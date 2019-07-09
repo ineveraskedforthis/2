@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title> hello </title>
+        <link rel='stylesheet', type='text/css', href='static/style.css'>
+    </head>
+    <body>
+        <h1> hello, friend </h1>
+        <div id='game'>
+        </div>
+        <div id='users_list'>
+            <ul id='users'>
+            <li> test </li>
+            <li> test </li>
+            <li> test </li>
+            </ul>
+        </div>
+        <div id='actions'>
+        </div>
+        <div id='login-frame'>
+            <form action=''>
+                <p> 
+                    <label for='login'> login </label>
+                    <input id='login-l'>
+                </p>
+                <p> 
+                    <label for='password'> password </label>
+                    <input id='password-l'>
+                </p>
+                <p>
+                    <input type='submit', name='login_button', value='login'>
+                </p>
+            </form>
+            <!--p>
+                <button> register </button>
+            </p-->
+        </div>
+        <div id='reg-frame'>
+            <form action=''>
+                <p> 
+                    <label for='login'> login </label>
+                    <input id='login-r'>
+                </p>
+                <p> 
+                    <label for='password'> password </label>
+                    <input id='password-r'>
+                </p>
+                <p>
+                    <input type='submit', name='reg_button', value='register'>
+                </p>
+            </form>
+            <!--p>
+                <button> login </button>
+            </p-->
+        </div>
+        <script src='/socket.io/socket.io.js'></script>
+        <script src='https://code.jquery.com/jquery-1.11.1.js'></script>
+        <script src='/static/main.js'></script>
+    </body>
+</html>

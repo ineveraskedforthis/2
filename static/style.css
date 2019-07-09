@@ -1,0 +1,18 @@
+body {
+    background-color: tomato;
+}
+#login_button {
+    
+}
+li:nth-of-type(2n) {
+    background-color: #ccc;
+}
+li:nth-of-type(2n+1) {
+    background-color: #eee;
+}
+li.selected {
+    background-color: green;
+}
+li:hover {
+    background-color: blue;
+}
