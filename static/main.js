@@ -26,6 +26,12 @@ $(function() {
     });
     
     socket.on('is-reg-completed', msg => {
-        alert(msg);
+        if (msg != 'ok') {
+            alert(msg);
+        }
+    })
+    
+    socket.on('new-user-online', msg => {
+        $('ul').append($("<li>").text(msg));
     })
 });
