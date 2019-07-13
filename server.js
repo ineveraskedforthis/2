@@ -9,7 +9,11 @@ var validator = require('validator');
 var bcrypt = require('bcrypt');
 //const saltRounds = 10;
 var {Pool} = require('pg');
-var pool = new Pool();
+if (process.env.stage == 'dev') {
+    var pool = new Pool();
+} else{
+    var pool = new Pool({connectionString: process.env.DATABASE_URL, ssl: true});
+}
 var salt = process.env.SALT;
 var dbname = process.env.DBNAME;
 LAST_ID = 1
@@ -67,6 +71,7 @@ app.get('/', (req, res) => {
 
 io.on('connection', async socket => {
     console.log('a user connected');
+    online = false
     socket.on('disconnect', () => {
         console.log('user disconnected');
     });
@@ -79,7 +84,10 @@ io.on('connection', async socket => {
         socket.emit('is-reg-valid', error_message);
         var answer = await reg_player(data);
         socket.emit('is-reg-completed', answer);
-        socket.emit('new-user-online', data.login);
+        if (online == false){
+            socket.emit('new-user-online', data.login);
+        }
+        
     })
 });
 
