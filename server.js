@@ -9,14 +9,17 @@ var validator = require('validator');
 var bcrypt = require('bcrypt');
 //const saltRounds = 10;
 var {Pool} = require('pg');
-if (process.env.stage == 'dev') {
+var stage = process.env.STAGE;
+if (stage == 'dev') {
     var pool = new Pool();
 } else{
     var pool = new Pool({connectionString: process.env.DATABASE_URL, ssl: true});
 }
 var salt = process.env.SALT;
 var dbname = process.env.DBNAME;
-LAST_ID = 1
+LAST_ID = 1;
+USERS_ONLINE = [];
+USERS = {};
 
 new_user_query = 'INSERT INTO accounts (login, password_hash, id) VALUES ($1, $2, $3)';
 reset_id_query = 'INSERT INTO last_id VALUES (0)';
@@ -31,27 +34,28 @@ class User {
     }
 }
 
-USERS = [];
-
 (async () => {
     try {
-        client = await pool.connect();
-        try {
-            await client.query('DROP DATABASE ' + dbname);
-        } catch(err) {
-            console.log(err)
+        if (stage == 'dev'){
+            client = await pool.connect();
+            try {
+                await client.query('DROP DATABASE ' + dbname);
+            } catch(err) {
+                console.log(err)
+            }
+            try {
+                await client.query('CREATE DATABASE ' + dbname);
+            } catch(err) {
+                console.log(err);
+            }
+            await client.end();
+            pool = new Pool({database: dbname});
         }
-        try {
-            await client.query('CREATE DATABASE ' + dbname);
-        } catch(err) {
-            console.log(err);
-        }
-        await client.end();
-        pool = new Pool({database: dbname});
         client = await pool.connect();
         await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int)');
         await client.query('CREATE TABLE last_id (last_id int)');
         await client.query(reset_id_query);
+        await client.end();
         //await client.query();
         console.log('database is ready');
     } catch (e) {
@@ -71,9 +75,28 @@ app.get('/', (req, res) => {
 
 io.on('connection', async socket => {
     console.log('a user connected');
-    online = false
+    var online = false;
+    var current_user = null;
+    function new_user_online(login) {
+        if (online == false) {
+            USERS_ONLINE.push(login);
+            io.emit('new-user-online', login);
+            online = true;
+        }
+    }
+    
+    function user_disconnects(login) {
+        i = USERS_ONLINE.indexOf(login);
+        USERS_ONLINE.splice(i, 1);
+        io.emit('users-online', USERS_ONLINE);
+    }
+    
+    socket.emit('users-online', USERS_ONLINE);
     socket.on('disconnect', () => {
         console.log('user disconnected');
+        if (online == true) {
+            user_disconnects(current_user.login);
+        }
     });
     socket.on('login', async data => {
         console.log(data);
@@ -83,11 +106,11 @@ io.on('connection', async socket => {
         error_message = validate_reg(data);
         socket.emit('is-reg-valid', error_message);
         var answer = await reg_player(data);
-        socket.emit('is-reg-completed', answer);
-        if (online == false){
-            socket.emit('new-user-online', data.login);
+        socket.emit('is-reg-completed', answer.reg_promt);
+        if (answer.reg_promt == 'ok') {
+            current_user = answer.user;
+            new_user_online(data.login);
         }
-        
     })
 });
 
@@ -116,14 +139,14 @@ function validate_reg(data) {
 async function reg_player(data) {
     var login_is_available = await check_login(data.login);
     if (!login_is_available) {
-        return 'login-is-not-available';
+        return {reg_promt: 'login-is-not-available', user: null};
     }
     var hash = await bcrypt.hash(data.password, salt);
     new_user = new User();
     id = get_new_id();
     await new_user.create(data.login, hash, id);
-    USERS[id] = User;
-    return('ok');
+    USERS[id] = new_user;
+    return({reg_promt: 'ok', user: new_user});
 }
 
 function get_new_id(){

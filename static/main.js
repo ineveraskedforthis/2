@@ -11,12 +11,18 @@ $(function() {
         socket.emit('reg', {login: $('#login-r').val(), password: $('#password-r').val()});
     });
 
-    $('li').click(function() {
-        if (selected != null) {
+    $('#users-list').on('click', 'li', function() {
+        if (selected == this){
             $(selected).removeClass('selected');
+            selected = null;
+        } else if (selected != null) {
+            $(selected).removeClass('selected');
+            $(this).addClass('selected');
+            selected = this;
+        } else {
+            $(this).addClass('selected');
+            selected = this;
         }
-        $(this).addClass('selected');
-        selected = this;
     });
 
     socket.on('is-reg-valid', msg => {
@@ -32,6 +38,14 @@ $(function() {
     })
     
     socket.on('new-user-online', msg => {
-        $('ul').append($("<li>").text(msg));
+        $('ul').append($('<li>').text(msg));
     })
+    
+    socket.on('users-online', msg => {
+        console.log(msg);
+        $('ul').empty();
+        msg.forEach(item => {
+            $('ul').append($('<li>').text(msg));
+        })
+    });
 });

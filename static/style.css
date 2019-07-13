@@ -16,3 +16,28 @@ li.selected {
 li:hover {
     background-color: blue;
 }
+.container {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr;
+}
+#game {
+    background: red;
+    height: 500px;
+    border:1px solid black;
+}
+#status {
+    background: red;
+    height: 500px;
+    border:1px solid black;
+}
+#users_list {
+    background: red;
+    height: 500px;
+    border:1px solid black;
+    overflow: auto;
+}
+#actions {
+    background: red;
+    height: 500px;
+    border:1px solid black;
+}
