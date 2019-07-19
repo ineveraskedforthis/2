@@ -219,7 +219,7 @@ class Equip {
         this.id = id;
     }
     
-    get_range() {
+    get_weapon_range() {
         return 1;
     }
 }
