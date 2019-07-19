@@ -24,6 +24,10 @@ $(function() {
             selected = this;
         }
     });
+    
+    $('#attack-button').click(() => {
+        socket.emit('attack', null);
+    })
 
     socket.on('is-reg-valid', msg => {
         if (msg != 'ok') {
@@ -38,14 +42,23 @@ $(function() {
     })
     
     socket.on('new-user-online', msg => {
-        $('ul').append($('<li>').text(msg));
+        $('#users-list').append($('<li>').text(msg));
     })
     
     socket.on('users-online', msg => {
-        console.log(msg);
-        $('ul').empty();
+        $('#users').empty();
         msg.forEach(item => {
-            $('ul').append($('<li>').text(msg));
+            $('#users').append($('<li>').text(msg));
         })
+    });
+    
+    socket.on('log-message', msg => {
+        $('#game-log').append($('<p>').text(msg));
+    });
+    
+    socket.on('char-info', msg =>{
+        $('#char-info').empty();
+        $('#char-info').append($('<p>').text(`name: ${msg.login}`))
+        $('#char-info').append($('<p>').text(`hp:${msg.character.hp}/${msg.character.max_hp}`))
     });
 });

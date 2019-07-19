@@ -9,10 +9,12 @@
         <h1> hello, friend </h1>
         <div class='container'>
             <div id='game'>
-                <ul id='game-log'>
-                </ul>
+                <div id='game-log'>
+                </div>
             </div>
             <div id='status'>
+                <h2> status </h2>
+                <div id='char-info'></div>
             </div>
             <div id='users-list'>
                 <h2> users online </h2>
@@ -20,6 +22,7 @@
                 </ul>
             </div>
             <div id='actions'>
+                <button id='attack-button'> attack </button>
             </div>
         </div>
         <div id='login-frame'>
@@ -36,9 +39,6 @@
                     <input type='submit', name='login_button', value='login'>
                 </p>
             </form>
-            <!--p>
-                <button> register </button>
-            </p-->
         </div>
         <div id='reg-frame'>
             <form action=''>
@@ -54,9 +54,6 @@
                     <input type='submit', name='reg_button', value='register'>
                 </p>
             </form>
-            <!--p>
-                <button> login </button>
-            </p-->
         </div>
         <script src='/socket.io/socket.io.js'></script>
         <script src='https://code.jquery.com/jquery-1.11.1.js'></script>

@@ -16,6 +16,7 @@ li.selected {
 li:hover {
     background-color: blue;
 }
+
 .container {
     display: grid;
     grid-template-columns: 3fr 1fr 1fr 1fr;
@@ -30,10 +31,10 @@ li:hover {
     height: 500px;
     border:1px solid black;
 }
-#users_list {
+#users-list {
     background: red;
     height: 500px;
-    border:1px solid black;
+    border: 1px solid black;
     overflow: auto;
 }
 #actions {
