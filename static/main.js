@@ -59,6 +59,6 @@ $(function() {
     socket.on('char-info', msg =>{
         $('#char-info').empty();
         $('#char-info').append($('<p>').text(`name: ${msg.login}`))
-        $('#char-info').append($('<p>').text(`hp:${msg.character.hp}/${msg.character.max_hp}`))
+        $('#char-info').append($('<p>').text(`hp:${msg.hp}/${msg.max_hp}`))
     });
 });
