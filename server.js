@@ -126,13 +126,15 @@ class Fight {
                 }
             }
         }
-        await this.reward_team(this.is_over);
+        var winner = this.is_over();
+        var exp_reward = this.reward(1 - winner);
+        await this.reward_team(winner, exp_reward);
     }
     
     is_over() {
         var hp = [0, 0];
         for (var i = 0; i < this.ids.length; i++) {
-            hp[this.teams[i]] += CHARACTERS[ids[i]].hp;
+            hp[this.teams[i]] += CHARACTERS[this.ids[i]].hp;
         }
         if (hp[0] == 0) {
             return 1;
@@ -143,13 +145,29 @@ class Fight {
         return -1;
     }
     
+    reward(team) {
+        var exp = 0;
+        for (var i = 0; i < this.ids.length; i++){
+            if (this.teams[i] == team) {
+                exp += CHARACTERS[this.ids[i]].get_exp_reward();
+            }
+        }
+        return exp;
+    }    
+    
     async reward_team(team, exp) {
+        var n = 0;
+        for (var i = 0; i < this.ids.length; i++){
+            if (this.teams[i] == team) {
+                n += 1
+            }
+        }
         for (var i = 0; i < this.ids.length; i++) {
             var character = CHARACTERS[this.ids[i]];
             if (this.teams[i] == team && character != null) {
-                await CHARACTERS[this.ids[i]].give_exp(exp);
-                CHARACTERS[this.ids[i]].in_battle = false;
+                await character.give_exp(Math.floor(exp / n));
             }
+            character.in_battle = false;
         }
     }
 }
@@ -180,6 +198,10 @@ class Character {
         await pool.query(new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player]);
     }
     
+    get_exp_reward() {
+        return this.exp_reward;
+    }
+    
     get_range() {
         return this.equip.get_weapon_range();
     }
@@ -205,11 +227,12 @@ class Character {
     }
     
     async give_exp(x) {
-        await this.set_exp(self.exp + x);
+        await this.set_exp(this.exp + x);
     }
     
     async set_exp(x) {
-        await pool.query(set_exp_query, [x, this.id])
+        this.exp = x;
+        await pool.query(set_exp_query, [x, this.id]);
     }
     
     async get_hp() {
@@ -386,7 +409,7 @@ async function create_battle(attackers, defenders) {
 }
 
 function update_char_info(socket, user) {
-    socket.emit('char-info', {login: user.login, hp: user.character.hp, max_hp: user.character.max_hp});
+    socket.emit('char-info', {login: user.login, hp: user.character.hp, max_hp: user.character.max_hp, exp: user.character.exp});
 }
 
 function validate_reg(data) {
