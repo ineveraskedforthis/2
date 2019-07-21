@@ -195,4 +195,8 @@ $(function() {
         $('#char-info').append($('<p>').text(`name: ${msg.login}`))
         $('#char-info').append($('<p>').text(`hp:${msg.hp}/${msg.max_hp}`))
     });
+    
+    socket.on('alert', msg => {
+        alert(msg);
+    });
 });

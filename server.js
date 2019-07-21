@@ -97,14 +97,14 @@ class Fight {
     
     async action(actor_index, action) {
         var character = CHARACTERS[this.ids[actor_index]];
-        if (action.action == 'moves') {
+        if (action.action == 'move') {
             if (action.target == 'right') {
                 this.positions[actor_index] += 1;
             } else {
                 this.positions[actor_index] -= 1;
             }
             return `${character.name} ${action.action} ${action.target}`
-        } else if (action.action == 'attacks') {
+        } else if (action.action == 'attack') {
             if (action.target != null) {
                 var damage = await character.attack(action.target);
                 return `${character.name} ${action.action} ${action.target.name} and deals ${damage} damage`;
@@ -148,6 +148,7 @@ class Fight {
             var character = CHARACTERS[this.ids[i]];
             if (this.teams[i] == team && character != null) {
                 await CHARACTERS[this.ids[i]].give_exp(exp);
+                CHARACTERS[this.ids[i]].in_battle = false;
             }
         }
     }
@@ -166,6 +167,7 @@ class Character {
         this.dead = false;
         this.exp_reward = 5;
         this.equip = new Equip();
+        this.in_battle = false;
     }
     
     async init(id, name, player = false) {
@@ -371,10 +373,12 @@ async function create_battle(attackers, defenders) {
     teams =[];
     for (var i = 0; i < attackers.length; i++) {
         ids.push(attackers[i].id);
+        attackers[i].in_battle = true;
         teams.push(0);
     }
     for (var i = 0; i < defenders.length; i++) {
         ids.push(defenders[i].id);
+        defenders[i].in_battle = true;
         teams.push(1);
     }
     await battle.init(id, ids, teams);
