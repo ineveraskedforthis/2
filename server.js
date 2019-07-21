@@ -97,17 +97,17 @@ class Fight {
     
     async action(actor_index, action) {
         var character = CHARACTERS[this.ids[actor_index]];
-        if (action.action == 'move') {
+        if (action.action == 'moves') {
             if (action.target == 'right') {
                 this.positions[actor_index] += 1;
             } else {
                 this.positions[actor_index] -= 1;
             }
             return `${character.name} ${action.action} ${action.target}`
-        } else if (action.action == 'attack') {
+        } else if (action.action == 'attacks') {
             if (action.target != null) {
                 var damage = await character.attack(action.target);
-                return `${character.name} ${action.action} ${action.target.name} and deal ${damage} damage`;
+                return `${character.name} ${action.action} ${action.target.name} and deals ${damage} damage`;
             }
             return 'pfff';
         }

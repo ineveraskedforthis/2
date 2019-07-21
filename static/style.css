@@ -46,3 +46,6 @@ li:hover {
 #game-log {
     overflow: auto;
 }
+#game-field {
+    border:1px solid tomato;
+}
