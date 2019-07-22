@@ -35,6 +35,7 @@ set_hp_query = 'UPDATE chars SET hp = ($1) WHERE id = ($2)';
 set_exp_query = 'UPDATE chars SET exp = ($1) WHERE id = ($2)';
 set_id_query = 'UPDATE last_id SET last_id = ($2) WHERE id_type = ($1)';
 get_id_query = 'SELECT * FROM last_id WHERE id_type = ($1)';
+save_world_size_query = '';
 
 function AI_fighter(index, ids, teams, positions) {
     var min_distance = BASE_FIGHT_RANGE;
@@ -65,6 +66,25 @@ function AI_fighter(index, ids, teams, positions) {
         action_target = target;
     }
     return {action: action, target: action_target};
+}
+
+
+class World(){
+    async init(x, y, pool) {
+        this.x = x;
+        this.y = y;
+        this.agents = {};
+        this.agents_ids = new Set();
+        pool.query(save_world_size_query, [x, y]);
+    }
+    
+    async update(pool) {
+        
+    }
+    
+    async update_id(id, pool) {
+        
+    }
 }
 
 
