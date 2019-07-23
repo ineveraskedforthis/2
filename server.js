@@ -73,19 +73,61 @@ function AI_fighter(index, ids, teams, positions) {
 
 
 class MarketOrder {
-    async init(pool, typ, tag, owner, amount, price) {
+    async init(pool, typ, tag, owner, amount, price, market_id) {
         this.typ = typ;
         this.tag = tag;
         this.owner = owner;
         this.amount = amount;
         this.price = price;
         this.id = await get_new_id('market_order');
-        await pool.query(new_market_order_query, [id, typ, tag, owner, amount, price]);
+        this.market_id = market_id;
+        await pool.query(new_market_order_query, [id, typ, tag, owner, amount, price, market]);
     }
 }
 
 
-class Market {}
+class Market {
+    async init(pool, world, cell_id, owner) {
+        this.id = await get_new_id('market');
+        this.cell_id = cell_id;
+        this.owner = owner;
+        this.world = world;
+        this.savings = new Savings();
+        await this.savings.init(pool, this.id);
+        this.stash = new Stash();
+        await this.stash.init(pool, this.id);
+        this.buy_orders = {};
+        this.sell_orders = {};
+        this.planned_money_to_spent = {};
+        this.total_cost_of_placed_goods = {};
+        this.max_price = {};
+        this.total_sold = {};
+        this.total_sold_cost = {};
+        this.total_sold_new = {};
+        this.total_sold_cost_new = {};
+        this.sells = {};
+        this.tmp_sells = {};
+        this.taxes = {};
+        for (tag in world.TAGS) {
+            this.taxes[tag] = 0;
+            this.planned_money_to_spent[tag] = 0;
+            this.total_cost_of_placed_goods[tag] = 0;
+            this.tmp_plannned_money_to_spent[tag] = 0;
+            this.tmp_total_cost_of_placed_goods[tag] = 0;
+            this.sell_orders[tag] = set();
+            this.buy_orders[tag] = set();
+            this.max_price[tag] = 0;
+            this.total_sold[tag] = 0;
+            this.total_sold_cost[tag] = 0;
+            this.total_sold_new[tag] = 0;
+            this.total_sold_cost_new[tag] = 0;
+            this.sells[tag] = [];
+            this.tmp_sells[tag] = [];
+        }
+        this.save_to_db(pool);
+    }
+
+}
 
 
 class Tile {}
