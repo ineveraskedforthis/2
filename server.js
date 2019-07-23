@@ -72,7 +72,17 @@ function AI_fighter(index, ids, teams, positions) {
 
 
 
-class MarketOrder {}
+class MarketOrder {
+    async init(pool, typ, tag, owner, amount, price) {
+        this.typ = typ;
+        this.tag = tag;
+        this.owner = owner;
+        this.amount = amount;
+        this.price = price;
+        this.id = await get_new_id('market_order');
+        await pool.query(new_market_order_query, [id, typ, tag, owner, amount, price]);
+    }
+}
 
 
 class Market {}
