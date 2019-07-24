@@ -83,6 +83,10 @@ class MarketOrder {
         this.market_id = market_id;
         await pool.query(new_market_order_query, [id, typ, tag, owner, amount, price, market]);
     }
+
+    async save_to_db(pool) {
+        await pool.query(update_market_order_query, [id, typ, tag, owner, amount, price, market])
+    }
 }
 
 
@@ -114,8 +118,8 @@ class Market {
             this.total_cost_of_placed_goods[tag] = 0;
             this.tmp_plannned_money_to_spent[tag] = 0;
             this.tmp_total_cost_of_placed_goods[tag] = 0;
-            this.sell_orders[tag] = set();
-            this.buy_orders[tag] = set();
+            this.sell_orders[tag] = new Set([]);
+            this.buy_orders[tag] = new Set([]);
             this.max_price[tag] = 0;
             this.total_sold[tag] = new Array(30);
             this.total_sold[tag].fill(0);
@@ -264,6 +268,49 @@ class Market {
         }
         await this.clear_empty_sell_orders(pool, tag);
         await this.save_to_db(pool);
+    }
+
+    async new_order(pool, typ, tag, amount, price, agent) {
+        if (typ == 'SELL') {
+            var tmp = await agent.stash.transfer(pool, this.stash, tag, amount);
+            var order = new MarketOrder();
+            order_id = await order.init(pool, typ, tag, agent, tmp, price, this.id);
+            this.sell_orders[tag].add(order_id);
+            this.world.add_order(pool, order);
+        }
+        if (type == 'BUY') {
+            if (price != 0) {
+                savings = await agent.savings.get(pool);
+                amount = min(amount, Math.floor(savings / price));
+                await agent.savings.transfer(pool, this.savings, amount * price)
+                var order = new MarketOrder();
+                order_id = await order.init(pool, typ, tag, agent, amount, price, this.id);
+                this.buy_orders[tag].add(order_id);
+                this.world.add_order(pool, order);
+            } else {
+                var order = new MarketOrder();
+                order_id = await order.init(pool, typ, tag, agent, amount, price, this.id);
+                this.buy_orders[tag].add(order_id);
+                this.world.add_order(pool, order);
+            }
+        }
+    }
+
+    async execute_buy_order(pool, order, amount, seller) {
+        this.tmp_sells[order.tag].push([amount, order.price]);
+        order.amount -= amount;
+        await order,save_to_db(pool);
+        await this.savings.transfer(pool, seller.savings, amount * order.price);
+        await this.savings.transfer(pool, this.owner.savings, amount * this.taxes[order.tag]);
+        await seller.stash.transfer(pool, order.owner.stash, order.tag, amount);
+        this.total_sold_new[order.tag] += amount;
+        this.total_sold_cost_new[order.tag] += amount * order.price;
+        this.save_to_db(pool);
+        return amount * order.price;
+    }
+
+    async execute_sell_order(pool, order, amount, buyer) {
+        
     }
 }
 
