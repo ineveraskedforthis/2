@@ -126,7 +126,7 @@ class Market {
             this.sells[tag] = [];
             this.tmp_sells[tag] = [];
         }
-        await this.save_to_db(pool);
+        await this.load_to_db(pool);
     }
 
     async update(pool) {
@@ -135,9 +135,135 @@ class Market {
             this.tmp_plannned_money_to_spent = 0;
             this.total_cost_of_placed_goods[tag] = this.tmp_total_cost_of_placed_goods[tag];
             this.tmp_total_cost_of_placed_goods[tag] = 0;
-            this.total_sold[tag] = this.total_sold[tag].slice(1).concat([this.total_sold_cost_new[tag]]]);
-            
+            this.total_sold[tag] = this.total_sold[tag].slice(1);
+            this.total_sold.push(this.total_sold_new[tag]]);
+            this.total_sold_new[tag] = 0;
+            this.total_sold_cost[tag] = this.total_sold_cost[tag].slice(1)
+            this.total_sold_cost.push(this.total_sold_cost_new[tag]);
+            this.total_sold_cost_new[tag] = 0;
+            this.sells[tag] = this.tmp_sells[tag];
         }
+        await this.save_to_db(pool);
+    }
+
+    async set_taxes(pool, tag, x) {
+        this.taxes[tag] = x;
+        await this.save_to_db(pool);
+    }
+
+    async buy(pool, tag, buyer, amount, money) {
+        if (buyer.savings.get() < money) {
+            money = buyer.savings.get(pool);
+        }
+        this.tmp_plannned_money_to_spent[tag] += money;
+        var tmp = [];
+        for (var i in this.sell_orders[tag]) {
+            tmp.push(world.get_order(pool, i));
+        }
+        tmp.sort((a, b) => {
+            if (a.price < b.price) {
+                return -1;
+            }
+            if (a.price > b.price) {
+                return 1;
+            }
+            return 0;
+        });
+        var i = 0;
+        var j = 0;
+        var total_spendings = 0;
+        var y = money;
+        while ((i < tmp.length) && (amount > 0)) {
+            var tmp_amount = 0;
+            while ((i < tmp.length) && (tmp[i].price == tmp[j].price)) {
+                tmp_amount += tmp[i].amount;
+                i += 1;
+            }
+            if ((money - total_spendings) < (amount * tmp[j].price)) {
+                amount = Math.floor((money - total_spendings) / tmp[j].price);
+            }
+            if (tmp_amount <= amount) {
+                for (var k = j; k < i; k++) {
+                    total_spendings += await this.execute_sell_order(pool, tmp[k], tmp[k].amount, buyer);
+                }
+                amount -= tmp_amount;
+            } else {
+                var u_amount = amount;
+                for (var k = j; k < i; k++) {
+                    var memelord = Math.floor((tmp[k].amount / tmp_amount) * u_amount);
+                    amount -= memelord;
+                    total_spendings += await this.execute_sell_order(pool, tmp[k], memelord, buyer);
+                }
+                for (var k = j; k < i; k++) {
+                    if ((tmp[k].amount > 0) && (amount > 0)) {
+                        total_spendings += await this.execute_sell_order(pool, tmp[k], 1, buyer);
+                        amount -= 1;
+                    }
+                }
+            }
+            j = i;
+        }
+        if ((amount > 0) && (money > 0)) {
+            var price = Math.floor((money - total_spendings) / amount);
+            await this.new_order(pool, 'BUY', tag, amount, price, buywe);
+        }
+        await his.clear_empty_sell_orders[tag];
+        await this.save_to_db(pool);
+        return total_spendings;
+    }
+
+    async sell(pool, tag, seller, amount, price) {
+        if (amount > seller.stash.get(tag)) {
+            amount = seller.stash.get(tag);
+        }
+        this.tmp_total_cost_of_placed_goods[tag] += amount * price;
+        var tmp = [];
+        for (var i in this.buy_orders[tag]) {
+            tmp.push(this.world.get_order(pool, i));
+        }
+        tmp.sort((a, b) => {
+            if (a.price < b.price) {
+                return 1;
+            }
+            if (a.price > b.price) {
+                return -1;
+            }
+            return 0;
+        });
+        var i = 0;
+        var j = 0;
+        while ((i < tmp.length) && (amount > 0) && (tmp[i].price >= price) {
+            var tmp_amount = 0;
+            while ((i < tmp.length) && (tmp[i].price == tmp[j].price)) {
+                tmp_amount += tmp[i].amount;
+                i += 1;
+            }
+            if (tmp_amount <= amount) {
+                for (var k = j; k < i; k++) {
+                    await this.execute_buy_order(pool, tmp[k], tmp[k].amount, seller);
+                }
+                amount -= tmp_amount;
+            } else {
+                var u_amount = amount;
+                for (var k = j; k <= i; k++) {
+                    var memelord = Math.floor((tmp[k].amount / tmp_amount) * u_amount);
+                    amount -= memelord;
+                    await this.execute_buy_order(pool, tmp[k], memelord, seller);
+                }
+                for (var k = j; k <= i; k++) {
+                    if ((tmp[k].amount > 0) && (amount > 0)) {
+                        await this.execute_buy_order(pool, tmp[k], 1, seller);
+                        amount -= 1;
+                    }
+                }
+            }
+            j = i;
+        }
+        if (amount > 0) {
+            await this.new_order(pool, 'SELL', tag, amount, price, seller);
+        }
+        await this.clear_empty_sell_orders(pool, tag);
+        await this.save_to_db(pool);
     }
 }
 
