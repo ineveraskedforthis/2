@@ -117,16 +117,28 @@ class Market {
             this.sell_orders[tag] = set();
             this.buy_orders[tag] = set();
             this.max_price[tag] = 0;
-            this.total_sold[tag] = 0;
-            this.total_sold_cost[tag] = 0;
+            this.total_sold[tag] = new Array(30);
+            this.total_sold[tag].fill(0);
+            this.total_sold_cost[tag] = new Array(30);
+            this.total_sold_cost[tag].fill(0);
             this.total_sold_new[tag] = 0;
             this.total_sold_cost_new[tag] = 0;
             this.sells[tag] = [];
             this.tmp_sells[tag] = [];
         }
-        this.save_to_db(pool);
+        await this.save_to_db(pool);
     }
 
+    async update(pool) {
+        for (tag in this.world.TAGS) {
+            this.planned_money_to_spent[tag] = self.tmp_plannned_money_to_spent[tag];
+            this.tmp_plannned_money_to_spent = 0;
+            this.total_cost_of_placed_goods[tag] = this.tmp_total_cost_of_placed_goods[tag];
+            this.tmp_total_cost_of_placed_goods[tag] = 0;
+            this.total_sold[tag] = this.total_sold[tag].slice(1).concat([this.total_sold_cost_new[tag]]]);
+            
+        }
+    }
 }
 
 
