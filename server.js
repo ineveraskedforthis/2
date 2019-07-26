@@ -39,6 +39,12 @@ get_id_query = 'SELECT * FROM last_id WHERE id_type = ($1)';
 save_world_size_query = '';
 new_cell_query = '';
 
+
+function sum(a) {
+    return a.reduce((x, y) => x + y, 0);
+}
+
+
 function AI_fighter(index, ids, teams, positions) {
     var min_distance = BASE_FIGHT_RANGE;
     var closest_enemy = null;
@@ -71,6 +77,71 @@ function AI_fighter(index, ids, teams, positions) {
 }
 
 
+class Savings {
+    constructor() {
+        this.data = {};
+        this.prev_data = {};
+        this.income = 0;
+    }
+
+    get_json() {
+        var tmp = {};
+        tmp.data = this.data;
+        tmp.prev_data = this.prev_data;
+        tmp.income = this.income;
+        return tmp;
+    }
+
+    load_from_json(x) {
+        this.data = x.data;
+        this.prev_data = x.prev_data;
+        this.income = this.income;
+    }
+}
+
+
+class Stash {
+    constructor() {
+        this.data = {};
+    }
+
+    get_json() {
+        return this.data
+    }
+
+    load_from_json(x) {
+        this.data = x;
+    }
+
+    inc(tag, x) {
+        this.check_tag(tag);
+        if (this.data[tag] + x < 0) {
+            var tmp = -this.data[tag];
+            this.data[tag] = 0;
+        } else {
+            var tmp = x;
+            this.data[tag] += x;
+        }
+        return tmp;
+    }
+
+    get(tag) {
+        return this.data[tag];
+    }
+
+    transfer(target, tag, x) {
+        tmp = this.inc(tag, -amount);
+        target.inc(tag, -tmp);
+        return -tmp;
+    }
+
+    check_tag(tag) {
+        if (not (tag in this.data)) {
+            this.data[tag] = 0;
+        }
+    }
+}
+
 
 class MarketOrder {
     async init(pool, typ, tag, owner, amount, price, market_id) {
@@ -86,6 +157,10 @@ class MarketOrder {
 
     async save_to_db(pool) {
         await pool.query(update_market_order_query, [id, typ, tag, owner, amount, price, market])
+    }
+
+    get_json() {
+
     }
 }
 
@@ -310,7 +385,7 @@ class Market {
     async clear_empty_sell_orders(pool, tag) {
         var tmp = new Set();
         for (var i in this.sell_orders[tag]) {
-            order = await this.world.get_order(pool, i);
+            var order = await this.world.get_order(pool, i);
             if (order.amount == 0) {
                 tmp.add(i);
             }
@@ -318,12 +393,13 @@ class Market {
         for (var i in tmp) {
             this.cancel_sell_order(pool, i);
         }
+        await this.save_to_db(pool);
     }
 
     async clear_empty_buy_orders(pool, tag) {
         var tmp = new Set();
         for (var i in this.buy_orders[tag]) {
-            order = await this.world.get_order(pool, i);
+            var order = await this.world.get_order(pool, i);
             if (order.amount == 0) {
                 tmp.add(i);
             }
@@ -331,6 +407,7 @@ class Market {
         for (var i in tmp) {
             this.cancel_buy_order(pool, i);
         }
+        await this.save_to_db(pool);
     }
 
     async clear_agent_orders(pool, agent, tag) {
@@ -341,7 +418,7 @@ class Market {
     async clear_agent_sell_orders(pool, agent, tag) {
         var tmp = new Set();
         for (var i in this.sell_orders[tag]) {
-            order = await this.world.get_order(pool, i);
+            var order = await this.world.get_order(pool, i);
             if (order.owner == agent) {
                 tmp.add(i);
             }
@@ -349,12 +426,13 @@ class Market {
         for (var i in tmp) {
             this.cancel_sell_order(pool, i);
         }
+        await this.save_to_db(pool);
     }
 
     async clear_agent_buy_orders(pool, agent, tag) {
         var tmp = new Set();
         for (var i in this.buy_orders[tag]) {
-            order = await this.world.get_order(pool, i);
+            var order = await this.world.get_order(pool, i);
             if (order.owner == agent) {
                 tmp.add(i);
             }
@@ -362,6 +440,7 @@ class Market {
         for (var i in tmp) {
             await this.cancel_buy_order(pool, i);
         }
+        await this.save_to_db(pool);
     }
 
     async get_money_on_hold(pool, agent) {
@@ -377,7 +456,192 @@ class Market {
         return tmp;
     }
 
-    
+    async cancel_buy_order(pool, order_id) {
+        var order = await this.world.get_order(pool, order_id);
+        var amount = order.amount * (order_price + this.taxes[order.tag]);
+        await this.savings.transfer(pool, order.owner.savings, amount);
+        this.buy_orders[order.tag].delete(order_id);
+        await this.save_to_db(pool);
+    }
+
+    async cancel_sell_order(pool, order_id) {
+        var order = await this.world.get_order(pool, order_id);
+        await this.stash.transfer(pool, order.owner.stash, order.tag, order.amount);
+        this.sell_orders[order.tag].delete(order_id);
+        await this.save_to_db(pool);
+    }
+
+    async check_cost(pool, list_of_goods) {
+        var cost = 0;
+        for (var i in list_of_goods) {
+            cost += await this.check_tag_cost(i[0], i[1]);
+        }
+        return cost;
+    }
+
+    async guess_cost(pool, list_of_goods) {
+        var cost = 0;
+        for (var i in list_of_goods) {
+            cost += await this.guess_tag_cost(i[0], i[1])
+        }
+        return cost;
+    }
+
+    async check_tag_cost(pool, tag, amount) {
+        var tmp = [];
+        for (var i in this.sell_orders[tag]) {
+            var order = await this.world.get_order(pool, i);
+            tmp.push(order);
+        }
+        tmp.sort((a, b) => {a.price - b.price});
+        var i = 0;
+        var j = 0;
+        var cost = 0;
+        for (var i in tmp) {
+            if (i.amount <= amount) {
+                cost += i.amount * (i.price + this.taxes[tag]);
+                amount -= i.amount;
+            } else if (amount > 0) {
+                cost += amount * (i.price + this.taxes[tag]);
+                amount = 0;
+            }
+        }
+        if (amount > 0) {
+            return this.world.INF;
+        }
+        return cost;
+    }
+
+    async guess_tag_cost(pool, tag, amount) {
+        var tmp = [];
+        for (var i in this.sell_orders[tag]) {
+            var order = await this.world.get_order(pool, i);
+            tmp.push(order);
+        }
+        tmp.sort((a, b) => {a.price - b.price});
+        var i = 0;
+        var j = 0;
+        var cost = 0;
+        for (var i in tmp) {
+            if (i.amount <= amount) {
+                cost += i.amount * (i.price + this.taxes[tag]);
+                amount -= i.amount;
+            } else if (amount > 0) {
+                cost += amount * (i.price + this.taxes[tag]);
+                amount = 0;
+            }
+        }
+        if (amount > 0) {
+            if (sum(this.total_sold[tag]) != 0) {
+                av_price = await this.get_average_tag_price(pool, tag);
+                cost += Math.floor(av_price * amount);
+            } else {
+                cost += this.world.HISTORY_PRICE[tag] * amount;
+            }
+        }
+        return cost;
+    }
+
+    async get_total_cost_of_placed_goods_with_price_less_or_equal(pool, tag, x) {
+        var cost = 0;
+        for (var i in this.tmp_sells[tag]) {
+            if (i[1] <= x) {
+                cost += i[0] * i[1];
+            }
+        }
+        for (var i in this.sell_orders[tag]) {
+            var order = await this.world.get_order(pool, i);
+            if (order.price <= x) {
+                cost += i.amount * i.price;
+            }
+        }
+        return cost;
+    }
+
+    async get_average_tag_price(pool, tag) {
+        var total_count = sum(this.total_sold[tag]) + this.total_sold_new[tag];
+        var total_cost = sum(this.total_sold_cost[tag]) + this.total_sold_cost_new[tag];
+        for (var i in this.sell_orders[tag]) {
+            var order = await this.world.get_order(pool, i);
+            total_count += order.amount;
+            total_cost += order.amount * (order.price + this.taxes[tag]);
+        }
+        for (var i in this.buy_orders[tag]) {
+            var order = await this.world.get_order(pool, i);
+            total_count += order.amount;
+            total_cost += order.amount * (order.price + this.taxes[tag]);
+        }
+        if (total_count != 0) {
+            return total_cost / total_count;
+        }
+        return this.world.HISTORY_PRICE[tag]
+    }
+
+    async find_amount_of_goods_for_buying(pool, max_amount, money, goods) {
+        var l = 0;
+        var r = Math.floor(max_amount + 1);
+        while (l + 1 < r) {
+            var m = Math.floor((l + r) / 2);
+            var list_of_goods = [];
+            for (var i in goods) {
+                list_of_goods.push(i[0], i[1] * m);
+            }
+            var estimated_cost = this.guess_cost(pool, list_of_goods);
+            if (estimated_cost <= money) {
+                l = m;
+            } else {
+                r = m;
+            }
+        }
+        return l;
+    }
+
+    async get_most_profitable_building(pool) {}
+
+    async get_orders_list(pool) {
+        var tmp = [];
+        for (var tag in this.world.TAGS) {
+            for (var i in this.buy_orders[tag]) {
+                order = await world.get_order(i);
+                tmp.push(order.get_json());
+            }
+            for (var i in this.sell_orders[tag]) {
+                order = await world.get_order(i);
+                tmp.push(order.get_json());
+            }
+        }
+        return tmp;
+    }
+
+    async save_to_db(pool) {
+        await pool.query(update_market_query, [this.get_json()]);
+    }
+
+    async load_to_db(pool) {
+        await pool.query(new_market_query, [this.get_json()]);
+    }
+
+    get_json() {
+        var tmp = {};
+        tmp.id = this.id;
+        tmp.cell_id = this.cell_id;
+        tmp.owner = this.owner.id;
+        tmp.savings = this.savings.get_json();
+        tmp.stash = this.stash.get_json();
+        tmp.buy_orders = this.buy_orders;
+        tmp.sell_orders = this.sell_orders;
+        tmp.planned_money_to_spent = his.planned_money_to_spent;
+        tmp.total_cost_of_placed_goods = this.total_cost_of_placed_goods;
+        tmp.max_price = this.max_price;
+        tmp.total_sold = this.total_sold;
+        tmp.total_sold_cost = his.total_sold_cost;
+        tmp.total_sold_new = this.total_sold_new;
+        tmp.total_sold_cost_new = this.total_sold_cost_new;
+        tmp.sells = this.sells;
+        tmp.tmp_sells = this.tmp_sells;
+        tmp.taxes = this.taxes;
+        return tmp;
+    }
 }
 
 
