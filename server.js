@@ -38,6 +38,8 @@ set_id_query = 'UPDATE last_id SET last_id = ($2) WHERE id_type = ($1)';
 get_id_query = 'SELECT * FROM last_id WHERE id_type = ($1)';
 save_world_size_query = '';
 new_cell_query = '';
+new_market_query = '';
+update_market_query = '';
 
 
 function sum(a) {
@@ -80,7 +82,9 @@ function AI_fighter(index, ids, teams, positions) {
 class Savings {
     constructor() {
         this.data = {};
+        this.data['standard_money'] = 0;
         this.prev_data = {};
+        this.prev_data['standard_money'] = 0;
         this.income = 0;
     }
 
@@ -96,6 +100,47 @@ class Savings {
         this.data = x.data;
         this.prev_data = x.prev_data;
         this.income = this.income;
+    }
+
+    update() {
+        this.prev_data['standard_money'] = this.data['standard_money'];
+        this.income = 0;
+    }
+
+    set(x) {
+        this.data['standard_money'] = x;
+    }
+
+    get() {
+        return this.data['standard_money'];
+    }
+
+    get_estimated_income() {
+        return this.data['standard_money'] - this.prev_data['standard_money'];
+    }
+
+    inc(x) {
+        var a = this.get();
+        if ((a + x) < 0) {
+            this.set(0);
+        } else {
+            this.set(a + x)
+        }
+    }
+
+    transfer(target, x) {
+        var a = this.get();
+        var b = target.get();
+        var tmp = x;
+        if ((a - x >= 0) && (b + x >= 0)) {
+            this.inc(-x);
+            target.inc(x);
+        } else if ((a - x < 0) && (b + x >= 0)) {
+            tmp = a - x;
+            this.set(0);
+            target.inc(x + tmp);
+        }
+        return tmp;
     }
 }
 
@@ -173,9 +218,7 @@ class Market {
         this.owner = owner;
         this.world = world;
         this.savings = new Savings();
-        await this.savings.init(pool, this.id);
         this.stash = new Stash();
-        await this.stash.init(pool, this.id);
         this.buy_orders = {};
         this.sell_orders = {};
         this.planned_money_to_spent = {};
