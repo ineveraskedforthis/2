@@ -1,0 +1,50 @@
+accounts
+    login
+    password_hash
+    id
+    char_id
+
+chars
+    name
+    hp
+    max_hp
+    exp
+    level
+    id
+    is_player
+    user_id
+
+last_id
+    id_type
+    last_id
+
+battles
+    id
+    ids
+    teams
+    positions
+
+worlds
+    x
+    y
+
+cells
+    id
+    x
+    y
+    name
+    market_id
+    owner_id
+    pop_id
+
+market
+    id
+    data
+
+market_orders
+    id
+    typ
+    tag
+    amount
+    price
+    market_id

@@ -1,3 +1,4 @@
+'use strict'
 require('dotenv').config({path: __dirname + '/.env'});
 var version = 0;
 var express = require('express');
@@ -19,27 +20,29 @@ if (stage == 'dev') {
 var salt = process.env.SALT;
 var dbname = process.env.DBNAME;
 
-BASE_FIGHT_RANGE = 10;
-LAST_ID = 0;
-LAST_FIGHT_ID = 0;
-USERS_ONLINE = [];
-USERS = {};
-CHARACTERS = {};
+var new_user_query = 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)';
+var new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
+var init_id_query = 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)';
+var new_battle_query = 'INSERT INTO battles (id, ids, teams, positions) VALUES ($1, $2, $3, $4)';
+var new_cell_query = 'INSERT INTO cells (id, x, y, name, market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+var new_market_query = 'INSERT INTO markets (id, data) VALUES ($1, $2)';
+var new_market_order_query = 'INSERT INTO market_orders (id, typ, tag, amount, price, market_id) VALUES ($1, $2, $3, $4, $5, $6)';
 
-new_user_query = 'INSERT INTO accounts (login, password_hash, id) VALUES ($1, $2, $3)';
-new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player) VALUES ($1, $2, $3, $4, $5, $6, $7)';
-reset_id_query = 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)';
-new_battle_query = 'INSERT INTO battles (id, ids, teams, positions) VALUES ($1, $2, $3, $4)';
-update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
-find_user_by_login_query = 'SELECT * FROM accounts WHERE login = ($1)';
-set_hp_query = 'UPDATE chars SET hp = ($1) WHERE id = ($2)';
-set_exp_query = 'UPDATE chars SET exp = ($1) WHERE id = ($2)';
-set_id_query = 'UPDATE last_id SET last_id = ($2) WHERE id_type = ($1)';
-get_id_query = 'SELECT * FROM last_id WHERE id_type = ($1)';
-save_world_size_query = '';
-new_cell_query = '';
-new_market_query = '';
-update_market_query = '';
+var update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
+var update_market_order_query = 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)';
+var update_market_query = 'UPDATE markets SET data = ($2) WHERE id = ($1)';
+
+var delete_market_order_query = 'DELETE FROM market_orders WHERE id = ($1)';
+var delete_battle_query = 'DELETE FROM battles WHERE id = ($1)';
+var delete_char_query = 'DELETE FROM chars WHERE id = ($1)';
+
+var find_user_by_login_query = 'SELECT * FROM accounts WHERE login = ($1)';
+var set_hp_query = 'UPDATE chars SET hp = ($1) WHERE id = ($2)';
+var set_exp_query = 'UPDATE chars SET exp = ($1) WHERE id = ($2)';
+var set_id_query = 'UPDATE last_id SET last_id = ($2) WHERE id_type = ($1)';
+var get_id_query = 'SELECT * FROM last_id WHERE id_type = ($1)';
+var save_world_size_query = 'INSERT INTO worlds (x, y) VALUES ($1, $2)';
+
 
 
 function sum(a) {
@@ -47,12 +50,12 @@ function sum(a) {
 }
 
 
-function AI_fighter(index, ids, teams, positions) {
-    var min_distance = BASE_FIGHT_RANGE;
+function AI_fighter(world, index, ids, teams, positions) {
+    var min_distance = world.BASE_BATTLE_RANGE;
     var closest_enemy = null;
     for (i = 0; i < positions.length; i++) {
         var dx = positions[i] - positions[index];
-        if (((Math.abs(dx) <= Math.abs(min_distance)) || (closest_enemy == null)) && (teams[i] != teams[index]) && (CHARACTERS[ids[i]] != null)) {
+        if (((Math.abs(dx) <= Math.abs(min_distance)) || (closest_enemy == null)) && (teams[i] != teams[index]) && (world.chars[ids[i]] != null)) {
             closest_enemy = i;
             min_distance = dx;
         }
@@ -60,8 +63,8 @@ function AI_fighter(index, ids, teams, positions) {
     if (closest_enemy == null) {
         return {action: 'idle', target: null};
     }
-    var actor = CHARACTERS[ids[index]];
-    var target = CHARACTERS[ids[closest_enemy]];
+    var actor = world.chars[ids[index]];
+    var target = world.chars[ids[closest_enemy]];
     var action_target = null;
     var action = null;
     if (Math.abs(min_distance) > actor.get_range()) {
@@ -189,31 +192,48 @@ class Stash {
 
 
 class MarketOrder {
-    async init(pool, typ, tag, owner, amount, price, market_id) {
+    async init(pool, world, typ, tag, owner, amount, price, market_id) {
         this.typ = typ;
+        this.world = world;
         this.tag = tag;
         this.owner = owner;
         this.amount = amount;
         this.price = price;
-        this.id = await get_new_id('market_order');
+        this.id = await world.get_new_id(pool, 'market_order_id');
         this.market_id = market_id;
-        await pool.query(new_market_order_query, [id, typ, tag, owner, amount, price, market]);
+        await this.load_to_db(pool);
+    }
+
+    async load_to_db(pool) {
+        await pool.query(new_market_order_query, [this.id, this.typ, this.tag, this.owner, this.amount, this.price, this.market_id]);
     }
 
     async save_to_db(pool) {
-        await pool.query(update_market_order_query, [id, typ, tag, owner, amount, price, market])
+        await pool.query(update_market_order_query, [this.id, this.amount]);
+    }
+
+    async delete_from_db(pool) {
+        await pool.query(delete_market_order_query, [this.id]);
     }
 
     get_json() {
-
+        var tmp = {};
+        tmp.typ = this.typ;
+        tmp.tag = this.tag;
+        tmp.owner = this.owner;
+        tmp.amount = this.amount;
+        tmp.price = this.price;
+        tmp.id = this.id;
+        tmp.market_id = this.market_id;
+        return tmp;
     }
 }
 
 
-// remember to check how taxes are working
+// remember to check how taxes are working (spoiler: wrong)
 class Market {
     async init(pool, world, cell_id, owner) {
-        this.id = await get_new_id('market');
+        this.id = await world.get_new_id(pool, 'market_id');
         this.cell_id = cell_id;
         this.owner = owner;
         this.world = world;
@@ -250,6 +270,7 @@ class Market {
             this.tmp_sells[tag] = [];
         }
         await this.load_to_db(pool);
+        return this.id
     }
 
     async update(pool) {
@@ -259,7 +280,7 @@ class Market {
             this.total_cost_of_placed_goods[tag] = this.tmp_total_cost_of_placed_goods[tag];
             this.tmp_total_cost_of_placed_goods[tag] = 0;
             this.total_sold[tag] = this.total_sold[tag].slice(1);
-            this.total_sold.push(this.total_sold_new[tag]]);
+            this.total_sold.push(this.total_sold_new[tag]);
             this.total_sold_new[tag] = 0;
             this.total_sold_cost[tag] = this.total_sold_cost[tag].slice(1)
             this.total_sold_cost.push(this.total_sold_cost_new[tag]);
@@ -274,7 +295,7 @@ class Market {
         await this.save_to_db(pool);
     }
 
-    async buy(pool, tag, buyer, amount, money) {
+    async buy(pool, tag, buyer, amount, money, max_price = null) {
         if (buyer.savings.get() < money) {
             money = buyer.savings.get(pool);
         }
@@ -283,12 +304,12 @@ class Market {
         for (var i in this.sell_orders[tag]) {
             tmp.push(world.get_order(pool, i));
         }
-        tmp.sort((a, b) => a.price - b.price});
+        tmp.sort((a, b) => (a.price - b.price));
         var i = 0;
         var j = 0;
         var total_spendings = 0;
         var y = money;
-        while ((i < tmp.length) && (amount > 0)) {
+        while ((i < tmp.length) && (amount > 0) && ((max_price == null) || (tmp[i].price <= max_price))) {
             var tmp_amount = 0;
             while ((i < tmp.length) && (tmp[i].price == tmp[j].price)) {
                 tmp_amount += tmp[i].amount;
@@ -336,10 +357,10 @@ class Market {
         for (var i in this.buy_orders[tag]) {
             tmp.push(this.world.get_order(pool, i));
         }
-        tmp.sort((a, b) => b.price - a.price});
+        tmp.sort((a, b) => (b.price - a.price));
         var i = 0;
         var j = 0;
-        while ((i < tmp.length) && (amount > 0) && (tmp[i].price >= price) {
+        while ((i < tmp.length) && (amount > 0) && (tmp[i].price >= price)) {
             var tmp_amount = 0;
             while ((i < tmp.length) && (tmp[i].price == tmp[j].price)) {
                 tmp_amount += tmp[i].amount;
@@ -617,7 +638,7 @@ class Market {
         if (total_count != 0) {
             return total_cost / total_count;
         }
-        return this.world.HISTORY_PRICE[tag]
+        return this.world.HISTORY_PRICE[tag];
     }
 
     async find_amount_of_goods_for_buying(pool, max_amount, money, goods) {
@@ -657,11 +678,11 @@ class Market {
     }
 
     async save_to_db(pool) {
-        await pool.query(update_market_query, [this.get_json()]);
+        await pool.query(update_market_query, [this.id, this.get_json()]);
     }
 
     async load_to_db(pool) {
-        await pool.query(new_market_query, [this.get_json()]);
+        await pool.query(new_market_query, [this.id, this.get_json()]);
     }
 
     get_json() {
@@ -673,11 +694,11 @@ class Market {
         tmp.stash = this.stash.get_json();
         tmp.buy_orders = this.buy_orders;
         tmp.sell_orders = this.sell_orders;
-        tmp.planned_money_to_spent = his.planned_money_to_spent;
+        tmp.planned_money_to_spent = this.planned_money_to_spent;
         tmp.total_cost_of_placed_goods = this.total_cost_of_placed_goods;
         tmp.max_price = this.max_price;
         tmp.total_sold = this.total_sold;
-        tmp.total_sold_cost = his.total_sold_cost;
+        tmp.total_sold_cost = this.total_sold_cost;
         tmp.total_sold_new = this.total_sold_new;
         tmp.total_sold_cost_new = this.total_sold_cost_new;
         tmp.sells = this.sells;
@@ -688,75 +709,57 @@ class Market {
 }
 
 
-class Tile {}
-
-
-class SmallTownTile extends Tile {}
-
-
-class PasturesTile extends Tile {}
-
-
-class VillageTile extends Tile {}
-
-
-class ForestTile extends Tile {}
-
-
 class Cell {
-    async init(pool, world, map, i, j, name, owner) {
+    async init(pool, world, map, i, j, name, owner_id) {
         this.name = i + ' ' + j;
         this.world = world;
         this.map = map;
         this.i = i;
         this.j = j;
+        this.id = i * world.y + j + 1;
         var market = new Market();
-        market_id = await market.init(pool);
-        this.market = market_id;
-        this.tiles = [];
-        this.owner = owner;
-        var pop = new HomelessHumanBeings();
-        pop_id = await pop.init(pool, this.world, this, 0, 'homeless ' + this.name);
-        this.pop = pop_id;
-        pool.query(new_cell_query, [i, j, name, market_id, [], owner, pop_id]);
+        this.market_id = await market.init(pool, world, this.id, market);
+        this.owner_id = owner_id;
+        // var pop = new HomelessHumanBeings();
+        // pop_id = await pop.init(pool, this.world, this, 0, 'homeless ' + this.name);
+        var pop_id = 0;
+        this.pop_id = pop_id;
+        await this.load_to_db(pool);
+        return this.id;
     }
 
     async update(pool) {
-        this.world.get_market(this.market).update(pool);
-        for (var i in this.tiles) {
-            await this.world.get_tile(i).update(pool);
-        }
+        this.world.get_market(this.market_id).update(pool);
     }
 
     async get_market(pool) {
-        market = await this.world.get_market(pool, this.market);
+        market = await this.world.get_market(pool, this.market_id);
         return market;
     }
 
-    async get_enterprises_list(pool) {
-        var tmp = [];
-        for (var i in this.tiles) {
-            tile = await this.world.get_tile(i);
-            for (var j in tile.enterprises) {
-                tmp.push(j)
-            }
-        }
-        return tmp;
-    }
+    // async get_enterprises_list(pool) {
+    //     var tmp = [];
+    //     for (var i in this.tiles) {
+    //         tile = await this.world.get_tile(i);
+    //         for (var j in tile.enterprises) {
+    //             tmp.push(j)
+    //         }
+    //     }
+    //     return tmp;
+    // }
 
     async set_owner(pool, owner) {
         this.owner = owner;
         await pool.query(update_cell_owner_query, owner);
     }
 
-    async get_pops_list(pool) {
-        var tmp = [this.pop];
-        for (var i in self.tiles) {
-            var tile = await this.world.get_tile(i);
-            var tmp2 = await tile.get_pops_list(pool);
-            tmp.concat(tmp2);
-        }
-        return tmp;
+    // async get_pops_list(pool) {
+    //     var tmp = [this.pop];
+    //     return tmp;
+    // }
+
+    async load_to_db(pool) {
+        await pool.query(new_cell_query, [this.id, this.i, this.j, this.name, this.market_id, this.owner_id, this.pop_id]);
     }
 }
 
@@ -771,7 +774,7 @@ class Map {
             var tmp = []
             for (var j = 0; j < this.y; j++) {
                 var cell = new Cell();
-                await cell.init(pool, world, this, i, j, null, null);
+                await cell.init(pool, world, this, i, j, null, -1);
             }
             this.cells.push(tmp);
         }
@@ -780,61 +783,146 @@ class Map {
     async update(pool) {
         for (var i = 0; i < this.x; i++) {
             for (var j = 0; j < this.y; j++) {
-                await this.cells[i][j].update();
+                await this.cells[i][j].update(pool);
             }
         }
     }
 
-    async get_cell(pool, x, y) {
+    get_cell(x, y) {
         return this.cells[x][y];
     }
 }
 
 
 class World {
-    async init(pool, x, yl) {
+    async init(pool, x, y) {
         this.x = x;
         this.y = y;
-        this.agents = {};
-        this.map = Map();
-        this.map.init(pool, this);
-        pool.query(save_world_size_query, [x, y]);
+        // this.agents = {};
+        this.BASE_BATTLE_RANGE = 10;
+        this.users = {};
+        this.chars = {};
+        this.users_online = [];
+        this.map = new Map();
+        await this.map.init(pool, this);
+        this.battles = {}
+        await pool.query(save_world_size_query, [x, y]);
     }
 
     async update(pool) {
-        for (var i in this.agents) {
-            await i.update();
+        // for (var i in this.agents) {
+        //     await i.update();
+        // }
+        for (var i in this.chars) {
+            await i.update(pool);
         }
     }
 
-    async get_cell(pool, x, y) {
-        var cell = await this.map.get_cell(pool, x, y);
-        return cell;
+    get_cell(x, y) {
+        return this.map.get_cell(x, y);
     }
 
-    async get_pops(pool) {
-        var tmp = [];
-        for (var i in this.agents) {
-            if (i.is_pop) {
-                tmp.push(i);
-            }
-        }
-        return tmp;
+    // get_pops(pool) {
+    //     var tmp = [];
+    //     for (var i in this.agents) {
+    //         if (i.is_pop) {
+    //             tmp.push(i);
+    //         }
+    //     }
+    //     return tmp;
+    // }
+
+    // async get_total_money() {
+    //     var tmp = 0;
+    //     for (var i in this.agents) {
+    //         tmp += i.savings.get('money');
+    //     }
+    //     return tmp;
+    // }
+
+    async get_new_id(pool, str) {
+        // console.log(str);
+        var x = await pool.query(get_id_query, [str]);
+        x = x.rows[0];
+        // console.log(x);
+        x = x.last_id;
+        x += 1;
+        await pool.query(set_id_query, [str, x]);
+        return x;
     }
 
-    async get_total_money() {
-        var tmp = 0;
-        for (var i in this.agents) {
-            tmp += i.savings.get('money');
+    async kill(pool, character) {
+        character.dead = true;
+        if (character.is_player) {
+            var user = this.users[character.user_id];
+            await user.get_new_char(pool);
         }
-        return tmp;
+        await character.delete_from_db(pool);
+        this.chars[character.id] = null;
+    }
+
+    async create_monster(pool, monster_class) {
+        var monster = new monster_class();
+        var id = await monster.init(pool, this);
+        this.chars[id] = monster;
+        return monster;
+    }
+
+    async create_battle(pool, attackers, defenders) {
+        var battle = new Battle();
+        var ids = [];
+        var teams =[];
+        for (var i = 0; i < attackers.length; i++) {
+            ids.push(attackers[i].id);
+            attackers[i].in_battle = true;
+            teams.push(0);
+        }
+        for (var i = 0; i < defenders.length; i++) {
+            ids.push(defenders[i].id);
+            defenders[i].in_battle = true;
+            teams.push(1);
+        }
+        var id = await battle.init(pool, world, ids, teams);
+        this.battles[id] = battle;
+        return battle;
+    }
+
+    async delete_battle(pool, battle_id) {
+        var battle = this.battles[battle_id];
+        battle.delete_from_db(pool);
+        this.battles[battle_id] = null;
+    }
+
+    //check if login is available and create new user
+    async reg_player(pool, data) {
+        var login_is_available = await this.check_login(pool, data.login);
+        if (!login_is_available) {
+            return {reg_promt: 'login-is-not-available', user: null};
+        }
+        var hash = await bcrypt.hash(data.password, salt);
+        var new_user = new User();
+        var id = await new_user.create(pool, this, data.login, hash);
+        this.users[id] = new_user;
+        this.chars[new_user.character.id] = new_user.character;
+        return({reg_promt: 'ok', user: new_user});
+    }
+
+    //check login availability
+    async check_login(pool, login) {
+        var res = await pool.query(find_user_by_login_query, [login]);
+        if (res.rows.length == 0) {
+            return true;
+        }
+        return false;
     }
 }
 
 
-class Fight {
-    async init(id, ids, teams, range = BASE_FIGHT_RANGE) {
-        this.id = id;
+class Battle {
+    async init(pool, world, id, ids, teams) {
+        this.id = await world.get_new_id(pool, 'battle_id');
+        var range = world.BASE_BATTLE_RANGE;
+        this.world = world;
         this.ids = ids;
         this.teams = teams;
         this.positions = Array(this.ids.length).fill(0);
@@ -843,24 +931,25 @@ class Fight {
                 this.positions[i] = range;
             }
         }
-        await pool.query(new_battle_query, [id, ids, teams, this.positions]);
+        await this.load_to_db(pool);
+        return this.id;
     }
 
-    async update() {
+    async update(pool) {
         var log = [];
         for (var i = 0; i < this.ids.length; i++) {
-            if (CHARACTERS[this.ids[i]].get_hp() != 0) {
+            if (world.chars[this.ids[i]].get_hp() != 0) {
                 var action = AI_fighter(i, this.ids, this.teams, this.positions);
-                var log_entry = await this.action(i, action);
+                var log_entry = await this.action(pool, i, action);
                 log.push(log_entry)
             }
         }
-        this.save();
+        await this.save_to_db(pool);
         return log;
     }
 
-    async action(actor_index, action) {
-        var character = CHARACTERS[this.ids[actor_index]];
+    async action(pool, actor_index, action) {
+        var character = world.chars[this.ids[actor_index]];
         if (action.action == 'move') {
             if (action.target == 'right') {
                 this.positions[actor_index] += 1;
@@ -870,35 +959,31 @@ class Fight {
             return `${character.name} ${action.action} ${action.target}`
         } else if (action.action == 'attack') {
             if (action.target != null) {
-                var damage = await character.attack(action.target);
+                var damage = await character.attack(pool, action.target);
                 return `${character.name} ${action.action} ${action.target.name} and deals ${damage} damage`;
             }
             return 'pfff';
         }
     }
 
-    async save() {
-        pool.query(update_battle_query, [this.id, this.ids, this.teams, this.positions])
-    }
-
-    async run() {
+    async run(pool) {
         while (this.is_over() == -1) {
-            var log = await this.update();
+            var log = await this.update(pool);
             for (var i = 0; i < this.ids.length; i++) {
-                if (CHARACTERS[this.ids[i]].is_player) {
-                    log.forEach(log_entry => USERS[this.ids[i]].socket.emit('log-message', log_entry));
+                if (world.chars[this.ids[i]].is_player) {
+                    log.forEach(log_entry => world.users[this.ids[i]].socket.emit('log-message', log_entry));
                 }
             }
         }
         var winner = this.is_over();
         var exp_reward = this.reward(1 - winner);
-        await this.reward_team(winner, exp_reward);
+        await this.reward_team(pool, winner, exp_reward);
     }
 
     is_over() {
         var hp = [0, 0];
         for (var i = 0; i < this.ids.length; i++) {
-            hp[this.teams[i]] += CHARACTERS[this.ids[i]].hp;
+            hp[this.teams[i]] += world.chars[this.ids[i]].hp;
         }
         if (hp[0] == 0) {
             return 1;
@@ -913,13 +998,13 @@ class Fight {
         var exp = 0;
         for (var i = 0; i < this.ids.length; i++){
             if (this.teams[i] == team) {
-                exp += CHARACTERS[this.ids[i]].get_exp_reward();
+                exp += world.chars[this.ids[i]].get_exp_reward();
             }
         }
         return exp;
     }
 
-    async reward_team(team, exp) {
+    async reward_team(pool, team, exp) {
         var n = 0;
         for (var i = 0; i < this.ids.length; i++){
             if (this.teams[i] == team) {
@@ -927,20 +1012,37 @@ class Fight {
             }
         }
         for (var i = 0; i < this.ids.length; i++) {
-            var character = CHARACTERS[this.ids[i]];
+            var character = world.chars[this.ids[i]];
             if (this.teams[i] == team && character != null) {
                 await character.give_exp(Math.floor(exp / n));
             }
             character.in_battle = false;
         }
     }
+
+    async load_to_db(pool) {
+        await pool.query(new_battle_query, [this.id, this.ids, this.teams, this.positions]);
+    }
+
+    async save_to_db(pool) {
+        pool.query(update_battle_query, [this.id, this.ids, this.teams, this.positions])
+    }
+
+    async delete_from_db(pool) {
+        await pool.query(delete_battle_query, [this.id]);
+    }
 }
 
 
 class Character {
-    init_base_values(id, name, player, hp, max_hp, exp, level) {
+    init_base_values(world, id, name, hp, max_hp, exp, level, user_id = -1) {
+        this.world = world;
         this.name = name;
-        this.is_player = player;
+        if (user_id == -1) {
+            this.is_player = false;
+        } else {
+            this.is_player = true;
+        }
         this.hp = hp;
         this.max_hp = max_hp;
         this.exp = exp;
@@ -950,16 +1052,16 @@ class Character {
         this.exp_reward = 5;
         this.equip = new Equip();
         this.in_battle = false;
+        this.stash = new Stash();
+        this.savings = new Savings();
+        this.user_id = user_id;
     }
 
-    async init(id, name, player = false) {
-        this.init_base_values(id, name, player, 100, 100, 0, 0);
-        await this.equip.init(id);
-        await this.save_to_db();
-    }
-
-    async save_to_db() {
-        await pool.query(new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player]);
+    async init(pool, world, name, user_id = -1) {
+        var id = await world.get_new_id(pool, 'char_id');
+        this.init_base_values(world, id, name, 100, 100, 0, user_id);
+        await this.equip.init(pool, world, id);
+        await this.save_to_db(pool);
     }
 
     get_exp_reward() {
@@ -970,54 +1072,63 @@ class Character {
         return this.equip.get_weapon_range();
     }
 
-    async attack(target) {
+    async attack(pool, target) {
         var damage = 5;
-        await target.take_damage(damage);
+        await target.take_damage(pool, damage);
         return damage;
     }
 
-    async take_damage(damage) {
-        await this.change_hp(damage);
+    async take_damage(pool, damage) {
+        await this.change_hp(pool, damage);
     }
 
-    async change_hp(x) {
+    async change_hp(pool, x) {
         this.hp -= x;
         if (this.hp <= 0) {
             this.hp = 0;
-            await kill(this);
-        } else {
-            await pool.query(set_hp_query, [this.hp, this.id]);
+            await this.world.kill(pool, this);
         }
+        await pool.query(set_hp_query, [this.hp, this.id]);
     }
 
-    async give_exp(x) {
-        await this.set_exp(this.exp + x);
+    async give_exp(pool, x) {
+        await this.set_exp(pool, this.exp + x);
     }
 
-    async set_exp(x) {
+    async set_exp(pool, x) {
         this.exp = x;
         await pool.query(set_exp_query, [x, this.id]);
     }
 
-    async get_hp() {
+    get_hp() {
         return this.hp
+    }
+
+    async save_to_db(pool) {
+        await pool.query(new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player, this.user_id]);
+    }
+
+    async delete_from_db(pool) {
+        await pool.query(delete_char_query, [this.id]);
     }
 }
 
+
 class Rat extends Character {
-    async init(id, name = null) {
+    async init(pool, world, name = null) {
+        var id = await world.get_new_id(pool, 'char_id');
         if (name == null) {
             name = 'rat ' + id;
         }
-        this.init_base_values(id, name, false, 10, 10, 0, 0);
-        await this.equip.init(id);
-        await this.save_to_db();
+        this.init_base_values(world, id, name, 10, 10, 0);
+        await this.equip.init(pool, world, id);
+        await this.save_to_db(pool);
     }
 }
 
 
 class Equip {
-    async init(id){
+    async init(pool, world, id){
         this.id = id;
     }
 
@@ -1028,35 +1139,57 @@ class Equip {
 
 
 class User {
-    async create(login, hash, id){
+    async create(pool, world, login, hash) {
         this.login = login;
-        this.id = id;
-        await pool.query(new_user_query, [login, hash, id]);
-        this.character = new Character();
+        this.id = await world.get_new_id(pool, 'user_id');
         this.socket = null;
-        await this.character.init(this.id, this.login, true);
+        this.world = world;
+        this.hash = hash;
+        await this.get_new_char(pool);
+        await this.load_to_db(pool);
+    }
+
+    async get_new_char(pool) {
+        this.character = new Character();
+        this.char_id = await this.character.init(pool, this.world, this.login, this.id);
     }
 
     set_socket(socket) {
         this.socket = socket;
     }
+
+    async load_to_db(pool) {
+        await pool.query(new_user_query, [this.login, this.hash, this.id, this.char_id]);
+    }
+
+    async save_to_db(pool) {
+        await pool.query(update_user_query, [this.char_id]);
+    }
 }
 
 
+var world = new World();
+
 (async () => {
     try {
-        client = await pool.connect();
+        var client = await pool.connect();
         await client.query('DROP TABLE IF EXISTS accounts');
         await client.query('DROP TABLE IF EXISTS chars');
         await client.query('DROP TABLE IF EXISTS last_id');
         await client.query('DROP TABLE IF EXISTS battles');
-        await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY)');
-        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean)');
-        await client.query('CREATE TABLE last_id (id_type varchar(10), last_id int)');
+        await client.query('DROP TABLE IF EXISTS worlds');
+        await client.query('DROP TABLE IF EXISTS markets');
+        await client.query('DROP TABLE IF EXISTS cells');
+        await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
+        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, user_id int)');
+        await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
         await client.query('CREATE TABLE battles (id int PRIMARY KEY, ids int[], teams int[], positions int[])');
-        await reset_ids(client);
+        await client.query('CREATE TABLE worlds (x int, y int)');
+        await client.query('CREATE TABLE markets (id int PRIMARY KEY, data jsonb)');
+        await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, owner_id int, pop_id int)')
+        await init_ids(client);
         await client.end();
-        //await client.query();
+        await world.init(pool, 1, 1);
         console.log('database is ready');
     } catch (e) {
         console.log(e);
@@ -1064,9 +1197,12 @@ class User {
 })();
 
 
-async function reset_ids(client) {
-    await client.query(reset_id_query, ['battle_id', 0]);
-    await client.query(reset_id_query, ['user_id', 0]);
+async function init_ids(client) {
+    var id_types = ['battle_id', 'user_id', 'char_id', 'market_order_id', 'market_id', 'cell_id'];
+    for (var i = 0; i < id_types.length; i++) {
+        await client.query(init_id_query, [id_types[i], 0]);
+    }
+    return null;
 }
 
 
@@ -1078,105 +1214,23 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + '/views/base.html');
 });
 
-io.on('connection', async socket => {
-    console.log('a user connected');
-    var online = false;
-    var current_user = null;
-    function new_user_online(login) {
-        if (online == false) {
-            USERS_ONLINE.push(login);
-            io.emit('new-user-online', login);
-            online = true;
-        }
-    }
 
-    function user_disconnects(login) {
-        i = USERS_ONLINE.indexOf(login);
-        USERS_ONLINE.splice(i, 1);
-        io.emit('users-online', USERS_ONLINE);
-    }
-
-    socket.emit('users-online', USERS_ONLINE);
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
-        if (online == true) {
-            user_disconnects(current_user.login);
-        }
-    });
-    socket.on('login', async data => {
-        console.log(data);
-        //socket.emit('new-user-online', data.login);
-    });
-    socket.on('reg', async data => {
-        error_message = validate_reg(data);
-        socket.emit('is-reg-valid', error_message);
-        var answer = await reg_player(data);
-        socket.emit('is-reg-completed', answer.reg_promt);
-        if (answer.reg_promt == 'ok') {
-            current_user = answer.user;
-            current_user.set_socket(socket);
-            USERS[current_user.id] = current_user;
-            CHARACTERS[current_user.id] = current_user.character;
-            new_user_online(data.login);
-            socket.emit('log-message', 'hello ' + data.login);
-            update_char_info(socket, current_user);
-        }
-    })
-
-    socket.on('attack', async msg => {
-        if (current_user != null && !current_user.character.in_battle) {
-            rat = await create_monster(Rat);
-            battle = await create_battle([current_user.character], [rat]);
-            log = await battle.run();
-            await update_char_info(socket, current_user);
-            // log.forEach(log_entry => socket.emit('log-message', log_entry));
-        }
-    })
-});
-
-http.listen(port, () => {
-    console.log('listening on *:3000');
-});
-
-
-async function kill(character) {
-    character.dead = true;
+function new_user_online(io, world, login) {
+    world.users_online.push(login);
+    io.emit('new-user-online', login);
 }
 
-
-async function create_monster(monster_class) {
-    monster = new monster_class();
-    id = await get_new_id('user_id');
-    await monster.init(id);
-    CHARACTERS[id] = monster;
-    return monster;
-}
-
-
-async function create_battle(attackers, defenders) {
-    battle = new Fight();
-    id = await get_new_id('battle_id');
-    ids =[];
-    teams =[];
-    for (var i = 0; i < attackers.length; i++) {
-        ids.push(attackers[i].id);
-        attackers[i].in_battle = true;
-        teams.push(0);
-    }
-    for (var i = 0; i < defenders.length; i++) {
-        ids.push(defenders[i].id);
-        defenders[i].in_battle = true;
-        teams.push(1);
-    }
-    await battle.init(id, ids, teams);
-    return battle;
+function user_disconnects(io, world, login) {
+    i = world.users_online.indexOf(login);
+    world.users_online.splice(i, 1);
+    io.emit('users-online', world.users_online);
 }
 
 function update_char_info(socket, user) {
     socket.emit('char-info', {login: user.login, hp: user.character.hp, max_hp: user.character.max_hp, exp: user.character.exp});
 }
 
-function validate_reg(data) {
+function validate_creds(data) {
     if (data.login.length == 0) {
         return 'empty-login';
     }
@@ -1192,35 +1246,56 @@ function validate_reg(data) {
     return 'ok';
 }
 
-//check if login is available and create new user
-async function reg_player(data) {
-    var login_is_available = await check_login(data.login);
-    if (!login_is_available) {
-        return {reg_promt: 'login-is-not-available', user: null};
-    }
-    var hash = await bcrypt.hash(data.password, salt);
-    new_user = new User();
-    id = await get_new_id('user_id');
-    await new_user.create(data.login, hash, id);
-    USERS[id] = new_user;
-    return({reg_promt: 'ok', user: new_user});
-}
+io.on('connection', async socket => {
+    console.log('a user connected');
+    var online = false;
+    var current_user = null;
+    socket.emit('users-online', world.users_online);
 
-async function get_new_id(str) {
-    x = await pool.query(get_id_query, [str]);
-    x = x.rows[0];
-    x = x.last_id;
-    x += 1;
-    await pool.query(set_id_query, [str, x]);
-    return x;
-}
+    socket.on('disconnect', () => {
+        console.log('user disconnected');
+        if (online == true) {
+            user_disconnects(current_user.login);
+        }
+    });
 
-//check login availability
-async function check_login(login) {
-    res = await pool.query(find_user_by_login_query, [login]);
-//    console.log('select responce', res);
-    if (res.rows.length == 0) {
-        return true;
-    }
-    return false;
-}
+    socket.on('login', async data => {
+        // console.log(data);
+        // socket.emit('new-user-online', data.login);
+    });
+
+    socket.on('reg', async data => {
+        // console.log(data);
+        var error_message = validate_creds(data);
+        socket.emit('is-reg-valid', error_message);
+        if (online) {
+            socket.emit('is-reg-valid', 'you-are-logged-in')
+            return
+        }
+        var answer = await world.reg_player(pool, data);
+        socket.emit('is-reg-completed', answer.reg_promt);
+        if (answer.reg_promt == 'ok') {
+            current_user = answer.user;
+            current_user.set_socket(socket);
+            new_user_online(io, world, data.login);
+            online = true;
+            socket.emit('log-message', 'hello ' + data.login);
+            update_char_info(socket, current_user);
+        }
+    })
+
+    socket.on('attack', async msg => {
+        if (current_user != null && !current_user.character.in_battle) {
+            var rat = await world.create_monster(pool, Rat);
+            var battle = await world.create_battle(pool, [current_user.character], [rat]);
+            var log = await battle.run(pool);
+            await world.delete_battle(pool, battle_id);
+            await update_char_info(socket, current_user);
+            // log.forEach(log_entry => socket.emit('log-message', log_entry));
+        }
+    })
+});
+
+http.listen(port, () => {
+    console.log('listening on *:3000');
+});

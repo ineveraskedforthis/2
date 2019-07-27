@@ -1,3 +1,5 @@
+'use strict'
+
 class GameField {
     constructor(canvas, x, y) {
         this.canvas = canvas.get(0);
@@ -8,7 +10,7 @@ class GameField {
         this.hovered = null;
         this.selected = null;
     }
-    
+
     draw() {
         var ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, 400, 400);
@@ -22,7 +24,7 @@ class GameField {
             }
         }
     }
-    
+
     draw_hex(i, j, mode, color) {
         var ctx = this.canvas.getContext('2d');
         var h = this.hex_side * Math.sqrt(3) / 2;
@@ -48,12 +50,12 @@ class GameField {
         ctx.font = '10px Times New Roman';
         ctx.fillText(`${i} ${j}`, center_x - w, center_y + h / 2);
     }
-    
+
     move(dx, dy) {
         this.camera[0] -= dx;
         this.camera[1] -= dy;
     }
-    
+
     get_hex(x, y) {
         x = x + this.camera[0];
         y = y + this.camera[1];
@@ -73,10 +75,10 @@ class GameField {
                     return [x, y];
                 }
             }
-            
+
         }
     }
-    
+
     hover_hex(i, j) {
         this.hovered = [i, j];
     }
@@ -96,18 +98,19 @@ $(function() {
     var game_field = new GameField($('#game-field'), 4, 4);
     var prev_mouse_x = null;
     var prev_mouse_y = null;
+    var is_dragging = false;
     $('#game-field').hide();
-    
+
     $('#game-field').mousedown(() => {
         is_dragging = true;
         prev_mouse_x = null;
         prev_mouse_y = null;
     });
-    
+
     $(window).mouseup(() => {
         is_dragging = false;
     });
-    
+
     $('#game-field').mousemove(event => {
         if (is_dragging) {
             if (prev_mouse_x != null) {
@@ -118,12 +121,12 @@ $(function() {
             prev_mouse_x = event.pageX;
             prev_mouse_y = event.pageY;
         }
-        mouse_pos = get_pos_in_canvas(game_field.canvas, event);
+        var mouse_pos = get_pos_in_canvas(game_field.canvas, event);
         var hovered_hex = game_field.get_hex(mouse_pos.x, mouse_pos.y);
         game_field.hover_hex(hovered_hex[0], hovered_hex[1]);
         game_field.draw();
     });
-    
+
     $('#login-frame').submit(e => {
         e.preventDefault();
         socket.emit('login', {login: $('#login-l').val(), password: $('#password-l').val()});
@@ -147,16 +150,16 @@ $(function() {
             selected = this;
         }
     });
-    
+
     $('#attack-button').click(() => {
         socket.emit('attack', null);
     });
-    
+
     $('#show-log').click(() => {
         $('#game-field').hide();
         $('#game-log').show();
     });
-    
+
     $('#show-map').click(() => {
         game_field.draw();
         $('#game-field').show();
@@ -168,35 +171,35 @@ $(function() {
             alert(msg);
         }
     });
-    
+
     socket.on('is-reg-completed', msg => {
         if (msg != 'ok') {
             alert(msg);
         }
     });
-    
+
     socket.on('new-user-online', msg => {
         $('#users-list').append($('<li>').text(msg));
     });
-    
+
     socket.on('users-online', msg => {
         $('#users').empty();
         msg.forEach(item => {
             $('#users').append($('<li>').text(msg));
         })
     });
-    
+
     socket.on('log-message', msg => {
         $('#game-log').append($('<p>').text(msg));
     });
-    
+
     socket.on('char-info', msg =>{
         $('#char-info').empty();
         $('#char-info').append($('<p>').text(`name: ${msg.login}`))
         $('#char-info').append($('<p>').text(`hp:${msg.hp}/${msg.max_hp}`))
         $('#char-info').append($('<p>').text(`exp: ${msg.exp}`))
     });
-    
+
     socket.on('alert', msg => {
         alert(msg);
     });
