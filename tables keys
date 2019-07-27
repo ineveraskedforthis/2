@@ -12,6 +12,7 @@ chars
     level
     id
     is_player
+    cell_id
     user_id
 
 last_id

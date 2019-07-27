@@ -84,6 +84,39 @@ class GameField {
     }
 }
 
+class MarketTable {
+    constructor(container) {
+        this.data = [];
+        this.container = container;
+        this.table = $('<table>');
+    }
+
+    draw() {
+        this.container.empty();
+        this.container.append(this.table);
+    }
+
+    update(data = []) {
+        this.data = data;
+        this.table = $('<table>');
+        var header = this.populate_row($('<tr>'), ['type', 'tag', 'amount', 'price']);
+        this.table.append(header);
+        for (var i in this.data) {
+            var row = this.populate_row($('<tr>'), [i.type, i.tag, i.amount, i.price]);
+            this.table.append(row);
+        }
+        this.draw();
+    }
+
+    populate_row(row, l) {
+        for (var i of l) {
+            row.append($('<td>').text(i));
+        }
+        return row;
+    }
+
+}
+
 function get_pos_in_canvas(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     return {
@@ -96,10 +129,15 @@ $(function() {
     var socket = io();
     var selected = null;
     var game_field = new GameField($('#game-field'), 4, 4);
+    var market_table = new MarketTable($('#market'));
+    market_table.update();
     var prev_mouse_x = null;
     var prev_mouse_y = null;
     var is_dragging = false;
+    socket.emit('get-market-data', null);
+
     $('#game-field').hide();
+    $('#market').hide();
 
     $('#game-field').mousedown(() => {
         is_dragging = true;
@@ -158,19 +196,29 @@ $(function() {
     $('#show-log').click(() => {
         $('#game-field').hide();
         $('#game-log').show();
+        $('#market').hide();
     });
 
     $('#show-map').click(() => {
         game_field.draw();
         $('#game-field').show();
         $('#game-log').hide();
+        $('#market').hide();
     });
+
+    $('#show-market').click(() => {
+        $('#game-field').hide();
+        $('#game-log').hide();
+        $('#market').show();
+    })
 
     socket.on('is-reg-valid', msg => {
         if (msg != 'ok') {
             alert(msg);
         }
     });
+
+
 
     socket.on('is-reg-completed', msg => {
         if (msg != 'ok') {
@@ -193,12 +241,18 @@ $(function() {
         $('#game-log').append($('<p>').text(msg));
     });
 
-    socket.on('char-info', msg =>{
+    socket.on('char-info', msg => {
         $('#char-info').empty();
-        $('#char-info').append($('<p>').text(`name: ${msg.login}`))
-        $('#char-info').append($('<p>').text(`hp:${msg.hp}/${msg.max_hp}`))
-        $('#char-info').append($('<p>').text(`exp: ${msg.exp}`))
+        $('#char-info').append($('<p>').text(`name: ${msg.name}`));
+        $('#char-info').append($('<p>').text(`hp:${msg.hp}/${msg.max_hp}`));
+        $('#char-info').append($('<p>').text(`exp: ${msg.exp}`));
+        $('#char-info').append($('<p>').text(`savings: ${msg.savings.data['standard_money']}`));
+        $('#char-info').append($('<p>').text(`meat: ${msg.stash['meat']}`));
     });
+
+    socket.on('market-data', data => {
+        market_table.update(data);
+    })
 
     socket.on('alert', msg => {
         alert(msg);

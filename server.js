@@ -21,7 +21,7 @@ var salt = process.env.SALT;
 var dbname = process.env.DBNAME;
 
 var new_user_query = 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)';
-var new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
+var new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player, cell_id, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
 var init_id_query = 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)';
 var new_battle_query = 'INSERT INTO battles (id, ids, teams, positions) VALUES ($1, $2, $3, $4)';
 var new_cell_query = 'INSERT INTO cells (id, x, y, name, market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
@@ -31,6 +31,7 @@ var new_market_order_query = 'INSERT INTO market_orders (id, typ, tag, amount, p
 var update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
 var update_market_order_query = 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)';
 var update_market_query = 'UPDATE markets SET data = ($2) WHERE id = ($1)';
+var update_char_query = 'UPDATE chars SET hp = ($2), max_hp = ($3), exp = ($4), level = ($5), cell_id = ($6) WHERE id = ($1)';
 
 var delete_market_order_query = 'DELETE FROM market_orders WHERE id = ($1)';
 var delete_battle_query = 'DELETE FROM battles WHERE id = ($1)';
@@ -53,9 +54,9 @@ function sum(a) {
 function AI_fighter(world, index, ids, teams, positions) {
     var min_distance = world.BASE_BATTLE_RANGE;
     var closest_enemy = null;
-    for (i = 0; i < positions.length; i++) {
+    for (var i = 0; i < positions.length; i++) {
         var dx = positions[i] - positions[index];
-        if (((Math.abs(dx) <= Math.abs(min_distance)) || (closest_enemy == null)) && (teams[i] != teams[index]) && (world.chars[ids[i]] != null)) {
+        if (((Math.abs(dx) <= Math.abs(min_distance)) || (closest_enemy == null)) && (teams[i] != teams[index]) && (!world.chars[ids[i]].is_dead)) {
             closest_enemy = i;
             min_distance = dx;
         }
@@ -177,14 +178,14 @@ class Stash {
         return this.data[tag];
     }
 
-    transfer(target, tag, x) {
-        tmp = this.inc(tag, -amount);
+    transfer(target, tag, amount) {
+        var tmp = this.inc(tag, -amount);
         target.inc(tag, -tmp);
         return -tmp;
     }
 
     check_tag(tag) {
-        if (not (tag in this.data)) {
+        if (!(tag in this.data)) {
             this.data[tag] = 0;
         }
     }
@@ -242,7 +243,9 @@ class Market {
         this.buy_orders = {};
         this.sell_orders = {};
         this.planned_money_to_spent = {};
+        this.tmp_planned_money_to_spent = {};
         this.total_cost_of_placed_goods = {};
+        this.tmp_total_cost_of_placed_goods = {};
         this.max_price = {};
         this.total_sold = {};
         this.total_sold_cost = {};
@@ -251,11 +254,11 @@ class Market {
         this.sells = {};
         this.tmp_sells = {};
         this.taxes = {};
-        for (tag in world.TAGS) {
+        for (var tag of world.TAGS) {
             this.taxes[tag] = 0;
             this.planned_money_to_spent[tag] = 0;
             this.total_cost_of_placed_goods[tag] = 0;
-            this.tmp_plannned_money_to_spent[tag] = 0;
+            this.tmp_planned_money_to_spent[tag] = 0;
             this.tmp_total_cost_of_placed_goods[tag] = 0;
             this.sell_orders[tag] = new Set([]);
             this.buy_orders[tag] = new Set([]);
@@ -274,7 +277,7 @@ class Market {
     }
 
     async update(pool) {
-        for (tag in this.world.TAGS) {
+        for (tag of this.world.TAGS) {
             this.planned_money_to_spent[tag] = self.tmp_plannned_money_to_spent[tag];
             this.tmp_plannned_money_to_spent = 0;
             this.total_cost_of_placed_goods[tag] = this.tmp_total_cost_of_placed_goods[tag];
@@ -509,7 +512,7 @@ class Market {
 
     async get_money_on_hold(pool, agent) {
         var tmp = 0;
-        for (var tag in this.world.TAGS) {
+        for (var tag of this.world.TAGS) {
             for (var i in this.buy_orders[tag]) {
                 order = await this.world.get_order(pool, i);
                 if (order.owner == agent) {
@@ -537,7 +540,7 @@ class Market {
 
     async check_cost(pool, list_of_goods) {
         var cost = 0;
-        for (var i in list_of_goods) {
+        for (var i of list_of_goods) {
             cost += await this.check_tag_cost(i[0], i[1]);
         }
         return cost;
@@ -545,7 +548,7 @@ class Market {
 
     async guess_cost(pool, list_of_goods) {
         var cost = 0;
-        for (var i in list_of_goods) {
+        for (var i of list_of_goods) {
             cost += await this.guess_tag_cost(i[0], i[1])
         }
         return cost;
@@ -561,7 +564,7 @@ class Market {
         var i = 0;
         var j = 0;
         var cost = 0;
-        for (var i in tmp) {
+        for (var i of tmp) {
             if (i.amount <= amount) {
                 cost += i.amount * (i.price + this.taxes[tag]);
                 amount -= i.amount;
@@ -578,7 +581,7 @@ class Market {
 
     async guess_tag_cost(pool, tag, amount) {
         var tmp = [];
-        for (var i in this.sell_orders[tag]) {
+        for (var i of this.sell_orders[tag]) {
             var order = await this.world.get_order(pool, i);
             tmp.push(order);
         }
@@ -586,7 +589,7 @@ class Market {
         var i = 0;
         var j = 0;
         var cost = 0;
-        for (var i in tmp) {
+        for (var i of tmp) {
             if (i.amount <= amount) {
                 cost += i.amount * (i.price + this.taxes[tag]);
                 amount -= i.amount;
@@ -608,12 +611,12 @@ class Market {
 
     async get_total_cost_of_placed_goods_with_price_less_or_equal(pool, tag, x) {
         var cost = 0;
-        for (var i in this.tmp_sells[tag]) {
+        for (var i of this.tmp_sells[tag]) {
             if (i[1] <= x) {
                 cost += i[0] * i[1];
             }
         }
-        for (var i in this.sell_orders[tag]) {
+        for (var i of this.sell_orders[tag]) {
             var order = await this.world.get_order(pool, i);
             if (order.price <= x) {
                 cost += i.amount * i.price;
@@ -625,12 +628,12 @@ class Market {
     async get_average_tag_price(pool, tag) {
         var total_count = sum(this.total_sold[tag]) + this.total_sold_new[tag];
         var total_cost = sum(this.total_sold_cost[tag]) + this.total_sold_cost_new[tag];
-        for (var i in this.sell_orders[tag]) {
+        for (var i of this.sell_orders[tag]) {
             var order = await this.world.get_order(pool, i);
             total_count += order.amount;
             total_cost += order.amount * (order.price + this.taxes[tag]);
         }
-        for (var i in this.buy_orders[tag]) {
+        for (var i of this.buy_orders[tag]) {
             var order = await this.world.get_order(pool, i);
             total_count += order.amount;
             total_cost += order.amount * (order.price + this.taxes[tag]);
@@ -664,12 +667,12 @@ class Market {
 
     async get_orders_list(pool) {
         var tmp = [];
-        for (var tag in this.world.TAGS) {
-            for (var i in this.buy_orders[tag]) {
+        for (var tag of this.world.TAGS) {
+            for (var i of this.buy_orders[tag]) {
                 order = await world.get_order(i);
                 tmp.push(order.get_json());
             }
-            for (var i in this.sell_orders[tag]) {
+            for (var i of this.sell_orders[tag]) {
                 order = await world.get_order(i);
                 tmp.push(order.get_json());
             }
@@ -695,7 +698,9 @@ class Market {
         tmp.buy_orders = this.buy_orders;
         tmp.sell_orders = this.sell_orders;
         tmp.planned_money_to_spent = this.planned_money_to_spent;
+        tmp.tmp_planned_money_to_spent = this.tmp_plannned_money_to_spent;
         tmp.total_cost_of_placed_goods = this.total_cost_of_placed_goods;
+        tmp.tmp_total_cost_of_placed_goods = this.tmp_total_cost_of_placed_goods;
         tmp.max_price = this.max_price;
         tmp.total_sold = this.total_sold;
         tmp.total_sold_cost = this.total_sold_cost;
@@ -716,7 +721,7 @@ class Cell {
         this.map = map;
         this.i = i;
         this.j = j;
-        this.id = i * world.y + j + 1;
+        this.id = i * world.y + j;
         var market = new Market();
         this.market_id = await market.init(pool, world, this.id, market);
         this.owner_id = owner_id;
@@ -791,6 +796,10 @@ class Map {
     get_cell(x, y) {
         return this.cells[x][y];
     }
+
+    get_cell_by_id(id) {
+        return this.get_cell(Math.floor(id / this.y), id % this.y);
+    }
 }
 
 
@@ -803,6 +812,7 @@ class World {
         this.users = {};
         this.chars = {};
         this.users_online = [];
+        this.TAGS = ['meat'];
         this.map = new Map();
         await this.map.init(pool, this);
         this.battles = {}
@@ -820,6 +830,10 @@ class World {
 
     get_cell(x, y) {
         return this.map.get_cell(x, y);
+    }
+
+    get_cell_by_id(id) {
+        return this.map.get_cell_by_id(id);
     }
 
     // get_pops(pool) {
@@ -852,13 +866,14 @@ class World {
     }
 
     async kill(pool, character) {
-        character.dead = true;
+        character.is_dead = true;
         if (character.is_player) {
             var user = this.users[character.user_id];
             await user.get_new_char(pool);
+            this.chars[user.character.id] = user.character;
         }
         await character.delete_from_db(pool);
-        this.chars[character.id] = null;
+        // this.chars[character.id] = null;
     }
 
     async create_monster(pool, monster_class) {
@@ -871,7 +886,7 @@ class World {
     async create_battle(pool, attackers, defenders) {
         var battle = new Battle();
         var ids = [];
-        var teams =[];
+        var teams = [];
         for (var i = 0; i < attackers.length; i++) {
             ids.push(attackers[i].id);
             attackers[i].in_battle = true;
@@ -885,6 +900,12 @@ class World {
         var id = await battle.init(pool, world, ids, teams);
         this.battles[id] = battle;
         return battle;
+    }
+
+    async delete_battle(pool, id) {
+        var battle = this.battles[id];
+        await battle.delete_from_db(pool);
+        this.battles[id] = null;
     }
 
     async delete_battle(pool, battle_id) {
@@ -919,13 +940,15 @@ class World {
 
 
 class Battle {
-    async init(pool, world, id, ids, teams) {
+    async init(pool, world, ids, teams) {
         this.id = await world.get_new_id(pool, 'battle_id');
         var range = world.BASE_BATTLE_RANGE;
         this.world = world;
         this.ids = ids;
         this.teams = teams;
         this.positions = Array(this.ids.length).fill(0);
+        this.stash = new Stash();
+        this.savings = new Savings();
         for (var i = 0; i < this.ids.length; i++) {
             if (this.teams[i] == 1) {
                 this.positions[i] = range;
@@ -938,8 +961,8 @@ class Battle {
     async update(pool) {
         var log = [];
         for (var i = 0; i < this.ids.length; i++) {
-            if (world.chars[this.ids[i]].get_hp() != 0) {
-                var action = AI_fighter(i, this.ids, this.teams, this.positions);
+            if (this.world.chars[this.ids[i]].get_hp() != 0) {
+                var action = AI_fighter(this.world, i, this.ids, this.teams, this.positions);
                 var log_entry = await this.action(pool, i, action);
                 log.push(log_entry)
             }
@@ -949,7 +972,7 @@ class Battle {
     }
 
     async action(pool, actor_index, action) {
-        var character = world.chars[this.ids[actor_index]];
+        var character = this.world.chars[this.ids[actor_index]];
         if (action.action == 'move') {
             if (action.target == 'right') {
                 this.positions[actor_index] += 1;
@@ -967,23 +990,34 @@ class Battle {
     }
 
     async run(pool) {
+        // console.log(this.world.chars);
         while (this.is_over() == -1) {
             var log = await this.update(pool);
             for (var i = 0; i < this.ids.length; i++) {
-                if (world.chars[this.ids[i]].is_player) {
-                    log.forEach(log_entry => world.users[this.ids[i]].socket.emit('log-message', log_entry));
+                var character = world.chars[this.ids[i]];
+                // console.log(character);
+                // console.log(log)
+                if (character.is_player) {
+                    log.forEach(log_entry => this.world.users[character.user_id].socket.emit('log-message', log_entry));
                 }
             }
         }
         var winner = this.is_over();
         var exp_reward = this.reward(1 - winner);
+        await this.collect_loot(pool);
         await this.reward_team(pool, winner, exp_reward);
     }
 
     is_over() {
         var hp = [0, 0];
         for (var i = 0; i < this.ids.length; i++) {
-            hp[this.teams[i]] += world.chars[this.ids[i]].hp;
+            var character = this.world.chars[this.ids[i]];
+            if (character == null) {
+                var x = 0
+            } else {
+                var x = character.hp;
+            }
+            hp[this.teams[i]] += x;
         }
         if (hp[0] == 0) {
             return 1;
@@ -994,11 +1028,20 @@ class Battle {
         return -1;
     }
 
+    async collect_loot(pool) {
+        for (var i = 0; i < this.ids.length; i ++) {
+            var character = this.world.chars[this.ids[i]];
+            if (character.hp == 0) {
+                await character.transfer_all(pool, this);    
+            }
+        }
+    }
+
     reward(team) {
         var exp = 0;
-        for (var i = 0; i < this.ids.length; i++){
+        for (var i = 0; i < this.ids.length; i++) {
             if (this.teams[i] == team) {
-                exp += world.chars[this.ids[i]].get_exp_reward();
+                exp += this.world.chars[this.ids[i]].get_exp_reward();
             }
         }
         return exp;
@@ -1012,12 +1055,21 @@ class Battle {
             }
         }
         for (var i = 0; i < this.ids.length; i++) {
-            var character = world.chars[this.ids[i]];
-            if (this.teams[i] == team && character != null) {
-                await character.give_exp(Math.floor(exp / n));
+            var character = this.world.chars[this.ids[i]];
+            if (this.teams[i] == team && !character.is_dead) {
+                await character.give_exp(pool, Math.floor(exp / n));
             }
             character.in_battle = false;
         }
+        var i = 0;
+        while (this.teams[i] != team) {
+            i += 1;
+        }
+        var leader = this.world.chars[this.ids[i]];
+        for (var tag of this.world.TAGS) {
+            var x = this.stash.get(tag);
+            await this.transfer(pool, leader, tag, x);
+        }    
     }
 
     async load_to_db(pool) {
@@ -1031,11 +1083,17 @@ class Battle {
     async delete_from_db(pool) {
         await pool.query(delete_battle_query, [this.id]);
     }
+
+    async transfer(pool, target, tag, x) {
+        this.stash.transfer(target.stash, tag, x);
+        await this.save_to_db(pool);
+        await target.save_to_db(pool);
+    }
 }
 
 
 class Character {
-    init_base_values(world, id, name, hp, max_hp, exp, level, user_id = -1) {
+    init_base_values(world, id, name, hp, max_hp, exp, level, cell_id, user_id = -1) {
         this.world = world;
         this.name = name;
         if (user_id == -1) {
@@ -1055,13 +1113,15 @@ class Character {
         this.stash = new Stash();
         this.savings = new Savings();
         this.user_id = user_id;
+        this.cell_id = cell_id;
     }
 
-    async init(pool, world, name, user_id = -1) {
+    async init(pool, world, name, cell_id, user_id = -1) {
         var id = await world.get_new_id(pool, 'char_id');
-        this.init_base_values(world, id, name, 100, 100, 0, user_id);
+        this.init_base_values(world, id, name, 100, 100, 0, 0, cell_id, user_id);
         await this.equip.init(pool, world, id);
         await this.save_to_db(pool);
+        return id;
     }
 
     get_exp_reward() {
@@ -1100,12 +1160,41 @@ class Character {
         await pool.query(set_exp_query, [x, this.id]);
     }
 
+    async transfer(pool, target, tag, x) {
+        this.stash.transfer(target.stash, tag, x);
+        await this.save_to_db(pool);
+        await target.save_to_db(pool);
+    }
+
+    async transfer_all(pool, target) {
+        for (var tag of this.world.TAGS) {
+            var x = this.stash.get(tag);
+            await this.transfer(pool, target, tag, x);
+        }
+        await this.save_to_db(pool);
+    }
+
     get_hp() {
         return this.hp
     }
 
+    get_json() {
+        return {name: this.name,
+                hp: this.hp,
+                max_hp: this.max_hp,
+                savings: this.savings.get_json(),
+                stash: this.stash.get_json(),
+                level: this.level,
+                exp: this.exp};
+    }
+
+    async load_to_db(pool) {
+        // console.log(pool);
+        await pool.query(new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player, this.cell_id, this.user_id]);
+    }
+
     async save_to_db(pool) {
-        await pool.query(new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player, this.user_id]);
+        await pool.query(update_char_query, [this.id, this.hp, this.max_hp, this.exp, this.level, this.cell_id]);
     }
 
     async delete_from_db(pool) {
@@ -1115,14 +1204,16 @@ class Character {
 
 
 class Rat extends Character {
-    async init(pool, world, name = null) {
+    async init(pool, world, cell_id, name = null) {
         var id = await world.get_new_id(pool, 'char_id');
         if (name == null) {
             name = 'rat ' + id;
         }
-        this.init_base_values(world, id, name, 10, 10, 0);
+        this.init_base_values(world, id, name, 10, 10, 0, 0, cell_id);
         await this.equip.init(pool, world, id);
-        await this.save_to_db(pool);
+        this.stash.inc('meat', 1);
+        await this.load_to_db(pool);
+        return id;
     }
 }
 
@@ -1147,11 +1238,12 @@ class User {
         this.hash = hash;
         await this.get_new_char(pool);
         await this.load_to_db(pool);
+        return this.id;
     }
 
     async get_new_char(pool) {
         this.character = new Character();
-        this.char_id = await this.character.init(pool, this.world, this.login, this.id);
+        this.char_id = await this.character.init(pool, this.world, this.login, 0, this.id);
     }
 
     set_socket(socket) {
@@ -1181,7 +1273,7 @@ var world = new World();
         await client.query('DROP TABLE IF EXISTS markets');
         await client.query('DROP TABLE IF EXISTS cells');
         await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
-        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, user_id int)');
+        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, cell_id int, user_id int)');
         await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
         await client.query('CREATE TABLE battles (id int PRIMARY KEY, ids int[], teams int[], positions int[])');
         await client.query('CREATE TABLE worlds (x int, y int)');
@@ -1221,13 +1313,13 @@ function new_user_online(io, world, login) {
 }
 
 function user_disconnects(io, world, login) {
-    i = world.users_online.indexOf(login);
+    var i = world.users_online.indexOf(login);
     world.users_online.splice(i, 1);
     io.emit('users-online', world.users_online);
 }
 
 function update_char_info(socket, user) {
-    socket.emit('char-info', {login: user.login, hp: user.character.hp, max_hp: user.character.max_hp, exp: user.character.exp});
+    socket.emit('char-info', user.character.get_json());
 }
 
 function validate_creds(data) {
@@ -1255,7 +1347,7 @@ io.on('connection', async socket => {
     socket.on('disconnect', () => {
         console.log('user disconnected');
         if (online == true) {
-            user_disconnects(current_user.login);
+            user_disconnects(io, world, current_user.login);
         }
     });
 
@@ -1289,7 +1381,7 @@ io.on('connection', async socket => {
             var rat = await world.create_monster(pool, Rat);
             var battle = await world.create_battle(pool, [current_user.character], [rat]);
             var log = await battle.run(pool);
-            await world.delete_battle(pool, battle_id);
+            await world.delete_battle(pool, battle.id);
             await update_char_info(socket, current_user);
             // log.forEach(log_entry => socket.emit('log-message', log_entry));
         }
