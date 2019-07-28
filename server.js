@@ -1556,6 +1556,7 @@ io.on('connection', async socket => {
         var error_message = validate_creds(data);
         socket.emit('is-reg-valid', error_message);
         var answer = await world.reg_player(pool, data);
+        // console.log(answer);
         socket.emit('is-reg-completed', answer.reg_promt);
         if (answer.reg_promt == 'ok') {
             current_user = answer.user;
@@ -1608,5 +1609,5 @@ http.listen(port, () => {
     console.log('listening on *:3000');
 });
 
-// gameloop.setGameLoop(async delta => await world.update(pool), 2000);
-setInterval(async => await world.update(pool));
+gameloop.setGameLoop(async delta => await world.update(pool), 2000);
+// setInterval(async () => await world.update(pool), 2000);
