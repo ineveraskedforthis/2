@@ -37,6 +37,59 @@
             </div>
             <div id='actions'>
                 <button id='attack-button'> attack </button>
+                <div id='market-actions'>
+                    <button id='show-buy-form'>
+                        buy
+                    </button>
+                    <button id='show-sell-form'>
+                        sell
+                    </button>
+                    <br>
+                    <div id='buy-form-con'>
+                        <form action=''>
+                            <p>
+                                <label for='buy-tag-select'> tag </label>
+                                <select id='buy-tag-select'>
+                                </select>
+                            </p>
+                            <p>
+                                <label for='buy-amount'> amount </label>
+                                <input id='buy-amount'>
+                            </p>
+                            <p>
+                                <label for='buy-money'> money </label>
+                                <input id='buy-money'>
+                            </p>
+                            <p>
+                                <label for='buy-max-price'> max price </label>
+                                <input id='buy-max-price'>
+                            </p>
+                            <p>
+                                <input type='submit', name='buy', value='buy'>
+                            </p>
+                        </form>
+                    </div>
+                    <div id='sell-form-con'>
+                        <form action=''>
+                            <p>
+                                <label for='sell-tag-select'> tag </label>
+                                <select id='sell-tag-select'>
+                                </select>
+                            </p>
+                            <p>
+                                <label for='sell-amount'> amount </label>
+                                <input id='sell-amount'>
+                            </p>
+                            <p>
+                                <label for='sell-price'> price </label>
+                                <input id='sell-price'>
+                            </p>
+                            <p>
+                                <input type='submit', name='sell', value='sell'>
+                            </p>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
         <div id='login-frame'>

@@ -99,10 +99,12 @@ class MarketTable {
     update(data = []) {
         this.data = data;
         this.table = $('<table>');
-        var header = this.populate_row($('<tr>'), ['type', 'tag', 'amount', 'price']);
+        var header = this.populate_row($('<tr>'), ['type', 'tag', 'amount', 'price', 'name']);
         this.table.append(header);
-        for (var i in this.data) {
-            var row = this.populate_row($('<tr>'), [i.type, i.tag, i.amount, i.price]);
+        console.log(this.data);
+        for (var i of this.data) {
+            console.log(i.typ, i.tag, i.amount, i.price);
+            var row = this.populate_row($('<tr>'), [i.typ, i.tag, i.amount, i.price, i.owner_name]);
             this.table.append(row);
         }
         this.draw();
@@ -138,6 +140,7 @@ $(function() {
 
     $('#game-field').hide();
     $('#market').hide();
+    $('#sell-form-con').hide();
 
     $('#game-field').mousedown(() => {
         is_dragging = true;
@@ -175,6 +178,21 @@ $(function() {
         socket.emit('reg', {login: $('#login-r').val(), password: $('#password-r').val()});
     });
 
+    $('#buy-form-con').submit(e => {
+        e.preventDefault();
+        socket.emit('buy', {tag: $('#buy-tag-select').val(),
+                            amount: $('#buy-amount').val(),
+                            money: $('#buy-money').val(),
+                            max_price: $('#buy-max-price').val()});
+    });
+
+    $('#sell-form-con').submit(e => {
+        e.preventDefault();
+        socket.emit('sell', {tag: $('#sell-tag-select').val(),
+                             amount: $('#sell-amount').val(),
+                             price: $('#sell-price').val()});
+    });
+
     $('#users-list').on('click', 'li', function() {
         if (selected == this){
             $(selected).removeClass('selected');
@@ -210,15 +228,30 @@ $(function() {
         $('#game-field').hide();
         $('#game-log').hide();
         $('#market').show();
-    })
+    });
+
+    $('#show-buy-form').click(() => {
+        $('#buy-form-con').show();
+        $('#sell-form-con').hide();
+    });
+
+    $('#show-sell-form').click(() => {
+        $('#buy-form-con').hide();
+        $('#sell-form-con').show();
+    });
+
+    socket.on('tags', msg => {
+        for (var tag of msg) {
+            $('#buy-tag-select').append($('<option>').val(tag).text(tag));
+            $('#sell-tag-select').append($('<option>').val(tag).text(tag));
+        }
+    });
 
     socket.on('is-reg-valid', msg => {
         if (msg != 'ok') {
             alert(msg);
         }
     });
-
-
 
     socket.on('is-reg-completed', msg => {
         if (msg != 'ok') {

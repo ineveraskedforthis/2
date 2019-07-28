@@ -19,6 +19,7 @@ if (stage == 'dev') {
 }
 var salt = process.env.SALT;
 var dbname = process.env.DBNAME;
+const logging = true;
 
 var new_user_query = 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)';
 var new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player, cell_id, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
@@ -26,7 +27,7 @@ var init_id_query = 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)';
 var new_battle_query = 'INSERT INTO battles (id, ids, teams, positions) VALUES ($1, $2, $3, $4)';
 var new_cell_query = 'INSERT INTO cells (id, x, y, name, market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
 var new_market_query = 'INSERT INTO markets (id, data) VALUES ($1, $2)';
-var new_market_order_query = 'INSERT INTO market_orders (id, typ, tag, amount, price, market_id) VALUES ($1, $2, $3, $4, $5, $6)';
+var new_market_order_query = 'INSERT INTO market_orders (id, typ, tag, owner_id, amount, price, market_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
 
 var update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
 var update_market_order_query = 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)';
@@ -198,15 +199,28 @@ class MarketOrder {
         this.world = world;
         this.tag = tag;
         this.owner = owner;
+        this.owner_id = owner.id;
         this.amount = amount;
         this.price = price;
         this.id = await world.get_new_id(pool, 'market_order_id');
         this.market_id = market_id;
+        if (logging) {
+            console.log('market order init');
+        }
         await this.load_to_db(pool);
+        return this.id;
     }
 
     async load_to_db(pool) {
-        await pool.query(new_market_order_query, [this.id, this.typ, this.tag, this.owner, this.amount, this.price, this.market_id]);
+        if (logging) {
+            console.log('load market order to db');
+            console.log(new_market_order_query);
+            console.log([this.id, this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
+        }
+        await pool.query(new_market_order_query, [this.id, this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
+        if (logging) {
+            console.log('loading completed');
+        }
     }
 
     async save_to_db(pool) {
@@ -221,7 +235,8 @@ class MarketOrder {
         var tmp = {};
         tmp.typ = this.typ;
         tmp.tag = this.tag;
-        tmp.owner = this.owner;
+        tmp.owner_id = this.owner_id;
+        tmp.owner_name = this.owner.name;
         tmp.amount = this.amount;
         tmp.price = this.price;
         tmp.id = this.id;
@@ -299,13 +314,16 @@ class Market {
     }
 
     async buy(pool, tag, buyer, amount, money, max_price = null) {
+        if (logging) {
+            console.log('market buy', tag, buyer.name, amount, money);
+        }
         if (buyer.savings.get() < money) {
             money = buyer.savings.get(pool);
         }
-        this.tmp_plannned_money_to_spent[tag] += money;
+        this.tmp_planned_money_to_spent[tag] += money;
         var tmp = [];
-        for (var i in this.sell_orders[tag]) {
-            tmp.push(world.get_order(pool, i));
+        for (var i of this.sell_orders[tag]) {
+            tmp.push(world.get_order(i));
         }
         tmp.sort((a, b) => (a.price - b.price));
         var i = 0;
@@ -318,8 +336,8 @@ class Market {
                 tmp_amount += tmp[i].amount;
                 i += 1;
             }
-            if ((money - total_spendings) < (amount * tmp[j].price)) {
-                amount = Math.floor((money - total_spendings) / tmp[j].price);
+            if ((money - total_spendings) < (amount * (tmp[j].price + this.taxes[tag]))) {
+                amount = Math.floor((money - total_spendings) / (tmp[j].price + this.taxes[tag]));
             }
             if (tmp_amount <= amount) {
                 for (var k = j; k < i; k++) {
@@ -344,23 +362,33 @@ class Market {
         }
         if ((amount > 0) && (money > 0)) {
             var price = Math.floor((money - total_spendings) / amount);
-            await this.new_order(pool, 'BUY', tag, amount, price, buywe);
+            if ((max_price != null) && (max_price < price)) {
+                price = max_price;
+            }
+            await this.new_order(pool, 'BUY', tag, amount, price, buyer);
         }
-        await his.clear_empty_sell_orders[tag];
+        await this.clear_empty_sell_orders[tag];
         await this.save_to_db(pool);
         return total_spendings;
     }
 
     async sell(pool, tag, seller, amount, price) {
+        if (logging) {
+            console.log('market sell', tag, seller.name, amount, price);
+        }
         if (amount > seller.stash.get(tag)) {
             amount = seller.stash.get(tag);
         }
         this.tmp_total_cost_of_placed_goods[tag] += amount * price;
         var tmp = [];
-        for (var i in this.buy_orders[tag]) {
-            tmp.push(this.world.get_order(pool, i));
+        for (var i of this.buy_orders[tag]) {
+            tmp.push(this.world.get_order(i));
         }
         tmp.sort((a, b) => (b.price - a.price));
+        if (logging) {
+            console.log('buy orders');
+            console.log(tmp);
+        }
         var i = 0;
         var j = 0;
         while ((i < tmp.length) && (amount > 0) && (tmp[i].price >= price)) {
@@ -376,12 +404,12 @@ class Market {
                 amount -= tmp_amount;
             } else {
                 var u_amount = amount;
-                for (var k = j; k <= i; k++) {
+                for (var k = j; k < i; k++) {
                     var memelord = Math.floor((tmp[k].amount / tmp_amount) * u_amount);
                     amount -= memelord;
                     await this.execute_buy_order(pool, tmp[k], memelord, seller);
                 }
-                for (var k = j; k <= i; k++) {
+                for (var k = j; k < i; k++) {
                     if ((tmp[k].amount > 0) && (amount > 0)) {
                         await this.execute_buy_order(pool, tmp[k], 1, seller);
                         amount -= 1;
@@ -398,41 +426,47 @@ class Market {
     }
 
     async new_order(pool, typ, tag, amount, price, agent) {
-        if (typ == 'SELL') {
-            var tmp = await agent.stash.transfer(pool, this.stash, tag, amount);
-            var order = new MarketOrder();
-            order_id = await order.init(pool, typ, tag, agent, tmp, price, this.id);
-            this.sell_orders[tag].add(order_id);
-            this.world.add_order(pool, order);
+        if (logging) {
+            console.log('new market order', typ, tag, amount, price);
         }
-        if (type == 'BUY') {
+        if (typ == 'SELL') {
+            var tmp = agent.stash.transfer(this.stash, tag, amount);
+            var order = new MarketOrder();
+            var order_id = await order.init(pool, this.world, typ, tag, agent, tmp, price, this.id);
+            this.sell_orders[tag].add(order_id);
+            await this.world.add_order(pool, order);
+        }
+        if (typ == 'BUY') {
             if (price != 0) {
-                savings = await agent.savings.get(pool);
-                amount = min(amount, Math.floor(savings / price));
-                await agent.savings.transfer(pool, this.savings, amount * price)
+                var savings = agent.savings.get();
+                var amount = Math.min(amount, Math.floor(savings / price));
+                agent.savings.transfer(this.savings, amount * price);
                 var order = new MarketOrder();
-                order_id = await order.init(pool, typ, tag, agent, amount, price, this.id);
+                var order_id = await order.init(pool, this.world, typ, tag, agent, amount, price, this.id);
                 this.buy_orders[tag].add(order_id);
-                this.world.add_order(pool, order);
+                await this.world.add_order(pool, order);
             } else {
                 var order = new MarketOrder();
-                order_id = await order.init(pool, typ, tag, agent, amount, price, this.id);
+                var order_id = await order.init(pool, this.world, typ, tag, agent, amount, price, this.id);
                 this.buy_orders[tag].add(order_id);
-                this.world.add_order(pool, order);
+                await this.world.add_order(pool, order);
             }
         }
+        await this.save_to_db(pool);
     }
 
     async execute_buy_order(pool, order, amount, seller) {
         this.tmp_sells[order.tag].push([amount, order.price]);
         order.amount -= amount;
         await order.save_to_db(pool);
-        await this.savings.transfer(pool, seller.savings, amount * order.price);
-        await this.savings.transfer(pool, this.owner.savings, amount * this.taxes[order.tag]);
-        await seller.stash.transfer(pool, order.owner.stash, order.tag, amount);
+        this.savings.transfer(seller.savings, amount * order.price);
+        this.savings.transfer(this.owner.savings, amount * this.taxes[order.tag]);
+        seller.stash.transfer(order.owner.stash, order.tag, amount);
         this.total_sold_new[order.tag] += amount;
         this.total_sold_cost_new[order.tag] += amount * order.price;
         await this.save_to_db(pool);
+        await seller.save_to_db(pool);
+        await order.owner.save_to_db(pool);
         return amount * (order.price + this.taxes[order.tag]);
     }
 
@@ -440,24 +474,26 @@ class Market {
         this.tmp_sells[order.tag].push([amount, order.price]);
         order.amount -= amount;
         await order.save_to_db(pool);
-        await this.stash.transfer(pool, buyer.stash, order.tag, amount);
-        await buyer.savings.transfer(pool, order.owner.savings, amount * order.price);
-        await buyer.savings.transfer(pool, this.owner.savings, amount * this.taxes[order.tag]);
+        this.stash.transfer(buyer.stash, order.tag, amount);
+        buyer.savings.transfer(order.owner.savings, amount * order.price);
+        buyer.savings.transfer(this.owner.savings, amount * this.taxes[order.tag]);
         this.total_sold_new[order.tag] += amount;
-        this.total_sold_cost_new[order.tag] += amount * order_price;
+        this.total_sold_cost_new[order.tag] += amount * order.price;
         await this.save_to_db(pool);
+        await buyer.save_to_db(pool);
+        await order.owner.save_to_db(pool);
         return amount * (order.price + this.taxes[order.tag]);
     }
 
     async clear_empty_sell_orders(pool, tag) {
         var tmp = new Set();
-        for (var i in this.sell_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+        for (var i of this.sell_orders[tag]) {
+            var order = this.world.get_order(i);
             if (order.amount == 0) {
                 tmp.add(i);
             }
         }
-        for (var i in tmp) {
+        for (var i of tmp) {
             this.cancel_sell_order(pool, i);
         }
         await this.save_to_db(pool);
@@ -465,13 +501,13 @@ class Market {
 
     async clear_empty_buy_orders(pool, tag) {
         var tmp = new Set();
-        for (var i in this.buy_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+        for (var i of this.buy_orders[tag]) {
+            var order = this.world.get_order(i);
             if (order.amount == 0) {
                 tmp.add(i);
             }
         }
-        for (var i in tmp) {
+        for (var i of tmp) {
             this.cancel_buy_order(pool, i);
         }
         await this.save_to_db(pool);
@@ -484,13 +520,13 @@ class Market {
 
     async clear_agent_sell_orders(pool, agent, tag) {
         var tmp = new Set();
-        for (var i in this.sell_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+        for (var i of this.sell_orders[tag]) {
+            var order = this.world.get_order(i);
             if (order.owner == agent) {
                 tmp.add(i);
             }
         }
-        for (var i in tmp) {
+        for (var i of tmp) {
             this.cancel_sell_order(pool, i);
         }
         await this.save_to_db(pool);
@@ -498,8 +534,8 @@ class Market {
 
     async clear_agent_buy_orders(pool, agent, tag) {
         var tmp = new Set();
-        for (var i in this.buy_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+        for (var i of this.buy_orders[tag]) {
+            var order = this.world.get_order(i);
             if (order.owner == agent) {
                 tmp.add(i);
             }
@@ -514,7 +550,7 @@ class Market {
         var tmp = 0;
         for (var tag of this.world.TAGS) {
             for (var i in this.buy_orders[tag]) {
-                order = await this.world.get_order(pool, i);
+                order = this.world.get_order(i);
                 if (order.owner == agent) {
                     tmp += i.amount * (i.price + this.taxes[order.tag]);
                 }
@@ -524,7 +560,7 @@ class Market {
     }
 
     async cancel_buy_order(pool, order_id) {
-        var order = await this.world.get_order(pool, order_id);
+        var order = this.world.get_order(order_id);
         var amount = order.amount * (order_price + this.taxes[order.tag]);
         await this.savings.transfer(pool, order.owner.savings, amount);
         this.buy_orders[order.tag].delete(order_id);
@@ -532,7 +568,7 @@ class Market {
     }
 
     async cancel_sell_order(pool, order_id) {
-        var order = await this.world.get_order(pool, order_id);
+        var order = this.world.get_order(order_id);
         await this.stash.transfer(pool, order.owner.stash, order.tag, order.amount);
         this.sell_orders[order.tag].delete(order_id);
         await this.save_to_db(pool);
@@ -557,7 +593,7 @@ class Market {
     async check_tag_cost(pool, tag, amount) {
         var tmp = [];
         for (var i in this.sell_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+            var order = this.world.get_order(i);
             tmp.push(order);
         }
         tmp.sort((a, b) => {a.price - b.price});
@@ -582,7 +618,7 @@ class Market {
     async guess_tag_cost(pool, tag, amount) {
         var tmp = [];
         for (var i of this.sell_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+            var order = this.world.get_order(i);
             tmp.push(order);
         }
         tmp.sort((a, b) => {a.price - b.price});
@@ -617,7 +653,7 @@ class Market {
             }
         }
         for (var i of this.sell_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+            var order = this.world.get_order(i);
             if (order.price <= x) {
                 cost += i.amount * i.price;
             }
@@ -629,12 +665,12 @@ class Market {
         var total_count = sum(this.total_sold[tag]) + this.total_sold_new[tag];
         var total_cost = sum(this.total_sold_cost[tag]) + this.total_sold_cost_new[tag];
         for (var i of this.sell_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+            var order = this.world.get_order(i);
             total_count += order.amount;
             total_cost += order.amount * (order.price + this.taxes[tag]);
         }
         for (var i of this.buy_orders[tag]) {
-            var order = await this.world.get_order(pool, i);
+            var order = this.world.get_order(i);
             total_count += order.amount;
             total_cost += order.amount * (order.price + this.taxes[tag]);
         }
@@ -665,15 +701,15 @@ class Market {
 
     async get_most_profitable_building(pool) {}
 
-    async get_orders_list(pool) {
+    get_orders_list() {
         var tmp = [];
         for (var tag of this.world.TAGS) {
             for (var i of this.buy_orders[tag]) {
-                order = await world.get_order(i);
+                var order = this.world.get_order(i);
                 tmp.push(order.get_json());
             }
             for (var i of this.sell_orders[tag]) {
-                order = await world.get_order(i);
+                var order = this.world.get_order(i);
                 tmp.push(order.get_json());
             }
         }
@@ -681,7 +717,12 @@ class Market {
     }
 
     async save_to_db(pool) {
-        await pool.query(update_market_query, [this.id, this.get_json()]);
+        var tmp = this.get_json();
+        // console.log(tmp);
+        await pool.query(update_market_query, [this.id, tmp]);
+        if (logging) {
+            console.log('market saved to db');
+        }
     }
 
     async load_to_db(pool) {
@@ -698,7 +739,7 @@ class Market {
         tmp.buy_orders = this.buy_orders;
         tmp.sell_orders = this.sell_orders;
         tmp.planned_money_to_spent = this.planned_money_to_spent;
-        tmp.tmp_planned_money_to_spent = this.tmp_plannned_money_to_spent;
+        tmp.tmp_planned_money_to_spent = this.tmp_planned_money_to_spent;
         tmp.total_cost_of_placed_goods = this.total_cost_of_placed_goods;
         tmp.tmp_total_cost_of_placed_goods = this.tmp_total_cost_of_placed_goods;
         tmp.max_price = this.max_price;
@@ -724,6 +765,7 @@ class Cell {
         this.id = i * world.y + j;
         var market = new Market();
         this.market_id = await market.init(pool, world, this.id, market);
+        this.market = market;
         this.owner_id = owner_id;
         // var pop = new HomelessHumanBeings();
         // pop_id = await pop.init(pool, this.world, this, 0, 'homeless ' + this.name);
@@ -780,6 +822,7 @@ class Map {
             for (var j = 0; j < this.y; j++) {
                 var cell = new Cell();
                 await cell.init(pool, world, this, i, j, null, -1);
+                tmp.push(cell);
             }
             this.cells.push(tmp);
         }
@@ -811,6 +854,7 @@ class World {
         this.BASE_BATTLE_RANGE = 10;
         this.users = {};
         this.chars = {};
+        this.orders = {};
         this.users_online = [];
         this.TAGS = ['meat'];
         this.map = new Map();
@@ -865,6 +909,14 @@ class World {
         return x;
     }
 
+    async add_order(pool, order) {
+        this.orders[order.id] = order;
+    }
+
+    get_order (order_id) {
+        return this.orders[order_id];
+    }
+
     async kill(pool, character) {
         character.is_dead = true;
         if (character.is_player) {
@@ -876,9 +928,9 @@ class World {
         // this.chars[character.id] = null;
     }
 
-    async create_monster(pool, monster_class) {
+    async create_monster(pool, monster_class, cell_id) {
         var monster = new monster_class();
-        var id = await monster.init(pool, this);
+        var id = await monster.init(pool, this, cell_id);
         this.chars[id] = monster;
         return monster;
     }
@@ -1174,6 +1226,19 @@ class Character {
         await this.save_to_db(pool);
     }
 
+    async buy(pool, tag, amount, money, max_price = null) {
+        var cell = this.world.get_cell_by_id(this.cell_id);
+        await cell.market.buy(pool, tag, this, amount, money, max_price);
+    }
+
+    async sell(pool, tag, amount, price) {
+        if (logging) {
+            console.log('character sell', tag, amount, price);
+        }
+        var cell = this.world.get_cell_by_id(this.cell_id);
+        await cell.market.sell(pool, tag, this, amount, price);
+    }
+
     get_hp() {
         return this.hp
     }
@@ -1272,16 +1337,22 @@ var world = new World();
         await client.query('DROP TABLE IF EXISTS worlds');
         await client.query('DROP TABLE IF EXISTS markets');
         await client.query('DROP TABLE IF EXISTS cells');
+        await client.query('DROP TABLE IF EXISTS market_orders');
         await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
         await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, cell_id int, user_id int)');
         await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
         await client.query('CREATE TABLE battles (id int PRIMARY KEY, ids int[], teams int[], positions int[])');
         await client.query('CREATE TABLE worlds (x int, y int)');
         await client.query('CREATE TABLE markets (id int PRIMARY KEY, data jsonb)');
-        await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, owner_id int, pop_id int)')
+        await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, owner_id int, pop_id int)');
+        await client.query('CREATE TABLE market_orders (id int PRIMARY KEY, typ varchar(5), tag varchar(30), owner_id int, amount int, price int, market_id int)');
         await init_ids(client);
         await client.end();
         await world.init(pool, 1, 1);
+        var rat_trader = await world.create_monster(pool, Rat, 0);
+        rat_trader.savings.inc(1000);
+        await rat_trader.buy(pool, 'meat', 1000, 1000);
+
         console.log('database is ready');
     } catch (e) {
         console.log(e);
@@ -1322,6 +1393,17 @@ function update_char_info(socket, user) {
     socket.emit('char-info', user.character.get_json());
 }
 
+function update_market_info(socket, user) {
+    var cell_id = user.character.cell_id;
+    var cell = world.get_cell_by_id(cell_id);
+    var data = cell.market.get_orders_list();
+    if (logging) {
+        console.log('sending market orders to client');
+        console.log(data);
+    }
+    socket.emit('market-data', data);
+}
+
 function validate_creds(data) {
     if (data.login.length == 0) {
         return 'empty-login';
@@ -1343,6 +1425,7 @@ io.on('connection', async socket => {
     var online = false;
     var current_user = null;
     socket.emit('users-online', world.users_online);
+    socket.emit('tags', world.TAGS);
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
@@ -1373,19 +1456,44 @@ io.on('connection', async socket => {
             online = true;
             socket.emit('log-message', 'hello ' + data.login);
             update_char_info(socket, current_user);
+            update_market_info(socket, current_user);
         }
-    })
+    });
 
     socket.on('attack', async msg => {
         if (current_user != null && !current_user.character.in_battle) {
-            var rat = await world.create_monster(pool, Rat);
+            var rat = await world.create_monster(pool, Rat, current_user.character.cell_id);
             var battle = await world.create_battle(pool, [current_user.character], [rat]);
             var log = await battle.run(pool);
             await world.delete_battle(pool, battle.id);
             await update_char_info(socket, current_user);
             // log.forEach(log_entry => socket.emit('log-message', log_entry));
         }
-    })
+    });
+
+    socket.on('buy', async msg => {
+        var flag = (world.TAGS.indexOf(msg.tag) > -1) && (validator.isInt(msg.amount)) && (validator.isInt(msg.money)) && (validator.isInt(msg.max_price) || msg.max_price == null);
+        if ((current_user != null) && flag) {
+            if (!(msg.max_price == null)) {
+                msg.max_price = parseInt(msg.max_price);
+            }
+            await current_user.character.buy(pool, msg.tag, parseInt(msg.amount), parseInt(msg.money), msg.max_price);
+            update_market_info(socket, current_user);
+            update_char_info(socket, current_user);
+        }
+    });
+
+    socket.on('sell', async msg => {
+        var flag = (world.TAGS.indexOf(msg.tag) > -1) && (validator.isInt(msg.amount)) && (validator.isInt(msg.price));
+        if ((current_user != null) && flag) {
+            if (logging) {
+                console.log('sell message', msg);
+            }
+            await current_user.character.sell(pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
+            update_market_info(socket, current_user);
+            update_char_info(socket, current_user);
+        }
+    });
 });
 
 http.listen(port, () => {

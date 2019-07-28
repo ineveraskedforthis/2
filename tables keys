@@ -46,6 +46,7 @@ market_orders
     id
     typ
     tag
+    owner_id
     amount
     price
     market_id
