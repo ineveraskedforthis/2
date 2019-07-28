@@ -14,6 +14,9 @@ chars
     is_player
     cell_id
     user_id
+    savings
+    stash
+    in_battle
 
 last_id
     id_type

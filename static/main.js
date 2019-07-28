@@ -101,9 +101,7 @@ class MarketTable {
         this.table = $('<table>');
         var header = this.populate_row($('<tr>'), ['type', 'tag', 'amount', 'price', 'name']);
         this.table.append(header);
-        console.log(this.data);
         for (var i of this.data) {
-            console.log(i.typ, i.tag, i.amount, i.price);
             var row = this.populate_row($('<tr>'), [i.typ, i.tag, i.amount, i.price, i.owner_name]);
             this.table.append(row);
         }
@@ -254,6 +252,18 @@ $(function() {
     });
 
     socket.on('is-reg-completed', msg => {
+        if (msg != 'ok') {
+            alert(msg);
+        }
+    });
+
+    socket.on('is-login-valid', msg => {
+        if (msg != 'ok') {
+            alert(msg);
+        }
+    });
+
+    socket.on('is-login-completed', msg => {
         if (msg != 'ok') {
             alert(msg);
         }

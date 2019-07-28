@@ -19,10 +19,10 @@ if (stage == 'dev') {
 }
 var salt = process.env.SALT;
 var dbname = process.env.DBNAME;
-const logging = true;
+const logging = false;
 
 var new_user_query = 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)';
-var new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player, cell_id, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+var new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player, cell_id, user_id, savings, stash, in_battle) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)';
 var init_id_query = 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)';
 var new_battle_query = 'INSERT INTO battles (id, ids, teams, positions) VALUES ($1, $2, $3, $4)';
 var new_cell_query = 'INSERT INTO cells (id, x, y, name, market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
@@ -32,13 +32,14 @@ var new_market_order_query = 'INSERT INTO market_orders (id, typ, tag, owner_id,
 var update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
 var update_market_order_query = 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)';
 var update_market_query = 'UPDATE markets SET data = ($2) WHERE id = ($1)';
-var update_char_query = 'UPDATE chars SET hp = ($2), max_hp = ($3), exp = ($4), level = ($5), cell_id = ($6) WHERE id = ($1)';
+var update_char_query = 'UPDATE chars SET hp = ($2), max_hp = ($3), exp = ($4), level = ($5), cell_id = ($6), savings = ($7), stash = ($8), in_battle = ($9) WHERE id = ($1)';
 
 var delete_market_order_query = 'DELETE FROM market_orders WHERE id = ($1)';
 var delete_battle_query = 'DELETE FROM battles WHERE id = ($1)';
 var delete_char_query = 'DELETE FROM chars WHERE id = ($1)';
 
 var find_user_by_login_query = 'SELECT * FROM accounts WHERE login = ($1)';
+var select_char_by_id_query = 'SELECT * FROM chars WHERE id = ($1)';
 var set_hp_query = 'UPDATE chars SET hp = ($1) WHERE id = ($2)';
 var set_exp_query = 'UPDATE chars SET exp = ($1) WHERE id = ($2)';
 var set_id_query = 'UPDATE last_id SET last_id = ($2) WHERE id_type = ($1)';
@@ -494,7 +495,7 @@ class Market {
             }
         }
         for (var i of tmp) {
-            this.cancel_sell_order(pool, i);
+            await this.cancel_sell_order(pool, i);
         }
         await this.save_to_db(pool);
     }
@@ -508,7 +509,7 @@ class Market {
             }
         }
         for (var i of tmp) {
-            this.cancel_buy_order(pool, i);
+            await this.cancel_buy_order(pool, i);
         }
         await this.save_to_db(pool);
     }
@@ -974,10 +975,54 @@ class World {
         }
         var hash = await bcrypt.hash(data.password, salt);
         var new_user = new User();
-        var id = await new_user.create(pool, this, data.login, hash);
+        var id = await new_user.init(pool, this, data.login, hash);
         this.users[id] = new_user;
         this.chars[new_user.character.id] = new_user.character;
         return({reg_promt: 'ok', user: new_user});
+    }
+
+    async login_player(pool, data) {
+        var user_data = await this.load_user_data_from_db(pool, data.login);
+        if (user_data == null) {
+            return {login_promt: 'wrong-login', user: null};
+        }
+        var password_hash = user_data.password_hash;
+        var f = await bcrypt.compare(data.password, password_hash);
+        if (f) {
+            var user = await this.load_user_to_memory(pool, user_data);
+            return({login_promt: 'ok', user: user});
+        }
+        return {login_promt: 'wrong-password', user: null};
+    }
+
+    async load_user_data_from_db(pool, login) {
+        var res = await pool.query(find_user_by_login_query, [login]);
+        if (res.rows.length == 0) {
+            return null;
+        }
+        return res.rows[0];
+    }
+
+    async load_user_to_memory(pool, data) {
+        var user = new User();
+        await user.load_from_json(pool, this, data);
+        this.users[user.id] = user;
+        return user;
+    }
+
+    async load_character_data_from_db(pool, char_id) {
+        var res = await pool.query(select_char_by_id_query, [char_id]);
+        if (res.rows.length == 0) {
+            return null;
+        }
+        return res.rows[0];
+    }
+
+    async load_character_data_to_memory(pool, data) {
+        var character = new Character();
+        await character.load_from_json(pool, this, data)
+        this.chars[data.id] = character;
+        return character;
     }
 
     //check login availability
@@ -1172,7 +1217,7 @@ class Character {
         var id = await world.get_new_id(pool, 'char_id');
         this.init_base_values(world, id, name, 100, 100, 0, 0, cell_id, user_id);
         await this.equip.init(pool, world, id);
-        await this.save_to_db(pool);
+        await this.load_to_db(pool);
         return id;
     }
 
@@ -1243,6 +1288,26 @@ class Character {
         return this.hp
     }
 
+    async load_from_json(pool, world, data) {
+        this.world = world;
+        this.id = data.id;
+        this.name = data.name;
+        this.hp = data.hp;
+        this.max_hp = data.max_hp;
+        this.exp = data.exp;
+        this.level = data.level;
+        this.user_id = data.user_id;
+        this.savings = new Savings();
+        this.savings.load_from_json(data.savings);
+        this.stash = new Stash();
+        this.stash.load_from_json(data.stash);
+        this.is_player = (this.user_id != -1);
+        this.cell_id = data.cell_id;
+        this.dead = (this.hp == 0);
+        this.in_battle = data.in_battle;
+        this.Equip = new Equip();
+    }
+
     get_json() {
         return {name: this.name,
                 hp: this.hp,
@@ -1255,11 +1320,11 @@ class Character {
 
     async load_to_db(pool) {
         // console.log(pool);
-        await pool.query(new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player, this.cell_id, this.user_id]);
+        await pool.query(new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player, this.cell_id, this.user_id, this.savings.get_json(), this.stash.get_json(), this.in_battle]);
     }
 
     async save_to_db(pool) {
-        await pool.query(update_char_query, [this.id, this.hp, this.max_hp, this.exp, this.level, this.cell_id]);
+        await pool.query(update_char_query, [this.id, this.hp, this.max_hp, this.exp, this.level, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.in_battle]);
     }
 
     async delete_from_db(pool) {
@@ -1295,12 +1360,12 @@ class Equip {
 
 
 class User {
-    async create(pool, world, login, hash) {
+    async init(pool, world, login, hash) {
         this.login = login;
         this.id = await world.get_new_id(pool, 'user_id');
         this.socket = null;
         this.world = world;
-        this.hash = hash;
+        this.password_hash = hash;
         await this.get_new_char(pool);
         await this.load_to_db(pool);
         return this.id;
@@ -1315,8 +1380,20 @@ class User {
         this.socket = socket;
     }
 
+    async load_from_json(pool, world, data) {
+        this.login = data.login;
+        this.id = data.id;
+        this.socket = null;
+        this.world = world;
+        this.password_hash = data.password_hash;
+        this.char_id = data.char_id;
+        var char_data = await world.load_character_data_from_db(pool, this.char_id);
+        var character = await world.load_character_data_to_memory(pool, char_data);
+        this.character = character;
+    }
+
     async load_to_db(pool) {
-        await pool.query(new_user_query, [this.login, this.hash, this.id, this.char_id]);
+        await pool.query(new_user_query, [this.login, this.password_hash, this.id, this.char_id]);
     }
 
     async save_to_db(pool) {
@@ -1339,7 +1416,7 @@ var world = new World();
         await client.query('DROP TABLE IF EXISTS cells');
         await client.query('DROP TABLE IF EXISTS market_orders');
         await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
-        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, cell_id int, user_id int)');
+        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, cell_id int, user_id int, savings jsonb, stash jsonb, in_battle boolean)');
         await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
         await client.query('CREATE TABLE battles (id int PRIMARY KEY, ids int[], teams int[], positions int[])');
         await client.query('CREATE TABLE worlds (x int, y int)');
@@ -1401,7 +1478,7 @@ function update_market_info(socket, user) {
         console.log('sending market orders to client');
         console.log(data);
     }
-    socket.emit('market-data', data);
+    io.emit('market-data', data);
 }
 
 function validate_creds(data) {
@@ -1436,17 +1513,32 @@ io.on('connection', async socket => {
 
     socket.on('login', async data => {
         // console.log(data);
-        // socket.emit('new-user-online', data.login);
+        if (online) {
+            socket.emit('is-login-valid', 'you-are-logged-in');
+            return;
+        }
+        var error_message = validate_creds(data);
+        socket.emit('is-login-valid', error_message);
+        var answer = await world.login_player(pool, data);
+        socket.emit('is-login-completed', answer.login_promt);
+        if (answer.login_promt == 'ok') {
+            current_user = answer.user;
+            current_user.set_socket(socket);
+            new_user_online(io, world, data.login);
+            online = true;
+            socket.emit('log-message', 'hello ' + data.login);
+            update_char_info(socket, current_user);
+            update_market_info(socket, current_user);
+        }
     });
 
     socket.on('reg', async data => {
-        // console.log(data);
+        if (online) {
+            socket.emit('is-reg-valid', 'you-are-logged-in');
+            return;
+        }
         var error_message = validate_creds(data);
         socket.emit('is-reg-valid', error_message);
-        if (online) {
-            socket.emit('is-reg-valid', 'you-are-logged-in')
-            return
-        }
         var answer = await world.reg_player(pool, data);
         socket.emit('is-reg-completed', answer.reg_promt);
         if (answer.reg_promt == 'ok') {
