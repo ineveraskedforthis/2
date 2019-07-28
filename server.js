@@ -5,6 +5,7 @@ var express = require('express');
 var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+var gameloop = require('node-gameloop');
 const port = process.env.PORT || 3000;
 var path = require('path');
 var validator = require('validator');
@@ -869,7 +870,7 @@ class World {
         //     await i.update();
         // }
         for (var i in this.chars) {
-            await i.update(pool);
+            await this.chars[i].update(pool);
         }
     }
 
@@ -1221,6 +1222,18 @@ class Character {
         return id;
     }
 
+    async update(pool) {
+        this.change_hp(pool, 1);
+        if (this.is_player) {
+            var socket = this.world.users[this.user_id].socket;
+        } else {
+            var socket = null;
+        } 
+        if (socket != null) {
+            socket.emit('char-info', this.get_json());
+        }
+    }
+
     get_exp_reward() {
         return this.exp_reward;
     }
@@ -1236,11 +1249,14 @@ class Character {
     }
 
     async take_damage(pool, damage) {
-        await this.change_hp(pool, damage);
+        await this.change_hp(pool, -damage);
     }
 
     async change_hp(pool, x) {
-        this.hp -= x;
+        this.hp += x;
+        if (this.hp > this.max_hp) {
+            this.hp = this.max_hp;
+        } 
         if (this.hp <= 0) {
             this.hp = 0;
             await this.world.kill(pool, this);
@@ -1591,3 +1607,6 @@ io.on('connection', async socket => {
 http.listen(port, () => {
     console.log('listening on *:3000');
 });
+
+// gameloop.setGameLoop(async delta => await world.update(pool), 2000);
+setInterval(async => await world.update(pool));
