@@ -53,3 +53,11 @@ market_orders
     amount
     price
     market_id
+
+agents
+    id
+    cell_id
+    name
+    savings
+    stash
+
