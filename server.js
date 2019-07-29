@@ -1190,6 +1190,32 @@ class Battle {
 }
 
 
+class Agent {
+    init_base_values(world, id, cell_id, name = null) {
+        if (name == null) {
+            name = 'agent ' + id;
+        }
+        this.world = world;
+        this.id = id;
+        this.cell_id = cell_id;
+        this.name = name;
+        this.savings = new Savings;
+        this.stash = new Stash;
+        this.type = 'agent';
+    }
+
+    async init(pool, world, cell_id, name = null) {
+        id = await world.get_new_id(pool, 'agent');
+        this.init_base_values(world, id, cell_id, name);
+        this.load_to_db(pool);
+    }
+
+    async load_to_db(pool) {
+        pool.query('insert_agent_query', [this.id, this.cell_id, this.name, this.savigs.get_json(), this.stash.get_json()]);
+    }
+}
+
+
 class Character {
     init_base_values(world, id, name, hp, max_hp, exp, level, cell_id, user_id = -1) {
         this.world = world;
