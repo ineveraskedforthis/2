@@ -61,3 +61,20 @@ agents
     savings
     stash
 
+consumers
+    id
+    cell_id
+    name
+    savings
+    stash
+    data
+
+pops
+    id
+    cell_id
+    name
+    savings
+    stash
+    data
+    race_tag
+    ai_tag

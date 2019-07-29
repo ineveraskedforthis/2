@@ -1130,7 +1130,7 @@ class Battle {
         for (var i = 0; i < this.ids.length; i ++) {
             var character = this.world.chars[this.ids[i]];
             if (character.hp == 0) {
-                await character.transfer_all(pool, this);    
+                await character.transfer_all(pool, this);
             }
         }
     }
@@ -1167,7 +1167,7 @@ class Battle {
         for (var tag of this.world.TAGS) {
             var x = this.stash.get(tag);
             await this.transfer(pool, leader, tag, x);
-        }    
+        }
     }
 
     async load_to_db(pool) {
@@ -1209,20 +1209,24 @@ class Agent {
     }
 
     async init(pool, world, cell_id, name = null) {
-        id = await world.get_new_id(pool, 'agent');
+        var id = await world.get_new_id(pool, 'agent');
         this.init_base_values(world, id, cell_id, name);
         this.load_to_db(pool);
     }
 
-    async update(pool) {
+    async update(pool, save = true) {
         this.savings.update();
+        this.save_to_db(pool, save);
     }
 
     async load_to_db(pool) {
         pool.query(insert_agent_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json()]);
     }
 
-    async save_to_db(pool) {
+    async save_to_db(pool, save = true) {
+        if (!this.save) {
+            return
+        }
         pool.query(update_agent_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json()]);
     }
 
@@ -1237,18 +1241,19 @@ class Agent {
         this.stash.load_from_json(data.stash);
     }
 
-    async transfer(pool, target, tag, x) {
+    async transfer(pool, target, tag, x, save = true, save_target = true) {
         this.stash.transfer(target.stash, tag, x);
-        await this.save_to_db(pool);
-        await target.save_to_db(pool);
+        await target.save_to_db(pool, save_target);
+        await this.save_to_db(pool, save);
     }
 
-    async transfer_all(pool, target) {
+    async transfer_all(pool, target, save = true, save_target = true) {
         for (var tag of this.world.TAGS) {
             var x = this.stash.get(tag);
-            await this.transfer(pool, target, tag, x);
+            await this.transfer(pool, target, tag, x, save = false, save_target = false);
         }
-        await this.save_to_db(pool);
+        await this.save_to_db(pool, save);
+        await target.save_to_db(pool, save_target)
     }
 
     async buy(pool, tag, amount, money, max_price = null) {
@@ -1284,33 +1289,47 @@ class Consumer extends Agent {
     }
 
     init(pool, world, cell_id, size, needs, name = null) {
-        id = await world.get_new_id('consumer');
+        var id = await world.get_new_id('consumer');
         this.init_base_values(world, id, cell_id, size, needs, name = null);
         this.load_to_db(pool);
     }
 
-    async update(pool) {
-        super.update(pool);
-        this.consume_update(pool);
+    async update(pool, save = true) {
+        super.update(pool, save = false);
+        this.consume_update(pool, save = false);
+        this.save_to_db(pool, save);
     }
 
-    async set_size(pool, x) {
-        this.data.size.current = Math.min(x, this.data.size.max);
-        this.save_to_db(pool);
+    async set_size(pool, x, save = true) {
+        if (this.data.size.max != null) {
+            this.data.size.current = Math.min(x, this.data.size.max);
+        } else {
+            this.data.size.current = x;
+        }
+        this.save_to_db(pool, save);
     }
 
-    async consume_update(pool) {
+    async set_max_size(pool, x, save = true) {
+        this.data.size.max = x;
+        this.save_to_db(pool, save);
+    }
+
+    async transfer_size(pool, target, x, save = true, target_save = true) {
+        var tmp = Math.min(x, this.data.size.current);
+        this.data.size.current -= tmp;
+        target.data.size.current += tmp;
+    }
+
+    async consume_update(pool, save = true) {
         for (var i in this.data.needs) {
             this.consume(pool, i, false);
         }
-        this.save_to_db(pool);
+        this.save_to_db(pool, save);
     }
 
     async consume(pool, tag, save = true) {
         this.stash.inc(tag, -this.needs[tag] + this.size.current);
-        if (save) {
-            this.save_to_db(pool);
-        }
+        this.save_to_db(pool, save);
     }
 
     async load_to_db(pool) {
@@ -1318,6 +1337,9 @@ class Consumer extends Agent {
     }
 
     async save_to_db(pool) {
+        if (!this.save) {
+            return
+        }
         pool.query(update_consumer_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.data]);
     }
 
@@ -1336,16 +1358,94 @@ class Consumer extends Agent {
 
 
 class Pop extends Consumer {
-    init_base_values(world, id, cell_id, size, needs, name = null, AI = BasicPopAI) {
+    init_base_values(world, id, cell_id, size, needs, race_tag, name = null, AI = {state: BasicPopAIstate, tag: 'basic_pop_ai'}) {
         super.init_base_values(world, id, cell_id, size, needs, name);
-        this.AI = AI();   
+        this.AI = AI;
+        this.race_tag = race_tag;
+        this.data.growth_mod = 0;
+        this.data.death_mod = 0;
     }
 
-    async init(pool, world, cell_id, size, needs, name = null, AI = BasicPopAI) {
-        
+    async init(pool, world, cell_id, size, needs, race_tag, name = null, AI = {state: BasicPopAIstate, tag: 'basic_pop_ai'}) {
+        var id = await this.world.get_new_id('consumer');
+        this.init_base_values(world, id, cell_id, size, needs, race_tag, name, AI);
+        this.load_to_db(pool);
+    }
+
+    async update(pool, growth_flag = false, save = true) {
+        if (this.data.size.current == 0) {
+            return
+        }
+        super.update(pool, save = false);
+        this.data.death_mod += world.get_tick_death_rate(this.race_tag);
+        if (growth_flag) {
+            this.growth_update(pool, save = false);
+            this.data.growth_mod = 0;
+            this.data.death_mod = 0;
+        }
+        this.motions_update(pool, save = false, save_targets = true);
+        this.save_to_db(pool, save);
+    }
+
+    async set_max_size(pool, x, save = true) {
+        this.data.size.max = x;
+        this.save_to_db(pool, save);
+    }
+
+    async consume(pool, tag, save = true) {
+        if (this.data.size.current == 0) {
+            return;
+        }
+        var total_need = Math.floor(this.data.needs[tag] * self.data.size.current);
+        var in_stash = Math.min(this.stash.get(tag), total_need);
+        if (total_need == 0) {
+            return;
+        }
+        if (tag == 'food') {
+            this.data.growth_mod += (2 * in_stash / total_need - 1) * this.world.get_tick_max_growth(this.race_tag);
+        }
+        await super.consume(pool, tag, save = false);
+        await this.save_to_db(pool, save);
+    }
+
+    async growth_update(pool, save) {
+        var size = this.data.size.current
+        var growth = Math.floor(this.data.size.current * (1 + this.data.growth_mod));
+        this.data.size.current = Math.floor(this.data.size.current * (1 - this.data.death_mod))
+        this.save_to_db(pool, save);
+    }
+
+    async motions_update(pool, save = true, save_target = true) {
+        return;
+    }
+
+    async load_to_db(pool) {
+        pool.query(insert_pop_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.race_tag, this.AI.tag]);
+    }
+
+    async save_to_db(pool, save = true) {
+        pool.query(update_pop_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.tag]);
+    }
+
+    async load_from_json(pool, world, data) {
+        super.load_from_json(pool, world, data);
+        this.race_tag = data.race_tag;
+        this.ai = world.get_ai(data.ai_tag);
     }
 }
 
+
+class Profession {
+
+}
+
+class ProfessionGraph {
+
+}
+
+class Enterprise {
+
+}
 
 class Character {
     init_base_values(world, id, name, hp, max_hp, exp, level, cell_id, user_id = -1) {
@@ -1385,7 +1485,7 @@ class Character {
             var socket = this.world.users[this.user_id].socket;
         } else {
             var socket = null;
-        } 
+        }
         if (socket != null) {
             socket.emit('char-info', this.get_json());
         }
@@ -1413,7 +1513,7 @@ class Character {
         this.hp += x;
         if (this.hp > this.max_hp) {
             this.hp = this.max_hp;
-        } 
+        }
         if (this.hp <= 0) {
             this.hp = 0;
             await this.world.kill(pool, this);
