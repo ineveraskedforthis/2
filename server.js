@@ -85,6 +85,33 @@ function AI_fighter(world, index, ids, teams, positions) {
     return {action: action, target: action_target};
 }
 
+class State {
+    static Enter(pool, agent, save) {}
+    static Execute(pool, agent, save) {}
+    static Exit(pool, agent, save) {}
+    static tag() {
+        return null;
+    }
+}
+
+class StateMachine {
+    constructor(owner, state) {
+        this.owner = owner;
+        this.prev_state = null;
+        this.curr_state = state;
+    }
+
+    async init(pool, save) {
+        this.curr_state.Enter(pool, this.owner, save);
+    }
+
+    async update(pool) {
+        await this.curr_state.Execute()
+    }
+}
+
+
+
 
 class Savings {
     constructor() {
@@ -1275,11 +1302,9 @@ class Agent {
 }
 
 class Consumer extends Agent {
-    init_base_values(world, id, cell_id, size, needs, name = null) {
+    init_base_values(world, id, cell_id, data, name = null) {
         super.init_base_values(world, id, cell_id, name);
-        this.data = {}
-        this.data.needs = needs;
-        this.data.size = size;
+        this.data = data;
     }
 
     update_name() {
@@ -1288,9 +1313,9 @@ class Consumer extends Agent {
         }
     }
 
-    init(pool, world, cell_id, size, needs, name = null) {
+    init(pool, world, cell_id, data, name = null) {
         var id = await world.get_new_id('consumer');
-        this.init_base_values(world, id, cell_id, size, needs, name = null);
+        this.init_base_values(world, id, cell_id, data, name = null);
         this.load_to_db(pool);
     }
 
@@ -1358,17 +1383,17 @@ class Consumer extends Agent {
 
 
 class Pop extends Consumer {
-    init_base_values(world, id, cell_id, size, needs, race_tag, name = null, AI = {state: BasicPopAIstate, tag: 'basic_pop_ai'}) {
+    init_base_values(world, id, cell_id, size, needs, race_tag, name = null, AIstate = {state: BasicPopAIstate, tag: 'basic_pop_ai_state'}) {
         super.init_base_values(world, id, cell_id, size, needs, name);
-        this.AI = AI;
+        this.AI = StateMachine(AIstate);
         this.race_tag = race_tag;
         this.data.growth_mod = 0;
         this.data.death_mod = 0;
     }
 
-    async init(pool, world, cell_id, size, needs, race_tag, name = null, AI = {state: BasicPopAIstate, tag: 'basic_pop_ai'}) {
+    async init(pool, world, cell_id, size, needs, race_tag, name = null, AIstate = {state: BasicPopAIstate, tag: 'basic_pop_ai_state'}) {
         var id = await this.world.get_new_id('consumer');
-        this.init_base_values(world, id, cell_id, size, needs, race_tag, name, AI);
+        this.init_base_values(world, id, cell_id, size, needs, race_tag, name, AIstate);
         this.load_to_db(pool);
     }
 
@@ -1383,7 +1408,8 @@ class Pop extends Consumer {
             this.data.growth_mod = 0;
             this.data.death_mod = 0;
         }
-        this.motions_update(pool, save = false, save_targets = true);
+        await this.AI.state.update(pool, save = false);
+        await this.motions_update(pool, save = false, save_targets = true);
         this.save_to_db(pool, save);
     }
 
@@ -1436,15 +1462,100 @@ class Pop extends Consumer {
 
 
 class Profession {
-
+    async init(pool, world, tag, edges) {
+        this.world = world;
+        this.tag = tag;
+        this.edges = edges;
+        this.agents_ids = [];
+    }
 }
 
 class ProfessionGraph {
-
+    async init(pool, world, professions) {
+        this.world = world;
+        this.professions = professions;
+    }
 }
 
-class Enterprise {
+class Enterprise extends Consumer {
+    init_base_values(world, id, cell_id, data, name = null, AIstate = {state: BasicEnterpriseAIstate, tag: 'basic_enterprise_ai_state'}) {
+        super.init_base_values(world, id, data, needs, name)
+        this.AI = StateMachine(AIstate);
+        this.workers = [];
+        this.prices = world.create_zero_prices_list();
+    }
 
+    async init(pool, world, cell_id, data, name = null, AIstate = {state: BasicEnterpriseAIstate, tag: 'basic_enterprise_ai_state'}) {
+        var id = await world.get_new_id('enterprise');
+        this.init_base_values(world, id, cell_id, data, name, AIstate);
+        this.load_to_db(pool);
+    }
+
+    async add_worker(pool, worker, save = true) {
+        this.workers.push({id: worker.id, type: worker.get_type()});
+        this.save_to_db(pool, save);
+    }
+
+    async update(pool, save = true) {
+        await this.update_workers_count(pool);
+        await super.update(pool, save = false);
+        await this.AI.update(pool, save = false);
+        await this.production_update(pool, save = false);
+        await this.save_to_db(pool, save);
+    }
+
+    async production_update(pool, save = true) {
+        var production_amount = this.get_production_amount();
+        for (var i in this.data.input) {
+            if (this.data.input[i] != 0) {
+                production_amount = Math.min(production_amount, this.stash.get(i) / (this.data.input[i] * this.get_input_eff()));
+            }
+        }
+        for (var i in this.data.input) {
+            this.stash.inc(i, Math.floor(production_amount * this.data.input[i] * this.get_input_eff());
+        }
+        for (var i in this.data.output) {
+            this.stash.inc(i, Math.floor(production_amount * this.data.output[i] * this.get_output_eff()));
+        }
+        await this.save_to_db(pool, save);
+    }
+
+    get_output_eff() {
+        return this.data.output_eff;
+    }
+
+    get_input_eff() {
+        return this.data.input_eff
+    }
+
+    get_production_amount() {
+        return this.get_active_workers * this.data.throughput;
+    }
+
+    get_active_workers() {
+        var x = 0;
+        for (var worker of this.workers) {
+            var true_worker = this.world.get_agent(worker.type, worker.id);
+            x += true_worker.size;
+        }
+        return x;
+    }
+
+    get_json() {
+
+    }
+
+    async load_to_db(pool) {
+
+    }
+
+    async save_to_db(pool, save = true) {
+
+    }
+
+    async load_from_json(pool) {
+
+    }
 }
 
 class Character {
