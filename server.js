@@ -105,12 +105,108 @@ class StateMachine {
         this.curr_state.Enter(pool, this.owner, save);
     }
 
-    async update(pool) {
-        await this.curr_state.Execute()
+    async update(pool, save) {
+        await this.curr_state.Execute(pool, this.owner, save);
+    }
+
+    async change_state(state) {
+        this.prev_state = this.state;
+        await this.prev_state.Exit(pool, this.owner, save);
+        this.curr_state = state;
+        await this.curr_state.Enter(pool, this.owner, save);
     }
 }
 
+class BasicPopAIstate extends State {
+    async Execute(pool, agent, save) {
+        cell = agent.get_cell();
+        var savings = agent.savings.get();
+        var tmp = max(agent.get_need('food') - agent.stash.get('food'), 0);
+        await agent.clear_orders(pool, 'food', save = false);
+        var estimated_food_cost = agent.get_local_market().guess_tag_cost('food', tmp);
+        await agent.buy(pool, 'food', tmp, Math.min(savings, estimated_food_cost * 3), save = false);
+        for (var tag of world.TAGS) {
+            if (tag != 'food') {
+                var tmp = max(agent.get_need(tag) - agent.stash.get(tag), 0);
+                agent.clear_orders(pool, tag, save);
+                if (tmp > 0) {
+                    var estimated_tag_cost = agent.get_local_market().guess_tag_cost(tag, tmp);
+                    var money_to_spend_on_tag = Math.min(savings, max(estimated_tag_cost, Math.floor(savings * 0.1)));
+                    await agent.buy(pool, tag, tmp, money_to_spend_on_tag, save = false);
+                }
+            }
+        }
+        //update desire to change work
+    }
 
+    tag() {
+        return 'basic_pop_ai_state';
+    }
+}
+
+class BasicEnterpriseAIstate extends State {
+    async Execute(pool, agent, save) {
+        var market = agent.get_local_market();
+        for (var i in agent.data.input) {
+            await agent.clear_orders(pool, i, save = false);
+        }
+        for (var i in agent.data.output) {
+            await agent.clear_orders(pool, i, save = false);
+        }
+        // correct prices
+        for (var tag in agent.data.output) {
+            var amount = agent.data.output[tag];
+            var tmp_pure_income = null;
+            var tdworkers = 0;
+            var tdprice = {};
+            tdprice[tag] = 0;
+            var i = 0;
+            var t_x = 0;
+            var t_planned_spendings = 0;
+            while (i < Math.pow(3, agent.data.output.length) {
+                var tmp = i;
+                var dprice = {};
+                var no_profit = false;
+                for (var tag2 in agent.data.output) {
+                    dprice[tag2] = (tmp % 3 - 1) // tmp acts here as trit mask
+                    tmp = Math.floor(tmp / 3);
+                    if (agent.data.price[tag2] + dprice[tag] <= 0) {
+                        no_profit = true
+                    }
+                }
+                if (no_profit) {
+                    i += 1;
+                    continue;
+                }
+                for (var dworkers = 0; dworkers <= 1; dworkers++) {
+                    if ((agent.size + dworkers > agent.data.max_size) || (agent.size + dworkers <= 0)) {
+                        continue
+                    }
+                    var planned_workers = agent.data_size + dworkers;
+                    var expected_income = {};
+                    for (var z in agent.data.output) {
+                        var planned_price = {};
+                        var max_income = {};
+                        expected_income[z] = 0;
+                        planned_price[z] = agent.data.price[z] + dprice[z];
+                        var total_cost_of_produced_goods = planned_workers * agent.get_production_per_worker() * planned_price[z];
+                        max_income[z] = market.planned_money_to_spent[z] - market.get_total_cost_of_placed_goods_with_price_less_or_equal(z, planned_price[z], taxes = true);
+                        expected_income[z] = Math.min(max_income[z], total_cost_of_goods);
+                    }
+                }
+                var total_income = 0;
+                for (var z in agent.data.output) {
+                    total_income += expected_income[z];
+                }
+                var x = market.find_amount_of_goods_for_buying(planned_workers * agent.get_input_consumption_per_worker(), agent.data.savings.get() / );
+            }
+        }
+    }
+
+    tag() {
+        return 'basic_enterprise_ai_state';
+    }
+}
 
 
 class Savings {
