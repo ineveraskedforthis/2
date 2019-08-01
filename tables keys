@@ -78,3 +78,12 @@ pops
     data
     race_tag
     ai_tag
+
+enterprises
+    id
+    cell_id
+    name
+    savings
+    stash
+    data
+    ai_tag 

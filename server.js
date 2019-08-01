@@ -29,11 +29,20 @@ var new_battle_query = 'INSERT INTO battles (id, ids, teams, positions) VALUES (
 var new_cell_query = 'INSERT INTO cells (id, x, y, name, market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
 var new_market_query = 'INSERT INTO markets (id, data) VALUES ($1, $2)';
 var new_market_order_query = 'INSERT INTO market_orders (id, typ, tag, owner_id, amount, price, market_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+var insert_agent_query = 'INSERT INTO agents (id, cell_id, name, savings, stash) VALUES ($1, $2, $3, $4, $5)';
+var insert_consumer_query = 'INSERT INTO agents (id, cell_id, name, savings, stash, data) VALUES ($1, $2, $3, $4, $5, $6)';
+var insert_pop_query = 'INSERT INTO agents (id, cell_id, name, savings, stash, data, race_tag, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
+var insert_enterprise_query = 'INSERT INTO agents (id, cell_id, name, savings, stash, data, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+
 
 var update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
 var update_market_order_query = 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)';
 var update_market_query = 'UPDATE markets SET data = ($2) WHERE id = ($1)';
 var update_char_query = 'UPDATE chars SET hp = ($2), max_hp = ($3), exp = ($4), level = ($5), cell_id = ($6), savings = ($7), stash = ($8), in_battle = ($9) WHERE id = ($1)';
+var update_agent_query = 'UPDATE agents SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5) WHERE id = ($1)'';
+var update_consumer_query = 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6) WHERE id = ($1)'';
+var update_pop_query = 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), race_tag = ($7), ai_tag = ($8) WHERE id = ($1)'';
+var update_enterprise_query = 'UPDATE enterprises SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), ai_tag = ($7) WHERE id = ($1)'';
 
 var delete_market_order_query = 'DELETE FROM market_orders WHERE id = ($1)';
 var delete_battle_query = 'DELETE FROM battles WHERE id = ($1)';
@@ -166,10 +175,10 @@ class BasicEnterpriseAIstate extends State {
             var tmp = i;
             var dprice = {};
             var no_profit = false;
-            for (var tag2 in agent.data.output) {
-                dprice[tag2] = (tmp % 3 - 1) // tmp acts here as trit mask
+            for (var tag in agent.data.output) {
+                dprice[tag] = (tmp % 3 - 1) // tmp acts here as trit mask
                 tmp = Math.floor(tmp / 3);
-                if (agent.data.price[tag2] + dprice[tag] <= 0) {
+                if (agent.data.price[tag] + dprice[tag] <= 0) {
                     no_profit = true
                 }
             }
@@ -181,7 +190,7 @@ class BasicEnterpriseAIstate extends State {
                 if ((agent.size + dworkers > agent.data.max_size) || (agent.size + dworkers <= 0)) {
                     continue
                 }
-                var planned_workers = agent.data_size + dworkers;
+                var planned_workers = agent.data.size + dworkers;
                 var expected_income = {};
                 var planned_price = {};
                 var max_income = {};
@@ -192,7 +201,7 @@ class BasicEnterpriseAIstate extends State {
                     max_income[z] = market.planned_money_to_spent[z] - market.get_total_cost_of_placed_goods_with_price_less_or_equal(z, planned_price[z], taxes = true);
                     expected_income[z] = Math.min(max_income[z], total_cost_of_goods);
                 }
-            
+
                 var total_income = 0;
                 for (var z in agent.data.output) {
                     total_income += expected_income[z];
@@ -224,12 +233,14 @@ class BasicEnterpriseAIstate extends State {
         agent.set_size(agent.data.size + dworkers);
         //seling output with updated prices and buying input
         for (var tag in agent.data.output) {
-            agent.sell(tag, agent.stash.get(tag), agent.price[tag]);      
-        }  
-        for (var tag in agent.data.input) {
-            agent.buy(tag, agent.data.input[tag] * t_x, market.guess_tag_cost(tag, agent.data.input[tag] * t_x) * 2);
+            await agent.sell(pool, tag, agent.stash.get(tag), agent.price[tag], save = false);
         }
-
+        for (var tag in agent.data.input) {
+            await agent.buy(pool, tag, agent.data.input[tag] * t_x, market.guess_tag_cost(tag, agent.data.input[tag] * t_x) * 2, save = false);
+        }
+        await agent.pay_salary(pool, save = false);
+        await agent.pay_profits(pool, save = false);
+        await agent.save_to_db(pool, save);
     }
 
     tag() {
@@ -1571,11 +1582,11 @@ class Pop extends Consumer {
     }
 
     async load_to_db(pool) {
-        pool.query(insert_pop_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.race_tag, this.AI.tag]);
+        pool.query(insert_pop_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.race_tag, this.AI.curr_state.tag()]);
     }
 
     async save_to_db(pool, save = true) {
-        pool.query(update_pop_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.tag]);
+        pool.query(update_pop_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.curr_state.tag()]);
     }
 
     async load_from_json(pool, world, data) {
@@ -1606,7 +1617,7 @@ class Enterprise extends Consumer {
     init_base_values(world, id, cell_id, data, name = null, AIstate = {state: BasicEnterpriseAIstate, tag: 'basic_enterprise_ai_state'}) {
         super.init_base_values(world, id, data, needs, name)
         this.AI = StateMachine(AIstate);
-        this.workers = [];
+        this.data.workers = [];
         this.prices = world.create_zero_prices_list();
     }
 
@@ -1617,7 +1628,7 @@ class Enterprise extends Consumer {
     }
 
     async add_worker(pool, worker, save = true) {
-        this.workers.push({id: worker.id, type: worker.get_type()});
+        this.data.workers.push({id: worker.id, type: worker.get_type()});
         this.save_to_db(pool, save);
     }
 
@@ -1645,12 +1656,36 @@ class Enterprise extends Consumer {
         await this.save_to_db(pool, save);
     }
 
+    async pay_salary(pool, save = true, save_target = true) {
+        for (var worker_id of this.data.workers_ids) {
+            worker = world.agents[worker_id];
+            this.savings.transfer(worker.savings, worker.data.size * this.data.salary);
+            await worker.save_to_db(pool, save_targets);
+        }
+        await.this.save_to_db(pool, save);
+    }
+
+    async pay_profits(pool, save = true, save_targets = true) {
+        var inf = this.get_total_influence();
+        var payment = Math.floor(this.savings.get() * 0.01);
+        for (var owner_info of this.data.owners) {
+            owner = world.agents[owner_info.id];
+            this.savings.transfer(owner.savings, Math.floor(payment * owner_info.influence / inf));
+            await owner.save_to_db(pool, save_targets);
+        }
+        await this.save_to_db(pool, save);
+    }
+
+    get_total_influence() {
+        return this.get_active_workers();
+    }
+
     get_output_eff() {
         return this.data.output_eff;
     }
 
     get_input_eff() {
-        return this.data.input_eff
+        return this.data.input_eff;
     }
 
     get_production_amount() {
@@ -1659,27 +1694,27 @@ class Enterprise extends Consumer {
 
     get_active_workers() {
         var x = 0;
-        for (var worker of this.workers) {
-            var true_worker = this.world.get_agent(worker.type, worker.id);
-            x += true_worker.size;
+        for (var worker_id of this.data.workers_ids) {
+            var worker = this.world.get_agent(worker_id);
+            x += worker.size;
         }
         return x;
     }
 
-    get_json() {
-
+    get_production_per_worker() {
+        return (1 / this.get_input_eff) * this.data.throughput * this.get_output_eff();
     }
 
     async load_to_db(pool) {
-
+        pool.query(insert_enterprise_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.curr_state.tag()]);
     }
 
     async save_to_db(pool, save = true) {
-
+        pool.query(update_enterprise_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.curr_state.tag()]);
     }
 
-    async load_from_json(pool) {
-
+    async load_from_json(pool, world, data) {
+        super.load_from_json(pool, world, data);
     }
 }
 
