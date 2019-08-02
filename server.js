@@ -932,10 +932,7 @@ class Cell {
         this.market_id = await market.init(pool, world, this.id, market);
         this.market = market;
         this.owner_id = owner_id;
-        // var pop = new HomelessHumanBeings();
-        // pop_id = await pop.init(pool, this.world, this, 0, 'homeless ' + this.name);
-        var pop_id = 0;
-        this.pop_id = pop_id;
+        this.job_graph = ProfessionGraph(pool, world, this.world.PROFESSIONS);
         await this.load_to_db(pool);
         return this.id;
     }
@@ -947,6 +944,10 @@ class Cell {
     async get_market(pool) {
         market = await this.world.get_market(pool, this.market_id);
         return market;
+    }
+
+    get_population() {
+        return this.job_graph.get_total_size();
     }
 
     // async get_enterprises_list(pool) {
@@ -1437,6 +1438,7 @@ class Agent {
     }
 }
 
+
 class Consumer extends Agent {
     init_base_values(world, id, cell_id, data, name = null) {
         super.init_base_values(world, id, cell_id, name);
@@ -1604,12 +1606,30 @@ class Profession {
         this.edges = edges;
         this.agents_ids = [];
     }
+
+    get_total_size() {
+        var size = 0;
+        for (a of this.agents_ids) {
+            size += this.world.agents[a];
+        }
+        return size;
+    }
+
+    
 }
 
 class ProfessionGraph {
     async init(pool, world, professions) {
         this.world = world;
         this.professions = professions;
+    }
+
+    get_total_size() {
+        var size = 0;
+        for (var prof of this.professions) {
+            size += prof.get_total_size();
+        }
+        return size;
     }
 }
 
