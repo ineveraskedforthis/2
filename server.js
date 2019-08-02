@@ -1604,7 +1604,8 @@ class Profession {
         this.world = world;
         this.tag = tag;
         this.edges = edges;
-        this.agents_ids = [];
+        this.agents_ids = Set();
+        this.enterprises_ids = Set();
     }
 
     get_total_size() {
@@ -1615,7 +1616,19 @@ class Profession {
         return size;
     }
 
-    
+    get_average_savings() {
+        var total_savings = 0;
+        var total_size = 0;
+        for (var agent_id of this.agents_ids) {
+            var agent = this.world.agents[agent_id];
+            total_savings += agent.get_true_savings();
+            total_size += agent.data.size;
+        }
+        if (total_size == 0) {
+            return 1000;
+        }
+        return Math.floor(total_savings / sotal_size);
+    }
 }
 
 class ProfessionGraph {
@@ -1630,6 +1643,49 @@ class ProfessionGraph {
             size += prof.get_total_size();
         }
         return size;
+    }
+
+    async update(pool) {
+        for (var i of this.professions) {
+            await i.update(pool);
+        }
+
+        for (var i of this.professions) {
+            for (var k of i.edges) {
+                var j = this.professions[k];
+                await this.push(pool, i, j);
+            }
+        }
+    }
+
+    async push(pool, i, j) {
+        if ((j.get_average_savings() <= i.get_average_savings()) || (j.is_full)) {
+            return;
+        }
+        for (var agent_id of i.agents_ids) {
+            for (var enterprise_id of j.enterprises_ids) {
+                var agent = this.world.agents[agent_id];
+                var enterprise = this.world.agents[enterprise_id];
+                if (enterprise.is_full()) {
+                    continue;
+                }
+                if (agent.data.size == 0) {
+                    continue;
+                }
+                if (enterprise.get_active_workers() < enterprise.data.size) {
+                    if (agent.is_pop()) {
+                        for (var z of enterprise.workers_ids) {
+                            var agent2 = this.world.agents[z];
+                            if (agent2.is_pop()) {
+                                if (agent2.race_tag == agent.race_tag) {
+                                    await agent.transfer_size(pool)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
