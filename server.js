@@ -1662,6 +1662,7 @@ class ProfessionGraph {
         if ((j.get_average_savings() <= i.get_average_savings()) || (j.is_full)) {
             return;
         }
+        actions = [];
         for (var agent_id of i.agents_ids) {
             for (var enterprise_id of j.enterprises_ids) {
                 var agent = this.world.agents[agent_id];
@@ -1678,10 +1679,16 @@ class ProfessionGraph {
                             var agent2 = this.world.agents[z];
                             if (agent2.is_pop()) {
                                 if (agent2.race_tag == agent.race_tag) {
-                                    await agent.transfer_size(pool)
+                                    actions.push({type: 'transfer_size', agent1: agent_id, agent2: z, amount: 1});
+                                    target_found = true;
                                 }
                             }
                         }
+                        if (!target_found) {
+                            pop = await this.world.create_empty_pop({cell: this.cell, profession: j, enterprise: })
+                        }
+                    } else {
+                        actions.push({type: 'move_agent_to_enterprise', agent: agent_id, to: enterprise_id});
                     }
                 }
             }
