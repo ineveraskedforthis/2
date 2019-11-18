@@ -13,14 +13,15 @@ var bcrypt = require('bcrypt');
 //const saltRounds = 10;
 var {Pool} = require('pg');
 var stage = process.env.STAGE;
+var dbname = process.env.DBNAME;
 if (stage == 'dev') {
     var pool = new Pool({database: dbname});
 } else{
     var pool = new Pool({connectionString: process.env.DATABASE_URL, ssl: true});
 }
 var salt = process.env.SALT;
-var dbname = process.env.DBNAME;
 const logging = false;
+const logging_db_queries = false;
 
 var new_user_query = 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)';
 var new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player, cell_id, user_id, savings, stash, in_battle) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)';
@@ -30,19 +31,19 @@ var new_cell_query = 'INSERT INTO cells (id, x, y, name, market_id, owner_id, po
 var new_market_query = 'INSERT INTO markets (id, data) VALUES ($1, $2)';
 var new_market_order_query = 'INSERT INTO market_orders (id, typ, tag, owner_id, amount, price, market_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
 var insert_agent_query = 'INSERT INTO agents (id, cell_id, name, savings, stash) VALUES ($1, $2, $3, $4, $5)';
-var insert_consumer_query = 'INSERT INTO agents (id, cell_id, name, savings, stash, data) VALUES ($1, $2, $3, $4, $5, $6)';
-var insert_pop_query = 'INSERT INTO agents (id, cell_id, name, savings, stash, data, race_tag, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
-var insert_enterprise_query = 'INSERT INTO agents (id, cell_id, name, savings, stash, data, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7)';
+var insert_consumer_query = 'INSERT INTO consumers (id, cell_id, name, savings, stash, data) VALUES ($1, $2, $3, $4, $5, $6)';
+var insert_pop_query = 'INSERT INTO pops (id, cell_id, name, savings, stash, data, race_tag, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
+var insert_enterprise_query = 'INSERT INTO enterprises (id, cell_id, name, savings, stash, data, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7)';
 
 
 var update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
 var update_market_order_query = 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)';
 var update_market_query = 'UPDATE markets SET data = ($2) WHERE id = ($1)';
 var update_char_query = 'UPDATE chars SET hp = ($2), max_hp = ($3), exp = ($4), level = ($5), cell_id = ($6), savings = ($7), stash = ($8), in_battle = ($9) WHERE id = ($1)';
-var update_agent_query = 'UPDATE agents SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5) WHERE id = ($1)'';
-var update_consumer_query = 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6) WHERE id = ($1)'';
-var update_pop_query = 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), race_tag = ($7), ai_tag = ($8) WHERE id = ($1)'';
-var update_enterprise_query = 'UPDATE enterprises SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), ai_tag = ($7) WHERE id = ($1)'';
+var update_agent_query = 'UPDATE agents SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5) WHERE id = ($1)';
+var update_consumer_query = 'UPDATE consumers SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6) WHERE id = ($1)';
+var update_pop_query = 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), race_tag = ($7), ai_tag = ($8) WHERE id = ($1)';
+var update_enterprise_query = 'UPDATE enterprises SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), ai_tag = ($7) WHERE id = ($1)';
 
 var delete_market_order_query = 'DELETE FROM market_orders WHERE id = ($1)';
 var delete_battle_query = 'DELETE FROM battles WHERE id = ($1)';
@@ -94,6 +95,16 @@ function AI_fighter(world, index, ids, teams, positions) {
     return {action: action, target: action_target};
 }
 
+
+async function send_query(pool, query, args) {
+    if (logging_db_queries) {
+        console.log(query)
+        console.log(args)
+    }
+    return pool.query(query, args)
+}
+
+
 class State {
     static Enter(pool, agent, save) {}
     static Execute(pool, agent, save) {}
@@ -102,6 +113,7 @@ class State {
         return null;
     }
 }
+
 
 class StateMachine {
     constructor(owner, state) {
@@ -127,21 +139,20 @@ class StateMachine {
 }
 
 class BasicPopAIstate extends State {
-    async Execute(pool, agent, save) {
-        cell = agent.get_cell();
+    static async Execute(pool, agent, save) {
+        let cell = agent.get_cell();
         var savings = agent.savings.get();
-        var tmp = max(agent.get_need('food') - agent.stash.get('food'), 0);
-        await agent.clear_orders(pool, 'food', save = false);
+        var tmp = Math.max(agent.get_need('food') - agent.stash.get('food'), 0);
+        await agent.clear_orders(pool);
         var estimated_food_cost = agent.get_local_market().guess_tag_cost('food', tmp);
-        await agent.buy(pool, 'food', tmp, Math.min(savings, estimated_food_cost * 3), save = false);
+        await agent.buy(pool, 'food', tmp, Math.min(savings, estimated_food_cost * 3));
         for (var tag of world.TAGS) {
             if (tag != 'food') {
-                var tmp = max(agent.get_need(tag) - agent.stash.get(tag), 0);
-                agent.clear_orders(pool, tag, save);
+                var tmp = Math.max(agent.get_need(tag) - agent.stash.get(tag), 0);
                 if (tmp > 0) {
                     var estimated_tag_cost = agent.get_local_market().guess_tag_cost(tag, tmp);
-                    var money_to_spend_on_tag = Math.min(savings, max(estimated_tag_cost, Math.floor(savings * 0.1)));
-                    await agent.buy(pool, tag, tmp, money_to_spend_on_tag, save = false);
+                    var money_to_spend_on_tag = Math.min(savings, Math.max(estimated_tag_cost, Math.floor(savings * 0.1)));
+                    await agent.buy(pool, tag, tmp, money_to_spend_on_tag);
                 }
             }
         }
@@ -154,7 +165,7 @@ class BasicPopAIstate extends State {
 }
 
 class BasicEnterpriseAIstate extends State {
-    async Execute(pool, agent, save) {
+    static async Execute(pool, agent, save) {
         var market = agent.get_local_market();
         for (var i in agent.data.input) {
             await agent.clear_orders(pool, i, save = false);
@@ -216,7 +227,7 @@ class BasicEnterpriseAIstate extends State {
                 var planned_income = total_income;
                 var planned_spendings = planned_workers * agent.salary + inputs_cost;
                 var planned_pure_income = planned_income - planned_spendings;
-                if ((tmp_pure_income == null) || ((tmp_pure_income < planned_pure_income)) {
+                if ((tmp_pure_income == null) || ((tmp_pure_income < planned_pure_income))) {
                     t_x = x;
                     tdprice = dprice;
                     tdworkers = dworkers;
@@ -382,18 +393,18 @@ class MarketOrder {
             console.log(new_market_order_query);
             console.log([this.id, this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
         }
-        await pool.query(new_market_order_query, [this.id, this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
+        await send_query(pool, new_market_order_query, [this.id, this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
         if (logging) {
             console.log('loading completed');
         }
     }
 
     async save_to_db(pool) {
-        await pool.query(update_market_order_query, [this.id, this.amount]);
+        await send_query(pool, update_market_order_query, [this.id, this.amount]);
     }
 
     async delete_from_db(pool) {
-        await pool.query(delete_market_order_query, [this.id]);
+        await send_query(pool, delete_market_order_query, [this.id]);
     }
 
     get_json() {
@@ -678,7 +689,7 @@ class Market {
         await this.save_to_db(pool);
     }
 
-    async clear_agent_orders(pool, agent, tag) {
+    async clear_agent_orders(pool, agent, tag, save = true) {
         this.clear_agent_buy_orders(pool, agent, tag);
         this.clear_agent_sell_orders(pool, agent, tag);
     }
@@ -705,7 +716,7 @@ class Market {
                 tmp.add(i);
             }
         }
-        for (var i in tmp) {
+        for (var i of tmp) {
             await this.cancel_buy_order(pool, i);
         }
         await this.save_to_db(pool);
@@ -714,7 +725,7 @@ class Market {
     async get_money_on_hold(pool, agent) {
         var tmp = 0;
         for (var tag of this.world.TAGS) {
-            for (var i in this.buy_orders[tag]) {
+            for (var i of this.buy_orders[tag]) {
                 order = this.world.get_order(i);
                 if (order.owner == agent) {
                     tmp += i.amount * (i.price + this.taxes[order.tag]);
@@ -726,36 +737,40 @@ class Market {
 
     async cancel_buy_order(pool, order_id) {
         var order = this.world.get_order(order_id);
-        var amount = order.amount * (order_price + this.taxes[order.tag]);
-        await this.savings.transfer(pool, order.owner.savings, amount);
+        var amount = order.amount * (order.price + this.taxes[order.tag]);
+        await this.savings.transfer(order.owner.savings, amount);
         this.buy_orders[order.tag].delete(order_id);
+        await order.owner.save_to_db(pool)
         await this.save_to_db(pool);
+        await order.delete_from_db(pool);
     }
 
     async cancel_sell_order(pool, order_id) {
         var order = this.world.get_order(order_id);
-        await this.stash.transfer(pool, order.owner.stash, order.tag, order.amount);
+        await this.stash.transfer(order.owner.stash, order.tag, order.amount);
         this.sell_orders[order.tag].delete(order_id);
+        await order.owner.save_to_db(pool)
         await this.save_to_db(pool);
+        await order.delete_from_db(pool);
     }
 
-    async check_cost(pool, list_of_goods) {
+    check_cost(list_of_goods) {
         var cost = 0;
         for (var i of list_of_goods) {
-            cost += await this.check_tag_cost(i[0], i[1]);
+            cost += this.check_tag_cost(i[0], i[1]);
         }
         return cost;
     }
 
-    async guess_cost(pool, list_of_goods) {
+    guess_cost(list_of_goods) {
         var cost = 0;
         for (var i of list_of_goods) {
-            cost += await this.guess_tag_cost(i[0], i[1])
+            cost += this.guess_tag_cost(i[0], i[1])
         }
         return cost;
     }
 
-    async check_tag_cost(pool, tag, amount) {
+    check_tag_cost(tag, amount) {
         var tmp = [];
         for (var i in this.sell_orders[tag]) {
             var order = this.world.get_order(i);
@@ -780,7 +795,7 @@ class Market {
         return cost;
     }
 
-    async guess_tag_cost(pool, tag, amount) {
+    guess_tag_cost(tag, amount) {
         var tmp = [];
         for (var i of this.sell_orders[tag]) {
             var order = this.world.get_order(i);
@@ -801,7 +816,7 @@ class Market {
         }
         if (amount > 0) {
             if (sum(this.total_sold[tag]) != 0) {
-                av_price = await this.get_average_tag_price(pool, tag);
+                av_price = this.get_average_tag_price(tag);
                 cost += Math.floor(av_price * amount);
             } else {
                 cost += this.world.HISTORY_PRICE[tag] * amount;
@@ -810,7 +825,7 @@ class Market {
         return cost;
     }
 
-    async get_total_cost_of_placed_goods_with_price_less_or_equal(pool, tag, x) {
+    get_total_cost_of_placed_goods_with_price_less_or_equal(tag, x) {
         var cost = 0;
         for (var i of this.tmp_sells[tag]) {
             if (i[1] <= x) {
@@ -826,7 +841,7 @@ class Market {
         return cost;
     }
 
-    async get_average_tag_price(pool, tag) {
+    get_average_tag_price(pool, tag) {
         var total_count = sum(this.total_sold[tag]) + this.total_sold_new[tag];
         var total_cost = sum(this.total_sold_cost[tag]) + this.total_sold_cost_new[tag];
         for (var i of this.sell_orders[tag]) {
@@ -845,7 +860,7 @@ class Market {
         return this.world.HISTORY_PRICE[tag];
     }
 
-    async find_amount_of_goods_for_buying(pool, max_amount, money, goods) {
+    find_amount_of_goods_for_buying(max_amount, money, goods) {
         var l = 0;
         var r = Math.floor(max_amount + 1);
         while (l + 1 < r) {
@@ -854,7 +869,7 @@ class Market {
             for (var i in goods) {
                 list_of_goods.push(i[0], i[1] * m);
             }
-            var estimated_cost = this.guess_cost(pool, list_of_goods);
+            var estimated_cost = this.guess_cost(list_of_goods);
             if (estimated_cost <= money) {
                 l = m;
             } else {
@@ -864,7 +879,7 @@ class Market {
         return l;
     }
 
-    async get_most_profitable_building(pool) {}
+    get_most_profitable_building(pool) {}
 
     get_orders_list() {
         var tmp = [];
@@ -883,15 +898,11 @@ class Market {
 
     async save_to_db(pool) {
         var tmp = this.get_json();
-        // console.log(tmp);
-        await pool.query(update_market_query, [this.id, tmp]);
-        if (logging) {
-            console.log('market saved to db');
-        }
+        await send_query(pool, update_market_query, [this.id, tmp]);
     }
 
     async load_to_db(pool) {
-        await pool.query(new_market_query, [this.id, this.get_json()]);
+        await send_query(pool, new_market_query, [this.id, this.get_json()]);
     }
 
     get_json() {
@@ -927,12 +938,12 @@ class Cell {
         this.map = map;
         this.i = i;
         this.j = j;
-        this.id = i * world.y + j;
+        this.id = world.get_cell_id_by_x_y(i, j);
         var market = new Market();
         this.market_id = await market.init(pool, world, this.id, market);
         this.market = market;
         this.owner_id = owner_id;
-        this.job_graph = ProfessionGraph(pool, world, this.world.PROFESSIONS);
+        this.job_graph = new ProfessionGraph(pool, world, this.world.PROFESSIONS);
         await this.load_to_db(pool);
         return this.id;
     }
@@ -963,7 +974,7 @@ class Cell {
 
     async set_owner(pool, owner) {
         this.owner = owner;
-        await pool.query(update_cell_owner_query, owner);
+        await send_query(pool, update_cell_owner_query, owner);
     }
 
     // async get_pops_list(pool) {
@@ -972,7 +983,7 @@ class Cell {
     // }
 
     async load_to_db(pool) {
-        await pool.query(new_cell_query, [this.id, this.i, this.j, this.name, this.market_id, this.owner_id, this.pop_id]);
+        await send_query(pool, new_cell_query, [this.id, this.i, this.j, this.name, this.market_id, this.owner_id, this.pop_id]);
     }
 }
 
@@ -1016,26 +1027,32 @@ class World {
     async init(pool, x, y) {
         this.x = x;
         this.y = y;
-        // this.agents = {};
+        this.agents = {};
         this.BASE_BATTLE_RANGE = 10;
         this.users = {};
         this.chars = {};
         this.orders = {};
         this.users_online = [];
-        this.TAGS = ['meat'];
+        this.TAGS = ['food', 'clothes'];
         this.map = new Map();
+        this.HISTORY_PRICE = {}
+        this.HISTORY_PRICE['food'] = 10
+        this.HISTORY_PRICE['clothes'] = 10
         await this.map.init(pool, this);
         this.battles = {}
-        await pool.query(save_world_size_query, [x, y]);
+        let pop = await this.create_pop(pool, 0, 0, 100, {'food': 1, 'clothes': 1}, 'pepe', 'random dudes', 100000)
+        this.agents[pop.id] = pop
+        await send_query(pool, save_world_size_query, [x, y])
     }
 
     async update(pool) {
-        // for (var i in this.agents) {
-        //     await i.update();
-        // }
+        for (var i in this.agents) {
+            await this.agents[i].update(pool);
+        }
         for (var i in this.chars) {
             await this.chars[i].update(pool);
         }
+        update_market_info(this.map.cells[0][0])
     }
 
     get_cell(x, y) {
@@ -1046,6 +1063,9 @@ class World {
         return this.map.get_cell_by_id(id);
     }
 
+    get_cell_id_by_x_y(x, y) {
+        return x * this.y + y
+    }
     // get_pops(pool) {
     //     var tmp = [];
     //     for (var i in this.agents) {
@@ -1066,12 +1086,12 @@ class World {
 
     async get_new_id(pool, str) {
         // console.log(str);
-        var x = await pool.query(get_id_query, [str]);
+        var x = await send_query(pool, get_id_query, [str]);
         x = x.rows[0];
         // console.log(x);
         x = x.last_id;
         x += 1;
-        await pool.query(set_id_query, [str, x]);
+        await send_query(pool, set_id_query, [str, x]);
         return x;
     }
 
@@ -1099,6 +1119,15 @@ class World {
         var id = await monster.init(pool, this, cell_id);
         this.chars[id] = monster;
         return monster;
+    }
+
+    async create_pop(pool, x, y, size, needs, race_tag, name, savings) {
+        let pop = new Pop();
+        let cell_id = this.get_cell_id_by_x_y(x, y)
+        await pop.init(pool, this, cell_id, size, needs, race_tag, name)
+        await pop.savings.inc(savings)
+        await pop.save_to_db(pool)
+        return pop
     }
 
     async create_battle(pool, attackers, defenders) {
@@ -1161,7 +1190,7 @@ class World {
     }
 
     async load_user_data_from_db(pool, login) {
-        var res = await pool.query(find_user_by_login_query, [login]);
+        var res = await send_query(pool, find_user_by_login_query, [login]);
         if (res.rows.length == 0) {
             return null;
         }
@@ -1176,7 +1205,7 @@ class World {
     }
 
     async load_character_data_from_db(pool, char_id) {
-        var res = await pool.query(select_char_by_id_query, [char_id]);
+        var res = await send_query(pool, select_char_by_id_query, [char_id]);
         if (res.rows.length == 0) {
             return null;
         }
@@ -1192,11 +1221,19 @@ class World {
 
     //check login availability
     async check_login(pool, login) {
-        var res = await pool.query(find_user_by_login_query, [login]);
+        var res = await send_query(pool, find_user_by_login_query, [login]);
         if (res.rows.length == 0) {
             return true;
         }
         return false;
+    }
+
+    get_tick_death_rate(race) {
+        return 0.001
+    }
+
+    get_tick_max_growth(race) {
+        return 0.001
     }
 }
 
@@ -1335,15 +1372,15 @@ class Battle {
     }
 
     async load_to_db(pool) {
-        await pool.query(new_battle_query, [this.id, this.ids, this.teams, this.positions]);
+        await send_query(pool, new_battle_query, [this.id, this.ids, this.teams, this.positions]);
     }
 
     async save_to_db(pool) {
-        pool.query(update_battle_query, [this.id, this.ids, this.teams, this.positions])
+        await send_query(pool, update_battle_query, [this.id, this.ids, this.teams, this.positions])
     }
 
     async delete_from_db(pool) {
-        await pool.query(delete_battle_query, [this.id]);
+        await send_query(pool, delete_battle_query, [this.id]);
     }
 
     async transfer(pool, target, tag, x) {
@@ -1373,25 +1410,25 @@ class Agent {
     }
 
     async init(pool, world, cell_id, name = null) {
-        var id = await world.get_new_id(pool, 'agent');
+        var id = await world.get_new_id(pool, 'agent_id');
         this.init_base_values(world, id, cell_id, name);
-        this.load_to_db(pool);
+        await this.load_to_db(pool);
     }
 
     async update(pool, save = true) {
         this.savings.update();
-        this.save_to_db(pool, save);
+        await this.save_to_db(pool, save);
     }
 
     async load_to_db(pool) {
-        pool.query(insert_agent_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json()]);
+        await send_query(pool, insert_agent_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json()]);
     }
 
     async save_to_db(pool, save = true) {
         if (!this.save) {
             return
         }
-        pool.query(update_agent_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json()]);
+        await send_query(pool, update_agent_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json()]);
     }
 
     async load_from_json(pool, world, data) {
@@ -1428,6 +1465,16 @@ class Agent {
         await this.get_local_market().sell(pool, tag, this, amount, price);
     }
 
+    async clear_tag_orders(pool, tag, save_market = true) {
+        await this.get_local_market().clear_agent_orders(pool, this, tag, save_market)
+    }
+
+    async clear_orders(pool, save_market = true) {
+        for (var tag of this.world.TAGS) {
+            await this.clear_tag_orders(pool, tag, save_market)
+        }
+    }
+
     get_local_market() {
         var cell = this.world.get_cell_by_id(this.cell_id);
         return cell.market;
@@ -1435,6 +1482,10 @@ class Agent {
 
     get_name() {
         return this.name;
+    }
+
+    get_cell() {
+        return this.world.get_cell_by_id(this.cell_id)
     }
 }
 
@@ -1451,16 +1502,20 @@ class Consumer extends Agent {
         }
     }
 
-    init(pool, world, cell_id, data, name = null) {
+    get_need(tag) {
+        return this.data.needs[tag] * this.data.size
+    }
+
+    async init(pool, world, cell_id, data, name = null) {
         var id = await world.get_new_id('consumer');
-        this.init_base_values(world, id, cell_id, data, name = null);
-        this.load_to_db(pool);
+        this.init_base_values(world, id, cell_id, data, null);
+        await this.load_to_db(pool);
     }
 
     async update(pool, save = true) {
-        super.update(pool, save = false);
-        this.consume_update(pool, save = false);
-        this.save_to_db(pool, save);
+        await super.update(pool, false);
+        await this.consume_update(pool, false);
+        await this.save_to_db(pool, save);
     }
 
     async set_size(pool, x, save = true) {
@@ -1469,41 +1524,43 @@ class Consumer extends Agent {
         } else {
             this.data.size.current = x;
         }
-        this.save_to_db(pool, save);
+        await this.save_to_db(pool, save);
     }
 
     async set_max_size(pool, x, save = true) {
         this.data.size.max = x;
-        this.save_to_db(pool, save);
+        await this.save_to_db(pool, save);
     }
 
     async transfer_size(pool, target, x, save = true, target_save = true) {
         var tmp = Math.min(x, this.data.size.current);
         this.data.size.current -= tmp;
         target.data.size.current += tmp;
+        await this.save_to_db(pool, save)
+        await target.save_to_db(pool, target_save)
     }
 
     async consume_update(pool, save = true) {
         for (var i in this.data.needs) {
             this.consume(pool, i, false);
         }
-        this.save_to_db(pool, save);
+        await this.save_to_db(pool, save);
     }
 
     async consume(pool, tag, save = true) {
-        this.stash.inc(tag, -this.needs[tag] + this.size.current);
-        this.save_to_db(pool, save);
+        this.stash.inc(tag, -this.get_need(tag));
+        await this.save_to_db(pool, save);
     }
 
     async load_to_db(pool) {
-        pool.query(insert_consumer_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data]);
+        await send_query(pool, insert_consumer_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data]);
     }
 
     async save_to_db(pool) {
         if (!this.save) {
             return
         }
-        pool.query(update_consumer_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.data]);
+        await send_query(pool, update_consumer_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data]);
     }
 
     async load_from_json(pool, world, data) {
@@ -1521,46 +1578,46 @@ class Consumer extends Agent {
 
 
 class Pop extends Consumer {
-    init_base_values(world, id, cell_id, size, needs, race_tag, name = null, AIstate = {state: BasicPopAIstate, tag: 'basic_pop_ai_state'}) {
-        super.init_base_values(world, id, cell_id, size, needs, name);
-        this.AI = StateMachine(AIstate);
+    init_base_values(world, id, cell_id, data, race_tag, name = null, AIstate = {state: BasicPopAIstate, tag: 'basic_pop_ai_state'}) {
+        super.init_base_values(world, id, cell_id, data, name);
+        this.AI = new StateMachine(this, AIstate.state);
         this.race_tag = race_tag;
         this.data.growth_mod = 0;
         this.data.death_mod = 0;
     }
 
     async init(pool, world, cell_id, size, needs, race_tag, name = null, AIstate = {state: BasicPopAIstate, tag: 'basic_pop_ai_state'}) {
-        var id = await this.world.get_new_id('consumer');
-        this.init_base_values(world, id, cell_id, size, needs, race_tag, name, AIstate);
-        this.load_to_db(pool);
+        var id = await world.get_new_id(pool, 'agent_id');
+        this.init_base_values(world, id, cell_id, {'size': size, 'needs': needs}, race_tag, name, AIstate);
+        await this.load_to_db(pool);
     }
 
     async update(pool, growth_flag = false, save = true) {
         if (this.data.size.current == 0) {
             return
         }
-        super.update(pool, save = false);
+        super.update(pool, false);
         this.data.death_mod += world.get_tick_death_rate(this.race_tag);
         if (growth_flag) {
-            this.growth_update(pool, save = false);
+            this.growth_update(pool, false);
             this.data.growth_mod = 0;
             this.data.death_mod = 0;
         }
-        await this.AI.state.update(pool, save = false);
-        await this.motions_update(pool, save = false, save_targets = true);
-        this.save_to_db(pool, save);
+        await this.AI.update(pool, false);
+        await this.motions_update(pool, false, true);
+        await this.save_to_db(pool, save);
     }
 
     async set_max_size(pool, x, save = true) {
         this.data.size.max = x;
-        this.save_to_db(pool, save);
+        await this.save_to_db(pool, save);
     }
 
     async consume(pool, tag, save = true) {
         if (this.data.size.current == 0) {
             return;
         }
-        var total_need = Math.floor(this.data.needs[tag] * self.data.size.current);
+        var total_need = Math.floor(this.data.needs[tag] * this.data.size.current);
         var in_stash = Math.min(this.stash.get(tag), total_need);
         if (total_need == 0) {
             return;
@@ -1568,7 +1625,7 @@ class Pop extends Consumer {
         if (tag == 'food') {
             this.data.growth_mod += (2 * in_stash / total_need - 1) * this.world.get_tick_max_growth(this.race_tag);
         }
-        await super.consume(pool, tag, save = false);
+        await super.consume(pool, tag, false);
         await this.save_to_db(pool, save);
     }
 
@@ -1576,7 +1633,7 @@ class Pop extends Consumer {
         var size = this.data.size.current
         var growth = Math.floor(this.data.size.current * (1 + this.data.growth_mod));
         this.data.size.current = Math.floor(this.data.size.current * (1 - this.data.death_mod))
-        this.save_to_db(pool, save);
+        await this.save_to_db(pool, save);
     }
 
     async motions_update(pool, save = true, save_target = true) {
@@ -1584,11 +1641,11 @@ class Pop extends Consumer {
     }
 
     async load_to_db(pool) {
-        pool.query(insert_pop_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.race_tag, this.AI.curr_state.tag()]);
+        await send_query(pool, insert_pop_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.race_tag, this.AI.curr_state.tag()]);
     }
 
     async save_to_db(pool, save = true) {
-        pool.query(update_pop_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.curr_state.tag()]);
+        await send_query(pool, update_pop_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.race_tag, this.AI.curr_state.tag()]);
     }
 
     async load_from_json(pool, world, data) {
@@ -1611,9 +1668,24 @@ class Profession {
     get_total_size() {
         var size = 0;
         for (a of this.agents_ids) {
-            size += this.world.agents[a];
+            size += this.world.agents[a].size;
         }
         return size;
+    }
+
+    get_job_places() {
+        let tmp = 0
+        for (a of this.enterprises_ids) {
+            tmp += this.world.agents[a].size;
+        }
+        return tmp
+    }    
+
+    is_full() {
+        if (this.get_total_size() >= this.get_job_places()) {
+            return true
+        }
+        return false
     }
 
     get_average_savings() {
@@ -1659,37 +1731,38 @@ class ProfessionGraph {
     }
 
     async push(pool, i, j) {
+        // if i pops have more savings that j then there is no point in changing prof from i to j
         if ((j.get_average_savings() <= i.get_average_savings()) || (j.is_full)) {
             return;
         }
         actions = [];
+        //iterate over i agents
         for (var agent_id of i.agents_ids) {
-            for (var enterprise_id of j.enterprises_ids) {
-                var agent = this.world.agents[agent_id];
-                var enterprise = this.world.agents[enterprise_id];
-                if (enterprise.is_full()) {
-                    continue;
-                }
-                if (agent.data.size == 0) {
-                    continue;
-                }
-                if (enterprise.get_active_workers() < enterprise.data.size) {
-                    if (agent.is_pop()) {
+            let agent = this.world.agents[agent_id];
+            if (agent.data.size == 0) {
+                continue;
+            }
+            //iterate over j enterprises
+            if (agent.is_pop) {
+                target = -1
+                max_s = 0
+                for (var enterprise_id of j.enterprises_ids) {
+                    let enterprise = this.world.agents[enterprise_id];
+                    if (enterprise.is_full()) {
+                        continue;
+                    }
+                    if (enterprise.get_active_workers() < enterprise.data.size) {
                         for (var z of enterprise.workers_ids) {
                             var agent2 = this.world.agents[z];
-                            if (agent2.is_pop()) {
-                                if (agent2.race_tag == agent.race_tag) {
-                                    actions.push({type: 'transfer_size', agent1: agent_id, agent2: z, amount: 1});
-                                    target_found = true;
-                                }
+                            if (agent2.is_pop() && agent2.race_tag == agent.race_tag && max_s < agent2.get_savings_per_capita()) {
+                                target = agent2
+                                max_s = agent2.get_savings_per_capita()
                             }
                         }
-                        if (!target_found) {
-                            pop = await this.world.create_empty_pop({cell: this.cell, profession: j, enterprise: })
-                        }
-                    } else {
-                        actions.push({type: 'move_agent_to_enterprise', agent: agent_id, to: enterprise_id});
                     }
+                }
+                if (target != -1) {
+                    agent.transfer_size(target, 1)
                 }
             }
         }
@@ -1700,26 +1773,25 @@ class Enterprise extends Consumer {
     init_base_values(world, id, cell_id, data, name = null, AIstate = {state: BasicEnterpriseAIstate, tag: 'basic_enterprise_ai_state'}) {
         super.init_base_values(world, id, data, needs, name)
         this.AI = StateMachine(AIstate);
-        this.data.workers = [];
         this.prices = world.create_zero_prices_list();
     }
 
     async init(pool, world, cell_id, data, name = null, AIstate = {state: BasicEnterpriseAIstate, tag: 'basic_enterprise_ai_state'}) {
-        var id = await world.get_new_id('enterprise');
+        var id = await world.get_new_id('agent_id');
         this.init_base_values(world, id, cell_id, data, name, AIstate);
         this.load_to_db(pool);
     }
 
-    async add_worker(pool, worker, save = true) {
-        this.data.workers.push({id: worker.id, type: worker.get_type()});
-        this.save_to_db(pool, save);
-    }
+    // async add_worker(pool, worker, save = true) {
+    //     this.data.workers.push({id: worker.id, type: worker.get_type()});
+    //     this.save_to_db(pool, save);
+    // }
 
     async update(pool, save = true) {
         await this.update_workers_count(pool);
-        await super.update(pool, save = false);
-        await this.AI.update(pool, save = false);
-        await this.production_update(pool, save = false);
+        await super.update(pool, false);
+        await this.AI.update(pool, false);
+        await this.production_update(pool, false);
         await this.save_to_db(pool, save);
     }
 
@@ -1731,7 +1803,7 @@ class Enterprise extends Consumer {
             }
         }
         for (var i in this.data.input) {
-            this.stash.inc(i, Math.floor(production_amount * this.data.input[i] * this.get_input_eff());
+            this.stash.inc(i, Math.floor(production_amount * this.data.input[i] * this.get_input_eff()));
         }
         for (var i in this.data.output) {
             this.stash.inc(i, Math.floor(production_amount * this.data.output[i] * this.get_output_eff()));
@@ -1739,13 +1811,22 @@ class Enterprise extends Consumer {
         await this.save_to_db(pool, save);
     }
 
+    // async pay_salary(pool, save = true, save_target = true) {
+    //     for (var worker_id of this.data.workers_ids) {
+    //         worker = world.agents[worker_id];
+    //         this.savings.transfer(worker.savings, worker.data.size * this.data.salary);
+    //         await worker.save_to_db(pool, save_targets);
+    //     }
+    //     await.this.save_to_db(pool, save);
+    // }
+
     async pay_salary(pool, save = true, save_target = true) {
-        for (var worker_id of this.data.workers_ids) {
-            worker = world.agents[worker_id];
-            this.savings.transfer(worker.savings, worker.data.size * this.data.salary);
-            await worker.save_to_db(pool, save_targets);
+        var g = this.cell.get_job_graph();
+        prof = h.get_profession(this.data.profession)
+        for (data of prof.enterprise_to_worker[this.id]) {
+            worker = world.agents[worker_id]
+            this.savings.transfer(worker.savings, )
         }
-        await.this.save_to_db(pool, save);
     }
 
     async pay_profits(pool, save = true, save_targets = true) {
@@ -1789,11 +1870,11 @@ class Enterprise extends Consumer {
     }
 
     async load_to_db(pool) {
-        pool.query(insert_enterprise_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.curr_state.tag()]);
+        await send_query(pool, insert_enterprise_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.curr_state.tag()]);
     }
 
     async save_to_db(pool, save = true) {
-        pool.query(update_enterprise_query, [this.id, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.curr_state.tag()]);
+        await send_query(pool, update_enterprise_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.AI.curr_state.tag()]);
     }
 
     async load_from_json(pool, world, data) {
@@ -1872,7 +1953,7 @@ class Character {
             this.hp = 0;
             await this.world.kill(pool, this);
         }
-        await pool.query(set_hp_query, [this.hp, this.id]);
+        await send_query(pool, set_hp_query, [this.hp, this.id]);
     }
 
     async give_exp(pool, x) {
@@ -1881,7 +1962,7 @@ class Character {
 
     async set_exp(pool, x) {
         this.exp = x;
-        await pool.query(set_exp_query, [x, this.id]);
+        await send_query(pool, set_exp_query, [x, this.id]);
     }
 
     async transfer(pool, target, tag, x) {
@@ -1947,15 +2028,15 @@ class Character {
 
     async load_to_db(pool) {
         // console.log(pool);
-        await pool.query(new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player, this.cell_id, this.user_id, this.savings.get_json(), this.stash.get_json(), this.in_battle]);
+        await send_query(pool, new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player, this.cell_id, this.user_id, this.savings.get_json(), this.stash.get_json(), this.in_battle]);
     }
 
     async save_to_db(pool) {
-        await pool.query(update_char_query, [this.id, this.hp, this.max_hp, this.exp, this.level, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.in_battle]);
+        await send_query(pool, update_char_query, [this.id, this.hp, this.max_hp, this.exp, this.level, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.in_battle]);
     }
 
     async delete_from_db(pool) {
-        await pool.query(delete_char_query, [this.id]);
+        await send_query(pool, delete_char_query, [this.id]);
     }
 }
 
@@ -1968,7 +2049,7 @@ class Rat extends Character {
         }
         this.init_base_values(world, id, name, 10, 10, 0, 0, cell_id);
         await this.equip.init(pool, world, id);
-        this.stash.inc('meat', 1);
+        this.stash.inc('food', 1);
         await this.load_to_db(pool);
         return id;
     }
@@ -2020,52 +2101,27 @@ class User {
     }
 
     async load_to_db(pool) {
-        await pool.query(new_user_query, [this.login, this.password_hash, this.id, this.char_id]);
+        await send_query(pool, new_user_query, [this.login, this.password_hash, this.id, this.char_id]);
     }
 
     async save_to_db(pool) {
-        await pool.query(update_user_query, [this.char_id]);
+        await send_query(pool, update_user_query, [this.char_id]);
     }
 }
 
 
 var world = new World();
 
-(async () => {
-    try {
-        var client = await pool.connect();
-        await client.query('DROP TABLE IF EXISTS accounts');
-        await client.query('DROP TABLE IF EXISTS chars');
-        await client.query('DROP TABLE IF EXISTS last_id');
-        await client.query('DROP TABLE IF EXISTS battles');
-        await client.query('DROP TABLE IF EXISTS worlds');
-        await client.query('DROP TABLE IF EXISTS markets');
-        await client.query('DROP TABLE IF EXISTS cells');
-        await client.query('DROP TABLE IF EXISTS market_orders');
-        await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
-        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, cell_id int, user_id int, savings jsonb, stash jsonb, in_battle boolean)');
-        await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
-        await client.query('CREATE TABLE battles (id int PRIMARY KEY, ids int[], teams int[], positions int[])');
-        await client.query('CREATE TABLE worlds (x int, y int)');
-        await client.query('CREATE TABLE markets (id int PRIMARY KEY, data jsonb)');
-        await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, owner_id int, pop_id int)');
-        await client.query('CREATE TABLE market_orders (id int PRIMARY KEY, typ varchar(5), tag varchar(30), owner_id int, amount int, price int, market_id int)');
-        await init_ids(client);
-        await client.end();
-        await world.init(pool, 1, 1);
-        var rat_trader = await world.create_monster(pool, Rat, 0);
-        rat_trader.savings.inc(1000);
-        await rat_trader.buy(pool, 'meat', 1000, 1000);
 
-        console.log('database is ready');
-    } catch (e) {
-        console.log(e);
+async function drop_tables(client, tables) {
+    for (let i = 0; i < tables.length; i++) {
+        await client.query('DROP TABLE IF EXISTS ' + tables[i]);
     }
-})();
+}
 
 
 async function init_ids(client) {
-    var id_types = ['battle_id', 'user_id', 'char_id', 'market_order_id', 'market_id', 'cell_id'];
+    var id_types = ['battle_id', 'user_id', 'char_id', 'market_order_id', 'market_id', 'cell_id', 'agent_id'];
     for (var i = 0; i < id_types.length; i++) {
         await client.query(init_id_query, [id_types[i], 0]);
     }
@@ -2097,15 +2153,22 @@ function update_char_info(socket, user) {
     socket.emit('char-info', user.character.get_json());
 }
 
-function update_market_info(socket, user) {
-    var cell_id = user.character.cell_id;
-    var cell = world.get_cell_by_id(cell_id);
+function update_market_info(cell) {
     var data = cell.market.get_orders_list();
     if (logging) {
         console.log('sending market orders to client');
         console.log(data);
     }
     io.emit('market-data', data);
+}
+
+function send_message(socket, msg, user) {
+    if (msg.length > 1000) {
+        socket.emit('new-message', 'message-too-long')
+        return
+    }
+    // msg = validator.escape(msg)
+    io.emit('new-message', {msg: msg, user: user.login})
 }
 
 function validate_creds(data) {
@@ -2155,7 +2218,6 @@ io.on('connection', async socket => {
             online = true;
             socket.emit('log-message', 'hello ' + data.login);
             update_char_info(socket, current_user);
-            update_market_info(socket, current_user);
         }
     });
 
@@ -2176,7 +2238,6 @@ io.on('connection', async socket => {
             online = true;
             socket.emit('log-message', 'hello ' + data.login);
             update_char_info(socket, current_user);
-            update_market_info(socket, current_user);
         }
     });
 
@@ -2198,7 +2259,6 @@ io.on('connection', async socket => {
                 msg.max_price = parseInt(msg.max_price);
             }
             await current_user.character.buy(pool, msg.tag, parseInt(msg.amount), parseInt(msg.money), msg.max_price);
-            update_market_info(socket, current_user);
             update_char_info(socket, current_user);
         }
     });
@@ -2210,8 +2270,13 @@ io.on('connection', async socket => {
                 console.log('sell message', msg);
             }
             await current_user.character.sell(pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
-            update_market_info(socket, current_user);
             update_char_info(socket, current_user);
+        }
+    });
+
+    socket.on('new-message', async msg => {
+        if (online) {
+            send_message(socket, msg + '', current_user)
         }
     });
 });
@@ -2220,5 +2285,35 @@ http.listen(port, () => {
     console.log('listening on *:3000');
 });
 
-gameloop.setGameLoop(async delta => await world.update(pool), 2000);
+
+(async () => {
+    try {
+        var client = await pool.connect();
+        let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises']
+        await drop_tables(client, tables)
+        await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
+        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, cell_id int, user_id int, savings jsonb, stash jsonb, in_battle boolean)');
+        await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
+        await client.query('CREATE TABLE battles (id int PRIMARY KEY, ids int[], teams int[], positions int[])');
+        await client.query('CREATE TABLE worlds (x int, y int)');
+        await client.query('CREATE TABLE markets (id int PRIMARY KEY, data jsonb)');
+        await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, owner_id int, pop_id int)');
+        await client.query('CREATE TABLE market_orders (id int PRIMARY KEY, typ varchar(5), tag varchar(30), owner_id int, amount int, price int, market_id int)');
+        await client.query('CREATE TABLE agents (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb)')
+        await client.query('CREATE TABLE consumers (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb)')
+        await client.query('CREATE TABLE pops (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, race_tag varchar(50), ai_tag varchar(50))')
+        await client.query('CREATE TABLE enterprises (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, ai_tag varchar(50))')
+        await init_ids(client);
+        await client.end();
+        await world.init(pool, 1, 1);
+        var rat_trader = await world.create_monster(pool, Rat, 0);
+        rat_trader.savings.inc(1000);
+        await rat_trader.buy(pool, 'food', 1000, 1000);
+
+        console.log('database is ready');
+        gameloop.setGameLoop(async delta => await world.update(pool), 2000);
+    } catch (e) {
+        console.log(e);
+    }
+})();
 // setInterval(async () => await world.update(pool), 2000);

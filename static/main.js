@@ -176,6 +176,11 @@ $(function() {
         socket.emit('reg', {login: $('#login-r').val(), password: $('#password-r').val()});
     });
 
+    $('#send-message-frame').submit(e => {
+        e.preventDefault();
+        socket.emit('new-message', $('#message').val())
+    })
+
     $('#buy-form-con').submit(e => {
         e.preventDefault();
         socket.emit('buy', {tag: $('#buy-tag-select').val(),
@@ -284,13 +289,20 @@ $(function() {
         $('#game-log').append($('<p>').text(msg));
     });
 
+    socket.on('new-message', msg => {
+        if (msg != 'message-too-long')
+            $('#game-log').append($('<p>').text(msg.user + ' : ' + msg.msg));
+    })
+
     socket.on('char-info', msg => {
         $('#char-info').empty();
         $('#char-info').append($('<p>').text(`name: ${msg.name}`));
         $('#char-info').append($('<p>').text(`hp:${msg.hp}/${msg.max_hp}`));
         $('#char-info').append($('<p>').text(`exp: ${msg.exp}`));
         $('#char-info').append($('<p>').text(`savings: ${msg.savings.data['standard_money']}`));
-        $('#char-info').append($('<p>').text(`meat: ${msg.stash['meat']}`));
+        for (let i in msg.stash) {
+            $('#char-info').append($('<p>').text(`${i}: ${msg.stash[i]}`));
+        }
     });
 
     socket.on('market-data', data => {
