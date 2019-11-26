@@ -1140,7 +1140,7 @@ class World {
 
     async kill(pool, character) {
         character.is_dead = true;
-        if (character.is_player) {
+        if (character.data.is_player) {
             var user = this.users[character.user_id];
             await user.get_new_char(pool);
             this.chars[user.character.id] = user.character;
@@ -1331,7 +1331,7 @@ class Battle {
                 var character = world.chars[this.ids[i]];
                 // console.log(character);
                 // console.log(log)
-                if (character.is_player) {
+                if (character.data.is_player) {
                     log.forEach(log_entry => this.world.users[character.user_id].socket.emit('log-message', log_entry));
                 }
             }
@@ -1966,7 +1966,7 @@ class Character {
         await this.change_hp(pool, 1, false);
         await this.update_status(pool, false);
         await this.save_to_db(pool)
-        if (this.is_player) {
+        if (this.data.is_player) {
             var socket = this.world.users[this.user_id].socket;
         } else {
             var socket = null;
@@ -1998,7 +1998,7 @@ class Character {
     get_resists() {
         let res = this.data.base_resists;
         let res_e = this.equip.get_resists();
-        for (i of this.world.damage_types) {
+        for (let i of this.world.damage_types) {
             res[i] += res_e[i];
         }
         return res
@@ -2029,12 +2029,14 @@ class Character {
     async take_damage(pool, damage) {
         let res = this.get_resists();
         let total_damage = 0;
-        for (i of this.world.damage_types) {
-            let damage = Math.max(1, damage[i] - res[i]);
-            total_damage += damage;
-            this.update_status_after_damage(pool, i, damage, false);
-            await this.change_hp(pool, -damage, false);
+        for (let i of this.world.damage_types) {
+            let curr_damage = Math.max(1, damage[i] - res[i]);
+            total_damage += curr_damage;
+            this.update_status_after_damage(pool, i, curr_damage, false);
+            await this.change_hp(pool, -curr_damage, false);
         }
+        this.data.other.blood_covering = Math.min(this.data.other.blood_covering + 10, 100)
+        this.data.other.rage = Math.min(this.data.other.blood_covering + 10, 100)
         await this.save_hp_to_db(pool)
         return total_damage;
     }
@@ -2172,12 +2174,20 @@ class Equip {
         return 1;
     }
 
-    get_weapon_damage() {
+    get_weapon_damage(m) {
         if (this.data.right_hand == null) {
-            return {blunt: 3, pierce: 1, slice: 1};
+            var tmp = {blunt: 3, pierce: 1, slice: 1};
         } else {
-            return {blunt: 10, pierce: 1, slice: 1};
+            var tmp = {blunt: 10, pierce: 1, slice: 1};
         }
+        for (var i in tmp) {
+            tmp[i] = Math.floor(tmp[i] * m / 10);
+        }
+        return tmp
+    }
+
+    get_resists() {
+        return {blunt: 0, pierce: 0, slice: 0};
     }
 }
 

@@ -76,7 +76,7 @@ class CharacterImage {
             blood_3: 'apu_blood_3',
             blood_4: 'apu_blood_4'
         };
-        this.stats = {rage: 100, blood: 0, power: 0};
+        this.stats = {rage: 0, blood: 0, power: 0};
         this.w = 400;
         this.h = 274;
         this.pupils_phi = -Math.PI / 2
@@ -149,8 +149,6 @@ class CharacterImage {
         else {
             draw_image(ctx, images[this.images['mouth_0']], 0, 0, this.w, this.h);
         }
-        this.stats.rage = this.stats.rage;
-        this.stats.blood = (this.stats.blood + 1) % 100
     }
 }
 
@@ -460,11 +458,19 @@ $(function() {
         $('#char-info').empty();
         $('#char-info').append($('<p>').text(`name: ${msg.name}`));
         $('#char-info').append($('<p>').text(`hp:${msg.hp}/${msg.max_hp}`));
-        $('#char-info').append($('<p>').text(`exp: ${msg.exp}`));
+        $('#char-info').append($('<p>').text(`exp: ${msg.data.exp}`));
         $('#char-info').append($('<p>').text(`savings: ${msg.savings.data['standard_money']}`));
+        for (let i in msg.data.stats) {
+            $('#char-info').append($('<p>').text(`${i}: ${msg.data.stats[i]}`));
+        };
+        $('#char_info').append($('<p>').text(`${msg.data.other}`));
+        for (let i in msg.data.other) {
+            $('#char-info').append($('<p>').text(`${i}: ${msg.data.other[i]}`));
+        }
+        char_image.update(msg.data.other.rage, msg.data.other.blood_covering, msg.data.stats.pow)
         for (let i in msg.stash) {
             $('#char-info').append($('<p>').text(`${i}: ${msg.stash[i]}`));
-        }
+        };
     });
 
     socket.on('market-data', data => {
