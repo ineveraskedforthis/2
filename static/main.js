@@ -1,12 +1,164 @@
 'use strict'
+var images = {}
+
+function load_image(s, callback) {
+    var tmp = new Image();
+    tmp.src = s;
+    tmp.onload = callback
+    return tmp
+}
+
+var loaded = Array.apply(null, Array(12)).map(() => 0)
+
+function check_loading() {
+    let f = 1;
+    for (let i = 0; i < loaded.length; i++){
+        f *= loaded[i];
+    }
+    return f
+}
+
+images['apu_eyes_0'] = load_image('static/img/apu_base_eyes.png', () => loaded[0] = 1);
+images['apu_blood_eyes_0'] = load_image('static/img/apu_eyes_blood.png', () => loaded[1] = 1);
+images['apu_pupils_0'] = load_image('static/img/apu_pupils_0.png', () => loaded[2] = 1);
+images['apu_head_base_0'] = load_image('static/img/apu_head_base.png', () => loaded[3] = 1);
+images['apu_mouth_0'] = load_image('static/img/apu_mouth_0.png', () => loaded[4] = 1);
+images['apu_mouth_1'] = load_image('static/img/apu_mouth_1.png', () => loaded[5] = 1);
+images['apu_wrinkles_0'] = load_image('static/img/apu_wrinkles.png', () => loaded[6] = 1);
+images['apu_blood_0'] = load_image('static/img/apu_blood_0.png', () => loaded[7] = 1);
+images['apu_blood_1'] = load_image('static/img/apu_blood_1.png', () => loaded[8] = 1);
+images['apu_blood_2'] = load_image('static/img/apu_blood_2.png', () => loaded[9] = 1);
+images['apu_blood_3'] = load_image('static/img/apu_blood_3.png', () => loaded[10] = 1);
+images['apu_blood_4'] = load_image('static/img/apu_blood_4.png', () => loaded[11] = 1);
+
+
+function draw_image(context, image, x, y, w, h) {
+    context.drawImage(image, x, y, w, h)
+}
+
+
+
+function change_image_data(image_data, f) {
+    for (var i = 0; i < image_data.data.length; i += 4) {
+        let r = image_data.data[i + 0];
+        let g = image_data.data[i + 1];
+        let b = image_data.data[i + 2];
+        let a = image_data.data[i + 3];
+        var result = f([r, g, b, a]);
+        for (var j = 0; i < 4; i++) {
+            image_data.data[i + j] = result[j]
+        }
+    }
+    return image_data
+}
+
+function change_alpha(l, a) {
+    l[3] = Math.max(Math.min(Math.floor(l[3] * a), 255), 0)
+    return l
+}
+
+class CharacterImage {
+    constructor(canvas, tmp_canvas) {
+        this.canvas = canvas.get(0);
+        this.tmp_canvas = tmp_canvas.get(0);
+        this.draw_order = ['eyes', 'blood_eyes', 'pupils', 'head', 'mouth', 'wrinkles'];
+        this.images = {
+            head: 'apu_head_base_0', 
+            eyes: 'apu_eyes_0', 
+            blood_eyes: 'apu_blood_eyes_0', 
+            pupils: 'apu_pupils_0',
+            mouth_1: 'apu_mouth_1',
+            mouth_0: 'apu_mouth_0',
+            wrinkles: 'apu_wrinkles_0',
+            blood_0: 'apu_blood_0',
+            blood_1: 'apu_blood_1',
+            blood_2: 'apu_blood_2',
+            blood_3: 'apu_blood_3',
+            blood_4: 'apu_blood_4'
+        };
+        this.stats = {rage: 100, blood: 0, power: 0};
+        this.w = 400;
+        this.h = 274;
+        this.pupils_phi = -Math.PI / 2
+        this.pupils_rad = 14
+    }
+
+    update(rage, blood, power) {
+        this.stats.rage = rage;
+        this.stats.blood = blood;
+        this.stats.power = power;
+    }
+
+    draw() {
+        var ctx = this.canvas.getContext('2d');
+        var tmp = this.tmp_canvas.getContext('2d');
+        ctx.clearRect(0, 0, 400, 400);
+        draw_image(ctx, images[this.images['eyes']], 0, 0, this.w, this.h);
+        tmp.clearRect(0, 0, 400, 400);
+        draw_image(tmp, images[this.images['blood_eyes']], 0, 0, this.w, this.h);
+        var image_data = tmp.getImageData(0, 0, this.tmp_canvas.width, this.tmp_canvas.height);
+        var rage = this.stats.rage;
+        for (var i = 3; i < image_data.data.length; i+=4) {
+            image_data.data[i] = Math.floor(image_data.data[i] * rage / 100)
+        }
+        tmp.putImageData(image_data, 0, 0);
+        ctx.drawImage(this.tmp_canvas, 0, 0)
+
+        if (rage > 50) {
+            let x = Math.cos(this.pupils_phi) * this.pupils_rad * 1.5 - 10;
+            let y = Math.sin(this.pupils_phi) * this.pupils_rad * 0.5 - 10;
+            draw_image(ctx, images[this.images['pupils']], x, y, this.w, this.h);
+            this.pupils_phi += Math.PI / 16;
+        }
+        else {
+            draw_image(ctx, images[this.images['pupils']], 0, 0, this.w, this.h);
+        }
+
+        draw_image(ctx, images[this.images['head']], 0, 0, this.w, this.h);
+        
+        let tmp_blood = this.stats.blood;
+        let c = 0;
+        while (tmp_blood > 0 && c <= 4) {
+            tmp.clearRect(0, 0, 400, 400);
+            draw_image(tmp, images[this.images['blood_' + c]], 0, 0, this.w, this.h)
+            if (tmp_blood < 20) {
+                var image_data = tmp.getImageData(0, 0, this.tmp_canvas.width, this.tmp_canvas.height);
+                for (var i = 3; i < image_data.data.length; i+=4) {
+                    image_data.data[i] = Math.floor(image_data.data[i] * tmp_blood / 20)
+                }
+                tmp.putImageData(image_data, 0, 0);
+            }
+            ctx.drawImage(this.tmp_canvas, 0, 0);
+            tmp_blood -= 20;
+            c += 1;
+        }
+
+        tmp.clearRect(0, 0, 400, 400);
+        draw_image(tmp, images[this.images['wrinkles']], 0, 0, this.w, this.h);
+        var image_data = tmp.getImageData(0, 0, this.tmp_canvas.width, this.tmp_canvas.height);
+        var rage = this.stats.rage;
+        for (var i = 3; i < image_data.data.length; i+=4) {
+            image_data.data[i] = Math.floor(image_data.data[i] * rage / 100)
+        }
+        tmp.putImageData(image_data, 0, 0);
+        ctx.drawImage(this.tmp_canvas, 0, 0);
+
+        if (rage > 80) {
+            draw_image(ctx, images[this.images['mouth_1']], 0, 0, this.w, this.h);
+        }
+        else {
+            draw_image(ctx, images[this.images['mouth_0']], 0, 0, this.w, this.h);
+        }
+        this.stats.rage = this.stats.rage;
+        this.stats.blood = (this.stats.blood + 1) % 100
+    }
+}
 
 class GameField {
-    constructor(canvas, x, y) {
+    constructor(canvas) {
         this.canvas = canvas.get(0);
         this.hex_side = 20;
         this.camera = [-50, -200];
-        this.x = x;
-        this.y = y;
         this.hovered = null;
         this.selected = null;
     }
@@ -128,8 +280,18 @@ function get_pos_in_canvas(canvas, event) {
 $(function() {
     var socket = io();
     var selected = null;
-    var game_field = new GameField($('#game-field'), 4, 4);
+    var game_field = new GameField($('#game-field'));
     var market_table = new MarketTable($('#market'));
+    var char_image = new CharacterImage($('#char-image'), $('#tmp-canvas'));
+
+    function draw(tmp) {
+        if (check_loading()) {
+            char_image.draw()
+        } 
+        window.requestAnimationFrame(draw);
+    }
+
+    window.requestAnimationFrame(draw);
     market_table.update();
     var prev_mouse_x = null;
     var prev_mouse_y = null;
@@ -153,8 +315,8 @@ $(function() {
     $('#game-field').mousemove(event => {
         if (is_dragging) {
             if (prev_mouse_x != null) {
-                dx = event.pageX - prev_mouse_x;
-                dy = event.pageY - prev_mouse_y;
+                var dx = event.pageX - prev_mouse_x;
+                var dy = event.pageY - prev_mouse_y;
                 game_field.move(dx, dy);
             }
             prev_mouse_x = event.pageX;

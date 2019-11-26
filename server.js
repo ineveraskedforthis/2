@@ -24,7 +24,7 @@ const logging = false;
 const logging_db_queries = false;
 
 var new_user_query = 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)';
-var new_char_query = 'INSERT INTO chars (name, hp, max_hp, exp, level, id, is_player, cell_id, user_id, savings, stash, in_battle) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)';
+var new_char_query = 'INSERT INTO chars (id, user_id, cell_id, name, hp, max_hp, savings, stash, data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
 var init_id_query = 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)';
 var new_battle_query = 'INSERT INTO battles (id, ids, teams, positions) VALUES ($1, $2, $3, $4)';
 var new_cell_query = 'INSERT INTO cells (id, x, y, name, market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
@@ -39,7 +39,7 @@ var insert_enterprise_query = 'INSERT INTO enterprises (id, cell_id, name, savin
 var update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
 var update_market_order_query = 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)';
 var update_market_query = 'UPDATE markets SET data = ($2) WHERE id = ($1)';
-var update_char_query = 'UPDATE chars SET hp = ($2), max_hp = ($3), exp = ($4), level = ($5), cell_id = ($6), savings = ($7), stash = ($8), in_battle = ($9) WHERE id = ($1)';
+var update_char_query = 'UPDATE chars SET cell_id = ($2), hp = ($3), max_hp = ($4), savings = ($5), stash = ($6), data = ($7) WHERE id = ($1)';
 var update_agent_query = 'UPDATE agents SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5) WHERE id = ($1)';
 var update_consumer_query = 'UPDATE consumers SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6) WHERE id = ($1)';
 var update_pop_query = 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), race_tag = ($7), ai_tag = ($8) WHERE id = ($1)';
@@ -52,7 +52,6 @@ var delete_char_query = 'DELETE FROM chars WHERE id = ($1)';
 var find_user_by_login_query = 'SELECT * FROM accounts WHERE login = ($1)';
 var select_char_by_id_query = 'SELECT * FROM chars WHERE id = ($1)';
 var set_hp_query = 'UPDATE chars SET hp = ($1) WHERE id = ($2)';
-var set_exp_query = 'UPDATE chars SET exp = ($1) WHERE id = ($2)';
 var set_id_query = 'UPDATE last_id SET last_id = ($2) WHERE id_type = ($1)';
 var get_id_query = 'SELECT * FROM last_id WHERE id_type = ($1)';
 var save_world_size_query = 'INSERT INTO worlds (x, y) VALUES ($1, $2)';
@@ -1042,6 +1041,42 @@ class World {
         this.battles = {}
         let pop = await this.create_pop(pool, 0, 0, 100, {'food': 1, 'clothes': 1}, 'pepe', 'random dudes', 100000)
         this.agents[pop.id] = pop
+        this.damage_types = new Set(['blunt', 'pierce', 'slice'])
+        this.base_stats = {
+            pepe: {
+                musculature: 10,
+                breathing: 10, 
+                coordination: 10, 
+                vis: 10, 
+                int: 10, 
+                tac: 0, 
+                mem: 10, 
+                pow: 10, 
+                tou: 10
+            },
+            rat: {
+                musculature: 1,
+                breathing: 1, 
+                coordination: 1, 
+                vis: 1, 
+                int: 1, 
+                tac: 0, 
+                mem: 1, 
+                pow: 1, 
+                tou: 1
+            }}
+        this.base_resists = {
+            pepe: {
+                blunt: 0,
+                pierce: 0,
+                slice: 0
+            },
+            rat: {
+                blunt: 0,
+                pierce: 0,
+                slice: 0
+            }
+        }
         await send_query(pool, save_world_size_query, [x, y])
     }
 
@@ -1136,12 +1171,12 @@ class World {
         var teams = [];
         for (var i = 0; i < attackers.length; i++) {
             ids.push(attackers[i].id);
-            attackers[i].in_battle = true;
+            await attackers[i].set(pool, 'in_battle', true);
             teams.push(0);
         }
         for (var i = 0; i < defenders.length; i++) {
             ids.push(defenders[i].id);
-            defenders[i].in_battle = true;
+            await defenders[i].set(pool, 'in_battle', true);
             teams.push(1);
         }
         var id = await battle.init(pool, world, ids, teams);
@@ -1358,7 +1393,7 @@ class Battle {
             if (this.teams[i] == team && !character.is_dead) {
                 await character.give_exp(pool, Math.floor(exp / n));
             }
-            character.in_battle = false;
+            await character.set(pool, 'in_battle', false);
         }
         var i = 0;
         while (this.teams[i] != team) {
@@ -1887,23 +1922,36 @@ class Character {
         this.world = world;
         this.name = name;
         if (user_id == -1) {
-            this.is_player = false;
+            var is_player = false;
         } else {
-            this.is_player = true;
+            var is_player = true;
         }
         this.hp = hp;
         this.max_hp = max_hp;
-        this.exp = exp;
-        this.level = level;
         this.id = id;
-        this.dead = false;
-        this.exp_reward = 5;
         this.equip = new Equip();
-        this.in_battle = false;
+        this.equip.right_hand = 'fist'
         this.stash = new Stash();
         this.savings = new Savings();
         this.user_id = user_id;
         this.cell_id = cell_id;
+        this.data = {
+            stats: this.world.base_stats.pepe,
+            base_resists: this.world.base_resists.pepe,
+            is_player: is_player,
+            exp: exp,
+            level: level,
+            exp_reward: 5,
+            dead: false,
+            in_battle: false,
+            status: {
+                stunned: 0
+            },
+            other: {
+                rage: 0,
+                blood_covering: 0
+            }
+        }
     }
 
     async init(pool, world, name, cell_id, user_id = -1) {
@@ -1915,7 +1963,9 @@ class Character {
     }
 
     async update(pool) {
-        this.change_hp(pool, 1);
+        await this.change_hp(pool, 1, false);
+        await this.update_status(pool, false);
+        await this.save_to_db(pool)
         if (this.is_player) {
             var socket = this.world.users[this.user_id].socket;
         } else {
@@ -1927,24 +1977,69 @@ class Character {
     }
 
     get_exp_reward() {
-        return this.exp_reward;
+        return this.data.exp_reward;
     }
 
     get_range() {
         return this.equip.get_weapon_range();
     }
 
+    async set(pool, nani, value) {
+        this.data.nani = value
+        await this.save_to_db(pool)
+    }
+
     async attack(pool, target) {
-        var damage = 5;
-        await target.take_damage(pool, damage);
-        return damage;
+        var damage = this.equip.get_weapon_damage(this.data.stats.musculature);
+        let total_damage = await target.take_damage(pool, damage);
+        return total_damage;
+    }
+
+    get_resists() {
+        let res = this.data.base_resists;
+        let res_e = this.equip.get_resists();
+        for (i of this.world.damage_types) {
+            res[i] += res_e[i];
+        }
+        return res
+    }
+
+    async stun(pool) {
+        this.data.status.stunned = 2
+    }
+
+    async update_status() {
+        for (let i of Object.keys(this.data.status)) {
+            let x = this.data.status[i];
+            this.data.status[i] = Math.max(x - 1, 0);
+        }
+    }
+
+    async update_status_after_damage(pool, type, x) {
+        if (type == 'blunt') {
+            if (x > 5) {
+                let d = Math.random();
+                if (d > 0.5) {
+                    await this.stun(pool)
+                }
+            }
+        }
     }
 
     async take_damage(pool, damage) {
-        await this.change_hp(pool, -damage);
+        let res = this.get_resists();
+        let total_damage = 0;
+        for (i of this.world.damage_types) {
+            let damage = Math.max(1, damage[i] - res[i]);
+            total_damage += damage;
+            this.update_status_after_damage(pool, i, damage, false);
+            await this.change_hp(pool, -damage, false);
+        }
+        await this.save_hp_to_db(pool)
+        return total_damage;
     }
 
-    async change_hp(pool, x) {
+    async change_hp(pool, x, save = true) {
         this.hp += x;
         if (this.hp > this.max_hp) {
             this.hp = this.max_hp;
@@ -1953,16 +2048,24 @@ class Character {
             this.hp = 0;
             await this.world.kill(pool, this);
         }
-        await send_query(pool, set_hp_query, [this.hp, this.id]);
+        await this.save_hp_to_db(pool, save);
     }
 
-    async give_exp(pool, x) {
-        await this.set_exp(pool, this.exp + x);
+    async save_hp_to_db(pool, save = true) {
+        if (save) {
+            await send_query(pool, set_hp_query, [this.hp, this.id]);
+        }
     }
 
-    async set_exp(pool, x) {
+    async give_exp(pool, x, save = true) {
+        await this.set_exp(pool, this.exp + x, save);
+    }
+
+    async set_exp(pool, x, save = true) {
         this.exp = x;
-        await send_query(pool, set_exp_query, [x, this.id]);
+        if (save) {
+            await this.save_to_db(pool);
+        }
     }
 
     async transfer(pool, target, tag, x) {
@@ -2002,37 +2105,34 @@ class Character {
         this.name = data.name;
         this.hp = data.hp;
         this.max_hp = data.max_hp;
-        this.exp = data.exp;
-        this.level = data.level;
         this.user_id = data.user_id;
         this.savings = new Savings();
         this.savings.load_from_json(data.savings);
         this.stash = new Stash();
         this.stash.load_from_json(data.stash);
-        this.is_player = (this.user_id != -1);
         this.cell_id = data.cell_id;
-        this.dead = (this.hp == 0);
-        this.in_battle = data.in_battle;
         this.Equip = new Equip();
+        this.data = data.data
     }
 
     get_json() {
-        return {name: this.name,
+        return {
+                name: this.name,
                 hp: this.hp,
                 max_hp: this.max_hp,
                 savings: this.savings.get_json(),
                 stash: this.stash.get_json(),
-                level: this.level,
-                exp: this.exp};
+                data: this.data
+                };
     }
 
     async load_to_db(pool) {
         // console.log(pool);
-        await send_query(pool, new_char_query, [this.name, this.hp, this.max_hp, this.exp, this.level, this.id, this.is_player, this.cell_id, this.user_id, this.savings.get_json(), this.stash.get_json(), this.in_battle]);
+        await send_query(pool, new_char_query, [this.id, this.user_id, this.cell_id, this.name, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.data]);
     }
 
     async save_to_db(pool) {
-        await send_query(pool, update_char_query, [this.id, this.hp, this.max_hp, this.exp, this.level, this.cell_id, this.savings.get_json(), this.stash.get_json(), this.in_battle]);
+        await send_query(pool, update_char_query, [this.id, this.cell_id, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.data]);
     }
 
     async delete_from_db(pool) {
@@ -2048,7 +2148,10 @@ class Rat extends Character {
             name = 'rat ' + id;
         }
         this.init_base_values(world, id, name, 10, 10, 0, 0, cell_id);
+        this.data.stats = this.world.base_stats.rat
+        this.data.base_resists = this.world.base_resists.rat
         await this.equip.init(pool, world, id);
+        this.equip.right_hand = 'bite'
         this.stash.inc('food', 1);
         await this.load_to_db(pool);
         return id;
@@ -2059,10 +2162,22 @@ class Rat extends Character {
 class Equip {
     async init(pool, world, id){
         this.id = id;
+        this.data = {
+            right_hand: null,
+        }
+        this.world = world
     }
 
     get_weapon_range() {
         return 1;
+    }
+
+    get_weapon_damage() {
+        if (this.data.right_hand == null) {
+            return {blunt: 3, pierce: 1, slice: 1};
+        } else {
+            return {blunt: 10, pierce: 1, slice: 1};
+        }
     }
 }
 
@@ -2292,7 +2407,7 @@ http.listen(port, () => {
         let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises']
         await drop_tables(client, tables)
         await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
-        await client.query('CREATE TABLE chars (name varchar(200), hp int, max_hp int, exp int, level int, id int PRIMARY KEY, is_player boolean, cell_id int, user_id int, savings jsonb, stash jsonb, in_battle boolean)');
+        await client.query('CREATE TABLE chars (id int PRIMARY KEY, user_id int, cell_id int, name varchar(200), hp int, max_hp int, savings jsonb, stash jsonb, data jsonb)');
         await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
         await client.query('CREATE TABLE battles (id int PRIMARY KEY, ids int[], teams int[], positions int[])');
         await client.query('CREATE TABLE worlds (x int, y int)');
