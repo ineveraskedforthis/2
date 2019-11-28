@@ -159,6 +159,8 @@ class GameField {
         this.camera = [-50, -200];
         this.hovered = null;
         this.selected = null;
+        this.x = 10;
+        this.y = 10;
     }
 
     draw() {
@@ -279,6 +281,7 @@ $(function() {
     var socket = io();
     var selected = null;
     var game_field = new GameField($('#game-field'));
+    game_field.draw()
     var market_table = new MarketTable($('#market'));
     var char_image = new CharacterImage($('#char-image'), $('#tmp-canvas'));
 
@@ -286,6 +289,7 @@ $(function() {
         if (check_loading()) {
             char_image.draw()
         } 
+        game_field.draw();
         window.requestAnimationFrame(draw);
     }
 
@@ -323,7 +327,6 @@ $(function() {
         var mouse_pos = get_pos_in_canvas(game_field.canvas, event);
         var hovered_hex = game_field.get_hex(mouse_pos.x, mouse_pos.y);
         game_field.hover_hex(hovered_hex[0], hovered_hex[1]);
-        game_field.draw();
     });
 
     $('#login-frame').submit(e => {
@@ -459,6 +462,8 @@ $(function() {
         $('#char-info').append($('<p>').text(`name: ${msg.name}`));
         $('#char-info').append($('<p>').text(`hp:${msg.hp}/${msg.max_hp}`));
         $('#char-info').append($('<p>').text(`exp: ${msg.data.exp}`));
+        $('#char-info').append($('<p>').text(`level: ${msg.data.level}`));
+        $('#char-info').append($('<p>').text(`skill points: ${msg.data.skill_points}`));
         $('#char-info').append($('<p>').text(`savings: ${msg.savings.data['standard_money']}`));
         for (let i in msg.data.stats) {
             $('#char-info').append($('<p>').text(`${i}: ${msg.data.stats[i]}`));

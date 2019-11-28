@@ -23,8 +23,11 @@ var salt = process.env.SALT;
 const logging = false;
 const logging_db_queries = false;
 
+var MESSAGES = [];
+var MESSAGE_ID = 0;
+
 var new_user_query = 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)';
-var new_char_query = 'INSERT INTO chars (id, user_id, cell_id, name, hp, max_hp, savings, stash, data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)';
+var new_char_query = 'INSERT INTO chars (id, user_id, cell_id, name, hp, max_hp, savings, stash, equip, data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
 var init_id_query = 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)';
 var new_battle_query = 'INSERT INTO battles (id, ids, teams, positions) VALUES ($1, $2, $3, $4)';
 var new_cell_query = 'INSERT INTO cells (id, x, y, name, market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7)';
@@ -39,7 +42,7 @@ var insert_enterprise_query = 'INSERT INTO enterprises (id, cell_id, name, savin
 var update_battle_query = 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4) WHERE id = ($1)';
 var update_market_order_query = 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)';
 var update_market_query = 'UPDATE markets SET data = ($2) WHERE id = ($1)';
-var update_char_query = 'UPDATE chars SET cell_id = ($2), hp = ($3), max_hp = ($4), savings = ($5), stash = ($6), data = ($7) WHERE id = ($1)';
+var update_char_query = 'UPDATE chars SET cell_id = ($2), hp = ($3), max_hp = ($4), savings = ($5), stash = ($6), equip = ($7), data = ($8) WHERE id = ($1)';
 var update_agent_query = 'UPDATE agents SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5) WHERE id = ($1)';
 var update_consumer_query = 'UPDATE consumers SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6) WHERE id = ($1)';
 var update_pop_query = 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), race_tag = ($7), ai_tag = ($8) WHERE id = ($1)';
@@ -60,6 +63,11 @@ var save_world_size_query = 'INSERT INTO worlds (x, y) VALUES ($1, $2)';
 
 function sum(a) {
     return a.reduce((x, y) => x + y, 0);
+}
+
+
+function get_next_nevel_req(l) {
+    return l * l * 10
 }
 
 
@@ -366,6 +374,43 @@ class Stash {
         }
     }
 }
+
+class Equip {
+    constructor() {
+        this.data = {
+            right_hand: null
+        }
+    }
+
+    get_weapon_range() {
+        return 1;
+    }
+
+    get_weapon_damage(m) {
+        if (this.data.right_hand == null) {
+            var tmp = {blunt: 3, pierce: 1, slice: 1};
+        } else {
+            var tmp = {blunt: 10, pierce: 1, slice: 1};
+        }
+        for (var i in tmp) {
+            tmp[i] = Math.floor(tmp[i] * m / 10);
+        }
+        return tmp
+    }
+
+    get_resists() {
+        return {blunt: 0, pierce: 0, slice: 0};
+    }
+
+    get_json() {
+        return this.data;
+    }
+
+    load_from_json(json) {
+        this.data = json;
+    }
+}
+
 
 
 class MarketOrder {
@@ -1930,7 +1975,7 @@ class Character {
         this.max_hp = max_hp;
         this.id = id;
         this.equip = new Equip();
-        this.equip.right_hand = 'fist'
+        this.equip.data.right_hand = 'fist';
         this.stash = new Stash();
         this.savings = new Savings();
         this.user_id = user_id;
@@ -1941,12 +1986,14 @@ class Character {
             is_player: is_player,
             exp: exp,
             level: level,
+            skill_points: 0,
             exp_reward: 5,
             dead: false,
             in_battle: false,
             status: {
                 stunned: 0
             },
+            skills: {},
             other: {
                 rage: 0,
                 blood_covering: 0
@@ -1957,7 +2004,6 @@ class Character {
     async init(pool, world, name, cell_id, user_id = -1) {
         var id = await world.get_new_id(pool, 'char_id');
         this.init_base_values(world, id, name, 100, 100, 0, 0, cell_id, user_id);
-        await this.equip.init(pool, world, id);
         await this.load_to_db(pool);
         return id;
     }
@@ -2060,11 +2106,25 @@ class Character {
     }
 
     async give_exp(pool, x, save = true) {
-        await this.set_exp(pool, this.exp + x, save);
+        await this.set_exp(pool, this.data.exp + x, save);
     }
 
     async set_exp(pool, x, save = true) {
-        this.exp = x;
+        this.data.exp = x;
+        if (this.data.exp >= get_next_nevel_req(this.data.level)) {
+            await this.level_up(pool, false);
+        }
+        if (save) {
+            await this.save_to_db(pool);
+        }
+    }
+
+    async level_up(pool, save) {
+        while (this.data.exp >= get_next_nevel_req(this.data.level)) {
+            this.data.exp -= get_next_nevel_req(this.data.level);
+            this.data.level += 1;
+            this.data.skill_points += 1;
+        }
         if (save) {
             await this.save_to_db(pool);
         }
@@ -2113,28 +2173,30 @@ class Character {
         this.stash = new Stash();
         this.stash.load_from_json(data.stash);
         this.cell_id = data.cell_id;
-        this.Equip = new Equip();
+        this.equip = new Equip();
+        this.equip.load_from_json(data.equip)
         this.data = data.data
     }
 
     get_json() {
         return {
-                name: this.name,
-                hp: this.hp,
-                max_hp: this.max_hp,
-                savings: this.savings.get_json(),
-                stash: this.stash.get_json(),
-                data: this.data
-                };
+            name: this.name,
+            hp: this.hp,
+            max_hp: this.max_hp,
+            savings: this.savings.get_json(),
+            stash: this.stash.get_json(),
+            equip: this.equip.get_json(),
+            data: this.data
+        };
     }
 
     async load_to_db(pool) {
         // console.log(pool);
-        await send_query(pool, new_char_query, [this.id, this.user_id, this.cell_id, this.name, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.data]);
+        await send_query(pool, new_char_query, [this.id, this.user_id, this.cell_id, this.name, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
     }
 
     async save_to_db(pool) {
-        await send_query(pool, update_char_query, [this.id, this.cell_id, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.data]);
+        await send_query(pool, update_char_query, [this.id, this.cell_id, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
     }
 
     async delete_from_db(pool) {
@@ -2152,45 +2214,12 @@ class Rat extends Character {
         this.init_base_values(world, id, name, 10, 10, 0, 0, cell_id);
         this.data.stats = this.world.base_stats.rat
         this.data.base_resists = this.world.base_resists.rat
-        await this.equip.init(pool, world, id);
-        this.equip.right_hand = 'bite'
+        this.equip.data.right_hand = 'bite'
         this.stash.inc('food', 1);
         await this.load_to_db(pool);
         return id;
     }
 }
-
-
-class Equip {
-    async init(pool, world, id){
-        this.id = id;
-        this.data = {
-            right_hand: null,
-        }
-        this.world = world
-    }
-
-    get_weapon_range() {
-        return 1;
-    }
-
-    get_weapon_damage(m) {
-        if (this.data.right_hand == null) {
-            var tmp = {blunt: 3, pierce: 1, slice: 1};
-        } else {
-            var tmp = {blunt: 10, pierce: 1, slice: 1};
-        }
-        for (var i in tmp) {
-            tmp[i] = Math.floor(tmp[i] * m / 10);
-        }
-        return tmp
-    }
-
-    get_resists() {
-        return {blunt: 0, pierce: 0, slice: 0};
-    }
-}
-
 
 class User {
     async init(pool, world, login, hash) {
@@ -2293,7 +2322,16 @@ function send_message(socket, msg, user) {
         return
     }
     // msg = validator.escape(msg)
-    io.emit('new-message', {msg: msg, user: user.login})
+
+    var message = {id: MESSAGE_ID, msg: msg, user: 'аноньчик'};
+    if (user != null) {
+        message.user = user.login;
+    }
+    MESSAGES.push(message);
+    if (MESSAGES.length > 50) {
+        MESSAGES.shift()
+    }
+    io.emit('new-message', message)
 }
 
 function validate_creds(data) {
@@ -2318,6 +2356,9 @@ io.on('connection', async socket => {
     var current_user = null;
     socket.emit('users-online', world.users_online);
     socket.emit('tags', world.TAGS);
+    for (var i of MESSAGES) {
+        socket.emit('new-message', i);
+    }
 
     socket.on('disconnect', () => {
         console.log('user disconnected');
@@ -2400,9 +2441,7 @@ io.on('connection', async socket => {
     });
 
     socket.on('new-message', async msg => {
-        if (online) {
-            send_message(socket, msg + '', current_user)
-        }
+        send_message(socket, msg + '', current_user)
     });
 });
 
@@ -2417,7 +2456,7 @@ http.listen(port, () => {
         let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises']
         await drop_tables(client, tables)
         await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
-        await client.query('CREATE TABLE chars (id int PRIMARY KEY, user_id int, cell_id int, name varchar(200), hp int, max_hp int, savings jsonb, stash jsonb, data jsonb)');
+        await client.query('CREATE TABLE chars (id int PRIMARY KEY, user_id int, cell_id int, name varchar(200), hp int, max_hp int, savings jsonb, stash jsonb, equip jsonb, data jsonb)');
         await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
         await client.query('CREATE TABLE battles (id int PRIMARY KEY, ids int[], teams int[], positions int[])');
         await client.query('CREATE TABLE worlds (x int, y int)');

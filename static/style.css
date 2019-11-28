@@ -31,6 +31,7 @@ li:hover {
     background: red;
     height: 500px;
     border:1px solid black;
+    overflow: auto;
 }
 #users-list {
     background: red;
