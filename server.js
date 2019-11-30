@@ -26,6 +26,13 @@ const logging_db_queries = false;
 var MESSAGES = [];
 var MESSAGE_ID = 0;
 
+var SKILLS = {};
+function add_skill(tag, max_level, req_level = 0, req_skills = null) {
+    SKILLS[tag] = {tag: tag, max_level: max_level, req_level: req_level, req_skills: req_skills};
+}
+add_skill('warrior_training', 3);
+add_skill('mage_training', 3);
+
 var new_user_query = 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)';
 var new_char_query = 'INSERT INTO chars (id, user_id, cell_id, name, hp, max_hp, savings, stash, equip, data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
 var init_id_query = 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)';
@@ -1088,7 +1095,7 @@ class World {
         this.agents[pop.id] = pop
         this.damage_types = new Set(['blunt', 'pierce', 'slice'])
         this.base_stats = {
-            pepe: {
+            apu: {
                 musculature: 10,
                 breathing: 10, 
                 coordination: 10, 
@@ -1132,7 +1139,8 @@ class World {
         for (var i in this.chars) {
             await this.chars[i].update(pool);
         }
-        update_market_info(this.map.cells[0][0])
+        update_market_info(this.map.cells[0][0]);
+        update_user_list();
     }
 
     get_cell(x, y) {
@@ -1981,7 +1989,7 @@ class Character {
         this.user_id = user_id;
         this.cell_id = cell_id;
         this.data = {
-            stats: this.world.base_stats.pepe,
+            stats: this.world.base_stats.apu,
             base_resists: this.world.base_resists.pepe,
             is_player: is_player,
             exp: exp,
@@ -2033,6 +2041,29 @@ class Character {
     async set(pool, nani, value) {
         this.data.nani = value
         await this.save_to_db(pool)
+    }
+
+    async add_skill(pool, skill, save = true) {
+        if (this.data.skill_points == 0) {
+            return
+        }
+        if (skill in this.data.skills) {
+            if (SKILLS[skill].max_level <= this.data.skills[skill]) {
+                return
+            }
+            this.data.skills[skill] += 1;
+            this.data.skill_points -= 1;
+            await this.update_stats(pool, false);
+        } else {
+            this.data.skills[skill] = 1;
+            this.data.skill_points -= 1;
+            await this.update_stats(pool, false);
+        }
+        this.save_to_db(pool, save)
+    }
+
+    async update_stats(pool, save) {
+        this.save_to_db(pool, save);
     }
 
     async attack(pool, target) {
@@ -2195,8 +2226,10 @@ class Character {
         await send_query(pool, new_char_query, [this.id, this.user_id, this.cell_id, this.name, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
     }
 
-    async save_to_db(pool) {
-        await send_query(pool, update_char_query, [this.id, this.cell_id, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
+    async save_to_db(pool, save) {
+        if (save) {
+            await send_query(pool, update_char_query, [this.id, this.cell_id, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
+        }
     }
 
     async delete_from_db(pool) {
@@ -2300,7 +2333,7 @@ function new_user_online(io, world, login) {
 function user_disconnects(io, world, login) {
     var i = world.users_online.indexOf(login);
     world.users_online.splice(i, 1);
-    io.emit('users-online', world.users_online);
+    update_user_list();
 }
 
 function update_char_info(socket, user) {
@@ -2314,6 +2347,10 @@ function update_market_info(cell) {
         console.log(data);
     }
     io.emit('market-data', data);
+}
+
+function update_user_list(){
+    io.emit('users-online', world.users_online);
 }
 
 function send_message(socket, msg, user) {
@@ -2354,8 +2391,8 @@ io.on('connection', async socket => {
     console.log('a user connected');
     var online = false;
     var current_user = null;
-    socket.emit('users-online', world.users_online);
     socket.emit('tags', world.TAGS);
+    socket.emit('skill-tree', SKILLS);
     for (var i of MESSAGES) {
         socket.emit('new-message', i);
     }
@@ -2436,6 +2473,13 @@ io.on('connection', async socket => {
                 console.log('sell message', msg);
             }
             await current_user.character.sell(pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
+            update_char_info(socket, current_user);
+        }
+    });
+
+    socket.on('up-skill', async msg => {
+        if (msg in SKILLS && current_user != null) {
+            await current_user.character.add_skill(pool, msg + '');
             update_char_info(socket, current_user);
         }
     });

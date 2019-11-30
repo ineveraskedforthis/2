@@ -269,6 +269,56 @@ class MarketTable {
 
 }
 
+class SkillTree {
+    constructor(container, socket) {
+        this.data = {};
+        this.container = container;
+        this.table = $('<table>');
+        this.socket = socket;
+        this.levels = null;
+    }
+
+    draw() {
+        this.container.empty();
+        this.container.append(this.table);
+    }
+
+    update(data = {}, levels = {}) {
+        this.data = data;
+        this.levels = levels;
+        this.table = $('<table>');
+        var header = this.populate_row($('<tr>'), ['skill', 'desc', 'button', 'skill_level']);
+        this.table.append(header);
+        for (var i in this.data) {
+            var row = $('<tr>');
+            var skill = this.data[i];
+            row.append($('<td>').text(skill.tag));
+            row.append($('<td>').text('required level ' + skill.req_level));
+            var tmp = $('<td>');
+            var tag = skill.tag;
+            ((tag) => tmp.append($('<button/>')
+                .text('+')
+                .click(() => send_skill_up_message(this.socket, tag))
+            ))(tag)
+            row.append(tmp);
+            tmp = 0;
+            if (skill.tag in levels) {
+                tmp = levels[skill.tag];
+            }
+            row.append($('<td>').text(tmp));
+            this.table.append(row);
+        }
+        this.draw();
+    }
+
+    populate_row(row, l) {
+        for (var i of l) {
+            row.append($('<td>').text(i));
+        }
+        return row;
+    }
+}
+
 function get_pos_in_canvas(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     return {
@@ -277,13 +327,20 @@ function get_pos_in_canvas(canvas, event) {
     };
 }
 
+function send_skill_up_message(socket, tag) {
+    console.log(tag)
+    socket.emit('up-skill', tag);
+}
+
 $(function() {
+    var SKILLS = {};
     var socket = io();
     var selected = null;
     var game_field = new GameField($('#game-field'));
     game_field.draw()
     var market_table = new MarketTable($('#market'));
     var char_image = new CharacterImage($('#char-image'), $('#tmp-canvas'));
+    var skill_tree = new SkillTree($('#skill-tree'), socket);
 
     function draw(tmp) {
         if (check_loading()) {
@@ -303,6 +360,7 @@ $(function() {
     $('#game-field').hide();
     $('#market').hide();
     $('#sell-form-con').hide();
+    $('#skill-tree').hide();
 
     $('#game-field').mousedown(() => {
         is_dragging = true;
@@ -381,6 +439,7 @@ $(function() {
         $('#game-field').hide();
         $('#game-log').show();
         $('#market').hide();
+        $('#skill-tree').hide();
     });
 
     $('#show-map').click(() => {
@@ -388,13 +447,22 @@ $(function() {
         $('#game-field').show();
         $('#game-log').hide();
         $('#market').hide();
+        $('#skill-tree').hide();
     });
 
     $('#show-market').click(() => {
         $('#game-field').hide();
         $('#game-log').hide();
         $('#market').show();
+        $('#skill-tree').hide();
     });
+
+    $('#show-skill-tree').click(() => {
+        $('#game-field').hide();
+        $('#game-log').hide();
+        $('#market').hide();
+        $('#skill-tree').show();
+    })
 
     $('#show-buy-form').click(() => {
         $('#buy-form-con').show();
@@ -437,14 +505,14 @@ $(function() {
         }
     });
 
-    socket.on('new-user-online', msg => {
-        $('#users-list').append($('<li>').text(msg));
-    });
+    // socket.on('new-user-online', msg => {
+    //     $('#users-list').append($('<li>').text(msg));
+    // });
 
     socket.on('users-online', msg => {
-        $('#users').empty();
+        $('#users-list').empty();
         msg.forEach(item => {
-            $('#users').append($('<li>').text(msg));
+            $('#users-list').append($('<li>').text(msg));
         })
     });
 
@@ -473,10 +541,15 @@ $(function() {
             $('#char-info').append($('<p>').text(`${i}: ${msg.data.other[i]}`));
         }
         char_image.update(msg.data.other.rage, msg.data.other.blood_covering, msg.data.stats.pow)
+        skill_tree.update(SKILLS, msg.data.skills);
         for (let i in msg.stash) {
             $('#char-info').append($('<p>').text(`${i}: ${msg.stash[i]}`));
         };
     });
+
+    socket.on('skill-tree', data => {
+        SKILLS = data;
+    })
 
     socket.on('market-data', data => {
         market_table.update(data);
