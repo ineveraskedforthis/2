@@ -2004,7 +2004,8 @@ class Character {
             skills: {},
             other: {
                 rage: 0,
-                blood_covering: 0
+                blood_covering: 0,
+                stress: 0
             }
         }
     }
@@ -2053,16 +2054,62 @@ class Character {
             }
             this.data.skills[skill] += 1;
             this.data.skill_points -= 1;
-            await this.update_stats(pool, false);
+            await this.update_stats(pool, undefined, false);
         } else {
             this.data.skills[skill] = 1;
             this.data.skill_points -= 1;
-            await this.update_stats(pool, false);
+            await this.update_stats(pool, undefined, false);
         }
         this.save_to_db(pool, save)
     }
 
-    async update_stats(pool, save) {
+    async update_stats(pool, race = 'apu', save = true) {
+        var tmp = {};
+        var base = this.world.base_stats[race];
+
+        tmp.musculature = base.musculature;
+        if ('warrior_training' in this.data.skills) {
+            tmp.musculature += this.data.skills['warrior_training'];
+        }
+        tmp.breathing = base.breathing;
+
+        tmp.coordination = base.coordination;
+        if ('warrior_training' in this.data.skills) {
+            if (this.data.skills['warrior_training'] > 2) {
+                tmp.coordination += 1;
+            }
+        }
+
+        tmp.vis = base.vis;
+
+        tmp.int = base.int;
+
+        tmp.tac = base.tac;
+        var flag_tier0_tactic = false
+        if ('warrior_training' in this.data.skills) {
+            if (this.data.skills['warrior_training'] >= 3) {
+                tmp.tac += 1;
+                flag_tier0_tactic = true
+            }
+        }
+        if ('mage_training' in this.data.skills && !flag_tier0_tactic) {
+            if (this.data.skills['mage_training'] >= 3) {
+                tmp.tac += 1;
+                flag_tier0_tactic = true
+            }
+        }
+
+        tmp.mem = base.mem;
+
+        tmp.pow = base.pow;
+        if ('mage_training' in this.data.skills) {
+            tmp.pow += this.data['mage_training']
+        }
+
+        tmp.tou = base.tou;
+
+        this.data.stats = tmp;
+
         this.save_to_db(pool, save);
     }
 
@@ -2205,8 +2252,8 @@ class Character {
         this.stash.load_from_json(data.stash);
         this.cell_id = data.cell_id;
         this.equip = new Equip();
-        this.equip.load_from_json(data.equip)
-        this.data = data.data
+        this.equip.load_from_json(data.equip);
+        this.data = data.data;
     }
 
     get_json() {
@@ -2226,7 +2273,7 @@ class Character {
         await send_query(pool, new_char_query, [this.id, this.user_id, this.cell_id, this.name, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
     }
 
-    async save_to_db(pool, save) {
+    async save_to_db(pool, save = true) {
         if (save) {
             await send_query(pool, update_char_query, [this.id, this.cell_id, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
         }
@@ -2326,13 +2373,15 @@ app.get('/', (req, res) => {
 
 
 function new_user_online(io, world, login) {
-    world.users_online.push(login);
-    io.emit('new-user-online', login);
+    world.users_online[login] = true;
+    update_user_list();
+    // io.emit('new-user-online', login);
 }
 
 function user_disconnects(io, world, login) {
-    var i = world.users_online.indexOf(login);
-    world.users_online.splice(i, 1);
+    if (login in world.users_online) {
+        world.users_online[login] = false;
+    }
     update_user_list();
 }
 
@@ -2350,7 +2399,13 @@ function update_market_info(cell) {
 }
 
 function update_user_list(){
-    io.emit('users-online', world.users_online);
+    var tmp = [];
+    for (var i in world.users_online) {
+        if (world.users_online[i]) {
+            tmp.push(i);
+        }
+    }
+    io.emit('users-online', tmp);
 }
 
 function send_message(socket, msg, user) {

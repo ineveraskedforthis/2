@@ -8,7 +8,7 @@ function load_image(s, callback) {
     return tmp
 }
 
-var loaded = Array.apply(null, Array(12)).map(() => 0)
+var loaded = Array.apply(null, Array(13)).map(() => 0)
 
 function check_loading() {
     let f = 1;
@@ -30,6 +30,7 @@ images['apu_blood_1'] = load_image('static/img/apu_blood_1.png', () => loaded[8]
 images['apu_blood_2'] = load_image('static/img/apu_blood_2.png', () => loaded[9] = 1);
 images['apu_blood_3'] = load_image('static/img/apu_blood_3.png', () => loaded[10] = 1);
 images['apu_blood_4'] = load_image('static/img/apu_blood_4.png', () => loaded[11] = 1);
+images['apu_pupils_1'] = load_image('static/img/apu_pupils_1.png', () => loaded[12] = 1)
 
 
 function draw_image(context, image, x, y, w, h) {
@@ -67,6 +68,7 @@ class CharacterImage {
             eyes: 'apu_eyes_0', 
             blood_eyes: 'apu_blood_eyes_0', 
             pupils: 'apu_pupils_0',
+            magic_pupils: 'apu_pupils_1',
             mouth_1: 'apu_mouth_1',
             mouth_0: 'apu_mouth_0',
             wrinkles: 'apu_wrinkles_0',
@@ -102,16 +104,27 @@ class CharacterImage {
             image_data.data[i] = Math.floor(image_data.data[i] * rage / 100)
         }
         tmp.putImageData(image_data, 0, 0);
-        ctx.drawImage(this.tmp_canvas, 0, 0)
+        ctx.drawImage(this.tmp_canvas, 0, 0);
+
+        var pow = this.stats.power;
+        tmp.clearRect(0, 0, 400, 400);
+        draw_image(tmp, images[this.images['magic_pupils']], 0, 0, this.w, this.h);
+        var image_data = tmp.getImageData(0, 0, this.tmp_canvas.width, this.tmp_canvas.height);
+        for (var i = 3; i < image_data.data.length; i+=4) {
+            image_data.data[i] = Math.floor(image_data.data[i] * pow / 100)
+        }
+        tmp.putImageData(image_data, 0, 0);
 
         if (rage > 50) {
             let x = Math.cos(this.pupils_phi) * this.pupils_rad * 1.5 - 10;
             let y = Math.sin(this.pupils_phi) * this.pupils_rad * 0.5 - 10;
             draw_image(ctx, images[this.images['pupils']], x, y, this.w, this.h);
+            ctx.drawImage(this.tmp_canvas, x, y);
             this.pupils_phi += Math.PI / 16;
         }
         else {
             draw_image(ctx, images[this.images['pupils']], 0, 0, this.w, this.h);
+            ctx.drawImage(this.tmp_canvas, 0, 0);
         }
 
         draw_image(ctx, images[this.images['head']], 0, 0, this.w, this.h);
@@ -517,7 +530,7 @@ $(function() {
     });
 
     socket.on('log-message', msg => {
-        $('#game-log').append($('<p>').text(msg));
+        $('#game-log').append($('<p>').text('[LOG] ' + msg));
     });
 
     socket.on('new-message', msg => {
