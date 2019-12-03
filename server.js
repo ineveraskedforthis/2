@@ -9,7 +9,7 @@ var gameloop = require('node-gameloop');
 const port = process.env.PORT || 3000;
 var path = require('path');
 var validator = require('validator');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcryptjs');
 //const saltRounds = 10;
 var {Pool} = require('pg');
 var stage = process.env.STAGE;
@@ -2159,7 +2159,7 @@ class Character {
             this.update_status_after_damage(pool, i, curr_damage, false);
             await this.change_hp(pool, -curr_damage, false);
         }
-        this.data.other.blood_covering = Math.min(this.data.other.blood_covering + 10, 100)
+        this.data.other.blood_covering = Math.min(this.data.other.blood_covering + 2, 100)
         this.data.other.rage = Math.min(this.data.other.blood_covering + 10, 100)
         await this.save_hp_to_db(pool)
         return total_damage;
