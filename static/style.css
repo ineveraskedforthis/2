@@ -23,25 +23,25 @@ li:hover {
     grid-template-columns: 3fr 1fr 1fr 1fr;
 }
 #game {
-    background: tomato;
+    background: azure;
     height: 500px;
     border: 1px solid black;
     overflow: auto;
 }
 #status {
-    background: tomato;
+    background: azure;
     height: 500px;
     border: 1px solid black;
     overflow: auto;
 }
 #users-list-container {
-    background: tomato;
+    background: azure;
     height: 500px;
     border: 1px solid black;
     overflow: auto;
 }
 #actions {
-    background: tomato;
+    background: azure;
     height: 500px;
     border: 1px solid black;
 }
