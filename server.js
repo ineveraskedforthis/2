@@ -109,7 +109,6 @@ function AI_fighter(world, index, ids, teams, positions) {
     return {action: action, target: action_target};
 }
 
-
 async function send_query(pool, query, args) {
     if (logging_db_queries) {
         console.log(query)
@@ -1137,7 +1136,9 @@ class World {
             await this.agents[i].update(pool);
         }
         for (var i in this.chars) {
-            await this.chars[i].update(pool);
+            if (!this.chars[i].data.dead) {
+                await this.chars[i].update(pool);
+            }
         }
         update_market_info(this.map.cells[0][0]);
         update_user_list();
@@ -2018,6 +2019,9 @@ class Character {
     }
 
     async update(pool) {
+        if (this.data.dead) {
+            return
+        }
         await this.change_hp(pool, 1, false);
         await this.update_status(pool, false);
         await this.save_to_db(pool)
