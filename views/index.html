@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8">
+	<title>Path of Pepe</title>
+	<link rel="stylesheet" type="text/css" href="static/reset.css">
+	<link rel="stylesheet" type="text/css" href="static/style.css">
+</head>
+<body>
+<div id="bg_fade"></div>
+
+
+	<div id="login_container">
+		<div id="select_box">
+			<div id="log_btn" class="selected">Я уже смешарик</div>
+			<div id="reg_btn" >Стать смешариком</div>
+		</div>
+		<div id='login-frame'>
+            <form action=''>
+                <p><input id='login-l' placeholder="Login"></p>
+                <p><input id='password-l' placeholder="Password"></p>
+                <p><input type='submit', name='login_button', value='login'></p>
+            </form>
+        </div>
+        <div id='reg-frame'>
+            <form action=''>
+                <p><input id='login-r' placeholder="Login"></p>
+                <p><input id='password-r' placeholder="Password"></p>
+                <p><input type='submit', name='reg_button', value='register'></p>
+            </form>
+        </div>
+	</div>
+	<div id="game_container">
+		<div>
+			
+
+			<canvas id='char-image' width=400 height=400></canvas>
+        	<canvas id='tmp-canvas' width=400 height=400></canvas>
+        	<canvas id='game-field' width=400 height=400></canvas>
+		</div>
+		<div id="chat_container">
+			<div id="chat"></div>
+		</div>
+	</div>
+
+
+
+	<script src='/socket.io/socket.io.js'></script>
+    <script src='https://code.jquery.com/jquery-1.11.1.js'></script>
+    <script src='/static/main.js'></script>
+    <script src="/static/ui.js"></script>
+</body>
+</html>

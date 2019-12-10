@@ -1,57 +1,70 @@
 body {
+
     background-image: url(/static/img/background_1.png);
     background-repeat: repeat;
 }
-#login_button {
-    
+#bg_fade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgb(0, 0, 33, .43);
 }
-li:nth-of-type(2n) {
-    background-color: #ccc;
+#game_container{ 
+    position: absolute;
+    width: 1600px;
+    height: 920px;
+    border: 3px solid rgb(100, 100, 100);
+    margin: 0px;
+    background: rgb(256, 256, 256, .66);
+    z-index: 2;
+    visibility: hidden;
 }
-li:nth-of-type(2n+1) {
-    background-color: #eee;
+#login_container {
+    position: absolute;
+    height: 380px;
+    width: 420px;
+    margin: auto;
+    background: rgb(256, 256, 256, .66);
+    z-index: 2;
+    left: 50%;
+    margin-left: -210px;
+    top: 20px;  
+    box-shadow: 5px 10px rgb(56, 56, 56, .66);;
 }
-li.selected {
-    background-color: green;
+#login-frame > form > p, #reg-frame > form > p{
+    width: 200px;
+    position: relative;
+    left: 50%;
+    margin-left: -100px;
+    margin-top: 20px;
+    top: 20px;
 }
-li:hover {
-    background-color: blue;
+#login-frame > form > p > input, #reg-frame > form > p > input{
+    width: 200px;
 }
-
-.container {
-    display: grid;
-    grid-template-columns: 3fr 1fr 1fr 1fr;
+#reg-frame, #login-frame {
+    position: absolute;
+    width: 100%;
+    margin-top: 40px;
 }
-#game {
-    background: azure;
-    height: 500px;
-    border: 1px solid black;
-    overflow: auto;
+#reg-frame {
+    visibility: hidden;
 }
-#status {
-    background: azure;
-    height: 500px;
-    border: 1px solid black;
-    overflow: auto;
+#select_box > div {
+    position: relative;
+    height: 35px;
+    line-height: 35px;
+    width: 50%;
+    background: rgb(134, 134, 134, .66);
+    float: left;
+    text-align: center;
+    :  center;
 }
-#users-list-container {
-    background: azure;
-    height: 500px;
-    border: 1px solid black;
-    overflow: auto;
+#select_box > div:hover {
+    background: rgb(166, 166, 166, .66);
 }
-#actions {
-    background: azure;
-    height: 500px;
-    border: 1px solid black;
-}
-#game-log {
-    overflow: auto;
-}
-#game-field {
-    border: 1px solid red;
-}
-
-#users-list {
-    list-style-type: none;
+#select_box > div.selected {
+    background: rgb(166, 166, 166, .66);
 }

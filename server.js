@@ -2372,7 +2372,7 @@ app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'static')));
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/views/base.html');
+    res.sendFile(__dirname + '/views/index.html');
 });
 
 
@@ -2480,7 +2480,7 @@ io.on('connection', async socket => {
             online = true;
             socket.emit('log-message', 'hello ' + data.login);
             update_char_info(socket, current_user);
-        }
+            }
     });
 
     socket.on('reg', async data => {
