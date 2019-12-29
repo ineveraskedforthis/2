@@ -26,6 +26,8 @@ const logging_db_queries = false;
 var MESSAGES = [];
 var MESSAGE_ID = 0;
 
+var MAX_TACTIC_SLOTS = 6
+
 var SKILLS = {};
 function add_skill(tag, max_level, req_level = 0, req_skills = null) {
     SKILLS[tag] = {tag: tag, max_level: max_level, req_level: req_level, req_skills: req_skills};
@@ -109,6 +111,7 @@ function AI_fighter(world, index, ids, teams, positions) {
     return {action: action, target: action_target};
 }
 
+
 async function send_query(pool, query, args) {
     if (logging_db_queries) {
         console.log(query)
@@ -150,6 +153,7 @@ class StateMachine {
         await this.curr_state.Enter(pool, this.owner, save);
     }
 }
+
 
 class BasicPopAIstate extends State {
     static async Execute(pool, agent, save) {
@@ -1092,7 +1096,8 @@ class World {
         this.battles = {}
         let pop = await this.create_pop(pool, 0, 0, 100, {'food': 1, 'clothes': 1}, 'pepe', 'random dudes', 100000)
         this.agents[pop.id] = pop
-        this.damage_types = new Set(['blunt', 'pierce', 'slice'])
+        this.damage_types = new Set(['blunt', 'pierce', 'slice']);
+        this.default_tactic_slot = {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}}
         this.base_stats = {
             apu: {
                 musculature: 10,
@@ -1140,8 +1145,45 @@ class World {
                 await this.chars[i].update(pool);
             }
         }
+        for (var i in this.battles) {
+            var battle = this.battles[i]
+            if (battle == null) {
+                continue
+            }
+            if (battle.is_over() == -1) {
+                var log = await battle.update(pool);
+                for (var i = 0; i < battle.ids.length; i++) {
+                    var character = this.chars[battle.ids[i]];
+                    if (character.data.is_player) {
+                        log.forEach(log_entry => this.send_message_to_character_user(character, log_entry));
+                    }
+                }
+            } else {
+                for (var i = 0; i < battle.ids.length; i++) {
+                    var character = this.chars[battle.ids[i]];
+                    if (character.data.is_player) {
+                        this.send_message_to_character_user(character, 'battle_end');
+                    }
+                }
+                var winner = battle.is_over();
+                var exp_reward = battle.reward(1 - winner);
+                await battle.collect_loot(pool);
+                await battle.reward_team(pool, winner, exp_reward);
+                await this.delete_battle(pool, battle.id);
+                
+            }
+        }
+
         update_market_info(this.map.cells[0][0]);
         update_user_list();
+    }
+
+    send_message_to_character_user(character, msg) {
+        this.send_message_to_user(this.users[character.user_id], msg)
+    }
+
+    send_message_to_user(user, msg) {
+        user.socket.emit('log-message', msg)
     }
 
     get_cell(x, y) {
@@ -1193,7 +1235,7 @@ class World {
     }
 
     async kill(pool, character) {
-        character.is_dead = true;
+        await character.set(pool, 'dead', true);
         if (character.data.is_player) {
             var user = this.users[character.user_id];
             await user.get_new_char(pool);
@@ -1221,19 +1263,13 @@ class World {
 
     async create_battle(pool, attackers, defenders) {
         var battle = new Battle();
-        var ids = [];
-        var teams = [];
+        var id = await battle.init(pool, world);
         for (var i = 0; i < attackers.length; i++) {
-            ids.push(attackers[i].id);
-            await attackers[i].set(pool, 'in_battle', true);
-            teams.push(0);
+            await battle.add_fighter(pool, attackers[i], 0);
         }
         for (var i = 0; i < defenders.length; i++) {
-            ids.push(defenders[i].id);
-            await defenders[i].set(pool, 'in_battle', true);
-            teams.push(1);
+            await battle.add_fighter(pool, defenders[i], 1);
         }
-        var id = await battle.init(pool, world, ids, teams);
         this.battles[id] = battle;
         return battle;
     }
@@ -1327,31 +1363,146 @@ class World {
 }
 
 
+class BattleAI {
+    static calculate_closest_enemy(battle, index) {
+        var closest_enemy = null;
+        var positions = battle.positions;
+        var min_distance = world.BASE_BATTLE_RANGE;
+        var teams = battle.teams;
+        var ids = battle.ids;
+        for (var i = 0; i < positions.length; i++) {
+            var dx = positions[i] - positions[index];
+            if (((Math.abs(dx) <= Math.abs(min_distance)) || (closest_enemy == null)) && (teams[i] != teams[index]) && (!world.chars[ids[i]].data.dead)) {
+                closest_enemy = i;
+                min_distance = dx;
+            }
+        }
+        return closest_enemy
+    }
+
+    static get_value_from_tactic_trigger_tag(agent, tag) {
+        if (agent == undefined) {
+            return -1
+        }
+        if (tag == 'hp') {
+            return agent.hp;
+        }
+        if (tag == 'rage') {
+            return agent.data.other.rage;
+        }
+        if (tag == 'blood_covering') {
+            return agent.data.other.blood_covering;
+        }
+    }
+
+    static compare(a, b, sign) {
+        if (sign == '<=') {
+            return a <= b;
+        }
+        if (sign == '<') {
+            return a < b;
+        }
+        if (sign == '==') {
+            return a == b;
+        }
+        if (sign == '>') {
+            return a > b;
+        }
+        if (sign == '>=') {
+            return a >= b;
+        }
+    }
+
+    static check_trigger(battle, index, target, tag, sign, value) {
+        if (target == 'me') {
+            var target = agent;
+        } else if (target == 'closest_enemy') {
+            var target_id = BattleAI.calculate_closest_enemy(battle, index)
+            var target = battle.world.chars[battle.ids[target_id]]
+        }
+        var value1 = BattleAI.get_value_from_tactic_trigger_tag(target, tag);
+        return BattleAI.compare(value1, value, sign);
+    }
+
+    static get_action(battle, index, target_tag, action_tag) {
+        var action = null;
+        var action_target = null
+        if (target_tag == 'closest_enemy') {
+            var true_target = BattleAI.calculate_closest_enemy(battle, index)
+        } else if (target_tag = 'me') {
+            var true_target = index
+        }
+        if (action_tag == 'attack') {
+            var actor = world.chars[battle.ids[index]];
+            var target = world.chars[battle.ids[true_target]];
+            var delta = battle.positions[true_target] - battle.positions[index];
+            if (Math.abs(delta) > actor.get_range()) {
+                action = 'move';
+                if (delta > 0){
+                    action_target = 'right';
+                } else {
+                    action_target = 'left';
+                }
+            } else {
+                action = 'attack';
+                action_target = true_target;
+            }
+            
+        }
+        return {action: action, target: action_target};
+    }
+
+    static async action(pool, agent, save) {
+        var world = agent.world;
+        var tactic = agent.data.tactic;
+        var battle = world.battles[agent.data.battle_id];
+        var index = agent.data.index_in_battle;
+        for (var i = 1; i <= MAX_TACTIC_SLOTS; i++) {
+            var slot = tactic['slot' + i];
+            if (slot != null && BattleAI.check_trigger(battle, index, slot.trigger.target, slot.trigger.tag, slot.trigger.sign, slot.trigger.value)) {
+                var action = BattleAI.get_action(battle, index, slot.action.target, slot.action.action);
+                console.log(action)
+                return await battle.action(pool, index, action)
+            }
+        }
+    }
+}
+
+
 class Battle {
-    async init(pool, world, ids, teams) {
+    async init(pool, world) {
         this.id = await world.get_new_id(pool, 'battle_id');
         var range = world.BASE_BATTLE_RANGE;
         this.world = world;
-        this.ids = ids;
-        this.teams = teams;
-        this.positions = Array(this.ids.length).fill(0);
+        this.ids = [];
+        this.teams = [];
+        this.positions = [];
         this.stash = new Stash();
         this.savings = new Savings();
-        for (var i = 0; i < this.ids.length; i++) {
-            if (this.teams[i] == 1) {
-                this.positions[i] = range;
-            }
-        }
         await this.load_to_db(pool);
         return this.id;
+    }
+
+    async add_fighter(pool, agent, team) {
+        this.ids.push(agent.id);
+        this.teams.push(team);
+        if (team == 1) {
+            this.positions.push(world.BASE_BATTLE_RANGE);
+        } else {
+            this.positions.push(0);
+        }
+        await agent.set(pool, 'battle_id', this.id, false);
+        await agent.set(pool, 'index_in_battle', this.ids.length - 1, false);
+        await agent.set(pool, 'in_battle', true);
+        this.save_to_db(pool);
     }
 
     async update(pool) {
         var log = [];
         for (var i = 0; i < this.ids.length; i++) {
-            if (this.world.chars[this.ids[i]].get_hp() != 0) {
-                var action = AI_fighter(this.world, i, this.ids, this.teams, this.positions);
-                var log_entry = await this.action(pool, i, action);
+            var char = this.world.chars[this.ids[i]]
+            if (char.get_hp() > 0) {
+                var log_entry = await BattleAI.action(pool, char, true)
                 log.push(log_entry)
             }
         }
@@ -1370,31 +1521,32 @@ class Battle {
             return `${character.name} ${action.action} ${action.target}`
         } else if (action.action == 'attack') {
             if (action.target != null) {
-                var damage = await character.attack(pool, action.target);
-                return `${character.name} ${action.action} ${action.target.name} and deals ${damage} damage`;
+                var target_char = this.world.chars[this.ids[action.target]];
+                var damage = await character.attack(pool, target_char);
+                return `${character.name} ${action.action} ${target_char.name} and deals ${damage} damage`;
             }
             return 'pfff';
         }
     }
 
-    async run(pool) {
-        // console.log(this.world.chars);
-        while (this.is_over() == -1) {
-            var log = await this.update(pool);
-            for (var i = 0; i < this.ids.length; i++) {
-                var character = world.chars[this.ids[i]];
-                // console.log(character);
-                // console.log(log)
-                if (character.data.is_player) {
-                    log.forEach(log_entry => this.world.users[character.user_id].socket.emit('log-message', log_entry));
-                }
-            }
-        }
-        var winner = this.is_over();
-        var exp_reward = this.reward(1 - winner);
-        await this.collect_loot(pool);
-        await this.reward_team(pool, winner, exp_reward);
-    }
+    // async run(pool) {
+    //     // console.log(this.world.chars);
+    //     while (this.is_over() == -1) {
+    //         var log = await this.update(pool);
+    //         for (var i = 0; i < this.ids.length; i++) {
+    //             var character = world.chars[this.ids[i]];
+    //             // console.log(character);
+    //             // console.log(log)
+    //             if (character.data.is_player) {
+    //                 log.forEach(log_entry => this.world.users[character.user_id].socket.emit('log-message', log_entry));
+    //             }
+    //         }
+    //     }
+    //     var winner = this.is_over();
+    //     var exp_reward = this.reward(1 - winner);
+    //     await this.collect_loot(pool);
+    //     await this.reward_team(pool, winner, exp_reward);
+    // }
 
     is_over() {
         var hp = [0, 0];
@@ -1407,6 +1559,7 @@ class Battle {
             }
             hp[this.teams[i]] += x;
         }
+        console.log(hp);
         if (hp[0] == 0) {
             return 1;
         }
@@ -1444,7 +1597,7 @@ class Battle {
         }
         for (var i = 0; i < this.ids.length; i++) {
             var character = this.world.chars[this.ids[i]];
-            if (this.teams[i] == team && !character.is_dead) {
+            if (this.teams[i] == team && !character.data.dead) {
                 await character.give_exp(pool, Math.floor(exp / n));
             }
             await character.set(pool, 'in_battle', false);
@@ -1999,6 +2152,15 @@ class Character {
             exp_reward: 5,
             dead: false,
             in_battle: false,
+            battle_id: null,
+            tactic: {
+                slot1: this.world.default_tactic_slot,
+                slot2: null,
+                slot3: null,
+                slot4: null,
+                slot5: null,
+                slot6: null
+            },
             status: {
                 stunned: 0
             },
@@ -2043,9 +2205,9 @@ class Character {
         return this.equip.get_weapon_range();
     }
 
-    async set(pool, nani, value) {
-        this.data.nani = value
-        await this.save_to_db(pool)
+    async set(pool, nani, value, save = true) {
+        this.data[nani] = value
+        await this.save_to_db(pool, save);
     }
 
     async add_skill(pool, skill, save = true) {
@@ -2452,6 +2614,7 @@ io.on('connection', async socket => {
     var current_user = null;
     socket.emit('tags', world.TAGS);
     socket.emit('skill-tree', SKILLS);
+    socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack']})
     for (var i of MESSAGES) {
         socket.emit('new-message', i);
     }
@@ -2507,10 +2670,6 @@ io.on('connection', async socket => {
         if (current_user != null && !current_user.character.in_battle) {
             var rat = await world.create_monster(pool, Rat, current_user.character.cell_id);
             var battle = await world.create_battle(pool, [current_user.character], [rat]);
-            var log = await battle.run(pool);
-            await world.delete_battle(pool, battle.id);
-            await update_char_info(socket, current_user);
-            // log.forEach(log_entry => socket.emit('log-message', log_entry));
         }
     });
 

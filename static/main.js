@@ -1,4 +1,10 @@
 'use strict'
+
+var TACTIC_TAGS_TARGET = [];
+var TACTIC_TAGS_VALUE_TAG = [];
+var TACTIC_SIGN_SIGN_TAG = [];
+var TACTIC_ACTION_TAG = [];
+
 var images = {}
 
 function load_image(s, callback) {
@@ -332,6 +338,126 @@ class SkillTree {
     }
 }
 
+class TacticScreen {
+    constructor(container, socket) {
+        this.data = {};
+        this.select_trigger_target = [];
+        this.select_trigger_value_tag = [];
+        this.select_trigger_sign = [];
+        this.input_trigger_value = [];
+        this.select_action_target = [];
+        this.select_action_action = [];
+        this.tactic_block = [];
+        this.container = container;
+        this.list_length = 10
+        var tmp_form = $('<form/>');
+        ((socket, tactic) => container.append($('<button/>')
+            .text('save')
+            .click(() => {
+                send_tactic(socket, tactic); return false
+            })))(this.socket, this.get_tactic());
+        container.append($('<button/>')
+            .text('reset')
+            .click(() => {this.reset_tactic(); return false}));
+        for (var i = 0; i < this.list_length; i++) {
+            this.tactic_block.push($('<tr>'));
+            
+            var trigger_row = $('<tr>');
+            this.select_trigger_target.push($(`<select id="${i}-trigger-target"></select>`));
+            this.select_trigger_value_tag.push($(`<select id="${i}-trigger-value_tag"></select>`));
+            this.select_trigger_sign.push($(`<select id="${i}-trigger-sign"></select>`));
+            this.input_trigger_value.push($(`<input id="${i}-trigger-value">`))
+            var trigger_row_2 = $('<td>');
+            trigger_row_2.append(this.select_trigger_target[i]);
+            trigger_row_2.append(this.select_trigger_value_tag[i]);
+            trigger_row_2.append(this.select_trigger_sign[i]);
+            trigger_row_2.append(this.input_trigger_value[i]);
+            trigger_row.append($('<td>').text('trigger'))
+            trigger_row.append(trigger_row_2);
+            
+            var action_row = $('<tr>');            
+            this.select_action_target.push($(`<select id="${i}-action-target"></select>`));
+            this.select_action_action.push($(`<select id="${i}-action-action"></select>`));
+            var action_row_2 = $('<td>');
+            action_row_2.append(this.select_action_target[i]);
+            action_row_2.append(this.select_action_action[i]);
+            action_row.append($('<td>').text('action'));
+            action_row.append(action_row_2);
+            
+            this.tactic_block[i].append(`<td>${i}</td>`);
+
+            var tmp = $('<td>');
+            tmp.append(trigger_row);
+            tmp.append(action_row);
+            this.tactic_block[i].append(trigger_row);
+            this.tactic_block[i].append(action_row);
+            tmp_form.append(this.tactic_block[i]);
+        }
+        this.container.append(tmp_form);
+        this.socket = socket;
+    };
+    
+    draw() {
+    }
+    
+    update(data) {
+        this.data = data;
+        this.draw();
+    }
+    
+    get_tactic() {
+        
+    }
+    
+    reset_tactic() {
+        var counter = 0;
+        for (var i in this.data) {
+            var slot = this.data[i]
+            if (slot != null) {
+                $(`#${counter}-trigger-target`).val(slot.trigger.target).change();
+                $(`#${counter}-trigger-value_tag`).val(slot.trigger.tag).change();
+                $(`#${counter}-trigger-sign`).val(slot.trigger.sign).change();
+                $(`#${counter}-trigger-value`).val(slot.trigger.value).change();
+                $(`#${counter}-action-target`).val(slot.action.target).change();
+                $(`#${counter}-action-action`).val(slot.action.action).change();
+                this.tactic_block[counter].show()
+            }
+            else {
+                this.tactic_block[counter].hide()
+            }
+            counter += 1;
+        }
+        for (counter; counter < this.list_length; counter++) {
+            this.tactic_block[counter].hide()
+        }
+    }
+    
+    update_tags(tags) {
+        console.log(tags);
+        for (var target_tag of tags.target) {
+            for (var i = 0; i < this.list_length; i++) {
+                this.select_trigger_target[i].append($('<option>').val(target_tag).text(target_tag));
+                this.select_action_target[i].append($('<option>').val(target_tag).text(target_tag));
+            }
+        };
+        for (var value_tag of tags.value_tags) {
+            for (var i = 0; i < this.list_length; i++) {
+                this.select_trigger_value_tag[i].append($('<option>').val(value_tag).text(value_tag))
+            }
+        };
+        for (var sign of tags.signs) {
+            for (var i = 0; i < this.list_length; i++) {
+                this.select_trigger_sign[i].append($('<option>').val(sign).text(sign))
+            }
+        };
+        for (var action of tags.actions) {
+            for (var i = 0; i < this.list_length; i++){
+                this.select_action_action[i].append($('<option>').val(action).text(action))
+            }
+        }
+    }
+};
+
 function get_pos_in_canvas(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     return {
@@ -354,6 +480,7 @@ $(function() {
     var market_table = new MarketTable($('#market'));
     var char_image = new CharacterImage($('#char-image'), $('#tmp-canvas'));
     var skill_tree = new SkillTree($('#skill-tree'), socket);
+    var tactic_screen = new TacticScreen($('#tactic'), socket);
 
     function draw(tmp) {
         if (check_loading()) {
@@ -374,6 +501,7 @@ $(function() {
     $('#market').hide();
     $('#sell-form-con').hide();
     $('#skill-tree').hide();
+    $('#tactic').hide()
 
     $('#game-field').mousedown(() => {
         is_dragging = true;
@@ -453,6 +581,7 @@ $(function() {
         $('#game-log').show();
         $('#market').hide();
         $('#skill-tree').hide();
+        $('#tactic').hide();
     });
 
     $('#show-map').click(() => {
@@ -461,6 +590,7 @@ $(function() {
         $('#game-log').hide();
         $('#market').hide();
         $('#skill-tree').hide();
+        $('#tactic').hide();
     });
 
     $('#show-market').click(() => {
@@ -468,6 +598,7 @@ $(function() {
         $('#game-log').hide();
         $('#market').show();
         $('#skill-tree').hide();
+        $('#tactic').hide();
     });
 
     $('#show-skill-tree').click(() => {
@@ -475,6 +606,15 @@ $(function() {
         $('#game-log').hide();
         $('#market').hide();
         $('#skill-tree').show();
+        $('#tactic').hide();
+    })
+
+    $('#show-tactic').click(() => {
+        $('#game-field').hide();
+        $('#game-log').hide();
+        $('#market').hide();
+        $('#skill-tree').hide();
+        $('#tactic').show();
     })
 
     $('#show-buy-form').click(() => {
@@ -493,6 +633,10 @@ $(function() {
             $('#sell-tag-select').append($('<option>').val(tag).text(tag));
         }
     });
+    
+    socket.on('tags-tactic', msg => {
+        tactic_screen.update_tags(msg);
+    })
 
     socket.on('is-reg-valid', msg => {
         if (msg != 'ok') {
@@ -555,6 +699,7 @@ $(function() {
         }
         char_image.update(msg.data.other.rage, msg.data.other.blood_covering, msg.data.stats.pow)
         skill_tree.update(SKILLS, msg.data.skills);
+        tactic_screen.update(msg.data.tactic)
         for (let i in msg.stash) {
             $('#char-info').append($('<p>').text(`${i}: ${msg.stash[i]}`));
         };
