@@ -14,7 +14,7 @@ function load_image(s, callback) {
     return tmp
 }
 
-var loaded = Array.apply(null, Array(13)).map(() => 0)
+var loaded = Array.apply(null, Array(15)).map(() => 0)
 
 function check_loading() {
     let f = 1;
@@ -37,6 +37,8 @@ images['apu_blood_2'] = load_image('static/img/apu_blood_2.png', () => loaded[9]
 images['apu_blood_3'] = load_image('static/img/apu_blood_3.png', () => loaded[10] = 1);
 images['apu_blood_4'] = load_image('static/img/apu_blood_4.png', () => loaded[11] = 1);
 images['apu_pupils_1'] = load_image('static/img/apu_pupils_1.png', () => loaded[12] = 1)
+images['base_background'] = load_image('static/img/base_background.png', () => loaded[13] = 1)
+images['test_0'] = load_image('static/img/test_0.png', () => loaded[14] = 1)
 
 
 function draw_image(context, image, x, y, w, h) {
@@ -168,6 +170,130 @@ class CharacterImage {
         else {
             draw_image(ctx, images[this.images['mouth_0']], 0, 0, this.w, this.h);
         }
+    }
+}
+
+class AnimatedImage {
+    constructor(image_name, count, w, h) {
+        this.tag = image_name;
+        this.count = count;
+        this.w = w;
+        this.h = h;
+        this.current = 0
+    }
+    
+    update() {
+        this.current += 1;
+        if (this.current >= this.count) {
+            this.current = 0
+        }
+    }
+    
+    draw(ctx, x, y, w, h) {
+        // console.log(this.tag + '_' + this.current, x, y, w, h)
+        draw_image(ctx, images[this.tag + '_' + this.current], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
+    }
+}
+
+class Vector {
+    constructor(x, y, z) {
+        this.data = [x, y, z]
+    }
+}
+
+class Line {
+    constructor(p, v) {
+        this.vector = v;
+        this.point = p;
+    }
+}
+
+class Plane {
+    constructor(n, p) {
+        this.normal_vector = n;
+        this.point = p;
+    }
+}
+
+function mult(s, v) {
+    return new Vector(s * v.data[0], s * v.data[1], s * v.data[2])
+}
+
+function sum(a, b) {
+    var c = new Vector(a.data[0] + b.data[0], a.data[1] + b.data[1], a.data[2] + b.data[2])
+    return c
+}
+
+function minus(a, b) {
+    var c = new Vector(a.data[0] - b.data[0], a.data[1] - b.data[1], a.data[2] - b.data[2])
+    return c
+}
+
+function dot(a, b) {
+    return a.data[0] * b.data[1] + a.data[1] * b.data[1] + a.data[2] * b.data[2];
+}
+
+function two_points_to_line(a, b) {
+    return new Line(a, minus(b, a))
+}
+
+function intersect(line, plane) {
+    var n = mult(Math.sqrt(dot(plane.normal_vector, plane.normal_vector)), plane.normal_vector)
+    var d = dot(plane.point, n)
+    var a = dot(line.point, n)
+    var b = dot(line.vector, n)
+    var t = (d - a) / b
+    return sum(mult(t, line.vector), line.point)
+}
+
+class BattleImage {
+    constructor(canvas, tmp_canvas) {
+        this.canvas = canvas.get(0);
+        this.tmp_canvas = tmp_canvas.get(0);
+        this.background = "base_background";
+        this.positions = []
+        this.images = []
+        this.w = 800;
+        this.h = 500;
+    }
+    
+    draw() {
+        var ctx = this.canvas.getContext('2d')
+        ctx.clearRect(0, 0, this.w, this.h);
+        draw_image(ctx, images[this.background], 0, 0, this.w, this.h)
+        for (var i = 0; i < this.positions.length; i++) {
+            var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
+            // console.log(pos)
+            this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
+        }
+    }
+    
+    add_fighter(tag, position) {
+        this.positions.push(position);
+        this.images.push(new AnimatedImage(tag, 1, 200, 200))
+    }
+    
+    calculate_canvas_pos(x, image) {
+        var base_vector = new Vector(0, 0, 1)
+        var point_of_battle_line = new Vector(500, -250, 0)
+        var height_vector = new Vector(0, image.h, 0)
+        var width_vector = new Vector(image.w, 0, 0)
+        var picture_plane = new Plane(base_vector, new Vector(0, 0, 0))
+        var viewer_point = new Vector(0, 0, -50)
+        var bottom_right_position = sum(sum(mult(x, base_vector), point_of_battle_line), mult(0.5, width_vector))
+        var top_left_position = minus(sum(sum(mult(x, base_vector), point_of_battle_line), height_vector), mult(0.5, width_vector))
+        var bottom_ray = two_points_to_line(bottom_right_position, viewer_point)
+        var top_ray = two_points_to_line(top_left_position, viewer_point)
+        var bottom_intersection = intersect(bottom_ray, picture_plane)
+        var top_intersection = intersect(top_ray, picture_plane)
+        // console.log(top_intersection.data)
+        // console.log(bottom_intersection.data)
+        var d = minus(bottom_intersection, top_intersection)
+        var centre = sum(top_intersection, mult(0.5, d))
+        centre = sum(centre, new Vector(this.w / 5, + this.h / 2, 0))
+        var canvas_top_left = minus(centre, mult(0.5, d))
+        // console.log(canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1])
+        return [canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1]]
     }
 }
 
@@ -349,13 +475,14 @@ class TacticScreen {
         this.select_action_action = [];
         this.tactic_block = [];
         this.container = container;
+        this.socket = socket;
         this.list_length = 10
         var tmp_form = $('<form/>');
-        ((socket, tactic) => container.append($('<button/>')
+        ((socket) => container.append($('<button/>')
             .text('save')
             .click(() => {
-                send_tactic(socket, tactic); return false
-            })))(this.socket, this.get_tactic());
+                send_tactic(socket, this.get_tactic()); return false
+            })))(this.socket);
         container.append($('<button/>')
             .text('reset')
             .click(() => {this.reset_tactic(); return false}));
@@ -366,7 +493,7 @@ class TacticScreen {
             this.select_trigger_target.push($(`<select id="${i}-trigger-target"></select>`));
             this.select_trigger_value_tag.push($(`<select id="${i}-trigger-value_tag"></select>`));
             this.select_trigger_sign.push($(`<select id="${i}-trigger-sign"></select>`));
-            this.input_trigger_value.push($(`<input id="${i}-trigger-value">`))
+            this.input_trigger_value.push($(`<input id="${i}-trigger-value">`));
             var trigger_row_2 = $('<td>');
             trigger_row_2.append(this.select_trigger_target[i]);
             trigger_row_2.append(this.select_trigger_value_tag[i]);
@@ -394,23 +521,39 @@ class TacticScreen {
             tmp_form.append(this.tactic_block[i]);
         }
         this.container.append(tmp_form);
-        this.socket = socket;
     };
-    
-    draw() {
-    }
     
     update(data) {
         this.data = data;
-        this.draw();
     }
     
     get_tactic() {
-        
+        var tactic = {};
+        for (var i = 0; i < this.list_length; i++) {
+            tactic['s' + i] = {
+                trigger: {
+                    target: this.select_trigger_target[i].val(),
+                    tag: this.select_trigger_value_tag[i].val(),
+                    sign: this.select_trigger_sign[i].val(),
+                    value: parseInt(this.input_trigger_value[i].val()),
+                },
+                action: {
+                    target: this.select_action_target[i].val(),
+                    action: this.select_action_action[i].val(),
+                }
+            }
+            var trigger = tactic['s' + i].trigger;
+            var action = tactic['s' + i].action;
+            // if (undefined in [trigger.target, trigger.tag, trigget.sign, trigger.value, action.target, action.action]) {
+                // tactic['s' + i] = undefined;
+            // }
+        }
+        return tactic;
     }
     
     reset_tactic() {
         var counter = 0;
+        console.log(this.data);
         for (var i in this.data) {
             var slot = this.data[i]
             if (slot != null) {
@@ -433,7 +576,7 @@ class TacticScreen {
     }
     
     update_tags(tags) {
-        console.log(tags);
+        // console.log(tags);
         for (var target_tag of tags.target) {
             for (var i = 0; i < this.list_length; i++) {
                 this.select_trigger_target[i].append($('<option>').val(target_tag).text(target_tag));
@@ -471,6 +614,11 @@ function send_skill_up_message(socket, tag) {
     socket.emit('up-skill', tag);
 }
 
+function send_tactic(socket, tactic) {
+    console.log(tactic);
+    socket.emit('set-tactic', tactic);
+}
+
 $(function() {
     var SKILLS = {};
     var socket = io();
@@ -481,10 +629,15 @@ $(function() {
     var char_image = new CharacterImage($('#char-image'), $('#tmp-canvas'));
     var skill_tree = new SkillTree($('#skill-tree'), socket);
     var tactic_screen = new TacticScreen($('#tactic'), socket);
-
+    var battle_image = new BattleImage($('#battle-canvas'), $('#battle-canvas-tmp'))
+    for (var i = 5000; i > 0; i -= 5) {
+        battle_image.add_fighter('test', i)
+    }
+    
     function draw(tmp) {
         if (check_loading()) {
             char_image.draw()
+            battle_image.draw()
         } 
         game_field.draw();
         window.requestAnimationFrame(draw);

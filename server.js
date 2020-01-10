@@ -1098,6 +1098,7 @@ class World {
         this.agents[pop.id] = pop
         this.damage_types = new Set(['blunt', 'pierce', 'slice']);
         this.default_tactic_slot = {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}}
+        this.empty_tactic_slot = {trigger: {target: undefined, tag: undefined, sign: undefined, value: undefined}, action: {target: undefined, action: undefined}}
         this.base_stats = {
             apu: {
                 musculature: 10,
@@ -1396,6 +1397,9 @@ class BattleAI {
     }
 
     static compare(a, b, sign) {
+        if (sign == undefined) {
+            return false
+        }
         if (sign == '<=') {
             return a <= b;
         }
@@ -1413,7 +1417,13 @@ class BattleAI {
         }
     }
 
-    static check_trigger(battle, index, target, tag, sign, value) {
+    static check_trigger(agent, battle, index, target, tag, sign, value) {
+        if (target == undefined || tag == undefined || sign == undefined || value == undefined) {
+            return false
+        }
+        if (target == null || tag == null || sign == null || value == null) {
+            return false
+        }
         if (target == 'me') {
             var target = agent;
         } else if (target == 'closest_enemy') {
@@ -1457,9 +1467,9 @@ class BattleAI {
         var tactic = agent.data.tactic;
         var battle = world.battles[agent.data.battle_id];
         var index = agent.data.index_in_battle;
-        for (var i = 1; i <= MAX_TACTIC_SLOTS; i++) {
-            var slot = tactic['slot' + i];
-            if (slot != null && BattleAI.check_trigger(battle, index, slot.trigger.target, slot.trigger.tag, slot.trigger.sign, slot.trigger.value)) {
+        for (var i = 0; i <= agent.data.stats.tac; i++) {
+            var slot = tactic['s' + i];
+            if (slot != null && slot != undefined && BattleAI.check_trigger(agent, battle, index, slot.trigger.target, slot.trigger.tag, slot.trigger.sign, slot.trigger.value)) {
                 var action = BattleAI.get_action(battle, index, slot.action.target, slot.action.action);
                 console.log(action)
                 return await battle.action(pool, index, action)
@@ -2149,18 +2159,11 @@ class Character {
             exp: exp,
             level: level,
             skill_points: 0,
-            exp_reward: 5,
+            exp_reward: 100,
             dead: false,
             in_battle: false,
             battle_id: null,
-            tactic: {
-                slot1: this.world.default_tactic_slot,
-                slot2: null,
-                slot3: null,
-                slot4: null,
-                slot5: null,
-                slot6: null
-            },
+            tactic: {s0: this.world.default_tactic_slot},
             status: {
                 stunned: 0
             },
@@ -2179,6 +2182,14 @@ class Character {
         await this.load_to_db(pool);
         return id;
     }
+    
+    async set_tactic(pool, tactic, save = true) {
+        console.log(tactic);
+        for (var i = 0; i <= this.data.stats.tac; i++) {
+            this.data.tactic['s' + i] = tactic['s' + i];
+        }
+        await this.save_to_db(pool, save);
+    }
 
     async update(pool) {
         if (this.data.dead) {
@@ -2194,6 +2205,7 @@ class Character {
         }
         if (socket != null) {
             socket.emit('char-info', this.get_json());
+            // console.log(this.get_json());
         }
     }
 
@@ -2206,7 +2218,7 @@ class Character {
     }
 
     async set(pool, nani, value, save = true) {
-        this.data[nani] = value
+        this.data[nani] = value;
         await this.save_to_db(pool, save);
     }
 
@@ -2262,6 +2274,16 @@ class Character {
             if (this.data.skills['mage_training'] >= 3) {
                 tmp.tac += 1;
                 flag_tier0_tactic = true
+            }
+        }
+        for (var i = 0; i <= tmp.tac; i++) {
+            if (!'s' + i in this.data.tactic || this.data.tactic['s' + i] == null) {
+                this.data.tactic['s' + i] = this.world.empty_tactic_slot;
+            }
+        }
+        for (var i = tmp.tac + 1; i < MAX_TACTIC_SLOTS; i++) {
+            if ('s' + i in this.data.tactic) {
+                this.data.tactic['s' + i] = undefined;
             }
         }
 
@@ -2327,7 +2349,7 @@ class Character {
         }
         this.data.other.blood_covering = Math.min(this.data.other.blood_covering + 2, 100)
         this.data.other.rage = Math.min(this.data.other.blood_covering + 10, 100)
-        await this.save_hp_to_db(pool)
+        await this.save_to_db(pool)
         return total_damage;
     }
 
@@ -2340,7 +2362,7 @@ class Character {
             this.hp = 0;
             await this.world.kill(pool, this);
         }
-        await this.save_hp_to_db(pool, save);
+        await this.save_to_db(pool, save);
     }
 
     async save_hp_to_db(pool, save = true) {
@@ -2614,7 +2636,7 @@ io.on('connection', async socket => {
     var current_user = null;
     socket.emit('tags', world.TAGS);
     socket.emit('skill-tree', SKILLS);
-    socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack']})
+    socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack']})
     for (var i of MESSAGES) {
         socket.emit('new-message', i);
     }
@@ -2701,6 +2723,12 @@ io.on('connection', async socket => {
             update_char_info(socket, current_user);
         }
     });
+    
+    socket.on('set-tactic', async msg => {
+        if (current_user != null) {
+            await current_user.character.set_tactic(pool, msg);
+        }
+    })
 
     socket.on('new-message', async msg => {
         send_message(socket, msg + '', current_user)
