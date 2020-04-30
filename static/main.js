@@ -39,6 +39,7 @@ images['apu_blood_4'] = load_image('static/img/apu_blood_4.png', () => loaded[11
 images['apu_pupils_1'] = load_image('static/img/apu_pupils_1.png', () => loaded[12] = 1)
 images['base_background'] = load_image('static/img/base_background.png', () => loaded[13] = 1)
 images['test_0'] = load_image('static/img/test_0.png', () => loaded[14] = 1)
+images['tost_0'] = load_image('static/img/tost_0.png', () => loaded[15] = 1)
 
 
 function draw_image(context, image, x, y, w, h) {
@@ -251,26 +252,64 @@ class BattleImage {
         this.canvas = canvas.get(0);
         this.tmp_canvas = tmp_canvas.get(0);
         this.background = "base_background";
-        this.positions = []
-        this.images = []
+        this.init()
         this.w = 800;
         this.h = 500;
+    }
+
+    init() {
+        this.positions = {}
+        this.ids = {}
+        this.images = {}
+        this.battle_ids = new Set()
+    }
+
+    clear() {
+        console.log('clear battle')
+        this.init()
+    }
+
+    load(data) {
+        console.log('load battle')
+        console.log(data)
+        for (var i in data) {
+            this.add_fighter(data[i].id, data[i].tag, data[i].position)
+        } 
+    }
+
+    update(data) {
+        console.log('update battle')
+        for (var i in data) {
+            this.update_pos(data[i].id, data[i].position)
+        }
+    }
+
+    dist(a, b, positions) {
+        return - positions[a] + positions[b]
     }
     
     draw() {
         var ctx = this.canvas.getContext('2d')
         ctx.clearRect(0, 0, this.w, this.h);
         draw_image(ctx, images[this.background], 0, 0, this.w, this.h)
-        for (var i = 0; i < this.positions.length; i++) {
+        var draw_order = Array.from(this.battle_ids)
+        draw_order.sort((a, b) => this.dist(a, b, this.positions))
+        for (var i of draw_order) {
             var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
             // console.log(pos)
             this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
         }
     }
     
-    add_fighter(tag, position) {
-        this.positions.push(position);
-        this.images.push(new AnimatedImage(tag, 1, 200, 200))
+    add_fighter(battle_id, tag, position) {
+        console.log(battle_id, tag, position)
+        this.battle_ids.add(battle_id)
+        this.positions[battle_id] = position;
+        this.images[battle_id] = new AnimatedImage(tag, 1, 200, 200)
+    }
+    
+    update_pos(battle_id, position) {
+        this.positions[battle_id] = position
     }
     
     calculate_canvas_pos(x, image) {
@@ -279,7 +318,7 @@ class BattleImage {
         var height_vector = new Vector(0, image.h, 0)
         var width_vector = new Vector(image.w, 0, 0)
         var picture_plane = new Plane(base_vector, new Vector(0, 0, 0))
-        var viewer_point = new Vector(0, 0, -50)
+        var viewer_point = new Vector(0, 0, -30)
         var bottom_right_position = sum(sum(mult(x, base_vector), point_of_battle_line), mult(0.5, width_vector))
         var top_left_position = minus(sum(sum(mult(x, base_vector), point_of_battle_line), height_vector), mult(0.5, width_vector))
         var bottom_ray = two_points_to_line(bottom_right_position, viewer_point)
@@ -630,8 +669,9 @@ $(function() {
     var skill_tree = new SkillTree($('#skill-tree'), socket);
     var tactic_screen = new TacticScreen($('#tactic'), socket);
     var battle_image = new BattleImage($('#battle-canvas'), $('#battle-canvas-tmp'))
-    for (var i = 5000; i > 0; i -= 5) {
-        battle_image.add_fighter('test', i)
+    $('#battle-canvas-tmp').hide();
+    for (var i = 200; i > 0; i -= 5) {
+        battle_image.add_fighter(i, 'test', i)
     }
     
     function draw(tmp) {
@@ -857,6 +897,19 @@ $(function() {
             $('#char-info').append($('<p>').text(`${i}: ${msg.stash[i]}`));
         };
     });
+
+    socket.on('battle-has-started', data => {
+        battle_image.clear()
+        battle_image.load(data)
+    })
+
+    socket.on('battle-update', data => {
+        battle_image.update(data)
+    })
+
+    socket.on('battle-has-ended', data => {
+        battle_image.clear()
+    })
 
     socket.on('skill-tree', data => {
         SKILLS = data;

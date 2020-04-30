@@ -1156,6 +1156,7 @@ class World {
                 for (var i = 0; i < battle.ids.length; i++) {
                     var character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
+                        this.send_to_character_user(character, 'battle-update', battle.get_data())
                         log.forEach(log_entry => this.send_message_to_character_user(character, log_entry));
                     }
                 }
@@ -1163,7 +1164,7 @@ class World {
                 for (var i = 0; i < battle.ids.length; i++) {
                     var character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
-                        this.send_message_to_character_user(character, 'battle_end');
+                        this.send_to_character_user(character, 'battle-has-ended', null);
                     }
                 }
                 var winner = battle.is_over();
@@ -1171,7 +1172,6 @@ class World {
                 await battle.collect_loot(pool);
                 await battle.reward_team(pool, winner, exp_reward);
                 await this.delete_battle(pool, battle.id);
-                
             }
         }
 
@@ -1183,8 +1183,18 @@ class World {
         this.send_message_to_user(this.users[character.user_id], msg)
     }
 
+
+    send_to_character_user(character, tag, msg) {
+        this.send_to_user(this.users[character.user_id], tag, msg)
+    }
+
     send_message_to_user(user, msg) {
-        user.socket.emit('log-message', msg)
+        this.send_to_user(user, 'log-message', msg)
+    }
+
+    send_to_user(user, tag, msg) {
+        // log(tag, msg)
+        user.socket.emit(tag, msg)
     }
 
     get_cell(x, y) {
@@ -1492,6 +1502,19 @@ class Battle {
         await this.load_to_db(pool);
         return this.id;
     }
+
+    get_data() {
+        var data = {}
+        for (var i = 0; i < this.ids.length; i++) {
+                var character = this.world.chars[this.ids[i]]
+                data[i] = {}
+                data[i].id = this.ids[i];
+                data[i].position = this.positions[i];
+                data[i].tag = character.get_tag();
+            }
+        return data
+    }
+    
 
     async add_fighter(pool, agent, team) {
         this.ids.push(agent.id);
@@ -2176,6 +2199,10 @@ class Character {
         }
     }
 
+    get_tag() {
+        return 'test'
+    }
+
     async init(pool, world, name, cell_id, user_id = -1) {
         var id = await world.get_new_id(pool, 'char_id');
         this.init_base_values(world, id, name, 100, 100, 0, 0, cell_id, user_id);
@@ -2487,6 +2514,10 @@ class Rat extends Character {
         await this.load_to_db(pool);
         return id;
     }
+
+    get_tag() {
+        return 'tost'
+    }
 }
 
 class User {
@@ -2692,6 +2723,7 @@ io.on('connection', async socket => {
         if (current_user != null && !current_user.character.in_battle) {
             var rat = await world.create_monster(pool, Rat, current_user.character.cell_id);
             var battle = await world.create_battle(pool, [current_user.character], [rat]);
+            socket.emit('battle-has-started', battle.get_data())
         }
     });
 
