@@ -1,0 +1,50 @@
+const constants = require("./constants.js")
+
+module.exports = 
+{
+    sum: function (a) {
+        return a.reduce((x, y) => x + y, 0);
+    },
+
+    get_next_nevel_req: function (l) {
+        return l * l * 10
+    },
+
+    send_query: async function (pool, query, args) {
+        if (constants.logging_db_queries) {
+            console.log(query)
+            console.log(args)
+        }
+        return pool.query(query, args)
+    },
+
+    drop_tables: async function (client, tables) {
+        for (let i = 0; i < tables.length; i++) {
+            await client.query('DROP TABLE IF EXISTS ' + tables[i]);
+        }
+    },
+        
+    init_ids: async function (client) {
+        var id_types = ['battle_id', 'user_id', 'char_id', 'market_order_id', 'market_id', 'cell_id', 'agent_id'];
+        for (var i = 0; i < id_types.length; i++) {
+            await client.query(constants.init_id_query, [id_types[i], 0]);
+        }
+        return null;
+    },
+    
+    validate_creds: function (data) {
+        if (data.login.length == 0) {
+            return 'empty-login';
+        }
+        if (data.login.length >= 30) {
+            return 'too-long';
+        }
+        if (data.password.length == 0){
+            return 'empty-pass';
+        }
+        if (!validator.isAlphanumeric(data.login, 'en-US')){
+            return 'login-not-allowed-symbols';
+        }
+        return 'ok';
+    }
+}
