@@ -1,7 +1,9 @@
 var bcrypt = require('bcryptjs');
 var User = require('./user.js');
 var salt = process.env.SALT;
-var validator = require('validator');
+
+var constants = require("./constants.js")
+var common = require("./common.js")
 
 module.exports = class UserManager{
     constructor() {
@@ -38,29 +40,42 @@ module.exports = class UserManager{
 
     new_user_online(login) {
         this.world.users_online[login] = true;
-        this.update_user_list();
+        var socket_manager = this.world.socket_manager;
+        socket_manager.update_user_list();
     }
     
     user_disconnects(login) {
         if (login in this.world.users_online) {
             this.world.users_online[login] = false;
         }
-        this.update_user_list();
+        var socket_manager = this.world.socket_manager;
+        socket_manager.update_user_list();
     }
 
-    validate_creds(data) {
-        if (data.login.length == 0) {
-            return 'empty-login';
+    get_user_from_character(character) {
+        return this.users[character.user_id]
+    }
+
+    async check_login(pool, login) {
+        var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
+        if (res.rows.length == 0) {
+            return true;
         }
-        if (data.login.length >= 30) {
-            return 'too-long';
+        return false;
+    }
+
+    async load_user_data_from_db(pool, login) {
+        var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
+        if (res.rows.length == 0) {
+            return null;
         }
-        if (data.password.length == 0){
-            return 'empty-pass';
-        }
-        if (!validator.isAlphanumeric(data.login, 'en-US')){
-            return 'login-not-allowed-symbols';
-        }
-        return 'ok';
+        return res.rows[0];
+    }
+
+    async load_user_to_memory(pool, data) {
+        var user = new User();
+        await user.load_from_json(pool, this, data);
+        this.users[user.id] = user;
+        return user;
     }
 }

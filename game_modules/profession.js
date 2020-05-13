@@ -1,4 +1,6 @@
-class Profession {
+// very raw and unfinished
+
+module.exports = class Profession {
     async init(pool, world, tag, edges) {
         this.world = world;
         this.tag = tag;

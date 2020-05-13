@@ -1,4 +1,6 @@
-class ProfessionGraph {
+// very raw and unfinished
+
+module.exports = class ProfessionGraph {
     async init(pool, world, professions) {
         this.world = world;
         this.professions = professions;

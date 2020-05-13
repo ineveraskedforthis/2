@@ -1,4 +1,5 @@
 const constants = require("./constants.js")
+var validator = require('validator');
 
 module.exports = 
 {
@@ -46,5 +47,14 @@ module.exports =
             return 'login-not-allowed-symbols';
         }
         return 'ok';
+    },
+
+    validate_buy_data: function (world, data) {
+        return (world.TAGS.indexOf(data.tag) > -1) && (validator.isInt(data.amount)) && (validator.isInt(data.money)) && (validator.isInt(data.max_price) || data.max_price == null);
+    },
+
+    validate_sell_data: function (world, data) {
+        return (world.TAGS.indexOf(data.tag) > -1) && (validator.isInt(data.amount)) && (validator.isInt(data.price));
     }
+
 }

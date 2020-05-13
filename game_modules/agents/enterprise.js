@@ -1,3 +1,5 @@
+// very raw and unfinished
+
 module.exports = class Enterprise extends Consumer {
     init_base_values(world, id, cell_id, data, name = null, AIstate = {state: BasicEnterpriseAIstate, tag: 'basic_enterprise_ai_state'}) {
         super.init_base_values(world, id, data, needs, name)

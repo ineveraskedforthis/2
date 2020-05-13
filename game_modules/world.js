@@ -1,16 +1,19 @@
-var constants = require("./constants.js")
-var common = require("./common.js")
+var constants = require("./constants.js");
+var common = require("./common.js");
 
-var Map = require("./map.js")
-var UserManager = require("./user_manager.js")
-var SocketManager = require("./socket_manager.js")
+var Map = require("./map.js");
+var Battle = require("./battle.js");
+var Character = require("./character.js");
+var UserManager = require("./user_manager.js");
+var SocketManager = require("./socket_manager.js");
+var Pop = require("./agents/pop.js");
 
 
 module.exports = class World {
     async init(pool, io, x, y) {
         this.io = io
         this.user_manager = new UserManager(this)
-        this.socket_manager = new SocketManager(this)
+        this.socket_manager = new SocketManager(pool, io, this)
         this.constants = require("./world_constants_1.js");
         this.x = x;
         this.y = y;
@@ -48,15 +51,15 @@ module.exports = class World {
                 for (let i = 0; i < battle.ids.length; i++) {
                     let character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
-                        this.send_to_character_user(character, 'battle-update', battle.get_data())
-                        log.forEach(log_entry => this.send_message_to_character_user(character, log_entry));
+                        this.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
+                        log.forEach(log_entry => this.socket_manager.send_message_to_character_user(character, log_entry));
                     }
                 }
             } else {
                 for (let i = 0; i < battle.ids.length; i++) {
                     let character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
-                        this.send_to_character_user(character, 'battle-has-ended', null);
+                        this.socket_manager.send_to_character_user(character, 'battle-has-ended', null);
                     }
                 }
                 var winner = battle.is_over();
@@ -123,9 +126,9 @@ module.exports = class World {
     async kill(pool, character) {
         await character.set(pool, 'dead', true);
         if (character.data.is_player) {
-            var user = this.users[character.user_id];
-            await user.get_new_char(pool);
-            this.chars[user.character.id] = user.character;
+            var user = this.user_manager.get_user_by_character(character);
+            var id = await user.get_new_char(pool);
+            this.chars[id] = user.character;
         }
         await character.delete_from_db(pool);
         // this.chars[character.id] = null;
@@ -149,11 +152,11 @@ module.exports = class World {
 
     async create_battle(pool, attackers, defenders) {
         var battle = new Battle();
-        var id = await battle.init(pool, world);
-        for (var i = 0; i < attackers.length; i++) {
+        var id = await battle.init(pool, this);
+        for (let i = 0; i < attackers.length; i++) {
             await battle.add_fighter(pool, attackers[i], 0);
         }
-        for (var i = 0; i < defenders.length; i++) {
+        for (let i = 0; i < defenders.length; i++) {
             await battle.add_fighter(pool, defenders[i], 1);
         }
         this.battles[id] = battle;
@@ -164,21 +167,6 @@ module.exports = class World {
         var battle = this.battles[id];
         await battle.delete_from_db(pool);
         this.battles[id] = null;
-    }
-
-    async load_user_data_from_db(pool, login) {
-        var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
-        if (res.rows.length == 0) {
-            return null;
-        }
-        return res.rows[0];
-    }
-
-    async load_user_to_memory(pool, data) {
-        var user = new User();
-        await user.load_from_json(pool, this, data);
-        this.users[user.id] = user;
-        return user;
     }
 
     async load_character_data_from_db(pool, char_id) {
@@ -195,20 +183,13 @@ module.exports = class World {
         this.chars[data.id] = character;
         return character;
     }
-
-    //check login availability
-    async check_login(pool, login) {
-        var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
-        if (res.rows.length == 0) {
-            return true;
-        }
-        return false;
-    }
-
+    
+    // eslint-disable-next-line no-unused-vars
     get_tick_death_rate(race) {
         return 0.001
     }
 
+    // eslint-disable-next-line no-unused-vars
     get_tick_max_growth(race) {
         return 0.001
     }
