@@ -27,7 +27,7 @@ module.exports = class Market {
         this.sells = {};
         this.tmp_sells = {};
         this.taxes = {};
-        for (var tag of world.TAGS) {
+        for (var tag of world.constants.TAGS) {
             this.taxes[tag] = 0;
             this.planned_money_to_spent[tag] = 0;
             this.total_cost_of_placed_goods[tag] = 0;
@@ -50,7 +50,7 @@ module.exports = class Market {
     }
 
     async update(pool) {
-        for (var tag of this.world.TAGS) {
+        for (var tag of this.world.constants.TAGS) {
             this.planned_money_to_spent[tag] = self.tmp_plannned_money_to_spent[tag];
             this.tmp_plannned_money_to_spent = 0;
             this.total_cost_of_placed_goods[tag] = this.tmp_total_cost_of_placed_goods[tag];
@@ -71,10 +71,8 @@ module.exports = class Market {
         await this.save_to_db(pool);
     }
 
-    async buy(pool, tag, buyer, amount, money, max_price = null) {
-        if (constants.logging) {
-            console.log('market buy', tag, buyer.name, amount, money);
-        }
+    async buy(pool, tag, buyer, amount, money, max_price = undefined, save = true) {
+        common.flag_log('market buy' + [tag, buyer.name, amount, money], constants.logging.market_order.buy);
         if (buyer.savings.get() < money) {
             money = buyer.savings.get(pool);
         }
@@ -88,7 +86,7 @@ module.exports = class Market {
         var j = 0;
         var total_spendings = 0;
         // var y = money;
-        while ((i < tmp.length) && (amount > 0) && ((max_price == null) || (tmp[i].price <= max_price))) {
+        while ((i < tmp.length) && (amount > 0) && ((max_price == undefined) || (tmp[i].price <= max_price))) {
             var tmp_amount = 0;
             while ((i < tmp.length) && (tmp[i].price == tmp[j].price)) {
                 tmp_amount += tmp[i].amount;
@@ -125,15 +123,13 @@ module.exports = class Market {
             }
             await this.new_order(pool, 'BUY', tag, amount, price, buyer);
         }
-        await this.clear_empty_sell_orders[tag];
-        await this.save_to_db(pool);
+        await this.clear_empty_sell_orders(pool, tag);
+        await this.save_to_db(pool, save);
         return total_spendings;
     }
 
     async sell(pool, tag, seller, amount, price) {
-        if (constants.logging) {
-            console.log('market sell', tag, seller.name, amount, price);
-        }
+        common.flag_log('market sell' + tag, seller.name, amount, price, constants.logging.market.sell);
         if (amount > seller.stash.get(tag)) {
             amount = seller.stash.get(tag);
         }
@@ -143,10 +139,8 @@ module.exports = class Market {
             tmp.push(this.world.get_order(i));
         }
         tmp.sort((a, b) => (b.price - a.price));
-        if (constants.logging) {
-            console.log('buy orders');
-            console.log(tmp);
-        }
+        common.flag_log('buy orders', constants.logging.market.sell);
+        common.flag_log(tmp, constants.logging.market.sell);
         var i = 0;
         var j = 0;
         while ((i < tmp.length) && (amount > 0) && (tmp[i].price >= price)) {
@@ -184,9 +178,6 @@ module.exports = class Market {
     }
 
     async new_order(pool, typ, tag, amount, price, agent) {
-        if (constants.logging) {
-            console.log('new market order', typ, tag, amount, price);
-        }
         if (typ == 'SELL') {
             var tmp = agent.stash.transfer(this.stash, tag, amount);
             var order = new MarketOrder();
@@ -197,10 +188,10 @@ module.exports = class Market {
         if (typ == 'BUY') {
             if (price != 0) {
                 let savings = agent.savings.get();
-                let amount = Math.min(amount, Math.floor(savings / price));
-                agent.savings.transfer(this.savings, amount * price);
+                let true_amount = Math.min(amount, Math.floor(savings / price));
+                agent.savings.transfer(this.savings, true_amount * price);
                 let order = new MarketOrder();
-                let order_id = await order.init(pool, this.world, typ, tag, agent, amount, price, this.id);
+                let order_id = await order.init(pool, this.world, typ, tag, agent, true_amount, price, this.id);
                 this.buy_orders[tag].add(order_id);
                 await this.world.add_order(pool, order);
             } else {
@@ -307,7 +298,7 @@ module.exports = class Market {
 
     async get_money_on_hold(pool, agent) {
         let tmp = 0;
-        for (let tag of this.world.TAGS) {
+        for (let tag of this.world.constants.TAGS) {
             for (let i of this.buy_orders[tag]) {
                 let order = this.world.get_order(i);
                 if (order.owner == agent) {
@@ -462,7 +453,7 @@ module.exports = class Market {
 
     get_orders_list() {
         var tmp = [];
-        for (var tag of this.world.TAGS) {
+        for (var tag of this.world.constants.TAGS) {
             for (let i of this.buy_orders[tag]) {
                 let order = this.world.get_order(i);
                 tmp.push(order.get_json());

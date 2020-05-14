@@ -1,3 +1,6 @@
+var common = require("./common.js")
+var constants = require("./constants.js")
+
 class State {
     // eslint-disable-next-line no-unused-vars
     static Enter(pool, agent, save) {}
@@ -18,15 +21,15 @@ class StateMachine {
         this.curr_state = state;
     }
 
-    async init(pool, save) {
+    async init(pool, save = true) {
         this.curr_state.Enter(pool, this.owner, save);
     }
 
-    async update(pool, save) {
+    async update(pool, save = true) {
         await this.curr_state.Execute(pool, this.owner, save);
     }
 
-    async change_state(pool, state, save) {
+    async change_state(pool, state, save = true) {
         this.prev_state = this.state;
         await this.prev_state.Exit(pool, this.owner, save);
         this.curr_state = state;
@@ -36,20 +39,21 @@ class StateMachine {
 
 
 class BasicPopAIstate extends State {
-    static async Execute(pool, agent, save) {
+    static async Execute(pool, agent, save = true) {
         // let cell = agent.get_cell();
         var savings = agent.savings.get();
         var tmp_food_need = Math.max(agent.get_need('food') - agent.stash.get('food'), 0);
         await agent.clear_orders(pool, save);
         var estimated_food_cost = agent.get_local_market().guess_tag_cost('food', tmp_food_need);
-        await agent.buy(pool, 'food', tmp_food_need, Math.min(savings, estimated_food_cost * 3), save);
-        for (var tag of agent.world.TAGS) {
+        await agent.buy(pool, 'food', tmp_food_need, Math.min(savings, estimated_food_cost * 3), undefined, save);
+        for (var tag of agent.world.constants.TAGS) {
             if (tag != 'food') {
                 var tmp_need = Math.max(agent.get_need(tag) - agent.stash.get(tag), 0);
                 if (tmp_need > 0) {
                     var estimated_tag_cost = agent.get_local_market().guess_tag_cost(tag, tmp_need);
                     var money_to_spend_on_tag = Math.min(savings, Math.max(estimated_tag_cost, Math.floor(savings * 0.1)));
-                    await agent.buy(pool, tag, tmp_need, money_to_spend_on_tag, save);
+                    common.flag_log('PopAI | ' + [tag, tmp_need, money_to_spend_on_tag, save], constants.logging.basic_pop_ai);
+                    await agent.buy(pool, tag, tmp_need, money_to_spend_on_tag, undefined, save);
                 }
             }
         }

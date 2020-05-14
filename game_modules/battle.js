@@ -157,7 +157,7 @@ module.exports = class Battle {
             i += 1;
         }
         var leader = this.world.chars[this.ids[i]];
-        for (var tag of this.world.TAGS) {
+        for (var tag of this.world.constants.TAGS) {
             var x = this.stash.get(tag);
             await this.transfer(pool, leader, tag, x);
         }

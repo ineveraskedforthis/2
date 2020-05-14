@@ -1,7 +1,7 @@
 var common = require("../common.js");
 var constants = require("../constants.js")
 
-var Agent = require("../agent.js");
+var Agent = require("./agent.js");
 var Stash = require("../stash.js");
 var Savings = require("../savings.js");
 

@@ -1,7 +1,25 @@
 const constants = {
     version: 0,
-    logging: false,
-    logging_db_queries: false,
+    logging: {
+        agent: {
+            buy: false
+        },
+        market_order: {
+            load_to_db: false,
+            init: false
+        },
+        market: {
+            buy: false,
+            sell: false
+        },
+        sockets: {
+            update_market_info: false,
+            messages: true
+        },
+        db_queries: false,
+        generic: false,
+        basic_pop_ai: false
+    },
     MAX_TACTIC_SLOTS: 6,
     new_user_query: 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)',
     new_char_query: 'INSERT INTO chars (id, user_id, cell_id, name, hp, max_hp, savings, stash, equip, data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',

@@ -6,9 +6,10 @@ var constants = require("./constants.js")
 var common = require("./common.js")
 
 module.exports = class UserManager{
-    constructor() {
+    constructor(world) {
         this.users = {};
         this.users_online = [];
+        this.world = world;
     }
 
     async reg_player(pool, data) {
@@ -18,9 +19,9 @@ module.exports = class UserManager{
         }
         var hash = await bcrypt.hash(data.password, salt);
         var new_user = new User();
-        var id = await new_user.init(pool, this, data.login, hash);
+        var id = await new_user.init(pool, this.world, data.login, hash);
         this.users[id] = new_user;
-        this.chars[new_user.character.id] = new_user.character;
+        this.world.chars[new_user.character.id] = new_user.character;
         return({reg_promt: 'ok', user: new_user});
     }
 
@@ -39,14 +40,14 @@ module.exports = class UserManager{
     }
 
     new_user_online(login) {
-        this.world.users_online[login] = true;
+        this.users_online[login] = true;
         var socket_manager = this.world.socket_manager;
         socket_manager.update_user_list();
     }
     
     user_disconnects(login) {
-        if (login in this.world.users_online) {
-            this.world.users_online[login] = false;
+        if (login in this.users_online) {
+            this.users_online[login] = false;
         }
         var socket_manager = this.world.socket_manager;
         socket_manager.update_user_list();

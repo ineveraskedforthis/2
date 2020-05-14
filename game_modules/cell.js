@@ -1,5 +1,5 @@
 var Market = require("./market.js")
-var ProfessionGraph = require("./prof_graph.js")
+var ProfessionGraph = require("./profession_graph.js")
 var common = require("./common.js")
 var constants = require("./constants.js")
 

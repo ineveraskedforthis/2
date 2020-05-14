@@ -24,8 +24,8 @@ module.exports = class Character {
         this.user_id = user_id;
         this.cell_id = cell_id;
         this.data = {
-            stats: this.world.base_stats.apu,
-            base_resists: this.world.base_resists.pepe,
+            stats: this.world.constants.base_stats.apu,
+            base_resists: this.world.constants.base_resists.pepe,
             is_player: is_player,
             exp: exp,
             level: level,
@@ -34,7 +34,7 @@ module.exports = class Character {
             dead: false,
             in_battle: false,
             battle_id: null,
-            tactic: {s0: this.world.default_tactic_slot},
+            tactic: {s0: this.world.constants.default_tactic_slot},
             status: {
                 stunned: 0
             },
@@ -75,7 +75,7 @@ module.exports = class Character {
         await this.save_to_db(pool)
         var socket = null;
         if (this.data.is_player) {
-            socket = this.world.users[this.user_id].socket;
+            socket = this.world.user_manager.users[this.user_id].socket;
         }
         if (socket != null) {
             socket.emit('char-info', this.get_json());
@@ -100,7 +100,7 @@ module.exports = class Character {
             return
         }
         if (skill in this.data.skills) {
-            if (constants.SKILLS[skill].max_level <= this.data.skills[skill]) {
+            if (this.world.constants.SKILLS[skill].max_level <= this.data.skills[skill]) {
                 return
             }
             this.data.skills[skill] += 1;
@@ -183,7 +183,7 @@ module.exports = class Character {
     get_resists() {
         let res = this.data.base_resists;
         let res_e = this.equip.get_resists();
-        for (let i of this.world.damage_types) {
+        for (let i of this.world.constants.damage_types) {
             res[i] += res_e[i];
         }
         return res
@@ -215,7 +215,7 @@ module.exports = class Character {
     async take_damage(pool, damage) {
         let res = this.get_resists();
         let total_damage = 0;
-        for (let i of this.world.damage_types) {
+        for (let i of this.world.constants.damage_types) {
             let curr_damage = Math.max(1, damage[i] - res[i]);
             total_damage += curr_damage;
             this.update_status_after_damage(pool, i, curr_damage, false);
@@ -277,7 +277,7 @@ module.exports = class Character {
     }
 
     async transfer_all(pool, target) {
-        for (var tag of this.world.TAGS) {
+        for (var tag of this.world.constants.TAGS) {
             var x = this.stash.get(tag);
             await this.transfer(pool, target, tag, x);
         }

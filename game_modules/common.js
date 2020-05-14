@@ -12,7 +12,9 @@ module.exports =
     },
 
     send_query: async function (pool, query, args) {
-        if (constants.logging_db_queries) {
+        if (constants.logging.db_queries) {
+            console.log('!!!!!!!!!!!!!!!')
+            console.log(constants.logging.db_queries)
             console.log(query)
             console.log(args)
         }
@@ -50,11 +52,17 @@ module.exports =
     },
 
     validate_buy_data: function (world, data) {
-        return (world.TAGS.indexOf(data.tag) > -1) && (validator.isInt(data.amount)) && (validator.isInt(data.money)) && (validator.isInt(data.max_price) || data.max_price == null);
+        return (world.constants.TAGS.indexOf(data.tag) > -1) && (validator.isInt(data.amount)) && (validator.isInt(data.money)) && (validator.isInt(data.max_price) || data.max_price == null);
     },
 
     validate_sell_data: function (world, data) {
-        return (world.TAGS.indexOf(data.tag) > -1) && (validator.isInt(data.amount)) && (validator.isInt(data.price));
-    }
+        return (world.constants.TAGS.indexOf(data.tag) > -1) && (validator.isInt(data.amount)) && (validator.isInt(data.price));
+    }, 
 
+    flag_log: function(msg, flag) {
+        if (flag) {
+            console.log(msg)
+        }
+    }
+    
 }

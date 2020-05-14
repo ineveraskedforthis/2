@@ -70,8 +70,9 @@ module.exports = class Agent {
         await target.save_to_db(pool, save_target)
     }
 
-    async buy(pool, tag, amount, money, max_price = null) {
-        await this.get_local_market().buy(pool, tag, this, amount, money, max_price);
+    async buy(pool, tag, amount, money, max_price = undefined, save = true) {
+        common.flag_log("agent.buy | " + [tag, amount, money, max_price], constants.logging.agent.buy)
+        await this.get_local_market().buy(pool, tag, this, amount, money, max_price, save);
     }
 
     async sell(pool, tag, amount, price) {
@@ -83,7 +84,7 @@ module.exports = class Agent {
     }
 
     async clear_orders(pool, save_market = true) {
-        for (var tag of this.world.TAGS) {
+        for (var tag of this.world.constants.TAGS) {
             await this.clear_tag_orders(pool, tag, save_market)
         }
     }

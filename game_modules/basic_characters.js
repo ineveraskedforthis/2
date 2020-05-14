@@ -1,3 +1,5 @@
+var Character = require("./character.js")
+
 class Rat extends Character {
     async init(pool, world, cell_id, name = null) {
         var id = await world.get_new_id(pool, 'char_id');
@@ -5,8 +7,8 @@ class Rat extends Character {
             name = 'rat ' + id;
         }
         this.init_base_values(world, id, name, 10, 10, 0, 0, cell_id);
-        this.data.stats = this.world.base_stats.rat
-        this.data.base_resists = this.world.base_resists.rat
+        this.data.stats = this.world.constants.base_stats.rat
+        this.data.base_resists = this.world.constants.base_resists.rat
         this.equip.data.right_hand = 'bite'
         this.stash.inc('food', 1);
         await this.load_to_db(pool);

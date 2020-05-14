@@ -9,46 +9,49 @@ module.exports = class SocketManager {
         this.pool = pool;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
+        this.real_shit();
     }
 
     real_shit() {
         this.io.on('connection', async socket => {
-            var online = false;
-            var current_user = null;
+            var user_data = {
+                online: false,
+                current_user: null
+            }
             this.connection(socket)
-            socket.on('disconnect', () => this.disconnect(current_user, online));        
-            socket.on('login', async data => this.login(socket, current_user, online, data));
-            socket.on('reg', async data => this.registration(socket, current_user, online, data));
-            socket.on('attack', async msg => this.attack(socket, current_user, online, msg));
-            socket.on('buy', async msg => this.buy(socket, current_user, online, msg));
-            socket.on('sell', async msg => this.sell(socket, current_user, online, msg));
-            socket.on('up-skill', async msg => this.up_skill(socket, current_user, online, msg));
-            socket.on('set-tactic', async msg => this.set_tactic(socket, current_user, online, msg));
-            socket.on('new-message', async msg => this.send_message(socket, msg + '', current_user));
+            socket.on('disconnect', () => this.disconnect(user_data));        
+            socket.on('login', async data => this.login(socket, user_data, data));
+            socket.on('reg', async data => this.registration(socket, user_data, data));
+            socket.on('attack', async msg => this.attack(socket, user_data, msg));
+            socket.on('buy', async msg => this.buy(socket, user_data, msg));
+            socket.on('sell', async msg => this.sell(socket, user_data, msg));
+            socket.on('up-skill', async msg => this.up_skill(socket, user_data, msg));
+            socket.on('set-tactic', async msg => this.set_tactic(socket, user_data, msg));
+            socket.on('new-message', async msg => this.send_message(socket, msg + '', user_data.current_user));
         });
     }
 
-    disconnect(current_user, online,) {
+    disconnect(user_data) {
         console.log('user disconnected');
         var user_manager = this.world.user_manager;
-        if (online == true) {
-            user_manager.user_disconnects(current_user.login);
+        if (user_data.online == true) {
+            user_manager.user_disconnects(user_data.current_user.login);
         }
     }
 
     connection(socket) {
         console.log('a user connected');
-        socket.emit('tags', this.world.TAGS);
-        socket.emit('skill-tree', this.world.SKILLS);
+        socket.emit('tags', this.world.constants.TAGS);
+        socket.emit('skill-tree', this.world.constants.SKILLS);
         socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack']})
         for (var i of this.MESSAGES) {
             socket.emit('new-message', i);
         }
     }
 
-    async login(socket, current_user, online, data) {
+    async login(socket, user_data, data) {
         // console.log(data);
-        if (online) {
+        if (user_data.online) {
             socket.emit('is-login-valid', 'you-are-logged-in');
             return;
         }
@@ -58,17 +61,17 @@ module.exports = class SocketManager {
         var answer = await this.world.login_player(this.pool, data);
         socket.emit('is-login-completed', answer.login_promt);
         if (answer.login_promt == 'ok') {
-            current_user = answer.user;
-            current_user.set_socket(socket);
+            user_data.current_user = answer.user;
+            user_data.current_user.set_socket(socket);
             user_manager.new_user_online(data.login);
-            online = true;
+            user_data.online = true;
             socket.emit('log-message', 'hello ' + data.login);
-            this.update_char_info(socket, current_user);
+            this.update_char_info(socket, user_data.current_user);
         }
     }
 
-    async registration(socket, current_user, online, data) {
-        if (online) {
+    async registration(socket, user_data, data) {
+        if (user_data.online) {
             socket.emit('is-reg-valid', 'you-are-logged-in');
             return;
         }
@@ -79,56 +82,59 @@ module.exports = class SocketManager {
         // console.log(answer);
         socket.emit('is-reg-completed', answer.reg_promt);
         if (answer.reg_promt == 'ok') {
-            current_user = answer.user;
-            current_user.set_socket(socket);            
+            user_data.current_user = answer.user;
+            user_data.current_user.set_socket(socket);            
             user_manager.new_user_online(data.login);
-            online = true;
+            user_data.online = true;
             socket.emit('log-message', 'hello ' + data.login);
-            this.update_char_info(socket, current_user);
+            this.update_char_info(socket, user_data.current_user);
+            common.flag_log('registration is finished', constants.logging.sockets.messages)
         }
     }
 
     // eslint-disable-next-line no-unused-vars
-    async attack(socket, current_user, online, data) {
-        if (current_user != null && !current_user.character.in_battle) {
-            var rat = await this.world.create_monster(this.pool, basic_characters.Rat, current_user.character.cell_id);
-            var battle = await this.world.create_battle(this.pool, [current_user.character], [rat]);
+    async attack(socket, user_data, data) {
+        common.flag_log('attack', constants.logging.sockets.messages)
+        common.flag_log([user_data], constants.logging.sockets.messages)
+        if (user_data.current_user != null && !user_data.current_user.character.in_battle) {
+            var rat = await this.world.create_monster(this.pool, basic_characters.Rat, user_data.current_user.character.cell_id);
+            var battle = await this.world.create_battle(this.pool, [user_data.current_user.character], [rat]);
             socket.emit('battle-has-started', battle.get_data())
         }
     }
 
-    async buy(socket, current_user, online, msg) {
-        var flag = common.validate_buying_data(msg);
-        if ((current_user != null) && flag) {
+    async buy(socket, user_data, msg) {
+        var flag = common.validate_buy_data(this.world, msg);
+        if ((user_data.current_user != null) && flag) {
             if (!(msg.max_price == null)) {
                 msg.max_price = parseInt(msg.max_price);
             }
-            await current_user.character.buy(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.money), msg.max_price);
-            this.update_char_info(socket, current_user);
+            await user_data.current_user.character.buy(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.money), msg.max_price);
+            this.update_char_info(socket, user_data.current_user);
         }
     }
 
-    async sell(socket, current_user, online, msg) {
-        var flag = common.validate_sell_data(msg, this.world);
-        if ((current_user != null) && flag) {
+    async sell(socket, user_data, msg) {
+        var flag = common.validate_sell_data(this.world, msg);
+        if ((user_data.current_user != null) && flag) {
             if (constants.logging) {
                 console.log('sell message', msg);
             }
-            await current_user.character.sell(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
-            this.update_char_info(socket, current_user);
+            await user_data.current_user.character.sell(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
+            this.update_char_info(socket, user_data.current_user);
         }
     }
 
-    async up_skill(socket, current_user, online, msg) {
-        if (msg in constants.SKILLS && current_user != null) {
-            await current_user.character.add_skill(this.pool, msg + '');
-            this.update_char_info(socket, current_user);
+    async up_skill(socket, user_data, msg) {
+        if (msg in constants.SKILLS && user_data.current_user != null) {
+            await user_data.current_user.character.add_skill(this.pool, msg + '');
+            this.update_char_info(socket, user_data.current_user);
         }
     }
 
-    async set_tactic(socket, current_user, online, msg) {
-        if (current_user != null) {
-            await current_user.character.set_tactic(this.pool, msg);
+    async set_tactic(socket, user_data, msg) {
+        if (user_data.current_user != null) {
+            await user_data.current_user.character.set_tactic(this.pool, msg);
         }
     }
 
@@ -156,7 +162,7 @@ module.exports = class SocketManager {
     
     update_market_info(cell) {
         var data = cell.market.get_orders_list();
-        if (constants.logging) {
+        if (constants.logging.sockets.update_market_info) {
             console.log('sending market orders to client');
             console.log(data);
         }

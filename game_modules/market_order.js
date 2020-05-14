@@ -13,7 +13,7 @@ module.exports = class MarketOrder {
         this.price = price;
         this.id = await world.get_new_id(pool, 'market_order_id');
         this.market_id = market_id;
-        if (constants.logging) {
+        if (constants.logging.market_order.init) {
             console.log('market order init');
         }
         await this.load_to_db(pool);
@@ -21,13 +21,8 @@ module.exports = class MarketOrder {
     }
 
     async load_to_db(pool) {
-        if (constants.logging) {
-            console.log('load market order to db');
-            console.log(constants.new_market_order_query);
-            console.log([this.id, this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
-        }
         await common.send_query(pool, constants.new_market_order_query, [this.id, this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
-        if (constants.logging) {
+        if (constants.logging.market_order_load_to_db) {
             console.log('loading completed');
         }
     }
