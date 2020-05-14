@@ -38,7 +38,7 @@ socket.on('is-reg-valid', msg => {
 socket.on('is-reg-completed', msg => {
 	if (msg != 'ok') {
 		alert(msg);
-	}{
+	} else if (msg == 'ok') {
 		document.getElementById('login_container').style.visibility = 'hidden';
 		document.getElementById('game_container').style.visibility = 'visible';
 	}
