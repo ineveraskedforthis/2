@@ -1,4 +1,10 @@
 'use strict'
+
+var TACTIC_TAGS_TARGET = [];
+var TACTIC_TAGS_VALUE_TAG = [];
+var TACTIC_SIGN_SIGN_TAG = [];
+var TACTIC_ACTION_TAG = [];
+
 var images = {}
 
 function load_image(s, callback) {
@@ -8,7 +14,7 @@ function load_image(s, callback) {
     return tmp
 }
 
-var loaded = Array.apply(null, Array(13)).map(() => 0)
+var loaded = Array.apply(null, Array(15)).map(() => 0)
 
 function check_loading() {
     let f = 1;
@@ -31,6 +37,9 @@ images['apu_blood_2'] = load_image('static/img/apu_blood_2.png', () => loaded[9]
 images['apu_blood_3'] = load_image('static/img/apu_blood_3.png', () => loaded[10] = 1);
 images['apu_blood_4'] = load_image('static/img/apu_blood_4.png', () => loaded[11] = 1);
 images['apu_pupils_1'] = load_image('static/img/apu_pupils_1.png', () => loaded[12] = 1)
+images['base_background'] = load_image('static/img/base_background.png', () => loaded[13] = 1)
+images['test_0'] = load_image('static/img/test_0.png', () => loaded[14] = 1)
+images['tost_0'] = load_image('static/img/tost_0.png', () => loaded[15] = 1)
 
 
 function draw_image(context, image, x, y, w, h) {
@@ -162,6 +171,168 @@ class CharacterImage {
         else {
             draw_image(ctx, images[this.images['mouth_0']], 0, 0, this.w, this.h);
         }
+    }
+}
+
+class AnimatedImage {
+    constructor(image_name, count, w, h) {
+        this.tag = image_name;
+        this.count = count;
+        this.w = w;
+        this.h = h;
+        this.current = 0
+    }
+    
+    update() {
+        this.current += 1;
+        if (this.current >= this.count) {
+            this.current = 0
+        }
+    }
+    
+    draw(ctx, x, y, w, h) {
+        // console.log(this.tag + '_' + this.current, x, y, w, h)
+        draw_image(ctx, images[this.tag + '_' + this.current], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
+    }
+}
+
+class Vector {
+    constructor(x, y, z) {
+        this.data = [x, y, z]
+    }
+}
+
+class Line {
+    constructor(p, v) {
+        this.vector = v;
+        this.point = p;
+    }
+}
+
+class Plane {
+    constructor(n, p) {
+        this.normal_vector = n;
+        this.point = p;
+    }
+}
+
+function mult(s, v) {
+    return new Vector(s * v.data[0], s * v.data[1], s * v.data[2])
+}
+
+function sum(a, b) {
+    var c = new Vector(a.data[0] + b.data[0], a.data[1] + b.data[1], a.data[2] + b.data[2])
+    return c
+}
+
+function minus(a, b) {
+    var c = new Vector(a.data[0] - b.data[0], a.data[1] - b.data[1], a.data[2] - b.data[2])
+    return c
+}
+
+function dot(a, b) {
+    return a.data[0] * b.data[1] + a.data[1] * b.data[1] + a.data[2] * b.data[2];
+}
+
+function two_points_to_line(a, b) {
+    return new Line(a, minus(b, a))
+}
+
+function intersect(line, plane) {
+    var n = mult(Math.sqrt(dot(plane.normal_vector, plane.normal_vector)), plane.normal_vector)
+    var d = dot(plane.point, n)
+    var a = dot(line.point, n)
+    var b = dot(line.vector, n)
+    var t = (d - a) / b
+    return sum(mult(t, line.vector), line.point)
+}
+
+class BattleImage {
+    constructor(canvas, tmp_canvas) {
+        this.canvas = canvas.get(0);
+        this.tmp_canvas = tmp_canvas.get(0);
+        this.background = "base_background";
+        this.init()
+        this.w = 800;
+        this.h = 500;
+    }
+
+    init() {
+        this.positions = {}
+        this.ids = {}
+        this.images = {}
+        this.battle_ids = new Set()
+    }
+
+    clear() {
+        console.log('clear battle')
+        this.init()
+    }
+
+    load(data) {
+        console.log('load battle')
+        console.log(data)
+        for (var i in data) {
+            this.add_fighter(data[i].id, data[i].tag, data[i].position)
+        } 
+    }
+
+    update(data) {
+        console.log('update battle')
+        for (var i in data) {
+            this.update_pos(data[i].id, data[i].position)
+        }
+    }
+
+    dist(a, b, positions) {
+        return - positions[a] + positions[b]
+    }
+    
+    draw() {
+        var ctx = this.canvas.getContext('2d')
+        ctx.clearRect(0, 0, this.w, this.h);
+        draw_image(ctx, images[this.background], 0, 0, this.w, this.h)
+        var draw_order = Array.from(this.battle_ids)
+        draw_order.sort((a, b) => this.dist(a, b, this.positions))
+        for (var i of draw_order) {
+            var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
+            // console.log(pos)
+            this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
+        }
+    }
+    
+    add_fighter(battle_id, tag, position) {
+        console.log(battle_id, tag, position)
+        this.battle_ids.add(battle_id)
+        this.positions[battle_id] = position;
+        this.images[battle_id] = new AnimatedImage(tag, 1, 200, 200)
+    }
+    
+    update_pos(battle_id, position) {
+        this.positions[battle_id] = position
+    }
+    
+    calculate_canvas_pos(x, image) {
+        var base_vector = new Vector(0, 0, 1)
+        var point_of_battle_line = new Vector(500, -250, 0)
+        var height_vector = new Vector(0, image.h, 0)
+        var width_vector = new Vector(image.w, 0, 0)
+        var picture_plane = new Plane(base_vector, new Vector(0, 0, 0))
+        var viewer_point = new Vector(0, 0, -30)
+        var bottom_right_position = sum(sum(mult(x, base_vector), point_of_battle_line), mult(0.5, width_vector))
+        var top_left_position = minus(sum(sum(mult(x, base_vector), point_of_battle_line), height_vector), mult(0.5, width_vector))
+        var bottom_ray = two_points_to_line(bottom_right_position, viewer_point)
+        var top_ray = two_points_to_line(top_left_position, viewer_point)
+        var bottom_intersection = intersect(bottom_ray, picture_plane)
+        var top_intersection = intersect(top_ray, picture_plane)
+        // console.log(top_intersection.data)
+        // console.log(bottom_intersection.data)
+        var d = minus(bottom_intersection, top_intersection)
+        var centre = sum(top_intersection, mult(0.5, d))
+        centre = sum(centre, new Vector(this.w / 5, + this.h / 2, 0))
+        var canvas_top_left = minus(centre, mult(0.5, d))
+        // console.log(canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1])
+        return [canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1]]
     }
 }
 
@@ -332,6 +503,143 @@ class SkillTree {
     }
 }
 
+class TacticScreen {
+    constructor(container, socket) {
+        this.data = {};
+        this.select_trigger_target = [];
+        this.select_trigger_value_tag = [];
+        this.select_trigger_sign = [];
+        this.input_trigger_value = [];
+        this.select_action_target = [];
+        this.select_action_action = [];
+        this.tactic_block = [];
+        this.container = container;
+        this.socket = socket;
+        this.list_length = 10
+        var tmp_form = $('<form/>');
+        ((socket) => container.append($('<button/>')
+            .text('save')
+            .click(() => {
+                send_tactic(socket, this.get_tactic()); return false
+            })))(this.socket);
+        container.append($('<button/>')
+            .text('reset')
+            .click(() => {this.reset_tactic(); return false}));
+        for (var i = 0; i < this.list_length; i++) {
+            this.tactic_block.push($('<tr>'));
+            
+            var trigger_row = $('<tr>');
+            this.select_trigger_target.push($(`<select id="${i}-trigger-target"></select>`));
+            this.select_trigger_value_tag.push($(`<select id="${i}-trigger-value_tag"></select>`));
+            this.select_trigger_sign.push($(`<select id="${i}-trigger-sign"></select>`));
+            this.input_trigger_value.push($(`<input id="${i}-trigger-value">`));
+            var trigger_row_2 = $('<td>');
+            trigger_row_2.append(this.select_trigger_target[i]);
+            trigger_row_2.append(this.select_trigger_value_tag[i]);
+            trigger_row_2.append(this.select_trigger_sign[i]);
+            trigger_row_2.append(this.input_trigger_value[i]);
+            trigger_row.append($('<td>').text('trigger'))
+            trigger_row.append(trigger_row_2);
+            
+            var action_row = $('<tr>');            
+            this.select_action_target.push($(`<select id="${i}-action-target"></select>`));
+            this.select_action_action.push($(`<select id="${i}-action-action"></select>`));
+            var action_row_2 = $('<td>');
+            action_row_2.append(this.select_action_target[i]);
+            action_row_2.append(this.select_action_action[i]);
+            action_row.append($('<td>').text('action'));
+            action_row.append(action_row_2);
+            
+            this.tactic_block[i].append(`<td>${i}</td>`);
+
+            var tmp = $('<td>');
+            tmp.append(trigger_row);
+            tmp.append(action_row);
+            this.tactic_block[i].append(trigger_row);
+            this.tactic_block[i].append(action_row);
+            tmp_form.append(this.tactic_block[i]);
+        }
+        this.container.append(tmp_form);
+    };
+    
+    update(data) {
+        this.data = data;
+    }
+    
+    get_tactic() {
+        var tactic = {};
+        for (var i = 0; i < this.list_length; i++) {
+            tactic['s' + i] = {
+                trigger: {
+                    target: this.select_trigger_target[i].val(),
+                    tag: this.select_trigger_value_tag[i].val(),
+                    sign: this.select_trigger_sign[i].val(),
+                    value: parseInt(this.input_trigger_value[i].val()),
+                },
+                action: {
+                    target: this.select_action_target[i].val(),
+                    action: this.select_action_action[i].val(),
+                }
+            }
+            var trigger = tactic['s' + i].trigger;
+            var action = tactic['s' + i].action;
+            // if (undefined in [trigger.target, trigger.tag, trigget.sign, trigger.value, action.target, action.action]) {
+                // tactic['s' + i] = undefined;
+            // }
+        }
+        return tactic;
+    }
+    
+    reset_tactic() {
+        var counter = 0;
+        console.log(this.data);
+        for (var i in this.data) {
+            var slot = this.data[i]
+            if (slot != null) {
+                $(`#${counter}-trigger-target`).val(slot.trigger.target).change();
+                $(`#${counter}-trigger-value_tag`).val(slot.trigger.tag).change();
+                $(`#${counter}-trigger-sign`).val(slot.trigger.sign).change();
+                $(`#${counter}-trigger-value`).val(slot.trigger.value).change();
+                $(`#${counter}-action-target`).val(slot.action.target).change();
+                $(`#${counter}-action-action`).val(slot.action.action).change();
+                this.tactic_block[counter].show()
+            }
+            else {
+                this.tactic_block[counter].hide()
+            }
+            counter += 1;
+        }
+        for (counter; counter < this.list_length; counter++) {
+            this.tactic_block[counter].hide()
+        }
+    }
+    
+    update_tags(tags) {
+        // console.log(tags);
+        for (var target_tag of tags.target) {
+            for (var i = 0; i < this.list_length; i++) {
+                this.select_trigger_target[i].append($('<option>').val(target_tag).text(target_tag));
+                this.select_action_target[i].append($('<option>').val(target_tag).text(target_tag));
+            }
+        };
+        for (var value_tag of tags.value_tags) {
+            for (var i = 0; i < this.list_length; i++) {
+                this.select_trigger_value_tag[i].append($('<option>').val(value_tag).text(value_tag))
+            }
+        };
+        for (var sign of tags.signs) {
+            for (var i = 0; i < this.list_length; i++) {
+                this.select_trigger_sign[i].append($('<option>').val(sign).text(sign))
+            }
+        };
+        for (var action of tags.actions) {
+            for (var i = 0; i < this.list_length; i++){
+                this.select_action_action[i].append($('<option>').val(action).text(action))
+            }
+        }
+    }
+};
+
 function get_pos_in_canvas(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     return {
@@ -345,6 +653,11 @@ function send_skill_up_message(socket, tag) {
     socket.emit('up-skill', tag);
 }
 
+function send_tactic(socket, tactic) {
+    console.log(tactic);
+    socket.emit('set-tactic', tactic);
+}
+
 $(function() {
     var SKILLS = {};
     var socket = io();
@@ -354,10 +667,17 @@ $(function() {
     var market_table = new MarketTable($('#market'));
     var char_image = new CharacterImage($('#char-image'), $('#tmp-canvas'));
     var skill_tree = new SkillTree($('#skill-tree'), socket);
-
+    var tactic_screen = new TacticScreen($('#tactic'), socket);
+    var battle_image = new BattleImage($('#battle-canvas'), $('#battle-canvas-tmp'))
+    $('#battle-canvas-tmp').hide();
+    for (var i = 200; i > 0; i -= 5) {
+        battle_image.add_fighter(i, 'test', i)
+    }
+    
     function draw(tmp) {
         if (check_loading()) {
             char_image.draw()
+            battle_image.draw()
         } 
         game_field.draw();
         window.requestAnimationFrame(draw);
@@ -374,6 +694,7 @@ $(function() {
     $('#market').hide();
     $('#sell-form-con').hide();
     $('#skill-tree').hide();
+    $('#tactic').hide()
 
     $('#game-field').mousedown(() => {
         is_dragging = true;
@@ -453,6 +774,7 @@ $(function() {
         $('#game-log').show();
         $('#market').hide();
         $('#skill-tree').hide();
+        $('#tactic').hide();
     });
 
     $('#show-map').click(() => {
@@ -461,6 +783,7 @@ $(function() {
         $('#game-log').hide();
         $('#market').hide();
         $('#skill-tree').hide();
+        $('#tactic').hide();
     });
 
     $('#show-market').click(() => {
@@ -468,6 +791,7 @@ $(function() {
         $('#game-log').hide();
         $('#market').show();
         $('#skill-tree').hide();
+        $('#tactic').hide();
     });
 
     $('#show-skill-tree').click(() => {
@@ -475,6 +799,15 @@ $(function() {
         $('#game-log').hide();
         $('#market').hide();
         $('#skill-tree').show();
+        $('#tactic').hide();
+    })
+
+    $('#show-tactic').click(() => {
+        $('#game-field').hide();
+        $('#game-log').hide();
+        $('#market').hide();
+        $('#skill-tree').hide();
+        $('#tactic').show();
     })
 
     $('#show-buy-form').click(() => {
@@ -493,33 +826,12 @@ $(function() {
             $('#sell-tag-select').append($('<option>').val(tag).text(tag));
         }
     });
+    
+    socket.on('tags-tactic', msg => {
+        tactic_screen.update_tags(msg);
+    })
 
-    socket.on('is-reg-valid', msg => {
-        if (msg != 'ok') {
-            alert(msg);
-        }
-    });
-
-    socket.on('is-reg-completed', msg => {
-        if (msg != 'ok') {
-            alert(msg);
-        }
-    });
-
-    socket.on('is-login-valid', msg => {
-        if (msg != 'ok') {
-            alert(msg);
-        }
-    });
-
-    socket.on('is-login-completed', msg => {
-        if (msg != 'ok') {
-            alert(msg);
-        } else if (msg == 'ok'){
-            document.getElementById('login_container').style.visibility = 'hidden';
-            document.getElementById('game_container').style.visibility = 'visible';
-        }
-    });
+    
 
     // socket.on('new-user-online', msg => {
     //     $('#users-list').append($('<li>').text(msg));
@@ -558,10 +870,24 @@ $(function() {
         }
         char_image.update(msg.data.other.rage, msg.data.other.blood_covering, msg.data.stats.pow)
         skill_tree.update(SKILLS, msg.data.skills);
+        tactic_screen.update(msg.data.tactic)
         for (let i in msg.stash) {
             $('#char-info').append($('<p>').text(`${i}: ${msg.stash[i]}`));
         };
     });
+
+    socket.on('battle-has-started', data => {
+        battle_image.clear()
+        battle_image.load(data)
+    })
+
+    socket.on('battle-update', data => {
+        battle_image.update(data)
+    })
+
+    socket.on('battle-has-ended', data => {
+        battle_image.clear()
+    })
 
     socket.on('skill-tree', data => {
         SKILLS = data;
