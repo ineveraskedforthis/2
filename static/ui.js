@@ -58,3 +58,17 @@ socket.on('is-login-completed', msg => {
 		document.getElementById('game_container').style.visibility = 'visible';
 	}
 });
+
+
+var char_image = new CharacterImage(document.getElementById('char_image'), document.getElementById('tmp-canvas'));
+
+function draw(tmp) {
+	if (check_loading()) {
+		char_image.draw()
+		// battle_image.draw()
+	} 
+	// game_field.draw();
+	window.requestAnimationFrame(draw);
+}
+
+window.requestAnimationFrame(draw);

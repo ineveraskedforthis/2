@@ -49,9 +49,82 @@ body {
     width: 100%;
     margin-top: 40px;
 }
+
 #reg-frame {
     visibility: hidden;
 }
+
+
+
+
+
+
+
+
+#wire_frame {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    width: 1141px;
+    height: 821px;
+    background-image: url(/static/img/basic_frame.png);
+    background-repeat: no-repeat;
+}
+
+
+#character_window {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 265px;
+    height: 271px;
+}
+#char_image {
+    position: absolute;
+    margin-left: 35px;
+    margin-top: 20px;
+}
+#char_overlay {
+    position: absolute;
+    margin-left: 10px;
+    margin-top: 10px;
+    width: 246px;
+    height: 254px;
+    background-image: url(/static/img/character_frame.png);
+    background-repeat: no-repeat;
+}
+
+
+
+
+#chat_container {
+    position: absolute;
+    top: 10px;
+    left: 265px; 
+    width: 865px;
+    height: 251px;
+    background: rgba(78, 11, 11, 0.7);
+}
+
+#select_message_type > div {
+    position: relative;
+    height: 20px;
+    line-height: 35px;
+    width: 50%;
+    background: rgb(134, 134, 134, .66);
+    float: left;
+    text-align: center;
+}
+#select_message_type > div:hover {
+    background: rgb(166, 166, 166, .66);
+}
+
+#select_message_type > div.selected {
+    background: rgb(166, 166, 166, .66);
+}
+
+
+
 #select_box > div {
     position: relative;
     height: 35px;
@@ -60,11 +133,16 @@ body {
     background: rgb(134, 134, 134, .66);
     float: left;
     text-align: center;
-    :  center;
 }
+
 #select_box > div:hover {
     background: rgb(166, 166, 166, .66);
 }
+
 #select_box > div.selected {
     background: rgb(166, 166, 166, .66);
+}
+
+#temp_canvases {
+    visibility: hidden;
 }

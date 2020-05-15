@@ -30,24 +30,40 @@
             </form>
         </div>
 	</div>
-	<div id="game_container">
-		<div>
-			
 
-			<canvas id='char-image' width=400 height=400></canvas>
-        	<canvas id='tmp-canvas' width=400 height=400></canvas>
-        	<canvas id='game-field' width=400 height=400></canvas>
+
+	<div id="game_container">
+		<div id = "wire_frame">
+			<div id = character_window>
+				<canvas id='char_image' width=240 height=240></canvas>
+				<div id = char_overlay></div>
+			</div>
+			<canvas id='battle-canvas' width=800 height=500></canvas>
+			<div id = 'temp_canvases'>
+				<canvas id='tmp-canvas' width=240 height=240></canvas>
+				<canvas id='battle-canvas-tmp' width=800 height=500></canvas>
+			</div>
+			<canvas id='game-field' width=400 height=400></canvas>
+			<div id="chat_container">
+				<div id="select_messages_type">
+					<div id="open_chat_button" class="selected">chat</div>
+					<div id="open_log_button" >logs</div>
+				</div>
+				<div id='log'>
+				</div>
+				<div id="chat">
+				</div>
+			</div>
 		</div>
-		<div id="chat_container">
-			<div id="chat"></div>
-		</div>
+		<div id = overlay></div>
 	</div>
 
-
-
+	<script src="/static/common.js"></script>
+	<script src="/static/load_images.js"></script>
 	<script src='/socket.io/socket.io.js'></script>
     <!-- <script src='https://code.jquery.com/jquery-1.11.1.js'></script> -->
-    <!-- <script src='/static/main.js'></script> -->
+	<!-- <script src='/static/main.js'></script> -->
+	<script src="/static/character_image.js"></script>
     <script src="/static/ui.js"></script>
 </body>
 </html>
