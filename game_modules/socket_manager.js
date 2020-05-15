@@ -50,7 +50,6 @@ module.exports = class SocketManager {
     }
 
     async login(socket, user_data, data) {
-        // console.log(data);
         if (user_data.online) {
             socket.emit('is-login-valid', 'you-are-logged-in');
             return;
@@ -79,7 +78,6 @@ module.exports = class SocketManager {
         var error_message = common.validate_creds(data);
         socket.emit('is-reg-valid', error_message);
         var answer = await user_manager.reg_player(this.pool, data);
-        // console.log(answer);
         socket.emit('is-reg-completed', answer.reg_promt);
         if (answer.reg_promt == 'ok') {
             user_data.current_user = answer.user;
@@ -96,7 +94,7 @@ module.exports = class SocketManager {
     async attack(socket, user_data, data) {
         common.flag_log('attack', constants.logging.sockets.messages)
         common.flag_log([user_data], constants.logging.sockets.messages)
-        if (user_data.current_user != null && !user_data.current_user.character.in_battle) {
+        if (user_data.current_user != null && !user_data.current_user.character.data.in_battle) {
             var rat = await this.world.create_monster(this.pool, basic_characters.Rat, user_data.current_user.character.cell_id);
             var battle = await this.world.create_battle(this.pool, [user_data.current_user.character], [rat]);
             socket.emit('battle-has-started', battle.get_data())
@@ -117,9 +115,6 @@ module.exports = class SocketManager {
     async sell(socket, user_data, msg) {
         var flag = common.validate_sell_data(this.world, msg);
         if ((user_data.current_user != null) && flag) {
-            if (constants.logging) {
-                console.log('sell message', msg);
-            }
             await user_data.current_user.character.sell(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
             this.update_char_info(socket, user_data.current_user);
         }

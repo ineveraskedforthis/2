@@ -58,7 +58,7 @@ var world = new World();
 
         console.log('database is ready');
         // eslint-disable-next-line no-unused-vars
-        gameloop.setGameLoop(async delta => await world.update(pool), 2000);
+        gameloop.setGameLoop(async delta => await world.update(pool), 1000);
     } catch (e) {
         console.log(e);
     }

@@ -12,8 +12,8 @@
 
 	<div id="login_container">
 		<div id="select_box">
-			<div id="open_login_window_button" class="selected">Я уже смешарик</div>
-			<div id="open_reg_window_button" >Стать смешариком</div>
+			<div id="open_login_window_button" class="selected">I'm already funny ball</div>
+			<div id="open_reg_window_button" >BECOME FUNNY BALL</div>
 		</div>
 		<div id='login-frame'>
             <form action=''>
@@ -37,25 +37,52 @@
 			<div id = character_window>
 				<canvas id='char_image' width=240 height=240></canvas>
 				<div id = char_overlay></div>
-			</div>
-			<canvas id='battle-canvas' width=800 height=500></canvas>
-			<div id = 'temp_canvases'>
-				<canvas id='tmp-canvas' width=240 height=240></canvas>
-				<canvas id='battle-canvas-tmp' width=800 height=500></canvas>
-			</div>
-			<canvas id='game-field' width=400 height=400></canvas>
+			</div>			
+
 			<div id="chat_container">
 				<div id="select_messages_type">
 					<div id="open_chat_button" class="selected">chat</div>
 					<div id="open_log_button" >logs</div>
+					<div>3</div>
+					<div>4</div>
+					<div>5</div>
+					<div>6</div>
+					<div>7</div>
+					<div>8</div>
+					<div>9</div>
+					<div>10</div>
 				</div>
 				<div id='log'>
 				</div>
 				<div id="chat">
 				</div>
+				<div id='send_message_frame'>
+					<input id='message_field', type="text", placeholder='New message'>
+					<input type='submit', id='send_message_button', value= 'Send' >
+				</div>
 			</div>
+
+			<div id = "status_frame">
+				<div id= 'status_label'><p>Status</p></div>
+				<div id = "status"></div>
+			</div>>
+			<div id = "control_frame">
+				<div id = "attack_button", class = 'control_button'></div>
+				<div class = 'control_button'></div>
+			</div>
+
+			<div id = "game_frame">
+				<canvas id='battle_canvas' width=800 height=500></canvas>			
+				<canvas id='map' width=400 height=400></canvas>	
+			</div>
+
 		</div>
 		<div id = overlay></div>
+	</div>
+
+	<div id = 'temp_canvases'>
+		<canvas id='tmp_canvas' width=240 height=240></canvas>
+		<canvas id='battle_canvas_tmp' width=800 height=500></canvas>
 	</div>
 
 	<script src="/static/common.js"></script>
@@ -64,6 +91,7 @@
     <!-- <script src='https://code.jquery.com/jquery-1.11.1.js'></script> -->
 	<!-- <script src='/static/main.js'></script> -->
 	<script src="/static/character_image.js"></script>
+	<script src="/static/battle_image.js"></script>
     <script src="/static/ui.js"></script>
 </body>
 </html>

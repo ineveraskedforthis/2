@@ -14,7 +14,7 @@ const constants = {
         },
         sockets: {
             update_market_info: false,
-            messages: true
+            messages: false
         },
         user: {
             load_from_json: false

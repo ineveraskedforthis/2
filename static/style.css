@@ -9,6 +9,8 @@ body {
     bottom: 0;
     left: 0;
     right: 0;
+    width: 100%;
+    height: 100%;
     background-color: rgb(0, 0, 33, .43);
 }
 #game_container{ 
@@ -106,23 +108,129 @@ body {
     background: rgba(78, 11, 11, 0.7);
 }
 
-#select_message_type > div {
+#select_messages_type > div {
     position: relative;
-    height: 20px;
-    line-height: 35px;
-    width: 50%;
-    background: rgb(134, 134, 134, .66);
+    height: 33px;
+    line-height: 33px;
+    width: 86px;
+    background-image: url(/static/img/chat_button.png);
     float: left;
     text-align: center;
 }
-#select_message_type > div:hover {
-    background: rgb(166, 166, 166, .66);
+#select_messages_type > div:hover {
+    background-image: url(/static/img/chat_button_selected.png);
 }
 
-#select_message_type > div.selected {
-    background: rgb(166, 166, 166, .66);
+#select_messages_type > div.selected {
+    background-image: url(/static/img/chat_button_selected.png);
 }
 
+#log {
+    visibility: hidden;
+    position: absolute;
+    top: 35px;
+    left: 10px;
+    height: 183px;
+    width: 98.5%;
+    overflow: auto;
+}
+
+#chat {
+    position: absolute;
+    top: 35px;
+    left: 10px;
+    height: 183px;
+    width: 98.5%;
+    overflow: auto;
+}
+
+#send_message_frame {
+    position: absolute;
+    top: 223px;
+    left: 10px;
+    height: 22px;
+    width: 100%;
+}
+
+#message_field {
+    position: absolute;
+    width: 300px;
+    height: 22px;
+}
+
+#send_message_button {
+    position: absolute;
+    left: 780px;
+    width: 50px;
+    height: 22px;
+}
+
+
+#status_frame {
+    position: absolute;
+    left: 10px;
+    top: 270px;
+    height: 540px;
+    width: 250px;
+    background: rgba(78, 11, 11, 0.7);
+}
+
+#status {
+    position: absolute;
+    left: 15px;
+    top: 25px;
+    width: 100%;
+    overflow: auto;
+}
+
+#status_label {
+    position: absolute;
+    left: 15px;
+    top: 10px;
+}
+
+
+
+
+
+#control_frame {
+    position: absolute;
+    left: 266px;
+    width: 39px;
+    height: 540px;
+    top: 270px;
+    background: rgba(78, 11, 11, 0.7);
+}
+
+#control_frame > div {
+    top: 5px;
+    position: relative;
+    width: 33px;
+    height: 33px;
+    float: top;
+    left: 3px;
+}
+
+#attack_button {
+    background-image: url(/static/img/attack_button.png);
+}
+
+#attack_button:hover {
+    background-image: url(/static/img/attack_button_hovered.png);
+}
+
+#attack_button:active {
+    background-image: url(/static/img/attack_button_pressed.png);
+}
+
+.control_button {
+    background-image: url(/static/img/attack_button.png);
+}
+
+
+#map {
+    visibility: hidden;
+}
 
 
 #select_box > div {
@@ -145,4 +253,20 @@ body {
 
 #temp_canvases {
     visibility: hidden;
+}
+
+
+#game_frame {
+    position: absolute;
+    top: 270px;
+    left: 305px;
+    height: 540px;
+    width: 822px;
+    background: rgba(50, 5, 5, 0.7);
+}
+
+#battle_canvas {
+    position: relative;
+    top: 10;
+    left: 10;
 }
