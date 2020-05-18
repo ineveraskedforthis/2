@@ -121,7 +121,7 @@ module.exports = class SocketManager {
     }
 
     async up_skill(socket, user_data, msg) {
-        if (msg in constants.SKILLS && user_data.current_user != null) {
+        if (msg in this.world.constants.SKILLS && user_data.current_user != null) {
             await user_data.current_user.character.add_skill(this.pool, msg + '');
             this.update_char_info(socket, user_data.current_user);
         }

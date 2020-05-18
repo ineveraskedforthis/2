@@ -1,3 +1,8 @@
+function send_skill_up_message(socket, tag) {
+    console.log(tag)
+    socket.emit('up-skill', tag);
+}
+
 class SkillTree {
     constructor(container, socket) {
         this.data = {};
@@ -8,8 +13,8 @@ class SkillTree {
     }
 
     draw() {
-        this.container.empty();
-        this.container.append(this.table);
+        this.container.textContent = '';
+        this.container.appendChild(this.table);
     }
 
     update(data = {}, levels = {}) {
@@ -18,31 +23,33 @@ class SkillTree {
         this.table = document.createElement('table');
         let header = this.table.insertRow();
         let skill = header.insertCell(0);
-        let desc = header.insertCell(0);
-        let button = header.insertCell(0);
-        let skill_level = header.insertCell(0);
+        let desc = header.insertCell(1);
+        let button = header.insertCell(2);
+        let skill_level = header.insertCell(3);
         skill.innerHTML = 'skill';
         desc.innerHTML = 'desc';
         button.innerHTML = 'button';
         skill_level.innerHTML = 'skill_level';
-        for (var i in this.data) {
-            var row = $('<tr>');
-            var skill = this.data[i];
-            row.append($('<td>').text(skill.tag));
-            row.append($('<td>').text('required level ' + skill.req_level));
-            var tmp = $('<td>');
+        for (let i in this.data) {
+            let row = this.table.insertRow();
+            let skill = this.data[i];
+            let skill_cell = row.insertCell(0);
+            skill_cell.innerHTML = skill.tag;
+            let req_cell = row.insertCell(1);
+            req_cell.innerHTML = 'required level ' + skill.req_level;
+            let tmp = row.insertCell(2)
             var tag = skill.tag;
-            ((tag) => tmp.append($('<button/>')
-                .text('+')
-                .click(() => send_skill_up_message(this.socket, tag))
-            ))(tag)
-            row.append(tmp);
+            let button = document.createElement('button');
+            tmp.appendChild(button);
+            ((tag) => 
+                button.onclick = () => send_skill_up_message(this.socket, tag)
+            )(tag)
             tmp = 0;
             if (skill.tag in levels) {
                 tmp = levels[skill.tag];
             }
-            row.append($('<td>').text(tmp));
-            this.table.append(row);
+            let level_cell = row.insertCell(3);
+            level_cell.innerHTML = tmp;
         }
         this.draw();
     }

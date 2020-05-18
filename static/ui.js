@@ -5,6 +5,7 @@ var prev_mouse_x = null;
 var prev_mouse_y = null;
 var is_dragging = false;
 
+var SKILLS = {};
 
 function get_pos_in_canvas(canvas, event) {
     var rect = canvas.getBoundingClientRect();
@@ -210,7 +211,7 @@ socket.on('char-info', msg => {
 	}
 
 	char_image.update(msg.data.other.rage, msg.data.other.blood_covering, msg.data.stats.pow)
-	// skill_tree.update(SKILLS, msg.data.skills);
+	skill_tree.update(SKILLS, msg.data.skills);
 	// tactic_screen.update(msg.data.tactic)
 	
 });
@@ -232,6 +233,10 @@ socket.on('market-data', data => {
 	market_table.update(data);
 })
 
+socket.on('skill-tree', data => {
+	SKILLS = data;
+})
+
 socket.on('alert', msg => {
 	alert(msg);
 });
@@ -246,6 +251,9 @@ socket.emit('get-market-data', null);
 // eslint-disable-next-line no-undef
 var map = new Map(document.getElementById('map'));
 map.draw()
+// eslint-disable-next-line no-undef
+var skill_tree = new SkillTree(document.getElementById('skilltree'), socket);
+
 
 for (var i = 200; i > 10; i -= 5) {
 	battle_image.add_fighter(i, 'tost', i)
