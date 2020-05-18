@@ -211,25 +211,20 @@ body {
     left: 3px;
 }
 
-#attack_button {
+.control_button {
     background-image: url(/static/img/attack_button.png);
 }
 
-#attack_button:hover {
+.control_button:hover {
     background-image: url(/static/img/attack_button_hovered.png);
 }
 
-#attack_button:active {
+.control_button:active {
     background-image: url(/static/img/attack_button_pressed.png);
 }
 
 .control_button {
     background-image: url(/static/img/attack_button.png);
-}
-
-
-#map {
-    visibility: hidden;
 }
 
 
@@ -265,8 +260,10 @@ body {
     background: rgba(50, 5, 5, 0.7);
 }
 
-#battle_canvas {
-    position: relative;
-    top: 10;
-    left: 10;
+.game_tab {
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    overflow: auto;
+    visibility: hidden;
 }

@@ -1,10 +1,8 @@
 
 class AnimatedImage {
-    constructor(image_name, count, w, h) {
+    constructor(image_name, count) {
         this.tag = image_name;
         this.count = count;
-        this.w = w;
-        this.h = h;
         this.current = 0
     }
     
@@ -14,7 +12,15 @@ class AnimatedImage {
             this.current = 0
         }
     }
+
+    get_w() {
+        return images[this.tag + '_' + this.current].width
+    }
     
+    get_h() {
+        return images[this.tag + '_' + this.current].height
+    }
+
     draw(ctx, x, y, w, h) {
         // console.log(this.tag + '_' + this.current, x, y, w, h)
         draw_image(ctx, images[this.tag + '_' + this.current], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
@@ -120,7 +126,7 @@ class BattleImage {
         var draw_order = Array.from(this.battle_ids)
         draw_order.sort((a, b) => this.dist(a, b, this.positions))
         for (var i of draw_order) {
-            var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
+            var pos = this.calculate_canvas_pos(this.positions[i] * 2, this.images[i])
             // console.log(pos)
             this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
         }
@@ -130,7 +136,7 @@ class BattleImage {
         console.log(battle_id, tag, position)
         this.battle_ids.add(battle_id)
         this.positions[battle_id] = position;
-        this.images[battle_id] = new AnimatedImage(tag, 1, 200, 200)
+        this.images[battle_id] = new AnimatedImage(tag, 1)
     }
     
     update_pos(battle_id, position) {
@@ -140,8 +146,8 @@ class BattleImage {
     calculate_canvas_pos(x, image) {
         var base_vector = new Vector(0, 0, 1)
         var point_of_battle_line = new Vector(500, -250, 0)
-        var height_vector = new Vector(0, image.h, 0)
-        var width_vector = new Vector(image.w, 0, 0)
+        var height_vector = new Vector(0, image.get_h(), 0)
+        var width_vector = new Vector(image.get_w(), 0, 0)
         var picture_plane = new Plane(base_vector, new Vector(0, 0, 0))
         var viewer_point = new Vector(0, 0, -30)
         var bottom_right_position = sum(sum(mult(x, base_vector), point_of_battle_line), mult(0.5, width_vector))

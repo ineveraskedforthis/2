@@ -1,6 +1,59 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
+var prev_mouse_x = null;
+var prev_mouse_y = null;
+var is_dragging = false;
+
+
+function get_pos_in_canvas(canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+}
+
+document.getElementById('map').onmousedown = () => {
+	is_dragging = true;
+	prev_mouse_x = null;
+	prev_mouse_y = null;
+}
+
+document.onmouseup = () => {
+	is_dragging = false;
+};
+
+document.getElementById('map').onmousemove = event => {
+	if (is_dragging) {
+		if (prev_mouse_x != null) {
+			var dx = event.pageX - prev_mouse_x;
+			var dy = event.pageY - prev_mouse_y;
+			map.move(dx, dy);
+		}
+		prev_mouse_x = event.pageX;
+		prev_mouse_y = event.pageY;
+	}
+	var mouse_pos = get_pos_in_canvas(map.canvas, event);
+	var hovered_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
+	map.hover_hex(hovered_hex[0], hovered_hex[1]);
+};
+
+function show(tag) {
+	document.getElementById('battle_tab').style.visibility = 'hidden';
+	document.getElementById('market_tab').style.visibility = 'hidden';
+	document.getElementById('tactics_tab').style.visibility = 'hidden';
+	document.getElementById('skilltree_tab').style.visibility = 'hidden';
+	document.getElementById('map_tab').style.visibility = 'hidden';
+	document.getElementById(tag).style.visibility = 'visible';
+}
+
+function show_game() {
+	document.getElementById('login_container').style.visibility = 'hidden';
+	document.getElementById('game_container').style.visibility = 'visible';
+	show('battle_tab');
+}
+
 document.getElementById('open_reg_window_button').onclick = () => {
 	document.getElementById('login-frame').style.visibility = 'hidden';
 	document.getElementById('reg-frame').style.visibility = 'visible';
@@ -51,7 +104,21 @@ document.getElementById('send_message_button').onclick = (event) => {
 
 
 document.getElementById('attack_button').onclick = () => {
+	show('battle_tab');
 	socket.emit('attack', null);
+}
+
+document.getElementById('market_button').onclick = () => {
+	show('market_tab');
+}
+document.getElementById('map_button').onclick = () => {
+	show('map_tab');
+}
+document.getElementById('tactics_button').onclick = () => {
+	show('tactics_tab');
+}
+document.getElementById('skilltree_button').onclick = () => {
+	show('skilltree_tab');
 }
 
 
@@ -65,9 +132,7 @@ socket.on('is-reg-completed', msg => {
 	if (msg != 'ok') {
 		alert(msg);
 	} else if (msg == 'ok') {
-		document.getElementById('login_container').style.visibility = 'hidden';
-		document.getElementById('game_container').style.visibility = 'visible';
-		// document.getElementById('bg_fade').style.visibility = 'hidden';
+		show_game();
 	}
 });
 
@@ -81,9 +146,7 @@ socket.on('is-login-completed', msg => {
 	if (msg != 'ok') {
 		alert(msg);
 	} else if (msg == 'ok') {
-		document.getElementById('login_container').style.visibility = 'hidden';
-		document.getElementById('game_container').style.visibility = 'visible';
-		// document.getElementById('bg_fade').style.visibility = 'hidden';
+		show_game();
 	}
 });
 
@@ -165,19 +228,38 @@ socket.on('battle-has-ended', () => {
 	battle_image.clear()
 })
 
+socket.on('market-data', data => {
+	market_table.update(data);
+})
+
+socket.on('alert', msg => {
+	alert(msg);
+});
 
 // eslint-disable-next-line no-undef
 var char_image = new CharacterImage(document.getElementById('char_image'), document.getElementById('tmp_canvas'));
 // eslint-disable-next-line no-undef
 var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_tmp'));
+// eslint-disable-next-line no-undef
+var market_table = new MarketTable(document.getElementById('market'));
+socket.emit('get-market-data', null);
+// eslint-disable-next-line no-undef
+var map = new Map(document.getElementById('map'));
+map.draw()
+
+for (var i = 200; i > 10; i -= 5) {
+	battle_image.add_fighter(i, 'tost', i)
+}
+battle_image.add_fighter(0, 'test', 0)
+
 
 function draw() {
 	// eslint-disable-next-line no-undef
 	if (check_loading()) {
 		char_image.draw()
-		// battle_image.draw()
+		battle_image.draw()
 	} 
-	// game_field.draw();
+	map.draw();
 	window.requestAnimationFrame(draw);
 }
 

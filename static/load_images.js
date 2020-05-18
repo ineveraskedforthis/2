@@ -30,6 +30,6 @@ images['apu_blood_2'] = load_image('static/img/apu_blood_2.png', () => loaded[9]
 images['apu_blood_3'] = load_image('static/img/apu_blood_3.png', () => loaded[10] = 1);
 images['apu_blood_4'] = load_image('static/img/apu_blood_4.png', () => loaded[11] = 1);
 images['apu_pupils_1'] = load_image('static/img/apu_pupils_1.png', () => loaded[12] = 1)
-images['base_background'] = load_image('static/img/base_background.png', () => loaded[13] = 1)
+images['base_background'] = load_image('static/img/background.png', () => loaded[13] = 1)
 images['test_0'] = load_image('static/img/test_0.png', () => loaded[14] = 1)
 images['tost_0'] = load_image('static/img/tost_0.png', () => loaded[15] = 1)

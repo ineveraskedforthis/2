@@ -98,38 +98,7 @@ class GameField {
     }
 }
 
-class MarketTable {
-    constructor(container) {
-        this.data = [];
-        this.container = container;
-        this.table = $('<table>');
-    }
 
-    draw() {
-        this.container.empty();
-        this.container.append(this.table);
-    }
-
-    update(data = []) {
-        this.data = data;
-        this.table = $('<table>');
-        var header = this.populate_row($('<tr>'), ['type', 'tag', 'amount', 'price', 'name']);
-        this.table.append(header);
-        for (var i of this.data) {
-            var row = this.populate_row($('<tr>'), [i.typ, i.tag, i.amount, i.price, i.owner_name]);
-            this.table.append(row);
-        }
-        this.draw();
-    }
-
-    populate_row(row, l) {
-        for (var i of l) {
-            row.append($('<td>').text(i));
-        }
-        return row;
-    }
-
-}
 
 class SkillTree {
     constructor(container, socket) {
@@ -342,7 +311,7 @@ $(function() {
     var selected = null;
     var game_field = new GameField($('#game-field'));
     game_field.draw()
-    var market_table = new MarketTable($('#market'));
+    
     var skill_tree = new SkillTree($('#skill-tree'), socket);
     var tactic_screen = new TacticScreen($('#tactic'), socket);    
     
@@ -350,7 +319,7 @@ $(function() {
     var prev_mouse_x = null;
     var prev_mouse_y = null;
     var is_dragging = false;
-    socket.emit('get-market-data', null);
+    
 
     $('#game-field').mousedown(() => {
         is_dragging = true;
@@ -435,32 +404,9 @@ $(function() {
         })
     });
 
-    
-
-    
-
-    socket.on('battle-has-started', data => {
-        battle_image.clear()
-        battle_image.load(data)
-    })
-
-    socket.on('battle-update', data => {
-        battle_image.update(data)
-    })
-
-    socket.on('battle-has-ended', data => {
-        battle_image.clear()
-    })
-
     socket.on('skill-tree', data => {
         SKILLS = data;
     })
 
-    socket.on('market-data', data => {
-        market_table.update(data);
-    })
-
-    socket.on('alert', msg => {
-        alert(msg);
-    });
+    
 });
