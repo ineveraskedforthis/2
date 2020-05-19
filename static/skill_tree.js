@@ -3,6 +3,7 @@ function send_skill_up_message(socket, tag) {
     socket.emit('up-skill', tag);
 }
 
+// eslint-disable-next-line no-unused-vars
 class SkillTree {
     constructor(container, socket) {
         this.data = {};
@@ -40,6 +41,7 @@ class SkillTree {
             let tmp = row.insertCell(2)
             var tag = skill.tag;
             let button = document.createElement('button');
+            button.innerHTML = '+';
             tmp.appendChild(button);
             ((tag) => 
                 button.onclick = () => send_skill_up_message(this.socket, tag)
@@ -52,12 +54,5 @@ class SkillTree {
             level_cell.innerHTML = tmp;
         }
         this.draw();
-    }
-
-    populate_row(row, l) {
-        for (var i of l) {
-            row.append($('<td>').text(i));
-        }
-        return row;
     }
 }

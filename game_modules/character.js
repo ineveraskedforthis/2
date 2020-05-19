@@ -115,7 +115,7 @@ module.exports = class Character {
 
     async update_stats(pool, race = 'apu', save = true) {
         var tmp = {};
-        var base = this.world.base_stats[race];
+        var base = this.world.constants.base_stats[race];
 
         tmp.musculature = base.musculature;
         if ('warrior_training' in this.data.skills) {

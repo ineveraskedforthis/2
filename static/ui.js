@@ -212,7 +212,7 @@ socket.on('char-info', msg => {
 
 	char_image.update(msg.data.other.rage, msg.data.other.blood_covering, msg.data.stats.pow)
 	skill_tree.update(SKILLS, msg.data.skills);
-	// tactic_screen.update(msg.data.tactic)
+	tactic_screen.update(msg.data.tactic)
 	
 });
 
@@ -237,6 +237,11 @@ socket.on('skill-tree', data => {
 	SKILLS = data;
 })
 
+socket.on('tags-tactic', msg => {
+	tactic_screen.update_tags(msg);
+})
+
+
 socket.on('alert', msg => {
 	alert(msg);
 });
@@ -253,6 +258,8 @@ var map = new Map(document.getElementById('map'));
 map.draw()
 // eslint-disable-next-line no-undef
 var skill_tree = new SkillTree(document.getElementById('skilltree'), socket);
+// eslint-disable-next-line no-undef
+var tactic_screen = new TacticScreen(document.getElementById('tactic'), socket);
 
 
 for (var i = 200; i > 10; i -= 5) {
