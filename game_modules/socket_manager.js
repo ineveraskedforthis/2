@@ -39,13 +39,16 @@ module.exports = class SocketManager {
         }
     }
 
-    connection(socket) {
+    async connection(socket) {
         console.log('a user connected');
+        
         socket.emit('tags', this.world.constants.TAGS);
         socket.emit('skill-tree', this.world.constants.SKILLS);
         socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack']})
-        for (var i of this.MESSAGES) {
-            socket.emit('new-message', i);
+        var messages = await this.load_messages_from_database()
+        for (let i = 0; i < messages.rows.length; i++) {
+            let tmp = messages.rows[i];
+            socket.emit('new-message', {id: tmp.id, msg: tmp.message, user: tmp.sender})
         }
     }
 
@@ -175,25 +178,28 @@ module.exports = class SocketManager {
         this.io.emit('users-online', tmp);
     }
     
-    send_message(socket, msg, user) {
+    async send_message(socket, msg, user) {
         if (msg.length > 1000) {
             socket.emit('new-message', 'message-too-long')
             return
         }
         // msg = validator.escape(msg)
-    
-        var message = {id: this.MESSAGE_ID, msg: msg, user: 'аноньчик'};
-        this.MESSAGE_ID += 1;
+        var id = await this.world.get_new_id(this.pool, 'messages')
+        var message = {id: id, msg: msg, user: 'аноньчик'};
         if (user != null) {
             message.user = user.login;
         }
-        this.MESSAGES.push(message);
-        if (this.MESSAGES.length > 50) {
-            this.MESSAGES.shift()
-        }
+        await this.load_message_to_database(message);
         this.io.emit('new-message', message);
     }
 
-    
-    
+    async load_message_to_database(message) {
+        await common.send_query(this.pool, constants.new_message_query, [message.id, message.msg, message.user]);
+        await common.send_query(this.pool, constants.clear_old_messages_query, [message.id - 50]);
+    }
+
+    async load_messages_from_database() {
+        var rows = await common.send_query(this.pool, constants.get_messages_query);
+        return rows
+    }
 }

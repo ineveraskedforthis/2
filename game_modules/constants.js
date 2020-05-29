@@ -1,5 +1,5 @@
 const constants = {
-    version: 22,
+    version: 25,
     logging: {
         agent: {
             buy: false
@@ -66,6 +66,10 @@ const constants = {
     select_char_by_id_query: 'SELECT * FROM chars WHERE id = ($1)',
     select_cell_by_id_query: 'SELECT * FROM cells WHERE id = ($1)',
     select_market_by_id_query: 'SELECT * FROM markets WHERE id = ($1)',
+
+    new_message_query: 'INSERT INTO messages (id, message, sender) VALUES ($1, $2, $3)',
+    clear_old_messages_query: 'DELETE FROM messages WHERE id < ($1)',
+    get_messages_query: 'SELECT * FROM messages',
 };
 
 module.exports = constants;

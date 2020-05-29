@@ -13,10 +13,12 @@ module.exports =
 
     send_query: async function (pool, query, args) {
         if (constants.logging.db_queries) {
-            console.log('!!!!!!!!!!!!!!!')
-            console.log(constants.logging.db_queries)
-            console.log(query)
-            console.log(args)
+            if ((!query.includes('market')) & (!query.includes('chars'))) {
+                console.log('!!!!!!!!!!!!!!!')
+                console.log(constants.logging.db_queries)
+                console.log(query)
+                console.log(args)
+            }
         }
         return pool.query(query, args)
     },
@@ -44,7 +46,7 @@ module.exports =
     },
         
     init_ids: async function (client) {
-        var id_types = ['battle_id', 'user_id', 'char_id', 'market_order_id', 'market_id', 'cell_id', 'agent_id'];
+        var id_types = ['battle_id', 'user_id', 'char_id', 'market_order_id', 'market_id', 'cell_id', 'agent_id', 'messages'];
         for (var i = 0; i < id_types.length; i++) {
             await client.query(constants.init_id_query, [id_types[i], 0]);
         }

@@ -36,7 +36,7 @@ var world = new World(io, 1, 1);
 (async () => {
     try {
         var client = await pool.connect();
-        let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises']
+        let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises', 'messages']
         let ver = await common.get_version(client);
         console.log('version from db ');
         console.log(ver.version);
@@ -58,6 +58,7 @@ var world = new World(io, 1, 1);
             await client.query('CREATE TABLE consumers (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb)')
             await client.query('CREATE TABLE pops (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, race_tag varchar(50), ai_tag varchar(50))')
             await client.query('CREATE TABLE enterprises (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, ai_tag varchar(50))')
+            await client.query('CREATE TABLE messages (id int PRIMARY KEY, message varchar(1000), sender varchar(200))')           
             await common.init_ids(client);
             await client.end();
             await world.init(pool);

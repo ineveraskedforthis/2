@@ -45,8 +45,6 @@ module.exports = class MarketOrder {
         this.owner_id = data.owner_id;
         this.owner_tag = data.owner_tag;
         this.owner = this.world.get_from_id_tag(this.owner_id, this.owner_tag);
-        console.log(this.owner_id, this.owner_tag)
-        console.log(this.owner.name)
         this.amount = data.amount;
         this.price = data.price;
         this.id = data.id;
