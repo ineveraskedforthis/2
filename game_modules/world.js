@@ -1,3 +1,4 @@
+var basic_characters = require("./basic_characters.js");
 var constants = require("./constants.js");
 var common = require("./common.js");
 
@@ -7,29 +8,102 @@ var Character = require("./character.js");
 var UserManager = require("./user_manager.js");
 var SocketManager = require("./socket_manager.js");
 var Pop = require("./agents/pop.js");
+var MarketOrder = require("./market_order")
+
+
 
 
 module.exports = class World {
-    async init(pool, io, x, y) {
+    constructor(io, x, y) {
         this.io = io
-        this.user_manager = new UserManager(this)
-        this.socket_manager = new SocketManager(pool, io, this)
-        this.constants = require("./world_constants_1.js");
+        this.user_manager = new UserManager(this);
         this.x = x;
         this.y = y;
+        this.map = new Map(this);
+        this.constants = require("./world_constants_1.js");
         this.agents = {};
-        this.BASE_BATTLE_RANGE = 10;
         this.chars = {};
         this.orders = {};
-        this.map = new Map();
+        this.battles = {}
+        this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {}
         this.HISTORY_PRICE['food'] = 10
         this.HISTORY_PRICE['clothes'] = 10
-        await this.map.init(pool, this);
-        this.battles = {}
+    }
+
+    async init(pool) {
+        this.socket_manager = new SocketManager(pool, this.io, this);
+        await this.map.init(pool);
+        await common.send_query(pool, constants.save_world_size_query, [this.x, this.y])
+        await this.add_starting_agents(pool);
+    }
+
+    async add_starting_agents(pool) {
         let pop = await this.create_pop(pool, 0, 0, 100, {'food': 1, 'clothes': 1}, 'pepe', 'random dudes', 100000)
         this.agents[pop.id] = pop;
-        await common.send_query(pool, constants.save_world_size_query, [x, y])
+        var rat_trader = await this.create_monster(pool, basic_characters.Rat, 0);
+        rat_trader.savings.inc(1000);
+        await rat_trader.buy(pool, 'food', 1000, 1000);
+    }
+
+    async load(pool) {
+        this.socket_manager = new SocketManager(pool, this.io, this);
+        await this.load_size(pool);
+        await this.map.load(pool);
+        await this.load_agents(pool);
+        await this.load_characters(pool);
+        await this.load_orders(pool);
+        await this.load_battles(pool);
+    }
+
+    async load_size(pool) {
+        let size = await common.send_query(pool, constants.load_world_size_query);
+        this.x = size.rows[0].x;
+        this.y = size.rows[0].y;
+    }
+
+    async load_agents(pool) {
+        await this.load_pops(pool);
+    }
+
+    async load_pops(pool) {
+        let res = await common.send_query(pool, constants.load_pops_query);
+        for (let i of res.rows) {
+            let pop = new Pop(this);
+            pop.load_from_json(i);
+            this.agents[pop.id] = pop;
+        }
+        console.log('pops loaded')
+    }
+
+    async load_characters(pool) {
+        let res = await common.send_query(pool, constants.load_chars_query);
+        for (let i of res.rows) {
+            let char = new Character(this);
+            char.load_from_json(i);
+            this.chars[char.id] = char;
+        }
+        console.log('characters loaded')
+    }
+
+    async load_orders(pool) {
+        let res = await common.send_query(pool, constants.load_orders_query);
+        for (let i of res.rows) {
+            let order = new MarketOrder(this);
+            order.load_from_json(i);
+            this.orders[order.id] = order;
+        }
+        console.log('orders loaded')
+    }
+
+    async load_battles(pool) {
+        let res = await common.send_query(pool, constants.load_battles_query);
+        for (let i of res.rows) {
+            let battle = new Battle(this);
+            battle.load_from_json(i);
+            this.battles[battle.id] = battle;
+        }
+        console.log('battles loaded')
     }
 
     async update(pool) {
@@ -123,6 +197,21 @@ module.exports = class World {
         return this.orders[order_id];
     }
 
+    get_from_id_tag(id, tag) {
+        if (tag == 'agent') {
+            return this.agents[id]
+        }
+        if (tag == 'chara') {
+            return this.chars[id]
+        }
+        if (tag == 'pop') {
+            return this.agents[id]
+        }
+        if (tag == 'cell') {
+            return this.get_cell_by_id(id)
+        }
+    }
+
     async kill(pool, character) {
         await character.set(pool, 'dead', true);
         if (character.data.is_player) {
@@ -135,24 +224,24 @@ module.exports = class World {
     }
 
     async create_monster(pool, monster_class, cell_id) {
-        var monster = new monster_class();
-        var id = await monster.init(pool, this, cell_id);
+        var monster = new monster_class(this);
+        var id = await monster.init(pool, cell_id);
         this.chars[id] = monster;
         return monster;
     }
 
     async create_pop(pool, x, y, size, needs, race_tag, name, savings) {
-        let pop = new Pop();
+        let pop = new Pop(this);
         let cell_id = this.get_cell_id_by_x_y(x, y)
-        await pop.init(pool, this, cell_id, size, needs, race_tag, name)
+        await pop.init(pool, cell_id, size, needs, race_tag, name)
         await pop.savings.inc(savings)
         await pop.save_to_db(pool)
         return pop
     }
 
     async create_battle(pool, attackers, defenders) {
-        var battle = new Battle();
-        var id = await battle.init(pool, this);
+        var battle = new Battle(this);
+        var id = await battle.init(pool);
         for (let i = 0; i < attackers.length; i++) {
             await battle.add_fighter(pool, attackers[i], 0);
         }

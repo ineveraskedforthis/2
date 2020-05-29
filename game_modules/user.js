@@ -4,20 +4,28 @@ var common = require("./common.js");
 var Character = require("./character.js")
 
 module.exports = class User {
-    async init(pool, world, login, hash) {
-        this.login = login;
-        this.id = await world.get_new_id(pool, 'user_id');
-        this.socket = null;
+    constructor(world) {
         this.world = world;
-        this.password_hash = hash;
+    }
+
+    async init(pool) {        
+        this.id = await this.world.get_new_id(pool, 'user_id');
         await this.get_new_char(pool);
         await this.load_to_db(pool);
         return this.id;
     }
 
+    set_login(login) {
+        this.login = login;
+    }
+
+    set_password_hash(hash) {
+        this.password_hash = hash
+    }
+
     async get_new_char(pool) {
-        this.character = new Character();
-        this.char_id = await this.character.init(pool, this.world, this.login, 0, this.id);
+        this.character = new Character(this.world);
+        this.char_id = await this.character.init(pool, this.login, 0, this.id);
         return this.char_id
     }
 
@@ -25,17 +33,19 @@ module.exports = class User {
         this.socket = socket;
     }
 
-    async load_from_json(pool, world, data) {
+    async load_from_json(pool, data) {
         common.flag_log(data, constants.logging.user.load_from_json);
-        this.login = data.login;
         this.id = data.id;
-        this.socket = null;
-        this.world = world;
-        this.password_hash = data.password_hash;
+        this.set_login(data.login)
+        this.set_password_hash(data.password_hash)
         this.char_id = data.char_id;
-        var char_data = await world.load_character_data_from_db(pool, this.char_id);
-        var character = await world.load_character_data_to_memory(pool, char_data);
-        this.character = character;
+        if (this.char_id in this.world.chars) {
+            this.character = this.world.chars[this.char_id]
+        } else {
+            var char_data = await this.world.load_character_data_from_db(pool, this.char_id);
+            var character = await this.world.load_character_data_to_memory(pool, char_data);
+            this.character = character;
+        }
     }
 
     async load_to_db(pool) {

@@ -2,21 +2,27 @@ var common = require("../common.js");
 var constants = require("../constants.js")
 
 var StateMachine = require("../StateMachines.js").StateMachine
-var BasicPopAIstate = require("../StateMachines.js").BasicPopAIstate
+var BasicPopAIstate = require("../StateMachines.js").AIs['basic_pop_ai_state']
+var AIs = require("../StateMachines.js").AIs
 var Consumer = require("./consumer.js")
 
 module.exports = class Pop extends Consumer {
-    init_base_values(world, id, cell_id, data, race_tag, name = null, AIstate = {state: BasicPopAIstate, tag: 'basic_pop_ai_state'}) {
-        super.init_base_values(world, id, cell_id, data, name);
-        this.AI = new StateMachine(this, AIstate.state);
+    constructor(world) {
+        super(world);
+        this.tag = 'pop'
+    }
+
+    init_base_values(id, cell_id, data, race_tag, name = null, AIstate = BasicPopAIstate) {
+        super.init_base_values(id, cell_id, data, name);
+        this.AI = new StateMachine(this, AIstate);
         this.race_tag = race_tag;
         this.data.growth_mod = 0;
         this.data.death_mod = 0;
     }
 
-    async init(pool, world, cell_id, size, needs, race_tag, name = null, AIstate = {state: BasicPopAIstate, tag: 'basic_pop_ai_state'}) {
-        var id = await world.get_new_id(pool, 'agent_id');
-        this.init_base_values(world, id, cell_id, {'size': size, 'needs': needs}, race_tag, name, AIstate);
+    async init(pool, cell_id, size, needs, race_tag, name = null, AIstate = BasicPopAIstate) {
+        var id = await this.world.get_new_id(pool, 'agent_id');
+        this.init_base_values(id, cell_id, {'size': size, 'needs': needs}, race_tag, name, AIstate);
         await this.load_to_db(pool);
     }
 
@@ -79,9 +85,9 @@ module.exports = class Pop extends Consumer {
         }
     }
 
-    async load_from_json(pool, world, data) {
-        super.load_from_json(pool, world, data);
+    async load_from_json(data) {
+        super.load_from_json(data);
         this.race_tag = data.race_tag;
-        this.ai = world.get_ai(data.ai_tag);
+        this.AI = new StateMachine(this, AIs[data.ai_tag]);
     }
 }

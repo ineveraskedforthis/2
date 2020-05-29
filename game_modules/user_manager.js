@@ -18,11 +18,17 @@ module.exports = class UserManager{
             return {reg_promt: 'login-is-not-available', user: null};
         }
         var hash = await bcrypt.hash(data.password, salt);
-        var new_user = new User();
-        var id = await new_user.init(pool, this.world, data.login, hash);
+        var new_user = this.create_new_user();
+        new_user.set_login(data.login);
+        new_user.set_password_hash(hash);
+        var id = await new_user.init(pool);
         this.users[id] = new_user;
         this.world.chars[new_user.character.id] = new_user.character;
         return({reg_promt: 'ok', user: new_user});
+    }
+
+    create_new_user() {
+        return new User(this.world)
     }
 
     async login_player(pool, data) {
@@ -74,8 +80,8 @@ module.exports = class UserManager{
     }
 
     async load_user_to_memory(pool, data) {
-        var user = new User();
-        await user.load_from_json(pool, this.world, data);
+        var user = this.create_new_user();
+        await user.load_from_json(pool, data);
         this.users[user.id] = user;
         return user;
     }

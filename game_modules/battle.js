@@ -6,15 +6,18 @@ var Savings = require("./savings.js");
 var BattleAI = require("./battle_ai.js")
 
 module.exports = class Battle {
-    async init(pool, world) {
-        this.id = await world.get_new_id(pool, 'battle_id');
-        // var range = world.BASE_BATTLE_RANGE;
-        this.world = world;
+    constructor(world) {
+        this.world = world
         this.ids = [];
         this.teams = [];
         this.positions = [];
         this.stash = new Stash();
         this.savings = new Savings();
+    }
+
+    async init(pool) {
+        this.id = await this.world.get_new_id(pool, 'battle_id');
+        // var range = world.BASE_BATTLE_RANGE;        
         await this.load_to_db(pool);
         return this.id;
     }
@@ -144,11 +147,20 @@ module.exports = class Battle {
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.new_battle_query, [this.id, this.ids, this.teams, this.positions]);
+        await common.send_query(pool, constants.new_battle_query, [this.id, this.ids, this.teams, this.positions, this.savings.get_json(), this.stash.get_json()]);
+    }
+
+    load_from_json(data) {
+        this.id = data.id
+        this.ids = data.ids
+        this.teams = data.teams
+        this.positions = data.position
+        this.savings.load_from_json(data.savings)
+        this.stash.load_from_json(data.stash)
     }
 
     async save_to_db(pool) {
-        await common.send_query(pool, constants.update_battle_query, [this.id, this.ids, this.teams, this.positions])
+        await common.send_query(pool, constants.update_battle_query, [this.id, this.ids, this.teams, this.positions, this.savings.get_json(), this.stash.get_json()])
     }
 
     async delete_from_db(pool) {

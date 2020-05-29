@@ -1,19 +1,39 @@
 var Cell = require("./cell.js")
 
 module.exports = class Map {
-    async init(pool, world) {
+    constructor (world) {
         this.world = world;
         this.x = world.x;
         this.y = world.y;
         this.cells = [];
+    }
+
+    async init(pool) {
         for (var i = 0; i < this.x; i++) {
             var tmp = []
             for (var j = 0; j < this.y; j++) {
-                var cell = new Cell();
-                await cell.init(pool, world, this, i, j, null, -1);
+                var cell = new Cell(this.world, this, i, j, null, -1);
+                await cell.init(pool);
                 tmp.push(cell);
             }
             this.cells.push(tmp);
+        }
+    }
+
+    async load(pool) {
+        for (let i = 0; i < this.x; i++) {
+            let tmp = []
+            for (let j = 0; j < this.y; j++) {
+                let cell = new Cell(this.world, this, i, j, null, -1);
+                tmp.push(cell);
+            }
+            this.cells.push(tmp);
+        }
+
+        for (let i = 0; i < this.x; i++) {
+            for (let j = 0; j < this.y; j++) {
+                this.cells[i][j].load(pool);
+            }
         }
     }
 

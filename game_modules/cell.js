@@ -4,24 +4,34 @@ var common = require("./common.js")
 var constants = require("./constants.js")
 
 module.exports = class Cell {
-    async init(pool, world, map, i, j, name, owner_id) {
-        this.name = i + ' ' + j;
+    constructor(world, map, i, j, name, owner_id) {
         this.world = world;
         this.map = map;
         this.i = i;
         this.j = j;
-        this.id = world.get_cell_id_by_x_y(i, j);
-        var market = new Market();
-        this.market_id = await market.init(pool, world, this.id, market);
-        this.market = market;
         this.owner_id = owner_id;
+        this.id = world.get_cell_id_by_x_y(i, j);
+        this.tag = 'cell';
+        this.market = new Market(world, this);
+    }
+
+    async init(pool, world) {     
+        this.name = this.i + ' ' + this.j;   
+        this.market_id = await this.market.init(pool, world, this.id, this.market);        
         this.job_graph = new ProfessionGraph(pool, world, this.world.PROFESSIONS);
         await this.load_to_db(pool);
-        return this.id;
+    }
+
+    async load(pool) {
+        let tmp = await common.send_query(pool, constants.select_cell_by_id_query, [this.id]);
+        tmp = tmp.rows[0];
+        this.name = tmp.name;
+        this.market_id = tmp.market_id;
+        await this.market.load(pool, this.market_id);
     }
 
     async update(pool) {
-        this.world.get_market(this.market_id).update(pool);
+        await this.world.get_market(this.market_id).update(pool);
     }
 
     async get_market(pool) {

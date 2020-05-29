@@ -26,6 +26,22 @@ module.exports =
             await client.query('DROP TABLE IF EXISTS ' + tables[i]);
         }
     },
+
+    get_version: async function (client) {
+        await client.query('CREATE TABLE IF NOT EXISTS version (version int)');
+        let res = await client.query('SELECT * FROM version');
+        if (res.rows.length == 0) {
+            await client.query('INSERT INTO version (version) VALUES ($1)', [0]);
+            return {version: 0};
+        }
+        return res.rows[0];
+    },
+
+    set_version: async function (client, version) {
+        await client.query('DROP TABLE IF EXISTS version');
+        await client.query('CREATE TABLE IF NOT EXISTS version (version int)');
+        await client.query('INSERT INTO version (version) VALUES ($1)', [version]);
+    },
         
     init_ids: async function (client) {
         var id_types = ['battle_id', 'user_id', 'char_id', 'market_order_id', 'market_id', 'cell_id', 'agent_id'];

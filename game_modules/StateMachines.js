@@ -60,12 +60,14 @@ class BasicPopAIstate extends State {
         //update desire to change work
     }
 
-    tag() {
+    static tag() {
         return 'basic_pop_ai_state';
     }
 }
 
-class BasicEnterpriseAIstate extends State {
+
+
+//class BasicEnterpriseAIstate extends State {
     // static async Execute(pool, agent, save) {
     //     var market = agent.get_local_market();
     //     for (var i in agent.data.input) {
@@ -158,11 +160,14 @@ class BasicEnterpriseAIstate extends State {
     // tag() {
     //     return 'basic_enterprise_ai_state';
     // }
+
+//}
+var AIs = {
+    'basic_pop_ai_state': BasicPopAIstate
 }
 
 module.exports = {
     State: State,
     StateMachine: StateMachine,
-    BasicPopAIstate: BasicPopAIstate,
-    BasicEnterpriseAIstate: BasicEnterpriseAIstate
+    AIs: AIs
 }

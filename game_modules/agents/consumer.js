@@ -7,8 +7,13 @@ var Savings = require("../savings.js");
 
 module.exports = 
 class Consumer extends Agent {
-    init_base_values(world, id, cell_id, data, name = null) {
-        super.init_base_values(world, id, cell_id, name);
+    constructor(world) {
+        super(world);
+        this.tag = 'consu'
+    }
+    
+    init_base_values(id, cell_id, data, name = null) {
+        super.init_base_values(id, cell_id, name);
         this.data = data;
     }
 
@@ -22,9 +27,9 @@ class Consumer extends Agent {
         return this.data.needs[tag] * this.data.size
     }
 
-    async init(pool, world, cell_id, data, name = null) {
-        var id = await world.get_new_id('consumer');
-        this.init_base_values(world, id, cell_id, data, name);
+    async init(pool, cell_id, data, name = null) {
+        var id = await this.world.get_new_id('consumer');
+        this.init_base_values(id, cell_id, data, name);
         await this.load_to_db(pool);
     }
 
@@ -79,14 +84,11 @@ class Consumer extends Agent {
         await common.send_query(pool, constants.update_consumer_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data]);
     }
 
-    async load_from_json(pool, world, data) {
-        this.world = world;
+    async load_from_json(data) {
         this.id = data.id;
         this.cell_id = data.cell_id;
         this.name = data.name;
-        this.savings = new Savings();
         this.savings.load_from_json(data.savings);
-        this.stash = new Stash();
         this.stash.load_from_json(data.stash);
         this.data = data.data;
     }

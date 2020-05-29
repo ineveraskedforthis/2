@@ -5,14 +5,18 @@ var Stash = require("../stash.js");
 var Savings = require("../savings.js")
 
 module.exports = class Agent {
-    init_base_values(world, id, cell_id, name = null) {
+    constructor(world) {
         this.world = world;
+        this.savings = new Savings;
+        this.stash = new Stash;
+        this.tag = 'agent'
+    }
+
+    init_base_values(id, cell_id, name = null) {
         this.id = id;
         this.cell_id = cell_id;
         this.name = name;
         this.update_name();
-        this.savings = new Savings;
-        this.stash = new Stash;
         this.type = 'agent';
     }
 
@@ -22,9 +26,9 @@ module.exports = class Agent {
         }
     }
 
-    async init(pool, world, cell_id, name = null) {
-        var id = await world.get_new_id(pool, 'agent_id');
-        this.init_base_values(world, id, cell_id, name);
+    async init(pool, cell_id, name = null) {
+        var id = await this.world.get_new_id(pool, 'agent_id');
+        this.init_base_values(id, cell_id, name);
         await this.load_to_db(pool);
     }
 
@@ -44,8 +48,7 @@ module.exports = class Agent {
         await common.send_query(pool, constants.update_agent_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json()]);
     }
 
-    async load_from_json(pool, world, data) {
-        this.world = world;
+    async load_from_json(data) {
         this.id = data.id;
         this.cell_id = data.cell_id;
         this.name = data.name;

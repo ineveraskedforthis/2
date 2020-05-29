@@ -6,10 +6,9 @@ const constants = require("./constants.js");
 
 // remember to check how taxes are working (spoiler: wrong)
 module.exports = class Market {
-    async init(pool, world, cell_id, owner) {
-        this.id = await world.get_new_id(pool, 'market_id');
-        this.cell_id = cell_id;
+    constructor(world, owner) {
         this.owner = owner;
+        this.owner_tag = owner.tag;
         this.world = world;
         this.savings = new Savings();
         this.stash = new Stash();
@@ -27,7 +26,11 @@ module.exports = class Market {
         this.sells = {};
         this.tmp_sells = {};
         this.taxes = {};
-        for (var tag of world.constants.TAGS) {
+    }
+
+    async init(pool) {
+        this.id = await this.world.get_new_id(pool, 'market_id');
+        for (var tag of this.world.constants.TAGS) {
             this.taxes[tag] = 0;
             this.planned_money_to_spent[tag] = 0;
             this.total_cost_of_placed_goods[tag] = 0;
@@ -47,6 +50,13 @@ module.exports = class Market {
         }
         await this.load_to_db(pool);
         return this.id
+    }
+
+    async load(pool, id) {
+        this.id = id
+        let tmp = await common.send_query(pool, constants.select_market_by_id_query, [this.id]);
+        tmp = tmp.rows[0];
+        this.load_from_json(tmp.data)
     }
 
     async update(pool) {
@@ -180,8 +190,8 @@ module.exports = class Market {
     async new_order(pool, typ, tag, amount, price, agent) {
         if (typ == 'SELL') {
             var tmp = agent.stash.transfer(this.stash, tag, amount);
-            var order = new MarketOrder();
-            var order_id = await order.init(pool, this.world, typ, tag, agent, tmp, price, this.id);
+            var order = new MarketOrder(this.world);
+            var order_id = await order.init(pool, typ, tag, agent, tmp, price, this.id);
             this.sell_orders[tag].add(order_id);
             await this.world.add_order(pool, order);
         }
@@ -190,13 +200,13 @@ module.exports = class Market {
                 let savings = agent.savings.get();
                 let true_amount = Math.min(amount, Math.floor(savings / price));
                 agent.savings.transfer(this.savings, true_amount * price);
-                let order = new MarketOrder();
-                let order_id = await order.init(pool, this.world, typ, tag, agent, true_amount, price, this.id);
+                let order = new MarketOrder(this.world);
+                let order_id = await order.init(pool, typ, tag, agent, true_amount, price, this.id);
                 this.buy_orders[tag].add(order_id);
                 await this.world.add_order(pool, order);
             } else {
                 let order = new MarketOrder();
-                let order_id = await order.init(pool, this.world, typ, tag, agent, amount, price, this.id);
+                let order_id = await order.init(pool, typ, tag, agent, amount, price, this.id);
                 this.buy_orders[tag].add(order_id);
                 await this.world.add_order(pool, order);
             }
@@ -478,12 +488,18 @@ module.exports = class Market {
     get_json() {
         var tmp = {};
         tmp.id = this.id;
-        tmp.cell_id = this.cell_id;
         tmp.owner = this.owner.id;
+        tmp.owner_tag = this.owner_tag;
         tmp.savings = this.savings.get_json();
         tmp.stash = this.stash.get_json();
-        tmp.buy_orders = this.buy_orders;
-        tmp.sell_orders = this.sell_orders;
+        tmp.buy_orders = {}
+        tmp.sell_orders = {}
+
+        for (let tag of this.world.constants.TAGS) {
+            tmp.buy_orders[tag] = Array.from(this.buy_orders[tag].values())
+            tmp.sell_orders[tag] = Array.from(this.sell_orders[tag].values())
+        }
+
         tmp.planned_money_to_spent = this.planned_money_to_spent;
         tmp.tmp_planned_money_to_spent = this.tmp_planned_money_to_spent;
         tmp.total_cost_of_placed_goods = this.total_cost_of_placed_goods;
@@ -497,5 +513,29 @@ module.exports = class Market {
         tmp.tmp_sells = this.tmp_sells;
         tmp.taxes = this.taxes;
         return tmp;
+    }
+
+    load_from_json(data) {
+        this.owner = this.world.get_from_id_tag(data.owner, data.owner_tag);
+        this.owner_tag = data.owner_tag;
+        this.savings.load_from_json(data.savings);
+        this.stash.load_from_json(data.stash);
+        
+        this.planned_money_to_spent = data.planned_money_to_spent;
+        this.tmp_plannned_money_to_spent = data.planned_money_to_spent;
+        this.total_cost_of_placed_goods = data.total_cost_of_placed_goods;
+        this.tmp_total_cost_of_placed_goods = data.tmp_total_cost_of_placed_goods;
+        this.max_price = data.max_price;
+        this.total_sold = data.total_sold;
+        this.total_sold_cost = data.total_sold_cost;
+        this.total_sold_new = data.total_sold_new;
+        this.total_sold_cost_new = data.total_sold_cost_new;
+        this.sells = data.sells;
+        this.tmp_sells = data.tmp_sells;
+        this.taxes = data.taxes;
+        for (let tag of this.world.constants.TAGS) {
+            this.buy_orders[tag] = new Set(data.buy_orders[tag])
+            this.sell_orders[tag] = new Set(data.sell_orders[tag])
+        }
     }
 }

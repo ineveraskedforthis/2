@@ -7,8 +7,15 @@ var Savings = require("./savings.js")
 
 
 module.exports = class Character {
-    init_base_values(world, id, name, hp, max_hp, exp, level, cell_id, user_id = -1) {
+    constructor(world) {
         this.world = world;
+        this.equip = new Equip();
+        this.stash = new Stash();
+        this.savings = new Savings();
+        this.tag = 'chara';
+    }
+
+    init_base_values(id, name, hp, max_hp, exp, level, cell_id, user_id = -1) {
         this.name = name;
         var is_player = true
         if (user_id == -1) {
@@ -16,11 +23,8 @@ module.exports = class Character {
         }
         this.hp = hp;
         this.max_hp = max_hp;
-        this.id = id;
-        this.equip = new Equip();
-        this.equip.data.right_hand = 'fist';
-        this.stash = new Stash();
-        this.savings = new Savings();
+        this.id = id;        
+        this.equip.data.right_hand = 'fist';        
         this.user_id = user_id;
         this.cell_id = cell_id;
         this.data = {
@@ -51,9 +55,9 @@ module.exports = class Character {
         return 'test'
     }
 
-    async init(pool, world, name, cell_id, user_id = -1) {
-        var id = await world.get_new_id(pool, 'char_id');
-        this.init_base_values(world, id, name, 100, 100, 0, 0, cell_id, user_id);
+    async init(pool, name, cell_id, user_id = -1) {
+        var id = await this.world.get_new_id(pool, 'char_id');
+        this.init_base_values(id, name, 100, 100, 0, 0, cell_id, user_id);
         await this.load_to_db(pool);
         return id;
     }
@@ -72,11 +76,14 @@ module.exports = class Character {
         await this.change_hp(pool, 1, false);
         await this.update_status(pool, false);
         await this.save_to_db(pool)
-        var socket = null;
+        var socket = undefined;
         if (this.data.is_player) {
-            socket = this.world.user_manager.users[this.user_id].socket;
+            let user = this.world.user_manager.users[this.user_id]
+            if (user != undefined) {
+                socket = this.world.user_manager.users[this.user_id].socket;
+            }
         }
-        if (socket != null) {
+        if (socket != undefined) {
             socket.emit('char-info', this.get_json());
         }
     }
@@ -300,15 +307,14 @@ module.exports = class Character {
         return this.hp
     }
 
-    async load_from_json(pool, world, data) {
-        this.world = world;
+    async load_from_json(data) {
         this.id = data.id;
         this.name = data.name;
         this.hp = data.hp;
         this.max_hp = data.max_hp;
         this.user_id = data.user_id;
-        this.savings = new Savings();
-        this.savings.load_from_json(data.savings);
+        this.savings = new Savings();        
+        this.savings.load_from_json(data.savings);        
         this.stash = new Stash();
         this.stash.load_from_json(data.stash);
         this.cell_id = data.cell_id;
