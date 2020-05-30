@@ -19,6 +19,9 @@ const constants = {
         user: {
             load_from_json: false
         },
+        character: {
+            sell: false
+        },
         db_queries: false,
         generic: false,
         basic_pop_ai: false

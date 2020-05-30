@@ -1,21 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset = "utf-8">
-	<title>Path of Pepe</title>
-	<link rel="stylesheet" type="text/css" href="static/reset.css">
-	<link rel="stylesheet" type="text/css" href="static/style.css">
+    <meta charset = "utf-8">
+    <title>Path of Pepe</title>
+    <link rel="stylesheet" type="text/css" href="static/reset.css">
+    <link rel="stylesheet" type="text/css" href="static/style.css">
 </head>
 <body>
 <div id="bg_fade"></div>
 
 
-	<div id="login_container">
-		<div id="select_box">
-			<div id="open_login_window_button" class="selected">I'm already funny ball</div>
-			<div id="open_reg_window_button" >BECOME FUNNY BALL</div>
-		</div>
-		<div id='login-frame'>
+    <div id="login_container">
+        <div id="select_box">
+            <div id="open_login_window_button" class="selected">I'm already funny ball</div>
+            <div id="open_reg_window_button" >BECOME FUNNY BALL</div>
+        </div>
+        <div id='login-frame'>
             <form action=''>
                 <p><input id='login-l' placeholder="Login"></p>
                 <p><input id='password-l' placeholder="Password"></p>
@@ -29,90 +29,146 @@
                 <p><input type='submit', name='reg_button', value='register'></p>
             </form>
         </div>
-	</div>
+    </div>
 
 
-	<div id="game_container">
-		<div id = "wire_frame">
-			<div id = character_window>
-				<canvas id='char_image' width=240 height=240></canvas>
-				<div id = char_overlay></div>
-			</div>			
+    <div id="game_container">
+        <div id = "wire_frame">
+            <div id = character_window>
+                <canvas id='char_image' width=240 height=240></canvas>
+                <div id = char_overlay></div>
+            </div>            
 
-			<div id="chat_container">
-				<div id="select_messages_type">
-					<div id="open_chat_button" class="selected">chat</div>
-					<div id="open_log_button" >logs</div>
-					<div>3</div>
-					<div>4</div>
-					<div>5</div>
-					<div>6</div>
-					<div>7</div>
-					<div>8</div>
-					<div>9</div>
-					<div>10</div>
-				</div>
-				<div id='log'>
-				</div>
-				<div id="chat">
-				</div>
-				<div id='send_message_frame'>
-					<input id='message_field', type="text", placeholder='New message'>
-					<input type='submit', id='send_message_button', value= 'Send' >
-				</div>
-			</div>
+            <div id="chat_container">
+                <div id="select_messages_type">
+                    <div id="open_chat_button" class="selected">chat</div>
+                    <div id="open_log_button" >logs</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>8</div>
+                    <div>9</div>
+                    <div>10</div>
+                </div>
+                <div id='log'>
+                </div>
+                <div id="chat">
+                </div>
+                <div id='send_message_frame'>
+                    <input id='message_field', type="text", placeholder='New message'>
+                    <input type='submit', id='send_message_button', value= 'Send' >
+                </div>
+            </div>
 
-			<div id = "status_frame">
-				<div id= 'status_label'><p>Status</p></div>
-				<div id = "status"></div>
-			</div>>
-			<div id = "control_frame">
-				<div id = "attack_button", class = 'control_button'></div>
-				<div id = "market_button", class = 'control_button'></div>
-				<div id = "tactics_button", class = 'control_button'></div>
-				<div id = "skilltree_button", class = 'control_button'></div>
-				<div id = "map_button", class = 'control_button'></div>
-			</div>
+            <div id = "status_frame">
+                <div id= 'status_label'><p>Status</p></div>
+                <div id = "status"></div>
+            </div>>
+            <div id = "control_frame">
+                <div id = "attack_button", class = 'control_button'></div>
+                <div id = "market_button", class = 'control_button'></div>
+                <div id = "market_control_button", class = 'control_button'></div>
+                <div id = "tactics_button", class = 'control_button'></div>
+                <div id = "skilltree_button", class = 'control_button'></div>
+                <div id = "map_button", class = 'control_button'></div>
+            </div>
 
-			<div id = "game_frame">
-				<dev id = 'battle_tab', class="game_tab">
-					<canvas id='battle_canvas' width=800 height=500></canvas>
-				</dev>
-				<dev id = 'market_tab', class="game_tab">	
-					<dev id = 'market'> </dev>
-				</dev>
-				<dev id = 'tactics_tab', class="game_tab">
-					<dev id = 'tactic'> </dev>
-				</dev>
-				<dev id = 'skilltree_tab', class="game_tab">
-					<dev id = 'skilltree'> </dev>
-				</dev>
-				<dev id = 'map_tab', class = "game_tab">
-					<canvas id='map' width=400 height=400></canvas>	
-				</dev>
-				
-			</div>
+            <div id = "game_frame">
+                <dev id = 'battle_tab', class="game_tab">
+                    <canvas id='battle_canvas' width=800 height=500></canvas>
+                </dev>
+                <dev id = 'market_tab', class="game_tab">    
+                    <dev id = 'market'> </dev>
+                </dev>
+                <dev id = 'market_control_tab', class="game_tab">    
+                    <div id='market_actions'>
+                        <button id='show_buy_form'>
+                            buy
+                        </button>
+                        <button id='show_sell_form'>
+                            sell
+                        </button>
+                        <br>
+                        <div id='buy_form_con'>
+                            <form action=''>
+                                <p>
+                                    <label for='buy_tag_select'> tag </label>
+                                    <select id='buy_tag_select'>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for='buy_amount'> amount </label>
+                                    <input id='buy_amount'>
+                                </p>
+                                <p>
+                                    <label for='buy_money'> money </label>
+                                    <input id='buy_money'>
+                                </p>
+                                <p>
+                                    <label for='buy_max_price'> max price </label>
+                                    <input id='buy_max_price'>
+                                </p>
+                                <p>
+                                    <input type='submit', name='buy', value='buy'>
+                                </p>
+                            </form>
+                        </div>
+                        <div id='sell_form_con'>
+                            <form action=''>
+                                <p>
+                                    <label for='sell_tag_select'> tag </label>
+                                    <select id='sell_tag_select'>
+                                    </select>
+                                </p>
+                                <p>
+                                    <label for='sell_amount'> amount </label>
+                                    <input id='sell_amount'>
+                                </p>
+                                <p>
+                                    <label for='sell_price'> price </label>
+                                    <input id='sell_price'>
+                                </p>
+                                <p>
+                                    <input type='submit', name='sell', value='sell'>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </dev>
+                <dev id = 'tactics_tab', class="game_tab">
+                    <dev id = 'tactic'> </dev>
+                </dev>
+                <dev id = 'skilltree_tab', class="game_tab">
+                    <dev id = 'skilltree'> </dev>
+                </dev>
+                <dev id = 'map_tab', class = "game_tab">
+                    <canvas id='map' width=400 height=400></canvas>    
+                </dev>
+                
+            </div>
 
-		</div>
-		<div id = overlay></div>
-	</div>
+        </div>
+        <div id = overlay></div>
+    </div>
 
-	<div id = 'temp_canvases'>
-		<canvas id='tmp_canvas' width=240 height=240></canvas>
-		<canvas id='battle_canvas_tmp' width=800 height=500></canvas>
-	</div>
+    <div id = 'temp_canvases'>
+        <canvas id='tmp_canvas' width=240 height=240></canvas>
+        <canvas id='battle_canvas_tmp' width=800 height=500></canvas>
+    </div>
 
-	<script src="/static/common.js"></script>
-	<script src="/static/load_images.js"></script>
-	<script src='/socket.io/socket.io.js'></script>
+    <script src="/static/common.js"></script>
+    <script src="/static/load_images.js"></script>
+    <script src='/socket.io/socket.io.js'></script>
     <!-- <script src='https://code.jquery.com/jquery-1.11.1.js'></script> -->
-	<!-- <script src='/static/main.js'></script> -->
-	<script src="/static/character_image.js"></script>
-	<script src="/static/battle_image.js"></script>
-	<script src="/static/market_table.js"></script>
-	<script src="/static/skill_tree.js"></script>
-	<script src="/static/tactic_screen.js"></script>
-	<script src="/static/map.js"></script>
+    <!-- <script src='/static/main.js'></script> -->
+    <script src="/static/character_image.js"></script>
+    <script src="/static/battle_image.js"></script>
+    <script src="/static/market_table.js"></script>
+    <script src="/static/skill_tree.js"></script>
+    <script src="/static/tactic_screen.js"></script>
+    <script src="/static/map.js"></script>
     <script src="/static/ui.js"></script>
 </body>
 </html>
