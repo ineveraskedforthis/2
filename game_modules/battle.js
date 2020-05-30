@@ -70,14 +70,14 @@ module.exports = class Battle {
             } else {
                 this.positions[actor_index] -= 1;
             }
-            return `${character.name} ${action.action} ${action.target}`
+            return {action: 'move', who: actor_index, target: action.target}
         } else if (action.action == 'attack') {
             if (action.target != null) {
                 var target_char = this.world.chars[this.ids[action.target]];
                 var damage = await character.attack(pool, target_char);
-                return `${character.name} ${action.action} ${target_char.name} and deals ${damage} damage`;
+                return {action: 'attack', attacker: actor_index, target: action.target, damage: damage};
             }
-            return 'pfff';
+            return {action: 'pff'};
         }
     }
 

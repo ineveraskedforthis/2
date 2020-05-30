@@ -127,7 +127,7 @@ module.exports = class World {
                     let character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
                         this.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
-                        log.forEach(log_entry => this.socket_manager.send_message_to_character_user(character, log_entry));
+                        log.forEach(log_entry => { this.socket_manager.send_to_character_user(character, 'battle-action', log_entry)});
                     }
                 }
             } else {

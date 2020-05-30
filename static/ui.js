@@ -260,6 +260,11 @@ socket.on('battle-update', data => {
     battle_image.update(data)
 })
 
+socket.on('battle-action', data => {
+    console.log(data)
+    battle_image.update_action(data)
+})
+
 socket.on('battle-has-ended', () => {
     battle_image.clear()
 })
@@ -303,14 +308,13 @@ for (var i = 200; i > 10; i -= 5) {
 battle_image.add_fighter(0, 'test', 0)
 
 
+
 function draw() {
-    // eslint-disable-next-line no-undef
-    if (check_loading()) {
-        char_image.draw()
-        battle_image.draw()
-    } 
+    char_image.draw()
+    battle_image.draw()
     map.draw();
     window.requestAnimationFrame(draw);
 }
 
-window.requestAnimationFrame(draw);
+const images = loadImages(images_list[0], images_list[1], () => {console.log(images), window.requestAnimationFrame(draw);});
+

@@ -1,35 +1,51 @@
-var images = {}
+check_loading = false
 
-function load_image(s, callback) {
-    var tmp = new Image();
-    tmp.src = s;
-    tmp.onload = callback
-    return tmp
+// https://stackoverflow.com/a/53294054/10281950
+
+images_list = [[], []];
+
+function add_image_to_load(name, filename) {
+    images_list[0].push(name)
+    images_list[1].push(filename)
 }
 
-var loaded = Array.apply(null, Array(15)).map(() => 0)
+add_image_to_load('apu_eyes_0', 'apu_base_eyes')
+add_image_to_load('apu_blood_eyes_0', 'apu_eyes_blood')
+add_image_to_load('apu_pupils_0', 'apu_pupils_0')
+add_image_to_load('apu_pupils_1', 'apu_pupils_1')
+add_image_to_load('apu_head_base_0', 'apu_head_base')
+add_image_to_load('apu_mouth_0', 'apu_mouth_0')
+add_image_to_load('apu_mouth_1', 'apu_mouth_1')
+add_image_to_load('apu_wrinkles_0', 'apu_wrinkles')
+for (let i = 0; i < 5; i++) {
+    add_image_to_load('apu_blood_' + i, 'apu_blood_' + i)
+}
+add_image_to_load('base_background', 'background')
+add_image_to_load('tost_move_0000', 'tost_0000')
+add_image_to_load('tost_idle_0000', 'tost_0000')
+add_image_to_load('tost_attack_0000', 'tost_0000')
+for (let i = 0; i < 12; i++) {
+    let num = ("0000" + i).slice(-4);
+    add_image_to_load('test_move_' + num, 'test_move_' + num);
+}
+for (let i = 0; i < 8; i++) {
+    let num = ("0000" + i).slice(-4);
+    add_image_to_load('test_attack_' + num, 'test_attack_' + num);
+}
+add_image_to_load('test_idle_0000', 'test_idle_0000')
 
-function check_loading() {
-    let f = 1;
-    for (let i = 0; i < loaded.length; i++){
-        f *= loaded[i];
-    }
-    return f
+function loadImages(names, files, onAllLoaded) {
+    var i, numLoading = names.length;
+    const onload = () => --numLoading === 0 && onAllLoaded();
+    const images = {};
+    for (i = 0; i < names.length; i++) {
+        console.log(i, names[i], files[i])
+        const img = images[names[i]] = new Image;        
+        img.src = 'static/img/' + files[i] + ".png";
+        img.onload = onload;
+    }   
+    return images;
 }
 
-images['apu_eyes_0'] = load_image('static/img/apu_base_eyes.png', () => loaded[0] = 1);
-images['apu_blood_eyes_0'] = load_image('static/img/apu_eyes_blood.png', () => loaded[1] = 1);
-images['apu_pupils_0'] = load_image('static/img/apu_pupils_0.png', () => loaded[2] = 1);
-images['apu_head_base_0'] = load_image('static/img/apu_head_base.png', () => loaded[3] = 1);
-images['apu_mouth_0'] = load_image('static/img/apu_mouth_0.png', () => loaded[4] = 1);
-images['apu_mouth_1'] = load_image('static/img/apu_mouth_1.png', () => loaded[5] = 1);
-images['apu_wrinkles_0'] = load_image('static/img/apu_wrinkles.png', () => loaded[6] = 1);
-images['apu_blood_0'] = load_image('static/img/apu_blood_0.png', () => loaded[7] = 1);
-images['apu_blood_1'] = load_image('static/img/apu_blood_1.png', () => loaded[8] = 1);
-images['apu_blood_2'] = load_image('static/img/apu_blood_2.png', () => loaded[9] = 1);
-images['apu_blood_3'] = load_image('static/img/apu_blood_3.png', () => loaded[10] = 1);
-images['apu_blood_4'] = load_image('static/img/apu_blood_4.png', () => loaded[11] = 1);
-images['apu_pupils_1'] = load_image('static/img/apu_pupils_1.png', () => loaded[12] = 1)
-images['base_background'] = load_image('static/img/background.png', () => loaded[13] = 1)
-images['test_0'] = load_image('static/img/test_0.png', () => loaded[14] = 1)
-images['tost_0'] = load_image('static/img/tost_0.png', () => loaded[15] = 1)
+
+

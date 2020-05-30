@@ -1,29 +1,37 @@
 
 class AnimatedImage {
-    constructor(image_name, count) {
+    constructor(image_name) {
         this.tag = image_name;
-        this.count = count;
         this.current = 0
+        this.action = 'idle'
+    }
+
+    get_image_name() {
+        return this.tag + '_' + this.action + '_' + ("0000" + this.current).slice(-4)
     }
     
     update() {
         this.current += 1;
-        if (this.current >= this.count) {
+        if (!(this.get_image_name() in images)) {
             this.current = 0
         }
     }
 
+    set_action(tag) {
+        this.action = tag
+    }
+
     get_w() {
-        return images[this.tag + '_' + this.current].width
+        return images[this.get_image_name()].width
     }
     
     get_h() {
-        return images[this.tag + '_' + this.current].height
+        return images[this.get_image_name()].height
     }
 
     draw(ctx, x, y, w, h) {
         // console.log(this.tag + '_' + this.current, x, y, w, h)
-        draw_image(ctx, images[this.tag + '_' + this.current], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
+        draw_image(ctx, images[this.get_image_name()], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
     }
 }
 
@@ -102,16 +110,23 @@ class BattleImage {
 
     load(data) {
         console.log('load battle')
-        console.log(data)
         for (var i in data) {
-            this.add_fighter(data[i].id, data[i].tag, data[i].position)
+            this.add_fighter(i, data[i].tag, data[i].position)
         } 
     }
 
     update(data) {
-        console.log('update battle')
         for (var i in data) {
-            this.update_pos(data[i].id, data[i].position)
+            this.update_pos(i, data[i].position)
+        }
+    }
+
+    update_action(action){
+        if (action.action == 'move') {
+            this.images[action.who].set_action(action.action)
+        }
+        if (action.action == 'attack') {
+            this.images[action.attacker].set_action(action.action)
         }
     }
 
@@ -129,6 +144,7 @@ class BattleImage {
             var pos = this.calculate_canvas_pos(this.positions[i] * 2, this.images[i])
             // console.log(pos)
             this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
+            this.images[i].update()
         }
     }
     
@@ -136,7 +152,7 @@ class BattleImage {
         console.log(battle_id, tag, position)
         this.battle_ids.add(battle_id)
         this.positions[battle_id] = position;
-        this.images[battle_id] = new AnimatedImage(tag, 1)
+        this.images[battle_id] = new AnimatedImage(tag)
     }
     
     update_pos(battle_id, position) {
