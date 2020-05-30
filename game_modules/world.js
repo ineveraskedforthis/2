@@ -29,6 +29,7 @@ module.exports = class World {
         this.HISTORY_PRICE = {}
         this.HISTORY_PRICE['food'] = 10
         this.HISTORY_PRICE['clothes'] = 10
+        this.vacuum_stage = 0
     }
 
     async init(pool) {
@@ -146,6 +147,13 @@ module.exports = class World {
 
         this.socket_manager.update_market_info(this.map.cells[0][0]);
         this.socket_manager.update_user_list();
+
+
+        if (this.vacuum_stage++ > 100) {
+            common.send_query(pool, 'VACUUM market_orders');
+            console.log('vacuum');
+            this.vacuum_stage = 0;
+        }
     }
 
     get_cell(x, y) {

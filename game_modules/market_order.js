@@ -15,20 +15,17 @@ module.exports = class MarketOrder {
         this.owner_tag = owner.tag;
         this.amount = amount;
         this.price = price;
-        this.id = await this.world.get_new_id(pool, 'market_order_id');
         this.market_id = market_id;
         if (constants.logging.market_order.init) {
             console.log('market order init');
         }
-        await this.load_to_db(pool);
+        this.id = await this.load_to_db(pool);
         return this.id;
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.new_market_order_query, [this.id, this.typ, this.tag, this.owner_id, this.owner_tag, this.amount, this.price, this.market_id]);
-        if (constants.logging.market_order_load_to_db) {
-            console.log('loading completed');
-        }
+        let result = await common.send_query(pool, constants.insert_market_order_query, [this.typ, this.tag, this.owner_id, this.owner_tag, this.amount, this.price, this.market_id]);
+        return result.rows[0].id;
     }
 
     async save_to_db(pool) {

@@ -15,20 +15,7 @@ var TACTIC_ACTION_TAG = [];
     
 
 
-    $('#buy-form-con').submit(e => {
-        e.preventDefault();
-        socket.emit('buy', {tag: $('#buy-tag-select').val(),
-                            amount: $('#buy-amount').val(),
-                            money: $('#buy-money').val(),
-                            max_price: $('#buy-max-price').val()});
-    });
 
-    $('#sell-form-con').submit(e => {
-        e.preventDefault();
-        socket.emit('sell', {tag: $('#sell-tag-select').val(),
-                             amount: $('#sell-amount').val(),
-                             price: $('#sell-price').val()});
-    });
 
     $('#users-list').on('click', 'li', function() {
         if (selected == this){
@@ -48,12 +35,7 @@ var TACTIC_ACTION_TAG = [];
 
 
 
-    socket.on('tags', msg => {
-        for (var tag of msg) {
-            $('#buy-tag-select').append($('<option>').val(tag).text(tag));
-            $('#sell-tag-select').append($('<option>').val(tag).text(tag));
-        }
-    });
+
     
     
     
