@@ -18,7 +18,11 @@ class AnimatedImage {
     }
 
     set_action(tag) {
-        this.action = tag
+        if (tag != this.action ){
+            console.log(tag, this.action);
+            this.action = tag
+            this.current = 0;
+        }
     }
 
     get_w() {
@@ -101,6 +105,7 @@ class BattleImage {
         this.ids = {}
         this.images = {}
         this.battle_ids = new Set()
+        this.tick = 0;
     }
 
     clear() {
@@ -135,6 +140,7 @@ class BattleImage {
     }
     
     draw() {
+        this.tick += 1;
         var ctx = this.canvas.getContext('2d')
         ctx.clearRect(0, 0, this.w, this.h);
         draw_image(ctx, images[this.background], 0, 0, this.w, this.h)
@@ -144,7 +150,12 @@ class BattleImage {
             var pos = this.calculate_canvas_pos(this.positions[i] * 2, this.images[i])
             // console.log(pos)
             this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
-            this.images[i].update()
+            if (this.tick > 1) {
+                this.images[i].update()
+            }
+        }      
+        if (this.tick > 2) {
+            this.tick = 0
         }
     }
     
