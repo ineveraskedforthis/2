@@ -1,4 +1,3 @@
-
 class AnimatedImage {
     constructor(image_name) {
         this.tag = image_name;
@@ -19,7 +18,6 @@ class AnimatedImage {
 
     set_action(tag) {
         if (tag != this.action ){
-            console.log(tag, this.action);
             this.action = tag
             this.current = 0;
         }
@@ -98,6 +96,7 @@ class BattleImage {
         this.init()
         this.w = 800;
         this.h = 500;
+        this.movement_speed = 60
     }
 
     init() {
@@ -106,33 +105,35 @@ class BattleImage {
         this.images = {}
         this.battle_ids = new Set()
         this.tick = 0;
+        
+        this.action_queue = [];
+        this.l = 0;
+        this.r = 1;
+        this.movement_tick = 0;
+        this.prev_positions = {}
+        this.new_positions = {}
     }
 
     clear() {
         console.log('clear battle')
-        this.init()
+        this.update_action({action: 'stop_battle'})
     }
 
     load(data) {
         console.log('load battle')
+        this.init()
         for (var i in data) {
             this.add_fighter(i, data[i].tag, data[i].position)
         } 
     }
 
     update(data) {
-        for (var i in data) {
-            this.update_pos(i, data[i].position)
-        }
+
     }
 
     update_action(action){
-        if (action.action == 'move') {
-            this.images[action.who].set_action(action.action)
-        }
-        if (action.action == 'attack') {
-            this.images[action.attacker].set_action(action.action)
-        }
+        this.action_queue.push(action);
+        this.r += 1
     }
 
     dist(a, b, positions) {
@@ -140,6 +141,55 @@ class BattleImage {
     }
     
     draw() {
+        if (this.r > this.l + 1) {
+            this.movement_tick += 1
+            // console.log(this.positions)
+            // console.log(this.prev_positions)
+            // console.log(this.new_positions)
+            // console.log(this.movement_tick)
+            
+            
+
+            for (let i in this.positions) {
+                this.update_pos(i)
+            }
+
+            if (this.movement_tick >= this.movement_speed) {
+                // console.log(this.l)
+                // console.log(this.r)
+                // console.log(this.action_queue)
+                this.movement_tick = 0
+                for (let i in this.positions) {
+                    this.images[i].set_action('idle');
+                }
+                let action = this.action_queue[this.l]
+                if (action.action == 'move') {
+                    // console.log(action)
+                    this.images[action.who].set_action(action.action)
+                    if (action.target == 'right') {
+                        // console.log('right')
+                        this.new_positions[action.who] = this.prev_positions[action.who] + 1
+                    }
+                    if (action.target == 'left') {
+                        // console.log('left')
+                        this.new_positions[action.who] = this.prev_positions[action.who] - 1
+                    }
+                }
+                else if (action.action == 'attack') {
+                    this.images[action.attacker].set_action(action.action)
+                }
+                else if (action.action == 'stop_battle') {
+                    console.log('stop_battle')
+                    return this.init()
+                } else this.images[action.attacker].set_action('idle')
+                this.l +=1
+                for (let i in this.positions) {
+                    this.prev_positions[i] = this.positions[i]
+                }
+            }
+        }
+
+
         this.tick += 1;
         var ctx = this.canvas.getContext('2d')
         ctx.clearRect(0, 0, this.w, this.h);
@@ -147,10 +197,10 @@ class BattleImage {
         var draw_order = Array.from(this.battle_ids)
         draw_order.sort((a, b) => this.dist(a, b, this.positions))
         for (var i of draw_order) {
-            var pos = this.calculate_canvas_pos(this.positions[i] * 2, this.images[i])
+            var pos = this.calculate_canvas_pos(this.positions[i] * 5, this.images[i])
             // console.log(pos)
             this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
-            if (this.tick > 1) {
+            if (this.tick > 2) {
                 this.images[i].update()
             }
         }      
@@ -162,12 +212,18 @@ class BattleImage {
     add_fighter(battle_id, tag, position) {
         console.log(battle_id, tag, position)
         this.battle_ids.add(battle_id)
+        this.new_positions[battle_id] = position;
+        this.prev_positions[battle_id] = position;
         this.positions[battle_id] = position;
         this.images[battle_id] = new AnimatedImage(tag)
     }
     
-    update_pos(battle_id, position) {
-        this.positions[battle_id] = position
+    update_pos(battle_id) {
+        if (!(battle_id in this.prev_positions)) {
+            this.positions[battle_id] = this.new_position[battle_id]
+        } else {
+            this.positions[battle_id] = this.prev_positions[battle_id] + (this.new_positions[battle_id] - this.prev_positions[battle_id]) / this.movement_speed * this.movement_tick
+        }
     }
     
     calculate_canvas_pos(x, image) {
