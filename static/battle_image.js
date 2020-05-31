@@ -96,7 +96,7 @@ class BattleImage {
         this.init()
         this.w = 800;
         this.h = 500;
-        this.movement_speed = 60
+        this.movement_speed = 50
     }
 
     init() {
@@ -197,7 +197,7 @@ class BattleImage {
         var draw_order = Array.from(this.battle_ids)
         draw_order.sort((a, b) => this.dist(a, b, this.positions))
         for (var i of draw_order) {
-            var pos = this.calculate_canvas_pos(this.positions[i] * 5, this.images[i])
+            var pos = this.calculate_canvas_pos(this.positions[i] * 10, this.images[i])
             // console.log(pos)
             this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
             if (this.tick > 2) {
