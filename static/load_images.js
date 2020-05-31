@@ -33,6 +33,18 @@ for (let i = 0; i < 8; i++) {
     add_image_to_load('test_attack_' + num, 'test_attack_' + num);
 }
 add_image_to_load('test_idle_0000', 'test_idle_0000')
+for (let i = 0; i < 4; i++) {
+    let num = ("0000" + i).slice(-4);
+    add_image_to_load('rat_idle_' + num, 'rat_idle_' + num);
+}
+for (let i = 0; i < 4; i++) {
+    let num = ("0000" + i).slice(-4);
+    add_image_to_load('rat_move_' + num, 'rat_idle_' + num);
+}
+for (let i = 0; i < 4; i++) {
+    let num = ("0000" + i).slice(-4);
+    add_image_to_load('rat_attack_' + num, 'rat_idle_' + num);
+}
 
 function loadImages(names, files, onAllLoaded) {
     var i, numLoading = names.length;

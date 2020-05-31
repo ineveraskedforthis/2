@@ -29,7 +29,7 @@ module.exports = class Battle {
                 data[i] = {}
                 data[i].id = this.ids[i];
                 data[i].position = this.positions[i];
-                data[i].tag = character.get_tag();
+                data[i].tag = character.data.model;
             }
         return data
     }

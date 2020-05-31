@@ -28,6 +28,7 @@ module.exports = class Character {
         this.user_id = user_id;
         this.cell_id = cell_id;
         this.data = {
+            model: 'test',
             stats: this.world.constants.base_stats.apu,
             base_resists: this.world.constants.base_resists.pepe,
             is_player: is_player,
@@ -170,7 +171,7 @@ module.exports = class Character {
 
         tmp.pow = base.pow;
         if ('mage_training' in this.data.skills) {
-            tmp.pow += this.data['mage_training']
+            tmp.pow += this.data.skills['mage_training']
         }
 
         tmp.tou = base.tou;

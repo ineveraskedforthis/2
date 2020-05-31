@@ -11,12 +11,13 @@ class Rat extends Character {
         this.data.base_resists = this.world.constants.base_resists.rat
         this.equip.data.right_hand = 'bite'
         this.stash.inc('food', 1);
+        this.data.model = 'rat'
         await this.load_to_db(pool);
         return id;
     }
 
     get_tag() {
-        return 'tost'
+        return 'rat'
     }
 }
 
