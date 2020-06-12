@@ -309,10 +309,10 @@ battle_image.add_fighter(0, 'test', 0)
 
 
 
-function draw() {
-    char_image.draw()
-    battle_image.draw()
-    map.draw();
+function draw(time) {
+    char_image.draw(time)
+    battle_image.draw(time)
+    map.draw(time);
     window.requestAnimationFrame(draw);
 }
 

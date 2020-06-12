@@ -9,17 +9,8 @@ function add_image_to_load(name, filename) {
     images_list[1].push(filename)
 }
 
-add_image_to_load('apu_eyes_0', 'apu_base_eyes')
-add_image_to_load('apu_blood_eyes_0', 'apu_eyes_blood')
-add_image_to_load('apu_pupils_0', 'apu_pupils_0')
-add_image_to_load('apu_pupils_1', 'apu_pupils_1')
-add_image_to_load('apu_head_base_0', 'apu_head_base')
-add_image_to_load('apu_mouth_0', 'apu_mouth_0')
-add_image_to_load('apu_mouth_1', 'apu_mouth_1')
-add_image_to_load('apu_wrinkles_0', 'apu_wrinkles')
-for (let i = 0; i < 5; i++) {
-    add_image_to_load('apu_blood_' + i, 'apu_blood_' + i)
-}
+
+
 add_image_to_load('base_background', 'background')
 add_image_to_load('tost_move_0000', 'tost_0000')
 add_image_to_load('tost_idle_0000', 'tost_0000')

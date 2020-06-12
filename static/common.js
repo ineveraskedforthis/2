@@ -1,3 +1,5 @@
+const mat4 = glMatrix.mat4
+
 function draw_image(context, image, x, y, w, h) {
     context.drawImage(image, x, y, w, h)
 }
@@ -20,3 +22,4 @@ function change_alpha(l, a) {
     l[3] = Math.max(Math.min(Math.floor(l[3] * a), 255), 0)
     return l
 }
+
