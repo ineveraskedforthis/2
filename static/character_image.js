@@ -10,7 +10,6 @@ void main(void) {
 }
 `;
 
-// Fragment shader program
 
 const fsSource = `
 varying highp vec2 vTextureCoord;
@@ -18,8 +17,114 @@ uniform sampler2D uSampler;
 void main(void) {
     gl_FragColor = texture2D(uSampler, vTextureCoord);
 }
+`
+
+
+const fsFace = `
+#version 100
+precision mediump float;
+uniform float BLOOD;
+varying highp vec2 vTextureCoord;
+uniform sampler2D uSampler;
+
+float rand(vec2 co){
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+}
+float rand(float n){
+ 	return fract(cos(n*89.42)*343.42);
+}
+
+float sq(float a){
+    return a*a;
+}
+
+float al(float a){
+    return min(1.0, max(0.0, a));
+}
+
+vec4 mix_colors(vec4 a, vec4 b, float tmp){
+    return vec4(mix(a[0], b[0], tmp), mix(a[1], b[1], tmp), mix(a[2], b[2], tmp), a[3]);
+}
+
+void main(void) {
+    vec2 uv = gl_PointCoord;
+    vec4 result_color = texture2D(uSampler, vTextureCoord);
+    for (int i=0;i<10;i++){
+        float a = rand(float(float(i)*1.7));
+        float c = rand(float(float(i)*1.2 + 1.0)) * 2.0 - 1.0;
+        float dist = abs(a * uv[0] + (1.0-sqrt(a*a)) * uv[1] - c) + rand(uv) * 0.8;
+        vec4 blood_color = vec4(0.8, 0, 0, 0);
+        dist = cos(min(dist, 3.0));
+        float tmp = al(sin(dist)) * al(BLOOD/20.0 - float(i));
+        result_color = mix_colors(result_color, blood_color, tmp);
+    }
+    result_color = mix_colors(result_color, vec4(0.5, 0.1, 0.1, 0), BLOOD * (1.0/100.0));
+    gl_FragColor = result_color;
+}
 `;
 
+const fs_eyes = `
+// https://www.shadertoy.com/view/3t2Szh
+#version 100
+precision mediump float;
+uniform float RAGE;
+varying highp vec2 vTextureCoord;
+uniform sampler2D uSampler;
+
+float Random(vec2 v)
+{
+    return fract(sin(dot(v, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float Noise(vec2 st) 
+{
+	// https://www.shadertoy.com/view/4dS3Wd
+    
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    float a = Random(i + vec2(0.0, 0.0));
+    float b = Random(i + vec2(1.0, 0.0));
+    float c = Random(i + vec2(0.0, 1.0));
+    float d = Random(i + vec2(1.0, 1.0));
+
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+}
+
+float RidgedFbm(vec2 x, int octaves)
+{
+    float f = 0.0;
+    float w = 1.0;
+
+    for (int i = 0; i < 256; ++i)
+    {
+        if (i >= octaves)
+            break;
+        
+        f += w * abs(Noise(x) * 2.0 - 1.0);
+
+        x *= 2.0;
+        w *= 0.5;
+    }
+
+    return f;
+}
+
+vec4 mix_colors(vec4 a, vec4 b, float tmp){
+    return vec4(mix(a[0], b[0], tmp), mix(a[1], b[1], tmp), mix(a[2], b[2], tmp), a[3]);
+}
+
+void main(void) {
+    vec2 uv = gl_PointCoord;
+    vec4 result_color = texture2D(uSampler, vTextureCoord);
+    float f = 1.0 - RidgedFbm(uv*3.0, 3);
+    float veins = pow(f, 3.0) * smoothstep(0.0, 0.3, 1.0);
+    result_color = mix_colors(result_color, vec4(1, 0, 0, 1), veins*RAGE/100.0);
+    gl_FragColor = result_color;
+}
+`
 
 const texture_coord = [
     1.0,  1.0,
@@ -320,62 +425,107 @@ class CharacterImage {
             bottom_lip_opened: loadTexture(this.gl, '/static/img/apu_bottom_lip_1.png'),
         }
 
-        this.shaderProgram = initShaderProgram(this.gl, vsSource, fsSource);
-        this.programInfo = {
-            program: this.shaderProgram,
-            attribLocations: {
-                vertexPosition: this.gl.getAttribLocation(this.shaderProgram, 'aVertexPosition'),
-                textureCoord: this.gl.getAttribLocation(this.shaderProgram, 'aTextureCoord'),
-            },
-            uniformLocations: {
-                projectionMatrix: this.gl.getUniformLocation(this.shaderProgram, 'uProjectionMatrix'),
-                modelViewMatrix: this.gl.getUniformLocation(this.shaderProgram, 'uModelViewMatrix'),
-                uSampler: this.gl.getUniformLocation(this.shaderProgram, 'uSampler'),
-            },
-        };
+        this.shaders = {}
+        {
+            let shaderProgram = initShaderProgram(this.gl, vsSource, fsSource);
+            let programInfo = {
+                program: shaderProgram,
+                attribLocations: {
+                    vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+                    textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+                },
+                uniformLocations: {
+                    projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+                    modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+                    uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
+                },
+            };
+            this.shaders['basic'] = programInfo
+        }
+        {
+            let shaderProgram = initShaderProgram(this.gl, vsSource, fsFace);
+            let programInfo = {
+                program: shaderProgram,
+                attribLocations: {
+                    vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+                    textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+                },
+                uniformLocations: {
+                    projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+                    modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+                    uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
+                },
+            };
+            this.location_of_BLOOD = this.gl.getUniformLocation(shaderProgram, 'BLOOD');
+            this.shaders['face'] = programInfo
+        }
+
+        {
+            let shaderProgram = initShaderProgram(this.gl, vsSource, fs_eyes);
+            let programInfo = {
+                program: shaderProgram,
+                attribLocations: {
+                    vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+                    textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+                },
+                uniformLocations: {
+                    projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+                    modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+                    uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
+                },
+            };
+            this.location_of_eyes_RAGE = this.gl.getUniformLocation(shaderProgram, 'RAGE');
+            this.shaders['eyes'] = programInfo
+        }
 
         this.objects = []
         this.objects[0] = {
             tag: 'eyes',
             animate: false,
+            shader: true,
             buffer: initBuffer.eyes(this.gl),
-            texture: this.textures.eyes
+            texture: this.textures.eyes,
+            program_info: this.shaders['eyes']
         }
         this.objects[1] = {
             tag: 'pupil_left',
             animate: false,
+            shader: false,
             buffer: initBuffer.pupil_left(this.gl),
-            texture: this.textures.eyes
+            texture: this.textures.pupil_left,
+            program_info: this.shaders['basic']
         }
         this.objects[2] = {
             tag: 'pupil_right',
             animate: false,
+            shader: false,
             buffer: initBuffer.pupil_right(this.gl),
-            texture: this.textures.pupil_left
+            texture: this.textures.pupil_right,
+            program_info: this.shaders['basic']
         }
         this.objects[3] = {
-            tag: 'pupil_left',
-            animate: true,
-            buffer: initBuffer.pupil_left(this.gl),
-            texture: this.textures.pupil_right
-        }
-        this.objects[4] = {
             tag: 'face',
             animate: false,
+            shader: true,
             buffer: initBuffer.face(this.gl),
-            texture: this.textures.face
+            texture: this.textures.face,
+            program_info: this.shaders['face']
         }
-        this.objects[5] = {
+        this.objects[4] = {
             tag: 'upper_lip',
             animate: false,
+            shader: false,
             buffer: initBuffer.upper_lip(this.gl),
-            texture: this.textures.upper_lip
+            texture: this.textures.upper_lip,
+            program_info: this.shaders['basic']
         }
-        this.objects[6] = {
+        this.objects[5] = {
             tag: 'bottom_lip',
             animate: false,
+            shader: false,
             buffer: initBuffer.bottom_lip(this.gl),
-            texture: this.textures.bottom_lip_closed
+            texture: this.textures.bottom_lip_closed,
+            program_info: this.shaders['basic']
         }
 
 
@@ -387,7 +537,7 @@ class CharacterImage {
         this.stats.blood = blood;
         this.stats.power = power;
         if (rage > 60) {
-            this.objects[6].texture = this.textures.bottom_lip_opened
+            this.objects[5].texture = this.textures.bottom_lip_opened
         }
     }
 
@@ -395,10 +545,10 @@ class CharacterImage {
         time *= 0.001;  // convert to seconds
         const deltaTime = time - this.prev;
         this.prev = time;
-        this.draw_scene(this.gl, this.programInfo, this.objects, deltaTime);
+        this.draw_scene(this.gl, this.objects, deltaTime);
     }
 
-    draw_scene(gl, programInfo, objects, deltaTime) {
+    draw_scene(gl, objects, deltaTime) {
         gl.clearColor(this.stats.rage / 200 + 0.1, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -449,17 +599,24 @@ class CharacterImage {
                     [r * Math.cos(phi), r * Math.sin(phi), 0]);
             }
         
-            bind_position(gl, objects[i].buffer.position, programInfo)
-            bind_texture_coord(gl, objects[i].buffer.textureCoord, programInfo)
+            bind_position(gl, objects[i].buffer.position, objects[i].program_info)
+            bind_texture_coord(gl, objects[i].buffer.textureCoord, objects[i].program_info)
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, objects[i].buffer.indices);
+            
+            gl.useProgram(objects[i].program_info.program)
+            if (objects[i].tag == 'face') {
+                gl.uniform1f(this.location_of_BLOOD, this.stats.blood);
+            } else if (objects[i].tag == 'eyes') {
+                gl.uniform1f(this.location_of_eyes_RAGE, this.stats.rage)
+            }
+            
 
-            gl.useProgram(programInfo.program);
             gl.uniformMatrix4fv(
-                programInfo.uniformLocations.projectionMatrix,
+                objects[i].program_info.uniformLocations.projectionMatrix,
                 false,
                 projectionMatrix);
             gl.uniformMatrix4fv(
-                programInfo.uniformLocations.modelViewMatrix,
+                objects[i].program_info.uniformLocations.modelViewMatrix,
                 false,
                 modelViewMatrix);
             gl.activeTexture(gl.TEXTURE0);
@@ -468,7 +625,7 @@ class CharacterImage {
             gl.bindTexture(gl.TEXTURE_2D, objects[i].texture);
         
             // Tell the shader we bound the texture to texture unit 0
-            gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+            gl.uniform1i(objects[i].program_info.uniformLocations.uSampler, 0);
 
             {
                 const vertexCount = 6;
