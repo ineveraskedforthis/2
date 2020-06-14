@@ -54,6 +54,7 @@ module.exports = class Battle {
         for (var i = 0; i < this.ids.length; i++) {
             var char = this.world.chars[this.ids[i]]
             if (char.get_hp() > 0) {
+                char.update2(pool)
                 var log_entry = await BattleAI.action(pool, char, true)
                 log.push(log_entry)
             }
@@ -70,12 +71,12 @@ module.exports = class Battle {
             } else {
                 this.positions[actor_index] -= 1;
             }
-            return {action: 'move', who: actor_index, target: action.target}
+            return {action: 'move', who: actor_index, target: action.target, actor_name: character.name}
         } else if (action.action == 'attack') {
             if (action.target != null) {
                 var target_char = this.world.chars[this.ids[action.target]];
-                var damage = await character.attack(pool, target_char);
-                return {action: 'attack', attacker: actor_index, target: action.target, damage: damage};
+                var result = await character.attack(pool, target_char);
+                return {action: 'attack', attacker: actor_index, target: action.target, result: result, actor_name: character.name};
             }
             return {action: 'pff'};
         }
@@ -154,7 +155,7 @@ module.exports = class Battle {
         this.id = data.id
         this.ids = data.ids
         this.teams = data.teams
-        this.positions = data.position
+        this.positions = data.positions
         this.savings.load_from_json(data.savings)
         this.stash.load_from_json(data.stash)
     }

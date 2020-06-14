@@ -6,7 +6,7 @@ class Rat extends Character {
         if (name == null) {
             name = 'rat ' + id;
         }
-        this.init_base_values(id, name, 10, 10, 0, 0, cell_id);
+        this.init_base_values(id, name, 40, 40, 0, 0, cell_id);
         this.data.stats = this.world.constants.base_stats.rat
         this.data.base_resists = this.world.constants.base_resists.rat
         this.equip.data.right_hand = 'bite'

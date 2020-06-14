@@ -68,6 +68,7 @@ module.exports = class SocketManager {
             user_manager.new_user_online(data.login);
             user_data.online = true;
             socket.emit('log-message', 'hello ' + data.login);
+            this.send_battle_data_to_user(answer.user);
             this.update_char_info(socket, user_data.current_user);
         }
     }
@@ -136,6 +137,14 @@ module.exports = class SocketManager {
         }
     }
 
+    send_battle_data_to_user(user) {
+        let character = user.character;
+        if (character.data.in_battle) {
+            let battle = this.world.battles[character.data.battle_id];
+            this.send_to_user(user, 'battle-has-started', battle.get_data());
+        }
+    }
+
     send_message_to_character_user(character, msg) {
         let user = this.world.user_manager.get_user_from_character(character);
         this.send_message_to_user(user, msg);
@@ -151,7 +160,9 @@ module.exports = class SocketManager {
     }
 
     send_to_user(user, tag, msg) {
-        user.socket.emit(tag, msg)
+        if (user&&this.world.user_manager.users_online[user.login]) {
+            user.socket.emit(tag, msg)
+        }
     }
 
     update_char_info(socket, user) {

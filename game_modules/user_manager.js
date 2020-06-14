@@ -8,7 +8,7 @@ var common = require("./common.js")
 module.exports = class UserManager{
     constructor(world) {
         this.users = {};
-        this.users_online = [];
+        this.users_online = {};
         this.world = world;
     }
 

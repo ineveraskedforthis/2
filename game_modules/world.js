@@ -26,10 +26,11 @@ module.exports = class World {
         this.orders = {};
         this.battles = {}
         this.BASE_BATTLE_RANGE = 10;
-        this.HISTORY_PRICE = {}
-        this.HISTORY_PRICE['food'] = 10
-        this.HISTORY_PRICE['clothes'] = 10
-        this.vacuum_stage = 0
+        this.HISTORY_PRICE = {};
+        this.HISTORY_PRICE['food'] = 10;
+        this.HISTORY_PRICE['clothes'] = 10;
+        this.vacuum_stage = 0;
+        this.battle_tick = 0;
     }
 
     async init(pool) {
@@ -108,6 +109,10 @@ module.exports = class World {
     }
 
     async update(pool) {
+        this.battle_tick += 1;
+        if (this.battle_tick >= 3) {
+            this.battle_tick = 0;
+        }
         for (let i in this.agents) {
             await this.agents[i].update(pool);
         }
@@ -116,6 +121,21 @@ module.exports = class World {
                 await this.chars[i].update(pool);
             }
         }
+        if (this.battle_tick == 0){
+            this.update_battles(pool)
+        }
+
+        this.socket_manager.update_market_info(this.map.cells[0][0]);
+        this.socket_manager.update_user_list();
+
+        if (this.vacuum_stage++ > 100) {
+            common.send_query(pool, 'VACUUM market_orders');
+            console.log('vacuum');
+            this.vacuum_stage = 0;
+        }
+    }
+
+    async update_battles(pool) {
         for (let i in this.battles) {
             var battle = this.battles[i]
             if (battle == null) {
@@ -143,16 +163,6 @@ module.exports = class World {
                 await battle.reward_team(pool, winner, exp_reward);
                 await this.delete_battle(pool, battle.id);
             }
-        }
-
-        this.socket_manager.update_market_info(this.map.cells[0][0]);
-        this.socket_manager.update_user_list();
-
-
-        if (this.vacuum_stage++ > 100) {
-            common.send_query(pool, 'VACUUM market_orders');
-            console.log('vacuum');
-            this.vacuum_stage = 0;
         }
     }
 

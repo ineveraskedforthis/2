@@ -30,6 +30,7 @@ module.exports = class Character {
         this.data = {
             model: 'test',
             stats: this.world.constants.base_stats.apu,
+            base_battle_stats: this.world.constants.base_battle_stats,
             base_resists: this.world.constants.base_resists.pepe,
             is_player: is_player,
             exp: exp,
@@ -70,13 +71,23 @@ module.exports = class Character {
         await this.save_to_db(pool, save);
     }
 
+    get_regeneration() {
+        let tmp = this.data.base_battle_stats.regeneration;
+        tmp = Math.floor(this.data.stats.tou / 20) + tmp;
+        return tmp
+    }
+
+    change_rage(x) {
+        this.data.other.rage = Math.max(0, Math.min(100, this.data.other.rage + x))
+    }
+
     async update(pool) {
         if (this.data.dead) {
             return
         }
-        await this.change_hp(pool, 1, false);
-        await this.update_status(pool, false);
-        await this.save_to_db(pool)
+        if (!this.data.in_battle) {
+            await this.update2(pool)
+        }
         var socket = undefined;
         if (this.data.is_player) {
             let user = this.world.user_manager.users[this.user_id]
@@ -87,6 +98,17 @@ module.exports = class Character {
         if (socket != undefined) {
             socket.emit('char-info', this.get_json());
         }
+    }
+
+    async update2(pool) {
+        if (this.data.dead) {
+            return
+        }
+        let reg = this.get_regeneration();
+        await this.change_hp(pool, reg, false);
+        this.change_rage(-1);
+        await this.update_status(pool, false);
+        await this.save_to_db(pool)
     }
 
     get_exp_reward() {
@@ -116,12 +138,29 @@ module.exports = class Character {
         } else {
             this.data.skills[skill] = 1;
             this.data.skill_points -= 1;
-            await this.update_stats(pool, undefined, false);
+            await this.update_skill_stats(pool, undefined, false);
         }
         this.save_to_db(pool, save)
     }
 
-    async update_stats(pool, race = 'apu', save = true) {
+    get_accuracy() {
+        let blood_acc_loss = this.data.other.blood_covering * this.data.base_battle_stats.blood_burden;
+        let rage_acc_loss = this.data.other.rage * this.data.base_battle_stats.rage_burden;
+        return Math.min(1, Math.max(0.2, this.data.base_battle_stats.accuracy - blood_acc_loss - rage_acc_loss))
+    }
+
+    get_crit_chance(tag) {
+        if (tag == 'attack') {
+            let increase = 1 + this.data.base_battle_stats.attack_crit_add;
+            return this.data.base_battle_stats.crit_chance * increase
+        }
+        if (tag == 'spell') {
+            let increase = 1 + this.data.base_battle_stats.spell_crit_add;
+            return this.data.base_battle_stats.crit_chance * increase
+        }
+    }
+
+    async update_skill_stats(pool, race = 'apu', save = true) {
         var tmp = {};
         var base = this.world.constants.base_stats[race];
 
@@ -182,18 +221,68 @@ module.exports = class Character {
     }
 
     async attack(pool, target) {
-        var damage = this.equip.get_weapon_damage(this.data.stats.musculature);
-        let total_damage = await target.take_damage(pool, damage);
-        return total_damage;
+        let result = {}
+        result.crit = false
+        result.evade = false
+        result.damage = this.equip.get_weapon_damage(this.data.stats.musculature);
+        result.total_damage = 0;
+        result = this.roll_accuracy(result);
+        result = this.roll_crit(result);
+        result = target.roll_evasion(result);
+        result = await target.take_damage(pool, result);
+        this.data.other.rage = Math.min(this.data.other.rage + 10, 100)
+        return result;
     }
 
-    get_resists() {
-        let res = this.data.base_resists;
-        let res_e = this.equip.get_resists();
-        for (let i of this.world.constants.damage_types) {
-            res[i] += res_e[i];
+    roll_accuracy(result) {
+        let dice = Math.random();
+        let acc = this.get_accuracy();
+        console.log(dice, acc);
+        if (dice > acc) {
+            result.evade = true;
         }
-        return res
+        return result
+    }
+
+    roll_crit(result) {
+        let dice = Math.random()
+        let crit_chance = this.get_crit_chance;
+        let mult = this.data.base_battle_stats.crit_mult;
+        if (dice < crit_chance) {
+            result.damage['blunt'] = result.damage['blunt'] * mult;
+            result.damage['pierce'] = result.damage['pierce'] * mult;
+            result.damage['slice'] = result.damage['slice'] * mult;
+            result.crit = true;
+        }
+        return result
+    }
+
+    roll_evasion(result) {
+        if (result.crit) {
+            return result;
+        }
+        let dice = Math.random()
+        let evade_chance = this.data.base_battle_stats.evasion;
+        if (dice < evade_chance) {
+            result.evade = true
+        }
+        return result
+    }
+
+    async take_damage(pool, result) {
+        let res = this.get_resists();
+        if (!result.evade) {
+            for (let i of this.world.constants.damage_types) {
+                let curr_damage = Math.max(1, result.damage[i] - res[i]);
+                result.total_damage += curr_damage;
+                this.update_status_after_damage(pool, i, curr_damage, false);
+                await this.change_hp(pool, -curr_damage, false);
+            }
+            this.data.other.blood_covering = Math.min(this.data.other.blood_covering + 2, 100)
+            this.data.other.rage = Math.min(this.data.other.rage + 2, 100)
+        }
+        await this.save_to_db(pool)
+        return result;
     }
 
     async stun(pool) {
@@ -219,19 +308,13 @@ module.exports = class Character {
         }
     }
 
-    async take_damage(pool, damage) {
-        let res = this.get_resists();
-        let total_damage = 0;
+    get_resists() {
+        let res = this.data.base_resists;
+        let res_e = this.equip.get_resists();
         for (let i of this.world.constants.damage_types) {
-            let curr_damage = Math.max(1, damage[i] - res[i]);
-            total_damage += curr_damage;
-            this.update_status_after_damage(pool, i, curr_damage, false);
-            await this.change_hp(pool, -curr_damage, false);
+            res[i] += res_e[i];
         }
-        this.data.other.blood_covering = Math.min(this.data.other.blood_covering + 2, 100)
-        this.data.other.rage = Math.min(this.data.other.blood_covering + 10, 100)
-        await this.save_to_db(pool)
-        return total_damage;
+        return res
     }
 
     async change_hp(pool, x, save = true) {

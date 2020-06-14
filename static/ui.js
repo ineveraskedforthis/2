@@ -186,13 +186,17 @@ socket.on('is-login-completed', msg => {
     }
 });
 
-socket.on('log-message', msg => {
+function new_log_message(msg) {
     var log = document.getElementById('log');
     var new_line = document.createElement('p');
     var text = document.createTextNode(msg);
     new_line.append(text);
     log.appendChild(new_line);
     log.scrollTop = log.scrollHeight
+}
+
+socket.on('log-message', msg => {
+    new_log_message(msg)
 });
 
 socket.on('new-message', msg => {
@@ -253,6 +257,7 @@ socket.on('char-info', msg => {
 
 socket.on('battle-has-started', data => {
     battle_image.clear()
+    console.log(data)
     battle_image.load(data)
 })
 
@@ -263,6 +268,12 @@ socket.on('battle-update', data => {
 socket.on('battle-action', data => {
     console.log(data)
     battle_image.update_action(data)
+    if (data.action == 'attack') {
+        if (data.result.crit) {
+            new_log_message(data.actor_name + ': critical_damage')
+        }
+        new_log_message(data.actor_name + ': deals ' + data.result.total_damage + ' damage')
+    }    
 })
 
 socket.on('battle-has-ended', () => {
