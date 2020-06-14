@@ -92,12 +92,7 @@ void main(void) {
     vec2 uv = gl_PointCoord;
     vec4 result_color = texture2D(uSampler, vTextureCoord);
     for (int i=0;i<10;i++){
-        // float a = rand(float(float(i)*1.7));
-        // float c = rand(float(float(i)*1.2 + 1.0)) * 2.0 - 1.0;
-        // float dist = abs(a * uv[0] + (1.0-sqrt(a*a)) * uv[1] - c) + rand(uv) * 0.8;
         vec4 blood_color = vec4(0.8, 0, 0, 0);
-        // dist = cos(min(dist, 3.0));
-        // float tmp = al(sin(dist)) * al(BLOOD/20.0 - float(i));
         float f = 1.0 - RidgedFbm(uv, 3);
         float tmp = pow(f, 2.0) * smoothstep(0.0, 0.3, 1.0) * al(BLOOD/20.0 - float(i));
         result_color = mix_colors(result_color, blood_color, tmp);
