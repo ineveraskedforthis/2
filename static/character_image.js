@@ -24,6 +24,7 @@ const fsFace = `
 #version 100
 precision mediump float;
 uniform float BLOOD;
+uniform float RAGE;
 varying highp vec2 vTextureCoord;
 uniform sampler2D uSampler;
 
@@ -46,19 +47,65 @@ vec4 mix_colors(vec4 a, vec4 b, float tmp){
     return vec4(mix(a[0], b[0], tmp), mix(a[1], b[1], tmp), mix(a[2], b[2], tmp), a[3]);
 }
 
+float Random(vec2 v)
+{
+    return fract(sin(dot(v, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+float Noise(vec2 st) 
+{
+	// https://www.shadertoy.com/view/4dS3Wd
+    
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    float a = Random(i + vec2(0.0, 0.0));
+    float b = Random(i + vec2(1.0, 0.0));
+    float c = Random(i + vec2(0.0, 1.0));
+    float d = Random(i + vec2(1.0, 1.0));
+
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+}
+
+float RidgedFbm(vec2 x, int octaves)
+{
+    float f = 0.0;
+    float w = 1.0;
+
+    for (int i = 0; i < 256; ++i)
+    {
+        if (i >= octaves)
+            break;
+        
+        f += w * abs(Noise(x) * 2.0 - 1.0);
+
+        x *= 2.0;
+        w *= 0.5;
+    }
+
+    return f;
+}
+
 void main(void) {
     vec2 uv = gl_PointCoord;
     vec4 result_color = texture2D(uSampler, vTextureCoord);
     for (int i=0;i<10;i++){
-        float a = rand(float(float(i)*1.7));
-        float c = rand(float(float(i)*1.2 + 1.0)) * 2.0 - 1.0;
-        float dist = abs(a * uv[0] + (1.0-sqrt(a*a)) * uv[1] - c) + rand(uv) * 0.8;
+        // float a = rand(float(float(i)*1.7));
+        // float c = rand(float(float(i)*1.2 + 1.0)) * 2.0 - 1.0;
+        // float dist = abs(a * uv[0] + (1.0-sqrt(a*a)) * uv[1] - c) + rand(uv) * 0.8;
         vec4 blood_color = vec4(0.8, 0, 0, 0);
-        dist = cos(min(dist, 3.0));
-        float tmp = al(sin(dist)) * al(BLOOD/20.0 - float(i));
+        // dist = cos(min(dist, 3.0));
+        // float tmp = al(sin(dist)) * al(BLOOD/20.0 - float(i));
+        float f = 1.0 - RidgedFbm(uv, 3);
+        float tmp = pow(f, 2.0) * smoothstep(0.0, 0.3, 1.0) * al(BLOOD/20.0 - float(i));
         result_color = mix_colors(result_color, blood_color, tmp);
     }
-    result_color = mix_colors(result_color, vec4(0.5, 0.1, 0.1, 0), BLOOD * (1.0/100.0));
+    // result_color = mix_colors(result_color, vec4(0.5, 0.1, 0.1, 0), BLOOD * (1.0/100.0));
+    float f = 1.0 - RidgedFbm(uv, 6);
+    float veins = pow(f, 6.0) * smoothstep(0.0, 0.3, 1.0);
+    result_color = mix_colors(result_color, vec4(0, 0, 0, 1), veins*RAGE/100.0);
     gl_FragColor = result_color;
 }
 `;
@@ -126,6 +173,46 @@ void main(void) {
 }
 `
 
+
+const fs_pupils = `
+#version 100
+precision mediump float;
+uniform float POWER;
+varying highp vec2 vTextureCoord;
+uniform sampler2D uSampler;
+uniform float x;
+uniform float y;
+
+float sq(float a){
+    return a*a;
+}
+
+float al(float a){
+    return min(1.0, max(0.0, a));
+}
+
+vec4 mix_colors(vec4 a, vec4 b, float tmp){
+    return vec4(mix(a[0], b[0], tmp), mix(a[1], b[1], tmp), mix(a[2], b[2], tmp), a[3]);
+}
+
+float Random(vec2 v)
+{
+    return fract(sin(dot(v, vec2(12.9898,78.233))) * 43758.5453);
+}
+
+void main(void) {
+    vec2 uv = gl_PointCoord;
+    vec4 result_color = texture2D(uSampler, vTextureCoord);
+    vec4 power_color = vec4(0, 1, 1, 1);
+    for (int i=0;i<10;i++){
+        float dist = sqrt(sq(uv[0] - x - 0.5) + sq(uv[1] - y - 0.5));
+        float tmp = cos(dist * 100.0) * al((POWER-10.0)/10.0 - float(i));
+        result_color = mix_colors(result_color, power_color, tmp);
+    }
+    gl_FragColor = result_color;
+}
+`
+
 const texture_coord = [
     1.0,  1.0,
     0.0,  1.0,
@@ -161,6 +248,23 @@ const pupil_right_pos = [
     -0.2, +0.3, +1.1,
 ]
 
+function centre(a) {
+    let x = 0;
+    let y = 0;
+    let z = 0;
+    for (let i = 0; i < a.length / 3; i++) {
+        x += a[3*i]
+        y += a[3*i + 1]
+        z += a[3*i + 2]
+    }
+    x = x / a.length * 3
+    y = z / a.length * 3
+    z = y / a.length * 3
+    return [x, y, z, 1]
+}
+
+const pupil_left_centre = centre(pupil_left_pos);
+const pupil_right_centre = centre(pupil_right_pos);
 
 const initBuffer = {
     face: (gl) => {
@@ -457,6 +561,7 @@ class CharacterImage {
                 },
             };
             this.location_of_BLOOD = this.gl.getUniformLocation(shaderProgram, 'BLOOD');
+            this.location_of_RAGE = this.gl.getUniformLocation(shaderProgram, 'RAGE');
             this.shaders['face'] = programInfo
         }
 
@@ -477,6 +582,25 @@ class CharacterImage {
             this.location_of_eyes_RAGE = this.gl.getUniformLocation(shaderProgram, 'RAGE');
             this.shaders['eyes'] = programInfo
         }
+        {
+            let shaderProgram = initShaderProgram(this.gl, vsSource, fs_pupils);
+            let programInfo = {
+                program: shaderProgram,
+                attribLocations: {
+                    vertexPosition: this.gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+                    textureCoord: this.gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+                },
+                uniformLocations: {
+                    projectionMatrix: this.gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+                    modelViewMatrix: this.gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+                    uSampler: this.gl.getUniformLocation(shaderProgram, 'uSampler'),
+                },
+            };
+            this.location_of_pupils_POWER = this.gl.getUniformLocation(shaderProgram, 'POWER');
+            this.location_of_pupils_x = this.gl.getUniformLocation(shaderProgram, 'x');
+            this.location_of_pupils_y = this.gl.getUniformLocation(shaderProgram, 'y');
+            this.shaders['pupils'] = programInfo
+        }
 
         this.objects = []
         this.objects[0] = {
@@ -490,18 +614,18 @@ class CharacterImage {
         this.objects[1] = {
             tag: 'pupil_left',
             animate: false,
-            shader: false,
+            shader: true,
             buffer: initBuffer.pupil_left(this.gl),
             texture: this.textures.pupil_left,
-            program_info: this.shaders['basic']
+            program_info: this.shaders['pupils']
         }
         this.objects[2] = {
             tag: 'pupil_right',
             animate: false,
-            shader: false,
+            shader: true,
             buffer: initBuffer.pupil_right(this.gl),
             texture: this.textures.pupil_right,
-            program_info: this.shaders['basic']
+            program_info: this.shaders['pupils']
         }
         this.objects[3] = {
             tag: 'face',
@@ -549,7 +673,7 @@ class CharacterImage {
     }
 
     draw_scene(gl, objects, deltaTime) {
-        gl.clearColor(this.stats.rage / 200 + 0.1, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
+        gl.clearColor(this.stats.rage / 200 + 0.1, 0.2, 0.2, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
         gl.depthFunc(gl.LEQUAL);            // Near things obscure far things
@@ -606,8 +730,20 @@ class CharacterImage {
             gl.useProgram(objects[i].program_info.program)
             if (objects[i].tag == 'face') {
                 gl.uniform1f(this.location_of_BLOOD, this.stats.blood);
+                gl.uniform1f(this.location_of_RAGE, this.stats.rage);
             } else if (objects[i].tag == 'eyes') {
                 gl.uniform1f(this.location_of_eyes_RAGE, this.stats.rage)
+            } else if (objects[i].tag == 'pupil_left' || objects[i].tag == 'pupil_right'){
+                gl.uniform1f(this.location_of_pupils_POWER, this.stats.power)
+                let tmp = [0, 0, 0, 0];
+                if (objects[i].tag == 'pupil_left') {
+                    vec4.transformMat4(tmp, pupil_left_centre, modelViewMatrix);
+                } else {
+                    vec4.transformMat4(tmp, pupil_right_centre, modelViewMatrix);
+                }
+                vec4.transformMat4(tmp, tmp, projectionMatrix);
+                gl.uniform1f(this.location_of_pupils_x, tmp[0]/tmp[3])
+                gl.uniform1f(this.location_of_pupils_y, tmp[1]/tmp[3])
             }
             
 
