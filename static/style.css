@@ -189,12 +189,18 @@ body {
     top: 10px;
 }
 
-.battle_canvas {
-    position: absolute;
-    left: 15px;
-    top: 15px;
+._battle_canvas {
+    position: relative;
 }
 
+#battle_canvas {
+    z-index: 2;
+}
+
+#battle_canvas_background {
+    top: -500px;
+    z-index: 1;
+}
 
 
 #control_frame {

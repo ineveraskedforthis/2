@@ -20,6 +20,7 @@ class CharacterScreen {
         this.button.innerHTML = 'update';
         this.table = document.createElement('table');
         this.table2 = document.createElement('table');
+        this.misc = document.createElement('misc');
         this.div = div
         this.div.appendChild(this.button)
         this.div.appendChild(this.table)
@@ -33,7 +34,8 @@ class CharacterScreen {
     update(data) {
         console.log(data)
         let inv = data.equip.backpack;
-        this.table.innerHTML = ''
+        this.table.innerHTML = '';
+        this.table2.innerHTML = ''
         for (let i = 0; i < inv.length; i++) {
             let row = this.table.insertRow();
             let type = row.insertCell(0);
@@ -70,6 +72,18 @@ class CharacterScreen {
                     a.innerHTML = affix.tag + ' ' + affix.tier;
                 }
             }
+        }
+
+        for (let i in data.stats) {
+            let stats_line = document.createElement('p');
+            stats_line.append(document.createTextNode(`${i}: ${data.stats[i]}`));
+            this.misc.appendChild(stats_line);
+        }
+
+        for (let i in data.stash) {
+            let other_line = document.createElement('p');
+            other_line.append(document.createTextNode(`${i}: ${data.stash[i]}`))
+            this.misc.appendChild(other_line);
         }
 
     }

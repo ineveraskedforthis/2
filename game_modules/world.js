@@ -230,7 +230,8 @@ module.exports = class World {
         }
     }
 
-    async kill(pool, character) {
+    async kill(pool, char_id) {
+        let character = this.chars[char_id];
         await character.set(pool, 'dead', true);
         if (character.data.is_player) {
             var user = this.user_manager.get_user_from_character(character);

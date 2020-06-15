@@ -652,11 +652,19 @@ class CharacterImage {
     }
 
     update(rage, blood, power) {
-        this.stats.rage = rage;
-        this.stats.blood = blood;
-        this.stats.power = power;
-        if (rage > 60) {
-            this.objects[5].texture = this.textures.bottom_lip_opened
+        if (rage != undefined) {
+            this.stats.rage = rage;
+            if (rage > 60) {
+                this.objects[5].texture = this.textures.bottom_lip_opened;
+            } else {
+                this.objects[5].texture = this.textures.bottom_lip_closed;
+            }
+        }
+        if(blood != undefined) {
+            this.stats.blood = blood;
+        }        
+        if (power != undefined) {
+            this.stats.power = power;
         }
     }
 

@@ -14,6 +14,8 @@ module.exports = class Character {
         this.stash = new Stash();
         this.savings = new Savings();
         this.tag = 'chara';
+
+        this.changed = false;
     }
 
     init_base_values(id, name, hp, max_hp, exp, level, cell_id, user_id = -1) {
@@ -78,9 +80,9 @@ module.exports = class Character {
         return tmp
     }
 
-    change_rage(x) {
-        this.data.other.rage = Math.max(0, Math.min(100, this.data.other.rage + x))
-    }
+
+
+    //updaters
 
     async update(pool) {
         if (this.data.dead) {
@@ -89,16 +91,21 @@ module.exports = class Character {
         if (!this.data.in_battle) {
             await this.update2(pool)
         }
-        var socket = undefined;
-        if (this.data.is_player) {
-            let user = this.world.user_manager.users[this.user_id]
-            if (user != undefined) {
-                socket = this.world.user_manager.users[this.user_id].socket;
-            }
+        let sm = this.world.socket_manager;
+        if (this.hp_changed) {
+            sm.send_hp_update(this);
+            this.hp_changed = false;
         }
-        if (socket != undefined) {
-            socket.emit('char-info', this.get_json());
+        if (this.exp_changed) {
+            sm.send_exp_update(this);
+            this.exp_changed = false;
         }
+        if (this.status_changed) {
+            sm.send_status_update(this);
+            this.status_changed = false;
+        }
+        await this.save_to_db(pool, this.changed);
+        this.changed = false;
     }
 
     async update2(pool) {
@@ -109,20 +116,6 @@ module.exports = class Character {
         await this.change_hp(pool, reg, false);
         this.change_rage(-1);
         await this.update_status(pool, false);
-        await this.save_to_db(pool)
-    }
-
-    get_exp_reward() {
-        return this.data.exp_reward;
-    }
-
-    get_range() {
-        return this.equip.get_weapon_range();
-    }
-
-    async set(pool, nani, value, save = true) {
-        this.data[nani] = value;
-        await this.save_to_db(pool, save);
     }
 
     async add_skill(pool, skill, save = true) {
@@ -142,23 +135,6 @@ module.exports = class Character {
             await this.update_skill_stats(pool, undefined, false);
         }
         this.save_to_db(pool, save)
-    }
-
-    get_accuracy() {
-        let blood_acc_loss = this.data.other.blood_covering * this.data.base_battle_stats.blood_burden;
-        let rage_acc_loss = this.data.other.rage * this.data.base_battle_stats.rage_burden;
-        return Math.min(1, Math.max(0.2, this.data.base_battle_stats.accuracy - blood_acc_loss - rage_acc_loss))
-    }
-
-    get_crit_chance(tag) {
-        if (tag == 'attack') {
-            let increase = 1 + this.data.base_battle_stats.attack_crit_add;
-            return this.data.base_battle_stats.crit_chance * increase
-        }
-        if (tag == 'spell') {
-            let increase = 1 + this.data.base_battle_stats.spell_crit_add;
-            return this.data.base_battle_stats.crit_chance * increase
-        }
     }
 
     async update_skill_stats(pool, race = 'apu', save = true) {
@@ -221,6 +197,8 @@ module.exports = class Character {
         this.save_to_db(pool, save);
     }
 
+    //actions
+
     async attack(pool, target) {
         let result = {}
         result.crit = false;
@@ -236,6 +214,67 @@ module.exports = class Character {
         result = await target.take_damage(pool, result);        
         return result;
     }
+
+    async take_damage(pool, result) {
+        let res = this.get_resists();
+        if (!result.evade) {
+            for (let i of this.world.constants.damage_types) {
+                let curr_damage = Math.max(1, result.damage[i] - res[i]);
+                result.total_damage += curr_damage;
+                this.update_status_after_damage(pool, i, curr_damage, false);
+                await this.change_hp(pool, -curr_damage, false);
+            }
+            this.change_blood(2);
+            this.change_rage(2);
+        }
+        await this.save_to_db(pool)
+        return result;
+    }
+
+    async equip_item(pool, index) {
+        this.equip.equip(index);
+        this.save_to_db(pool);
+    }
+
+    async level_up(pool, save) {
+        while (this.data.exp >= common.get_next_nevel_req(this.data.level)) {
+            this.data.exp -= common.get_next_nevel_req(this.data.level);
+            this.data.level += 1;
+            this.data.skill_points += 1;
+        }
+        if (save) {
+            await this.save_to_db(pool);
+        }
+    }
+
+    async transfer(pool, target, tag, x) {
+        this.stash.transfer(target.stash, tag, x);
+        await this.save_to_db(pool);
+        await target.save_to_db(pool);
+    }
+
+    async transfer_all(pool, target) {
+        for (var tag of this.world.constants.TAGS) {
+            var x = this.stash.get(tag);
+            await this.transfer(pool, target, tag, x);
+        }
+        await this.save_to_db(pool);
+    }
+    
+    async buy(pool, tag, amount, money, max_price = null) {
+        var cell = this.world.get_cell_by_id(this.cell_id);
+        await cell.market.buy(pool, tag, this, amount, money, max_price);
+    }
+
+    async sell(pool, tag, amount, price) {
+        if (constants.logging.character.sell) {
+            console.log('character sell', tag, amount, price);
+        }
+        var cell = this.world.get_cell_by_id(this.cell_id);
+        await cell.market.sell(pool, tag, this, amount, price);
+    }
+
+    //attack misc
 
     mod_damage_with_stats(result) {
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * this.data.stats.musculature / 10));
@@ -279,44 +318,7 @@ module.exports = class Character {
         return result
     }
 
-    async take_damage(pool, result) {
-        let res = this.get_resists();
-        if (!result.evade) {
-            for (let i of this.world.constants.damage_types) {
-                let curr_damage = Math.max(1, result.damage[i] - res[i]);
-                result.total_damage += curr_damage;
-                this.update_status_after_damage(pool, i, curr_damage, false);
-                await this.change_hp(pool, -curr_damage, false);
-            }
-            this.data.other.blood_covering = Math.min(this.data.other.blood_covering + 2, 100)
-            this.data.other.rage = Math.min(this.data.other.rage + 2, 100)
-        }
-        await this.save_to_db(pool)
-        return result;
-    }
-
-    async stun(pool) {
-        this.data.status.stunned = 2
-        this.save_to_db(pool)
-    }
-
-    async update_status() {
-        for (let i of Object.keys(this.data.status)) {
-            let x = this.data.status[i];
-            this.data.status[i] = Math.max(x - 1, 0);
-        }
-    }
-
-    async update_status_after_damage(pool, type, x) {
-        if (type == 'blunt') {
-            if (x > 5) {
-                let d = Math.random();
-                if (d > 0.5) {
-                    await this.stun(pool)
-                }
-            }
-        }
-    }
+    //getters
 
     get_resists() {
         let res = this.data.base_resists;
@@ -327,21 +329,104 @@ module.exports = class Character {
         return res
     }
 
+    get_hp() {
+        return this.hp
+    }
+
+    get_accuracy() {
+        let blood_acc_loss = this.data.other.blood_covering * this.data.base_battle_stats.blood_burden;
+        let rage_acc_loss = this.data.other.rage * this.data.base_battle_stats.rage_burden;
+        return Math.min(1, Math.max(0.2, this.data.base_battle_stats.accuracy - blood_acc_loss - rage_acc_loss))
+    }
+
+    get_crit_chance(tag) {
+        if (tag == 'attack') {
+            let increase = 1 + this.data.base_battle_stats.attack_crit_add;
+            return this.data.base_battle_stats.crit_chance * increase
+        }
+        if (tag == 'spell') {
+            let increase = 1 + this.data.base_battle_stats.spell_crit_add;
+            return this.data.base_battle_stats.crit_chance * increase
+        }
+    }
+    
+    get_exp_reward() {
+        return this.data.exp_reward;
+    }
+
+    get_range() {
+        return this.equip.get_weapon_range();
+    }
+
+    //setters
+
+    async set(pool, nani, value, save = true) {
+        if (this.data[nani] != value) {
+            this.changed = true;
+            this.data[nani] = value
+        }
+        this.save_to_db(pool, save);
+    }
+
+    change_rage(x) {
+        let tmp = this.data.other.rage;
+        this.data.other.rage = Math.max(0, Math.min(100, this.data.other.rage + x));
+        if (tmp != this.data.other.rage) {
+            this.changed = true;
+            this.status_changed = true;
+        }
+    }
+
+    change_blood(x) {
+        let tmp = this.data.other.blood_covering;
+        this.data.other.blood_covering = Math.max(0, Math.min(100, this.data.other.blood_covering + x));
+        
+        if (tmp != this.data.other.blood_covering) {
+            this.changed = true
+            this.status_changed = true;
+        }
+    }
+
     async change_hp(pool, x, save = true) {
+        let tmp = this.hp;
         this.hp += x;
         if (this.hp > this.max_hp) {
             this.hp = this.max_hp;
         }
         if (this.hp <= 0) {
             this.hp = 0;
-            await this.world.kill(pool, this);
+            await this.world.kill(pool, this.id);
+        }
+        if (this.hp != tmp) {
+            this.hp_changed = true;
+            this.changed = true;
         }
         await this.save_to_db(pool, save);
     }
 
-    async save_hp_to_db(pool, save = true) {
-        if (save) {
-            await common.send_query(pool, constants.set_hp_query, [this.hp, this.id]);
+    async update_status_after_damage(pool, type, x) {
+        if (type == 'blunt') {
+            if (x > 5) {
+                let d = Math.random();
+                if (d > 0.5) {
+                    this.stun()
+                }
+            }
+        }
+    }
+
+    async stun() {
+        this.data.status.stunned = 2;
+        this.changed = true;
+    }
+
+    async update_status() {
+        for (let i of Object.keys(this.data.status)) {
+            let x = this.data.status[i];
+            if (x > 1) {
+                this.changed = true;
+            }
+            this.data.status[i] = Math.max(x - 1, 0);
         }
     }
 
@@ -350,6 +435,7 @@ module.exports = class Character {
     }
 
     async set_exp(pool, x, save = true) {
+        this.exp_changed = true;
         this.data.exp = x;
         if (this.data.exp >= common.get_next_nevel_req(this.data.level)) {
             await this.level_up(pool, false);
@@ -359,46 +445,12 @@ module.exports = class Character {
         }
     }
 
-    async level_up(pool, save) {
-        while (this.data.exp >= common.get_next_nevel_req(this.data.level)) {
-            this.data.exp -= common.get_next_nevel_req(this.data.level);
-            this.data.level += 1;
-            this.data.skill_points += 1;
-        }
+    //misc
+
+    async save_hp_to_db(pool, save = true) {
         if (save) {
-            await this.save_to_db(pool);
+            await common.send_query(pool, constants.set_hp_query, [this.hp, this.id]);
         }
-    }
-
-    async transfer(pool, target, tag, x) {
-        this.stash.transfer(target.stash, tag, x);
-        await this.save_to_db(pool);
-        await target.save_to_db(pool);
-    }
-
-    async transfer_all(pool, target) {
-        for (var tag of this.world.constants.TAGS) {
-            var x = this.stash.get(tag);
-            await this.transfer(pool, target, tag, x);
-        }
-        await this.save_to_db(pool);
-    }
-
-    async buy(pool, tag, amount, money, max_price = null) {
-        var cell = this.world.get_cell_by_id(this.cell_id);
-        await cell.market.buy(pool, tag, this, amount, money, max_price);
-    }
-
-    async sell(pool, tag, amount, price) {
-        if (constants.logging.character.sell) {
-            console.log('character sell', tag, amount, price);
-        }
-        var cell = this.world.get_cell_by_id(this.cell_id);
-        await cell.market.sell(pool, tag, this, amount, price);
-    }
-
-    get_hp() {
-        return this.hp
     }
 
     async load_from_json(data) {

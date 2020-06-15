@@ -27,13 +27,14 @@ module.exports = class SocketManager {
             socket.on('login', async data => this.login(socket, user_data, data));
             socket.on('reg', async data => this.registration(socket, user_data, data));
             socket.on('attack', async msg => this.attack(socket, user_data, msg));
-            socket.on('buy', async msg => this.buy(socket, user_data, msg));
-            socket.on('sell', async msg => this.sell(socket, user_data, msg));
-            socket.on('up-skill', async msg => this.up_skill(socket, user_data, msg));
-            socket.on('set-tactic', async msg => this.set_tactic(socket, user_data, msg));
+            socket.on('buy', async msg => this.buy(user_data, msg));
+            socket.on('sell', async msg => this.sell(user_data, msg));
+            socket.on('up-skill', async msg => this.up_skill(user_data, msg));
+            socket.on('set-tactic', async msg => this.set_tactic(user_data, msg));
             socket.on('new-message', async msg => this.send_message(socket, msg + '', user_data.current_user));
             socket.on('char-info-detailed', () => this.send_char_info(socket, user_data.current_user));
-            socket.on('send-market-data', (msg) => {user_data.market_data = msg})
+            socket.on('send-market-data', (msg) => {user_data.market_data = msg});
+            socket.on('equip', async (msg) => this.equip(user_data, msg));
         });
     }
 
@@ -42,6 +43,13 @@ module.exports = class SocketManager {
         var user_manager = this.world.user_manager;
         if (user_data.online == true) {
             user_manager.user_disconnects(user_data.current_user.login);
+        }
+    }
+
+    async equip(user_data, msg) {
+        if (user_data.current_user != null) {
+            let character = user_data.current_user.character;
+            await character.equip_item(this.pool, msg);
         }
     }
 
@@ -75,7 +83,7 @@ module.exports = class SocketManager {
             user_data.online = true;
             socket.emit('log-message', 'hello ' + data.login);
             this.send_battle_data_to_user(answer.user);
-            this.update_char_info(socket, user_data.current_user);
+            this.send_all(user_data.current_user.character);
         }
     }
 
@@ -95,10 +103,24 @@ module.exports = class SocketManager {
             user_manager.new_user_online(data.login);
             user_data.online = true;
             socket.emit('log-message', 'hello ' + data.login);
-            this.update_char_info(socket, user_data.current_user);
+            this.send_all(user_data.current_user.character);
             common.flag_log('registration is finished', constants.logging.sockets.messages)
         }
     }
+
+    send_all(character) {
+        this.send_to_character_user(character, 'name', character.name);
+        this.send_hp_update(character);
+        this.send_exp_update(character)
+        this.send_status_update(character);
+        this.send_tactics_info(character);
+
+        let user = character.user;
+        let socket = character.user.socket;
+        this.send_char_info(socket, user);
+    }
+
+    // actions
 
     // eslint-disable-next-line no-unused-vars
     async attack(socket, user_data, data) {
@@ -111,36 +133,53 @@ module.exports = class SocketManager {
         }
     }
 
-    async buy(socket, user_data, msg) {
+    async buy(user_data, msg) {
         var flag = common.validate_buy_data(this.world, msg);
         if ((user_data.current_user != null) && flag) {
             if (!(msg.max_price == null)) {
                 msg.max_price = parseInt(msg.max_price);
             }
-            await user_data.current_user.character.buy(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.money), msg.max_price);
-            this.update_char_info(socket, user_data.current_user);
+            let char = user_data.current_user.character;
+            await char.buy(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.money), msg.max_price);
+            
         }
     }
 
-    async sell(socket, user_data, msg) {
+    async sell(user_data, msg) {
         var flag = common.validate_sell_data(this.world, msg);
         if ((user_data.current_user != null) && flag) {
-            await user_data.current_user.character.sell(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
-            this.update_char_info(socket, user_data.current_user);
+            let char = user_data.current_user.character;
+            await char.sell(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
+            this.send_savings_update(char);
         }
     }
 
-    async up_skill(socket, user_data, msg) {
+    async up_skill(user_data, msg) {
         if (msg in this.world.constants.SKILLS && user_data.current_user != null) {
-            await user_data.current_user.character.add_skill(this.pool, msg + '');
-            this.update_char_info(socket, user_data.current_user);
+            let char = user_data.current_user.character;
+            await char.add_skill(this.pool, msg + '');
+            this.send_skills_info(char);
         }
     }
 
-    async set_tactic(socket, user_data, msg) {
+    
+
+    async set_tactic(user_data, msg) {
         if (user_data.current_user != null) {
-            await user_data.current_user.character.set_tactic(this.pool, msg);
+            let char = user_data.current_user.character;
+            await char.set_tactic(this.pool, msg);
+            this.send_tactics_info(char);
         }
+    }
+
+    // information sending
+
+    send_skills_info(character) {
+        this.send_to_character_user(character, 'skills', character.data.skills)
+    }
+
+    send_tactics_info(character) {
+        this.send_to_character_user(character, 'tactic', character.data.tactic)
     }
 
     send_battle_data_to_user(user) {
@@ -171,12 +210,28 @@ module.exports = class SocketManager {
         }
     }
 
-    update_char_info(socket, user) {
-        socket.emit('char-info', user.character.get_json());
+    send_hp_update(character) {
+        let user = this.world.user_manager.get_user_from_character(character);
+        this.send_to_user(user, 'hp', {hp: character.hp, mhp: character.max_hp});
+    }
+
+    send_exp_update(character) {
+        let user = this.world.user_manager.get_user_from_character(character);
+        this.send_to_user(user, 'exp', {exp: character.data.exp, level: character.data.level, points: character.data.skill_points});
+    }
+
+    send_savings_update(character) {
+        let user = this.world.user_manager.get_user_from_character(character);
+        this.send_to_user(user, 'savings', character.savings.get());
+    }
+
+    send_status_update(character) {
+        this.send_to_character_user(character, 'status', character.data.other)
     }
 
     send_char_info(socket, user) {
-        socket.emit('char-info-detailed', {equip: user.character.equip.data})
+        let char = user.character
+        socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.data.stash});
     }
     
     update_market_info(cell) {

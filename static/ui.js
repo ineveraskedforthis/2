@@ -51,12 +51,23 @@ function show(tag) {
     document.getElementById(tag).style.visibility = 'visible';
 }
 
+// function show(tag) {
+//     document.getElementById('battle_tab').style.display = 'none';
+//     document.getElementById('market_tab').style.display = 'none';
+//     document.getElementById('market_control_tab').style.display = 'none';
+//     document.getElementById('tactics_tab').style.display = 'none';
+//     document.getElementById('skilltree_tab').style.display = 'none';
+//     document.getElementById('map_tab').style.display = 'none';
+//     document.getElementById('character_screen').style.display = 'none';
+//     document.getElementById(tag).style.display = 'block';
+// }
+
 function show_game() {
     document.getElementById('login_container').style.visibility = 'hidden';
     document.getElementById('login-frame').style.visibility = 'hidden';
     document.getElementById('reg-frame').style.visibility = 'hidden';
     document.getElementById('game_container').style.visibility = 'visible';
-    show('battle_tab');
+    show('character_screen');
 }
 
 document.getElementById('open_reg_window_button').onclick = () => {
@@ -161,42 +172,56 @@ document.getElementById('character_screen_button').onclick = () => {
 }
 
 
-socket.on('tags', msg => {
+socket.on('tags', msg => update_tags(msg));
+socket.on('is-reg-valid', msg => my_alert(msg));
+socket.on('is-reg-completed', msg => reg(msg));
+socket.on('is-login-valid', msg => my_alert(msg));
+socket.on('is-login-completed', msg => login(msg));
+socket.on('log-message', msg => new_log_message(msg));
+socket.on('new-message', msg => new_message(msg));
+socket.on('hp', msg => char_info_monster.update_hp(msg));
+socket.on('exp', msg => char_info_monster.update_exp(msg));
+socket.on('savings', msg => char_info_monster.update_savings(msg));
+socket.on('status', msg => char_info_monster.update_status(msg));
+socket.on('market-data', data => market_table.update(data));
+socket.on('skill-tree', data => {SKILLS = data});
+socket.on('tags-tactic', msg => tactic_screen.update_tags(msg));
+socket.on('char-info-detailed', msg => character_screen.update(msg))
+socket.on('alert', msg => alert(msg));
+socket.on('skills', msg => skill_tree.update(SKILLS, msg));
+socket.on('tactic', msg => tactic_screen.update(msg));
+
+
+function update_tags(msg) {
     for (var tag of msg) {
         var tag_option = new Option(tag, tag);
         document.getElementById('buy_tag_select').add(tag_option);
         tag_option = new Option(tag, tag);
         document.getElementById('sell_tag_select').add(tag_option);
     }
-});
+}
 
-socket.on('is-reg-valid', msg => {
+function my_alert(msg) {
     if (msg != 'ok') {
         alert(msg);
     }
-});
+}
 
-socket.on('is-reg-completed', msg => {
-    if (msg != 'ok') {
-        alert(msg);
-    } else if (msg == 'ok') {
-        show_game();
-    }
-});
-
-socket.on('is-login-valid', msg => {
-    if (msg != 'ok') {
-        alert(msg);
-    }
-});
-
-socket.on('is-login-completed', msg => {
+function login(msg) {
     if (msg != 'ok') {
         alert(msg);
     } else if (msg == 'ok') {
         show_game();
     }
-});
+}
+
+function reg(msg) {
+    if (msg != 'ok') {
+        alert(msg);
+    } else if (msg == 'ok') {
+        show_game();
+    }
+}
 
 function new_log_message(msg) {
     var log = document.getElementById('log');
@@ -207,117 +232,106 @@ function new_log_message(msg) {
     log.scrollTop = log.scrollHeight
 }
 
-socket.on('log-message', msg => {
-    new_log_message(msg)
-});
-
-socket.on('new-message', msg => {
-    if (msg != 'message-too-long')
+function new_message(msg) {
+    if (msg != 'message-too-long') {
         var chat = document.getElementById('chat');
         var new_line = document.createElement('p');
         var text = document.createTextNode(msg.user + ': ' + msg.msg);
         new_line.append(text);
         chat.appendChild(new_line);
         chat.scrollTop = chat.scrollHeight
-})
-
-socket.on('char-info', msg => {
-    let status = document.getElementById('status');
-    status.textContent = '';
-    let name_line = document.createElement('p');
-    let hp_line = document.createElement('p');
-    let exp_line = document.createElement('p');
-    let level_line = document.createElement('p');
-    let points_line = document.createElement('p');
-    let savings_line = document.createElement('p');
-
-    name_line.append(document.createTextNode(`name: ${msg.name}`));
-    hp_line.append(document.createTextNode(`hp:${msg.hp}/${msg.max_hp}`));
-    exp_line.append(document.createTextNode(`exp: ${msg.data.exp}`));
-    level_line.append(document.createTextNode(`level: ${msg.data.level}`));
-    points_line.append(document.createTextNode(`skill points: ${msg.data.skill_points}`));
-    savings_line.append(document.createTextNode(`savings: ${msg.savings.data['standard_money']}`));
-
-    status.appendChild(name_line);
-    status.appendChild(hp_line);
-    status.appendChild(exp_line);
-    status.appendChild(level_line);
-    status.appendChild(points_line);
-    status.appendChild(savings_line);
-
-    for (let i in msg.data.stats) {
-        let stats_line = document.createElement('p');
-        stats_line.append(document.createTextNode(`${i}: ${msg.data.stats[i]}`));
-        status.appendChild(stats_line);
     }
-    for (let i in msg.data.other) {
-        let other_line = document.createElement('p');
-        other_line.append(document.createTextNode(`${i}: ${msg.data.other[i]}`))
-        status.appendChild(other_line);
-    }
-    for (let i in msg.stash) {
-        let other_line = document.createElement('p');
-        other_line.append(document.createTextNode(`${i}: ${msg.stash[i]}`))
-        status.appendChild(other_line);
+}
+
+
+class CharInfoMonster {
+    constructor() {
+        this.table = document.createElement('table');
+
+        this.name = this.insert_row('name');
+        this.hp = this.insert_row('hp');
+
+        this.exp = this.insert_row('exp');        
+        this.level = this.insert_row('level');
+        this.points = this.insert_row('points');
+
+        this.savings = this.insert_row('savings');
+
+        this.rage = this.insert_row('rage');
+        this.blood = this.insert_row('blood');
+        this.stress = this.insert_row('stress');
+
     }
 
-    char_image.update(msg.data.other.rage, msg.data.other.blood_covering, msg.data.stats.pow)
-    skill_tree.update(SKILLS, msg.data.skills);
-    tactic_screen.update(msg.data.tactic)
-    
-});
+    insert_row(s) {
+        let row = this.table.insertRow();
+        let label = row.insertCell(0);
+        label.innnerHTML = s
+        return row.insertCell(1);
+    }
 
-socket.on('battle-has-started', data => {
-    battle_image.clear()
-    console.log(data)
-    battle_image.load(data)
-})
+    update_hp(data) {
+        this.hp.innnerHTML = `${data.hp}/${data.mhp}`
+    }
 
-socket.on('battle-update', data => {
-    battle_image.update(data)
-})
+    update_exp(data) {
+        this.exp.innnerHTML = data.exp;
+        this.level.innnerHTML = data.level;
+        this.points.innnerHTML = data.points;
+    }
 
-socket.on('battle-action', data => {
-    console.log(data)
-    battle_image.update_action(data)
-    if (data.action == 'attack') {
-        if (data.result.crit) {
-            new_log_message(data.actor_name + ': critical_damage')
-        }
-        new_log_message(data.actor_name + ': deals ' + data.result.total_damage + ' damage')
-    }    
-})
+    update_savings(savings) {
+        this.savings.innnerHTML = savings;
+    }
 
-socket.on('battle-has-ended', () => {
-    battle_image.clear()
-})
+    update_status(data) {
+        this.rage.innnerHTML = data.rage;
+        this.blood.innnerHTML = data.blood;
+        this.stress.innnerHTML = data.stress;
+        // char_image.update(data.rage, data.blood, undefined)
+    }
+}
+const char_info_monster = new CharInfoMonster();
+let status_page = document.getElementById('status')
+status_page.appendChild(char_info_monster.table);
 
-socket.on('market-data', data => {
-    market_table.update(data);
-})
 
-socket.on('skill-tree', data => {
-    SKILLS = data;
-})
 
-socket.on('tags-tactic', msg => {
-    tactic_screen.update_tags(msg);
-})
 
-socket.on('char-info-detailed', msg => {
-    character_screen.update(msg);
-})
 
-socket.on('alert', msg => {
-    alert(msg);
-});
+// socket.on('battle-has-started', data => {
+//     battle_image.clear()
+//     console.log(data)
+//     battle_image.load(data)
+// })
+
+// socket.on('battle-update', data => {
+//     battle_image.update(data)
+// })
+
+// socket.on('battle-action', data => {
+//     console.log(data)
+//     battle_image.update_action(data)
+//     if (data.action == 'attack') {
+//         if (data.result.crit) {
+//             new_log_message(data.actor_name + ': critical_damage')
+//         }
+//         new_log_message(data.actor_name + ': deals ' + data.result.total_damage + ' damage')
+//     }    
+// })
+
+// socket.on('battle-has-ended', () => {
+//     battle_image.clear()
+// })
+
+
 
 
 
 // eslint-disable-next-line no-undef
-var char_image = new CharacterImage(document.getElementById('char_image'), document.getElementById('tmp_canvas'));
+// var char_image = new CharacterImage(document.getElementById('char_image'), document.getElementById('tmp_canvas'));
 // eslint-disable-next-line no-undef
-var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
+// var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 // eslint-disable-next-line no-undef
 var market_table = new MarketTable(document.getElementById('market'));
 socket.emit('get-market-data', null);
@@ -338,18 +352,18 @@ ctx.clearRect(45, 45, 60, 60);
 ctx.strokeRect(50, 50, 50, 50);
 
 
-for (var i = 200; i > 10; i -= 5) {
-    battle_image.add_fighter(i, 'tost', i)
-}
-battle_image.add_fighter(0, 'test', 0)
+// for (var i = 200; i > 10; i -= 5) {
+//     battle_image.add_fighter(i, 'tost', i)
+// }
+// battle_image.add_fighter(0, 'test', 0)
 
 
 
 function draw(time) {
     if (document.getElementById('game_container').style.visibility == 'visible') {
-        char_image.draw(time);
+        // char_image.draw(time);
         if (document.getElementById('battle_tab').style.visibility != 'hidden') {
-            battle_image.draw(time);
+            // battle_image.draw(time);
         }
         if (document.getElementById('map_tab').style.visibility != 'hidden'){
             map.draw(time);
@@ -357,5 +371,6 @@ function draw(time) {
     }
     window.requestAnimationFrame(draw);
 }
+
 
 const images = loadImages(images_list[0], images_list[1], () => {console.log(images), window.requestAnimationFrame(draw);});

@@ -26,6 +26,8 @@ module.exports = class User {
     async get_new_char(pool) {
         this.character = new Character(this.world);
         this.char_id = await this.character.init(pool, this.login, 0, this.id);
+        console.log(this.char_id);
+        this.save_to_db();
         return this.char_id
     }
 
@@ -39,8 +41,11 @@ module.exports = class User {
         this.set_login(data.login)
         this.set_password_hash(data.password_hash)
         this.char_id = data.char_id;
-        if (this.char_id in this.world.chars) {
+        console.log('user ' + this.id + ' loading character ' + this.char_id);
+        console.log('character is loaded? ' + (this.world.chars[this.char_id] != undefined));
+        if (this.world.chars[this.char_id] != undefined) {
             this.character = this.world.chars[this.char_id]
+            this.character.user = this;
         } else {
             var char_data = await this.world.load_character_data_from_db(pool, this.char_id);
             var character = await this.world.load_character_data_to_memory(pool, char_data);

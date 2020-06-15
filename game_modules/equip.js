@@ -22,6 +22,19 @@ module.exports = class Equip {
         return result
     }
 
+    equip(index) {
+        let backpack = this.data.backpack;
+        if (backpack[index] != undefined) {
+            let tmp = this.data.right_hand;
+            this.data.right_hand = backpack[index]
+            if (tmp.tag != 'empty' & tmp.tag != 'fist') {
+                backpack[index] = tmp;
+            } else {
+                backpack[index] = undefined;
+            }
+        }
+    }
+
     get_resists() {
         return {blunt: 0, pierce: 0, slice: 0, fire: 0};
     }
