@@ -11,7 +11,7 @@ var gameloop = require('node-gameloop');
 var path = require('path');
 var World = require("./game_modules/world.js");
 var common = require("./game_modules/common.js");
-var constants = require("./game_modules/constants");
+var constants = require("./game_modules/constants.js");
 
 var {Pool} = require('pg');
 var stage = process.env.STAGE;

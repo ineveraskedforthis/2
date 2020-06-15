@@ -290,6 +290,40 @@ module.exports = class World {
         this.chars[data.id] = character;
         return character;
     }
+
+    generate_loot(level) {
+        let item = {};
+        item.tag = 'sword';
+        let dice = Math.random()
+        let num_of_affixes = 0
+        if (dice > 0.5) {
+            num_of_affixes += 1
+        }
+        if (dice > 0.9) {
+            num_of_affixes += 1
+        }
+        item.affixes = num_of_affixes;
+        for (let i = 0; i < num_of_affixes; i++) {
+            item['a' + i] = this.roll_affix(level)
+        }
+        return item;
+    }
+
+    roll_affix(level) {
+        let dice = Math.random();
+        let affix = {}
+        if (dice < 0.4) {
+            affix.tag = 'sharp'
+        } else if (dice < 0.8) {
+            affix.tag = 'heavy'
+        } else {
+            affix.tag = 'hot'
+        }
+        let dice2 = Math.random();
+        affix.tier = 1
+        affix.tier += Math.floor(level * dice2 / 2)
+        return affix;
+    }
     
     // eslint-disable-next-line no-unused-vars
     get_tick_death_rate(race) {

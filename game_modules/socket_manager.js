@@ -10,14 +10,18 @@ module.exports = class SocketManager {
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
         this.real_shit();
+        this.sockets = new Set();
     }
 
     real_shit() {
         this.io.on('connection', async socket => {
             var user_data = {
+                socket: socket,
                 online: false,
-                current_user: null
+                current_user: null,
+                market_data: false
             }
+            this.sockets.add(user_data);            
             this.connection(socket)
             socket.on('disconnect', () => this.disconnect(user_data));        
             socket.on('login', async data => this.login(socket, user_data, data));
@@ -28,6 +32,8 @@ module.exports = class SocketManager {
             socket.on('up-skill', async msg => this.up_skill(socket, user_data, msg));
             socket.on('set-tactic', async msg => this.set_tactic(socket, user_data, msg));
             socket.on('new-message', async msg => this.send_message(socket, msg + '', user_data.current_user));
+            socket.on('char-info-detailed', () => this.send_char_info(socket, user_data.current_user));
+            socket.on('send-market-data', (msg) => {user_data.market_data = msg})
         });
     }
 
@@ -168,6 +174,10 @@ module.exports = class SocketManager {
     update_char_info(socket, user) {
         socket.emit('char-info', user.character.get_json());
     }
+
+    send_char_info(socket, user) {
+        socket.emit('char-info-detailed', {equip: user.character.equip.data})
+    }
     
     update_market_info(cell) {
         var data = cell.market.get_orders_list();
@@ -175,9 +185,13 @@ module.exports = class SocketManager {
             console.log('sending market orders to client');
             console.log(data);
         }
-        this.io.emit('market-data', data);
+        for (let i of this.sockets) {
+            if (i.online & i.market_data) {
+                i.socket.emit('market-data', data)
+            }
+        }
     }
-    
+
     update_user_list(){
         var tmp = [];
         var users_online = this.world.user_manager.users_online;

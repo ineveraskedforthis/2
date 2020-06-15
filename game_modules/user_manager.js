@@ -33,8 +33,8 @@ module.exports = class UserManager{
 
     async login_player(pool, data) {
         var user_data = await this.load_user_data_from_db(pool, data.login);
-        if (user_data == null) {
-            return {login_promt: 'wrong-login', user: null};
+        if (user_data == undefined) {
+            return {login_promt: 'wrong-login', user: undefined};
         }
         var password_hash = user_data.password_hash;
         var f = await bcrypt.compare(data.password, password_hash);
@@ -42,7 +42,7 @@ module.exports = class UserManager{
             var user = await this.load_user_to_memory(pool, user_data);
             return({login_promt: 'ok', user: user});
         }
-        return {login_promt: 'wrong-password', user: null};
+        return {login_promt: 'wrong-password', user: undefined};
     }
 
     new_user_online(login) {
@@ -74,7 +74,7 @@ module.exports = class UserManager{
     async load_user_data_from_db(pool, login) {
         var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
         if (res.rows.length == 0) {
-            return null;
+            return undefined;
         }
         return res.rows[0];
     }

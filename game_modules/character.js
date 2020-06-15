@@ -1,5 +1,6 @@
 var common = require("./common.js");
 var constants = require("./constants.js")
+var weapons = require("./weapons.js")
 
 var Equip = require("./equip.js");
 var Stash = require("./stash.js");
@@ -24,7 +25,7 @@ module.exports = class Character {
         this.hp = hp;
         this.max_hp = max_hp;
         this.id = id;        
-        this.equip.data.right_hand = 'fist';        
+        this.equip.data.right_hand = weapons.fist;        
         this.user_id = user_id;
         this.cell_id = cell_id;
         this.data = {
@@ -222,22 +223,31 @@ module.exports = class Character {
 
     async attack(pool, target) {
         let result = {}
-        result.crit = false
-        result.evade = false
-        result.damage = this.equip.get_weapon_damage(this.data.stats.musculature);
+        result.crit = false;
+        result.evade = false;
+        result.poison = false;
         result.total_damage = 0;
+        result = this.equip.get_weapon_damage(result);
+        result = this.mod_damage_with_stats(result);        
         result = this.roll_accuracy(result);
         result = this.roll_crit(result);
         result = target.roll_evasion(result);
-        result = await target.take_damage(pool, result);
-        this.data.other.rage = Math.min(this.data.other.rage + 10, 100)
+        this.change_rage(5)
+        result = await target.take_damage(pool, result);        
         return result;
+    }
+
+    mod_damage_with_stats(result) {
+        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * this.data.stats.musculature / 10));
+        result.damage['pierce'] = Math.floor(Math.max(1, result.damage['pierce'] * this.data.stats.musculature / 10));
+        result.damage['slice'] = Math.floor(Math.max(1, result.damage['slice'] * this.data.stats.musculature / 10));
+        result.damage['fire'] = Math.floor(Math.max(1, result.damage['fire'] * this.data.stats.pow / 10));
+        return result
     }
 
     roll_accuracy(result) {
         let dice = Math.random();
         let acc = this.get_accuracy();
-        console.log(dice, acc);
         if (dice > acc) {
             result.evade = true;
         }

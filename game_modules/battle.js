@@ -145,6 +145,7 @@ module.exports = class Battle {
             var x = this.stash.get(tag);
             await this.transfer(pool, leader, tag, x);
         }
+        leader.equip.add_item(this.world.generate_loot(2))
     }
 
     async load_to_db(pool) {

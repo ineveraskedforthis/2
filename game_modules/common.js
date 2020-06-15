@@ -13,7 +13,7 @@ module.exports =
 
     send_query: async function (pool, query, args) {
         if (constants.logging.db_queries) {
-            if ((!query.includes('market')) & (!query.includes('chars'))) {
+            if ((!query.includes('market')) & (!query.includes('pops'))) {
                 console.log('!!!!!!!!!!!!!!!')
                 console.log(constants.logging.db_queries)
                 console.log(query)

@@ -1,7 +1,10 @@
+var {item_base_damage, affixes_effects} = require("./item_tags.js")
+
 module.exports = class Equip {
     constructor() {
         this.data = {
-            right_hand: null
+            right_hand: {tag: 'empty', affixes: 0},
+            backpack: []
         }
     }
 
@@ -9,21 +12,18 @@ module.exports = class Equip {
         return 1;
     }
 
-    get_weapon_damage(m) {
-        var tmp = undefined
-        if (this.data.right_hand == null) {
-            tmp = {blunt: 3, pierce: 1, slice: 1};
-        } else {
-            tmp = {blunt: 10, pierce: 1, slice: 1};
+    get_weapon_damage(result) {
+        let right_hand = this.data.right_hand;
+        result = item_base_damage[right_hand.tag](result);
+        for (let i=0; i<right_hand.affixes; i++) {
+            let affix = right_hand['a' + i];
+            result = affixes_effects[affix.tag](result, affix.tier);
         }
-        for (var i in tmp) {
-            tmp[i] = Math.floor(tmp[i] * m / 10);
-        }
-        return tmp
+        return result
     }
 
     get_resists() {
-        return {blunt: 0, pierce: 0, slice: 0};
+        return {blunt: 0, pierce: 0, slice: 0, fire: 0};
     }
 
     get_json() {
@@ -32,5 +32,9 @@ module.exports = class Equip {
 
     load_from_json(json) {
         this.data = json;
+    }
+
+    add_item(item) {
+        this.data.backpack.push(item);
     }
 }

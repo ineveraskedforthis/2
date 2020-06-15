@@ -1,7 +1,7 @@
  var CONSTS = {
     TAGS: ['food', 'clothes'],
     SKILLS: {},
-    damage_types: new Set(['blunt', 'pierce', 'slice']),
+    damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
     default_tactic_slot: {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}},
     empty_tactic_slot: {trigger: {target: undefined, tag: undefined, sign: undefined, value: undefined}, action: {target: undefined, action: undefined}},
     base_stats: {
@@ -31,12 +31,14 @@
         pepe: {
             blunt: 0,
             pierce: 0,
-            slice: 0
+            slice: 0,
+            fire: 0
         },
         rat: {
             blunt: 0,
             pierce: 0,
-            slice: 0
+            slice: 0,
+            fire: 0
         }
     },
     base_battle_stats: {

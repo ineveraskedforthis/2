@@ -89,13 +89,14 @@ function intersect(line, plane) {
 }
 
 class BattleImage {
-    constructor(canvas, tmp_canvas) {
+    constructor(canvas, canvas_background) {
         this.canvas = canvas;
-        this.tmp_canvas = tmp_canvas;
+        this.canvas_background = canvas_background;
         this.background = "base_background";
         this.init()
         this.w = 800;
         this.h = 500;
+        this.background_flag = false;
         this.movement_speed = 50
     }
 
@@ -141,23 +142,23 @@ class BattleImage {
     }
     
     draw() {
+
+        if (!this.background_flag){
+            console.log('draw_background')
+            let ctx = this.canvas_background.getContext('2d');
+            ctx.fillRect(25, 25, 100, 100);
+            draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
+            
+            this.background_flag = true;
+        }        
         if (this.r > this.l + 1) {
-            this.movement_tick += 1
-            // console.log(this.positions)
-            // console.log(this.prev_positions)
-            // console.log(this.new_positions)
-            // console.log(this.movement_tick)
-            
-            
+            this.movement_tick += 1         
 
             for (let i in this.positions) {
                 this.update_pos(i)
             }
 
             if (this.movement_tick >= this.movement_speed) {
-                // console.log(this.l)
-                // console.log(this.r)
-                // console.log(this.action_queue)
                 this.movement_tick = 0
                 for (let i in this.positions) {
                     this.images[i].set_action('idle');
@@ -191,9 +192,8 @@ class BattleImage {
 
 
         this.tick += 1;
-        var ctx = this.canvas.getContext('2d')
+        let ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, this.w, this.h);
-        draw_image(ctx, images[this.background], 0, 0, this.w, this.h)
         var draw_order = Array.from(this.battle_ids)
         draw_order.sort((a, b) => this.dist(a, b, this.positions))
         for (var i of draw_order) {
@@ -210,7 +210,7 @@ class BattleImage {
     }
     
     add_fighter(battle_id, tag, position) {
-        console.log(battle_id, tag, position)
+        // console.log(battle_id, tag, position)
         this.battle_ids.add(battle_id)
         this.new_positions[battle_id] = position;
         this.prev_positions[battle_id] = position;

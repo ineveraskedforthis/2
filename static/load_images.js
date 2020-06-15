@@ -42,7 +42,7 @@ function loadImages(names, files, onAllLoaded) {
     const onload = () => --numLoading === 0 && onAllLoaded();
     const images = {};
     for (i = 0; i < names.length; i++) {
-        console.log(i, names[i], files[i])
+        // console.log(i, names[i], files[i])
         const img = images[names[i]] = new Image;        
         img.src = 'static/img/' + files[i] + ".png";
         img.onload = onload;

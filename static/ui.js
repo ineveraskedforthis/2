@@ -47,11 +47,14 @@ function show(tag) {
     document.getElementById('tactics_tab').style.visibility = 'hidden';
     document.getElementById('skilltree_tab').style.visibility = 'hidden';
     document.getElementById('map_tab').style.visibility = 'hidden';
+    document.getElementById('character_screen').style.visibility = 'hidden';
     document.getElementById(tag).style.visibility = 'visible';
 }
 
 function show_game() {
     document.getElementById('login_container').style.visibility = 'hidden';
+    document.getElementById('login-frame').style.visibility = 'hidden';
+    document.getElementById('reg-frame').style.visibility = 'hidden';
     document.getElementById('game_container').style.visibility = 'visible';
     show('battle_tab');
 }
@@ -133,19 +136,28 @@ document.getElementById('attack_button').onclick = () => {
 }
 
 document.getElementById('market_button').onclick = () => {
+    socket.emit('send-market-data', true)
     show('market_tab');
 }
 document.getElementById('market_control_button').onclick = () => {
+    socket.emit('send-market-data', false)
     show('market_control_tab');
 }
 document.getElementById('map_button').onclick = () => {
+    socket.emit('send-market-data', false)
     show('map_tab');
 }
 document.getElementById('tactics_button').onclick = () => {
+    socket.emit('send-market-data', false)
     show('tactics_tab');
 }
 document.getElementById('skilltree_button').onclick = () => {
+    socket.emit('send-market-data', false)
     show('skilltree_tab');
+}
+document.getElementById('character_screen_button').onclick = () => {
+    socket.emit('send-market-data', false)
+    show('character_screen')
 }
 
 
@@ -292,15 +304,20 @@ socket.on('tags-tactic', msg => {
     tactic_screen.update_tags(msg);
 })
 
+socket.on('char-info-detailed', msg => {
+    character_screen.update(msg);
+})
 
 socket.on('alert', msg => {
     alert(msg);
 });
 
+
+
 // eslint-disable-next-line no-undef
 var char_image = new CharacterImage(document.getElementById('char_image'), document.getElementById('tmp_canvas'));
 // eslint-disable-next-line no-undef
-var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_tmp'));
+var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 // eslint-disable-next-line no-undef
 var market_table = new MarketTable(document.getElementById('market'));
 socket.emit('get-market-data', null);
@@ -311,6 +328,14 @@ map.draw()
 var skill_tree = new SkillTree(document.getElementById('skilltree'), socket);
 // eslint-disable-next-line no-undef
 var tactic_screen = new TacticScreen(document.getElementById('tactic'), socket);
+// eslint-disable-next-line no-undef
+var character_screen = new CharacterScreen(document.getElementById('character_screen'), socket);
+
+var canvas = document.getElementById('battle_canvas');
+var ctx = canvas.getContext('2d');
+ctx.fillRect(25, 25, 100, 100);
+ctx.clearRect(45, 45, 60, 60);
+ctx.strokeRect(50, 50, 50, 50);
 
 
 for (var i = 200; i > 10; i -= 5) {
@@ -321,11 +346,16 @@ battle_image.add_fighter(0, 'test', 0)
 
 
 function draw(time) {
-    char_image.draw(time)
-    battle_image.draw(time)
-    map.draw(time);
+    if (document.getElementById('game_container').style.visibility == 'visible') {
+        char_image.draw(time);
+        if (document.getElementById('battle_tab').style.visibility != 'hidden') {
+            battle_image.draw(time);
+        }
+        if (document.getElementById('map_tab').style.visibility != 'hidden'){
+            map.draw(time);
+        }
+    }
     window.requestAnimationFrame(draw);
 }
 
 const images = loadImages(images_list[0], images_list[1], () => {console.log(images), window.requestAnimationFrame(draw);});
-
