@@ -116,6 +116,7 @@ module.exports = class SocketManager {
         this.send_status_update(character);
         this.send_tactics_info(character);
         this.send_savings_update(character);
+        this.send_skills_info(character);
 
         let user = character.user;
         let socket = character.user.socket;
@@ -143,7 +144,7 @@ module.exports = class SocketManager {
             }
             let char = user_data.current_user.character;
             await char.buy(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.money), msg.max_price);
-            
+            this.send_savings_update(char);
         }
     }
 
@@ -161,6 +162,7 @@ module.exports = class SocketManager {
             let char = user_data.current_user.character;
             await char.add_skill(this.pool, msg + '');
             this.send_skills_info(char);
+            this.send_exp_update(char)
         }
     }
 

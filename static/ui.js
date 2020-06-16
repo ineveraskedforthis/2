@@ -307,6 +307,7 @@ class CharInfoMonster {
     }
 
     update_savings(savings) {
+        console.log('savings', savings);
         this.savings.innerHTML = savings;
     }
 

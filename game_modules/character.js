@@ -104,6 +104,10 @@ module.exports = class Character {
             sm.send_status_update(this);
             this.status_changed = false;
         }
+        if (this.savings_changed) {
+            sm.send_savings_update(this);
+            this.savings_changed = false;
+        }
         await this.save_to_db(pool, this.changed);
         this.changed = false;
     }

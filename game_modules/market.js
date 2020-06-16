@@ -223,6 +223,8 @@ module.exports = class Market {
         this.savings.transfer(seller.savings, amount * order.price);
         // this.savings.transfer(this.owner.savings, amount * this.taxes[order.tag]);
         seller.stash.transfer(order.owner.stash, order.tag, amount);
+        order.owner.savings_changed = true;
+        seller.savings_changed = true;
         this.total_sold_new[order.tag] += amount;
         this.total_sold_cost_new[order.tag] += amount * order.price;
         await this.save_to_db(pool);
@@ -237,6 +239,8 @@ module.exports = class Market {
         await order.save_to_db(pool);
         this.stash.transfer(buyer.stash, order.tag, amount);
         buyer.savings.transfer(order.owner.savings, amount * order.price);
+        order.owner.savings_changed = true;
+        buyer.savings_changed = true;
         // buyer.savings.transfer(this.owner.savings, amount * this.taxes[order.tag]);
         this.total_sold_new[order.tag] += amount;
         this.total_sold_cost_new[order.tag] += amount * order.price;
