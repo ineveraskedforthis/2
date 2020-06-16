@@ -33,6 +33,7 @@ class AnimatedImage {
 
     draw(ctx, x, y, w, h) {
         // console.log(this.tag + '_' + this.current, x, y, w, h)
+        // console.log(this.get_image_name())
         draw_image(ctx, images[this.get_image_name()], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
     }
 }
@@ -97,20 +98,23 @@ class BattleImage {
         this.w = 800;
         this.h = 500;
         this.background_flag = false;
-        this.movement_speed = 50
+        this.movement_speed = 1
     }
 
     init() {
+        let ctx = this.canvas.getContext('2d');
+        ctx.clearRect(0, 0, this.w, this.h);
         this.positions = {}
         this.ids = {}
         this.images = {}
         this.battle_ids = new Set()
         this.tick = 0;
+        this.movement = 0;
+        this.animation_tick = 0;
         
         this.action_queue = [];
         this.l = 0;
-        this.r = 1;
-        this.movement_tick = 0;
+        this.r = 0;
         this.prev_positions = {}
         this.new_positions = {}
     }
@@ -141,71 +145,80 @@ class BattleImage {
         return - positions[a] + positions[b]
     }
     
-    draw() {
+    draw(delta) {
 
         if (!this.background_flag){
             console.log('draw_background')
             let ctx = this.canvas_background.getContext('2d');
-            ctx.fillRect(25, 25, 100, 100);
             draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
-            
             this.background_flag = true;
-        }        
-        if (this.r > this.l + 1) {
-            this.movement_tick += 1         
+        }  
 
+        if (this.action_queue.length == 0) {
+            return
+        }
+
+        if (this.r > this.l) {
+            this.movement += delta;
+        }
+        // console.log('!')
+        while ((this.movement >= this.movement_speed) & (this.r > this.l)) {
+            // console.log(this.r, this.l);
+            let who = undefined;
+            for (let i in this.positions) {
+                this.images[i].set_action('idle');
+                this.prev_positions[i] = this.new_positions[i]
+            }
+            // console.log(this.prev_positions);
+            // console.log(this.new_positions);
+            let action = this.action_queue[this.l]
+            if (action.action == 'move') {
+                who = action.who;
+                this.images[who].set_action(action.action)
+                if (action.target == 'right') {
+                    // console.log('right')
+                    this.new_positions[who] = this.prev_positions[who] + 1;
+                }
+                if (action.target == 'left') {
+                    // console.log('left')
+                    this.new_positions[who] = this.prev_positions[who] - 1;
+                }
+                // console.log(this.images[who].get_image_name());
+            }
+            else if (action.action == 'attack') {
+                who = action.attacker
+                this.images[who].set_action(action.action)
+                // console.log(this.images[who].get_image_name());
+            }
+            else if (action.action == 'stop_battle') {
+                console.log('stop_battle')
+                return this.init()
+            } else this.images[action.attacker].set_action('idle')
+
+            this.l +=1
+            this.movement -= this.movement_speed;
+            // console.log()
+        }
+
+        this.animation_tick += delta;
+        
+        if (this.animation_tick > 1/15) {
             for (let i in this.positions) {
                 this.update_pos(i)
             }
 
-            if (this.movement_tick >= this.movement_speed) {
-                this.movement_tick = 0
-                for (let i in this.positions) {
-                    this.images[i].set_action('idle');
-                }
-                let action = this.action_queue[this.l]
-                if (action.action == 'move') {
-                    // console.log(action)
-                    this.images[action.who].set_action(action.action)
-                    if (action.target == 'right') {
-                        // console.log('right')
-                        this.new_positions[action.who] = this.prev_positions[action.who] + 1
-                    }
-                    if (action.target == 'left') {
-                        // console.log('left')
-                        this.new_positions[action.who] = this.prev_positions[action.who] - 1
-                    }
-                }
-                else if (action.action == 'attack') {
-                    this.images[action.attacker].set_action(action.action)
-                }
-                else if (action.action == 'stop_battle') {
-                    console.log('stop_battle')
-                    return this.init()
-                } else this.images[action.attacker].set_action('idle')
-                this.l +=1
-                for (let i in this.positions) {
-                    this.prev_positions[i] = this.positions[i]
-                }
-            }
-        }
-
-
-        this.tick += 1;
-        let ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, this.w, this.h);
-        var draw_order = Array.from(this.battle_ids)
-        draw_order.sort((a, b) => this.dist(a, b, this.positions))
-        for (var i of draw_order) {
-            var pos = this.calculate_canvas_pos(this.positions[i] * 10, this.images[i])
-            // console.log(pos)
-            this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
-            if (this.tick > 2) {
+            // console.log('!')
+            let ctx = this.canvas.getContext('2d');
+            ctx.clearRect(0, 0, this.w, this.h);
+            var draw_order = Array.from(this.battle_ids)
+            draw_order.sort((a, b) => this.dist(a, b, this.positions))
+            for (var i of draw_order) {
+                var pos = this.calculate_canvas_pos(this.positions[i] * 10, this.images[i])
+                // console.log(pos)
+                this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
                 this.images[i].update()
             }
-        }      
-        if (this.tick > 2) {
-            this.tick = 0
+            this.animation_tick = this.animation_tick % (1/15);
         }
     }
     
@@ -222,7 +235,9 @@ class BattleImage {
         if (!(battle_id in this.prev_positions)) {
             this.positions[battle_id] = this.new_position[battle_id]
         } else {
-            this.positions[battle_id] = this.prev_positions[battle_id] + (this.new_positions[battle_id] - this.prev_positions[battle_id]) / this.movement_speed * this.movement_tick
+            let tmp = Math.min(this.movement, this.movement_speed) / this.movement_speed;
+
+            this.positions[battle_id] = this.prev_positions[battle_id] + (this.new_positions[battle_id] - this.prev_positions[battle_id]) * tmp
         }
     }
     

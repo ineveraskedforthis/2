@@ -1,5 +1,5 @@
 const constants = {
-    version: 49,
+    version: 50,
     logging: {
         agent: {
             buy: false
@@ -49,6 +49,7 @@ const constants = {
     update_consumer_query: 'UPDATE consumers SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6) WHERE id = ($1)',
     update_pop_query: 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), race_tag = ($7), ai_tag = ($8) WHERE id = ($1)',
     update_enterprise_query: 'UPDATE enterprises SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), ai_tag = ($7) WHERE id = ($1)',
+    update_user_query: 'UPDATE accounts SET char_id = ($2) WHERE id = ($1)',
 
     delete_market_order_query: 'DELETE FROM market_orders WHERE id = ($1)',
     delete_battle_query: 'DELETE FROM battles WHERE id = ($1)',

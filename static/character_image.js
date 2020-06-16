@@ -505,6 +505,7 @@ class CharacterImage {
 
         this.gl = this.canvas.getContext("webgl");
         this.prev = 0
+        this.animation_time = 0;
 
         
       
@@ -652,6 +653,7 @@ class CharacterImage {
     }
 
     update(rage, blood, power) {
+        // console.log(rage, blood, power);
         if (rage != undefined) {
             this.stats.rage = rage;
             if (rage > 60) {
@@ -672,10 +674,17 @@ class CharacterImage {
         time *= 0.001;  // convert to seconds
         const deltaTime = time - this.prev;
         this.prev = time;
-        this.draw_scene(this.gl, this.objects, deltaTime);
+        this.animation_time += deltaTime
+        // console.log(this.animation_time);
+        if (this.animation_time > 1/10) {
+            this.draw_scene(this.gl, this.objects, this.animation_time); 
+            this.animation_time = this.animation_time % (1/10);
+        }  
+             
     }
 
     draw_scene(gl, objects, deltaTime) {
+        // console.log('draw')
         gl.clearColor(this.stats.rage / 200 + 0.1, 0.2, 0.2, 1.0);  // Clear to black, fully opaque
         gl.clearDepth(1.0);                 // Clear everything
         gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -720,7 +729,7 @@ class CharacterImage {
             
             if (objects[i].tag == 'pupil_left' || objects[i].tag == 'pupil_right') {
                 let r = this.stats.rage * this.pupils_rad / 1000;
-                let phi = this.stats.rage / 10 * this.cubeRotation % (2 * Math.PI)
+                let phi =  this.cubeRotation;
                 mat4.translate(modelViewMatrix, 
                     modelViewMatrix, 
                     [r * Math.cos(phi), r * Math.sin(phi), 0]);
@@ -776,7 +785,7 @@ class CharacterImage {
       
         // Update the rotation for the next draw
       
-        this.cubeRotation += deltaTime;
+        this.cubeRotation += (deltaTime * this.stats.rage / 10) % (2 * Math.PI);
       }
 }
 

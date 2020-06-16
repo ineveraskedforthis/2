@@ -20,7 +20,15 @@ module.exports =
                 console.log(args)
             }
         }
-        return pool.query(query, args)
+        try {
+            return await pool.query(query, args)
+        } catch(err) {
+            console.log(err);
+            console.log('!!!!!!!!!!!!!!!')
+            console.log(constants.logging.db_queries)
+            console.log(query)
+            console.log(args)
+        }
     },
 
     drop_tables: async function (client, tables) {

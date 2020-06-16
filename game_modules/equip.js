@@ -48,6 +48,8 @@ module.exports = class Equip {
     }
 
     add_item(item) {
-        this.data.backpack.push(item);
+        if (item != undefined) {
+            this.data.backpack.push(item);
+        }
     }
 }

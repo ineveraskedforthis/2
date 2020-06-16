@@ -114,6 +114,7 @@ module.exports = class SocketManager {
         this.send_exp_update(character)
         this.send_status_update(character);
         this.send_tactics_info(character);
+        this.send_savings_update(character);
 
         let user = character.user;
         let socket = character.user.socket;
@@ -231,7 +232,7 @@ module.exports = class SocketManager {
 
     send_char_info(socket, user) {
         let char = user.character
-        socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.data.stash});
+        socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.stash});
     }
     
     update_market_info(cell) {

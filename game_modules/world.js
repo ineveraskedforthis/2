@@ -154,7 +154,7 @@ module.exports = class World {
                 for (let i = 0; i < battle.ids.length; i++) {
                     let character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
-                        this.socket_manager.send_to_character_user(character, 'battle-has-ended', null);
+                        this.socket_manager.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
                     }
                 }
                 var winner = battle.is_over();
@@ -293,6 +293,10 @@ module.exports = class World {
     }
 
     generate_loot(level) {
+        let loot_dice = Math.random();
+        if (loot_dice < 0.5) {
+            return undefined;
+        }
         let item = {};
         item.tag = 'sword';
         let dice = Math.random()

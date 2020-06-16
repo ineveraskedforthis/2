@@ -183,6 +183,7 @@ socket.on('hp', msg => char_info_monster.update_hp(msg));
 socket.on('exp', msg => char_info_monster.update_exp(msg));
 socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
+socket.on('name', msg => char_info_monster.update_name(msg));
 socket.on('market-data', data => market_table.update(data));
 socket.on('skill-tree', data => {SKILLS = data});
 socket.on('tags-tactic', msg => tactic_screen.update_tags(msg));
@@ -190,6 +191,27 @@ socket.on('char-info-detailed', msg => character_screen.update(msg))
 socket.on('alert', msg => alert(msg));
 socket.on('skills', msg => skill_tree.update(SKILLS, msg));
 socket.on('tactic', msg => tactic_screen.update(msg));
+
+socket.on('battle-has-started', data => {
+    battle_image.clear()
+    console.log(data)
+    battle_image.load(data)
+})
+
+socket.on('battle-update', data => {
+    battle_image.update(data)
+})
+
+socket.on('battle-action', data => {
+    console.log(data)
+    battle_image.update_action(data)
+    if (data.action == 'attack') {
+        if (data.result.crit) {
+            new_log_message(data.actor_name + ': critical_damage')
+        }
+        new_log_message(data.actor_name + ': deals ' + data.result.total_damage + ' damage')
+    }    
+})
 
 
 function update_tags(msg) {
@@ -266,72 +288,43 @@ class CharInfoMonster {
     insert_row(s) {
         let row = this.table.insertRow();
         let label = row.insertCell(0);
-        label.innnerHTML = s
+        label.innerHTML = s
         return row.insertCell(1);
     }
 
+    update_name(data) {
+        this.name.innerHTML = data;
+    }
+
     update_hp(data) {
-        this.hp.innnerHTML = `${data.hp}/${data.mhp}`
+        this.hp.innerHTML = `${data.hp}/${data.mhp}`
     }
 
     update_exp(data) {
-        this.exp.innnerHTML = data.exp;
-        this.level.innnerHTML = data.level;
-        this.points.innnerHTML = data.points;
+        this.exp.innerHTML = data.exp;
+        this.level.innerHTML = data.level;
+        this.points.innerHTML = data.points;
     }
 
     update_savings(savings) {
-        this.savings.innnerHTML = savings;
+        this.savings.innerHTML = savings;
     }
 
     update_status(data) {
-        this.rage.innnerHTML = data.rage;
-        this.blood.innnerHTML = data.blood;
-        this.stress.innnerHTML = data.stress;
-        // char_image.update(data.rage, data.blood, undefined)
+        this.rage.innerHTML = data.rage;
+        this.blood.innerHTML = data.blood_covering;
+        this.stress.innerHTML = data.stress;
+        char_image.update(data.rage, data.blood_covering, undefined)
     }
 }
 const char_info_monster = new CharInfoMonster();
 let status_page = document.getElementById('status')
 status_page.appendChild(char_info_monster.table);
 
-
-
-
-
-// socket.on('battle-has-started', data => {
-//     battle_image.clear()
-//     console.log(data)
-//     battle_image.load(data)
-// })
-
-// socket.on('battle-update', data => {
-//     battle_image.update(data)
-// })
-
-// socket.on('battle-action', data => {
-//     console.log(data)
-//     battle_image.update_action(data)
-//     if (data.action == 'attack') {
-//         if (data.result.crit) {
-//             new_log_message(data.actor_name + ': critical_damage')
-//         }
-//         new_log_message(data.actor_name + ': deals ' + data.result.total_damage + ' damage')
-//     }    
-// })
-
-// socket.on('battle-has-ended', () => {
-//     battle_image.clear()
-// })
-
-
-
-
-
 // eslint-disable-next-line no-undef
-// var char_image = new CharacterImage(document.getElementById('char_image'), document.getElementById('tmp_canvas'));
+var char_image = new CharacterImage(document.getElementById('char_image'));
 // eslint-disable-next-line no-undef
-// var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
+var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 // eslint-disable-next-line no-undef
 var market_table = new MarketTable(document.getElementById('market'));
 socket.emit('get-market-data', null);
@@ -345,25 +338,18 @@ var tactic_screen = new TacticScreen(document.getElementById('tactic'), socket);
 // eslint-disable-next-line no-undef
 var character_screen = new CharacterScreen(document.getElementById('character_screen'), socket);
 
-var canvas = document.getElementById('battle_canvas');
-var ctx = canvas.getContext('2d');
-ctx.fillRect(25, 25, 100, 100);
-ctx.clearRect(45, 45, 60, 60);
-ctx.strokeRect(50, 50, 50, 50);
-
-
-// for (var i = 200; i > 10; i -= 5) {
-//     battle_image.add_fighter(i, 'tost', i)
-// }
-// battle_image.add_fighter(0, 'test', 0)
-
-
+var currentTime = (new Date()).getTime(); var lastTime = (new Date()).getTime();
+var delta = 0;
 
 function draw(time) {
+    currentTime = (new Date()).getTime();
+    delta = (currentTime - lastTime) / 1000;
+    lastTime = currentTime;
+
     if (document.getElementById('game_container').style.visibility == 'visible') {
-        // char_image.draw(time);
+        char_image.draw(time);
         if (document.getElementById('battle_tab').style.visibility != 'hidden') {
-            // battle_image.draw(time);
+            battle_image.draw(delta);
         }
         if (document.getElementById('map_tab').style.visibility != 'hidden'){
             map.draw(time);
@@ -373,4 +359,4 @@ function draw(time) {
 }
 
 
-const images = loadImages(images_list[0], images_list[1], () => {console.log(images), window.requestAnimationFrame(draw);});
+const images = loadImages(images_list[0], images_list[1], () => { console.log(images), window.requestAnimationFrame(draw);});

@@ -26,8 +26,9 @@ module.exports = class User {
     async get_new_char(pool) {
         this.character = new Character(this.world);
         this.char_id = await this.character.init(pool, this.login, 0, this.id);
+        this.character.user = this;
         console.log(this.char_id);
-        this.save_to_db();
+        await this.save_to_db(pool);
         return this.char_id
     }
 
@@ -46,18 +47,21 @@ module.exports = class User {
         if (this.world.chars[this.char_id] != undefined) {
             this.character = this.world.chars[this.char_id]
             this.character.user = this;
+            if (this.character.hp == 0) {
+                await this.world.kill(pool, character.id)
+            }
         } else {
-            var char_data = await this.world.load_character_data_from_db(pool, this.char_id);
-            var character = await this.world.load_character_data_to_memory(pool, char_data);
-            this.character = character;
+            await this.get_new_char(pool)
         }
     }
 
     async load_to_db(pool) {
+        console.log('loading user to db')
         await common.send_query(pool, constants.new_user_query, [this.login, this.password_hash, this.id, this.char_id]);
     }
 
     async save_to_db(pool) {
-        await common.send_query(pool, constants.update_user_query, [this.char_id]);
+        console.log('saving user changes to db')
+        await common.send_query(pool, constants.update_user_query, [this.id, this.char_id]);
     }
 }
