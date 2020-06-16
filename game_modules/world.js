@@ -8,7 +8,8 @@ var Character = require("./character.js");
 var UserManager = require("./user_manager.js");
 var SocketManager = require("./socket_manager.js");
 var Pop = require("./agents/pop.js");
-var MarketOrder = require("./market_order")
+var MarketOrder = require("./market_order");
+const StateMachines = require("./StateMachines.js");
 
 
 
@@ -41,11 +42,8 @@ module.exports = class World {
     }
 
     async add_starting_agents(pool) {
-        let pop = await this.create_pop(pool, 0, 0, 100, {'food': 1, 'clothes': 1}, 'pepe', 'random dudes', 100000)
+        let pop = await this.create_pop(pool, 0, 0, 100, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'random dudes', 100000, StateMachines.AIs['meat_to_heal']);
         this.agents[pop.id] = pop;
-        var rat_trader = await this.create_monster(pool, basic_characters.Rat, 0);
-        rat_trader.savings.inc(1000);
-        await rat_trader.buy(pool, 'food', 1000, 1000);
     }
 
     async load(pool) {
@@ -238,6 +236,7 @@ module.exports = class World {
             var id = await user.get_new_char(pool);
             this.chars[id] = user.character;
         }
+        await character.clear_orders(pool);
         await character.delete_from_db(pool);
         // this.chars[character.id] = null;
     }
@@ -249,10 +248,10 @@ module.exports = class World {
         return monster;
     }
 
-    async create_pop(pool, x, y, size, needs, race_tag, name, savings) {
+    async create_pop(pool, x, y, size, needs, race_tag, name, savings, state) {
         let pop = new Pop(this);
         let cell_id = this.get_cell_id_by_x_y(x, y)
-        await pop.init(pool, cell_id, size, needs, race_tag, name)
+        await pop.init(pool, cell_id, size, needs, race_tag, name, state)
         await pop.savings.inc(savings)
         await pop.save_to_db(pool)
         return pop

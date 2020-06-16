@@ -65,6 +65,24 @@ class BasicPopAIstate extends State {
     }
 }
 
+class MeatToHeal extends State {
+    static async Execute(pool, agent, save = true) {
+        let savings = agent.savings.get();
+        let food_buy = Math.floor(savings / 100);
+        await agent.clear_orders(pool, save);
+        await agent.buy(pool, 'meat', food_buy, savings, 100);
+        let meat = agent.stash.get('meat');
+        agent.stash.set('meat', 0);
+        agent.stash.inc('food', meat);
+        let food = agent.stash.get('food');
+        await agent.sell(pool, 'food', food, 150);
+    }
+
+    static tag() {
+        return 'meat_to_heal';
+    }
+}
+
 
 
 //class BasicEnterpriseAIstate extends State {
@@ -163,7 +181,8 @@ class BasicPopAIstate extends State {
 
 //}
 var AIs = {
-    'basic_pop_ai_state': BasicPopAIstate
+    'basic_pop_ai_state': BasicPopAIstate,
+    'meat_to_heal': MeatToHeal
 }
 
 module.exports = {

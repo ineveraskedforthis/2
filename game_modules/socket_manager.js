@@ -35,6 +35,7 @@ module.exports = class SocketManager {
             socket.on('char-info-detailed', () => this.send_char_info(socket, user_data.current_user));
             socket.on('send-market-data', (msg) => {user_data.market_data = msg});
             socket.on('equip', async (msg) => this.equip(user_data, msg));
+            socket.on('eat', async () => this.eat(user_data));
         });
     }
 
@@ -163,7 +164,12 @@ module.exports = class SocketManager {
         }
     }
 
-    
+    async eat(user_data) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            char.eat(this.pool);
+        }
+    }
 
     async set_tactic(user_data, msg) {
         if (user_data.current_user != null) {

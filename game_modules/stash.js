@@ -24,7 +24,17 @@ module.exports = class Stash {
         return tmp;
     }
 
+    set(tag, x) {
+        this.check_tag(tag);
+        if (x < 0) {
+            this.data[tag] = 0;
+        } else {
+            this.data[tag] = x;
+        }
+    }
+
     get(tag) {
+        this.check_tag(tag);
         return this.data[tag];
     }
 

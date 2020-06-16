@@ -139,7 +139,7 @@ module.exports = class Market {
     }
 
     async sell(pool, tag, seller, amount, price) {
-        common.flag_log('market sell' + tag, seller.name, amount, price, constants.logging.market.sell);
+        common.flag_log('market sell' + [tag, seller.name, amount, price], constants.logging.market.sell);
         if (amount > seller.stash.get(tag)) {
             amount = seller.stash.get(tag);
         }
@@ -188,6 +188,8 @@ module.exports = class Market {
     }
 
     async new_order(pool, typ, tag, amount, price, agent) {
+        amount = Math.floor(amount);
+        price = Math.floor(price);
         if (typ == 'SELL') {
             var tmp = agent.stash.transfer(this.stash, tag, amount);
             var order = new MarketOrder(this.world);

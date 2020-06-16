@@ -9,26 +9,42 @@ function send_equip_message(socket, index) {
     socket.emit('equip', index);
 }
 
+function send_eat_request(socket) {
+    socket.emit('eat');
+}
+
 class CharacterScreen {
     constructor(div, socket) {
         this.data = {}
         this.socket = socket;
+        this.div = div;
+
         this.button = document.createElement('button');
         (() => 
                 this.button.onclick = () => send_update_request(this.socket)
         )();
         this.button.innerHTML = 'update';
+        this.div.appendChild(this.button);
+
         this.table = document.createElement('table');
         this.table2 = document.createElement('table');
         this.misc = document.createElement('misc');
-        this.div = div;
-        this.div.appendChild(this.button);
+
         this.div.appendChild(this.table);
+
         let label1 = document.createElement('p');
         label1.innerHTML = 'Equipment:';
         this.div.appendChild(label1);
         this.div.appendChild(this.table2);
         this.div.appendChild(this.misc);
+
+        this.button = document.createElement('button');
+        (() => 
+                this.button.onclick = () => send_eat_request(this.socket)
+        )();
+        this.button.innerHTML = 'eat';
+        this.div.appendChild(this.button);
+
         console.log('character_screen_loaded')
     }
 

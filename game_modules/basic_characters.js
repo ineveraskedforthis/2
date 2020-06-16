@@ -10,7 +10,7 @@ class Rat extends Character {
         this.data.stats = this.world.constants.base_stats.rat
         this.data.base_resists = this.world.constants.base_resists.rat
         this.equip.data.right_hand = {tag: 'empty', affixes: 0}
-        this.stash.inc('food', 1);
+        this.stash.inc('meat', 1);
         this.data.model = 'rat'
         await this.load_to_db(pool);
         return id;
@@ -20,6 +20,7 @@ class Rat extends Character {
         return 'rat'
     }
 }
+
 
 module.exports = {
     Rat: Rat

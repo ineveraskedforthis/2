@@ -246,6 +246,17 @@ module.exports = class Character {
             await this.save_to_db(pool);
         }
     }
+    
+    eat(pool) {
+        if (!this.data.in_battle) {
+            let tmp = this.stash.get('food');
+            if (tmp > 0) {
+                this.change_hp(pool, 10);
+                this.stash.inc('food', -1);
+            }
+        }
+        this.changed = true;
+    }
 
     async transfer(pool, target, tag, x) {
         this.stash.transfer(target.stash, tag, x);
@@ -272,6 +283,16 @@ module.exports = class Character {
         }
         var cell = this.world.get_cell_by_id(this.cell_id);
         await cell.market.sell(pool, tag, this, amount, price);
+    }
+
+    async clear_tag_orders(pool, tag, save_market = true) {
+        await this.get_local_market().clear_agent_orders(pool, this, tag, save_market)
+    }
+
+    async clear_orders(pool, save_market = true) {
+        for (var tag of this.world.constants.TAGS) {
+            await this.clear_tag_orders(pool, tag, save_market)
+        }
     }
 
     //attack misc
@@ -356,6 +377,11 @@ module.exports = class Character {
 
     get_range() {
         return this.equip.get_weapon_range();
+    }
+
+    get_local_market() {
+        var cell = this.world.get_cell_by_id(this.cell_id);
+        return cell.market;
     }
 
     //setters
