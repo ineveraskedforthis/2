@@ -69,13 +69,18 @@ class MeatToHeal extends State {
     static async Execute(pool, agent, save = true) {
         let savings = agent.savings.get();
         let food_buy = Math.floor(savings / 100);
-        await agent.clear_orders(pool, save);
-        await agent.buy(pool, 'meat', food_buy, savings, 100);
+        if (food_buy > 2) {
+            await agent.clear_orders(pool, save);
+            await agent.buy(pool, 'meat', food_buy, savings, 100);
+        }
+        
         let meat = agent.stash.get('meat');
-        agent.stash.set('meat', 0);
-        agent.stash.inc('food', meat);
-        let food = agent.stash.get('food');
-        await agent.sell(pool, 'food', food, 150);
+        if (meat > 0) {
+            agent.stash.set('meat', 0);
+            agent.stash.inc('food', meat);
+            let food = agent.stash.get('food');
+            await agent.sell(pool, 'food', food, 150);
+        }        
     }
 
     static tag() {

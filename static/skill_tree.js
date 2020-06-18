@@ -37,7 +37,7 @@ class SkillTree {
             let skill_cell = row.insertCell(0);
             skill_cell.innerHTML = skill.tag;
             let req_cell = row.insertCell(1);
-            req_cell.innerHTML = 'required level ' + skill.req_level;
+            req_cell.innerHTML = 'required level ' + skill.req_level + ' ' + skill.req_skills + ' ';
             let tmp = row.insertCell(2)
             var tag = skill.tag;
             let button = document.createElement('button');

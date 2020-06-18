@@ -18,6 +18,7 @@ module.exports = class Pop extends Consumer {
         this.race_tag = race_tag;
         this.data.growth_mod = 0;
         this.data.death_mod = 0;
+        this.data.ai_tag
     }
 
     async init(pool, cell_id, size, needs, race_tag, name = null, AIstate = BasicPopAIstate) {
@@ -88,6 +89,7 @@ module.exports = class Pop extends Consumer {
     async load_from_json(data) {
         super.load_from_json(data);
         this.race_tag = data.race_tag;
+        console.log(data.ai_tag);
         this.AI = new StateMachine(this, AIs[data.ai_tag]);
     }
 }

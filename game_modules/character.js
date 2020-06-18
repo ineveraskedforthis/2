@@ -126,13 +126,20 @@ module.exports = class Character {
         if (this.data.skill_points == 0) {
             return
         }
+        let SKILLS = this.world.constants.SKILLS;
+        for (let i of SKILLS[skill].req_skills) {
+            // console.log(i, this.data.skills[i], SKILLS[i].max_level);
+            if (this.data.skills[i] != SKILLS[i].max_level) {
+                return
+            }
+        }
         if (skill in this.data.skills) {
-            if (this.world.constants.SKILLS[skill].max_level <= this.data.skills[skill]) {
+            if (SKILLS[skill].max_level <= this.data.skills[skill]) {
                 return
             }
             this.data.skills[skill] += 1;
             this.data.skill_points -= 1;
-            await this.update_stats(pool, undefined, false);
+            await this.update_skill_stats(pool, undefined, false);
         } else {
             this.data.skills[skill] = 1;
             this.data.skill_points -= 1;
@@ -299,13 +306,19 @@ module.exports = class Character {
         }
     }
 
+    async move(pool, data) {
+        this.changed = true;
+        this.cell_id = this.world.get_cell_id_by_x_y(data.x, data.y);
+        console.log(this.name + ' move ' + data.x + data.y);
+    }
+
     //attack misc
 
     mod_damage_with_stats(result) {
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * this.data.stats.musculature / 10));
         result.damage['pierce'] = Math.floor(Math.max(1, result.damage['pierce'] * this.data.stats.musculature / 10));
         result.damage['slice'] = Math.floor(Math.max(1, result.damage['slice'] * this.data.stats.musculature / 10));
-        result.damage['fire'] = Math.floor(Math.max(1, result.damage['fire'] * this.data.stats.pow / 10));
+        result.damage['fire'] = Math.floor(Math.max(1, result.damage['fire'] * this.get_magic_power()));
         return result
     }
 
@@ -345,6 +358,14 @@ module.exports = class Character {
 
     //getters
 
+    get_magic_power() {
+        let power = this.data.stats['pow'];
+        if (this.data.skills['blood_battery'] == 1) {
+            power = power * (1 + this.data.other.blood_covering / 100);
+        }
+        return power / 10;
+    }
+
     get_resists() {
         let res = this.data.base_resists;
         let res_e = this.equip.get_resists();
@@ -358,19 +379,34 @@ module.exports = class Character {
         return this.hp
     }
 
+    get_cell() {
+        return this.world.get_cell_by_id(this.cell_id);
+    }
+
     get_accuracy() {
-        let blood_acc_loss = this.data.other.blood_covering * this.data.base_battle_stats.blood_burden;
-        let rage_acc_loss = this.data.other.rage * this.data.base_battle_stats.rage_burden;
+        let blood_burden = this.data.base_battle_stats.blood_burden;
+        let rage_burden = this.data.base_battle_stats.rage_burden
+        if (this.data.skills['rage_control'] == 1) {
+            rage_burden -= 0.002;
+        }
+        if (this.data.skills['cold_rage'] == 1) {
+            rage_burden -= 0.002;
+        }
+        if (this.data.skills['the_way_of_rage'] == 1) {
+            rage_burden -= 0.002;
+        }
+        let blood_acc_loss = this.data.other.blood_covering * blood_burden;
+        let rage_acc_loss = this.data.other.rage * rage_burden;
         return Math.min(1, Math.max(0.2, this.data.base_battle_stats.accuracy - blood_acc_loss - rage_acc_loss))
     }
 
     get_crit_chance(tag) {
         if (tag == 'attack') {
-            let increase = 1 + this.data.base_battle_stats.attack_crit_add;
-            return this.data.base_battle_stats.crit_chance * increase
+            let increase = 1 + this.data.base_battle_stats.attack_crit_add + this.data.stats.int / 100;
+            return this.data.base_battle_stats.crit_chance * increase;
         }
         if (tag == 'spell') {
-            let increase = 1 + this.data.base_battle_stats.spell_crit_add;
+            let increase = 1 + this.data.base_battle_stats.spell_crit_add + this.data.stats.int / 100;
             return this.data.base_battle_stats.crit_chance * increase
         }
     }

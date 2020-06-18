@@ -55,10 +55,15 @@
     }
 }
 
-function add_skill(tag, max_level, req_level = 0, req_skills = null) {
+function add_skill(tag, max_level, req_level = 0, req_skills = []) {
     CONSTS.SKILLS[tag] = {tag: tag, max_level: max_level, req_level: req_level, req_skills: req_skills};
 }
 add_skill('warrior_training', 3);
 add_skill('mage_training', 3);
+add_skill('rage_control', 1, 0, ['warrior_training']);
+add_skill('cold_rage', 1, 0, ['rage_control']);
+add_skill('the_way_of_rage', 1, 0, ['cold_rage']);
+add_skill('blocking_movements', 1, 0, ['warrior_training']);
+add_skill('blood_battery', 1, 0, ['mage_training']);
 
 module.exports = CONSTS

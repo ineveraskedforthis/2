@@ -36,6 +36,7 @@ module.exports = class SocketManager {
             socket.on('send-market-data', (msg) => {user_data.market_data = msg});
             socket.on('equip', async (msg) => this.equip(user_data, msg));
             socket.on('eat', async () => this.eat(user_data));
+            socket.on('move', async (msg) => this.move(user_data, msg));
         });
     }
 
@@ -117,6 +118,7 @@ module.exports = class SocketManager {
         this.send_tactics_info(character);
         this.send_savings_update(character);
         this.send_skills_info(character);
+        this.send_map_pos_info(character);
 
         let user = character.user;
         let socket = character.user.socket;
@@ -124,6 +126,15 @@ module.exports = class SocketManager {
     }
 
     // actions
+
+    async move(user_data, data) {
+        if (user_data.current_user == null) {
+            return 
+        }
+        let char = user_data.current_user.character;
+        await char.move(this.pool, data);
+        user_data.socket.emit('map-pos', data);
+    }
 
     // eslint-disable-next-line no-unused-vars
     async attack(socket, user_data, data) {
@@ -182,6 +193,12 @@ module.exports = class SocketManager {
     }
 
     // information sending
+
+    send_map_pos_info(character) {
+        let cell_id = character.cell_id;
+        let pos = this.world.get_cell_x_y_by_id(cell_id);
+        this.send_to_character_user(character, 'map-pos', pos)
+    }
 
     send_skills_info(character) {
         this.send_to_character_user(character, 'skills', character.data.skills)
@@ -249,9 +266,16 @@ module.exports = class SocketManager {
             console.log('sending market orders to client');
             console.log(data);
         }
+        // console.log(this.sockets);
         for (let i of this.sockets) {
-            if (i.online & i.market_data) {
-                i.socket.emit('market-data', data)
+            // console.log(i.current_user);
+            if (i.current_user != null) {
+                let char = i.current_user.character;
+                let cell1 = char.get_cell();
+                // console.log(cell1.id + ' ' + cell.id);
+                if (i.online & i.market_data & cell1.id==cell.id) {
+                    i.socket.emit('market-data', data)
+                }
             }
         }
     }

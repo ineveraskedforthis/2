@@ -1,13 +1,28 @@
 /* eslint-disable no-redeclare */
 class Map {
-    constructor(canvas) {
+    constructor(canvas, container, socket) {
         this.canvas = canvas;
+        this.socket = socket
         this.hex_side = 20;
         this.camera = [-50, -200];
         this.hovered = null;
-        this.selected = null;
-        this.x = 10;
-        this.y = 10;
+        this.selected = [0, 0];
+        this.curr_pos = [0, 0];
+        this.x = 2;
+        this.y = 2;
+        let button = document.createElement('button');
+
+        this.button = document.createElement('button');
+        (() => 
+                this.button.onclick = () => this.send_move_request(socket)
+        )(this.socket);
+        this.button.innerHTML = 'move';
+        this.container = container;
+        this.container.appendChild(this.button);
+    }
+
+    send_move_request() {
+        this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
     }
 
     draw() {
@@ -17,6 +32,10 @@ class Map {
             for (var j = 0; j < this.y; j++) {
                 if (this.hovered != null && this.hovered[0] == i && this.hovered[1] == j) {
                     this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.5)');
+                } else if (this.curr_pos[0] == i && this.curr_pos[1] == j) {
+                    this.draw_hex(i, j, 'fill', '(0, 0, 255, 0.5)');
+                } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
+                    this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.5)');
                 } else {
                     this.draw_hex(i, j, 'stroke', '(0, 0, 0, 1)');
                 }
@@ -79,5 +98,13 @@ class Map {
 
     hover_hex(i, j) {
         this.hovered = [i, j];
+    }
+
+    select_hex(i, j) {
+        this.selected = [i, j];
+    }
+
+    set_curr_pos(i, j) {
+        this.curr_pos = [i, j];
     }
 }

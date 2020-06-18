@@ -11,6 +11,7 @@ class MarketTable {
     }
 
     update(data = []) {
+        console.log(data)
         this.data = data;
         this.table = document.createElement('table');
         let header = this.table.insertRow();

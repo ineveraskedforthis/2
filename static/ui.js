@@ -3,7 +3,6 @@ var socket = io();
 
 var prev_mouse_x = null;
 var prev_mouse_y = null;
-var is_dragging = false;
 
 var SKILLS = {};
 
@@ -15,30 +14,32 @@ function get_pos_in_canvas(canvas, event) {
     };
 }
 
-document.getElementById('map').onmousedown = () => {
-    is_dragging = true;
-    prev_mouse_x = null;
-    prev_mouse_y = null;
-}
+// document.getElementById('map').ondragstart = (event) => {
+//     prev_mouse_x = null;
+//     prev_mouse_y = null;
+// }
 
-document.onmouseup = () => {
-    is_dragging = false;
-};
+// document.getElementById('map').ondrag = (event) => {
+//     if (prev_mouse_x != null) {
+//         var dx = event.pageX - prev_mouse_x;
+//         var dy = event.pageY - prev_mouse_y;
+//         map.move(dx, dy);
+//     }
+//     prev_mouse_x = event.pageX;
+//     prev_mouse_y = event.pageY;
+// }
 
 document.getElementById('map').onmousemove = event => {
-    if (is_dragging) {
-        if (prev_mouse_x != null) {
-            var dx = event.pageX - prev_mouse_x;
-            var dy = event.pageY - prev_mouse_y;
-            map.move(dx, dy);
-        }
-        prev_mouse_x = event.pageX;
-        prev_mouse_y = event.pageY;
-    }
     var mouse_pos = get_pos_in_canvas(map.canvas, event);
     var hovered_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
     map.hover_hex(hovered_hex[0], hovered_hex[1]);
 };
+
+document.getElementById('map').onmouseup = event => {
+    let mouse_pos = get_pos_in_canvas(map.canvas, event);
+    let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
+    map.select_hex(selected_hex[0], selected_hex[1]);
+}
 
 function show(tag) {
     document.getElementById('battle_tab').style.visibility = 'hidden';
@@ -191,6 +192,7 @@ socket.on('char-info-detailed', msg => character_screen.update(msg))
 socket.on('alert', msg => alert(msg));
 socket.on('skills', msg => skill_tree.update(SKILLS, msg));
 socket.on('tactic', msg => tactic_screen.update(msg));
+socket.on('map-pos', msg => {console.log(msg); map.set_curr_pos(msg.x, msg.y)});
 
 socket.on('battle-has-started', data => {
     battle_image.clear()
@@ -330,7 +332,7 @@ var battle_image = new BattleImage(document.getElementById('battle_canvas'), doc
 var market_table = new MarketTable(document.getElementById('market'));
 socket.emit('get-market-data', null);
 // eslint-disable-next-line no-undef
-var map = new Map(document.getElementById('map'));
+var map = new Map(document.getElementById('map'), document.getElementById('map_control'), socket);
 map.draw()
 // eslint-disable-next-line no-undef
 var skill_tree = new SkillTree(document.getElementById('skilltree'), socket);

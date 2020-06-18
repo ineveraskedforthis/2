@@ -122,8 +122,14 @@ module.exports = class World {
         if (this.battle_tick == 0){
             this.update_battles(pool)
         }
+        await this.map.update(pool);
 
-        this.socket_manager.update_market_info(this.map.cells[0][0]);
+        for (let i = 0; i < this.x; i++) {
+            for (let j = 0; j < this.y; j++) {
+                this.socket_manager.update_market_info(this.map.cells[i][j]);
+            }
+        }
+        
         this.socket_manager.update_user_list();
 
         if (this.vacuum_stage++ > 100) {
@@ -338,4 +344,9 @@ module.exports = class World {
     get_tick_max_growth(race) {
         return 0.001
     }
+
+    get_cell_x_y_by_id(id) {
+        return {x: Math.floor(id / this.y), y: id % this.y}
+    }
+
 }

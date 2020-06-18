@@ -1,5 +1,5 @@
 const constants = {
-    version: 55,
+    version: 64,
     logging: {
         agent: {
             buy: false
@@ -9,8 +9,8 @@ const constants = {
             init: false
         },
         market: {
-            buy: false,
-            sell: false
+            buy: true,
+            sell: true
         },
         sockets: {
             update_market_info: false,

@@ -39,9 +39,9 @@ module.exports = class Market {
             this.sell_orders[tag] = new Set([]);
             this.buy_orders[tag] = new Set([]);
             this.max_price[tag] = 0;
-            this.total_sold[tag] = new Array(30);
+            this.total_sold[tag] = new Array(10);
             this.total_sold[tag].fill(0);
-            this.total_sold_cost[tag] = new Array(30);
+            this.total_sold_cost[tag] = new Array(10);
             this.total_sold_cost[tag].fill(0);
             this.total_sold_new[tag] = 0;
             this.total_sold_cost_new[tag] = 0;
@@ -61,15 +61,16 @@ module.exports = class Market {
 
     async update(pool) {
         for (var tag of this.world.constants.TAGS) {
-            this.planned_money_to_spent[tag] = self.tmp_plannned_money_to_spent[tag];
-            this.tmp_plannned_money_to_spent = 0;
+            this.planned_money_to_spent[tag] = this.tmp_planned_money_to_spent[tag];
+            this.tmp_planned_money_to_spent = 0;
             this.total_cost_of_placed_goods[tag] = this.tmp_total_cost_of_placed_goods[tag];
             this.tmp_total_cost_of_placed_goods[tag] = 0;
+            // console.log(this.total_sold[tag]);
             this.total_sold[tag] = this.total_sold[tag].slice(1);
-            this.total_sold.push(this.total_sold_new[tag]);
+            this.total_sold[tag].push(this.total_sold_new[tag]);
             this.total_sold_new[tag] = 0;
             this.total_sold_cost[tag] = this.total_sold_cost[tag].slice(1)
-            this.total_sold_cost.push(this.total_sold_cost_new[tag]);
+            this.total_sold_cost[tag].push(this.total_sold_cost_new[tag]);
             this.total_sold_cost_new[tag] = 0;
             this.sells[tag] = this.tmp_sells[tag];
         }
@@ -485,6 +486,7 @@ module.exports = class Market {
     async save_to_db(pool) {
         var tmp = this.get_json();
         await common.send_query(pool, constants.update_market_query, [this.id, tmp]);
+        // console.log(tmp.buy_orders);
     }
 
     async load_to_db(pool) {
@@ -501,9 +503,15 @@ module.exports = class Market {
         tmp.buy_orders = {}
         tmp.sell_orders = {}
 
+        // console.log('orders ' + this.id)
         for (let tag of this.world.constants.TAGS) {
             tmp.buy_orders[tag] = Array.from(this.buy_orders[tag].values())
             tmp.sell_orders[tag] = Array.from(this.sell_orders[tag].values())
+            // console.log(tag);
+            // console.log(tmp.buy_orders[tag]);
+            // console.log(tmp.sell_orders[tag]);
+            // console.log(this.buy_orders[tag]);
+            // console.log(this.sell_orders[tag]);
         }
 
         tmp.planned_money_to_spent = this.planned_money_to_spent;
@@ -528,7 +536,7 @@ module.exports = class Market {
         this.stash.load_from_json(data.stash);
         
         this.planned_money_to_spent = data.planned_money_to_spent;
-        this.tmp_plannned_money_to_spent = data.planned_money_to_spent;
+        this.tmp_planned_money_to_spent = data.planned_money_to_spent;
         this.total_cost_of_placed_goods = data.total_cost_of_placed_goods;
         this.tmp_total_cost_of_placed_goods = data.tmp_total_cost_of_placed_goods;
         this.max_price = data.max_price;

@@ -31,7 +31,7 @@ http.listen(port, () => {
     console.log('listening on *:3000');
 });
 
-var world = new World(io, 1, 1);
+var world = new World(io, 2, 2);
 
 (async () => {
     try {
