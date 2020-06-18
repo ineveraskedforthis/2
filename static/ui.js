@@ -205,6 +205,9 @@ socket.on('battle-update', data => {
 })
 
 socket.on('battle-action', data => {
+    if (data == null) {
+        return
+    }
     console.log(data)
     battle_image.update_action(data)
     if (data.action == 'attack') {

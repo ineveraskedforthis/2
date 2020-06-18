@@ -83,6 +83,7 @@ module.exports = class BattleAI {
             var delta = battle.positions[true_target] - battle.positions[index];
             if (Math.abs(delta) > actor.get_range()) {
                 action = 'move';
+                
                 if (delta > 0){
                     action_target = 'right';
                 } else {

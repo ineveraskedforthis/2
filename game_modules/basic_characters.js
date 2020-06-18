@@ -19,9 +19,42 @@ class Rat extends Character {
     get_tag() {
         return 'rat'
     }
+    get_item_lvl() {
+        return 2;
+    }
 }
 
+class Graci extends Character {
+    async init(pool, cell_id, name = null) {
+        var id = await this.world.get_new_id(pool, 'char_id');
+        if (name == null) {
+            name = 'graci ' + id;
+        }
+        this.init_base_values(id, name, 150, 150, 0, 0, cell_id);
+        this.data.stats = this.world.constants.base_stats.rat
+        this.data.base_resists = this.world.constants.base_resists.rat
+        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 3}}
+        this.data.model = 'graci'
+        this.data.movement_speed = 2;
+        await this.load_to_db(pool);
+        return id;
+    }
+
+    get_tag() {
+        return 'graci'
+    }
+    get_item_lvl() {
+        return 10;
+    }
+
+    change_rage(x) {
+    }
+
+    change_blood(x) {
+    }
+}
 
 module.exports = {
-    Rat: Rat
+    Rat: Rat,
+    Graci: Graci
 }

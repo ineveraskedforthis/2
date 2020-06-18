@@ -37,6 +37,19 @@ for (let i = 0; i < 4; i++) {
     add_image_to_load('rat_attack_' + num, 'rat_idle_' + num);
 }
 
+for (let i = 0; i < 1; i++) {
+    let num = ("0000" + i).slice(-4);
+    add_image_to_load('graci_idle_' + num, 'graci_idle_' + num);
+}
+for (let i = 0; i < 10; i++) {
+    let num = ("0000" + i).slice(-4);
+    add_image_to_load('graci_move_' + num, 'graci_move_' + num);
+}
+for (let i = 0; i < 1; i++) {
+    let num = ("0000" + i).slice(-4);
+    add_image_to_load('graci_attack_' + num, 'graci_attack_' + num);
+}
+
 function loadImages(names, files, onAllLoaded) {
     var i, numLoading = names.length;
     const onload = () => --numLoading === 0 && onAllLoaded();

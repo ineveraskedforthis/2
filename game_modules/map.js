@@ -32,7 +32,7 @@ module.exports = class Map {
 
         for (let i = 0; i < this.x; i++) {
             for (let j = 0; j < this.y; j++) {
-                this.cells[i][j].load(pool);
+                await this.cells[i][j].load(pool);
             }
         }
     }
@@ -46,10 +46,12 @@ module.exports = class Map {
     }
 
     get_cell(x, y) {
+        // console.log(x, y);
         return this.cells[x][y];
     }
 
     get_cell_by_id(id) {
+        // console.log(id);
         return this.get_cell(Math.floor(id / this.y), id % this.y);
     }
 }

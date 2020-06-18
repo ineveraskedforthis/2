@@ -108,7 +108,7 @@ module.exports = class World {
 
     async update(pool) {
         this.battle_tick += 1;
-        if (this.battle_tick >= 3) {
+        if (this.battle_tick >= 4) {
             this.battle_tick = 0;
         }
         for (let i in this.agents) {
@@ -163,8 +163,8 @@ module.exports = class World {
                 }
                 var winner = battle.is_over();
                 var exp_reward = battle.reward(1 - winner);
-                await battle.collect_loot(pool);
-                await battle.reward_team(pool, winner, exp_reward);
+                let ilvl = await battle.collect_loot(pool);
+                await battle.reward_team(pool, winner, exp_reward, ilvl);
                 await this.delete_battle(pool, battle.id);
             }
         }
@@ -235,6 +235,7 @@ module.exports = class World {
     }
 
     async kill(pool, char_id) {
+        console.log('kill ' + char_id);
         let character = this.chars[char_id];
         await character.set(pool, 'dead', true);
         if (character.data.is_player) {
@@ -306,10 +307,10 @@ module.exports = class World {
         item.tag = 'sword';
         let dice = Math.random()
         let num_of_affixes = 0
-        if (dice > 0.5) {
+        if (dice * (1 + level / 10) > 0.5 ) {
             num_of_affixes += 1
         }
-        if (dice > 0.9) {
+        if (dice * (1 + level / 100) > 0.9) {
             num_of_affixes += 1
         }
         item.affixes = num_of_affixes;

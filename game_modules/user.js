@@ -27,8 +27,9 @@ module.exports = class User {
         this.character = new Character(this.world);
         this.char_id = await this.character.init(pool, this.login, 0, this.id);
         this.character.user = this;
-        console.log(this.char_id);
+        this.world.chars[this.char_id] = this.character;
         await this.save_to_db(pool);
+        this.world.socket_manager.send_all(this.character)
         return this.char_id
     }
 
@@ -48,7 +49,7 @@ module.exports = class User {
             this.character = this.world.chars[this.char_id]
             this.character.user = this;
             if (this.character.hp == 0) {
-                await this.world.kill(pool, character.id)
+                await this.world.kill(pool, this.character.id)
             }
         } else {
             await this.get_new_char(pool)

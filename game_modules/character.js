@@ -32,6 +32,7 @@ module.exports = class Character {
         this.cell_id = cell_id;
         this.data = {
             model: 'test',
+            movement_speed: 1,
             stats: this.world.constants.base_stats.apu,
             base_battle_stats: this.world.constants.base_battle_stats,
             base_resists: this.world.constants.base_resists.pepe,
@@ -357,6 +358,10 @@ module.exports = class Character {
     }
 
     //getters
+
+    get_item_lvl() {
+        return 1;
+    }
 
     get_magic_power() {
         let power = this.data.stats['pow'];

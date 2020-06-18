@@ -141,8 +141,14 @@ module.exports = class SocketManager {
         common.flag_log('attack', constants.logging.sockets.messages)
         common.flag_log([user_data], constants.logging.sockets.messages)
         if (user_data.current_user != null && !user_data.current_user.character.data.in_battle) {
-            var rat = await this.world.create_monster(this.pool, basic_characters.Rat, user_data.current_user.character.cell_id);
-            var battle = await this.world.create_battle(this.pool, [user_data.current_user.character], [rat]);
+            let char = user_data.current_user.character;
+            let enemy = undefined;
+            if (char.cell_id == 0) {
+                enemy = await this.world.create_monster(this.pool, basic_characters.Rat, char.cell_id);
+            } else {
+                enemy = await this.world.create_monster(this.pool, basic_characters.Graci, char.cell_id);
+            }
+            var battle = await this.world.create_battle(this.pool, [char], [enemy]);
             socket.emit('battle-has-started', battle.get_data())
         }
     }
@@ -266,16 +272,18 @@ module.exports = class SocketManager {
             console.log('sending market orders to client');
             console.log(data);
         }
-        // console.log(this.sockets);
         for (let i of this.sockets) {
-            // console.log(i.current_user);
             if (i.current_user != null) {
                 let char = i.current_user.character;
-                let cell1 = char.get_cell();
-                // console.log(cell1.id + ' ' + cell.id);
-                if (i.online & i.market_data & cell1.id==cell.id) {
-                    i.socket.emit('market-data', data)
+                try {
+                    let cell1 = char.get_cell();
+                    if (i.online & i.market_data & cell1.id==cell.id) {
+                        i.socket.emit('market-data', data)
+                    }
+                } catch(error) {
+                    console.log(i.current_user.login)
                 }
+                
             }
         }
     }
