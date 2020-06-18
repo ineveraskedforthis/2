@@ -29,7 +29,9 @@ module.exports = class User {
         this.character.user = this;
         this.world.chars[this.char_id] = this.character;
         await this.save_to_db(pool);
-        this.world.socket_manager.send_all(this.character)
+        if (this.socket != undefined) {
+            this.world.socket_manager.send_all(this.character)
+        }
         return this.char_id
     }
 
