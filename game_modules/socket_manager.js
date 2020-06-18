@@ -262,8 +262,10 @@ module.exports = class SocketManager {
     }
 
     send_char_info(socket, user) {
-        let char = user.character
-        socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.stash});
+        if (user != null) {
+            let char = user.character
+            socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.stash});
+        }        
     }
     
     update_market_info(cell) {

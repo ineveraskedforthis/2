@@ -62,7 +62,7 @@ module.exports = class Market {
     async update(pool) {
         for (var tag of this.world.constants.TAGS) {
             this.planned_money_to_spent[tag] = this.tmp_planned_money_to_spent[tag];
-            this.tmp_planned_money_to_spent = 0;
+            this.tmp_planned_money_to_spent[tag] = 0;
             this.total_cost_of_placed_goods[tag] = this.tmp_total_cost_of_placed_goods[tag];
             this.tmp_total_cost_of_placed_goods[tag] = 0;
             // console.log(this.total_sold[tag]);

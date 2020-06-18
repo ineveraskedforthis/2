@@ -9,8 +9,8 @@ const constants = {
             init: false
         },
         market: {
-            buy: true,
-            sell: true
+            buy: false,
+            sell: false
         },
         sockets: {
             update_market_info: false,
