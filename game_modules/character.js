@@ -270,6 +270,16 @@ module.exports = class Character {
         this.changed = true;
     }
 
+    clean(pool) {
+        if (!this.data.in_battle) {
+            let tmp = this.stash.get('water');
+            if (tmp > 0) {
+                this.change_blood(-20);
+                this.stash.inc('water', -1);
+            }
+        }
+    }
+
     async transfer(pool, target, tag, x) {
         this.stash.transfer(target.stash, tag, x);
         await this.save_to_db(pool);

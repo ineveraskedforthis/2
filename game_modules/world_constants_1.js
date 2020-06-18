@@ -1,5 +1,5 @@
  var CONSTS = {
-    TAGS: ['food', 'clothes', 'meat'],
+    TAGS: ['food', 'clothes', 'meat', 'water'],
     SKILLS: {},
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
     default_tactic_slot: {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}},

@@ -7,10 +7,17 @@ function send_update_request(socket) {
 
 function send_equip_message(socket, index) {
     socket.emit('equip', index);
+    socket.emit('char-info-detailed');
 }
 
 function send_eat_request(socket) {
     socket.emit('eat');
+    socket.emit('char-info-detailed');
+}
+
+function send_clean_request(socket) {
+    socket.emit('clean');
+    socket.emit('char-info-detailed');
 }
 
 class CharacterScreen {
@@ -43,6 +50,13 @@ class CharacterScreen {
                 this.button.onclick = () => send_eat_request(this.socket)
         )();
         this.button.innerHTML = 'eat';
+        this.div.appendChild(this.button);
+
+        this.button = document.createElement('button');
+        (() => 
+                this.button.onclick = () => send_clean_request(this.socket)
+        )();
+        this.button.innerHTML = 'clean';
         this.div.appendChild(this.button);
 
         console.log('character_screen_loaded')

@@ -142,6 +142,31 @@ document.getElementById('sell_form_con').onsubmit = (event) => {
 }
 
 
+let market_actions = document.getElementById('market_actions');
+
+this.button = document.createElement('button');
+(() => 
+        this.button.onclick = () => socket.emit('sell', {tag: 'meat', amount: '1', price: '100'})
+)();
+this.button.innerHTML = 'SELL 1 MEAT FOR 100';
+market_actions.appendChild(this.button);
+
+this.button = document.createElement('button');
+(() => 
+        this.button.onclick = () => socket.emit('buy', {tag: 'food', amount: '1', money: '100', max_price: '100'})
+)();
+this.button.innerHTML = 'BUY 1 FOOD FOR 150';
+market_actions.appendChild(this.button);
+
+this.button = document.createElement('button');
+(() => 
+        this.button.onclick = () => socket.emit('buy', {tag: 'water', amount: '1', money: '100', max_price: '100'})
+)();
+this.button.innerHTML = 'BUY 1 WATER FOR 100';
+market_actions.appendChild(this.button);
+
+
+
 document.getElementById('attack_button').onclick = () => {
     show('battle_tab');
     socket.emit('attack', null);
@@ -168,8 +193,9 @@ document.getElementById('skilltree_button').onclick = () => {
     show('skilltree_tab');
 }
 document.getElementById('character_screen_button').onclick = () => {
-    socket.emit('send-market-data', false)
-    show('character_screen')
+    socket.emit('send-market-data', false);
+    socket.emit('char-info-detailed');
+    show('character_screen');
 }
 
 
@@ -326,6 +352,9 @@ class CharInfoMonster {
 const char_info_monster = new CharInfoMonster();
 let status_page = document.getElementById('status')
 status_page.appendChild(char_info_monster.table);
+
+
+
 
 // eslint-disable-next-line no-undef
 var char_image = new CharacterImage(document.getElementById('char_image'));

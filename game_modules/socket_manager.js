@@ -36,6 +36,7 @@ module.exports = class SocketManager {
             socket.on('send-market-data', (msg) => {user_data.market_data = msg});
             socket.on('equip', async (msg) => this.equip(user_data, msg));
             socket.on('eat', async () => this.eat(user_data));
+            socket.on('clean', async () => this.clean(user_data));
             socket.on('move', async (msg) => this.move(user_data, msg));
         });
     }
@@ -187,6 +188,13 @@ module.exports = class SocketManager {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
             char.eat(this.pool);
+        }
+    }
+
+    async clean(user_data) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            char.clean(this.pool);
         }
     }
 

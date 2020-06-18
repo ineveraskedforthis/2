@@ -73,6 +73,11 @@ class MeatToHeal extends State {
             await agent.clear_orders(pool, save);
             await agent.buy(pool, 'meat', food_buy, savings, 100);
         }
+
+        let water = agent.stash.get('water');
+        if (water > 0) {
+            await agent.sell(pool, 'water', water, 100);
+        }
         
         let meat = agent.stash.get('meat');
         if (meat > 0) {
