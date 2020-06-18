@@ -365,7 +365,6 @@ var market_table = new MarketTable(document.getElementById('market'));
 socket.emit('get-market-data', null);
 // eslint-disable-next-line no-undef
 var map = new Map(document.getElementById('map'), document.getElementById('map_control'), socket);
-map.draw()
 // eslint-disable-next-line no-undef
 var skill_tree = new SkillTree(document.getElementById('skilltree'), socket);
 // eslint-disable-next-line no-undef

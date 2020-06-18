@@ -10,6 +10,7 @@ function add_image_to_load(name, filename) {
 }
 
 
+add_image_to_load('map', 'map')
 
 add_image_to_load('base_background', 'background')
 add_image_to_load('tost_move_0000', 'tost_0000')

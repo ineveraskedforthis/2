@@ -1,4 +1,15 @@
 /* eslint-disable no-redeclare */
+
+const graci_plains = 'Plains where gracis are living their beautiful life. Be aware, they are very fast, traveller.'
+
+const DESCRIPTIONS = {
+    '0_0': 'Settlement of colonists - greedy but brave men. Here you can sell your raw meet and exchange it for food and water',
+    '1_0': graci_plains,
+    '1_1': graci_plains,
+    '1_2': graci_plains
+}
+
+
 class Map {
     constructor(canvas, container, socket) {
         this.canvas = canvas;
@@ -8,9 +19,8 @@ class Map {
         this.hovered = null;
         this.selected = [0, 0];
         this.curr_pos = [0, 0];
-        this.x = 2;
-        this.y = 2;
-        let button = document.createElement('button');
+        this.x = 10;
+        this.y = 10;
 
         this.button = document.createElement('button');
         (() => 
@@ -19,6 +29,9 @@ class Map {
         this.button.innerHTML = 'move';
         this.container = container;
         this.container.appendChild(this.button);
+
+        this.description = document.createElement('div');
+        this.container.appendChild(this.description);
     }
 
     send_move_request() {
@@ -28,8 +41,9 @@ class Map {
     draw() {
         var ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, 400, 400);
-        for (var i = 0; i < this.x; i++) {
-            for (var j = 0; j < this.y; j++) {
+        ctx.drawImage(images['map'], -7, -7, 357, 411)
+        for (var i = -10; i < 10; i++) {
+            for (var j = -10; j < 10; j++) {
                 if (this.hovered != null && this.hovered[0] == i && this.hovered[1] == j) {
                     this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.5)');
                 } else if (this.curr_pos[0] == i && this.curr_pos[1] == j) {
@@ -63,9 +77,9 @@ class Map {
             ctx.lineTo(center_x + this.hex_side, center_y);
             ctx.stroke()
         }
-        ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-        ctx.font = '10px Times New Roman';
-        ctx.fillText(`${i} ${j}`, center_x - w, center_y + h / 2);
+        // ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+        // ctx.font = '10px Times New Roman';
+        // ctx.fillText(`${i} ${j}`, center_x - w, center_y + h / 2);
     }
 
     move(dx, dy) {
@@ -102,6 +116,7 @@ class Map {
 
     select_hex(i, j) {
         this.selected = [i, j];
+        this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[i + '_' + j];
     }
 
     set_curr_pos(i, j) {
