@@ -167,6 +167,12 @@ module.exports = class SocketManager {
         if (user_data.current_user == null) {
             return 
         }
+        if (data.x < 0 || data.x >= this.world.x) {
+            return
+        }
+        if (data.y < 0 || data.y >= this.world.y) {
+            return
+        }
         let char = user_data.current_user.character;
         await char.move(this.pool, data);
         user_data.socket.emit('map-pos', data);
