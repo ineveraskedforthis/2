@@ -161,7 +161,7 @@ market_actions.appendChild(this.button);
 
 this.button = document.createElement('button');
 (() => 
-        this.button.onclick = () => socket.emit('buy', {tag: 'food', amount: '1', money: '150', max_price: '100'})
+        this.button.onclick = () => socket.emit('buy', {tag: 'food', amount: '1', money: '150', max_price: '150'})
 )();
 this.button.innerHTML = 'BUY 1 FOOD FOR 150';
 market_actions.appendChild(this.button);

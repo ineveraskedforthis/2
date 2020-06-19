@@ -216,12 +216,14 @@ module.exports = class Character {
         result.crit = false;
         result.evade = false;
         result.poison = false;
+        result.blocked = false;
         result.total_damage = 0;
         result = this.equip.get_weapon_damage(result);
         result = this.mod_damage_with_stats(result);        
         result = this.roll_accuracy(result);
         result = this.roll_crit(result);
         result = target.roll_evasion(result);
+        result = target.roll_block(result);
         this.change_rage(5)
         result = await target.take_damage(pool, result);        
         return result;
@@ -367,6 +369,15 @@ module.exports = class Character {
         return result
     }
 
+    roll_block(result) {
+        let dice = Math.random()
+        let block_chance = this.get_block_chance();
+        if (dice < block_chance) {
+            result.blocked = true;
+        }
+        return result;
+    }
+
     //getters
 
     get_item_lvl() {
@@ -413,6 +424,14 @@ module.exports = class Character {
         let blood_acc_loss = this.data.other.blood_covering * blood_burden;
         let rage_acc_loss = this.data.other.rage * rage_burden;
         return Math.min(1, Math.max(0.2, this.data.base_battle_stats.accuracy - blood_acc_loss - rage_acc_loss))
+    }
+
+    get_block_chance() {
+        let tmp = this.data.base_battle_stats.block;
+        if (this.skills['blocking_movements'] == 1) {
+            tmp += 0.06;
+        }
+        return tmp;
     }
 
     get_crit_chance(tag) {
