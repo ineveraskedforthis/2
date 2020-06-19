@@ -18,8 +18,10 @@ var stage = process.env.STAGE;
 var dbname = process.env.DBNAME;
 var pool = undefined
 if (stage == 'dev') {
+    console.log('local')
     pool = new Pool({database: dbname});
 } else{
+    console.log('remote')
     pool = new Pool({connectionString: process.env.DATABASE_URL, ssl: true});
 }
 app.use(express.json());
@@ -33,9 +35,12 @@ http.listen(port, () => {
 
 var world = new World(io, 2, 2);
 
+
 (async () => {
     try {
+        console.log('connecting to db');
         var client = await pool.connect();
+
         let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises', 'messages']
         let ver = await common.get_version(client);
         console.log('version from db ');
