@@ -428,7 +428,7 @@ module.exports = class Character {
 
     get_block_chance() {
         let tmp = this.data.base_battle_stats.block;
-        if (this.skills['blocking_movements'] == 1) {
+        if (this.data.skills['blocking_movements'] == 1) {
             tmp += 0.06;
         }
         return tmp;

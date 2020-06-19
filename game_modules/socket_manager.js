@@ -50,6 +50,7 @@ module.exports = class SocketManager {
             socket.on('clean', async () => this.clean(user_data));
             socket.on('move', async (msg) => this.move(user_data, msg));
             socket.on('session', async (msg) => this.login_with_session(socket, user_data, msg));
+            socket.on('clear_orders', async () => this.clear_orders(user_data));
         });
     }
 
@@ -192,6 +193,15 @@ module.exports = class SocketManager {
             }
             var battle = await this.world.create_battle(this.pool, [char], [enemy]);
             socket.emit('battle-has-started', battle.get_data())
+        }
+    }
+
+    async clear_orders(user_data) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            await char.clear_orders(this.pool);
+            this.send_savings_update(char);
+            this.send_char_info(char);
         }
     }
 

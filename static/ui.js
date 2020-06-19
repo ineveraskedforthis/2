@@ -173,6 +173,14 @@ this.button = document.createElement('button');
 this.button.innerHTML = 'BUY 1 WATER FOR 100';
 market_actions.appendChild(this.button);
 
+this.button = document.createElement('button');
+(() => 
+        this.button.onclick = () => socket.emit('clear_orders')
+)();
+this.button.innerHTML = 'CLEAR ORDERS';
+market_actions.appendChild(this.button);
+
+
 
 
 document.getElementById('attack_button').onclick = () => {
