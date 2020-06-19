@@ -344,5 +344,6 @@ body {
 
   .tooltip:hover .tooltiptext {
     visibility: visible;
+    z-index: 99; 
     opacity: 1;
   }
