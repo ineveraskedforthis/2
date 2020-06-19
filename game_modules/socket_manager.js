@@ -11,6 +11,17 @@ module.exports = class SocketManager {
         this.MESSAGE_ID = 0;
         this.real_shit();
         this.sockets = new Set();
+        this.sessions = {};
+    }
+
+    generate_session(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
     }
 
     real_shit() {
@@ -38,6 +49,7 @@ module.exports = class SocketManager {
             socket.on('eat', async () => this.eat(user_data));
             socket.on('clean', async () => this.clean(user_data));
             socket.on('move', async (msg) => this.move(user_data, msg));
+            socket.on('session', async (msg) => this.login_with_session(socket, user_data, msg));
         });
     }
 
@@ -69,6 +81,21 @@ module.exports = class SocketManager {
         }
     }
 
+    async login_with_session(socket, user_data, session) {
+        if (session in this.sessions) {
+            user_data.current_user = this.sessions[session].current_user;
+            user_data.current_user.set_socket(socket);
+            let user_manager = this.world.user_manager;
+            let user = user_data.current_user
+            user_manager.new_user_online(user.login);
+            user_data.online = true;
+            socket.emit('log-message', 'hello ' + user.login);
+            socket.emit('is-login-completed', 'ok');
+            this.send_battle_data_to_user(user);
+            this.send_all(user.character);
+        }
+    }
+
     async login(socket, user_data, data) {
         if (user_data.online) {
             socket.emit('is-login-valid', 'you-are-logged-in');
@@ -87,6 +114,10 @@ module.exports = class SocketManager {
             socket.emit('log-message', 'hello ' + data.login);
             this.send_battle_data_to_user(answer.user);
             this.send_all(user_data.current_user.character);
+
+            let session = this.generate_session(20);
+            socket.emit('session', session);
+            this.sessions[session] = user_data;
         }
     }
 
@@ -108,6 +139,10 @@ module.exports = class SocketManager {
             socket.emit('log-message', 'hello ' + data.login);
             this.send_all(user_data.current_user.character);
             common.flag_log('registration is finished', constants.logging.sockets.messages)
+
+            let session = this.generate_session(20);
+            socket.emit('session', session);
+            this.sessions[session] = user_data;
         }
     }
 

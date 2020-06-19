@@ -1,6 +1,14 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
+socket.on('connect', () => {
+    console.log('connected')
+    let tmp = localStorage.getItem('session');
+    if (tmp != null) {
+        socket.emit('session', tmp);
+    }
+})
+
 var prev_mouse_x = null;
 var prev_mouse_y = null;
 
@@ -222,6 +230,9 @@ socket.on('alert', msg => alert(msg));
 socket.on('skills', msg => skill_tree.update(SKILLS, msg));
 socket.on('tactic', msg => tactic_screen.update(msg));
 socket.on('map-pos', msg => {console.log(msg); map.set_curr_pos(msg.x, msg.y)});
+
+socket.on('session', msg => {localStorage.setItem('session', msg)})
+
 
 socket.on('battle-has-started', data => {
     battle_image.clear()
