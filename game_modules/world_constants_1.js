@@ -3,7 +3,7 @@
     SKILLS: {},
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
     default_tactic_slot: {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}},
-    empty_tactic_slot: {trigger: {target: undefined, tag: undefined, sign: undefined, value: undefined}, action: {target: undefined, action: undefined}},
+    empty_tactic_slot: {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}},
     base_stats: {
         apu: {
             musculature: 10,

@@ -286,6 +286,7 @@ function login(msg) {
     if (msg != 'ok') {
         alert(msg);
     } else if (msg == 'ok') {
+        tactic_screen.reset_tactic()
         show_game();
     }
 }
@@ -294,6 +295,7 @@ function reg(msg) {
     if (msg != 'ok') {
         alert(msg);
     } else if (msg == 'ok') {
+        tactic_screen.reset_tactic()
         show_game();
     }
 }

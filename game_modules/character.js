@@ -185,13 +185,13 @@ module.exports = class Character {
             }
         }
         for (let i = 0; i <= tmp.tac; i++) {
-            if (!'s' + i in this.data.tactic || this.data.tactic['s' + i] == null) {
-                this.data.tactic['s' + i] = this.world.empty_tactic_slot;
+            if (!(('s' + i) in this.data.tactic) || this.data.tactic['s' + i] == 'undefined') {
+                this.data.tactic['s' + i] = this.world.constants.empty_tactic_slot;
             }
         }
         for (let i = tmp.tac + 1; i < constants.MAX_TACTIC_SLOTS; i++) {
-            if ('s' + i in this.data.tactic) {
-                this.data.tactic['s' + i] = undefined;
+            if (('s' + i) in this.data.tactic) {
+                this.data.tactic['s' + i] = 'undefined';
             }
         }
 

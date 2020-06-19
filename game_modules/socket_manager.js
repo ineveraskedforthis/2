@@ -231,6 +231,7 @@ module.exports = class SocketManager {
             let char = user_data.current_user.character;
             await char.add_skill(this.pool, msg + '');
             this.send_skills_info(char);
+            this.send_tactics_info(char);
             this.send_exp_update(char)
         }
     }
