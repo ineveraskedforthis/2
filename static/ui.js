@@ -60,6 +60,16 @@ function show(tag) {
     document.getElementById(tag).style.visibility = 'visible';
 }
 
+function showTab(tabId){
+    let parent_elem = document.getElementById(tabId).parentElement;
+    for (var i = 0; i < parent_elem.childNodes.length; i++) {
+        if (parent_elem.childNodes[i].id != undefined && parent_elem.childNodes[i].id != null && parent_elem.childNodes[i].id != ''){
+            document.getElementById(parent_elem.childNodes[i].id).style.visibility = 'hidden';
+        }
+    }
+    document.getElementById(tabId).style.visibility = 'visible';    
+}
+
 // function show(tag) {
 //     document.getElementById('battle_tab').style.display = 'none';
 //     document.getElementById('market_tab').style.display = 'none';
@@ -185,7 +195,7 @@ market_actions.appendChild(this.button);
 
 document.getElementById('attack_button').onclick = () => {
     socket.emit('send-market-data', false)
-    show('battle_tab');
+    showTab('battle_tab');
 }
 
 document.getElementById('attack').onclick = () => {
@@ -193,28 +203,28 @@ document.getElementById('attack').onclick = () => {
 }
 document.getElementById('market_button').onclick = () => {
     socket.emit('send-market-data', true)
-    show('market_tab');
+    showTab('market_tab');
 }
 document.getElementById('market_control_button').onclick = () => {
     socket.emit('send-market-data', false)
-    show('market_control_tab');
+    showTab('market_control_tab');
 }
 document.getElementById('map_button').onclick = () => {
     socket.emit('send-market-data', false)
-    show('map_tab');
+    showTab('map_tab');
 }
 document.getElementById('tactics_button').onclick = () => {
     socket.emit('send-market-data', false)
-    show('tactics_tab');
+    showTab('tactics_tab');
 }
 document.getElementById('skilltree_button').onclick = () => {
     socket.emit('send-market-data', false)
-    show('skilltree_tab');
+    showTab('skilltree_tab');
 }
 document.getElementById('character_screen_button').onclick = () => {
     socket.emit('send-market-data', false);
     socket.emit('char-info-detailed');
-    show('character_screen');
+    showTab('character_screen');
 }
 
 
