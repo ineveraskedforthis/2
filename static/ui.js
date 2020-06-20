@@ -49,7 +49,7 @@ document.getElementById('map').onmouseup = event => {
     map.select_hex(selected_hex[0], selected_hex[1]);
 }
 
-function show(tag) {
+/*function show(tag) {
     document.getElementById('battle_tab').style.visibility = 'hidden';
     document.getElementById('market_tab').style.visibility = 'hidden';
     document.getElementById('market_control_tab').style.visibility = 'hidden';
@@ -58,7 +58,7 @@ function show(tag) {
     document.getElementById('map_tab').style.visibility = 'hidden';
     document.getElementById('character_screen').style.visibility = 'hidden';
     document.getElementById(tag).style.visibility = 'visible';
-}
+}*/
 
 function showTab(tabId){
     let parent_elem = document.getElementById(tabId).parentElement;
@@ -86,7 +86,7 @@ function show_game() {
     document.getElementById('login-frame').style.visibility = 'hidden';
     document.getElementById('reg-frame').style.visibility = 'hidden';
     document.getElementById('game_container').style.visibility = 'visible';
-    show('character_screen');
+    showTab('character_screen');
 }
 
 document.getElementById('open_reg_window_button').onclick = () => {
