@@ -74,15 +74,17 @@ module.exports = class SocketManager {
         
         socket.emit('tags', this.world.constants.TAGS);
         socket.emit('skill-tree', this.world.constants.SKILLS);
-        socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack']})
+        socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee']})
         var messages = await this.load_messages_from_database()
         for (let i = 0; i < messages.rows.length; i++) {
             let tmp = messages.rows[i];
             socket.emit('new-message', {id: tmp.id, msg: tmp.message, user: tmp.sender})
         }
+        console.log('data sent to user');
     }
 
     async login_with_session(socket, user_data, session) {
+        console.log('attempt to login with session')
         if (session in this.sessions) {
             user_data.current_user = this.sessions[session].current_user;
             user_data.current_user.set_socket(socket);
@@ -94,10 +96,13 @@ module.exports = class SocketManager {
             socket.emit('is-login-completed', 'ok');
             this.send_battle_data_to_user(user);
             this.send_all(user.character);
+        } else {
+            socket.emit('reset_session');
         }
     }
 
     async login(socket, user_data, data) {
+        console.log('login attempt')
         if (user_data.online) {
             socket.emit('is-login-valid', 'you-are-logged-in');
             return;
@@ -105,6 +110,9 @@ module.exports = class SocketManager {
         var user_manager = this.world.user_manager
         var error_message = common.validate_creds(data);
         socket.emit('is-login-valid', error_message);
+        if (error_message != 'ok') {
+            return
+        }
         var answer = await user_manager.login_player(this.pool, data);
         socket.emit('is-login-completed', answer.login_promt);
         if (answer.login_promt == 'ok') {
@@ -119,10 +127,12 @@ module.exports = class SocketManager {
             let session = this.generate_session(20);
             socket.emit('session', session);
             this.sessions[session] = user_data;
+            console.log('user ' + data.login + ' logged in')
         }
     }
 
     async registration(socket, user_data, data) {
+        console.log('registration attempt')
         if (user_data.online) {
             socket.emit('is-reg-valid', 'you-are-logged-in');
             return;
@@ -130,6 +140,9 @@ module.exports = class SocketManager {
         var user_manager = this.world.user_manager;
         var error_message = common.validate_creds(data);
         socket.emit('is-reg-valid', error_message);
+        if (error_message != 'ok') {
+            return
+        }
         var answer = await user_manager.reg_player(this.pool, data);
         socket.emit('is-reg-completed', answer.reg_promt);
         if (answer.reg_promt == 'ok') {
@@ -144,6 +157,7 @@ module.exports = class SocketManager {
             let session = this.generate_session(20);
             socket.emit('session', session);
             this.sessions[session] = user_data;
+            console.log('user ' + data.login + ' registrated')
         }
     }
 
@@ -334,6 +348,43 @@ module.exports = class SocketManager {
             console.log('sending market orders to client');
             console.log(data);
         }
+        for (let i of this.sockets) {
+            if (i.current_user != null) {
+                let char = i.current_user.character;
+                try {
+                    let cell1 = char.get_cell();
+                    if (i.online & i.market_data & cell1.id==cell.id) {
+                        i.socket.emit('market-data', data)
+                    }
+                } catch(error) {
+                    console.log(i.current_user.login)
+                }
+                
+            }
+        }
+    }
+
+    send_market_info(cell) {
+        let market = cell.market;
+
+        let data = {
+            buy: {},
+            sell: {}
+        }
+
+        for (let tag of this.world.constants.TAGS) {
+            data.buy[tag] = [];
+            data.sell[tag] = []
+            for (let i of market.buy_orders[tag].values()) {
+                let order = this.world.get_order(i);
+                data.buy[tag].push(order.get_json());
+            }
+            for (let i of market.sell_orders[tag].values()) {
+                let order = this.world.get_order(i);
+                data.sell[tag].push(order.get_json());
+            }
+        }
+        
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;

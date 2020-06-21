@@ -193,7 +193,7 @@ class BattleImage {
             else if (action.action == 'stop_battle') {
                 console.log('stop_battle')
                 return this.init()
-            } else this.images[action.attacker].set_action('idle')
+            } else this.images[action.who].set_action('idle')
 
             this.l +=1
             this.movement -= this.movement_speed;

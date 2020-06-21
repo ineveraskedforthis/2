@@ -127,7 +127,7 @@ module.exports = class World {
 
         for (let i = 0; i < this.x; i++) {
             for (let j = 0; j < this.y; j++) {
-                this.socket_manager.update_market_info(this.map.cells[i][j]);
+                this.socket_manager.send_market_info(this.map.cells[i][j]);
             }
         }
         
@@ -146,7 +146,8 @@ module.exports = class World {
             if (battle == null) {
                 continue
             }
-            if (battle.is_over() == -1) {
+            let res = battle.is_over();
+            if (res == -1) {
                 var log = await battle.update(pool);
                 for (let i = 0; i < battle.ids.length; i++) {
                     let character = this.chars[battle.ids[i]];
@@ -156,16 +157,20 @@ module.exports = class World {
                     }
                 }
             } else {
+                if (res != 2) {
+                    var exp_reward = battle.reward(1 - res);
+                    let ilvl = await battle.collect_loot(pool);
+                    await battle.reward_team(pool, res, exp_reward, ilvl);
+                }
+                else {
+                    await battle.reward_team(pool, res, 0, 0);
+                }
                 for (let i = 0; i < battle.ids.length; i++) {
                     let character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
                         this.socket_manager.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
                     }
                 }
-                var winner = battle.is_over();
-                var exp_reward = battle.reward(1 - winner);
-                let ilvl = await battle.collect_loot(pool);
-                await battle.reward_team(pool, winner, exp_reward, ilvl);
                 await this.delete_battle(pool, battle.id);
             }
         }

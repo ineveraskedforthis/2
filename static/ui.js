@@ -4,7 +4,7 @@ var socket = io();
 socket.on('connect', () => {
     console.log('connected')
     let tmp = localStorage.getItem('session');
-    if (tmp != null) {
+    if ((tmp != null) && (tmp != 'null')) {
         socket.emit('session', tmp);
     }
 })
@@ -245,8 +245,9 @@ socket.on('exp', msg => char_info_monster.update_exp(msg));
 socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
-socket.on('market-data', data => market_table.update(data));
-socket.on('market-data', data => auction_house.update(data));
+//socket.on('market-data', data => market_table.update(data));
+//socket.on('market-data', data => auction_house.update(data));
+socket.on('market-data', data => console.log(data));
 socket.on('skill-tree', data => {SKILLS = data});
 socket.on('tags-tactic', msg => tactic_screen.update_tags(msg));
 socket.on('char-info-detailed', msg => character_screen.update(msg))
@@ -256,6 +257,7 @@ socket.on('tactic', msg => tactic_screen.update(msg));
 socket.on('map-pos', msg => {console.log(msg); map.set_curr_pos(msg.x, msg.y)});
 
 socket.on('session', msg => {localStorage.setItem('session', msg)})
+socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 
 
 socket.on('battle-has-started', data => {
