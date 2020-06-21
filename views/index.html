@@ -76,6 +76,7 @@
                 <div id = "skilltree_button", class = 'control_button tooltip'><span class="tooltiptext">Skills</span></div>
                 <div id = "map_button", class = 'control_button tooltip'><span class="tooltiptext">Map</span></div>
                 <div id = "character_screen_button", class = 'control_button tooltip'><span class="tooltiptext">Character screen</span></div>
+                <div id = "auction_house_button", class = 'control_button tooltip'><span class="tooltiptext">Auction house</span></div>
             </div>
 
             <div id = "game_frame">
@@ -162,6 +163,19 @@
                 </div>
                 <div id = 'character_screen', class = "game_tab">
                 </div>
+
+                <div id="auction_house_tab" class="game_tab">
+                    <div id="auction_tab_select">
+                        <div id="auction_buy_tab_button" class="auction_tab_button">BUY</div>
+                        <div id="auction_sell_tab_button" class="auction_tab_button">SELL</div>
+                        <div id="auction_offers_tab_button" class="auction_tab_button">MY OFFERS</div>
+                    </div>
+                    <div id="auction_active_tab">
+                        <div id="auction_buy_tab" class="auction_tab">BUYING STUFF</div>
+                        <div id="auction_sell_tab" class="auction_tab">SELLING STUFF</div>
+                        <div id="auction_offers_tab" class="auction_tab">HERE IS YOUR STUFF YOU ARE SELLING</div>
+                    </div>                    
+                </div>
                 
             </div>
 
@@ -178,6 +192,7 @@
     <script src="/static/character_image.js"></script>
     <script src="/static/battle_image.js"></script>
     <script src="/static/market_table.js"></script>
+    <script src="/static/auction_house.js"></script>
     <script src="/static/skill_tree.js"></script>
     <script src="/static/tactic_screen.js"></script>
     <script src="/static/character_screen.js"></script>

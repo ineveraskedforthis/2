@@ -263,6 +263,18 @@ body {
     background-image: url(/static/img/skills_button_pressed.png);
 }
 
+#auction_house_button {
+    background-image: url(/static/img/auc_button.png);
+}
+
+#auction_house_button:hover {
+    background-image: url(/static/img/auc_button_hovered.png);
+}
+
+#auction_house_button:active {
+    background-image: url(/static/img/auc_button_pressed.png);
+}
+
 
 #select_box > div {
     position: relative;
@@ -370,4 +382,36 @@ body {
 }
 #attack:hover{
     border: rgb(21, 240, 39) solid 3px;
+}
+
+
+#auction_tab_select{
+    position: relative;
+    width: 100%;
+    height: 38px;
+}
+.auction_tab_button{
+    text-align: center;
+    float: left;
+    width: 20%;
+    padding: 0.5em;
+    height: 1em;
+    border: #590000 3px solid;
+    color: white;
+    border-radius: 10px 10px 0px 0px;
+    user-select: none;
+}
+.auction_tab_button:hover{
+    background-color: rgba(78, 11, 11, 0.7);
+}
+.auction_tab{
+    border: #590000 3px solid;
+    color: white; 
+    position: absolute;
+    width: 795px;
+    height: 450px;
+}
+.auc_slot{
+    border: white 1px solid;
+    
 }
