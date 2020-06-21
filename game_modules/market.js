@@ -503,15 +503,9 @@ module.exports = class Market {
         tmp.buy_orders = {}
         tmp.sell_orders = {}
 
-        // console.log('orders ' + this.id)
         for (let tag of this.world.constants.TAGS) {
             tmp.buy_orders[tag] = Array.from(this.buy_orders[tag].values())
             tmp.sell_orders[tag] = Array.from(this.sell_orders[tag].values())
-            // console.log(tag);
-            // console.log(tmp.buy_orders[tag]);
-            // console.log(tmp.sell_orders[tag]);
-            // console.log(this.buy_orders[tag]);
-            // console.log(this.sell_orders[tag]);
         }
 
         tmp.planned_money_to_spent = this.planned_money_to_spent;

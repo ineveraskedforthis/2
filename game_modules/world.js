@@ -127,7 +127,7 @@ module.exports = class World {
 
         for (let i = 0; i < this.x; i++) {
             for (let j = 0; j < this.y; j++) {
-                this.socket_manager.update_market_info(this.map.cells[i][j]);
+                this.socket_manager.send_market_info(this.map.cells[i][j]);
             }
         }
         

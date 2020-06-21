@@ -364,6 +364,43 @@ module.exports = class SocketManager {
         }
     }
 
+    send_market_info(cell) {
+        let market = cell.market;
+
+        let data = {
+            buy: {},
+            sell: {}
+        }
+
+        for (let tag of this.world.constants.TAGS) {
+            data.buy[tag] = [];
+            data.sell[tag] = []
+            for (let i of market.buy_orders[tag].values()) {
+                let order = this.world.get_order(i);
+                data.buy[tag].push(order.get_json());
+            }
+            for (let i of market.sell_orders[tag].values()) {
+                let order = this.world.get_order(i);
+                data.sell[tag].push(order.get_json());
+            }
+        }
+        
+        for (let i of this.sockets) {
+            if (i.current_user != null) {
+                let char = i.current_user.character;
+                try {
+                    let cell1 = char.get_cell();
+                    if (i.online & i.market_data & cell1.id==cell.id) {
+                        i.socket.emit('market-data', data)
+                    }
+                } catch(error) {
+                    console.log(i.current_user.login)
+                }
+                
+            }
+        }
+    }
+
     update_user_list(){
         var tmp = [];
         var users_online = this.world.user_manager.users_online;

@@ -240,7 +240,7 @@ socket.on('exp', msg => char_info_monster.update_exp(msg));
 socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
-socket.on('market-data', data => market_table.update(data));
+socket.on('market-data', data => console.log(data));
 socket.on('skill-tree', data => {SKILLS = data});
 socket.on('tags-tactic', msg => tactic_screen.update_tags(msg));
 socket.on('char-info-detailed', msg => character_screen.update(msg))
