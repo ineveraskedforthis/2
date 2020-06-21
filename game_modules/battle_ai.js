@@ -80,10 +80,9 @@ module.exports = class BattleAI {
         if (action_tag == 'attack') {
             var actor = battle.world.chars[battle.ids[index]];
             // var target = battle.world.chars[battle.ids[true_target]];
-            var delta = battle.positions[true_target] - battle.positions[index];
+            let delta = battle.positions[true_target] - battle.positions[index];
             if (Math.abs(delta) > actor.get_range()) {
                 action = 'move';
-                
                 if (delta > 0){
                     action_target = 'right';
                 } else {
@@ -93,7 +92,9 @@ module.exports = class BattleAI {
                 action = 'attack';
                 action_target = true_target;
             }
-            
+        }
+        if (action_tag == 'flee') {
+            action = 'flee';
         }
         return {action: action, target: action_target};
     }

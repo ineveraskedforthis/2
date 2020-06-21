@@ -13,6 +13,8 @@ module.exports = class Battle {
         this.positions = [];
         this.stash = new Stash();
         this.savings = new Savings();
+        this.data = {};
+        this.data.draw = false;
     }
 
     async init(pool) {
@@ -81,6 +83,14 @@ module.exports = class Battle {
                 return {action: 'attack', attacker: actor_index, target: action.target, result: result, actor_name: character.name};
             }
             return {action: 'pff'};
+        } else if (action.action == 'flee') {
+            let dice = Math.random();
+            if (dice <= 0.4) {
+                this.data.draw = true;
+                return {action: 'flee', who: actor_index};
+            } else {
+                return {action: 'pff', who: actor_index};
+            }
         }
     }
 
@@ -101,6 +111,9 @@ module.exports = class Battle {
         }
         if (hp[1] == 0) {
             return 0;
+        }
+        if (this.data.draw == true) {
+            return 2;
         }
         return -1;
     }
@@ -136,21 +149,26 @@ module.exports = class Battle {
         }
         for (let i = 0; i < this.ids.length; i++) {
             var character = this.world.chars[this.ids[i]];
-            if (this.teams[i] == team && !character.data.dead) {
-                await character.give_exp(pool, Math.floor(exp / n));
-            }
+            if (team != 2) {
+                if (this.teams[i] == team && !character.data.dead) {
+                    await character.give_exp(pool, Math.floor(exp / n));
+                }
+            }            
             await character.set(pool, 'in_battle', false);
         }
-        var i = 0;
-        while (this.teams[i] != team) {
-            i += 1;
+        if (team != 2) {
+            var i = 0;
+            while (this.teams[i] != team) {
+                i += 1;
+            }
+            var leader = this.world.chars[this.ids[i]];
+            for (var tag of this.world.constants.TAGS) {
+                var x = this.stash.get(tag);
+                await this.transfer(pool, leader, tag, x);
+            }
+            leader.equip.add_item(this.world.generate_loot(ilvl))
         }
-        var leader = this.world.chars[this.ids[i]];
-        for (var tag of this.world.constants.TAGS) {
-            var x = this.stash.get(tag);
-            await this.transfer(pool, leader, tag, x);
-        }
-        leader.equip.add_item(this.world.generate_loot(ilvl))
+        
     }
 
     async load_to_db(pool) {

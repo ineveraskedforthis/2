@@ -4,7 +4,7 @@ var socket = io();
 socket.on('connect', () => {
     console.log('connected')
     let tmp = localStorage.getItem('session');
-    if (tmp != null) {
+    if ((tmp != null) && (tmp != 'null')) {
         socket.emit('session', tmp);
     }
 })
@@ -240,6 +240,7 @@ socket.on('tactic', msg => tactic_screen.update(msg));
 socket.on('map-pos', msg => {console.log(msg); map.set_curr_pos(msg.x, msg.y)});
 
 socket.on('session', msg => {localStorage.setItem('session', msg)})
+socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 
 
 socket.on('battle-has-started', data => {
