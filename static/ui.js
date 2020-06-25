@@ -226,6 +226,11 @@ document.getElementById('character_screen_button').onclick = () => {
     socket.emit('char-info-detailed');
     showTab('character_screen');
 }
+document.getElementById('auction_house_button').onclick = () => {
+    socket.emit('send-market-data', true);
+    showTab('auction_house_tab');
+    showTab('auction_buy_tab');
+}
 
 
 socket.on('tags', msg => update_tags(msg));
@@ -240,6 +245,8 @@ socket.on('exp', msg => char_info_monster.update_exp(msg));
 socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
+//socket.on('market-data', data => market_table.update(data));
+//socket.on('market-data', data => auction_house.update(data));
 socket.on('market-data', data => console.log(data));
 socket.on('skill-tree', data => {SKILLS = data});
 socket.on('tags-tactic', msg => tactic_screen.update_tags(msg));
@@ -404,7 +411,8 @@ var battle_image = new BattleImage(document.getElementById('battle_canvas'), doc
 // eslint-disable-next-line no-undef
 var market_table = new MarketTable(document.getElementById('market'));
 socket.emit('get-market-data', null);
-// eslint-disable-next-line no-undef
+var auction_house = new AuctionHouse(document.getElementById('auction_house_tab'));
+socket.emit('get-market-data', null);// eslint-disable-next-line no-undef
 var map = new Map(document.getElementById('map'), document.getElementById('map_control'), socket);
 // eslint-disable-next-line no-undef
 var skill_tree = new SkillTree(document.getElementById('skilltree'), socket);
