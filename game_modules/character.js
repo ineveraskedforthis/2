@@ -253,10 +253,12 @@ module.exports = class Character {
         let res = this.get_resists();
         if (!result.evade) {
             for (let i of this.world.constants.damage_types) {
-                let curr_damage = Math.max(1, result.damage[i] - res[i]);
-                result.total_damage += curr_damage;
-                this.update_status_after_damage(pool, i, curr_damage, false);
-                await this.change_hp(pool, -curr_damage, false);
+                if (result.damage[i] > 0) {
+                    let curr_damage = Math.max(1, result.damage[i] - res[i]);
+                    result.total_damage += curr_damage;
+                    this.update_status_after_damage(pool, i, curr_damage, false);
+                    await this.change_hp(pool, -curr_damage, false);
+                }                
             }
             this.change_blood(2);
             this.change_rage(2);
