@@ -96,6 +96,10 @@ module.exports = class BattleAI {
         if (action_tag == 'flee') {
             action = 'flee';
         }
+        if (action_tag.startsWith('spell:')) {
+            action = action_tag;
+            action_target = true_target;
+        }
         return {action: action, target: action_target};
     }
 

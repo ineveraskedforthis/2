@@ -252,6 +252,7 @@ socket.on('map-pos', msg => {console.log(msg); map.set_curr_pos(msg.x, msg.y)});
 socket.on('session', msg => {localStorage.setItem('session', msg)})
 socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 
+socket.on('new-action', msg => {console.log('action ' + msg); tactic_screen.add_action(msg)});
 
 socket.on('battle-has-started', data => {
     battle_image.clear()
@@ -274,7 +275,12 @@ socket.on('battle-action', data => {
             new_log_message(data.actor_name + ': critical_damage')
         }
         new_log_message(data.actor_name + ': deals ' + data.result.total_damage + ' damage')
-    }    
+    } else if (data.action.startsWith('kinetic_bolt')) {
+        if (data.result.crit) {
+            new_log_message(data.actor_name + ': critical_damage')
+        }
+        new_log_message(data.actor_name + ': deals with magic bolt ' + data.result.total_damage + ' damage')
+    }
 })
 
 

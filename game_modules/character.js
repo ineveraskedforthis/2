@@ -1,10 +1,12 @@
 var common = require("./common.js");
 var constants = require("./constants.js")
 var weapons = require("./weapons.js")
+const spells = require("./spells.js")
 
 var Equip = require("./equip.js");
 var Stash = require("./stash.js");
 var Savings = require("./savings.js")
+
 
 
 module.exports = class Character {
@@ -125,18 +127,21 @@ module.exports = class Character {
 
     async add_skill(pool, skill, save = true) {
         if (this.data.skill_points == 0) {
-            return
+            return undefined
         }
         let SKILLS = this.world.constants.SKILLS;
+        if (!(skill in SKILLS)) {
+            return undefined
+        }
         for (let i of SKILLS[skill].req_skills) {
             // console.log(i, this.data.skills[i], SKILLS[i].max_level);
             if (this.data.skills[i] != SKILLS[i].max_level) {
-                return
+                return undefined
             }
         }
         if (skill in this.data.skills) {
             if (SKILLS[skill].max_level <= this.data.skills[skill]) {
-                return
+                return undefined
             }
             this.data.skills[skill] += 1;
             this.data.skill_points -= 1;
@@ -146,7 +151,9 @@ module.exports = class Character {
             this.data.skill_points -= 1;
             await this.update_skill_stats(pool, undefined, false);
         }
-        this.save_to_db(pool, save)
+        this.save_to_db(pool, save);
+        let new_action = SKILLS[skill].action;
+        return new_action;
     }
 
     async update_skill_stats(pool, race = 'apu', save = true) {
@@ -226,6 +233,19 @@ module.exports = class Character {
         result = target.roll_block(result);
         this.change_rage(5)
         result = await target.take_damage(pool, result);        
+        return result;
+    }
+
+    async spell_attack(pool, target, tag) {
+        let result = {};
+        result.crit = false;
+        result.evade = false;
+        result.poison = false;
+        result.blocked = false;
+        result.total_damage = 0;
+        result = spells[tag](result);
+        result = this.mod_spell_damage_with_stats(result);
+        result = await target.take_damage(pool, result);
         return result;
     }
 
@@ -329,9 +349,18 @@ module.exports = class Character {
 
     mod_damage_with_stats(result) {
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * this.data.stats.musculature / 10));
-        result.damage['pierce'] = Math.floor(Math.max(1, result.damage['pierce'] * this.data.stats.musculature / 10));
-        result.damage['slice'] = Math.floor(Math.max(1, result.damage['slice'] * this.data.stats.musculature / 10));
-        result.damage['fire'] = Math.floor(Math.max(1, result.damage['fire'] * this.get_magic_power()));
+        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * this.data.stats.musculature / 10));
+        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * this.data.stats.musculature / 10));
+        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * this.get_magic_power()));
+        return result
+    }
+
+    mod_spell_damage_with_stats(result) {
+        let power = this.get_magic_power()
+        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * power));
+        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * power));
+        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * power));
+        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * power));
         return result
     }
 
@@ -407,6 +436,17 @@ module.exports = class Character {
 
     get_cell() {
         return this.world.get_cell_by_id(this.cell_id);
+    }
+
+    get_actions() {
+        let tmp = []
+        for (let i in this.data.skills) {
+            let action = this.world.constants.SKILLS[i].action
+            if (action != undefined) {
+                tmp.push(action)
+            }
+        }
+        return tmp
     }
 
     get_accuracy() {

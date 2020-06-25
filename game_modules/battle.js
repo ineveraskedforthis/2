@@ -69,6 +69,9 @@ module.exports = class Battle {
 
     async action(pool, actor_index, action) {
         var character = this.world.chars[this.ids[actor_index]];
+        if (action.action == null) {
+            return {action: 'pff', who: actor_index};
+        }
         if (action.action == 'move') {
             if (action.target == 'right') {
                 this.positions[actor_index] += 1;
@@ -78,8 +81,8 @@ module.exports = class Battle {
             return {action: 'move', who: actor_index, target: action.target, actor_name: character.name}
         } else if (action.action == 'attack') {
             if (action.target != null) {
-                var target_char = this.world.chars[this.ids[action.target]];
-                var result = await character.attack(pool, target_char);
+                let target_char = this.world.chars[this.ids[action.target]];
+                let result = await character.attack(pool, target_char);
                 return {action: 'attack', attacker: actor_index, target: action.target, result: result, actor_name: character.name};
             }
             return {action: 'pff'};
@@ -91,6 +94,11 @@ module.exports = class Battle {
             } else {
                 return {action: 'pff', who: actor_index};
             }
+        } else if (action.action.startsWith('spell:')) {
+            let spell_tag = action.action.substring(6);
+            let target_char = this.world.chars[this.ids[action.target]];
+            let result = await character.spell_attack(pool, target_char, spell_tag);
+            return {action: spell_tag, who: actor_index, result: result, actor_name: character.name};
         }
     }
 

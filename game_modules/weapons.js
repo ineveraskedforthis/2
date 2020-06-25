@@ -7,4 +7,12 @@ module.exports = {
         tag: 'empty',
         affixes: 0
     },
+    graci: {
+        tag: 'empty',
+        affixes: 1,
+        a0: {
+            tag: 'sharp',
+            tier: 1
+        }
+    }
 }

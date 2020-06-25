@@ -149,6 +149,13 @@ class TacticScreen {
             this.tactic_block[counter].style.display = 'none';
         }
     }
+
+    add_action(action) {
+        let j = this.select_action_action[0].length;
+        for (let i = 0; i < this.list_length; i++){
+            this.select_action_action[i][j] = new Option(action, action)
+        }
+    }
     
     update_tags(tags) {
         // console.log(tags);

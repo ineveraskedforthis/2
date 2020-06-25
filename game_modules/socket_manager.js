@@ -170,10 +170,11 @@ module.exports = class SocketManager {
         this.send_savings_update(character);
         this.send_skills_info(character);
         this.send_map_pos_info(character);
-
+        this.send_new_actions(character);
         let user = character.user;
         let socket = character.user.socket;
         this.send_char_info(socket, user);
+
     }
 
     // actions
@@ -243,7 +244,10 @@ module.exports = class SocketManager {
     async up_skill(user_data, msg) {
         if (msg in this.world.constants.SKILLS && user_data.current_user != null) {
             let char = user_data.current_user.character;
-            await char.add_skill(this.pool, msg + '');
+            let result = await char.add_skill(this.pool, msg + '');
+            if (result != undefined) {
+                this.send_new_tactic_action(char, result);
+            }
             this.send_skills_info(char);
             this.send_tactics_info(char);
             this.send_exp_update(char)
@@ -266,6 +270,7 @@ module.exports = class SocketManager {
 
     async set_tactic(user_data, msg) {
         if (user_data.current_user != null) {
+            // console.log(msg)
             let char = user_data.current_user.character;
             await char.set_tactic(this.pool, msg);
             this.send_tactics_info(char);
@@ -273,6 +278,17 @@ module.exports = class SocketManager {
     }
 
     // information sending
+
+    send_new_tactic_action(character, action) {
+        this.send_to_character_user(character, 'new-action', action);
+    }
+
+    send_new_actions(character) {
+        let actions = character.get_actions();
+        for (let i of actions) {
+            this.send_new_tactic_action(character, i);
+        }
+    }
 
     send_map_pos_info(character) {
         let cell_id = character.cell_id;
