@@ -32,6 +32,14 @@ module.exports = {
             resists.pierce += 2;
             resists.slice += 2;
             return resists;
+        },
+        rat_leather_boots: (resists) => {
+            resists.slice += 1;
+            return resists;
+        },
+        rat_leather_gauntlets: (resists) => {
+            resists.slice += 1;
+            return resists;
         }
     },
 
@@ -80,7 +88,9 @@ module.exports = {
         sword: 1000,
         rat_leather_armour: 1000,
         rat_fur_cap: 1000,
-        rat_leather_leggins: 1000
+        rat_leather_leggins: 1000,
+        rat_leather_gauntlets: 500,
+        rat_leather_boots: 500
     },
 
     loot_affixes_weight: {
@@ -99,6 +109,14 @@ module.exports = {
             power_battery: 1
         },
         rat_leather_leggins: {
+            thick: 2,
+            power_battery: 1
+        },
+        rat_leather_gauntlets: {
+            thick: 2,
+            power_battery: 2
+        },
+        rat_leather_boots: {
             thick: 2,
             power_battery: 1
         }

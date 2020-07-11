@@ -33,10 +33,9 @@ module.exports = class Cell {
     async update(pool) {
         await this.market.update(pool);
     }
-
-    async get_market(pool) {
-        var market = await this.world.get_market(pool, this.market_id);
-        return market;
+    
+    async clear_dead_orders(pool) {
+        await this.market.clear_dead_orders(pool)
     }
 
     get_population() {

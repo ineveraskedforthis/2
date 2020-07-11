@@ -68,6 +68,7 @@ module.exports = class World {
         await this.load_characters(pool);
         await this.load_orders(pool);
         await this.load_battles(pool);
+        await this.clear_dead_orders(pool);
     }
 
     async load_size(pool) {
@@ -118,6 +119,10 @@ module.exports = class World {
             this.battles[battle.id] = battle;
         }
         console.log('battles loaded')
+    }
+
+    async clear_dead_orders(pool) {
+        this.map.clear_dead_orders(pool);
     }
 
     async update(pool) {
@@ -256,13 +261,13 @@ module.exports = class World {
     async kill(pool, char_id) {
         console.log('kill ' + char_id);
         let character = this.chars[char_id];
+        await character.clear_orders(pool);
         await character.set(pool, 'dead', true);
         if (character.data.is_player) {
             var user = this.user_manager.get_user_from_character(character);
             var id = await user.get_new_char(pool);
             this.chars[id] = user.character;
         }
-        await character.clear_orders(pool);
         await character.delete_from_db(pool);
         // this.chars[character.id] = null;
     }

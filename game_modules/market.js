@@ -251,6 +251,35 @@ module.exports = class Market {
         return amount * (order.price + this.taxes[order.tag]);
     }
 
+    async clear_dead_orders(pool) {
+        var tmp = new Set();
+        for (let tag of this.world.constants.TAGS) {
+            for (let j of this.sell_orders[tag]) {
+                let order = this.world.get_order(j);
+                if (order.owner == undefined) {
+                    tmp.add(j)
+                }
+            }
+        }
+        for (let i of tmp) {
+            await this.cancel_sell_order(pool, i);
+        }
+
+        tmp = new Set();
+        for (let tag of this.world.constants.TAGS) {
+            for (let j of this.buy_orders[tag]) {
+                let order = this.world.get_order(j);
+                if (order.owner == undefined) {
+                    tmp.add(j)
+                }
+            }
+        }
+        for (let i of tmp) {
+            await this.cancel_buy_order(pool, i);
+        }
+        await this.save_to_db(pool);
+    }
+
     async clear_empty_sell_orders(pool, tag) {
         var tmp = new Set();
         for (let i of this.sell_orders[tag]) {
@@ -328,19 +357,24 @@ module.exports = class Market {
 
     async cancel_buy_order(pool, order_id, save) {
         var order = this.world.get_order(order_id);
-        var amount = order.amount * (order.price + this.taxes[order.tag]);
-        this.savings.transfer(order.owner.savings, amount);
+        if (order.owner != undefined) {
+            var amount = order.amount * (order.price + this.taxes[order.tag]);
+            this.savings.transfer(order.owner.savings, amount);
+            await order.owner.save_to_db(pool, save)
+        }
         this.buy_orders[order.tag].delete(order_id);
-        await order.owner.save_to_db(pool, save)
-        await this.save_to_db(pool, save);
         await order.delete_from_db(pool, save);
+        await this.save_to_db(pool, save);
+        
     }
 
     async cancel_sell_order(pool, order_id, save) {
         var order = this.world.get_order(order_id);
-        this.stash.transfer(order.owner.stash, order.tag, order.amount);
+        if (order.owner != undefined) {
+            this.stash.transfer(order.owner.stash, order.tag, order.amount);
+            await order.owner.save_to_db(pool, save)
+        }
         this.sell_orders[order.tag].delete(order_id);
-        await order.owner.save_to_db(pool, save)
         await this.save_to_db(pool, save);
         await order.delete_from_db(pool, save);
     }
