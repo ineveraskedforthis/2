@@ -52,13 +52,6 @@ module.exports = class Market {
         return this.id
     }
 
-    async load(pool, id) {
-        this.id = id
-        let tmp = await common.send_query(pool, constants.select_market_by_id_query, [this.id]);
-        tmp = tmp.rows[0];
-        this.load_from_json(tmp.data)
-    }
-
     async update(pool) {
         for (var tag of this.world.constants.TAGS) {
             this.planned_money_to_spent[tag] = this.tmp_planned_money_to_spent[tag];
@@ -525,6 +518,13 @@ module.exports = class Market {
 
     async load_to_db(pool) {
         await common.send_query(pool, constants.new_market_query, [this.id, this.get_json()]);
+    }
+
+    async load(pool, id) {
+        this.id = id
+        let tmp = await common.send_query(pool, constants.select_market_by_id_query, [this.id]);
+        tmp = tmp.rows[0];
+        this.load_from_json(tmp.data)
     }
 
     get_json() {

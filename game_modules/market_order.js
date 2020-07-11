@@ -45,7 +45,7 @@ module.exports = class MarketOrder {
         this.amount = data.amount;
         this.price = data.price;
         this.id = data.id;
-        this.market_id = data.id;
+        this.market_id = data.market_id;
         if (this.owner == undefined) {
             return false
         } else {

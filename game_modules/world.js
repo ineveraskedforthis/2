@@ -11,6 +11,7 @@ var SocketManager = require("./socket_manager.js");
 var Pop = require("./agents/pop.js");
 var MarketOrder = require("./market_order");
 const StateMachines = require("./StateMachines.js");
+const { OrderItem } = require("./market_items.js");
 
 let tmp = 0
 for (let i in loot_chance_weight) {
@@ -38,7 +39,8 @@ module.exports = class World {
         this.agents = {};
         this.chars = {};
         this.orders = {};
-        this.battles = {}
+        this.item_orders = {};
+        this.battles = {};
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
         this.HISTORY_PRICE['food'] = 10;
@@ -67,6 +69,7 @@ module.exports = class World {
         await this.load_agents(pool);
         await this.load_characters(pool);
         await this.load_orders(pool);
+        await this.load_item_orders(pool);
         await this.load_battles(pool);
         await this.clear_dead_orders(pool);
     }
@@ -109,6 +112,16 @@ module.exports = class World {
             this.orders[order.id] = order;
         }
         console.log('orders loaded')
+    }
+
+    async load_item_orders(pool) {
+        let res = await common.send_query(pool, constants.load_item_orders_query);
+        for (let i of res.rows) {
+            let order = new OrderItem(this);
+            order.load_from_json(i);
+            this.item_orders[order.id] = order;
+        }
+        console.log('item orders loaded')
     }
 
     async load_battles(pool) {
@@ -241,6 +254,10 @@ module.exports = class World {
 
     get_order (order_id) {
         return this.orders[order_id];
+    }
+
+    get_item_order (id) {
+        return this.item_orders[id];
     }
 
     get_from_id_tag(id, tag) {
