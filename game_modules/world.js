@@ -1,6 +1,7 @@
 var basic_characters = require("./basic_characters.js");
 var constants = require("./constants.js");
 var common = require("./common.js");
+var {loot_chance_weight, loot_affixes_weight} = require("./item_tags");
 
 var Map = require("./map.js");
 var Battle = require("./battle.js");
@@ -11,7 +12,19 @@ var Pop = require("./agents/pop.js");
 var MarketOrder = require("./market_order");
 const StateMachines = require("./StateMachines.js");
 
+let tmp = 0
+for (let i in loot_chance_weight) {
+    tmp += loot_chance_weight[i]
+}
+const total_loot_chance_weight = tmp;
 
+var total_affixes_weight = {}
+for (let tag in loot_affixes_weight) {
+    total_affixes_weight[tag] = 0
+    for (let i in loot_affixes_weight[tag]) {
+        total_affixes_weight[tag] += loot_affixes_weight[tag][i]
+    }
+}
 
 
 module.exports = class World {
@@ -304,13 +317,44 @@ module.exports = class World {
         return character;
     }
 
-    generate_loot(level) {
-        let loot_dice = Math.random();
-        if (loot_dice < 0.5) {
-            return undefined;
+    get_loot_tag(dice) {
+        let tmp = 0
+        for (let i in loot_chance_weight) {
+            tmp += loot_chance_weight[i];
+            if (total_loot_chance_weight * dice <= tmp) {
+                return i
+            }
         }
+    }
+
+    get_affix_tag(item_tag, dice) {
+        let tmp = 0
+        for (let i in loot_affixes_weight[item_tag]) {
+            tmp += loot_affixes_weight[item_tag][i];
+            if (total_affixes_weight[item_tag] * dice <= tmp) {
+                return i
+            }
+        }
+    }
+
+    roll_affix(item_tag, level) {
+        let dice = Math.random();
+        let affix = {}
+        affix.tag = this.get_affix_tag(item_tag, dice)
+        let dice2 = Math.random();
+        affix.tier = 1
+        affix.tier += Math.floor(level * dice2 / 2)
+        return affix;
+    }
+
+    generate_loot(level) {
+        // let loot_dice = Math.random();
+        // if (loot_dice < 0.5) {
+        //     return undefined;
+        // }
         let item = {};
-        item.tag = 'sword';
+        let tag_dice = Math.random();
+        item.tag = this.get_loot_tag(tag_dice)
         let dice = Math.random()
         let num_of_affixes = 0
         if (dice * (1 + level / 10) > 0.5 ) {
@@ -321,26 +365,10 @@ module.exports = class World {
         }
         item.affixes = num_of_affixes;
         for (let i = 0; i < num_of_affixes; i++) {
-            item['a' + i] = this.roll_affix(level)
+            item['a' + i] = this.roll_affix(item.tag, level)
         }
         return item;
-    }
-
-    roll_affix(level) {
-        let dice = Math.random();
-        let affix = {}
-        if (dice < 0.4) {
-            affix.tag = 'sharp'
-        } else if (dice < 0.8) {
-            affix.tag = 'heavy'
-        } else {
-            affix.tag = 'hot'
-        }
-        let dice2 = Math.random();
-        affix.tier = 1
-        affix.tier += Math.floor(level * dice2 / 2)
-        return affix;
-    }
+    }    
     
     // eslint-disable-next-line no-unused-vars
     get_tick_death_rate(race) {

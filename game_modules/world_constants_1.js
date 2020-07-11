@@ -26,6 +26,17 @@
             mem: 1, 
             pow: 1, 
             tou: 1
+        },
+        graci: {
+            musculature: 20,
+            breathing: 10, 
+            coordination: 10, 
+            vis: 10, 
+            int: 10, 
+            tac: 0, 
+            mem: 10, 
+            pow: 10, 
+            tou: 10
         }},
     base_resists: {
         pepe: {

@@ -254,7 +254,7 @@ module.exports = class Character {
         if (!result.evade) {
             for (let i of this.world.constants.damage_types) {
                 if (result.damage[i] > 0) {
-                    let curr_damage = Math.max(1, result.damage[i] - res[i]);
+                    let curr_damage = Math.max(0, result.damage[i] - res[i]);
                     result.total_damage += curr_damage;
                     this.update_status_after_damage(pool, i, curr_damage, false);
                     await this.change_hp(pool, -curr_damage, false);
@@ -353,12 +353,12 @@ module.exports = class Character {
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * this.data.stats.musculature / 10));
         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * this.data.stats.musculature / 10));
         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * this.data.stats.musculature / 10));
-        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * this.get_magic_power()));
+        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * this.get_magic_power() / 10));
         return result
     }
 
     mod_spell_damage_with_stats(result) {
-        let power = this.get_magic_power()
+        let power = this.get_magic_power() / 10
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * power));
         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * power));
         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * power));
@@ -416,15 +416,16 @@ module.exports = class Character {
     }
 
     get_magic_power() {
-        let power = this.data.stats['pow'];
+        let power = this.data.stats['pow'] + this.equip.get_magic_power();
         if (this.data.skills['blood_battery'] == 1) {
             power = power * (1 + this.data.other.blood_covering / 100);
         }
-        return power / 10;
+        return power;
     }
 
     get_resists() {
-        let res = this.data.base_resists;
+        let res = {}
+        Object.assign(res, this.data.base_resists)
         let res_e = this.equip.get_resists();
         for (let i of this.world.constants.damage_types) {
             res[i] += res_e[i];

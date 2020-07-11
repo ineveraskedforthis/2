@@ -31,9 +31,9 @@ class Graci extends Character {
             name = 'graci ' + id;
         }
         this.init_base_values(id, name, 150, 150, 0, 0, cell_id);
-        this.data.stats = this.world.constants.base_stats.rat
+        this.data.stats = this.world.constants.base_stats.graci
         this.data.base_resists = this.world.constants.base_resists.rat
-        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 3}}
+        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 2}}
         this.data.model = 'graci'
         this.data.movement_speed = 2;
         await this.load_to_db(pool);

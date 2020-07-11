@@ -317,6 +317,10 @@ body {
     overflow: hidden;
 }
 
+#character_screen {
+    overflow: auto;
+}
+
 
 
 

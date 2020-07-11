@@ -71,6 +71,8 @@ class MeatToHeal extends State {
         let food_buy = Math.floor(savings / 100);
         if (food_buy > 2) {
             await agent.clear_orders(pool, save);
+            let savings = agent.savings.get();
+            let food_buy = Math.floor(savings / 100);            
             await agent.buy(pool, 'meat', food_buy, savings, 100);
         }
 

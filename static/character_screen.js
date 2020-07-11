@@ -1,5 +1,6 @@
 
-const EQUIPMENT_TAGS = ['right_hand'];
+const EQUIPMENT_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms'];
+
 
 function send_update_request(socket) {
     socket.emit('char-info-detailed');
