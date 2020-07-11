@@ -68,26 +68,26 @@ class BasicPopAIstate extends State {
 class MeatToHeal extends State {
     static async Execute(pool, agent, save = true) {
         let savings = agent.savings.get();
-        let food_buy = Math.floor(savings / 100);
-        if (food_buy > 2) {
+        let meat_buy = Math.floor(savings / 100);
+        let food = agent.stash.get('food');
+        if ((meat_buy > 2) || (food > 0)) {
             await agent.clear_orders(pool, save);
             let savings = agent.savings.get();
-            let food_buy = Math.floor(savings / 100);            
-            await agent.buy(pool, 'meat', food_buy, savings, 100);
+            let meat_buy = Math.floor(savings / 100);
+            let food = agent.stash.get('food');
+            await agent.buy(pool, 'meat', meat_buy, savings, 100);
+            await agent.sell(pool, 'food', food, 150);
         }
 
         let water = agent.stash.get('water');
         if (water > 0) {
             await agent.sell(pool, 'water', water, 100);
         }
-        
         let meat = agent.stash.get('meat');
         if (meat > 0) {
             agent.stash.set('meat', 0);
             agent.stash.inc('food', meat);
-            let food = agent.stash.get('food');
-            await agent.sell(pool, 'food', food, 150);
-        }        
+        }
     }
 
     static tag() {

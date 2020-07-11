@@ -354,7 +354,7 @@ module.exports = class SocketManager {
     send_char_info(socket, user) {
         if (user != null) {
             let char = user.character
-            socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.stash});
+            socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.stash, resists: char.get_resists()});
         }        
     }
     

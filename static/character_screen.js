@@ -120,5 +120,14 @@ class CharacterScreen {
             other_line.append(document.createTextNode(`${i}: ${data.stash.data[i]}`))
             this.misc.appendChild(other_line);
         }
+
+        let resists_label = document.createElement('p')
+        resists_label.innerHTML = 'resists'; 
+        this.misc.appendChild(resists_label);
+        for (let i in data.resists) {
+            let other_line = document.createElement('p');
+            other_line.append(document.createTextNode(`${i}: ${data.resists[i]}`))
+            this.misc.appendChild(other_line);
+        }
     }
 }

@@ -67,6 +67,11 @@ module.exports = {
         },
         power_battery: (resists, tier) => {
             return resists
+        },
+        hard: (resists, tier) => {
+            resists.blunt += tier * 2;
+            resists.pierce += tier * 2;
+            resists.slice += tier * 2;
         }
     },
 
@@ -82,6 +87,8 @@ module.exports = {
         rat_leather_armour: 'body',
         rat_fur_cap: 'head',
         rat_leather_leggins: 'legs',
+        rat_leather_gauntlets: 'arms',
+        rat_leather_boots: 'foot'
     },
 
     loot_chance_weight: {
@@ -102,11 +109,13 @@ module.exports = {
         },
         rat_leather_armour: {
             thick: 2,
-            power_battery: 1
+            power_battery: 1,
+            hard: 1
         },
         rat_fur_cap: {
             thick: 2,
-            power_battery: 1
+            power_battery: 1,
+            hard: 1
         },
         rat_leather_leggins: {
             thick: 2,
