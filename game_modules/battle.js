@@ -67,6 +67,17 @@ module.exports = class Battle {
         return log;
     }
 
+    get_team_status(team) {
+        let tmp = []
+        for (let i in this.ids) {
+            if (this.teams[i] == team) {
+                let char = this.world.chars[this.ids[i]]
+                tmp.push({name: char.name, hp: char.hp})
+            }
+        }
+        return tmp
+    }
+
     async action(pool, actor_index, action) {
         var character = this.world.chars[this.ids[actor_index]];
         if (action.action == null) {

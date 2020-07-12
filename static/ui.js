@@ -291,6 +291,17 @@ socket.on('battle-action', data => {
     }
 })
 
+socket.on('enemy-update', msg => {
+    console.log(msg)
+    let div = document.getElementById('enemy_status');
+    div.innerHTML = ''
+    for (let i of msg) {
+        let label = document.createElement('p');
+        label.innerHTML = i.name + ' | | ' + i.hp + ' hp' 
+        div.appendChild(label)
+    }
+})
+
 
 function update_tags(msg) {
     for (var tag of msg) {

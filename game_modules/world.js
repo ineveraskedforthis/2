@@ -180,10 +180,12 @@ module.exports = class World {
             let res = battle.is_over();
             if (res == -1) {
                 var log = await battle.update(pool);
+                let status = battle.get_team_status(1);
                 for (let i = 0; i < battle.ids.length; i++) {
                     let character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
                         this.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
+                        this.socket_manager.send_to_character_user(character, 'enemy-update', status);
                         log.forEach(log_entry => { this.socket_manager.send_to_character_user(character, 'battle-action', log_entry)});
                     }
                 }
