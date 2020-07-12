@@ -94,6 +94,9 @@ module.exports = class SocketManager {
                 return
             }
             await character.sell_item(this.pool, ind, bo, sp);
+            let user = character.user;
+            let socket = character.user.socket;
+            this.send_char_info(socket, user);
         }
     }
 
