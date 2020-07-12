@@ -97,7 +97,7 @@ class MarketItems {
 
     async update(pool) {
         let now = Date.now();
-        for (let i in this.orders) {
+        for (let i of this.orders) {
             let order = this.world.get_item_order(i);
             if ((order.end_time < now) || (order.owner == undefined)) {
                 let resp = this.resolve(pool, i);
