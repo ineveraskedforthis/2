@@ -110,7 +110,23 @@ class ItemMarketTable {
         for (let i of data) {
             let row = table.insertRow()
             this.add_cell_to_row(row, i.owner_name);
-            this.add_cell_to_row(row, '| ' + i.item.tag);
+            {
+                let cell = row.insertCell();
+                let item_block = document.createElement('div')
+                item_block.setAttribute('class', 'tooltip')
+                item_block.innerHTML = i.item.tag
+                let span = document.createElement('span')
+                span.setAttribute('class', 'tooltiptext');
+                span.innerHTML = ''
+                for (let j = 0; j < i.item.affixes; j++){
+                    let affix = i.item['a' + j];
+                    if (affix != undefined){
+                        span.innerHTML = affix.tag + ' ' + affix.tier + ' | ';
+                    }
+                }
+                item_block.appendChild(span)
+                cell.appendChild(item_block)
+            }
             this.add_cell_to_row(row, '| ' + i.buyout_price);
             this.add_cell_to_row(row, '| ' + i.current_price);
             let now = Date.now();
