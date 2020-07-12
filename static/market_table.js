@@ -1,3 +1,16 @@
+function send_buyout_request() {
+    let items = document.getElementsByName('market_item_list_radio');
+    let index = undefined;
+
+    for(let i = 0; i < items.length; i++) {
+        if(items[i].checked)
+            index = parseInt(items[i].value);
+        }
+
+    console.log('buyout ' + index)
+    socket.emit('buyout', index);
+}
+
 class MarketTable {
     constructor(container) {
         this.data = [];
@@ -55,5 +68,64 @@ class MarketTable {
         }
         
         this.draw();
+    }
+}
+
+class ItemMarketTable {
+    constructor(container) {
+        this.data = [];
+        this.container = container;
+        this.table_container = document.createElement('div');
+        let table = document.createElement('table');
+        this.table_container.appendChild(table)
+        this.container.appendChild(this.table_container)
+
+        this.control_container = document.createElement('div');
+        {
+            let buyout_button = document.createElement('button');
+            (() => 
+                buyout_button.onclick = () => send_buyout_request()
+            )();
+            buyout_button.innerHTML = 'buyout';
+            this.control_container.appendChild(buyout_button);
+        }
+        this.container.appendChild(this.control_container);
+    }
+
+    add_cell_to_row(row, data) {
+        let cell = row.insertCell();
+        cell.innerHTML = data;
+    }
+
+    update(data) {
+        let table = document.createElement('table');
+        {
+            let row = table.insertRow()
+            this.add_cell_to_row(row, 'owner_name');
+            this.add_cell_to_row(row, '| item.tag');
+            this.add_cell_to_row(row, '| buyout_price');
+            this.add_cell_to_row(row, '| current_price');
+            this.add_cell_to_row(row, '| time left')
+        }
+        for (let i of data) {
+            let row = table.insertRow()
+            this.add_cell_to_row(row, i.owner_name);
+            this.add_cell_to_row(row, '| ' + i.item.tag);
+            this.add_cell_to_row(row, '| ' + i.buyout_price);
+            this.add_cell_to_row(row, '| ' + i.current_price);
+            let now = Date.now();
+            let dt = (i.end_time - now);
+            this.add_cell_to_row(row, '| ' + (Math.floor(dt / 60) / 1000) + ' minutes');
+            {
+                let cell = row.insertCell();
+                let radio_button = document.createElement('input');
+                radio_button.setAttribute('type', 'radio');
+                radio_button.setAttribute('name', 'market_item_list_radio');
+                radio_button.setAttribute('value', i.id);
+                cell.appendChild(radio_button);
+            }
+        }
+        this.table_container.innerHTML = '';
+        this.table_container.appendChild(table);
     }
 }

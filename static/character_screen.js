@@ -21,6 +21,22 @@ function send_clean_request(socket) {
     socket.emit('char-info-detailed');
 }
 
+function send_sell_item_request(socket) {
+
+    let items = document.getElementsByName('sell_item');
+    let index = undefined;
+
+    for(let i = 0; i < items.length; i++) {
+        if(items[i].checked)
+            index = parseInt(items[i].value);
+        }
+    
+    let buyout_price = document.getElementById('buyout_price').value;
+    let starting_price = document.getElementById('starting_price').value;
+
+    socket.emit('sell-item', {index: index, buyout_price: buyout_price, starting_price: starting_price});
+}
+
 class CharacterScreen {
     constructor(div, socket) {
         this.data = {}
@@ -60,6 +76,33 @@ class CharacterScreen {
         this.button.innerHTML = 'clean';
         this.div.appendChild(this.button);
 
+        this.button = document.createElement('button');
+        (() => 
+                this.button.onclick = () => send_sell_item_request(this.socket)
+        )();
+        this.button.innerHTML = 'sell selected item';
+        this.div.appendChild(this.button);
+
+        {
+            let label = document.createElement('p');
+            label.innerHTML = 'starting price'
+            this.div.appendChild(label);
+
+            let form = document.createElement('input');
+            form.setAttribute('id', 'starting_price');
+            this.div.appendChild(form);
+        }
+
+        {
+            let label = document.createElement('p');
+            label.innerHTML = 'buyout price'
+            this.div.appendChild(label);
+
+            let form = document.createElement('input');
+            form.setAttribute('id', 'buyout_price');
+            this.div.appendChild(form);
+        }
+
         console.log('character_screen_loaded')
     }
 
@@ -90,8 +133,14 @@ class CharacterScreen {
                 ((index) => 
                     button.onclick = () => send_equip_message(this.socket, index)
                 )(i)
+                tmp = row.insertCell(9);
+                let radio_button = document.createElement('input');
+                radio_button.setAttribute('type', 'radio');
+                radio_button.setAttribute('name', 'sell_item');
+                radio_button.setAttribute('value', i);
+                tmp.appendChild(radio_button);
             }
-        }        
+        }
         for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
             let row = this.table2.insertRow();
             let slot = row.insertCell(0);

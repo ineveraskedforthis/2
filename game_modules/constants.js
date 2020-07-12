@@ -1,5 +1,5 @@
 const constants = {
-    version: 84,
+    version: 85,
     logging: {
         agent: {
             buy: false
@@ -71,6 +71,7 @@ const constants = {
     load_pops_query: 'SELECT * FROM pops',
     load_chars_query: 'SELECT * FROM chars',
     load_orders_query: 'SELECT * FROM market_orders',
+    load_item_orders_query: 'SELECT * FROM items_orders',
     load_battles_query: 'SELECT * FROM battles',
 
     find_user_by_login_query: 'SELECT * FROM accounts WHERE login = ($1)',

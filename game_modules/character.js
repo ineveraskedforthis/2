@@ -331,6 +331,11 @@ module.exports = class Character {
         await cell.market.sell(pool, tag, this, amount, price);
     }
 
+    async sell_item(pool, index, buyout_price, starting_price) {
+        let cell = this.world.get_cell_by_id(this.cell_id);
+        await cell.item_market.sell(pool, this, index, buyout_price, starting_price);
+    }
+
     async clear_tag_orders(pool, tag, save_market = true) {
         await this.get_local_market().clear_agent_orders(pool, this, tag, save_market)
     }

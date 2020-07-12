@@ -4,9 +4,11 @@ const hour = 1000 * 60 * 60;
 const time_intervals = [1000 * 60, hour * 12, hour * 24, hour * 48];
 
 class MarketItems {
-    constructor(world) {
+    constructor(world, cell_id) {
         this.world = world;
         this.orders = new Set();
+        this.CHANGED = false;
+        this.cell_id = cell_id
     }
 
     async init(pool) {
@@ -14,37 +16,42 @@ class MarketItems {
         return this.id;
     }
 
-    async sell(pool, seller, index, buyout_price) {
-        let item = seller.equip.backpack[index]
+    async sell(pool, seller, index, buyout_price, starting_price) {
+        let item = seller.equip.data.backpack[index]
         if (item == undefined) {
             return 
         }
-        await this.new_order(pool, seller, item, buyout_price)
+        seller.equip.data.backpack[index] = undefined;
+        await seller.save_to_db(pool);
+        await this.new_order(pool, seller, item, buyout_price, starting_price, 1);
     }
 
     async new_order(pool, seller, item, buyout_price, starting_price, time_interval) {
         let order = new OrderItem(this.world);
         let time = Date.now();
         let dt = time_intervals[time_interval];
-        let id = order.init(pool, seller, item, buyout_price, starting_price, time + dt)
+        let id = await order.init(pool, seller, item, buyout_price, starting_price, time + dt)
         this.orders.add(id)
+        this.world.item_orders[id] = order;
+        this.CHANGED = true
     }
 
     async buyout(pool, buyer, id) {
-        if (!(id in this.orders)) {
+        if (!(this.orders.has(id))) {
             return
         }
-        let order = this.world.get_order_item(id);
-        if (buyer.get_savings() < order.buyout_price) {
+        let order = this.world.get_item_order(id);
+        if (buyer.savings.get() < order.buyout_price) {
             return
         }
         let item = order.item;
-        buyer.savings.transfer(order.owner, order.buyout_price);
+        buyer.savings.transfer(order.owner.savings, order.buyout_price);
         buyer.equip.add_item(item);
         buyer.save_to_db(pool)
+        await order.return_money(pool);
         this.orders.delete(id);
         await order.delete_from_db(pool);
-        this.save_to_db(pool);
+        this.CHANGED = true
     }
 
     async bid(pool, bidder, new_price, id) {
@@ -52,11 +59,17 @@ class MarketItems {
             return
         }
         let order = this.world.get_item_order(id);
-        if ((bidder.get_savings() < new_price) || (new_price <= order.current_price)) {
+        if ((bidder.savings.get() < new_price) || (new_price <= order.current_price)) {
             return
         }
+        if (bidder.id == order.owner_id) {
+            return
+        }
+        await order.return_money()
+        bidder.savings.inc(-new_price);
         await order.bid(pool, bidder, new_price);
         await order.save_to_db(pool);
+        this.CHANGED = true;
     }
 
     async resolve(pool, i) {
@@ -84,7 +97,6 @@ class MarketItems {
 
     async update(pool) {
         let now = Date.now();
-        let CHANGED = false;
         for (let i in this.orders) {
             let order = this.world.get_item_order(i);
             if ((order.end_time < now) || (order.owner == undefined)) {
@@ -92,13 +104,24 @@ class MarketItems {
                 if (resp) {
                     await order.delete_from_db(pool);
                     this.orders.delete(i);
-                    CHANGED = true;
+                    this.CHANGED = true;
                 }
             }
         }
-        if (CHANGED) {
+        if (this.CHANGED) {
             this.save_to_db(pool)
+            this.world.socket_manager.send_item_market_update(this)
+            this.CHANGED = false;
         }        
+    }
+
+    get_orders_list() {
+        var tmp = [];
+        for (let i of this.orders) {
+            let order = this.world.get_item_order(i);
+            tmp.push(order.get_json());
+        }
+        return tmp;
     }
 
     async load_from_json(data) {
@@ -113,7 +136,7 @@ class MarketItems {
     }
 
     async save_to_db(pool) {
-        await common.send_query(pool, constants.save_market_items_query, [this.id, Array.from(this.orders.values())]);
+        await common.send_query(pool, constants.update_market_items_query, [this.id, Array.from(this.orders.values())]);
     }
 
     async load_to_db(pool) {
@@ -133,7 +156,7 @@ class OrderItem {
         this.owner_id = owner.id;
         this.buyout_price = buyout_price;
         this.current_price = starting_price;
-        this.latest_bidder = owner;
+        this.latest_bidder = owner.id;
         this.end_time = end_time;
         this.id = await this.load_to_db(pool);
         return this.id;
@@ -147,8 +170,17 @@ class OrderItem {
         }
     }
 
+    async return_money(pool) {
+        if (this.latest_bidder != this.owner_id) {
+            let char = this.world.get_from_id_tag(this.latest_bidder, 'chara');
+            char.savings.inc(this.current_price);
+            char.save_to_db(pool);
+            this.current_price = 0;
+        }
+    }
+
     async load_to_db(pool) {
-        let result = await common.send_query(pool, constants.insert_item_order_query, [this.item, this.owner_id, this.buyout_price, this.сurrent_price, this.latest_bidder, this.end_time, this.market_id]);
+        let result = await common.send_query(pool, constants.insert_item_order_query, [this.item, this.owner_id, this.buyout_price, this.current_price, this.latest_bidder, this.end_time, this.market_id]);
         return result.rows[0].id;
     }
 
@@ -167,6 +199,7 @@ class OrderItem {
         this.owner = this.world.get_from_id_tag(this.owner_id, 'chara');
         this.buyout_price = data.buyout_price;
         this.current_price = data.current_price;
+        this.latest_bidder = data.latest_bidder;
         this.end_time = data.end_time;
         this.market_id = data.market_id;
     }
@@ -179,6 +212,7 @@ class OrderItem {
         tmp.owner_name = this.owner.name;
         tmp.buyout_price = this.buyout_price;
         tmp.current_price = this.current_price;
+        tmp.latest_bidder = this.latest_bidder;
         tmp.end_time = this.end_time;
         tmp.market_id = this.market_id;
         return tmp;

@@ -14,7 +14,7 @@ module.exports = class Cell {
         this.id = world.get_cell_id_by_x_y(i, j);
         this.tag = 'cell';
         this.market = new Market(world, this);
-        this.item_market = new MarketItems(this.world);
+        this.item_market = new MarketItems(this.world, this.id);
     }
 
     async init(pool, world) {     

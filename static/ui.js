@@ -246,6 +246,7 @@ socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 socket.on('market-data', data => {market_table.update(data)});
+socket.on('item-market-data', data => {console.log('item-market-data'); console.log(data); item_market_table.update(data)});
 // socket.on('market-data', data => auction_house.update(data));
 // socket.on('market-data', data => console.log(data));
 socket.on('skill-tree', data => {SKILLS = data});
@@ -411,7 +412,8 @@ var battle_image = new BattleImage(document.getElementById('battle_canvas'), doc
 // eslint-disable-next-line no-undef
 var market_table = new MarketTable(document.getElementById('market'));
 socket.emit('get-market-data', null);
-var auction_house = new AuctionHouse(document.getElementById('auction_house_tab'));
+var item_market_table = new ItemMarketTable(document.getElementById('auction_house_tab'))
+// var auction_house = new AuctionHouse(document.getElementById('auction_house_tab'));
 socket.emit('get-market-data', null);// eslint-disable-next-line no-undef
 var map = new Map(document.getElementById('map'), document.getElementById('map_control'), socket);
 // eslint-disable-next-line no-undef

@@ -51,6 +51,8 @@ module.exports = class SocketManager {
             socket.on('move', async (msg) => this.move(user_data, msg));
             socket.on('session', async (msg) => this.login_with_session(socket, user_data, msg));
             socket.on('clear_orders', async () => this.clear_orders(user_data));
+            socket.on('sell-item', async (msg) => this.sell_item(user_data, msg));
+            socket.on('buyout', async (msg) => this.buyout(user_data, msg))
         });
     }
 
@@ -62,10 +64,36 @@ module.exports = class SocketManager {
         }
     }
 
+    async buyout(user_data, msg) {
+        if (user_data.current_user != null) {
+            let character = user_data.current_user.character;
+            let market = character.get_cell().item_market;
+            let id = parseInt(msg);
+            if (isNaN(id)) {
+                return
+            }
+            await market.buyout(this.pool, character, id)
+            this.send_item_market_update_to_character(character);
+        }
+    }
+
     async equip(user_data, msg) {
         if (user_data.current_user != null) {
             let character = user_data.current_user.character;
             await character.equip_item(this.pool, msg);
+        }
+    }
+
+    async sell_item(user_data, msg) {
+        if (user_data.current_user != null) {
+            let character = user_data.current_user.character;
+            let ind = parseInt(msg.index);
+            let bo = parseInt(msg.buyout_price);
+            let sp = parseInt(msg.starting_price);
+            if ((isNaN(ind)) || (isNaN(bo)) || (isNaN(sp))) {
+                return
+            }
+            await character.sell_item(this.pool, ind, bo, sp);
         }
     }
 
@@ -171,10 +199,10 @@ module.exports = class SocketManager {
         this.send_skills_info(character);
         this.send_map_pos_info(character);
         this.send_new_actions(character);
+        this.send_item_market_update_to_character(character);
         let user = character.user;
         let socket = character.user.socket;
         this.send_char_info(socket, user);
-
     }
 
     // actions
@@ -376,6 +404,30 @@ module.exports = class SocketManager {
                     console.log(i.current_user.login)
                 }
                 
+            }
+        }
+    }
+
+    send_item_market_update_to_character(character) {
+        let market = character.get_cell().item_market;
+        let data = market.get_orders_list()
+        this.send_to_character_user(character, 'item-market-data', data)
+    }
+
+    send_item_market_update(market) {
+        let data = market.get_orders_list()
+        console.log('update_market_info')
+        for (let i of this.sockets) {
+            if (i.current_user != null) {
+                let char = i.current_user.character;
+                try {
+                    let cell1 = char.get_cell();
+                    if (i.online & cell1.id==market.cell_id) {
+                        i.socket.emit('item-market-data', data)
+                    }
+                } catch(error) {
+                    console.log(i.current_user.login)
+                }
             }
         }
     }
