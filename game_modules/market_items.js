@@ -46,6 +46,9 @@ class MarketItems {
         }
         let item = order.item;
         buyer.savings.transfer(order.owner.savings, order.buyout_price);
+        let sm = this.world.socket_manager;
+        sm.send_status_update(buyer);
+        sm.send_status_update(order.owner);
         buyer.equip.add_item(item);
         buyer.save_to_db(pool)
         await order.return_money(pool);
