@@ -24,11 +24,11 @@ class AnimatedImage {
     }
 
     get_w() {
-        return images[this.get_image_name()].width/2
+        return images[this.get_image_name()].width
     }
     
     get_h() {
-        return images[this.get_image_name()].height/2
+        return images[this.get_image_name()].height
     }
 
     draw(ctx, x, y, w, h) {

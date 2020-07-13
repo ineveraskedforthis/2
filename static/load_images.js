@@ -17,6 +17,24 @@ add_image_to_load('forest_background', 'forest_background')
 add_image_to_load('tost_move_0000', 'tost_0000')
 add_image_to_load('tost_idle_0000', 'tost_0000')
 add_image_to_load('tost_attack_0000', 'tost_0000')
+
+
+function load(tag, idle, move, attack) {
+    for (let i = 0; i < idle; i++) {
+        let num = ("0000" + i).slice(-4);
+        add_image_to_load(tag + '_idle_' + num, tag + '_idle_' + num);
+    }
+    for (let i = 0; i < move; i++) {
+        let num = ("0000" + i).slice(-4);
+        add_image_to_load(tag + '_move_' + num, tag + '_move_' + num);
+    }
+    for (let i = 0; i < attack; i++) {
+        let num = ("0000" + i).slice(-4);
+        add_image_to_load(tag + '_attack_' + num, tag + '_attack_' + num);
+    }
+}
+
+
 for (let i = 0; i < 12; i++) {
     let num = ("0000" + i).slice(-4);
     add_image_to_load('test_move_' + num, 'test_move_' + num);
@@ -26,31 +44,10 @@ for (let i = 0; i < 8; i++) {
     add_image_to_load('test_attack_' + num, 'test_attack_' + num);
 }
 add_image_to_load('test_idle_0000', 'test_idle_0000')
-for (let i = 0; i < 4; i++) {
-    let num = ("0000" + i).slice(-4);
-    add_image_to_load('rat_idle_' + num, 'rat_idle_' + num);
-}
-for (let i = 0; i < 4; i++) {
-    let num = ("0000" + i).slice(-4);
-    add_image_to_load('rat_move_' + num, 'rat_idle_' + num);
-}
-for (let i = 0; i < 4; i++) {
-    let num = ("0000" + i).slice(-4);
-    add_image_to_load('rat_attack_' + num, 'rat_idle_' + num);
-}
 
-for (let i = 0; i < 1; i++) {
-    let num = ("0000" + i).slice(-4);
-    add_image_to_load('graci_idle_' + num, 'graci_idle_' + num);
-}
-for (let i = 0; i < 10; i++) {
-    let num = ("0000" + i).slice(-4);
-    add_image_to_load('graci_move_' + num, 'graci_move_' + num);
-}
-for (let i = 0; i < 1; i++) {
-    let num = ("0000" + i).slice(-4);
-    add_image_to_load('graci_attack_' + num, 'graci_attack_' + num);
-}
+load('rat', 4, 4, 4);
+load('graci', 1, 10, 1);
+load('elodino', 1, 5, 2);
 
 function loadImages(names, files, onAllLoaded) {
     var i, numLoading = names.length;

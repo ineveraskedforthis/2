@@ -24,13 +24,37 @@ class Rat extends Character {
     }
 }
 
+class Elodino extends Character {
+    async init(pool, cell_id, name = null) {
+        var id = await this.world.get_new_id(pool, 'char_id');
+        if (name == null) {
+            name = 'elodino ' + id;
+        }
+        this.init_base_values(id, name, 100, 100, 0, 0, cell_id);
+        this.data.stats = this.world.constants.base_stats.elodino
+        this.data.base_resists = this.world.constants.base_resists.rat
+        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 1}}
+        this.stash.inc('meat', 2);
+        this.data.model = 'elodino'
+        await this.load_to_db(pool);
+        return id;
+    }
+
+    get_tag() {
+        return 'elodino'
+    }
+    get_item_lvl() {
+        return 5;
+    }
+}
+
 class Graci extends Character {
     async init(pool, cell_id, name = null) {
         var id = await this.world.get_new_id(pool, 'char_id');
         if (name == null) {
             name = 'graci ' + id;
         }
-        this.init_base_values(id, name, 150, 150, 0, 0, cell_id);
+        this.init_base_values(id, name, 200, 200, 0, 0, cell_id);
         this.data.stats = this.world.constants.base_stats.graci
         this.data.base_resists = this.world.constants.base_resists.rat
         this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 2}}
@@ -56,5 +80,6 @@ class Graci extends Character {
 
 module.exports = {
     Rat: Rat,
-    Graci: Graci
+    Graci: Graci,
+    Elodino: Elodino
 }
