@@ -72,6 +72,7 @@ module.exports = {
             resists.blunt += tier * 2;
             resists.pierce += tier * 2;
             resists.slice += tier * 2;
+            return resists
         }
     },
 
