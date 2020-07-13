@@ -33,7 +33,7 @@ http.listen(port, () => {
     console.log('listening on *:3000');
 });
 
-var world = new World(io, 2, 2);
+var world = new World(io, 3, 3);
 
 
 (async () => {

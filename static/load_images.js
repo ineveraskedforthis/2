@@ -12,7 +12,8 @@ function add_image_to_load(name, filename) {
 
 add_image_to_load('map', 'map')
 
-add_image_to_load('base_background', 'background')
+add_image_to_load('background', 'background')
+add_image_to_load('forest_background', 'forest_background')
 add_image_to_load('tost_move_0000', 'tost_0000')
 add_image_to_load('tost_idle_0000', 'tost_0000')
 add_image_to_load('tost_attack_0000', 'tost_0000')

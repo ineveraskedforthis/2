@@ -2,6 +2,17 @@
     TAGS: ['food', 'clothes', 'meat', 'water'],
     SKILLS: {},
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
+    MAP: {
+        '0_0': {move: true},
+        '0_1': {move: false},
+        '1_0': {move: true},
+        '1_1': {move: true},
+        '2_0': {move: true},
+        '2_1': {move: true},
+        '2_2': {move: true},
+        '1_2': {move: true},
+        '0_2': {move: false},
+    },
     default_tactic_slot: {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}},
     empty_tactic_slot: {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}},
     base_stats: {

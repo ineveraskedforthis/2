@@ -221,8 +221,10 @@ module.exports = class SocketManager {
             return
         }
         let char = user_data.current_user.character;
-        await char.move(this.pool, data);
-        user_data.socket.emit('map-pos', data);
+        let res = await char.move(this.pool, data);
+        if (res) {
+            user_data.socket.emit('map-pos', data);
+        }
     }
 
     // eslint-disable-next-line no-unused-vars

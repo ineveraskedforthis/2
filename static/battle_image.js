@@ -24,11 +24,11 @@ class AnimatedImage {
     }
 
     get_w() {
-        return images[this.get_image_name()].width
+        return images[this.get_image_name()].width/2
     }
     
     get_h() {
-        return images[this.get_image_name()].height
+        return images[this.get_image_name()].height/2
     }
 
     draw(ctx, x, y, w, h) {
@@ -93,7 +93,7 @@ class BattleImage {
     constructor(canvas, canvas_background) {
         this.canvas = canvas;
         this.canvas_background = canvas_background;
-        this.background = "base_background";
+        this.background = "base_background_2";
         this.init()
         this.w = 800;
         this.h = 500;
@@ -117,6 +117,14 @@ class BattleImage {
         this.r = 0;
         this.prev_positions = {}
         this.new_positions = {}
+    }
+
+    change_bg(bg) {
+        this.background = bg;
+        console.log('draw_background')
+        let ctx = this.canvas_background.getContext('2d');
+        draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
+        this.background_flag = true;
     }
 
     clear() {
@@ -213,7 +221,7 @@ class BattleImage {
             var draw_order = Array.from(this.battle_ids)
             draw_order.sort((a, b) => this.dist(a, b, this.positions))
             for (var i of draw_order) {
-                var pos = this.calculate_canvas_pos(this.positions[i] * 10, this.images[i])
+                var pos = this.calculate_canvas_pos(this.positions[i] * 5, this.images[i])
                 // console.log(pos)
                 this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
                 this.images[i].update()

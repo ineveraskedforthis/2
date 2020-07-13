@@ -347,9 +347,13 @@ module.exports = class Character {
     }
 
     async move(pool, data) {
-        this.changed = true;
-        this.cell_id = this.world.get_cell_id_by_x_y(data.x, data.y);
-        console.log(this.name + ' move ' + data.x + data.y);
+        if (this.world.constants.MAP[data.x + '_' + data.y].move) {
+            this.changed = true;
+            this.cell_id = this.world.get_cell_id_by_x_y(data.x, data.y);
+            console.log(this.name + ' move ' + data.x + data.y);
+            return true
+        }
+        return false
     }
 
     //attack misc

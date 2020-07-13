@@ -9,6 +9,17 @@ const DESCRIPTIONS = {
     '1_2': graci_plains
 }
 
+const BACKGROUNDS = {
+    '0_0': 'background',
+    '1_0': 'background',
+    '1_1': 'background',
+    '1_2': 'background',
+    '2_0': 'forest_background',
+    '2_1': 'forest_background',
+    '2_2': 'forest_background',
+    '2_3': 'forest_background'
+}
+
 
 class Map {
     constructor(canvas, container, socket) {
@@ -121,5 +132,6 @@ class Map {
 
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
+        battle_image.change_bg(BACKGROUNDS[i + '_' + j])
     }
 }
