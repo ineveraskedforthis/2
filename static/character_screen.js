@@ -21,6 +21,10 @@ function send_clean_request(socket) {
     socket.emit('char-info-detailed');
 }
 
+function get_item_image(tag) {
+    return "background: no-repeat center/100% url(/static/img/" + tag + ".png);"
+}
+
 function send_sell_item_request(socket) {
 
     let items = document.getElementsByName('sell_item');
@@ -38,79 +42,79 @@ function send_sell_item_request(socket) {
 }
 
 class CharacterScreen {
-    constructor(div, socket) {
+    constructor(socket) {
         this.data = {}
         this.socket = socket;
-        this.div = div;
+        this.stats_div = document.getElementById('stats');
+        this.inventory_div = document.getElementById('inventory');
+        this.equip_div = document.getElementById('equip')
+        this.actions_div =  document.getElementById('character_screen_actions');
 
         this.button = document.createElement('button');
         (() => 
                 this.button.onclick = () => send_update_request(this.socket)
         )();
         this.button.innerHTML = 'update';
-        this.div.appendChild(this.button);
+        this.actions_div.appendChild(this.button);
 
         this.table = document.createElement('table');
-        this.table2 = document.createElement('table');
+        this.table = document.getElementById('inventory_items');
+        this.inventory_stash_div = document.getElementById('inventory_stash')
         this.misc = document.createElement('misc');
-
-        this.div.appendChild(this.table);
-
         let label1 = document.createElement('p');
+
         label1.innerHTML = 'Equipment:';
-        this.div.appendChild(label1);
-        this.div.appendChild(this.table2);
-        this.div.appendChild(this.misc);
+        this.equip_div.appendChild(label1);
+
+        this.stats_div.appendChild(this.misc);
 
         this.button = document.createElement('button');
         (() => 
                 this.button.onclick = () => send_eat_request(this.socket)
         )();
         this.button.innerHTML = 'eat';
-        this.div.appendChild(this.button);
+        this.actions_div.appendChild(this.button);
 
         this.button = document.createElement('button');
         (() => 
                 this.button.onclick = () => send_clean_request(this.socket)
         )();
         this.button.innerHTML = 'clean';
-        this.div.appendChild(this.button);
+        this.actions_div.appendChild(this.button);
 
         this.button = document.createElement('button');
         (() => 
                 this.button.onclick = () => send_sell_item_request(this.socket)
         )();
         this.button.innerHTML = 'sell selected item';
-        this.div.appendChild(this.button);
+        this.actions_div.appendChild(this.button);
 
         {
             let label = document.createElement('p');
             label.innerHTML = 'starting price'
-            this.div.appendChild(label);
+            this.actions_div.appendChild(label);
 
             let form = document.createElement('input');
             form.setAttribute('id', 'starting_price');
-            this.div.appendChild(form);
+            this.actions_div.appendChild(form);
         }
 
         {
             let label = document.createElement('p');
             label.innerHTML = 'buyout price'
-            this.div.appendChild(label);
+            this.actions_div.appendChild(label);
 
             let form = document.createElement('input');
             form.setAttribute('id', 'buyout_price');
-            this.div.appendChild(form);
+            this.actions_div.appendChild(form);
         }
 
         console.log('character_screen_loaded')
     }
 
-    update(data) {
-        console.log(data)
+    update_inventory(data) {
         let inv = data.equip.backpack;
         this.table.innerHTML = '';
-        this.table2.innerHTML = ''
         for (let i = 0; i < inv.length; i++) {
             if (inv[i] != null) {
                 let row = this.table.insertRow();
@@ -141,33 +145,48 @@ class CharacterScreen {
                 tmp.appendChild(radio_button);
             }
         }
+        this.inventory_stash_div.innerHTML = ''
+        for (let i in data.stash.data) {
+            let other_line = document.createElement('p');
+            other_line.append(document.createTextNode(`${i}: ${data.stash.data[i]}`))
+            this.inventory_stash_div.appendChild(other_line);
+        }
+    }
+
+    update_equip(data) {     
         for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
-            let row = this.table2.insertRow();
-            let slot = row.insertCell(0);
-            slot.innerHTML = EQUIPMENT_TAGS[i]
-            let item = data.equip[EQUIPMENT_TAGS[i]]
-            let type = row.insertCell(1);
-            type.innerHTML = item.tag
+            let tag = EQUIPMENT_TAGS[i]
+            let item = data.equip[tag]
+            let image = document.getElementById('eq_' + tag + '_image');
+            image.style = get_item_image(item.tag)
+            let tooltip = document.getElementById('eq_' + tag + '_tooltip')
+            tooltip.innerHTML = ''
+            let tmp = document.createElement('div');
+            let tmp2 = document.createElement('p');
+            tmp2.innerHTML = item.tag
+            tmp.appendChild(tmp2)
             for (let j = 0; j < item.affixes; j++){
                 let affix = item['a' + j];
-                let a = row.insertCell(j + 2);
                 if (affix != undefined){
-                    a.innerHTML = affix.tag + ' ' + affix.tier;
+                    let p = document.createElement('p')
+                    p.innerHTML = affix.tag + ' ' + affix.tier;
+                    tmp.appendChild(p)
                 }
             }
+            tooltip.appendChild(tmp)
         }
+    }
+
+    update(data) {
+        console.log(data)
+        this.update_inventory(data);
+        this.update_equip(data);        
 
         this.misc.innerHTML = '';
         for (let i in data.stats) {
             let stats_line = document.createElement('p');
             stats_line.append(document.createTextNode(`${i}: ${data.stats[i]}`));
             this.misc.appendChild(stats_line);
-        }
-
-        for (let i in data.stash.data) {
-            let other_line = document.createElement('p');
-            other_line.append(document.createTextNode(`${i}: ${data.stash.data[i]}`))
-            this.misc.appendChild(other_line);
         }
 
         let resists_label = document.createElement('p')

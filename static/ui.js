@@ -432,7 +432,7 @@ var skill_tree = new SkillTree(document.getElementById('skilltree'), socket);
 // eslint-disable-next-line no-undef
 var tactic_screen = new TacticScreen(document.getElementById('tactic'), socket);
 // eslint-disable-next-line no-undef
-var character_screen = new CharacterScreen(document.getElementById('character_screen'), socket);
+var character_screen = new CharacterScreen(socket);
 
 var currentTime = (new Date()).getTime(); var lastTime = (new Date()).getTime();
 var delta = 0;

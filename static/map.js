@@ -1,12 +1,17 @@
 /* eslint-disable no-redeclare */
 
 const graci_plains = 'Plains where gracis are living their beautiful life. Be aware, they are very fast, traveller.'
+const forest_boundary = 'The forest starts here. Weird creatures inhabit this place, not a lot is known about them.'
 
 const DESCRIPTIONS = {
     '0_0': 'Settlement of colonists - greedy but brave men. Here you can sell your raw meet and exchange it for food and water',
     '1_0': graci_plains,
     '1_1': graci_plains,
-    '1_2': graci_plains
+    '1_2': graci_plains,
+    '2_0': forest_boundary,
+    '2_1': forest_boundary,
+    '2_2': forest_boundary,
+    '2_3': forest_boundary
 }
 
 const BACKGROUNDS = {
