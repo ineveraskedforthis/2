@@ -134,6 +134,7 @@ body {
     height: 183px;
     width: 98.5%;
     overflow: auto;
+    color: rgb(13, 228, 77);
 }
 
 #chat {
@@ -143,6 +144,7 @@ body {
     height: 183px;
     width: 98.5%;
     overflow: auto;
+    color: rgb(13, 228, 77);
 }
 
 #send_message_frame {
@@ -174,6 +176,7 @@ body {
     height: 540px;
     width: 250px;
     background: rgba(78, 11, 11, 0.7);
+    color: rgb(13, 228, 77);    
 }
 
 #status {
@@ -181,7 +184,7 @@ body {
     left: 15px;
     top: 25px;
     width: 100%;
-    overflow: auto;
+    overflow: auto;    
 }
 
 #status_label {
@@ -315,6 +318,7 @@ body {
     width: 802px;
     height: 523px;
     overflow: visible;
+    color: rgb(13, 228, 77);
 }
 
 #character_screen {
@@ -423,7 +427,7 @@ body {
     visibility: hidden;
     width: 120px;
     background-color: rgb(49, 0, 0);
-    color: rgb(4, 161, 51);
+    color: rgb(13, 228, 77);
     text-align: center;
     padding: 5px 0;
     border-radius: 6px;
@@ -431,9 +435,9 @@ body {
     /* Position the tooltip text */
     position: absolute;
     z-index: 1;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -60px;
+    bottom: 10%;
+    left: 120%;
+    /* margin-left: -60px; */
   
     /* Fade in tooltip */
     opacity: 0;
