@@ -145,11 +145,10 @@ class CharacterScreen {
                 tmp.appendChild(radio_button);
             }
         }
-        this.inventory_stash_div.innerHTML = ''
         for (let i in data.stash.data) {
-            let other_line = document.createElement('p');
-            other_line.append(document.createTextNode(`${i}: ${data.stash.data[i]}`))
-            this.inventory_stash_div.appendChild(other_line);
+            console.log(i + '_count')
+            let tmp = document.getElementById(i + '_count')
+            tmp.innerHTML = `${i}: ${data.stash.data[i]}`
         }
     }
 

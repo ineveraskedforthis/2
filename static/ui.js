@@ -309,6 +309,7 @@ function update_tags(msg) {
         document.getElementById('buy_tag_select').add(tag_option);
         tag_option = new Option(tag, tag);
         document.getElementById('sell_tag_select').add(tag_option);
+        document.getElementById('inv_' + tag + '_image').style = "background: no-repeat center/100% url(/static/img/stash_" + tag + ".png);"
     }
 }
 

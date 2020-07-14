@@ -392,6 +392,12 @@ body {
     background-image: url(/static/img/background_item.png);
 }
 
+.stash_block {
+    display: flex;
+    border: rgb(109, 18, 18) solid 1px;
+    background-color: rgb(83, 13, 13, 0.5);
+}
+
 .item_image {
     z-index: 10;
     position: absolute;
@@ -399,6 +405,12 @@ body {
     height: 100%;
 }
 
+
+
+.stash_image {
+    width: 30px;
+    height: 30px;
+}
 
 /* Tooltip container */
 .tooltip {
