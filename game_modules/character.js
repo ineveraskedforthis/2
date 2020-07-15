@@ -272,6 +272,11 @@ module.exports = class Character {
         this.save_to_db(pool);
     }
 
+    async unequip_tag(pool, tag) {
+        this.equip.unequip(tag);
+        this.save_to_db(pool)
+    }
+
     async level_up(pool, save) {
         while (this.data.exp >= common.get_next_nevel_req(this.data.level)) {
             this.data.exp -= common.get_next_nevel_req(this.data.level);

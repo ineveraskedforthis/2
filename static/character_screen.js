@@ -2,6 +2,12 @@
 const EQUIPMENT_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms'];
 
 
+for (let i of EQUIPMENT_TAGS) {
+    let tmp = document.getElementById('eq_' + i + '_image');
+    ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
+}
+
+
 function send_update_request(socket) {
     socket.emit('char-info-detailed');
 }

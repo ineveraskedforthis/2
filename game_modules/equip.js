@@ -81,6 +81,21 @@ module.exports = class Equip {
         }
     }
 
+    unequip(tag) {
+        if (!(EQUIP_TAGS.includes(tag))) {
+            return true
+        }
+        let item = this.data[tag];
+        if (tag == 'right_hand') {
+            this.data[tag] = items.fist;
+            return
+        }
+        this.data[tag] = empty;
+        if ((item.tag != 'empty') || (item.tag != 'fist')) {
+            this.add_item(item);
+        }        
+    }
+
     get_resists() {
         let resists = {blunt: 0, pierce: 0, slice: 0, fire: 0};
         for (let i of EQUIP_TAGS) {
