@@ -86,6 +86,9 @@ module.exports = class Equip {
             return true
         }
         let item = this.data[tag];
+        if (item.tag == 'empty') {
+            return
+        }
         if (tag == 'right_hand') {
             this.data[tag] = items.fist;
             return
