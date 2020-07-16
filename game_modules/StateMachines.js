@@ -1,6 +1,15 @@
 var common = require("./common.js")
 var constants = require("./constants.js")
 
+function buy_needs(pool, agent) {
+    let size = agent.data.size
+    let food_need = size;
+    let clothes_need = size;
+    let savings = agent.savings.get();
+    agent.buy(pool, 'food', food_need, Math.floor(savings / 2), 140)
+    agent.buy(pool, 'clothes', clothes_need, Math.floor(savings / 2), 200)
+}
+
 class State {
     // eslint-disable-next-line no-unused-vars
     static Enter(pool, agent, save) {}
@@ -67,27 +76,29 @@ class BasicPopAIstate extends State {
 
 class MeatToHeal extends State {
     static async Execute(pool, agent, save = true) {
+        await agent.clear_orders(pool, save);
+
+        //buy_meat
         let savings = agent.savings.get();
         let meat_buy = Math.floor(savings / 100);
-        let food = agent.stash.get('food');
-        if ((meat_buy > 2) || (food > 0)) {
-            await agent.clear_orders(pool, save);
-            let savings = agent.savings.get();
-            let meat_buy = Math.floor(savings / 100);
-            let food = agent.stash.get('food');
-            await agent.buy(pool, 'meat', meat_buy, savings, 100);
-            await agent.sell(pool, 'food', food, 150);
-        }
-
-        let water = agent.stash.get('water');
-        if (water > 0) {
-            await agent.sell(pool, 'water', water, 100);
-        }
+        await agent.buy(pool, 'meat', meat_buy, savings, 100);
+        
+        // meat to food
         let meat = agent.stash.get('meat');
         if (meat > 0) {
             agent.stash.set('meat', 0);
             agent.stash.inc('food', meat);
         }
+
+        // selling water
+        let water = agent.stash.get('water');
+        if (water > 0) {
+            await agent.sell(pool, 'water', water, 100);
+        }
+
+        // selling food
+        let food = agent.stash.get('food');
+        await agent.sell(pool, 'food', food, 140);
     }
 
     static tag() {
@@ -95,7 +106,30 @@ class MeatToHeal extends State {
     }
 }
 
+class Hunters extends State {
+    static async Execute(pool, agent, save = true) {
+        let size = agent.data.size;
+        await agent.clear_orders(pool, save)
+        
+        //hunt
+        agent.stash.inc('meat', size);
+        let meat = agent.stash.get('meat');
+        if (meat > 0) {
+            await agent.sell(pool, 'meat', meat, 100);
+        }
 
+        buy_needs(pool, agent);
+        agent.save_to_db(pool)
+    }
+    
+    static tag() {
+        return 'hunters'
+    }
+}
+
+class Clothiers extends State {
+
+}
 
 //class BasicEnterpriseAIstate extends State {
     // static async Execute(pool, agent, save) {
@@ -194,7 +228,8 @@ class MeatToHeal extends State {
 //}
 var AIs = {
     'basic_pop_ai_state': BasicPopAIstate,
-    'meat_to_heal': MeatToHeal
+    'meat_to_heal': MeatToHeal,
+    'hunters': Hunters
 }
 
 module.exports = {

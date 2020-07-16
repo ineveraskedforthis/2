@@ -41,22 +41,22 @@ class Consumer extends Agent {
 
     async set_size(pool, x, save = true) {
         if (this.data.size.max != null) {
-            this.data.size.current = Math.min(x, this.data.size.max);
+            this.data.size = Math.min(x, this.data.size_max);
         } else {
-            this.data.size.current = x;
+            this.data.size = x;
         }
         await this.save_to_db(pool, save);
     }
 
     async set_max_size(pool, x, save = true) {
-        this.data.size.max = x;
+        this.data.size_max = x;
         await this.save_to_db(pool, save);
     }
 
     async transfer_size(pool, target, x, save = true, target_save = true) {
-        var tmp = Math.min(x, this.data.size.current);
-        this.data.size.current -= tmp;
-        target.data.size.current += tmp;
+        var tmp = Math.min(x, this.data.size);
+        this.data.size -= tmp;
+        target.data.size += tmp;
         await this.save_to_db(pool, save)
         await target.save_to_db(pool, target_save)
     }

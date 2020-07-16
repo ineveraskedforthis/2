@@ -57,9 +57,11 @@ module.exports = class World {
     }
 
     async add_starting_agents(pool) {
-        let pop = await this.create_pop(pool, 0, 0, 100, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'random dudes', 100000, StateMachines.AIs['meat_to_heal']);
+        let pop = await this.create_pop(pool, 0, 0, 100, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat to food', 100000, StateMachines.AIs['meat_to_heal']);
+        let hunters = await this.create_pop(pool, 0, 0, 100, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters', 100000, StateMachines.AIs['hunters'])
         pop.stash.inc('water', 10000);
         this.agents[pop.id] = pop;
+        this.agents[hunters.id] = hunters
     }
 
     async load(pool) {
