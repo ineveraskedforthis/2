@@ -321,6 +321,10 @@ body {
     color: rgb(13, 228, 77);
 }
 
+#market_tab {
+    overflow: auto;
+}
+
 #character_screen {
     display: flex;
 }

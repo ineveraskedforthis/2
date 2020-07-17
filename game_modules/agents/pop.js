@@ -18,7 +18,11 @@ module.exports = class Pop extends Consumer {
         this.race_tag = race_tag;
         this.data.growth_mod = 0;
         this.data.death_mod = 0;
-        this.data.ai_tag
+        this.data.ai_tag;
+        this.data.price = 1;
+        this.data.sold = 0;
+        this.data.prev_sold = 0;
+        this.data.prev_price = 0;
     }
 
     async init(pool, cell_id, size, needs, race_tag, name = null, AIstate = BasicPopAIstate) {

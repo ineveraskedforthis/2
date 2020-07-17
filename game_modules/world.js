@@ -47,6 +47,7 @@ module.exports = class World {
         this.HISTORY_PRICE['clothes'] = 10;
         this.vacuum_stage = 0;
         this.battle_tick = 0;
+        this.pops_tick = 0;
     }
 
     async init(pool) {
@@ -56,13 +57,42 @@ module.exports = class World {
         await this.add_starting_agents(pool);
     }
 
+
     async add_starting_agents(pool) {
-        let pop = await this.create_pop(pool, 0, 0, 100, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat to food', 100000, StateMachines.AIs['meat_to_heal']);
-        let hunters = await this.create_pop(pool, 0, 0, 100, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters', 100000, StateMachines.AIs['hunters'])
-        pop.stash.inc('water', 10000);
+        let pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 1', 100, StateMachines.AIs['meat_to_heal']);
         this.agents[pop.id] = pop;
-        this.agents[hunters.id] = hunters
+        pop.stash.inc('water', 10000);
+
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 2', 100, StateMachines.AIs['meat_to_heal']);
+        this.agents[pop.id] = pop;
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 3', 100, StateMachines.AIs['meat_to_heal']);
+        this.agents[pop.id] = pop;
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 4', 100, StateMachines.AIs['meat_to_heal']);
+        this.agents[pop.id] = pop;
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 5', 200, StateMachines.AIs['meat_to_heal']);
+        this.agents[pop.id] = pop;
+
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 1', 100, StateMachines.AIs['hunters_meat'])
+        this.agents[pop.id] = pop
+        pop = await this.create_pop(pool, 0, 0, 2, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 2', 300, StateMachines.AIs['hunters_meat'])
+        this.agents[pop.id] = pop
+        pop = await this.create_pop(pool, 0, 0, 2, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 3', 200, StateMachines.AIs['hunters_meat'])
+        this.agents[pop.id] = pop
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 4', 100, StateMachines.AIs['hunters_leather'])
+        this.agents[pop.id] = pop
+        pop = await this.create_pop(pool, 0, 0, 2, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 5', 200, StateMachines.AIs['hunters_meat'])
+        this.agents[pop.id] = pop
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 6', 100, StateMachines.AIs['hunters_leather'])
+        this.agents[pop.id] = pop
+
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers 1', 100, StateMachines.AIs['clothiers'])
+        this.agents[pop.id] = pop
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers 2', 100, StateMachines.AIs['clothiers'])
+        this.agents[pop.id] = pop
+        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers 3', 100, StateMachines.AIs['clothiers'])
+        this.agents[pop.id] = pop
     }
+
 
     async load(pool) {
         this.socket_manager = new SocketManager(pool, this.io, this);
@@ -145,9 +175,16 @@ module.exports = class World {
         if (this.battle_tick >= 4) {
             this.battle_tick = 0;
         }
-        for (let i in this.agents) {
-            await this.agents[i].update(pool);
+
+        this.pops_tick += 1;
+        if (this.pops_tick >= 5) {
+            this.pops_tick = 0;
+            for (let i in this.agents) {
+                await this.agents[i].update(pool);
+            }
         }
+
+        
         for (let i in this.chars) {
             if (!this.chars[i].data.dead) {
                 await this.chars[i].update(pool);

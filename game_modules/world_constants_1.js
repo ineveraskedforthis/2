@@ -1,5 +1,5 @@
  var CONSTS = {
-    TAGS: ['food', 'clothes', 'meat', 'water'],
+    TAGS: ['food', 'clothes', 'meat', 'water', 'leather'],
     SKILLS: {},
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
     MAP: {

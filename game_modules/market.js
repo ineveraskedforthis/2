@@ -215,6 +215,7 @@ module.exports = class Market {
         order.amount -= amount;
         await order.save_to_db(pool);
         this.savings.transfer(seller.savings, amount * order.price);
+        seller.data.sold += amount;
         // this.savings.transfer(this.owner.savings, amount * this.taxes[order.tag]);
         seller.stash.transfer(order.owner.stash, order.tag, amount);
         order.owner.savings_changed = true;
@@ -233,6 +234,7 @@ module.exports = class Market {
         await order.save_to_db(pool);
         this.stash.transfer(buyer.stash, order.tag, amount);
         buyer.savings.transfer(order.owner.savings, amount * order.price);
+        order.owner.data.sold += amount;
         order.owner.savings_changed = true;
         buyer.savings_changed = true;
         // buyer.savings.transfer(this.owner.savings, amount * this.taxes[order.tag]);
@@ -249,7 +251,7 @@ module.exports = class Market {
         for (let tag of this.world.constants.TAGS) {
             for (let j of this.sell_orders[tag]) {
                 let order = this.world.get_order(j);
-                if (order.owner == undefined) {
+                if ((order == undefined) || (order.owner == undefined)) {
                     tmp.add(j)
                 }
             }
@@ -262,7 +264,7 @@ module.exports = class Market {
         for (let tag of this.world.constants.TAGS) {
             for (let j of this.buy_orders[tag]) {
                 let order = this.world.get_order(j);
-                if (order.owner == undefined) {
+                if ((order == undefined) || (order.owner == undefined)) {
                     tmp.add(j)
                 }
             }
@@ -350,26 +352,38 @@ module.exports = class Market {
 
     async cancel_buy_order(pool, order_id, save) {
         var order = this.world.get_order(order_id);
-        if (order.owner != undefined) {
-            var amount = order.amount * (order.price + this.taxes[order.tag]);
-            this.savings.transfer(order.owner.savings, amount);
-            await order.owner.save_to_db(pool, save)
-        }
-        this.buy_orders[order.tag].delete(order_id);
-        await order.delete_from_db(pool, save);
+        if (order == undefined) {
+            for (let tag of this.world.constants.TAGS) {
+                this.buy_orders[tag].delete(order_id)
+            }
+        } else {
+            if (order.owner != undefined) {
+                var amount = order.amount * (order.price + this.taxes[order.tag]);
+                this.savings.transfer(order.owner.savings, amount);
+                await order.owner.save_to_db(pool, save)
+            }
+            this.buy_orders[order.tag].delete(order_id);
+            await order.delete_from_db(pool, save);
+        }        
         await this.save_to_db(pool, save);
         
     }
 
     async cancel_sell_order(pool, order_id, save) {
         var order = this.world.get_order(order_id);
-        if (order.owner != undefined) {
-            this.stash.transfer(order.owner.stash, order.tag, order.amount);
-            await order.owner.save_to_db(pool, save)
+        if (order == undefined) {
+            for (let tag of this.world.constants.TAGS) {
+                this.sell_orders[tag].delete(order_id)
+            }
+        } else {
+            if (order.owner != undefined) {
+                this.stash.transfer(order.owner.stash, order.tag, order.amount);
+                await order.owner.save_to_db(pool, save)
+            }
+            this.sell_orders[order.tag].delete(order_id);
+            await order.delete_from_db(pool, save);
         }
-        this.sell_orders[order.tag].delete(order_id);
         await this.save_to_db(pool, save);
-        await order.delete_from_db(pool, save);
     }
 
     check_cost(list_of_goods) {
