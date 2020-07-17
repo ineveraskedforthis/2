@@ -3,10 +3,11 @@ var constants = require("./constants.js")
 
 function buy_needs(pool, agent) {
     let size = agent.data.size
-    let savings = agent.savings.get();
+    let savings = Math.min(agent.savings.get(), 200);
     let food_need = Math.max(0, size - agent.stash.get('food'));
+    let clothes_need = Math.max(0, size - agent.stash.get('clothes'));
     agent.buy(pool, 'food', food_need, Math.floor(savings * 2/3 * (food_need / size)), 10000)
-    agent.buy(pool, 'clothes', size, Math.floor(savings * 1/3), 10000)
+    agent.buy(pool, 'clothes', size, Math.floor(savings * 1/3 * (clothes_need / size)), 10000)
 }
 
 function consume(pool, agent) {
@@ -176,7 +177,7 @@ class HuntersMeat extends State {
         update_price(pool, agent, 'meat');
         
         //hunt
-        agent.stash.inc('meat', size * 1.1);
+        agent.stash.inc('meat', size * 1);
 
         //sell_meat
         let meat = agent.stash.get('meat');
@@ -227,7 +228,7 @@ class Clothiers extends State {
 
         
         let savings = agent.savings.get();
-        await agent.buy(pool, 'leather', size * 3, Math.floor(savings * 2/3), agent.data.price - 1);
+        await agent.buy(pool, 'leather', size * 3, Math.floor(savings * 3/4), agent.data.price - 1);
         
         
         let leather = agent.stash.get('leather');
@@ -238,6 +239,9 @@ class Clothiers extends State {
         }
 
         let clothes = Math.max(0, agent.stash.get('clothes'));
+        if (agent.savings.get() > 200) {
+            clothes = Math.max(0, clothes - 1);
+        }
         await agent.sell(pool, 'clothes', clothes, agent.data.price);
 
         buy_needs(pool, agent);
@@ -245,7 +249,7 @@ class Clothiers extends State {
     }
     
     static tag() {
-        return 'hunters'
+        return 'clothiers'
     }
 }
 

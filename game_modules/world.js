@@ -63,34 +63,25 @@ module.exports = class World {
         this.agents[pop.id] = pop;
         pop.stash.inc('water', 10000);
 
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 2', 100, StateMachines.AIs['meat_to_heal']);
-        this.agents[pop.id] = pop;
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 3', 100, StateMachines.AIs['meat_to_heal']);
-        this.agents[pop.id] = pop;
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 4', 100, StateMachines.AIs['meat_to_heal']);
-        this.agents[pop.id] = pop;
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 5', 200, StateMachines.AIs['meat_to_heal']);
-        this.agents[pop.id] = pop;
+        for (let i = 2; i < 6; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 100, StateMachines.AIs['meat_to_heal']);
+            this.agents[pop.id] = pop;
+        }
 
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 1', 100, StateMachines.AIs['hunters_meat'])
-        this.agents[pop.id] = pop
-        pop = await this.create_pop(pool, 0, 0, 2, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 2', 300, StateMachines.AIs['hunters_meat'])
-        this.agents[pop.id] = pop
-        pop = await this.create_pop(pool, 0, 0, 2, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 3', 200, StateMachines.AIs['hunters_meat'])
-        this.agents[pop.id] = pop
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 4', 100, StateMachines.AIs['hunters_leather'])
-        this.agents[pop.id] = pop
-        pop = await this.create_pop(pool, 0, 0, 2, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 5', 200, StateMachines.AIs['hunters_meat'])
-        this.agents[pop.id] = pop
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'hunters 6', 100, StateMachines.AIs['hunters_leather'])
-        this.agents[pop.id] = pop
+        for (let i = 1; i < 6; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, 100, StateMachines.AIs['hunters_meat']);
+            this.agents[pop.id] = pop;
+        }
 
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers 1', 100, StateMachines.AIs['clothiers'])
-        this.agents[pop.id] = pop
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers 2', 100, StateMachines.AIs['clothiers'])
-        this.agents[pop.id] = pop
-        pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers 3', 100, StateMachines.AIs['clothiers'])
-        this.agents[pop.id] = pop
+        for (let i = 1; i < 6; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'leather ' + i, 100, StateMachines.AIs['hunters_leather']);
+            this.agents[pop.id] = pop;
+        }
+
+        for (let i = 1; i < 6; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 100, StateMachines.AIs['clothiers']);
+            this.agents[pop.id] = pop;
+        }
     }
 
 
@@ -172,14 +163,16 @@ module.exports = class World {
 
     async update(pool) {
         this.battle_tick += 1;
-        if (this.battle_tick >= 4) {
+        if (this.battle_tick >= 3) {
             this.battle_tick = 0;
         }
 
         this.pops_tick += 1;
-        if (this.pops_tick >= 5) {
+        if (this.pops_tick >= 25) {
             this.pops_tick = 0;
-            for (let i in this.agents) {
+            let keys = Object.keys(this.agents);
+            keys.sort(function() {return Math.random() - 0.5});
+            for (let i of keys) {
                 await this.agents[i].update(pool);
             }
         }
