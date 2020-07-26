@@ -59,11 +59,11 @@ module.exports = class World {
 
 
     async add_starting_agents(pool) {
-        let pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook 1', 1000, StateMachines.AIs['meat_to_heal']);
+        let pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'water', 1000, StateMachines.AIs['water']);
         this.agents[pop.id] = pop;
         pop.stash.inc('water', 10000);
 
-        for (let i = 2; i < 9; i++) {
+        for (let i = 1; i < 9; i++) {
             pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 1000, StateMachines.AIs['meat_to_heal']);
             this.agents[pop.id] = pop;
         }
@@ -165,6 +165,12 @@ module.exports = class World {
         this.battle_tick += 1;
         if (this.battle_tick >= 3) {
             this.battle_tick = 0;
+
+            for (let i = 0; i < this.x; i++) {
+                for (let j = 0; j < this.y; j++) {
+                    this.socket_manager.send_market_info(this.map.cells[i][j]);
+                }
+            }
         }
 
         this.pops_tick += 1;
@@ -188,11 +194,7 @@ module.exports = class World {
         }
         await this.map.update(pool);
 
-        for (let i = 0; i < this.x; i++) {
-            for (let j = 0; j < this.y; j++) {
-                this.socket_manager.send_market_info(this.map.cells[i][j]);
-            }
-        }
+        
         
         this.socket_manager.update_user_list();
 

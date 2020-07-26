@@ -56,7 +56,7 @@ module.exports = class Battle {
         for (var i = 0; i < this.ids.length; i++) {
             var char = this.world.chars[this.ids[i]]
             if (char.get_hp() > 0) {
-                char.update2(pool)
+                char.update(pool)
                 for (let i = 0; i < char.data.movement_speed; i++) {
                     var log_entry = await BattleAI.action(pool, char, true)
                     log.push(log_entry)

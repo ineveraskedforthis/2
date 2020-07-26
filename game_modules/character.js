@@ -50,6 +50,7 @@ module.exports = class Character {
             status: {
                 stunned: 0
             },
+            stress_target: 0,
             skills: {},
             other: {
                 rage: 0,
@@ -93,7 +94,13 @@ module.exports = class Character {
         }
         if (!this.data.in_battle) {
             await this.update2(pool)
+        } else {
+            let dice = Math.random()
+            if (dice < this.data.base_battle_stats.stress_battle_generation) {
+                this.change_stress(1)
+            }            
         }
+        await this.stress_check(pool);
         let sm = this.world.socket_manager;
         if (this.hp_changed) {
             sm.send_hp_update(this);
@@ -115,6 +122,13 @@ module.exports = class Character {
         this.changed = false;
     }
 
+    async stress_check(pool) {
+        if (this.data.other.stress >= 100) {
+            await this.world.kill(pool, this.id);
+        }
+    }
+        
+
     async update2(pool) {
         if (this.data.dead) {
             return
@@ -122,6 +136,14 @@ module.exports = class Character {
         let reg = this.get_regeneration();
         await this.change_hp(pool, reg, false);
         this.change_rage(-1);
+        let d_stress = (this.data.stress_target - this.data.other.stress);
+        if (d_stress != 0) {
+            if ((d_stress / 30 > 1)||(d_stress / 30 < -1)) {
+                this.change_stress(Math.floor(d_stress/30))
+            } else {
+                this.change_stress(Math.sign(d_stress))
+            }
+        }
         await this.update_status(pool, false);
     }
 
@@ -537,8 +559,16 @@ module.exports = class Character {
     change_blood(x) {
         let tmp = this.data.other.blood_covering;
         this.data.other.blood_covering = Math.max(0, Math.min(100, this.data.other.blood_covering + x));
-        
         if (tmp != this.data.other.blood_covering) {
+            this.changed = true
+            this.status_changed = true;
+        }
+    }
+
+    change_stress(x) {
+        let tmp = this.data.other.stress;
+        this.data.other.stress = Math.max(0, Math.min(100, this.data.other.stress + x));
+        if (tmp != this.data.other.stress) {
             this.changed = true
             this.status_changed = true;
         }

@@ -1,5 +1,5 @@
 const constants = {
-    version: 124,
+    version: 126,
     logging: {
         agent: {
             buy: false

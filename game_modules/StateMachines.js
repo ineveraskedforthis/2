@@ -3,7 +3,7 @@ var constants = require("./constants.js")
 
 function buy_needs(pool, agent) {
     let size = agent.data.size
-    let savings = Math.min(agent.savings.get(), 200);
+    let savings = Math.min(Math.floor(agent.savings.get()/3), 200);
     let food_need = Math.max(0, size - agent.stash.get('food'));
     let clothes_need = Math.max(0, size - agent.stash.get('clothes'));
     agent.buy(pool, 'food', food_need, Math.floor(savings * 2/3 * (food_need / size)), 10000)
@@ -14,6 +14,16 @@ function consume(pool, agent) {
     let size = agent.data.size
     agent.stash.inc('food', -size);
     agent.stash.inc('clothes', -size);
+}
+
+function produce(pool, agent, tag1, tag2, throughput) {
+    let size = agent.data.size
+    let input = agent.stash.get(tag1);
+    if (input > 0) {
+        let production = Math.min(input, size * throughput)
+        agent.stash.inc(tag1, -production);
+        agent.stash.inc(tag2, production);
+    }  
 }
 
 function update_price(pool, agent, tag) {
@@ -49,24 +59,17 @@ function update_price(pool, agent, tag) {
     agent.data.prev_price = tmp_price;
     agent.data.prev_sold = tmp_sold;
     agent.data.sold = 0
-    // if ((product <= agent.data.prev_product)){
-    //     agent.data.price += 1;
-    // } else if (product > agent.data.prev_product + size * 0.8) {
-    //     agent.data.price = Math.floor(agent.data.price * 0.8);
-    //     if (agent.data.price < 1) {
-    //         agent.data.price = 1
-    //     }
-    // } else if (product > agent.data.prev_product) {
-    //     agent.data.price -= 1;
-    //     if (agent.data.price < 1) {
-    //         agent.data.price = 1
-    //     }
-    // }
 }
 
 class State {
     // eslint-disable-next-line no-unused-vars
-    static Enter(pool, agent, save) {}
+    static Enter(pool, agent, save) {
+        agent.data.price = 1
+        agent.data.prev_price = 0;
+        agent.data.prev_sold = 0;
+        agent.data.sold = 0
+        agent.name = this.tag()
+    }
     // eslint-disable-next-line no-unused-vars
     static Execute(pool, agent, save) {}
     // eslint-disable-next-line no-unused-vars
@@ -93,7 +96,7 @@ class StateMachine {
     }
 
     async change_state(pool, state, save = true) {
-        this.prev_state = this.state;
+        this.prev_state = this.curr_state;
         await this.prev_state.Exit(pool, this.owner, save);
         this.curr_state = state;
         await this.curr_state.Enter(pool, this.owner, save);
@@ -128,6 +131,20 @@ class BasicPopAIstate extends State {
     }
 }
 
+class WaterSeller extends State {
+    static async Execute(pool, agent, save = true) {
+        await agent.clear_orders(pool, save);
+        // selling water
+        let water = agent.stash.get('water');
+        if (water > 0) {
+            await agent.sell(pool, 'water', water, 10);
+        }
+    }
+    static tag() {
+        return 'water'
+    }
+}
+
 class MeatToHeal extends State {
     static async Execute(pool, agent, save = true) {
         let size = agent.data.size;
@@ -138,28 +155,16 @@ class MeatToHeal extends State {
         //buy_meat
         let savings = agent.savings.get();
         await agent.buy(pool, 'meat', size * 2, savings, agent.data.price - 1);
-        
-        // meat to food
-        let meat = agent.stash.get('meat');
-        // console.log(agent.name, 'own', meat , 'meat')
-        if (meat > 0) {
-            let production = Math.min(meat, size * 2)
-            agent.stash.inc('meat', -production);
-            agent.stash.inc('food', production);
-        }
-        // let food = agent.stash.get('food');
-        // console.log(agent.name, 'own', food , 'food')
 
-        // selling water
-        let water = agent.stash.get('water');
-        if (water > 0) {
-            await agent.sell(pool, 'water', water, 100);
-        }
+        produce(pool, agent, 'meat', 'food', 2)
 
         // selling food
         let food = Math.max(0, agent.stash.get('food') - size);
         await agent.sell(pool, 'food', food, agent.data.price);
-
+        savings = agent.savings.get();
+        if (savings < 100) {
+            agent.AI.change_state(pool, HuntersMeat)
+        }
         buy_needs(pool, agent);
         consume(pool, agent);        
     }
@@ -170,6 +175,7 @@ class MeatToHeal extends State {
 }
 
 class HuntersMeat extends State {
+
     static async Execute(pool, agent, save = true) {
         let size = agent.data.size;
         await agent.clear_orders(pool, save)
@@ -230,19 +236,17 @@ class Clothiers extends State {
         let savings = agent.savings.get();
         await agent.buy(pool, 'leather', size * 3, Math.floor(savings * 3/4), agent.data.price - 1);
         
-        
-        let leather = agent.stash.get('leather');
-        if (leather > 0) {
-            let production = Math.min(leather, size * 3)
-            agent.stash.inc('leather', -production);
-            agent.stash.inc('clothes', production);
-        }
+        produce(pool, agent, 'leather', 'clothes', 3)
 
         let clothes = Math.max(0, agent.stash.get('clothes'));
         if (agent.savings.get() > 200) {
             clothes = Math.max(0, clothes - 1);
         }
         await agent.sell(pool, 'clothes', clothes, agent.data.price);
+
+        if (savings < 100) {
+            agent.AI.change_state(pool, HuntersLeather)
+        }
 
         buy_needs(pool, agent);
         consume(pool, agent);
@@ -353,7 +357,8 @@ var AIs = {
     'meat_to_heal': MeatToHeal,
     'hunters_meat': HuntersMeat,
     'hunters_leather': HuntersLeather,
-    'clothiers': Clothiers
+    'clothiers': Clothiers,
+    'water': WaterSeller
 }
 
 module.exports = {

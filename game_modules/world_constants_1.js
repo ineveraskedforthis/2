@@ -84,7 +84,8 @@
         block: 0.02,
         blood_burden: 0.005,
         rage_burden: 0.005,
-        regeneration: 0
+        regeneration: 0,
+        stress_battle_generation: 0.3
     }
 }
 
