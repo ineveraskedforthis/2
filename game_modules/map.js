@@ -45,6 +45,14 @@ module.exports = class Map {
         }
     }
 
+    async update_info(pool) {
+        for (var i = 0; i < this.x; i++) {
+            for (var j = 0; j < this.y; j++) {
+                await this.cells[i][j].update_info(pool);
+            }
+        }
+    }
+
     async clear_dead_orders(pool) {
         for (var i = 0; i < this.x; i++) {
             for (var j = 0; j < this.y; j++) {

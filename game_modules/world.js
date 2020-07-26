@@ -45,9 +45,12 @@ module.exports = class World {
         this.HISTORY_PRICE = {};
         this.HISTORY_PRICE['food'] = 10;
         this.HISTORY_PRICE['clothes'] = 10;
+        this.HISTORY_PRICE['leather'] = 10;
+        this.HISTORY_PRICE['clothes'] = 10;
         this.vacuum_stage = 0;
         this.battle_tick = 0;
         this.pops_tick = 0;
+        this.map_tick = 0;
     }
 
     async init(pool) {
@@ -192,9 +195,14 @@ module.exports = class World {
         if (this.battle_tick == 0){
             this.update_battles(pool)
         }
+
+        if (this.map_tick >= 100) {
+            await this.map.update_info(pool);
+            this.map_tick = 0;
+        } 
+        this.map_tick += 1;
         await this.map.update(pool);
 
-        
         
         this.socket_manager.update_user_list();
 

@@ -40,6 +40,10 @@ module.exports = class Cell {
         await this.item_market.update(pool);
     }
 
+    async update_info(pool) {
+        await this.market.update_info(pool);
+    }
+
     async clear_dead_orders(pool) {
         await this.market.clear_dead_orders(pool)
     }
