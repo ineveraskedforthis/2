@@ -2,6 +2,7 @@
     TAGS: ['food', 'clothes', 'meat', 'water', 'leather'],
     SKILLS: {},
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
+    
     MAP: {
         '0_0': {move: true, monster: 'Rat'},
         '0_1': {move: false, monster: 'Rat'},

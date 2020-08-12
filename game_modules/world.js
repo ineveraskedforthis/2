@@ -46,7 +46,7 @@ module.exports = class World {
         this.HISTORY_PRICE['food'] = 10;
         this.HISTORY_PRICE['clothes'] = 10;
         this.HISTORY_PRICE['leather'] = 10;
-        this.HISTORY_PRICE['clothes'] = 10;
+        this.HISTORY_PRICE['meat'] = 10;
         this.vacuum_stage = 0;
         this.battle_tick = 0;
         this.pops_tick = 0;
@@ -66,23 +66,23 @@ module.exports = class World {
         this.agents[pop.id] = pop;
         pop.stash.inc('water', 10000);
 
-        for (let i = 1; i < 9; i++) {
-            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 1000, StateMachines.AIs['meat_to_heal']);
+        for (let i = 1; i <= 3; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 10000, StateMachines.AIs['meat_to_heal']);
             this.agents[pop.id] = pop;
         }
 
-        for (let i = 1; i < 10; i++) {
-            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, 1000, StateMachines.AIs['hunters_meat']);
+        for (let i = 1; i <= 5; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, 50, StateMachines.AIs['hunters_meat']);
             this.agents[pop.id] = pop;
         }
 
-        for (let i = 1; i < 6; i++) {
-            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'leather ' + i, 1000, StateMachines.AIs['hunters_leather']);
+        for (let i = 1; i <= 5; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'leather ' + i, 50, StateMachines.AIs['hunters_leather']);
             this.agents[pop.id] = pop;
         }
 
-        for (let i = 1; i < 4; i++) {
-            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 1000, StateMachines.AIs['clothiers']);
+        for (let i = 1; i <= 2; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 10000, StateMachines.AIs['clothiers']);
             this.agents[pop.id] = pop;
         }
     }
@@ -177,13 +177,22 @@ module.exports = class World {
         }
 
         this.pops_tick += 1;
-        if (this.pops_tick >= 30) {
+        if (this.pops_tick >= 1) {
             this.pops_tick = 0;
             let keys = Object.keys(this.agents);
             keys.sort(function() {return Math.random() - 0.5});
             for (let i of keys) {
                 await this.agents[i].update(pool);
             }
+            for (let i of Object.keys(this.agents)) {
+                let agent = this.agents[i]
+                console.log(agent.name.padEnd(15) + agent.savings.get().toString().padStart(10) + agent.data.price.toString().padStart(10) + agent.data.sold.toString().padStart(10))
+            }
+            let market = this.map.cells[0][0].market;
+            console.log('meat'.padEnd(10) + market.guess_tag_cost('meat', 1).toString().padStart(10))
+            console.log('leather'.padEnd(10) + market.guess_tag_cost('leather', 1).toString().padStart(10))
+            console.log('clothes'.padEnd(10) + market.guess_tag_cost('clothes', 1).toString().padStart(10))
+            console.log('food'.padEnd(10) + market.guess_tag_cost('food', 1).toString().padStart(10))
         }
 
         
@@ -208,7 +217,7 @@ module.exports = class World {
 
         if (this.vacuum_stage++ > 100) {
             common.send_query(pool, 'VACUUM market_orders');
-            console.log('vacuum');
+            // console.log('vacuum');
             this.vacuum_stage = 0;
         }
     }

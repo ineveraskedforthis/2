@@ -36,6 +36,9 @@ module.exports = class Cell {
     }
 
     async update(pool) {
+        if (this.market.changed) {
+            this.world.socket_manager.send_market_info(this)
+        }
         await this.market.update(pool);
         await this.item_market.update(pool);
     }

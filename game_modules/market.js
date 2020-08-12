@@ -53,6 +53,7 @@ module.exports = class Market {
     async update(pool) {
         if (this.changed) {
             await this.save_to_db(pool)
+            this.changed = false;
         }
     }
 
@@ -62,7 +63,7 @@ module.exports = class Market {
     }
 
     async buy(pool, tag, buyer, amount, money, max_price = undefined, save = true) {
-        common.flag_log('market buy' + [tag, buyer.name, amount, money], constants.logging.market_order.buy);
+        common.flag_log('market buy' + [tag, buyer.name, amount, money], constants.logging.market.buy);
         if (buyer.savings.get() < money) {
             money = buyer.savings.get(pool);
         }
@@ -74,7 +75,7 @@ module.exports = class Market {
         var i = 0;
         var j = 0;
         var total_spendings = 0;
-        while ((i < tmp.length) && (amount > 0) && ((max_price == undefined) || (tmp[i].price <= max_price))) {
+        while ((i < tmp.length) && (amount > 0) && ((max_price == undefined) || (isNaN(max_price)) || (tmp[i].price <= max_price))) {
             var tmp_amount = 0;
             while ((i < tmp.length) && (tmp[i].price == tmp[j].price)) {
                 tmp_amount += tmp[i].amount;
@@ -402,30 +403,9 @@ module.exports = class Market {
     }
 
     guess_tag_cost(tag, amount) {
-        var tmp = [];
-        for (let i of this.sell_orders[tag]) {
-            let order = this.world.get_order(i);
-            tmp.push(order);
-        }
-        tmp.sort((a, b) => {a.price - b.price});
-        var cost = 0;
-        for (let i of tmp) {
-            if (i.amount <= amount) {
-                cost += i.amount * (i.price + this.taxes[tag]);
-                amount -= i.amount;
-            } else if (amount > 0) {
-                cost += amount * (i.price + this.taxes[tag]);
-                amount = 0;
-            }
-        }
-        if (amount > 0) {
-            if (common.sum(this.total_sold[tag]) != 0) {
-                var av_price = this.get_average_tag_price(tag);
-                cost += Math.floor(av_price * amount);
-            } else {
-                cost += this.world.HISTORY_PRICE[tag] * amount;
-            }
-        }
+        let cost = 0
+        var av_price = this.get_average_tag_price(tag);
+        cost += Math.floor(av_price * amount);
         return cost;
     }
 
@@ -445,19 +425,9 @@ module.exports = class Market {
         return cost;
     }
 
-    get_average_tag_price(pool, tag) {
+    get_average_tag_price(tag) {
         var total_count = common.sum(this.total_sold[tag]) + this.total_sold_new[tag];
         var total_cost = common.sum(this.total_sold_cost[tag]) + this.total_sold_cost_new[tag];
-        for (let i of this.sell_orders[tag]) {
-            let order = this.world.get_order(i);
-            total_count += order.amount;
-            total_cost += order.amount * (order.price + this.taxes[tag]);
-        }
-        for (let i of this.buy_orders[tag]) {
-            let order = this.world.get_order(i);
-            total_count += order.amount;
-            total_cost += order.amount * (order.price + this.taxes[tag]);
-        }
         if (total_count != 0) {
             return total_cost / total_count;
         }

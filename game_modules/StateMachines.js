@@ -1,19 +1,57 @@
 var common = require("./common.js")
 var constants = require("./constants.js")
 
-function buy_needs(pool, agent) {
+async function buy_input(pool, agent, tag, amount) {
+    let savings = agent.savings.get();
+    var estimated_tag_cost = agent.get_local_market().guess_tag_cost(tag, amount);
+    // if (tag == 'leather') {console.log(tag, amount, Math.min(savings, estimated_tag_cost * 2), agent.data.price)}
+    await agent.buy(pool, tag, amount, Math.min(savings, estimated_tag_cost * 2), agent.data.price + 5);
+}
+
+async function buy_needs(pool, agent) {
     let size = agent.data.size
     let savings = Math.min(Math.floor(agent.savings.get()/3), 200);
-    let food_need = Math.max(0, size - agent.stash.get('food'));
-    let clothes_need = Math.max(0, size - agent.stash.get('clothes'));
-    agent.buy(pool, 'food', food_need, Math.floor(savings * 2/3 * (food_need / size)), 10000)
-    agent.buy(pool, 'clothes', size, Math.floor(savings * 1/3 * (clothes_need / size)), 10000)
+
+    {
+        let food_need = Math.max(0, size - agent.stash.get('food'));
+        let money_reserved_for_food = Math.floor(savings * 2/3 * (food_need / size));
+        let estimated_food_cost = agent.get_local_market().guess_tag_cost('food', food_need);
+        if (estimated_food_cost <= money_reserved_for_food) {
+            await agent.buy(pool, 'food', food_need, Math.min(money_reserved_for_food, estimated_food_cost * 3), 100000);
+        } else {
+            await agent.buy(pool, 'meat', food_need, Math.min(money_reserved_for_food, estimated_food_cost * 2), 100000);
+        }
+    }
+
+    {
+        let clothes_need = Math.max(0, size - agent.stash.get('clothes'));
+        let money_reserved_for_clothes = Math.floor(savings * 1/3 * (clothes_need / size));
+        let estimated_clothes_cost = agent.get_local_market().guess_tag_cost('clothes', clothes_need);
+        if (estimated_clothes_cost <= money_reserved_for_clothes) {
+            await agent.buy(pool, 'clothes', size, Math.min(money_reserved_for_clothes, estimated_clothes_cost * 3), 100000)
+        } else {
+            await agent.buy(pool, 'leather', size, Math.min(money_reserved_for_clothes, estimated_clothes_cost * 2), 100000)
+        }
+    } 
 }
 
 function consume(pool, agent) {
     let size = agent.data.size
-    agent.stash.inc('food', -size);
-    agent.stash.inc('clothes', -size);
+    let food_need = size
+    let food = agent.stash.get('food');
+    agent.stash.inc('food', -food_need);
+    food_need -= food;
+    if (food_need > 0) {
+        agent.stash.inc('meat', -food_need);
+    }
+
+    let clothes_need = size;
+    let clothes = agent.stash.get('food');
+    agent.stash.inc('clothes', -clothes_need);
+    clothes_need -= clothes;
+    if (clothes_need > 0) {
+        agent.stash.inc('leather', -food_need);
+    }
 }
 
 function produce(pool, agent, tag1, tag2, throughput) {
@@ -26,11 +64,7 @@ function produce(pool, agent, tag1, tag2, throughput) {
     }  
 }
 
-function update_price(pool, agent, tag) {
-    // let size = agent.data.size
-    // let product = agent.stash.get(tag);
-
-    console.log(agent.name, agent.data.price * agent.data.sold, agent.data.price, agent.savings.get())
+function update_price(pool, agent, tag, t) {
     let tmp_price = agent.data.price;
     let tmp_sold = agent.data.sold;
     if (agent.data.sold == 0) {
@@ -55,6 +89,17 @@ function update_price(pool, agent, tag) {
             agent.data.price = 2
         }
     }
+    // let market = agent.get_local_market()
+    // let estimated_expense = market.guess_tag_cost('food', 1);
+    // if (tag == 'food') {
+    //     estimated_expense += t * market.guess_tag_cost('meat', t)
+    // } else if (tag == 'clothes') {
+    //     estimated_expense += t * market.guess_tag_cost('leather', t)
+    // }
+    
+    // if (agent.data.price * t < estimated_expense) {
+    //     agent.data.price = Math.floor(estimated_expense / t) + 1
+    // }
 
     agent.data.prev_price = tmp_price;
     agent.data.prev_sold = tmp_sold;
@@ -103,34 +148,6 @@ class StateMachine {
     }
 }
 
-
-class BasicPopAIstate extends State {
-    static async Execute(pool, agent, save = true) {
-        // let cell = agent.get_cell();
-        var savings = agent.savings.get();
-        var tmp_food_need = Math.max(agent.get_need('food') - agent.stash.get('food'), 0);
-        await agent.clear_orders(pool, save);
-        var estimated_food_cost = agent.get_local_market().guess_tag_cost('food', tmp_food_need);
-        await agent.buy(pool, 'food', tmp_food_need, Math.min(savings, estimated_food_cost * 3), undefined, save);
-        for (var tag of agent.world.constants.TAGS) {
-            if (tag != 'food') {
-                var tmp_need = Math.max(agent.get_need(tag) - agent.stash.get(tag), 0);
-                if (tmp_need > 0) {
-                    var estimated_tag_cost = agent.get_local_market().guess_tag_cost(tag, tmp_need);
-                    var money_to_spend_on_tag = Math.min(savings, Math.max(estimated_tag_cost, Math.floor(savings * 0.1)));
-                    common.flag_log('PopAI | ' + [tag, tmp_need, money_to_spend_on_tag, save], constants.logging.basic_pop_ai);
-                    await agent.buy(pool, tag, tmp_need, money_to_spend_on_tag, undefined, save);
-                }
-            }
-        }
-        //update desire to change work
-    }
-
-    static tag() {
-        return 'basic_pop_ai_state';
-    }
-}
-
 class WaterSeller extends State {
     static async Execute(pool, agent, save = true) {
         await agent.clear_orders(pool, save);
@@ -150,18 +167,17 @@ class MeatToHeal extends State {
         let size = agent.data.size;
         await agent.clear_orders(pool, save);
 
-        update_price(pool, agent, 'food');
+        update_price(pool, agent, 'food', 2);
         
-        //buy_meat
-        let savings = agent.savings.get();
-        await agent.buy(pool, 'meat', size * 2, savings, agent.data.price - 1);
 
+        await buy_input(pool, agent, 'meat', 2)
         produce(pool, agent, 'meat', 'food', 2)
 
         // selling food
         let food = Math.max(0, agent.stash.get('food') - size);
         await agent.sell(pool, 'food', food, agent.data.price);
-        savings = agent.savings.get();
+        let savings = agent.savings.get();
+
         if (savings < 100) {
             agent.AI.change_state(pool, HuntersMeat)
         }
@@ -180,10 +196,10 @@ class HuntersMeat extends State {
         let size = agent.data.size;
         await agent.clear_orders(pool, save)
 
-        update_price(pool, agent, 'meat');
+        update_price(pool, agent, 'meat', 2);
         
         //hunt
-        agent.stash.inc('meat', size * 1);
+        agent.stash.inc('meat', size * 2);
 
         //sell_meat
         let meat = agent.stash.get('meat');
@@ -205,7 +221,7 @@ class HuntersLeather extends State {
         let size = agent.data.size;
         await agent.clear_orders(pool, save)
 
-        update_price(pool, agent, 'leather');
+        update_price(pool, agent, 'leather', 1);
         
         //hunt
         agent.stash.inc('leather', size);
@@ -227,15 +243,13 @@ class HuntersLeather extends State {
 
 class Clothiers extends State {
     static async Execute(pool, agent, save = true) {
-        let size = agent.data.size;
+        // let size = agent.data.size;
         await agent.clear_orders(pool, save)
 
-        update_price(pool, agent, 'clothes');
+        update_price(pool, agent, 'clothes', 3);
 
-        
-        let savings = agent.savings.get();
-        await agent.buy(pool, 'leather', size * 3, Math.floor(savings * 3/4), agent.data.price - 1);
-        
+        // console.log('!!!!')
+        await buy_input(pool, agent, 'leather', 3)        
         produce(pool, agent, 'leather', 'clothes', 3)
 
         let clothes = Math.max(0, agent.stash.get('clothes'));
@@ -244,10 +258,10 @@ class Clothiers extends State {
         }
         await agent.sell(pool, 'clothes', clothes, agent.data.price);
 
+        let savings = agent.savings.get()
         if (savings < 100) {
             agent.AI.change_state(pool, HuntersLeather)
         }
-
         buy_needs(pool, agent);
         consume(pool, agent);
     }
@@ -257,103 +271,7 @@ class Clothiers extends State {
     }
 }
 
-//class BasicEnterpriseAIstate extends State {
-    // static async Execute(pool, agent, save) {
-    //     var market = agent.get_local_market();
-    //     for (var i in agent.data.input) {
-    //         await agent.clear_orders(pool, i, save = false);
-    //     }
-    //     for (var i in agent.data.output) {
-    //         await agent.clear_orders(pool, i, save = false);
-    //     }
-    //     // correct prices
-    //     var amount = agent.data.output[tag];
-    //     var tmp_pure_income = null;
-    //     var tdworkers = 0;
-    //     var tdprice = {};
-    //     tdprice[tag] = 0;
-    //     var i = 0;
-    //     var t_x = 0;
-    //     var t_planned_spendings = 0;
-    //     while (i < Math.pow(3, agent.data.output.length)) {
-    //         var tmp = i;
-    //         var dprice = {};
-    //         var no_profit = false;
-    //         for (var tag in agent.data.output) {
-    //             dprice[tag] = (tmp % 3 - 1) // tmp acts here as trit mask
-    //             tmp = Math.floor(tmp / 3);
-    //             if (agent.data.price[tag] + dprice[tag] <= 0) {
-    //                 no_profit = true
-    //             }
-    //         }
-    //         if (no_profit) {
-    //             i += 1;
-    //             continue;
-    //         }
-    //         for (var dworkers = 0; dworkers <= 1; dworkers++) {
-    //             if ((agent.size + dworkers > agent.data.max_size) || (agent.size + dworkers <= 0)) {
-    //                 continue
-    //             }
-    //             var planned_workers = agent.data.size + dworkers;
-    //             var expected_income = {};
-    //             var planned_price = {};
-    //             var max_income = {};
-    //             for (var z in agent.data.output) {
-    //                 expected_income[z] = 0;
-    //                 planned_price[z] = agent.data.price[z] + dprice[z];
-    //                 var total_cost_of_produced_goods = planned_workers * agent.get_production_per_worker() * planned_price[z];
-    //                 max_income[z] = market.planned_money_to_spent[z] - market.get_total_cost_of_placed_goods_with_price_less_or_equal(z, planned_price[z], taxes = true);
-    //                 expected_income[z] = Math.min(max_income[z], total_cost_of_goods);
-    //             }
-
-    //             var total_income = 0;
-    //             for (var z in agent.data.output) {
-    //                 total_income += expected_income[z];
-    //             }
-    //             var x = market.find_amount_of_goods_for_buying(planned_workers * agent.get_input_consumption_per_worker(), Math.floor(agent.data.savings.get() / 2), agent.data.input);
-    //             var tmp_total_input = {};
-    //             for (var z in agent.data.input) {
-    //                 tmp_total_input[z] = agent.data.input[z] * x;
-    //             }
-    //             var input_cost = market.guess_cost(tmp_total_input);
-    //             var salary_spendings = agent.data.size * agent.salary;
-    //             var planned_income = total_income;
-    //             var planned_spendings = planned_workers * agent.salary + inputs_cost;
-    //             var planned_pure_income = planned_income - planned_spendings;
-    //             if ((tmp_pure_income == null) || ((tmp_pure_income < planned_pure_income))) {
-    //                 t_x = x;
-    //                 tdprice = dprice;
-    //                 tdworkers = dworkers;
-    //                 tmp_pure_income = planned_pure_income;
-    //                 t_planned_spendings = planned_spendings;
-    //             }
-    //         }
-    //         i += 1;
-    //     }
-    //     // saving changes
-    //     for (var tag in agent.data.output) {
-    //         agent.price[tag] += tdprice[tag];
-    //     }
-    //     agent.set_size(agent.data.size + dworkers);
-    //     //seling output with updated prices and buying input
-    //     for (var tag in agent.data.output) {
-    //         await agent.sell(pool, tag, agent.stash.get(tag), agent.price[tag], save = false);
-    //     }
-    //     for (var tag in agent.data.input) {
-    //         await agent.buy(pool, tag, agent.data.input[tag] * t_x, market.guess_tag_cost(tag, agent.data.input[tag] * t_x) * 2, save = false);
-    //     }
-    //     await agent.pay_salary(pool, save = false);
-    //     await agent.pay_profits(pool, save = false);
-    //     await agent.save_to_db(pool, save);
-    // }
-
-    // tag() {
-    //     return 'basic_enterprise_ai_state';
-    // }
-
-//}
 var AIs = {
-    'basic_pop_ai_state': BasicPopAIstate,
     'meat_to_heal': MeatToHeal,
     'hunters_meat': HuntersMeat,
     'hunters_leather': HuntersLeather,
