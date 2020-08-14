@@ -449,7 +449,8 @@ module.exports = class SocketManager {
 
         let data = {
             buy: {},
-            sell: {}
+            sell: {},
+            avg: {}
         }
 
         for (let tag of this.world.constants.TAGS) {
@@ -463,6 +464,7 @@ module.exports = class SocketManager {
                 let order = this.world.get_order(i);
                 data.sell[tag].push(order.get_json());
             }
+            data.avg[tag] = market.guess_tag_cost(tag, 1)
         }
         
         for (let i of this.sockets) {

@@ -1,6 +1,61 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
+
+var dps = {
+    food: [],
+    meat: [],
+    leather: [],
+    clothes: [],
+}
+var chart = new CanvasJS.Chart("chartContainer", {
+    title :{
+        text: "prices"
+    },
+    toolTip: {
+        shared: true
+    },
+    data: [
+        {
+            type: "line",
+            name: 'food',
+            dataPoints: dps['food']
+        },
+        {
+            type: "line",
+            name: 'meat',
+            dataPoints: dps['meat']
+        },
+        {
+            type: "line",
+            name: 'leather',
+            dataPoints: dps['leather']
+        },
+        {
+            type: "line",
+            name: 'clothes',
+            dataPoints: dps['clothes']
+        }
+    ]
+});
+
+var xVal = 0;
+var yVal = 100;
+var dataLength = 300; // number of dataPoints visible at any point
+
+var updateChart = function (tag, x) {
+    yVal = x;
+    dps[tag].push({
+        x: xVal,
+        y: yVal
+    });
+	if (dps[tag].length > dataLength) {
+		dps[tag].shift();
+	}
+};
+
+chart.render();
+
 socket.on('connect', () => {
     console.log('connected')
     let tmp = localStorage.getItem('session');
@@ -245,7 +300,16 @@ socket.on('exp', msg => char_info_monster.update_exp(msg));
 socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
-socket.on('market-data', data => {console.log(data);market_table.update(data)});
+socket.on('market-data', data => {
+    console.log(data);
+    market_table.update(data);
+    updateChart('meat', data.avg['meat']);
+    updateChart('food', data.avg['food']);
+    updateChart('leather', data.avg['leather']);
+    updateChart('clothes', data.avg['clothes']);
+    xVal++;
+    chart.render()
+});
 socket.on('item-market-data', data => {console.log('item-market-data'); console.log(data); item_market_table.update(data)});
 // socket.on('market-data', data => auction_house.update(data));
 // socket.on('market-data', data => console.log(data));

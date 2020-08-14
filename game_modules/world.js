@@ -66,22 +66,22 @@ module.exports = class World {
         this.agents[pop.id] = pop;
         pop.stash.inc('water', 10000);
 
-        for (let i = 1; i <= 3; i++) {
+        for (let i = 1; i <= 6; i++) {
             pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 10000, StateMachines.AIs['meat_to_heal']);
             this.agents[pop.id] = pop;
         }
 
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 10; i++) {
             pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, 50, StateMachines.AIs['hunters_meat']);
             this.agents[pop.id] = pop;
         }
 
-        for (let i = 1; i <= 5; i++) {
+        for (let i = 1; i <= 10; i++) {
             pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'leather ' + i, 50, StateMachines.AIs['hunters_leather']);
             this.agents[pop.id] = pop;
         }
 
-        for (let i = 1; i <= 2; i++) {
+        for (let i = 1; i <= 4; i++) {
             pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 10000, StateMachines.AIs['clothiers']);
             this.agents[pop.id] = pop;
         }

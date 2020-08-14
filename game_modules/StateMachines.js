@@ -5,7 +5,7 @@ async function buy_input(pool, agent, tag, amount) {
     let savings = agent.savings.get();
     var estimated_tag_cost = agent.get_local_market().guess_tag_cost(tag, amount);
     // if (tag == 'leather') {console.log(tag, amount, Math.min(savings, estimated_tag_cost * 2), agent.data.price)}
-    await agent.buy(pool, tag, amount, Math.min(savings, estimated_tag_cost * 2), agent.data.price + 5);
+    await agent.buy(pool, tag, amount, Math.min(savings, estimated_tag_cost * 2), 100000);
 }
 
 async function buy_needs(pool, agent) {
@@ -62,6 +62,28 @@ function produce(pool, agent, tag1, tag2, throughput) {
         agent.stash.inc(tag1, -production);
         agent.stash.inc(tag2, production);
     }  
+}
+
+function decay(agent) {
+    {let tag = 'meat';
+    let total = agent.stash.get(tag);
+    let decay = Math.floor(total);
+    agent.stash.inc(tag, -decay);}
+
+    {let tag = 'food';
+    let total = agent.stash.get(tag);
+    let decay = Math.floor(total/3);
+    agent.stash.inc(tag, -decay);}
+
+    {let tag = 'leather';
+    let total = agent.stash.get(tag);
+    let decay = Math.floor(total/5);
+    agent.stash.inc(tag, -decay);}
+
+    {let tag = 'clothes';
+    let total = agent.stash.get(tag);
+    let decay = Math.floor(total/100);
+    agent.stash.inc(tag, -decay);}
 }
 
 function update_price(pool, agent, tag, t) {
@@ -198,6 +220,11 @@ class HuntersMeat extends State {
 
         update_price(pool, agent, 'meat', 2);
         
+        
+
+        //decay
+        decay(agent);
+
         //hunt
         agent.stash.inc('meat', size * 2);
 
@@ -246,11 +273,11 @@ class Clothiers extends State {
         // let size = agent.data.size;
         await agent.clear_orders(pool, save)
 
-        update_price(pool, agent, 'clothes', 3);
+        update_price(pool, agent, 'clothes', 2);
 
         // console.log('!!!!')
-        await buy_input(pool, agent, 'leather', 3)        
-        produce(pool, agent, 'leather', 'clothes', 3)
+        await buy_input(pool, agent, 'leather', 2)        
+        produce(pool, agent, 'leather', 'clothes', 2)
 
         let clothes = Math.max(0, agent.stash.get('clothes'));
         if (agent.savings.get() > 200) {
