@@ -2,59 +2,65 @@
 var socket = io();
 
 
-var dps = {
-    food: [],
-    meat: [],
-    leather: [],
-    clothes: [],
-}
-var chart = new CanvasJS.Chart("chartContainer", {
-    title :{
-        text: "prices"
-    },
-    toolTip: {
-        shared: true
-    },
-    data: [
-        {
-            type: "line",
-            name: 'food',
-            dataPoints: dps['food']
-        },
-        {
-            type: "line",
-            name: 'meat',
-            dataPoints: dps['meat']
-        },
-        {
-            type: "line",
-            name: 'leather',
-            dataPoints: dps['leather']
-        },
-        {
-            type: "line",
-            name: 'clothes',
-            dataPoints: dps['clothes']
-        }
-    ]
-});
+// var dps = {
+//     food: [],
+//     meat: [],
+//     leather: [],
+//     clothes: [],
+//     tools: [],
+// }
+// var chart = new CanvasJS.Chart("chartContainer", {
+//     title :{
+//         text: "prices"
+//     },
+//     toolTip: {
+//         shared: true
+//     },
+//     data: [
+//         {
+//             type: "line",
+//             name: 'food',
+//             dataPoints: dps['food']
+//         },
+//         {
+//             type: "line",
+//             name: 'meat',
+//             dataPoints: dps['meat']
+//         },
+//         {
+//             type: "line",
+//             name: 'leather',
+//             dataPoints: dps['leather']
+//         },
+//         {
+//             type: "line",
+//             name: 'clothes',
+//             dataPoints: dps['clothes']
+//         },
+//         {
+//             type: "line",
+//             name: 'tools',
+//             dataPoints: dps['tools']
+//         }
+//     ]
+// });
 
-var xVal = 0;
-var yVal = 100;
-var dataLength = 300; // number of dataPoints visible at any point
+// var xVal = 0;
+// var yVal = 100;
+// var dataLength = 300; // number of dataPoints visible at any point
 
 var updateChart = function (tag, x) {
-    yVal = x;
-    dps[tag].push({
-        x: xVal,
-        y: yVal
-    });
-	if (dps[tag].length > dataLength) {
-		dps[tag].shift();
-	}
+    // yVal = x;
+    // dps[tag].push({
+    //     x: xVal,
+    //     y: yVal
+    // });
+	// if (dps[tag].length > dataLength) {
+	// 	dps[tag].shift();
+	// }
 };
 
-chart.render();
+// chart.render();
 
 socket.on('connect', () => {
     console.log('connected')
@@ -307,6 +313,7 @@ socket.on('market-data', data => {
     updateChart('food', data.avg['food']);
     updateChart('leather', data.avg['leather']);
     updateChart('clothes', data.avg['clothes']);
+    updateChart('tools', data.avg['tools']);
     xVal++;
     chart.render()
 });

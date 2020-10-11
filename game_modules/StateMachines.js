@@ -5,52 +5,95 @@ async function buy_input(pool, agent, tag, amount) {
     let savings = agent.savings.get();
     var estimated_tag_cost = agent.get_local_market().guess_tag_cost(tag, amount);
     // if (tag == 'leather') {console.log(tag, amount, Math.min(savings, estimated_tag_cost * 2), agent.data.price)}
-    await agent.buy(pool, tag, amount, Math.min(savings, estimated_tag_cost * 2), 100000);
+    await agent.buy(pool, tag, amount, Math.min(savings, estimated_tag_cost * 2), 100);
 }
 
 async function buy_needs(pool, agent) {
     let size = agent.data.size
-    let savings = Math.min(Math.floor(agent.savings.get()/3), 200);
+    let savings = Math.min(Math.floor(agent.savings.get()/3), 1000);
+
+    let f = (tag, x) => agent.get_local_market().guess_tag_cost(tag, x);
+    let goods_ratings = {}
+    // gp - goods prices
+    let gp = {
+        'food': f('food', 1),
+        'meat': f('meat', 1),
+        'clothes': f('clothes', 1),
+        'leather': f('leather', 1),
+        'tools': f('tools', 1)
+    }
+
+    // pf - prestige function, the more expensive the more it bought by rich boys, x - savings, y - price, right now it's pretty silly function
+    let pf = (x, y) => 1 / ((x + y) / 20 + 0.1) + (x + y) / 2;
 
     {
-        let food_need = Math.max(0, size - agent.stash.get('food'));
-        let money_reserved_for_food = Math.floor(savings * 2/3 * (food_need / size));
-        let estimated_food_cost = agent.get_local_market().guess_tag_cost('food', food_need);
-        if (estimated_food_cost <= money_reserved_for_food) {
-            await agent.buy(pool, 'food', food_need, Math.min(money_reserved_for_food, estimated_food_cost * 3), 100000);
-        } else {
-            await agent.buy(pool, 'meat', food_need, Math.min(money_reserved_for_food, estimated_food_cost * 2), 100000);
+        let tag = 'food';
+        let need = Math.max(0, size - agent.stash.get(tag));
+        
+        //numbers represent how well good is acting as corresponding need
+        goods_ratings['food'] = 1.2 / gp['food'] * pf(savings, gp['food']);
+        goods_ratings['meat'] = 0.5 / gp['meat'] * pf(savings, gp['meat']);
+        goods_ratings['leather'] = 0.1 / gp['leather'] * pf(savings, gp['leather']);
+        goods_ratings['clothes'] = 0.1 / gp['clothes'] * pf(savings, gp['clothes']);
+        goods_ratings['tools'] = 0.0 / gp['tools'] * pf(savings, gp['tools']);
+
+        for (let i in goods_ratings) {
+            if (goods_ratings[tag] < goods_ratings[i]) {
+                tag = i;
+            }
         }
+
+        let money_reserved = Math.floor(savings * 2/3 * (need / size));
+        let estimated_cost = Math.floor(f(tag, need) * 1.2 + 1);
+        await agent.buy(pool, tag, need, Math.min(money_reserved, estimated_cost), money_reserved);
     }
 
     {
-        let clothes_need = Math.max(0, size - agent.stash.get('clothes'));
-        let money_reserved_for_clothes = Math.floor(savings * 1/3 * (clothes_need / size));
-        let estimated_clothes_cost = agent.get_local_market().guess_tag_cost('clothes', clothes_need);
-        if (estimated_clothes_cost <= money_reserved_for_clothes) {
-            await agent.buy(pool, 'clothes', size, Math.min(money_reserved_for_clothes, estimated_clothes_cost * 3), 100000)
-        } else {
-            await agent.buy(pool, 'leather', size, Math.min(money_reserved_for_clothes, estimated_clothes_cost * 2), 100000)
+        let tag = 'clothes';
+        let need = Math.max(0, size - agent.stash.get(tag));
+        
+        goods_ratings['food'] = 0.1 / gp['food'] * pf(savings, gp['food']);
+        goods_ratings['meat'] = 0.1 / gp['meat'] * pf(savings, gp['meat']);
+        goods_ratings['leather'] = 0.6 / gp['leather'] * pf(savings, gp['leather']);
+        goods_ratings['clothes'] = 1.2 / gp['clothes'] * pf(savings, gp['clothes']);
+        goods_ratings['tools'] = 0.0 / gp['tools'] * pf(savings, gp['tools']);
+
+        for (let i in goods_ratings) {
+            if (goods_ratings[tag] < goods_ratings[i]) {
+                tag = i;
+            }
         }
-    } 
+
+        let money_reserved = Math.floor(savings * 2/3 * (need / size));
+        let estimated_cost = Math.floor(f(tag, need) * 1.2 + 1);
+        await agent.buy(pool, tag, need, Math.min(money_reserved, estimated_cost), money_reserved);
+    }
+
 }
 
 function consume(pool, agent) {
     let size = agent.data.size
-    let food_need = size
-    let food = agent.stash.get('food');
-    agent.stash.inc('food', -food_need);
-    food_need -= food;
-    if (food_need > 0) {
-        agent.stash.inc('meat', -food_need);
+
+    //eat
+    if (agent.stash.get('food') > 0) {
+        agent.stash.inc('food', -1);
+    } else if (agent.stash.get('meat') > 0) {
+        agent.stash.inc('meat', -1);
+    } else if (agent.stash.get('leather') > 0) {
+        agent.stash.inc('leather', -1);
+    } else if (agent.stash.get('clothes') > 0) {
+        agent.stash.inc('clothes', -1);
     }
 
-    let clothes_need = size;
-    let clothes = agent.stash.get('food');
-    agent.stash.inc('clothes', -clothes_need);
-    clothes_need -= clothes;
-    if (clothes_need > 0) {
-        agent.stash.inc('leather', -food_need);
+    //wear
+    if (agent.stash.get('clothes') > 0) {
+        agent.stash.inc('clothes', -1);
+    } else if (agent.stash.get('leather') > 0) {
+        agent.stash.inc('leather', -1);
+    } else if (agent.stash.get('meat') > 0) {
+        agent.stash.inc('meat', -1);
+    } else if (agent.stash.get('food') > 0) {
+        agent.stash.inc('food', -1);
     }
 }
 
@@ -82,7 +125,7 @@ function decay(agent) {
 
     {let tag = 'clothes';
     let total = agent.stash.get(tag);
-    let decay = Math.floor(total/100);
+    let decay = Math.floor(total/50);
     agent.stash.inc(tag, -decay);}
 }
 
@@ -90,7 +133,7 @@ function update_price(pool, agent, tag, t) {
     let tmp_price = agent.data.price;
     let tmp_sold = agent.data.sold;
     if (agent.data.sold == 0) {
-        agent.data.price -= 1
+        agent.data.price = Math.floor(agent.data.price * 0.9)
     } else if ((agent.data.sold * agent.data.price) < (agent.data.prev_sold * agent.data.prev_price)) {
         agent.data.price = agent.data.prev_price
     } else {
@@ -102,7 +145,7 @@ function update_price(pool, agent, tag, t) {
         }
     }
 
-    if ((tag == 'meat') || (tag == 'leather')) {
+    if (tag == 'hunter') {
         if (agent.data.price < 1) {
             agent.data.price = 1
         }
@@ -111,17 +154,6 @@ function update_price(pool, agent, tag, t) {
             agent.data.price = 2
         }
     }
-    // let market = agent.get_local_market()
-    // let estimated_expense = market.guess_tag_cost('food', 1);
-    // if (tag == 'food') {
-    //     estimated_expense += t * market.guess_tag_cost('meat', t)
-    // } else if (tag == 'clothes') {
-    //     estimated_expense += t * market.guess_tag_cost('leather', t)
-    // }
-    
-    // if (agent.data.price * t < estimated_expense) {
-    //     agent.data.price = Math.floor(estimated_expense / t) + 1
-    // }
 
     agent.data.prev_price = tmp_price;
     agent.data.prev_sold = tmp_sold;
@@ -170,6 +202,17 @@ class StateMachine {
     }
 }
 
+
+// template
+// clear orders
+// update_price
+// decay
+// buy_input
+// produce
+// sell
+// buy needs
+// consume
+
 class WaterSeller extends State {
     static async Execute(pool, agent, save = true) {
         await agent.clear_orders(pool, save);
@@ -191,6 +234,8 @@ class MeatToHeal extends State {
 
         update_price(pool, agent, 'food', 2);
         
+        //decay
+        decay(agent);
 
         await buy_input(pool, agent, 'meat', 2)
         produce(pool, agent, 'meat', 'food', 2)
@@ -201,7 +246,7 @@ class MeatToHeal extends State {
         let savings = agent.savings.get();
 
         if (savings < 100) {
-            agent.AI.change_state(pool, HuntersMeat)
+            agent.AI.change_state(pool, Hunters)
         }
         buy_needs(pool, agent);
         consume(pool, agent);        
@@ -212,26 +257,46 @@ class MeatToHeal extends State {
     }
 }
 
-class HuntersMeat extends State {
+class Hunters extends State {
 
     static async Execute(pool, agent, save = true) {
         let size = agent.data.size;
         await agent.clear_orders(pool, save)
 
-        update_price(pool, agent, 'meat', 2);
-        
-        
+        let estimated_meat_income = agent.get_local_market().guess_tag_cost('meat', 1);
+        let estimated_leather_income = agent.get_local_market().guess_tag_cost('leather', 1);
+
+
+        if (agent.data.product == undefined) {
+            agent.data.product = 'meat'
+        }
+
+        if ((estimated_leather_income > estimated_meat_income + agent.savings.get() / 50)&(agent.data.product == 'meat')) {
+            if (Math.random() > 0.9) {
+                agent.data.product = 'leather';
+                agent.name = 'leather'
+                agent.data.price = 10;
+            }
+        } else if ((estimated_meat_income > estimated_leather_income + agent.savings.get() / 50)&(agent.data.product == 'leather')) {
+            if (Math.random() > 0.9) {
+                agent.data.product = 'meat';
+                agent.name = 'meat'
+                agent.data.price = 10;
+            }
+        }
+
+        update_price(pool, agent, 'hunter', 2);        
 
         //decay
         decay(agent);
 
         //hunt
-        agent.stash.inc('meat', size * 2);
+        agent.stash.inc(agent.data.product, size * 2);
 
-        //sell_meat
-        let meat = agent.stash.get('meat');
-        if (meat > 0) {
-            await agent.sell(pool, 'meat', meat, agent.data.price);
+        //sell
+        let product = agent.stash.get(agent.data.product);
+        if (product > 0) {
+            await agent.sell(pool, agent.data.product, product, agent.data.price);
         }
 
         buy_needs(pool, agent);
@@ -239,45 +304,23 @@ class HuntersMeat extends State {
     }
     
     static tag() {
-        return 'hunters_meat'
-    }
-}
-
-class HuntersLeather extends State {
-    static async Execute(pool, agent, save = true) {
-        let size = agent.data.size;
-        await agent.clear_orders(pool, save)
-
-        update_price(pool, agent, 'leather', 1);
-        
-        //hunt
-        agent.stash.inc('leather', size);
-
-        //sell_leather
-        let leather = agent.stash.get('leather');
-        if (leather > 0) {
-            await agent.sell(pool, 'leather', leather, agent.data.price);
-        }
-
-        buy_needs(pool, agent);
-        consume(pool, agent);
-    }
-    
-    static tag() {
-        return 'hunters_leather'
+        return 'hunters'
     }
 }
 
 class Clothiers extends State {
     static async Execute(pool, agent, save = true) {
         // let size = agent.data.size;
-        await agent.clear_orders(pool, save)
+        await agent.clear_orders(pool, save);
 
         update_price(pool, agent, 'clothes', 2);
 
+        //decay
+        decay(agent);
+
         // console.log('!!!!')
-        await buy_input(pool, agent, 'leather', 2)        
-        produce(pool, agent, 'leather', 'clothes', 2)
+        await buy_input(pool, agent, 'leather', 2);
+        produce(pool, agent, 'leather', 'clothes', 2);
 
         let clothes = Math.max(0, agent.stash.get('clothes'));
         if (agent.savings.get() > 200) {
@@ -287,7 +330,7 @@ class Clothiers extends State {
 
         let savings = agent.savings.get()
         if (savings < 100) {
-            agent.AI.change_state(pool, HuntersLeather)
+            agent.AI.change_state(pool, Hunters);
         }
         buy_needs(pool, agent);
         consume(pool, agent);
@@ -298,12 +341,31 @@ class Clothiers extends State {
     }
 }
 
+
+class Toolmakers extends State {
+    static async Execute(pool, agent, save = true) {
+        await agent.clear_orders(pool, save);
+        let tag = 'tools';
+        update_price(pool, agent, tag, 1);
+        decay(agent);
+        agent.stash.inc(tag, 1);
+        let tag_amount = Math.max(0, agent.stash.get(tag));
+        await agent.sell(pool, tag, tag_amount, agent.data.price);
+        buy_needs(pool, agent);
+        consume(pool, agent);
+    }
+
+    static tag() {
+        return 'toolmakers'
+    }
+}
+
 var AIs = {
     'meat_to_heal': MeatToHeal,
-    'hunters_meat': HuntersMeat,
-    'hunters_leather': HuntersLeather,
+    'hunters': Hunters,
     'clothiers': Clothiers,
-    'water': WaterSeller
+    'water': WaterSeller,
+    'toolmakers': Toolmakers
 }
 
 module.exports = {

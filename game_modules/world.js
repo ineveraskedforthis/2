@@ -43,13 +43,14 @@ module.exports = class World {
         this.battles = {};
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
-        this.HISTORY_PRICE['food'] = 10;
-        this.HISTORY_PRICE['clothes'] = 10;
-        this.HISTORY_PRICE['leather'] = 10;
-        this.HISTORY_PRICE['meat'] = 10;
+        this.HISTORY_PRICE['food'] = 50;
+        this.HISTORY_PRICE['clothes'] = 50;
+        this.HISTORY_PRICE['leather'] = 50;
+        this.HISTORY_PRICE['meat'] = 50;
+        this.HISTORY_PRICE['tools'] = 0;
         this.vacuum_stage = 0;
         this.battle_tick = 0;
-        this.pops_tick = 0;
+        this.pops_tick = 1000;
         this.map_tick = 0;
     }
 
@@ -66,22 +67,17 @@ module.exports = class World {
         this.agents[pop.id] = pop;
         pop.stash.inc('water', 10000);
 
-        for (let i = 1; i <= 6; i++) {
+        for (let i = 1; i <= 3; i++) {
             pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 10000, StateMachines.AIs['meat_to_heal']);
             this.agents[pop.id] = pop;
         }
 
-        for (let i = 1; i <= 10; i++) {
-            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, 50, StateMachines.AIs['hunters_meat']);
+        for (let i = 1; i <= 13; i++) {
+            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, Math.floor(100 * i * i / 10), StateMachines.AIs['hunters']);
             this.agents[pop.id] = pop;
         }
 
-        for (let i = 1; i <= 10; i++) {
-            pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'leather ' + i, 50, StateMachines.AIs['hunters_leather']);
-            this.agents[pop.id] = pop;
-        }
-
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 3; i++) {
             pop = await this.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 10000, StateMachines.AIs['clothiers']);
             this.agents[pop.id] = pop;
         }
@@ -177,7 +173,7 @@ module.exports = class World {
         }
 
         this.pops_tick += 1;
-        if (this.pops_tick >= 1) {
+        if (this.pops_tick >= 1000) {
             this.pops_tick = 0;
             let keys = Object.keys(this.agents);
             keys.sort(function() {return Math.random() - 0.5});
@@ -194,7 +190,7 @@ module.exports = class World {
             console.log('clothes'.padEnd(10) + market.guess_tag_cost('clothes', 1).toString().padStart(10))
             console.log('food'.padEnd(10) + market.guess_tag_cost('food', 1).toString().padStart(10))
         }
-
+        
         
         for (let i in this.chars) {
             if (!this.chars[i].data.dead) {
@@ -205,7 +201,7 @@ module.exports = class World {
             this.update_battles(pool)
         }
 
-        if (this.map_tick >= 100) {
+        if (this.map_tick >= 1) {
             await this.map.update_info(pool);
             this.map_tick = 0;
         } 

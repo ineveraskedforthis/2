@@ -428,6 +428,18 @@ module.exports = class Market {
     get_average_tag_price(tag) {
         var total_count = common.sum(this.total_sold[tag]) + this.total_sold_new[tag];
         var total_cost = common.sum(this.total_sold_cost[tag]) + this.total_sold_cost_new[tag];
+
+        var tmp = [];
+        for (let i of this.sell_orders[tag]) {
+            let order = this.world.get_order(i);
+            tmp.push(order);
+        }
+        tmp.sort((a, b) => {a.price - b.price});
+        for (let i of tmp) {
+            total_cost += i.amount * i.price;
+            total_count += i.amount;
+        }
+
         if (total_count != 0) {
             return total_cost / total_count;
         }
