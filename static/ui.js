@@ -201,9 +201,9 @@ document.getElementById('send_message_button').onclick = (event) => {
 document.getElementById('buy_form_con').onsubmit = (event) => {
     event.preventDefault();
     let tag = document.getElementById('buy_tag_select').value;
-    let amount = document.getElementById('buy_amount').value;
-    let money = document.getElementById('buy_money').value;
-    let max_price = 999;
+    let amount = parseInt(document.getElementById('buy_amount').value);
+    let max_price = parseInt(document.getElementById('buy_max_price').value);
+    let money = amount * max_price;
     socket.emit('buy', {tag: tag,
                         amount: amount,
                         money: money,
@@ -478,7 +478,7 @@ class CharInfoMonster {
         this.rage.innerHTML = data.rage;
         this.blood.innerHTML = data.blood_covering;
         this.stress.innerHTML = data.stress;
-        char_image.update(data.rage, data.blood_covering, undefined)
+        char_image.update(data.rage, data.blood_covering, undefined, data.stress)
     }
 }
 const char_info_monster = new CharInfoMonster();

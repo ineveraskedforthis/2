@@ -173,7 +173,7 @@ module.exports = class World {
         }
 
         this.pops_tick += 1;
-        if (this.pops_tick >= 1000) {
+        if (this.pops_tick >= 180) {
             this.pops_tick = 0;
             let keys = Object.keys(this.agents);
             keys.sort(function() {return Math.random() - 0.5});

@@ -266,12 +266,12 @@ module.exports = class SocketManager {
 
     async buy(user_data, msg) {
         var flag = common.validate_buy_data(this.world, msg);
+        if (isNaN(msg.max_price) || isNaN(msg.money) || isNaN(msg.amount)) {
+            return
+        }
         if ((user_data.current_user != null) && flag) {
-            if (!(msg.max_price == null)) {
-                msg.max_price = parseInt(msg.max_price);
-            }
             let char = user_data.current_user.character;
-            await char.buy(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.money), msg.max_price);
+            await char.buy(this.pool, msg.tag, msg.amount, msg.money, msg.max_price);
             this.send_savings_update(char);
         }
     }

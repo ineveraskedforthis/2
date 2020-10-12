@@ -25,6 +25,7 @@ const fsFace = `
 precision mediump float;
 uniform float BLOOD;
 uniform float RAGE;
+uniform float STRESS;
 varying highp vec2 vTextureCoord;
 uniform sampler2D uSampler;
 
@@ -100,6 +101,8 @@ void main(void) {
     // result_color = mix_colors(result_color, vec4(0.5, 0.1, 0.1, 0), BLOOD * (1.0/100.0));
     float f = 1.0 - RidgedFbm(uv, 6);
     float veins = pow(f, 6.0) * smoothstep(0.0, 0.3, 1.0);
+    float averaged_color = (result_color[0] + result_color[1] + result_color[2]) / 6.0;
+    result_color = mix_colors(result_color, vec4(averaged_color, averaged_color, averaged_color, 1.0), STRESS/100.0);
     result_color = mix_colors(result_color, vec4(0, 0, 0, 1), veins*RAGE/100.0);
     gl_FragColor = result_color;
 }
@@ -110,6 +113,7 @@ const fs_eyes = `
 #version 100
 precision mediump float;
 uniform float RAGE;
+uniform float STRESS;
 varying highp vec2 vTextureCoord;
 uniform sampler2D uSampler;
 
@@ -163,6 +167,7 @@ void main(void) {
     vec4 result_color = texture2D(uSampler, vTextureCoord);
     float f = 1.0 - RidgedFbm(uv*3.0, 3);
     float veins = pow(f, 3.0) * smoothstep(0.0, 0.3, 1.0);
+    result_color = mix_colors(result_color, vec4(0.0, 0.0, 0.0, 1.0), STRESS/100.0);
     result_color = mix_colors(result_color, vec4(1, 0, 0, 1), veins*RAGE/100.0);
     gl_FragColor = result_color;
 }
@@ -497,7 +502,7 @@ class CharacterImage {
     constructor(canvas) {
         this.canvas = canvas;
 
-        this.stats = {rage: 0, blood: 0, power: 0};
+        this.stats = {rage: 0, blood: 0, power: 0, stress: 0};
         this.w = 200;
         this.h = 136;
         this.pupils_phi = -Math.PI / 2
@@ -558,6 +563,7 @@ class CharacterImage {
             };
             this.location_of_BLOOD = this.gl.getUniformLocation(shaderProgram, 'BLOOD');
             this.location_of_RAGE = this.gl.getUniformLocation(shaderProgram, 'RAGE');
+            this.location_of_STRESS = this.gl.getUniformLocation(shaderProgram, 'STRESS');
             this.shaders['face'] = programInfo
         }
 
@@ -576,6 +582,7 @@ class CharacterImage {
                 },
             };
             this.location_of_eyes_RAGE = this.gl.getUniformLocation(shaderProgram, 'RAGE');
+            this.location_of_eyes_STRESS = this.gl.getUniformLocation(shaderProgram, 'STRESS');
             this.shaders['eyes'] = programInfo
         }
         {
@@ -652,7 +659,7 @@ class CharacterImage {
         this.cubeRotation = 0.0;
     }
 
-    update(rage, blood, power) {
+    update(rage, blood, power, stress) {
         // console.log(rage, blood, power);
         if (rage != undefined) {
             this.stats.rage = rage;
@@ -667,6 +674,9 @@ class CharacterImage {
         }        
         if (power != undefined) {
             this.stats.power = power;
+        }
+        if (stress != undefined) {
+            this.stats.stress = stress;
         }
     }
 
@@ -743,8 +753,10 @@ class CharacterImage {
             if (objects[i].tag == 'face') {
                 gl.uniform1f(this.location_of_BLOOD, this.stats.blood);
                 gl.uniform1f(this.location_of_RAGE, this.stats.rage);
+                gl.uniform1f(this.location_of_STRESS, this.stats.stress);
             } else if (objects[i].tag == 'eyes') {
                 gl.uniform1f(this.location_of_eyes_RAGE, this.stats.rage)
+                gl.uniform1f(this.location_of_eyes_STRESS, this.stats.stress);
             } else if (objects[i].tag == 'pupil_left' || objects[i].tag == 'pupil_right'){
                 gl.uniform1f(this.location_of_pupils_POWER, this.stats.power)
                 let tmp = [0, 0, 0, 0];
