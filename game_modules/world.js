@@ -418,14 +418,13 @@ module.exports = class World {
         return affix;
     }
 
-    generate_loot(level) {
-        // let loot_dice = Math.random();
-        // if (loot_dice < 0.5) {
-        //     return undefined;
-        // }
-        let item = {};
-        let tag_dice = Math.random();
-        item.tag = this.get_loot_tag(tag_dice)
+    roll_affixes(item, level) {
+        if (item.affixes != undefined) {
+            for (let i = 0; i < item.affixes; i++) {
+                item['a' + i] = undefined
+            }
+            item.affixes = undefined;
+        }
         let dice = Math.random()
         let num_of_affixes = 0
         if (dice * (1 + level / 10) > 0.5 ) {
@@ -438,7 +437,18 @@ module.exports = class World {
         for (let i = 0; i < num_of_affixes; i++) {
             item['a' + i] = this.roll_affix(item.tag, level)
         }
-        return item;
+        return item
+    }
+
+    generate_loot(level) {
+        // let loot_dice = Math.random();
+        // if (loot_dice < 0.5) {
+        //     return undefined;
+        // }
+        let item = {};
+        let tag_dice = Math.random();
+        item.tag = this.get_loot_tag(tag_dice)        
+        return this.roll_affixes(item, level);
     }    
     
     // eslint-disable-next-line no-unused-vars

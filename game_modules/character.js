@@ -414,7 +414,20 @@ module.exports = class Character {
     }
 
     async enchant(pool, index) {
-
+        if ((!this.data.in_battle) & ('enchanting' in this.data.skills)) {
+            let item = this.equip.data.backpack[index]
+            if (item == undefined) {
+                return 
+            }
+            let tmp = this.stash.get('zaz');
+            if (tmp > 0) {
+                this.stash.inc('zaz', -1);
+                this.world.roll_affixes(this.equip.data.backpack[index], 5);
+                let stress_gained = this.calculate_gained_craft_stress('enchanting');
+                this.change_stress(stress_gained);
+            }            
+            this.changed = true;
+        }  
     }
 
     async disenchant(pool, index) {
