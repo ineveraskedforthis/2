@@ -66,9 +66,10 @@ class Map {
                     this.draw_hex(i, j, 'fill', '(0, 0, 255, 0.5)');
                 } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
                     this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.5)');
-                } else {
-                    this.draw_hex(i, j, 'stroke', '(0, 0, 0, 1)');
                 }
+                //  else {
+                //     this.draw_hex(i, j, 'stroke', '(0, 0, 0, 1)');
+                // }
             }
         }
     }
