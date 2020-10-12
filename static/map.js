@@ -11,7 +11,9 @@ const DESCRIPTIONS = {
     '2_0': forest_boundary,
     '2_1': forest_boundary,
     '2_2': forest_boundary,
-    '2_3': forest_boundary
+    '2_3': forest_boundary,
+    '3_1': forest_boundary,
+    '3_2': forest_boundary,
 }
 
 const BACKGROUNDS = {
@@ -22,7 +24,9 @@ const BACKGROUNDS = {
     '2_0': 'forest_background',
     '2_1': 'forest_background',
     '2_2': 'forest_background',
-    '2_3': 'forest_background'
+    '2_3': 'forest_background',
+    '3_1': 'forest_background',
+    '3_2': 'forest_background',
 }
 
 
@@ -30,8 +34,8 @@ class Map {
     constructor(canvas, container, socket) {
         this.canvas = canvas;
         this.socket = socket
-        this.hex_side = 20;
-        this.camera = [-50, -200];
+        this.hex_side = 30;
+        this.camera = [-60, -200];
         this.hovered = null;
         this.selected = [0, 0];
         this.curr_pos = [0, 0];
@@ -56,16 +60,16 @@ class Map {
 
     draw() {
         var ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, 400, 400);
-        ctx.drawImage(images['map'], -7, -7, 357, 411)
+        ctx.clearRect(0, 0, 500, 500);
+        ctx.drawImage(images['map'], 0, 0, 500, 500)
         for (var i = -10; i < 10; i++) {
             for (var j = -10; j < 10; j++) {
                 if (this.hovered != null && this.hovered[0] == i && this.hovered[1] == j) {
-                    this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.5)');
+                    this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.3)');
                 } else if (this.curr_pos[0] == i && this.curr_pos[1] == j) {
-                    this.draw_hex(i, j, 'fill', '(0, 0, 255, 0.5)');
+                    this.draw_hex(i, j, 'fill', '(0, 0, 255, 0.3)');
                 } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
-                    this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.5)');
+                    this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.3)');
                 }
                 //  else {
                 //     this.draw_hex(i, j, 'stroke', '(0, 0, 0, 1)');

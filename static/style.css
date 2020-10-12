@@ -325,6 +325,22 @@ body {
     overflow: auto;
 }
 
+#map_tab {
+    display: flex;
+}
+
+#map_column{
+    height: 100%;
+    width: 65%;
+}
+
+#map_control{
+    height: 100%;
+    width: 35%;
+    overflow: auto;
+}
+
+
 #character_screen {
     display: flex;
 }
@@ -333,6 +349,8 @@ body {
     border: rgb(56, 143, 6) solid 1px;
     padding: 1%;
 }
+
+
 
 #cs_first_column{
     height: 100%;
