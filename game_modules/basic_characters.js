@@ -12,6 +12,7 @@ class Rat extends Character {
         this.equip.data.right_hand = {tag: 'empty', affixes: 0}
         this.stash.inc('meat', 1);
         this.data.model = 'rat'
+        this.data.exp_reward = 2000
         await this.load_to_db(pool);
         return id;
     }
@@ -34,6 +35,7 @@ class Elodino extends Character {
         this.data.stats = this.world.constants.base_stats.elodino
         this.data.base_resists = this.world.constants.base_resists.rat
         this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 1}}
+        this.data.exp_reward = 200
         this.stash.inc('meat', 2);
         this.data.model = 'elodino'
         await this.load_to_db(pool);
@@ -60,6 +62,7 @@ class Graci extends Character {
         this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 2}}
         this.data.model = 'graci'
         this.data.movement_speed = 2;
+        this.data.exp_reward = 500
         await this.load_to_db(pool);
         return id;
     }

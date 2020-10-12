@@ -53,7 +53,11 @@ module.exports = class SocketManager {
             socket.on('session', async (msg) => this.login_with_session(socket, user_data, msg));
             socket.on('clear_orders', async () => this.clear_orders(user_data));
             socket.on('sell-item', async (msg) => this.sell_item(user_data, msg));
-            socket.on('buyout', async (msg) => this.buyout(user_data, msg))
+            socket.on('buyout', async (msg) => this.buyout(user_data, msg));
+            socket.on('cfood', async () => this.craft_food(user_data));
+            socket.on('cclothes', async () => this.craft_clothes(user_data));
+            socket.on('ench', async (msg) => this.enchant(user_data, msg));
+            socket.on('disench', async (msg) => this.disenchant(user_data, msg));
         });
     }
 
@@ -305,6 +309,34 @@ module.exports = class SocketManager {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
             char.clean(this.pool);
+        }
+    }
+
+    async craft_food(user_data) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            char.craft_food(this.pool);
+        }
+    }
+
+    async craft_clothes(user_data) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            char.craft_clothes(this.pool);
+        }
+    }
+
+    async enchant(user_data, msg) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            char.enchant(this.pool, msg);
+        }
+    }
+
+    async disenchant(user_data, msg) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            char.disenchant(this.pool, msg);
         }
     }
 

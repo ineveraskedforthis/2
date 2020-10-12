@@ -383,6 +383,86 @@ module.exports = class Character {
         return false
     }
 
+    //craft actions
+
+    async craft_food(pool) {
+        if ((!this.data.in_battle) & ('cook' in this.data.skills)) {
+            let tmp = this.stash.get('meat');
+            if (tmp > 0) {
+                this.stash.inc('meat', -1);
+                this.stash.inc('food', +1);
+                let stress_gained = this.calculate_gained_craft_stress('food');
+                this.change_stress(stress_gained);
+            }
+        }
+        this.changed = true;
+    }
+
+
+    async craft_clothes(pool) {
+        if ((!this.data.in_battle) & ('cook' in this.data.skills)) {
+            let tmp = this.stash.get('meat');
+            if (tmp > 0) {
+                this.stash.inc('leather', -1);
+                this.stash.inc('clothes', +1);
+                let stress_gained = this.calculate_gained_craft_stress('clothes');
+                this.change_stress(stress_gained);
+            }
+            this.changed = true;
+        }
+        
+    }
+
+    async enchant(pool, index) {
+
+    }
+
+    async disenchant(pool, index) {
+        if ((!this.data.in_battle) & ('disenchanting' in this.data.skills)) {
+            let item = this.equip.data.backpack[index]
+            if (item == undefined) {
+                return 
+            }
+            this.equip.data.backpack[index] = undefined;
+            let dice = Math.random();
+            if (dice > 0.9) {
+                this.stash.inc('zaz', +1);
+            }
+            let stress_gained = this.calculate_gained_craft_stress('disenchanting');
+            this.change_stress(stress_gained);
+            this.changed = true;   
+        }  
+    }
+
+    //craft misc
+    calculate_gained_craft_stress(tag) {
+        let total = 109;
+        if ('less_stress_from_crafting' in this.data.skills) {
+            total -= this.data.skills['less_stress_from_crafting'] * 5;
+        }
+        if (tag == 'food') {
+            if ('less_stress_from_making_food' in this.data.skills) {
+                total -= this.data.skills['less_stress_from_making_food'] * 5
+            }
+        }
+        if (tag == 'enchanting') {
+            if ('less_stress_from_enchanting' in this.data.skills) {
+                total -= this.data.skills['less_stress_from_enchanting'] * 5
+            }
+        }
+
+        if (tag == 'disenchanting') {
+            if ('less_stress_from_disenchanting' in this.data.skills) {
+                total -= this.data.skills['less_stress_from_disenchanting'] * 5
+            }
+        }
+
+        return total;
+    }
+    
+
+
+
     //attack misc
 
     mod_damage_with_stats(result) {
@@ -567,7 +647,7 @@ module.exports = class Character {
 
     change_stress(x) {
         let tmp = this.data.other.stress;
-        this.data.other.stress = Math.max(0, Math.min(100, this.data.other.stress + x));
+        this.data.other.stress = Math.max(0, this.data.other.stress + x);
         if (tmp != this.data.other.stress) {
             this.changed = true
             this.status_changed = true;

@@ -1,5 +1,5 @@
  var CONSTS = {
-    TAGS: ['food', 'clothes', 'meat', 'water', 'leather', 'tools'],
+    TAGS: ['food', 'clothes', 'meat', 'water', 'leather', 'tools', 'zaz'],
     SKILLS: {},
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
     
@@ -93,13 +93,23 @@
 function add_skill(tag, max_level, req_level = 0, req_skills = [], action = undefined) {
     CONSTS.SKILLS[tag] = {tag: tag, max_level: max_level, req_level: req_level, req_skills: req_skills, action: action};
 }
-add_skill('warrior_training', 3);
-add_skill('mage_training', 3);
-add_skill('rage_control', 1, 0, ['warrior_training']);
-add_skill('cold_rage', 1, 0, ['rage_control']);
-add_skill('the_way_of_rage', 1, 0, ['cold_rage']);
-add_skill('blocking_movements', 1, 0, ['warrior_training']);
-add_skill('blood_battery', 1, 0, ['mage_training']);
-add_skill('first_steps_in_magic', 1, 0, ['mage_training'], 'spell:kinetic_bolt')
+
+add_skill('warrior_training',             3);
+add_skill('mage_training',                3);
+add_skill('charge',                       1, 0, ['warrior_training'], 'spell:charge');
+add_skill('rage_control',                 1, 0, ['warrior_training']);
+add_skill('cold_rage',                    1, 0, ['rage_control']);
+add_skill('the_way_of_rage',              1, 0, ['cold_rage']);
+add_skill('blocking_movements',           1, 0, ['warrior_training']);
+add_skill('blood_battery',                1, 0, ['mage_training']);
+add_skill('first_steps_in_magic',         1, 0, ['mage_training'], 'spell:kinetic_bolt');
+add_skill('less_stress_from_crafting',    3);
+add_skill('less_stress_from_making_food', 3, 0, ['less_stress_from_crafting']);
+add_skill('disenchanting',                1, 3, ['first_steps_in_magic', 'less_stress_from_crafting']);
+add_skill('less_stress_from_disenchant',  3, 0, ['disenchanting']);
+add_skill('sewing',                       1);
+add_skill('cook',                         1);
+add_skill('enchanting',                   1, 3, ['first_steps_in_magic', 'less_stress_from_crafting']);
+add_skill('less_stress_from_enchant',     3, 0, ['enchanting']);
 
 module.exports = CONSTS

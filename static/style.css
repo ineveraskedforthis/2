@@ -334,21 +334,33 @@ body {
     padding: 1%;
 }
 
-#stats{
-    height: 96%;
+#cs_first_column{
+    height: 100%;
     width: 15%;
+}
+
+#cs_second_column{
+    height: 98%;
+    width: 40%;
+}
+
+#cs_third_column{
+    height: 98%;
+    width: 45%;
+}
+
+#stats{
+    height: 100%;
     overflow: auto;
 }
 
 #inventory{
-    height: 96%;
-    width: 40%;
+    height: 60%;
     overflow: auto;
 }
-
-#cs_third_column{
-    height: 100%;
-    width: 45%;
+#craft{
+    height: 40%;
+    overflow: auto;
 }
 
 #equip{
@@ -356,7 +368,7 @@ body {
 }
 
 #character_screen_actions{
-    height: 26%;
+    height: 30%;
 }
 
 #equip{

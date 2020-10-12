@@ -27,9 +27,43 @@ function send_clean_request(socket) {
     socket.emit('char-info-detailed');
 }
 
+function send_craft_food_request(socket) {
+    socket.emit('cfood')
+    socket.emit('char-info-detailed');
+}
+
+function send_craft_clothes_request(socket) {
+    socket.emit('cclothes')
+    socket.emit('char-info-detailed');
+}
+
+function send_enchant_request(socket) {
+    let items = document.getElementsByName('sell_item');
+    let index = undefined;
+    for(let i = 0; i < items.length; i++) {
+        if (items[i].checked) index = parseInt(items[i].value);
+    }
+
+    socket.emit('ench', index)
+    socket.emit('char-info-detailed');
+}
+
+function send_disenchant_request(socket) {
+    let items = document.getElementsByName('sell_item');
+    let index = undefined;
+    for(let i = 0; i < items.length; i++) {
+        if (items[i].checked) index = parseInt(items[i].value);
+    }
+
+    socket.emit('disench', index)
+    socket.emit('char-info-detailed');
+}
+
 function get_item_image(tag) {
     return "background: no-repeat center/100% url(/static/img/" + tag + ".png);"
 }
+
+
 
 function send_sell_item_request(socket) {
 
@@ -39,7 +73,7 @@ function send_sell_item_request(socket) {
     for(let i = 0; i < items.length; i++) {
         if(items[i].checked)
             index = parseInt(items[i].value);
-        }
+    }
     
     let buyout_price = document.getElementById('buyout_price').value;
     let starting_price = document.getElementById('starting_price').value;
@@ -113,6 +147,47 @@ class CharacterScreen {
             let form = document.createElement('input');
             form.setAttribute('id', 'buyout_price');
             this.actions_div.appendChild(form);
+        }
+
+
+        //craft
+        this.craft_div = document.getElementById('craft')
+        {   
+            {
+                let button = document.createElement('button');
+                (() => 
+                        button.onclick = () => send_craft_food_request(this.socket)
+                )();
+                button.innerHTML = 'craft_food';
+                this.craft_div.appendChild(button);
+            }
+
+            {
+                let button = document.createElement('button');
+                (() => 
+                        button.onclick = () => send_craft_clothes_request(this.socket)
+                )();
+                button.innerHTML = 'craft_clothes';
+                this.craft_div.appendChild(button);
+            }
+
+            {
+                let button = document.createElement('button');
+                (() => 
+                        button.onclick = () => send_enchant_request(this.socket)
+                )();
+                button.innerHTML = 'enchant selected';
+                this.craft_div.appendChild(button);
+            }
+
+            {
+                let button = document.createElement('button');
+                (() => 
+                        button.onclick = () => send_disenchant_request(this.socket)
+                )();
+                button.innerHTML = 'disenchant selected (item will be destroyed)';
+                this.craft_div.appendChild(button);
+            }
         }
 
         console.log('character_screen_loaded')

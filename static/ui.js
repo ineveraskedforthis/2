@@ -203,7 +203,7 @@ document.getElementById('buy_form_con').onsubmit = (event) => {
     let tag = document.getElementById('buy_tag_select').value;
     let amount = document.getElementById('buy_amount').value;
     let money = document.getElementById('buy_money').value;
-    let max_price = document.getElementById('buy_max_price').value;
+    let max_price = 999;
     socket.emit('buy', {tag: tag,
                         amount: amount,
                         money: money,
