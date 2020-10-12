@@ -12,7 +12,7 @@ class Rat extends Character {
         this.equip.data.right_hand = {tag: 'empty', affixes: 0}
         this.stash.inc('meat', 1);
         this.data.model = 'rat'
-        this.data.exp_reward = 2000
+        this.data.exp_reward = 50
         await this.load_to_db(pool);
         return id;
     }

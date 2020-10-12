@@ -109,6 +109,15 @@ module.exports = class Battle {
             let spell_tag = action.action.substring(6);
             let target_char = this.world.chars[this.ids[action.target]];
             let result = await character.spell_attack(pool, target_char, spell_tag);
+            if ('close_distance' in result) {
+                if (this.positions[action.target] > this.positions[actor_index]) {
+                    this.positions[actor_index] = this.positions[action.target] - 1;
+                }
+                if (this.positions[action.target] < this.positions[actor_index]) {
+                    this.positions[actor_index] = this.positions[action.target] + 1;
+                }
+                result.new_pos = this.positions[actor_index];
+            }
             return {action: spell_tag, who: actor_index, result: result, actor_name: character.name};
         }
     }

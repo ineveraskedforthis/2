@@ -268,6 +268,9 @@ module.exports = class Character {
         result = spells[tag](result);
         result = this.mod_spell_damage_with_stats(result);
         result = await target.take_damage(pool, result);
+        if ('rage' in result) {
+            this.change_rage(result.rage);
+        }
         return result;
     }
 

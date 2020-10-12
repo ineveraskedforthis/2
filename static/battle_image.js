@@ -193,6 +193,11 @@ class BattleImage {
                 }
                 // console.log(this.images[who].get_image_name());
             }
+            else if (action.action == 'charge') {
+                who = action.who;
+                this.images[who].set_action('move')
+                this.new_positions[who] = action.result.new_pos;
+            }
             else if (action.action == 'attack') {
                 who = action.attacker
                 this.images[who].set_action(action.action)
