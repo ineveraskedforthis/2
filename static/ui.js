@@ -106,6 +106,12 @@ let draw_char = localStorage.getItem('char_image');
     button.onclick = () => {if (draw_char == 'yes') {draw_char = 'no'; localStorage.setItem('char_image', 'no')} else {draw_char = 'yes'; localStorage.setItem('char_image', 'yes')}}
 }
 
+{
+    let button = document.getElementById('logout');
+    button.onclick = () => {localStorage.setItem('session', 'null'); location.reload()};
+}
+
+
 document.getElementById('map').onmousemove = event => {
     var mouse_pos = get_pos_in_canvas(map.canvas, event);
     var hovered_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
