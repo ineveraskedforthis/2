@@ -98,6 +98,14 @@ function get_pos_in_canvas(canvas, event) {
 //     prev_mouse_y = event.pageY;
 // }
 
+
+let draw_char = localStorage.getItem('char_image');
+
+{
+    let button = document.getElementById('char_image_button')
+    button.onclick = () => {if (draw_char == 'yes') {draw_char = 'no'; localStorage.setItem('char_image', 'no')} else {draw_char = 'yes'; localStorage.setItem('char_image', 'yes')}}
+}
+
 document.getElementById('map').onmousemove = event => {
     var mouse_pos = get_pos_in_canvas(map.canvas, event);
     var hovered_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
@@ -515,7 +523,9 @@ function draw(time) {
     lastTime = currentTime;
 
     if (document.getElementById('game_container').style.visibility == 'visible') {
-        char_image.draw(time);
+        if (draw_char == 'yes') {
+            char_image.draw(time);
+        }
         if (document.getElementById('battle_tab').style.visibility != 'hidden') {
             battle_image.draw(delta);
         }
