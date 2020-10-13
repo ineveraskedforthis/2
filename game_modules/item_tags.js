@@ -94,6 +94,31 @@ module.exports = {
         hot: (result, tier) => {
             result.damage.fire += tier * 10
             return result
+        },
+        precise: (result, tier) => {
+            result.chance_to_hit += tier * 0.02
+            return result
+        },
+        madness: (result, tier) => {
+            result.damage.blunt +=  20 * tier;
+            result.rage_gain +=      2 * tier;
+            return result
+        },
+        calm: (result, tier) => {
+            result.rage_gain +=     -1 * tier;
+            return result
+        },
+        daemonic: (result, tier) => {
+            result.damage.fire +=  300 * tier;
+            result.stress_gain +=   90;
+            result.rage_gain +=    100;
+            return result
+        },
+        notched: (result, tier) => {
+            result.damage.pierce +=  7 * tier;
+            result.damage.slice +=   7 * tier;
+            result.blood_gain +=     2 * tier;
+            return result
         }
     },
 
@@ -144,8 +169,6 @@ module.exports = {
             rat_leather_leggins:      1000,
             rat_leather_gauntlets:     500,
             rat_leather_boots:         500,
-            elodino_flesh_dress:   1000000,
-            graci_hair:            1000000,
         },
         elodino: {
             sword: 300,
@@ -166,21 +189,32 @@ module.exports = {
 
     loot_affixes_weight: {
         sword: {
-            sharp: 6,
-            heavy: 10,
-            hot: 3,
-            power_battery: 1
+            sharp: 60,
+            heavy: 100,
+            hot: 30,
+            precise: 50,
+            power_battery: 10,
+            madness: 20,
+            calm: 10,
+            daemonic: 1,
+            notched: 60
         },
         spear: {
-            heavy: 10,
-            hot: 5,
-            sharp: 5,
-            power_battery: 5
+            heavy: 5,
+            hot: 50,
+            sharp: 50,
+            power_battery: 50,
+            precise: 50,
+            calm: 10,
+            daemonic: 1,
         },
         mace: {
-            heavy: 10,
-            hot: 5,
-            power_battery: 5
+            heavy: 150,
+            hot: 50,
+            precise: 50,
+            power_battery: 50,
+            madness: 50,
+            daemonic: 1
         },
         rat_leather_armour: {
             thick: 2,

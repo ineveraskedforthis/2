@@ -246,6 +246,10 @@ module.exports = class Character {
         result.evade = false;
         result.poison = false;
         result.blocked = false;
+        result.rage_gain = 5;
+        result.stress_gain = 1;
+        result.blood_gain = 0;
+        result.chance_to_hit = 0;
         result.total_damage = 0;
         result = this.equip.get_weapon_damage(result);
         result = this.mod_damage_with_stats(result);        
@@ -253,7 +257,13 @@ module.exports = class Character {
         result = this.roll_crit(result);
         result = target.roll_evasion(result);
         result = target.roll_block(result);
-        this.change_rage(5)
+        this.change_rage(result.rage_gain);
+        this.change_stress(result.stress_gain);
+        this.change_blood(result.blood_gain);
+        let dice = Math.random();
+        if (dice > result.chance_to_hit) {
+            result.evade = true;
+        }
         result = await target.take_damage(pool, result);        
         return result;
     }
@@ -499,11 +509,7 @@ module.exports = class Character {
     }
 
     roll_accuracy(result) {
-        let dice = Math.random();
-        let acc = this.get_accuracy();
-        if (dice > acc) {
-            result.evade = true;
-        }
+        result.chance_to_hit += this.get_accuracy()
         return result
     }
 
