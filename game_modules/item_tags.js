@@ -71,6 +71,13 @@ module.exports = {
         rat_leather_gauntlets: (resists) => {
             resists.slice += 1;
             return resists;
+        },
+        elodino_flesh_dress: (resists) => {
+            return resists;
+        },
+        graci_hair: (resists) => {
+            resists.slice += 1;
+            return resists;
         }
     },
 
@@ -92,17 +99,17 @@ module.exports = {
 
     protection_affixes_effects: {
         thick: (resists, tier) => {
-            resists.pierce += tier * 3;
-            resists.slice += tier * 3;
+            resists.pierce += tier * 1;
+            resists.slice += tier * 2;
             return resists;
         },
         power_battery: (resists, tier) => {
             return resists
         },
         hard: (resists, tier) => {
-            resists.blunt += tier * 2;
-            resists.pierce += tier * 2;
-            resists.slice += tier * 2;
+            resists.blunt += tier * 1;
+            resists.pierce += tier * 1;
+            resists.slice += tier * 1;
             return resists
         }
     },
@@ -119,21 +126,42 @@ module.exports = {
         spear: 'right_hand',
         mace: 'right_hand',
         rat_leather_armour: 'body',
+        elodino_flesh_dress: 'body',
         rat_fur_cap: 'head',
+        graci_hair: 'head',
         rat_leather_leggins: 'legs',
         rat_leather_gauntlets: 'arms',
         rat_leather_boots: 'foot'
     },
 
     loot_chance_weight: {
-        sword: 300,
-        spear: 30000,
-        mace: 300,
-        rat_leather_armour: 1000,
-        rat_fur_cap: 1000,
-        rat_leather_leggins: 1000,
-        rat_leather_gauntlets: 500,
-        rat_leather_boots: 500
+        rat: {
+            sword:                     300,
+            spear:                     300,
+            mace:                      300,
+            rat_leather_armour:       1000,
+            rat_fur_cap:              1000,
+            rat_leather_leggins:      1000,
+            rat_leather_gauntlets:     500,
+            rat_leather_boots:         500,
+            elodino_flesh_dress:   1000000,
+            graci_hair:            1000000,
+        },
+        elodino: {
+            sword: 300,
+            spear: 300,
+            mace: 300,
+            elodino_flesh_dress: 100
+        },
+        graci: {
+            sword: 100,
+            spear: 100,
+            mace: 100,
+            graci_hair: 100,
+        },
+        test: {
+
+        }
     },
 
     loot_affixes_weight: {
@@ -163,6 +191,13 @@ module.exports = {
             thick: 2,
             power_battery: 1,
             hard: 1
+        },
+        elodino_flesh_dress: {
+            power_battery: 10
+        },
+        graci_hair: {
+            power_battery: 10,
+            thick: 2,
         },
         rat_leather_leggins: {
             thick: 2,

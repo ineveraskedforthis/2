@@ -94,7 +94,7 @@ class Graci extends Character {
 }
 
 module.exports = {
-    Rat: Rat,
-    Graci: Graci,
-    Elodino: Elodino
+    rat: Rat,
+    graci: Graci,
+    elodino: Elodino
 }

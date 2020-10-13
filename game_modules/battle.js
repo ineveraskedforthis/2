@@ -146,18 +146,6 @@ module.exports = class Battle {
         return -1;
     }
 
-    async collect_loot(pool) {
-        let item_lvl = 0;
-        for (var i = 0; i < this.ids.length; i ++) {
-            var character = this.world.chars[this.ids[i]];
-            if (character.hp == 0) {
-                await character.transfer_all(pool, this);
-                item_lvl += character.get_item_lvl()
-            }
-        }
-        return item_lvl;
-    }
-
     reward(team) {
         var exp = 0;
         for (var i = 0; i < this.ids.length; i++) {
@@ -168,7 +156,7 @@ module.exports = class Battle {
         return exp;
     }
 
-    async reward_team(pool, team, exp, ilvl) {
+    async reward_team(pool, team, exp) {
         var n = 0;
         for (let i = 0; i < this.ids.length; i++){
             if (this.teams[i] == team) {
@@ -176,7 +164,7 @@ module.exports = class Battle {
             }
         }
         for (let i = 0; i < this.ids.length; i++) {
-            var character = this.world.chars[this.ids[i]];
+            let character = this.world.chars[this.ids[i]];
             if (team != 2) {
                 if (this.teams[i] == team && !character.data.dead) {
                     await character.give_exp(pool, Math.floor(exp / n));
@@ -194,9 +182,14 @@ module.exports = class Battle {
                 var x = this.stash.get(tag);
                 await this.transfer(pool, leader, tag, x);
             }
-            leader.equip.add_item(this.world.generate_loot(ilvl))
+            for (let i = 0; i < this.ids.length; i ++) {
+                let character = this.world.chars[this.ids[i]];
+                if (character.hp == 0) {
+                    await character.transfer_all(pool, this);
+                    leader.equip.add_item(this.world.generate_loot(character.get_item_lvl(), character.get_tag()));
+                }
+            }
         }
-        
     }
 
     async load_to_db(pool) {

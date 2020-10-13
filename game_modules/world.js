@@ -13,11 +13,14 @@ var MarketOrder = require("./market_order");
 const StateMachines = require("./StateMachines.js");
 const { OrderItem } = require("./market_items.js");
 
-let tmp = 0
-for (let i in loot_chance_weight) {
-    tmp += loot_chance_weight[i]
+
+const total_loot_chance_weight = {}
+for (let i in  loot_chance_weight) {
+    total_loot_chance_weight[i] = 0
+    for (let j in loot_chance_weight[i]) {
+        total_loot_chance_weight[i] += loot_chance_weight[i][j]
+    }
 }
-const total_loot_chance_weight = tmp;
 
 var total_affixes_weight = {}
 for (let tag in loot_affixes_weight) {
@@ -239,8 +242,8 @@ module.exports = class World {
             } else {
                 if (res != 2) {
                     var exp_reward = battle.reward(1 - res);
-                    let ilvl = await battle.collect_loot(pool);
-                    await battle.reward_team(pool, res, exp_reward, ilvl);
+                    // let ilvl = await battle.collect_loot(pool);
+                    await battle.reward_team(pool, res, exp_reward);
                 }
                 else {
                     await battle.reward_team(pool, res, 0, 0);
@@ -388,11 +391,15 @@ module.exports = class World {
         return character;
     }
 
-    get_loot_tag(dice) {
+    get_loot_tag(dice, dead_tag) {
         let tmp = 0
-        for (let i in loot_chance_weight) {
-            tmp += loot_chance_weight[i];
-            if (total_loot_chance_weight * dice <= tmp) {
+        // console.log(dead_tag)
+        // console.log(loot_chance_weight[dead_tag])
+        // console.log(total_loot_chance_weight[dead_tag] * dice)
+        for (let i in loot_chance_weight[dead_tag]) {
+            // console.log(i)
+            tmp += loot_chance_weight[dead_tag][i];
+            if (total_loot_chance_weight[dead_tag] * dice <= tmp) {
                 return i
             }
         }
@@ -440,15 +447,18 @@ module.exports = class World {
         return item
     }
 
-    generate_loot(level) {
+    generate_loot(level, dead_tag) {
         // let loot_dice = Math.random();
         // if (loot_dice < 0.5) {
         //     return undefined;
         // }
         let item = {};
         let tag_dice = Math.random();
-        item.tag = this.get_loot_tag(tag_dice)        
-        return this.roll_affixes(item, level);
+        
+        item.tag = this.get_loot_tag(tag_dice, dead_tag)  
+        item = this.roll_affixes(item, level)
+        // console.log(item, dead_tag)      
+        return item;
     }    
     
     // eslint-disable-next-line no-unused-vars
