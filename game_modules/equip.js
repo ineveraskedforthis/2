@@ -1,4 +1,4 @@
-var {item_base_damage, item_base_resists, damage_affixes_effects, protection_affixes_effects, get_power, slots} = require("./item_tags.js");
+var {item_base_damage, item_base_range, item_base_resists, damage_affixes_effects, protection_affixes_effects, get_power, slots} = require("./item_tags.js");
 let items = require("./weapons.js");
 const { empty } = require("./weapons.js");
 const item_tags = require("./item_tags.js");
@@ -18,8 +18,9 @@ module.exports = class Equip {
         }
     }
 
-    get_weapon_range() {
-        return 1;
+    get_weapon_range(range) {
+        let right_hand = this.data.right_hand;
+        return  item_base_range[right_hand.tag](range);
     }
 
     get_weapon_damage(result) {
@@ -86,17 +87,18 @@ module.exports = class Equip {
             return true
         }
         let item = this.data[tag];
+        console.log(item)
         if (item.tag == 'empty') {
             return
         }
         if (tag == 'right_hand') {
             this.data[tag] = items.fist;
-            return
-        }
-        this.data[tag] = empty;
+        } else {
+            this.data[tag] = empty;   
+        }             
         if ((item.tag != 'empty') || (item.tag != 'fist')) {
             this.add_item(item);
-        }        
+        }
     }
 
     get_resists() {

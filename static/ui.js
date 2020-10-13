@@ -373,6 +373,8 @@ socket.on('battle-action', data => {
             new_log_message(data.actor_name + ': critical_damage')
         }
         new_log_message(data.actor_name + ': deals with magic bolt ' + data.result.total_damage + ' damage')
+    } else if (data.action.startsWith('charge')) {
+        new_log_message(data.actor_name + '   CHAAAAAAAAAARGE   ' + data.result.total_damage + ' damage')
     }
 })
 

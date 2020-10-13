@@ -625,7 +625,7 @@ module.exports = class Character {
     }
 
     get_range() {
-        return this.equip.get_weapon_range();
+        return this.equip.get_weapon_range(1);
     }
 
     get_local_market() {

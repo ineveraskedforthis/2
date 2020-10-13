@@ -11,7 +11,38 @@ module.exports = {
         fist: (result) => {
             result.damage = {blunt: 10, pierce: 1, slice: 1, fire: 0};
             return result
-        }
+        },
+        spear: (result) => {
+            result.damage = {blunt: 5, pierce: 20, slice: 5, fire: 0}
+            return result
+        },
+        mace: (result) => {
+            result.damage = {blunt: 60, pierce: 0, slice: 0, fire: 0}
+            return result
+        },
+    },
+
+    item_base_range: {
+        sword: (range) => {
+            range += 0;
+            return range
+        },
+        empty: (range) => {
+            range += 0;
+            return range
+        },
+        fist: (range) => {
+            range += 0;
+            return range
+        },
+        spear: (range) => {
+            range += 2;
+            return range
+        },
+        mace: (range) => {
+            range += 0;
+            return range
+        },
     },
 
     item_base_resists : {
@@ -85,6 +116,8 @@ module.exports = {
 
     slots: {
         sword: 'right_hand',
+        spear: 'right_hand',
+        mace: 'right_hand',
         rat_leather_armour: 'body',
         rat_fur_cap: 'head',
         rat_leather_leggins: 'legs',
@@ -93,7 +126,9 @@ module.exports = {
     },
 
     loot_chance_weight: {
-        sword: 1000,
+        sword: 300,
+        spear: 30000,
+        mace: 300,
         rat_leather_armour: 1000,
         rat_fur_cap: 1000,
         rat_leather_leggins: 1000,
@@ -107,6 +142,17 @@ module.exports = {
             heavy: 10,
             hot: 3,
             power_battery: 1
+        },
+        spear: {
+            heavy: 10,
+            hot: 5,
+            sharp: 5,
+            power_battery: 5
+        },
+        mace: {
+            heavy: 10,
+            hot: 5,
+            power_battery: 5
         },
         rat_leather_armour: {
             thick: 2,

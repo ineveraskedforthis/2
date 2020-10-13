@@ -17,6 +17,10 @@ class Rat extends Character {
         return id;
     }
 
+    get_range() {
+        return 1
+    }
+
     get_tag() {
         return 'rat'
     }
@@ -40,6 +44,10 @@ class Elodino extends Character {
         this.data.model = 'elodino'
         await this.load_to_db(pool);
         return id;
+    }
+
+    get_range() {
+        return 1
     }
 
     get_tag() {
@@ -72,6 +80,10 @@ class Graci extends Character {
     }
     get_item_lvl() {
         return 10;
+    }
+
+    get_range() {
+        return 2
     }
 
     change_rage(x) {
