@@ -3,6 +3,19 @@
 const graci_plains = 'Plains where gracis are living their beautiful life. Be aware, they are very fast, traveller.'
 const forest_boundary = 'The forest starts here. Weird creatures inhabit this place, not a lot is known about them.'
 
+const LOCAL_IMAGES = {
+    '0_0': 'starting_tiles_image_downsized.png',
+    '1_0': 'starting_tiles_image_downsized.png',
+    '1_1': 'starting_tiles_image_downsized.png',
+    '1_2': 'starting_tiles_image_downsized.png',
+    '2_0': 'forest_background.png',
+    '2_1': 'forest_background.png',
+    '2_2': 'forest_background.png',
+    '2_3': 'forest_background.png',
+    '3_1': 'forest_background.png',
+    '3_2': 'forest_background.png',
+}
+
 const DESCRIPTIONS = {
     '0_0': 'Settlement of colonists - greedy but brave men. Here you can sell your raw meet and exchange it for food and water',
     '1_0': graci_plains,
@@ -52,6 +65,8 @@ class Map {
 
         this.description = document.createElement('div');
         this.container.appendChild(this.description);
+
+        this.local_description = document.getElementById('local_description')
     }
 
     send_move_request() {
@@ -142,6 +157,7 @@ class Map {
 
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
+        this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[i + '_' + j] +  '" width="280">'
         battle_image.change_bg(BACKGROUNDS[i + '_' + j])
     }
 }

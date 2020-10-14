@@ -136,6 +136,9 @@ module.exports = {
             resists.pierce += tier * 1;
             resists.slice += tier * 1;
             return resists
+        },
+        regeneration: (resists, tier) => {
+            return resists
         }
     },
 
@@ -144,6 +147,10 @@ module.exports = {
             data += tier
             return data
         }
+    },
+
+    update_character: {
+        
     },
 
     slots: {
