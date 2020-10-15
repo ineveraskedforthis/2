@@ -178,16 +178,16 @@ module.exports = class Battle {
                 i += 1;
             }
             var leader = this.world.chars[this.ids[i]];
-            for (var tag of this.world.constants.TAGS) {
-                var x = this.stash.get(tag);
-                await this.transfer(pool, leader, tag, x);
-            }
             for (let i = 0; i < this.ids.length; i ++) {
                 let character = this.world.chars[this.ids[i]];
                 if (character.hp == 0) {
                     await character.transfer_all(pool, this);
                     leader.equip.add_item(this.world.generate_loot(character.get_item_lvl(), character.get_tag()));
                 }
+            }
+            for (var tag of this.world.constants.TAGS) {
+                var x = this.stash.get(tag);
+                await this.transfer(pool, leader, tag, x);
             }
         }
     }
