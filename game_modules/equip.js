@@ -1,4 +1,4 @@
-var {item_base_damage, item_base_range, item_base_resists, damage_affixes_effects, protection_affixes_effects, get_power, slots} = require("./item_tags.js");
+var {item_base_damage, item_base_range, item_base_resists, damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character} = require("./item_tags.js");
 let items = require("./weapons.js");
 const { empty } = require("./weapons.js");
 const item_tags = require("./item_tags.js");
@@ -17,6 +17,8 @@ module.exports = class Equip {
             backpack: []
         }
     }
+
+    
 
     get_weapon_range(range) {
         let right_hand = this.data.right_hand;
@@ -66,6 +68,22 @@ module.exports = class Equip {
             result += this.get_item_power(this.data[i])
         }
         return result
+    }
+
+    update(pool, agent) {
+        for (let i of EQUIP_TAGS) {
+            this.get_item_update(this.data[i], pool, agent);
+        }
+    }
+
+    get_item_update(item, pool, agent) {
+        for (let i = 0; i < item.affixes; i++) {
+            let affix = item['a' + i];
+            let f = update_character[affix.tag];
+            if (f != undefined) {
+                f(pool, agent, affix.tier);
+            }
+        }
     }
 
     equip(index) {

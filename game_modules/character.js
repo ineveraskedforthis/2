@@ -92,6 +92,7 @@ module.exports = class Character {
         if (this.data.dead) {
             return
         }
+        
         if (!this.data.in_battle) {
             await this.update2(pool)
         } else {
@@ -99,6 +100,7 @@ module.exports = class Character {
             if (dice < this.data.base_battle_stats.stress_battle_generation) {
                 this.change_stress(1)
             }            
+            this.equip.update(pool, this);
         }
         await this.stress_check(pool);
         let sm = this.world.socket_manager;
@@ -690,7 +692,6 @@ module.exports = class Character {
             this.hp_changed = true;
             this.changed = true;
         }
-        await this.save_to_db(pool, save);
     }
 
     async update_status_after_damage(pool, type, x) {

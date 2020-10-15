@@ -157,7 +157,7 @@ class Map {
 
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
-        this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[i + '_' + j] +  '" width="280">'
+        this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[i + '_' + j] +  '" width="300">'
         battle_image.change_bg(BACKGROUNDS[i + '_' + j])
     }
 }

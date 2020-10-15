@@ -128,29 +128,83 @@ module.exports = {
             resists.slice += tier * 2;
             return resists;
         },
+
         power_battery: (resists, tier) => {
             return resists
         },
+
         hard: (resists, tier) => {
             resists.blunt += tier * 1;
             resists.pierce += tier * 1;
             resists.slice += tier * 1;
             return resists
         },
-        regeneration: (resists, tier) => {
+
+        elder_beast_skin: (resists, tier) => {
+            resists.blunt +=      2 * tier;
+            resists.pierce +=     2 * tier;
+            resists.slice +=      2 * tier;
             return resists
-        }
+        },
+
+        elodino_pleasure: (resists, tier) => {
+            resists.blunt +=     -2 * tier;
+            resists.pierce +=    -2 * tier;
+            resists.slice +=     -2 * tier;
+            resists.hot +=       -2 * tier;
+            return resists
+        },
+
+        protection: (resists, tier) => {
+            resists.blunt +=     +2 * tier;
+            resists.pierce +=    +2 * tier;
+            resists.slice +=     +2 * tier;
+            resists.hot +=       +2 * tier;
+            return resists
+        },
+
+        pain_shell: (resists, tier) => {
+            resists.blunt +=     +5 * tier;
+            resists.pierce +=    +5 * tier;
+            resists.slice +=     +5 * tier;
+            resists.hot +=       +5 * tier;
+            return resists
+        },
+
+        power_of_graci_beauty: (resists) => {
+            return resists
+        },
     },
 
     get_power: {
         power_battery: (data, tier) => {
             data += tier
             return data
+        }, 
+        elodino_pleasure: (data, tier) => {
+            data += tier * 2
+            return data
+        },
+        power_of_graci_beauty: (data, tier) => {
+            data += tier * 2
+            return data
         }
     },
 
     update_character: {
-        
+        elder_beast_skin: (pool, agent, tier) => {
+            agent.change_stress(5 * tier);
+            agent.change_rage(5 * tier);
+            agent.change_hp(pool, 1 * tier);
+        },
+
+        power_of_graci_beauty: (pool, agent, tier) => {
+            agent.change_stress(1 * tier);
+        },
+
+        pain_shell: (pool, agent, tier) => {
+            agent.change_hp(pool, -1 * tier);
+        }
     },
 
     slots: {
@@ -168,14 +222,14 @@ module.exports = {
 
     loot_chance_weight: {
         rat: {
-            sword:                     300,
-            spear:                     300,
-            mace:                      300,
-            rat_leather_armour:       1000,
-            rat_fur_cap:              1000,
-            rat_leather_leggins:      1000,
-            rat_leather_gauntlets:     500,
-            rat_leather_boots:         500,
+            sword:                     30,
+            spear:                     30,
+            mace:                      30,
+            rat_leather_armour:       100,
+            rat_fur_cap:              100,
+            rat_leather_leggins:      100,
+            rat_leather_gauntlets:     50,
+            rat_leather_boots:         50,
         },
         elodino: {
             sword: 300,
@@ -234,11 +288,13 @@ module.exports = {
             hard: 1
         },
         elodino_flesh_dress: {
-            power_battery: 10
+            power_battery: 10,
+            elodino_pleasure: 2
         },
         graci_hair: {
             power_battery: 10,
             thick: 2,
+            power_of_graci_beauty: 3,
         },
         rat_leather_leggins: {
             thick: 2,
