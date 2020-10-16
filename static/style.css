@@ -347,6 +347,22 @@ body {
   overflow: hidden;  
 }
 
+.hbar { 
+    height: 10px;
+	position: relative;
+    width: 90%;
+	background: rgb(143, 151, 160);
+}
+
+.hbar > span {
+  display: block;
+  width: 30%;
+  height: 100%;
+  background-color: rgb(102, 0, 68);
+  position: relative;
+  overflow: hidden;  
+}
+
 
 /* progress bar orgy end */
 
@@ -397,7 +413,7 @@ body {
 }
 
 div#status_frame>div{
-    border: rgb(168, 9, 9) solid 1px;
+    /* border: rgb(168, 9, 9) solid 1px; */
     display: flex;    
     width: 95%;
 }
@@ -465,11 +481,14 @@ div#bars_row>div{
 
 #exp_row {
     height: 10%;
+    width: 97%;
     padding-left: 1%;
+    display: flexbox;
+    flex-direction: column;
 }
 
 #savings {
-    height: 5%;
+    height: 10%;
     padding-left: 1%;
 }
 

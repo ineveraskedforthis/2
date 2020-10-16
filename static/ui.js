@@ -453,7 +453,9 @@ class CharInfoMonster {
         this.hp =                   document.getElementById('hp_data');
         this.hp_display =           document.getElementById('hp_value_display');
 
-        this.exp =                  document.getElementById('exp_current');    
+        this.exp =                  document.getElementById('exp_current');  
+        this.exp_req =              document.getElementById('exp_required');  
+        this.exp_display =          document.getElementById('exp_value_display');
 
 
         this.level =                document.getElementById('level_data');
@@ -482,6 +484,9 @@ class CharInfoMonster {
 
     update_exp(data) {
         this.exp.innerHTML = data.exp;
+        this.exp_req.innerHTML = data.mexp
+        this.exp_display.style.width = `${Math.floor(data.exp/data.mexp * 100)}%`;
+
         this.level.innerHTML = data.level;
         this.points.innerHTML = data.points;
     }
