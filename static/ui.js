@@ -501,7 +501,7 @@ class CharInfoMonster {
         this.rage_display.style.height = `${Math.floor(data.rage)}%`;
 
         this.blood.innerHTML = data.blood_covering;
-        this.blood_display.style.height = `${Math.floor(data.blood)}%`;
+        this.blood_display.style.height = `${Math.floor(data.blood_covering)}%`;
 
         this.stress.innerHTML = data.stress;
         this.stress_display.style.height = `${Math.floor(data.stress)}%`;
