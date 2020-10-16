@@ -2,6 +2,8 @@ var common = require("./common.js");
 var constants = require("./constants.js");
 var basic_characters = require("./basic_characters.js");
 
+
+
 module.exports = class SocketManager {
     constructor(pool, io, world) {
         this.world = world;
@@ -54,10 +56,10 @@ module.exports = class SocketManager {
             socket.on('clear_orders', async () => this.clear_orders(user_data));
             socket.on('sell-item', async (msg) => this.sell_item(user_data, msg));
             socket.on('buyout', async (msg) => this.buyout(user_data, msg));
-            socket.on('cfood', async () => this.craft_food(user_data));
-            socket.on('cclothes', async () => this.craft_clothes(user_data));
-            socket.on('ench', async (msg) => this.enchant(user_data, msg));
-            socket.on('disench', async (msg) => this.disenchant(user_data, msg));
+            socket.on('cfood', async () => this.craft_food(socket, user_data));
+            socket.on('cclothes', async () => this.craft_clothes(socket, user_data));
+            socket.on('ench', async (msg) => this.enchant(socket, user_data, msg));
+            socket.on('disench', async (msg) => this.disenchant(socket, user_data, msg));
         });
     }
 
@@ -312,31 +314,43 @@ module.exports = class SocketManager {
         }
     }
 
-    async craft_food(user_data) {
+    async craft_food(socket, user_data) {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
-            char.craft_food(this.pool);
+            let res = await char.craft_food(this.pool);
+            if (res != 'ok') {
+                socket.emit('alert', res);
+            }
         }
     }
 
-    async craft_clothes(user_data) {
+    async craft_clothes(socket, user_data) {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
-            char.craft_clothes(this.pool);
+            let res = await char.craft_clothes(this.pool);
+            if (res != 'ok') {
+                socket.emit('alert', res);
+            }
         }
     }
 
-    async enchant(user_data, msg) {
+    async enchant(socket, user_data, msg) {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
-            char.enchant(this.pool, msg);
+            let res = await char.enchant(this.pool, msg);
+            if (res != 'ok') {
+                socket.emit('alert', res);
+            }
         }
     }
 
-    async disenchant(user_data, msg) {
+    async disenchant(socket, user_data, msg) {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
-            char.disenchant(this.pool, msg);
+            let res = await char.disenchant(this.pool, msg);
+            if (res != 'ok') {
+                socket.emit('alert', res);
+            }
         }
     }
 

@@ -401,6 +401,7 @@ module.exports = class Character {
     //craft actions
 
     async craft_food(pool) {
+        let res = 'ok';
         if ((!this.data.in_battle) & ('cook' in this.data.skills)) {
             let tmp = this.stash.get('meat');
             if (tmp > 0) {
@@ -408,31 +409,49 @@ module.exports = class Character {
                 this.stash.inc('food', +1);
                 let stress_gained = this.calculate_gained_craft_stress('food');
                 this.change_stress(stress_gained);
+                this.changed = true;
+            } 
+            else {
+                res = 'not_enough_meat'
             }
+        } else if (this.data.in_battle) {
+            res = 'in_battle'
+        } else if (!('cook' in this.data.skills)) {
+            res = 'skill_cook_is_not_learnt'
         }
-        this.changed = true;
+        
+        return res
     }
 
 
     async craft_clothes(pool) {
-        if ((!this.data.in_battle) & ('cook' in this.data.skills)) {
-            let tmp = this.stash.get('meat');
+        let res = 'ok';
+        if ((!this.data.in_battle) & ('sewing' in this.data.skills)) {
+            let tmp = this.stash.get('leather');
             if (tmp > 0) {
                 this.stash.inc('leather', -1);
                 this.stash.inc('clothes', +1);
                 let stress_gained = this.calculate_gained_craft_stress('clothes');
                 this.change_stress(stress_gained);
+                this.changed = true;
+            } else {
+                res = 'not_enough_leather'
             }
-            this.changed = true;
+        } else if (this.data.in_battle) {
+            res = 'in_battle'
+        } else if (!('sewing' in this.data.skills)) {
+            res = 'skill_sewing_is_not_learnt'
         }
-        
+        return res
     }
 
     async enchant(pool, index) {
+        let res = 'ok';
         if ((!this.data.in_battle) & ('enchanting' in this.data.skills)) {
             let item = this.equip.data.backpack[index]
             if (item == undefined) {
-                return 
+                res = 'no_selected_item'
+                return res
             }
             let tmp = this.stash.get('zaz');
             if (tmp > 0) {
@@ -440,16 +459,25 @@ module.exports = class Character {
                 this.world.roll_affixes(this.equip.data.backpack[index], 5);
                 let stress_gained = this.calculate_gained_craft_stress('enchanting');
                 this.change_stress(stress_gained);
-            }            
+            } else {
+                res = 'not_enough_zaz'
+            }
             this.changed = true;
-        }  
+        } else if (this.data.in_battle) {
+            res = 'in_battle'
+        } else if (!('enchanting' in this.data.skills)) {
+            res = 'skill_enchanting_is_not_learnt'
+        }
+        return res
     }
 
     async disenchant(pool, index) {
+        let res = 'ok';
         if ((!this.data.in_battle) & ('disenchanting' in this.data.skills)) {
             let item = this.equip.data.backpack[index]
             if (item == undefined) {
-                return 
+                res = 'no_selected_item'
+                return res
             }
             this.equip.data.backpack[index] = undefined;
             let dice = Math.random();
@@ -459,7 +487,12 @@ module.exports = class Character {
             let stress_gained = this.calculate_gained_craft_stress('disenchanting');
             this.change_stress(stress_gained);
             this.changed = true;   
-        }  
+        } else if (this.data.in_battle) {
+            res = 'in_battle'
+        } else if (!('disenchanting' in this.data.skills)) {
+            res = 'skill_disenchanting_is_not_learnt'
+        }
+        return res
     }
 
     //craft misc
