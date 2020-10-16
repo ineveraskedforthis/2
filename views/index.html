@@ -71,8 +71,58 @@
             </div>
 
             <div id = "status_frame">
-                <div id= 'status_label'><p>Status</p></div>
-                <div id = "status"></div>
+                <div id= "status_label">Status</div>
+                <div id = "name_row"> 
+                    <div id = "name"> </div> 
+                    <div id = "level"> lvl: <div id = "level_data"></div></div>
+                </div>
+
+                <div id = "bars_row">
+                    <div id = "hp_column" class = "bar_column">
+                        <div id = "hp_column_label" class = "bar_label">hp</div>
+                        <div id = "hp_bar" class = "bar_vertical">
+                            <div class = "bar"><span id="hp_value_display"></span></div>
+                        </div>
+                        <div id = "hp_data" class = "bar_data"></div>
+                    </div>
+                    <div id = "rage_column" class = "bar_column">
+                        <div id = "rage_column_label" class = "bar_label">rage</div>
+                        <div id = "rage_bar" class = "bar_vertical">
+                            <div class = "bar"><span id="rage_value_display"></span></div>
+                        </div>
+                        <div id = "rage_data" class = "bar_data"></div>
+                    </div>
+                    <div id = "blood_column" class = "bar_column">
+                        <div id = "blood_column_label" class = "bar_label">blood</div>
+                        <div id = "blood_bar" class = "bar_vertical">
+                            <div class = "bar"><span id="blood_value_display"></span></div>
+                        </div>
+                        <div id = "blood_data" class = "bar_data"></div>
+                    </div>
+                    <div id = "stress_column" class = "bar_column">
+                        <div id = "stress_column_label" class = "bar_label">stress</div>
+                        <div id = "stress_bar" class = "bar_vertical">
+                            <div class = "bar"><span id="stress_value_display"></span></div>
+                        </div>
+                        <div id = "stress_data" class = "bar_data"></div>
+                    </div>
+                </div>
+
+                <div id = "skill_points">
+                    available skill points: <div id="skill_points_data"></div>
+                </div>
+
+                <div id = "exp_row">
+                    <div id="exp_label">exp: </div>
+                    <div id="exp_bar"></div>
+                    <div id="exp_current"></div>
+                    <div id="exp_required"></div>
+                </div>
+
+                <div id = "savings">
+                    <div id="savings_label">savings: </div>
+                    <div id="savings_data"></div>
+                </div>
             </div>
             <div id = "control_frame">
                 <div id = "attack_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div>
