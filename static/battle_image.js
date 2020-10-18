@@ -98,7 +98,7 @@ class BattleImage {
         this.w = 800;
         this.h = 500;
         this.background_flag = false;
-        this.movement_speed = 1.0
+        this.movement_speed = 0.3
     }
 
     init() {

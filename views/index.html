@@ -79,7 +79,10 @@
 
                 <div id = "bars_row">
                     <div id = "hp_column" class = "bar_column tooltip">
-                        <span class="tooltiptext">hp determine how bad your physical conditions are. at 0 you are dead and will be given a new character</span>
+                        <span class="tooltiptext">
+                            hp determine how bad your physical conditions are.<br>
+                            at 0 you are dead and will be given a new character
+                        </span>
                         <div id = "hp_column_label" class = "bar_label">hp</div>
                         <div id = "hp_bar" class = "bar_vertical">
                             <div class = "bar"><span id="hp_value_display"></span></div>
@@ -87,7 +90,10 @@
                         <div id = "hp_data" class = "bar_data"></div>
                     </div>
                     <div id = "rage_column" class = "bar_column tooltip">
-                        <span class="tooltiptext">when you are figthing with enemy in melee your level of rage is rising and it lowers your accuracy. you can mitigate effects of rage or even make it useful via acquiring skills</span>
+                        <span class="tooltiptext">
+                        when you are figthing with enemy in melee your level of rage is rising and it lowers your accuracy.<br>
+                        you can mitigate effects of rage or even make it useful via acquiring skills
+                        </span>
                         <div id = "rage_column_label" class = "bar_label">rage</div>
                         <div id = "rage_bar" class = "bar_vertical">
                             <div class = "bar"><span id="rage_value_display"></span></div>
@@ -95,7 +101,9 @@
                         <div id = "rage_data" class = "bar_data"></div>
                     </div>
                     <div id = "blood_column" class = "bar_column tooltip">
-                        <span class="tooltiptext">blood is a measure of how much of your body is covered by blood. usually it's just harm your movement and accuracy but some skills can make you wish to cover yourself in it completely</span>
+                        <span class="tooltiptext">
+                        blood is a measure of how much of your body is covered by blood.<br>
+                        usually it just harms your movement and accuracy but some skills can make you wish to cover yourself in it completely</span>
                         <div id = "blood_column_label" class = "bar_label">blood</div>
                         <div id = "blood_bar" class = "bar_vertical">
                             <div class = "bar"><span id="blood_value_display"></span></div>
@@ -103,7 +111,9 @@
                         <div id = "blood_data" class = "bar_data"></div>
                     </div>
                     <div id = "stress_column" class = "bar_column tooltip">
-                        <span class="tooltiptext">stress value measures how much you want to die. it rises when you are fighting, crafting, etc. at 100 you will pass away. be careful, there are actions that without corresponding skills will stress you to death even if you was okay initially</span>
+                        <span class="tooltiptext">stress value measures how much you want to die.<br>
+                         it rises when you are fighting, crafting, etc. at 100 you will pass away.<br>
+                          be careful, there are actions that without corresponding skills will stress you to death even if you was okay initially</span>
                         <div id = "stress_column_label" class = "bar_label">stress</div>
                         <div id = "stress_bar" class = "bar_vertical">
                             <div class = "bar"><span id="stress_value_display"></span></div>
@@ -233,10 +243,20 @@
                 </div>
                 <div id = 'character_screen', class = "game_tab">
 
-                    <div id = 'cs_first_column'>
-
-                    <div id = 'stats', class = 'character_screen_frame'></div>
-
+                    <div id = 'cs_first_column' class = 'tooltip'>
+                        <span class = 'tooltiptext'>
+                                int: nothing <br>
+                                mem: nothing <br>
+                                pow: power of spells <br>
+                                tac: number of tactic slots <br>
+                                tou: nothing <br>
+                                vis: nothing <br>
+                                breathing: nothing <br>
+                                musculature: power of phys attacks <br>
+                                coordination: nothing <br>
+                                resists: how much damage is reduced from different parts of attacks
+                        </span>
+                        <div id = 'stats', class = 'character_screen_frame'></div>
                     </div>
 
                     <div id = 'cs_second_column'>
@@ -250,7 +270,7 @@
                                 <div id = 'inv_leather', class = 'stash_block'><div id = 'inv_leather_image', class = 'stash_image'></div><div id = 'leather_count'></div></div>
                                 <div id = 'inv_clothes', class = 'stash_block'><div id = 'inv_clothes_image', class = 'stash_image'></div><div id = 'clothes_count'></div></div>
                                 <div id = 'inv_tools',   class = 'stash_block'><div id = 'inv_tools_image',   class = 'stash_image'></div><div id = 'tools_count'  ></div></div>
-                                <div id = 'inv_zaz',   class = 'stash_block'><div id = 'inv_zaz_image',   class = 'stash_image'></div><div id = 'zaz_count'  ></div></div>
+                                <div id = 'inv_zaz',     class = 'stash_block'><div id = 'inv_zaz_image',     class = 'stash_image'></div><div id = 'zaz_count'  ></div></div>
                             </div>
                         </div>
                         <div id = 'craft', class = 'character_screen_frame'></div>

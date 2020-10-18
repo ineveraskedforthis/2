@@ -119,6 +119,10 @@ module.exports = {
             result.damage.slice +=   7 * tier;
             result.blood_gain +=     2 * tier;
             return result
+        },
+        power_battery: (result, tier) => {
+            result.damage.blunt += 1 * tier;
+            return result
         }
     },
 

@@ -109,7 +109,7 @@ add_skill('less_stress_from_making_food', 3, 0, ['less_stress_from_crafting']);
 add_skill('disenchanting',                1, 3, ['first_steps_in_magic', 'less_stress_from_crafting']);
 add_skill('less_stress_from_disenchant',  3, 0, ['disenchanting']);
 add_skill('sewing',                       1);
-add_skill('cook',                         1);
+add_skill('cook',                         5);
 add_skill('enchanting',                   1, 3, ['first_steps_in_magic', 'less_stress_from_crafting']);
 add_skill('less_stress_from_enchant',     3, 0, ['enchanting']);
 

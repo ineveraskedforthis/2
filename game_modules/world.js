@@ -165,7 +165,7 @@ module.exports = class World {
 
     async update(pool) {
         this.battle_tick += 1;
-        if (this.battle_tick >= 3) {
+        if (this.battle_tick >= 2) {
             this.battle_tick = 0;
 
             for (let i = 0; i < this.x; i++) {
@@ -183,15 +183,15 @@ module.exports = class World {
             for (let i of keys) {
                 await this.agents[i].update(pool);
             }
-            for (let i of Object.keys(this.agents)) {
-                let agent = this.agents[i]
-                console.log(agent.name.padEnd(15) + agent.savings.get().toString().padStart(10) + agent.data.price.toString().padStart(10) + agent.data.sold.toString().padStart(10))
-            }
+            // for (let i of Object.keys(this.agents)) {
+            //     let agent = this.agents[i]
+            //     console.log(agent.name.padEnd(15) + agent.savings.get().toString().padStart(10) + agent.data.price.toString().padStart(10) + agent.data.sold.toString().padStart(10))
+            // }
             let market = this.map.cells[0][0].market;
-            console.log('meat'.padEnd(10) + market.guess_tag_cost('meat', 1).toString().padStart(10))
-            console.log('leather'.padEnd(10) + market.guess_tag_cost('leather', 1).toString().padStart(10))
-            console.log('clothes'.padEnd(10) + market.guess_tag_cost('clothes', 1).toString().padStart(10))
-            console.log('food'.padEnd(10) + market.guess_tag_cost('food', 1).toString().padStart(10))
+            // console.log('meat'.padEnd(10) + market.guess_tag_cost('meat', 1).toString().padStart(10))
+            // console.log('leather'.padEnd(10) + market.guess_tag_cost('leather', 1).toString().padStart(10))
+            // console.log('clothes'.padEnd(10) + market.guess_tag_cost('clothes', 1).toString().padStart(10))
+            // console.log('food'.padEnd(10) + market.guess_tag_cost('food', 1).toString().padStart(10))
         }
         
         
@@ -330,17 +330,21 @@ module.exports = class World {
     }
 
     async kill(pool, char_id) {
-        console.log('kill ' + char_id);
+        
         let character = this.chars[char_id];
-        await character.clear_orders(pool);
-        await character.set(pool, 'dead', true);
-        if (character.data.is_player) {
-            var user = this.user_manager.get_user_from_character(character);
-            user.send_death_message()
-            var id = await user.get_new_char(pool);
-            this.chars[id] = user.character;
+        if (!character.data.dead) {
+            await character.clear_orders(pool);
+            await character.set(pool, 'dead', true);
+            console.log('kill ' + char_id);
+            if (character.data.is_player) {
+                var user = this.user_manager.get_user_from_character(character);
+                user.send_death_message()
+                var id = await user.get_new_char(pool);
+                this.chars[id] = user.character;
+            }
+            await character.delete_from_db(pool);
         }
-        await character.delete_from_db(pool);
+        
         // this.chars[character.id] = null;
     }
 

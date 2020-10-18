@@ -617,11 +617,11 @@ div#bars_row>div{
   /* Tooltip text */
   .tooltip .tooltiptext {
     visibility: hidden;
-    width: 120px;
+    width: 140px;
     background-color: rgb(49, 0, 0);
     color: rgb(13, 228, 77);
-    text-align: center;
-    padding: 5px 0;
+    text-align: left;
+    padding: 5px 2px;
     border-radius: 6px;
   
     /* Position the tooltip text */

@@ -30,7 +30,7 @@ module.exports = class User {
         this.world.chars[this.char_id] = this.character;
         await this.save_to_db(pool);
         if (this.socket != undefined) {
-            // console.log(this.character.data.other)
+            // 
             this.world.socket_manager.send_all(this.character)
         }
         return this.char_id

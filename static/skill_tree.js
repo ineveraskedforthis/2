@@ -1,4 +1,4 @@
-SKILL_DESC = {
+const SKILL_DESC = {
     'warrior_training': 'improve your physical conditions, at final level gives you a tactic slot 2',
     'mage_training': 'improve your magical power, at final level gives you a tactic slot 2',
     'charge': 'unlock charge ability: you are moved to your enemy position at cost of increasing rage',
@@ -56,7 +56,7 @@ class SkillTree {
             let row = this.table.insertRow();
             let skill = this.data[i];
             let skill_cell = row.insertCell(0);
-            skill_cell.innerHTML = skill.tag;
+            skill_cell.innerHTML = '<div class = "tooltip"><span class="tooltiptext">'+ SKILL_DESC[skill.tag] + '</span>' + skill.tag + '</div>';
             let req_cell = row.insertCell(1);
             req_cell.innerHTML = 'required level ' + skill.req_level + ' ' + skill.req_skills + ' ';
             let tmp = row.insertCell(2)

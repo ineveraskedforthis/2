@@ -39,7 +39,7 @@ for (let i = 0; i < 12; i++) {
     let num = ("0000" + i).slice(-4);
     add_image_to_load('test_move_' + num, 'test_move_' + num);
 }
-for (let i = 0; i < 8; i++) {
+for (let i = 0; i < 4; i++) {
     let num = ("0000" + i).slice(-4);
     add_image_to_load('test_attack_' + num, 'test_attack_' + num);
 }

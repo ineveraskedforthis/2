@@ -406,10 +406,16 @@ module.exports = class Character {
             let tmp = this.stash.get('meat');
             if (tmp > 0) {
                 this.stash.inc('meat', -1);
-                this.stash.inc('food', +1);
-                let stress_gained = this.calculate_gained_craft_stress('food');
-                this.change_stress(stress_gained);
-                this.changed = true;
+                let chance = this.get_craft_food_chance();
+                let dice = Math.random()
+                let stress_gained = this.calculate_gained_failed_craft_stress('food');
+                if (dice < chance) {
+                    this.stash.inc('food', +1);
+                    this.change_stress(Math.floor(stress_gained / 2));
+                } else {
+                    this.change_stress(stress_gained);
+                }     
+                this.changed = true;       
             } 
             else {
                 res = 'not_enough_meat'
@@ -419,10 +425,16 @@ module.exports = class Character {
         } else if (!('cook' in this.data.skills)) {
             res = 'skill_cook_is_not_learnt'
         }
-        
         return res
     }
 
+    get_craft_food_chance() {
+        let chance = 0.0;
+        if ('cook' in this.data.skills) {
+            chance += this.data.skills['cook'] * 0.2
+        }
+        return chance
+    }
 
     async craft_clothes(pool) {
         let res = 'ok';
@@ -431,7 +443,7 @@ module.exports = class Character {
             if (tmp > 0) {
                 this.stash.inc('leather', -1);
                 this.stash.inc('clothes', +1);
-                let stress_gained = this.calculate_gained_craft_stress('clothes');
+                let stress_gained = this.calculate_gained_failed_craft_stress('clothes');
                 this.change_stress(stress_gained);
                 this.changed = true;
             } else {
@@ -457,7 +469,7 @@ module.exports = class Character {
             if (tmp > 0) {
                 this.stash.inc('zaz', -1);
                 this.world.roll_affixes(this.equip.data.backpack[index], 5);
-                let stress_gained = this.calculate_gained_craft_stress('enchanting');
+                let stress_gained = this.calculate_gained_failed_craft_stress('enchanting');
                 this.change_stress(stress_gained);
             } else {
                 res = 'not_enough_zaz'
@@ -484,7 +496,7 @@ module.exports = class Character {
             if (dice > 0.9) {
                 this.stash.inc('zaz', +1);
             }
-            let stress_gained = this.calculate_gained_craft_stress('disenchanting');
+            let stress_gained = this.calculate_gained_failed_craft_stress('disenchanting');
             this.change_stress(stress_gained);
             this.changed = true;   
         } else if (this.data.in_battle) {
@@ -496,10 +508,10 @@ module.exports = class Character {
     }
 
     //craft misc
-    calculate_gained_craft_stress(tag) {
-        let total = 109;
+    calculate_gained_failed_craft_stress(tag) {
+        let total = 15;
         if ('less_stress_from_crafting' in this.data.skills) {
-            total -= this.data.skills['less_stress_from_crafting'] * 5;
+            total -= this.data.skills['less_stress_from_crafting'] * 3;
         }
         if (tag == 'food') {
             if ('less_stress_from_making_food' in this.data.skills) {
@@ -511,18 +523,14 @@ module.exports = class Character {
                 total -= this.data.skills['less_stress_from_enchanting'] * 5
             }
         }
-
         if (tag == 'disenchanting') {
             if ('less_stress_from_disenchanting' in this.data.skills) {
                 total -= this.data.skills['less_stress_from_disenchanting'] * 5
             }
         }
-
+        total = Math.max(0, total)
         return total;
     }
-    
-
-
 
     //attack misc
 
