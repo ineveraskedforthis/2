@@ -497,6 +497,7 @@ class CharInfoMonster {
     }
 
     update_status(data) {
+        console.log(data)
         this.rage.innerHTML = data.rage;
         this.rage_display.style.height = `${Math.floor(data.rage)}%`;
 

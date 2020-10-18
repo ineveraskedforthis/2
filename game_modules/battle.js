@@ -150,7 +150,9 @@ module.exports = class Battle {
         var exp = 0;
         for (var i = 0; i < this.ids.length; i++) {
             if (this.teams[i] == team) {
-                exp += this.world.chars[this.ids[i]].get_exp_reward();
+                if (this.world.chars[this.ids[i]] != undefined)                {
+                    exp+= this.world.chars[this.ids[i]].get_exp_reward();
+                }
             }
         }
         return exp;
@@ -165,12 +167,15 @@ module.exports = class Battle {
         }
         for (let i = 0; i < this.ids.length; i++) {
             let character = this.world.chars[this.ids[i]];
-            if (team != 2) {
-                if (this.teams[i] == team && !character.data.dead) {
-                    await character.give_exp(pool, Math.floor(exp / n));
-                }
-            }            
-            await character.set(pool, 'in_battle', false);
+            if (character != undefined)                {
+                if (team != 2) {
+                    if ((this.teams[i] == team) && (!character.data.dead)) {
+                        await character.give_exp(pool, Math.floor(exp / n));
+                    }
+                }            
+                await character.set(pool, 'in_battle', false);
+            }
+            
         }
         if (team != 2) {
             var i = 0;
@@ -180,7 +185,7 @@ module.exports = class Battle {
             var leader = this.world.chars[this.ids[i]];
             for (let i = 0; i < this.ids.length; i ++) {
                 let character = this.world.chars[this.ids[i]];
-                if (character.hp == 0) {
+                if ((character != undefined) && (character.hp == 0)) {
                     await character.transfer_all(pool, this);
                     leader.equip.add_item(this.world.generate_loot(character.get_item_lvl(), character.get_tag()));
                 }

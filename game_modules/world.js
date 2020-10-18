@@ -250,8 +250,10 @@ module.exports = class World {
                 }
                 for (let i = 0; i < battle.ids.length; i++) {
                     let character = this.chars[battle.ids[i]];
-                    if (character.data.is_player) {
-                        this.socket_manager.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
+                    if (character != undefined) {
+                        if (character.data.is_player) {
+                            this.socket_manager.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
+                        }
                     }
                 }
                 await this.delete_battle(pool, battle.id);
@@ -334,6 +336,7 @@ module.exports = class World {
         await character.set(pool, 'dead', true);
         if (character.data.is_player) {
             var user = this.user_manager.get_user_from_character(character);
+            user.send_death_message()
             var id = await user.get_new_char(pool);
             this.chars[id] = user.character;
         }

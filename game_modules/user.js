@@ -30,6 +30,7 @@ module.exports = class User {
         this.world.chars[this.char_id] = this.character;
         await this.save_to_db(pool);
         if (this.socket != undefined) {
+            // console.log(this.character.data.other)
             this.world.socket_manager.send_all(this.character)
         }
         return this.char_id
@@ -37,6 +38,12 @@ module.exports = class User {
 
     set_socket(socket) {
         this.socket = socket;
+    }
+
+    send_death_message() {
+        if (this.socket != undefined) {
+            this.socket.emit('alert', 'you_are_dead')
+        }
     }
 
     async load_from_json(pool, data) {

@@ -209,7 +209,7 @@ module.exports = class SocketManager {
     send_all(character) {
         this.send_to_character_user(character, 'name', character.name);
         this.send_hp_update(character);
-        this.send_exp_update(character)
+        this.send_exp_update(character);
         this.send_status_update(character);
         this.send_tactics_info(character);
         this.send_savings_update(character);
