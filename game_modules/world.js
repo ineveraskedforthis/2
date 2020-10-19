@@ -455,10 +455,10 @@ module.exports = class World {
     }
 
     generate_loot(level, dead_tag) {
-        // let loot_dice = Math.random();
-        // if (loot_dice < 0.5) {
-        //     return undefined;
-        // }
+        let loot_dice = Math.random();
+        if (loot_dice < 0.3) {
+            return undefined;
+        }
         let item = {};
         let tag_dice = Math.random();
         
