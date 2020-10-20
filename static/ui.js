@@ -70,33 +70,9 @@ socket.on('connect', () => {
     }
 })
 
-var prev_mouse_x = null;
-var prev_mouse_y = null;
+
 
 var SKILLS = {};
-
-function get_pos_in_canvas(canvas, event) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
-    };
-}
-
-// document.getElementById('map').ondragstart = (event) => {
-//     prev_mouse_x = null;
-//     prev_mouse_y = null;
-// }
-
-// document.getElementById('map').ondrag = (event) => {
-//     if (prev_mouse_x != null) {
-//         var dx = event.pageX - prev_mouse_x;
-//         var dy = event.pageY - prev_mouse_y;
-//         map.move(dx, dy);
-//     }
-//     prev_mouse_x = event.pageX;
-//     prev_mouse_y = event.pageY;
-// }
 
 
 let draw_char = localStorage.getItem('char_image');
@@ -112,7 +88,50 @@ let draw_char = localStorage.getItem('char_image');
 }
 
 
+
+var prev_mouse_x = null;
+var prev_mouse_y = null;
+var pressed = false;
+
+
+
+
+
+function get_pos_in_canvas(canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+}
+
+
+document.getElementById('map').ondrag = (event) => {
+    
+}
+
+document.getElementById('map').onmousedown = event => {
+    pressed = true;
+    prev_mouse_x = null;
+    prev_mouse_y = null;
+
+    let mouse_pos = get_pos_in_canvas(map.canvas, event);    
+    let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
+    map.select_hex(selected_hex[0], selected_hex[1]);
+}
+
 document.getElementById('map').onmousemove = event => {
+    if (pressed)
+    {
+        if (prev_mouse_x != null) {
+            var dx = event.pageX - prev_mouse_x;
+            var dy = event.pageY - prev_mouse_y;
+            map.move(dx, dy);
+        }
+        prev_mouse_x = event.pageX;
+        prev_mouse_y = event.pageY;
+    }
+
     var mouse_pos = get_pos_in_canvas(map.canvas, event);
     var hovered_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
     map.hover_hex(hovered_hex[0], hovered_hex[1]);
@@ -122,6 +141,7 @@ document.getElementById('map').onmouseup = event => {
     let mouse_pos = get_pos_in_canvas(map.canvas, event);
     let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
     map.select_hex(selected_hex[0], selected_hex[1]);
+    pressed = false;
 }
 
 /*function show(tag) {
