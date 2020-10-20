@@ -106,10 +106,6 @@ function get_pos_in_canvas(canvas, event) {
 }
 
 
-document.getElementById('map').ondrag = (event) => {
-    
-}
-
 document.getElementById('map').onmousedown = event => {
     pressed = true;
     prev_mouse_x = null;
