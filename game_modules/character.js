@@ -20,7 +20,7 @@ module.exports = class Character {
         this.changed = false;
     }
 
-    init_base_values(id, name, hp, max_hp, exp, level, cell_id, user_id = -1) {
+    init_base_values(name, hp, max_hp, exp, level, cell_id, user_id = -1) {
         this.name = name;
         var is_player = true
         if (user_id == -1) {
@@ -28,7 +28,7 @@ module.exports = class Character {
         }
         this.hp = hp;
         this.max_hp = max_hp;
-        this.id = id;        
+                
         this.equip.data.right_hand = weapons.fist;        
         this.user_id = user_id;
         this.cell_id = cell_id;
@@ -65,9 +65,10 @@ module.exports = class Character {
     }
 
     async init(pool, name, cell_id, user_id = -1) {
-        var id = await this.world.get_new_id(pool, 'char_id');
-        this.init_base_values(id, name, 100, 100, 0, 0, cell_id, user_id);
-        await this.load_to_db(pool);
+        this.init_base_values(name, 100, 100, 0, 0, cell_id, user_id);
+        let id = await this.load_to_db(pool);
+        this.id = id;
+        await this.save_to_db(pool);
         return id;
     }
     
@@ -813,7 +814,8 @@ module.exports = class Character {
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.new_char_query, [this.id, this.user_id, this.cell_id, this.name, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
+        let result = await common.send_query(pool, constants.new_char_query, [this.user_id, this.cell_id, this.name, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
+        return result.rows[0].id;
     }
 
     async save_to_db(pool, save = true) {

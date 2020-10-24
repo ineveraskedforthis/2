@@ -24,10 +24,9 @@ module.exports = class User {
     }
 
     async get_new_char(pool) {
-        this.character = new Character(this.world);
-        this.char_id = await this.character.init(pool, this.login, 0, this.id);
+        this.character = await this.world.create_new_character(pool, this.login, 0, this.id)
+        this.char_id = this.character.id
         this.character.user = this;
-        this.world.chars[this.char_id] = this.character;
         await this.save_to_db(pool);
         if (this.socket != undefined) {
             // 
@@ -53,9 +52,9 @@ module.exports = class User {
         this.set_password_hash(data.password_hash)
         this.char_id = data.char_id;
         console.log('user ' + this.id + ' loading character ' + this.char_id);
-        console.log('character is loaded? ' + (this.world.chars[this.char_id] != undefined));
-        if (this.world.chars[this.char_id] != undefined) {
-            this.character = this.world.chars[this.char_id]
+        console.log('character is loaded? ' + (this.world.get_char_from_id(this.char_id) != undefined));
+        if (this.world.get_char_from_id(this.char_id) != undefined) {
+            this.character = this.world.get_char_from_id(this.char_id)
             this.character.user = this;
             if (this.character.hp == 0) {
                 await this.world.kill(pool, this.character.id)

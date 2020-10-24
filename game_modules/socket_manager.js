@@ -393,7 +393,7 @@ module.exports = class SocketManager {
     send_battle_data_to_user(user) {
         let character = user.character;
         if (character.data.in_battle) {
-            let battle = this.world.battles[character.data.battle_id];
+            let battle = this.world.get_battle_from_id(character.data.battle_id);
             this.send_to_user(user, 'battle-has-started', battle.get_data());
         }
     }
@@ -525,6 +525,14 @@ module.exports = class SocketManager {
                     console.log(i.current_user.login)
                 }
                 
+            }
+        }
+    }
+
+    send_all_market_info() {
+        for (let i = 0; i < this.x; i++) {
+            for (let j = 0; j < this.y; j++) {
+                this.send_market_info(this.world.entity_manager.map.cells[i][j]);
             }
         }
     }

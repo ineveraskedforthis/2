@@ -12,8 +12,7 @@ module.exports = class Agent {
         this.tag = 'agent'
     }
 
-    init_base_values(id, cell_id, name = null) {
-        this.id = id;
+    init_base_values(cell_id, name = null) {
         this.cell_id = cell_id;
         this.name = name;
         this.update_name();
@@ -27,9 +26,10 @@ module.exports = class Agent {
     }
 
     async init(pool, cell_id, name = null) {
-        var id = await this.world.get_new_id(pool, 'agent_id');
-        this.init_base_values(id, cell_id, name);
-        await this.load_to_db(pool);
+        this.init_base_values(cell_id, name);
+        this.id = await this.load_to_db(pool);
+        await this.save_to_db(pool)
+        return this.id;
     }
 
     async update(pool, save = true) {
@@ -38,7 +38,8 @@ module.exports = class Agent {
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.insert_agent_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json()]);
+        let res = await common.send_query(pool, constants.insert_agent_query, [this.cell_id, this.name, this.savings.get_json(), this.stash.get_json()]);
+        return res.rows[0].id;
     }
 
     async save_to_db(pool, save = true) {

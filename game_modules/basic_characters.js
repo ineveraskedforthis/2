@@ -2,11 +2,10 @@ var Character = require("./character.js")
 
 class Rat extends Character {
     async init(pool, cell_id, name = null) {
-        var id = await this.world.get_new_id(pool, 'char_id');
         if (name == null) {
-            name = 'rat ' + id;
+            name = 'rat';
         }
-        this.init_base_values(id, name, 40, 40, 0, 0, cell_id);
+        this.init_base_values(name, 40, 40, 0, 0, cell_id);
         this.data.stats = this.world.constants.base_stats.rat
         this.data.base_resists = this.world.constants.base_resists.rat
         this.equip.data.right_hand = {tag: 'empty', affixes: 0}
@@ -14,7 +13,7 @@ class Rat extends Character {
         this.data.model = 'rat'
         this.data.exp_reward = 50
         await this.load_to_db(pool);
-        return id;
+        return this.id;
     }
 
     get_range() {
@@ -31,11 +30,10 @@ class Rat extends Character {
 
 class Elodino extends Character {
     async init(pool, cell_id, name = null) {
-        var id = await this.world.get_new_id(pool, 'char_id');
         if (name == null) {
-            name = 'elodino ' + id;
+            name = 'elodino';
         }
-        this.init_base_values(id, name, 100, 100, 0, 0, cell_id);
+        this.init_base_values(name, 100, 100, 0, 0, cell_id);
         this.data.stats = this.world.constants.base_stats.elodino
         this.data.base_resists = this.world.constants.base_resists.rat
         this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 1}}
@@ -43,7 +41,7 @@ class Elodino extends Character {
         this.stash.inc('meat', 2);
         this.data.model = 'elodino'
         await this.load_to_db(pool);
-        return id;
+        return this.id;
     }
 
     get_range() {

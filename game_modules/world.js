@@ -7,6 +7,7 @@ const StateMachines = require("./StateMachines.js");
 var UserManager = require("./user_manager.js");
 var SocketManager = require("./socket_manager.js");
 var EntityManager = require("./entity_manager.js");
+const Character = require("./character.js");
 
 
 
@@ -95,11 +96,7 @@ module.exports = class World {
 
         if (this.battle_tick == 0){
             await this.entity_manager.update_battles(pool)
-            for (let i = 0; i < this.x; i++) {
-                for (let j = 0; j < this.y; j++) {
-                    this.socket_manager.send_market_info(this.map.cells[i][j]);
-                }
-            }
+            this.socket_manager.send_all_market_info()
         }
 
         this.pops_tick += 1;
@@ -126,7 +123,13 @@ module.exports = class World {
         }
     }
 
-    
+    get_char_from_id(id) {
+        return this.entity_manager.chars[id]
+    }
+
+    get_battle_from_id(id) {
+        return this.entity_manager.battles[id]
+    }
 
     get_cell(x, y) {
         return this.entity_manager.get_cell(x, y);
@@ -137,7 +140,11 @@ module.exports = class World {
     }
 
     get_cell_id_by_x_y(x, y) {
-        return this.entity_manager.get_cell_by_x_y(x, y);
+        return this.entity_manager.get_cell_id_by_x_y(x, y);
+    }
+
+    get_cell_x_y_by_id(id) {
+        return {x: Math.floor(id / this.y), y: id % this.y}
     }
 
     async get_new_id(pool, str) {
@@ -188,7 +195,11 @@ module.exports = class World {
     }
 
     async load_character_data_to_memory(pool, data) {
-        return this.entity_manager.load_character_data_to_memory(pool, data)
+        return await this.entity_manager.load_character_data_to_memory(pool, data)
+    }
+
+    async create_new_character(pool, name, cell_id, user_id) {
+        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id)
     }
 
     get_loot_tag(dice, dead_tag) {
@@ -271,8 +282,6 @@ module.exports = class World {
         return 0.001
     }
 
-    get_cell_x_y_by_id(id) {
-        return {x: Math.floor(id / this.y), y: id % this.y}
-    }
+    
 
 }

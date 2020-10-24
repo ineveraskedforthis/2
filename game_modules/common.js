@@ -29,7 +29,9 @@ module.exports =
 
     drop_tables: async function (client, tables) {
         for (let i = 0; i < tables.length; i++) {
-            await client.query('DROP TABLE IF EXISTS ' + tables[i]);
+            if (tables[i] != 'messages') {
+                await client.query('DROP TABLE IF EXISTS ' + tables[i]);
+            }
         }
     },
 

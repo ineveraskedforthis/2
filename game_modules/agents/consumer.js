@@ -12,8 +12,8 @@ class Consumer extends Agent {
         this.tag = 'consu'
     }
     
-    init_base_values(id, cell_id, data, name = null) {
-        super.init_base_values(id, cell_id, name);
+    init_base_values(cell_id, data, name = null) {
+        super.init_base_values(cell_id, name);
         this.data = data;
     }
 
@@ -28,9 +28,9 @@ class Consumer extends Agent {
     }
 
     async init(pool, cell_id, data, name = null) {
-        var id = await this.world.get_new_id('consumer');
-        this.init_base_values(id, cell_id, data, name);
-        await this.load_to_db(pool);
+        this.init_base_values(cell_id, data, name);
+        this.id = await this.load_to_db(pool);
+        await this.save_to_db(pool)
     }
 
     async update(pool, save = true) {
@@ -74,7 +74,8 @@ class Consumer extends Agent {
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.insert_consumer_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data]);
+        let res = await common.send_query(pool, constants.insert_consumer_query, [this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data]);
+        return res.rows[0].id;
     }
 
     async save_to_db(pool) {

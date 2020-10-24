@@ -23,7 +23,6 @@ module.exports = class UserManager{
         new_user.set_password_hash(hash);
         var id = await new_user.init(pool);
         this.users[id] = new_user;
-        this.world.chars[new_user.character.id] = new_user.character;
         return({reg_promt: 'ok', user: new_user});
     }
 

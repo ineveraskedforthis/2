@@ -7,7 +7,7 @@ module.exports = class BattleAI {
         var ids = battle.ids;
         for (var i = 0; i < positions.length; i++) {
             var dx = positions[i] - positions[index];
-            if (((Math.abs(dx) <= Math.abs(min_distance)) || (closest_enemy == null)) && (teams[i] != teams[index]) && (!battle.world.chars[ids[i]].data.dead)) {
+            if (((Math.abs(dx) <= Math.abs(min_distance)) || (closest_enemy == null)) && (teams[i] != teams[index]) && (!battle.world.get_char_from_id(ids[i]).data.dead)) {
                 closest_enemy = i;
                 min_distance = dx;
             }
@@ -62,7 +62,7 @@ module.exports = class BattleAI {
             target = agent;
         } else if (target == 'closest_enemy') {
             var target_id = BattleAI.calculate_closest_enemy(battle, index)
-            target = battle.world.chars[battle.ids[target_id]]
+            target = battle.world.get_char_from_id(battle.ids[target_id])
         }
         var value1 = BattleAI.get_value_from_tactic_trigger_tag(target, tag);
         return BattleAI.compare(value1, value, sign);
@@ -78,8 +78,7 @@ module.exports = class BattleAI {
             true_target = index
         }
         if (action_tag == 'attack') {
-            var actor = battle.world.chars[battle.ids[index]];
-            // var target = battle.world.chars[battle.ids[true_target]];
+            var actor = battle.world.get_char_from_id(battle.ids[index]);
             let delta = battle.positions[true_target] - battle.positions[index];
             if (Math.abs(delta) > actor.get_range()) {
                 action = 'move';
@@ -106,7 +105,7 @@ module.exports = class BattleAI {
     static async action(pool, agent, save) {
         var world = agent.world;
         var tactic = agent.data.tactic;
-        var battle = world.battles[agent.data.battle_id];
+        var battle = world.get_battle_from_id(agent.data.battle_id);
         var index = agent.data.index_in_battle;
         for (var i = 0; i <= agent.data.stats.tac; i++) {
             var slot = tactic['s' + i];

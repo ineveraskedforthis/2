@@ -137,9 +137,9 @@ module.exports = class EntityManager {
                 for (let i = 0; i < battle.ids.length; i++) {
                     let character = this.chars[battle.ids[i]];
                     if (character.data.is_player) {
-                        this.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
-                        this.socket_manager.send_to_character_user(character, 'enemy-update', status);
-                        log.forEach(log_entry => { this.socket_manager.send_to_character_user(character, 'battle-action', log_entry)});
+                        this.world.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
+                        this.world.socket_manager.send_to_character_user(character, 'enemy-update', status);
+                        log.forEach(log_entry => { this.world.socket_manager.send_to_character_user(character, 'battle-action', log_entry)});
                     }
                 }
             } else {
@@ -155,7 +155,7 @@ module.exports = class EntityManager {
                     let character = this.chars[battle.ids[i]];
                     if (character != undefined) {
                         if (character.data.is_player) {
-                            this.socket_manager.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
+                            this.world.socket_manager.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
                         }
                     }
                 }
@@ -173,11 +173,15 @@ module.exports = class EntityManager {
     }
 
     get_cell_id_by_x_y(x, y) {
-        return x * this.y + y
+        return x * this.world.y + y
     }
 
     async add_order(pool, order) {
         this.orders[order.id] = order;
+    }
+
+    add_item_order(order) {
+        this.item_orders[order.id] = order
     }
 
     get_order (order_id) {
@@ -211,7 +215,7 @@ module.exports = class EntityManager {
             await character.set(pool, 'dead', true);
             console.log('kill ' + char_id);
             if (character.data.is_player) {
-                var user = this.user_manager.get_user_from_character(character);
+                var user = this.world.user_manager.get_user_from_character(character);
                 user.send_death_message()
                 var id = await user.get_new_char(pool);
                 this.chars[id] = user.character;
@@ -224,13 +228,12 @@ module.exports = class EntityManager {
 
     async create_monster(pool, monster_class, cell_id) {
         var monster = new monster_class(this.world);
-        var id = await monster.init(pool, cell_id);
-        this.chars[id] = monster;
+        await monster.init(pool, cell_id);
+        this.chars[monster.id] = monster;
         return monster;
     }
 
     async create_pop(pool, x, y, size, needs, race_tag, name, savings, state) {
-        await this.entity_manager.create_pop(pool, pool, x, y, size, needs, race_tag, name, savings, state)
         let pop = new Pop(this.world);
         let cell_id = this.get_cell_id_by_x_y(x, y)
         await pop.init(pool, cell_id, size, needs, race_tag, name, state)
@@ -241,16 +244,23 @@ module.exports = class EntityManager {
 
     async create_battle(pool, attackers, defenders) {
         var battle = new Battle(this.world);
-        var id = await battle.init(pool);
+        await battle.init(pool);
         for (let i = 0; i < attackers.length; i++) {
             await battle.add_fighter(pool, attackers[i], 0);
         }
         for (let i = 0; i < defenders.length; i++) {
             await battle.add_fighter(pool, defenders[i], 1);
         }
-        this.battles[id] = battle;
+        this.battles[battle.id] = battle;
         return battle;
     }
+
+    async create_new_character(pool, name, cell_id, user_id) {
+        let char = new Character(this.world);
+        await char.init(pool, name, cell_id, user_id);
+        this.chars[char.id] = char
+        return char
+    }    
 
     async delete_battle(pool, id) {
         var battle = this.battles[id];

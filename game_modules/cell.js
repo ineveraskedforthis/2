@@ -17,11 +17,10 @@ module.exports = class Cell {
         this.item_market = new MarketItems(this.world, this.id);
     }
 
-    async init(pool, world) {     
+    async init(pool) {     
         this.name = this.i + ' ' + this.j;   
         this.market_id = await this.market.init(pool);
         this.item_market_id = await this.item_market.init(pool);
-        this.job_graph = new ProfessionGraph(pool, world, this.world.PROFESSIONS);
         await this.load_to_db(pool);
     }
 
@@ -77,6 +76,7 @@ module.exports = class Cell {
     // }
 
     async load_to_db(pool) {
+        console.log(this.id)
         await common.send_query(pool, constants.new_cell_query, [this.id, this.i, this.j, this.name, this.market_id, this.item_market_id, this.owner_id, this.pop_id]);
     }
 }

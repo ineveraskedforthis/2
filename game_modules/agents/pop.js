@@ -12,8 +12,8 @@ module.exports = class Pop extends Consumer {
         this.tag = 'pop'
     }
 
-    init_base_values(id, cell_id, data, race_tag, name = null, AIstate = BasicPopAIstate) {
-        super.init_base_values(id, cell_id, data, name);
+    init_base_values(cell_id, data, race_tag, name = null, AIstate = BasicPopAIstate) {
+        super.init_base_values(cell_id, data, name);
         this.AI = new StateMachine(this, AIstate);
         this.race_tag = race_tag;
         this.data.growth_mod = 0;
@@ -25,9 +25,10 @@ module.exports = class Pop extends Consumer {
     }
 
     async init(pool, cell_id, size, needs, race_tag, name = null, AIstate = BasicPopAIstate) {
-        var id = await this.world.get_new_id(pool, 'agent_id');
-        this.init_base_values(id, cell_id, {'size': size, 'needs': needs}, race_tag, name, AIstate);
-        await this.load_to_db(pool);
+        this.init_base_values(cell_id, {'size': size, 'needs': needs}, race_tag, name, AIstate);
+        this.id = await this.load_to_db(pool);
+        await this.save_to_db(pool);
+        return this.id;
     }
 
     async update(pool, growth_flag = false, save = true) {
@@ -80,7 +81,8 @@ module.exports = class Pop extends Consumer {
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.insert_pop_query, [this.id, this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.race_tag, this.AI.curr_state.tag()]);
+        let res = await common.send_query(pool, constants.insert_pop_query, [this.cell_id, this.name, this.savings.get_json(), this.stash.get_json(), this.data, this.race_tag, this.AI.curr_state.tag()]);
+        return res.rows[0].id;
     }
 
     async save_to_db(pool, save = true) {

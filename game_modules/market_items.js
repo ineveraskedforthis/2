@@ -32,7 +32,7 @@ class MarketItems {
         let dt = time_intervals[time_interval];
         let id = await order.init(pool, seller, item, buyout_price, starting_price, time + dt)
         this.orders.add(id)
-        this.world.item_orders[id] = order;
+        this.world.add_item_order(order);
         this.CHANGED = true
     }
 

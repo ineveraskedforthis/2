@@ -27,7 +27,7 @@ module.exports = class Battle {
     get_data() {
         var data = {}
         for (var i = 0; i < this.ids.length; i++) {
-                var character = this.world.chars[this.ids[i]]
+                var character = this.world.get_char_from_id(this.ids[i])
                 data[i] = {}
                 data[i].id = this.ids[i];
                 data[i].position = this.positions[i];
@@ -54,7 +54,7 @@ module.exports = class Battle {
     async update(pool) {
         var log = [];
         for (var i = 0; i < this.ids.length; i++) {
-            var char = this.world.chars[this.ids[i]]
+            var char = this.world.get_char_from_id(this.ids[i])
             if (char.get_hp() > 0) {
                 char.update(pool)
                 for (let i = 0; i < char.data.movement_speed; i++) {
@@ -71,7 +71,7 @@ module.exports = class Battle {
         let tmp = []
         for (let i in this.ids) {
             if (this.teams[i] == team) {
-                let char = this.world.chars[this.ids[i]]
+                let char = this.world.get_char_from_id(this.ids[i])
                 tmp.push({name: char.name, hp: char.hp})
             }
         }
@@ -79,7 +79,7 @@ module.exports = class Battle {
     }
 
     async action(pool, actor_index, action) {
-        var character = this.world.chars[this.ids[actor_index]];
+        var character = this.world.get_char_from_id(this.ids[actor_index]);
         if (action.action == null) {
             return {action: 'pff', who: actor_index};
         }
@@ -92,7 +92,7 @@ module.exports = class Battle {
             return {action: 'move', who: actor_index, target: action.target, actor_name: character.name}
         } else if (action.action == 'attack') {
             if (action.target != null) {
-                let target_char = this.world.chars[this.ids[action.target]];
+                let target_char = this.world.get_char_from_id(this.ids[action.target]);
                 let result = await character.attack(pool, target_char);
                 return {action: 'attack', attacker: actor_index, target: action.target, result: result, actor_name: character.name};
             }
@@ -107,7 +107,7 @@ module.exports = class Battle {
             }
         } else if (action.action.startsWith('spell:')) {
             let spell_tag = action.action.substring(6);
-            let target_char = this.world.chars[this.ids[action.target]];
+            let target_char = this.world.get_char_from_id(this.ids[action.target]);
             let result = await character.spell_attack(pool, target_char, spell_tag);
             if ('close_distance' in result) {
                 if (this.positions[action.target] > this.positions[actor_index]) {
@@ -125,7 +125,7 @@ module.exports = class Battle {
     is_over() {
         var hp = [0, 0];
         for (var i = 0; i < this.ids.length; i++) {
-            var character = this.world.chars[this.ids[i]];
+            var character = this.world.get_char_from_id(this.ids[i]);
             var x = 0
             if (character == null) {
                 x = 0
@@ -150,8 +150,9 @@ module.exports = class Battle {
         var exp = 0;
         for (var i = 0; i < this.ids.length; i++) {
             if (this.teams[i] == team) {
-                if (this.world.chars[this.ids[i]] != undefined)                {
-                    exp+= this.world.chars[this.ids[i]].get_exp_reward();
+                let char = this.world.get_char_from_id(this.ids[i]);
+                if (char != undefined) {
+                    exp += char.get_exp_reward();
                 }
             }
         }
@@ -166,7 +167,7 @@ module.exports = class Battle {
             }
         }
         for (let i = 0; i < this.ids.length; i++) {
-            let character = this.world.chars[this.ids[i]];
+            let character = this.world.get_char_from_id(this.ids[i]);
             if (character != undefined)                {
                 if (team != 2) {
                     if ((this.teams[i] == team) && (!character.data.dead)) {
@@ -182,9 +183,9 @@ module.exports = class Battle {
             while (this.teams[i] != team) {
                 i += 1;
             }
-            var leader = this.world.chars[this.ids[i]];
+            var leader = this.world.get_char_from_id(this.ids[i]);
             for (let i = 0; i < this.ids.length; i ++) {
-                let character = this.world.chars[this.ids[i]];
+                let character = this.world.get_char_from_id(this.ids[i]);
                 if ((character != undefined) && (character.hp == 0)) {
                     await character.transfer_all(pool, this);
                     leader.equip.add_item(this.world.generate_loot(character.get_item_lvl(), character.get_tag()));
@@ -198,7 +199,7 @@ module.exports = class Battle {
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.new_battle_query, [this.id, this.ids, this.teams, this.positions, this.savings.get_json(), this.stash.get_json()]);
+        await common.send_query(pool, constants.new_battle_query, [this.ids, this.teams, this.positions, this.savings.get_json(), this.stash.get_json()]);
     }
 
     load_from_json(data) {
