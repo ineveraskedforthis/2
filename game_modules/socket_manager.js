@@ -530,8 +530,8 @@ module.exports = class SocketManager {
     }
 
     send_all_market_info() {
-        for (let i = 0; i < this.x; i++) {
-            for (let j = 0; j < this.y; j++) {
+        for (let i = 0; i < this.world.x; i++) {
+            for (let j = 0; j < this.world.y; j++) {
                 this.send_market_info(this.world.entity_manager.map.cells[i][j]);
             }
         }

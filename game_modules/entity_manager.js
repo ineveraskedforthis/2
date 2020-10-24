@@ -239,6 +239,7 @@ module.exports = class EntityManager {
         await pop.init(pool, cell_id, size, needs, race_tag, name, state)
         await pop.savings.inc(savings)
         await pop.save_to_db(pool)
+        this.agents[pop.id] = pop;
         return pop
     }
 

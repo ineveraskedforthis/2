@@ -106,7 +106,7 @@ module.exports = class World {
         }        
         
         
-            await this.entity_manager.update_chars(pool)
+        await this.entity_manager.update_chars(pool)
 
         if (this.map_tick >= 1) {
             await this.entity_manager.update_map(pool)
@@ -160,6 +160,10 @@ module.exports = class World {
 
     async add_order(pool, order) {
         this.entity_manager.add_order(pool, order);
+    }
+
+    add_item_order(order) {
+        this.entity_manager.add_item_order(order);
     }
 
     get_order (order_id) {

@@ -66,10 +66,9 @@ module.exports = class Character {
 
     async init(pool, name, cell_id, user_id = -1) {
         this.init_base_values(name, 100, 100, 0, 0, cell_id, user_id);
-        let id = await this.load_to_db(pool);
-        this.id = id;
+        this.id = await this.load_to_db(pool);
         await this.save_to_db(pool);
-        return id;
+        return this.id;
     }
     
     async set_tactic(pool, tactic, save = true) {
