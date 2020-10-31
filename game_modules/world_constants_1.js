@@ -4,16 +4,12 @@
     SKILLS: {},
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
     
-    MAP: {
-        '0_0': {move: true, monster: 'rat'},
-        '0_1': {move: false, monster: 'rat'},
-        '1_0': {move: true, monster: 'graci'},
-        '1_1': {move: true, monster: 'graci'},
-        '2_0': {move: true, monster: 'elodino'},
-        '2_1': {move: true, monster: 'elodino'},
-        '2_2': {move: true, monster: 'elodino'},
-        '1_2': {move: true, monster: 'graci'},
-        '0_2': {move: false, monster: 'elodino'},
+    territories: {
+        'colony': [[0, 3], [0, 4], [1, 2], [1, 3], [1, 4], [1, 5], [1, 6], '2_2', '2_3', '2_4', '2_5', '2_6', '2_7', '3_2', '3_3', '3_4', '3_5', '3_6', '3_7', '3_8'],
+        'sea': ['0_0', '0_1', '0_2', '1_0', '1_1', '2_0', '2_1', '3_0', '3_1']
+    },
+    starting_position: {
+        'colony': [0, 3],
     },
     default_tactic_slot: {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}},
     empty_tactic_slot: {trigger: {target: 'closest_enemy', tag: 'hp', sign: '>', value: '0'}, action: {target: 'closest_enemy', action: 'attack'}},

@@ -76,7 +76,6 @@ module.exports = class Cell {
     // }
 
     async load_to_db(pool) {
-        console.log(this.id)
         await common.send_query(pool, constants.new_cell_query, [this.id, this.i, this.j, this.name, this.market_id, this.item_market_id, this.owner_id, this.pop_id]);
     }
 }

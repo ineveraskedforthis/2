@@ -1,4 +1,5 @@
 /* eslint-disable no-redeclare */
+/*global images, battle_image*/
 
 const graci_plains = 'Plains where gracis are living their beautiful life. Be aware, they are very fast, traveller.'
 const forest_boundary = 'The forest starts here. Weird creatures inhabit this place, not a lot is known about them.'
@@ -43,6 +44,7 @@ const BACKGROUNDS = {
 }
 
 
+// eslint-disable-next-line no-unused-vars
 class Map {
     constructor(canvas, container, socket) {
         this.canvas = canvas;
@@ -55,6 +57,12 @@ class Map {
         this.curr_pos = [0, 0];
         this.x = 10;
         this.y = 10;
+
+        this.fog_of_war = {
+            'colony': true,
+            'rat_plains': true,
+            'rest_of_the_world': true,
+        }
 
         this.button = document.createElement('button');
         (() => 
@@ -74,10 +82,19 @@ class Map {
         this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
     }
 
+    toogle_territory(tag) {
+        this.fog_of_war[tag] = !this.fog_of_war[tag];
+    }
+
     draw() {
         var ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, 500, 500);
         ctx.drawImage(images['map'], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
+        for (i in this.fog_of_war) {
+            if (this.fog_of_war[i]) {
+                ctx.drawImage(images['fog_' + i], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
+            }
+        }
         for (var i = 0; i < 100; i++) {
             for (var j = 0; j < 100; j++) {
                 if (this.hovered != null && this.hovered[0] == i && this.hovered[1] == j) {
@@ -122,7 +139,6 @@ class Map {
     move(dx, dy) {
         this.camera[0] -= dx;
         this.camera[1] -= dy;
-        console.log(this.camera[0], this.camera[1])
     }
 
     get_hex(x, y) {

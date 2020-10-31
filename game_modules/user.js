@@ -24,7 +24,7 @@ module.exports = class User {
     }
 
     async get_new_char(pool) {
-        this.character = await this.world.create_new_character(pool, this.login, 0, this.id)
+        this.character = await this.world.create_new_character(pool, this.login, undefined, this.id, 'colony')
         this.char_id = this.character.id
         this.character.user = this;
         await this.save_to_db(pool);

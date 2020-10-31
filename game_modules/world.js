@@ -58,19 +58,19 @@ module.exports = class World {
 
 
     async add_starting_agents(pool) {
-        let pop = await this.entity_manager.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'water', 1000, StateMachines.AIs['water']);
+        let pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'water', 1000, StateMachines.AIs['water']);
         pop.stash.inc('water', 10000);
 
         for (let i = 1; i <= 3; i++) {
-            pop = await this.entity_manager.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 10000, StateMachines.AIs['meat_to_heal']);
+            pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 10000, StateMachines.AIs['meat_to_heal']);
         }
 
         for (let i = 1; i <= 13; i++) {
-            pop = await this.entity_manager.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, Math.floor(100 * i * i / 10), StateMachines.AIs['hunters']);
+            pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, Math.floor(100 * i * i / 10), StateMachines.AIs['hunters']);
         }
 
         for (let i = 1; i <= 3; i++) {
-            pop = await this.entity_manager.create_pop(pool, 0, 0, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 10000, StateMachines.AIs['clothiers']);
+            pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 10000, StateMachines.AIs['clothiers']);
         }
     }
 
@@ -202,8 +202,8 @@ module.exports = class World {
         return await this.entity_manager.load_character_data_to_memory(pool, data)
     }
 
-    async create_new_character(pool, name, cell_id, user_id) {
-        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id)
+    async create_new_character(pool, name, cell_id, user_id, territory_tag) {
+        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id, territory_tag)
     }
 
     get_loot_tag(dice, dead_tag) {

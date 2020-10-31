@@ -256,8 +256,13 @@ module.exports = class EntityManager {
         return battle;
     }
 
-    async create_new_character(pool, name, cell_id, user_id) {
+    async create_new_character(pool, name, cell_id, user_id, territory_tag) {
         let char = new Character(this.world);
+        if (cell_id == undefined) {
+            let tmp = this.world.constants.starting_position[territory_tag]
+            cell_id = this.get_cell_id_by_x_y(tmp[0], tmp[1]);
+        }
+        
         await char.init(pool, name, cell_id, user_id);
         this.chars[char.id] = char
         return char
