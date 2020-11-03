@@ -286,6 +286,14 @@ module.exports = class World {
         return 0.001
     }
 
-    
+    can_move(x, y) {
+        let tmp = x + '_' + y;
+        for (let i in this.constants.territories) {
+            if (this.constants.territories[i].indexOf(tmp) > -1) {
+                return this.constants.move[i]
+            }
+        } 
+        return false
+    }
 
 }

@@ -3,44 +3,51 @@
 
 const graci_plains = 'Plains where gracis are living their beautiful life. Be aware, they are very fast, traveller.'
 const forest_boundary = 'The forest starts here. Weird creatures inhabit this place, not a lot is known about them.'
+const colony = 'Settlement of colonists - greedy but brave men. Here you can sell your raw meet and exchange it for food and water'
+const sea = 'Sea. Pretty safe. If you can walk over the water. You can\'t though'
+const unknown = 'You don\'t know what is there'
+
+const territories = {
+    'colony': ['0_3', '0_4', '1_2', '1_3', '1_4', '1_5', '1_6', '2_2', '2_3', '2_4', '2_5', '2_6', '2_7', '3_2', '3_3', '3_4', '3_5', '3_6', '3_7', '3_8'],
+    'sea': ['0_0', '0_1', '0_2', '1_0', '1_1', '2_0', '2_1', '3_0', '3_1']
+}
+
+const terr_id = {
+    0: 'sea',
+    1: 'colony',
+}
+
+function get_tag(x, y) {
+    let tmp = x + '_' + y;
+    for (let i in territories) {
+        if (territories[i].indexOf(tmp) > -1) {
+            return i
+        }
+    } 
+    return 'unknown'
+}
 
 const LOCAL_IMAGES = {
-    '0_0': 'starting_tiles_image_downsized.png',
-    '1_0': 'starting_tiles_image_downsized.png',
-    '1_1': 'starting_tiles_image_downsized.png',
-    '1_2': 'starting_tiles_image_downsized.png',
-    '2_0': 'forest_background.png',
-    '2_1': 'forest_background.png',
-    '2_2': 'forest_background.png',
-    '2_3': 'forest_background.png',
-    '3_1': 'forest_background.png',
-    '3_2': 'forest_background.png',
+    'colony': 'starting_tiles_image_downsized.png',
+    'sea':    'starting_tiles_image_downsized.png',
+    'unknown':'starting_tiles_image_downsized.png'
 }
 
 const DESCRIPTIONS = {
-    '0_0': 'Settlement of colonists - greedy but brave men. Here you can sell your raw meet and exchange it for food and water',
-    '1_0': graci_plains,
-    '1_1': graci_plains,
-    '1_2': graci_plains,
-    '2_0': forest_boundary,
-    '2_1': forest_boundary,
-    '2_2': forest_boundary,
-    '2_3': forest_boundary,
-    '3_1': forest_boundary,
-    '3_2': forest_boundary,
+    'colony': colony,
+    'sea': sea,
+    'graci_plains': graci_plains,
+    'forest_boudary': forest_boundary,
+    'unknown': unknown
 }
 
 const BACKGROUNDS = {
-    '0_0': 'background',
-    '1_0': 'background',
-    '1_1': 'background',
-    '1_2': 'background',
-    '2_0': 'forest_background',
-    '2_1': 'forest_background',
-    '2_2': 'forest_background',
-    '2_3': 'forest_background',
-    '3_1': 'forest_background',
-    '3_2': 'forest_background',
+    'colony': 'background',
+    'rat_plains': 'background',
+    'graci_plains': 'background',
+    'sea': 'background',
+    'forest_boundary': 'forest_background',
+    'unknown': 'background'
 }
 
 
@@ -84,6 +91,15 @@ class Map {
 
     toogle_territory(tag) {
         this.fog_of_war[tag] = !this.fog_of_war[tag];
+    }
+
+    explore(data) {
+        for (let i in data) {
+            if (terr_id[i] in this.fog_of_war) {
+                console.log(terr_id[i])
+                this.fog_of_war[terr_id[i]] = !data[i]
+            }
+        }
     }
 
     draw() {
@@ -170,12 +186,14 @@ class Map {
 
     select_hex(i, j) {
         this.selected = [i, j];
-        this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[i + '_' + j];
+        let tag = get_tag(i, j);
+        this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag];
     }
 
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
-        this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[i + '_' + j] +  '" width="300">'
-        battle_image.change_bg(BACKGROUNDS[i + '_' + j])
+        let tag = get_tag(i, j);
+        this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'        
+        battle_image.change_bg(BACKGROUNDS[tag])
     }
 }

@@ -27,6 +27,7 @@ module.exports = class User {
         this.character = await this.world.create_new_character(pool, this.login, undefined, this.id, 'colony')
         this.char_id = this.character.id
         this.character.user = this;
+        this.character.add_explored(1);
         await this.save_to_db(pool);
         if (this.socket != undefined) {
             // 

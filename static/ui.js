@@ -357,6 +357,7 @@ socket.on('alert', msg => alert(msg));
 socket.on('skills', msg => skill_tree.update(SKILLS, msg));
 socket.on('tactic', msg => tactic_screen.update(msg));
 socket.on('map-pos', msg => {console.log(msg); map.set_curr_pos(msg.x, msg.y)});
+socket.on('explore', msg => {map.explore(msg)});
 
 socket.on('session', msg => {localStorage.setItem('session', msg)})
 socket.on('reset_session', () => {localStorage.setItem('session', 'null')})

@@ -39,6 +39,7 @@ module.exports = class Character {
             base_battle_stats: this.world.constants.base_battle_stats,
             base_resists: this.world.constants.base_resists.pepe,
             is_player: is_player,
+            explored: {},
             exp: exp,
             level: level,
             skill_points: 0,
@@ -389,7 +390,7 @@ module.exports = class Character {
     }
 
     async move(pool, data) {
-        if (this.world.constants.MAP[data.x + '_' + data.y].move) {
+        if (this.world.can_move(data.x, data.y)) {
             this.changed = true;
             this.cell_id = this.world.get_cell_id_by_x_y(data.x, data.y);
             console.log(this.name + ' move ' + data.x + data.y);
@@ -825,5 +826,9 @@ module.exports = class Character {
 
     async delete_from_db(pool) {
         await common.send_query(pool, constants.delete_char_query, [this.id]);
+    }
+
+    add_explored(tag) {
+        this.data.explored[tag] = true;
     }
 }

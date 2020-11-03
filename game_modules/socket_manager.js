@@ -217,6 +217,7 @@ module.exports = class SocketManager {
         this.send_map_pos_info(character);
         this.send_new_actions(character);
         this.send_item_market_update_to_character(character);
+        this.send_explored(character);
         let user = character.user;
         let socket = character.user.socket;
         this.send_char_info(socket, user);
@@ -437,11 +438,15 @@ module.exports = class SocketManager {
         this.send_to_character_user(character, 'status', character.data.other)
     }
 
+    send_explored(character) {
+        this.send_to_character_user(character, 'explore', character.data.explored)
+    }
+
     send_char_info(socket, user) {
         if (user != null) {
             let char = user.character
             socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.stash, resists: char.get_resists()});
-        }        
+        }
     }
     
     update_market_info(cell) {
@@ -536,6 +541,7 @@ module.exports = class SocketManager {
             }
         }
     }
+
 
     update_user_list(){
         var tmp = [];
