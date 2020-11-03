@@ -286,14 +286,26 @@ module.exports = class World {
         return 0.001
     }
 
-    can_move(x, y) {
+    get_territory(x, y) {
         let tmp = x + '_' + y;
         for (let i in this.constants.territories) {
             if (this.constants.territories[i].indexOf(tmp) > -1) {
-                return this.constants.move[i]
+                return i
             }
-        } 
-        return false
+        }
+        return undefined
+    }
+
+    get_id_from_territory(tag) {
+        return this.constants.id_terr[tag]
+    }
+
+    can_move(x, y) {
+        let ter = this.get_territory(x, y)
+        if (ter == undefined) {
+            return false    
+        }
+        return this.constants.move[ter]
     }
 
 }

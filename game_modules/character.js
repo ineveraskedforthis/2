@@ -391,10 +391,20 @@ module.exports = class Character {
 
     async move(pool, data) {
         if (this.world.can_move(data.x, data.y)) {
-            this.changed = true;
-            this.cell_id = this.world.get_cell_id_by_x_y(data.x, data.y);
-            console.log(this.name + ' move ' + data.x + data.y);
-            return true
+            let {x, y} = this.world.get_cell_x_y_by_id(this.cell_id)
+            let dx = data.x - x;
+            let dy = data.y - y;
+            if ((dx == 0 & dy == 1) || (dx == 0 & dy == -1) || (dx == 1 & dy == 0) || (dx == -1 & dy == 0) || (dx == 1 & dy == 1) || (dx == -1 & dy == -1)) {
+                this.changed = true;
+                this.cell_id = this.world.get_cell_id_by_x_y(data.x, data.y);
+                console.log(this.name + ' move ' + data.x + data.y);
+                this.change_stress(3);
+                let tmp = this.world.get_territory(data.x, data.y)
+                this.add_explored(this.world.get_id_from_territory(tmp));
+                this.world.socket_manager.send_explored(this);
+                return true
+            }
+            return false
         }
         return false
     }

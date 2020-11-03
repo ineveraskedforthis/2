@@ -107,6 +107,7 @@ function get_pos_in_canvas(canvas, event) {
 
 
 document.getElementById('map').onmousedown = event => {
+    event.preventDefault();
     pressed = true;
     prev_mouse_x = null;
     prev_mouse_y = null;
@@ -114,6 +115,9 @@ document.getElementById('map').onmousedown = event => {
     let mouse_pos = get_pos_in_canvas(map.canvas, event);    
     let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
     map.select_hex(selected_hex[0], selected_hex[1]);
+    if (event.button == 2) {
+        map.send_move_request()
+    }
 }
 
 document.getElementById('map').onmousemove = event => {

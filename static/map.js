@@ -15,6 +15,7 @@ const territories = {
 const terr_id = {
     0: 'sea',
     1: 'colony',
+    2: 'rat_plains'
 }
 
 function get_tag(x, y) {
@@ -28,9 +29,10 @@ function get_tag(x, y) {
 }
 
 const LOCAL_IMAGES = {
-    'colony': 'starting_tiles_image_downsized.png',
-    'sea':    'starting_tiles_image_downsized.png',
-    'unknown':'starting_tiles_image_downsized.png'
+    'colony':     'colony.png',
+    'sea':        'starting_tiles_image_downsized.png',
+    'rat_plains': 'starting_tiles_image_downsized.png',
+    'unknown':    'starting_tiles_image_downsized.png',
 }
 
 const DESCRIPTIONS = {
@@ -73,7 +75,7 @@ class Map {
 
         this.button = document.createElement('button');
         (() => 
-                this.button.onclick = () => this.send_move_request(socket)
+                this.button.onclick = () => this.send_move_request()
         )(this.socket);
         this.button.innerHTML = 'move';
         this.container = container;
@@ -94,6 +96,8 @@ class Map {
     }
 
     explore(data) {
+        console.log('explore')
+        console.log(data)
         for (let i in data) {
             if (terr_id[i] in this.fog_of_war) {
                 console.log(terr_id[i])
