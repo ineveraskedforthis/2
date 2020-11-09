@@ -409,6 +409,12 @@ module.exports = class Character {
         return false
     }
 
+    async attack_local_monster(pool) {
+        let cell = this.get_cell()
+        let battle = await this.world.attack_local_monster(pool, this, cell.i, cell.j);
+        return battle
+    }
+
     //craft actions
 
     async craft_food(pool) {

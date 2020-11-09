@@ -20,6 +20,16 @@
                        '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10']
     },
 
+    enemies: {
+        'colony': 'rat',
+        'rat_plains': 'rat'
+    },
+
+    outposts: {
+        '5_4': 'water',
+        '6_9': 'water'
+    },
+
     move: {
         'colony': true,
         'sea': false,

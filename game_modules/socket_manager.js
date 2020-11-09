@@ -248,12 +248,7 @@ module.exports = class SocketManager {
         common.flag_log([user_data], constants.logging.sockets.messages)
         if (user_data.current_user != null && !user_data.current_user.character.data.in_battle) {
             let char = user_data.current_user.character;
-            let enemy = undefined;
-            let cell = char.get_cell()
-            let tmp = cell.i + '_' + cell.j;
-            let tag = this.world.constants.MAP[tmp].monster;
-            enemy = await this.world.create_monster(this.pool, basic_characters[tag], char.cell_id)
-            var battle = await this.world.create_battle(this.pool, [char], [enemy]);
+            let battle = await char.attack_local_monster(this.pool);
             socket.emit('battle-has-started', battle.get_data())
         }
     }

@@ -6,11 +6,23 @@ const forest_boundary = 'The forest starts here. Weird creatures inhabit this pl
 const colony = 'Settlement of colonists - greedy but brave men. Here you can sell your raw meet and exchange it for food and water'
 const sea = 'Sea. Pretty safe. If you can walk over the water. You can\'t though'
 const unknown = 'You don\'t know what is there'
+const rat_plains = 'Plains infested with giant rats, who attack travellers and besiege colony at some times.'
 
 const territories = {
-    'colony': ['0_3', '0_4', '1_2', '1_3', '1_4', '1_5', '1_6', '2_2', '2_3', '2_4', '2_5', '2_6', '2_7', '3_2', '3_3', '3_4', '3_5', '3_6', '3_7', '3_8'],
-    'sea': ['0_0', '0_1', '0_2', '1_0', '1_1', '2_0', '2_1', '3_0', '3_1']
-}
+        'colony':     ['0_3', '0_4',
+                       '1_2', '1_3', '1_4', '1_5', '1_6', 
+                       '2_2', '2_3', '2_4', '2_5', '2_6', '2_7', 
+                       '3_2', '3_3', '3_4', '3_5', '3_6', '3_7', '3_8'],
+
+        'sea':        ['0_0', '0_1', '0_2', 
+                       '1_0', '1_1', '2_0', '2_1', 
+                       '3_0', '3_1'],
+
+        'rat_plains': ['4_2', '4_3', '4_4', '4_5', '4_6', '4_7', '4_8',
+                       '5_3', '5_4', '5_5', '5_6', '5_7', '5_8', '5_9',
+                       '6_3', '6_4', '6_5', '6_6', '6_7', '6_8', '6_9', '6_10',
+                       '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10']
+    }
 
 const terr_id = {
     0: 'sea',
@@ -38,6 +50,7 @@ const LOCAL_IMAGES = {
 const DESCRIPTIONS = {
     'colony': colony,
     'sea': sea,
+    'rat_plains': rat_plains,
     'graci_plains': graci_plains,
     'forest_boudary': forest_boundary,
     'unknown': unknown
@@ -191,12 +204,18 @@ class Map {
     select_hex(i, j) {
         this.selected = [i, j];
         let tag = get_tag(i, j);
+        if (this.fog_of_war[tag] == true) {
+            tag = 'unknown'
+        }
         this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag];
     }
 
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
         let tag = get_tag(i, j);
+        if (this.fog_of_war[tag] == true) {
+            tag = 'unknown'
+        }
         this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'        
         battle_image.change_bg(BACKGROUNDS[tag])
     }

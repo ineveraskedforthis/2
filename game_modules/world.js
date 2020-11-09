@@ -308,4 +308,17 @@ module.exports = class World {
         return this.constants.move[ter]
     }
 
+    get_enemy(x,y) {
+
+    }
+
+    async attack_local_monster(pool, char) {
+        let cell = char.get_cell();
+        let terr_tag = this.get_territory(cell.i, cell.j)
+        let tag = this.constants.enemies[terr_tag];
+        let enemy = await this.create_monster(pool, basic_characters[tag], char.cell_id)
+        let battle = await this.create_battle(pool, [char], [enemy]);
+        return battle
+    }
+
 }
