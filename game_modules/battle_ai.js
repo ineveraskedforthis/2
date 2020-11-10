@@ -1,20 +1,30 @@
+
+
+
 module.exports = class BattleAI {
+
+    dist(units, i, j) {
+        return (units[i].x - units[j].x) * (units[i].x - units[j].x) + (units[i].y - units[j].y) * (units[i].y - units[j].y)
+    }
+
     static calculate_closest_enemy(battle, index) {
         var closest_enemy = null;
-        var positions = battle.positions;
-        var min_distance = battle.world.BASE_BATTLE_RANGE;
-        var teams = battle.teams;
-        var ids = battle.ids;
-        for (var i = 0; i < positions.length; i++) {
-            var dx = positions[i] - positions[index];
-            if (((Math.abs(dx) <= Math.abs(min_distance)) || (closest_enemy == null)) && (teams[i] != teams[index]) && (!battle.world.get_char_from_id(ids[i]).data.dead)) {
+        let units = battle.units;
+        let unit = units[index];
+        var min_distance = 100;
+        for (var i = 0; i < units.length; i++) {
+            let target_unit = units[i]
+            var d = this.dist(units, index, i);
+            if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == null)) && (unit.team != target_unit.team) && (!battle.world.get_char_from_id(target_unit.id).data.dead)) {
                 closest_enemy = i;
-                min_distance = dx;
+                min_distance = d;
             }
         }
         return closest_enemy
     }
 
+
+    //tactics triggers block
     static get_value_from_tactic_trigger_tag(agent, tag) {
         if (agent == undefined) {
             return -1
@@ -68,6 +78,8 @@ module.exports = class BattleAI {
         return BattleAI.compare(value1, value, sign);
     }
 
+
+    //decide what action agent should do
     static get_action(battle, index, target_tag, action_tag) {
         var action = null;
         var action_target = null;

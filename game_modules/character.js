@@ -410,8 +410,7 @@ module.exports = class Character {
     }
 
     async attack_local_monster(pool) {
-        let cell = this.get_cell()
-        let battle = await this.world.attack_local_monster(pool, this, cell.i, cell.j);
+        let battle = await this.world.attack_local_monster(pool, this);
         return battle
     }
 
