@@ -1,11 +1,7 @@
-
+const geom = require("./geom.js");
 
 
 module.exports = class BattleAI {
-
-    dist(units, i, j) {
-        return (units[i].x - units[j].x) * (units[i].x - units[j].x) + (units[i].y - units[j].y) * (units[i].y - units[j].y)
-    }
 
     static calculate_closest_enemy(battle, index) {
         var closest_enemy = null;
@@ -14,7 +10,7 @@ module.exports = class BattleAI {
         var min_distance = 100;
         for (var i = 0; i < units.length; i++) {
             let target_unit = units[i]
-            var d = this.dist(units, index, i);
+            var d = geom.dist(unit, target_unit);
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == null)) && (unit.team != target_unit.team) && (!battle.world.get_char_from_id(target_unit.id).data.dead)) {
                 closest_enemy = i;
                 min_distance = d;
@@ -84,21 +80,19 @@ module.exports = class BattleAI {
         var action = null;
         var action_target = null;
         var true_target = undefined;
+        let unit = battle.units[index]
         if (target_tag == 'closest_enemy') {
             true_target = BattleAI.calculate_closest_enemy(battle, index)
         } else if (target_tag == 'me') {
             true_target = index
         }
+        let unit_2 = battle.units[true_target]
         if (action_tag == 'attack') {
-            var actor = battle.world.get_char_from_id(battle.ids[index]);
-            let delta = battle.positions[true_target] - battle.positions[index];
-            if (Math.abs(delta) > actor.get_range()) {
+            var actor = battle.world.get_char_from_id(unit.id);
+            let delta = geom.minus(unit_2, unit);
+            if (geom.norm(delta) > actor.get_range()) {
                 action = 'move';
-                if (delta > 0){
-                    action_target = 'right';
-                } else {
-                    action_target = 'left';
-                }
+                action_target = geom.normalize(delta);
             } else {
                 action = 'attack';
                 action_target = true_target;
