@@ -1,5 +1,6 @@
 var common = require("./common.js");
 var constants = require("./constants.js");
+const geom = require("./geom.js")
 
 var Stash = require("./stash.js");
 var Savings = require("./savings.js");
@@ -193,29 +194,26 @@ class BattleReworked {
         target.changed = true;
     }
 
-}
 
 
+    async action(pool, actor_index, action) {
+        let unit = this.units[actor_index]
+        var character = this.world.get_char_from_id(unit.id);
 
-module.exports = BattleReworked;
-
-
-
-async action(pool, actor_index, action) {
-        var character = this.world.get_char_from_id(this.ids[actor_index]);
+        //no action
         if (action.action == null) {
             return {action: 'pff', who: actor_index};
         }
+
+        //move toward enemy
         if (action.action == 'move') {
-            if (action.target == 'right') {
-                this.positions[actor_index] += 1;
-            } else {
-                this.positions[actor_index] -= 1;
-            }
+            unit.x = action.target.x + unit.x;
+            unit.y = action.target.y + unit.y;
             return {action: 'move', who: actor_index, target: action.target, actor_name: character.name}
         } else if (action.action == 'attack') {
             if (action.target != null) {
-                let target_char = this.world.get_char_from_id(this.ids[action.target]);
+                let unit2 = this.units[action.target];
+                let target_char = this.world.get_char_from_id(unit2.id);
                 let result = await character.attack(pool, target_char);
                 return {action: 'attack', attacker: actor_index, target: action.target, result: result, actor_name: character.name};
             }
@@ -230,17 +228,25 @@ async action(pool, actor_index, action) {
             }
         } else if (action.action.startsWith('spell:')) {
             let spell_tag = action.action.substring(6);
-            let target_char = this.world.get_char_from_id(this.ids[action.target]);
+            let unit2 = this.units[action.target];
+            let target_char = this.world.get_char_from_id(unit2.id);
             let result = await character.spell_attack(pool, target_char, spell_tag);
             if ('close_distance' in result) {
-                if (this.positions[action.target] > this.positions[actor_index]) {
-                    this.positions[actor_index] = this.positions[action.target] - 1;
+                let dist = geom.dist(unit, unit2)
+                if (dist > 2) {
+                    let v = geom.minus(unit2, unit);
+                    let u = geom.mult(geom.normilize(v), 1.5);
+                    v = geom.minus(v, u)
+                    unit.x = v.x
+                    unit.y = v.y
                 }
-                if (this.positions[action.target] < this.positions[actor_index]) {
-                    this.positions[actor_index] = this.positions[action.target] + 1;
-                }
-                result.new_pos = this.positions[actor_index];
+                result.new_pos = {x: unit.x, y: unit.y};
             }
             return {action: spell_tag, who: actor_index, result: result, actor_name: character.name};
         }
     }
+}
+
+
+
+module.exports = BattleReworked;
