@@ -4,7 +4,7 @@ function norm(data) {
 }
 
 function norm2(v) {
-    return v.x*v.x + v.y+v.y
+    return v.x*v.x + v.y*v.y
 }
 
 function normalize(v) {

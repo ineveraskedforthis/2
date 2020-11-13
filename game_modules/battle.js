@@ -130,7 +130,7 @@ class BattleReworked {
             let char = this.world.get_char_from_id(unit.id);
             if (char != undefined)                {
                 if (team != 2) {
-                    if ((this.teams[i] == team) && (!char.data.dead)) {
+                    if ((unit.team == team) && (!char.data.dead)) {
                         await char.give_exp(pool, Math.floor(exp / n));
                     }
                 }
@@ -166,13 +166,16 @@ class BattleReworked {
                 await this.transfer(pool, leader, tag, x);
             }
         }
+        this.save_to_db(pool);
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.new_battle_query, [this.units, this.savings.get_json(), this.stash.get_json(), this.data]);
+        let res =  await common.send_query(pool, constants.new_battle_query, [this.units, this.savings.get_json(), this.stash.get_json(), this.data]);
+        return res.rows[0].id
     }
 
     load_from_json(data) {
+        console.log(data)
         this.id = data.id
         this.units = data.units
         this.data = data.data
@@ -194,7 +197,9 @@ class BattleReworked {
         target.changed = true;
     }
 
-
+    unit_amount() {
+        return this.units.length;
+    }
 
     async action(pool, actor_index, action) {
         let unit = this.units[actor_index]

@@ -341,7 +341,7 @@ socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 socket.on('market-data', data => {
-    console.log(data);
+    // console.log(data);
     market_table.update(data);
     updateChart('meat', data.avg['meat']);
     updateChart('food', data.avg['food']);
@@ -351,7 +351,11 @@ socket.on('market-data', data => {
     xVal++;
     chart.render()
 });
-socket.on('item-market-data', data => {console.log('item-market-data'); console.log(data); item_market_table.update(data)});
+socket.on('item-market-data', data => {
+    // console.log('item-market-data'); 
+    // console.log(data); 
+    item_market_table.update(data)
+});
 // socket.on('market-data', data => auction_house.update(data));
 // socket.on('market-data', data => console.log(data));
 socket.on('skill-tree', data => {SKILLS = data});
@@ -518,7 +522,7 @@ class CharInfoMonster {
     }
 
     update_status(data) {
-        console.log(data)
+        // console.log(data)
         this.rage.innerHTML = data.rage;
         this.rage_display.style.height = `${Math.floor(data.rage)}%`;
 

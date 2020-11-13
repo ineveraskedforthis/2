@@ -32,8 +32,6 @@ class AnimatedImage {
     }
 
     draw(ctx, x, y, w, h) {
-        // console.log(this.tag + '_' + this.current, x, y, w, h)
-        // console.log(this.get_image_name())
         draw_image(ctx, images[this.get_image_name()], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
     }
 }
@@ -169,23 +167,18 @@ class BattleImage {
         if (this.r > this.l) {
             this.movement += delta;
         }
-        // console.log('!')
         while ((this.movement >= this.movement_speed) & (this.r > this.l)) {
-            // console.log(this.r, this.l);
             let who = undefined;
             for (let i in this.positions) {
                 this.images[i].set_action('idle');
                 this.prev_positions[i] = this.new_positions[i]
             }
-            // console.log(this.prev_positions);
-            // console.log(this.new_positions);
             let action = this.action_queue[this.l]
             if (action.action == 'move') {
                 who = action.who;
                 this.images[who].set_action(action.action)
                 this.new_positions[who].x = this.prev_positions[who].x + action.target.x;
                 this.new_positions[who].y = this.prev_positions[who].y + action.target.y;
-                // console.log(this.images[who].get_image_name());
             }
             else if (action.action == 'charge') {
                 who = action.who;
@@ -195,7 +188,6 @@ class BattleImage {
             else if (action.action == 'attack') {
                 who = action.attacker
                 this.images[who].set_action(action.action)
-                // console.log(this.images[who].get_image_name());
             }
             else if (action.action == 'stop_battle') {
                 console.log('stop_battle')
@@ -204,7 +196,6 @@ class BattleImage {
 
             this.l +=1
             this.movement -= this.movement_speed;
-            // console.log()
         }
 
         this.animation_tick += delta;
@@ -214,14 +205,12 @@ class BattleImage {
                 this.update_pos(i)
             }
 
-            // console.log('!')
             let ctx = this.canvas.getContext('2d');
             ctx.clearRect(0, 0, this.w, this.h);
             var draw_order = Array.from(this.battle_ids)
-            draw_order.sort((a, b) => this.dist(a, b, this.positions))
+            draw_order.sort((a, b) => -this.positions[a].y + this.positions[b].y)
             for (var i of draw_order) {
-                var pos = this.calculate_canvas_pos(this.positions[i] * 5, this.images[i])
-                // console.log(pos)
+                var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
                 this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
                 this.images[i].update()
             }
@@ -230,7 +219,7 @@ class BattleImage {
     }
     
     add_fighter(battle_id, tag, position) {
-        // console.log(battle_id, tag, position)
+        console.log(battle_id, tag, position)
         this.battle_ids.add(battle_id)
         this.new_positions[battle_id] = position;
         this.prev_positions[battle_id] = position;
@@ -272,11 +261,11 @@ class BattleImage {
     // }
 
     calculate_canvas_pos(pos, image) {
-        let center = {x: pos.x, y: pos.y};
-        center.x = center.x * 10 + 50;
-        center.y = center.y * 10 + 50;
+        let center = {x: pos.y, y: pos.x};
+        center.x = -center.x * 20 + 400;
+        center.y = center.y * 20 + 300;
         let w = image.get_w();
         let h = image.get_h();
-        return [center.x - w/2, center.y - h/2, center.x + w/2, center.y + h/2]
+        return [center.x - w/10, center.y - h/10, w/5, h/5]
     }
 }
