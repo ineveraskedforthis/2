@@ -134,8 +134,8 @@ module.exports = class EntityManager {
             if (res == -1) {
                 var log = await battle.update(pool);
                 let status = battle.get_team_status(1);
-                for (let i = 0; i < battle.ids.length; i++) {
-                    let character = this.chars[battle.ids[i]];
+                for (let i = 0; i < battle.unit_amount(); i++) {
+                    let character = this.chars[battle.units[i].id];
                     if (character.data.is_player) {
                         this.world.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
                         this.world.socket_manager.send_to_character_user(character, 'enemy-update', status);

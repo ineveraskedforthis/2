@@ -183,14 +183,8 @@ class BattleImage {
             if (action.action == 'move') {
                 who = action.who;
                 this.images[who].set_action(action.action)
-                if (action.target == 'right') {
-                    // console.log('right')
-                    this.new_positions[who] = this.prev_positions[who] + 1;
-                }
-                if (action.target == 'left') {
-                    // console.log('left')
-                    this.new_positions[who] = this.prev_positions[who] - 1;
-                }
+                this.new_positions[who].x = this.prev_positions[who].x + action.target.x;
+                this.new_positions[who].y = this.prev_positions[who].y + action.target.y;
                 // console.log(this.images[who].get_image_name());
             }
             else if (action.action == 'charge') {
@@ -249,31 +243,40 @@ class BattleImage {
             this.positions[battle_id] = this.new_position[battle_id]
         } else {
             let tmp = Math.min(this.movement, this.movement_speed) / this.movement_speed;
-
-            this.positions[battle_id] = this.prev_positions[battle_id] + (this.new_positions[battle_id] - this.prev_positions[battle_id]) * tmp
+            this.positions[battle_id].x = this.prev_positions[battle_id].x + (this.new_positions[battle_id].x - this.prev_positions[battle_id].x) * tmp;
+            this.positions[battle_id].y = this.prev_positions[battle_id].y + (this.new_positions[battle_id].y - this.prev_positions[battle_id].y) * tmp
         }
     }
     
-    calculate_canvas_pos(x, image) {
-        var base_vector = new Vector(0, 0, 1)
-        var point_of_battle_line = new Vector(500, -250, 0)
-        var height_vector = new Vector(0, image.get_h(), 0)
-        var width_vector = new Vector(image.get_w(), 0, 0)
-        var picture_plane = new Plane(base_vector, new Vector(0, 0, 0))
-        var viewer_point = new Vector(0, 0, -30)
-        var bottom_right_position = sum(sum(mult(x, base_vector), point_of_battle_line), mult(0.5, width_vector))
-        var top_left_position = minus(sum(sum(mult(x, base_vector), point_of_battle_line), height_vector), mult(0.5, width_vector))
-        var bottom_ray = two_points_to_line(bottom_right_position, viewer_point)
-        var top_ray = two_points_to_line(top_left_position, viewer_point)
-        var bottom_intersection = intersect(bottom_ray, picture_plane)
-        var top_intersection = intersect(top_ray, picture_plane)
-        // console.log(top_intersection.data)
-        // console.log(bottom_intersection.data)
-        var d = minus(bottom_intersection, top_intersection)
-        var centre = sum(top_intersection, mult(0.5, d))
-        centre = sum(centre, new Vector(this.w / 5, + this.h / 2, 0))
-        var canvas_top_left = minus(centre, mult(0.5, d))
-        // console.log(canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1])
-        return [canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1]]
+    // calculate_canvas_pos(x, image) {
+    //     var base_vector = new Vector(0, 0, 1)
+    //     var point_of_battle_line = new Vector(500, -250, 0)
+    //     var height_vector = new Vector(0, image.get_h(), 0)
+    //     var width_vector = new Vector(image.get_w(), 0, 0)
+    //     var picture_plane = new Plane(base_vector, new Vector(0, 0, 0))
+    //     var viewer_point = new Vector(0, 0, -30)
+    //     var bottom_right_position = sum(sum(mult(x, base_vector), point_of_battle_line), mult(0.5, width_vector))
+    //     var top_left_position = minus(sum(sum(mult(x, base_vector), point_of_battle_line), height_vector), mult(0.5, width_vector))
+    //     var bottom_ray = two_points_to_line(bottom_right_position, viewer_point)
+    //     var top_ray = two_points_to_line(top_left_position, viewer_point)
+    //     var bottom_intersection = intersect(bottom_ray, picture_plane)
+    //     var top_intersection = intersect(top_ray, picture_plane)
+    //     // console.log(top_intersection.data)
+    //     // console.log(bottom_intersection.data)
+    //     var d = minus(bottom_intersection, top_intersection)
+    //     var centre = sum(top_intersection, mult(0.5, d))
+    //     centre = sum(centre, new Vector(this.w / 5, + this.h / 2, 0))
+    //     var canvas_top_left = minus(centre, mult(0.5, d))
+    //     // console.log(canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1])
+    //     return [canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1]]
+    // }
+
+    calculate_canvas_pos(pos, image) {
+        let center = {x: pos.x, y: pos.y};
+        center.x = center.x * 10 + 50;
+        center.y = center.y * 10 + 50;
+        let w = image.get_w();
+        let h = image.get_h();
+        return [center.x - w/2, center.y - h/2, center.x + w/2, center.y + h/2]
     }
 }

@@ -68,7 +68,7 @@ module.exports = class BattleAI {
             target = agent;
         } else if (target == 'closest_enemy') {
             var target_id = BattleAI.calculate_closest_enemy(battle, index)
-            target = battle.world.get_char_from_id(battle.ids[target_id])
+            target = battle.world.get_char_from_id(battle.units[target_id].id)
         }
         var value1 = BattleAI.get_value_from_tactic_trigger_tag(target, tag);
         return BattleAI.compare(value1, value, sign);
@@ -108,10 +108,8 @@ module.exports = class BattleAI {
         return {action: action, target: action_target};
     }
 
-    static async action(pool, agent, save) {
-        var world = agent.world;
+    static async action(pool, battle, agent, save) {
         var tactic = agent.data.tactic;
-        var battle = world.get_battle_from_id(agent.data.battle_id);
         var index = agent.data.index_in_battle;
         for (var i = 0; i <= agent.data.stats.tac; i++) {
             var slot = tactic['s' + i];

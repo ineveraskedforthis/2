@@ -31,7 +31,7 @@ class BattleReworked {
             if (char.get_hp() > 0) {
                 char.update(pool)
                 for (let i = 0; i < char.data.movement_speed; i++) {
-                    var log_entry = await BattleAI.action(pool, char, true)
+                    var log_entry = await BattleAI.action(pool, this, char, true)
                     log.push(log_entry)
                 }                
             }
@@ -91,7 +91,7 @@ class BattleReworked {
             let unit = this.units[i]
             var char = this.world.get_char_from_id(unit.id);
             if (char != null) {
-                hp[this.teams[i]] += char.hp
+                hp[unit.team] += char.hp
             }
             if ((char == null) || (char.hp == 0)) {
                 if (!unit.dead) {
@@ -169,7 +169,7 @@ class BattleReworked {
     }
 
     async load_to_db(pool) {
-        await common.send_query(pool, constants.new_battle_query, [this.ids, this.units, this.savings.get_json(), this.stash.get_json(), this.data]);
+        await common.send_query(pool, constants.new_battle_query, [this.units, this.savings.get_json(), this.stash.get_json(), this.data]);
     }
 
     load_from_json(data) {

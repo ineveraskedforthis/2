@@ -24,7 +24,7 @@ function dist(a, b) {
 module.exports = {
     norm: norm,
     norm2: norm2,
-    normilize: normalize,
+    normalize: normalize,
     dist: dist,
     minus: minus
 }

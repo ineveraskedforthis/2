@@ -1,5 +1,5 @@
 const constants = {
-    version: 191,
+    version: 197,
     logging: {
         agent: {
             buy: false
@@ -30,7 +30,7 @@ const constants = {
     new_user_query: 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)',
     new_char_query: 'INSERT INTO chars (user_id, cell_id, name, hp, max_hp, savings, stash, equip, data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
     init_id_query: 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)',
-    new_battle_query: 'INSERT INTO battles (ids, teams, positions, savings, stash) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+    new_battle_query: 'INSERT INTO battles (units, savings, stash, data) VALUES ($1, $2, $3, $4) RETURNING id',
     new_cell_query: 'INSERT INTO cells (id, x, y, name, market_id, item_market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     new_market_query: 'INSERT INTO markets (id, data) VALUES ($1, $2)',
     insert_market_order_query: 'INSERT INTO market_orders (typ, tag, owner_id, owner_tag, amount, price, market_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
@@ -42,7 +42,7 @@ const constants = {
     insert_market_items_query: 'INSERT INTO items_markets (orders) VALUES ($1) RETURNING id',
 
 
-    update_battle_query: 'UPDATE battles SET ids = ($2), teams = ($3), positions = ($4), savings = ($5), stash = ($6) WHERE id = ($1)',
+    update_battle_query: 'UPDATE battles SET units = ($2), savings = ($3), stash = ($4), data = ($5) WHERE id = ($1)',
     update_market_order_query: 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)',
     update_market_query: 'UPDATE markets SET data = ($2) WHERE id = ($1)',
     update_char_query: 'UPDATE chars SET cell_id = ($2), hp = ($3), max_hp = ($4), savings = ($5), stash = ($6), equip = ($7), data = ($8) WHERE id = ($1)',
