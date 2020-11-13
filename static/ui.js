@@ -87,23 +87,46 @@ let draw_char = localStorage.getItem('char_image');
     button.onclick = () => {localStorage.setItem('session', 'null'); location.reload()};
 }
 
-
+function get_pos_in_canvas(canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    let tmp = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+    return tmp
+}
 
 var prev_mouse_x = null;
 var prev_mouse_y = null;
 var pressed = false;
 
+// eslint-disable-next-line no-undef
+var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 
+//battle canvas pressed
+let bcp = false
 
-
-
-function get_pos_in_canvas(canvas, event) {
-    var rect = canvas.getBoundingClientRect();
-    return {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
-    };
+document.getElementById('battle_canvas').onmousedown = event => {
+    event.preventDefault();
+    bcp = true
 }
+
+document.getElementById('battle_canvas').onmousemove = event => {
+    let mouse_pos = get_pos_in_canvas(battle_image.canvas, event);
+    battle_image.hover(mouse_pos);
+};
+
+document.getElementById('battle_canvas').onmouseup = event => {
+    let mouse_pos = get_pos_in_canvas(battle_image.canvas, event);
+    if (bcp) {
+        battle_image.press(mouse_pos);
+        bcp = false;
+    }
+}
+
+
+
+
 
 
 document.getElementById('map').onmousedown = event => {
@@ -343,13 +366,13 @@ socket.on('name', msg => char_info_monster.update_name(msg));
 socket.on('market-data', data => {
     // console.log(data);
     market_table.update(data);
-    updateChart('meat', data.avg['meat']);
-    updateChart('food', data.avg['food']);
-    updateChart('leather', data.avg['leather']);
-    updateChart('clothes', data.avg['clothes']);
-    updateChart('tools', data.avg['tools']);
-    xVal++;
-    chart.render()
+    // updateChart('meat', data.avg['meat']);
+    // updateChart('food', data.avg['food']);
+    // updateChart('leather', data.avg['leather']);
+    // updateChart('clothes', data.avg['clothes']);
+    // updateChart('tools', data.avg['tools']);
+    // xVal++;
+    // chart.render()
 });
 socket.on('item-market-data', data => {
     // console.log('item-market-data'); 
@@ -374,7 +397,7 @@ socket.on('new-action', msg => {console.log('action ' + msg); tactic_screen.add_
 
 socket.on('battle-has-started', data => {
     battle_image.clear()
-    console.log(data)
+    // console.log(data)
     battle_image.load(data)
 })
 
@@ -386,7 +409,7 @@ socket.on('battle-action', data => {
     if (data == null) {
         return
     }
-    console.log(data)
+    // console.log(data)
     battle_image.update_action(data)
     if (data.action == 'attack') {
         if (data.result.crit) {
@@ -404,7 +427,7 @@ socket.on('battle-action', data => {
 })
 
 socket.on('enemy-update', msg => {
-    console.log(msg)
+    // console.log(msg)
     let div = document.getElementById('enemy_status');
     div.innerHTML = ''
     for (let i of msg) {
@@ -522,7 +545,6 @@ class CharInfoMonster {
     }
 
     update_status(data) {
-        // console.log(data)
         this.rage.innerHTML = data.rage;
         this.rage_display.style.height = `${Math.floor(data.rage)}%`;
 
@@ -541,7 +563,7 @@ const char_info_monster = new CharInfoMonster();
 // eslint-disable-next-line no-undef
 var char_image = new CharacterImage(document.getElementById('char_image'));
 // eslint-disable-next-line no-undef
-var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
+
 // eslint-disable-next-line no-undef
 var market_table = new MarketTable(document.getElementById('market'));
 socket.emit('get-market-data', null);

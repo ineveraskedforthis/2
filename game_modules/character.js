@@ -94,7 +94,7 @@ module.exports = class Character {
             return
         }
         
-        if (!this.data.in_battle) {
+        if (!this.in_battle()) {
             await this.update2(pool)
         } else {
             let dice = Math.random()
@@ -845,5 +845,13 @@ module.exports = class Character {
 
     add_explored(tag) {
         this.data.explored[tag] = true;
+    }
+
+    is_player() {
+        return this.data.is_player;
+    }
+
+    in_battle() {
+        return this.data.in_battle;
     }
 }

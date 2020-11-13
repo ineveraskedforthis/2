@@ -16,6 +16,8 @@ class BattleReworked {
         this.data = {};
         this.data.draw = false;
         this.data.collected_exp = 0;
+        this.data.turn = 0;
+        this.queued_action = []
     }
 
     async init(pool) {
@@ -25,19 +27,40 @@ class BattleReworked {
 
     async update(pool) {
         var log = [];
-        for (var i = 0; i < this.units.length; i++) {
-            let unit = this.units[i];
-            var char = this.world.get_char_from_id(unit.id)
-            if (char.get_hp() > 0) {
-                char.update(pool)
+        let i = this.data.turn;
+        let unit = this.units[i];
+        var char = this.world.get_char_from_id(unit.id)
+        if (char.get_hp() > 0) {
+            if (char.is_player()) {
+                if (this.queued_action[i] != undefined) {
+                    await char.update(pool)
+                    log.push(await this.action(pool, i, this.queued_action[i]));
+                    this.queued_action[i] = undefined
+                    await this.next_turn(pool)
+                }
+            } else {
+                await char.update(pool)
                 for (let i = 0; i < char.data.movement_speed; i++) {
-                    var log_entry = await BattleAI.action(pool, this, char, true)
+                    let log_entry = await BattleAI.action(pool, this, char, true)
                     log.push(log_entry)
-                }                
+                }
+                await this.next_turn(pool)
             }
+        } else {
+            await this.next_turn(pool)
         }
-        await this.save_to_db(pool);
+        if (this.changed) {
+            this.save_to_db(pool)
+        }
         return log;
+    }
+
+    async next_turn(pool) {
+        this.data.turn += 1;
+        if (this.data.turn >= this.unit_amount()) {
+            this.data.turn = 0
+        }   
+        await this.save_to_db(pool);
     }
 
     get_data() {
@@ -55,6 +78,7 @@ class BattleReworked {
     }
 
     async add_fighter(pool, agent, team) {
+        console.log('add fighter')
         let unit = {}
         unit.id = agent.id;
         unit.team = team;
@@ -185,6 +209,7 @@ class BattleReworked {
 
     async save_to_db(pool) {
         await common.send_query(pool, constants.update_battle_query, [this.id, this.units, this.savings.get_json(), this.stash.get_json(), this.data])
+        this.changed = false
     }
 
     async delete_from_db(pool) {

@@ -1,3 +1,8 @@
+let BATTLE_SCALE = 50
+
+
+
+
 class AnimatedImage {
     constructor(image_name) {
         this.tag = image_name;
@@ -96,7 +101,7 @@ class BattleImage {
         this.w = 800;
         this.h = 500;
         this.background_flag = false;
-        this.movement_speed = 0.3
+        this.movement_speed = 0.3;
     }
 
     init() {
@@ -109,7 +114,12 @@ class BattleImage {
         this.tick = 0;
         this.movement = 0;
         this.animation_tick = 0;
-        
+
+        this.hovered = undefined
+        this.selected = undefined
+        this.anchor = undefined
+        this.player = undefined
+
         this.action_queue = [];
         this.l = 0;
         this.r = 0;
@@ -160,10 +170,6 @@ class BattleImage {
             this.background_flag = true;
         }  
 
-        if (this.action_queue.length == 0) {
-            return
-        }
-
         if (this.r > this.l) {
             this.movement += delta;
         }
@@ -171,7 +177,8 @@ class BattleImage {
             let who = undefined;
             for (let i in this.positions) {
                 this.images[i].set_action('idle');
-                this.prev_positions[i] = this.new_positions[i]
+                this.prev_positions[i].x = this.new_positions[i].x;
+                this.prev_positions[i].y = this.new_positions[i].y;
             }
             let action = this.action_queue[this.l]
             if (action.action == 'move') {
@@ -200,6 +207,7 @@ class BattleImage {
 
         this.animation_tick += delta;
         
+
         if (this.animation_tick > 1/15) {
             for (let i in this.positions) {
                 this.update_pos(i)
@@ -207,23 +215,58 @@ class BattleImage {
 
             let ctx = this.canvas.getContext('2d');
             ctx.clearRect(0, 0, this.w, this.h);
+
+            for (let i in this.positions) {
+                let pos = this.get_centre(this.positions[i])
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
+                if (this.selected == i) {
+                    ctx.fillStyle = "rgba(10, 10, 200, 0.7)"
+                } else if (this.hovered == i) {
+                    ctx.fillStyle = "rgba(0, 230, 0, 0.7)"
+                } else {
+                    ctx.fillStyle = "rgba(200, 200, 0, 0.5)"
+                }
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
+                ctx.stroke();
+            }
+            
             var draw_order = Array.from(this.battle_ids)
             draw_order.sort((a, b) => -this.positions[a].y + this.positions[b].y)
-            for (var i of draw_order) {
+            for (let i of draw_order) {
                 var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
                 this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
                 this.images[i].update()
             }
+            if (this.anchor != undefined) {
+                let ctx = this.canvas.getContext('2d');
+                ctx.beginPath();
+                ctx.arc(this.anchor.x, this.anchor.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
+                ctx.strokeStyle = 'rgba(255, 255, 0, 1)';
+                ctx.fillStyle = "rgba(10, 10, 200, 0.9)";
+                ctx.fill();
+                ctx.stroke();
+                ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
+            }
             this.animation_tick = this.animation_tick % (1/15);
         }
+        
     }
     
-    add_fighter(battle_id, tag, position) {
-        console.log(battle_id, tag, position)
+    add_fighter(battle_id, tag, pos) {
+        console.log("add fighter")
+        console.log(battle_id, tag, pos)
         this.battle_ids.add(battle_id)
-        this.new_positions[battle_id] = position;
-        this.prev_positions[battle_id] = position;
-        this.positions[battle_id] = position;
+        this.new_positions[battle_id] = {x:pos.x, y:pos.y};
+        this.prev_positions[battle_id] = {x:pos.x, y:pos.y};
+        this.positions[battle_id] = {x:pos.x, y:pos.y};
         this.images[battle_id] = new AnimatedImage(tag)
     }
     
@@ -233,7 +276,7 @@ class BattleImage {
         } else {
             let tmp = Math.min(this.movement, this.movement_speed) / this.movement_speed;
             this.positions[battle_id].x = this.prev_positions[battle_id].x + (this.new_positions[battle_id].x - this.prev_positions[battle_id].x) * tmp;
-            this.positions[battle_id].y = this.prev_positions[battle_id].y + (this.new_positions[battle_id].y - this.prev_positions[battle_id].y) * tmp
+            this.positions[battle_id].y = this.prev_positions[battle_id].y + (this.new_positions[battle_id].y - this.prev_positions[battle_id].y) * tmp;
         }
     }
     
@@ -250,22 +293,61 @@ class BattleImage {
     //     var top_ray = two_points_to_line(top_left_position, viewer_point)
     //     var bottom_intersection = intersect(bottom_ray, picture_plane)
     //     var top_intersection = intersect(top_ray, picture_plane)
-    //     // console.log(top_intersection.data)
-    //     // console.log(bottom_intersection.data)
     //     var d = minus(bottom_intersection, top_intersection)
     //     var centre = sum(top_intersection, mult(0.5, d))
     //     centre = sum(centre, new Vector(this.w / 5, + this.h / 2, 0))
     //     var canvas_top_left = minus(centre, mult(0.5, d))
-    //     // console.log(canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1])
     //     return [canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1]]
     // }
 
+    get_centre(pos) {
+        let centre = {x: pos.y, y: pos.x};
+        centre.x = -centre.x * BATTLE_SCALE + 520;
+        centre.y = centre.y * BATTLE_SCALE + 300;
+        return centre
+    }
+
     calculate_canvas_pos(pos, image) {
-        let center = {x: pos.y, y: pos.x};
-        center.x = -center.x * 20 + 400;
-        center.y = center.y * 20 + 300;
+        let centre = this.get_centre(pos);
         let w = image.get_w();
         let h = image.get_h();
-        return [center.x - w/10, center.y - h/10, w/5, h/5]
+        return [centre.x - w/10, centre.y - h/5 + 10, w/5, h/5]
+    }
+
+    hover(pos) {
+        let hovered = false;
+        for (let i in this.positions) {
+            let centre = this.get_centre(this.positions[i])
+            let dx = centre.x - pos.x;
+            let dy = centre.y - pos.y;
+            dx = dx * dx;
+            dy = dy * dy;
+            if (dx + dy < 400) {
+                this.hovered = i;
+                hovered = true;
+            }
+        } 
+        if (!hovered) {
+            this.hovered = undefined;
+        }
+    }
+    press(pos) {
+        let selected = false;
+        for (let i in this.positions) {
+            let centre = this.get_centre(this.positions[i])
+            let dx = centre.x - pos.x;
+            let dy = centre.y - pos.y;
+            dx = dx * dx;
+            dy = dy * dy;
+            if (dx + dy < 400) {
+                this.selected = i;
+                this.anchor = undefined
+                selected = true
+            }
+        } 
+        if (!selected) {
+            this.anchor = pos;
+            this.selected = undefined;
+        }
     }
 }
