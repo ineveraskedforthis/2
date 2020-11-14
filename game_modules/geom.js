@@ -21,10 +21,15 @@ function dist(a, b) {
     return norm(c)
 }
 
+function mult(a, c) {
+    return {x: a.x * c, y: a.y * c}
+}
+
 module.exports = {
     norm: norm,
     norm2: norm2,
     normalize: normalize,
     dist: dist,
-    minus: minus
+    minus: minus,
+    mult: mult
 }

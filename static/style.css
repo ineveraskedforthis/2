@@ -654,34 +654,23 @@ div#bars_row>div{
     opacity: 1;
   }
 
-#attack{
-    border: rgb(56, 143, 6) solid 3px;
+
+
+#battle_control{
     position: absolute;
-    width: 170px;
-    height: 20px;
     top: 450px;
     left: 30px;
+    width: 80%;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
     z-index: 3;
-    text-align: center;
-    padding-top: 0.5em;
-    color: darkgreen;
-    background-color: rgba(255, 255, 255, .5);
-    user-select: none;
 }
 
-
-#attack:hover{
-    border: rgb(21, 240, 39) solid 3px;
-}
-
-#battle_action{
+#battle_control>div{
     border: rgb(56, 143, 6) solid 3px;
-    position: absolute;
     width: 170px;
     height: 20px;
-    top: 450px;
-    left: 230px;
-    z-index: 3;
     text-align: center;
     padding-top: 0.5em;
     color: darkgreen;
@@ -689,8 +678,7 @@ div#bars_row>div{
     user-select: none;
 }
 
-
-#battle_action:hover{
+#battle_control>div:hover{
     border: rgb(21, 240, 39) solid 3px;
 }
 

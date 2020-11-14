@@ -267,7 +267,7 @@ class BattleReworked {
                 let dist = geom.dist(unit, unit2)
                 if (dist > 2) {
                     let v = geom.minus(unit2, unit);
-                    let u = geom.mult(geom.normilize(v), 1.5);
+                    let u = geom.mult(geom.normalize(v), 0.9);
                     v = geom.minus(v, u)
                     unit.x = v.x
                     unit.y = v.y
@@ -284,6 +284,9 @@ class BattleReworked {
             }
             if (action.action == 'attack') {
                 this.queued_action[index] = BattleAI.convert_attack_to_action(this, index, action.target);
+            }
+            if (action.action.startsWith('spell')) {
+                this.queued_action[index] = {action: action.action, target: action.target}
             }
         }
     }

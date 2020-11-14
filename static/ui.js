@@ -323,6 +323,13 @@ document.getElementById('battle_action').onclick = () => {
     }    
 }
 
+document.getElementById('battle_use_skill').onclick = () => {
+    let action = battle_image.get_action_spell();
+    if (action != undefined) {
+        socket.emit('battle-action', action);
+    } 
+}
+
 document.getElementById('attack').onclick = () => {
     socket.emit('attack', null);
 }
@@ -400,7 +407,7 @@ socket.on('explore', msg => {map.explore(msg)});
 socket.on('session', msg => {localStorage.setItem('session', msg)})
 socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 
-socket.on('new-action', msg => {console.log('action ' + msg); tactic_screen.add_action(msg)});
+socket.on('new-action', msg => {console.log('action ' + msg); tactic_screen.add_action(msg); battle_image.add_action(msg)});
 
 socket.on('battle-has-started', data => {
     battle_image.clear()

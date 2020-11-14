@@ -405,4 +405,18 @@ class BattleImage {
         }
         return undefined;
     }
+
+    get_action_spell() {
+        let tag = document.getElementById('battle_select_skill').value;
+        if ((tag == 'spell:charge') || (tag == 'spell:kinetic_bolt')) {
+            if (this.selected != undefined) {
+                return {action: tag, target: this.selected};
+            }
+        }
+    }
+
+    add_action(data) {
+        let tag_option = new Option(data, data);
+        document.getElementById('battle_select_skill').add(tag_option);
+    }
 }

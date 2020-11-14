@@ -89,13 +89,16 @@ module.exports = class World {
     }
 
     async update(pool) {
+
+        await this.entity_manager.update_battles(pool)
+
+
+        // don't ask any questions about variable names
         this.battle_tick += 1;
         if (this.battle_tick >= 2) {
             this.battle_tick = 0;
         }
-
-        if (this.battle_tick == 0){
-            await this.entity_manager.update_battles(pool)
+        if (this.battle_tick == 0){            
             this.socket_manager.send_all_market_info()
         }
 
