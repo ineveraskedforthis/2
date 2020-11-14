@@ -73,6 +73,8 @@ class BattleReworked {
             data[i].position = {x: unit.x, y: unit.y};
             data[i].rotation = unit.phi;
             data[i].tag = character.data.model;
+            data[i].is_player = character.is_player();
+            data[i].range = character.get_range();
         }
         return data
     }
@@ -273,6 +275,16 @@ class BattleReworked {
                 result.new_pos = {x: unit.x, y: unit.y};
             }
             return {action: spell_tag, who: actor_index, result: result, actor_name: character.name};
+        }
+    }
+    push_action(index, action) {
+        if (action != undefined) {
+            if (action.action == 'move') {
+                this.queued_action[index] = {action: 'move', target: geom.normalize(geom.minus(action.target, this.units[index]))}
+            }
+            if (action.action == 'attack') {
+                this.queued_action[index] = BattleAI.convert_attack_to_action(this, index, action.target);
+            }
         }
     }
 }

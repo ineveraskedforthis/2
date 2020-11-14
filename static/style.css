@@ -668,7 +668,29 @@ div#bars_row>div{
     background-color: rgba(255, 255, 255, .5);
     user-select: none;
 }
+
+
 #attack:hover{
+    border: rgb(21, 240, 39) solid 3px;
+}
+
+#battle_action{
+    border: rgb(56, 143, 6) solid 3px;
+    position: absolute;
+    width: 170px;
+    height: 20px;
+    top: 450px;
+    left: 230px;
+    z-index: 3;
+    text-align: center;
+    padding-top: 0.5em;
+    color: darkgreen;
+    background-color: rgba(255, 255, 255, .5);
+    user-select: none;
+}
+
+
+#battle_action:hover{
     border: rgb(21, 240, 39) solid 3px;
 }
 

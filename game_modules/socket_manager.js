@@ -60,6 +60,7 @@ module.exports = class SocketManager {
             socket.on('cclothes', async () => this.craft_clothes(socket, user_data));
             socket.on('ench', async (msg) => this.enchant(socket, user_data, msg));
             socket.on('disench', async (msg) => this.disenchant(socket, user_data, msg));
+            socket.on('battle-action', async (msg) => this.battle_action(socket, user_data, msg));
         });
     }
 
@@ -572,5 +573,13 @@ module.exports = class SocketManager {
     async load_messages_from_database() {
         var rows = await common.send_query(this.pool, constants.get_messages_query);
         return rows
+    }
+
+    async battle_action(socket, user_data, action) {
+        if (user_data.current_user != null && user_data.current_user.character.in_battle()) {
+            let char = user_data.current_user.character;
+            let battle = this.world.get_battle_from_id(char.data.battle_id);
+            battle.push_action(char.data.index_in_battle, action)
+        }
     }
 }

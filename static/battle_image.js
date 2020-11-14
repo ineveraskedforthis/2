@@ -114,6 +114,7 @@ class BattleImage {
         this.tick = 0;
         this.movement = 0;
         this.animation_tick = 0;
+        this.range = {}
 
         this.hovered = undefined
         this.selected = undefined
@@ -144,7 +145,7 @@ class BattleImage {
         console.log('load battle')
         this.init()
         for (var i in data) {
-            this.add_fighter(i, data[i].tag, data[i].position)
+            this.add_fighter(i, data[i].tag, data[i].position, data[i].range, data[i].is_player)
         } 
     }
 
@@ -170,22 +171,28 @@ class BattleImage {
             this.background_flag = true;
         }  
 
-        if (this.r > this.l) {
-            this.movement += delta;
+        this.movement += delta;
+        if ((this.movement > this.movement_speed)&(this.l >= this.r)) {
+            this.movement = this.movement_speed;
         }
+
         while ((this.movement >= this.movement_speed) & (this.r > this.l)) {
+
             let who = undefined;
             for (let i in this.positions) {
                 this.images[i].set_action('idle');
                 this.prev_positions[i].x = this.new_positions[i].x;
                 this.prev_positions[i].y = this.new_positions[i].y;
-            }
+            }   
             let action = this.action_queue[this.l]
             if (action.action == 'move') {
+                console.log('move', action.who)
                 who = action.who;
                 this.images[who].set_action(action.action)
+                console.log(this.prev_positions[who])
                 this.new_positions[who].x = this.prev_positions[who].x + action.target.x;
                 this.new_positions[who].y = this.prev_positions[who].y + action.target.y;
+                console.log(this.new_positions[who])
             }
             else if (action.action == 'charge') {
                 who = action.who;
@@ -200,8 +207,8 @@ class BattleImage {
                 console.log('stop_battle')
                 return this.init()
             } else this.images[action.who].set_action('idle')
-
             this.l +=1
+            
             this.movement -= this.movement_speed;
         }
 
@@ -254,13 +261,34 @@ class BattleImage {
                 ctx.fill();
                 ctx.stroke();
                 ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
+
+                if (this.player != undefined) {
+                    ctx.beginPath()
+                    let pos = this.positions[this.player];
+                    let centre = this.get_centre(pos);
+                    ctx.moveTo(centre.x, centre.y);
+                    ctx.lineTo(this.anchor.x, this.anchor.y)
+                    ctx.stroke()
+                }
+            }
+            if ((this.selected != undefined) & (this.player != undefined)) {
+                if (this.player != undefined) {
+                    ctx.beginPath()
+                    let pos1 = this.positions[this.player];
+                    let centre1 = this.get_centre(pos1);
+                    let pos2 = this.positions[this.selected];
+                    let centre2 = this.get_centre(pos2);
+                    ctx.moveTo(centre1.x, centre1.y);
+                    ctx.lineTo(centre2.x, centre2.y)
+                    ctx.stroke()
+                }
             }
             this.animation_tick = this.animation_tick % (1/15);
         }
         
     }
     
-    add_fighter(battle_id, tag, pos) {
+    add_fighter(battle_id, tag, pos, range, is_player) {
         console.log("add fighter")
         console.log(battle_id, tag, pos)
         this.battle_ids.add(battle_id)
@@ -268,6 +296,10 @@ class BattleImage {
         this.prev_positions[battle_id] = {x:pos.x, y:pos.y};
         this.positions[battle_id] = {x:pos.x, y:pos.y};
         this.images[battle_id] = new AnimatedImage(tag)
+        this.range[battle_id] = range;
+        if (is_player) {
+            this.player = battle_id
+        }
     }
     
     update_pos(battle_id) {
@@ -305,6 +337,13 @@ class BattleImage {
         centre.x = -centre.x * BATTLE_SCALE + 520;
         centre.y = centre.y * BATTLE_SCALE + 300;
         return centre
+    }
+
+    reverse_centre(pos) {
+        let tmp = {x: pos.x, y: pos.y}
+        tmp.x = (tmp.x - 520) / (-BATTLE_SCALE);
+        tmp.y = (tmp.y - 300) / (BATTLE_SCALE)
+        return {x: tmp.y, y: tmp.x}
     }
 
     calculate_canvas_pos(pos, image) {
@@ -349,5 +388,21 @@ class BattleImage {
             this.anchor = pos;
             this.selected = undefined;
         }
+    }
+
+    get_anchor_coords() {
+        if (this.anchor != undefined) {
+            return this.reverse_centre(this.anchor);
+        }
+    }
+
+    get_action() {
+        if (this.anchor != undefined) {
+            return {action: 'move', target: this.get_anchor_coords()}
+        }
+        if (this.selected != undefined) {
+            return {action: 'attack', target: this.selected};
+        }
+        return undefined;
     }
 }

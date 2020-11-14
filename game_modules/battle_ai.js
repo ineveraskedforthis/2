@@ -75,28 +75,39 @@ module.exports = class BattleAI {
     }
 
 
+    static convert_attack_to_action(battle, ind1, ind2) {
+        let tmp = {
+            action: undefined,
+            action_target: undefined
+        }
+        let unit = battle.units[ind1]
+        let unit_2 = battle.units[ind2]
+        var actor = battle.world.get_char_from_id(unit.id);
+        let delta = geom.minus(unit_2, unit);
+        if (geom.norm(delta) > actor.get_range()) {
+            tmp.action = 'move';
+            tmp.target = geom.normalize(delta);
+        } else {
+            tmp.action = 'attack';
+            tmp.target = ind2;
+        }
+        return tmp
+    }
+
     //decide what action agent should do
     static get_action(battle, index, target_tag, action_tag) {
         var action = null;
         var action_target = null;
         var true_target = undefined;
-        let unit = battle.units[index]
         if (target_tag == 'closest_enemy') {
             true_target = BattleAI.calculate_closest_enemy(battle, index)
         } else if (target_tag == 'me') {
             true_target = index
         }
-        let unit_2 = battle.units[true_target]
         if (action_tag == 'attack') {
-            var actor = battle.world.get_char_from_id(unit.id);
-            let delta = geom.minus(unit_2, unit);
-            if (geom.norm(delta) > actor.get_range()) {
-                action = 'move';
-                action_target = geom.normalize(delta);
-            } else {
-                action = 'attack';
-                action_target = true_target;
-            }
+            let res = this.convert_attack_to_action(battle, index, true_target);
+            action = res.action;
+            action_target = res.target;
         }
         if (action_tag == 'flee') {
             action = 'flee';

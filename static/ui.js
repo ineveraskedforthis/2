@@ -316,6 +316,13 @@ document.getElementById('attack_button').onclick = () => {
     showTab('battle_tab');
 }
 
+document.getElementById('battle_action').onclick = () => {
+    let action = battle_image.get_action();
+    if (action != undefined) {
+        socket.emit('battle-action', action);
+    }    
+}
+
 document.getElementById('attack').onclick = () => {
     socket.emit('attack', null);
 }
@@ -409,7 +416,6 @@ socket.on('battle-action', data => {
     if (data == null) {
         return
     }
-    // console.log(data)
     battle_image.update_action(data)
     if (data.action == 'attack') {
         if (data.result.crit) {
