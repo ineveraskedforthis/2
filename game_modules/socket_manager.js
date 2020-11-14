@@ -40,6 +40,7 @@ module.exports = class SocketManager {
             socket.on('login', async data => this.login(socket, user_data, data));
             socket.on('reg', async data => this.registration(socket, user_data, data));
             socket.on('attack', async msg => this.attack(socket, user_data, msg));
+            socket.on('attack-outpost', async msg => this.attack_local_outpost(socket, user_data, msg));
             socket.on('buy', async msg => this.buy(user_data, msg));
             socket.on('sell', async msg => this.sell(user_data, msg));
             socket.on('up-skill', async msg => this.up_skill(user_data, msg));
@@ -250,6 +251,16 @@ module.exports = class SocketManager {
         if (user_data.current_user != null && !user_data.current_user.character.data.in_battle) {
             let char = user_data.current_user.character;
             let battle = await char.attack_local_monster(this.pool);
+            socket.emit('battle-has-started', battle.get_data())
+        }
+    }
+
+    async attack_local_outpost(socket, user_data, data) {
+        common.flag_log('attack', constants.logging.sockets.messages)
+        common.flag_log([user_data], constants.logging.sockets.messages)
+        if (user_data.current_user != null && !user_data.current_user.character.data.in_battle) {
+            let char = user_data.current_user.character;
+            let battle = await char.attack_local_outpost(this.pool);
             socket.emit('battle-has-started', battle.get_data())
         }
     }

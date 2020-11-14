@@ -414,6 +414,11 @@ module.exports = class Character {
         return battle
     }
 
+    async attack_local_outpost(pool) {
+        let battle = await this.world.attack_local_outpost(pool, this);
+        return battle
+    }
+
     //craft actions
 
     async craft_food(pool) {

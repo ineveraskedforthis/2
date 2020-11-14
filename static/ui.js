@@ -333,6 +333,10 @@ document.getElementById('battle_use_skill').onclick = () => {
 document.getElementById('attack').onclick = () => {
     socket.emit('attack', null);
 }
+document.getElementById('attack_outpost').onclick = () => {
+    socket.emit('attack-outpost', null);
+}
+
 document.getElementById('market_button').onclick = () => {
     socket.emit('send-market-data', true)
     showTab('market_tab');
@@ -440,7 +444,6 @@ socket.on('battle-action', data => {
 })
 
 socket.on('enemy-update', msg => {
-    // console.log(msg)
     let div = document.getElementById('enemy_status');
     div.innerHTML = ''
     for (let i of msg) {

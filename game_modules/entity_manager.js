@@ -139,7 +139,7 @@ module.exports = class EntityManager {
                 let status = battle.get_team_status(1);
                 for (let i = 0; i < battle.unit_amount(); i++) {
                     let character = this.chars[battle.units[i].id];
-                    if (character.data.is_player) {
+                    if ((character != undefined) && (character.data.is_player)) {
                         this.world.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
                         this.world.socket_manager.send_to_character_user(character, 'enemy-update', status);
                         log.forEach(log_entry => { this.world.socket_manager.send_to_character_user(character, 'battle-action', log_entry)});
@@ -253,7 +253,7 @@ module.exports = class EntityManager {
             await battle.add_fighter(pool, attackers[i], 0);
         }
         for (let i = 0; i < defenders.length; i++) {
-            await battle.add_fighter(pool, defenders[i], 1);
+            await battle.add_fighter(pool, defenders[i], 1, {x: Math.random() * 5 - 2.5, y: Math.random() * 4 + 5});
         }
         this.battles[battle.id] = battle;
         return battle;

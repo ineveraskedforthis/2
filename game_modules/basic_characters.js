@@ -18,7 +18,7 @@ class Rat extends PredefinedMonster {
         this.init_base_values('rat', 40, 40, 0, 0, cell_id);
         this.data.stats = this.world.constants.base_stats.rat
         this.data.base_resists = this.world.constants.base_resists.rat
-        this.equip.data.right_hand = {tag: 'empty', affixes: 0}
+        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 1}}
         this.stash.inc('meat', 1);
         this.data.model = 'rat'
         this.data.exp_reward = 50
@@ -41,7 +41,7 @@ class Elodino extends PredefinedMonster  {
         this.init_base_values('elodino', 100, 100, 0, 0, cell_id);
         this.data.stats = this.world.constants.base_stats.elodino
         this.data.base_resists = this.world.constants.base_resists.rat
-        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 1}}
+        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 2}}
         this.data.exp_reward = 200
         this.stash.inc('meat', 2);
         this.data.model = 'elodino'

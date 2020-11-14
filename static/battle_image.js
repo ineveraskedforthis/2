@@ -111,6 +111,7 @@ class BattleImage {
         this.ids = {}
         this.images = {}
         this.battle_ids = new Set()
+        this.killed = {}
         this.tick = 0;
         this.movement = 0;
         this.animation_tick = 0;
@@ -150,7 +151,11 @@ class BattleImage {
     }
 
     update(data) {
-
+        for (let i in data) {
+            if ((data[i] == undefined) || (data[i].hp == 0)) {
+                this.killed[i] = true
+            }
+        }
     }
 
     update_action(action){
@@ -224,33 +229,38 @@ class BattleImage {
             ctx.clearRect(0, 0, this.w, this.h);
 
             for (let i in this.positions) {
-                let pos = this.get_centre(this.positions[i])
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
-                if (this.selected == i) {
-                    ctx.fillStyle = "rgba(10, 10, 200, 0.7)"
-                } else if (this.hovered == i) {
-                    ctx.fillStyle = "rgba(0, 230, 0, 0.7)"
-                } else {
-                    ctx.fillStyle = "rgba(200, 200, 0, 0.5)"
-                }
-                ctx.fill();
+                if (!this.killed[i]) {
+                    let pos = this.get_centre(this.positions[i])
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
+                    if (this.selected == i) {
+                        ctx.fillStyle = "rgba(10, 10, 200, 0.7)"
+                    } else if (this.hovered == i) {
+                        ctx.fillStyle = "rgba(0, 230, 0, 0.7)"
+                    } else {
+                        ctx.fillStyle = "rgba(200, 200, 0, 0.5)"
+                    }
+                    ctx.fill();
 
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
-                ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
+                    ctx.stroke();
 
-                ctx.beginPath();
-                ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
-                ctx.stroke();
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
+                    ctx.stroke();
+                }                
             }
             
+
             var draw_order = Array.from(this.battle_ids)
             draw_order.sort((a, b) => -this.positions[a].y + this.positions[b].y)
             for (let i of draw_order) {
-                var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
-                this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
-                this.images[i].update()
+                if (!this.killed[i]) {
+                    var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
+                    this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
+                    this.images[i].update()
+                }                
             }
             if (this.anchor != undefined) {
                 let ctx = this.canvas.getContext('2d');
@@ -297,6 +307,7 @@ class BattleImage {
         this.positions[battle_id] = {x:pos.x, y:pos.y};
         this.images[battle_id] = new AnimatedImage(tag)
         this.range[battle_id] = range;
+        this.killed[battle_id] = false
         if (is_player) {
             this.player = battle_id
         }

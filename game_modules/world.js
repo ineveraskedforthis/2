@@ -324,4 +324,18 @@ module.exports = class World {
         return battle
     }
 
+    async attack_local_outpost(pool, char) {
+        let cell = char.get_cell();
+        let tmp = cell.i + '_' + cell.j;
+        if (tmp in this.constants.outposts) {
+            let outpost = this.constants.outposts[tmp];
+            let enemies = [];
+            for (let i = 0; i < outpost.enemy_amount; i++) {
+                enemies.push(await this.create_monster(pool, basic_characters[outpost.enemy], char.cell_id))
+            }
+            let battle = await this.create_battle(pool, [char], enemies);
+            battle.stash.inc(outpost.res, outpost.res_amount)
+            return battle
+        }
+    }
 }

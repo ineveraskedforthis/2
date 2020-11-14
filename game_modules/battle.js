@@ -30,6 +30,10 @@ class BattleReworked {
         let i = this.data.turn;
         let unit = this.units[i];
         var char = this.world.get_char_from_id(unit.id)
+        if (char == undefined) {
+            await this.next_turn(pool)
+            return log
+        }
         if (char.get_hp() > 0) {
             if (char.is_player()) {
                 if (this.queued_action[i] != undefined) {
@@ -68,30 +72,39 @@ class BattleReworked {
         for (var i = 0; i < this.units.length; i++) {
             let unit = this.units[i];
             var character = this.world.get_char_from_id(unit.id)
-            data[i] = {}
-            data[i].id = unit.id;
-            data[i].position = {x: unit.x, y: unit.y};
-            data[i].rotation = unit.phi;
-            data[i].tag = character.data.model;
-            data[i].is_player = character.is_player();
-            data[i].range = character.get_range();
+            if (character != undefined) {
+                data[i] = {}
+                data[i].id = unit.id;
+                data[i].position = {x: unit.x, y: unit.y};
+                data[i].rotation = unit.phi;
+                data[i].tag = character.data.model;
+                data[i].is_player = character.is_player();
+                data[i].range = character.get_range();
+                data[i].hp = character.get_hp();
+            }
         }
         return data
     }
 
-    async add_fighter(pool, agent, team) {
+    async add_fighter(pool, agent, team, position) {
         console.log('add fighter')
         let unit = {}
         unit.id = agent.id;
         unit.team = team;
         unit.dead = false;
-        if (team == 1) {
-            unit.x = 0
-            unit.y = 10
+        if (position == undefined) {
+            if (team == 1) {
+                unit.x = 0
+                unit.y = 10
+            } else {
+                unit.x = 0
+                unit.y = 0
+            }
         } else {
-            unit.x = 0
-            unit.y = 0
+            unit.x = position.x
+            unit.y = position.y
         }
+
         this.units.push(unit);
         await agent.set(pool, 'battle_id', this.id, false);
         await agent.set(pool, 'index_in_battle', this.units.length - 1, false);
@@ -105,7 +118,10 @@ class BattleReworked {
             let unit = this.units[i]
             if (unit.team == team) {
                 let char = this.world.get_char_from_id(unit.id)
-                tmp.push({name: char.name, hp: char.hp})
+                if (char != undefined) {
+                    tmp.push({name: char.name, hp: char.hp})
+                }
+                
             }
         }
         return tmp

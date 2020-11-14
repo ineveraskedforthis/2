@@ -26,8 +26,18 @@
     },
 
     outposts: {
-        '5_4': 'water',
-        '6_9': 'water'
+        '5_4': {
+            res: 'water',
+            enemy: 'rat',
+            res_amount: 5,
+            enemy_amount: 4
+        },
+        '6_9': {
+            res: 'water',
+            enemy: 'rat',
+            res_amount: 5,
+            enemy_amount: 4
+        }
     },
 
     move: {
