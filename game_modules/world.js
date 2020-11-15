@@ -312,15 +312,23 @@ module.exports = class World {
     }
 
     get_enemy(x,y) {
-
+        let terr_tag = this.get_territory(x, y)
+        let tag = this.constants.enemies[terr_tag];
+        return tag;
     }
 
-    async attack_local_monster(pool, char) {
+    async attack_local_monster(pool, char, enemies_amount = 1) {
+        if (enemies_amount == 0) {
+            return undefined
+        }
         let cell = char.get_cell();
         let terr_tag = this.get_territory(cell.i, cell.j)
         let tag = this.constants.enemies[terr_tag];
-        let enemy = await this.create_monster(pool, basic_characters[tag], char.cell_id)
-        let battle = await this.create_battle(pool, [char], [enemy]);
+        let enemies = []
+        for (let i = 0; i < enemies_amount; i++) {
+            enemies.push(await this.create_monster(pool, basic_characters[tag], char.cell_id))
+        }
+        let battle = await this.create_battle(pool, [char], enemies);
         return battle
     }
 

@@ -133,7 +133,7 @@ class BattleImage {
         this.background = bg;
         console.log('draw_background')
         let ctx = this.canvas_background.getContext('2d');
-        draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
+        // draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
         this.background_flag = true;
     }
 
@@ -172,7 +172,7 @@ class BattleImage {
         if (!this.background_flag){
             console.log('draw_background')
             let ctx = this.canvas_background.getContext('2d');
-            draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
+            // draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
             this.background_flag = true;
         }  
 

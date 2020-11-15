@@ -401,16 +401,21 @@ module.exports = class Character {
                 this.change_stress(3);
                 let tmp = this.world.get_territory(data.x, data.y)
                 this.add_explored(this.world.get_id_from_territory(tmp));
+                let danger = this.world.constants.ter_danger[tmp];
+                let res = await this.attack_local_monster(pool, danger)
                 this.world.socket_manager.send_explored(this);
-                return true
+                if (res != undefined) {
+                    return 2
+                } 
+                return 1
             }
-            return false
+            return 0
         }
-        return false
+        return 0
     }
 
-    async attack_local_monster(pool) {
-        let battle = await this.world.attack_local_monster(pool, this);
+    async attack_local_monster(pool, enemies) {
+        let battle = await this.world.attack_local_monster(pool, this, enemies);
         return battle
     }
 

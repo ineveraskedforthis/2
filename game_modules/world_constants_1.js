@@ -25,6 +25,11 @@
         'rat_plains': 'rat'
     },
 
+    ter_danger: {
+        'colony': 0,
+        'rat_plains': 3 
+    },
+
     outposts: {
         '5_4': {
             res: 'water',
@@ -76,7 +81,7 @@
             tou: 10
         },
         rat: {
-            musculature: 1,
+            musculature: 5,
             breathing: 1, 
             coordination: 1, 
             vis: 1, 

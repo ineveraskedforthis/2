@@ -239,8 +239,12 @@ module.exports = class SocketManager {
         }
         let char = user_data.current_user.character;
         let res = await char.move(this.pool, data);
-        if (res) {
+        if (res != 0) {
             user_data.socket.emit('map-pos', data);
+        }
+        if (res == 2) {
+            user_data.socket.emit('alert', 'you are attacked');
+            this.send_battle_data_to_user(user_data.current_user);
         }
     }
 
