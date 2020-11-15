@@ -167,6 +167,34 @@ document.getElementById('map').onmouseup = event => {
     pressed = false;
 }
 
+
+// tutorial
+document.getElementById('tutorial_status').onmouseover = event => {
+    let status_frame = document.getElementById("status_frame")
+    status_frame.style.border = '1px solid yellow';
+    status_frame.style.backgroundColor = 'rgb(100, 100, 0, 0.5)'
+};
+document.getElementById('tutorial_status').onmouseout = event => {
+    let status_frame = document.getElementById("status_frame")
+    status_frame.style.border = '0px solid yellow';
+    status_frame.style.backgroundColor = 'rgb(78, 11, 11, 0.7)'
+};
+
+
+document.getElementById('tutorial_buttons').onmouseover = event => {
+    let status_frame = document.getElementById("control_frame")
+    status_frame.style.border = '1px solid yellow';
+    status_frame.style.backgroundColor = 'rgb(100, 100, 0, 0.5)'
+};
+document.getElementById('tutorial_buttons').onmouseout = event => {
+    let status_frame = document.getElementById("control_frame")
+    status_frame.style.border = '0px solid yellow';
+    status_frame.style.backgroundColor = 'rgb(78, 11, 11, 0.7)'
+};
+
+
+
+
 /*function show(tag) {
     document.getElementById('battle_tab').style.visibility = 'hidden';
     document.getElementById('market_tab').style.visibility = 'hidden';
@@ -205,6 +233,10 @@ function show_game() {
     document.getElementById('reg-frame').style.visibility = 'hidden';
     document.getElementById('game_container').style.visibility = 'visible';
     showTab('character_screen');
+}
+
+function show_tutorial() {
+    showTab('tutorial');
 }
 
 document.getElementById('open_reg_window_button').onclick = () => {
@@ -476,6 +508,10 @@ function login(msg) {
     } else if (msg == 'ok') {
         tactic_screen.reset_tactic()
         show_game();
+    }
+    let tutorial_stage = localStorage.getItem('tutorial');
+    if (tutorial_stage == null) {
+        show_tutorial(0);
     }
 }
 
