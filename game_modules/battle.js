@@ -281,7 +281,7 @@ class BattleReworked {
             let result = await character.spell_attack(pool, target_char, spell_tag);
             if ('close_distance' in result) {
                 let dist = geom.dist(unit, unit2)
-                if (dist > 2) {
+                if (dist > 1.9) {
                     let v = geom.minus(unit2, unit);
                     let u = geom.mult(geom.normalize(v), 0.9);
                     v = geom.minus(v, u)

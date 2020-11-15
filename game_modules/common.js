@@ -8,7 +8,7 @@ module.exports =
     },
 
     get_next_nevel_req: function (l) {
-        return l * l * 10
+        return l * l * 5 + 50 + 10 * l
     },
 
     send_query: async function (pool, query, args) {

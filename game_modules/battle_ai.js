@@ -78,15 +78,23 @@ module.exports = class BattleAI {
     static convert_attack_to_action(battle, ind1, ind2) {
         let tmp = {
             action: undefined,
-            action_target: undefined
+            target: undefined
         }
         let unit = battle.units[ind1]
         let unit_2 = battle.units[ind2]
         var actor = battle.world.get_char_from_id(unit.id);
         let delta = geom.minus(unit_2, unit);
-        if (geom.norm(delta) > actor.get_range()) {
+        let dist = geom.norm(delta)
+        if (dist > actor.get_range()) {
+            tmp.target = {}
             tmp.action = 'move';
-            tmp.target = geom.normalize(delta);
+            if (dist > actor.get_range() + 0.9) {
+                tmp.target = geom.normalize(delta);
+            } else {
+                tmp.target.x = geom.normalize(delta).x * (Math.max(dist - actor.get_range() + 0.1, 0));
+                tmp.target.y = geom.normalize(delta).y * (Math.max(dist - actor.get_range() + 0.1, 0));
+            }
+
         } else {
             tmp.action = 'attack';
             tmp.target = ind2;

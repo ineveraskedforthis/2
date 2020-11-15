@@ -171,24 +171,24 @@ document.getElementById('map').onmouseup = event => {
 // tutorial
 document.getElementById('tutorial_status').onmouseover = event => {
     let status_frame = document.getElementById("status_frame")
-    status_frame.style.border = '1px solid yellow';
+    // status_frame.style.border = '1px solid yellow';
     status_frame.style.backgroundColor = 'rgb(100, 100, 0, 0.5)'
 };
 document.getElementById('tutorial_status').onmouseout = event => {
     let status_frame = document.getElementById("status_frame")
-    status_frame.style.border = '0px solid yellow';
+    // status_frame.style.border = '0px solid yellow';
     status_frame.style.backgroundColor = 'rgb(78, 11, 11, 0.7)'
 };
 
 
 document.getElementById('tutorial_buttons').onmouseover = event => {
     let status_frame = document.getElementById("control_frame")
-    status_frame.style.border = '1px solid yellow';
+    // status_frame.style.border = '1px solid yellow';
     status_frame.style.backgroundColor = 'rgb(100, 100, 0, 0.5)'
 };
 document.getElementById('tutorial_buttons').onmouseout = event => {
     let status_frame = document.getElementById("control_frame")
-    status_frame.style.border = '0px solid yellow';
+    // status_frame.style.border = '0px solid yellow';
     status_frame.style.backgroundColor = 'rgb(78, 11, 11, 0.7)'
 };
 
