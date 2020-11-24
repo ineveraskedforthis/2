@@ -220,6 +220,7 @@ module.exports = class SocketManager {
         this.send_new_actions(character);
         this.send_item_market_update_to_character(character);
         this.send_explored(character);
+        this.send_teacher_info(character);
         let user = character.user;
         let socket = character.user.socket;
         this.send_char_info(socket, user);
@@ -241,6 +242,7 @@ module.exports = class SocketManager {
         let res = await char.move(this.pool, data);
         if (res != 0) {
             user_data.socket.emit('map-pos', data);
+            this.send_teacher_info(char);
         }
         if (res == 2) {
             user_data.socket.emit('alert', 'you are attacked');
@@ -551,6 +553,12 @@ module.exports = class SocketManager {
                 this.send_market_info(this.world.entity_manager.map.cells[i][j]);
             }
         }
+    }
+
+    send_teacher_info(character) {
+        let cell = character.get_cell();
+        let res = this.world.get_cell_teacher(cell.i, cell.j);
+        this.send_to_character_user(character, 'local-skills', res)
     }
 
 

@@ -65,9 +65,9 @@ module.exports = class World {
             pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 10000, StateMachines.AIs['meat_to_heal']);
         }
 
-        for (let i = 1; i <= 13; i++) {
-            pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, Math.floor(100 * i * i / 10), StateMachines.AIs['hunters']);
-        }
+        // for (let i = 1; i <= 13; i++) {
+        //     pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, Math.floor(100 * i * i / 10), StateMachines.AIs['hunters']);
+        // }
 
         for (let i = 1; i <= 3; i++) {
             pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 10000, StateMachines.AIs['clothiers']);
@@ -124,6 +124,12 @@ module.exports = class World {
             // console.log('vacuum');
             this.vacuum_stage = 0;
         }
+    }
+
+    get_cell_teacher(x, y) {
+        let tag = x + '_' + y;
+        let skill_group = this.constants.teachers[tag]
+        return this.constants.skill_groups[skill_group];
     }
 
     get_char_from_id(id) {

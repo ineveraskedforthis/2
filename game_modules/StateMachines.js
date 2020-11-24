@@ -5,7 +5,7 @@ async function buy_input(pool, agent, tag, amount) {
     let savings = agent.savings.get();
     var estimated_tag_cost = agent.get_local_market().guess_tag_cost(tag, amount);
     // if (tag == 'leather') {console.log(tag, amount, Math.min(savings, estimated_tag_cost * 2), agent.data.price)}
-    await agent.buy(pool, tag, amount, Math.min(savings, estimated_tag_cost * 2), 100);
+    await agent.buy(pool, tag, amount, Math.min(savings, estimated_tag_cost * 2), 19);
 }
 
 async function buy_needs(pool, agent) {
@@ -43,7 +43,8 @@ async function buy_needs(pool, agent) {
             }
         }
 
-        let money_reserved = Math.floor(savings * 2/3 * (need / size));
+        // let money_reserved = Math.floor(savings * 2/3 * (need / size));
+        let money_reserved = 30;
         let estimated_cost = Math.floor(f(tag, need) * 1.2 + 1);
         await agent.buy(pool, tag, need, Math.min(money_reserved, estimated_cost), money_reserved);
     }
@@ -64,7 +65,8 @@ async function buy_needs(pool, agent) {
             }
         }
 
-        let money_reserved = Math.floor(savings * 2/3 * (need / size));
+        // let money_reserved = Math.floor(savings * 2/3 * (need / size));
+        let money_reserved = 30;
         let estimated_cost = Math.floor(f(tag, need) * 1.2 + 1);
         await agent.buy(pool, tag, need, Math.min(money_reserved, estimated_cost), money_reserved);
     }
@@ -139,7 +141,9 @@ function update_price(pool, agent, tag, t) {
     } else {
         let dice = Math.random();
         if (dice > 0.5) {
-            agent.data.price += 1
+            if (agent.data.price < 20) {
+                agent.data.price += 1
+            }            
         } else {
             agent.data.price -= 1
         }
@@ -360,12 +364,26 @@ class Toolmakers extends State {
     }
 }
 
+class LeatherArmourMakers extends State {
+    static async Execute(pool, agent, save = true) {
+        await agent.clear_orders(pool, save);
+        let tag = 'leather';
+        let savings = agent.savings.get();
+        await agent.buy(pool, tag, 20, savings, 100);
+        while (agent.stash.get(tag) > 5) {
+            agent.stash.inc(tag, -5);
+
+        } 
+    }
+}
+
 var AIs = {
     'meat_to_heal': MeatToHeal,
     'hunters': Hunters,
     'clothiers': Clothiers,
     'water': WaterSeller,
-    'toolmakers': Toolmakers
+    'toolmakers': Toolmakers,
+    'armleather': LeatherArmourMakers
 }
 
 module.exports = {

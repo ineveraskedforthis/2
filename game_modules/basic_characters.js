@@ -89,8 +89,10 @@ class Graci extends PredefinedMonster  {
     }
 }
 
+
+
 module.exports = {
     rat: Rat,
     graci: Graci,
-    elodino: Elodino
+    elodino: Elodino,
 }

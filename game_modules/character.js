@@ -39,6 +39,7 @@ module.exports = class Character {
             base_battle_stats: this.world.constants.base_battle_stats,
             base_resists: this.world.constants.base_resists.pepe,
             is_player: is_player,
+            is_trainer: false,
             explored: {},
             exp: exp,
             level: level,
@@ -158,6 +159,12 @@ module.exports = class Character {
         if (!(skill in SKILLS)) {
             return undefined
         }
+        let cell = this.world.get_cell_by_id(this.cell_id);
+        let skill_group = this.world.get_cell_teacher(cell.i, cell.j)
+        if (!(skill in skill_group)) {
+            return undefined
+        }
+
         for (let i of SKILLS[skill].req_skills) {
             // console.log(i, this.data.skills[i], SKILLS[i].max_level);
             if (this.data.skills[i] != SKILLS[i].max_level) {
