@@ -1,6 +1,3 @@
-const mat4 = glMatrix.mat4;
-const vec4 = glMatrix.vec4;
-
 function draw_image(context, image, x, y, w, h) {
     context.drawImage(image, x, y, w, h)
 }

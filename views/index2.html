@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset = "utf-8">
+    <title>Path of :dishu:</title>
+    <link rel="stylesheet" type="text/css" href="static/reset.css">
+    <link rel="stylesheet" type="text/css" href="static/style2.css">
+</head>
+<body>
+
+    <div id="bg_fade"></div>
+
+    <div id="base_background"></div>
+
+    <div id="game_container">
+        <div id = "login_scene" class="game_scene">
+            <div id="login_container">
+                <div id="select_box">
+                    <div id="open_login_window_button" class="selected">Login</div>
+                    <div id="open_reg_window_button" >Registration</div>
+                </div>
+                <div id='login-frame'>
+                    <form action=''>
+                        <p><input id='login-l' placeholder="Login"></p>
+                        <p><input id='password-l' placeholder="Password"></p>
+                        <p><input type='submit', name='login_button', value='login'></p>
+                    </form>
+                </div>
+                <div id='reg-frame'>
+                    <form action=''>
+                        <p><input id='login-r' placeholder="Login"></p>
+                        <p><input id='password-r' placeholder="Password"></p>
+                        <p><input type='submit', name='reg_button', value='register'></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id = "character_creation" class="game_scene">
+            <div class="character_image_col">
+                <div id="character_image_body" class="character_image"></div>
+                <div id="character_image_eyes" class="character_image"></div>
+                <div id="character_image_chin" class="character_image"></div>
+                <div id="character_image_mouth" class="character_image"></div>
+            </div>
+            <div class="character_stats">
+                <div id="page_1" class="page">
+                    <div>YOUR NAME</div>
+                    <div><input id='char_name' placeholder="name"></div>
+                    <div class="appearance">
+                        <div>
+                            <p>eyes</p>
+                            <div> 
+                                <button id="eyes_0" class="next">0</button>
+                                <button id="eyes_1" class="next">1</button>
+                                <button id="eyes_2" class="next">2</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p>chin</p>
+                            <div>
+                                <button id="chin_0" class="next">0</button>
+                                <button id="chin_1" class="next">1</button>
+                                <button id="chin_2" class="next">2</button>
+                            </div>
+                        </div>
+                        <div>
+                            <p>mouth</p>
+                            <div>
+                                <button id="mouth_0" class="next">0</button>
+                                <button id="mouth_1" class="next">1</button>
+                                <button id="mouth_2" class="next">2</button>
+                            </div>    
+                        </div>
+                    </div>
+                    <button id="next_1" class="next">Next</button>
+                </div>
+                <div id="page_2" class="page">
+                    <div>TRAITS</div>
+                    <button id="next_2" class="next">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="/static/load_images.js"></script>
+    <script src='/socket.io/socket.io.js'></script>
+    <script src="/static/ui2.js"></script>
+</body>

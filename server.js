@@ -27,7 +27,7 @@ if (stage == 'dev') {
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'static')));
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/views/index.html');
+    res.sendFile(__dirname + '/views/index2.html');
 });
 http.listen(port, () => {
     console.log('listening on *:3000');
