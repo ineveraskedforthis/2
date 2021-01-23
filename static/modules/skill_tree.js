@@ -59,3 +59,5 @@ class SkillTree {
         this.draw();
     }
 }
+
+export const SkillTree = SkillTree;

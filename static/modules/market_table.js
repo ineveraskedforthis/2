@@ -145,3 +145,5 @@ class ItemMarketTable {
         this.table_container.appendChild(table);
     }
 }
+
+export const MarketTable = MarketTable;

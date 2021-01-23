@@ -3,12 +3,26 @@
 <head>
     <meta charset = "utf-8">
     <title>Path of :dishu:</title>
-    <link rel="stylesheet" type="text/css" href="static/reset.css">
-    <link rel="stylesheet" type="text/css" href="static/style2.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/reset.css">
+
+    <link rel="stylesheet" type="text/css" href="static/styles/tooltip.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/bars.css">
+
+    <link rel="stylesheet" type="text/css" href="static/styles/style2.css">
+
+    <link rel="stylesheet" type="text/css" href="static/styles/character_creation.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/status_frame_style.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/tab_list.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/messages.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/map.css">
 </head>
 <body>
 
     <div id="bg_fade"></div>
+
+    <button id='logout'>
+        logout
+    </button>
 
     <div id="base_background"></div>
 
@@ -81,10 +95,125 @@
                 </div>
             </div>
         </div>
+        <div id="actual_game_scene" class="game_scene">
+            <div id="status_frame" class="game_frame">
+                <div id= "status_label">Status</div>
+                <div id = "name_row"> 
+                    <div id = "name"> </div> 
+                    <div id = "level" class = "tooltip"> lvl: <div id = "level_data"></div><span class="tooltiptext">with levels you gain additional skillpoints that you can spend on acquiring new skills</span></div>
+                </div>
+
+                <div id = "bars_row">
+                    <div id = "hp_column" class = "bar_column tooltip">
+                        <span class="tooltiptext">
+                            hp determine how bad your physical conditions are.<br>
+                            at 0 you are dead and will be given a new character
+                        </span>
+                        <div id = "hp_column_label" class = "bar_label">hp</div>
+                        <div id = "hp_bar" class = "bar_vertical">
+                            <div class = "bar"><span id="hp_value_display"></span></div>
+                        </div>
+                        <div id = "hp_data" class = "bar_data"></div>
+                    </div>
+                    <div id = "rage_column" class = "bar_column tooltip">
+                        <span class="tooltiptext">
+                        when you are figthing with enemy in melee your level of rage is rising and it lowers your accuracy.<br>
+                        you can mitigate effects of rage or even make it useful via acquiring skills
+                        </span>
+                        <div id = "rage_column_label" class = "bar_label">rage</div>
+                        <div id = "rage_bar" class = "bar_vertical">
+                            <div class = "bar"><span id="rage_value_display"></span></div>
+                        </div>
+                        <div id = "rage_data" class = "bar_data"></div>
+                    </div>
+                    <div id = "blood_column" class = "bar_column tooltip">
+                        <span class="tooltiptext">
+                        blood is a measure of how much of your body is covered by blood.<br>
+                        usually it just harms your movement and accuracy but some skills can make you wish to cover yourself in it completely</span>
+                        <div id = "blood_column_label" class = "bar_label">blood</div>
+                        <div id = "blood_bar" class = "bar_vertical">
+                            <div class = "bar"><span id="blood_value_display"></span></div>
+                        </div>
+                        <div id = "blood_data" class = "bar_data"></div>
+                    </div>
+                    <div id = "stress_column" class = "bar_column tooltip">
+                        <span class="tooltiptext">stress value measures how much you want to die.<br>
+                         it rises when you are fighting, crafting, etc. at 100 you will pass away.<br>
+                          be careful, there are actions that without corresponding skills will stress you to death even if you was okay initially</span>
+                        <div id = "stress_column_label" class = "bar_label">stress</div>
+                        <div id = "stress_bar" class = "bar_vertical">
+                            <div class = "bar"><span id="stress_value_display"></span></div>
+                        </div>
+                        <div id = "stress_data" class = "bar_data"></div>
+                    </div>
+                </div>
+
+                <div id = "skill_points" class="tooltip">
+                    <span class="tooltiptext">spend them on developing skills</span>
+                    available skill points: <div id="skill_points_data"></div>
+                </div>
+
+                <div id = "exp_row" class="tooltip">
+                    <span class="tooltiptext">progress on gaining new level</span>
+                    <div id="exp_label">exp: </div>
+                    <div id="exp_bar" class = "hbar"><span id="exp_value_display"></span></div>
+                    <div>
+                        <div id="exp_current" style="display: inline"></div>/<div id="exp_required" style="display: inline"></div>
+                    </div>                    
+                </div>
+
+                <div id = "savings" class="tooltip">
+                    <span class="tooltiptext">used for interaction with market and item market</span>
+                    <div id="savings_label">savings: </div>
+                    <div id="savings_data"></div>
+                </div>
+            </div>
+
+            <div id="messages_frame" class="game_frame">
+                <div class="container">
+                    <div class="header">
+                        <div id="open_chat_button" class="selected">chat</div>
+                        <div id="open_log_button" >logs</div>
+                        <div>3</div>
+                        <div>4</div>
+                        <div>5</div>
+                    </div>
+                    <div id='log' class="messages_display">
+                    </div>
+                    <div id="chat" class="messages_display">
+                    </div>
+                    <div id='send_message_frame'>
+                        <input id='message_field', type="text", placeholder='New message'>
+                        <input type='submit', id='send_message_button', value= 'Send' >
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab_list_frame" class="game_frame">
+                <div id = "attack_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div>
+                <div id = "market_button", class = 'control_button tooltip'><span class="tooltiptext">Market</span></div>
+                <div id = "market_control_button", class = 'control_button tooltip'><span class="tooltiptext">Market actions</span></div>
+                <div id = "tactics_button", class = 'control_button tooltip'><span class="tooltiptext">Tactics</span></div>
+                <div id = "skilltree_button", class = 'control_button tooltip'><span class="tooltiptext">Skills</span></div>
+                <div id = "map_button", class = 'control_button tooltip'><span class="tooltiptext">Map</span></div>
+                <div id = "character_screen_button", class = 'control_button tooltip'><span class="tooltiptext">Character screen</span></div>
+                <div id = "auction_house_button", class = 'control_button tooltip'><span class="tooltiptext">Auction house</span></div>
+            </div>
+
+            <div id = 'map_tab', class = "game_tab">
+                <div id = 'map_column'>
+                    <canvas id='map' width=800 height=800 oncontextmenu="return false;"></canvas>
+                </div>
+                <div id = 'description_column'> 
+                    <div id='local_description'></div>
+                    <div id='map_control'></div>
+                </div>                
+            </div>
+        </div>  
     </div>
 
 
-    <script src="/static/load_images.js"></script>
+    <script src="/static/modules/load_images.js"></script>
     <script src='/socket.io/socket.io.js'></script>
-    <script src="/static/ui2.js"></script>
+    <script type="module" src="/static/ui2.js"></script>
 </body>

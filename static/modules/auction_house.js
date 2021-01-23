@@ -13,3 +13,4 @@ class AuctionHouse{
     }
 }
 
+export const AuctionHouse = AuctionHouse;

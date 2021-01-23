@@ -112,13 +112,6 @@ var updateChart = function (tag, x) {
 
 // chart.render();
 
-socket.on('connect', () => {
-    console.log('connected')
-    let tmp = localStorage.getItem('session');
-    if ((tmp != null) && (tmp != 'null')) {
-        socket.emit('session', tmp);
-    }
-})
 
 
 
@@ -428,7 +421,6 @@ document.getElementById('tutorial_status').onmouseout = event => {
     status_frame.style.backgroundColor = 'rgb(78, 11, 11, 0.7)'
 };
 
-
 document.getElementById('tutorial_buttons').onmouseover = event => {
     let status_frame = document.getElementById("control_frame")
     // status_frame.style.border = '1px solid yellow';
@@ -439,53 +431,6 @@ document.getElementById('tutorial_buttons').onmouseout = event => {
     // status_frame.style.border = '0px solid yellow';
     status_frame.style.backgroundColor = 'rgb(78, 11, 11, 0.7)'
 };
-
-
-
-
-/*function show(tag) {
-    document.getElementById('battle_tab').style.visibility = 'hidden';
-    document.getElementById('market_tab').style.visibility = 'hidden';
-    document.getElementById('market_control_tab').style.visibility = 'hidden';
-    document.getElementById('tactics_tab').style.visibility = 'hidden';
-    document.getElementById('skilltree_tab').style.visibility = 'hidden';
-    document.getElementById('map_tab').style.visibility = 'hidden';
-    document.getElementById('character_screen').style.visibility = 'hidden';
-    document.getElementById(tag).style.visibility = 'visible';
-}*/
-
-function showTab(tabId){
-    let parent_elem = document.getElementById(tabId).parentElement;
-    hide_skill_tab('local');
-    hide_skill_tab('learned')
-    skill_tab_deselect('local')
-    skill_tab_deselect('learned')
-    for (var i = 0; i < parent_elem.childNodes.length; i++) {
-        if (parent_elem.childNodes[i].id != undefined && parent_elem.childNodes[i].id != null && parent_elem.childNodes[i].id != ''){
-            document.getElementById(parent_elem.childNodes[i].id).style.visibility = 'hidden';
-        }
-    }
-    document.getElementById(tabId).style.visibility = 'visible';    
-}
-
-// function show(tag) {
-//     document.getElementById('battle_tab').style.display = 'none';
-//     document.getElementById('market_tab').style.display = 'none';
-//     document.getElementById('market_control_tab').style.display = 'none';
-//     document.getElementById('tactics_tab').style.display = 'none';
-//     document.getElementById('skilltree_tab').style.display = 'none';
-//     document.getElementById('map_tab').style.display = 'none';
-//     document.getElementById('character_screen').style.display = 'none';
-//     document.getElementById(tag).style.display = 'block';
-// }
-
-function show_game() {
-    document.getElementById('login_container').style.visibility = 'hidden';
-    document.getElementById('login-frame').style.visibility = 'hidden';
-    document.getElementById('reg-frame').style.visibility = 'hidden';
-    document.getElementById('game_container').style.visibility = 'visible';
-    showTab('character_screen');
-}
 
 function show_tutorial() {
     showTab('tutorial');
@@ -519,25 +464,7 @@ document.getElementById('login-frame').onsubmit = (event) => {
     socket.emit('login', {login: login, password: password});
 }
 
-document.getElementById('open_chat_button').onclick = () => {
-    document.getElementById('log').style.visibility = 'hidden';
-    document.getElementById('chat').style.visibility = 'visible';
-    document.getElementById('open_log_button').classList.remove('selected');
-    document.getElementById('open_chat_button').classList.add('selected');
-}
 
-document.getElementById('open_log_button').onclick = () => {
-    document.getElementById('chat').style.visibility = 'hidden';
-    document.getElementById('log').style.visibility = 'visible';
-    document.getElementById('open_chat_button').classList.remove('selected');
-    document.getElementById('open_log_button').classList.add('selected');
-}
-
-document.getElementById('send_message_button').onclick = (event) => {
-    event.preventDefault();
-    let message = document.getElementById('message_field').value;
-    socket.emit('new-message', message);
-}
 
 document.getElementById('buy_form_con').onsubmit = (event) => {
     event.preventDefault();
@@ -653,18 +580,6 @@ document.getElementById('auction_house_button').onclick = () => {
 }
 
 
-socket.on('tags', msg => update_tags(msg));
-socket.on('is-reg-valid', msg => my_alert(msg));
-socket.on('is-reg-completed', msg => reg(msg));
-socket.on('is-login-valid', msg => my_alert(msg));
-socket.on('is-login-completed', msg => login(msg));
-socket.on('log-message', msg => new_log_message(msg));
-socket.on('new-message', msg => new_message(msg));
-socket.on('hp', msg => char_info_monster.update_hp(msg));
-socket.on('exp', msg => char_info_monster.update_exp(msg));
-socket.on('savings', msg => char_info_monster.update_savings(msg));
-socket.on('status', msg => char_info_monster.update_status(msg));
-socket.on('name', msg => char_info_monster.update_name(msg));
 socket.on('market-data', data => {
     // console.log(data);
     market_table.update(data);
@@ -686,15 +601,14 @@ socket.on('item-market-data', data => {
 socket.on('skill-tree', data => load_skills(data));
 socket.on('tags-tactic', msg => tactic_screen.update_tags(msg));
 socket.on('char-info-detailed', msg => character_screen.update(msg))
-socket.on('alert', msg => alert(msg));
+
 socket.on('skills', msg => update_skill_data(msg));
 socket.on('local-skills', msg => update_local_skills(msg))
 socket.on('tactic', msg => tactic_screen.update(msg));
 socket.on('map-pos', msg => {console.log(msg); map.set_curr_pos(msg.x, msg.y)});
 socket.on('explore', msg => {map.explore(msg)});
 
-socket.on('session', msg => {localStorage.setItem('session', msg)})
-socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
+
 
 socket.on('new-action', msg => {console.log('action ' + msg); tactic_screen.add_action(msg); battle_image.add_action(msg)});
 
@@ -777,92 +691,6 @@ function reg(msg) {
     }
 }
 
-function new_log_message(msg) {
-    var log = document.getElementById('log');
-    var new_line = document.createElement('p');
-    var text = document.createTextNode(msg);
-    new_line.append(text);
-    log.appendChild(new_line);
-    log.scrollTop = log.scrollHeight
-}
-
-function new_message(msg) {
-    if (msg != 'message-too-long') {
-        var chat = document.getElementById('chat');
-        var new_line = document.createElement('p');
-        var text = document.createTextNode(msg.user + ': ' + msg.msg);
-        new_line.append(text);
-        chat.appendChild(new_line);
-        chat.scrollTop = chat.scrollHeight
-    }
-}
-
-
-class CharInfoMonster {
-    constructor() {
-
-        this.name =                 document.getElementById('name');
-
-        this.hp =                   document.getElementById('hp_data');
-        this.hp_display =           document.getElementById('hp_value_display');
-
-        this.exp =                  document.getElementById('exp_current');  
-        this.exp_req =              document.getElementById('exp_required');  
-        this.exp_display =          document.getElementById('exp_value_display');
-
-
-        this.level =                document.getElementById('level_data');
-        this.points =               document.getElementById('skill_points_data');
-
-        this.savings =              document.getElementById('savings_data');
-
-        this.rage =                 document.getElementById('rage_data');
-        this.rage_display =         document.getElementById('rage_value_display');
-
-        this.blood =                document.getElementById('blood_data');
-        this.blood_display =        document.getElementById('blood_value_display');
-
-        this.stress =               document.getElementById('stress_data');
-        this.stress_display =       document.getElementById('stress_value_display');
-    }
-
-    update_name(data) {
-        this.name.innerHTML = data;
-    }
-
-    update_hp(data) {
-        this.hp.innerHTML = `${data.hp}/${data.mhp}`
-        this.hp_display.style.height = `${Math.floor(data.hp/data.mhp * 100)}%`;
-    }
-
-    update_exp(data) {
-        this.exp.innerHTML = data.exp;
-        this.exp_req.innerHTML = data.mexp
-        this.exp_display.style.width = `${Math.floor(data.exp/data.mexp * 100)}%`;
-
-        this.level.innerHTML = data.level;
-        this.points.innerHTML = data.points;
-    }
-
-    update_savings(savings) {
-        console.log('savings', savings);
-        this.savings.innerHTML = savings;
-    }
-
-    update_status(data) {
-        this.rage.innerHTML = data.rage;
-        this.rage_display.style.height = `${Math.floor(data.rage)}%`;
-
-        this.blood.innerHTML = data.blood_covering;
-        this.blood_display.style.height = `${Math.floor(data.blood_covering)}%`;
-
-        this.stress.innerHTML = data.stress;
-        this.stress_display.style.height = `${Math.floor(data.stress)}%`;
-
-        char_image.update(data.rage, data.blood_covering, undefined, data.stress)
-    }
-}
-const char_info_monster = new CharInfoMonster();
 
 
 // eslint-disable-next-line no-undef
@@ -875,7 +703,7 @@ socket.emit('get-market-data', null);
 var item_market_table = new ItemMarketTable(document.getElementById('auction_house_tab'))
 // var auction_house = new AuctionHouse(document.getElementById('auction_house_tab'));
 socket.emit('get-market-data', null);// eslint-disable-next-line no-undef
-var map = new Map(document.getElementById('map'), document.getElementById('map_control'), socket);
+
 // eslint-disable-next-line no-undef
 // var skill_tree = new SkillTree(document.getElementById('skilltree'), socket);
 // eslint-disable-next-line no-undef
@@ -883,27 +711,3 @@ var tactic_screen = new TacticScreen(document.getElementById('tactic'), socket);
 // eslint-disable-next-line no-undef
 var character_screen = new CharacterScreen(socket);
 
-var currentTime = (new Date()).getTime(); var lastTime = (new Date()).getTime();
-var delta = 0;
-
-function draw(time) {
-    currentTime = (new Date()).getTime();
-    delta = (currentTime - lastTime) / 1000;
-    lastTime = currentTime;
-
-    if (document.getElementById('game_container').style.visibility == 'visible') {
-        if (draw_char == 'yes') {
-            char_image.draw(time);
-        }
-        if (document.getElementById('battle_tab').style.visibility != 'hidden') {
-            battle_image.draw(delta);
-        }
-        if (document.getElementById('map_tab').style.visibility != 'hidden'){
-            map.draw(time);
-        }
-    }
-    window.requestAnimationFrame(draw);
-}
-
-
-const images = loadImages(images_list[0], images_list[1], () => { console.log(images), window.requestAnimationFrame(draw);});

@@ -1,6 +1,8 @@
 /* eslint-disable no-redeclare */
 /*global images, battle_image*/
 
+import {get_pos_in_canvas} from './common.js';
+
 const graci_plains = 'Plains where gracis are living their beautiful life. Be aware, they are very fast, traveller.'
 const forest_boundary = 'The forest starts here. Weird creatures inhabit this place, not a lot is known about them.'
 const colony = 'It\'h - Settlement of colonists - greedy but brave men. Here you can sell your raw meet and exchange it for food and water'
@@ -65,9 +67,52 @@ const BACKGROUNDS = {
     'unknown': 'background'
 }
 
+export function init_map_control(map, globals) {
+    console.log('map control')
+    map.canvas.onmousedown = event => {
+        event.preventDefault();
+        globals.pressed = true;
+        globals.prev_mouse_x = null;
+        globals.prev_mouse_y = null;
 
-// eslint-disable-next-line no-unused-vars
-class Map {
+        let mouse_pos = get_pos_in_canvas(map.canvas, event);    
+        let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
+        map.select_hex(selected_hex[0], selected_hex[1]);
+        if (event.button == 2) {
+            map.send_move_request()
+        }
+    }
+
+    map.canvas.onmousemove = event => {
+        if (globals.pressed)
+        {
+            if (globals.prev_mouse_x != null) {
+                var dx = event.pageX - globals.prev_mouse_x;
+                var dy = event.pageY - globals.prev_mouse_y;
+                map.move(dx, dy);
+            }
+            globals.prev_mouse_x = event.pageX;
+            globals.prev_mouse_y = event.pageY;
+        }
+
+        var mouse_pos = get_pos_in_canvas(map.canvas, event);
+        var hovered_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
+        map.hover_hex(hovered_hex[0], hovered_hex[1]);
+    };
+
+    map.canvas.onmouseup = event => {
+        let mouse_pos = get_pos_in_canvas(map.canvas, event);
+        let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
+        map.select_hex(selected_hex[0], selected_hex[1]);
+        globals.pressed = false;
+    }
+
+    map.canvas.onmouseout = event => {
+        globals.pressed = false;
+    };
+}
+
+export class Map {
     constructor(canvas, container, socket) {
         this.canvas = canvas;
         this.socket = socket
@@ -119,9 +164,9 @@ class Map {
         }
     }
 
-    draw() {
+    draw(images) {
         var ctx = this.canvas.getContext('2d');
-        ctx.clearRect(0, 0, 500, 500);
+        ctx.clearRect(0, 0, 2000, 2000);
         ctx.drawImage(images['map'], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
         for (i in this.fog_of_war) {
             if (this.fog_of_war[i]) {
@@ -213,10 +258,10 @@ class Map {
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
         let tag = get_tag(i, j);
-        if (this.fog_of_war[tag] == true) {
-            tag = 'unknown'
-        }
+        // if (this.fog_of_war[tag] == true) {
+        //     tag = 'unknown'
+        // }
         this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'        
-        battle_image.change_bg(BACKGROUNDS[tag])
+        return BACKGROUNDS[tag];
     }
 }

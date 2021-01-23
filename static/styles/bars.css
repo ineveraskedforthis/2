@@ -1,0 +1,67 @@
+/* progress bar orgy */
+
+.bar { 
+    width: 50%;
+	position: relative;
+	background: rgb(139, 70, 70);
+    margin: 0 auto;
+    transform: rotate(180deg);
+}
+
+.bar > span {
+  display: block;
+  height: 30%;
+  background-color: rgb(43,194,83);
+  position: relative;
+  overflow: hidden;  
+}
+
+.hbar { 
+    height: 10px;
+	position: relative;
+    width: 90%;
+	background: rgb(143, 151, 160);
+}
+
+.hbar > span {
+  display: block;
+  width: 30%;
+  height: 100%;
+  background-color: rgb(102, 0, 68);
+  position: relative;
+  overflow: hidden;  
+}
+
+
+/* progress bar orgy end */
+
+
+/* VERTICAL BAR */
+
+.bar_column{
+    display: flex; 
+    flex-direction: column;
+}
+
+.bar_column>div{
+    text-align: center;
+}
+
+.bar_label{
+    height: 10%;
+}
+
+.bar_vertical{
+    height: 75%;
+    display: flexbox;
+}
+
+.bar_vertical>.bar{
+    height: 100%;
+}
+
+.bar_data{
+    height: 15%;
+}
+
+/* VERTICAL BAR END */

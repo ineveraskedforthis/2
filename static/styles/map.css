@@ -1,0 +1,28 @@
+#map_tab {
+    display: flex;
+    color: rgb(13, 228, 77);
+}
+
+#map_column{
+    height: 100%;
+    width: 62.5%;
+    border: rgb(168, 9, 9) solid 1px;
+    overflow: hidden;
+}
+
+#description_column{
+    width: 35%;
+    height: 100%;
+}
+
+#local_description{
+    height: 50%;
+    width: 100%;
+    overflow: visible;
+}
+
+#map_control{
+    height: 50%;
+    width: 100%;
+    overflow: auto;
+}

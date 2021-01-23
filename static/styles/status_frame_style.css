@@ -1,0 +1,90 @@
+/* STATUS FRAME CSS */
+
+#status_frame{
+    color: rgb(13, 228, 77);  
+    display: flex;
+    flex-direction: column;
+}
+
+div#status_frame>div{
+    /* border: rgb(168, 9, 9) solid 1px; */
+    display: flex;    
+    width: 95%;
+}
+
+#status_label{
+    height: 5%;
+    padding-left: 1%;
+}
+
+
+#name_row{
+    height: 10%;
+    display: flex; 
+    flex-direction: column;
+}
+
+#name_row>div{
+    width: 100%;
+    margin: 0 auto;
+    text-align: center; 
+}
+#level_data{
+    display: inline;
+}
+
+#bars_row{
+    height: 30%;
+    display: flex;
+    flex-direction: row;
+}
+
+#stress_bar>div>span{
+    background-color: rgb(0,0,0);
+}
+#stress_bar>div{
+    background-color: rgb(120,120,120);
+}
+
+#blood_bar>div>span{
+    background-color: rgb(160, 0, 0);
+}
+#blood_bar>div{
+    background-color: rgb(120,120,120);
+}
+
+#rage_bar>div>span{
+    background-color: rgb(228, 180, 24);
+}
+#rage_bar>div{
+    background-color: rgb(120,120,120);
+}
+
+#hp_bar>div{
+    background-color: rgb(120,120,120);
+}
+
+div#bars_row>div{
+    width: 25%;
+}
+
+#skill_points{
+    height: 5%;
+    padding-left: 1%;
+}
+
+#exp_row {
+    height: 10%;
+    width: 97%;
+    padding-left: 1%;
+    display: flexbox;
+    flex-direction: column;
+}
+
+#savings {
+    height: 10%;
+    padding-left: 1%;
+}
+
+
+/* STATUS FRAME CSS END */

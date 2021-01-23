@@ -1,0 +1,64 @@
+
+#messages_frame > .container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(78, 11, 11, 0.7);
+}
+
+#messages_frame > .container > .header {
+    position: absolute;
+    width: 100%;
+    height: 33px;
+    background: rgba(143, 47, 71, 1.0);
+}
+
+#messages_frame > .container > .header > div {
+    position: relative;
+    height: 33px;
+    line-height: 33px;
+    width: 86px;
+    background-image: url(/static/img/chat_button.png);
+    float: left;
+    text-align: center;
+}
+
+#messages_frame > .container > .header > div:hover {
+    background-image: url(/static/img/chat_button_selected.png);
+}
+
+#messages_frame > .container > .header > div.selected {
+    background-image: url(/static/img/chat_button_selected.png);
+}
+
+#messages_frame > .container > .header > .messages_display {
+    position: absolute;
+    height: 100% - 30px - 33px;
+    width: 100%;
+    overflow: auto;
+    color: rgb(13, 228, 77);
+}
+
+#log {
+    visibility: hidden;
+}
+
+#send_message_frame {
+    position: absolute;
+    bottom: 0%;
+    height: 30px;
+    width: 100%;
+}
+
+#message_field {
+    position: absolute;
+    width: 80%;
+    height: 100% - 0px;
+}
+
+#send_message_button {
+    position: absolute;
+    width: 18%;
+    height: 100%;
+    right: 0px;
+}

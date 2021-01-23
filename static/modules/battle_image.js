@@ -1,8 +1,5 @@
 let BATTLE_SCALE = 50
 
-
-
-
 class AnimatedImage {
     constructor(image_name) {
         this.tag = image_name;
@@ -431,3 +428,5 @@ class BattleImage {
         document.getElementById('battle_select_skill').add(tag_option);
     }
 }
+
+export const BattleImage = BattleImage;

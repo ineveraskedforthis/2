@@ -1,0 +1,60 @@
+#tab_list_frame > .control_button {
+    top: 5px;
+    position: relative;
+    width: 33px;
+    height: 33px;
+    float: top;
+    left: 3px;
+}
+
+
+.control_button {
+    background-image: url(/static/img/attack_button.png);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.control_button:hover {
+    background-image: url(/static/img/attack_button_hovered.png);
+}
+
+.control_button:active {
+    background-image: url(/static/img/attack_button_pressed.png);
+}
+
+#character_screen_button {
+    background-image: url(/static/img/character_button.png);
+}
+
+#character_screen_button:hover {
+    background-image: url(/static/img/character_button_hovered.png);
+}
+
+#character_screen_button:active {
+    background-image: url(/static/img/character_button_pressed.png);
+}
+
+
+#skilltree_button {
+    background-image: url(/static/img/skills_button.png);
+}
+
+#skilltree_button:hover {
+    background-image: url(/static/img/skills_button_hovered.png);
+}
+
+#skilltree_button:active {
+    background-image: url(/static/img/skills_button_pressed.png);
+}
+
+#auction_house_button {
+    background-image: url(/static/img/auc_button.png);
+}
+
+#auction_house_button:hover {
+    background-image: url(/static/img/auc_button_hovered.png);
+}
+
+#auction_house_button:active {
+    background-image: url(/static/img/auc_button_pressed.png);
+}

@@ -21,3 +21,11 @@ function change_alpha(l, a) {
     return l
 }
 
+export function get_pos_in_canvas(canvas, event) {
+    var rect = canvas.getBoundingClientRect();
+    let tmp = {
+      x: event.clientX - rect.left,
+      y: event.clientY - rect.top
+    };
+    return tmp
+}

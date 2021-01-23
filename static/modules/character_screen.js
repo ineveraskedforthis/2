@@ -279,3 +279,5 @@ class CharacterScreen {
         }
     }
 }
+
+export const CharacterScreen = CharacterScreen
