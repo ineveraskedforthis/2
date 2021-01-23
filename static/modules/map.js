@@ -258,9 +258,6 @@ export class Map {
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
         let tag = get_tag(i, j);
-        // if (this.fog_of_war[tag] == true) {
-        //     tag = 'unknown'
-        // }
         this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'        
         return BACKGROUNDS[tag];
     }

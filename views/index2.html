@@ -190,25 +190,54 @@
             </div>
 
             <div id="tab_list_frame" class="game_frame">
-                <div id = "attack_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div>
+                <div id = "battle_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div>
                 <div id = "market_button", class = 'control_button tooltip'><span class="tooltiptext">Market</span></div>
                 <div id = "market_control_button", class = 'control_button tooltip'><span class="tooltiptext">Market actions</span></div>
-                <div id = "tactics_button", class = 'control_button tooltip'><span class="tooltiptext">Tactics</span></div>
+                <!-- <div id = "tactics_button", class = 'control_button tooltip'><span class="tooltiptext">Tactics</span></div> -->
                 <div id = "skilltree_button", class = 'control_button tooltip'><span class="tooltiptext">Skills</span></div>
                 <div id = "map_button", class = 'control_button tooltip'><span class="tooltiptext">Map</span></div>
                 <div id = "character_screen_button", class = 'control_button tooltip'><span class="tooltiptext">Character screen</span></div>
                 <div id = "auction_house_button", class = 'control_button tooltip'><span class="tooltiptext">Auction house</span></div>
             </div>
 
-            <div id = 'map_tab', class = "game_tab">
+            <div id = 'map_tab', class = "game_tab hidden">
                 <div id = 'map_column'>
                     <canvas id='map' width=800 height=800 oncontextmenu="return false;"></canvas>
                 </div>
                 <div id = 'description_column'> 
                     <div id='local_description'></div>
                     <div id='map_control'></div>
-                </div>                
+                </div> 
             </div>
+
+            <div id = 'battle_tab', class="game_tab hidden">
+                <div id = 'battle_control'>
+                    <div id='attack'>
+                        Hunt.
+                    </div>
+                    <div id='attack_outpost'>
+                        Search.
+                    </div>
+                    <div id='battle_action'>
+                        Battle action.
+                    </div>
+
+                    <div id='battle_use_skill'>
+                        Use skill.
+                    </div>
+
+                    <select id='battle_select_skill'>
+                    </select>
+                </div>
+                
+
+                <div id='enemy_status'>
+                </div>
+                <canvas id='battle_canvas' width=800 height=500, class="_battle_canvas"></canvas>
+                <canvas id='battle_canvas_background' width=800 height=500, class="_battle_canvas"></canvas>
+            </div>
+
+
         </div>  
     </div>
 

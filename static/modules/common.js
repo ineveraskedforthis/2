@@ -1,4 +1,4 @@
-function draw_image(context, image, x, y, w, h) {
+export function draw_image(context, image, x, y, w, h) {
     context.drawImage(image, x, y, w, h)
 }
 

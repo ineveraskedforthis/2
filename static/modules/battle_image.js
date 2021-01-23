@@ -1,4 +1,26 @@
+import {draw_image, get_pos_in_canvas} from './common.js'
+
 let BATTLE_SCALE = 50
+
+export function init_battle_control(battle_image, globals) {
+    battle_image.canvas.onmousedown = event => {
+        event.preventDefault();
+        globals.bcp = true
+    }
+
+    battle_image.canvas.onmousemove = event => {
+        let mouse_pos = get_pos_in_canvas(battle_image.canvas, event);
+        battle_image.hover(mouse_pos);
+    };
+
+    battle_image.canvas.onmouseup = event => {
+        let mouse_pos = get_pos_in_canvas(battle_image.canvas, event);
+        if (globals.bcp) {
+            battle_image.press(mouse_pos);
+            globals.bcp = false;
+        }
+    }
+}
 
 class AnimatedImage {
     constructor(image_name) {
@@ -11,7 +33,7 @@ class AnimatedImage {
         return this.tag + '_' + this.action + '_' + ("0000" + this.current).slice(-4)
     }
     
-    update() {
+    update(images) {
         this.current += 1;
         if (!(this.get_image_name() in images)) {
             this.current = 0
@@ -25,15 +47,15 @@ class AnimatedImage {
         }
     }
 
-    get_w() {
+    get_w(images) {
         return images[this.get_image_name()].width
     }
     
-    get_h() {
+    get_h(images) {
         return images[this.get_image_name()].height
     }
 
-    draw(ctx, x, y, w, h) {
+    draw(ctx, x, y, w, h, images) {
         draw_image(ctx, images[this.get_image_name()], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
     }
 }
@@ -89,7 +111,7 @@ function intersect(line, plane) {
     return sum(mult(t, line.vector), line.point)
 }
 
-class BattleImage {
+export class BattleImage {
     constructor(canvas, canvas_background) {
         this.canvas = canvas;
         this.canvas_background = canvas_background;
@@ -164,7 +186,7 @@ class BattleImage {
         return - positions[a] + positions[b]
     }
     
-    draw(delta) {
+    draw(images, delta) {
 
         if (!this.background_flag){
             console.log('draw_background')
@@ -254,9 +276,9 @@ class BattleImage {
             draw_order.sort((a, b) => -this.positions[a].y + this.positions[b].y)
             for (let i of draw_order) {
                 if (!this.killed[i]) {
-                    var pos = this.calculate_canvas_pos(this.positions[i], this.images[i])
-                    this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3])
-                    this.images[i].update()
+                    var pos = this.calculate_canvas_pos(this.positions[i], this.images[i], images)
+                    this.images[i].draw(ctx, pos[0], pos[1], pos[2], pos[3], images)
+                    this.images[i].update(images)
                 }                
             }
             if (this.anchor != undefined) {
@@ -319,26 +341,6 @@ class BattleImage {
             this.positions[battle_id].y = this.prev_positions[battle_id].y + (this.new_positions[battle_id].y - this.prev_positions[battle_id].y) * tmp;
         }
     }
-    
-    // calculate_canvas_pos(x, image) {
-    //     var base_vector = new Vector(0, 0, 1)
-    //     var point_of_battle_line = new Vector(500, -250, 0)
-    //     var height_vector = new Vector(0, image.get_h(), 0)
-    //     var width_vector = new Vector(image.get_w(), 0, 0)
-    //     var picture_plane = new Plane(base_vector, new Vector(0, 0, 0))
-    //     var viewer_point = new Vector(0, 0, -30)
-    //     var bottom_right_position = sum(sum(mult(x, base_vector), point_of_battle_line), mult(0.5, width_vector))
-    //     var top_left_position = minus(sum(sum(mult(x, base_vector), point_of_battle_line), height_vector), mult(0.5, width_vector))
-    //     var bottom_ray = two_points_to_line(bottom_right_position, viewer_point)
-    //     var top_ray = two_points_to_line(top_left_position, viewer_point)
-    //     var bottom_intersection = intersect(bottom_ray, picture_plane)
-    //     var top_intersection = intersect(top_ray, picture_plane)
-    //     var d = minus(bottom_intersection, top_intersection)
-    //     var centre = sum(top_intersection, mult(0.5, d))
-    //     centre = sum(centre, new Vector(this.w / 5, + this.h / 2, 0))
-    //     var canvas_top_left = minus(centre, mult(0.5, d))
-    //     return [canvas_top_left.data[0], this.h - canvas_top_left.data[1], d.data[0], -d.data[1]]
-    // }
 
     get_centre(pos) {
         let centre = {x: pos.y, y: pos.x};
@@ -354,10 +356,10 @@ class BattleImage {
         return {x: tmp.y, y: tmp.x}
     }
 
-    calculate_canvas_pos(pos, image) {
+    calculate_canvas_pos(pos, image, images) {
         let centre = this.get_centre(pos);
-        let w = image.get_w();
-        let h = image.get_h();
+        let w = image.get_w(images);
+        let h = image.get_h(images);
         return [centre.x - w/10, centre.y - h/5 + 10, w/5, h/5]
     }
 
@@ -428,5 +430,3 @@ class BattleImage {
         document.getElementById('battle_select_skill').add(tag_option);
     }
 }
-
-export const BattleImage = BattleImage;

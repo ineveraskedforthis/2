@@ -1,18 +1,25 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
+const game_tabs = ['map', 'battle']
+
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
+import {BattleImage, init_battle_control} from './modules/battle_image.js';
 
 var globals = {
     prev_mouse_x: null,
     prev_mouse_y: null,
-    pressed: false
+    pressed: false,
+    bcp: false
 }
 
 const char_info_monster = new CharInfoMonster();
 const map = new Map(document.getElementById('map'), document.getElementById('map_control'), socket);
-init_map_control(map, globals)
+init_map_control(map, globals);
+const battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
+init_battle_control(battle_image, globals);
+
 
 socket.on('connect', () => {
     console.log('connected')
@@ -21,6 +28,9 @@ socket.on('connect', () => {
         socket.emit('session', tmp);
     }
 })
+
+
+
 
 // MESSAGES STUFF
 function new_log_message(msg) {
@@ -45,14 +55,14 @@ function new_message(msg) {
 
 document.getElementById('open_chat_button').onclick = () => {
     document.getElementById('log').style.visibility = 'hidden';
-    document.getElementById('chat').style.visibility = 'visible';
+    document.getElementById('chat').style.visibility = 'inherit';
     document.getElementById('open_log_button').classList.remove('selected');
     document.getElementById('open_chat_button').classList.add('selected');
 }
 
 document.getElementById('open_log_button').onclick = () => {
     document.getElementById('chat').style.visibility = 'hidden';
-    document.getElementById('log').style.visibility = 'visible';
+    document.getElementById('log').style.visibility = 'inherit';
     document.getElementById('open_chat_button').classList.remove('selected');
     document.getElementById('open_log_button').classList.add('selected');
 }
@@ -65,6 +75,9 @@ document.getElementById('send_message_button').onclick = (event) => {
 
 //MESSAGES STUFF END
 
+
+
+//CHANGE SCENES STUFF
 function show_char_creation() {
     show_scene("character_creation")
     document.getElementById('page_1').style.visibility = 'inherit';
@@ -84,17 +97,47 @@ function show_scene(scene_id) {
     document.getElementById(scene_id).style.visibility = 'visible';    
 }
 
+function toogle_tab(tag) {
+    let tab = document.getElementById(tag + '_tab');
+    if (tab.classList.contains('hidden')) {
+        tab.classList.remove('hidden');
+    } else {
+        tab.classList.add('hidden');
+    }
+}
+
+for (let tag of game_tabs) {
+    document.getElementById(tag + '_button').onclick = () => {
+        let res = toogle_tab(tag);
+        if ((tag == 'market') & (res = 'on')) {
+            socket.emit('send-market-data', true)
+        } else {
+            socket.emit('send-market-data', false)
+        }
+    }
+}
+//CHANGE SCENES STUFF
+
+
+
+
+//CREDENTIALS STUFF
+
+{
+    let button = document.getElementById('logout');
+    button.onclick = () => {localStorage.setItem('session', 'null'); location.reload()};
+}
 
 document.getElementById('open_reg_window_button').onclick = () => {
     document.getElementById('login-frame').style.visibility = 'hidden';
-    document.getElementById('reg-frame').style.visibility = 'visible';
+    document.getElementById('reg-frame').style.visibility = 'inherit';
     document.getElementById('open_login_window_button').classList.remove('selected');
     document.getElementById('open_reg_window_button').classList.add('selected');
 }
 
 document.getElementById('open_login_window_button').onclick = () => {
     document.getElementById('reg-frame').style.visibility = 'hidden';
-    document.getElementById('login-frame').style.visibility = 'visible';
+    document.getElementById('login-frame').style.visibility = 'inherit';
     document.getElementById('open_reg_window_button').classList.remove('selected');
     document.getElementById('open_login_window_button').classList.add('selected');
 }
@@ -112,7 +155,12 @@ document.getElementById('login-frame').onsubmit = (event) => {
     let password = document.getElementById('password-l').value;
     socket.emit('login', {login: login, password: password});
 }
+//CREDENTIAL STUFF END
 
+
+
+
+//CHARACTER CREATION STUFF
 document.getElementById("next_1").onclick = (event) => {
     event.preventDefault();
     document.getElementById("page_2").style.visibility = 'inherit'
@@ -122,8 +170,6 @@ document.getElementById("next_2").onclick = (event) => {
     event.preventDefault();
     show_game();
 }
-
-
 
 for (let i = 0; i<3; i++) {
     document.getElementById("eyes_"+ i).onclick = (event) => {
@@ -143,9 +189,68 @@ for (let i = 0; i<3; i++) {
         document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/mouth_'+ i + '.png)'
     }
 }
+//CHARACTER CREATION STUFF ENDS
 
 
 
+//BATTLE STUFF
+document.getElementById('battle_action').onclick = () => {
+    let action = battle_image.get_action();
+    if (action != undefined) {
+        socket.emit('battle-action', action);
+    }    
+}
+
+document.getElementById('battle_use_skill').onclick = () => {
+    let action = battle_image.get_action_spell();
+    if (action != undefined) {
+        socket.emit('battle-action', action);
+    } 
+}
+
+document.getElementById('attack').onclick = () => {
+    socket.emit('attack', null);
+}
+document.getElementById('attack_outpost').onclick = () => {
+    socket.emit('attack-outpost', null);
+}
+
+
+function start_battle(data) {
+    battle_image.clear()
+    battle_image.load(data)
+}
+
+function battle_action(data) {
+    if (data == null) {
+        return
+    }
+    battle_image.update_action(data)
+    if (data.action == 'attack') {
+        if (data.result.crit) {
+            new_log_message(data.actor_name + ': critical_damage')
+        }
+        new_log_message(data.actor_name + ': deals ' + data.result.total_damage + ' damage')
+    } else if (data.action.startsWith('kinetic_bolt')) {
+        if (data.result.crit) {
+            new_log_message(data.actor_name + ': critical_damage')
+        }
+        new_log_message(data.actor_name + ': deals with magic bolt ' + data.result.total_damage + ' damage')
+    } else if (data.action.startsWith('charge')) {
+        new_log_message(data.actor_name + '   CHAAAAAAAAAARGE   ' + data.result.total_damage + ' damage')
+    }
+}
+
+function update_enemy(data) {
+    let div = document.getElementById('enemy_status');
+    div.innerHTML = ''
+    for (let i of data) {
+        let label = document.createElement('p');
+        label.innerHTML = i.name + ' | | ' + i.hp + ' hp' 
+        div.appendChild(label)
+    }
+}
+//BATTLE STUFF END
 
 
 socket.on('tags', msg => update_tags(msg));
@@ -169,11 +274,17 @@ socket.on('log-message', msg => new_log_message(msg));
 socket.on('new-message', msg => new_message(msg));
 
 socket.on('map-pos', msg => {
-    console.log(msg); 
     let location = map.set_curr_pos(msg.x, msg.y);
     // battle_image.change_bg(location);
 });
 socket.on('explore', msg => {map.explore(msg)});
+
+socket.on('new-action', msg => {battle_image.add_action(msg)});
+
+socket.on('battle-has-started', data => start_battle(data))
+socket.on('battle-update', data => battle_image.update(data))
+socket.on('battle-action', data => battle_action(data))
+socket.on('enemy-update', data => update_enemy(data))
 
 
 function update_tags(msg) {
@@ -223,10 +334,10 @@ function draw(time) {
     lastTime = currentTime;
 
     if (document.getElementById('actual_game_scene').style.visibility == 'visible') {
-        // if (document.getElementById('battle_tab').style.visibility != 'hidden') {
-        //     battle_image.draw(delta);
-        // }
-        if (document.getElementById('map_tab').style.visibility != 'hidden'){
+        if (!document.getElementById('battle_tab').classList.contains('hidden')) {
+            battle_image.draw(images, delta);
+        }
+        if (!document.getElementById('map_tab').classList.contains('hidden')){
             map.draw(images, time);
         }
     }
@@ -234,4 +345,7 @@ function draw(time) {
 }
 
 
-const images = loadImages(images_list[0], images_list[1], () => { console.log(images), window.requestAnimationFrame(draw);});
+const images = loadImages(images_list[0], images_list[1], () => { 
+    console.log(images);
+    window.requestAnimationFrame(draw);
+});
