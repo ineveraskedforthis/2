@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
-const game_tabs = ['map', 'battle']
+const game_tabs = ['map', 'battle', 'skilltree']
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
@@ -117,6 +117,237 @@ for (let tag of game_tabs) {
     }
 }
 //CHANGE SCENES STUFF
+
+
+
+//SKILL TREE STUFF
+const SKILL_DESC = {
+    'warrior_training': 'increases musculature, unlocks learning warrior specific spells after reaching level 3',
+    'mage_training': 'improves your magical power, unlocks learning mage specific spells after reaching level 3',
+    'charge': 'unlock charge ability: you are moved to your enemy position at cost of increasing rage',
+    'rage_control': 'rage influence accuracy less',
+    'cold_rage': 'rage influence accuracy even less',
+    'the_way_of_rage': 'rage almost does not influence accuracy',
+    'blocking_movements': 'you learn basics of blocking attacks, now you have better chances to block enemy\'s attack',
+    'blood_battery': 'blood now makes all magical damage higher',
+    'first_steps_in_magic': 'unlock magic bolt: ranged ability with low blunt damage',
+    'less_stress_from_crafting': 'at second level of this ability you can safely craft various things, third one decrease stress even more and unlock futher development of your crafting abilities',
+    'less_stress_from_making_food': 'you gain less stress from preparing food',
+    'disenchanting': 'unlock ability to break items into zaz',
+    'less_stress_from_disenchant': 'you gain less stress from disenchanting',
+    'sewing': 'unlock ability to sew clothes',
+    'cook': 'unlock ability to prepare food',
+    'enchanting':'unlock ability to use zaz to add enchantments to items',
+    'less_stress_from_enchant': 'you gain less stress from enchanting',
+}
+
+const SKILL_NAMES = {
+    'warrior_training': 'Warrior training',
+    'mage_training': 'Mage training',
+    'charge': 'Charge',
+    'first_steps_in_magic': 'First steps in magic',
+    'blocking_movements': 'Blocking movements',
+    'cook': 'Cooking'
+}
+var CURR_SKILL_DESC = undefined
+var SKILL_SELECTED = undefined
+var LOCAL_SKILLS = []
+var skill_divs = {}
+var learned_skill_divs = {}
+
+
+function show_skill_tab(tag) {
+    let tab = document.getElementById(tag + '_skills');
+    tab.classList.remove('hidden');
+}
+
+function hide_skill_tab(tag) {
+    let tab = document.getElementById(tag + '_skills');
+    tab.classList.add('hidden');
+}
+
+function skill_tab_select(tag) {
+    let tab = document.getElementById(tag + '_skills_tab')
+    tab.classList.add('selected')
+}
+function skill_tab_deselect(tag) {
+    let tab = document.getElementById(tag + '_skills_tab')
+    tab.classList.remove('selected')
+}
+
+document.getElementById('learned_skills_tab').onclick = () => {
+    skill_tab_select('learned')
+    show_skill_tab('learned')
+    skill_tab_deselect('local')
+    hide_skill_tab('local')
+}
+
+document.getElementById('local_skills_tab').onclick = () => {
+    skill_tab_select('local')
+    show_skill_tab('local')
+    skill_tab_deselect('learned')
+    hide_skill_tab('learned')
+}
+
+function set_skill_description(tag) {
+    if (CURR_SKILL_DESC != tag) {
+        if (tag == undefined) {
+            document.getElementById('skills_description').innerHTML = ''
+        } else {
+            document.getElementById('skills_description').innerHTML = SKILL_NAMES[tag] + '<br>' + SKILL_DESC[tag]
+        }
+        CURR_SKILL_DESC = tag;
+    }
+}
+
+function shadow_skill(tag) {
+    skill_divs[tag].classList.add('shadowed')
+}
+function unshadow_skill(tag) {
+    skill_divs[tag].classList.remove('shadowed')
+}
+
+function send_skill_up_message(socket, tag) {
+    console.log(tag)
+    socket.emit('up-skill', tag);
+}
+
+function build_skill_div(tag, cur_level) {
+    let skill = document.createElement('div');
+    skill.classList.add("skill")
+    skill.id = 'skill_' + tag
+
+    let image = document.createElement('div');
+    image.classList.add("skill_thumbnail")
+    image.style =  "background: no-repeat 100%/100% url(/static/img/thumb_" + tag + ".png);"
+
+    let skill_level = document.createElement('div')
+    skill_level.classList.add("skill_level")
+
+    let level_up = document.createElement('div')
+    level_up.classList.add("level_up")
+    level_up.innerHTML = 'upgrade'
+
+    let level = document.createElement('div')
+    level.classList.add("current_level")
+    level.innerHTML = cur_level
+
+    skill.appendChild(image)
+    skill.appendChild(skill_level)
+
+    skill_level.appendChild(level_up)
+    skill_level.appendChild(level)
+
+    skill.onmouseover = () => {
+        set_skill_description(tag)
+    }
+    skill.onmouseout = () => {
+        set_skill_description(SKILL_SELECTED)
+    }
+    skill.onclick = () => {
+        if (SKILL_SELECTED != undefined) {
+            document.getElementById('skill_' + SKILL_SELECTED).classList.remove('selected')
+        }
+        SKILL_SELECTED = tag;
+        skill.classList.add('selected');
+    }
+    ((tag) => 
+        level_up.onclick = () => send_skill_up_message(this.socket, tag)
+    )(tag)
+
+    return skill
+}
+
+function build_learned_skill_div(tag, cur_level) {
+    let skill = document.createElement('div');
+    skill.classList.add("skill")
+    skill.id = 'l_skill_' + tag
+
+    let image = document.createElement('div');
+    image.classList.add("skill_thumbnail")
+    image.style =  "background: no-repeat 100%/100% url(/static/img/thumb_" + tag + ".png);"
+
+    let skill_level = document.createElement('div')
+    skill_level.classList.add("skill_level")
+
+    let level_up = document.createElement('div')
+    level_up.classList.add("level_up")
+    level_up.innerHTML = 'upgrade'
+
+    let level = document.createElement('div')
+    level.classList.add("current_level")
+    level.innerHTML = cur_level
+
+    skill.appendChild(image)
+    skill.appendChild(skill_level)
+
+    skill_level.appendChild(level_up)
+    skill_level.appendChild(level)
+
+    skill.onmouseover = () => {
+        set_skill_description(tag)
+    }
+    skill.onmouseout = () => {
+        set_skill_description(SKILL_SELECTED)
+    }
+    skill.onclick = () => {
+        if (SKILL_SELECTED != undefined) {
+            document.getElementById('skill_' + SKILL_SELECTED).classList.remove('selected')
+        }
+        SKILL_SELECTED = tag;
+        skill.classList.add('selected');
+    }
+    return skill
+}
+
+function load_skills(data) {
+    for (let tag in data) {
+        skill_divs[tag] = build_skill_div(tag, 0)
+        learned_skill_divs[tag] = build_learned_skill_div(tag, 0)
+    }
+}
+
+function update_local_skills(data) {
+    let list = document.getElementById('local_skills');
+    LOCAL_SKILLS = data;
+    list.innerHTML = ''
+
+    console.log(data)
+    
+    if ((data != undefined) & (data != null)) {
+        for (let tag of data) {
+            list.appendChild(skill_divs[tag])
+        }
+    }    
+}
+
+function update_skill_data(data) {
+    console.log('update skills')
+    let list = document.getElementById('learned_skills');
+    list.innerHTML = '';
+    for (let tag in data) {
+        skill_divs[tag].querySelector('.current_level').innerHTML = data[tag];
+        let clone = skill_divs[tag].cloneNode(true)
+        clone.id = 'l_skill_' + tag
+        clone.querySelector('.level_up').innerHTML = 'level:'
+        clone.onmouseover = () => {
+            set_skill_description(tag)
+        }
+        clone.onmouseout = () => {
+            set_skill_description(SKILL_SELECTED)
+        }
+        clone.onclick = () => {
+            if (SKILL_SELECTED != undefined) {
+                document.getElementById('l_skill_' + SKILL_SELECTED).classList.remove('selected')
+            }
+            SKILL_SELECTED = tag;
+            clone.classList.add('selected');
+        }
+        list.appendChild(clone)
+    }
+}
+//SKILL TREE STUFF END
+
 
 
 
@@ -285,6 +516,10 @@ socket.on('battle-has-started', data => start_battle(data))
 socket.on('battle-update', data => battle_image.update(data))
 socket.on('battle-action', data => battle_action(data))
 socket.on('enemy-update', data => update_enemy(data))
+
+socket.on('skill-tree', data => load_skills(data));
+socket.on('skills', msg => update_skill_data(msg));
+socket.on('local-skills', msg => update_local_skills(msg))
 
 
 function update_tags(msg) {

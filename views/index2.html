@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="static/styles/tab_list.css">
     <link rel="stylesheet" type="text/css" href="static/styles/messages.css">
     <link rel="stylesheet" type="text/css" href="static/styles/map.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/skills.css">
 </head>
 <body>
 
@@ -235,6 +236,31 @@
                 </div>
                 <canvas id='battle_canvas' width=800 height=500, class="_battle_canvas"></canvas>
                 <canvas id='battle_canvas_background' width=800 height=500, class="_battle_canvas"></canvas>
+            </div>
+
+            
+            <div id = 'skilltree_tab', class="game_tab hidden">
+                <div id = 'skills'> 
+                    <div id = 'skills_header'>
+                        <div id = 'learned_skills_tab' class="skills_tab">
+                            Learned skills
+                        </div>
+                        <div id = 'local_skills_tab' class="skills_tab">
+                            Local skill trainers
+                        </div>
+                    </div>
+                    <div id = 'skills_body'>
+                        <div id = 'learned_skills' class = 'skills_list'>
+                            
+                        </div>
+
+                        <div id = 'local_skills' class = 'skills_list hidden'>
+                        </div>
+
+                        <div id = 'skills_description'>
+                        </div>
+                    </div>                    
+                </div>
             </div>
 
 
