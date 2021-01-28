@@ -152,16 +152,20 @@ module.exports = class Character {
     }
 
     async add_skill(pool, skill, save = true) {
+
         if (this.data.skill_points == 0) {
             return undefined
         }
+
         let SKILLS = this.world.constants.SKILLS;
         if (!(skill in SKILLS)) {
             return undefined
         }
         let cell = this.world.get_cell_by_id(this.cell_id);
+        console.log(cell.i, cell.j)
         let skill_group = this.world.get_cell_teacher(cell.i, cell.j)
-        if (!(skill in skill_group)) {
+
+        if (!(skill_group.includes(skill))) {
             return undefined
         }
 
@@ -171,6 +175,7 @@ module.exports = class Character {
                 return undefined
             }
         }
+
         if (skill in this.data.skills) {
             if (SKILLS[skill].max_level <= this.data.skills[skill]) {
                 return undefined

@@ -275,7 +275,6 @@ function unshadow_skill(tag) {
 }
 
 function send_skill_up_message(socket, tag) {
-    console.log(tag)
     socket.emit('up-skill', tag);
 }
 
@@ -319,7 +318,7 @@ function build_skill_div(tag, cur_level) {
         skill.classList.add('selected');
     }
     ((tag) => 
-        level_up.onclick = () => send_skill_up_message(this.socket, tag)
+        level_up.onclick = () => send_skill_up_message(socket, tag)
     )(tag)
 
     return skill
