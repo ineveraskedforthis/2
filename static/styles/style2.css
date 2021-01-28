@@ -104,6 +104,32 @@ body {
     background: rgba(143, 31, 31, 0.356);
 }
 
+
+.movable > .corner:hover {
+    background-color: yellow;
+}
+
+.movable > .corner {
+    background-color: yellowgreen;
+}
+
+.movable > .top {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 1%;
+    height: 1%;
+}
+
+.movable > .bottom {
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
+    width: 1%;
+    height: 1%;
+}
+
+
 #status_frame {
     position: absolute;
     height: 100%;

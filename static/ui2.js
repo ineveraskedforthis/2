@@ -11,6 +11,7 @@ var globals = {
     prev_mouse_x: null,
     prev_mouse_y: null,
     pressed: false,
+    pressed_resize: false,
     bcp: false
 }
 
@@ -28,6 +29,39 @@ socket.on('connect', () => {
         socket.emit('session', tmp);
     }
 })
+
+
+// MOVABLE STUFF 
+let bottom_corners = document.querySelectorAll('.movable > .bottom')
+for (let corner of bottom_corners) {
+    (corner => {corner.onmousedown = (event) =>{
+        if (!globals.pressed_resize)
+        {
+            globals.pressed_resize = true
+            globals.current_resize = corner.parentElement
+        } else {
+            globals.pressed_resize = false
+        }
+    }})(corner)
+}
+
+let game_scene = document.getElementById('actual_game_scene')
+game_scene.onmousemove = event => {
+        if (globals.pressed_resize)
+        {
+            let x = event.pageX;
+            let y = event.pageY;
+            let rect_1 = globals.current_resize.getBoundingClientRect();
+            let rect_2 = game_scene.getBoundingClientRect();
+            let new_width = x - rect_1.left + 2;
+            let new_height = y - rect_1.top + 2;
+            globals.current_resize.style.width = new_width + 'px'
+            globals.current_resize.style.height = new_height + 'px'
+        }
+};
+
+// MOVABLE STUFF END
+
 
 
 
