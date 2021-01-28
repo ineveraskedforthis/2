@@ -111,22 +111,21 @@ body {
 
 .movable > .corner {
     background-color: yellowgreen;
+    width: 10px;
+    height: 10px;
+    z-index: 3;
 }
 
 .movable > .top {
     position: absolute;
     top: 0%;
     left: 0%;
-    width: 1%;
-    height: 1%;
 }
 
 .movable > .bottom {
     position: absolute;
     bottom: 0%;
     right: 0%;
-    width: 1%;
-    height: 1%;
 }
 
 
@@ -187,7 +186,7 @@ body {
 
 #battle_control{
     position: absolute;
-    top: 450px;
+    bottom: 10px;
     left: 30px;
     width: 80%;
     height: 60px;

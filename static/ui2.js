@@ -11,7 +11,8 @@ var globals = {
     prev_mouse_x: null,
     prev_mouse_y: null,
     pressed: false,
-    pressed_resize: false,
+    pressed_resize_bottom: false,
+    pressed_resize_top: false,
     bcp: false
 }
 
@@ -35,19 +36,32 @@ socket.on('connect', () => {
 let bottom_corners = document.querySelectorAll('.movable > .bottom')
 for (let corner of bottom_corners) {
     (corner => {corner.onmousedown = (event) =>{
-        if (!globals.pressed_resize)
+        if (!globals.pressed_resize_bottom)
         {
-            globals.pressed_resize = true
+            globals.pressed_resize_bottom = true
             globals.current_resize = corner.parentElement
         } else {
-            globals.pressed_resize = false
+            globals.pressed_resize_bottom = false
+        }
+    }})(corner)
+}
+
+let top_corners = document.querySelectorAll('.movable > .top')
+for (let corner of top_corners) {
+    (corner => {corner.onmousedown = (event) =>{
+        if (!globals.pressed_resize_top)
+        {
+            globals.pressed_resize_top = true
+            globals.current_resize = corner.parentElement
+        } else {
+            globals.pressed_resize_top = false
         }
     }})(corner)
 }
 
 let game_scene = document.getElementById('actual_game_scene')
 game_scene.onmousemove = event => {
-        if (globals.pressed_resize)
+        if (globals.pressed_resize_bottom)
         {
             let x = event.pageX;
             let y = event.pageY;
@@ -55,6 +69,25 @@ game_scene.onmousemove = event => {
             let rect_2 = game_scene.getBoundingClientRect();
             let new_width = x - rect_1.left + 2;
             let new_height = y - rect_1.top + 2;
+            globals.current_resize.style.width = new_width + 'px'
+            globals.current_resize.style.height = new_height + 'px'
+        }
+        if (globals.pressed_resize_top)
+        {
+            let x = event.pageX;
+            let y = event.pageY;
+            let rect_1 = globals.current_resize.getBoundingClientRect();
+            let rect_2 = game_scene.getBoundingClientRect();
+
+            let old_left = rect_1.left - rect_2.left;
+            let old_top = rect_1.top - rect_2.top;
+            let new_left = x - rect_2.left;
+            let new_top = y - rect_2.top;
+            let new_width = rect_1.right - rect_1.left - (new_left - old_left);
+            let new_height = rect_1.bottom - rect_1.top - (new_top - old_top);
+
+            globals.current_resize.style.top = new_top + 'px';
+            globals.current_resize.style.left = new_left + 'px';
             globals.current_resize.style.width = new_width + 'px'
             globals.current_resize.style.height = new_height + 'px'
         }

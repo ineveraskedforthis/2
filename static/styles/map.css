@@ -16,13 +16,13 @@
 }
 
 #local_description{
-    height: 50%;
+    height: 70%;
     width: 100%;
     overflow: visible;
 }
 
 #map_control{
-    height: 50%;
+    height: 30%;
     width: 100%;
     overflow: auto;
 }
