@@ -47,14 +47,14 @@
     background-image: url(/static/img/skills_button_pressed.png);
 }
 
-#auction_house_button {
+#market_button {
     background-image: url(/static/img/auc_button.png);
 }
 
-#auction_house_button:hover {
+#market_button:hover {
     background-image: url(/static/img/auc_button_hovered.png);
 }
 
-#auction_house_button:active {
+#market_button:active {
     background-image: url(/static/img/auc_button_pressed.png);
 }

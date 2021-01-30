@@ -146,4 +146,11 @@ class ItemMarketTable {
     }
 }
 
-export const MarketTable = MarketTable;
+export class Market {
+    constructor(container, socket) {
+        this.container = container;
+        this.socket = socket;
+    }
+
+    
+}

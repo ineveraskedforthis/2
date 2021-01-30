@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
-const game_tabs = ['map', 'battle', 'skilltree']
+const game_tabs = ['map', 'battle', 'skilltree', 'market']
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
@@ -589,13 +589,34 @@ socket.on('local-skills', msg => update_local_skills(msg))
 
 
 function update_tags(msg) {
-    // for (var tag of msg) {
-    //     var tag_option = new Option(tag, tag);
-    //     document.getElementById('buy_tag_select').add(tag_option);
-    //     tag_option = new Option(tag, tag);
-    //     document.getElementById('sell_tag_select').add(tag_option);
-    //     document.getElementById('inv_' + tag + '_image').style = "background: no-repeat center/100% url(/static/img/stash_" + tag + ".png);"
-    // }
+    let market_div = document.querySelector('.goods_list') 
+
+    for (var tag of msg) {
+
+        {
+            let div_cell = document.createElement('div');
+            div_cell.classList.add('goods_type');
+            div_cell.classList.add(tag);
+
+            let div_image = document.createElement('div');
+            div_image.classList.add('goods_icon');
+            div_image.style = "background: no-repeat center/100% url(/static/img/stash_" + tag + ".png);"
+            div_cell.appendChild(div_image)
+
+            let div_text = document.createElement('div');
+            div_text.innerHTML = tag;
+            div_text.classList.add('goods_name');
+            div_cell.appendChild(div_text);
+
+            let avg_price = document.createElement('div');
+            avg_price.innerHTML = 'undefined';
+            avg_price.classList.add('goods_avg_price');
+            div_cell.appendChild(avg_price);
+
+            market_div.appendChild(div_cell)
+        }
+
+    }
 }
 
 function my_alert(msg) {

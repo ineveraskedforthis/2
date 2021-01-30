@@ -193,12 +193,10 @@
             <div id="tab_list_frame" class="game_frame">
                 <div id = "battle_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div>
                 <div id = "market_button", class = 'control_button tooltip'><span class="tooltiptext">Market</span></div>
-                <div id = "market_control_button", class = 'control_button tooltip'><span class="tooltiptext">Market actions</span></div>
                 <!-- <div id = "tactics_button", class = 'control_button tooltip'><span class="tooltiptext">Tactics</span></div> -->
                 <div id = "skilltree_button", class = 'control_button tooltip'><span class="tooltiptext">Skills</span></div>
                 <div id = "map_button", class = 'control_button tooltip'><span class="tooltiptext">Map</span></div>
                 <div id = "character_screen_button", class = 'control_button tooltip'><span class="tooltiptext">Character screen</span></div>
-                <div id = "auction_house_button", class = 'control_button tooltip'><span class="tooltiptext">Auction house</span></div>
             </div>
 
             <div id = 'map_tab', class = "game_tab hidden movable">
@@ -269,6 +267,66 @@
                 <div class="corner bottom"></div>
             </div>
 
+            <div id = 'market_tab', class="game_tab hidden movable">
+                <div id = 'market'> 
+                    <div class="header">
+                        <div id="open_market" class="selected">Common goods</div>
+                        <div id="open_auction">Equipment</div>
+                    </div>
+                    <div class="market_body">
+                        <div class="goods_market">
+                            <div class="goods_list">
+                                <div class="goods_type">
+                                    <div class="goods_icon"></div>
+                                    <div class="goods_name">Tag</div>
+                                    <div class="goods_avg_price">Average price</div>
+                                </div>
+                            </div>
+                            <div class="market_control">
+                                <div class="header">Market control.</div>
+                                <div class="description">Description</div>
+                                <div class="buy_panel control_panel">
+                                    <div class="textnumber">
+                                        <div>Available on market</div>
+                                        <div id="supply">0</div>
+                                    </div>
+                                    <div id="buy_amount" class="trade_amount">
+                                        <div id="plus_buy" class="plus">+1</div>
+                                        <div id="current_buy" class="current">0</div>
+                                        <div id="minus_buy" class="minus">-1</div>
+                                        <div id="reset_buy" class="reset">Reset</div>
+                                    </div>
+                                    <div class="textnumber">
+                                        <div>Current cost.</div>
+                                        <div id="buy_cost"></div>
+                                    </div>
+                                    <div id="confirm_buy" class="button">Confirm trade</div>
+                                </div>
+                                <div class="sell_panel control_panel">
+                                    <div class="textnumber">
+                                        <div>Demand on market</div>
+                                        <div id="demand">0</div>
+                                    </div>
+                                    <div id="sell_amount" class="trade_amount">
+                                        <div id="plus_buy" class="plus">+1</div>
+                                        <div id="current_buy" class="current">0</div>
+                                        <div id="minus_buy" class="minus">-1</div>
+                                        <div id="reset_buy" class="reset">Reset</div>
+                                    </div>
+                                    <div class="textnumber">
+                                        <div>Current profits.</div>
+                                        <div id="profit">0</div>
+                                    </div>
+                                    <div id="confirm_buy" class="button">Confirm trade</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
+            </div>
 
         </div>  
     </div>
