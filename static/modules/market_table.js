@@ -11,66 +11,6 @@ function send_buyout_request() {
     socket.emit('buyout', index);
 }
 
-class MarketTable {
-    constructor(container) {
-        this.data = [];
-        this.container = container;
-        this.table = document.createElement('table');
-    }
-
-    draw() {
-        this.container.textContent = '';
-        this.container.appendChild(this.table);
-    }
-
-    update(data = []) {
-        // console.log(data)
-        this.data = data;
-        this.table = document.createElement('table');
-        let header = this.table.insertRow();
-        let type = header.insertCell(0);
-        let tag = header.insertCell(1);
-        let amount = header.insertCell(2);
-        let price = header.insertCell(3);
-        let name = header.insertCell(4);
-        type.innerHTML = 'type'
-        tag.innerHTML = 'tag'
-        amount.innerHTML = 'amount'
-        price.innerHTML = 'price'
-        name.innerHTML = 'name'
-        for (tag in this.data.buy) {
-            for (let i of this.data.buy[tag]) {
-                let row = this.table.insertRow();
-                let type = row.insertCell(0);
-                let tag = row.insertCell(1);
-                let amount = row.insertCell(2);
-                let price = row.insertCell(3);
-                let name = row.insertCell(4);
-                type.innerHTML = i.typ
-                tag.innerHTML = i.tag
-                amount.innerHTML = i.amount
-                price.innerHTML = i.price
-                name.innerHTML = i.owner_name
-            }
-            for (let i of this.data.sell[tag]) {
-                let row = this.table.insertRow();
-                let type = row.insertCell(0);
-                let tag = row.insertCell(1);
-                let amount = row.insertCell(2);
-                let price = row.insertCell(3);
-                let name = row.insertCell(4);
-                type.innerHTML = i.typ
-                tag.innerHTML = i.tag
-                amount.innerHTML = i.amount
-                price.innerHTML = i.price
-                name.innerHTML = i.owner_name
-            }
-        }
-        
-        this.draw();
-    }
-}
-
 class ItemMarketTable {
     constructor(container) {
         this.data = [];
@@ -146,11 +86,96 @@ class ItemMarketTable {
     }
 }
 
-export class Market {
+export class GoodsMarket {
     constructor(container, socket) {
         this.container = container;
+        this.buy_amount_div = container.querySelector('#buy_amount > .current')
+        this.sell_amount_div = container.querySelector('#sell_amount > .current')
+        this.sell_amount = 0;
+        this.buy_amount = 0;
+        {
+            let button = container.querySelector('#sell_amount > .plus')
+            button.onclick = (event) => {
+                event.preventDefault();
+                this.inc_sell()
+            }
+        }
+
+        {
+            let button = container.querySelector('#sell_amount > .minus')
+            button.onclick = (event) => {
+                event.preventDefault();
+                this.dec_sell()
+            }
+        }
+
+        {
+            let button = container.querySelector('#buy_amount > .plus')
+            button.onclick = (event) => {
+                event.preventDefault();
+                this.inc_buy()
+            }
+        }
+
+        {
+            let button = container.querySelector('#buy_amount > .minus')
+            button.onclick = (event) => {
+                event.preventDefault();
+                this.dec_buy()
+            }
+        }
+
         this.socket = socket;
     }
 
-    
+    inc_buy() {
+        this.buy_amount += 1;
+        this.update_buy();
+    }
+
+    dec_buy() {
+        this.buy_amount = Math.max(0, this.buy_amount - 1)
+        this.update_buy();
+    }
+
+    inc_sell() {
+        this.sell_amount += 1
+        this.update_sell();
+    }
+
+    dec_sell() {
+        this.sell_amount = Math.max(0, this.sell_amount - 1)
+        this.update_sell();
+    }
+
+    update_buy() {
+        this.buy_amount_div.innerHTML = this.buy_amount;
+    }
+
+    update_sell() {
+        this.sell_amount_div.innerHTML = this.sell_amount;
+    }
+
+    update_data(data) {
+        console.log(data)
+        this.data = data;
+        for (let tag in data.buy) {
+            let total_price = 0;
+            let total_amount = 0;
+            for (let order of data.buy[tag]) {
+                total_price += order.price * order.amount
+                total_amount += order.amount
+            }
+            for (let order of data.sell[tag]) {
+                total_price += order.price * order.amount
+                total_amount += order.amount
+            }
+            let div = this.container.querySelector('.' + tag + ' > .goods_avg_price')
+            if (total_amount > 0) {
+                div.innerHTML = total_price / total_amount
+            } else {
+                div.innerHTML = 'undefined'
+            }
+        }
+    }
 }

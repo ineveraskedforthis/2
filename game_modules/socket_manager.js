@@ -474,12 +474,11 @@ module.exports = class SocketManager {
                 try {
                     let cell1 = char.get_cell();
                     if (i.online & i.market_data & cell1.id==cell.id) {
-                        i.socket.emit('market-data', data)
+                        i.socket.emit('market-data', data);
                     }
                 } catch(error) {
-                    console.log(i.current_user.login)
+                    console.log(i.current_user.login);
                 }
-                
             }
         }
     }

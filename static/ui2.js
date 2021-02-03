@@ -6,6 +6,7 @@ const game_tabs = ['map', 'battle', 'skilltree', 'market']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';
+import {GoodsMarket} from './modules/market_table.js';
 
 var globals = {
     prev_mouse_x: null,
@@ -21,6 +22,14 @@ const map = new Map(document.getElementById('map'), document.getElementById('map
 init_map_control(map, globals);
 const battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 init_battle_control(battle_image, globals);
+
+
+// market
+const goods_market = new GoodsMarket(document.querySelector('.goods_market'))
+socket.on('market-data', data => {
+    goods_market.update_data(data);
+});
+// market-end
 
 
 socket.on('connect', () => {
@@ -168,15 +177,18 @@ function toogle_tab(tag) {
     let tab = document.getElementById(tag + '_tab');
     if (tab.classList.contains('hidden')) {
         tab.classList.remove('hidden');
+        return 'on'
     } else {
         tab.classList.add('hidden');
+        return 'off'
     }
 }
 
 for (let tag of game_tabs) {
     document.getElementById(tag + '_button').onclick = () => {
         let res = toogle_tab(tag);
-        if ((tag == 'market') & (res = 'on')) {
+        console.log(tag, res)
+        if ((tag == 'market') & (res == 'on')) {
             socket.emit('send-market-data', true)
         } else {
             socket.emit('send-market-data', false)
