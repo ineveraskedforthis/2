@@ -26,9 +26,7 @@ init_battle_control(battle_image, globals);
 
 // market
 const goods_market = new GoodsMarket(document.querySelector('.goods_market'))
-socket.on('market-data', data => {
-    goods_market.update_data(data);
-});
+
 // market-end
 
 
@@ -599,6 +597,8 @@ socket.on('skill-tree', data => load_skills(data));
 socket.on('skills', msg => update_skill_data(msg));
 socket.on('local-skills', msg => update_local_skills(msg))
 
+socket.on('market-data', data => goods_market.update_data(data));
+
 
 function update_tags(msg) {
     let market_div = document.querySelector('.goods_list') 
@@ -610,20 +610,37 @@ function update_tags(msg) {
             div_cell.classList.add('goods_type');
             div_cell.classList.add(tag);
 
-            let div_image = document.createElement('div');
-            div_image.classList.add('goods_icon');
-            div_image.style = "background: no-repeat center/100% url(/static/img/stash_" + tag + ".png);"
-            div_cell.appendChild(div_image)
+            {
+                let div_image = document.createElement('div');
+                div_image.classList.add('goods_icon');
+                div_image.style = "background: no-repeat center/100% url(/static/img/stash_" + tag + ".png);"
+                div_cell.appendChild(div_image)
+            }
 
-            let div_text = document.createElement('div');
-            div_text.innerHTML = tag;
-            div_text.classList.add('goods_name');
-            div_cell.appendChild(div_text);
+            {
+                let div_text = document.createElement('div');
+                div_text.innerHTML = tag;
+                div_text.classList.add('goods_name');
+                div_cell.appendChild(div_text);
+            }
 
-            let avg_price = document.createElement('div');
-            avg_price.innerHTML = 'undefined';
-            avg_price.classList.add('goods_avg_price');
-            div_cell.appendChild(avg_price);
+            {
+                let avg_price = document.createElement('div');
+                avg_price.innerHTML = 'undefined';
+                avg_price.classList.add('goods_avg_buy_price');
+                div_cell.appendChild(avg_price);
+            }
+
+            {
+                let avg_price = document.createElement('div');
+                avg_price.innerHTML = 'undefined';
+                avg_price.classList.add('goods_avg_sell_price');
+                div_cell.appendChild(avg_price);
+            }
+
+            ((tag) => div_cell.onclick = () => {
+                goods_market.select(tag)
+            })(tag)
 
             market_div.appendChild(div_cell)
         }

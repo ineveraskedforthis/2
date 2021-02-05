@@ -150,6 +150,7 @@ export class GoodsMarket {
 
     update_buy() {
         this.buy_amount_div.innerHTML = this.buy_amount;
+        this.update_estimation(this.selected_tag);
     }
 
     update_sell() {
@@ -162,20 +163,81 @@ export class GoodsMarket {
         for (let tag in data.buy) {
             let total_price = 0;
             let total_amount = 0;
+
             for (let order of data.buy[tag]) {
                 total_price += order.price * order.amount
                 total_amount += order.amount
             }
-            for (let order of data.sell[tag]) {
-                total_price += order.price * order.amount
-                total_amount += order.amount
-            }
-            let div = this.container.querySelector('.' + tag + ' > .goods_avg_price')
+
+            let div = this.container.querySelector('.' + tag + ' > .goods_avg_buy_price')
             if (total_amount > 0) {
                 div.innerHTML = total_price / total_amount
             } else {
                 div.innerHTML = 'undefined'
+            }     
+            
+        }
+
+        for (let tag in data.sell) {
+            let total_price = 0;
+            let total_amount = 0;
+
+            for (let order of data.sell[tag]) {
+                total_price += order.price * order.amount
+                total_amount += order.amount
+            }   
+
+            let div = this.container.querySelector('.' + tag + ' > .goods_avg_sell_price')
+            if (total_amount > 0) {
+                div.innerHTML = total_price / total_amount
+            } else {
+                div.innerHTML = 'undefined'
+            }  
+        }
+    }
+
+    select(tag) {
+        if (this.selected_tag != undefined) {
+            let div = this.container.querySelector('.' + this.selected_tag);
+            div.classList.remove('selected');
+        }
+        this.selected_tag = tag;
+        let desc = this.container.querySelector('.description')
+        desc.innerHTML = tag
+        let div = this.container.querySelector('.' + this.selected_tag);
+        div.classList.add('selected');
+        this.update_estimation(tag)
+    }
+
+    update_estimation(tag) {
+        if (tag == undefined) {
+            return
+        }
+
+        {
+            let current_buy = this.container.querySelector("#buy_amount > .current").innerHTML
+            let res = this.check_tag_cost(tag, parseInt(current_buy));
+            let div = document.getElementById('buy_cost');
+            div.innerHTML = res[0] + ', ' + (res[1]) + ' not on a market'
+        }
+    }
+
+    check_tag_cost(tag, amount) {
+        var tmp = [];
+        for (var order of this.data.sell[tag]) {
+            tmp.push(order);
+        }
+        tmp.sort((a, b) => {a.price - b.price});
+        var cost = 0;
+        for (let i of tmp) {
+            if (i.amount <= amount) {
+                cost += i.amount * (i.price);
+                amount -= i.amount;
+            } else if (amount > 0) {
+                cost += amount * (i.price);
+                amount = 0;
             }
         }
+        return [cost, amount]
     }
 }

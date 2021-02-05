@@ -304,8 +304,16 @@ body {
     width: 100px;
 }
 
-#market > .market_body > .goods_market > .goods_list > .goods_type > .goods_avg_price {
+#market > .market_body > .goods_market > .goods_list > .goods_type > .goods_avg_sell_price {
     width: 100px;
+}
+
+#market > .market_body > .goods_market > .goods_list > .goods_type > .goods_avg_buy_price {
+    width: 100px;
+}
+
+#market > .market_body > .goods_market > .goods_list > .goods_type.selected {
+    background-color: rgba(187, 197, 45, 0.575);
 }
 
 #market > .market_body > .goods_market > .market_control {
