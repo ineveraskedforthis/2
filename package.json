@@ -10,7 +10,7 @@
         "express-validator": "^6.1.1",
         "node-gameloop": "^0.1.4",
         "pg": "^7.18.2",
-        "socket.io": "^2.2.0",
+        "socket.io": "^2.4.0",
         "validator": "^11.1.0"
     },
     "devDependencies": {
