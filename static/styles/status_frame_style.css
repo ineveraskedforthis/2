@@ -19,7 +19,7 @@ div#status_frame>div{
 
 
 #name_row{
-    height: 10%;
+    height: 15%;
     display: flex; 
     flex-direction: column;
 }
@@ -34,7 +34,7 @@ div#status_frame>div{
 }
 
 #bars_row{
-    height: 30%;
+    height: 50%;
     display: flex;
     flex-direction: row;
 }
@@ -74,7 +74,7 @@ div#bars_row>div{
 }
 
 #exp_row {
-    height: 10%;
+    height: 15%;
     width: 97%;
     padding-left: 1%;
     display: flexbox;

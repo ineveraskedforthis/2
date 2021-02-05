@@ -18,7 +18,7 @@
 #local_description{
     height: 70%;
     width: 100%;
-    overflow: visible;
+    overflow: hidden;
 }
 
 #map_control{

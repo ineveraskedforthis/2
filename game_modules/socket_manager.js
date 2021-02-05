@@ -294,9 +294,12 @@ module.exports = class SocketManager {
 
     async sell(user_data, msg) {
         var flag = common.validate_sell_data(this.world, msg);
+        if (isNaN(msg.amount) || isNaN(msg.price)) {
+            return
+        }
         if ((user_data.current_user != null) && flag) {
             let char = user_data.current_user.character;
-            await char.sell(this.pool, msg.tag, parseInt(msg.amount), parseInt(msg.price));
+            await char.sell(this.pool, msg.tag, msg.amount, msg.price);
             this.send_savings_update(char);
         }
     }
@@ -458,10 +461,18 @@ module.exports = class SocketManager {
     send_char_info(socket, user) {
         if (user != null) {
             let char = user.character
-            socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, stash: char.stash, resists: char.get_resists()});
+            socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, resists: char.get_resists()});
+            this.send_stash_update(socket, user)
         }
     }
     
+    send_stash_update(socket, user) {
+        if (user != null) {
+            let char = user.character
+            socket.emit('stash-update', char.stash.data)
+        }
+    }
+
     update_market_info(cell) {
         var data = cell.market.get_orders_list();
         if (constants.logging.sockets.update_market_info) {

@@ -14,7 +14,8 @@ var globals = {
     pressed: false,
     pressed_resize_bottom: false,
     pressed_resize_top: false,
-    bcp: false
+    bcp: false,
+    socket: socket
 }
 
 const char_info_monster = new CharInfoMonster();
@@ -25,7 +26,7 @@ init_battle_control(battle_image, globals);
 
 
 // market
-const goods_market = new GoodsMarket(document.querySelector('.goods_market'))
+const goods_market = new GoodsMarket(document.querySelector('.goods_market'), socket)
 
 // market-end
 
@@ -577,6 +578,10 @@ socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 
+// socket.on('char-info-detailed', msg => character_screen.update(msg))
+socket.on('stash-update', msg => {goods_market.update_inventory(msg)});
+
+
 socket.on('log-message', msg => new_log_message(msg));
 socket.on('new-message', msg => new_message(msg));
 
@@ -636,6 +641,13 @@ function update_tags(msg) {
                 avg_price.innerHTML = 'undefined';
                 avg_price.classList.add('goods_avg_sell_price');
                 div_cell.appendChild(avg_price);
+            }
+
+            {
+                let div = document.createElement('div');
+                div.innerHTML = 'undefined';
+                div.classList.add('goods_amount_in_inventory');
+                div_cell.appendChild(div);
             }
 
             ((tag) => div_cell.onclick = () => {

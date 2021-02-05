@@ -125,6 +125,22 @@ export class GoodsMarket {
             }
         }
 
+        {
+            let button = container.querySelector('#confirm_buy')
+            button.onclick = (event) => {
+                event.preventDefault();
+                this.buy()
+            }
+        }
+
+        {
+            let button = container.querySelector('#confirm_sell')
+            button.onclick = (event) => {
+                event.preventDefault();
+                this.sell()
+            }
+        }
+
         this.socket = socket;
     }
 
@@ -155,10 +171,11 @@ export class GoodsMarket {
 
     update_sell() {
         this.sell_amount_div.innerHTML = this.sell_amount;
+        this.update_sell_estimation(this.selected_tag)
     }
 
     update_data(data) {
-        console.log(data)
+        // console.log(data)
         this.data = data;
         for (let tag in data.buy) {
             let total_price = 0;
@@ -193,7 +210,10 @@ export class GoodsMarket {
             } else {
                 div.innerHTML = 'undefined'
             }  
+            this.update_estimation(tag)
+            this.update_sell_estimation(tag)
         }
+        
     }
 
     select(tag) {
@@ -207,6 +227,7 @@ export class GoodsMarket {
         let div = this.container.querySelector('.' + this.selected_tag);
         div.classList.add('selected');
         this.update_estimation(tag)
+        this.update_sell_estimation(tag)
     }
 
     update_estimation(tag) {
@@ -218,7 +239,20 @@ export class GoodsMarket {
             let current_buy = this.container.querySelector("#buy_amount > .current").innerHTML
             let res = this.check_tag_cost(tag, parseInt(current_buy));
             let div = document.getElementById('buy_cost');
-            div.innerHTML = res[0] + ', ' + (res[1]) + ' not on a market'
+            div.innerHTML = res[0] + ', ' + (res[1]) + ' will be not bought'
+        }
+    }
+
+    update_sell_estimation(tag) {
+        if (tag == undefined) {
+            return
+        }
+
+        {
+            let current_sell = this.container.querySelector("#sell_amount > .current").innerHTML
+            let res = this.check_tag_sell_profits(tag, parseInt(current_sell));
+            let div = document.getElementById("profit");
+            div.innerHTML = res[0] + ', and ' + (res[1]) + ' will be not sold'
         }
     }
 
@@ -239,5 +273,56 @@ export class GoodsMarket {
             }
         }
         return [cost, amount]
+    }
+
+    check_tag_sell_profits(tag, amount) {
+        var tmp = [];
+        for (var order of this.data.buy[tag]) {
+            tmp.push(order);
+        }
+        tmp.sort((a, b) => {-a.price + b.price});
+        var profit = 0;
+        for (let i of tmp) {
+            if (i.amount <= amount) {
+                profit += i.amount * (i.price);
+                amount -= i.amount;
+            } else if (amount > 0) {
+                profit += amount * (i.price);
+                amount = 0;
+            }
+        }
+        return [profit, amount]
+    }
+
+    buy() {
+        if (this.selected_tag == undefined) {
+            return 
+        }
+        let tmp = this.check_tag_cost(this.selected_tag, this.buy_amount)
+        this.socket.emit('buy', {tag: this.selected_tag,
+                            amount: this.buy_amount - tmp[1],
+                            money: money,
+                            max_price: 99999});
+    }
+
+    sell() {
+        if (this.selected_tag == undefined) {
+            return 
+        }
+        let tmp = this.check_tag_sell_profits(this.selected_tag, this.sell_amount)
+        this.socket.emit('sell', {tag: this.selected_tag ,
+                             amount: this.sell_amount - tmp[1],
+                             price: 1});
+    }
+
+    update_inventory(data) {
+        console.log(data);
+        for (let tag in data) {
+            console.log(tag)
+            let div = this.container.querySelector('.' + tag + ' > .goods_amount_in_inventory')
+            if (div != null)  {
+                div.innerHTML = data[tag]
+            }            
+        }
     }
 }

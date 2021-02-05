@@ -131,7 +131,7 @@ body {
 
 #status_frame {
     position: absolute;
-    height: 100%;
+    height: 50%;
     width: 15%;
 }
 
@@ -312,6 +312,10 @@ body {
     width: 100px;
 }
 
+#market > .market_body > .goods_market > .goods_list > .goods_type > .goods_amount_in_inventory {
+    width: 100px;
+}
+
 #market > .market_body > .goods_market > .goods_list > .goods_type.selected {
     background-color: rgba(187, 197, 45, 0.575);
 }
@@ -324,7 +328,7 @@ body {
 
 #market > .market_body > .goods_market > .market_control > .header {
     width: 100%;
-    height: 10%;
+    height: 20px;
     text-align: center;
 }
 
@@ -332,7 +336,7 @@ body {
     text-align: center;
     top: 10%;
     width: 100%;
-    height: 20%;
+    height: 20px;
 }
 
 #market > .market_body > .goods_market > .market_control > .buy_panel {
@@ -360,6 +364,18 @@ body {
 
 #market > .market_body > .goods_market > .market_control > .sell_panel {
     background-color: rgba(0, 255, 0, 0.10);
+}
+
+.control_panel > .button {
+    background-color: rgba(80, 21, 11, 0.123);
+}
+
+.control_panel > .button:hover {
+    background-color: rgba(148, 156, 36, 0.425);
+}
+
+.control_panel > .button:active {
+    background-color: rgba(145, 148, 102, 0.671);
 }
 
 .trade_amount {
@@ -397,6 +413,8 @@ body {
 .trade_amount > .reset:hover {
     background-color: red;
 }
+
+
 
 .textnumber {
     display: flex;

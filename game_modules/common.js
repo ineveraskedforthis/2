@@ -80,7 +80,7 @@ module.exports =
     },
 
     validate_sell_data: function (world, data) {
-        return (world.constants.TAGS.indexOf(data.tag) > -1) && (validator.isInt(data.amount)) && (validator.isInt(data.price));
+        return (world.constants.TAGS.indexOf(data.tag) > -1) && (!isNaN(data.amount)) && (!isNaN(data.price));
     }, 
 
     flag_log: function(msg, flag) {
