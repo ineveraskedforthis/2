@@ -42,6 +42,7 @@ var world = new World(io, 27, 27);
 (async () => {
     try {
         console.log('connecting to db');
+        console.log(pool);
         var client = await pool.connect();
         console.log('connection ready, checking for version update');
         let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises', 'messages', 'items_orders', 'items_markets']
