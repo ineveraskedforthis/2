@@ -9,7 +9,9 @@ const client = new Client({
 
 client.connect();
 
-client.query('CREATE TABLE IF NOT EXISTS version (version int)');
+client.query('CREATE TABLE IF NOT EXISTS version (version int)', () => {
+    console.log('!!!!!!!')
+});
 
 
 client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
