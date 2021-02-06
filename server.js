@@ -22,7 +22,10 @@ if (stage == 'dev') {
     pool = new Pool({database: dbname});
 } else{
     console.log('remote')
-    pool = new Pool({connectionString: process.env.DATABASE_URL, ssl: true});
+    pool = new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: {rejectUnauthorized: false}
+    });
 }
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'static')));
