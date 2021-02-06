@@ -28,6 +28,25 @@ if (stage == 'dev') {
         connectionString: process.env.DATABASE_URL,
         ssl: {rejectUnauthorized: false}
     });
+
+    const client = new Client({
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false
+        }
+    });
+
+    client.connect();
+
+    client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
+        console.log('???')
+        if (err) throw err;
+        for (let row of res.rows) {
+            console.log(JSON.stringify(row));
+        }
+        client.end();
+    });
+
 }
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'static')));
@@ -39,6 +58,9 @@ http.listen(port, () => {
 });
 
 var world = new World(io, 27, 27);
+
+
+
 
 
 (async () => {
