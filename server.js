@@ -36,9 +36,9 @@ if (stage == 'dev') {
             rejectUnauthorized: false
         }
     });
-
+    console.log('???')
     client.connect();
-
+    console.log('!!!')
     client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
         console.log('???')
         if (err) throw err;
