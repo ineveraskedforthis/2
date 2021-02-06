@@ -10,11 +10,7 @@ const client = new Client({
 client.connect();
 
 client.query('CREATE TABLE IF NOT EXISTS version (version int)');
-let res = client.query('SELECT * FROM version');
-if (res.rows.length == 0) {
-    client.query('INSERT INTO version (version) VALUES ($1)', [0]);
-    return {version: 0};
-}
+
 
 client.query('SELECT table_schema,table_name FROM information_schema.tables;', (err, res) => {
   if (err) throw err;
