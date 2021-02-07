@@ -106,7 +106,7 @@ module.exports = class World {
         if (this.pops_tick >= 180) {
             this.pops_tick = 0;
             await this.entity_manager.update_agents(pool)
-        }        
+        }
         
         
         await this.entity_manager.update_chars(pool)

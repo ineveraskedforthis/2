@@ -210,10 +210,10 @@ export class GoodsMarket {
             } else {
                 div.innerHTML = 'undefined'
             }  
-            this.update_estimation(tag)
-            this.update_sell_estimation(tag)
+            
         }
-        
+        this.update_estimation(this.selected_tag)
+        this.update_sell_estimation(this.selected_tag)
     }
 
     select(tag) {
