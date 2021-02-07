@@ -1,19 +1,17 @@
 'use strict'
 require('dotenv').config({path: __dirname + '/.env'});
 
-
 var {Pool} = require('pg');
 var pool = undefined
 
 console.log('remote')
 
+console.log(process.env.DATABASE_URL)
+
 pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {rejectUnauthorized: false}
 });
-
-
-
 
 (async () => {
     try {
