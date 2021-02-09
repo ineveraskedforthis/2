@@ -402,6 +402,9 @@ module.exports = class Character {
     }
 
     async move(pool, data) {
+        if (this.in_battle()) {
+            return 0
+        }
         if (this.world.can_move(data.x, data.y)) {
             let {x, y} = this.world.get_cell_x_y_by_id(this.cell_id)
             let dx = data.x - x;

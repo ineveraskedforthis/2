@@ -16,6 +16,7 @@
     <link rel="stylesheet" type="text/css" href="static/styles/messages.css">
     <link rel="stylesheet" type="text/css" href="static/styles/map.css">
     <link rel="stylesheet" type="text/css" href="static/styles/skills.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/char_screen.css">
 </head>
 <body>
 
@@ -52,12 +53,7 @@
         </div>
 
         <div id = "character_creation" class="game_scene">
-            <div class="character_image_col">
-                <div id="character_image_body" class="character_image"></div>
-                <div id="character_image_eyes" class="character_image"></div>
-                <div id="character_image_chin" class="character_image"></div>
-                <div id="character_image_mouth" class="character_image"></div>
-            </div>
+            
             <div class="character_stats">
                 <div id="page_1" class="page">
                     <div>YOUR NAME</div>
@@ -97,6 +93,14 @@
             </div>
         </div>
         <div id="actual_game_scene" class="game_scene">
+            <div class="character_image_col">
+                <div id="character_image_body" class="character_image"></div>
+                <div id="character_image_eyes" class="character_image"></div>
+                <div id="character_image_chin" class="character_image"></div>
+                <div id="character_image_mouth" class="character_image"></div>
+            </div>
+
+
             <div id="status_frame" class="game_frame">
                 <div id = "name_row"> 
                     <div id = "name"> </div> 
@@ -195,7 +199,7 @@
                 <!-- <div id = "tactics_button", class = 'control_button tooltip'><span class="tooltiptext">Tactics</span></div> -->
                 <div id = "skilltree_button", class = 'control_button tooltip'><span class="tooltiptext">Skills</span></div>
                 <div id = "map_button", class = 'control_button tooltip'><span class="tooltiptext">Map</span></div>
-                <div id = "character_screen_button", class = 'control_button tooltip'><span class="tooltiptext">Character screen</span></div>
+                <div id = "character_button", class = 'control_button tooltip'><span class="tooltiptext">Character screen</span></div>
             </div>
 
             <div id = 'map_tab', class = "game_tab hidden movable">
@@ -233,8 +237,8 @@
 
                 <div id='enemy_status'>
                 </div>
-                <canvas id='battle_canvas' width=800 height=500, class="_battle_canvas"></canvas>
-                <canvas id='battle_canvas_background' width=800 height=500, class="_battle_canvas"></canvas>
+                <canvas id='battle_canvas' width=600 height=500, class="_battle_canvas"></canvas>
+                <canvas id='battle_canvas_background' width=600 height=500, class="_battle_canvas"></canvas>
                 <div class="corner top"></div>
                 <div class="corner bottom"></div>
             </div>
@@ -332,6 +336,68 @@
                 <div class="corner bottom"></div>
             </div>
 
+            <div id="character_tab" class="game_tab hidden movable">
+                <div id = 'character_screen'>
+                    <div id = 'cs_first_column' class = 'tooltip'>
+                        <span class = 'tooltiptext'>
+                                pow: power of spells <br>
+                                musculature: power of phys attacks <br>
+                                resists: how much damage is reduced from different parts of attacks
+                        </span>
+                        <div id = 'stats', class = 'character_screen_frame'></div>
+                    </div>
+
+                    <div id = 'cs_second_column'>
+
+                        <div id = 'inventory', class = 'character_screen_frame'>
+                            <table id = 'inventory_items'></table>
+                            <div id = 'inventory_stash'>
+                                <div id = 'inv_meat',    class = 'stash_block'><div id = 'inv_meat_image',    class = 'stash_image'></div><div id = 'meat_count'   ></div></div>
+                                <div id = 'inv_food',    class = 'stash_block'><div id = 'inv_food_image',    class = 'stash_image'></div><div id = 'food_count'   ></div></div>
+                                <div id = 'inv_water',   class = 'stash_block'><div id = 'inv_water_image',   class = 'stash_image'></div><div id = 'water_count'  ></div></div>
+                                <div id = 'inv_leather', class = 'stash_block'><div id = 'inv_leather_image', class = 'stash_image'></div><div id = 'leather_count'></div></div>
+                                <div id = 'inv_clothes', class = 'stash_block'><div id = 'inv_clothes_image', class = 'stash_image'></div><div id = 'clothes_count'></div></div>
+                                <div id = 'inv_tools',   class = 'stash_block'><div id = 'inv_tools_image',   class = 'stash_image'></div><div id = 'tools_count'  ></div></div>
+                                <div id = 'inv_zaz',     class = 'stash_block'><div id = 'inv_zaz_image',     class = 'stash_image'></div><div id = 'zaz_count'  ></div></div>
+                            </div>
+                        </div>
+                        <div id = 'craft', class = 'character_screen_frame'></div>
+
+                    </div>
+
+                    <div id = 'cs_third_column'>
+                        <div id = 'equip', class = 'character_screen_frame'>
+                            <div id = 'eq_head', class = 'item_frame tooltip'> 
+                                <div id="eq_head_image", class = 'item_image'></div>
+                                <span id="eq_head_tooltip", class="tooltiptext"></span>
+                            </div>
+                            <div id = 'eq_right_hand', class = 'item_frame tooltip'>
+                                <div id="eq_right_hand_image", class = 'item_image'></div>
+                                <span id="eq_right_hand_tooltip", class="tooltiptext"></span>
+                            </div>
+                            <div id = 'eq_body', class = 'item_frame tooltip'>
+                                <div id="eq_body_image", class = 'item_image'></div>
+                                <span id="eq_body_tooltip", class="tooltiptext"></span>
+                            </div>
+                            <div id = 'eq_legs', class = 'item_frame tooltip'>      
+                                <div id="eq_legs_image", class = 'item_image'></div>
+                                <span id="eq_legs_tooltip", class="tooltiptext"></span>
+                            </div>
+                            <div id = 'eq_foot', class = 'item_frame tooltip'>      
+                                <div id="eq_foot_image", class = 'item_image'></div>
+                                <span id="eq_foot_tooltip", class="tooltiptext"></span>
+                            </div>
+                            <div id = 'eq_arms', class = 'item_frame tooltip'>      
+                                <div id="eq_arms_image", class = 'item_image'></div>
+                                <span id="eq_arms_tooltip", class="tooltiptext"></span>
+                            </div>
+                        </div>
+                        <div id = 'character_screen_actions', class = 'character_screen_frame'></div>
+                    </div>                    
+                </div>
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
+            </div>
         </div>  
     </div>
 

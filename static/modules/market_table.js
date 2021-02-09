@@ -212,8 +212,10 @@ export class GoodsMarket {
             }  
             
         }
-        this.update_estimation(this.selected_tag)
-        this.update_sell_estimation(this.selected_tag)
+        if (this.selected_tag != undefined) {
+            this.update_estimation(this.selected_tag)
+            this.update_sell_estimation(this.selected_tag)
+        }
     }
 
     select(tag) {

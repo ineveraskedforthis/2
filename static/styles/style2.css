@@ -94,6 +94,12 @@ body {
     visibility: hidden;
 }
 
+#actual_game_scene {
+    background-image: url(/static/img/colony_background_main.png);
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 #login_scene {
     visibility: visible;
 }
@@ -101,7 +107,7 @@ body {
 
 
 .game_frame {
-    background: rgba(143, 31, 31, 0.356);
+    background: rgba(143, 31, 31, 0.507);
 }
 
 
@@ -158,7 +164,7 @@ body {
     top: 10%;
     width: 50%;
     height: 70%;
-    background: rgba(143, 31, 31, 0.356);
+    background: rgba(143, 31, 31, 0.527);
     color: rgb(13, 228, 77);
 }
 

@@ -81,7 +81,7 @@ function send_sell_item_request(socket) {
     socket.emit('sell-item', {index: index, buyout_price: buyout_price, starting_price: starting_price});
 }
 
-class CharacterScreen {
+export class CharacterScreen {
     constructor(socket) {
         this.data = {}
         this.socket = socket;
@@ -226,11 +226,15 @@ class CharacterScreen {
                 tmp.appendChild(radio_button);
             }
         }
-        for (let i in data.stash.data) {
-            console.log(i + '_count')
-            let tmp = document.getElementById(i + '_count')
-            tmp.innerHTML = `${i}: ${data.stash.data[i]}`
-        }
+        
+    }
+
+    update_stash(data) {
+        // for (let i in data.stash.data) {
+        //     console.log(i + '_count')
+        //     let tmp = document.getElementById(i + '_count')
+        //     tmp.innerHTML = `${i}: ${data.stash.data[i]}`
+        // }
     }
 
     update_equip(data) {     
@@ -279,5 +283,3 @@ class CharacterScreen {
         }
     }
 }
-
-export const CharacterScreen = CharacterScreen

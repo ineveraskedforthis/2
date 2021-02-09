@@ -1,12 +1,13 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
-const game_tabs = ['map', 'battle', 'skilltree', 'market']
+const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character']
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';
 import {GoodsMarket} from './modules/market_table.js';
+import {CharacterScreen} from './modules/character_screen.js'
 
 var globals = {
     prev_mouse_x: null,
@@ -23,6 +24,7 @@ const map = new Map(document.getElementById('map'), document.getElementById('map
 init_map_control(map, globals);
 const battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 init_battle_control(battle_image, globals);
+const character_screen = new CharacterScreen(socket);
 
 
 // market
@@ -87,17 +89,17 @@ game_scene.onmousemove = event => {
             let rect_1 = globals.current_resize.getBoundingClientRect();
             let rect_2 = game_scene.getBoundingClientRect();
 
-            let old_left = rect_1.left - rect_2.left;
-            let old_top = rect_1.top - rect_2.top;
-            let new_left = x - rect_2.left;
-            let new_top = y - rect_2.top;
-            let new_width = rect_1.right - rect_1.left - (new_left - old_left);
-            let new_height = rect_1.bottom - rect_1.top - (new_top - old_top);
+            let width = rect_1.right - rect_1.left;
+            let height = rect_1.bottom - rect_1.top;
+            let new_left = Math.min(rect_1.right - 1, Math.min(rect_2.right - rect_2.left - width, Math.max(1, x - rect_2.left - 1)));
+            let new_top = Math.min(rect_1.bottom - 1, Math.min(rect_2.bottom - rect_2.top - height, Math.max(1, y - rect_2.top - 1)));
+            // let new_width = rect_1.right - rect_1.left - (new_left - old_left);
+            // let new_height = rect_1.bottom - rect_1.top - (new_top - old_top);
 
             globals.current_resize.style.top = new_top + 'px';
             globals.current_resize.style.left = new_left + 'px';
-            globals.current_resize.style.width = new_width + 'px'
-            globals.current_resize.style.height = new_height + 'px'
+            // globals.current_resize.style.width = new_width + 'px'
+            // globals.current_resize.style.height = new_height + 'px'
         }
 };
 
@@ -578,7 +580,7 @@ socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 
-// socket.on('char-info-detailed', msg => character_screen.update(msg))
+socket.on('char-info-detailed', msg => character_screen.update(msg))
 socket.on('stash-update', msg => {goods_market.update_inventory(msg)});
 
 
@@ -656,6 +658,8 @@ function update_tags(msg) {
 
             market_div.appendChild(div_cell)
         }
+
+
 
     }
 }

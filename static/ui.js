@@ -81,14 +81,6 @@ function reg(msg) {
 }
 
 
-
-// eslint-disable-next-line no-undef
-var char_image = new CharacterImage(document.getElementById('char_image'));
-// eslint-disable-next-line no-undef
-
-// eslint-disable-next-line no-undef
-var market_table = new MarketTable(document.getElementById('market'));
-
 var item_market_table = new ItemMarketTable(document.getElementById('auction_house_tab'))
 // var auction_house = new AuctionHouse(document.getElementById('auction_house_tab'));
 socket.emit('get-market-data', null);// eslint-disable-next-line no-undef
@@ -96,5 +88,5 @@ socket.emit('get-market-data', null);// eslint-disable-next-line no-undef
 // eslint-disable-next-line no-undef
 var tactic_screen = new TacticScreen(document.getElementById('tactic'), socket);
 // eslint-disable-next-line no-undef
-var character_screen = new CharacterScreen(socket);
+
 

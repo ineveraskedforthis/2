@@ -32,123 +32,9 @@
                     </div>
                 </div>
                 
-                
-                <div id = 'market_control_tab', class="game_tab">    
-                    <div id='market_actions'>
-                        <br>
-                        <div id='buy_form_con'>
-                            <form action=''>
-                                <p>
-                                    <label for='buy_tag_select'> tag </label>
-                                    <select id='buy_tag_select'>
-                                    </select>
-                                </p>
-                                <p>
-                                    <label for='buy_amount'> amount </label>
-                                    <input id='buy_amount'>
-                                </p>
-                                <p>
-                                    <label for='buy_max_price'> max price </label>
-                                    <input id='buy_max_price'>
-                                </p>
-                                <p>
-                                    <input type='submit', name='buy', value='buy'>
-                                </p>
-                            </form>
-                        </div>
-                        <div id='sell_form_con'>
-                            <form action=''>
-                                <p>
-                                    <label for='sell_tag_select'> tag </label>
-                                    <select id='sell_tag_select'>
-                                    </select>
-                                </p>
-                                <p>
-                                    <label for='sell_amount'> amount </label>
-                                    <input id='sell_amount'>
-                                </p>
-                                <p>
-                                    <label for='sell_price'> price </label>
-                                    <input id='sell_price'>
-                                </p>
-                                <p>
-                                    <input type='submit', name='sell', value='sell'>
-                                </p>
-                            </form>
-                        </div>
-                    </div>
-                </div>
                 <div id = 'tactics_tab', class="game_tab">
                     <div id = 'tactic'> </div>
-                </div>
-
-                
-                <div id = 'character_screen', class = "game_tab">
-
-                    <div id = 'cs_first_column' class = 'tooltip'>
-                        <span class = 'tooltiptext'>
-                                int: nothing <br>
-                                mem: nothing <br>
-                                pow: power of spells <br>
-                                tac: number of tactic slots <br>
-                                tou: nothing <br>
-                                vis: nothing <br>
-                                breathing: nothing <br>
-                                musculature: power of phys attacks <br>
-                                coordination: nothing <br>
-                                resists: how much damage is reduced from different parts of attacks
-                        </span>
-                        <div id = 'stats', class = 'character_screen_frame'></div>
-                    </div>
-
-                    <div id = 'cs_second_column'>
-
-                        <div id = 'inventory', class = 'character_screen_frame'>
-                            <table id = 'inventory_items'></table>
-                            <div id = 'inventory_stash'>
-                                <div id = 'inv_meat',    class = 'stash_block'><div id = 'inv_meat_image',    class = 'stash_image'></div><div id = 'meat_count'   ></div></div>
-                                <div id = 'inv_food',    class = 'stash_block'><div id = 'inv_food_image',    class = 'stash_image'></div><div id = 'food_count'   ></div></div>
-                                <div id = 'inv_water',   class = 'stash_block'><div id = 'inv_water_image',   class = 'stash_image'></div><div id = 'water_count'  ></div></div>
-                                <div id = 'inv_leather', class = 'stash_block'><div id = 'inv_leather_image', class = 'stash_image'></div><div id = 'leather_count'></div></div>
-                                <div id = 'inv_clothes', class = 'stash_block'><div id = 'inv_clothes_image', class = 'stash_image'></div><div id = 'clothes_count'></div></div>
-                                <div id = 'inv_tools',   class = 'stash_block'><div id = 'inv_tools_image',   class = 'stash_image'></div><div id = 'tools_count'  ></div></div>
-                                <div id = 'inv_zaz',     class = 'stash_block'><div id = 'inv_zaz_image',     class = 'stash_image'></div><div id = 'zaz_count'  ></div></div>
-                            </div>
-                        </div>
-                        <div id = 'craft', class = 'character_screen_frame'></div>
-
-                    </div>
-
-                    <div id = 'cs_third_column'>
-                        <div id = 'equip', class = 'character_screen_frame'>
-                            <div id = 'eq_head', class = 'item_frame tooltip'> 
-                                <div id="eq_head_image", class = 'item_image'></div>
-                                <span id="eq_head_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_right_hand', class = 'item_frame tooltip'>
-                                <div id="eq_right_hand_image", class = 'item_image'></div>
-                                <span id="eq_right_hand_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_body', class = 'item_frame tooltip'>
-                                <div id="eq_body_image", class = 'item_image'></div>
-                                <span id="eq_body_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_legs', class = 'item_frame tooltip'>      
-                                <div id="eq_legs_image", class = 'item_image'></div>
-                                <span id="eq_legs_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_foot', class = 'item_frame tooltip'>      
-                                <div id="eq_foot_image", class = 'item_image'></div>
-                                <span id="eq_foot_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_arms', class = 'item_frame tooltip'>      
-                                <div id="eq_arms_image", class = 'item_image'></div>
-                                <span id="eq_arms_tooltip", class="tooltiptext"></span>
-                            </div>
-                        </div>
-                        <div id = 'character_screen_actions', class = 'character_screen_frame'></div>
-                    </div>                    
-                </div>
+                </div>            
 
                 <div id="auction_house_tab" class="game_tab">
                     <!-- <div id="auction_tab_select">
@@ -166,23 +52,8 @@
             </div>
 
         </div>
-        
-        <div id = overlay></div>
+
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/gl-matrix@3/gl-matrix.js"></script>
-    <script src="/static/common.js"></script>
-    <script src="/static/load_images.js"></script>
-    <script src='/socket.io/socket.io.js'></script>
-    <!-- <script src='https://code.jquery.com/jquery-1.11.1.js'></script> -->
-    <!-- <script src='/static/main.js'></script> -->
-    <script src="/static/character_image.js"></script>
-    <script src="/static/battle_image.js"></script>
-    <script src="/static/market_table.js"></script>
-    <script src="/static/auction_house.js"></script>
-    <script src="/static/skill_tree.js"></script>
-    <script src="/static/tactic_screen.js"></script>
-    <script src="/static/character_screen.js"></script>
-    <script src="/static/map.js"></script>
-    <script src="/static/ui.js"></script>
+
 </body>
 </html>
