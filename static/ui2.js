@@ -581,7 +581,7 @@ socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 
 socket.on('char-info-detailed', msg => character_screen.update(msg))
-socket.on('stash-update', msg => {goods_market.update_inventory(msg)});
+socket.on('stash-update', msg => {console.log(msg); goods_market.update_inventory(msg); character_screen.update_stash(msg)});
 
 
 socket.on('log-message', msg => new_log_message(msg));
@@ -609,7 +609,7 @@ socket.on('market-data', data => goods_market.update_data(data));
 
 function update_tags(msg) {
     let market_div = document.querySelector('.goods_list') 
-
+    let inventory_div = document.getElementById('inventory_stash')
     for (var tag of msg) {
 
         {
@@ -657,6 +657,33 @@ function update_tags(msg) {
             })(tag)
 
             market_div.appendChild(div_cell)
+
+            div_cell = document.createElement('div');
+            div_cell.classList.add('goods_type');
+            div_cell.classList.add(tag);
+
+            {
+                let div_image = document.createElement('div');
+                div_image.classList.add('goods_icon');
+                div_image.style = "background: no-repeat center/100% url(/static/img/stash_" + tag + ".png);"
+                div_cell.appendChild(div_image)
+            }
+
+            {
+                let div_text = document.createElement('div');
+                div_text.innerHTML = tag;
+                div_text.classList.add('goods_name');
+                div_cell.appendChild(div_text);
+            }
+            
+            {
+                let div = document.createElement('div');
+                div.innerHTML = 'undefined';
+                div.classList.add('goods_amount_in_inventory');
+                div_cell.appendChild(div);
+            }
+
+            inventory_div.appendChild(div_cell)
         }
 
 

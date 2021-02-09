@@ -303,7 +303,7 @@ export class GoodsMarket {
         let tmp = this.check_tag_cost(this.selected_tag, this.buy_amount)
         this.socket.emit('buy', {tag: this.selected_tag,
                             amount: this.buy_amount - tmp[1],
-                            money: money,
+                            money: tmp[0],
                             max_price: 99999});
     }
 
@@ -318,9 +318,7 @@ export class GoodsMarket {
     }
 
     update_inventory(data) {
-        console.log(data);
         for (let tag in data) {
-            console.log(tag)
             let div = this.container.querySelector('.' + tag + ' > .goods_amount_in_inventory')
             if (div != null)  {
                 div.innerHTML = data[tag]

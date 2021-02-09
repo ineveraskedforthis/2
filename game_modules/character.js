@@ -453,8 +453,10 @@ module.exports = class Character {
                 if (dice < chance) {
                     this.stash.inc('food', +1);
                     this.change_stress(Math.floor(stress_gained / 2));
+                    res = 'ok'
                 } else {
                     this.change_stress(stress_gained);
+                    res = 'failed'
                 }     
                 this.changed = true;       
             } 

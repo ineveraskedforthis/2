@@ -435,6 +435,12 @@ module.exports = class SocketManager {
         }
     }
 
+    get_user_socket(user) {
+        if (user&&this.world.user_manager.users_online[user.login]) {
+            return user.socket;
+        }
+    }
+
     send_hp_update(character) {
         let user = this.world.user_manager.get_user_from_character(character);
         this.send_to_user(user, 'hp', {hp: character.hp, mhp: character.max_hp});
@@ -456,6 +462,14 @@ module.exports = class SocketManager {
 
     send_explored(character) {
         this.send_to_character_user(character, 'explore', character.data.explored)
+    }
+
+    send_updates_to_char(character) {
+        let user = this.world.user_manager.get_user_from_character(character);
+        let socket = this.get_user_socket(user)
+        if (socket != undefined) {
+            send_char_info(socket, user)
+        }
     }
 
     send_char_info(socket, user) {

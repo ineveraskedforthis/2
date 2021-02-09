@@ -159,6 +159,7 @@ module.exports = class EntityManager {
                     if (character != undefined) {
                         if (character.data.is_player) {
                             this.world.socket_manager.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
+                            this.world.socket_manager.send_char_info(character)
                         }
                     }
                 }

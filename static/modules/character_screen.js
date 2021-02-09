@@ -2,10 +2,6 @@
 const EQUIPMENT_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms'];
 
 
-for (let i of EQUIPMENT_TAGS) {
-    let tmp = document.getElementById('eq_' + i + '_image');
-    ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
-}
 
 
 function send_update_request(socket) {
@@ -85,6 +81,13 @@ export class CharacterScreen {
     constructor(socket) {
         this.data = {}
         this.socket = socket;
+
+        for (let i of EQUIPMENT_TAGS) {
+        let tmp = document.getElementById('eq_' + i + '_image');
+            ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
+        }
+
+
         this.stats_div = document.getElementById('stats');
         this.inventory_div = document.getElementById('inventory');
         this.equip_div = document.getElementById('equip')
@@ -230,11 +233,12 @@ export class CharacterScreen {
     }
 
     update_stash(data) {
-        // for (let i in data.stash.data) {
-        //     console.log(i + '_count')
-        //     let tmp = document.getElementById(i + '_count')
-        //     tmp.innerHTML = `${i}: ${data.stash.data[i]}`
-        // }
+        for (let tag in data) {
+            let div = this.inventory_stash_div.querySelector('.' + tag + ' > .goods_amount_in_inventory')
+            if (div != null)  {
+                div.innerHTML = data[tag]
+            }            
+        }
     }
 
     update_equip(data) {     
