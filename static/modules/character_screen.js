@@ -1,5 +1,5 @@
 
-const EQUIPMENT_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms'];
+export const EQUIPMENT_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms'];
 
 
 
@@ -196,8 +196,8 @@ export class CharacterScreen {
         console.log('character_screen_loaded')
     }
 
-    update_inventory(data) {
-        let inv = data.equip.backpack;
+    update_backpack(data) {
+        let inv = data.backpack;
         this.table.innerHTML = '';
         for (let i = 0; i < inv.length; i++) {
             if (inv[i] != null) {
@@ -241,10 +241,10 @@ export class CharacterScreen {
         }
     }
 
-    update_equip(data) {     
+    update_equip(data) {
         for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
             let tag = EQUIPMENT_TAGS[i]
-            let item = data.equip[tag]
+            let item = data[tag]
             let image = document.getElementById('eq_' + tag + '_image');
             image.style = get_item_image(item.tag)
             let tooltip = document.getElementById('eq_' + tag + '_tooltip')
@@ -263,13 +263,10 @@ export class CharacterScreen {
             }
             tooltip.appendChild(tmp)
         }
+        this.update_backpack(data)
     }
 
     update(data) {
-        console.log(data)
-        this.update_inventory(data);
-        this.update_equip(data);        
-
         this.misc.innerHTML = '';
         for (let i in data.stats) {
             let stats_line = document.createElement('p');

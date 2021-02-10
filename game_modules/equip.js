@@ -105,7 +105,6 @@ module.exports = class Equip {
             return true
         }
         let item = this.data[tag];
-        console.log(item)
         if ((item.tag == 'empty') || (item.tag == 'fist')) {
             return
         }

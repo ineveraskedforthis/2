@@ -468,15 +468,23 @@ module.exports = class SocketManager {
         let user = this.world.user_manager.get_user_from_character(character);
         let socket = this.get_user_socket(user)
         if (socket != undefined) {
-            send_char_info(socket, user)
+           this.send_char_info(socket, user)
         }
     }
 
     send_char_info(socket, user) {
         if (user != null) {
             let char = user.character
-            socket.emit('char-info-detailed', {equip: char.equip.data, stats: char.data.stats, resists: char.get_resists()});
+            socket.emit('char-info-detailed', {stats: char.data.stats, resists: char.get_resists()});
+            this.send_equip_update(socket, user)
             this.send_stash_update(socket, user)
+        }
+    }
+
+    send_equip_update(socket, user) {
+        if (user != null) {
+            let char = user.character
+            socket.emit('equip-update', char.equip.data)
         }
     }
     

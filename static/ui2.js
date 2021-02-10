@@ -7,7 +7,7 @@ import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';
 import {GoodsMarket} from './modules/market_table.js';
-import {CharacterScreen} from './modules/character_screen.js'
+import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
 
 var globals = {
     prev_mouse_x: null,
@@ -502,6 +502,19 @@ for (let i = 0; i<3; i++) {
 //CHARACTER CREATION STUFF ENDS
 
 
+//EQUIP DISPLAY
+
+function update_equip(data) {
+    for (let tag of EQUIPMENT_TAGS) {
+        let div = document.querySelector('.character_image.equip.' + tag);
+        let item_tag = data[tag].tag;
+        div.style = "background: no-repeat center/100% url(/static/img/" + item_tag + "_big.png);"
+    }
+}
+
+//EQUIP DISPLAY END
+
+
 
 //BATTLE STUFF
 document.getElementById('battle_action').onclick = () => {
@@ -581,8 +594,8 @@ socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 
 socket.on('char-info-detailed', msg => character_screen.update(msg))
-socket.on('stash-update', msg => {console.log(msg); goods_market.update_inventory(msg); character_screen.update_stash(msg)});
-
+socket.on('stash-update', msg => {goods_market.update_inventory(msg); character_screen.update_stash(msg)});
+socket.on('equip-update', msg => {character_screen.update_equip(msg); update_equip(msg)});
 
 socket.on('log-message', msg => new_log_message(msg));
 socket.on('new-message', msg => new_message(msg));

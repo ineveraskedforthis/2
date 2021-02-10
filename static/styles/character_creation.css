@@ -15,10 +15,10 @@
 
 .character_image {
     position: absolute;
-    width: 50%;
-    left: 0%;
+    width: 300px;
+    left: 20%;
     top: 30%;
-    height: 60%;
+    height: 525px;
     background-position: center;
     background-repeat: no-repeat;
     background-size:contain;

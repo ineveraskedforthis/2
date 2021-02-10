@@ -207,13 +207,6 @@ class BattleReworked {
                 var x = this.stash.get(tag);
                 await this.transfer(pool, leader, tag, x);
             }
-
-            for (let i = 0; i < this.units.length; i ++) {
-                let character = this.world.get_char_from_id(unit.id);
-                if ((character != undefined) && (character.hp == 0)) {
-                    
-                }
-            }
         }
         this.save_to_db(pool);
     }
