@@ -95,7 +95,7 @@ body {
 }
 
 #actual_game_scene {
-    background-image: url(/static/img/colony_background_main.png);
+    background-image: url(/static/img/bg_colony.png);
     background-position: center;
     background-repeat: no-repeat;
 }

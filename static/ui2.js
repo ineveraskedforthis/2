@@ -6,7 +6,7 @@ const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';
-import {GoodsMarket} from './modules/market_table.js';
+import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
 
 var globals = {
@@ -28,7 +28,34 @@ const character_screen = new CharacterScreen(socket);
 
 
 // market
-const goods_market = new GoodsMarket(document.querySelector('.goods_market'), socket)
+const goods_market = new GoodsMarket(document.querySelector('.goods_market'), socket);
+const item_market_table = new ItemMarketTable(document.querySelector('.auction_body'), socket);
+
+{
+    let market_button = document.getElementById('open_market')
+    let auction_button = document.getElementById('open_auction')
+
+    let market = document.querySelector('.goods_market');
+    let auction = document.querySelector('.auction_body');
+
+    market_button.onclick = () => {
+        market.classList.remove('hidden');
+        auction.classList.add('hidden');
+
+        auction_button.classList.remove('selected');
+        market_button.classList.add('selected');
+    }
+
+    auction_button.onclick = () => {
+        market.classList.add('hidden');
+        auction.classList.remove('hidden');
+
+        market_button.classList.remove('selected');
+        auction_button.classList.add('selected');
+    }
+
+}
+
 
 // market-end
 
@@ -186,8 +213,13 @@ function toogle_tab(tag) {
 }
 
 for (let tag of game_tabs) {
-    document.getElementById(tag + '_button').onclick = () => {
+    if (tag == 'battle') {
+        continue
+    }
+    let button = document.getElementById(tag + '_button');
+    button.onclick = () => {
         let res = toogle_tab(tag);
+        button.classList.toggle('active')
         console.log(tag, res)
         if ((tag == 'market') & (res == 'on')) {
             socket.emit('send-market-data', true)
@@ -517,31 +549,30 @@ function update_equip(data) {
 
 
 //BATTLE STUFF
+
 document.getElementById('battle_action').onclick = () => {
     let action = battle_image.get_action();
     if (action != undefined) {
         socket.emit('battle-action', action);
-    }    
+    }
 }
 
 document.getElementById('battle_use_skill').onclick = () => {
     let action = battle_image.get_action_spell();
     if (action != undefined) {
         socket.emit('battle-action', action);
-    } 
+    }
 }
-
-document.getElementById('attack').onclick = () => {
-    socket.emit('attack', null);
-}
-document.getElementById('attack_outpost').onclick = () => {
-    socket.emit('attack-outpost', null);
-}
-
 
 function start_battle(data) {
+    toogle_tab('battle')
     battle_image.clear()
     battle_image.load(data)
+}
+
+function end_battle() {
+    toogle_tab('battle')
+    battle_image.clear()
 }
 
 function battle_action(data) {
@@ -561,6 +592,8 @@ function battle_action(data) {
         new_log_message(data.actor_name + ': deals with magic bolt ' + data.result.total_damage + ' damage')
     } else if (data.action.startsWith('charge')) {
         new_log_message(data.actor_name + '   CHAAAAAAAAAARGE   ' + data.result.total_damage + ' damage')
+    } else if (data.action.startsWith('stop_battle')) {
+        end_battle()
     }
 }
 
@@ -575,6 +608,8 @@ function update_enemy(data) {
 }
 //BATTLE STUFF END
 
+
+// SOCKET ONS
 
 socket.on('tags', msg => update_tags(msg));
 socket.on('alert', msg => alert(msg));
@@ -602,13 +637,14 @@ socket.on('new-message', msg => new_message(msg));
 
 socket.on('map-pos', msg => {
     let location = map.set_curr_pos(msg.x, msg.y);
-    // battle_image.change_bg(location);
+    change_bg(location);
 });
 socket.on('explore', msg => {map.explore(msg)});
 
 socket.on('new-action', msg => {battle_image.add_action(msg)});
 
 socket.on('battle-has-started', data => start_battle(data))
+socket.on('battle-has-ended', data => end_battle(data))
 socket.on('battle-update', data => battle_image.update(data))
 socket.on('battle-action', data => battle_action(data))
 socket.on('enemy-update', data => update_enemy(data))
@@ -618,7 +654,7 @@ socket.on('skills', msg => update_skill_data(msg));
 socket.on('local-skills', msg => update_local_skills(msg))
 
 socket.on('market-data', data => goods_market.update_data(data));
-
+socket.on('item-market-data', data => {item_market_table.update(data)});
 
 function update_tags(msg) {
     let market_div = document.querySelector('.goods_list') 
@@ -702,6 +738,11 @@ function update_tags(msg) {
 
 
     }
+}
+
+function change_bg(tag) {
+    let div = document.getElementById('actual_game_scene');
+    div.style.backgroundImage = "url(/static/img/bg_" + tag + ".png)"
 }
 
 function my_alert(msg) {

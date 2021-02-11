@@ -150,7 +150,7 @@
                     <div id = "stress_column" class = "bar_column tooltip">
                         <span class="tooltiptext">stress value measures how much you want to die.<br>
                          it rises when you are fighting, crafting, etc. at 100 you will pass away.<br>
-                          be careful, there are actions that without corresponding skills will stress you to death even if you was okay initially</span>
+                          be careful, there are actions that without corresponding skills will stress you to death even if you were okay initially</span>
                         <div id = "stress_column_label" class = "bar_label">stress</div>
                         <div id = "stress_bar" class = "bar_vertical">
                             <div class = "bar"><span id="stress_value_display"></span></div>
@@ -201,7 +201,7 @@
             </div>
 
             <div id="tab_list_frame" class="game_frame">
-                <div id = "battle_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div>
+                <!-- <div id = "battle_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div> -->
                 <div id = "market_button", class = 'control_button tooltip'><span class="tooltiptext">Market</span></div>
                 <!-- <div id = "tactics_button", class = 'control_button tooltip'><span class="tooltiptext">Tactics</span></div> -->
                 <div id = "skilltree_button", class = 'control_button tooltip'><span class="tooltiptext">Skills</span></div>
@@ -215,7 +215,17 @@
                 </div>
                 <div id = 'description_column'> 
                     <div id='local_description'></div>
-                    <div id='map_control'></div>
+                    <div id='map_control'>
+                        <div id='move_button' class = 'button'>
+                            Move to selected
+                        </div>
+                        <div id='attack_button' class = 'button'>
+                            Hunt at local hex
+                        </div>
+                        <div id='search_button' class = 'button'>
+                            Search at local hex
+                        </div>
+                    </div>
                 </div> 
                 <div class="corner top"></div>
                 <div class="corner bottom"></div>
@@ -223,12 +233,7 @@
 
             <div id = 'battle_tab', class="game_tab hidden movable">
                 <div id = 'battle_control'>
-                    <div id='attack'>
-                        Hunt.
-                    </div>
-                    <div id='attack_outpost'>
-                        Search.
-                    </div>
+                    
                     <div id='battle_action'>
                         Battle action.
                     </div>
@@ -284,7 +289,7 @@
                         <div id="open_auction">Equipment</div>
                     </div>
                     <div class="market_body">
-                        <div class="goods_market">
+                        <div class="goods_market market_tab" >
                             <div class="goods_list">
                                 <div class="goods_type">
                                     <div class="goods_icon"></div>
@@ -336,7 +341,11 @@
 
                             </div>
                         </div>
-
+                    
+                        <div class="auction_body market_tab hidden">
+                            <div id="auction_house_tab">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="corner top"></div>

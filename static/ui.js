@@ -27,30 +27,13 @@ function show_tutorial() {
 
 
 
-socket.on('item-market-data', data => {
-    // console.log('item-market-data'); 
-    // console.log(data); 
-    item_market_table.update(data)
-});
+
 // socket.on('market-data', data => auction_house.update(data));
 // socket.on('market-data', data => console.log(data));
 
 socket.on('tags-tactic', msg => tactic_screen.update_tags(msg));
 socket.on('tactic', msg => tactic_screen.update(msg));
 
-
-
-
-
-function update_tags(msg) {
-    for (var tag of msg) {
-        var tag_option = new Option(tag, tag);
-        document.getElementById('buy_tag_select').add(tag_option);
-        tag_option = new Option(tag, tag);
-        document.getElementById('sell_tag_select').add(tag_option);
-        document.getElementById('inv_' + tag + '_image').style = "background: no-repeat center/100% url(/static/img/stash_" + tag + ".png);"
-    }
-}
 
 function my_alert(msg) {
     if (msg != 'ok') {
@@ -81,9 +64,6 @@ function reg(msg) {
 }
 
 
-var item_market_table = new ItemMarketTable(document.getElementById('auction_house_tab'))
-// var auction_house = new AuctionHouse(document.getElementById('auction_house_tab'));
-socket.emit('get-market-data', null);// eslint-disable-next-line no-undef
 
 // eslint-disable-next-line no-undef
 var tactic_screen = new TacticScreen(document.getElementById('tactic'), socket);

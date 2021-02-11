@@ -36,7 +36,7 @@
     padding: 2px;
 }
 
-#market > .market_body > .goods_market {
+#market > .market_body > .market_tab {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -191,4 +191,37 @@
     width: 50%;
     height: 100%;
     text-align: center;
+}
+
+
+
+
+#auction_tab_select{
+    position: relative;
+    width: 100%;
+    height: 38px;
+}
+.auction_tab_button{
+    text-align: center;
+    float: left;
+    width: 20%;
+    padding: 0.5em;
+    height: 1em;
+    border: #590000 3px solid;
+    color: white;
+    border-radius: 10px 10px 0px 0px;
+    user-select: none;
+}
+.auction_tab_button:hover{
+    background-color: rgba(78, 11, 11, 0.7);
+}
+.auction_tab{
+    border: #590000 3px solid;
+    color: white; 
+    position: absolute;
+    width: 795px;
+    height: 450px;
+}
+.auc_slot{
+    border: white 1px solid;
 }

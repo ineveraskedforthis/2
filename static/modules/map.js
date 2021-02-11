@@ -48,12 +48,12 @@ const LOCAL_IMAGES = {
 const DESCRIPTIONS = location_descriptions;
 
 const BACKGROUNDS = {
-    'colony': 'background',
-    'rat_plains': 'background',
-    'graci_plains': 'background',
-    'sea': 'background',
-    'forest_boundary': 'forest_background',
-    'unknown': 'background'
+    'colony': 'colony',
+    'rat_plains': 'red_steppe',
+    'graci_plains': 'red_steppe',
+    'sea': 'red_steppe',
+    'forest_boundary': 'forest',
+    'unknown': 'red_steppe'
 }
 
 export function init_map_control(map, globals) {
@@ -101,6 +101,8 @@ export function init_map_control(map, globals) {
     };
 }
 
+
+
 export class Map {
     constructor(canvas, container, socket) {
         this.canvas = canvas;
@@ -120,14 +122,28 @@ export class Map {
             'rest_of_the_world': true,
         }
 
-        this.button = document.createElement('button');
-        (() => 
-                this.button.onclick = () => this.send_move_request()
-        )(this.socket);
-        this.button.innerHTML = 'move';
-        this.container = container;
-        this.container.appendChild(this.button);
+        {
+            let button = document.getElementById('move_button');
+            (() => 
+                    button.onclick = () => this.send_move_request()
+            )(this.socket);
+        }
 
+        {
+            let button = document.getElementById('attack_button');
+            (() => 
+                    button.onclick = () => socket.emit('attack', null)
+            )(this.socket);
+        }
+
+        {
+            let button = document.getElementById('search_button');
+            (() => 
+                    button.onclick = () => socket.emit('attack-outpost', null)
+            )(this.socket);
+        }
+        
+        this.container = container;
         this.description = document.createElement('div');
         this.container.appendChild(this.description);
 

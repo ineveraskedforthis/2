@@ -1,4 +1,4 @@
-function send_buyout_request() {
+function send_buyout_request(socket) {
     let items = document.getElementsByName('market_item_list_radio');
     let index = undefined;
 
@@ -11,10 +11,11 @@ function send_buyout_request() {
     socket.emit('buyout', index);
 }
 
-class ItemMarketTable {
-    constructor(container) {
+export class ItemMarketTable {
+    constructor(container, socket) {
         this.data = [];
         this.container = container;
+        this.soclet = socket;
         this.table_container = document.createElement('div');
         let table = document.createElement('table');
         this.table_container.appendChild(table)
@@ -23,9 +24,9 @@ class ItemMarketTable {
         this.control_container = document.createElement('div');
         {
             let buyout_button = document.createElement('button');
-            (() => 
-                buyout_button.onclick = () => send_buyout_request()
-            )();
+            ((socket) => 
+                buyout_button.onclick = () => send_buyout_request(socket)
+            )(socket);
             buyout_button.innerHTML = 'buyout';
             this.control_container.appendChild(buyout_button);
         }

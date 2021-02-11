@@ -83,6 +83,7 @@ module.exports = class SocketManager {
             }
             await market.buyout(this.pool, character, id)
             this.send_item_market_update_to_character(character);
+            this.send_equip_update_to_character(character);
         }
     }
 
@@ -289,6 +290,7 @@ module.exports = class SocketManager {
             let char = user_data.current_user.character;
             await char.buy(this.pool, msg.tag, msg.amount, msg.money, msg.max_price);
             this.send_savings_update(char);
+            this.send_stash_update_to_character(char);
         }
     }
 
@@ -301,6 +303,7 @@ module.exports = class SocketManager {
             let char = user_data.current_user.character;
             await char.sell(this.pool, msg.tag, msg.amount, msg.price);
             this.send_savings_update(char);
+            this.send_stash_update_to_character(char);
         }
     }
 
@@ -469,6 +472,22 @@ module.exports = class SocketManager {
         let socket = this.get_user_socket(user)
         if (socket != undefined) {
            this.send_char_info(socket, user)
+        }
+    }
+
+    send_equip_update_to_character(character) {
+        let user = this.world.user_manager.get_user_from_character(character);
+        let socket = this.get_user_socket(user)
+        if (socket != undefined) {
+           this.send_equip_update(socket, user)
+        }
+    }
+
+    send_stash_update_to_character(character) {
+        let user = this.world.user_manager.get_user_from_character(character);
+        let socket = this.get_user_socket(user)
+        if (socket != undefined) {
+           this.send_stash_update(socket, user)
         }
     }
 

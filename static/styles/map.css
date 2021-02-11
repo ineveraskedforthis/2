@@ -16,13 +16,29 @@
 }
 
 #local_description{
-    height: 70%;
+    height: 200px;
     width: 100%;
     overflow: hidden;
 }
 
 #map_control{
-    height: 30%;
+    height: auto;
     width: 100%;
     overflow: auto;
+}
+
+#map_control > .button {
+    height: 30px;
+    width: 50%;
+    left: 5px;
+    background: rgba(105, 119, 52, 0.247);
+    border: rgb(168, 9, 9) solid 1px;
+}
+
+#map_control > .button:hover {
+    background: rgba(101, 102, 28, 0.507);
+}
+
+#map_control > .button:active {
+    background: rgba(178, 219, 28, 0.66);
 }
