@@ -149,13 +149,7 @@ body {
     height: 30%;
 }
 
-#tab_list_frame {
-    position: absolute;
-    top:0%;
-    right: 0%;
-    height: 5%;
-    width: 30%;
-}
+
 
 
 .game_tab {

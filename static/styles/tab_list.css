@@ -2,7 +2,7 @@
     position: absolute;
     top:0%;
     right: 0%;
-    height: 50%;
+    height: auto;
     width: 37px;
 }
 
@@ -74,4 +74,27 @@
 }
 #market_button.active {
     background-image: url(/static/img/auc_button_pressed.png);
+}
+
+
+
+#market_tab {
+    width: 790px;
+    height: 335px;
+    left: 270px;
+    top:10px;
+}
+
+#skilltree_tab {
+    left: 6px;
+    top: 51%;
+    height: 400px;
+    width: 420px;
+}
+
+#map_tab {
+    left: 440px;
+    top: 51%;
+    width: 700px;
+    height: 400px;
 }

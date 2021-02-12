@@ -1,4 +1,11 @@
 
+#market_tab {
+    width: 790px;
+    height: 335px;
+    left: 270px;
+    top:10px;
+}
+
 #market {
     height: 100%;
     width: 100%;
