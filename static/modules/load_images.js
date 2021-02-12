@@ -19,6 +19,8 @@ add_image_to_load('fog_rat_plains', 'fog_rat_plains')
 add_image_to_load('fog_rest_of_the_world', 'fog_rest_of_the_world')
 add_image_to_load('background', 'background')
 add_image_to_load('forest_background', 'forest_background')
+add_image_to_load('battle_bg_colony', 'battle_bg_colony');
+add_image_to_load('battle_bg_red_steppe', 'battle_bg_colony');
 add_image_to_load('tost_move_0000', 'tost_0000')
 add_image_to_load('tost_idle_0000', 'tost_0000')
 add_image_to_load('tost_attack_0000', 'tost_0000')

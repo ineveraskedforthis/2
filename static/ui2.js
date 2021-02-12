@@ -546,24 +546,6 @@ function update_equip(data) {
 
 //EQUIP DISPLAY END
 
-
-
-//BATTLE STUFF
-
-document.getElementById('battle_action').onclick = () => {
-    let action = battle_image.get_action();
-    if (action != undefined) {
-        socket.emit('battle-action', action);
-    }
-}
-
-document.getElementById('battle_use_skill').onclick = () => {
-    let action = battle_image.get_action_spell();
-    if (action != undefined) {
-        socket.emit('battle-action', action);
-    }
-}
-
 function start_battle(data) {
     toogle_tab('battle')
     battle_image.clear()
@@ -574,40 +556,6 @@ function end_battle() {
     toogle_tab('battle')
     battle_image.clear()
 }
-
-function battle_action(data) {
-    if (data == null) {
-        return
-    }
-    battle_image.update_action(data)
-    if (data.action == 'attack') {
-        if (data.result.crit) {
-            new_log_message(data.actor_name + ': critical_damage')
-        }
-        new_log_message(data.actor_name + ': deals ' + data.result.total_damage + ' damage')
-    } else if (data.action.startsWith('kinetic_bolt')) {
-        if (data.result.crit) {
-            new_log_message(data.actor_name + ': critical_damage')
-        }
-        new_log_message(data.actor_name + ': deals with magic bolt ' + data.result.total_damage + ' damage')
-    } else if (data.action.startsWith('charge')) {
-        new_log_message(data.actor_name + '   CHAAAAAAAAAARGE   ' + data.result.total_damage + ' damage')
-    } else if (data.action.startsWith('stop_battle')) {
-        end_battle()
-    }
-}
-
-function update_enemy(data) {
-    let div = document.getElementById('enemy_status');
-    div.innerHTML = ''
-    for (let i of data) {
-        let label = document.createElement('p');
-        label.innerHTML = i.name + ' | | ' + i.hp + ' hp' 
-        div.appendChild(label)
-    }
-}
-//BATTLE STUFF END
-
 
 // SOCKET ONS
 
@@ -641,13 +589,17 @@ socket.on('map-pos', msg => {
 });
 socket.on('explore', msg => {map.explore(msg)});
 
-socket.on('new-action', msg => {battle_image.add_action(msg)});
+socket.on('new-action', msg => battle_image.add_action({name: msg, tag:msg}));
 
 socket.on('battle-has-started', data => start_battle(data))
 socket.on('battle-has-ended', data => end_battle(data))
 socket.on('battle-update', data => battle_image.update(data))
-socket.on('battle-action', data => battle_action(data))
-socket.on('enemy-update', data => update_enemy(data))
+socket.on('battle-action', data => {
+    let res = battle_image.battle_action(data);
+    new_log_message(res)
+    if (res == 'battle has ended') end_battle();
+})
+socket.on('enemy-update', data => battle_image.update_enemy(data))
 
 socket.on('skill-tree', data => load_skills(data));
 socket.on('skills', msg => update_skill_data(msg));

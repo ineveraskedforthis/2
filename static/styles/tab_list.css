@@ -98,3 +98,10 @@
     width: 700px;
     height: 400px;
 }
+
+#battle_tab {
+    left: 202px;
+    top: 10%;
+    width: 80%;
+    height: 80%;
+}

@@ -3,6 +3,7 @@ import {draw_image, get_pos_in_canvas} from './common.js'
 let BATTLE_SCALE = 50
 
 export function init_battle_control(battle_image, globals) {
+    let socket = globals.socket;
     battle_image.canvas.onmousedown = event => {
         event.preventDefault();
         globals.bcp = true
@@ -20,6 +21,12 @@ export function init_battle_control(battle_image, globals) {
             globals.bcp = false;
         }
     }
+
+    battle_image.socket = globals.socket;
+
+    battle_image.add_action({name: 'move', tag: 'move'})
+    battle_image.add_action({name: 'attack', tag: 'attack'})
+    battle_image.add_action({name: 'flee', tag: 'flee'})
 }
 
 class AnimatedImage {
@@ -115,12 +122,14 @@ export class BattleImage {
     constructor(canvas, canvas_background) {
         this.canvas = canvas;
         this.canvas_background = canvas_background;
-        this.background = "base_background_2";
+        this.background = "colony";
         this.init()
         this.w = 800;
-        this.h = 500;
+        this.h = 400;
         this.background_flag = false;
         this.movement_speed = 0.3;
+        this.scale = 1;
+        this.container = document.getElementById('battle_tab')
     }
 
     init() {
@@ -152,7 +161,7 @@ export class BattleImage {
         this.background = bg;
         console.log('draw_background')
         let ctx = this.canvas_background.getContext('2d');
-        // draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
+        draw_image(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
         this.background_flag = true;
     }
 
@@ -189,9 +198,8 @@ export class BattleImage {
     draw(images, delta) {
 
         if (!this.background_flag){
-            console.log('draw_background')
             let ctx = this.canvas_background.getContext('2d');
-            // draw_image(ctx, images[this.background], 0, 0, this.w, this.h);
+            draw_image(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
             this.background_flag = true;
         }  
 
@@ -213,10 +221,8 @@ export class BattleImage {
                 console.log('move', action.who)
                 who = action.who;
                 this.images[who].set_action(action.action)
-                console.log(this.prev_positions[who])
                 this.new_positions[who].x = this.prev_positions[who].x + action.target.x;
                 this.new_positions[who].y = this.prev_positions[who].y + action.target.y;
-                console.log(this.new_positions[who])
             }
             else if (action.action == 'charge') {
                 who = action.who;
@@ -406,27 +412,63 @@ export class BattleImage {
         }
     }
 
-    get_action() {
-        if (this.anchor != undefined) {
-            return {action: 'move', target: this.get_anchor_coords()}
-        }
-        if (this.selected != undefined) {
-            return {action: 'attack', target: this.selected};
-        }
-        return undefined;
-    }
-
-    get_action_spell() {
-        let tag = document.getElementById('battle_select_skill').value;
-        if ((tag == 'spell:charge') || (tag == 'spell:kinetic_bolt')) {
+    send_action(tag) {        
+        console.log(tag)
+        if (tag.startsWith('spell')) {
             if (this.selected != undefined) {
-                return {action: tag, target: this.selected};
+                this.socket.emit('battle-action', {action: tag, target: this.selected})
             }
+        } else if (tag == 'move') {
+            if (this.anchor != undefined) {
+                this.socket.emit('battle-action', {action: 'move', target: this.get_anchor_coords()})
+            }
+        } else if (tag == 'attack') {
+            if (this.selected != undefined) {
+                this.socket.emit('battle-action', {action: 'attack', target: this.selected})
+            }
+        } else if (tag == 'flee') {
+            this.socket.emit('battle-action', {action: 'flee'})
         }
     }
 
-    add_action(data) {
-        let tag_option = new Option(data, data);
-        document.getElementById('battle_select_skill').add(tag_option);
+    add_action(action_type) {
+        let action_div = document.createElement('div');
+        action_div.classList.add('battle_action');
+        action_div.innerHTML = action_type.name;
+        action_div.onclick = () => this.send_action(action_type.tag)
+        let div = this.container.querySelector('.battle_control');
+        div.appendChild(action_div)
+    }
+
+    update_enemy(data) {
+        let div = document.getElementById('enemy_status');
+        div.innerHTML = ''
+        for (let i of data) {
+            let label = document.createElement('p');
+            label.innerHTML = i.name + ' | | ' + i.hp + ' hp' 
+            div.appendChild(label)
+        }
+    }
+
+    battle_action(data) {
+        if (data == null) {
+            return ''
+        }
+        this.update_action(data)
+        if (data.action == 'attack') {
+            if (data.result.crit) {
+                return data.actor_name + ': critical_damage';
+            }
+            return data.actor_name + ': deals ' + data.result.total_damage + ' damage';
+        } else if (data.action.startsWith('kinetic_bolt')) {
+            if (data.result.crit) {
+                return data.actor_name + ': critical_damage'
+            }
+            return data.actor_name + ': deals with magic bolt ' + data.result.total_damage + ' damage'
+        } else if (data.action.startsWith('charge')) {
+            return data.actor_name + '   CHAAAAAAAAAARGE   ' + data.result.total_damage + ' damage'
+        } else if (data.action.startsWith('stop_battle')) {
+            return 'battle has ended'
+        }
     }
 }

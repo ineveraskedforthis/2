@@ -266,7 +266,9 @@ module.exports = class SocketManager {
         if (user_data.current_user != null && !user_data.current_user.character.data.in_battle) {
             let char = user_data.current_user.character;
             let battle = await char.attack_local_outpost(this.pool);
-            socket.emit('battle-has-started', battle.get_data())
+            if (battle != undefined) {
+                socket.emit('battle-has-started', battle.get_data())
+            }
         }
     }
 

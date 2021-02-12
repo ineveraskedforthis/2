@@ -301,6 +301,9 @@ class BattleReworked {
             if (action.action == 'attack') {
                 this.queued_action[index] = BattleAI.convert_attack_to_action(this, index, action.target);
             }
+            if (action.action == 'flee') {
+                this.queued_action[index] = {action: 'flee'}
+            }
             if (action.action.startsWith('spell')) {
                 this.queued_action[index] = {action: action.action, target: action.target}
             }

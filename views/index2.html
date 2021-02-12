@@ -18,6 +18,7 @@
     <link rel="stylesheet" type="text/css" href="static/styles/skills.css">
     <link rel="stylesheet" type="text/css" href="static/styles/market.css">
     <link rel="stylesheet" type="text/css" href="static/styles/char_screen.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/battle.css">
 </head>
 <body>
 
@@ -234,25 +235,22 @@
             </div>
 
             <div id = 'battle_tab', class="game_tab hidden movable">
-                <div id = 'battle_control'>
-                    
-                    <div id='battle_action'>
-                        Battle action.
-                    </div>
 
-                    <div id='battle_use_skill'>
-                        Use skill.
-                    </div>
-
-                    <select id='battle_select_skill'>
-                    </select>
+                <div class = 'battle_display'>
+                    <canvas id='battle_canvas' width=600 height=400, class="_battle_canvas"></canvas>
+                    <canvas id='battle_canvas_background' width=600 height=400, class="_battle_canvas"></canvas>
                 </div>
+
+                <div class = 'battle_control'>                    
+                </div>                
+                
+                <div class="enemy_list">
+                    <div id='enemy_status'>
+
+                    </div>
+                </div>             
                 
 
-                <div id='enemy_status'>
-                </div>
-                <canvas id='battle_canvas' width=600 height=500, class="_battle_canvas"></canvas>
-                <canvas id='battle_canvas_background' width=600 height=500, class="_battle_canvas"></canvas>
                 <div class="corner top"></div>
                 <div class="corner bottom"></div>
             </div>
