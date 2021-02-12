@@ -1,9 +1,12 @@
 /* STATUS FRAME CSS */
 
+
 #status_frame{
     color: rgb(13, 228, 77);  
     display: flex;
     flex-direction: column;
+    height: auto;
+    width: 200px;
 }
 
 div#status_frame>div{
@@ -12,29 +15,29 @@ div#status_frame>div{
     width: 95%;
 }
 
-#status_label{
-    height: 5%;
-    padding-left: 1%;
-}
-
-
 #name_row{
-    height: 15%;
-    display: flex; 
-    flex-direction: column;
+    height: 20px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
 }
 
 #name_row>div{
-    width: 100%;
     margin: 0 auto;
-    text-align: center; 
 }
+
+#name{
+    text-align: left;
+}
+
 #level_data{
     display: inline;
+    right: 0%;
+    text-align: right;
 }
 
 #bars_row{
-    height: 50%;
+    height: 100px;
     display: flex;
     flex-direction: row;
 }
@@ -68,21 +71,29 @@ div#bars_row>div{
     width: 25%;
 }
 
+
 #skill_points{
-    height: 5%;
+    height: 20px;
     padding-left: 1%;
 }
 
+
+
 #exp_row {
-    height: 15%;
+    height: 20px;
     width: 97%;
     padding-left: 1%;
     display: flexbox;
-    flex-direction: column;
+    flex-direction: row;
 }
 
+#exp_bar {
+    margin-top: 2%;
+}
+
+
 #savings {
-    height: 10%;
+    height: 20px;
     padding-left: 1%;
 }
 

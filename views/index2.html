@@ -114,6 +114,20 @@
                     <div id = "level" class = "tooltip"> lvl: <div id = "level_data"></div><span class="tooltiptext">with levels you gain additional skillpoints that you can spend on acquiring new skills</span></div>
                 </div>
 
+                <div id = "exp_row" class="tooltip">
+                    <span class="tooltiptext">progress on gaining new level</span>
+                    <div id="exp_label">exp: </div>
+                    <div id="exp_bar" class = "hbar"><span id="exp_value_display"></span></div>
+                    <div>
+                        <div id="exp_current" style="display: inline"></div>/<div id="exp_required" style="display: inline"></div>
+                    </div>                    
+                </div>
+
+                <div id = "skill_points" class="tooltip">
+                    <span class="tooltiptext">spend them on developing skills</span>
+                    skill points: <div id="skill_points_data"></div>
+                </div>
+
                 <div id = "bars_row">
                     <div id = "hp_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
@@ -159,19 +173,9 @@
                     </div>
                 </div>
 
-                <div id = "skill_points" class="tooltip">
-                    <span class="tooltiptext">spend them on developing skills</span>
-                    available skill points: <div id="skill_points_data"></div>
-                </div>
+                
 
-                <div id = "exp_row" class="tooltip">
-                    <span class="tooltiptext">progress on gaining new level</span>
-                    <div id="exp_label">exp: </div>
-                    <div id="exp_bar" class = "hbar"><span id="exp_value_display"></span></div>
-                    <div>
-                        <div id="exp_current" style="display: inline"></div>/<div id="exp_required" style="display: inline"></div>
-                    </div>                    
-                </div>
+                
 
                 <div id = "savings" class="tooltip">
                     <span class="tooltiptext">used for interaction with market and item market</span>

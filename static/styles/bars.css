@@ -1,7 +1,7 @@
 /* progress bar orgy */
 
 .bar { 
-    width: 50%;
+    width: 70%;
 	position: relative;
 	background: rgb(139, 70, 70);
     margin: 0 auto;
@@ -48,11 +48,12 @@
 }
 
 .bar_label{
-    height: 10%;
+    visibility: hidden;
+    height: 0%;
 }
 
 .bar_vertical{
-    height: 75%;
+    height: 100%;
     display: flexbox;
 }
 
@@ -61,7 +62,12 @@
 }
 
 .bar_data{
-    height: 15%;
+    position: absolute;
+    top: 40%;
+    height: 10%;
+    text-align: center;
+    width: 100%;
+    color: black;
 }
 
 /* VERTICAL BAR END */
