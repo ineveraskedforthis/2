@@ -128,7 +128,6 @@ module.exports = class SocketManager {
             let tmp = messages.rows[i];
             socket.emit('new-message', {id: tmp.id, msg: tmp.message, user: tmp.sender})
         }
-        console.log('data sent to user');
     }
 
     async login_with_session(socket, user_data, session) {
@@ -175,7 +174,6 @@ module.exports = class SocketManager {
             let session = this.generate_session(20);
             socket.emit('session', session);
             this.sessions[session] = user_data;
-            console.log('user ' + data.login + ' logged in')
         }
     }
 
@@ -376,7 +374,6 @@ module.exports = class SocketManager {
 
     async set_tactic(user_data, msg) {
         if (user_data.current_user != null) {
-            // console.log(msg)
             let char = user_data.current_user.character;
             await char.set_tactic(this.pool, msg);
             this.send_tactics_info(char);
@@ -543,7 +540,6 @@ module.exports = class SocketManager {
 
     send_item_market_update(market) {
         let data = market.get_orders_list()
-        console.log('update_market_info')
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
@@ -640,8 +636,8 @@ module.exports = class SocketManager {
     }
 
     async load_message_to_database(message) {
-        await common.send_query(this.pool, constants.new_message_query, [message.id, message.msg, message.user]);
-        await common.send_query(this.pool, constants.clear_old_messages_query, [message.id - 50]);
+        let res = await common.send_query(this.pool, constants.new_message_query, [message.msg, message.user]);
+        await common.send_query(this.pool, constants.clear_old_messages_query, [res.rows[0].id - 50]);
     }
 
     async load_messages_from_database() {

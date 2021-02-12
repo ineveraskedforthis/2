@@ -39,7 +39,6 @@ module.exports = class UserManager{
         var f = await bcrypt.compare(data.password, password_hash);
         if (f) {
             var user = await this.load_user_to_memory(pool, user_data);
-            console.log(user.login, 'logged in');
             return({login_promt: 'ok', user: user});
         }
         return {login_promt: 'wrong-password', user: undefined};
@@ -47,6 +46,7 @@ module.exports = class UserManager{
 
     new_user_online(login) {
         this.users_online[login] = true;
+        console.log(login, ' logged in');
         var socket_manager = this.world.socket_manager;
         socket_manager.update_user_list();
     }
