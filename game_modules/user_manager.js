@@ -39,6 +39,7 @@ module.exports = class UserManager{
         var f = await bcrypt.compare(data.password, password_hash);
         if (f) {
             var user = await this.load_user_to_memory(pool, user_data);
+            console.log(user.login, 'logged in');
             return({login_promt: 'ok', user: user});
         }
         return {login_promt: 'wrong-password', user: undefined};

@@ -131,43 +131,41 @@
                 <div id = "bars_row">
                     <div id = "hp_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
-                            hp determine how bad your physical conditions are.<br>
-                            at 0 you are dead and will be given a new character
+                            hp - your physical condition.<br>
+                            at 0 you are <i class="red">dead</i>
                         </span>
-                        <div id = "hp_column_label" class = "bar_label">hp</div>
-                        <div id = "hp_bar" class = "bar_vertical">
-                            <div class = "bar"><span id="hp_value_display"></span></div>
+                        <div id = "hp_bar" class = "hbar">
+                            <span id="hp_value_display"></span>
                         </div>
                         <div id = "hp_data" class = "bar_data"></div>
                     </div>
                     <div id = "rage_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
-                        when you are figthing with enemy in melee your level of rage is rising and it lowers your accuracy.<br>
-                        you can mitigate effects of rage or even make it useful via acquiring skills
+                        rage: rises when figthing with enemy in melee<br>
+                        <i class="red">lowers</i> your accuracy.
                         </span>
-                        <div id = "rage_column_label" class = "bar_label">rage</div>
-                        <div id = "rage_bar" class = "bar_vertical">
-                            <div class = "bar"><span id="rage_value_display"></span></div>
+                        <div id = "rage_bar" class = "hbar">
+                            <span id="rage_value_display"></span>
                         </div>
                         <div id = "rage_data" class = "bar_data"></div>
                     </div>
                     <div id = "blood_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
-                        blood is a measure of how much of your body is covered by blood.<br>
-                        usually it just harms your movement and accuracy but some skills can make you wish to cover yourself in it completely</span>
-                        <div id = "blood_column_label" class = "bar_label">blood</div>
-                        <div id = "blood_bar" class = "bar_vertical">
-                            <div class = "bar"><span id="blood_value_display"></span></div>
+                        blood: how much of your body is covered by blood.<br>
+                        <i class="red">harms</i> your movement and accuracy
+                        </span>
+                        <div id = "blood_bar" class = "hbar">
+                            <span id="blood_value_display"></span>
                         </div>
                         <div id = "blood_data" class = "bar_data"></div>
                     </div>
                     <div id = "stress_column" class = "bar_column tooltip">
-                        <span class="tooltiptext">stress value measures how much you want to die.<br>
-                         it rises when you are fighting, crafting, etc. at 100 you will pass away.<br>
-                          be careful, there are actions that without corresponding skills will stress you to death even if you were okay initially</span>
-                        <div id = "stress_column_label" class = "bar_label">stress</div>
-                        <div id = "stress_bar" class = "bar_vertical">
-                            <div class = "bar"><span id="stress_value_display"></span></div>
+                        <span class="tooltiptext">
+                        stress: how much you want to die.<br>
+                        <i class="red">rises</i> when you are fighting, crafting, etc. at 100 you will <i class="red">die</i>.
+                        </span>
+                        <div id = "stress_bar" class = "hbar">
+                            <span id="stress_value_display"></span>
                         </div>
                         <div id = "stress_data" class = "bar_data"></div>
                     </div>

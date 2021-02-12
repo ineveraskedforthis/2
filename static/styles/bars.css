@@ -1,7 +1,8 @@
 /* progress bar orgy */
 
 .bar { 
-    width: 70%;
+    width: 90%;
+    height: 100%;
 	position: relative;
 	background: rgb(139, 70, 70);
     margin: 0 auto;
@@ -41,15 +42,13 @@
 .bar_column{
     display: flex; 
     flex-direction: column;
+    width: 100%;
+    height: 30px;
+    border: rgb(0, 0, 0) solid 2px;
 }
 
 .bar_column>div{
-    text-align: center;
-}
-
-.bar_label{
-    visibility: hidden;
-    height: 0%;
+    text-align: right;
 }
 
 .bar_vertical{
@@ -63,11 +62,11 @@
 
 .bar_data{
     position: absolute;
-    top: 40%;
-    height: 10%;
-    text-align: center;
-    width: 100%;
+    height: 100%;
+    text-align: right;
+    width: 95%;
     color: black;
+    margin-right: 3px;
 }
 
 /* VERTICAL BAR END */

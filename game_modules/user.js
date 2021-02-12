@@ -30,7 +30,6 @@ module.exports = class User {
         this.character.add_explored(1);
         await this.save_to_db(pool);
         if (this.socket != undefined) {
-            // 
             this.world.socket_manager.send_all(this.character)
         }
         return this.char_id

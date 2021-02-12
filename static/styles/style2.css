@@ -135,11 +135,7 @@ body {
 }
 
 
-#status_frame {
-    position: absolute;
-    height: 50%;
-    width: 15%;
-}
+
 
 #messages_frame {
     position: absolute;
@@ -150,6 +146,9 @@ body {
 }
 
 
+.red {
+    color: crimson;
+}
 
 
 .game_tab {

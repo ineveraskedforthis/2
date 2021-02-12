@@ -32,7 +32,7 @@ export class CharInfoMonster {
 
     update_hp(data) {
         this.hp.innerHTML = `${data.hp}/${data.mhp}`
-        this.hp_display.style.height = `${Math.floor(data.hp/data.mhp * 100)}%`;
+        this.hp_display.style.width = `${Math.floor(data.hp/data.mhp * 100)}%`;
     }
 
     update_exp(data) {
@@ -51,12 +51,12 @@ export class CharInfoMonster {
 
     update_status(data) {
         this.rage.innerHTML = data.rage;
-        this.rage_display.style.height = `${Math.floor(data.rage)}%`;
+        this.rage_display.style.width = `${Math.floor(data.rage)}%`;
 
         this.blood.innerHTML = data.blood_covering;
-        this.blood_display.style.height = `${Math.floor(data.blood_covering)}%`;
+        this.blood_display.style.width = `${Math.floor(data.blood_covering)}%`;
 
         this.stress.innerHTML = data.stress;
-        this.stress_display.style.height = `${Math.floor(data.stress)}%`;
+        this.stress_display.style.width = `${Math.floor(data.stress)}%`;
     }
 }
