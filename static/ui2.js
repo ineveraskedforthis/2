@@ -20,7 +20,7 @@ var globals = {
 }
 
 const char_info_monster = new CharInfoMonster();
-const map = new Map(document.getElementById('map'), document.getElementById('map_control'), socket);
+const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket);
 init_map_control(map, globals);
 const battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 init_battle_control(battle_image, globals);
@@ -561,6 +561,8 @@ function end_battle() {
 
 socket.on('tags', msg => update_tags(msg));
 socket.on('alert', msg => alert(msg));
+
+socket.on('sections', msg => map.load_sections(msg));
 
 socket.on('is-reg-valid', msg => my_alert(msg));
 socket.on('is-reg-completed', msg => reg(msg));

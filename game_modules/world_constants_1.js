@@ -20,6 +20,22 @@
                        '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10']
     },
 
+    sections: {
+        hexes:{
+            'mages_quarter': ['1_6', '1_5', '2_6', '2_7', '3_7', '3_8'],
+            'port': ['0_3', '0_4', '1_3'],
+            'living_area': ['1_4', '2_5', '3_6', '3_5', '2_4', '3_4'],
+        },
+        territories:{
+            'colony': ['mages_quarter', 'port', 'living_area']
+        },
+        colors:{
+            'mages_quarter': [0, 127, 0],
+            'port': [0, 0, 127],
+            'living_area': [127, 127, 0],
+        }
+    },
+
     enemies: {
         'colony': 'rat',
         'rat_plains': 'rat'
@@ -167,6 +183,8 @@
         cook: ['cook'],
         mage_craft: ['disenchanting', 'enchanting',],
     },
+
+
 }
 
 function add_skill(tag, max_level, req_level = 0, req_skills = [], action = undefined, r_t = true) {

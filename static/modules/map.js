@@ -2,7 +2,7 @@
 /*global images, battle_image*/
 
 import {get_pos_in_canvas} from './common.js';
-import {location_descriptions} from './localisation.js';
+import {location_descriptions, section_descriptions} from './localisation.js';
 
 
 const territories = {
@@ -27,7 +27,7 @@ const terr_id = {
     2: 'rat_plains'
 }
 
-function get_tag(x, y) {
+function get_territory_tag(x, y) {
     let tmp = x + '_' + y;
     for (let i in territories) {
         if (territories[i].indexOf(tmp) > -1) {
@@ -113,6 +113,9 @@ export class Map {
         this.hovered = null;
         this.selected = [0, 0];
         this.curr_pos = [0, 0];
+        this.curr_territory = undefined;
+        this.curr_section = undefined;
+        this.sections = undefined;
         this.x = 10;
         this.y = 10;
 
@@ -181,17 +184,42 @@ export class Map {
         for (var i = 0; i < 100; i++) {
             for (var j = 0; j < 100; j++) {
                 if (this.hovered != null && this.hovered[0] == i && this.hovered[1] == j) {
-                    this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.3)');
+                    this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.6)');
                 } else if (this.curr_pos[0] == i && this.curr_pos[1] == j) {
-                    this.draw_hex(i, j, 'fill', '(0, 0, 255, 0.3)');
+                    this.draw_hex(i, j, 'fill', '(0, 0, 255, 0.6)');
                 } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
-                    this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.3)');
+                    this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.6)');
+                } else {
+                    if ((get_territory_tag(i, j) == this.curr_territory) & (this.curr_territory != undefined) & (this.sections != undefined)) {
+                        let color = this.get_section_color(this.get_section(i, j))
+                        if (color != undefined) {
+                            this.draw_hex(i, j, 'fill', color);
+                        }
+                    }
                 }
                 //  else {
                 //     this.draw_hex(i, j, 'stroke', '(0, 0, 0, 1)');
                 // }
             }
         }
+    }
+
+    get_section(x, y) {
+        let tmp = x + '_' + y;
+        for (let i in this.sections.hexes) {
+            if (this.sections.hexes[i].indexOf(tmp) > -1) {
+                return i
+            }
+        } 
+        return 'unknown'
+    }
+
+    get_section_color(tag) {
+        if (tag in this.sections.colors) {
+            let color = this.sections.colors[tag];
+            return '(' + color[0] + ', ' + color[1] + ', ' + color[2] + `, 0.3)`
+        }
+        return undefined;
     }
 
     draw_hex(i, j, mode, color) {
@@ -253,17 +281,25 @@ export class Map {
 
     select_hex(i, j) {
         this.selected = [i, j];
-        let tag = get_tag(i, j);
+        let tag = get_territory_tag(i, j);
         if (this.fog_of_war[tag] == true) {
             tag = 'unknown'
         }
-        this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag];
+        let section_tag = this.get_section(i, j)
+        this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag] + '<br>' + section_descriptions[section_tag];
     }
 
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
-        let tag = get_tag(i, j);
-        this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'        
-        return BACKGROUNDS[tag];
+        this.curr_territory = get_territory_tag(i, j);
+        console.log(this.curr_territory)
+        console.log(i, j)
+        this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[this.curr_territory] +  '" width="300">'        
+        return BACKGROUNDS[this.curr_territory];
+    }
+
+    load_sections(data) {
+        console.log(data);
+        this.sections = data;
     }
 }

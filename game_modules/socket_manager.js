@@ -123,6 +123,8 @@ module.exports = class SocketManager {
         socket.emit('tags', this.world.constants.TAGS);
         socket.emit('skill-tree', this.world.constants.SKILLS);
         socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee']})
+        
+        socket.emit('sections', this.world.constants.sections);
         var messages = await this.load_messages_from_database()
         for (let i = 0; i < messages.rows.length; i++) {
             let tmp = messages.rows[i];
