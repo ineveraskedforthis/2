@@ -22,7 +22,6 @@ if (stage == 'dev') {
     pool = new Pool({database: dbname});
 } else{
     console.log('remote')
-
     pool = new Pool({
         user: process.env.DATABASE_USER,
         connectionString: process.env.DATABASE_URL,
