@@ -23,7 +23,6 @@ if (stage == 'dev') {
 } else{
     console.log('remote')
     pool = new Pool({
-        user: process.env.DATABASE_USER,
         connectionString: process.env.DATABASE_URL,
         ssl: {rejectUnauthorized: false}
     });
