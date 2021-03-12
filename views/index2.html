@@ -19,6 +19,7 @@
     <link rel="stylesheet" type="text/css" href="static/styles/market.css">
     <link rel="stylesheet" type="text/css" href="static/styles/char_screen.css">
     <link rel="stylesheet" type="text/css" href="static/styles/battle.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/quests.css">
 </head>
 <body>
 
@@ -210,6 +211,7 @@
                 <div id = "skilltree_button", class = 'control_button tooltip'><span class="tooltiptext">Skills</span></div>
                 <div id = "map_button", class = 'control_button tooltip'><span class="tooltiptext">Map</span></div>
                 <div id = "character_button", class = 'control_button tooltip'><span class="tooltiptext">Character screen</span></div>
+                <div id = "quest_button", class = 'control_button tooltip'><span class="tooltiptext">Quests screen</span></div>
             </div>
 
             <div id = 'map_tab', class = "game_tab hidden movable">
@@ -404,6 +406,22 @@
                         <div id = 'character_screen_actions', class = 'character_screen_frame'></div>
                     </div>                    
                 </div>
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
+            </div>
+
+            <div id="quest_tab" class="game_tab hidden movable">
+
+                <div class="quest_givers">
+                </div>
+
+                <div class="quest_screen">
+                    <div class="quest_list">
+                    </div>
+                    <div class="quest_portrait">
+                    </div>
+                </div>
+
                 <div class="corner top"></div>
                 <div class="corner bottom"></div>
             </div>

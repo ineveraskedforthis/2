@@ -1,0 +1,124 @@
+/* #quest_tab > div {
+    border: white 1px solid;
+} */
+
+#quest_tab > .quest_givers {
+    position: absolute;
+    left: 0%;
+    height: 100%;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+}
+
+#quest_tab > .quest_screen {
+    position: absolute;
+    left: 30%;
+    height: 100%;
+    width: 70%;
+}
+
+
+#quest_tab > .quest_screen > .quest_list {
+    position: absolute;
+    left: 5.5%;
+    height: 95%;
+    width: 73%;
+    overflow: auto;
+    top: 5%;
+    display: flex;
+    flex-direction: column;
+}
+
+#quest_tab > .quest_screen > .quest_portrait {
+    position: absolute;
+    right: 1%;
+    top: 1%;
+    width: 30%;
+    height: 40%;
+    background-image: url(/static/img/portrait_unknown_quest_giver.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#quest_tab > .quest_givers > div {
+    border: white 1px solid;
+    height: 5%;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    background-color: rgba(68, 16, 16, 0.856);
+    padding: 5%;
+}
+
+#quest_tab > .quest_givers > div:hover {
+    background-color: rgba(140, 167, 24, 0.493);
+} 
+
+#quest_tab > .quest_givers > div.selected {
+    /* background-color: rgba(221, 224, 5, 0.726); */
+    border-right: 0px;
+    background-color: rgba(221, 224, 5, 0);
+} 
+
+#quest_tab > .quest_givers > div > .portrait {
+    height: 100%;
+    width: 20%;
+    background-image: url(/static/img/portrait_unknown_quest_giver.png);
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+#quest_tab > .quest_givers > div > .name {
+    height: 50%;
+    width: 90%;
+    text-align: right;
+}
+
+#quest_tab > .quest_screen > .quest_list > div {
+    border: white 1px solid;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    padding: 1%;
+    margin: 2%;
+    background-color: rgba(90, 21, 21, 0.767);
+}
+
+
+
+#quest_tab > .quest_screen > .quest_list > div > .d_expand > .button {
+    background-color: rgba(75, 80, 11, 0.253);
+    border: white 1px solid;
+    width: fit-content;
+    padding: 5px;
+    margin-left: 40%;
+    z-index: 555;
+}
+
+#quest_tab > .quest_screen > .quest_list > div > .d_expand > .button:hover {
+    background-color: rgba(84, 156, 36, 0.425);
+}
+
+#quest_tab > .quest_screen > .quest_list > div > .d_expand > .button:active {
+    background-color: rgba(76, 160, 101, 0.767);
+}
+
+#quest_tab > .quest_screen > .quest_list > div > .d_short {
+    text-align: center;
+    margin-bottom: 4px;
+} 
+
+#quest_tab > .quest_screen > .quest_list > div > .d_short:hover {
+    background-color: rgba(141, 167, 24, 0.164);
+} 
+
+#quest_tab > .quest_screen > .quest_list > div > .d_short.selected {
+    background-color: rgba(221, 224, 5, 0.726);
+} 
+
+#quest_tab > .quest_screen > .quest_list > div > .d_expand.hidden {
+    visibility: hidden;
+    display: none;
+}
+

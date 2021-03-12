@@ -19,3 +19,4 @@ export const section_descriptions = {
     'port': 'Port. There you can find a market.',
     'living_area': 'Living area'
 }
+
