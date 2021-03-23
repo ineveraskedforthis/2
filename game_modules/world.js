@@ -58,6 +58,29 @@ module.exports = class World {
 
 
     async add_starting_agents(pool) {
+
+
+        let port_chunk = await this.entity_manager.create_area(pool, 'port')
+        let living_area = await this.entity_manager.create_area(pool, 'living_area')
+
+        let ith_colony = await this.entity_manager.create_faction(pool, 'Ith Colony')
+
+        // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
+        // let ith_rats = await this.entity_manager.create_faction(pool, 'Rats of Steppe')
+
+        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, undefined)
+        mayor.savings.inc(10000);
+
+        ith_colony.set_leader(mayor)
+
+        port_chunk.set_influence(ith_colony, 100)
+        living_area.set_influence(ith_colony, 100)
+
+        
+
+
+
+
         let pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'water', 1000, StateMachines.AIs['water']);
         pop.stash.inc('water', 10000);
 

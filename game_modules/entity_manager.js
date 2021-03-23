@@ -270,7 +270,9 @@ module.exports = class EntityManager {
         await char.init(pool, name, cell_id, user_id);
         this.chars[char.id] = char
         return char
-    }    
+    }
+
+    
 
     async delete_battle(pool, id) {
         var battle = this.battles[id];

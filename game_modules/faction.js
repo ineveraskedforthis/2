@@ -1,10 +1,26 @@
+const Savings = require("./savings");
+
 class Faction {
-    constructor(world, tag, starting_position, control_in_cells, unit) {
+    constructor(world, tag, starting_position, unit) {
         this.world = world;
+        this.saving = new Savings()
+
         this.tag = tag
         this.starting_position = starting_position
-        this.control_in_cells = control_in_cells
         this.unit = unit
+    }
+
+    init(pool) {
+        this.id = await this.load_to_db(pool);
+        return this.id;
+    }
+
+    save_to_db(pool) {
+        this.changed = false
+    }
+
+    load_to_db(pool) {
+        
     }
 }
 
