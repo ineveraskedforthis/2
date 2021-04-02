@@ -23,6 +23,9 @@ module.exports = class EntityManager {
         this.orders = {};
         this.item_orders = {};
         this.battles = {};
+        this.areas = {}
+        this.factions = {}
+        this.quests = {}
     }
 
     async init(pool) {
@@ -309,22 +312,22 @@ module.exports = class EntityManager {
     }
 
     async create_area(pool, tag) {
-        let area = new Area(this.world, tag, {}, {})
-        let id = await area.init(pool);
+        let area = new Area(this.world)
+        let id = await area.init(pool, tag, {}, {});
         this.areas[id] = area;
         return area
     }
 
     async create_faction(pool, tag) {
-        let faction = new Faction(this.world, tag)
-        let id = await faction.init(pool)
-        this.factions[id] = factino;
+        let faction = new Faction(this.world)
+        let id = await faction.init(pool, tag)
+        this.factions[id] = faction;
         return faction
     }
 
     async create_quest(pool, item, reward_money, reward_reputation) {
-        let quest = new Quest(this.world, item, reward_money, reward_reputation)
-        let id = await quest.init(pool)
+        let quest = new Quest(this.world)
+        let id = await quest.init(pool, item, reward_money, reward_reputation)
         this.quests[id] = quest;
         return quest;
     }

@@ -1,5 +1,7 @@
-const Savings = require("./savings");
-const Stash = require("./stash");
+const Savings = require("./savings.js");
+const Stash = require("./stash.js");
+const common = require("../common.js")
+const constants = require("../static_data/constants.js");
 
 module.exports = class Area {
     constructor(world) {
@@ -13,7 +15,7 @@ module.exports = class Area {
         this.changed = false
     }
 
-    async init(tag, factions_influence, local_resources) {
+    async init(pool, tag, factions_influence, local_resources) {
         this.tag = tag
         this.factions_influence = factions_influence
         this.local_resources = local_resources
@@ -47,12 +49,12 @@ module.exports = class Area {
         return this.factions_influence[faction.tag]
     }
 
-    load_to_db(pool) {
+    async load_to_db(pool) {
         let res = await common.send_query(pool, constants.insert_area_query, [this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
         return res.rows[0].id
     }   
 
-    save_to_db(pool) {
+    async save_to_db(pool) {
         this.changed = false
         this.savings.changed = false
         await common.send_query(pool, constants.update_area_query, [this.id, this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);

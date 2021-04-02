@@ -1,5 +1,7 @@
-const Savings = require("./savings");
-const Stash = require("./stash");
+const Savings = require("./savings.js");
+const Stash = require("./stash.js");
+const common = require("../common.js")
+const constants = require("../static_data/constants.js");
 
 module.exports = class Quest {
     constructor(world) {

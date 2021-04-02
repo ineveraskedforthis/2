@@ -11,7 +11,7 @@ var gameloop = require('node-gameloop');
 var path = require('path');
 var World = require("./game_modules/world.js");
 var common = require("./game_modules/common.js");
-var constants = require("./game_modules/constants.js");
+var constants = require("./game_modules/static_data/constants.js");
 
 var {Pool} = require('pg');
 var stage = process.env.STAGE;
@@ -72,7 +72,7 @@ var world = new World(io, 27, 27);
             await client.query('CREATE TABLE enterprises (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, ai_tag varchar(50))')
             
             await client.query('CREATE TABLE areas (id serial primary key, tag varchar(200), savings jsonb, stash jsonb, faction_influence jsonb, local_resources jsonb)')
-            await client.query('CREATE TABLE factions (id serial primary key, tag varchar(200), savings jsonb)')
+            await client.query('CREATE TABLE factions (id serial primary key, tag varchar(200), savings jsonb, leader_id int)')
             await client.query('CREATE TABLE quests (id serial primary key, money jsonb, reward_money int, reward_reputation int)')
 
             await client.query('CREATE TABLE if not exists messages (id serial PRIMARY KEY, message varchar(1000), sender varchar(200))')       

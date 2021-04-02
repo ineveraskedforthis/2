@@ -1,5 +1,5 @@
 var common = require("../common.js");
-const constants = require("./constants.js");
+const constants = require("../static_data/constants.js");
 
 
 module.exports = class MarketOrder {

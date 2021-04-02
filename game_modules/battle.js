@@ -4,7 +4,7 @@ const geom = require("./geom.js")
 
 var Stash = require("./base_game_classes/stash.js");
 var Savings = require("./base_game_classes/savings.js");
-var BattleAI = require("./base_game_classes/battle_ai.js")
+var BattleAI = require("./battle_ai.js")
 
 
 class BattleReworked {
