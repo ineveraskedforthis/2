@@ -22,7 +22,7 @@ module.exports = class Area {
     }
 
     async update(pool) {
-        if (this.changed) {
+        if (this.changed || this.savings.changed) {
             this.save_to_db(pool)
         }
     }
@@ -54,6 +54,7 @@ module.exports = class Area {
 
     save_to_db(pool) {
         this.changed = false
+        this.savings.changed = false
         await common.send_query(pool, constants.update_area_query, [this.id, this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
     }
 

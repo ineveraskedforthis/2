@@ -43,7 +43,7 @@ var world = new World(io, 27, 27);
         console.log('connecting to db');
         var client = await pool.connect();
         console.log('connection ready, checking for version update');
-        let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'messages', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises', 'messages', 'items_orders', 'items_markets']
+        let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'messages', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises', 'messages', 'items_orders', 'items_markets', 'areas', 'quests', 'factions']
         let ver = await common.get_version(client);
         console.log('version from db ');
         console.log(ver.version);
@@ -71,6 +71,10 @@ var world = new World(io, 27, 27);
             await client.query('CREATE TABLE pops (id serial primary key, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, race_tag varchar(50), ai_tag varchar(50))')
             await client.query('CREATE TABLE enterprises (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, ai_tag varchar(50))')
             
+            await client.query('CREATE TABLE areas (id serial primary key, tag varchar(200), savings jsonb, stash jsonb, faction_influence jsonb, local_resources jsonb)')
+            await client.query('CREATE TABLE factions (id serial primary key, tag varchar(200), savings jsonb)')
+            await client.query('CREATE TABLE quests (id serial primary key, money jsonb, reward_money int, reward_reputation int)')
+
             await client.query('CREATE TABLE if not exists messages (id serial PRIMARY KEY, message varchar(1000), sender varchar(200))')       
             await common.set_version(client, constants.version);
             

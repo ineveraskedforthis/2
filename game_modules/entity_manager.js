@@ -315,8 +315,8 @@ module.exports = class EntityManager {
         return area
     }
 
-    async create_faction(pool, tag, starting_pos) {
-        let faction = new Faction(this.world, tag, starting_pos, {})
+    async create_faction(pool, tag) {
+        let faction = new Faction(this.world, tag)
         let id = await faction.init(pool)
         this.factions[id] = factino;
         return faction

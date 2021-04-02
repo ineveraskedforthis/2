@@ -63,8 +63,8 @@ module.exports = class World {
         let port_chunk = await this.entity_manager.create_area(pool, 'port')
         let living_area = await this.entity_manager.create_area(pool, 'living_area')
 
-        let ith_colony = await this.entity_manager.create_faction(pool, 'Ith Colony')
-        let ith_rats = await this.entity_manager.create_faction(pool, 'Rats of Steppe')
+        let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony')
+        let ith_rats = await this.entity_manager.create_faction(pool, 'steppe_rats')
 
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
 

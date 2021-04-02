@@ -5,6 +5,7 @@ module.exports = class Savings {
         this.prev_data = {};
         this.prev_data['standard_money'] = 0;
         this.income = 0;
+        this.changed = false
     }
 
     get_json() {
@@ -28,6 +29,7 @@ module.exports = class Savings {
 
     set(x) {
         this.data['standard_money'] = x;
+        this.changed = true;
     }
 
     get() {
@@ -45,6 +47,7 @@ module.exports = class Savings {
         } else {
             this.set(a + x)
         }
+        this.changed = true
     }
 
     transfer(target, x) {

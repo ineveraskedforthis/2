@@ -40,7 +40,9 @@ const constants = {
     insert_enterprise_query: 'INSERT INTO enterprises (id, cell_id, name, savings, stash, data, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7)',
     insert_item_order_query: 'INSERT INTO items_orders (item, owner_id, buyout_price, current_price, latest_bidder, end_time, market_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     insert_market_items_query: 'INSERT INTO items_markets (orders) VALUES ($1) RETURNING id',
-    insert_area_query: 'INSERT INTO areas (tag, savings, stash, faction_influence, local_resources) VALUES ($1, $2, $3, $4, $5)',
+    insert_area_query: 'INSERT INTO areas (tag, savings, stash, faction_influence, local_resources) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+    insert_faction_query: 'INSERT INTO areas (tag, savings) VALUES ($1, $2) RETURNING id',
+    insert_quest_quert: 'INSERT INTO quests (money, reward_money, reward_reputation) RETURNING id',
 
 
     update_battle_query: 'UPDATE battles SET units = ($2), savings = ($3), stash = ($4), data = ($5) WHERE id = ($1)',
@@ -55,6 +57,8 @@ const constants = {
     update_market_items_query: 'UPDATE items_markets SET orders = ($2) WHERE id = ($1)',
     update_item_order_query: 'UPDATE items_orders SET current_price = ($2), latest_bidder = ($3) WHERE id = ($1)',
     update_area_query: 'UPDATE areas SET savings = ($2), stash = ($3), faction_influence = ($4), local_resources = ($5) WHERE id = ($1)',
+    update_faction_query: 'UPDATE areas SET savings = ($2) WHERE id = ($1)',
+    update_quest_query: 'UPDATE quests SET money = ($2), reward_money = ($3), reward_reputation = ($4) WHERE id = ($1)',
 
 
     delete_market_order_query: 'DELETE FROM market_orders WHERE id = ($1)',
