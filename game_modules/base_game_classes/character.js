@@ -1,7 +1,7 @@
-var common = require("./common.js");
-var constants = require("./constants.js")
-var weapons = require("./weapons.js")
-const spells = require("./spells.js")
+var common = require("../common.js");
+var constants = require("../static_data/constants.js")
+var weapons = require("../static_data/weapons.js")
+const spells = require("../static_data/spells.js")
 
 var Equip = require("./equip.js");
 var Stash = require("./stash.js");

@@ -1,13 +1,13 @@
 var basic_characters = require("./basic_characters.js");
-var constants = require("./constants.js");
+var constants = require("./static_data/constants.js");
 var common = require("./common.js");
-var {loot_chance_weight, loot_affixes_weight} = require("./item_tags");
+var {loot_chance_weight, loot_affixes_weight} = require("./static_data/item_tags");
 const StateMachines = require("./StateMachines.js");
 
 var UserManager = require("./user_manager.js");
 var SocketManager = require("./socket_manager.js");
 var EntityManager = require("./entity_manager.js");
-const Character = require("./character.js");
+const Character = require("./base_game_classes/character.js");
 
 
 

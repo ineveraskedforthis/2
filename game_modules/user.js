@@ -1,7 +1,7 @@
-var constants = require("./constants.js");
+var constants = require("./static_data/constants.js");
 var common = require("./common.js");
 
-var Character = require("./character.js")
+var Character = require("./base_game_classes/character.js")
 
 module.exports = class User {
     constructor(world) {

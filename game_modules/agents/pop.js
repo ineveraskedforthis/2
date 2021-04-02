@@ -1,5 +1,5 @@
 var common = require("../common.js");
-var constants = require("../constants.js")
+var constants = require("../static_data/constants.js")
 
 var StateMachine = require("../StateMachines.js").StateMachine
 var BasicPopAIstate = require("../StateMachines.js").AIs['basic_pop_ai_state']

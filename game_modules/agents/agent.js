@@ -1,8 +1,8 @@
 var common = require("../common.js");
-var constants = require("../constants.js")
+var constants = require("../static_data/constants.js")
 
-var Stash = require("../stash.js");
-var Savings = require("../savings.js")
+var Stash = require("../base_game_classes/stash.js");
+var Savings = require("../base_game_classes/savings.js")
 
 module.exports = class Agent {
     constructor(world) {

@@ -1,8 +1,8 @@
-var Market = require("./market.js")
+var Market = require("./market/market.js")
 var ProfessionGraph = require("./profession_graph.js")
 var common = require("./common.js")
-var constants = require("./constants.js")
-const { MarketItems } = require("./market_items.js")
+var constants = require("./static_data/constants.js")
+const { MarketItems } = require("./market/market_items.js")
 
 module.exports = class Cell {
     constructor(world, map, i, j, name, owner_id) {

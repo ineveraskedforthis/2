@@ -1,17 +1,17 @@
-var constants = require("./constants.js");
+var constants = require("./static_data/constants.js");
 var common = require("./common.js");
 
 
 var Map = require("./map.js");
 var Battle = require("./battle.js");
-var Character = require("./character.js");
+var Character = require("./base_game_classes/character.js");
 var Pop = require("./agents/pop.js");
-var MarketOrder = require("./market_order");
+var MarketOrder = require("./market/market_order");
 
-const { OrderItem } = require("./market_items.js");
-const Area = require("./area.js");
-const Faction = require("./faction.js");
-const Quest = require("./quest.js");
+const { OrderItem } = require("./market/market_items.js");
+const Area = require("./base_game_classes/area.js");
+const Faction = require("./base_game_classes/faction.js");
+const Quest = require("./base_game_classes/quest.js");
 
 
 module.exports = class EntityManager {

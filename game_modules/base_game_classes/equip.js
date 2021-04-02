@@ -1,7 +1,7 @@
-var {item_base_damage, item_base_range, item_base_resists, damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character} = require("./item_tags.js");
-let items = require("./weapons.js");
-const { empty } = require("./weapons.js");
-const item_tags = require("./item_tags.js");
+var {item_base_damage, item_base_range, item_base_resists, damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character} = require("../static_data/item_tags.js");
+let items = require("../static_data/weapons.js");
+const { empty } = require("../static_data/weapons.js");
+const item_tags = require("../static_data/item_tags.js");
 
 const EQUIP_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms']
 

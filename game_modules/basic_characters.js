@@ -1,4 +1,4 @@
-var Character = require("./character.js")
+var Character = require("./base_game_classes/character")
 
 class PredefinedMonster extends Character {
     async init(pool, cell_id, name = null) {        

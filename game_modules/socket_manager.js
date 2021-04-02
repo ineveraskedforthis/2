@@ -1,5 +1,5 @@
 var common = require("./common.js");
-var constants = require("./constants.js");
+var constants = require("./static_data/constants.js");
 var basic_characters = require("./basic_characters.js");
 
 

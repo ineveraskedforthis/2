@@ -1,4 +1,4 @@
-const constants = require("./constants.js")
+const constants = require("./static_data/constants.js")
 var validator = require('validator');
 
 module.exports = 
