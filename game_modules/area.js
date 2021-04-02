@@ -2,18 +2,21 @@ const Savings = require("./savings");
 const Stash = require("./stash");
 
 module.exports = class Area {
-    constructor(world, tag, factions_influence, local_resources) {
+    constructor(world) {
         this.world = world
         this.stash = new Stash()
         this.savings = new Savings()
 
-        this.tag = tag
-        this.factions_influence = factions_influence
-        this.local_resources = local_resources
+        this.tag = undefined
+        this.factions_influence = {}
+        this.local_resources = {}
         this.changed = false
     }
 
-    async init(tag) {
+    async init(tag, factions_influence, local_resources) {
+        this.tag = tag
+        this.factions_influence = factions_influence
+        this.local_resources = local_resources
         this.id = await this.load_to_db(pool);
         return this.id;
     }
@@ -45,10 +48,21 @@ module.exports = class Area {
     }
 
     load_to_db(pool) {
-
-    }
+        let res = await common.send_query(pool, constants.insert_area_query, [this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
+        return res.rows[0].id
+    }   
 
     save_to_db(pool) {
         this.changed = false
+        await common.send_query(pool, constants.update_area_query, [this.id, this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
+    }
+
+    load_from_json(data) {
+        this.id = data.id;
+        this.tag = data.tag;
+        this.factions_influence = data.factions_influence;
+        this.local_resources = data.local_resources;
+        this.savings.load_from_json(data.savings)
+        this.stash.load_from_json(data.stash)
     }
 };

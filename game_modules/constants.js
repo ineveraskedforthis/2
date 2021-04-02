@@ -40,6 +40,7 @@ const constants = {
     insert_enterprise_query: 'INSERT INTO enterprises (id, cell_id, name, savings, stash, data, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7)',
     insert_item_order_query: 'INSERT INTO items_orders (item, owner_id, buyout_price, current_price, latest_bidder, end_time, market_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     insert_market_items_query: 'INSERT INTO items_markets (orders) VALUES ($1) RETURNING id',
+    insert_area_query: 'INSERT INTO areas (tag, savings, stash, faction_influence, local_resources) VALUES ($1, $2, $3, $4, $5)',
 
 
     update_battle_query: 'UPDATE battles SET units = ($2), savings = ($3), stash = ($4), data = ($5) WHERE id = ($1)',
@@ -53,6 +54,7 @@ const constants = {
     update_user_query: 'UPDATE accounts SET char_id = ($2) WHERE id = ($1)',
     update_market_items_query: 'UPDATE items_markets SET orders = ($2) WHERE id = ($1)',
     update_item_order_query: 'UPDATE items_orders SET current_price = ($2), latest_bidder = ($3) WHERE id = ($1)',
+    update_area_query: 'UPDATE areas SET savings = ($2), stash = ($3), faction_influence = ($4), local_resources = ($5) WHERE id = ($1)',
 
 
     delete_market_order_query: 'DELETE FROM market_orders WHERE id = ($1)',
@@ -72,6 +74,9 @@ const constants = {
     load_orders_query: 'SELECT * FROM market_orders',
     load_item_orders_query: 'SELECT * FROM items_orders',
     load_battles_query: 'SELECT * FROM battles',
+    load_areas_query: 'SELECT * FROM areas',
+    load_quests_query: 'SELECT * FROM quests',
+    load_factions_query: 'SELECT * FROM factions',
 
     find_user_by_login_query: 'SELECT * FROM accounts WHERE login = ($1)',
     select_char_by_id_query: 'SELECT * FROM chars WHERE id = ($1)',

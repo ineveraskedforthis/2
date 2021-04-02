@@ -9,6 +9,9 @@ var Pop = require("./agents/pop.js");
 var MarketOrder = require("./market_order");
 
 const { OrderItem } = require("./market_items.js");
+const Area = require("./area.js");
+const Faction = require("./faction.js");
+const Quest = require("./quest.js");
 
 
 module.exports = class EntityManager {
@@ -33,6 +36,9 @@ module.exports = class EntityManager {
         await this.load_orders(pool);
         await this.load_item_orders(pool);
         await this.load_battles(pool);
+        await this.load_areas(pool);
+        await this.load_factions(pool);
+        await this.load_quests(pool);
         await this.clear_dead_orders(pool);
     }
 
@@ -88,6 +94,36 @@ module.exports = class EntityManager {
             this.battles[battle.id] = battle;
         }
         console.log('battles loaded')
+    }
+
+    async load_areas(pool) {
+        let res = await common.send_query(pool, constants.load_areas_query);
+        for (let i of res.rows) {
+            let obj = new Area(this.world);
+            obj.load_from_json(i);
+            this.areas[obj.id] = obj;
+        }
+        console.log('areas loaded')
+    }
+
+    async load_factions(pool) {
+        let res = await common.send_query(pool, constants.load_factions_query);
+        for (let i of res.rows) {
+            let faction = new Faction(this.world);
+            faction.load_from_json(i);
+            this.factions[faction.id] = faction;
+        }
+        console.log('factions loaded')
+    }
+
+    async load_quests(pool) {
+        let res = await common.send_query(pool, constants.load_quests_query);
+        for (let i of res.rows) {
+            let quest = new Quest(this.world);
+            quest.load_from_json(i);
+            this.quests[quest.id] = quest;
+        }
+        console.log('quests loaded')
     }
 
     async clear_dead_orders(pool) {
@@ -272,7 +308,26 @@ module.exports = class EntityManager {
         return char
     }
 
-    
+    async create_area(pool, tag) {
+        let area = new Area(this.world, tag, {}, {})
+        let id = await area.init(pool);
+        this.areas[id] = area;
+        return area
+    }
+
+    async create_faction(pool, tag, starting_pos) {
+        let faction = new Faction(this.world, tag, starting_pos, {})
+        let id = await faction.init(pool)
+        this.factions[id] = factino;
+        return faction
+    }
+
+    async create_quest(pool, item, reward_money, reward_reputation) {
+        let quest = new Quest(this.world, item, reward_money, reward_reputation)
+        let id = await quest.init(pool)
+        this.quests[id] = quest;
+        return quest;
+    }
 
     async delete_battle(pool, id) {
         var battle = this.battles[id];

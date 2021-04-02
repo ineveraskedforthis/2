@@ -64,9 +64,9 @@ module.exports = class World {
         let living_area = await this.entity_manager.create_area(pool, 'living_area')
 
         let ith_colony = await this.entity_manager.create_faction(pool, 'Ith Colony')
+        let ith_rats = await this.entity_manager.create_faction(pool, 'Rats of Steppe')
 
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
-        // let ith_rats = await this.entity_manager.create_faction(pool, 'Rats of Steppe')
 
         let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, undefined)
         mayor.savings.inc(10000);

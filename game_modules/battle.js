@@ -217,7 +217,6 @@ class BattleReworked {
     }
 
     load_from_json(data) {
-        console.log(data)
         this.id = data.id
         this.units = data.units
         this.data = data.data

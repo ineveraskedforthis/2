@@ -1,29 +1,24 @@
 const Savings = require("./savings");
 
-class Faction {
-    constructor(world, tag, starting_position, unit) {
+module.exports = class Faction {
+    constructor(world) {
         this.world = world;
         this.saving = new Savings()
+    }
 
+    async init(pool, tag, starting_position, unitl) {
         this.tag = tag
         this.starting_position = starting_position
         this.unit = unit
-    }
-
-    init(pool) {
         this.id = await this.load_to_db(pool);
         return this.id;
     }
 
-    save_to_db(pool) {
+    async save_to_db(pool) {
         this.changed = false
     }
 
-    load_to_db(pool) {
+    async load_to_db(pool) {
         
     }
-}
-
-module.exports = {
-    Faction: Faction
 }
