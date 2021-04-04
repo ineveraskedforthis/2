@@ -30,23 +30,23 @@ module.exports = class Area {
     }
 
     set_influence(faction, amount) {
-        this.factions_influence[faction.tag] = amount
+        this.factions_influence[faction.id] = amount
     }
 
     change_influence(faction, amount) {
-        if (faction.tag in this.factions_influence) {
-            this.faction_influence[faction.tag] = this.factions_influence[faction.tag] + amount
+        if (faction.id in this.factions_influence) {
+            this.faction_influence[faction.id] = this.factions_influence[faction.id] + amount
         } else {
-            this.faction_influence[faction.tag] = amount
+            this.faction_influence[faction.id] = amount
         }
-        if (this.factions_influence[faction.tag] < 0) {
-            this.factions_influence[faction.tag] = undefined
+        if (this.factions_influence[faction.id] < 0) {
+            this.factions_influence[faction.id] = undefined
         }
         this.changed = true
     }
 
     get_influence(faction) {
-        return this.factions_influence[faction.tag]
+        return this.factions_influence[faction.id]
     }
 
     async load_to_db(pool) {

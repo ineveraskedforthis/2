@@ -71,6 +71,7 @@ module.exports = class World {
         let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, undefined)
         mayor.savings.inc(10000);
 
+        this.entity_manager.set_faction_leader(ith_colony, mayor)
         ith_colony.set_leader(mayor)
 
         port_chunk.set_influence(ith_colony, 100)
@@ -129,6 +130,7 @@ module.exports = class World {
         if (this.pops_tick >= 180) {
             this.pops_tick = 0;
             await this.entity_manager.update_agents(pool)
+            this.entity_manager.update_factions()
         }
         
         
@@ -344,6 +346,10 @@ module.exports = class World {
         let terr_tag = this.get_territory(x, y)
         let tag = this.constants.enemies[terr_tag];
         return tag;
+    }
+
+    create_quest() {
+        
     }
 
     async attack_local_monster(pool, char, enemies_amount = 1) {

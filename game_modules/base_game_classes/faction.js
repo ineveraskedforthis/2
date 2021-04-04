@@ -7,6 +7,7 @@ module.exports = class Faction {
         this.world = world;
         this.savings = new Savings()
         this.changed = false;
+        this.leader_id = -1;
     }
 
     async init(pool, tag) {

@@ -207,6 +207,29 @@ module.exports = class EntityManager {
         }
     }
 
+    update_factions() {
+    }
+
+    set_faction_leader(faction, leader) {
+        faction.set_leader(leader)
+        leader.set_faction(faction)
+    }
+
+    update_areas() {
+        for (let i in this.areas) {
+            let area = this.areas[i]
+            for (let faction_id in area.faction_influence) {
+                let faction = this.factions[faction_id]
+                let leader = this.chars[faction.leader_id]
+                if ((faction.tag != 'steppe_rats') & (area.get_influence('steppe_rats') >= 10)) {
+                    let quest_money_reward = Math.floor(area.get_influence('steppe_rats') / 10)
+                    let quest_reputation_reward = Math.floor(area.get_influence('steppe_rats') / 5)
+                    leader.new_quest('meat', quest_money_reward, quest_reputation_reward)
+                }
+            }
+        }
+    }
+
     get_cell(x, y) {
         return this.map.get_cell(x, y);
     }
