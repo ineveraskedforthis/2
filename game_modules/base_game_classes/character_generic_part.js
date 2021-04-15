@@ -4,7 +4,7 @@ module.exports = class CharacterGenericPart {
         this.equip = new Equip();
         this.stash = new Stash();
         this.savings = new Savings();
-        this.tag = 'chara';
+        this.tag = 'chara'
 
         this.status = {
             hp: 100,
@@ -14,7 +14,20 @@ module.exports = class CharacterGenericPart {
         };
 
         this.data = {
-            skills = {},
+            skills = {
+                clothier = [0, 0],
+                cook = [0, 0],
+                onehand = [0, 0],
+                polearms = [0, 0],
+                noweapon = [0, 0],
+                skinning = [0, 0],
+                enchanting = [0, 0],
+                magic_mastery = [0, 0],
+                blocking = [0, 0],
+                evasion = [0, 0],
+            },
+
+            perks = {},
 
             innate_stats = {
                 max_hp = 100,
@@ -41,6 +54,7 @@ module.exports = class CharacterGenericPart {
         }
 
         this.changed = false;
+        this.status_changed = false;
     }
 
     init_base_values(name, cell_id, user_id = -1) {
@@ -54,6 +68,7 @@ module.exports = class CharacterGenericPart {
 
     async update(pool) {
         await this.status_check(pool);
+
         if (this.data.dead) {
             return
         }
@@ -84,15 +99,7 @@ module.exports = class CharacterGenericPart {
 
     flags_handling_update() {
         let sm = this.world.socket_manager;
-        if (this.data.flags.hp_changed) {
-            sm.send_hp_update(this);
-            this.flags.hp_changed = false;
-        }
-        if (this.exp_changed) {
-            sm.send_exp_update(this);
-            this.exp_changed = false;
-        }
-        if (this.status.changed) {
+        if (this.status_changed) {
             sm.send_status_update(this);
             this.status_changed = false;
         }
@@ -115,21 +122,78 @@ module.exports = class CharacterGenericPart {
         return this.hp
     }
 
-    async change_hp(x) {
-        let tmp = this.hp;
-        this.hp += x;
-        if (this.hp > this.max_hp) {
-            this.hp = this.max_hp;
+    get_hp_change() {
+        return 0
+    }
+
+    get_rage_change() {
+        if (!this.flags.in_battle) {
+            return -1
+        } else {
+            return 1
         }
-        if (this.hp != tmp) {
-            this.hp_changed = true;
-            this.changed = true;
+    }
+
+    get_stress_change() {
+        let d_stress = (this.get_stress_target() - this.data.other.stress);
+        if (d_stress != 0) {
+            if ((d_stress / 30 > 1)||(d_stress / 30 < -1)) {
+                return Math.floor(d_stress/30)
+            } else {
+                return Math.sign(d_stress)
+            }
         }
+    }
+
+    get_max_hp() {
+        return this.data.innate_stats.max_hp
     }
 
     get_cell() {
         return this.world.get_cell_by_id(this.cell_id);
     }
+
+    change_hp(x) {
+        let tmp = this.hp;
+        this.status.hp = Math.max(0, Math.min(this.get_max_hp(), this.status.hp + x));
+        if (this.status.hp != tmp) {
+            this.changed = true;
+            this.status_changed = true;
+        }
+    }
+
+    change_rage(x) {
+        let tmp = this.status.rage;
+        this.status.rage = Math.max(0, Math.min(this.get_max_rage(), this.status.rage + x));
+        if (tmp != this.data.other.rage) {
+            this.changed = true;
+            this.status_changed = true;
+        }
+    }
+
+    change_blood(x) {
+        let tmp = this.data.other.blood;
+        this.status.blood = Math.max(0, Math.min(this.get_max_blood(), this.status.blood + x));
+        if (tmp != this.status.blood) {
+            this.changed = true
+            this.status_changed = true;
+        }
+    }
+
+    change_stress(x) {
+        let tmp = this.status.stress;
+        this.status.stress = Math.max(0, this.status.stress + x);
+        if (tmp != this.status.stress) {
+            this.changed = true
+            this.status_changed = true;
+        }
+    }
+
+    
+
+
+
+
 
     equip_item(index) {
         this.equip.equip(index);
@@ -152,10 +216,9 @@ module.exports = class CharacterGenericPart {
         }
     }
 
-    get_cell() {
-        return this.world.get_cell_by_id(this.cell_id);
-    }
-    
+
+
+
     buy(tag, amount, money, max_price = null) {
         let cell = this.get_cell();
         if (cell.has_market()) {            
@@ -192,27 +255,21 @@ module.exports = class CharacterGenericPart {
 
 
 
-
-
-
-
-
-
-
-
-
-    async save_hp_to_db(pool, save = true) {
+    async save_status_to_db(pool, save = true) {
         if (save) {
-            await common.send_query(pool, constants.set_hp_query, [this.hp, this.id]);
+            await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
         }
     }
 
     async load_from_json(data) {
         this.id = data.id;
         this.name = data.name;
-        this.hp = data.hp;
-        this.max_hp = data.max_hp;
         this.user_id = data.user_id;
+
+        this.status = data.status;
+        this.data = data.data;
+        this.flags = data.flags;
+
         this.savings = new Savings();        
         this.savings.load_from_json(data.savings);        
         this.stash = new Stash();
@@ -220,14 +277,14 @@ module.exports = class CharacterGenericPart {
         this.cell_id = data.cell_id;
         this.equip = new Equip();
         this.equip.load_from_json(data.equip);
-        this.data = data.data;
+        
     }
 
     get_json() {
         return {
             name: this.name,
-            hp: this.hp,
-            max_hp: this.max_hp,
+            status: this.status,
+            flags: this.flags,
             savings: this.savings.get_json(),
             stash: this.stash.get_json(),
             equip: this.equip.get_json(),

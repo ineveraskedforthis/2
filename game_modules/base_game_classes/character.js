@@ -29,7 +29,19 @@ class Character2 extends CharacterGenericPart {
     }
 
     out_of_battle_update() {
+        if (this.data.dead) {
+            return
+        }
 
+        let reg = this.get_hp_change();
+        this.change_hp(pool, reg, false);
+        let rage_change = this.get_rage_change()
+        this.change_rage(rage_change);
+        let d_stress = this.get_stress_change()
+        this.change_stress(d_stress)
+
+        
+        await this.update_status(pool, false);
     }
 
     status_check() {
@@ -42,8 +54,9 @@ class Character2 extends CharacterGenericPart {
         if (this.data.other.stress >= 100) {
             await this.world.kill(pool, this.id);
         }
-        
     }
+
+
 }
 
 
@@ -59,47 +72,7 @@ module.exports = class Character {
         this.changed = false;
     }
 
-    init_base_values(name, hp, max_hp, exp, level, cell_id, user_id = -1) {
-        this.name = name;
-        var is_player = true
-        if (user_id == -1) {
-            is_player = false;
-        }
-        this.hp = hp;
-        this.max_hp = max_hp;
-                
-        this.equip.data.right_hand = weapons.fist;        
-        this.user_id = user_id;
-        this.cell_id = cell_id;
-        this.data = {
-            model: 'test',
-            movement_speed: 1,
-            stats: this.world.constants.base_stats.apu,
-            base_battle_stats: this.world.constants.base_battle_stats,
-            base_resists: this.world.constants.base_resists.pepe,
-            is_player: is_player,
-            is_trainer: false,
-            explored: {},
-            exp: exp,
-            level: level,
-            skill_points: 0,
-            exp_reward: 100,
-            dead: false,
-            in_battle: false,
-            battle_id: null,
-            tactic: {s0: this.world.constants.default_tactic_slot},
-            status: {
-                stunned: 0
-            },
-            stress_target: 0,
-            skills: {},
-            other: {
-                rage: 0,
-                blood_covering: 0,
-                stress: 0
-            }
-        }
-    }
+    
 
     get_tag() {
         return 'test'
@@ -117,141 +90,6 @@ module.exports = class Character {
             this.data.tactic['s' + i] = tactic['s' + i];
         }
         await this.save_to_db(pool, save);
-    }
-
-    get_regeneration() {
-        let tmp = this.data.base_battle_stats.regeneration;
-        tmp = Math.floor(this.data.stats.tou / 20) + tmp;
-        return tmp
-    }
-
-
-
-    //updaters
-
-
-
-    
-        
-
-    async update2(pool) {
-        if (this.data.dead) {
-            return
-        }
-        let reg = this.get_regeneration();
-        await this.change_hp(pool, reg, false);
-        this.change_rage(-1);
-        let d_stress = (this.data.stress_target - this.data.other.stress);
-        if (d_stress != 0) {
-            if ((d_stress / 30 > 1)||(d_stress / 30 < -1)) {
-                this.change_stress(Math.floor(d_stress/30))
-            } else {
-                this.change_stress(Math.sign(d_stress))
-            }
-        }
-        await this.update_status(pool, false);
-    }
-
-    async add_skill(pool, skill, save = true) {
-
-        if (this.data.skill_points == 0) {
-            return undefined
-        }
-
-        let SKILLS = this.world.constants.SKILLS;
-        if (!(skill in SKILLS)) {
-            return undefined
-        }
-        let cell = this.world.get_cell_by_id(this.cell_id);
-        console.log(cell.i, cell.j)
-        let skill_group = this.world.get_cell_teacher(cell.i, cell.j)
-
-        if (!(skill_group.includes(skill))) {
-            return undefined
-        }
-
-        for (let i of SKILLS[skill].req_skills) {
-            // console.log(i, this.data.skills[i], SKILLS[i].max_level);
-            if (this.data.skills[i] != SKILLS[i].max_level) {
-                return undefined
-            }
-        }
-
-        if (skill in this.data.skills) {
-            if (SKILLS[skill].max_level <= this.data.skills[skill]) {
-                return undefined
-            }
-            this.data.skills[skill] += 1;
-            this.data.skill_points -= 1;
-            await this.update_skill_stats(pool, undefined, false);
-        } else {
-            this.data.skills[skill] = 1;
-            this.data.skill_points -= 1;
-            await this.update_skill_stats(pool, undefined, false);
-        }
-        this.save_to_db(pool, save);
-        let new_action = SKILLS[skill].action;
-        return new_action;
-    }
-
-    async update_skill_stats(pool, race = 'apu', save = true) {
-        var tmp = {};
-        var base = this.world.constants.base_stats[race];
-
-        tmp.musculature = base.musculature;
-        if ('warrior_training' in this.data.skills) {
-            tmp.musculature += this.data.skills['warrior_training'];
-        }
-        tmp.breathing = base.breathing;
-
-        tmp.coordination = base.coordination;
-        if ('warrior_training' in this.data.skills) {
-            if (this.data.skills['warrior_training'] > 2) {
-                tmp.coordination += 1;
-            }
-        }
-
-        tmp.vis = base.vis;
-
-        tmp.int = base.int;
-
-        tmp.tac = base.tac;
-        var flag_tier0_tactic = false
-        if ('warrior_training' in this.data.skills) {
-            if (this.data.skills['warrior_training'] >= 3) {
-                tmp.tac += 1;
-                flag_tier0_tactic = true
-            }
-        }
-        if ('mage_training' in this.data.skills && !flag_tier0_tactic) {
-            if (this.data.skills['mage_training'] >= 3) {
-                tmp.tac += 1;
-                flag_tier0_tactic = true
-            }
-        }
-        for (let i = 0; i <= tmp.tac; i++) {
-            if (!(('s' + i) in this.data.tactic) || this.data.tactic['s' + i] == 'undefined') {
-                this.data.tactic['s' + i] = this.world.constants.empty_tactic_slot;
-            }
-        }
-        for (let i = tmp.tac + 1; i < constants.MAX_TACTIC_SLOTS; i++) {
-            if (('s' + i) in this.data.tactic) {
-                this.data.tactic['s' + i] = 'undefined';
-            }
-        }
-
-        tmp.mem = base.mem;
-
-        tmp.pow = base.pow;
-        if ('mage_training' in this.data.skills) {
-            tmp.pow += this.data.skills['mage_training']
-        }
-
-        tmp.tou = base.tou;
-
-        this.data.stats = tmp;
-
-        this.save_to_db(pool, save);
     }
 
     //actions
@@ -691,34 +529,6 @@ module.exports = class Character {
         this.data.quest = {id: quest.id, tag: tag}
         this.savings.transfer(quest.savings, this.savings.get())
     }
-
-    change_rage(x) {
-        let tmp = this.data.other.rage;
-        this.data.other.rage = Math.max(0, Math.min(100, this.data.other.rage + x));
-        if (tmp != this.data.other.rage) {
-            this.changed = true;
-            this.status_changed = true;
-        }
-    }
-
-    change_blood(x) {
-        let tmp = this.data.other.blood_covering;
-        this.data.other.blood_covering = Math.max(0, Math.min(100, this.data.other.blood_covering + x));
-        if (tmp != this.data.other.blood_covering) {
-            this.changed = true
-            this.status_changed = true;
-        }
-    }
-
-    change_stress(x) {
-        let tmp = this.data.other.stress;
-        this.data.other.stress = Math.max(0, this.data.other.stress + x);
-        if (tmp != this.data.other.stress) {
-            this.changed = true
-            this.status_changed = true;
-        }
-    }
-
     
 
     async update_status_after_damage(pool, type, x) {
