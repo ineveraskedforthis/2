@@ -85,12 +85,7 @@ module.exports = class Character {
         return this.id;
     }
     
-    async set_tactic(pool, tactic, save = true) {
-        for (var i = 0; i <= this.data.stats.tac; i++) {
-            this.data.tactic['s' + i] = tactic['s' + i];
-        }
-        await this.save_to_db(pool, save);
-    }
+    
 
     //actions
 
