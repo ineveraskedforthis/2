@@ -207,7 +207,7 @@ module.exports = class EntityManager {
         }
     }
 
-    update_factions() {
+    async update_factions(pool) {
     }
 
     set_faction_leader(faction, leader) {
@@ -215,7 +215,7 @@ module.exports = class EntityManager {
         leader.set_faction(faction)
     }
 
-    update_areas() {
+    async update_areas(pool) {
         for (let i in this.areas) {
             let area = this.areas[i]
             for (let faction_id in area.faction_influence) {
@@ -224,10 +224,15 @@ module.exports = class EntityManager {
                 if ((faction.tag != 'steppe_rats') & (area.get_influence('steppe_rats') >= 10)) {
                     let quest_money_reward = Math.floor(area.get_influence('steppe_rats') / 10)
                     let quest_reputation_reward = Math.floor(area.get_influence('steppe_rats') / 5)
-                    leader.new_quest('meat', quest_money_reward, quest_reputation_reward)
+                    await this.new_quest(pool, leader, 'meat', quest_money_reward, quest_reputation_reward)
                 }
             }
         }
+    }
+    
+    async new_quest(pool, leader, item_tag, money_reward, reputation_reward, tag) {
+        let quest = await this.create_quest(pool, item_tag, money_reward, reputation_reward);
+        leader.add_quest(quest, tag)
     }
 
     get_cell(x, y) {

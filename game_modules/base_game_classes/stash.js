@@ -1,6 +1,7 @@
 module.exports = class Stash {
     constructor() {
         this.data = {};
+        this.changed = false;
     }
 
     get_json() {
@@ -21,6 +22,7 @@ module.exports = class Stash {
             tmp = x;
             this.data[tag] += x;
         }
+        this.changed = true;
         return tmp;
     }
 
@@ -31,6 +33,7 @@ module.exports = class Stash {
         } else {
             this.data[tag] = x;
         }
+        this.changed = true;
     }
 
     get(tag) {

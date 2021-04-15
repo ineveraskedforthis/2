@@ -6,6 +6,45 @@ const spells = require("../static_data/spells.js")
 var Equip = require("./equip.js");
 var Stash = require("./stash.js");
 var Savings = require("./savings.js")
+const CharacterGenericPart = require("./character_generic_part.js")
+
+
+class Character2 extends CharacterGenericPart {
+    constructor(world) {
+        this.world = world;
+        this.equip = new Equip();
+        this.stash = new Stash();
+        this.savings = new Savings();
+        this.tag = 'chara';
+
+        this.changed = false;
+    }
+
+    battle_update() {
+        let dice = Math.random()
+        if (dice < this.data.base_battle_stats.stress_battle_generation) {
+            this.change_stress(1)
+        }            
+        this.equip.update(pool, this);
+    }
+
+    out_of_battle_update() {
+
+    }
+
+    status_check() {
+
+        if (this.hp <= 0) {
+            this.hp = 0;
+            await this.world.kill(pool, this.id);
+        }
+
+        if (this.data.other.stress >= 100) {
+            await this.world.kill(pool, this.id);
+        }
+        
+    }
+}
 
 
 
@@ -90,47 +129,9 @@ module.exports = class Character {
 
     //updaters
 
-    async update(pool) {
-        if (this.data.dead) {
-            return
-        }
-        
-        if (!this.in_battle()) {
-            await this.update2(pool)
-        } else {
-            let dice = Math.random()
-            if (dice < this.data.base_battle_stats.stress_battle_generation) {
-                this.change_stress(1)
-            }            
-            this.equip.update(pool, this);
-        }
-        await this.stress_check(pool);
-        let sm = this.world.socket_manager;
-        if (this.hp_changed) {
-            sm.send_hp_update(this);
-            this.hp_changed = false;
-        }
-        if (this.exp_changed) {
-            sm.send_exp_update(this);
-            this.exp_changed = false;
-        }
-        if (this.status_changed) {
-            sm.send_status_update(this);
-            this.status_changed = false;
-        }
-        if (this.savings_changed) {
-            sm.send_savings_update(this);
-            this.savings_changed = false;
-        }
-        await this.save_to_db(pool, this.changed);
-        this.changed = false;
-    }
 
-    async stress_check(pool) {
-        if (this.data.other.stress >= 100) {
-            await this.world.kill(pool, this.id);
-        }
-    }
+
+    
         
 
     async update2(pool) {
@@ -317,15 +318,7 @@ module.exports = class Character {
         return result;
     }
 
-    async equip_item(pool, index) {
-        this.equip.equip(index);
-        this.save_to_db(pool);
-    }
 
-    async unequip_tag(pool, tag) {
-        this.equip.unequip(tag);
-        this.save_to_db(pool)
-    }
 
     async level_up(pool, save) {
         while (this.data.exp >= common.get_next_nevel_req(this.data.level)) {
@@ -359,47 +352,7 @@ module.exports = class Character {
         }
     }
 
-    async transfer(pool, target, tag, x) {
-        this.stash.transfer(target.stash, tag, x);
-        await this.save_to_db(pool);
-        await target.save_to_db(pool);
-    }
 
-    async transfer_all(pool, target) {
-        for (var tag of this.world.constants.TAGS) {
-            var x = this.stash.get(tag);
-            await this.transfer(pool, target, tag, x);
-        }
-        await this.save_to_db(pool);
-    }
-    
-    async buy(pool, tag, amount, money, max_price = null) {
-        var cell = this.world.get_cell_by_id(this.cell_id);
-        await cell.market.buy(pool, tag, this, amount, money, max_price);
-    }
-
-    async sell(pool, tag, amount, price) {
-        if (constants.logging.character.sell) {
-            console.log('character sell', tag, amount, price);
-        }
-        var cell = this.world.get_cell_by_id(this.cell_id);
-        await cell.market.sell(pool, tag, this, amount, price);
-    }
-
-    async sell_item(pool, index, buyout_price, starting_price) {
-        let cell = this.world.get_cell_by_id(this.cell_id);
-        await cell.item_market.sell(pool, this, index, buyout_price, starting_price);
-    }
-
-    async clear_tag_orders(pool, tag, save_market = true) {
-        await this.get_local_market().clear_agent_orders(pool, this, tag, save_market)
-    }
-
-    async clear_orders(pool, save_market = true) {
-        for (var tag of this.world.constants.TAGS) {
-            await this.clear_tag_orders(pool, tag, save_market)
-        }
-    }
 
     async move(pool, data) {
         if (this.in_battle()) {
@@ -657,13 +610,7 @@ module.exports = class Character {
         return res
     }
 
-    get_hp() {
-        return this.hp
-    }
-
-    get_cell() {
-        return this.world.get_cell_by_id(this.cell_id);
-    }
+    
 
     get_actions() {
         let tmp = []
@@ -735,6 +682,16 @@ module.exports = class Character {
         this.save_to_db(pool, save);
     }
 
+    set_faction(faction) {
+        this.changed = true
+        this.data.faction = faction.id
+    }
+
+    add_quest(quest, tag) {
+        this.data.quest = {id: quest.id, tag: tag}
+        this.savings.transfer(quest.savings, this.savings.get())
+    }
+
     change_rage(x) {
         let tmp = this.data.other.rage;
         this.data.other.rage = Math.max(0, Math.min(100, this.data.other.rage + x));
@@ -762,21 +719,7 @@ module.exports = class Character {
         }
     }
 
-    async change_hp(pool, x, save = true) {
-        let tmp = this.hp;
-        this.hp += x;
-        if (this.hp > this.max_hp) {
-            this.hp = this.max_hp;
-        }
-        if (this.hp <= 0) {
-            this.hp = 0;
-            await this.world.kill(pool, this.id);
-        }
-        if (this.hp != tmp) {
-            this.hp_changed = true;
-            this.changed = true;
-        }
-    }
+    
 
     async update_status_after_damage(pool, type, x) {
         if (type == 'blunt') {
@@ -821,54 +764,7 @@ module.exports = class Character {
 
     //misc
 
-    async save_hp_to_db(pool, save = true) {
-        if (save) {
-            await common.send_query(pool, constants.set_hp_query, [this.hp, this.id]);
-        }
-    }
 
-    async load_from_json(data) {
-        this.id = data.id;
-        this.name = data.name;
-        this.hp = data.hp;
-        this.max_hp = data.max_hp;
-        this.user_id = data.user_id;
-        this.savings = new Savings();        
-        this.savings.load_from_json(data.savings);        
-        this.stash = new Stash();
-        this.stash.load_from_json(data.stash);
-        this.cell_id = data.cell_id;
-        this.equip = new Equip();
-        this.equip.load_from_json(data.equip);
-        this.data = data.data;
-    }
-
-    get_json() {
-        return {
-            name: this.name,
-            hp: this.hp,
-            max_hp: this.max_hp,
-            savings: this.savings.get_json(),
-            stash: this.stash.get_json(),
-            equip: this.equip.get_json(),
-            data: this.data
-        };
-    }
-
-    async load_to_db(pool) {
-        let result = await common.send_query(pool, constants.new_char_query, [this.user_id, this.cell_id, this.name, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
-        return result.rows[0].id;
-    }
-
-    async save_to_db(pool, save = true) {
-        if (save) {
-            await common.send_query(pool, constants.update_char_query, [this.id, this.cell_id, this.hp, this.max_hp, this.savings.get_json(), this.stash.get_json(), this.equip.get_json(), this.data]);
-        }
-    }
-
-    async delete_from_db(pool) {
-        await common.send_query(pool, constants.delete_char_query, [this.id]);
-    }
 
     add_explored(tag) {
         this.data.explored[tag] = true;

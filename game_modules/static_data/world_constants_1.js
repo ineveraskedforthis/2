@@ -147,6 +147,12 @@
             tou: 10
         }},
     base_resists: {
+        zero: {
+            blunt: 0,
+            pierce: 0,
+            slice: 0,
+            fire: 0
+        },
         pepe: {
             blunt: 0,
             pierce: 0,

@@ -72,7 +72,6 @@ module.exports = class World {
         mayor.savings.inc(10000);
 
         this.entity_manager.set_faction_leader(ith_colony, mayor)
-        ith_colony.set_leader(mayor)
 
         port_chunk.set_influence(ith_colony, 100)
         living_area.set_influence(ith_colony, 100)
@@ -130,7 +129,8 @@ module.exports = class World {
         if (this.pops_tick >= 180) {
             this.pops_tick = 0;
             await this.entity_manager.update_agents(pool)
-            this.entity_manager.update_factions()
+            await this.entity_manager.update_factions(pool)
+            await this.entity_manager.update_areas(pool)
         }
         
         
