@@ -43,7 +43,9 @@ module.exports = class CharacterGenericPart {
                 explored: {},
                 battle_id: null,
                 tactic: {s0: this.world.constants.default_tactic_slot},
-            }
+            },
+
+            faction = -1
         }
 
         this.flags = {
@@ -84,6 +86,8 @@ module.exports = class CharacterGenericPart {
         this.changed = false;
     }
 
+    //some stuff defined per concrete character class
+
     async status_check(pool) {
 
     }
@@ -94,6 +98,14 @@ module.exports = class CharacterGenericPart {
 
     battle_update() {
 
+    }
+
+    on_move() {
+
+    }
+
+    get_item_lvl() {
+        return 1;
     }
 
 
@@ -112,7 +124,6 @@ module.exports = class CharacterGenericPart {
             this.stash.changed = false;
         }
     }
-
 
     get_tag() {
         return this.tag
@@ -192,8 +203,7 @@ module.exports = class CharacterGenericPart {
     
 
 
-
-
+    //equip and stash interactions
 
     equip_item(index) {
         this.equip.equip(index);
@@ -217,6 +227,10 @@ module.exports = class CharacterGenericPart {
     }
 
 
+
+
+
+    //market interactions
 
 
     buy(tag, amount, money, max_price = null) {
@@ -254,6 +268,275 @@ module.exports = class CharacterGenericPart {
     }
 
 
+
+
+
+    //attack calculations
+
+    async attack(pool, target) {
+        let result = {}
+        result.crit = false;
+        result.evade = false;
+        result.poison = false;
+        result.blocked = false;
+        result.rage_gain = 5;
+        result.stress_gain = 1;
+        result.blood_gain = 0;
+        result.chance_to_hit = 0;
+        result.total_damage = 0;
+        result = this.equip.get_weapon_damage(result);
+        result = this.mod_damage_with_stats(result);        
+        result = this.roll_accuracy(result);
+        result = this.roll_crit(result);
+        result = target.roll_evasion(result);
+        result = target.roll_block(result);
+        this.change_rage(result.rage_gain);
+        this.change_stress(result.stress_gain);
+        this.change_blood(result.blood_gain);
+        let dice = Math.random();
+        if (dice > result.chance_to_hit) {
+            result.evade = true;
+        }
+        result = await target.take_damage(pool, result);        
+        return result;
+    }
+
+    async spell_attack(pool, target, tag) {
+        let result = {};
+        result.crit = false;
+        result.evade = false;
+        result.poison = false;
+        result.blocked = false;
+        result.total_damage = 0;
+        result = spells[tag](result);
+        result = this.mod_spell_damage_with_stats(result);
+        result = await target.take_damage(pool, result);
+        if ('rage' in result) {
+            this.change_rage(result.rage);
+        }
+        return result;
+    }
+
+    async take_damage(pool, result) {
+        let res = this.get_resists();
+        if (!result.evade) {
+            for (let i of this.world.constants.damage_types) {
+                if (result.damage[i] > 0) {
+                    let curr_damage = Math.max(0, result.damage[i] - res[i]);
+                    result.total_damage += curr_damage;
+                    this.change_hp(-curr_damage);
+                }                
+            }
+            this.change_blood(2);
+            this.change_rage(2);
+        }
+        await this.save_to_db(pool)
+        return result;
+    }
+
+
+    add_explored(tag) {
+        this.data.explored[tag] = true;
+    }
+    
+
+    async on_move_default(pool, data) {
+        this.on_move()
+
+        let tmp = this.world.get_territory(data.x, data.y)
+        this.add_explored(this.world.get_id_from_territory(tmp));
+        this.world.socket_manager.send_explored(this);
+
+        let danger = this.world.constants.ter_danger[tmp];
+        let res = await this.attack_local_monster(pool, danger)                
+        if (res != undefined) {
+            return 2
+        } 
+        return 1
+    }
+
+    verify_move(dx, dy) {
+        return ((dx == 0 & dy == 1) || (dx == 0 & dy == -1) || (dx == 1 & dy == 0) || (dx == -1 & dy == 0) || (dx == 1 & dy == 1) || (dx == -1 & dy == -1))
+    }
+
+    async move(pool, data) {
+        if (this.in_battle()) {
+            return 0
+        }
+        if (this.world.can_move(data.x, data.y)) {
+            let {x, y} = this.world.get_cell_x_y_by_id(this.cell_id)
+            let dx = data.x - x;
+            let dy = data.y - y;
+            if (this.verify_move(dx, dy)) {
+                this.changed = true;
+                this.cell_id = this.world.get_cell_id_by_x_y(data.x, data.y);
+                return await this.on_move_default(pool, data)                
+            }
+            return 0
+        }
+        return 0
+    }
+
+    mod_damage_with_stats(result) {
+        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * this.data.stats.musculature / 10));
+        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * this.data.stats.musculature / 10));
+        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * this.data.stats.musculature / 10));
+        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * this.get_magic_power() / 10));
+        return result
+    }
+
+    mod_spell_damage_with_stats(result) {
+        let power = this.get_magic_power() / 10
+        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * power));
+        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * power));
+        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * power));
+        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * power));
+        return result
+    }
+
+    roll_accuracy(result) {
+        result.chance_to_hit += this.get_accuracy()
+        return result
+    }
+
+    roll_crit(result) {
+        let dice = Math.random()
+        let crit_chance = this.get_crit_chance;
+        let mult = this.data.base_battle_stats.crit_mult;
+        if (dice < crit_chance) {
+            result.damage['blunt'] = result.damage['blunt'] * mult;
+            result.damage['pierce'] = result.damage['pierce'] * mult;
+            result.damage['slice'] = result.damage['slice'] * mult;
+            result.crit = true;
+        }
+        return result
+    }
+
+    roll_evasion(result) {
+        if (result.crit) {
+            return result;
+        }
+        let dice = Math.random()
+        let evade_chance = this.data.base_battle_stats.evasion;
+        if (dice < evade_chance) {
+            result.evade = true
+        }
+        return result
+    }
+
+    roll_block(result) {
+        let dice = Math.random()
+        let block_chance = this.get_block_chance();
+        if (dice < block_chance) {
+            result.blocked = true;
+        }
+        return result;
+    }
+
+    get_magic_power() {
+        let power = this.data.stats['pow'] + this.equip.get_magic_power();
+        if (this.data.skills['blood_battery'] == 1) {
+            power = power * (1 + this.data.other.blood_covering / 100);
+        }
+        return power;
+    }
+
+    get_resists() {
+        let res = {}
+        Object.assign(res, this.data.base_resists)
+        let res_e = this.equip.get_resists();
+        for (let i of this.world.constants.damage_types) {
+            res[i] += res_e[i];
+        }
+        return res
+    }    
+
+    get_accuracy() {
+        let blood_burden = this.data.base_battle_stats.blood_burden;
+        let rage_burden = this.data.base_battle_stats.rage_burden
+        if (this.data.skills['rage_control'] == 1) {
+            rage_burden -= 0.002;
+        }
+        if (this.data.skills['cold_rage'] == 1) {
+            rage_burden -= 0.002;
+        }
+        if (this.data.skills['the_way_of_rage'] == 1) {
+            rage_burden -= 0.002;
+        }
+        let blood_acc_loss = this.data.other.blood_covering * blood_burden;
+        let rage_acc_loss = this.data.other.rage * rage_burden;
+        return Math.min(1, Math.max(0.2, this.data.base_battle_stats.accuracy - blood_acc_loss - rage_acc_loss))
+    }
+
+    get_block_chance() {
+        let tmp = this.data.base_battle_stats.block;
+        if (this.data.skills['blocking_movements'] == 1) {
+            tmp += 0.06;
+        }
+        return tmp;
+    }
+
+    get_crit_chance(tag) {
+        if (tag == 'attack') {
+            let increase = 1 + this.data.base_battle_stats.attack_crit_add + this.data.stats.int / 100;
+            return this.data.base_battle_stats.crit_chance * increase;
+        }
+        if (tag == 'spell') {
+            let increase = 1 + this.data.base_battle_stats.spell_crit_add + this.data.stats.int / 100;
+            return this.data.base_battle_stats.crit_chance * increase
+        }
+    }
+
+
+
+
+    // some getters
+
+    get_actions() {
+        let tmp = []
+        for (let i in this.data.skills) {
+            let action = this.world.constants.SKILLS[i].action
+            if (action != undefined) {
+                tmp.push(action)
+            }
+        }
+        return tmp
+    }
+    
+    get_range() {
+        return this.equip.get_weapon_range(1);
+    }
+
+    get_local_market() {
+        var cell = this.world.get_cell_by_id(this.cell_id);
+        return cell.market;
+    }
+
+    
+    
+    // flag checking functions
+
+    is_player() {
+        return this.flags.is_player;
+    }
+
+    in_battle() {
+        return this.flags.in_battle;
+    }
+
+
+
+    // factions interactions
+
+    set_faction(faction) {
+        this.changed = true
+        this.data.faction = faction.id
+    }
+
+
+
+
+    //db interactions
 
     async save_status_to_db(pool, save = true) {
         if (save) {
