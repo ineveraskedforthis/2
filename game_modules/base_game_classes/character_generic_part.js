@@ -1,3 +1,5 @@
+const generate_empty_attack_result = import("./misc/attack_result.js")
+
 module.exports = class CharacterGenericPart {
     constructor(world) {
         this.world = world;
@@ -35,6 +37,8 @@ module.exports = class CharacterGenericPart {
                 max_blood = 100,
                 max_stress = 100,
                 movement_speed: 1,
+                phys_power = 10,
+                magic_power = 10,
                 base_resists: this.world.constants.base_resists.zero
             },
 
@@ -86,6 +90,23 @@ module.exports = class CharacterGenericPart {
         this.changed = false;
     }
 
+    flags_handling_update() {
+        let sm = this.world.socket_manager;
+        if (this.status_changed) {
+            sm.send_status_update(this);
+            this.status_changed = false;
+        }
+        if (this.savings.changed) {
+            sm.send_savings_update(this);
+            this.savings.changed = false;
+        }
+        if (this.stash.changed) {
+            sm.send_stash_update(this);
+            this.stash.changed = false;
+        }
+    }
+
+
     //some stuff defined per concrete character class
 
     async status_check(pool) {
@@ -106,23 +127,6 @@ module.exports = class CharacterGenericPart {
 
     get_item_lvl() {
         return 1;
-    }
-
-
-    flags_handling_update() {
-        let sm = this.world.socket_manager;
-        if (this.status_changed) {
-            sm.send_status_update(this);
-            this.status_changed = false;
-        }
-        if (this.savings.changed) {
-            sm.send_savings_update(this);
-            this.savings.changed = false;
-        }
-        if (this.stash.changed) {
-            sm.send_stash_update(this);
-            this.stash.changed = false;
-        }
     }
 
     get_tag() {
@@ -200,6 +204,13 @@ module.exports = class CharacterGenericPart {
         }
     }
 
+    change_status(dstatus) {
+        this.change_hp(dstatus.hp)
+        this.change_rage(dstatus.rage);
+        this.change_stress(dstatus.stress);
+        this.change_blood(dstatus.blood);
+    }
+
     
 
 
@@ -274,46 +285,30 @@ module.exports = class CharacterGenericPart {
     //attack calculations
 
     async attack(pool, target) {
-        let result = {}
-        result.crit = false;
-        result.evade = false;
-        result.poison = false;
-        result.blocked = false;
-        result.rage_gain = 5;
-        result.stress_gain = 1;
-        result.blood_gain = 0;
-        result.chance_to_hit = 0;
-        result.total_damage = 0;
+        let result = generate_empty_attack_result()
+
         result = this.equip.get_weapon_damage(result);
-        result = this.mod_damage_with_stats(result);        
+        result = this.mod_attack_damage_with_stats(result);        
         result = this.roll_accuracy(result);
         result = this.roll_crit(result);
         result = target.roll_evasion(result);
         result = target.roll_block(result);
-        this.change_rage(result.rage_gain);
-        this.change_stress(result.stress_gain);
-        this.change_blood(result.blood_gain);
-        let dice = Math.random();
-        if (dice > result.chance_to_hit) {
-            result.evade = true;
-        }
+
+        this.change_status(result.attacker_status_change)
+
         result = await target.take_damage(pool, result);        
         return result;
     }
 
     async spell_attack(pool, target, tag) {
-        let result = {};
-        result.crit = false;
-        result.evade = false;
-        result.poison = false;
-        result.blocked = false;
-        result.total_damage = 0;
+        let result = generate_empty_attack_result()
+
         result = spells[tag](result);
         result = this.mod_spell_damage_with_stats(result);
+
+        this.change_status(result.attacker_status_change)
+
         result = await target.take_damage(pool, result);
-        if ('rage' in result) {
-            this.change_rage(result.rage);
-        }
         return result;
     }
 
@@ -327,109 +322,85 @@ module.exports = class CharacterGenericPart {
                     this.change_hp(-curr_damage);
                 }                
             }
-            this.change_blood(2);
-            this.change_rage(2);
+            this.change_status(result.defender_status_change)
         }
         await this.save_to_db(pool)
         return result;
-    }
+    }    
 
+    mod_attack_damage_with_stats(result) {
+        let phys_power = this.get_phys_power() / 10
+        let magic_power = this.get_magic_power() / 10
 
-    add_explored(tag) {
-        this.data.explored[tag] = true;
-    }
-    
+        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
+        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * phys_power));
+        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * phys_power));
+        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * magic_power));
 
-    async on_move_default(pool, data) {
-        this.on_move()
-
-        let tmp = this.world.get_territory(data.x, data.y)
-        this.add_explored(this.world.get_id_from_territory(tmp));
-        this.world.socket_manager.send_explored(this);
-
-        let danger = this.world.constants.ter_danger[tmp];
-        let res = await this.attack_local_monster(pool, danger)                
-        if (res != undefined) {
-            return 2
-        } 
-        return 1
-    }
-
-    verify_move(dx, dy) {
-        return ((dx == 0 & dy == 1) || (dx == 0 & dy == -1) || (dx == 1 & dy == 0) || (dx == -1 & dy == 0) || (dx == 1 & dy == 1) || (dx == -1 & dy == -1))
-    }
-
-    async move(pool, data) {
-        if (this.in_battle()) {
-            return 0
-        }
-        if (this.world.can_move(data.x, data.y)) {
-            let {x, y} = this.world.get_cell_x_y_by_id(this.cell_id)
-            let dx = data.x - x;
-            let dy = data.y - y;
-            if (this.verify_move(dx, dy)) {
-                this.changed = true;
-                this.cell_id = this.world.get_cell_id_by_x_y(data.x, data.y);
-                return await this.on_move_default(pool, data)                
-            }
-            return 0
-        }
-        return 0
-    }
-
-    mod_damage_with_stats(result) {
-        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * this.data.stats.musculature / 10));
-        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * this.data.stats.musculature / 10));
-        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * this.data.stats.musculature / 10));
-        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * this.get_magic_power() / 10));
         return result
     }
 
     mod_spell_damage_with_stats(result) {
         let power = this.get_magic_power() / 10
+
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * power));
         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * power));
         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * power));
         result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * power));
+
         return result
     }
 
     roll_accuracy(result) {
-        result.chance_to_hit += this.get_accuracy()
+        let dice = Math.random();
+
+        result.chance_to_hit = this.get_accuracy(result)
+        
+        if (dice > result.chance_to_hit) {
+            result.miss = true;
+        }
+
         return result
     }
 
     roll_crit(result) {
         let dice = Math.random()
-        let crit_chance = this.get_crit_chance;
-        let mult = this.data.base_battle_stats.crit_mult;
+
+        let crit_chance = this.get_crit_chance();
+        let mult = this.get_crit_mult();
+
         if (dice < crit_chance) {
             result.damage['blunt'] = result.damage['blunt'] * mult;
             result.damage['pierce'] = result.damage['pierce'] * mult;
             result.damage['slice'] = result.damage['slice'] * mult;
             result.crit = true;
         }
+
         return result
     }
 
     roll_evasion(result) {
-        if (result.crit) {
-            return result;
-        }
         let dice = Math.random()
-        let evade_chance = this.data.base_battle_stats.evasion;
+
+        let evade_chance = this.get_evasion_chance();
+
         if (dice < evade_chance) {
             result.evade = true
+            result.crit = false
         }
+
         return result
     }
 
     roll_block(result) {
         let dice = Math.random()
+
         let block_chance = this.get_block_chance();
+
         if (dice < block_chance) {
             result.blocked = true;
         }
+        
         return result;
     }
 
@@ -512,6 +483,45 @@ module.exports = class CharacterGenericPart {
         return cell.market;
     }
 
+
+
+
+
+    // craft related
+
+    calculate_gained_failed_craft_stress(tag) {
+        let total = 15;
+        if ('less_stress_from_crafting' in this.data.skills) {
+            total -= this.data.skills['less_stress_from_crafting'] * 3;
+        }
+        if (tag == 'food') {
+            if ('less_stress_from_making_food' in this.data.skills) {
+                total -= this.data.skills['less_stress_from_making_food'] * 5
+            }
+        }
+        if (tag == 'enchanting') {
+            if ('less_stress_from_enchanting' in this.data.skills) {
+                total -= this.data.skills['less_stress_from_enchanting'] * 5
+            }
+        }
+        if (tag == 'disenchanting') {
+            if ('less_stress_from_disenchanting' in this.data.skills) {
+                total -= this.data.skills['less_stress_from_disenchanting'] * 5
+            }
+        }
+        total = Math.max(0, total)
+        return total;
+    }
+
+    get_craft_food_chance() {
+        let chance = 0.0;
+        if ('cook' in this.data.skills) {
+            chance += this.data.skills['cook'] * 0.2
+        }
+        return chance
+    } 
+    
+
     
     
     // flag checking functions
@@ -531,6 +541,33 @@ module.exports = class CharacterGenericPart {
     set_faction(faction) {
         this.changed = true
         this.data.faction = faction.id
+    }
+
+
+    // exploration
+
+    add_explored(tag) {
+        this.data.explored[tag] = true;
+    }
+    
+
+    async on_move_default(pool, data) {
+        this.on_move()
+
+        let tmp = this.world.get_territory(data.x, data.y)
+        this.add_explored(this.world.get_id_from_territory(tmp));
+        this.world.socket_manager.send_explored(this);
+
+        let danger = this.world.constants.ter_danger[tmp];
+        let res = await this.attack_local_monster(pool, danger)                
+        if (res != undefined) {
+            return 2
+        } 
+        return 1
+    }
+
+    verify_move(dx, dy) {
+        return ((dx == 0 & dy == 1) || (dx == 0 & dy == -1) || (dx == 1 & dy == 0) || (dx == -1 & dy == 0) || (dx == 1 & dy == 1) || (dx == -1 & dy == -1))
     }
 
 
