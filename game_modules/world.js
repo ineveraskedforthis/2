@@ -64,7 +64,7 @@ module.exports = class World {
         let living_area = await this.entity_manager.create_area(pool, 'living_area')
 
         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony')
-        let ith_rats = await this.entity_manager.create_faction(pool, 'steppe_rats')
+        // let ith_rats = await this.entity_manager.create_faction(pool, 'steppe_rats')
 
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
 
@@ -76,25 +76,7 @@ module.exports = class World {
         port_chunk.set_influence(ith_colony, 100)
         living_area.set_influence(ith_colony, 100)
 
-        
 
-
-
-
-        let pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'water', 1000, StateMachines.AIs['water']);
-        pop.stash.inc('water', 10000);
-
-        for (let i = 1; i <= 3; i++) {
-            pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 10000, StateMachines.AIs['meat_to_heal']);
-        }
-
-        // for (let i = 1; i <= 13; i++) {
-        //     pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, Math.floor(100 * i * i / 10), StateMachines.AIs['hunters']);
-        // }
-
-        for (let i = 1; i <= 3; i++) {
-            pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 10000, StateMachines.AIs['clothiers']);
-        }
     }
 
 

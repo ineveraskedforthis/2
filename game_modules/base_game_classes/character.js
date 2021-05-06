@@ -1,25 +1,7 @@
-var common = require("../common.js");
-var constants = require("../static_data/constants.js")
-var weapons = require("../static_data/weapons.js")
-const spells = require("../static_data/spells.js")
-
-var Equip = require("./equip.js");
-var Stash = require("./stash.js");
-var Savings = require("./savings.js")
 const CharacterGenericPart = require("./character_generic_part.js")
 
 
 class Character extends CharacterGenericPart {
-    constructor(world) {
-        this.world = world;
-        this.equip = new Equip();
-        this.stash = new Stash();
-        this.savings = new Savings();
-        this.tag = 'chara';
-
-        this.changed = false;
-    }
-
     async init(pool, name, cell_id, user_id = -1) {
         this.init_base_values(name, cell_id, user_id);
         this.id = await this.load_to_db(pool);
@@ -46,32 +28,29 @@ class Character extends CharacterGenericPart {
     }
 
     out_of_battle_update() {
-        if (this.data.dead) {
+        if (this.is_dead()) {
             return
         }
 
         let reg = this.get_hp_change();
-        this.change_hp(pool, reg, false);
+        this.change_hp(reg);
         let rage_change = this.get_rage_change()
         this.change_rage(rage_change);
         let d_stress = this.get_stress_change()
-        this.change_stress(d_stress)
-
-        
-        await this.update_status(pool, false);
+        this.change_stress(d_stress);
     }
 
 
     // 
 
-    status_check() {
+    async status_check(pool) {
 
-        if (this.hp <= 0) {
-            this.hp = 0;
+        if (this.status.hp <= 0) {
+            this.status.hp = 0;
             await this.world.kill(pool, this.id);
         }
 
-        if (this.data.other.stress >= 100) {
+        if (this.status.stress >= 100) {
             await this.world.kill(pool, this.id);
         }
     }
@@ -79,8 +58,11 @@ class Character extends CharacterGenericPart {
 
     //on action
 
-    async on_move() {
+    async on_move(pool) {
         this.change_stress(3);
+        let danger = this.world.constants.ter_danger[tmp];
+        let res = await this.attack_local_monster(pool, danger) 
+        return res
     }
 
 

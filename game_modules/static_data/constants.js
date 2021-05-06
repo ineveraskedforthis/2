@@ -1,5 +1,5 @@
 const constants = {
-    version: 233,
+    version: 236,
     logging: {
         agent: {
             buy: false
@@ -28,7 +28,7 @@ const constants = {
     },
     MAX_TACTIC_SLOTS: 6,
     new_user_query: 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)',
-    new_char_query: 'INSERT INTO chars (user_id, cell_id, name, hp, max_hp, savings, stash, equip, data) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id',
+    new_char_query: 'INSERT INTO chars (user_id, cell_id, faction_id, name, status, skills, stats, misc, flags, savings, stash, equip) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id',
     init_id_query: 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)',
     new_battle_query: 'INSERT INTO battles (units, savings, stash, data) VALUES ($1, $2, $3, $4) RETURNING id',
     new_cell_query: 'INSERT INTO cells (id, x, y, name, market_id, item_market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
@@ -48,7 +48,7 @@ const constants = {
     update_battle_query: 'UPDATE battles SET units = ($2), savings = ($3), stash = ($4), data = ($5) WHERE id = ($1)',
     update_market_order_query: 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)',
     update_market_query: 'UPDATE markets SET data = ($2) WHERE id = ($1)',
-    update_char_query: 'UPDATE chars SET cell_id = ($2), hp = ($3), max_hp = ($4), savings = ($5), stash = ($6), equip = ($7), data = ($8) WHERE id = ($1)',
+    update_char_query: 'UPDATE chars SET cell_id = ($2), faction_id = ($3), status = ($4), skills = ($5), stats = ($6), misc = ($7), flags = ($8), savings = ($9), stash = ($10), equip = ($11) WHERE id = ($1)',
     update_agent_query: 'UPDATE agents SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5) WHERE id = ($1)',
     update_consumer_query: 'UPDATE consumers SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6) WHERE id = ($1)',
     update_pop_query: 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), race_tag = ($7), ai_tag = ($8) WHERE id = ($1)',

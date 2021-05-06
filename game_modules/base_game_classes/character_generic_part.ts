@@ -1,12 +1,6 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+declare var require: any
+declare var module: any
+
 var common = require("../common.js");
 var constants = require("../static_data/constants.js");
 const Equip = require("./equip.js");
@@ -16,13 +10,32 @@ const spells = require("../static_data/spells.js");
 const generate_empty_attack_result = require("./misc/attack_result.js");
 const { generate_empty_resists } = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
+
+
+interface SkillObject {
+    theory: number;
+    practice: number;
+}
+
 class SkillObject {
+
     constructor() {
-        this.practice = 0;
-        this.theory = 0;
+        this.practice = 0
+        this.theory = 0
     }
 }
+
 class SkillList {
+    clothier: SkillObject;
+    cooking: SkillObject;
+    onehand: SkillObject;
+    polearms: SkillObject;
+    noweapon: SkillObject;
+    skinning: SkillObject;
+    magic_mastery: SkillObject;
+    blocking: SkillObject;
+    evasion: SkillObject;
+
     constructor() {
         this.clothier = new SkillObject();
         this.cooking = new SkillObject();
@@ -35,22 +48,51 @@ class SkillList {
         this.evasion = new SkillObject();
     }
 }
+
+interface Status {
+    hp: number;
+    rage: number;
+    blood: number;
+    stress: number;
+}
+
 class Status {
     constructor() {
-        this.hp = 0;
-        this.rage = 0;
-        this.blood = 0;
-        this.stress = 0;
+        this.hp = 0
+        this.rage = 0
+        this.blood = 0
+        this.stress = 0
     }
 }
+
+interface Perk {
+
+}
+
+interface DamageByTypeObject {
+    blunt: number,
+    pierce: number,
+    slice: number,
+    fire: number
+}
+
 class DamageByTypeObject {
     constructor() {
-        this.blunt = 0;
-        this.pierce = 0;
-        this.slice = 0;
-        this.fire = 0;
+        this.blunt = 0
+        this.pierce = 0
+        this.slice = 0
+        this.fire = 0
     }
 }
+
+interface InnateStats {
+    max: Status,
+    movement_speed: number,
+    phys_power: number,
+    magic_power: number,
+    base_resists: DamageByTypeObject
+}
+
 class InnateStats {
     constructor() {
         this.max = new Status();
@@ -60,34 +102,75 @@ class InnateStats {
         this.base_resists = new DamageByTypeObject();
     }
 }
+
+interface Misc {
+    model: string;
+    explored: any;
+    battle_id: number;
+    tactic: any;
+    ai_tag: string;
+}
+
 class Misc {
     constructor() {
-        this.model = 'empty';
-        this.explored = {};
-        this.battle_id = -1;
-        this.tactic = {};
-        this.ai_tag = 'dummy';
+        this.model = 'empty'
+        this.explored = {}
+        this.battle_id = -1
+        this.tactic = {}
+        this.ai_tag = 'dummy'
     }
 }
+
+interface CharacterFlags {
+    player: boolean,
+    trainer: boolean,
+    dead: boolean,
+    in_battle: boolean,
+}
+
 class CharacterFlags {
     constructor() {
-        this.player = false;
-        this.trainer = false;
-        this.dead = false;
-        this.in_battle = false;
+        this.player = false
+        this.trainer = false
+        this.dead = false
+        this.in_battle = false
     }
 }
+
 module.exports = class CharacterGenericPart {
+    world: any;
+    equip: any;
+    stash: any;
+    savings: any;
+    tag: string;
+    status: Status;
+    skills: SkillList;
+    stats: InnateStats;
+    misc: Misc;
+    flags: CharacterFlags;
+    changed: boolean;
+    status_changed: boolean;
+
+    id: number
+    name: string;
+    user_id: number;
+    cell_id: number;
+    faction_id: number;
+
     constructor(world) {
         this.world = world;
         this.equip = new Equip();
         this.stash = new Stash();
         this.savings = new Savings();
-        this.tag = 'chara';
-        this.status = new Status();
-        this.status.hp = 100;
-        this.skills = new SkillList();
-        this.stats = new InnateStats();
+        this.tag = 'chara'
+
+        this.status = new Status()
+        this.status.hp = 100
+
+        this.skills = new SkillList()
+
+        this.stats = new InnateStats()
+
         this.stats.max.hp = 100;
         this.stats.max.rage = 100;
         this.stats.max.blood = 100;
@@ -95,48 +178,54 @@ module.exports = class CharacterGenericPart {
         this.stats.movement_speed = 1;
         this.stats.phys_power = 10;
         this.stats.magic_power = 10;
+
         this.misc = {
             model: 'test',
             explored: 0,
             battle_id: -1,
-            tactic: { s0: this.world.constants.default_tactic_slot },
+            tactic: {s0: this.world.constants.default_tactic_slot},
             ai_tag: 'dummy'
         },
-            this.flags = {
-                player: false,
-                trainer: false,
-                dead: false,
-                in_battle: false,
-            };
+
+        this.flags = {
+            player: false,
+            trainer: false,
+            dead: false,
+            in_battle: false,
+        }
+
         this.changed = false;
         this.status_changed = false;
     }
-    init_base_values(name, cell_id, user_id = -1) {
+
+    init_base_values(name: string, cell_id: number, user_id = -1) {
         this.name = name;
         if (user_id != -1) {
             this.flags.player = true;
-        }
+        }   
         this.user_id = user_id;
         this.cell_id = cell_id;
         this.faction_id = -1;
     }
-    update(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.status_check(pool);
-            if (this.flags.dead) {
-                return;
-            }
-            if (!this.in_battle()) {
-                this.out_of_battle_update();
-            }
-            else {
-                this.battle_update();
-            }
-            this.flags_handling_update();
-            yield this.save_to_db(pool, this.changed);
-            this.changed = false;
-        });
+
+    async update(pool: any) {
+        await this.status_check(pool);
+
+        if (this.flags.dead) {
+            return
+        }
+        
+        if (!this.in_battle()) {
+            this.out_of_battle_update()
+        } else {
+            this.battle_update()
+        }
+
+        this.flags_handling_update();        
+        await this.save_to_db(pool, this.changed);
+        this.changed = false;
     }
+
     flags_handling_update() {
         let sm = this.world.socket_manager;
         if (this.status_changed) {
@@ -152,67 +241,86 @@ module.exports = class CharacterGenericPart {
             this.stash.changed = false;
         }
     }
+
+
     //some stuff defined per concrete character class
-    status_check(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-        });
+
+    async status_check(pool: any) {
+
     }
+
     out_of_battle_update() {
+
     }
+
     battle_update() {
+
     }
+
     on_move() {
+
     }
+
     get_item_lvl() {
         return 1;
     }
+
     get_tag() {
-        return this.tag;
+        return this.tag
     }
+
     get_hp() {
-        return this.status.hp;
+        return this.status.hp
     }
+
     get_hp_change() {
-        return 0;
+        return 0
     }
+
     get_rage_change() {
         if (!this.flags.in_battle) {
-            return -1;
-        }
-        else {
-            return 1;
+            return -1
+        } else {
+            return 1
         }
     }
+
     get_stress_change() {
         let d_stress = (this.get_stress_target() - this.status.stress);
         if (d_stress != 0) {
-            if ((d_stress / 30 > 1) || (d_stress / 30 < -1)) {
-                return Math.floor(d_stress / 30);
-            }
-            else {
-                return Math.sign(d_stress);
+            if ((d_stress / 30 > 1)||(d_stress / 30 < -1)) {
+                return Math.floor(d_stress/30)
+            } else {
+                return Math.sign(d_stress)
             }
         }
     }
+
     get_stress_target() {
-        return 0;
+        return 0
     }
+
     get_max_hp() {
-        return this.stats.max.hp;
+        return this.stats.max.hp
     }
+
     get_max_rage() {
-        return this.stats.max.rage;
+        return this.stats.max.rage
     }
+
     get_max_stress() {
-        return this.stats.max.stress;
+        return this.stats.max.stress
     }
+
     get_max_blood() {
-        return this.stats.max.blood;
+        return this.stats.max.blood
     }
+
     get_cell() {
         return this.world.get_cell_by_id(this.cell_id);
     }
-    change_hp(x) {
+
+    change_hp(x: number) {
         let tmp = this.status.hp;
         this.status.hp = Math.max(0, Math.min(this.get_max_hp(), this.status.hp + x));
         if (this.status.hp != tmp) {
@@ -220,7 +328,8 @@ module.exports = class CharacterGenericPart {
             this.status_changed = true;
         }
     }
-    change_rage(x) {
+
+    change_rage(x: number) {
         let tmp = this.status.rage;
         this.status.rage = Math.max(0, Math.min(this.get_max_rage(), this.status.rage + x));
         if (tmp != this.status.rage) {
@@ -228,319 +337,440 @@ module.exports = class CharacterGenericPart {
             this.status_changed = true;
         }
     }
-    change_blood(x) {
+
+    change_blood(x: number) {
         let tmp = this.status.blood;
         this.status.blood = Math.max(0, Math.min(this.get_max_blood(), this.status.blood + x));
         if (tmp != this.status.blood) {
-            this.changed = true;
+            this.changed = true
             this.status_changed = true;
         }
     }
-    change_stress(x) {
+
+    change_stress(x: number) {
         let tmp = this.status.stress;
         this.status.stress = Math.max(0, this.status.stress + x);
         if (tmp != this.status.stress) {
-            this.changed = true;
+            this.changed = true
             this.status_changed = true;
         }
     }
-    change_status(dstatus) {
-        this.change_hp(dstatus.hp);
+
+    change_status(dstatus: Status) {
+        this.change_hp(dstatus.hp)
         this.change_rage(dstatus.rage);
         this.change_stress(dstatus.stress);
         this.change_blood(dstatus.blood);
     }
+  
+
     //equip and stash interactions
+
     equip_item(index) {
         this.equip.equip(index);
         this.changed = true;
     }
+
     unequip_tag(tag) {
         this.equip.unequip(tag);
         this.changed = true;
     }
+
     transfer(target, tag, x) {
         this.stash.transfer(target.stash, tag, x);
     }
+
     transfer_all(target) {
         for (var tag of this.world.constants.TAGS) {
             var x = this.stash.get(tag);
             this.transfer(target, tag, x);
         }
     }
+
+
+
+
+
     //market interactions
+
+
     buy(tag, amount, money, max_price = null) {
         let cell = this.get_cell();
-        if (cell.has_market()) {
+        if (cell.has_market()) {            
             cell.market.buy(tag, this, amount, money, max_price);
-        }
+        }        
     }
+
     sell(tag, amount, price) {
         let cell = this.get_cell();
         if (cell.has_market()) {
             cell.market.sell(tag, this, amount, price);
-        }
+        }        
     }
+
     sell_item(index, buyout_price, starting_price) {
         let cell = this.get_cell();
         if (cell.has_market()) {
             cell.item_market.sell(this, index, buyout_price, starting_price);
-        }
+        }        
     }
+
     clear_tag_orders(tag) {
         let cell = this.get_cell();
         if (cell.has_market()) {
-            cell.market.clear_agent_orders(this, tag);
+            cell.market.clear_agent_orders(this, tag)
         }
     }
+
     clear_orders() {
         for (var tag of this.world.constants.TAGS) {
-            this.clear_tag_orders(tag);
+            this.clear_tag_orders(tag)
         }
     }
+
+
+
+
+
     //attack calculations
-    attack(pool, target) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let result = generate_empty_attack_result();
-            result = this.equip.get_weapon_damage(result);
-            result = this.mod_attack_damage_with_stats(result);
-            result = this.roll_accuracy(result);
-            result = this.roll_crit(result);
-            result = target.roll_evasion(result);
-            result = target.roll_block(result);
-            this.change_status(result.attacker_status_change);
-            result = yield target.take_damage(pool, result);
-            return result;
-        });
+
+    async attack(pool: any, target: CharacterGenericPart) {
+        let result = generate_empty_attack_result()
+
+        result = this.equip.get_weapon_damage(result);
+        result = this.mod_attack_damage_with_stats(result);        
+        result = this.roll_accuracy(result);
+        result = this.roll_crit(result);
+        result = target.roll_evasion(result);
+        result = target.roll_block(result);
+
+        this.change_status(result.attacker_status_change)
+
+        result = await target.take_damage(pool, result);        
+        return result;
     }
-    spell_attack(pool, target, tag) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let result = generate_empty_attack_result();
-            result = spells[tag](result);
-            result = this.mod_spell_damage_with_stats(result);
-            this.change_status(result.attacker_status_change);
-            result = yield target.take_damage(pool, result);
-            return result;
-        });
+
+    async spell_attack(pool, target, tag) {
+        let result = generate_empty_attack_result()
+
+        result = spells[tag](result);
+        result = this.mod_spell_damage_with_stats(result);
+
+        this.change_status(result.attacker_status_change)
+
+        result = await target.take_damage(pool, result);
+        return result;
     }
-    take_damage(pool, result) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let res = this.get_resists();
-            if (!result.evade) {
-                for (let i of this.world.constants.damage_types) {
-                    if (result.damage[i] > 0) {
-                        let curr_damage = Math.max(0, result.damage[i] - res[i]);
-                        result.total_damage += curr_damage;
-                        this.change_hp(-curr_damage);
-                    }
-                }
-                this.change_status(result.defender_status_change);
+
+    async take_damage(pool, result) {
+        let res = this.get_resists();
+        if (!result.evade) {
+            for (let i of this.world.constants.damage_types) {
+                if (result.damage[i] > 0) {
+                    let curr_damage = Math.max(0, result.damage[i] - res[i]);
+                    result.total_damage += curr_damage;
+                    this.change_hp(-curr_damage);
+                }                
             }
-            yield this.save_to_db(pool);
-            return result;
-        });
-    }
+            this.change_status(result.defender_status_change)
+        }
+        await this.save_to_db(pool)
+        return result;
+    }    
+
     mod_attack_damage_with_stats(result) {
-        let phys_power = this.get_phys_power() / 10;
-        let magic_power = this.get_magic_power() / 10;
+        let phys_power = this.get_phys_power() / 10
+        let magic_power = this.get_magic_power() / 10
+
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * phys_power));
         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * phys_power));
         result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * magic_power));
-        return result;
+
+        return result
     }
+
     mod_spell_damage_with_stats(result) {
-        let power = this.get_magic_power() / 10;
+        let power = this.get_magic_power() / 10
+
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * power));
         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * power));
         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * power));
         result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * power));
-        return result;
+
+        return result
     }
+
     roll_accuracy(result) {
         let dice = Math.random();
-        result.chance_to_hit = this.get_accuracy(result);
+
+        result.chance_to_hit = this.get_accuracy(result)
+        
         if (dice > result.chance_to_hit) {
             result.miss = true;
         }
-        return result;
+
+        return result
     }
+
     roll_crit(result) {
-        let dice = Math.random();
+        let dice = Math.random()
+
         let crit_chance = this.get_crit_chance("attack");
         let mult = this.get_crit_mult();
+
         if (dice < crit_chance) {
             result.damage['blunt'] = result.damage['blunt'] * mult;
             result.damage['pierce'] = result.damage['pierce'] * mult;
             result.damage['slice'] = result.damage['slice'] * mult;
             result.crit = true;
         }
-        return result;
+
+        return result
     }
+
     roll_evasion(result) {
-        let dice = Math.random();
+        let dice = Math.random()
+
         let evade_chance = this.get_evasion_chance();
+
         if (dice < evade_chance) {
-            result.evade = true;
-            result.crit = false;
+            result.evade = true
+            result.crit = false
         }
-        return result;
+
+        return result
     }
+
     roll_block(result) {
-        let dice = Math.random();
+        let dice = Math.random()
+
         let block_chance = this.get_block_chance();
+
         if (dice < block_chance) {
             result.blocked = true;
         }
+
         return result;
     }
+
     get_magic_power() {
         let power = this.stats.magic_power * this.equip.get_magic_power_modifier();
+
         return power;
     }
+
     get_phys_power() {
         let power = this.stats.phys_power * this.equip.get_magic_power_modifier();
+
         return power;
     }
+
     get_resists() {
-        let res = generate_empty_resists();
+        let res = generate_empty_resists()
+
         let res_e = this.equip.get_resists();
         for (let i of this.world.constants.damage_types) {
             res[i] += res_e[i];
         }
-        return res;
-    }
+
+        return res
+    }    
+
     get_evasion_chance() {
-        return character_defines.evasion + this.skills.evasion.practice * 0.01;
+        return character_defines.evasion + this.skills.evasion.practice * 0.01
     }
+
     get_accuracy(result) {
-        let base_accuracy = character_defines.accuracy + this.skills[result.weapon_type].practice * character_defines.skill_accuracy_modifier;
+        let base_accuracy = character_defines.accuracy + this.skills[result.weapon_type].practice * character_defines.skill_accuracy_modifier
+
         let blood_burden = character_defines.blood_accuracy_burden;
-        let rage_burden = character_defines.rage_accuracy_burden;
+        let rage_burden = character_defines.rage_accuracy_burden
+
         let blood_acc_loss = this.status.blood * blood_burden;
         let rage_acc_loss = this.status.rage * rage_burden;
-        return Math.min(1, Math.max(0.2, base_accuracy - blood_acc_loss - rage_acc_loss));
+
+        return Math.min(1, Math.max(0.2, base_accuracy - blood_acc_loss - rage_acc_loss))
     }
+
     get_block_chance() {
         let tmp = character_defines.block + this.skills.blocking.practice * character_defines.skill_blocking_modifier;
+
         return tmp;
     }
-    get_crit_chance(tag) {
-        let base_crit_chance = character_defines.crit_chance;
+
+    get_crit_chance(tag: "attack"|"spell") {
+        let base_crit_chance = character_defines.crit_chance
+
         if (tag == 'attack') {
             return base_crit_chance;
         }
+        
         if (tag == 'spell') {
             return base_crit_chance;
         }
     }
-    get_crit_mult() {
-        return character_defines.crit_mult;
+
+    get_crit_mult(){
+        return character_defines.crit_mult
     }
+
+
     // some getters
+
     get_actions() {
-        let tmp = [];
-        return tmp;
+        let tmp = []
+        return tmp
     }
+    
     get_range() {
         return this.equip.get_weapon_range(1);
     }
+
     get_local_market() {
         var cell = this.world.get_cell_by_id(this.cell_id);
         return cell.market;
     }
+
+
+
+
+
     // craft related
+
     calculate_gained_failed_craft_stress(tag) {
         let total = 10;
         return total;
     }
+
     get_craft_food_chance() {
         let chance = 0.0;
-        chance += this.skills.cooking.practice * 0.05;
-        return chance;
-    }
+        chance += this.skills.cooking.practice * 0.05
+        return chance
+    } 
+    
+
+    
+    
     // flag checking functions
+
     is_player() {
         return this.flags.player;
     }
+
     in_battle() {
         return this.flags.in_battle;
     }
+
     is_dead() {
-        return this.flags.dead;
+        return this.flags.dead
     }
+
+
+
     // factions interactions
+
     set_faction(faction) {
-        this.changed = true;
-        this.faction_id = faction.id;
+        this.changed = true
+        this.faction_id = faction.id
     }
+
+
     // exploration
+
     add_explored(tag) {
         this.misc.explored[tag] = true;
     }
-    on_move_default(pool, data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let tmp = this.world.get_territory(data.x, data.y);
-            this.add_explored(this.world.get_id_from_territory(tmp));
-            this.world.socket_manager.send_explored(this);
-            let res = this.on_move();
-            if (res != undefined) {
-                return 2;
-            }
-            return 1;
-        });
+    
+
+    async on_move_default(pool, data) {
+        let tmp = this.world.get_territory(data.x, data.y)
+        this.add_explored(this.world.get_id_from_territory(tmp));
+        this.world.socket_manager.send_explored(this);
+        let res = this.on_move()         
+        if (res != undefined) {
+            return 2
+        } 
+        return 1
     }
-    verify_move(dx, dy) {
-        return ((dx == 0 && dy == 1) || (dx == 0 && dy == -1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0) || (dx == 1 && dy == 1) || (dx == -1 && dy == -1));
+
+    verify_move(dx: number, dy: number) {
+        return ((dx == 0 && dy == 1) || (dx == 0 && dy == -1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0) || (dx == 1 && dy == 1) || (dx == -1 && dy == -1))
     }
+
+
+
+
     //db interactions
-    save_status_to_db(pool, save = true) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (save) {
-                yield common.send_query(pool, constants.set_status_query, [this.status, this.id]);
-            }
-        });
+
+    async save_status_to_db(pool, save = true) {
+        if (save) {
+            await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
+        }
     }
-    load_from_json(data) {
-        return __awaiter(this, void 0, void 0, function* () {
-            this.id = data.id;
-            this.name = data.name;
-            this.user_id = data.user_id;
-            this.cell_id = data.cell_id;
-            this.faction_id = data.faction_id;
-            this.status = data.status;
-            this.skills = data.skills;
-            this.stats = data.stats;
-            this.misc = data.misc;
-            this.flags = data.flags;
-            this.savings = new Savings();
-            this.savings.load_from_json(data.savings);
-            this.stash = new Stash();
-            this.stash.load_from_json(data.stash);
-            this.equip = new Equip();
-            this.equip.load_from_json(data.equip);
-        });
+
+    async load_from_json(data) {
+        this.id = data.id;
+        this.name = data.name;
+        this.user_id = data.user_id;
+        this.cell_id = data.cell_id;
+        this.faction_id = data.faction_id
+
+        this.status = data.status;
+        this.skills = data.skills;
+        this.stats = data.stats;
+        this.misc = data.misc
+
+        this.flags = data.flags;
+
+        this.savings = new Savings();        
+        this.savings.load_from_json(data.savings);        
+        this.stash = new Stash();
+        this.stash.load_from_json(data.stash);
+        this.equip = new Equip();
+        this.equip.load_from_json(data.equip);        
     }
+
     get_json() {
         return {
             name: this.name,
+
             status: this.status,
             skills: this.skills,
             stats: this.stats,
             misc: this.misc,
+
             flags: this.flags,
+
             savings: this.savings.get_json(),
             stash: this.stash.get_json(),
             equip: this.equip.get_json(),
         };
     }
-    load_to_db(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let result = yield common.send_query(pool, constants.new_char_query, [
-                this.user_id,
+
+    async load_to_db(pool) {
+        let result = await common.send_query(pool, constants.new_char_query, [
+            this.user_id,
+            this.cell_id, 
+            this.faction_id,
+            this.name, 
+            this.status,
+            this.skills,
+            this.stats,
+            this.misc,
+            this.flags,
+            this.savings.get_json(), 
+            this.stash.get_json(), 
+            this.equip.get_json()]);
+        return result.rows[0].id;
+    }
+
+    async save_to_db(pool, save = true) {
+        if (save) {
+            await common.send_query(pool, constants.update_char_query, [
+                this.id,
                 this.cell_id,
                 this.faction_id,
-                this.name,
                 this.status,
                 this.skills,
                 this.stats,
@@ -548,33 +778,11 @@ module.exports = class CharacterGenericPart {
                 this.flags,
                 this.savings.get_json(),
                 this.stash.get_json(),
-                this.equip.get_json()
-            ]);
-            return result.rows[0].id;
-        });
+                this.equip.get_json()]);
+        }
     }
-    save_to_db(pool, save = true) {
-        return __awaiter(this, void 0, void 0, function* () {
-            if (save) {
-                yield common.send_query(pool, constants.update_char_query, [
-                    this.id,
-                    this.cell_id,
-                    this.faction_id,
-                    this.status,
-                    this.skills,
-                    this.stats,
-                    this.misc,
-                    this.flags,
-                    this.savings.get_json(),
-                    this.stash.get_json(),
-                    this.equip.get_json()
-                ]);
-            }
-        });
+
+    async delete_from_db(pool) {
+        await common.send_query(pool, constants.delete_char_query, [this.id]);
     }
-    delete_from_db(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield common.send_query(pool, constants.delete_char_query, [this.id]);
-        });
-    }
-};
+}

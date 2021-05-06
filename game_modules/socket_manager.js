@@ -404,11 +404,11 @@ module.exports = class SocketManager {
     }
 
     send_skills_info(character) {
-        this.send_to_character_user(character, 'skills', character.data.skills)
+        // this.send_to_character_user(character, 'skills', character.data.skills)
     }
 
     send_tactics_info(character) {
-        this.send_to_character_user(character, 'tactic', character.data.tactic)
+        // this.send_to_character_user(character, 'tactic', character.data.tactic)
     }
 
     send_battle_data_to_user(user) {
@@ -452,7 +452,7 @@ module.exports = class SocketManager {
 
     send_exp_update(character) {
         let user = this.world.user_manager.get_user_from_character(character);
-        this.send_to_user(user, 'exp', {exp: character.data.exp, mexp: common.get_next_nevel_req(character.data.level), level: character.data.level, points: character.data.skill_points});
+        // this.send_to_user(user, 'exp', {exp: character.data.exp, mexp: common.get_next_nevel_req(character.data.level), level: character.data.level, points: character.data.skill_points});
     }
 
     send_savings_update(character) {
@@ -461,11 +461,11 @@ module.exports = class SocketManager {
     }
 
     send_status_update(character) {
-        this.send_to_character_user(character, 'status', character.data.other)
+        this.send_to_character_user(character, 'status', character.status)
     }
 
     send_explored(character) {
-        this.send_to_character_user(character, 'explore', character.data.explored)
+        this.send_to_character_user(character, 'explore', character.misc.explored)
     }
 
     send_updates_to_char(character) {
@@ -495,7 +495,7 @@ module.exports = class SocketManager {
     send_char_info(socket, user) {
         if (user != null) {
             let char = user.character
-            socket.emit('char-info-detailed', {stats: char.data.stats, resists: char.get_resists()});
+            // socket.emit('char-info-detailed', {stats: char.data.stats, resists: char.get_resists()});
             this.send_equip_update(socket, user)
             this.send_stash_update(socket, user)
         }
