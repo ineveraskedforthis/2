@@ -1,5 +1,4 @@
 var Market = require("./market/market.js")
-var ProfessionGraph = require("./profession_graph.js")
 var common = require("./common.js")
 var constants = require("./static_data/constants.js")
 const { MarketItems } = require("./market/market_items.js")
@@ -22,6 +21,10 @@ module.exports = class Cell {
         this.market_id = await this.market.init(pool);
         this.item_market_id = await this.item_market.init(pool);
         await this.load_to_db(pool);
+    }
+
+    has_market() {
+        return true
     }
 
     async load(pool) {

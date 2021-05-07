@@ -43,13 +43,11 @@
     display: flex; 
     flex-direction: column;
     width: 100%;
-    height: 30px;
+    height: 26px;
     border: rgb(0, 0, 0) solid 2px;
 }
 
-.bar_column>div{
-    text-align: right;
-}
+
 
 .bar_vertical{
     height: 100%;
@@ -63,10 +61,17 @@
 .bar_data{
     position: absolute;
     height: 100%;
-    text-align: right;
-    width: 95%;
-    color: black;
+    left: 105%;
+    text-align: left;
+    color: rgb(0, 0, 0);
     margin-right: 3px;
+    font-stretch: extra-expanded;
+    font: 1.4rem 'LeagueMonoVariable', sans-serif;
+    text-shadow:
+     -1px -1px 0 rgb(255, 255, 255),  
+      1px -1px 0 rgb(255, 255, 255),
+      -1px 1px 0 rgb(255, 255, 255),
+       1px 1px 0 rgb(255, 255, 255);
 }
 
 /* VERTICAL BAR END */

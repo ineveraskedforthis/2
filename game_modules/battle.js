@@ -172,7 +172,7 @@ class BattleReworked {
             let char = this.world.get_char_from_id(unit.id);
             if (char != undefined)                {
                 if (team != 2) {
-                    if ((unit.team == team) && (!char.data.dead)) {
+                    if ((unit.team == team) && (!char.is_dead())) {
                         await char.give_exp(pool, Math.floor(exp / n));
                     }
                 }

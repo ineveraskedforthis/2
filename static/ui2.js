@@ -657,7 +657,7 @@ socket.on('is-login-completed', msg => login(msg));
 socket.on('session', msg => {localStorage.setItem('session', msg)})
 socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 
-socket.on('hp', msg => char_info_monster.update_hp(msg));
+socket.on('hp', msg => char_info_monster.update_status(msg));
 socket.on('exp', msg => char_info_monster.update_exp(msg));
 socket.on('savings', msg => char_info_monster.update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));

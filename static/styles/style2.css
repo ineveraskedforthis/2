@@ -2,6 +2,7 @@ body {
 
     background-image: url(/static/img/background_1.png);
     background-repeat: repeat;
+    overflow: hidden;
 }
 
 #bg_fade {
@@ -81,10 +82,10 @@ body {
 
 #game_container {
     position: absolute;
-    width: 90%;
-    height: 90%;
-    margin-left: 5%;
-    margin-top: 2%;
+    width: 1800px;
+    height: 900px;
+    margin-left: 50px;
+    margin-top: 30px;
 }
 
 .game_scene {
@@ -107,7 +108,7 @@ body {
 
 
 .game_frame {
-    background: rgba(143, 31, 31, 0.507);
+    background: rgba(136, 62, 62, 0.527);;
 }
 
 
@@ -157,7 +158,7 @@ body {
     top: 10%;
     width: 50%;
     height: 70%;
-    background: rgba(143, 31, 31, 0.527);
+    background: rgba(136, 62, 62, 0.527);
     color: rgb(13, 228, 77);
 }
 

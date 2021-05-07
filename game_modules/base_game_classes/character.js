@@ -1,3 +1,4 @@
+const move = require("./character_actions/move.js");
 const CharacterGenericPart = require("./character_generic_part.js")
 
 
@@ -60,14 +61,13 @@ class Character extends CharacterGenericPart {
 
     async on_move(pool) {
         this.change_stress(3);
-        let danger = this.world.constants.ter_danger[tmp];
-        let res = await this.attack_local_monster(pool, danger) 
-        return res
+        // let danger = this.world.constants.ter_danger[tmp];
+        // let res = await this.attack_local_monster(pool, danger) 
+        return undefined
     }
-
-
-
 }
+
+Character.prototype.move = move; 
 
 
 module.exports = Character

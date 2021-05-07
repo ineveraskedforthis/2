@@ -255,7 +255,7 @@ module.exports = class SocketManager {
     async attack(socket, user_data, data) {
         common.flag_log('attack', constants.logging.sockets.messages)
         common.flag_log([user_data], constants.logging.sockets.messages)
-        if (user_data.current_user != null && !user_data.current_user.character.data.in_battle) {
+        if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
             let char = user_data.current_user.character;
             let battle = await char.attack_local_monster(this.pool);
             socket.emit('battle-has-started', battle.get_data())
@@ -265,7 +265,7 @@ module.exports = class SocketManager {
     async attack_local_outpost(socket, user_data, data) {
         common.flag_log('attack', constants.logging.sockets.messages)
         common.flag_log([user_data], constants.logging.sockets.messages)
-        if (user_data.current_user != null && !user_data.current_user.character.data.in_battle) {
+        if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
             let char = user_data.current_user.character;
             let battle = await char.attack_local_outpost(this.pool);
             if (battle != undefined) {
@@ -413,7 +413,7 @@ module.exports = class SocketManager {
 
     send_battle_data_to_user(user) {
         let character = user.character;
-        if (character.data.in_battle) {
+        if (character.in_battle()) {
             let battle = this.world.get_battle_from_id(character.data.battle_id);
             this.send_to_user(user, 'battle-has-started', battle.get_data());
         }
@@ -446,8 +446,7 @@ module.exports = class SocketManager {
     }
 
     send_hp_update(character) {
-        let user = this.world.user_manager.get_user_from_character(character);
-        this.send_to_user(user, 'hp', {hp: character.hp, mhp: character.max_hp});
+        this.send_status_update(character)
     }
 
     send_exp_update(character) {
@@ -461,7 +460,7 @@ module.exports = class SocketManager {
     }
 
     send_status_update(character) {
-        this.send_to_character_user(character, 'status', character.status)
+        this.send_to_character_user(character, 'status', {c: character.status, m: character.stats.max})
     }
 
     send_explored(character) {

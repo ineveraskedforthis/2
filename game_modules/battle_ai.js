@@ -11,7 +11,7 @@ module.exports = class BattleAI {
         for (var i = 0; i < units.length; i++) {
             let target_unit = units[i]
             var d = geom.dist(unit, target_unit);
-            if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == null)) && (unit.team != target_unit.team) && (!battle.world.get_char_from_id(target_unit.id).data.dead)) {
+            if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == null)) && (unit.team != target_unit.team) && (!battle.world.get_char_from_id(target_unit.id).is_dead())) {
                 closest_enemy = i;
                 min_distance = d;
             }

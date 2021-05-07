@@ -281,7 +281,7 @@ module.exports = class EntityManager {
     async kill(pool, char_id) {
         
         let character = this.chars[char_id];
-        if (!character.data.dead) {
+        if (!character.is_dead()) {
             await character.clear_orders(pool);
             await character.set(pool, 'dead', true);
             console.log('kill ' + char_id);

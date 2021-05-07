@@ -97,7 +97,7 @@ module.exports = class CharacterGenericPart {
         this.stats.magic_power = 10;
         this.misc = {
             model: 'test',
-            explored: 0,
+            explored: {},
             battle_id: -1,
             tactic: { s0: this.world.constants.default_tactic_slot },
             ai_tag: 'dummy'
@@ -161,7 +161,10 @@ module.exports = class CharacterGenericPart {
     }
     battle_update() {
     }
-    on_move() {
+    on_move(pool) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return undefined;
+        });
     }
     get_item_lvl() {
         return 1;
@@ -193,6 +196,7 @@ module.exports = class CharacterGenericPart {
                 return Math.sign(d_stress);
             }
         }
+        return 0;
     }
     get_stress_target() {
         return 0;
@@ -483,7 +487,7 @@ module.exports = class CharacterGenericPart {
             let tmp = this.world.get_territory(data.x, data.y);
             this.add_explored(this.world.get_id_from_territory(tmp));
             this.world.socket_manager.send_explored(this);
-            let res = this.on_move();
+            let res = yield this.on_move(pool);
             if (res != undefined) {
                 return 2;
             }
