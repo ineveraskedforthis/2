@@ -104,7 +104,7 @@ module.exports = class World {
             this.battle_tick = 0;
         }
         if (this.battle_tick == 0){            
-            this.socket_manager.send_all_market_info()
+            // this.socket_manager.send_all_market_info()
         }
 
         this.pops_tick += 1;

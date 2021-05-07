@@ -76,7 +76,8 @@ module.exports = class SocketManager {
     async buyout(user_data, msg) {
         if (user_data.current_user != null) {
             let character = user_data.current_user.character;
-            let market = character.get_cell().item_market;
+            let market = character.get_cell().get_item_market();
+            if (market == undefined) return;
             let id = parseInt(msg);
             if (isNaN(id)) {
                 return
@@ -514,8 +515,9 @@ module.exports = class SocketManager {
         }
     }
 
-    update_market_info(cell) {
-        var data = cell.market.get_orders_list();
+    update_market_info(market) {
+        var data = market.get_orders_list();
+        cell = market.get_cell();
         if (constants.logging.sockets.update_market_info) {
             console.log('sending market orders to client');
             console.log(data);
@@ -536,7 +538,8 @@ module.exports = class SocketManager {
     }
 
     send_item_market_update_to_character(character) {
-        let market = character.get_cell().item_market;
+        let market = character.get_cell().get_item_market();
+        if (market == undefined) return;
         let data = market.get_orders_list()
         this.send_to_character_user(character, 'item-market-data', data)
     }
@@ -558,8 +561,8 @@ module.exports = class SocketManager {
         }
     }
 
-    send_market_info(cell) {
-        let market = cell.market;
+    send_market_info(market) {
+        cell = market.get_cell()
 
         let data = {
             buy: {},
@@ -598,10 +601,8 @@ module.exports = class SocketManager {
     }
 
     send_all_market_info() {
-        for (let i = 0; i < this.world.x; i++) {
-            for (let j = 0; j < this.world.y; j++) {
-                this.send_market_info(this.world.entity_manager.map.cells[i][j]);
-            }
+        for (let market of this.world.entity_manager.markets) {
+            this.send_market_info(market)
         }
     }
 

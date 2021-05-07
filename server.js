@@ -58,7 +58,8 @@ var world = new World(io, 27, 27);
             await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
             await client.query('CREATE TABLE battles (id serial primary key, units jsonb[], savings jsonb, stash jsonb, data jsonb)');
             await client.query('CREATE TABLE worlds (x int, y int)');
-            await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, item_market_id int, owner_id int, pop_id int)');
+
+            await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, item_market_id int, development jsonb, resources jsonb)');
 
             await client.query('CREATE TABLE markets (id int PRIMARY KEY, data jsonb)');
             await client.query("CREATE TABLE market_orders (id serial primary key, typ varchar(5), tag varchar(30), owner_id int, owner_tag varchar(5), amount int, price int, market_id int)");

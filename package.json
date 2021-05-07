@@ -15,6 +15,7 @@
         "validator": "^11.1.0"
     },
     "devDependencies": {
+        "@types/node": "^15.0.2",
         "eslint": "^6.8.0"
     }
 }

@@ -1,5 +1,5 @@
 const constants = {
-    version: 238,
+    version: 239,
     logging: {
         agent: {
             buy: false
@@ -31,7 +31,7 @@ const constants = {
     new_char_query: 'INSERT INTO chars (user_id, cell_id, faction_id, name, status, skills, stats, misc, flags, savings, stash, equip) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id',
     init_id_query: 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)',
     new_battle_query: 'INSERT INTO battles (units, savings, stash, data) VALUES ($1, $2, $3, $4) RETURNING id',
-    new_cell_query: 'INSERT INTO cells (id, x, y, name, market_id, item_market_id, owner_id, pop_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+    new_cell_query: 'INSERT INTO cells (id, x, y, name, market_id, item_market_id, development, resources) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     new_market_query: 'INSERT INTO markets (id, data) VALUES ($1, $2)',
     insert_market_order_query: 'INSERT INTO market_orders (typ, tag, owner_id, owner_tag, amount, price, market_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
     insert_agent_query: 'INSERT INTO agents (cell_id, name, savings, stash) VALUES ($1, $2, $3, $4) RETURNING id',

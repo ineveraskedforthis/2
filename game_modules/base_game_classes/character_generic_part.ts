@@ -1,6 +1,3 @@
-declare var require: any
-declare var module: any
-
 var common = require("../common.js");
 var constants = require("../static_data/constants.js");
 const Equip = require("./equip.js");
