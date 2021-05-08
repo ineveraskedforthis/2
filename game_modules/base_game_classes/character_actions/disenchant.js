@@ -1,6 +1,6 @@
 module.exports = function disenchant(index) {
     let res = 'ok';
-    if ((!this.data.in_battle) & ('disenchanting' in this.data.skills)) {
+    if ((!this.in_battle()) & ('disenchanting' in this.data.skills)) {
         let item = this.equip.data.backpack[index]
         if (item == undefined) {
             res = 'no_selected_item'
@@ -14,7 +14,7 @@ module.exports = function disenchant(index) {
         let stress_gained = this.calculate_gained_failed_craft_stress('disenchanting');
         this.change_stress(stress_gained);
         this.changed = true;   
-    } else if (this.data.in_battle) {
+    } else if (this.in_battle()) {
         res = 'in_battle'
     } else if (!('disenchanting' in this.data.skills)) {
         res = 'skill_disenchanting_is_not_learnt'

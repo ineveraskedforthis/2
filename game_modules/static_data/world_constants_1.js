@@ -3,6 +3,67 @@
     ENEMY_TAGS: ['rat', 'elodino', 'graci'],
     SKILLS: {},
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
+
+    development: {
+
+        // ########################
+        // ######## IT'H ##########
+        // ########################
+
+        //colony center
+        '0_3': {rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0},
+        '0_4': {rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0},
+        '1_3': {rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0},
+        '1_4': {rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0},
+        '1_5': {rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0},
+        '1_6': {rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0},
+
+        //north part
+        '1_2': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '2_3': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '2_4': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '3_3': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '3_4': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+
+        //fishers quarter
+        '2_2': {rural: 2, urban: 0, wild: 0, ruins: 0, wastelands: 0},
+        '3_2': {rural: 2, urban: 0, wild: 0, ruins: 0, wastelands: 0},
+
+        //south part
+        '2_5': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '2_6': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '2_7': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '3_5': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '3_6': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '3_7': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+        '3_8': {rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0},
+    },
+
+    resources: {
+        //coast colony
+        '3_2': {water: true, prey: false, forest: false, fish: true},
+        '2_2': {water: true, prey: false, forest: false, fish: true},
+        '1_2': {water: true, prey: false, forest: false, fish: false},
+        '1_3': {water: true, prey: false, forest: false, fish: false},
+        '0_3': {water: true, prey: false, forest: false, fish: false},
+        '0_4': {water: true, prey: false, forest: false, fish: false},
+        '1_5': {water: true, prey: false, forest: false, fish: false},
+        '1_6': {water: true, prey: false, forest: false, fish: false},
+        '2_7': {water: true, prey: false, forest: false, fish: false},
+        '3_8': {water: true, prey: false, forest: false, fish: false},
+
+        // north rat coast
+        '4_2': {water: true, prey: false, forest: false, fish: true},
+        '5_3': {water: true, prey: false, forest: false, fish: true},
+        '6_3': {water: true, prey: false, forest: false, fish: true},
+        '7_3': {water: true, prey: false, forest: false, fish: true},  
+
+        //south rat coast
+        '4_8': {water: true, prey: false, forest: false, fish: false},
+        '5_9': {water: true, prey: false, forest: false, fish: false},
+        '6_10': {water: true, prey: false, forest: false, fish: false},
+        '7_10': {water: true, prey: false, forest: false, fish: false},
+    },
     
     territories: {
         'colony':     ['0_3', '0_4',

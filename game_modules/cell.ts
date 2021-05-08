@@ -15,6 +15,7 @@ interface CellResources {
     water: boolean;
     prey: boolean;
     forest: boolean;
+    fish: boolean
 }
 
 interface Actions {
@@ -50,9 +51,17 @@ class Cell {
 
         this.market_id = -1
         this.item_market_id = -1
+        if (development == undefined) {
+            this.development = {rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0};
+        } else {
+            this.development = development
+        }
 
-        this.development = development
-        this.resources = res
+        if (res == undefined) {
+            this.resources = {water: false, prey: false, forest: false, fish: false}
+        } else {
+            this.resources = res
+        }
     }
 
     async init(pool) {
@@ -71,16 +80,23 @@ class Cell {
             rest: false,
             clean: false
         }
-        if ((this.development.wild > 0) && this.resources.prey) {
-            actions.hunt = true
-        }
-        if (this.resources.water) {
-            actions.clean = true
-        }
-        if (this.development.urban > 0) {
-            actions.rest = true
-        }
+
+        actions.hunt = this.can_hunt()
+        actions.clean = this.can_clean()
+        actions.rest = this.can_rest()
         return actions
+    }
+
+    can_clean(): boolean{
+        return (this.resources.water)
+    }
+
+    can_hunt(): boolean{
+        return (this.development.wild > 0) && (this.resources.prey)
+    }
+
+    can_rest(): boolean{
+        return (this.development.urban > 0)
     }
 
     get_item_market() {

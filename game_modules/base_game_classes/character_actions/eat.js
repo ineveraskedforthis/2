@@ -1,5 +1,5 @@
 module.exports = function eat() {
-    if (!this.data.in_battle) {
+    if (!this.in_battle()) {
         let tmp = this.stash.get('food');
         if (tmp > 0) {
             this.change_hp(pool, 10);

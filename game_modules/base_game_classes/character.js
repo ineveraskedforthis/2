@@ -1,3 +1,4 @@
+const clean = require("./character_actions/clean.js");
 const move = require("./character_actions/move.js");
 const CharacterGenericPart = require("./character_generic_part.js")
 
@@ -68,6 +69,7 @@ class Character extends CharacterGenericPart {
 }
 
 Character.prototype.move = move; 
+Character.prototype.clean = clean; 
 
 
 module.exports = Character

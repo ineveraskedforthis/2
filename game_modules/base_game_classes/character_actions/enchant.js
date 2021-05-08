@@ -1,6 +1,6 @@
 module.exports = function enchant(index) {
     let res = 'ok';
-    if ((!this.data.in_battle) & ('enchanting' in this.data.skills)) {
+    if ((!this.in_battle()) & ('enchanting' in this.data.skills)) {
         let item = this.equip.data.backpack[index]
         if (item == undefined) {
             res = 'no_selected_item'
@@ -16,7 +16,7 @@ module.exports = function enchant(index) {
             res = 'not_enough_zaz'
         }
         this.changed = true;
-    } else if (this.data.in_battle) {
+    } else if (this.in_battle()) {
         res = 'in_battle'
     } else if (!('enchanting' in this.data.skills)) {
         res = 'skill_enchanting_is_not_learnt'

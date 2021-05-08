@@ -12,7 +12,7 @@ module.exports = class Map {
         for (var i = 0; i < this.x; i++) {
             var tmp = []
             for (var j = 0; j < this.y; j++) {
-                var cell = new Cell(this.world, this, i, j, null, -1);
+                var cell = new Cell(this.world, this, i, j, '', this.world.constants.development[i + '_' + j], this.world.constants.resources[i + '_' + j]);
                 await cell.init(pool);
                 tmp.push(cell);
             }

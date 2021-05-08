@@ -1,6 +1,6 @@
 module.exports = function craft_clothes() {
     let res = 'ok';
-    if ((!this.data.in_battle) & ('sewing' in this.data.skills)) {
+    if ((!this.in_battle()) & ('sewing' in this.data.skills)) {
         let tmp = this.stash.get('leather');
         if (tmp > 0) {
             this.stash.inc('leather', -1);
@@ -11,7 +11,7 @@ module.exports = function craft_clothes() {
         } else {
             res = 'not_enough_leather'
         }
-    } else if (this.data.in_battle) {
+    } else if (this.in_battle()) {
         res = 'in_battle'
     } else if (!('sewing' in this.data.skills)) {
         res = 'skill_sewing_is_not_learnt'

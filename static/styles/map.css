@@ -13,17 +13,17 @@
 
 #local_description{
     position: absolute;
-    left: 50%;
+    left: 30%;
     top: 0%;
     height: 200px;
-    width: 50%;
+    width: 70%;
     overflow: hidden;
     border-left: rgb(168, 9, 9) solid 1px;
 }
 
 #map_control{
     height: auto;
-    width: 50%;
+    width: 30%;
     overflow: hidden;
 }
 
@@ -48,7 +48,7 @@
     position: absolute;
     top: 10px;
     left: 10px;
-    width: 500px;
+    width: 400px;
     background: rgba(151, 0, 0, 0.66);
     border: rgb(168, 9, 9) solid 1px;
     overflow: hidden;

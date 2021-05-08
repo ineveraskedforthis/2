@@ -333,7 +333,7 @@ module.exports = class SocketManager {
     async clean(user_data) {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
-            char.clean(this.pool);
+            char.clean();
         }
     }
 

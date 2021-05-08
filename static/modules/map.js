@@ -4,6 +4,11 @@
 import {get_pos_in_canvas} from './common.js';
 import {location_descriptions, section_descriptions} from './localisation.js';
 
+function st(a) {
+    return a[0] + ' ' + a[1]
+}
+
+const directions = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]]
 
 const territories = {
         'colony':     ['0_3', '0_4',
@@ -90,13 +95,14 @@ export function init_map_control(map, globals) {
     };
 
     map.canvas.onmouseup = event => {
+        event.preventDefault()
         let mouse_pos = get_pos_in_canvas(map.canvas, event);
         let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
-        
         if (event.button == 2) {
+            let tmp = Date.now()
             if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
                 map.select_hex(selected_hex[0], selected_hex[1]);
-                map.send_move_request()
+                map.send_cell_action('move')
             }  
         } else {
             let tmp = Date.now()
@@ -142,21 +148,28 @@ export class Map {
         {
             let button = document.getElementById('move_button');
             (() => 
-                    button.onclick = () => this.send_move_request()
+                    button.onclick = () => this.send_cell_action('move')
             )(this.socket);
         }
 
         {
             let button = document.getElementById('attack_button');
             (() => 
-                    button.onclick = () => socket.emit('attack', null)
+                    button.onclick = () => this.send_cell_action('attack')
             )(this.socket);
         }
 
         {
-            let button = document.getElementById('search_button');
+            let button = document.getElementById('hunt_button');
             (() => 
-                    button.onclick = () => socket.emit('attack-outpost', null)
+                    button.onclick = () => this.send_cell_action('hunt')
+            )(this.socket);
+        }
+
+        {
+            let button = document.getElementById('clean_button');
+            (() => 
+                    button.onclick = () => this.send_cell_action('clean')
             )(this.socket);
         }
         
@@ -165,10 +178,30 @@ export class Map {
         this.container.appendChild(this.description);
 
         this.local_description = document.getElementById('local_description')
+
+        this.path = {}
+        this.real_path = []
+        this.path_progress = 0
     }
 
-    send_move_request() {
-        this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
+    send_cell_action(action) {
+        if ((action == 'move') && (this.check_move(this.selected[0] - this.curr_pos[0], this.selected[1] - this.curr_pos[1]))) {
+            this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
+        } else if ((this.selected[0] == this.curr_pos[0]) && (this.selected[1] == this.curr_pos[1])) {
+            this.socket.emit(action, {x: this.selected[0], y: this.selected[1]})
+        } else if (this.real_path.length > 1) {
+            this.path_progress += 1
+            this.socket.emit('move', {x: this.real_path[this.path_progress + 1][0], y: this.real_path[this.path_progress + 1][1]})            
+        }        
+    }
+
+    check_move(a, b) {
+        for (let i of directions) {
+            if ((i[0] == a) && (i[1] == b)) {
+                return true
+            }
+        }
+        return false
     }
 
     toogle_territory(tag) {
@@ -201,8 +234,9 @@ export class Map {
                     this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.6)');
                 } else if (this.curr_pos[0] == i && this.curr_pos[1] == j) {
                     this.draw_hex(i, j, 'fill', '(0, 0, 255, 0.6)');
+                    this.draw_hex(i, j, 'circle', '(0, 255, 0, 1)');
                 } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
-                    this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.6)');
+                    this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.6)');                    
                 } else {
                     if ((get_territory_tag(i, j) == this.curr_territory) & (this.curr_territory != undefined) & (this.sections != undefined)) {
                         let color = this.get_section_color(this.get_section(i, j))
@@ -210,12 +244,35 @@ export class Map {
                             this.draw_hex(i, j, 'fill', color);
                         }
                     }
+                    
                 }
-                //  else {
-                //     this.draw_hex(i, j, 'stroke', '(0, 0, 0, 1)');
-                // }
             }
         }
+
+        if (this.selected != undefined){
+            ctx.strokeStyle = 'rgb(0, 255, 0)'
+            let tmp = st(this.selected)
+            let cur = this.selected
+            while ((tmp != -1) && (tmp != undefined)) {
+                if ((tmp in this.path) && (this.path[tmp] != -1)) {
+                    let t = this.get_hex_centre(cur[0], cur[1])
+                    ctx.beginPath()
+                    ctx.moveTo(t[0], t[1]);
+
+                    let tmp_cen = this.get_hex_centre(this.path[tmp][0], this.path[tmp][1])
+                    ctx.lineTo(tmp_cen[0], tmp_cen[1])
+                    ctx.stroke()
+                }
+                if (this.path[tmp] != undefined) {
+                    cur = this.path[tmp]
+                    tmp = st(this.path[tmp])                    
+                } else {
+                    tmp = undefined
+                    cur = undefined
+                }
+                
+            }
+        }        
     }
 
     get_section(x, y) {
@@ -236,12 +293,27 @@ export class Map {
         return undefined;
     }
 
+    get_hex_centre(i, j) {
+        var h = this.hex_side * Math.sqrt(3) / 2;
+        var w = this.hex_side / 2;
+        var tx = (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
+        var ty = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
+        return [tx, ty]
+    }
+
     draw_hex(i, j, mode, color) {
         var ctx = this.canvas.getContext('2d');
         var h = this.hex_side * Math.sqrt(3) / 2;
         var w = this.hex_side / 2;
         var center_x = (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
         var center_y = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
+        if (mode == 'circle') {
+            ctx.strokeStyle = 'rgba' + color;
+            ctx.beginPath();
+            ctx.arc(center_x, center_y, 5, 0, Math.PI * 2, true);
+            ctx.stroke();
+        }
+
         ctx.fillStyle = 'rgba' + color;
         ctx.beginPath();
         ctx.moveTo(center_x + this.hex_side, center_y);
@@ -256,6 +328,7 @@ export class Map {
             ctx.lineTo(center_x + this.hex_side, center_y);
             ctx.stroke()
         }
+
         // ctx.fillStyle = 'rgba(0, 0, 0, 1)';
         // ctx.font = '10px Times New Roman';
         // ctx.fillText(`${i} ${j}`, center_x - w, center_y + h / 2);
@@ -300,7 +373,71 @@ export class Map {
         }
         let section_tag = this.get_section(i, j)
         this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag] + '<br>' + section_descriptions[section_tag];
-        this.local_description.innerHTML = '<img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'   
+        this.local_description.innerHTML = '<img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'
+        this.path = this.create_path()
+        this.real_path = []
+        this.path_progress = 0
+
+        if (this.selected != undefined){
+            let tmp = st(this.selected)
+            let cur = this.selected
+            while ((tmp != -1) && (tmp != undefined)) {
+                this.real_path.push(cur)
+                if (this.path[tmp] != undefined) {
+                    cur = this.path[tmp]
+                    tmp = st(this.path[tmp])                    
+                } else {
+                    tmp = undefined
+                    cur = undefined
+                }
+            }
+        }
+        this.real_path = this.real_path.reverse()
+    }
+
+    create_path() {
+        let queue = [this.curr_pos];
+        let prev = {}
+        prev[st(this.curr_pos)] = -1
+        let used = {}
+        let right = 1;
+        let next = 0
+        while ((next != -1) && (right < 400)) {
+            let curr = queue[next]
+            used[st(curr)] = true
+            
+
+            for (let d of directions) {
+                let tmp = [curr[0] + d[0], curr[1] + d[1]]
+                let territory = get_territory_tag(tmp[0], tmp[1])
+                if ((!used[st(tmp)]) && (territory != 'unknown') && (territory != 'sea') && (!this.fog_of_war[territory])) {
+                    queue[right] = tmp;
+                    prev[st(tmp)] = curr
+                    right++;
+                    if ((tmp[0] == this.selected[0]) && (tmp[1] == this.selected[1])) {
+                        return prev
+                    }                    
+                }                
+            }
+            
+
+            let heur_score = 9999
+            next = -1
+            for (let i = 0; i < right; i++) {
+                let tmp = this.dist(queue[i], this.selected)
+                if ((tmp < heur_score) && (!used[st(queue[i])])) {
+                    next = i;
+                    heur_score = tmp
+                }
+            }
+        }
+        return prev
+    }
+
+    dist(a, b) {
+        let v1 = this.get_hex_centre(a[0], a[1])
+        let v2 = this.get_hex_centre(b[0], b[1])
+        return ((v1[0] - v2[0]) * (v1[0] - v2[0]) + (v1[1] - v2[1]) * (v1[1] - v2[1])) /10000
     }
 
     set_curr_pos(i, j) {

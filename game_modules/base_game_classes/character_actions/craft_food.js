@@ -1,6 +1,6 @@
 module.exports = function craft_food() {
     let res = 'ok';
-    if ((!this.data.in_battle) & ('cook' in this.data.skills)) {
+    if ((!this.in_battle()) & ('cook' in this.data.skills)) {
         let tmp = this.stash.get('meat');
         if (tmp > 0) {
             this.stash.inc('meat', -1);
@@ -20,7 +20,7 @@ module.exports = function craft_food() {
         else {
             res = 'not_enough_meat'
         }
-    } else if (this.data.in_battle) {
+    } else if (this.in_battle()) {
         res = 'in_battle'
     } else if (!('cook' in this.data.skills)) {
         res = 'skill_cook_is_not_learnt'
