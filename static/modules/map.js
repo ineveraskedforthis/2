@@ -64,12 +64,12 @@ export function init_map_control(map, globals) {
         globals.prev_mouse_x = null;
         globals.prev_mouse_y = null;
 
-        let mouse_pos = get_pos_in_canvas(map.canvas, event);    
-        let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
-        map.select_hex(selected_hex[0], selected_hex[1]);
-        if (event.button == 2) {
-            map.send_move_request()
-        }
+        map.last_time_down = Date.now() 
+
+        // let mouse_pos = get_pos_in_canvas(map.canvas, event);    
+        // let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
+        // map.select_hex(selected_hex[0], selected_hex[1]);
+        
     }
 
     map.canvas.onmousemove = event => {
@@ -92,7 +92,21 @@ export function init_map_control(map, globals) {
     map.canvas.onmouseup = event => {
         let mouse_pos = get_pos_in_canvas(map.canvas, event);
         let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
-        map.select_hex(selected_hex[0], selected_hex[1]);
+        
+        if (event.button == 2) {
+            if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
+                map.select_hex(selected_hex[0], selected_hex[1]);
+                map.send_move_request()
+            }  
+        } else {
+            let tmp = Date.now()
+            if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
+                map.select_hex(selected_hex[0], selected_hex[1]);
+                let context = document.getElementById('map_context');
+                context.style.top = mouse_pos.y + 5 + 'px';
+                context.style.left = mouse_pos.x + 5 + 'px';
+            }            
+        }
         globals.pressed = false;
     }
 
@@ -271,7 +285,6 @@ export class Map {
                     return [x, y];
                 }
             }
-
         }
     }
 
@@ -287,14 +300,12 @@ export class Map {
         }
         let section_tag = this.get_section(i, j)
         this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag] + '<br>' + section_descriptions[section_tag];
+        this.local_description.innerHTML = '<img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'   
     }
 
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
         this.curr_territory = get_territory_tag(i, j);
-        console.log(this.curr_territory)
-        console.log(i, j)
-        this.local_description.innerHTML = 'Your surroundings: \n <img src="static/img/' + LOCAL_IMAGES[this.curr_territory] +  '" width="300">'        
         return BACKGROUNDS[this.curr_territory];
     }
 

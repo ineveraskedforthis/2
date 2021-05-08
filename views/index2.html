@@ -215,11 +215,7 @@
             </div>
 
             <div id = 'map_tab', class = "game_tab hidden movable">
-                <div id = 'map_column'>
-                    <canvas id='map_canvas' width=800 height=800 oncontextmenu="return false;"></canvas>
-                </div>
-                <div id = 'description_column'> 
-                    <div id='local_description'></div>
+                <div id = 'map_context'>
                     <div id='map_control'>
                         <div id='move_button' class = 'button'>
                             Move to selected
@@ -230,7 +226,15 @@
                         <div id='search_button' class = 'button'>
                             Search at local hex
                         </div>
+                        <div id='local_description'></div>
                     </div>
+                </div>
+                <div id = 'map_column'>
+                    <canvas id='map_canvas' width=800 height=800 oncontextmenu="return false;"></canvas>
+                </div>
+                <div id = 'description_column'> 
+                    
+                    
                 </div> 
                 <div class="corner top"></div>
                 <div class="corner bottom"></div>
