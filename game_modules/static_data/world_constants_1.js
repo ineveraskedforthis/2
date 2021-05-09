@@ -63,6 +63,25 @@
         '5_9': {water: true, prey: false, forest: false, fish: false},
         '6_10': {water: true, prey: false, forest: false, fish: false},
         '7_10': {water: true, prey: false, forest: false, fish: false},
+
+        //rat planes
+        '5_4': {water: false, prey: true, forest: false, fish: false},
+        '5_5': {water: false, prey: true, forest: false, fish: false},
+        '5_6': {water: false, prey: true, forest: false, fish: false},
+        '5_7': {water: false, prey: true, forest: false, fish: false},
+        '5_8': {water: false, prey: true, forest: false, fish: false},
+        '6_4': {water: false, prey: true, forest: false, fish: false},
+        '6_5': {water: false, prey: true, forest: false, fish: false},
+        '6_6': {water: false, prey: true, forest: false, fish: false},
+        '6_7': {water: false, prey: true, forest: false, fish: false},
+        '6_8': {water: false, prey: true, forest: false, fish: false},
+        '6_9': {water: false, prey: true, forest: false, fish: false},
+        '7_4': {water: false, prey: true, forest: false, fish: false},
+        '7_5': {water: false, prey: true, forest: false, fish: false},
+        '7_6': {water: false, prey: true, forest: false, fish: false},
+        '7_7': {water: false, prey: true, forest: false, fish: false},
+        '7_8': {water: false, prey: true, forest: false, fish: false},
+        '7_9': {water: false, prey: true, forest: false, fish: false},
     },
     
     territories: {
@@ -86,6 +105,7 @@
             'mages_quarter': ['1_6', '1_5', '2_6', '2_7', '3_7', '3_8'],
             'port': ['0_3', '0_4', '1_3'],
             'living_area': ['1_4', '2_5', '3_6', '3_5', '2_4', '3_4'],
+            'north_rat_coast': ['4_2', '5_3', '6_3', '7_3']
         },
         territories:{
             'colony': ['mages_quarter', 'port', 'living_area']
@@ -94,6 +114,7 @@
             'mages_quarter': [0, 127, 0],
             'port': [0, 0, 127],
             'living_area': [127, 127, 0],
+            'north_rat_coast': [0, 0, 0]
         }
     },
 

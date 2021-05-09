@@ -50,9 +50,13 @@ module.exports = class SocketManager {
             socket.on('send-market-data', (msg) => {user_data.market_data = msg});
             socket.on('equip', async (msg) => this.equip(user_data, msg));
             socket.on('unequip', async (msg) => this.unequip(user_data, msg));
+
             socket.on('eat', async () => this.eat(user_data));
             socket.on('clean', async () => this.clean(user_data));
+            socket.on('rest', async () => this.rest(user_data));
             socket.on('move', async (msg) => this.move(user_data, msg));
+            socket.on('hunt', async () => this.hunt(user_data))
+
             socket.on('session', async (msg) => this.login_with_session(socket, user_data, msg));
             socket.on('clear_orders', async () => this.clear_orders(user_data));
             socket.on('sell-item', async (msg) => this.sell_item(user_data, msg));
@@ -327,13 +331,39 @@ module.exports = class SocketManager {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
             char.eat(this.pool);
+            this.send_stash_update(user_data.socket, user_data.current_user)
         }
     }
 
     async clean(user_data) {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
-            char.clean();
+            let res = char.clean();
+            if (res != 'ok') {
+                user_data.socket.emit('alert', res)
+            }
+        }
+    }
+
+    async hunt(user_data) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            let res = char.hunt();
+            if (res != 'ok') {
+                user_data.socket.emit('alert', res)
+            } else {
+                this.send_stash_update(user_data.socket, user_data.current_user)
+            }
+        }
+    }
+
+    async rest(user_data) {
+        if (user_data.current_user != null) {
+            let char = user_data.current_user.character;
+            let res = char.rest();
+            if (res != 'ok') {
+                user_data.socket.emit('alert', res)
+            }
         }
     }
 

@@ -1,5 +1,7 @@
 const clean = require("./character_actions/clean.js");
+const hunt = require("./character_actions/hunt.js");
 const move = require("./character_actions/move.js");
+const rest = require("./character_actions/rest.js");
 const CharacterGenericPart = require("./character_generic_part.js")
 
 
@@ -42,6 +44,10 @@ class Character extends CharacterGenericPart {
         this.change_stress(d_stress);
     }
 
+    get_stress_change() {
+        return 0
+    }
+
 
     // 
 
@@ -61,7 +67,7 @@ class Character extends CharacterGenericPart {
     //on action
 
     async on_move(pool) {
-        this.change_stress(3);
+        this.change_stress(2);
         // let danger = this.world.constants.ter_danger[tmp];
         // let res = await this.attack_local_monster(pool, danger) 
         return undefined
@@ -70,6 +76,7 @@ class Character extends CharacterGenericPart {
 
 Character.prototype.move = move; 
 Character.prototype.clean = clean; 
-
+Character.prototype.rest = rest;
+Character.prototype.hunt = hunt;
 
 module.exports = Character

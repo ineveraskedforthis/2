@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
-const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest']
+const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash']
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
@@ -642,6 +642,23 @@ function end_battle() {
     battle_image.clear()
 }
 
+
+//stash update
+function update_savings(msg) {
+    document.getElementById('savings').innerHTML = 'Savings: ' + msg
+}
+
+function update_stash(data) {
+    for (let tag in data) {
+        let stash = document.getElementById('goods_stash')
+        let div = stash.querySelector('.' + tag + ' > .goods_amount_in_inventory')
+        if (div != null)  {
+            div.innerHTML = data[tag]
+        }            
+    }
+}
+//
+
 // SOCKET ONS
 
 socket.on('tags', msg => update_tags(msg));
@@ -659,12 +676,12 @@ socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 
 socket.on('hp', msg => char_info_monster.update_status(msg));
 socket.on('exp', msg => char_info_monster.update_exp(msg));
-socket.on('savings', msg => char_info_monster.update_savings(msg));
+socket.on('savings', msg => update_savings(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 
 socket.on('char-info-detailed', msg => character_screen.update(msg))
-socket.on('stash-update', msg => {goods_market.update_inventory(msg); character_screen.update_stash(msg)});
+socket.on('stash-update', msg => {goods_market.update_inventory(msg); update_stash(msg)});
 socket.on('equip-update', msg => {character_screen.update_equip(msg); update_equip(msg)});
 
 socket.on('log-message', msg => new_log_message(msg));
@@ -697,7 +714,7 @@ socket.on('item-market-data', data => {item_market_table.update(data)});
 
 function update_tags(msg) {
     let market_div = document.querySelector('.goods_list') 
-    let inventory_div = document.getElementById('inventory_stash')
+    let inventory_div = document.getElementById('goods_stash')
     for (var tag of msg) {
 
         {
@@ -721,21 +738,21 @@ function update_tags(msg) {
 
             {
                 let avg_price = document.createElement('div');
-                avg_price.innerHTML = 'undefined';
+                avg_price.innerHTML = '?';
                 avg_price.classList.add('goods_avg_buy_price');
                 div_cell.appendChild(avg_price);
             }
 
             {
                 let avg_price = document.createElement('div');
-                avg_price.innerHTML = 'undefined';
+                avg_price.innerHTML = '?';
                 avg_price.classList.add('goods_avg_sell_price');
                 div_cell.appendChild(avg_price);
             }
 
             {
                 let div = document.createElement('div');
-                div.innerHTML = 'undefined';
+                div.innerHTML = '?';
                 div.classList.add('goods_amount_in_inventory');
                 div_cell.appendChild(div);
             }
@@ -747,7 +764,8 @@ function update_tags(msg) {
             market_div.appendChild(div_cell)
 
             div_cell = document.createElement('div');
-            div_cell.classList.add('goods_type');
+            div_cell.classList.add('goods_type_stash');
+            div_cell.classList.add('tooltip')
             div_cell.classList.add(tag);
 
             {
@@ -758,15 +776,15 @@ function update_tags(msg) {
             }
 
             {
-                let div_text = document.createElement('div');
+                let div_text = document.createElement('span');
                 div_text.innerHTML = tag;
-                div_text.classList.add('goods_name');
+                div_text.classList.add('tooltiptext');
                 div_cell.appendChild(div_text);
             }
             
             {
                 let div = document.createElement('div');
-                div.innerHTML = 'undefined';
+                div.innerHTML = '?';
                 div.classList.add('goods_amount_in_inventory');
                 div_cell.appendChild(div);
             }

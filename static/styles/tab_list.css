@@ -105,3 +105,9 @@
     width: 80%;
     height: 80%;
 }
+
+#stash_tab {
+    top:0px;
+    height: auto;
+    width: auto;
+}

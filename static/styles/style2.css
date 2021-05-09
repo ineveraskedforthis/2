@@ -172,11 +172,38 @@ body {
 
 
 
+#goods_stash {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+}
 
 
+.goods_type_stash {
+    position: relative;
+    width: auto;
+    height: auto;
+    padding: 5px;
+    margin: 2px;
+    border: white 1px solid;
+}
 
+.goods_type_stash:hover {
+    background-color: yellow;
+}
 
+.goods_type_stash:active {
+    background-color: greenyellow;
+}
 
+.goods_type_stash > .goods_amount_in_inventory {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+}
+.goods_type_stash > .tooltiptext {
+    width: auto;
+}
 
 
 

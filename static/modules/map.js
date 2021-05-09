@@ -172,6 +172,13 @@ export class Map {
                     button.onclick = () => this.send_cell_action('clean')
             )(this.socket);
         }
+
+        {
+            let button = document.getElementById('rest_button');
+            (() => 
+                    button.onclick = () => this.send_cell_action('rest')
+            )(this.socket);
+        }
         
         this.container = container;
         this.description = document.createElement('div');
