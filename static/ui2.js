@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
-const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash']
+const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
@@ -658,6 +658,16 @@ function update_stash(data) {
     }
 }
 //
+
+
+//craft 
+
+{
+    let div = document.getElementById('cook_meat')
+    div.onclick = () => socket.emit('cfood')
+}
+
+
 
 // SOCKET ONS
 

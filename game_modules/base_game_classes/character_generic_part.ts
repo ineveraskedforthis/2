@@ -5,7 +5,7 @@ const Savings = require("./savings.js");
 const Stash = require("./stash.js");
 const spells = require("../static_data/spells.js");
 const generate_empty_attack_result = require("./misc/attack_result.js");
-const { generate_empty_resists } = require("./misc/empty_resists.js");
+const generate_empty_resists = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
 
 
@@ -22,6 +22,10 @@ class SkillObject {
     }
 }
 
+interface PerksTable {
+    meat_master: boolean;
+}
+
 class SkillList {
     clothier: SkillObject;
     cooking: SkillObject;
@@ -32,6 +36,7 @@ class SkillList {
     magic_mastery: SkillObject;
     blocking: SkillObject;
     evasion: SkillObject;
+    perks: PerksTable|{};
 
     constructor() {
         this.clothier = new SkillObject();
@@ -43,6 +48,7 @@ class SkillList {
         this.magic_mastery = new SkillObject();
         this.blocking = new SkillObject();
         this.evasion = new SkillObject();
+        this.perks = {}
     }
 }
 
@@ -219,7 +225,7 @@ module.exports = class CharacterGenericPart {
         }
 
         this.flags_handling_update();        
-        await this.save_to_db(pool, this.changed);
+        await this.save_to_db(pool, this.changed || this.stash.changed || this.savings.changed);
         this.changed = false;
     }
 

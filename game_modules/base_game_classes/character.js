@@ -1,4 +1,5 @@
 const clean = require("./character_actions/clean.js");
+const cook_meat = require("./character_actions/cook_meat.js");
 const hunt = require("./character_actions/hunt.js");
 const move = require("./character_actions/move.js");
 const rest = require("./character_actions/rest.js");
@@ -78,5 +79,6 @@ Character.prototype.move = move;
 Character.prototype.clean = clean; 
 Character.prototype.rest = rest;
 Character.prototype.hunt = hunt;
+Character.prototype.cook_meat = cook_meat;
 
 module.exports = Character

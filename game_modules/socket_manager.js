@@ -254,6 +254,7 @@ module.exports = class SocketManager {
             user_data.socket.emit('alert', 'you are attacked');
             this.send_battle_data_to_user(user_data.current_user);
         }
+        this.send_status_update(char)
     }
 
     // eslint-disable-next-line no-unused-vars
@@ -332,6 +333,7 @@ module.exports = class SocketManager {
             let char = user_data.current_user.character;
             char.eat(this.pool);
             this.send_stash_update(user_data.socket, user_data.current_user)
+            this.send_status_update(char)
         }
     }
 
@@ -342,6 +344,7 @@ module.exports = class SocketManager {
             if (res != 'ok') {
                 user_data.socket.emit('alert', res)
             }
+            this.send_status_update(char)
         }
     }
 
@@ -354,6 +357,7 @@ module.exports = class SocketManager {
             } else {
                 this.send_stash_update(user_data.socket, user_data.current_user)
             }
+            this.send_status_update(char)
         }
     }
 
@@ -364,17 +368,20 @@ module.exports = class SocketManager {
             if (res != 'ok') {
                 user_data.socket.emit('alert', res)
             }
+            this.send_status_update(char)
         }
     }
 
     async craft_food(socket, user_data) {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
-            let res = await char.craft_food(this.pool);
+            let res = char.cook_meat();
             if (res != 'ok') {
                 socket.emit('alert', res);
             }
+            this.send_stash_update(socket, user_data.current_user)
         }
+        this.send_status_update(char)
     }
 
     async craft_clothes(socket, user_data) {
@@ -525,7 +532,13 @@ module.exports = class SocketManager {
     send_char_info(socket, user) {
         if (user != null) {
             let char = user.character
-            // socket.emit('char-info-detailed', {stats: char.data.stats, resists: char.get_resists()});
+            socket.emit('char-info-detailed', {
+                stats: {
+                    phys_power: char.stats.phys_power,
+                    magic_power: char.stats.magic_power,
+                    movement_speed: char.stats.movement_speed
+                },
+                resists: char.get_resists()});
             this.send_equip_update(socket, user)
             this.send_stash_update(socket, user)
         }

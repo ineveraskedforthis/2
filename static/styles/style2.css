@@ -206,6 +206,22 @@ body {
 }
 
 
+.craft_option {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+    width: auto;
+    height: auto;
+}
+
+.craft_option:hover {
+    background-color: yellow;
+}
+
+.craft_option:active{
+    background-color: greenyellow;
+}
+
 
 
 
