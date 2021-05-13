@@ -1,29 +1,32 @@
-module.exports = function generate_empty_attack_result() {
-    let result = {}
-
-    result.flags = {
-        crit: false,
-        evade: false,
-        miss: false,
-        poison: false,
-        blocked: false
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AttackResult = void 0;
+const damage_types_1 = require("./damage_types");
+class AttackResult {
+    constructor() {
+        this.flags = {
+            crit: false,
+            evade: false,
+            miss: false,
+            poison: false,
+            blocked: false
+        };
+        this.defender_status_change = {
+            hp: 0,
+            rage: 0,
+            stress: 0,
+            blood: 0
+        };
+        this.attacker_status_change = {
+            hp: 0,
+            rage: 0,
+            stress: 0,
+            blood: 0
+        };
+        this.damage = new damage_types_1.DamageByTypeObject();
+        this.weapon_type = 'noweapon';
+        this.chance_to_hit = 0;
+        this.total_damage = 0;
     }
-
-    result.defender_status_change = {
-        hp: 0,
-        rage: 0,
-        stress: 0,
-        blood: 0
-    }
-
-    result.attacker_status_change = {
-        hp: 0,
-        rage: 0,
-        stress: 0,
-        blood: 0
-    }
-
-    result.total_damage = 0;
-
-    return result
 }
+exports.AttackResult = AttackResult;

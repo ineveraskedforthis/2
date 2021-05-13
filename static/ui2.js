@@ -382,14 +382,14 @@ function skill_tab_deselect(tag) {
     tab.classList.remove('selected')
 }
 
-document.getElementById('skills_tab').onclick = () => {
+document.getElementById('skills_header').onclick = () => {
     skill_tab_select('skills')
     show_skill_tab('skills')
     skill_tab_deselect('perks')
     hide_skill_tab('perks')
 }
 
-document.getElementById('perks_tab').onclick = () => {
+document.getElementById('perks_header').onclick = () => {
     skill_tab_select('perks')
     show_skill_tab('perks')
     skill_tab_deselect('skills')

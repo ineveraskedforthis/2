@@ -2,29 +2,31 @@ var common = require("../common.js");
 var constants = require("../static_data/constants.js");
 const Equip = require("./equip.js");
 const Savings = require("./savings.js");
-const Stash = require("./stash.js");
+// const Stash = require("./stash.ts");
 const spells = require("../static_data/spells.js");
-const generate_empty_attack_result = require("./misc/attack_result.js");
+
 const generate_empty_resists = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
 
-
-interface SkillObject {
-    theory: number;
-    practice: number;
-}
+import { tag } from "../static_data/type_script_types";
+import {Stash} from "./stash"
+import {AttackResult} from "./misc/attack_result";
+import {DamageByTypeObject, damage_types} from "./misc/damage_types"
 
 class SkillObject {
-
+    practice: number;
+    theory: number
     constructor() {
         this.practice = 0
         this.theory = 0
     }
 }
 
-interface PerksTable {
+
+export interface PerksTable {
     meat_master: boolean;
 }
+
 
 class SkillList {
     clothier: SkillObject;
@@ -52,14 +54,11 @@ class SkillList {
     }
 }
 
-interface Status {
-    hp: number;
-    rage: number;
-    blood: number;
-    stress: number;
-}
-
 class Status {
+    hp:number;
+    rage:number;
+    blood:number;
+    stress:number;
     constructor() {
         this.hp = 0
         this.rage = 0
@@ -68,35 +67,17 @@ class Status {
     }
 }
 
-interface Perk {
 
-}
 
-interface DamageByTypeObject {
-    blunt: number,
-    pierce: number,
-    slice: number,
-    fire: number
-}
 
-class DamageByTypeObject {
-    constructor() {
-        this.blunt = 0
-        this.pierce = 0
-        this.slice = 0
-        this.fire = 0
-    }
-}
 
-interface InnateStats {
-    max: Status,
-    movement_speed: number,
-    phys_power: number,
-    magic_power: number,
-    base_resists: DamageByTypeObject
-}
 
 class InnateStats {
+    max: Status;
+    movement_speed: number;
+    phys_power: number;
+    magic_power: number;
+    base_resists: DamageByTypeObject;
     constructor() {
         this.max = new Status();
         this.movement_speed = 0;
@@ -106,15 +87,12 @@ class InnateStats {
     }
 }
 
-interface Misc {
+class Misc {
     model: string;
     explored: any;
     battle_id: number;
     tactic: any;
     ai_tag: string;
-}
-
-class Misc {
     constructor() {
         this.model = 'empty'
         this.explored = {}
@@ -124,14 +102,13 @@ class Misc {
     }
 }
 
-interface CharacterFlags {
-    player: boolean,
-    trainer: boolean,
-    dead: boolean,
-    in_battle: boolean,
-}
+
 
 class CharacterFlags {
+    player: boolean;
+    trainer: boolean;
+    dead: boolean;
+    in_battle: boolean;
     constructor() {
         this.player = false
         this.trainer = false
@@ -143,7 +120,7 @@ class CharacterFlags {
 module.exports = class CharacterGenericPart {
     world: any;
     equip: any;
-    stash: any;
+    stash: Stash;
     savings: any;
     tag: string;
     status: Status;
@@ -160,7 +137,7 @@ module.exports = class CharacterGenericPart {
     cell_id: number;
     faction_id: number;
 
-    constructor(world) {
+    constructor(world:any) {
         this.world = world;
         this.equip = new Equip();
         this.stash = new Stash();
@@ -190,15 +167,16 @@ module.exports = class CharacterGenericPart {
             ai_tag: 'dummy'
         },
 
-        this.flags = {
-            player: false,
-            trainer: false,
-            dead: false,
-            in_battle: false,
-        }
+        this.flags = new CharacterFlags()
 
         this.changed = false;
         this.status_changed = false;
+
+        this.id = -1;
+        this.name = 'unknown'
+        this.user_id = -1
+        this.cell_id = -1
+        this.faction_id = -1
     }
 
     init_base_values(name: string, cell_id: number, user_id = -1) {
@@ -260,7 +238,7 @@ module.exports = class CharacterGenericPart {
 
     }
 
-    async on_move(pool) {
+    async on_move(pool: any) {
         return undefined
     }
 
@@ -370,21 +348,21 @@ module.exports = class CharacterGenericPart {
 
     //equip and stash interactions
 
-    equip_item(index) {
+    equip_item(index:number) {
         this.equip.equip(index);
         this.changed = true;
     }
 
-    unequip_tag(tag) {
+    unequip_tag(tag:string) {
         this.equip.unequip(tag);
         this.changed = true;
     }
 
-    transfer(target, tag, x) {
+    transfer(target:any, tag:tag, x:number) {
         this.stash.transfer(target.stash, tag, x);
     }
 
-    transfer_all(target) {
+    transfer_all(target: any) {
         for (var tag of this.world.constants.TAGS) {
             var x = this.stash.get(tag);
             this.transfer(target, tag, x);
@@ -398,28 +376,28 @@ module.exports = class CharacterGenericPart {
     //market interactions
 
 
-    buy(tag, amount, money, max_price = null) {
+    buy(tag:tag, amount: number, money: number, max_price = null) {
         let cell = this.get_cell();
         if (cell.has_market()) {            
             cell.market.buy(tag, this, amount, money, max_price);
         }        
     }
 
-    sell(tag, amount, price) {
+    sell(tag:tag, amount: number, price: number) {
         let cell = this.get_cell();
         if (cell.has_market()) {
             cell.market.sell(tag, this, amount, price);
         }        
     }
 
-    sell_item(index, buyout_price, starting_price) {
+    sell_item(index: number, buyout_price: number, starting_price: number) {
         let cell = this.get_cell();
         if (cell.has_market()) {
             cell.item_market.sell(this, index, buyout_price, starting_price);
         }        
     }
 
-    clear_tag_orders(tag) {
+    clear_tag_orders(tag:tag) {
         let cell = this.get_cell();
         if (cell.has_market()) {
             cell.market.clear_agent_orders(this, tag)
@@ -439,7 +417,7 @@ module.exports = class CharacterGenericPart {
     //attack calculations
 
     async attack(pool: any, target: CharacterGenericPart) {
-        let result = generate_empty_attack_result()
+        let result = new AttackResult()
 
         result = this.equip.get_weapon_damage(result);
         result = this.mod_attack_damage_with_stats(result);        
@@ -454,8 +432,8 @@ module.exports = class CharacterGenericPart {
         return result;
     }
 
-    async spell_attack(pool, target, tag) {
-        let result = generate_empty_attack_result()
+    async spell_attack(pool: any, target: any, tag: string) {
+        let result = new AttackResult()
 
         result = spells[tag](result);
         result = this.mod_spell_damage_with_stats(result);
@@ -466,10 +444,10 @@ module.exports = class CharacterGenericPart {
         return result;
     }
 
-    async take_damage(pool, result) {
+    async take_damage(pool: any, result: any) {
         let res = this.get_resists();
-        if (!result.evade) {
-            for (let i of this.world.constants.damage_types) {
+        if (!result.flags.evade) {
+            for (let i of damage_types) {
                 if (result.damage[i] > 0) {
                     let curr_damage = Math.max(0, result.damage[i] - res[i]);
                     result.total_damage += curr_damage;
@@ -482,7 +460,7 @@ module.exports = class CharacterGenericPart {
         return result;
     }    
 
-    mod_attack_damage_with_stats(result) {
+    mod_attack_damage_with_stats(result: AttackResult) {
         let phys_power = this.get_phys_power() / 10
         let magic_power = this.get_magic_power() / 10
 
@@ -494,7 +472,7 @@ module.exports = class CharacterGenericPart {
         return result
     }
 
-    mod_spell_damage_with_stats(result) {
+    mod_spell_damage_with_stats(result: AttackResult) {
         let power = this.get_magic_power() / 10
 
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * power));
@@ -505,19 +483,19 @@ module.exports = class CharacterGenericPart {
         return result
     }
 
-    roll_accuracy(result) {
+    roll_accuracy(result: AttackResult) {
         let dice = Math.random();
 
         result.chance_to_hit = this.get_accuracy(result)
         
         if (dice > result.chance_to_hit) {
-            result.miss = true;
+            result.flags.miss = true;
         }
 
         return result
     }
 
-    roll_crit(result) {
+    roll_crit(result: AttackResult) {
         let dice = Math.random()
 
         let crit_chance = this.get_crit_chance("attack");
@@ -527,32 +505,32 @@ module.exports = class CharacterGenericPart {
             result.damage['blunt'] = result.damage['blunt'] * mult;
             result.damage['pierce'] = result.damage['pierce'] * mult;
             result.damage['slice'] = result.damage['slice'] * mult;
-            result.crit = true;
+            result.flags.crit = true;
         }
 
         return result
     }
 
-    roll_evasion(result) {
+    roll_evasion(result: AttackResult) {
         let dice = Math.random()
 
         let evade_chance = this.get_evasion_chance();
 
         if (dice < evade_chance) {
-            result.evade = true
-            result.crit = false
+            result.flags.evade = true
+            result.flags.crit = false
         }
 
         return result
     }
 
-    roll_block(result) {
+    roll_block(result: AttackResult) {
         let dice = Math.random()
 
         let block_chance = this.get_block_chance();
 
         if (dice < block_chance) {
-            result.blocked = true;
+            result.flags.blocked = true;
         }
 
         return result;
@@ -571,7 +549,7 @@ module.exports = class CharacterGenericPart {
     }
 
     get_resists() {
-        let res = generate_empty_resists()
+        let res:any = new DamageByTypeObject()
 
         let res_e = this.equip.get_resists();
         for (let i of this.world.constants.damage_types) {
@@ -585,7 +563,7 @@ module.exports = class CharacterGenericPart {
         return character_defines.evasion + this.skills.evasion.practice * 0.01
     }
 
-    get_accuracy(result) {
+    get_accuracy(result: AttackResult) {
         let base_accuracy = character_defines.accuracy + this.skills[result.weapon_type].practice * character_defines.skill_accuracy_modifier
 
         let blood_burden = character_defines.blood_accuracy_burden;
@@ -623,7 +601,7 @@ module.exports = class CharacterGenericPart {
     // some getters
 
     get_actions() {
-        let tmp = []
+        let tmp:any[] = []
         return tmp
     }
     
@@ -642,7 +620,7 @@ module.exports = class CharacterGenericPart {
 
     // craft related
 
-    calculate_gained_failed_craft_stress(tag) {
+    calculate_gained_failed_craft_stress(tag:any) {
         let total = 10;
         return total;
     }
@@ -674,7 +652,7 @@ module.exports = class CharacterGenericPart {
 
     // factions interactions
 
-    set_faction(faction) {
+    set_faction(faction:any) {
         this.changed = true
         this.faction_id = faction.id
     }
@@ -682,12 +660,12 @@ module.exports = class CharacterGenericPart {
 
     // exploration
 
-    add_explored(tag) {
+    add_explored(tag:any) {
         this.misc.explored[tag] = true;
     }
     
 
-    async on_move_default(pool, data) {
+    async on_move_default(pool:any, data:any) {
         let tmp = this.world.get_territory(data.x, data.y)
         this.add_explored(this.world.get_id_from_territory(tmp));
         this.world.socket_manager.send_explored(this);
@@ -707,13 +685,13 @@ module.exports = class CharacterGenericPart {
 
     //db interactions
 
-    async save_status_to_db(pool, save = true) {
+    async save_status_to_db(pool:any, save = true) {
         if (save) {
             await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
         }
     }
 
-    async load_from_json(data) {
+    async load_from_json(data:any) {
         this.id = data.id;
         this.name = data.name;
         this.user_id = data.user_id;
@@ -752,7 +730,7 @@ module.exports = class CharacterGenericPart {
         };
     }
 
-    async load_to_db(pool) {
+    async load_to_db(pool:any) {
         let result = await common.send_query(pool, constants.new_char_query, [
             this.user_id,
             this.cell_id, 
@@ -769,7 +747,7 @@ module.exports = class CharacterGenericPart {
         return result.rows[0].id;
     }
 
-    async save_to_db(pool, save = true) {
+    async save_to_db(pool:any, save = true) {
         if (save) {
             await common.send_query(pool, constants.update_char_query, [
                 this.id,
@@ -786,7 +764,7 @@ module.exports = class CharacterGenericPart {
         }
     }
 
-    async delete_from_db(pool) {
+    async delete_from_db(pool:any) {
         await common.send_query(pool, constants.delete_char_query, [this.id]);
     }
 }

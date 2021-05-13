@@ -1,12 +1,4 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
+"use strict";
 var Market = require("./market/market.js");
 var common = require("./common.js");
 var constants = require("./static_data/constants.js");
@@ -35,10 +27,8 @@ class Cell {
             this.resources = res;
         }
     }
-    init(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield this.load_to_db(pool);
-        });
+    async init(pool) {
+        await this.load_to_db(pool);
     }
     has_market() {
         return false;
@@ -69,62 +59,50 @@ class Cell {
     get_market() {
         return undefined;
     }
-    update(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // if (this.market.changed) {
-            //     this.world.socket_manager.send_market_info(this)
-            // }
-            // await this.market.update(pool);
-            // await this.item_market.update(pool);
-        });
+    async update(pool) {
+        // if (this.market.changed) {
+        //     this.world.socket_manager.send_market_info(this)
+        // }
+        // await this.market.update(pool);
+        // await this.item_market.update(pool);
     }
-    update_info(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // await this.market.update_info(pool);
-        });
+    async update_info(pool) {
+        // await this.market.update_info(pool);
     }
-    clear_dead_orders(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // await this.market.clear_dead_orders(pool)
-        });
+    async clear_dead_orders(pool) {
+        // await this.market.clear_dead_orders(pool)
     }
     get_population() {
         // return this.job_graph.get_total_size();
     }
-    set_owner(pool, owner) {
-        return __awaiter(this, void 0, void 0, function* () {
-            // this.owner = owner;
-            // await common.send_query(pool, constants.update_cell_owner_query, owner);
-        });
+    async set_owner(pool, owner) {
+        // this.owner = owner;
+        // await common.send_query(pool, constants.update_cell_owner_query, owner);
     }
     // async get_pops_list(pool) {
     //     var tmp = [this.pop];
     //     return tmp;
     // }
-    load(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let tmp = yield common.send_query(pool, constants.select_cell_by_id_query, [this.id]);
-            tmp = tmp.rows[0];
-            this.name = tmp.name;
-            this.market_id = tmp.market_id;
-            this.item_market_id = tmp.item_market_id;
-            this.development = tmp.development;
-            this.resources = tmp.resources;
-        });
+    async load(pool) {
+        let tmp = await common.send_query(pool, constants.select_cell_by_id_query, [this.id]);
+        tmp = tmp.rows[0];
+        this.name = tmp.name;
+        this.market_id = tmp.market_id;
+        this.item_market_id = tmp.item_market_id;
+        this.development = tmp.development;
+        this.resources = tmp.resources;
     }
-    load_to_db(pool) {
-        return __awaiter(this, void 0, void 0, function* () {
-            yield common.send_query(pool, constants.new_cell_query, [
-                this.id,
-                this.i,
-                this.j,
-                this.name,
-                this.market_id,
-                this.item_market_id,
-                this.development,
-                this.resources
-            ]);
-        });
+    async load_to_db(pool) {
+        await common.send_query(pool, constants.new_cell_query, [
+            this.id,
+            this.i,
+            this.j,
+            this.name,
+            this.market_id,
+            this.item_market_id,
+            this.development,
+            this.resources
+        ]);
     }
 }
 module.exports = Cell;

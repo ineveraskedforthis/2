@@ -64,7 +64,7 @@ class Cell {
         }
     }
 
-    async init(pool) {
+    async init(pool:any) {
         await this.load_to_db(pool);
     }
 
@@ -107,7 +107,7 @@ class Cell {
         return undefined
     }
 
-    async update(pool) {
+    async update(pool:any) {
         // if (this.market.changed) {
         //     this.world.socket_manager.send_market_info(this)
         // }
@@ -115,11 +115,11 @@ class Cell {
         // await this.item_market.update(pool);
     }
 
-    async update_info(pool) {
+    async update_info(pool:any) {
         // await this.market.update_info(pool);
     }
 
-    async clear_dead_orders(pool) {
+    async clear_dead_orders(pool:any) {
         // await this.market.clear_dead_orders(pool)
     }
 
@@ -127,7 +127,7 @@ class Cell {
         // return this.job_graph.get_total_size();
     }
 
-    async set_owner(pool, owner) {
+    async set_owner(pool:any, owner:any) {
         // this.owner = owner;
         // await common.send_query(pool, constants.update_cell_owner_query, owner);
     }
@@ -137,7 +137,7 @@ class Cell {
     //     return tmp;
     // }
 
-    async load(pool) {
+    async load(pool:any) {
         let tmp = await common.send_query(pool, constants.select_cell_by_id_query, [this.id]);
         tmp = tmp.rows[0];
 
@@ -150,7 +150,7 @@ class Cell {
         this.resources = tmp.resources
     }
 
-    async load_to_db(pool) {
+    async load_to_db(pool:any) {
         await common.send_query(pool, constants.new_cell_query, [
             this.id,
             this.i, 
