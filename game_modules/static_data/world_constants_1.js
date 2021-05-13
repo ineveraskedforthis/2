@@ -275,40 +275,53 @@
 
 }
 
-function add_skill(tag, max_level, req_level = 0, req_skills = [], action = undefined, r_t = true) {
-    CONSTS.SKILLS[tag] = {tag: tag, max_level: max_level, req_level: req_level, req_skills: req_skills, action: action, req_teacher: r_t};
+CONSTS.SKILLS = {
+    clothier: {practice: 0, theory: 0},
+    cooking: {practice: 0, theory: 0},
+    onehand: {practice: 0, theory: 0},
+    polearms: {practice: 0, theory: 0},
+    noweapon: {practice: 0, theory: 0},
+    skinning: {practice: 0, theory: 0},
+    magic_mastery: {practice: 0, theory: 0},
+    blocking: {practice: 0, theory: 0},
+    evasion: {practice: 0, theory: 0},
+    // perks = {}
 }
 
+// function add_skill(tag, max_level, req_level = 0, req_skills = [], action = undefined, r_t = true) {
+//     CONSTS.SKILLS[tag] = {tag: tag, max_level: max_level, req_level: req_level, req_skills: req_skills, action: action, req_teacher: r_t};
+// }
 
-//warrior
-add_skill('warrior_training',             3, 0);
-add_skill('charge',                       1, 0, ['warrior_training'], 'spell:charge');
-add_skill('blocking_movements',           1, 0, ['warrior_training']);
 
-//rage control
-add_skill('rage_control',                 1, 0, ['warrior_training']);
-add_skill('cold_rage',                    1, 0, ['rage_control']);
-add_skill('the_way_of_rage',              1, 0, ['cold_rage']);
+// //warrior
+// add_skill('warrior_training',             3, 0);
+// add_skill('charge',                       1, 0, ['warrior_training'], 'spell:charge');
+// add_skill('blocking_movements',           1, 0, ['warrior_training']);
 
-//mage
-add_skill('mage_training',                3, 0);
-add_skill('first_steps_in_magic',         1, 0, ['mage_training'], 'spell:kinetic_bolt');
+// //rage control
+// add_skill('rage_control',                 1, 0, ['warrior_training']);
+// add_skill('cold_rage',                    1, 0, ['rage_control']);
+// add_skill('the_way_of_rage',              1, 0, ['cold_rage']);
 
-//blood mage
-add_skill('blood_battery',                1, 0, ['mage_training']);
+// //mage
+// add_skill('mage_training',                3, 0);
+// add_skill('first_steps_in_magic',         1, 0, ['mage_training'], 'spell:kinetic_bolt');
 
-//craft
-add_skill('sewing',                       1);
-add_skill('cook',                         5);
+// //blood mage
+// add_skill('blood_battery',                1, 0, ['mage_training']);
 
-//mage craft
-add_skill('disenchanting',                1, 3, ['first_steps_in_magic']);
-add_skill('enchanting',                   1, 3, ['first_steps_in_magic']);
+// //craft
+// add_skill('sewing',                       1);
+// add_skill('cook',                         5);
 
-//craft improvements
-add_skill('less_stress_from_disenchant',  3, 0, ['disenchanting']);
-add_skill('less_stress_from_crafting',    3);
-add_skill('less_stress_from_making_food', 3, 0, ['less_stress_from_crafting']);
-add_skill('less_stress_from_enchant',     3, 0, ['enchanting']);
+// //mage craft
+// add_skill('disenchanting',                1, 3, ['first_steps_in_magic']);
+// add_skill('enchanting',                   1, 3, ['first_steps_in_magic']);
+
+// //craft improvements
+// add_skill('less_stress_from_disenchant',  3, 0, ['disenchanting']);
+// add_skill('less_stress_from_crafting',    3);
+// add_skill('less_stress_from_making_food', 3, 0, ['less_stress_from_crafting']);
+// add_skill('less_stress_from_enchant',     3, 0, ['enchanting']);
 
 module.exports = CONSTS

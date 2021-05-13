@@ -3,13 +3,13 @@
     flex-direction: column;
     height: 100%;
 }
-#skills_header{
+#skills_header_container{
     height: 5%;
     display: flex;
     flex-direction: row;
 }
 
-.skills_tab{
+#skills_header_container > .header{
     width: 50%;
     height: 100%;
     text-align: center;
@@ -17,9 +17,14 @@
     padding: 4px;
 }
 
-.skills_tab:hover{
+#skills_header_container > .header:hover{
     background-color: rgba(255, 232, 0, 0.5);
 }
+
+#skills_header_container> .selected{
+    background-color: rgba(10, 10, 200, 0.5);
+}
+
 
 #skills_body{
     margin-top: 10px;
@@ -31,20 +36,60 @@
     position: relative;
 }
 
-.skills_list{
+.tab{
     position: absolute;
-    height: 80%;
-    width: 85%;
-    align-self: center;
+    height: 50%px;
+    width: 100%;
+    /* align-self: center;
     display: grid;
     grid-template-columns: repeat(auto-fill, 100px);
     grid-auto-rows: 100px;
-    grid-gap: 10px;
+    grid-gap: 10px; */
+    display: flex;
+    flex-direction: column;
     overflow: auto;
 }
-.skills_list > div{
+.tab > div{
     visibility: inherit;
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+    /* border: gray 1px solid; */
+    height: auto;
+    width: 200px;
+
+    text-shadow:
+     -1px -1px 0 rgb(139, 80, 80),  
+      1px -1px 0 rgb(139, 80, 80),
+      -1px 1px 0 rgb(139, 80, 80),
+       1px 1px 0 rgb(139, 80, 80);
+    color: rgb(233, 166, 166);
 }
+
+.tab > div > .label{
+    padding: 5px;
+    width: 170px;
+    z-index: 5;
+}
+
+.tab > div > .practice_n{
+    position: relative;
+    padding: 5px;
+    z-index: 5;
+    right: 0%;
+}
+
+
+
+.tab > div > .hbar{
+    position: absolute;
+    border: tomato 1px solid;
+    width: 200px;
+    height: 25px;
+    
+}
+
+
 
 .skill{
     width: 100%;
@@ -93,16 +138,12 @@
     background-color: rgba(146, 146, 146, 0.637);
 }
 
-#skills_header>.selected{
-    background-color: rgba(10, 10, 200, 0.5);
-}
-
-.skills_list>.selected{
+.tab>.selected{
     background-color: rgba(10, 10, 200, 0.5);
     border: rgb(186, 228, 0) 2px solid;
 }
 
-#skills_description{
+.selected_description{
     height: 20%;
     align-self: center;
     border: white 1px solid;

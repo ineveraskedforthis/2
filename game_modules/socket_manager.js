@@ -126,7 +126,7 @@ module.exports = class SocketManager {
         console.log('a user connected');
         
         socket.emit('tags', this.world.constants.TAGS);
-        socket.emit('skill-tree', this.world.constants.SKILLS);
+        socket.emit('skill-tags', this.world.constants.SKILLS);
         socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee']})
         
         socket.emit('sections', this.world.constants.sections);
@@ -380,8 +380,9 @@ module.exports = class SocketManager {
                 socket.emit('alert', res);
             }
             this.send_stash_update(socket, user_data.current_user)
+            this.send_status_update(char)
         }
-        this.send_status_update(char)
+        
     }
 
     async craft_clothes(socket, user_data) {
@@ -442,7 +443,7 @@ module.exports = class SocketManager {
     }
 
     send_skills_info(character) {
-        // this.send_to_character_user(character, 'skills', character.data.skills)
+        this.send_to_character_user(character, 'skills', character.skills)
     }
 
     send_tactics_info(character) {

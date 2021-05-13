@@ -344,8 +344,18 @@ const SKILL_NAMES = {
     'charge': 'Charge',
     'first_steps_in_magic': 'First steps in magic',
     'blocking_movements': 'Blocking movements',
-    'cook': 'Cooking'
+    'cook': 'Cooking',
+    clothier: 'Clothing making',
+    cooking: 'Cooking',
+    onehand: 'One handed weapons',
+    polearms: 'Polearms',
+    noweapon: "Unarmed",
+    skinning: 'Skinning animals',
+    magic_mastery: 'Magic',
+    blocking: 'Blocking attacks',
+    evasion: 'Evading attacks',
 }
+
 var CURR_SKILL_DESC = undefined
 var SKILL_SELECTED = undefined
 var LOCAL_SKILLS = []
@@ -354,36 +364,36 @@ var learned_skill_divs = {}
 
 
 function show_skill_tab(tag) {
-    let tab = document.getElementById(tag + '_skills');
+    let tab = document.getElementById(tag + '_tab');
     tab.classList.remove('hidden');
 }
 
 function hide_skill_tab(tag) {
-    let tab = document.getElementById(tag + '_skills');
+    let tab = document.getElementById(tag + '_tab');
     tab.classList.add('hidden');
 }
 
 function skill_tab_select(tag) {
-    let tab = document.getElementById(tag + '_skills_tab')
+    let tab = document.getElementById(tag + '_header')
     tab.classList.add('selected')
 }
 function skill_tab_deselect(tag) {
-    let tab = document.getElementById(tag + '_skills_tab')
+    let tab = document.getElementById(tag + '_header')
     tab.classList.remove('selected')
 }
 
-document.getElementById('learned_skills_tab').onclick = () => {
-    skill_tab_select('learned')
-    show_skill_tab('learned')
-    skill_tab_deselect('local')
-    hide_skill_tab('local')
+document.getElementById('skills_tab').onclick = () => {
+    skill_tab_select('skills')
+    show_skill_tab('skills')
+    skill_tab_deselect('perks')
+    hide_skill_tab('perks')
 }
 
-document.getElementById('local_skills_tab').onclick = () => {
-    skill_tab_select('local')
-    show_skill_tab('local')
-    skill_tab_deselect('learned')
-    hide_skill_tab('learned')
+document.getElementById('perks_tab').onclick = () => {
+    skill_tab_select('perks')
+    show_skill_tab('perks')
+    skill_tab_deselect('skills')
+    hide_skill_tab('skills')
 }
 
 function set_skill_description(tag) {
@@ -397,151 +407,196 @@ function set_skill_description(tag) {
     }
 }
 
-function shadow_skill(tag) {
-    skill_divs[tag].classList.add('shadowed')
-}
-function unshadow_skill(tag) {
-    skill_divs[tag].classList.remove('shadowed')
-}
+var SKILL_TAGS = {}
 
-function send_skill_up_message(socket, tag) {
-    socket.emit('up-skill', tag);
-}
-
-function build_skill_div(tag, cur_level) {
-    let skill = document.createElement('div');
-    skill.classList.add("skill")
-    skill.id = 'skill_' + tag
-
-    let image = document.createElement('div');
-    image.classList.add("skill_thumbnail")
-    image.style =  "background: no-repeat 100%/100% url(/static/img/thumb_" + tag + ".png);"
-
-    let skill_level = document.createElement('div')
-    skill_level.classList.add("skill_level")
-
-    let level_up = document.createElement('div')
-    level_up.classList.add("level_up")
-    level_up.innerHTML = 'upgrade'
-
-    let level = document.createElement('div')
-    level.classList.add("current_level")
-    level.innerHTML = cur_level
-
-    skill.appendChild(image)
-    skill.appendChild(skill_level)
-
-    skill_level.appendChild(level_up)
-    skill_level.appendChild(level)
-
-    skill.onmouseover = () => {
-        set_skill_description(tag)
-    }
-    skill.onmouseout = () => {
-        set_skill_description(SKILL_SELECTED)
-    }
-    skill.onclick = () => {
-        if (SKILL_SELECTED != undefined) {
-            document.getElementById('skill_' + SKILL_SELECTED).classList.remove('selected')
-        }
-        SKILL_SELECTED = tag;
-        skill.classList.add('selected');
-    }
-    ((tag) => 
-        level_up.onclick = () => send_skill_up_message(socket, tag)
-    )(tag)
-
-    return skill
-}
-
-function build_learned_skill_div(tag, cur_level) {
-    let skill = document.createElement('div');
-    skill.classList.add("skill")
-    skill.id = 'l_skill_' + tag
-
-    let image = document.createElement('div');
-    image.classList.add("skill_thumbnail")
-    image.style =  "background: no-repeat 100%/100% url(/static/img/thumb_" + tag + ".png);"
-
-    let skill_level = document.createElement('div')
-    skill_level.classList.add("skill_level")
-
-    let level_up = document.createElement('div')
-    level_up.classList.add("level_up")
-    level_up.innerHTML = 'upgrade'
-
-    let level = document.createElement('div')
-    level.classList.add("current_level")
-    level.innerHTML = cur_level
-
-    skill.appendChild(image)
-    skill.appendChild(skill_level)
-
-    skill_level.appendChild(level_up)
-    skill_level.appendChild(level)
-
-    skill.onmouseover = () => {
-        set_skill_description(tag)
-    }
-    skill.onmouseout = () => {
-        set_skill_description(SKILL_SELECTED)
-    }
-    skill.onclick = () => {
-        if (SKILL_SELECTED != undefined) {
-            document.getElementById('skill_' + SKILL_SELECTED).classList.remove('selected')
-        }
-        SKILL_SELECTED = tag;
-        skill.classList.add('selected');
-    }
-    return skill
-}
-
-function load_skills(data) {
-    for (let tag in data) {
-        skill_divs[tag] = build_skill_div(tag, 0)
-        learned_skill_divs[tag] = build_learned_skill_div(tag, 0)
+function load_skill_tags(data){
+    SKILL_TAGS = data;
+    for (let tag in SKILL_TAGS) {
+        let div = build_skill_div(tag)
+        document.getElementById('skills_tab').append(div)
     }
 }
 
-function update_local_skills(data) {
-    let list = document.getElementById('local_skills');
-    LOCAL_SKILLS = data;
-    list.innerHTML = ''
-
-    console.log(data)
+function build_skill_div(tag){
+    let skill_div = document.createElement('div')
+    skill_div.id = tag + '_skill_div'
     
-    if ((data != undefined) & (data != null)) {
-        for (let tag of data) {
-            list.appendChild(skill_divs[tag])
-        }
-    }    
+    let name_label = document.createElement('div')
+    name_label.classList.add('label')
+    name_label.innerHTML = SKILL_NAMES[tag]
+    skill_div.appendChild(name_label)
+
+    let practice_bar_container = document.createElement('div')
+    let practice_bar = document.createElement('span')
+    practice_bar_container.classList.add('hbar')
+    practice_bar_container.appendChild(practice_bar)
+    skill_div.appendChild(practice_bar_container)
+
+    let practice_number = document.createElement('div')
+    practice_number.classList.add('practice_n')
+    practice_number.innerHTML = '?'
+    skill_div.appendChild(practice_number)
+
+    return skill_div
 }
 
 function update_skill_data(data) {
-    console.log('update skills')
-    let list = document.getElementById('learned_skills');
-    list.innerHTML = '';
-    for (let tag in data) {
-        skill_divs[tag].querySelector('.current_level').innerHTML = data[tag];
-        let clone = skill_divs[tag].cloneNode(true)
-        clone.id = 'l_skill_' + tag
-        clone.querySelector('.level_up').innerHTML = 'level:'
-        clone.onmouseover = () => {
-            set_skill_description(tag)
-        }
-        clone.onmouseout = () => {
-            set_skill_description(SKILL_SELECTED)
-        }
-        clone.onclick = () => {
-            if (SKILL_SELECTED != undefined) {
-                document.getElementById('l_skill_' + SKILL_SELECTED).classList.remove('selected')
-            }
-            SKILL_SELECTED = tag;
-            clone.classList.add('selected');
-        }
-        list.appendChild(clone)
+    console.log('!!!')
+    console.log(data)
+    for (let tag in SKILL_TAGS) {
+        let div = document.getElementById(tag + '_skill_div')
+        let amount = div.querySelector('.practice_n')
+        amount.innerHTML = data[tag].practice
+        let span = div.querySelector('.hbar > span')
+        span.style.width = data[tag].practice + '%'
     }
 }
+
+// function shadow_skill(tag) {
+//     skill_divs[tag].classList.add('shadowed')
+// }
+// function unshadow_skill(tag) {
+//     skill_divs[tag].classList.remove('shadowed')
+// }
+
+// function send_skill_up_message(socket, tag) {
+//     socket.emit('up-skill', tag);
+// }
+
+// function build_skill_div(tag, cur_level) {
+//     let skill = document.createElement('div');
+//     skill.classList.add("skill")
+//     skill.id = 'skill_' + tag
+
+//     let image = document.createElement('div');
+//     image.classList.add("skill_thumbnail")
+//     image.style =  "background: no-repeat 100%/100% url(/static/img/thumb_" + tag + ".png);"
+
+//     let skill_level = document.createElement('div')
+//     skill_level.classList.add("skill_level")
+
+//     let level_up = document.createElement('div')
+//     level_up.classList.add("level_up")
+//     level_up.innerHTML = 'upgrade'
+
+//     let level = document.createElement('div')
+//     level.classList.add("current_level")
+//     level.innerHTML = cur_level
+
+//     skill.appendChild(image)
+//     skill.appendChild(skill_level)
+
+//     skill_level.appendChild(level_up)
+//     skill_level.appendChild(level)
+
+//     skill.onmouseover = () => {
+//         set_skill_description(tag)
+//     }
+//     skill.onmouseout = () => {
+//         set_skill_description(SKILL_SELECTED)
+//     }
+//     skill.onclick = () => {
+//         if (SKILL_SELECTED != undefined) {
+//             document.getElementById('skill_' + SKILL_SELECTED).classList.remove('selected')
+//         }
+//         SKILL_SELECTED = tag;
+//         skill.classList.add('selected');
+//     }
+//     ((tag) => 
+//         level_up.onclick = () => send_skill_up_message(socket, tag)
+//     )(tag)
+
+//     return skill
+// }
+
+// function build_learned_skill_div(tag, cur_level) {
+//     let skill = document.createElement('div');
+//     skill.classList.add("skill")
+//     skill.id = 'l_skill_' + tag
+
+//     let image = document.createElement('div');
+//     image.classList.add("skill_thumbnail")
+//     image.style =  "background: no-repeat 100%/100% url(/static/img/thumb_" + tag + ".png);"
+
+//     let skill_level = document.createElement('div')
+//     skill_level.classList.add("skill_level")
+
+//     let level_up = document.createElement('div')
+//     level_up.classList.add("level_up")
+//     level_up.innerHTML = 'upgrade'
+
+//     let level = document.createElement('div')
+//     level.classList.add("current_level")
+//     level.innerHTML = cur_level
+
+//     skill.appendChild(image)
+//     skill.appendChild(skill_level)
+
+//     skill_level.appendChild(level_up)
+//     skill_level.appendChild(level)
+
+//     skill.onmouseover = () => {
+//         set_skill_description(tag)
+//     }
+//     skill.onmouseout = () => {
+//         set_skill_description(SKILL_SELECTED)
+//     }
+//     skill.onclick = () => {
+//         if (SKILL_SELECTED != undefined) {
+//             document.getElementById('skill_' + SKILL_SELECTED).classList.remove('selected')
+//         }
+//         SKILL_SELECTED = tag;
+//         skill.classList.add('selected');
+//     }
+//     return skill
+// }
+
+// function load_skills(data) {
+//     for (let tag in data) {
+//         skill_divs[tag] = build_skill_div(tag, 0)
+//         learned_skill_divs[tag] = build_learned_skill_div(tag, 0)
+//     }
+// }
+
+// function update_local_skills(data) {
+//     let list = document.getElementById('local_skills');
+//     LOCAL_SKILLS = data;
+//     list.innerHTML = ''
+
+//     console.log(data)
+    
+//     if ((data != undefined) & (data != null)) {
+//         for (let tag of data) {
+//             list.appendChild(skill_divs[tag])
+//         }
+//     }    
+// }
+
+// function update_skill_data(data) {
+//     console.log('update skills')
+//     let list = document.getElementById('learned_skills');
+//     list.innerHTML = '';
+//     for (let tag in data) {
+//         skill_divs[tag].querySelector('.current_level').innerHTML = data[tag];
+//         let clone = skill_divs[tag].cloneNode(true)
+//         clone.id = 'l_skill_' + tag
+//         clone.querySelector('.level_up').innerHTML = 'level:'
+//         clone.onmouseover = () => {
+//             set_skill_description(tag)
+//         }
+//         clone.onmouseout = () => {
+//             set_skill_description(SKILL_SELECTED)
+//         }
+//         clone.onclick = () => {
+//             if (SKILL_SELECTED != undefined) {
+//                 document.getElementById('l_skill_' + SKILL_SELECTED).classList.remove('selected')
+//             }
+//             SKILL_SELECTED = tag;
+//             clone.classList.add('selected');
+//         }
+//         list.appendChild(clone)
+//     }
+// }
 //SKILL TREE STUFF END
 
 
@@ -715,9 +770,9 @@ socket.on('battle-action', data => {
 })
 socket.on('enemy-update', data => battle_image.update_enemy(data))
 
-socket.on('skill-tree', data => load_skills(data));
+socket.on('skill-tags', data => load_skill_tags(data));
 socket.on('skills', msg => update_skill_data(msg));
-socket.on('local-skills', msg => update_local_skills(msg))
+// socket.on('local-skills', msg => update_local_skills(msg))
 
 socket.on('market-data', data => goods_market.update_data(data));
 socket.on('item-market-data', data => {item_market_table.update(data)});
