@@ -30,12 +30,6 @@ export class Stash {
     inc(tag: tag, x: number) {
         this.check_tag(tag);
         var tmp = undefined
-        if (typeof this.data[tag] === "undefined") {
-            this.data[tag] = x
-            tmp = x;
-            return tmp;
-        }
-
         if (this.data[tag] + x < 0) {
             tmp = -this.data[tag];
             this.data[tag] = 0;

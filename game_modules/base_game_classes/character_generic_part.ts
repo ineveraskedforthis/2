@@ -117,7 +117,7 @@ class CharacterFlags {
     }
 }
 
-module.exports = class CharacterGenericPart {
+export class CharacterGenericPart {
     world: any;
     equip: any;
     stash: Stash;

@@ -1,13 +1,241 @@
+
+import { Stash } from "./base_game_classes/stash";
+
 var common = require("./common.js");
 var constants = require("./static_data/constants.js");
 const geom = require("./geom.js")
-
-var Stash = require("./base_game_classes/stash.js");
 var Savings = require("./base_game_classes/savings.js");
 var BattleAI = require("./battle_ai.js")
+import {CharacterGenericPart} from './base_game_classes/character_generic_part'
+import { utimes } from "fs";
+
+type log = string[]
+
+class UnitsHeap {
+    data: UnitData[];
+    last: number;
+    heap: number[];
+    selected: number;
+
+    constructor() {
+        this.data = []
+        this.heap = []
+        this.last = 0;
+        this.selected = -1
+    }
+
+    get_value(i: number) {
+        return this.data[i].next_turn_after;
+    }
+
+    get_unit(i: number): UnitData {
+        return this.data[i]
+    }
+
+    get_selected_unit(): UnitData {
+        return this.data[this.selected]
+    }
+
+    push(obj: number) {
+        this.heap[this.last] = obj;
+        this.last += 1;
+        this.shift_up(this.last - 1)
+    }
+
+    shift_up(i:number) {
+        let tmp = i;
+        while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor(tmp / 2))) {
+            this.swap(tmp, Math.floor(tmp / 2))
+            tmp = Math.floor(tmp / 2)
+        }
+    }
+
+    shift_down(i: number) {
+        let tmp = i;
+        while (tmp * 2 < this.last) {
+            if (tmp * 2 + 1 < this.last) {
+                if ((this.get_value(tmp * 2 + 1) > this.get_value(tmp * 2)) && (this.get_value(tmp * 2 + 1) > this.get_value(tmp))) {
+                    this.swap(tmp, tmp * 2 + 1)
+                    tmp = tmp * 2 + 1
+                } else if (this.get_value(tmp * 2) > this.get_value(tmp)) {
+                    this.swap(tmp, tmp * 2)
+                    tmp = tmp * 2
+                } else {
+                    break
+                }
+            }
+        }
+    }
+
+    swap(a: number, b: number) {
+        let s = this.heap[a];
+        this.heap[a] = this.heap[b]
+        this.heap[b] = s
+    }
+
+    pop():number|undefined {
+        if (this.last == 0) {
+            return undefined
+        }
+        let tmp = this.heap[0]
+        this.selected = tmp;
+        this.last -= 1
+        this.heap[0] = this.heap[this.last]
+        this.shift_down(0);
+        return tmp
+    }
+
+    update(dt: number) {
+        for (let i in this.data) {
+            this.data[i].update(dt)
+        }
+    }
+
+    get_json() {
+        return {
+            data: this.data,
+            last: this.last,
+            heap: this.heap
+        }
+    }
+
+    load_from_json(j: any) {
+        this.data = j.data
+        this.last = j.last
+        this.heap = j.heap
+    }
+}
+
+class UnitData {
+    action_points_left: number;
+    action_points_max: number;
+    next_turn_after: number;
+    initiative: number;
+    speed: number;
+    position: {x: number, y: number};
+    char_id: number
+
+
+    constructor(ap: number, initiative: number, speed: number, position: {x: number, y: number}, char_id: number) {
+        this.action_points_left = ap;
+        this.action_points_max = ap;
+        this.initiative = initiative
+        this.speed = speed
+        this.next_turn_after = initiative
+        this.position = position
+        this.char_id = char_id
+    }
+
+    update(dt: number) {
+        this.next_turn_after = this.next_turn_after - dt
+    }
+
+    end_turn() {
+        this.next_turn_after = this.initiative;
+        this.action_points_left = Math.min((this.action_points_left + this.speed), this.action_points_max);
+    }
+}
+
+
+class BattleReworked2 {
+    world: any;
+    heap: UnitsHeap;
+    id: number;
+    savings: any;
+    stash: Stash;
+    changed: boolean;
+    waiting_for_input = true;
+
+    constructor(world: any) {
+        this.heap = new UnitsHeap();
+        this.world = world;
+        this.id = -1
+        this.savings = new Savings()
+        this.stash = new Stash()
+        this.changed = false
+        this.waiting_for_input = false
+    }
+
+    async init(pool: any) {
+        this.id = await this.load_to_db(pool);
+        return this.id;
+    }
+
+    async load_to_db(pool: any) {
+        let res =  await common.send_query(pool, constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json()]);
+        return res.rows[0].id
+    }
+
+    load_from_json(data: any) {
+        this.id = data.id
+        this.heap.load_from_json(data.heap)
+        this.savings.load_from_json(data.savings)
+        this.stash.load_from_json(data.stash)
+        this.waiting_for_input = data.waiting_for_input
+    }
+
+    async save_to_db(pool: any) {
+        await common.send_query(pool, constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input])
+        this.changed = false
+    }
+
+    async delete_from_db(pool: any) {
+        await common.send_query(pool, constants.delete_battle_query, [this.id]);
+    }
+
+
+    async update(pool:any) {
+        if (!this.waiting_for_input) {
+            // heap manipulations
+            let tmp = this.heap.pop()
+            if (tmp == undefined) {
+                return 'no_units_left'
+            }
+            let unit = this.heap.get_unit(tmp)
+            let time_passed = unit.next_turn_after
+            this.heap.update(time_passed)
+            
+            //character stuff
+            let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+            if ((char == undefined) || char.is_dead()) {
+                await this.update(pool)
+            }
+            await char.update(pool)
+            let dt = unit.next_turn_after
+            this.heap.update(dt)
+
+            //actual actions
+            if (char.is_player()) {
+                this.waiting_for_input = true
+                return 'waiting_for_input'
+            } else {
+                let log_obj: log = [];
+                log_obj = await this.make_turn(pool, log_obj)
+                unit.end_turn()
+            }
+        } else {
+            return 'waiting_for_input'
+        }
+    }
+
+    async make_turn(pool: any, log_obj: log): Promise<log> {
+        let unit = this.heap.get_selected_unit()
+        log_obj = BattleAI.action(pool, this, unit, log_obj);
+        return log_obj;
+    }
+
+
+}
 
 
 class BattleReworked {
+    world: any;
+    units: number[];
+    stash: Stash;
+    savings: any;
+    units_priority: number[];
+
+
     constructor(world) {
         this.world = world;
         this.units = [];
@@ -20,13 +248,8 @@ class BattleReworked {
         this.queued_action = []
     }
 
-    async init(pool) {
-        this.id = await this.load_to_db(pool);
-        return this.id;
-    }
-
     async update(pool) {
-        var log = [];
+        var log: string[] = [];
         let i = this.data.turn;
         let unit = this.units[i];
         var char = this.world.get_char_from_id(unit.id)
@@ -211,27 +434,7 @@ class BattleReworked {
         this.save_to_db(pool);
     }
 
-    async load_to_db(pool) {
-        let res =  await common.send_query(pool, constants.new_battle_query, [this.units, this.savings.get_json(), this.stash.get_json(), this.data]);
-        return res.rows[0].id
-    }
 
-    load_from_json(data) {
-        this.id = data.id
-        this.units = data.units
-        this.data = data.data
-        this.savings.load_from_json(data.savings)
-        this.stash.load_from_json(data.stash)
-    }
-
-    async save_to_db(pool) {
-        await common.send_query(pool, constants.update_battle_query, [this.id, this.units, this.savings.get_json(), this.stash.get_json(), this.data])
-        this.changed = false
-    }
-
-    async delete_from_db(pool) {
-        await common.send_query(pool, constants.delete_battle_query, [this.id]);
-    }
 
     async transfer(pool, target, tag, x) {
         this.stash.transfer(target.stash, tag, x);
