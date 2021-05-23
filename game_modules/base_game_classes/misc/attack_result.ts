@@ -7,7 +7,8 @@ export class AttackResult {
         evade: boolean,
         miss: boolean,
         poison: boolean,
-        blocked: boolean
+        blocked: boolean,
+        close_distance: boolean
     }
     defender_status_change:Status;
     attacker_status_change:Status;
@@ -15,6 +16,7 @@ export class AttackResult {
     total_damage:number;
     damage: DamageByTypeObject;
     chance_to_hit: number;
+    new_pos: {x: number, y:number}|undefined;
 
 
     constructor() {
@@ -23,7 +25,8 @@ export class AttackResult {
             evade: false,
             miss: false,
             poison: false,
-            blocked: false
+            blocked: false,
+            close_distance: false
         }
 
         this.defender_status_change = {
@@ -39,6 +42,8 @@ export class AttackResult {
             stress: 0,
             blood: 0
         }
+
+        this.new_pos = undefined
 
         this.damage = new DamageByTypeObject();
         this.weapon_type = 'noweapon'

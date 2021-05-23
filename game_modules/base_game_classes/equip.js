@@ -5,6 +5,7 @@ const item_tags = require("../static_data/item_tags.js");
 
 const EQUIP_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms']
 
+
 module.exports = class Equip {
     constructor() {
         this.data = {
@@ -16,9 +17,18 @@ module.exports = class Equip {
             arms: empty,
             backpack: []
         }
+        this.changed = false
     }
 
-    
+    transfer_all() {
+        for (let tag of EQUIP_TAGS) {
+            this.unequip(tag);
+        }
+        for (let i = 0; i < this.data.backpack.length; i++) {
+            targer.equip.add_item(this.data.backpack[i])
+            this.data.backpack[i] = undefined
+        }
+    }
 
     get_weapon_range(range) {
         let right_hand = this.data.right_hand;

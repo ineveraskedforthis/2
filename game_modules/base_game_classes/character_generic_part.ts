@@ -369,6 +369,12 @@ export class CharacterGenericPart {
         }
     }
 
+    transfer_all_inv(target: {stash: Stash, savings: any, equip: any}) {
+        this.transfer_all(target)
+        this.savings.transfer_all(target.savings)
+        this.equip.transfer_all()
+    }
+
 
 
 
@@ -609,12 +615,26 @@ export class CharacterGenericPart {
         return this.equip.get_weapon_range(1);
     }
 
+    get_model() {
+        return this.misc.model
+    }
+
     get_local_market() {
         var cell = this.world.get_cell_by_id(this.cell_id);
         return cell.market;
     }
 
+    get_action_points() {
+        return 10
+    }
 
+    get_initiative() {
+        return 10
+    }
+
+    get_speed() {
+        return 5
+    }
 
 
 
@@ -680,6 +700,13 @@ export class CharacterGenericPart {
         return ((dx == 0 && dy == 1) || (dx == 0 && dy == -1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0) || (dx == 1 && dy == 1) || (dx == -1 && dy == -1))
     }
 
+    set_flag(flag: 'in_battle'|'trainer'|'player'|'dead', value: boolean) {
+        this.flags[flag] = value
+    }
+
+    set_battle_id(x: number) {
+        this.misc.battle_id = x
+    }
 
 
 

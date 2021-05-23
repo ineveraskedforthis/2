@@ -16,6 +16,10 @@ module.exports = class Savings {
         return tmp;
     }
 
+    transfer_all(target) {
+        this.transfer(target, this.get())
+    }
+
     load_from_json(x) {
         this.data = x.data;
         this.prev_data = x.prev_data;
