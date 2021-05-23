@@ -9,7 +9,8 @@ class AttackResult {
             evade: false,
             miss: false,
             poison: false,
-            blocked: false
+            blocked: false,
+            close_distance: false
         };
         this.defender_status_change = {
             hp: 0,
@@ -23,6 +24,7 @@ class AttackResult {
             stress: 0,
             blood: 0
         };
+        this.new_pos = undefined;
         this.damage = new damage_types_1.DamageByTypeObject();
         this.weapon_type = 'noweapon';
         this.chance_to_hit = 0;

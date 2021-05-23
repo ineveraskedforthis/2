@@ -253,6 +253,12 @@ export class CharacterGenericPart {
     get_hp() {
         return this.status.hp
     }
+    get_blood() {
+        return this.status.blood
+    }
+    get_rage() {
+        return this.status.rage
+    }
 
     get_hp_change() {
         return 0
@@ -706,6 +712,13 @@ export class CharacterGenericPart {
 
     set_battle_id(x: number) {
         this.misc.battle_id = x
+    }
+    get_battle_id() {
+        return this.misc.battle_id
+    }
+
+    get_tactic() {
+        return [this.world.constants.default_tactic_slot]
     }
 
 

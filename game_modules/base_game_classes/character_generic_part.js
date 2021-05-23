@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CharacterGenericPart = void 0;
 var common = require("../common.js");
 var constants = require("../static_data/constants.js");
 const Equip = require("./equip.js");
@@ -65,7 +66,7 @@ class CharacterFlags {
         this.in_battle = false;
     }
 }
-module.exports = class CharacterGenericPart {
+class CharacterGenericPart {
     constructor(world) {
         this.world = world;
         this.equip = new Equip();
@@ -156,6 +157,12 @@ module.exports = class CharacterGenericPart {
     }
     get_hp() {
         return this.status.hp;
+    }
+    get_blood() {
+        return this.status.blood;
+    }
+    get_rage() {
+        return this.status.rage;
     }
     get_hp_change() {
         return 0;
@@ -253,6 +260,11 @@ module.exports = class CharacterGenericPart {
             var x = this.stash.get(tag);
             this.transfer(target, tag, x);
         }
+    }
+    transfer_all_inv(target) {
+        this.transfer_all(target);
+        this.savings.transfer_all(target.savings);
+        this.equip.transfer_all();
     }
     //market interactions
     buy(tag, amount, money, max_price = null) {
@@ -425,9 +437,21 @@ module.exports = class CharacterGenericPart {
     get_range() {
         return this.equip.get_weapon_range(1);
     }
+    get_model() {
+        return this.misc.model;
+    }
     get_local_market() {
         var cell = this.world.get_cell_by_id(this.cell_id);
         return cell.market;
+    }
+    get_action_points() {
+        return 10;
+    }
+    get_initiative() {
+        return 10;
+    }
+    get_speed() {
+        return 5;
     }
     // craft related
     calculate_gained_failed_craft_stress(tag) {
@@ -470,6 +494,18 @@ module.exports = class CharacterGenericPart {
     }
     verify_move(dx, dy) {
         return ((dx == 0 && dy == 1) || (dx == 0 && dy == -1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0) || (dx == 1 && dy == 1) || (dx == -1 && dy == -1));
+    }
+    set_flag(flag, value) {
+        this.flags[flag] = value;
+    }
+    set_battle_id(x) {
+        this.misc.battle_id = x;
+    }
+    get_battle_id() {
+        return this.misc.battle_id;
+    }
+    get_tactic() {
+        return [this.world.constants.default_tactic_slot];
     }
     //db interactions
     async save_status_to_db(pool, save = true) {
@@ -545,4 +581,5 @@ module.exports = class CharacterGenericPart {
     async delete_from_db(pool) {
         await common.send_query(pool, constants.delete_char_query, [this.id]);
     }
-};
+}
+exports.CharacterGenericPart = CharacterGenericPart;

@@ -3,20 +3,24 @@ import { Stash } from "./base_game_classes/stash";
 
 var common = require("./common.js");
 var constants = require("./static_data/constants.js");
-const geom = require("./geom.js")
+
+import {geom} from './geom'
 var Savings = require("./base_game_classes/savings.js");
-var BattleAI = require("./battle_ai.js")
+import {BattleAI} from './battle_ai'
 import {CharacterGenericPart} from './base_game_classes/character_generic_part'
-import { utimes } from "fs";
 import { tag } from "./static_data/type_script_types";
 
-type log = string[]
-interface MoveAction {action: "move", target: {x: number, y:number}}
-interface AttackAction {action: "attack", target: number}
+
+export interface MoveAction {action: "move", target: {x: number, y:number}}
+export interface AttackAction {action: "attack", target: number}
 interface FleeAction {action: "flee"}
 interface SpellTargetAction {action: "spell_target", target: number, spell_tag: "power_bolt"|"charge"}
+interface EndTurn {action: 'end_turn'}
+interface NullAction {action: null}
+export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction
+export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null
 
-type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction
+type ActionLog = Action[]
 
 class UnitsHeap {
     data: UnitData[];
@@ -216,43 +220,61 @@ export class BattleReworked2 {
             // heap manipulations
             let tmp = this.heap.pop()
             if (tmp == undefined) {
-                return 'no_units_left'
+                return {responce: 'no_units_left'}
             }
             let unit = this.heap.get_unit(tmp)
             let time_passed = unit.next_turn_after
             this.heap.update(time_passed)
             
+
             //character stuff
             let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
             if ((char == undefined) || char.is_dead()) {
-                await this.update(pool)
+                return {responce: 'dead_unit'}
             }
             await char.update(pool)
             let dt = unit.next_turn_after
             this.heap.update(dt)
+
 
             //actual actions
             if (char.is_player()) {
                 this.waiting_for_input = true
                 return 'waiting_for_input'
             } else {
-                let log_obj: log = [];
+                let log_obj: ActionLog = [];
                 log_obj = await this.make_turn(pool, log_obj)
                 unit.end_turn()
+                return {responce: 'end_turn', data: log_obj}
             }
         } else {
-            return 'waiting_for_input'
+            return {responce: 'waiting_for_input'}
         }
     }
 
-    async make_turn(pool: any, log_obj: log): Promise<log> {
-        let unit = this.heap.get_selected_unit()
-        log_obj = BattleAI.action(pool, this, unit, log_obj);
-        return log_obj;
+    get_units() {
+        return this.heap.data
     }
 
-    player_action() {
+    get_unit(i: number) {
+        return this.heap.get_unit(i)
+    }
 
+    get_char(unit: UnitData) {
+        return this.world.get_char_from_id(unit.char_id)
+    }
+
+    async make_turn(pool: any, log: ActionLog): Promise<ActionLog> {
+        let unit = this.heap.get_selected_unit()
+        let char = this.get_char(unit)
+        let action:Action = BattleAI.action(this, char);
+        while (action.action != 'end_turn') {
+            log.push(action)
+            this.action(pool, this.heap.selected, action)
+            action = BattleAI.action(this, char);
+        }
+
+        return log;
     }
 
     async action(pool:any, unit_index: number, action: Action) {
@@ -268,8 +290,14 @@ export class BattleReworked2 {
 
         //move toward enemy
         if (action.action == 'move') {
+            let tmp = geom.minus(action.target, unit.position)
+            if (geom.norm(tmp) > unit.action_points_left) {
+                tmp = geom.intify(geom.mult(geom.normalize(tmp), unit.action_points_left))
+            }
             unit.position.x = action.target.x + unit.position.x;
             unit.position.y = action.target.y + unit.position.y;
+            let points_spent = Math.floor(geom.norm(tmp))
+            unit.action_points_left -= points_spent
             return {action: 'move', who: unit_index, target: action.target, actor_name: character.name}
         }
 
@@ -278,9 +306,10 @@ export class BattleReworked2 {
             if (action.target != null) {
                 let unit2 = this.heap.get_unit(action.target);
                 let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
-                if (geom.dist(unit.position, unit2.position) <= char.get_range()) {
+                if ((geom.dist(unit.position, unit2.position) <= char.get_range()) && unit.action_points_left >= 1) {
                     let target_char = this.world.get_char_from_id(unit2.char_id);
                     let result = character.attack(pool, target_char);
+                    unit.action_points_left -= 1
                     return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
                 }
             }
@@ -289,33 +318,44 @@ export class BattleReworked2 {
 
 
         if (action.action == 'flee') {
-            let dice = Math.random();
-            if (dice <= 0.4) {
-                this.draw = true;
-                return {action: 'flee', who: unit_index};
-            } else {
-                return {action: 'pff', who: unit_index};
+            if (unit.action_points_left > 3) {
+                unit.action_points_left -= 3
+                let dice = Math.random();
+                if (dice <= 0.4) {
+                    this.draw = true;
+                    return {action: 'flee', who: unit_index};
+                } else {
+                    return {action: 'pff', who: unit_index};
+                }
             }
         } 
         
 
         if (action.action == 'spell_target') {
-            let spell_tag = action.spell_tag;
-            let unit2 = this.heap.get_unit(action.target);
-            let target_char = this.world.get_char_from_id(unit2.char_id);
-            let result = await character.spell_attack(pool, target_char, spell_tag);
-            if (result.flags.close_distance) {
-                let dist = geom.dist(unit, unit2)
-                if (dist > 1.9) {
-                    let v = geom.minus(unit2, unit);
-                    let u = geom.mult(geom.normalize(v), 0.9);
-                    v = geom.minus(v, u)
-                    unit.position.x = v.x
-                    unit.position.y = v.y
+            if (unit.action_points_left > 3) {
+                let spell_tag = action.spell_tag;
+                let unit2 = this.heap.get_unit(action.target);
+                let target_char = this.world.get_char_from_id(unit2.char_id);
+                let result = await character.spell_attack(pool, target_char, spell_tag);
+                if (result.flags.close_distance) {
+                    let dist = geom.dist(unit.position, unit2.position)
+                    if (dist > 1.9) {
+                        let v = geom.minus(unit2.position, unit.position);
+                        let u = geom.mult(geom.normalize(v), 0.9);
+                        v = geom.minus(v, u)
+                        unit.position.x = v.x
+                        unit.position.y = v.y
+                    }
+                    result.new_pos = {x: unit.position.x, y: unit.position.y};
                 }
-                result.new_pos = {x: unit.position.x, y: unit.position.y};
+                unit.action_points_left -= 3
+                return {action: spell_tag, who: unit_index, result: result, actor_name: character.name};
             }
-            return {action: spell_tag, who: unit_index, result: result, actor_name: character.name};
+        }
+
+        if (action.action == 'end_turn') {
+            this.waiting_for_input = false
+            unit.end_turn()
         }
         this.changed = true
     }
@@ -480,5 +520,4 @@ export class BattleReworked2 {
     units_amount() {
         return this.heap.get_units_amount()
     }
-
 }
