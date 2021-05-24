@@ -196,18 +196,18 @@ module.exports = {
     },
 
     update_character: {
-        elder_beast_skin: (pool, agent, tier) => {
+        elder_beast_skin: (agent, tier) => {
             agent.change_stress(5 * tier);
             agent.change_rage(5 * tier);
-            agent.change_hp(pool, 1 * tier);
+            agent.change_hp(1 * tier);
         },
 
-        power_of_graci_beauty: (pool, agent, tier) => {
+        power_of_graci_beauty: (agent, tier) => {
             agent.change_stress(1 * tier);
         },
 
-        pain_shell: (pool, agent, tier) => {
-            agent.change_hp(pool, -1 * tier);
+        pain_shell: (agent, tier) => {
+            agent.change_hp(-1 * tier);
         }
     },
 

@@ -263,7 +263,7 @@ module.exports = class SocketManager {
         common.flag_log([user_data], constants.logging.sockets.messages)
         if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
             let char = user_data.current_user.character;
-            let battle = await char.attack_local_monster(this.pool);
+            let battle = await this.world.attack_local_monster(this.pool, char, 1);
             socket.emit('battle-has-started', battle.get_data())
         }
     }
@@ -453,7 +453,7 @@ module.exports = class SocketManager {
     send_battle_data_to_user(user) {
         let character = user.character;
         if (character.in_battle()) {
-            let battle = this.world.get_battle_from_id(character.data.battle_id);
+            let battle = this.world.get_battle_from_id(character.get_battle_id());
             this.send_to_user(user, 'battle-has-started', battle.get_data());
         }
     }
@@ -696,8 +696,10 @@ module.exports = class SocketManager {
     async battle_action(socket, user_data, action) {
         if (user_data.current_user != null && user_data.current_user.character.in_battle()) {
             let char = user_data.current_user.character;
-            let battle = this.world.get_battle_from_id(char.data.battle_id);
-            battle.push_action(char.data.index_in_battle, action)
+            let battle = this.world.get_battle_from_id(char.get_battle_id());
+            if (battle != undefined) {
+                await battle.process_input(this.pool, char.get_in_battle_id(), action)
+            }
         }
     }
 }

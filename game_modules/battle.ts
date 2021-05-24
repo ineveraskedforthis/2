@@ -7,7 +7,7 @@ var constants = require("./static_data/constants.js");
 import {geom} from './geom'
 var Savings = require("./base_game_classes/savings.js");
 import {BattleAI} from './battle_ai'
-import {CharacterGenericPart} from './base_game_classes/character_generic_part'
+import type {CharacterGenericPart} from './base_game_classes/character_generic_part'
 import { tag } from "./static_data/type_script_types";
 
 
@@ -60,30 +60,36 @@ class UnitsHeap {
     shift_up(i:number) {
         let tmp = i;
         while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor(tmp / 2))) {
-            this.swap(tmp, Math.floor(tmp / 2))
-            tmp = Math.floor(tmp / 2)
+            this.swap(tmp, Math.floor((tmp - 1) / 2))
+            tmp = Math.floor((tmp - 1) / 2)
         }
     }
 
     shift_down(i: number) {
         let tmp = i;
-        while (tmp * 2 < this.last) {
-            if (tmp * 2 + 1 < this.last) {
-                if ((this.get_value(tmp * 2 + 1) > this.get_value(tmp * 2)) && (this.get_value(tmp * 2 + 1) > this.get_value(tmp))) {
+        while (tmp * 2 + 1 < this.last) {
+            if (tmp * 2 + 2 < this.last) {
+                if ((this.get_value(tmp * 2 + 2) < this.get_value(tmp * 2 + 1)) && (this.get_value(tmp * 2 + 2) < this.get_value(tmp))) {
+                    this.swap(tmp, tmp * 2 + 2)
+                    tmp = tmp * 2 + 2
+                } else if (this.get_value(tmp * 2 + 1) < this.get_value(tmp)) {
                     this.swap(tmp, tmp * 2 + 1)
                     tmp = tmp * 2 + 1
-                } else if (this.get_value(tmp * 2) > this.get_value(tmp)) {
-                    this.swap(tmp, tmp * 2)
-                    tmp = tmp * 2
                 } else {
                     break
                 }
+            } else if (this.get_value(tmp * 2 + 1) < this.get_value(tmp)) {
+                this.swap(tmp, tmp * 2 + 1)
+                tmp = tmp * 2 + 1
+            } else {
+                break
             }
         }
     }
 
     add_unit(u: UnitData) {
         this.data.push(u);
+        this.push(this.data.length - 1)
     }
 
     swap(a: number, b: number) {
@@ -118,7 +124,10 @@ class UnitsHeap {
         }
     }
 
-    load_from_json(j: any) {
+    load_from_json(j: UnitsHeap) {
+        for (let i in j.data) {
+            let unit = new UnitData()
+        }
         this.data = j.data
         this.last = j.last
         this.heap = j.heap
@@ -137,7 +146,13 @@ class UnitData {
     dead: boolean
 
 
-    constructor(char:CharacterGenericPart, position: {x: number, y: number}, team: number) {
+    constructor(char:CharacterGenericPart|undefined, position: {x: number, y: number}, team: number, json: UnitData|undefined) {
+        if ((char == undefined) && (json != undefined)) {
+            this.load_from_json(json)
+            return
+        } else if (char == undefined) {
+            return
+        }
         let ap = char.get_action_points()
         this.action_points_left = ap;
         this.action_points_max = ap;
@@ -148,6 +163,18 @@ class UnitData {
         this.char_id = char.id
         this.team = team
         this.dead = false
+    }
+
+    load_from_json(data: UnitData) {
+        this.action_points_left = data.action_points_left;
+        this.action_points_max = data.action_points_max;
+        this.initiative = data.initiative
+        this.speed = data.speed
+        this.next_turn_after = data.next_turn_after
+        this.position = data.position
+        this.char_id = data.char_id
+        this.team = data.team
+        this.dead = data.dead
     }
 
     update(dt: number) {
@@ -169,7 +196,7 @@ export class BattleReworked2 {
     stash: Stash;
     changed: boolean;
     draw: boolean;
-    waiting_for_input = true;
+    waiting_for_input:boolean;
 
 
     constructor(world: any) {
@@ -189,7 +216,7 @@ export class BattleReworked2 {
     }
 
     async load_to_db(pool: any) {
-        let res =  await common.send_query(pool, constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json()]);
+        let res =  await common.send_query(pool, constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
         return res.rows[0].id
     }
 
@@ -217,14 +244,18 @@ export class BattleReworked2 {
         }
 
         if (!this.waiting_for_input) {
+            console.log('??? update')
+            console.log(this.heap.heap)
             // heap manipulations
             let tmp = this.heap.pop()
+            console.log(tmp)
             if (tmp == undefined) {
                 return {responce: 'no_units_left'}
             }
             let unit = this.heap.get_unit(tmp)
             let time_passed = unit.next_turn_after
             this.heap.update(time_passed)
+            console.log(unit)
             
 
             //character stuff
@@ -235,16 +266,21 @@ export class BattleReworked2 {
             await char.update(pool)
             let dt = unit.next_turn_after
             this.heap.update(dt)
-
+            console.log(char.name)
 
             //actual actions
             if (char.is_player()) {
+                console.log('player turn')
                 this.waiting_for_input = true
+                this.changed = true
                 return 'waiting_for_input'
             } else {
+                console.log('ai turn')
                 let log_obj: ActionLog = [];
                 log_obj = await this.make_turn(pool, log_obj)
+                console.log(log_obj)
                 unit.end_turn()
+                this.changed = true
                 return {responce: 'end_turn', data: log_obj}
             }
         } else {
@@ -394,7 +430,8 @@ export class BattleReworked2 {
         this.heap.add_unit(unit)
 
         agent.set_flag('in_battle', true)
-        agent.set_battle_id(this.heap.data.length - 1)
+        agent.set_in_battle_id(this.heap.data.length - 1)
+        agent.set_battle_id(this.id)
 
         this.changed = true;
     }
@@ -510,11 +547,18 @@ export class BattleReworked2 {
         this.changed = true;
     }
 
-    async process_input(pool: any, input: Action) {
+    async process_input(pool: any, unit_index: number, input: Action) {
+        console.log(unit_index)
+        console.log(input)
+        // console.log(this.heap)
         if (!this.waiting_for_input) {
             return -1
         }
+        if (this.heap.selected != unit_index) {
+            return -1
+        }
         await this.action(pool, this.heap.selected, input)
+        this.changed = true
     }
 
     units_amount() {

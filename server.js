@@ -56,7 +56,7 @@ var world = new World(io, 27, 27);
             await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
             await client.query('CREATE TABLE chars (id serial primary key, user_id int, cell_id int, faction_id int, name varchar(200), status jsonb, skills jsonb, stats jsonb, misc jsonb, flags jsonb, savings jsonb, stash jsonb, equip jsonb)');
             await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
-            await client.query('CREATE TABLE battles (id serial primary key, units jsonb[], savings jsonb, stash jsonb, data jsonb)');
+            await client.query('CREATE TABLE battles (id serial primary key, heap jsonb, savings jsonb, stash jsonb, waiting_for_input boolean)');
             await client.query('CREATE TABLE worlds (x int, y int)');
 
             await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, item_market_id int, development jsonb, resources jsonb)');

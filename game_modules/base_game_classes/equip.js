@@ -80,18 +80,18 @@ module.exports = class Equip {
         return result
     }
 
-    update(pool, agent) {
+    update(agent) {
         for (let i of EQUIP_TAGS) {
-            this.get_item_update(this.data[i], pool, agent);
+            this.get_item_update(this.data[i], agent);
         }
     }
 
-    get_item_update(item, pool, agent) {
+    get_item_update(item, agent) {
         for (let i = 0; i < item.affixes; i++) {
             let affix = item['a' + i];
             let f = update_character[affix.tag];
             if (f != undefined) {
-                f(pool, agent, affix.tier);
+                f(agent, affix.tier);
             }
         }
     }

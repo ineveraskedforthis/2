@@ -1,98 +1,83 @@
-var Character = require("./base_game_classes/character")
-
-class PredefinedMonster extends Character {
-    async init(pool, cell_id, name = null) {        
-        this.specific_part_of_init(cell_id)
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var Character = require("./base_game_classes/character");
+const character_generic_part_1 = require("./base_game_classes/character_generic_part");
+class PredefinedMonster extends character_generic_part_1.CharacterGenericPart {
+    async init(pool, cell_id, name = 'monster') {
+        this.specific_part_of_init(cell_id);
         if (name != null) {
-            this.name = name
+            this.name = name;
         }
         this.id = await this.load_to_db(pool);
         await this.load_to_db(pool);
         return this.id;
     }
-}
-
-class Rat extends PredefinedMonster {
-
     specific_part_of_init(cell_id) {
-        this.init_base_values('rat', 40, 40, 0, 0, cell_id);
-        this.data.stats = this.world.constants.base_stats.rat
-        this.data.base_resists = this.world.constants.base_resists.rat
-        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 1}}
+    }
+}
+class Rat extends PredefinedMonster {
+    specific_part_of_init(cell_id) {
+        this.init_base_values('rat', cell_id);
+        this.status.hp = 30;
+        this.stats.max.hp = 30;
+        this.stats.magic_power = 0;
+        this.stats.phys_power = 4;
+        this.equip.data.right_hand = { tag: 'empty', affixes: 1, a0: { tag: 'sharp', tier: 1 } };
         this.stash.inc('meat', 1);
-        this.data.model = 'rat'
-        this.data.exp_reward = 50
+        this.misc.model = 'rat';
     }
-
     get_range() {
-        return 1
+        return 1;
     }
-
     get_tag() {
-        return 'rat'
+        return 'rat';
     }
     get_item_lvl() {
         return 2;
     }
 }
-
-class Elodino extends PredefinedMonster  {
+class Elodino extends PredefinedMonster {
     specific_part_of_init(cell_id) {
-        this.init_base_values('elodino', 100, 100, 0, 0, cell_id);
-        this.data.stats = this.world.constants.base_stats.elodino
-        this.data.base_resists = this.world.constants.base_resists.rat
-        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 2}}
-        this.data.exp_reward = 200
+        this.init_base_values('elodino', cell_id);
+        this.equip.data.right_hand = { tag: 'empty', affixes: 1, a0: { tag: 'sharp', tier: 2 } };
         this.stash.inc('meat', 2);
-        this.data.model = 'elodino'
+        this.misc.model = 'elodino';
     }
-
     get_range() {
-        return 1
+        return 1;
     }
-
     get_tag() {
-        return 'elodino'
+        return 'elodino';
     }
     get_item_lvl() {
         return 5;
     }
 }
-
-class Graci extends PredefinedMonster  {
+class Graci extends PredefinedMonster {
     specific_part_of_init(cell_id) {
-        this.init_base_values('graci', 200, 200, 0, 0, cell_id);
-        this.data.stats = this.world.constants.base_stats.graci
-        this.data.base_resists = this.world.constants.base_resists.rat
-        this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 2}}
-        this.data.model = 'graci'
-        this.data.movement_speed = 2;
-        this.data.exp_reward = 500
+        this.init_base_values('graci', cell_id);
+        this.status.hp = 200;
+        this.stats.max.hp = 200;
+        this.stats.phys_power = 20;
+        this.equip.data.right_hand = { tag: 'empty', affixes: 1, a0: { tag: 'sharp', tier: 2 } };
+        this.misc.model = 'graci';
     }
-
     get_tag() {
-        return 'graci'
+        return 'graci';
     }
-
     get_item_lvl() {
         return 10;
     }
-
     get_range() {
-        return 2
+        return 2;
     }
-
     change_rage(x) {
     }
-
     change_blood(x) {
     }
 }
-
-
-
 module.exports = {
     rat: Rat,
     graci: Graci,
     elodino: Elodino,
-}
+};

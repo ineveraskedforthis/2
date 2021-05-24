@@ -1,5 +1,5 @@
 const constants = {
-    version: 244,
+    version: 256,
     logging: {
         agent: {
             buy: false
@@ -30,7 +30,7 @@ const constants = {
     new_user_query: 'INSERT INTO accounts (login, password_hash, id, char_id) VALUES ($1, $2, $3, $4)',
     new_char_query: 'INSERT INTO chars (user_id, cell_id, faction_id, name, status, skills, stats, misc, flags, savings, stash, equip) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING id',
     init_id_query: 'INSERT INTO last_id (id_type, last_id) VALUES ($1, $2)',
-    new_battle_query: 'INSERT INTO battles (units, savings, stash, data) VALUES ($1, $2, $3, $4) RETURNING id',
+    new_battle_query: 'INSERT INTO battles (heap, savings, stash, waiting_for_input) VALUES ($1, $2, $3, $4) RETURNING id',
     new_cell_query: 'INSERT INTO cells (id, x, y, name, market_id, item_market_id, development, resources) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     new_market_query: 'INSERT INTO markets (id, data) VALUES ($1, $2)',
     insert_market_order_query: 'INSERT INTO market_orders (typ, tag, owner_id, owner_tag, amount, price, market_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
@@ -45,7 +45,7 @@ const constants = {
     insert_quest_quert: 'INSERT INTO quests (money, stash, required_item_tag, reward_money, reward_reputation) RETURNING id',
 
 
-    update_battle_query: 'UPDATE battles SET units = ($2), savings = ($3), stash = ($4), data = ($5) WHERE id = ($1)',
+    update_battle_query: 'UPDATE battles SET heap = ($2), savings = ($3), stash = ($4), waiting_for_input = ($5) WHERE id = ($1)',
     update_market_order_query: 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)',
     update_market_query: 'UPDATE markets SET data = ($2) WHERE id = ($1)',
     update_char_query: 'UPDATE chars SET cell_id = ($2), faction_id = ($3), status = ($4), skills = ($5), stats = ($6), misc = ($7), flags = ($8), savings = ($9), stash = ($10), equip = ($11) WHERE id = ($1)',

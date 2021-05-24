@@ -34,30 +34,39 @@ class UnitsHeap {
     shift_up(i) {
         let tmp = i;
         while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor(tmp / 2))) {
-            this.swap(tmp, Math.floor(tmp / 2));
-            tmp = Math.floor(tmp / 2);
+            this.swap(tmp, Math.floor((tmp - 1) / 2));
+            tmp = Math.floor((tmp - 1) / 2);
         }
     }
     shift_down(i) {
         let tmp = i;
-        while (tmp * 2 < this.last) {
-            if (tmp * 2 + 1 < this.last) {
-                if ((this.get_value(tmp * 2 + 1) > this.get_value(tmp * 2)) && (this.get_value(tmp * 2 + 1) > this.get_value(tmp))) {
+        while (tmp * 2 + 1 < this.last) {
+            console.log(tmp);
+            if (tmp * 2 + 2 < this.last) {
+                if ((this.get_value(tmp * 2 + 2) < this.get_value(tmp * 2 + 1)) && (this.get_value(tmp * 2 + 2) < this.get_value(tmp))) {
+                    this.swap(tmp, tmp * 2 + 2);
+                    tmp = tmp * 2 + 2;
+                }
+                else if (this.get_value(tmp * 2 + 1) < this.get_value(tmp)) {
                     this.swap(tmp, tmp * 2 + 1);
                     tmp = tmp * 2 + 1;
-                }
-                else if (this.get_value(tmp * 2) > this.get_value(tmp)) {
-                    this.swap(tmp, tmp * 2);
-                    tmp = tmp * 2;
                 }
                 else {
                     break;
                 }
             }
+            else if (this.get_value(tmp * 2 + 1) < this.get_value(tmp)) {
+                this.swap(tmp, tmp * 2 + 1);
+                tmp = tmp * 2 + 1;
+            }
+            else {
+                break;
+            }
         }
     }
     add_unit(u) {
         this.data.push(u);
+        this.push(this.data.length - 1);
     }
     swap(a, b) {
         let s = this.heap[a];
@@ -68,11 +77,14 @@ class UnitsHeap {
         if (this.last == 0) {
             return undefined;
         }
+        console.log(this.heap[0]);
         let tmp = this.heap[0];
         this.selected = tmp;
         this.last -= 1;
         this.heap[0] = this.heap[this.last];
         this.shift_down(0);
+        console.log('heap updated');
+        console.log(this.heap);
         return tmp;
     }
     update(dt) {
@@ -88,13 +100,19 @@ class UnitsHeap {
         };
     }
     load_from_json(j) {
+        for (let i in j.data) {
+            let unit = new UnitData(undefined)
+            unit.load_from_json(j.data[i])
+        }
         this.data = j.data;
         this.last = j.last;
         this.heap = j.heap;
     }
 }
+
 class UnitData {
     constructor(char, position, team) {
+        if (char == undefined) {return}
         let ap = char.get_action_points();
         this.action_points_left = ap;
         this.action_points_max = ap;
@@ -113,10 +131,10 @@ class UnitData {
         this.next_turn_after = this.initiative;
         this.action_points_left = Math.min((this.action_points_left + this.speed), this.action_points_max);
     }
+    load_from_jso
 }
 class BattleReworked2 {
     constructor(world) {
-        this.waiting_for_input = true;
         this.heap = new UnitsHeap();
         this.world = world;
         this.id = -1;
@@ -131,7 +149,7 @@ class BattleReworked2 {
         return this.id;
     }
     async load_to_db(pool) {
-        let res = await common.send_query(pool, constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json()]);
+        let res = await common.send_query(pool, constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
         return res.rows[0].id;
     }
     load_from_json(data) {
@@ -153,14 +171,18 @@ class BattleReworked2 {
             this.save_to_db(pool);
         }
         if (!this.waiting_for_input) {
+            console.log('??? update');
+            console.log(this.heap.heap);
             // heap manipulations
             let tmp = this.heap.pop();
+            console.log(tmp);
             if (tmp == undefined) {
                 return { responce: 'no_units_left' };
             }
             let unit = this.heap.get_unit(tmp);
             let time_passed = unit.next_turn_after;
             this.heap.update(time_passed);
+            console.log(unit);
             //character stuff
             let char = this.world.get_char_from_id(unit.char_id);
             if ((char == undefined) || char.is_dead()) {
@@ -169,15 +191,21 @@ class BattleReworked2 {
             await char.update(pool);
             let dt = unit.next_turn_after;
             this.heap.update(dt);
+            console.log(char.name);
             //actual actions
             if (char.is_player()) {
+                console.log('player turn');
                 this.waiting_for_input = true;
+                this.changed = true;
                 return 'waiting_for_input';
             }
             else {
+                console.log('ai turn');
                 let log_obj = [];
                 log_obj = await this.make_turn(pool, log_obj);
+                console.log(log_obj);
                 unit.end_turn();
+                this.changed = true;
                 return { responce: 'end_turn', data: log_obj };
             }
         }
@@ -307,7 +335,8 @@ class BattleReworked2 {
         let unit = new UnitData(agent, position, team);
         this.heap.add_unit(unit);
         agent.set_flag('in_battle', true);
-        agent.set_battle_id(this.heap.data.length - 1);
+        agent.set_in_battle_id(this.heap.data.length - 1);
+        agent.set_battle_id(this.id);
         this.changed = true;
     }
     async transfer(target, tag, x) {
@@ -411,10 +440,17 @@ class BattleReworked2 {
         }
         this.changed = true;
     }
-    async process_input(pool, input) {
+    async process_input(pool, unit_index, input) {
+        console.log(unit_index);
+        console.log(this.heap);
         if (!this.waiting_for_input) {
             return -1;
         }
+        console.log('1')
+        if (this.heap.selected != unit_index) {
+            return -1;
+        }
+        console.log('2')
         await this.action(pool, this.heap.selected, input);
     }
     units_amount() {

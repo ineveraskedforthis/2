@@ -3,7 +3,8 @@ var common = require("./common.js");
 
 
 var Map = require("./map.js");
-var Battle = require("./battle.js");
+var {BattleReworked2} = require("./battle.js");
+const Battle = BattleReworked2
 var Character = require("./base_game_classes/character.js");
 var Pop = require("./agents/pop.js");
 var MarketOrder = require("./market/market_order");
@@ -176,8 +177,9 @@ module.exports = class EntityManager {
             if (res == -1) {
                 var log = await battle.update(pool);
                 let status = battle.get_team_status(1);
-                for (let i = 0; i < battle.unit_amount(); i++) {
-                    let character = this.chars[battle.units[i].id];
+                let units = battle.get_units()
+                for (let i = 0; i < units.length; i++) {
+                    let character = this.chars[units[i].id];
                     if ((character != undefined) && (character.data.is_player)) {
                         this.world.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
                         this.world.socket_manager.send_to_character_user(character, 'enemy-update', status);
@@ -318,10 +320,10 @@ module.exports = class EntityManager {
         var battle = new Battle(this.world);
         await battle.init(pool);
         for (let i = 0; i < attackers.length; i++) {
-            await battle.add_fighter(pool, attackers[i], 0);
+            battle.add_fighter(attackers[i], 0, {x: 0, y:0});
         }
         for (let i = 0; i < defenders.length; i++) {
-            await battle.add_fighter(pool, defenders[i], 1, {x: Math.random() * 5 - 2.5, y: Math.random() * 4 + 5});
+            battle.add_fighter(defenders[i], 1, {x: Math.random() * 5 - 2.5, y: Math.random() * 4 + 5});
         }
         this.battles[battle.id] = battle;
         return battle;

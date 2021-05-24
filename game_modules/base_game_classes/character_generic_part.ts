@@ -2,7 +2,6 @@ var common = require("../common.js");
 var constants = require("../static_data/constants.js");
 const Equip = require("./equip.js");
 const Savings = require("./savings.js");
-// const Stash = require("./stash.ts");
 const spells = require("../static_data/spells.js");
 
 const generate_empty_resists = require("./misc/empty_resists.js");
@@ -91,12 +90,14 @@ class Misc {
     model: string;
     explored: any;
     battle_id: number;
+    in_battle_id: number;
     tactic: any;
     ai_tag: string;
     constructor() {
         this.model = 'empty'
         this.explored = {}
         this.battle_id = -1
+        this.in_battle_id = -1
         this.tactic = {}
         this.ai_tag = 'dummy'
     }
@@ -159,13 +160,10 @@ export class CharacterGenericPart {
         this.stats.phys_power = 10;
         this.stats.magic_power = 10;
 
-        this.misc = {
-            model: 'test',
-            explored: {},
-            battle_id: -1,
-            tactic: {s0: this.world.constants.default_tactic_slot},
-            ai_tag: 'dummy'
-        },
+        this.misc = new Misc;
+        this.misc.model = 'test'
+        this.misc.ai_tag = 'dummy'
+        this.misc.tactic = {s0: this.world.constants.default_tactic_slot}
 
         this.flags = new CharacterFlags()
 
@@ -350,7 +348,7 @@ export class CharacterGenericPart {
         this.change_stress(dstatus.stress);
         this.change_blood(dstatus.blood);
     }
-  
+
 
     //equip and stash interactions
 
@@ -715,6 +713,13 @@ export class CharacterGenericPart {
     }
     get_battle_id() {
         return this.misc.battle_id
+    }
+
+    set_in_battle_id(x: number) {
+        this.misc.in_battle_id = x
+    }
+    get_in_battle_id() {
+        return this.misc.in_battle_id
     }
 
     get_tactic() {
