@@ -27,6 +27,7 @@ export function init_battle_control(battle_image, globals) {
     battle_image.add_action({name: 'move', tag: 'move'})
     battle_image.add_action({name: 'attack', tag: 'attack'})
     battle_image.add_action({name: 'flee', tag: 'flee'})
+    battle_image.add_action({name: 'end_turn', tag: 'end_turn'})
 }
 
 class AnimatedImage {
@@ -124,8 +125,8 @@ export class BattleImage {
         this.canvas_background = canvas_background;
         this.background = "colony";
         this.init()
-        this.w = 800;
-        this.h = 400;
+        this.w = 700;
+        this.h = 450;
         this.background_flag = false;
         this.movement_speed = 0.3;
         this.scale = 1;
@@ -144,6 +145,10 @@ export class BattleImage {
         this.movement = 0;
         this.animation_tick = 0;
         this.range = {}
+
+        this.names = {}
+        this.hps = {}
+        this.aps = {}
 
         this.hovered = undefined
         this.selected = undefined
@@ -187,6 +192,10 @@ export class BattleImage {
     }
 
     update_action(action){
+        if (action.action == 'pff') {
+            alert('bad_action')
+            return
+        }
         this.action_queue.push(action);
         this.r += 1
     }
@@ -221,8 +230,10 @@ export class BattleImage {
                 console.log('move', action.who)
                 who = action.who;
                 this.images[who].set_action(action.action)
-                this.new_positions[who].x = this.prev_positions[who].x + action.target.x;
-                this.new_positions[who].y = this.prev_positions[who].y + action.target.y;
+                // this.new_positions[who].x = this.prev_positions[who].x + action.target.x;
+                // this.new_positions[who].y = this.prev_positions[who].y + action.target.y;
+                this.new_positions[who].x = action.target.x;
+                this.new_positions[who].y = action.target.y;
             }
             else if (action.action == 'charge') {
                 who = action.who;
@@ -274,6 +285,13 @@ export class BattleImage {
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
                     ctx.stroke();
+
+                    ctx.fillStyle = "rgba(0, 0, 0, 1)"
+                    ctx.font = '15px serif';
+                    ctx.strokeRect(pos.x - 50, pos.y - 120, 100, 20)
+                    ctx.fillText(this.names[i] + '   ' + this.hps[i] + ' hp', pos.x - 45, pos.y - 105);
+                    ctx.strokeRect(pos.x - 50, pos.y - 100, 100, 20)
+                    ctx.fillText('ap:  ' + this.aps[i], pos.x - 45, pos.y - 85);
                 }                
             }
             
@@ -323,12 +341,17 @@ export class BattleImage {
         
     }
     
-    add_fighter(battle_id, tag, pos, range, is_player) {
+    add_fighter(battle_id, tag, pos, range, is_player, name, hp) {
         console.log("add fighter")
         console.log(battle_id, tag, pos)
         this.battle_ids.add(battle_id)
         this.new_positions[battle_id] = {x:pos.x, y:pos.y};
         this.prev_positions[battle_id] = {x:pos.x, y:pos.y};
+
+        this.names[battle_id] = 'test'
+        this.hps[battle_id] = 'test'
+        this.aps[battle_id] = 'test'
+
         this.positions[battle_id] = {x:pos.x, y:pos.y};
         this.images[battle_id] = new AnimatedImage(tag)
         this.range[battle_id] = range;
@@ -428,6 +451,8 @@ export class BattleImage {
             }
         } else if (tag == 'flee') {
             this.socket.emit('battle-action', {action: 'flee'})
+        } else if (tag == 'end_turn') {
+            this.socket.emit('battle-action', {action: 'end_turn'})
         }
     }
 
@@ -441,13 +466,19 @@ export class BattleImage {
     }
 
     update_enemy(data) {
-        let div = document.getElementById('enemy_status');
-        div.innerHTML = ''
-        for (let i of data) {
-            let label = document.createElement('p');
-            label.innerHTML = i.name + ' | | ' + i.hp + ' hp' 
-            div.appendChild(label)
+        console.log(data)
+        for (let i in data) {
+            this.names[i] = data[i].name
+            this.hps[i] = data[i].hp
+            this.aps[i] = data[i].ap
         }
+        // let div = document.getElementById('enemy_status');
+        // div.innerHTML = ''
+        // for (let i of data) {
+        //     let label = document.createElement('p');
+        //     label.innerHTML = i.name + ' | | ' + i.hp + ' hp' 
+        //     div.appendChild(label)
+        // }
     }
 
     battle_action(data) {

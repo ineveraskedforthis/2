@@ -766,6 +766,7 @@ socket.on('battle-update', data => battle_image.update(data))
 socket.on('battle-action', data => {
     let res = battle_image.battle_action(data);
     new_log_message(res)
+    console.log(data)
     if (res == 'battle has ended') end_battle();
 })
 socket.on('enemy-update', data => battle_image.update_enemy(data))

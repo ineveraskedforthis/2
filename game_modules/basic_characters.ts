@@ -22,6 +22,8 @@ class Rat extends PredefinedMonster {
 
     specific_part_of_init(cell_id: number) {
         this.init_base_values('rat', cell_id);
+
+        this.name = 'rat'
         this.status.hp = 30
         this.stats.max.hp = 30
         this.stats.magic_power = 0
@@ -29,6 +31,10 @@ class Rat extends PredefinedMonster {
         this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 1}}
         this.stash.inc('meat', 1);
         this.misc.model = 'rat'
+    }
+
+    get_initiative() {
+        return 6
     }
 
     get_range() {

@@ -176,7 +176,7 @@ module.exports = class EntityManager {
             let res = battle.is_over();
             if (res == -1) {
                 var log = await battle.update(pool);
-                let status = battle.get_team_status(1);
+                let status = battle.get_status();
                 let units = battle.get_units()
                 for (let i = 0; i < units.length; i++) {
                     let character = this.chars[units[i].id];
@@ -285,9 +285,9 @@ module.exports = class EntityManager {
         let character = this.chars[char_id];
         if (!character.is_dead()) {
             await character.clear_orders(pool);
-            await character.set(pool, 'dead', true);
+            await character.set_flag('dead', true);
             console.log('kill ' + char_id);
-            if (character.data.is_player) {
+            if (character.is_player()) {
                 var user = this.world.user_manager.get_user_from_character(character);
                 user.send_death_message()
                 var id = await user.get_new_char(pool);

@@ -9,6 +9,7 @@ var Savings = require("./base_game_classes/savings.js");
 import {BattleAI} from './battle_ai'
 import type {CharacterGenericPart} from './base_game_classes/character_generic_part'
 import { tag } from "./static_data/type_script_types";
+import { getEmitHelpers } from "typescript";
 
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
@@ -127,13 +128,15 @@ class UnitsHeap {
     load_from_json(j: UnitsHeap) {
         for (let i in j.data) {
             let unit = new UnitData()
+            unit.load_from_json(j.data[i])
+            this.data.push(unit)
         }
-        this.data = j.data
         this.last = j.last
         this.heap = j.heap
+        this.selected = j.selected
     }
 }
-
+        
 class UnitData {
     action_points_left: number;
     action_points_max: number;
@@ -146,13 +149,19 @@ class UnitData {
     dead: boolean
 
 
-    constructor(char:CharacterGenericPart|undefined, position: {x: number, y: number}, team: number, json: UnitData|undefined) {
-        if ((char == undefined) && (json != undefined)) {
-            this.load_from_json(json)
-            return
-        } else if (char == undefined) {
-            return
-        }
+    constructor() {
+        this.action_points_left = 0;
+        this.action_points_max = 0;
+        this.initiative = 100
+        this.speed = 0
+        this.next_turn_after = 100
+        this.position = {x: 0, y: 0}
+        this.char_id = -1
+        this.team = -1
+        this.dead = true
+    }
+
+    init(char:CharacterGenericPart, position: {x: number, y: number}, team: number) {
         let ap = char.get_action_points()
         this.action_points_left = ap;
         this.action_points_max = ap;
@@ -248,14 +257,12 @@ export class BattleReworked2 {
             console.log(this.heap.heap)
             // heap manipulations
             let tmp = this.heap.pop()
-            console.log(tmp)
             if (tmp == undefined) {
                 return {responce: 'no_units_left'}
             }
             let unit = this.heap.get_unit(tmp)
             let time_passed = unit.next_turn_after
             this.heap.update(time_passed)
-            console.log(unit)
             
 
             //character stuff
@@ -280,6 +287,7 @@ export class BattleReworked2 {
                 log_obj = await this.make_turn(pool, log_obj)
                 console.log(log_obj)
                 unit.end_turn()
+                this.heap.push(tmp)
                 this.changed = true
                 return {responce: 'end_turn', data: log_obj}
             }
@@ -301,22 +309,26 @@ export class BattleReworked2 {
     }
 
     async make_turn(pool: any, log: ActionLog): Promise<ActionLog> {
+        console.log('turn of ' + this.heap.selected)
         let unit = this.heap.get_selected_unit()
         let char = this.get_char(unit)
         let action:Action = BattleAI.action(this, char);
+        console.log(action)
         while (action.action != 'end_turn') {
             log.push(action)
+            console.log(action)
             this.action(pool, this.heap.selected, action)
             action = BattleAI.action(this, char);
         }
-
+        this.changed = true
         return log;
     }
 
     async action(pool:any, unit_index: number, action: Action) {
         let unit = this.heap.get_unit(unit_index)
         var character:CharacterGenericPart = this.world.get_char_from_id(unit.char_id);
-
+        console.log('processing action')
+        console.log(action)
 
         //no action
         if (action.action == null) {
@@ -326,15 +338,16 @@ export class BattleReworked2 {
 
         //move toward enemy
         if (action.action == 'move') {
+            console.log(unit.action_points_left)
             let tmp = geom.minus(action.target, unit.position)
-            if (geom.norm(tmp) > unit.action_points_left) {
-                tmp = geom.intify(geom.mult(geom.normalize(tmp), unit.action_points_left))
+            if (geom.norm(tmp) * 2 > unit.action_points_left) {
+                tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / 2)
             }
-            unit.position.x = action.target.x + unit.position.x;
-            unit.position.y = action.target.y + unit.position.y;
-            let points_spent = Math.floor(geom.norm(tmp))
+            unit.position.x = tmp.x + unit.position.x;
+            unit.position.y = tmp.y + unit.position.y;
+            let points_spent = geom.norm(tmp) * 2
             unit.action_points_left -= points_spent
-            return {action: 'move', who: unit_index, target: action.target, actor_name: character.name}
+            return {action: 'move', who: unit_index, target: unit.position, actor_name: character.name}
         }
 
         
@@ -342,9 +355,12 @@ export class BattleReworked2 {
             if (action.target != null) {
                 let unit2 = this.heap.get_unit(action.target);
                 let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+
+                console.log(geom.dist(unit.position, unit2.position))
+                console.log(char.get_range())
                 if ((geom.dist(unit.position, unit2.position) <= char.get_range()) && unit.action_points_left >= 1) {
                     let target_char = this.world.get_char_from_id(unit2.char_id);
-                    let result = character.attack(pool, target_char);
+                    let result = await character.attack(pool, target_char);
                     unit.action_points_left -= 1
                     return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
                 }
@@ -392,6 +408,8 @@ export class BattleReworked2 {
         if (action.action == 'end_turn') {
             this.waiting_for_input = false
             unit.end_turn()
+            this.heap.push(unit_index)
+            return {action: 'end_turn', who: unit_index}
         }
         this.changed = true
     }
@@ -425,7 +443,8 @@ export class BattleReworked2 {
             }
         }
 
-        let unit = new UnitData(agent, position, team);
+        let unit = new UnitData();
+        unit.init(agent, position, team)
 
         this.heap.add_unit(unit)
 
@@ -445,10 +464,22 @@ export class BattleReworked2 {
         for (let i in this.heap.data) {
             let unit = this.heap.data[i]
             if (unit.team == team) {
-                let char = this.world.get_char_from_id(unit.char_id)
+                let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
                 if (char != undefined) {
-                    tmp.push({name: char.name, hp: char.hp, next_turn: unit.next_turn_after})
+                    tmp.push({name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after})
                 }
+            }
+        }
+        return tmp
+    }
+
+    get_status() {
+        let tmp = []
+        for (let i in this.heap.data) {
+            let unit = this.heap.data[i]
+            let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+            if (char != undefined) {
+                tmp.push({name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left})
             }
         }
         return tmp
@@ -548,17 +579,25 @@ export class BattleReworked2 {
     }
 
     async process_input(pool: any, unit_index: number, input: Action) {
-        console.log(unit_index)
-        console.log(input)
-        // console.log(this.heap)
         if (!this.waiting_for_input) {
-            return -1
+            return {action: 'pff', who: unit_index}
         }
         if (this.heap.selected != unit_index) {
-            return -1
+            return {action: 'pff', who: unit_index}
         }
-        await this.action(pool, this.heap.selected, input)
-        this.changed = true
+
+        if (input != undefined) {
+            this.changed = true
+            if (input.action == 'move') {
+                return await this.action(pool, unit_index, {action: 'move', target: input.target})
+            } else if (input.action == 'attack') {
+                return await this.action(pool, unit_index, BattleAI.convert_attack_to_action(this, unit_index, input.target))
+            } else if (input.action == 'flee') {
+                return await this.action(pool, unit_index, {action: 'flee'})
+            } else {
+                return await this.action(pool, unit_index, input)
+            }
+        }        
     }
 
     units_amount() {

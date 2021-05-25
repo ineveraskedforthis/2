@@ -1,7 +1,7 @@
-._battle_canvas {
+#battle_tab > .battle_display > ._battle_canvas {
     position: absolute;
-    top: 5%;
-    left: 5%;
+    top: 0px;
+    left: 0px;
 }
 
 #battle_canvas {
@@ -14,40 +14,50 @@
 
 #battle_tab > .battle_display {
     position: absolute;
-    border: rgb(56, 143, 6) solid 1px;
-    top: 1%;
-    left: 1%;
-    width: 80%;
-    height: 70%;
+    /* border: rgb(56, 143, 6) solid 1px; */
+    top: 5px;
+    left: 5px;
+    width: 700px;
+    height: 450px;
     background-color: rgba(204, 151, 151, 0.856);
 }
 
 #battle_tab > .enemy_list {
     position: absolute;
-    left: 82%;
-    width: 17%;
+    top: 5px;
+    left: 710px;
+    width: 215px;
     height: 70%;
-    top: 1%;
+
 }
 
-.battle_control{
+#battle_tab > .enemy_list > .enemy_status{
+    border: rgb(56, 143, 6) solid 1px;
+    width: 200px;
+    left: 2px;
+    height: 40px;
+    z-index: 3;
+    color: rgb(38, 138, 46);
+    background-color: rgba(255, 255, 255, .5);
+}
+
+#battle_tab > .battle_control{
     position: absolute;
-    top: 72%;
-    left: 1%;
-    width: 98%;
-    height: 27%;
+    top: 455px;
+    left: 5px;
+    width: 698px;
+    height: 48px;
     display: flex;
     flex-direction: row;
     z-index: 3;
-    border: rgb(56, 143, 6) solid 1px;
+    border: rgb(143, 6, 6) solid 1px;
 }
 
 .battle_control> .battle_action{
-    border: rgb(56, 143, 6) solid 2px;
-    width: 100px;
-    height: 50%;
+    border: rgb(143, 6, 6) solid 2px;
+    width: 70px;
+    height: 44px;
     text-align: center;
-    padding-top: 0.5em;
     color: darkgreen;
     background-color: rgba(255, 255, 255, .5);
     user-select: none;
@@ -57,19 +67,14 @@
     border: rgb(21, 240, 39) solid 2px;
 }
 
-
-
-#enemy_status{
-    border: rgb(56, 143, 6) solid 3px;
+#battle_tab > .aps {
     position: absolute;
-    width: 170px;
-    height: 20px;
-    top: 20px;
-    left: 30px;
-    z-index: 3;
-    text-align: center;
-    padding-top: 0.5em;
-    color: rgb(38, 138, 46);
+    top: 505px;
+    height: 30px;
+    width: 698px;
+    left: 5px;
+    border: rgb(143, 6, 6) solid 1px;
     background-color: rgba(255, 255, 255, .5);
-    user-select: none;
 }
+
+

@@ -454,9 +454,9 @@ export class CharacterGenericPart {
         return result;
     }
 
-    async take_damage(pool: any, result: any) {
+    async take_damage(pool: any, result: any): Promise<AttackResult> {
         let res = this.get_resists();
-        if (!result.flags.evade) {
+        if (!result.flags.evade && !result.flags.miss) {
             for (let i of damage_types) {
                 if (result.damage[i] > 0) {
                     let curr_damage = Math.max(0, result.damage[i] - res[i]);
@@ -553,7 +553,7 @@ export class CharacterGenericPart {
     }
 
     get_phys_power() {
-        let power = this.stats.phys_power * this.equip.get_magic_power_modifier();
+        let power = this.stats.phys_power * this.equip.get_phys_power_modifier();
 
         return power;
     }

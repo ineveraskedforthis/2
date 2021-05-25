@@ -91,29 +91,20 @@ export class BattleAI {
 
 
     static convert_attack_to_action(battle: BattleReworked2, ind1: number, ind2: number): AttackAction|MoveAction {
-        let tmp:Action = {action: null}
         let unit = battle.get_unit(ind1)
         let unit_2 = battle.get_unit(ind2)
         var actor = battle.world.get_char_from_id(unit.char_id);
         let delta = geom.minus(unit_2.position, unit.position);
         let dist = geom.norm(delta)
         if (dist > actor.get_range()) {
-            let target: point = {x: 0, y: 0}
+            let target: point = {x: unit.position.x, y: unit.position.y}
             let action_tag: ActionTag = "move";
-            if (dist > actor.get_range() + 0.9) {
-                target = geom.normalize(delta);
-            } else {
-                target.x = geom.normalize(delta).x * (Math.max(dist - actor.get_range() + 0.1, 0));
-                target.y = geom.normalize(delta).y * (Math.max(dist - actor.get_range() + 0.1, 0));
-            }
-            tmp = {action: action_tag, target: target}
+            target.x += geom.normalize(delta).x * (Math.max(dist - actor.get_range() + 0.1, 0));
+            target.y += geom.normalize(delta).y * (Math.max(dist - actor.get_range() + 0.1, 0));
+            return {action: action_tag, target: target}
         } else {
-            tmp = {
-                action: 'attack',
-                target: ind2
-            }
+            return {action: 'attack', target: ind2}
         }
-        return tmp
     }
 
     //decide what action agent should do

@@ -41,7 +41,6 @@ class UnitsHeap {
     shift_down(i) {
         let tmp = i;
         while (tmp * 2 + 1 < this.last) {
-            console.log(tmp);
             if (tmp * 2 + 2 < this.last) {
                 if ((this.get_value(tmp * 2 + 2) < this.get_value(tmp * 2 + 1)) && (this.get_value(tmp * 2 + 2) < this.get_value(tmp))) {
                     this.swap(tmp, tmp * 2 + 2);
@@ -77,14 +76,11 @@ class UnitsHeap {
         if (this.last == 0) {
             return undefined;
         }
-        console.log(this.heap[0]);
         let tmp = this.heap[0];
         this.selected = tmp;
         this.last -= 1;
         this.heap[0] = this.heap[this.last];
         this.shift_down(0);
-        console.log('heap updated');
-        console.log(this.heap);
         return tmp;
     }
     update(dt) {
@@ -101,18 +97,28 @@ class UnitsHeap {
     }
     load_from_json(j) {
         for (let i in j.data) {
-            let unit = new UnitData(undefined)
-            unit.load_from_json(j.data[i])
+            let unit = new UnitData();
+            unit.load_from_json(j.data[i]);
+            this.data.push(unit);
         }
-        this.data = j.data;
         this.last = j.last;
         this.heap = j.heap;
+        this.selected = j.selected;
     }
 }
-
 class UnitData {
-    constructor(char, position, team) {
-        if (char == undefined) {return}
+    constructor() {
+        this.action_points_left = 0;
+        this.action_points_max = 0;
+        this.initiative = 100;
+        this.speed = 0;
+        this.next_turn_after = 100;
+        this.position = { x: 0, y: 0 };
+        this.char_id = -1;
+        this.team = -1;
+        this.dead = true;
+    }
+    init(char, position, team) {
         let ap = char.get_action_points();
         this.action_points_left = ap;
         this.action_points_max = ap;
@@ -124,6 +130,17 @@ class UnitData {
         this.team = team;
         this.dead = false;
     }
+    load_from_json(data) {
+        this.action_points_left = data.action_points_left;
+        this.action_points_max = data.action_points_max;
+        this.initiative = data.initiative;
+        this.speed = data.speed;
+        this.next_turn_after = data.next_turn_after;
+        this.position = data.position;
+        this.char_id = data.char_id;
+        this.team = data.team;
+        this.dead = data.dead;
+    }
     update(dt) {
         this.next_turn_after = this.next_turn_after - dt;
     }
@@ -131,7 +148,6 @@ class UnitData {
         this.next_turn_after = this.initiative;
         this.action_points_left = Math.min((this.action_points_left + this.speed), this.action_points_max);
     }
-    load_from_jso
 }
 class BattleReworked2 {
     constructor(world) {
@@ -175,14 +191,12 @@ class BattleReworked2 {
             console.log(this.heap.heap);
             // heap manipulations
             let tmp = this.heap.pop();
-            console.log(tmp);
             if (tmp == undefined) {
                 return { responce: 'no_units_left' };
             }
             let unit = this.heap.get_unit(tmp);
             let time_passed = unit.next_turn_after;
             this.heap.update(time_passed);
-            console.log(unit);
             //character stuff
             let char = this.world.get_char_from_id(unit.char_id);
             if ((char == undefined) || char.is_dead()) {
@@ -205,6 +219,7 @@ class BattleReworked2 {
                 log_obj = await this.make_turn(pool, log_obj);
                 console.log(log_obj);
                 unit.end_turn();
+                this.heap.push(tmp);
                 this.changed = true;
                 return { responce: 'end_turn', data: log_obj };
             }
@@ -223,42 +238,51 @@ class BattleReworked2 {
         return this.world.get_char_from_id(unit.char_id);
     }
     async make_turn(pool, log) {
+        console.log('turn of ' + this.heap.selected);
         let unit = this.heap.get_selected_unit();
         let char = this.get_char(unit);
         let action = battle_ai_1.BattleAI.action(this, char);
+        console.log(action);
         while (action.action != 'end_turn') {
             log.push(action);
+            console.log(action);
             this.action(pool, this.heap.selected, action);
             action = battle_ai_1.BattleAI.action(this, char);
         }
+        this.changed = true;
         return log;
     }
     async action(pool, unit_index, action) {
         let unit = this.heap.get_unit(unit_index);
         var character = this.world.get_char_from_id(unit.char_id);
+        console.log('processing action');
+        console.log(action);
         //no action
         if (action.action == null) {
             return { action: 'pff', who: unit_index };
         }
         //move toward enemy
         if (action.action == 'move') {
+            console.log(unit.action_points_left);
             let tmp = geom_1.geom.minus(action.target, unit.position);
-            if (geom_1.geom.norm(tmp) > unit.action_points_left) {
-                tmp = geom_1.geom.intify(geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left));
+            if (geom_1.geom.norm(tmp) * 2 > unit.action_points_left) {
+                tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / 2);
             }
-            unit.position.x = action.target.x + unit.position.x;
-            unit.position.y = action.target.y + unit.position.y;
-            let points_spent = Math.floor(geom_1.geom.norm(tmp));
+            unit.position.x = tmp.x + unit.position.x;
+            unit.position.y = tmp.y + unit.position.y;
+            let points_spent = geom_1.geom.norm(tmp) * 2;
             unit.action_points_left -= points_spent;
-            return { action: 'move', who: unit_index, target: action.target, actor_name: character.name };
+            return { action: 'move', who: unit_index, target: unit.position, actor_name: character.name };
         }
         if (action.action == 'attack') {
             if (action.target != null) {
                 let unit2 = this.heap.get_unit(action.target);
                 let char = this.world.get_char_from_id(unit.char_id);
+                console.log(geom_1.geom.dist(unit.position, unit2.position));
+                console.log(char.get_range());
                 if ((geom_1.geom.dist(unit.position, unit2.position) <= char.get_range()) && unit.action_points_left >= 1) {
                     let target_char = this.world.get_char_from_id(unit2.char_id);
-                    let result = character.attack(pool, target_char);
+                    let result = await character.attack(pool, target_char);
                     unit.action_points_left -= 1;
                     return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
                 }
@@ -302,6 +326,8 @@ class BattleReworked2 {
         if (action.action == 'end_turn') {
             this.waiting_for_input = false;
             unit.end_turn();
+            this.heap.push(unit_index);
+            return { action: 'end_turn', who: unit_index };
         }
         this.changed = true;
     }
@@ -332,7 +358,8 @@ class BattleReworked2 {
                 position = { x: 0, y: 0 };
             }
         }
-        let unit = new UnitData(agent, position, team);
+        let unit = new UnitData();
+        unit.init(agent, position, team);
         this.heap.add_unit(unit);
         agent.set_flag('in_battle', true);
         agent.set_in_battle_id(this.heap.data.length - 1);
@@ -349,8 +376,19 @@ class BattleReworked2 {
             if (unit.team == team) {
                 let char = this.world.get_char_from_id(unit.char_id);
                 if (char != undefined) {
-                    tmp.push({ name: char.name, hp: char.hp, next_turn: unit.next_turn_after });
+                    tmp.push({ name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after });
                 }
+            }
+        }
+        return tmp;
+    }
+    get_status() {
+        let tmp = [];
+        for (let i in this.heap.data) {
+            let unit = this.heap.data[i];
+            let char = this.world.get_char_from_id(unit.char_id);
+            if (char != undefined) {
+                tmp.push({ name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left });
             }
         }
         return tmp;
@@ -441,17 +479,27 @@ class BattleReworked2 {
         this.changed = true;
     }
     async process_input(pool, unit_index, input) {
-        console.log(unit_index);
-        console.log(this.heap);
         if (!this.waiting_for_input) {
-            return -1;
+            return { action: 'pff', who: unit_index };
         }
-        console.log('1')
         if (this.heap.selected != unit_index) {
-            return -1;
+            return { action: 'pff', who: unit_index };
         }
-        console.log('2')
-        await this.action(pool, this.heap.selected, input);
+        if (input != undefined) {
+            this.changed = true;
+            if (input.action == 'move') {
+                return await this.action(pool, unit_index, { action: 'move', target: input.target });
+            }
+            else if (input.action == 'attack') {
+                return await this.action(pool, unit_index, battle_ai_1.BattleAI.convert_attack_to_action(this, unit_index, input.target));
+            }
+            else if (input.action == 'flee') {
+                return await this.action(pool, unit_index, { action: 'flee' });
+            }
+            else {
+                return await this.action(pool, unit_index, input);
+            }
+        }
     }
     units_amount() {
         return this.heap.get_units_amount();

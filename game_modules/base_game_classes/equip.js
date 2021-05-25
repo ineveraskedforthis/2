@@ -80,6 +80,15 @@ module.exports = class Equip {
         return result
     }
 
+    get_phys_power_modifier() {
+        return 1
+    }
+
+    
+    get_magic_power_modifier() {
+        return 1
+    }
+
     update(agent) {
         for (let i of EQUIP_TAGS) {
             this.get_item_update(this.data[i], agent);

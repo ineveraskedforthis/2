@@ -77,31 +77,21 @@ class BattleAI {
         return BattleAI.compare(value1, value, sign);
     }
     static convert_attack_to_action(battle, ind1, ind2) {
-        let tmp = { action: null };
         let unit = battle.get_unit(ind1);
         let unit_2 = battle.get_unit(ind2);
         var actor = battle.world.get_char_from_id(unit.char_id);
         let delta = geom_1.geom.minus(unit_2.position, unit.position);
         let dist = geom_1.geom.norm(delta);
         if (dist > actor.get_range()) {
-            let target = { x: 0, y: 0 };
+            let target = { x: unit.position.x, y: unit.position.y };
             let action_tag = "move";
-            if (dist > actor.get_range() + 0.9) {
-                target = geom_1.geom.normalize(delta);
-            }
-            else {
-                target.x = geom_1.geom.normalize(delta).x * (Math.max(dist - actor.get_range() + 0.1, 0));
-                target.y = geom_1.geom.normalize(delta).y * (Math.max(dist - actor.get_range() + 0.1, 0));
-            }
-            tmp = { action: action_tag, target: target };
+            target.x += geom_1.geom.normalize(delta).x * (Math.max(dist - actor.get_range() + 0.1, 0));
+            target.y += geom_1.geom.normalize(delta).y * (Math.max(dist - actor.get_range() + 0.1, 0));
+            return { action: action_tag, target: target };
         }
         else {
-            tmp = {
-                action: 'attack',
-                target: ind2
-            };
+            return { action: 'attack', target: ind2 };
         }
-        return tmp;
     }
     //decide what action agent should do
     static get_action(battle, index, target_tag, action_tag, spell_tag) {

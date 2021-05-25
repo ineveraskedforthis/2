@@ -265,6 +265,8 @@ module.exports = class SocketManager {
             let char = user_data.current_user.character;
             let battle = await this.world.attack_local_monster(this.pool, char, 1);
             socket.emit('battle-has-started', battle.get_data())
+            let status = battle.get_status()
+            this.send_to_character_user(char, 'enemy-update', status);
         }
     }
 
@@ -276,6 +278,8 @@ module.exports = class SocketManager {
             let battle = await char.attack_local_outpost(this.pool);
             if (battle != undefined) {
                 socket.emit('battle-has-started', battle.get_data())
+                let status = battle.get_status()
+                this.send_to_character_user(char, 'enemy-update', status);
             }
         }
     }
@@ -455,6 +459,8 @@ module.exports = class SocketManager {
         if (character.in_battle()) {
             let battle = this.world.get_battle_from_id(character.get_battle_id());
             this.send_to_user(user, 'battle-has-started', battle.get_data());
+            let status = battle.get_status()
+            this.send_to_character_user(character, 'enemy-update', status);
         }
     }
 
@@ -698,8 +704,13 @@ module.exports = class SocketManager {
             let char = user_data.current_user.character;
             let battle = this.world.get_battle_from_id(char.get_battle_id());
             if (battle != undefined) {
-                await battle.process_input(this.pool, char.get_in_battle_id(), action)
+                let res = await battle.process_input(this.pool, char.get_in_battle_id(), action)
+                console.log(res)
+                this.send_to_character_user(char, 'battle-action', res)
+                let status = battle.get_status()
+                this.send_to_character_user(char, 'enemy-update', status);
             }
         }
     }
+    
 }
