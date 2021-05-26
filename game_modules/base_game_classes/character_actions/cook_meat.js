@@ -22,6 +22,7 @@ module.exports = function cook_meat() {
             } else {
                 if (skill < 19) {
                     this.skills.cooking.practice += 1
+                    this.send_skills_update()
                 }
                 this.change_stress(5)
                 return 'failed'

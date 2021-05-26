@@ -10,7 +10,8 @@ class AttackResult {
             miss: false,
             poison: false,
             blocked: false,
-            close_distance: false
+            close_distance: false,
+            killing_strike: false
         };
         this.defender_status_change = {
             hp: 0,

@@ -215,6 +215,7 @@ class CharacterGenericPart {
         if (this.status.hp != tmp) {
             this.changed = true;
             this.status_changed = true;
+            this.send_status_update();
         }
     }
     change_rage(x) {
@@ -223,6 +224,7 @@ class CharacterGenericPart {
         if (tmp != this.status.rage) {
             this.changed = true;
             this.status_changed = true;
+            this.send_status_update();
         }
     }
     change_blood(x) {
@@ -231,6 +233,7 @@ class CharacterGenericPart {
         if (tmp != this.status.blood) {
             this.changed = true;
             this.status_changed = true;
+            this.send_status_update();
         }
     }
     change_stress(x) {
@@ -239,6 +242,7 @@ class CharacterGenericPart {
         if (tmp != this.status.stress) {
             this.changed = true;
             this.status_changed = true;
+            this.send_status_update();
         }
     }
     change_status(dstatus) {
@@ -300,6 +304,25 @@ class CharacterGenericPart {
             this.clear_tag_orders(tag);
         }
     }
+    // network simplification functions
+    send_skills_update() {
+        if (this.is_player()) {
+            this.world.socket_manager.send_skills_info(this);
+        }
+    }
+    send_status_update() {
+        if (this.is_player()) {
+            this.world.socket_manager.send_status_update(this);
+        }
+    }
+    send_stash_update() {
+        if (this.is_player()) {
+            this.world.socket_manager.send_stash_update_to_character(this);
+        }
+    }
+    //rgo
+    rgo_check(character) {
+    }
     //attack calculations
     async attack(pool, target) {
         let result = new attack_result_1.AttackResult();
@@ -310,7 +333,16 @@ class CharacterGenericPart {
         result = target.roll_evasion(result);
         result = target.roll_block(result);
         this.change_status(result.attacker_status_change);
+        let dice = Math.random();
+        if (dice > this.skills[result.weapon_type].practice / 50) {
+            this.skills[result.weapon_type].practice += 1;
+        }
+        this.send_skills_update();
         result = await target.take_damage(pool, result);
+        if (result.flags.killing_strike) {
+            target.transfer_all_inv(this);
+            target.rgo_check(this);
+        }
         return result;
     }
     async spell_attack(pool, target, tag) {
@@ -329,6 +361,9 @@ class CharacterGenericPart {
                     let curr_damage = Math.max(0, result.damage[i] - res[i]);
                     result.total_damage += curr_damage;
                     this.change_hp(-curr_damage);
+                    if (this.get_hp() == 0) {
+                        result.flags.killing_strike = true;
+                    }
                 }
             }
             this.change_status(result.defender_status_change);

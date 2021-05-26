@@ -285,7 +285,6 @@ export class BattleReworked2 {
 
             if (char.is_dead()){
                 unit.dead = true
-                console.log('dead char')
                 return {responce: 'char_is_dead'}
             }
 
@@ -335,9 +334,6 @@ export class BattleReworked2 {
     async action(pool:any, unit_index: number, action: Action) {
         let unit = this.heap.get_unit(unit_index)
         var character:CharacterGenericPart = this.world.get_char_from_id(unit.char_id);
-        // console.log('processing action')
-        // console.log(action)
-        // console.log('action points left: ' + unit.action_points_left)
 
         //no action
         if (action.action == null) {
@@ -347,7 +343,6 @@ export class BattleReworked2 {
 
         //move toward enemy
         if (action.action == 'move') {
-            // console.log(unit.action_points_left)
             let tmp = geom.minus(action.target, unit.position)
             if (geom.norm(tmp) * 2 > unit.action_points_left) {
                 tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / 2)

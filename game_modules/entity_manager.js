@@ -140,15 +140,6 @@ module.exports = class EntityManager {
             for (let i of keys) {
                 await this.agents[i].update(pool);
             }
-            // for (let i of Object.keys(this.agents)) {
-            //     let agent = this.agents[i]
-            //     console.log(agent.name.padEnd(15) + agent.savings.get().toString().padStart(10) + agent.data.price.toString().padStart(10) + agent.data.sold.toString().padStart(10))
-            // }
-            // let market = this.map.cells[0][0].market;
-            // console.log('meat'.padEnd(10) + market.guess_tag_cost('meat', 1).toString().padStart(10))
-            // console.log('leather'.padEnd(10) + market.guess_tag_cost('leather', 1).toString().padStart(10))
-            // console.log('clothes'.padEnd(10) + market.guess_tag_cost('clothes', 1).toString().padStart(10))
-            // console.log('food'.padEnd(10) + market.guess_tag_cost('food', 1).toString().padStart(10))
     }
 
     async update_chars(pool) {
@@ -220,6 +211,7 @@ module.exports = class EntityManager {
                         }
                     }
                 }
+                battle.clean_up_battle()
                 await this.delete_battle(pool, battle.id);
             }
         }

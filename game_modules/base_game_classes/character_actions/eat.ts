@@ -1,7 +1,6 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.eat = void 0;
-function eat(char) {
+import type { CharacterGenericPart } from "../character_generic_part";
+
+export function eat(char:CharacterGenericPart) {
     if (!char.in_battle()) {
         let tmp = char.stash.get('food');
         if (tmp > 0) {
@@ -10,4 +9,3 @@ function eat(char) {
         }
     }
 }
-exports.eat = eat;

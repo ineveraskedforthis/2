@@ -8,7 +8,8 @@ export class AttackResult {
         miss: boolean,
         poison: boolean,
         blocked: boolean,
-        close_distance: boolean
+        close_distance: boolean,
+        killing_strike: boolean
     }
     defender_status_change:Status;
     attacker_status_change:Status;
@@ -26,7 +27,8 @@ export class AttackResult {
             miss: false,
             poison: false,
             blocked: false,
-            close_distance: false
+            close_distance: false,
+            killing_strike: false
         }
 
         this.defender_status_change = {

@@ -85,7 +85,6 @@ export class BattleAI {
         if (value1 == undefined) {
             return false
         }
-        console.log(value1)
         return BattleAI.compare(value1, value, sign);
     }
 

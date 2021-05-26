@@ -441,8 +441,6 @@ function build_skill_div(tag){
 }
 
 function update_skill_data(data) {
-    console.log('!!!')
-    console.log(data)
     for (let tag in SKILL_TAGS) {
         let div = document.getElementById(tag + '_skill_div')
         let amount = div.querySelector('.practice_n')
@@ -712,6 +710,13 @@ function update_stash(data) {
         }            
     }
 }
+
+function process_stash_click(tag) {
+    console.log(tag)
+    if (tag == 'food') {
+        socket.emit('eat')
+    }
+}
 //
 
 
@@ -766,7 +771,6 @@ socket.on('battle-update', data => battle_image.update(data))
 socket.on('battle-action', data => {
     let res = battle_image.battle_action(data);
     new_log_message(res)
-    console.log(data)
     if (res == 'battle has ended') end_battle();
 })
 socket.on('enemy-update', data => battle_image.update_enemy(data))
@@ -829,10 +833,13 @@ function update_tags(msg) {
 
             market_div.appendChild(div_cell)
 
+
+            // stash
             div_cell = document.createElement('div');
             div_cell.classList.add('goods_type_stash');
             div_cell.classList.add('tooltip')
             div_cell.classList.add(tag);
+            ((tag) => div_cell.onclick = () => {process_stash_click(tag)})(tag)
 
             {
                 let div_image = document.createElement('div');

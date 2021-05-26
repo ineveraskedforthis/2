@@ -27,6 +27,23 @@ class Rat extends PredefinedMonster {
         this.stash.inc('meat', 1);
         this.misc.model = 'rat';
     }
+    rgo_check(character) {
+        let skinning = character.skills.skinning.practice;
+        if (skinning > 10) {
+            let dice = Math.random();
+            if (dice < skinning / 50) {
+                character.stash.inc('leather', 1);
+                character.stash.inc('meat', 1);
+            }
+        }
+        let dice = Math.random();
+        if (dice > skinning / 50) {
+            character.skills.skinning.practice += 1;
+        }
+        character.stash.inc('meat', 2);
+        character.send_skills_update();
+        character.send_stash_update();
+    }
     get_initiative() {
         return 6;
     }

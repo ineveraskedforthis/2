@@ -479,7 +479,6 @@ export class BattleImage {
     }
 
     update_enemy(data) {
-        console.log(data)
         for (let i in data) {
             this.names[i] = data[i].name
             this.hps[i] = data[i].hp

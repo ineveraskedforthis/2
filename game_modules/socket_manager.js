@@ -259,8 +259,7 @@ module.exports = class SocketManager {
 
     // eslint-disable-next-line no-unused-vars
     async attack(socket, user_data, data) {
-        common.flag_log('attack', constants.logging.sockets.messages)
-        common.flag_log([user_data], constants.logging.sockets.messages)
+        console.log('attack')
         if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
             let char = user_data.current_user.character;
             let battle = await this.world.attack_local_monster(this.pool, char, 1);
@@ -271,8 +270,6 @@ module.exports = class SocketManager {
     }
 
     async attack_local_outpost(socket, user_data, data) {
-        common.flag_log('attack', constants.logging.sockets.messages)
-        common.flag_log([user_data], constants.logging.sockets.messages)
         if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
             let char = user_data.current_user.character;
             let battle = await char.attack_local_outpost(this.pool);
@@ -335,7 +332,7 @@ module.exports = class SocketManager {
     async eat(user_data) {
         if (user_data.current_user != null) {
             let char = user_data.current_user.character;
-            char.eat(this.pool);
+            char.eat();
             this.send_stash_update(user_data.socket, user_data.current_user)
             this.send_status_update(char)
         }
@@ -710,12 +707,10 @@ module.exports = class SocketManager {
             let battle = this.world.get_battle_from_id(char.get_battle_id());
             if (battle != undefined) {
                 let res = await battle.process_input(this.pool, char.get_in_battle_id(), action)
-                console.log(res)
                 this.send_to_character_user(char, 'battle-action', res)
                 let status = battle.get_status()
                 this.send_to_character_user(char, 'enemy-update', status);
             }
         }
     }
-    
 }

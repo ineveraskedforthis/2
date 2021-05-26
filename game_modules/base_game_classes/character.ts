@@ -4,6 +4,7 @@ const hunt = require("./character_actions/hunt.js");
 const move = require("./character_actions/move.js");
 const rest = require("./character_actions/rest.js");
 
+import {eat} from './character_actions/eat'
 import {CharacterGenericPart} from "./character_generic_part.js"
 
 class Character extends CharacterGenericPart {
@@ -79,6 +80,9 @@ class Character extends CharacterGenericPart {
     async rest() {}
     async hunt() {}
     async cook_meat() {}
+    async eat() {
+        eat(this)
+    }
 }
 
 Character.prototype.move = move; 

@@ -74,7 +74,6 @@ class BattleAI {
         if (value1 == undefined) {
             return false;
         }
-        console.log(value1);
         return BattleAI.compare(value1, value, sign);
     }
     static convert_attack_to_action(battle, ind1, ind2) {

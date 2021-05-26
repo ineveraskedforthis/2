@@ -5,6 +5,7 @@ const cook_meat = require("./character_actions/cook_meat.js");
 const hunt = require("./character_actions/hunt.js");
 const move = require("./character_actions/move.js");
 const rest = require("./character_actions/rest.js");
+const eat_1 = require("./character_actions/eat");
 const character_generic_part_js_1 = require("./character_generic_part.js");
 class Character extends character_generic_part_js_1.CharacterGenericPart {
     async init(pool, name, cell_id, user_id = -1) {
@@ -61,6 +62,9 @@ class Character extends character_generic_part_js_1.CharacterGenericPart {
     async rest() { }
     async hunt() { }
     async cook_meat() { }
+    async eat() {
+        eat_1.eat(this);
+    }
 }
 Character.prototype.move = move;
 Character.prototype.clean = clean;

@@ -216,7 +216,6 @@ class BattleReworked2 {
             this.heap.update(dt);
             if (char.is_dead()) {
                 unit.dead = true;
-                console.log('dead char');
                 return { responce: 'char_is_dead' };
             }
             //actual actions
@@ -252,7 +251,6 @@ class BattleReworked2 {
         let char = this.get_char(unit);
         let action = battle_ai_1.BattleAI.action(this, unit, char);
         while (action.action != 'end_turn') {
-            console.log(action);
             let logged_action = await this.action(pool, this.heap.selected, action);
             log.push(logged_action);
             action = battle_ai_1.BattleAI.action(this, unit, char);
@@ -263,16 +261,12 @@ class BattleReworked2 {
     async action(pool, unit_index, action) {
         let unit = this.heap.get_unit(unit_index);
         var character = this.world.get_char_from_id(unit.char_id);
-        // console.log('processing action')
-        // console.log(action)
-        // console.log('action points left: ' + unit.action_points_left)
         //no action
         if (action.action == null) {
             return { action: 'pff', who: unit_index };
         }
         //move toward enemy
         if (action.action == 'move') {
-            // console.log(unit.action_points_left)
             let tmp = geom_1.geom.minus(action.target, unit.position);
             if (geom_1.geom.norm(tmp) * 2 > unit.action_points_left) {
                 tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / 2);
