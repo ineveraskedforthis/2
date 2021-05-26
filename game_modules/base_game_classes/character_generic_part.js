@@ -138,6 +138,13 @@ class CharacterGenericPart {
     }
     //some stuff defined per concrete character class
     async status_check(pool) {
+        if (this.status.hp <= 0) {
+            this.status.hp = 0;
+            await this.world.kill(pool, this.id);
+        }
+        if (this.status.stress >= 100) {
+            await this.world.kill(pool, this.id);
+        }
     }
     out_of_battle_update() {
     }
@@ -478,6 +485,7 @@ class CharacterGenericPart {
     // exploration
     add_explored(tag) {
         this.misc.explored[tag] = true;
+        this.changed = true;
     }
     async on_move_default(pool, data) {
         let tmp = this.world.get_territory(data.x, data.y);
@@ -494,15 +502,18 @@ class CharacterGenericPart {
     }
     set_flag(flag, value) {
         this.flags[flag] = value;
+        this.changed = true;
     }
     set_battle_id(x) {
         this.misc.battle_id = x;
+        this.changed = true;
     }
     get_battle_id() {
         return this.misc.battle_id;
     }
     set_in_battle_id(x) {
         this.misc.in_battle_id = x;
+        this.changed = true;
     }
     get_in_battle_id() {
         return this.misc.in_battle_id;

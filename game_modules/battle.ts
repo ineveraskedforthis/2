@@ -9,7 +9,6 @@ var Savings = require("./base_game_classes/savings.js");
 import {BattleAI} from './battle_ai'
 import type {CharacterGenericPart} from './base_game_classes/character_generic_part'
 import { tag } from "./static_data/type_script_types";
-import { getEmitHelpers } from "typescript";
 
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
@@ -28,16 +27,18 @@ class UnitsHeap {
     last: number;
     heap: number[];
     selected: number;
+    changed: boolean;
 
     constructor() {
         this.data = []
         this.heap = []
         this.last = 0;
         this.selected = -1
+        this.changed = false
     }
 
     get_value(i: number) {
-        return this.data[i].next_turn_after;
+        return this.data[this.heap[i]].next_turn_after;
     }
 
     get_units_amount() {
@@ -56,14 +57,16 @@ class UnitsHeap {
         this.heap[this.last] = obj;
         this.last += 1;
         this.shift_up(this.last - 1)
+        this.changed = true
     }
 
     shift_up(i:number) {
         let tmp = i;
-        while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor(tmp / 2))) {
+        while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor((tmp - 1) / 2))) {
             this.swap(tmp, Math.floor((tmp - 1) / 2))
             tmp = Math.floor((tmp - 1) / 2)
         }
+        this.changed = true
     }
 
     shift_down(i: number) {
@@ -86,17 +89,20 @@ class UnitsHeap {
                 break
             }
         }
+        this.changed = true
     }
 
     add_unit(u: UnitData) {
         this.data.push(u);
         this.push(this.data.length - 1)
+        this.changed = true
     }
 
     swap(a: number, b: number) {
         let s = this.heap[a];
         this.heap[a] = this.heap[b]
         this.heap[b] = s
+        this.changed = true
     }
 
     pop():number|undefined {
@@ -107,7 +113,9 @@ class UnitsHeap {
         this.selected = tmp;
         this.last -= 1
         this.heap[0] = this.heap[this.last]
+        this.heap.length = this.last
         this.shift_down(0);
+        this.changed = true
         return tmp
     }
 
@@ -115,13 +123,15 @@ class UnitsHeap {
         for (let i in this.data) {
             this.data[i].update(dt)
         }
+        this.changed = true
     }
 
     get_json() {
         return {
             data: this.data,
             last: this.last,
-            heap: this.heap
+            heap: this.heap,
+            selected: this.selected
         }
     }
 
@@ -137,7 +147,7 @@ class UnitsHeap {
     }
 }
         
-class UnitData {
+export class UnitData {
     action_points_left: number;
     action_points_max: number;
     next_turn_after: number;
@@ -248,13 +258,11 @@ export class BattleReworked2 {
 
 
     async update(pool:any) {
-        if (this.changed) {
+        if (this.changed || this.heap.changed) {
             this.save_to_db(pool)
         }
 
         if (!this.waiting_for_input) {
-            console.log('??? update')
-            console.log(this.heap.heap)
             // heap manipulations
             let tmp = this.heap.pop()
             if (tmp == undefined) {
@@ -270,22 +278,25 @@ export class BattleReworked2 {
             if ((char == undefined) || char.is_dead()) {
                 return {responce: 'dead_unit'}
             }
+
             await char.update(pool)
             let dt = unit.next_turn_after
             this.heap.update(dt)
-            console.log(char.name)
+
+            if (char.is_dead()){
+                unit.dead = true
+                console.log('dead char')
+                return {responce: 'char_is_dead'}
+            }
 
             //actual actions
             if (char.is_player()) {
-                console.log('player turn')
                 this.waiting_for_input = true
                 this.changed = true
-                return 'waiting_for_input'
+                return {responce: 'waiting_for_input'}
             } else {
-                console.log('ai turn')
-                let log_obj: ActionLog = [];
+                let log_obj: any[] = [];
                 log_obj = await this.make_turn(pool, log_obj)
-                console.log(log_obj)
                 unit.end_turn()
                 this.heap.push(tmp)
                 this.changed = true
@@ -308,17 +319,14 @@ export class BattleReworked2 {
         return this.world.get_char_from_id(unit.char_id)
     }
 
-    async make_turn(pool: any, log: ActionLog): Promise<ActionLog> {
-        console.log('turn of ' + this.heap.selected)
+    async make_turn(pool: any, log: any[]): Promise<ActionLog> {
         let unit = this.heap.get_selected_unit()
         let char = this.get_char(unit)
-        let action:Action = BattleAI.action(this, char);
-        console.log(action)
+        let action:Action = BattleAI.action(this, unit, char);
         while (action.action != 'end_turn') {
-            log.push(action)
-            console.log(action)
-            this.action(pool, this.heap.selected, action)
-            action = BattleAI.action(this, char);
+            let logged_action = await this.action(pool, this.heap.selected, action)
+            log.push(logged_action)
+            action = BattleAI.action(this, unit, char);
         }
         this.changed = true
         return log;
@@ -327,8 +335,9 @@ export class BattleReworked2 {
     async action(pool:any, unit_index: number, action: Action) {
         let unit = this.heap.get_unit(unit_index)
         var character:CharacterGenericPart = this.world.get_char_from_id(unit.char_id);
-        console.log('processing action')
-        console.log(action)
+        // console.log('processing action')
+        // console.log(action)
+        // console.log('action points left: ' + unit.action_points_left)
 
         //no action
         if (action.action == null) {
@@ -338,7 +347,7 @@ export class BattleReworked2 {
 
         //move toward enemy
         if (action.action == 'move') {
-            console.log(unit.action_points_left)
+            // console.log(unit.action_points_left)
             let tmp = geom.minus(action.target, unit.position)
             if (geom.norm(tmp) * 2 > unit.action_points_left) {
                 tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / 2)
@@ -347,6 +356,7 @@ export class BattleReworked2 {
             unit.position.y = tmp.y + unit.position.y;
             let points_spent = geom.norm(tmp) * 2
             unit.action_points_left -= points_spent
+            this.changed = true
             return {action: 'move', who: unit_index, target: unit.position, actor_name: character.name}
         }
 
@@ -355,13 +365,11 @@ export class BattleReworked2 {
             if (action.target != null) {
                 let unit2 = this.heap.get_unit(action.target);
                 let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
-
-                console.log(geom.dist(unit.position, unit2.position))
-                console.log(char.get_range())
                 if ((geom.dist(unit.position, unit2.position) <= char.get_range()) && unit.action_points_left >= 1) {
                     let target_char = this.world.get_char_from_id(unit2.char_id);
                     let result = await character.attack(pool, target_char);
                     unit.action_points_left -= 1
+                    this.changed = true
                     return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
                 }
             }
@@ -373,8 +381,10 @@ export class BattleReworked2 {
             if (unit.action_points_left > 3) {
                 unit.action_points_left -= 3
                 let dice = Math.random();
+                this.changed = true
                 if (dice <= 0.4) {
                     this.draw = true;
+                    
                     return {action: 'flee', who: unit_index};
                 } else {
                     return {action: 'pff', who: unit_index};
@@ -401,6 +411,7 @@ export class BattleReworked2 {
                     result.new_pos = {x: unit.position.x, y: unit.position.y};
                 }
                 unit.action_points_left -= 3
+                this.changed = true
                 return {action: spell_tag, who: unit_index, result: result, actor_name: character.name};
             }
         }
@@ -409,6 +420,7 @@ export class BattleReworked2 {
             this.waiting_for_input = false
             unit.end_turn()
             this.heap.push(unit_index)
+            this.changed = true
             return {action: 'end_turn', who: unit_index}
         }
         this.changed = true
@@ -457,6 +469,7 @@ export class BattleReworked2 {
 
     async transfer(target:{stash: Stash}, tag:tag, x:number) {
         this.stash.transfer(target.stash, tag, x);
+        this.changed = true
     }
 
     get_team_status(team: number) {
@@ -492,8 +505,8 @@ export class BattleReworked2 {
         }
         for (var i = 0; i < this.heap.data.length; i++) {
             let unit = this.heap.data[i]
-            var char = this.world.get_char_from_id(unit.char_id);
-            if ((char == undefined) || (char.hp == 0)) {
+            var char: CharacterGenericPart = this.world.get_char_from_id(unit.char_id);
+            if ((char == undefined) || (char.get_hp() == 0)) {
                 if (!unit.dead) {
                     unit.dead = true;
                 }
@@ -517,6 +530,8 @@ export class BattleReworked2 {
                 return -1
             } else if (teams_left == 1) {
                 return team_not_lost
+            } else {
+                return 'draw'
             }
         }
         return -1;
@@ -530,10 +545,14 @@ export class BattleReworked2 {
                 char.set_flag('in_battle', false);
                 char.set_battle_id(-1)
             }
+            this.changed = true
         }
     }
+
+    reward() {}
     
     async reward_team(pool: any, team: number) {
+        this.changed = true
         let units_amount = this.heap.get_units_amount()
 
         var n = 0;
@@ -569,6 +588,7 @@ export class BattleReworked2 {
             }
         }
 
+        if (leader == undefined) {return}
 
         //leader gets all loot stash
         for (var tag of this.world.constants.TAGS) {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BattleReworked2 = void 0;
+exports.BattleReworked2 = exports.UnitData = void 0;
 const stash_1 = require("./base_game_classes/stash");
 var common = require("./common.js");
 var constants = require("./static_data/constants.js");
@@ -13,9 +13,10 @@ class UnitsHeap {
         this.heap = [];
         this.last = 0;
         this.selected = -1;
+        this.changed = false;
     }
     get_value(i) {
-        return this.data[i].next_turn_after;
+        return this.data[this.heap[i]].next_turn_after;
     }
     get_units_amount() {
         return this.data.length;
@@ -30,13 +31,15 @@ class UnitsHeap {
         this.heap[this.last] = obj;
         this.last += 1;
         this.shift_up(this.last - 1);
+        this.changed = true;
     }
     shift_up(i) {
         let tmp = i;
-        while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor(tmp / 2))) {
+        while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor((tmp - 1) / 2))) {
             this.swap(tmp, Math.floor((tmp - 1) / 2));
             tmp = Math.floor((tmp - 1) / 2);
         }
+        this.changed = true;
     }
     shift_down(i) {
         let tmp = i;
@@ -62,15 +65,18 @@ class UnitsHeap {
                 break;
             }
         }
+        this.changed = true;
     }
     add_unit(u) {
         this.data.push(u);
         this.push(this.data.length - 1);
+        this.changed = true;
     }
     swap(a, b) {
         let s = this.heap[a];
         this.heap[a] = this.heap[b];
         this.heap[b] = s;
+        this.changed = true;
     }
     pop() {
         if (this.last == 0) {
@@ -80,19 +86,23 @@ class UnitsHeap {
         this.selected = tmp;
         this.last -= 1;
         this.heap[0] = this.heap[this.last];
+        this.heap.length = this.last;
         this.shift_down(0);
+        this.changed = true;
         return tmp;
     }
     update(dt) {
         for (let i in this.data) {
             this.data[i].update(dt);
         }
+        this.changed = true;
     }
     get_json() {
         return {
             data: this.data,
             last: this.last,
-            heap: this.heap
+            heap: this.heap,
+            selected: this.selected
         };
     }
     load_from_json(j) {
@@ -149,6 +159,7 @@ class UnitData {
         this.action_points_left = Math.min((this.action_points_left + this.speed), this.action_points_max);
     }
 }
+exports.UnitData = UnitData;
 class BattleReworked2 {
     constructor(world) {
         this.heap = new UnitsHeap();
@@ -183,12 +194,10 @@ class BattleReworked2 {
         await common.send_query(pool, constants.delete_battle_query, [this.id]);
     }
     async update(pool) {
-        if (this.changed) {
+        if (this.changed || this.heap.changed) {
             this.save_to_db(pool);
         }
         if (!this.waiting_for_input) {
-            console.log('??? update');
-            console.log(this.heap.heap);
             // heap manipulations
             let tmp = this.heap.pop();
             if (tmp == undefined) {
@@ -205,19 +214,20 @@ class BattleReworked2 {
             await char.update(pool);
             let dt = unit.next_turn_after;
             this.heap.update(dt);
-            console.log(char.name);
+            if (char.is_dead()) {
+                unit.dead = true;
+                console.log('dead char');
+                return { responce: 'char_is_dead' };
+            }
             //actual actions
             if (char.is_player()) {
-                console.log('player turn');
                 this.waiting_for_input = true;
                 this.changed = true;
-                return 'waiting_for_input';
+                return { responce: 'waiting_for_input' };
             }
             else {
-                console.log('ai turn');
                 let log_obj = [];
                 log_obj = await this.make_turn(pool, log_obj);
-                console.log(log_obj);
                 unit.end_turn();
                 this.heap.push(tmp);
                 this.changed = true;
@@ -238,16 +248,14 @@ class BattleReworked2 {
         return this.world.get_char_from_id(unit.char_id);
     }
     async make_turn(pool, log) {
-        console.log('turn of ' + this.heap.selected);
         let unit = this.heap.get_selected_unit();
         let char = this.get_char(unit);
-        let action = battle_ai_1.BattleAI.action(this, char);
-        console.log(action);
+        let action = battle_ai_1.BattleAI.action(this, unit, char);
         while (action.action != 'end_turn') {
-            log.push(action);
             console.log(action);
-            this.action(pool, this.heap.selected, action);
-            action = battle_ai_1.BattleAI.action(this, char);
+            let logged_action = await this.action(pool, this.heap.selected, action);
+            log.push(logged_action);
+            action = battle_ai_1.BattleAI.action(this, unit, char);
         }
         this.changed = true;
         return log;
@@ -255,15 +263,16 @@ class BattleReworked2 {
     async action(pool, unit_index, action) {
         let unit = this.heap.get_unit(unit_index);
         var character = this.world.get_char_from_id(unit.char_id);
-        console.log('processing action');
-        console.log(action);
+        // console.log('processing action')
+        // console.log(action)
+        // console.log('action points left: ' + unit.action_points_left)
         //no action
         if (action.action == null) {
             return { action: 'pff', who: unit_index };
         }
         //move toward enemy
         if (action.action == 'move') {
-            console.log(unit.action_points_left);
+            // console.log(unit.action_points_left)
             let tmp = geom_1.geom.minus(action.target, unit.position);
             if (geom_1.geom.norm(tmp) * 2 > unit.action_points_left) {
                 tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / 2);
@@ -272,18 +281,18 @@ class BattleReworked2 {
             unit.position.y = tmp.y + unit.position.y;
             let points_spent = geom_1.geom.norm(tmp) * 2;
             unit.action_points_left -= points_spent;
+            this.changed = true;
             return { action: 'move', who: unit_index, target: unit.position, actor_name: character.name };
         }
         if (action.action == 'attack') {
             if (action.target != null) {
                 let unit2 = this.heap.get_unit(action.target);
                 let char = this.world.get_char_from_id(unit.char_id);
-                console.log(geom_1.geom.dist(unit.position, unit2.position));
-                console.log(char.get_range());
                 if ((geom_1.geom.dist(unit.position, unit2.position) <= char.get_range()) && unit.action_points_left >= 1) {
                     let target_char = this.world.get_char_from_id(unit2.char_id);
                     let result = await character.attack(pool, target_char);
                     unit.action_points_left -= 1;
+                    this.changed = true;
                     return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
                 }
             }
@@ -293,6 +302,7 @@ class BattleReworked2 {
             if (unit.action_points_left > 3) {
                 unit.action_points_left -= 3;
                 let dice = Math.random();
+                this.changed = true;
                 if (dice <= 0.4) {
                     this.draw = true;
                     return { action: 'flee', who: unit_index };
@@ -320,6 +330,7 @@ class BattleReworked2 {
                     result.new_pos = { x: unit.position.x, y: unit.position.y };
                 }
                 unit.action_points_left -= 3;
+                this.changed = true;
                 return { action: spell_tag, who: unit_index, result: result, actor_name: character.name };
             }
         }
@@ -327,6 +338,7 @@ class BattleReworked2 {
             this.waiting_for_input = false;
             unit.end_turn();
             this.heap.push(unit_index);
+            this.changed = true;
             return { action: 'end_turn', who: unit_index };
         }
         this.changed = true;
@@ -368,6 +380,7 @@ class BattleReworked2 {
     }
     async transfer(target, tag, x) {
         this.stash.transfer(target.stash, tag, x);
+        this.changed = true;
     }
     get_team_status(team) {
         let tmp = [];
@@ -401,7 +414,7 @@ class BattleReworked2 {
         for (var i = 0; i < this.heap.data.length; i++) {
             let unit = this.heap.data[i];
             var char = this.world.get_char_from_id(unit.char_id);
-            if ((char == undefined) || (char.hp == 0)) {
+            if ((char == undefined) || (char.get_hp() == 0)) {
                 if (!unit.dead) {
                     unit.dead = true;
                 }
@@ -428,6 +441,9 @@ class BattleReworked2 {
             else if (teams_left == 1) {
                 return team_not_lost;
             }
+            else {
+                return 'draw';
+            }
         }
         return -1;
     }
@@ -439,9 +455,12 @@ class BattleReworked2 {
                 char.set_flag('in_battle', false);
                 char.set_battle_id(-1);
             }
+            this.changed = true;
         }
     }
+    reward() { }
     async reward_team(pool, team) {
+        this.changed = true;
         let units_amount = this.heap.get_units_amount();
         var n = 0;
         for (let i = 0; i < units_amount; i++) {
@@ -470,6 +489,9 @@ class BattleReworked2 {
                 let resources = leader.exploit(character);
                 resources.transfer_all(leader);
             }
+        }
+        if (leader == undefined) {
+            return;
         }
         //leader gets all loot stash
         for (var tag of this.world.constants.TAGS) {

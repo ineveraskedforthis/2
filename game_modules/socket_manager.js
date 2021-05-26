@@ -458,9 +458,14 @@ module.exports = class SocketManager {
         let character = user.character;
         if (character.in_battle()) {
             let battle = this.world.get_battle_from_id(character.get_battle_id());
-            this.send_to_user(user, 'battle-has-started', battle.get_data());
-            let status = battle.get_status()
-            this.send_to_character_user(character, 'enemy-update', status);
+            if (battle != null) {
+                this.send_to_user(user, 'battle-has-started', battle.get_data());
+                let status = battle.get_status()
+                this.send_to_character_user(character, 'enemy-update', status);
+            } else {
+                character.set_flag('in_battle', false)
+            }
+            
         }
     }
 

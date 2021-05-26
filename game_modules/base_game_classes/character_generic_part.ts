@@ -225,7 +225,14 @@ export class CharacterGenericPart {
     //some stuff defined per concrete character class
 
     async status_check(pool: any) {
+        if (this.status.hp <= 0) {
+            this.status.hp = 0;
+            await this.world.kill(pool, this.id);
+        }
 
+        if (this.status.stress >= 100) {
+            await this.world.kill(pool, this.id);
+        }
     }
 
     out_of_battle_update() {
@@ -686,6 +693,7 @@ export class CharacterGenericPart {
 
     add_explored(tag:any) {
         this.misc.explored[tag] = true;
+        this.changed = true
     }
     
 
@@ -706,10 +714,12 @@ export class CharacterGenericPart {
 
     set_flag(flag: 'in_battle'|'trainer'|'player'|'dead', value: boolean) {
         this.flags[flag] = value
+        this.changed = true
     }
 
     set_battle_id(x: number) {
         this.misc.battle_id = x
+        this.changed = true
     }
     get_battle_id() {
         return this.misc.battle_id
@@ -717,6 +727,7 @@ export class CharacterGenericPart {
 
     set_in_battle_id(x: number) {
         this.misc.in_battle_id = x
+        this.changed = true
     }
     get_in_battle_id() {
         return this.misc.in_battle_id

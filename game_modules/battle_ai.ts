@@ -1,5 +1,5 @@
-import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
-import { BattleReworked2, Action, ActionTag, MoveAction, AttackAction } from "./battle";
+import type { CharacterGenericPart } from "./base_game_classes/character_generic_part";
+import type { BattleReworked2, Action, ActionTag, MoveAction, AttackAction, UnitData } from "./battle";
 
 import {geom, point} from './geom'
 
@@ -73,7 +73,6 @@ export class BattleAI {
             return false
         }
         let target_char = undefined
-
         if (target == 'me') {
             target_char = agent;
         } else if (target == 'closest_enemy') {
@@ -86,6 +85,7 @@ export class BattleAI {
         if (value1 == undefined) {
             return false
         }
+        console.log(value1)
         return BattleAI.compare(value1, value, sign);
     }
 
@@ -146,15 +146,16 @@ export class BattleAI {
          return {action: null}
     }
 
-    static action(battle: BattleReworked2, agent: CharacterGenericPart): Action {
+    static action(battle: BattleReworked2, unit: UnitData, agent: CharacterGenericPart): Action {
         let tactic: any = agent.get_tactic()
-        var index = agent.get_battle_id();
-        for (var i = 0; i <= 3; i++) {
-            var slot: any = tactic['s' + i];
-            if (slot != null && slot != undefined && BattleAI.check_trigger(agent, battle, index, slot.trigger.target, slot.trigger.tag, slot.trigger.sign, slot.trigger.value)) {
-                var action = BattleAI.get_action(battle, index, slot.action.target, slot.action.action, slot.spell_tag);
-                return action
-            }
+        var index = agent.get_in_battle_id();
+        let slot = tactic[0]
+        if (unit.action_points_left < 1) {
+            return {action: 'end_turn'}
+        }
+        if (BattleAI.check_trigger(agent, battle, index, slot.trigger.target, slot.trigger.tag, slot.trigger.sign, slot.trigger.value)) {
+            var action = BattleAI.get_action(battle, index, slot.action.target, slot.action.action, slot.spell_tag);
+            return action
         }
         return {action: 'end_turn'}
     }

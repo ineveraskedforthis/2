@@ -74,6 +74,7 @@ class BattleAI {
         if (value1 == undefined) {
             return false;
         }
+        console.log(value1);
         return BattleAI.compare(value1, value, sign);
     }
     static convert_attack_to_action(battle, ind1, ind2) {
@@ -127,15 +128,16 @@ class BattleAI {
         }
         return { action: null };
     }
-    static action(battle, agent) {
+    static action(battle, unit, agent) {
         let tactic = agent.get_tactic();
-        var index = agent.get_battle_id();
-        for (var i = 0; i <= 3; i++) {
-            var slot = tactic['s' + i];
-            if (slot != null && slot != undefined && BattleAI.check_trigger(agent, battle, index, slot.trigger.target, slot.trigger.tag, slot.trigger.sign, slot.trigger.value)) {
-                var action = BattleAI.get_action(battle, index, slot.action.target, slot.action.action, slot.spell_tag);
-                return action;
-            }
+        var index = agent.get_in_battle_id();
+        let slot = tactic[0];
+        if (unit.action_points_left < 1) {
+            return { action: 'end_turn' };
+        }
+        if (BattleAI.check_trigger(agent, battle, index, slot.trigger.target, slot.trigger.tag, slot.trigger.sign, slot.trigger.value)) {
+            var action = BattleAI.get_action(battle, index, slot.action.target, slot.action.action, slot.spell_tag);
+            return action;
         }
         return { action: 'end_turn' };
     }

@@ -267,6 +267,7 @@ export class BattleImage {
             for (let i in this.positions) {
                 if (!this.killed[i]) {
                     let pos = this.get_centre(this.positions[i])
+                    ctx.strokeStyle = "rgba(0, 0, 0, 1)"
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
                     if (this.selected == i) {
@@ -286,12 +287,24 @@ export class BattleImage {
                     ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
                     ctx.stroke();
 
-                    ctx.fillStyle = "rgba(0, 0, 0, 1)"
+
                     ctx.font = '15px serif';
+                    if (this.selected == i) {
+                        ctx.fillStyle = "rgba(1, 1, 1, 1)"
+                        ctx.strokeStyle = "rgba(0, 0, 0, 1)"
+                    } else if (this.hovered == i) {
+                        ctx.fillStyle = "rgba(1, 1, 1, 1)"
+                        ctx.strokeStyle = "rgba(0, 0, 0, 1)"
+                        
+                    } else {
+                        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"
+                        ctx.strokeStyle = "rgba(0, 0, 0, 0.1)"
+                    }
                     ctx.strokeRect(pos.x - 50, pos.y - 120, 100, 20)
-                    ctx.fillText(this.names[i] + '   ' + this.hps[i] + ' hp', pos.x - 45, pos.y - 105);
                     ctx.strokeRect(pos.x - 50, pos.y - 100, 100, 20)
+                    ctx.fillText(this.names[i] + '   ' + this.hps[i] + ' hp', pos.x - 45, pos.y - 105);
                     ctx.fillText('ap:  ' + this.aps[i], pos.x - 45, pos.y - 85);
+                    
                 }                
             }
             
@@ -307,10 +320,10 @@ export class BattleImage {
             }
             if (this.anchor != undefined) {
                 let ctx = this.canvas.getContext('2d');
-                ctx.beginPath();
-                ctx.arc(this.anchor.x, this.anchor.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
                 ctx.strokeStyle = 'rgba(255, 255, 0, 1)';
                 ctx.fillStyle = "rgba(10, 10, 200, 0.9)";
+                ctx.beginPath();
+                ctx.arc(this.anchor.x, this.anchor.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
                 ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
@@ -487,12 +500,12 @@ export class BattleImage {
         }
         this.update_action(data)
         if (data.action == 'attack') {
-            if (data.result.crit) {
+            if (data.result.flags.crit) {
                 return data.actor_name + ': critical_damage';
             }
             return data.actor_name + ': deals ' + data.result.total_damage + ' damage';
         } else if (data.action.startsWith('kinetic_bolt')) {
-            if (data.result.crit) {
+            if (data.result.flags.crit) {
                 return data.actor_name + ': critical_damage'
             }
             return data.actor_name + ': deals with magic bolt ' + data.result.total_damage + ' damage'
