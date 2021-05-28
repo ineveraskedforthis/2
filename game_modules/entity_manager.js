@@ -166,51 +166,10 @@ module.exports = class EntityManager {
             }
             let res = battle.is_over();
             if (res == -1) {
-                let res2 = await battle.update(pool)
-                
-                if (res2.responce == 'end_turn') {
-
-                    let status = battle.get_status();
-                    let units = battle.get_units()
-                    for (let i = 0; i < units.length; i++) {
-                        let character = this.chars[units[i].char_id];
-                        if ((character != undefined) && (character.is_player())) {
-                            this.world.socket_manager.send_to_character_user(character, 'battle-update', battle.get_data())
-                            this.world.socket_manager.send_to_character_user(character, 'enemy-update', status);     
-                        }
-                    }
-
-                    let log = res2.data
-                    for (let i = 0; i < units.length; i++) {
-                        let character = this.chars[units[i].char_id];
-                        if ((character != undefined) && (character.is_player())) {
-                            if (log != undefined) {
-                                log.forEach(log_entry => { this.world.socket_manager.send_to_character_user(character, 'battle-action', log_entry)});
-                            }                        
-                        }
-                    }
-                }
-                
-
+                await battle.update(pool)
             } else {
-                if (res != 2) {
-                    var exp_reward = battle.reward(1 - res);
-                    // let ilvl = await battle.collect_loot(pool);
-                    await battle.reward_team(pool, res, exp_reward);
-                }
-                else {
-                    await battle.reward_team(pool, res, 0, 0);
-                }
-                let units = battle.get_units()
-                for (let i = 0; i < units.length; i++) {
-                    let character = this.chars[units[i].char_id];
-                    if (character != undefined) {
-                        if (character.is_player()) {
-                            this.world.socket_manager.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
-                            this.world.socket_manager.send_updates_to_char(character)
-                        }
-                    }
-                }
+
+                
                 battle.clean_up_battle()
                 await this.delete_battle(pool, battle.id);
             }

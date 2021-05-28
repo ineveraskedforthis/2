@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-undef
 var socket = io();
 
-const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-
+// const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
+const game_tabs = ['map', 'skilltree', 'stash', 'craft']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';
@@ -25,6 +25,15 @@ init_map_control(map, globals);
 const battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 init_battle_control(battle_image, globals);
 const character_screen = new CharacterScreen(socket);
+
+
+
+// noselect tabs 
+
+[...document.querySelectorAll(".noselect")].forEach( el => 
+ el.addEventListener('contextmenu', e => e.preventDefault())
+);
+
 
 
 // market
@@ -732,7 +741,7 @@ function process_stash_click(tag) {
 // SOCKET ONS
 
 socket.on('tags', msg => update_tags(msg));
-socket.on('alert', msg => alert(msg));
+socket.on('alert', msg => new_log_message(msg));
 
 socket.on('sections', msg => map.load_sections(msg));
 
@@ -911,6 +920,15 @@ function draw(time) {
     currentTime = (new Date()).getTime();
     delta = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
+
+    if (globals.map_context_dissapear_time != undefined) {
+        if ((globals.map_context_dissapear_time > 0) && (!globals.mouse_over_map_context)) {
+            globals.map_context_dissapear_time = Math.max(0, globals.map_context_dissapear_time - delta)
+            if (globals.map_context_dissapear_time == 0) {
+                document.getElementById('map_context').classList.add('hidden')
+            }
+        }
+    }
 
     if (document.getElementById('actual_game_scene').style.visibility == 'visible') {
         if (!document.getElementById('battle_tab').classList.contains('hidden')) {

@@ -263,9 +263,7 @@ module.exports = class SocketManager {
         if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
             let char = user_data.current_user.character;
             let battle = await this.world.attack_local_monster(this.pool, char, 1);
-            socket.emit('battle-has-started', battle.get_data())
-            let status = battle.get_status()
-            this.send_to_character_user(char, 'enemy-update', status);
+            battle.send_data_start()
         }
     }
 
@@ -274,9 +272,7 @@ module.exports = class SocketManager {
             let char = user_data.current_user.character;
             let battle = await char.attack_local_outpost(this.pool);
             if (battle != undefined) {
-                socket.emit('battle-has-started', battle.get_data())
-                let status = battle.get_status()
-                this.send_to_character_user(char, 'enemy-update', status);
+                battle.send_data_start()
             }
         }
     }
@@ -457,12 +453,62 @@ module.exports = class SocketManager {
             let battle = this.world.get_battle_from_id(character.get_battle_id());
             if (battle != null) {
                 this.send_to_user(user, 'battle-has-started', battle.get_data());
+                this.send_to_user(user, 'battle-action', {action: 'new_turn', target: battle.heap.selected});
                 let status = battle.get_status()
                 this.send_to_character_user(character, 'enemy-update', status);
             } else {
                 character.set_flag('in_battle', false)
             }
             
+        }
+    }
+
+    send_battle_data_start(battle) {
+        let units = battle.get_units()
+        let data = battle.get_data()
+        let status = battle.get_status()
+        for (let i in units) {
+            let char = this.world.get_character_by_id(units[i].char_id)
+            if ((char != undefined) && char.is_player()) {
+                this.send_to_character_user(char, 'battle-has-started', data);
+                this.send_to_character_user(char, 'enemy-update', status)
+            }
+        } 
+    }
+
+    send_battle_update(battle) {
+        let units = battle.get_units()
+        let status = battle.get_status()
+        let data = battle.get_data()
+        for (let i in units) {
+            let char = this.world.get_character_by_id(units[i].char_id)
+            if ((char != undefined) && char.is_player()) {
+                this.send_to_character_user(char, 'enemy-update', status)
+                this.send_to_character_user(char, 'battle-update', data)
+            }
+        } 
+    }
+
+    send_battle_action(battle, a) {
+        let units = battle.get_units()
+        for (let i = 0; i < units.length; i++) {
+            let char = this.world.get_character_by_id(units[i].char_id);
+            if ((char != undefined) && char.is_player()) {
+                this.send_to_character_user(char, 'battle-action', a)
+            }
+        }
+    }
+
+    send_stop_battle(battle) {
+        let units = battle.get_units()
+        for (let i = 0; i < units.length; i++) {
+            let character = this.world.get_character_by_id(units[i].char_id);
+            if (character != undefined) {
+                if (character.is_player()) {
+                    this.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
+                    this.send_updates_to_char(character)
+                }
+            }
         }
     }
 
@@ -707,9 +753,8 @@ module.exports = class SocketManager {
             let battle = this.world.get_battle_from_id(char.get_battle_id());
             if (battle != undefined) {
                 let res = await battle.process_input(this.pool, char.get_in_battle_id(), action)
-                this.send_to_character_user(char, 'battle-action', res)
-                let status = battle.get_status()
-                this.send_to_character_user(char, 'enemy-update', status);
+                battle.send_action(res)
+                battle.send_update()
             }
         }
     }

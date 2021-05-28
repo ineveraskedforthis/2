@@ -193,6 +193,28 @@ class BattleReworked2 {
     async delete_from_db(pool) {
         await common.send_query(pool, constants.delete_battle_query, [this.id]);
     }
+    // networking
+    send_data_start() {
+        this.world.socket_manager.send_battle_data_start(this);
+        if (this.waiting_for_input) {
+            this.send_action({ action: 'new_turn', target: this.heap.selected });
+        }
+    }
+    send_update() {
+        this.world.socket_manager.send_battle_update(this);
+        if (this.waiting_for_input) {
+            this.send_action({ action: 'new_turn', target: this.heap.selected });
+        }
+    }
+    send_current_turn() {
+        this.send_action({ action: 'new_turn', target: this.heap.selected });
+    }
+    send_action(a) {
+        this.world.socket_manager.send_battle_action(this, a);
+    }
+    send_stop() {
+        this.world.socket_manager.send_stop_battle(this);
+    }
     async update(pool) {
         if (this.changed || this.heap.changed) {
             this.save_to_db(pool);
@@ -218,6 +240,7 @@ class BattleReworked2 {
                 unit.dead = true;
                 return { responce: 'char_is_dead' };
             }
+            this.send_action({ action: 'new_turn', target: tmp });
             //actual actions
             if (char.is_player()) {
                 this.waiting_for_input = true;
@@ -226,7 +249,7 @@ class BattleReworked2 {
             }
             else {
                 let log_obj = [];
-                log_obj = await this.make_turn(pool, log_obj);
+                await this.make_turn(pool);
                 unit.end_turn();
                 this.heap.push(tmp);
                 this.changed = true;
@@ -246,17 +269,17 @@ class BattleReworked2 {
     get_char(unit) {
         return this.world.get_char_from_id(unit.char_id);
     }
-    async make_turn(pool, log) {
+    async make_turn(pool) {
         let unit = this.heap.get_selected_unit();
         let char = this.get_char(unit);
         let action = battle_ai_1.BattleAI.action(this, unit, char);
         while (action.action != 'end_turn') {
             let logged_action = await this.action(pool, this.heap.selected, action);
-            log.push(logged_action);
+            this.send_action(logged_action);
+            this.send_update();
             action = battle_ai_1.BattleAI.action(this, unit, char);
         }
         this.changed = true;
-        return log;
     }
     async action(pool, unit_index, action) {
         let unit = this.heap.get_unit(unit_index);
@@ -451,49 +474,10 @@ class BattleReworked2 {
             }
             this.changed = true;
         }
+        this.send_stop();
     }
     reward() { }
-    async reward_team(pool, team) {
-        this.changed = true;
-        let units_amount = this.heap.get_units_amount();
-        var n = 0;
-        for (let i = 0; i < units_amount; i++) {
-            let unit = this.heap.get_unit(i);
-            if (unit.team == team) {
-                n += 1;
-            }
-        }
-        // first added unit of team who is alive is a leader
-        var i = 0;
-        let unit = this.heap.get_unit(i);
-        while ((unit.team != team) && (!unit.dead) && (i < units_amount)) {
-            i += 1;
-            unit = this.heap.get_unit(i);
-        }
-        if ((i == units_amount) && (unit.team != team)) {
-            return -1;
-        }
-        var leader = this.world.get_char_from_id(unit.char_id);
-        // team leader gets all loot (should rework one day)
-        for (let i = 0; i < units_amount; i++) {
-            let unit = this.heap.get_unit(i);
-            let character = this.world.get_char_from_id(unit.char_id);
-            if ((character != undefined) && (character.is_dead())) {
-                character.transfer_all_inv(leader);
-                let resources = leader.exploit(character);
-                resources.transfer_all(leader);
-            }
-        }
-        if (leader == undefined) {
-            return;
-        }
-        //leader gets all loot stash
-        for (var tag of this.world.constants.TAGS) {
-            var x = this.stash.get(tag);
-            await this.transfer(leader, tag, x);
-        }
-        this.changed = true;
-    }
+    async reward_team(pool, team) { }
     async process_input(pool, unit_index, input) {
         if (!this.waiting_for_input) {
             return { action: 'pff', who: unit_index };

@@ -143,6 +143,10 @@ module.exports = class World {
         return this.entity_manager.chars[id]
     }
 
+    get_character_by_id(id) {
+        return this.entity_manager.chars[id]
+    }
+
     get_battle_from_id(id) {
         return this.entity_manager.battles[id]
     }

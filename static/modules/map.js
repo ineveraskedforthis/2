@@ -109,8 +109,11 @@ export function init_map_control(map, globals) {
             if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
                 map.select_hex(selected_hex[0], selected_hex[1]);
                 let context = document.getElementById('map_context');
+
                 context.style.top = mouse_pos.y + 5 + 'px';
                 context.style.left = mouse_pos.x + 5 + 'px';
+                context.classList.remove('hidden')
+                globals.map_context_dissapear_time = 1;
             }            
         }
         globals.pressed = false;
@@ -119,6 +122,11 @@ export function init_map_control(map, globals) {
     map.canvas.onmouseout = event => {
         globals.pressed = false;
     };
+
+    let context = document.getElementById('map_context');
+
+    context.onmouseenter = (() => {globals.mouse_over_map_context = true; globals.map_context_dissapear_time = 1})
+    context.onmouseleave = (() => globals.mouse_over_map_context = false)
 }
 
 
