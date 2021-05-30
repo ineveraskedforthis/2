@@ -1,13 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.World = void 0;
 var basic_characters = require("./basic_characters.js");
-var { constants } = require("./static_data/constants.js");
+var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
+import {loot_chance_weight, loot_affixes_weight, item_tag, affix_tag} from "./static_data/item_tags";
+
 var UserManager = require("./user_manager.js");
 var SocketManager = require("./socket_manager.js");
 var EntityManager = require("./entity_manager.js");
-const world_constants_1_1 = require("./static_data/world_constants_1");
+
+import {CONSTS} from './static_data/world_constants_1';
+import {MarketOrder} from './market/market_order'
+import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
+import { BattleReworked2 } from "./battle";
+
+
+
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -15,6 +21,7 @@ const world_constants_1_1 = require("./static_data/world_constants_1");
 //         total_loot_chance_weight[i] += loot_chance_weight[i][j]
 //     }
 // }
+
 // var total_affixes_weight = {}
 // for (let tag in loot_affixes_weight) {
 //     total_affixes_weight[tag] = 0
@@ -22,12 +29,29 @@ const world_constants_1_1 = require("./static_data/world_constants_1");
 //         total_affixes_weight[tag] += loot_affixes_weight[tag][i]
 //     }
 // }
-class World {
-    constructor(io, x, y) {
+
+
+export class World {
+    io: any;
+    x: number
+    y: number
+    constants: typeof CONSTS;
+    user_manager: any
+    BASE_BATTLE_RANGE: number;
+    HISTORY_PRICE: any;
+    vacuum_stage:number;
+    battle_tick: number;
+    pops_tick: number;
+    map_tick: number;
+    socket_manager: typeof SocketManager;
+    entity_manager: typeof EntityManager;
+    territories: {[_: string]: any}
+
+    constructor(io: any, x: number, y: number) {
         this.io = io;
         this.x = x;
         this.y = y;
-        this.constants = world_constants_1_1.CONSTS;
+        this.constants = CONSTS;
         this.user_manager = new UserManager(this);
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
@@ -41,96 +65,131 @@ class World {
         this.pops_tick = 1000;
         this.map_tick = 0;
         this.socket_manager = undefined;
-        this.entity_manager = undefined;
-        this.territories = {};
+        this.entity_manager = undefined
+
+        this.territories = {}
     }
-    async init(pool) {
+
+    async init(pool: any) {
         this.socket_manager = new SocketManager(pool, this.io, this);
         this.entity_manager = new EntityManager(this);
         await this.entity_manager.init(pool);
-        await common.send_query(pool, constants.save_world_size_query, [this.x, this.y]);
+        await common.send_query(pool, constants.save_world_size_query, [this.x, this.y])
+        
+        
         // await this.generate_territories()
         await this.add_starting_agents(pool);
     }
-    async add_starting_agents(pool) {
-        let port_chunk = await this.entity_manager.create_area(pool, 'port');
-        let living_area = await this.entity_manager.create_area(pool, 'living_area');
-        let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony');
-        let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats');
+
+
+    async add_starting_agents(pool: any) {
+        let port_chunk = await this.entity_manager.create_area(pool, 'port')
+        let living_area = await this.entity_manager.create_area(pool, 'living_area')
+
+
+        let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony')
+        let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats')
+
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
-        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, undefined);
+
+        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, undefined)
         mayor.savings.inc(10000);
-        this.entity_manager.set_faction_leader(ith_colony, mayor);
-        port_chunk.set_influence(ith_colony, 100);
-        living_area.set_influence(ith_colony, 50);
-        living_area.set_influence(steppe_rats, 50);
+
+        this.entity_manager.set_faction_leader(ith_colony, mayor)
+
+        port_chunk.set_influence(ith_colony, 100)
+        living_area.set_influence(ith_colony, 50)
+        living_area.set_influence(steppe_rats, 50)
+
     }
-    async load(pool) {
+
+
+    async load(pool: any) {
         this.socket_manager = new SocketManager(pool, this.io, this);
         this.entity_manager = new EntityManager(this);
         await this.entity_manager.load(pool);
         await this.load_size(pool);
     }
-    async load_size(pool) {
+
+    async load_size(pool: any) {
         let size = await common.send_query(pool, constants.load_world_size_query);
         this.x = size.rows[0].x;
         this.y = size.rows[0].y;
     }
-    async update(pool) {
-        await this.entity_manager.update_battles(pool);
+
+    async update(pool: any) {
+
+        await this.entity_manager.update_battles(pool)
+
+
         // don't ask any questions about variable names
         this.battle_tick += 1;
         if (this.battle_tick >= 2) {
             this.battle_tick = 0;
         }
-        if (this.battle_tick == 0) {
+        if (this.battle_tick == 0){            
             // this.socket_manager.send_all_market_info()
         }
+
         this.pops_tick += 1;
         if (this.pops_tick >= 180) {
             this.pops_tick = 0;
-            await this.entity_manager.update_agents(pool);
-            await this.entity_manager.update_factions(pool);
-            await this.entity_manager.update_areas(pool);
+            await this.entity_manager.update_agents(pool)
+            await this.entity_manager.update_factions(pool)
+            await this.entity_manager.update_areas(pool)
         }
-        await this.entity_manager.update_chars(pool);
+        
+        
+        await this.entity_manager.update_chars(pool)
+
         if (this.map_tick >= 1) {
-            await this.entity_manager.update_map(pool);
+            await this.entity_manager.update_map(pool)
             this.map_tick = 0;
-        }
+        } 
         this.map_tick += 1;
+        
         this.socket_manager.update_user_list();
+
         if (this.vacuum_stage++ > 100) {
             common.send_query(pool, 'VACUUM market_orders');
             // console.log('vacuum');
             this.vacuum_stage = 0;
         }
     }
-    get_cell_teacher(x, y) {
-        return undefined;
+
+    get_cell_teacher(x: number, y: number) {
+        return undefined
     }
-    get_char_from_id(id) {
-        return this.entity_manager.chars[id];
+
+    get_char_from_id(id: number) {
+        return this.entity_manager.chars[id]
     }
-    get_character_by_id(id) {
-        return this.entity_manager.chars[id];
+
+    get_character_by_id(id: number) {
+        return this.entity_manager.chars[id]
     }
-    get_battle_from_id(id) {
-        return this.entity_manager.battles[id];
+
+    get_battle_from_id(id: number) {
+        return this.entity_manager.battles[id]
     }
-    get_cell(x, y) {
+
+    get_cell(x: number, y: number) {
         return this.entity_manager.get_cell(x, y);
     }
-    get_cell_by_id(id) {
+
+    get_cell_by_id(id: number) {
         return this.entity_manager.get_cell_by_id(id);
     }
-    get_cell_id_by_x_y(x, y) {
+
+    get_cell_id_by_x_y(x: number, y: number) {
         return this.entity_manager.get_cell_id_by_x_y(x, y);
     }
-    get_cell_x_y_by_id(id) {
-        return { x: Math.floor(id / this.y), y: id % this.y };
+
+    get_cell_x_y_by_id(id: number) {
+        return {x: Math.floor(id / this.y), y: id % this.y}
     }
-    async get_new_id(pool, str) {
+
+    async get_new_id(pool: any, str: string) {
         // console.log(str);
         var x = await common.send_query(pool, constants.get_id_query, [str]);
         x = x.rows[0];
@@ -140,39 +199,51 @@ class World {
         await common.send_query(pool, constants.set_id_query, [str, x]);
         return x;
     }
-    async add_order(pool, order) {
+
+    async add_order(pool: any, order: MarketOrder) {
         this.entity_manager.add_order(pool, order);
     }
-    add_item_order(order) {
+
+    add_item_order(order: MarketOrder) {
         this.entity_manager.add_item_order(order);
     }
-    get_order(order_id) {
+
+    get_order (order_id: number) {
         return this.entity_manager.get_order(order_id);
     }
-    get_item_order(id) {
+
+    get_item_order (id: number) {
         return this.entity_manager.get_item_order(id);
     }
-    get_from_id_tag(id, tag) {
-        return this.entity_manager.get_from_id_tag(id, tag);
+
+    get_from_id_tag(id: number, tag: string){
+        return this.entity_manager.get_from_id_tag(id, tag)
     }
-    async kill(pool, char_id) {
-        await this.entity_manager.kill(pool, char_id);
+
+    async kill(pool: any, char_id: number) {
+        await this.entity_manager.kill(pool, char_id)
     }
-    async create_monster(pool, monster_class, cell_id) {
-        return await this.entity_manager.create_monster(pool, monster_class, cell_id);
+
+    async create_monster(pool: any, monster_class: string, cell_id: number) {
+        return await this.entity_manager.create_monster(pool, monster_class, cell_id)
     }
-    async create_battle(pool, attackers, defenders) {
-        return await this.entity_manager.create_battle(pool, attackers, defenders);
+
+    async create_battle(pool: any, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
+        return await this.entity_manager.create_battle(pool, attackers, defenders)
     }
-    async load_character_data_from_db(pool, char_id) {
-        return await this.entity_manager.load_character_data_from_db(pool, char_id);
+
+    async load_character_data_from_db(pool: any, char_id: number) {
+        return await this.entity_manager.load_character_data_from_db(pool, char_id)
     }
-    async load_character_data_to_memory(pool, data) {
-        return await this.entity_manager.load_character_data_to_memory(pool, data);
+
+    async load_character_data_to_memory(pool: any, data: number) {
+        return await this.entity_manager.load_character_data_to_memory(pool, data)
     }
-    async create_new_character(pool, name, cell_id, user_id, territory_tag) {
-        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id, territory_tag);
+
+    async create_new_character(pool: any, name: string, cell_id: number, user_id: number, territory_tag: string) {
+        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id, territory_tag)
     }
+
     // get_loot_tag(dice, dead_tag) {
     //     let tmp = 0
     //     // console.log(dead_tag)
@@ -186,6 +257,7 @@ class World {
     //         }
     //     }
     // }
+
     // get_affix_tag(item_tag: item_tag, dice):affix_tag {
     //     let tmp = 0
     //     for (let affix in loot_affixes_weight[item_tag]) {
@@ -197,12 +269,14 @@ class World {
     //         }            
     //     }
     // }
+
     // roll_affix(item_tag: item_tag, level: number) {
     //     let dice = Math.random();
     //     let dice2 = Math.random();
     //     let affix = {tag: this.get_affix_tag(item_tag, dice), tier: 1 + Math.floor(level * dice2 / 2)}
     //     return affix;
     // }
+
     // roll_affixes(item: any, level: number) {
     //     if (item.affixes != undefined) {
     //         for (let i = 0; i < item.affixes; i++) {
@@ -224,6 +298,7 @@ class World {
     //     }
     //     return item
     // }
+
     // generate_loot(level: number, dead_tag: any) {
     //     let loot_dice = Math.random();
     //     if (loot_dice < 0.3) {
@@ -235,63 +310,86 @@ class World {
     //     // console.log(item, dead_tag)      
     //     return item;
     // }    
+    
     // // eslint-disable-next-line no-unused-vars
     // get_tick_death_rate(race) {
     //     return 0.001
     // }
+
     // // eslint-disable-next-line no-unused-vars
     // get_tick_max_growth(race) {
     //     return 0.001
     // }
-    get_territory(x, y) {
+
+    get_territory(x: number, y: number) {
         let tmp = x + '_' + y;
-        let data = this.constants.territories;
+        let data:{[_: string]: any} =  this.constants.territories
         for (let i in this.constants.territories) {
             if (data[i].indexOf(tmp) > -1) {
-                return i;
+                return i
             }
         }
-        return undefined;
+        return undefined
     }
-    get_id_from_territory(tag) {
-        let data = this.constants.id_terr;
-        return data[tag];
+
+    get_id_from_territory(tag: string): number {
+        let data:{[_: string]: any} = this.constants.id_terr
+        return data[tag]
     }
-    can_move(x, y) {
-        let ter = this.get_territory(x, y);
+
+    can_move(x: number, y: number) {
+        let ter = this.get_territory(x, y)
         if (ter == undefined) {
-            return false;
+            return false    
         }
-        let data = this.constants.move;
-        return data[ter];
+        let data:{[_: string]: boolean} = this.constants.move
+        return data[ter]
     }
-    get_enemy(x, y) {
-        let terr_tag = this.get_territory(x, y);
+
+    get_enemy(x: number, y: number) {
+        let terr_tag = this.get_territory(x, y)
         if (terr_tag == undefined) {
-            return;
+            return
         }
-        let data = this.constants.enemies;
+        let data:{[_: string]: string} = this.constants.enemies
         let tag = data[terr_tag];
         return tag;
     }
+
     create_quest() {
+        
     }
-    async attack_local_monster(pool, char, enemies_amount = 1) {
+
+    async attack_local_monster(pool:any, char: CharacterGenericPart, enemies_amount = 1): Promise<(BattleReworked2 | undefined)> {
         if (enemies_amount == 0) {
-            return undefined;
+            return undefined
         }
         let cell = char.get_cell();
-        let terr_tag = this.get_territory(cell.i, cell.j);
-        let enemy_tag = this.get_enemy(cell.i, cell.j);
+        let terr_tag = this.get_territory(cell.i, cell.j)
+        let enemy_tag = this.get_enemy(cell.i, cell.j)
         if ((enemy_tag == undefined) || (terr_tag == undefined)) {
-            return undefined;
+            return undefined
         }
-        let enemies = [];
+        let enemies = []
         for (let i = 0; i < enemies_amount; i++) {
-            enemies.push(await this.create_monster(pool, basic_characters[enemy_tag], char.cell_id));
+            enemies.push(await this.create_monster(pool, basic_characters[enemy_tag], char.cell_id))
         }
         let battle = await this.create_battle(pool, [char], enemies);
-        return battle;
+        return battle
     }
+
+    // async attack_local_outpost(pool: any, char: CharacterGenericPart) {
+    //     let cell = char.get_cell();
+    //     let tmp = cell.i + '_' + cell.j;
+    //     if (tmp in this.constants.outposts) {
+    //         let outpost = this.constants.outposts[tmp];
+    //         let enemies = [];
+    //         for (let i = 0; i < outpost.enemy_amount; i++) {
+    //             enemies.push(await this.create_monster(pool, basic_characters[outpost.enemy], char.cell_id))
+    //         }
+    //         let battle = await this.create_battle(pool, [char], enemies);
+    //         battle.stash.inc(outpost.res, outpost.res_amount)
+    //         return battle
+    //     }
+    // }
 }
-exports.World = World;

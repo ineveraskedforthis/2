@@ -1,9 +1,9 @@
 var common = require("../common.js");
-var constants = require("../static_data/constants.js")
+var {constants} = require("../static_data/constants.js")
 
-var StateMachine = require("../StateMachines.js").StateMachine
-var BasicPopAIstate = require("../StateMachines.js").AIs['basic_pop_ai_state']
-var AIs = require("../StateMachines.js").AIs
+var StateMachine = require("../AI/StateMachines.js").StateMachine
+var BasicPopAIstate = require("../AI/StateMachines.js").AIs['basic_pop_ai_state']
+var AIs = require("../AI/StateMachines.js").AIs
 var Consumer = require("./consumer.js")
 
 module.exports = class Pop extends Consumer {

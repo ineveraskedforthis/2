@@ -1,7 +1,7 @@
 const Savings = require("./savings.js");
 const {Stash} = require("./stash.js");
 const common = require("../common.js")
-const constants = require("../static_data/constants.js");
+const {constants} = require("../static_data/constants.js");
 
 module.exports = class Area {
     constructor(world) {
@@ -32,6 +32,7 @@ module.exports = class Area {
     set_influence(faction, amount) {
         this.factions_influence[faction.id] = amount
     }
+
 
     change_influence(faction, amount) {
         if (faction.id in this.factions_influence) {

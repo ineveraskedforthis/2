@@ -1,8 +1,8 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 var Market = require("./market/market.js");
 var common = require("./common.js");
-var constants = require("./static_data/constants.js");
-const { MarketItems } = require("./market/market_items.js");
+const constants_js_1 = require("./static_data/constants.js");
 class Cell {
     constructor(world, map, i, j, name, development, res) {
         this.world = world;
@@ -84,7 +84,7 @@ class Cell {
     //     return tmp;
     // }
     async load(pool) {
-        let tmp = await common.send_query(pool, constants.select_cell_by_id_query, [this.id]);
+        let tmp = await common.send_query(pool, constants_js_1.constants.select_cell_by_id_query, [this.id]);
         tmp = tmp.rows[0];
         this.name = tmp.name;
         this.market_id = tmp.market_id;
@@ -93,7 +93,7 @@ class Cell {
         this.resources = tmp.resources;
     }
     async load_to_db(pool) {
-        await common.send_query(pool, constants.new_cell_query, [
+        await common.send_query(pool, constants_js_1.constants.new_cell_query, [
             this.id,
             this.i,
             this.j,

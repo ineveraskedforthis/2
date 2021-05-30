@@ -2,7 +2,7 @@ var bcrypt = require('bcryptjs');
 var User = require('./user.js');
 var salt = process.env.SALT;
 
-var constants = require("./static_data/constants.js")
+var {constants} = require("./static_data/constants.js")
 var common = require("./common.js")
 
 module.exports = class UserManager{

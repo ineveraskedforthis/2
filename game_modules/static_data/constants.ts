@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.constants = void 0;
-exports.constants = {
+export const constants = {
     version: 277,
     logging: {
         agent: {
@@ -46,6 +43,8 @@ exports.constants = {
     insert_area_query: 'INSERT INTO areas (tag, savings, stash, faction_influence, local_resources) VALUES ($1, $2, $3, $4, $5) RETURNING id',
     insert_faction_query: 'INSERT INTO factions (tag, savings, leader_id) VALUES ($1, $2, $3) RETURNING id',
     insert_quest_quert: 'INSERT INTO quests (money, stash, required_item_tag, reward_money, reward_reputation) RETURNING id',
+
+
     update_battle_query: 'UPDATE battles SET heap = ($2), savings = ($3), stash = ($4), waiting_for_input = ($5) WHERE id = ($1)',
     update_market_order_query: 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)',
     update_market_query: 'UPDATE markets SET data = ($2) WHERE id = ($1)',
@@ -60,13 +59,18 @@ exports.constants = {
     update_area_query: 'UPDATE areas SET savings = ($2), stash = ($3), faction_influence = ($4), local_resources = ($5) WHERE id = ($1)',
     update_faction_query: 'UPDATE factions SET savings = ($2), leader_id = ($3) WHERE id = ($1)',
     update_quest_query: 'UPDATE quests SET money = ($2), stash = ($3), required_item_tag = ($4), reward_money = ($5), reward_reputation = ($6) WHERE id = ($1)',
+
+
     delete_market_order_query: 'DELETE FROM market_orders WHERE id = ($1)',
     delete_item_order_query: 'DELETE FROM items_orders WHERE id = ($1)',
     delete_battle_query: 'DELETE FROM battles WHERE id = ($1)',
     delete_char_query: 'DELETE FROM chars WHERE id = ($1)',
+
+    
     set_hp_query: 'UPDATE chars SET hp = ($1) WHERE id = ($2)',
     set_id_query: 'UPDATE last_id SET last_id = ($2) WHERE id_type = ($1)',
     get_id_query: 'SELECT * FROM last_id WHERE id_type = ($1)',
+
     save_world_size_query: 'INSERT INTO worlds (x, y) VALUES ($1, $2)',
     load_world_size_query: 'SELECT * FROM worlds',
     load_pops_query: 'SELECT * FROM pops',
@@ -77,11 +81,14 @@ exports.constants = {
     load_areas_query: 'SELECT * FROM areas',
     load_quests_query: 'SELECT * FROM quests',
     load_factions_query: 'SELECT * FROM factions',
+
     find_user_by_login_query: 'SELECT * FROM accounts WHERE login = ($1)',
     select_char_by_id_query: 'SELECT * FROM chars WHERE id = ($1)',
     select_cell_by_id_query: 'SELECT * FROM cells WHERE id = ($1)',
     select_market_by_id_query: 'SELECT * FROM markets WHERE id = ($1)',
     select_market_items_by_id_query: 'SELECT * FROM items_markets WHERE id = ($1)',
+
+
     new_message_query: 'INSERT INTO messages (message, sender) VALUES ($1, $2) RETURNING id',
     clear_old_messages_query: 'DELETE FROM messages WHERE id < ($1)',
     get_messages_query: 'SELECT * FROM messages',

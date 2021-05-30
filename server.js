@@ -9,9 +9,9 @@ var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var gameloop = require('node-gameloop');
 var path = require('path');
-var World = require("./game_modules/world.js");
+var {World} = require("./game_modules/world.js");
 var common = require("./game_modules/common.js");
-var constants = require("./game_modules/static_data/constants.js");
+var {constants} = require("./game_modules/static_data/constants.js");
 
 var {Pool} = require('pg');
 var stage = process.env.STAGE;

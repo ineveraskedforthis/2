@@ -2,7 +2,7 @@
 import { Stash } from "./base_game_classes/stash";
 
 var common = require("./common.js");
-var constants = require("./static_data/constants.js");
+var {constants} = require("./static_data/constants.js");
 
 import {geom} from './geom'
 var Savings = require("./base_game_classes/savings.js");

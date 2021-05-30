@@ -1,4 +1,4 @@
-var constants = require("./static_data/constants.js");
+var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
 
 var Character = require("./base_game_classes/character.js")

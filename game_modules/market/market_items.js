@@ -1,5 +1,5 @@
 const common = require("../common.js");
-const constants = require("../static_data/constants.js");
+const {constants} = require("../static_data/constants.js");
 const hour = 1000 * 60 * 60;
 const time_intervals = [1000 * 60, hour * 12, hour * 24, hour * 48];
 

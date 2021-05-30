@@ -2,7 +2,7 @@ var Savings = require("../base_game_classes/savings.js");
 var Stash = require("../base_game_classes/stash.js");
 var MarketOrder = require("./market_order")
 var common = require("../common.js");
-const constants = require("../static_data/constants.js");
+const {constants} = require("../static_data/constants.js");
 
 // remember to check how taxes are working (spoiler: wrong)
 module.exports = class Market {

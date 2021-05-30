@@ -1,5 +1,5 @@
-var common = require("./common.js")
-var constants = require("./static_data/constants.js")
+var common = require("../common.js")
+var {constants} = require("../static_data/constants.js")
 
 async function buy_input(pool, agent, tag, amount) {
     let savings = agent.savings.get();

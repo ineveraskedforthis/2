@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleReworked2 = exports.UnitData = void 0;
 const stash_1 = require("./base_game_classes/stash");
 var common = require("./common.js");
-var constants = require("./static_data/constants.js");
+var { constants } = require("./static_data/constants.js");
 const geom_1 = require("./geom");
 var Savings = require("./base_game_classes/savings.js");
 const battle_ai_1 = require("./battle_ai");

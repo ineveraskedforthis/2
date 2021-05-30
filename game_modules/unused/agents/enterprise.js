@@ -8,7 +8,7 @@ module.exports = class Enterprise extends Consumer {
     }
 
     async init(pool, world, cell_id, data, name = null, AIstate = {state: BasicEnterpriseAIstate, tag: 'basic_enterprise_ai_state'}) {
-        var id = await world.get_new_id('agent_id');
+        // var id = await world.get_new_id('agent_id');
         this.init_base_values(world, id, cell_id, data, name, AIstate);
         this.id = await this.load_to_db(pool);
     }

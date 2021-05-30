@@ -1,4 +1,4 @@
-var constants = require("./static_data/constants.js");
+var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
 
 
@@ -6,7 +6,7 @@ var Map = require("./map.js");
 var {BattleReworked2} = require("./battle.js");
 const Battle = BattleReworked2
 var Character = require("./base_game_classes/character.js");
-var Pop = require("./agents/pop.js");
+// var Pop = require("./agents/pop.js");
 var MarketOrder = require("./market/market_order");
 
 const { OrderItem } = require("./market/market_items.js");
@@ -35,7 +35,7 @@ module.exports = class EntityManager {
 
     async load(pool) {
         await this.map.load(pool);
-        await this.load_agents(pool);
+        // await this.load_agents(pool);
         await this.load_characters(pool);
         await this.load_orders(pool);
         await this.load_item_orders(pool);
@@ -46,19 +46,19 @@ module.exports = class EntityManager {
         await this.clear_dead_orders(pool);
     }
 
-    async load_agents(pool) {
-        await this.load_pops(pool);
-    }
+    // async load_agents(pool) {
+    //     await this.load_pops(pool);
+    // }
 
-    async load_pops(pool) {
-        let res = await common.send_query(pool, constants.load_pops_query);
-        for (let i of res.rows) {
-            let pop = new Pop(this.world);
-            pop.load_from_json(i);
-            this.agents[pop.id] = pop;
-        }
-        console.log('pops loaded')
-    }
+    // async load_pops(pool) {
+    //     let res = await common.send_query(pool, constants.load_pops_query);
+    //     for (let i of res.rows) {
+    //         let pop = new Pop(this.world);
+    //         pop.load_from_json(i);
+    //         this.agents[pop.id] = pop;
+    //     }
+    //     console.log('pops loaded')
+    // }
 
     async load_characters(pool) {
         let res = await common.send_query(pool, constants.load_chars_query);

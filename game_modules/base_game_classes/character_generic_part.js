@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CharacterGenericPart = void 0;
 var common = require("../common.js");
-var constants = require("../static_data/constants.js");
+var { constants } = require("../static_data/constants.js");
 const Equip = require("./equip.js");
 const Savings = require("./savings.js");
 const spells = require("../static_data/spells.js");
@@ -208,6 +208,12 @@ class CharacterGenericPart {
     }
     get_cell() {
         return this.world.get_cell_by_id(this.cell_id);
+    }
+    get_faction() {
+        if (this.faction_id != -1) {
+            return this.world.get_faction_from_id(this.faction_id);
+        }
+        return undefined;
     }
     change_hp(x) {
         let tmp = this.status.hp;

@@ -571,12 +571,12 @@ export class BattleImage {
 
     set_current_turn(i) {
         console.log('new turn ' + i)
-        let div = this.container.querySelector('.enemy_list > .fighter_' + i)
-        div.classList.add('current_turn')        
         if (this.current_turn != undefined) {
             let div = this.container.querySelector('.enemy_list > .fighter_' + this.current_turn)
             div.classList.remove('current_turn')    
         }
+        let div = this.container.querySelector('.enemy_list > .fighter_' + i)
+        div.classList.add('current_turn')
         this.current_turn = i
     }
 

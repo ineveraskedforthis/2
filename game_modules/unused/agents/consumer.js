@@ -1,5 +1,5 @@
 var common = require("../common.js");
-var constants = require("../static_data/constants.js")
+var {constants} = require("../static_data/constants.js")
 
 var Agent = require("./agent.js");
 var Stash = require("../base_game_classes/stash.js");

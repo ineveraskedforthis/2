@@ -1,7 +1,7 @@
 var Market = require("./market/market.js")
 var common = require("./common.js")
-var constants = require("./static_data/constants.js")
-const { MarketItems } = require("./market/market_items.js")
+import {constants} from "./static_data/constants.js";
+
 
 interface Development {
     rural: 0|1|2|3;
