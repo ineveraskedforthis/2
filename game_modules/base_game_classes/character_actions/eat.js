@@ -13,6 +13,7 @@ exports.eat = {
         return 2 /* IN_BATTLE */;
     },
     result: async function (pool, char, data) {
+        char.changed = true;
         char.change_hp(10);
         char.stash.inc('food', -1);
         char.send_stash_update();

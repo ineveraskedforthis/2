@@ -11,8 +11,8 @@ import { CharacterGenericPart } from "./base_game_classes/character_generic_part
 import { BattleReworked2 } from "./battle";
 import { ActionManager } from "./manager_classes/action_manager";
 import {tag} from './static_data/type_script_types'
-import {SocketManager} from './socket_manager'
-import {UserManager} from './user_manager'
+import {SocketManager} from './manager_classes/socket_manager'
+import {UserManager} from './manager_classes/user_manager'
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -48,10 +48,15 @@ export class World {
     entity_manager: typeof EntityManager;
     territories: {[_: string]: any}
 
+    ACTION_TIME: number
+
     constructor(io: any, x: number, y: number) {
         this.io = io;
         this.x = x;
         this.y = y;
+
+        this.ACTION_TIME = 2
+
         this.constants = CONSTS;
         this.user_manager = new UserManager(this);
         this.action_manager = new ActionManager(this, undefined)
@@ -123,7 +128,6 @@ export class World {
     async update(pool: any, dt: number) {
 
         await this.entity_manager.update_battles(pool, dt)
-
 
         // don't ask any questions about variable names
         this.battle_tick += 1;

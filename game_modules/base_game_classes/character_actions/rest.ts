@@ -14,6 +14,7 @@ export const rest = {
     },
 
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
+        char.changed = true
         char.change_stress(-20)
         char.send_status_update()
     },

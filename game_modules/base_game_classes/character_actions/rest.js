@@ -13,6 +13,7 @@ exports.rest = {
         return 2 /* IN_BATTLE */;
     },
     result: async function (pool, char, data) {
+        char.changed = true;
         char.change_stress(-20);
         char.send_status_update();
     },

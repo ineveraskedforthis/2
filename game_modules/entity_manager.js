@@ -144,7 +144,7 @@ module.exports = class EntityManager {
 
     async update_chars(pool, dt) {
         for (let i in this.chars) {
-            if (!this.chars[i].is_dead()) {
+            if ((this.chars[i] != undefined) && !this.chars[i].is_dead()) {
                 let char = this.chars[i]
                 if (!char.in_battle()) {
                     await char.update(pool, dt);

@@ -1,12 +1,12 @@
-import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
-import { BattleReworked2 } from "./battle";
-import { CharacterAction, CharacterActionResponce } from "./manager_classes/action_manager";
-import { User } from "./user";
-import { World } from "./world";
+import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
+import { BattleReworked2 } from "../battle";
+import { CharacterAction, CharacterActionResponce } from "./action_manager";
+import { User } from "../user";
+import { World } from "../world";
 
-var common = require("./common.js");
-var {constants} = require("./static_data/constants.js");
-var basic_characters = require("./basic_characters.js");
+var common = require("../common.js");
+var {constants} = require("../static_data/constants.js");
+var basic_characters = require("../basic_characters.js");
 
 
 interface UserData {
@@ -399,6 +399,8 @@ export class SocketManager {
                 user.socket.emit('alert', 'no place to rest here')
             } else if (res == CharacterActionResponce.IN_BATTLE) {
                 user.socket.emit('alert', 'you are in battle')
+            } else if (res == CharacterActionResponce.FAILED) {
+                user.socket.emit('alert', 'failed')
             }
         }        
     }
@@ -774,5 +776,9 @@ export class SocketManager {
                 battle.send_update()
             }
         }
+    }
+
+    send_action_ping_to_character(char: CharacterGenericPart) {
+        this.send_to_character_user(char, 'action-ping', {tag: 'start', time: this.world.ACTION_TIME})
     }
 }

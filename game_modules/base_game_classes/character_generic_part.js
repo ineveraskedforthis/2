@@ -115,6 +115,7 @@ class CharacterGenericPart {
         }
         if (!this.in_battle()) {
             this.out_of_battle_update(dt);
+            this.update_action_progress(dt);
         }
         else {
             this.battle_update();
@@ -130,7 +131,7 @@ class CharacterGenericPart {
         else {
             return;
         }
-        if ((this.current_action != undefined) && this.action_progress >= 10) {
+        if ((this.current_action != undefined) && this.action_progress >= this.world.ACTION_TIME) {
             this.world.action_manager.action(this.current_action, this, this.action_target);
         }
     }
@@ -139,14 +140,17 @@ class CharacterGenericPart {
         if (this.status_changed) {
             sm.send_status_update(this);
             this.status_changed = false;
+            this.changed = true;
         }
         if (this.savings.changed) {
             sm.send_savings_update(this);
             this.savings.changed = false;
+            this.changed = true;
         }
         if (this.stash.changed) {
             sm.send_stash_update_to_character(this);
             this.stash.changed = false;
+            this.changed = true;
         }
     }
     //some stuff defined per concrete character class
@@ -340,6 +344,11 @@ class CharacterGenericPart {
     send_stash_update() {
         if (this.is_player()) {
             this.world.socket_manager.send_stash_update_to_character(this);
+        }
+    }
+    send_action_ping() {
+        if (this.is_player()) {
+            this.world.socket_manager.send_action_ping_to_character(this);
         }
     }
     //rgo
@@ -650,6 +659,7 @@ class CharacterGenericPart {
                 this.stash.get_json(),
                 this.equip.get_json()
             ]);
+            this.changed = false;
         }
     }
     async delete_from_db(pool) {

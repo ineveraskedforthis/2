@@ -30,7 +30,6 @@ class Character extends character_generic_part_js_1.CharacterGenericPart {
         this.change_rage(rage_change);
         let d_stress = this.get_stress_change();
         this.change_stress(d_stress);
-        this.update_action_progress(dt);
     }
     get_stress_change() {
         return 0;

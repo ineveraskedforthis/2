@@ -43,6 +43,7 @@ export const cook_meat = {
                 }
                 char.change_stress(5)
                 char.send_status_update()
+                char.world.socket_manager.send_to_character_user(char, 'alert', 'failed')
                 return CharacterActionResponce.FAILED
             }
         }

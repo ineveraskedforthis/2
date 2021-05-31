@@ -458,6 +458,7 @@ export class Map {
     set_curr_pos(i, j) {
         this.curr_pos = [i, j];
         this.curr_territory = get_territory_tag(i, j);
+        this.send_cell_action('move')
         return BACKGROUNDS[this.curr_territory];
     }
 

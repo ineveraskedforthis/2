@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketManager = void 0;
-const action_manager_1 = require("./manager_classes/action_manager");
-const user_1 = require("./user");
-var common = require("./common.js");
-var { constants } = require("./static_data/constants.js");
-var basic_characters = require("./basic_characters.js");
+const action_manager_1 = require("./action_manager");
+const user_1 = require("../user");
+var common = require("../common.js");
+var { constants } = require("../static_data/constants.js");
+var basic_characters = require("../basic_characters.js");
 class SocketManager {
     constructor(pool, io, world) {
         this.world = world;
@@ -345,6 +345,9 @@ class SocketManager {
             else if (res == 2 /* IN_BATTLE */) {
                 user.socket.emit('alert', 'you are in battle');
             }
+            else if (res == 4 /* FAILED */) {
+                user.socket.emit('alert', 'failed');
+            }
         }
     }
     // async craft_clothes(user: User) {
@@ -677,6 +680,9 @@ class SocketManager {
                 battle.send_update();
             }
         }
+    }
+    send_action_ping_to_character(char) {
+        this.send_to_character_user(char, 'action-ping', { tag: 'start', time: this.world.ACTION_TIME });
     }
 }
 exports.SocketManager = SocketManager;

@@ -20,10 +20,12 @@ exports.clean = {
         let cell = char.get_cell();
         let tmp = char.stash.get('water');
         if (cell.can_clean()) {
+            char.changed = true;
             char.change_blood(-20);
             char.send_status_update();
         }
         else if (tmp > 0) {
+            char.changed = true;
             char.change_blood(-20);
             char.stash.inc('water', -1);
             char.send_stash_update();

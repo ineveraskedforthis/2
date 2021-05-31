@@ -7,8 +7,8 @@ var common = require("./common.js");
 var EntityManager = require("./entity_manager.js");
 const world_constants_1_1 = require("./static_data/world_constants_1");
 const action_manager_1 = require("./manager_classes/action_manager");
-const socket_manager_1 = require("./socket_manager");
-const user_manager_1 = require("./user_manager");
+const socket_manager_1 = require("./manager_classes/socket_manager");
+const user_manager_1 = require("./manager_classes/user_manager");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -28,6 +28,7 @@ class World {
         this.io = io;
         this.x = x;
         this.y = y;
+        this.ACTION_TIME = 2;
         this.constants = world_constants_1_1.CONSTS;
         this.user_manager = new user_manager_1.UserManager(this);
         this.action_manager = new action_manager_1.ActionManager(this, undefined);

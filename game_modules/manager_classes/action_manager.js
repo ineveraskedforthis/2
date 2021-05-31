@@ -23,9 +23,13 @@ class ActionManager {
         this.actions.push(action);
     }
     async start_action(action_id, char, data) {
+        if (char.action_started) {
+            return 5 /* ALREADY_IN_ACTION */;
+        }
         let action = this.actions[action_id];
         let check = await action.check(this.pool, char, data);
         if (check == 1 /* OK */) {
+            char.send_action_ping();
             await action.start(this.pool, char, data);
             char.action_started = true;
             char.current_action = action_id;

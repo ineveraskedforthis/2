@@ -791,6 +791,8 @@ socket.on('skills', msg => update_skill_data(msg));
 socket.on('market-data', data => goods_market.update_data(data));
 socket.on('item-market-data', data => {item_market_table.update(data)});
 
+socket.on('action-ping', data => restart_action_bar(data.time))
+
 function update_tags(msg) {
     let market_div = document.querySelector('.goods_list') 
     let inventory_div = document.getElementById('goods_stash')
@@ -913,6 +915,18 @@ function reg(msg) {
     }
 }
 
+
+function restart_action_bar(time) {
+    console.log('???')
+    globals.action_total_time = time
+    globals.action_in_progress = true
+    globals.action_time = 0
+    let div = document.getElementById('action_progress_bar')
+    div.classList.remove('hidden')
+    let bar = div.querySelector('span')
+    bar.style.width = '0%'
+}
+
 var currentTime = (new Date()).getTime(); var lastTime = (new Date()).getTime();
 var delta = 0;
 
@@ -920,6 +934,18 @@ function draw(time) {
     currentTime = (new Date()).getTime();
     delta = (currentTime - lastTime) / 1000;
     lastTime = currentTime;
+
+    if (globals.action_in_progress) {
+        globals.action_time += delta
+        let div = document.getElementById('action_progress_bar')
+        if (globals.action_total_time <= globals.action_time) {
+            globals.action_in_progress = false
+            div.classList.add('hidden')
+        } else {
+            let bar = div.querySelector('span')
+            bar.style.width = Math.floor(globals.action_time / globals.action_total_time * 10000)/ 100 + '%'
+        }    
+    }
 
     if (globals.map_context_dissapear_time != undefined) {
         if ((globals.map_context_dissapear_time > 0) && (!globals.mouse_over_map_context)) {

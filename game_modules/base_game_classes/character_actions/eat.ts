@@ -14,6 +14,7 @@ export const eat = {
     },
 
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
+        char.changed = true
         char.change_hp(10);
         char.stash.inc('food', -1);
         char.send_stash_update()

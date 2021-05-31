@@ -16,6 +16,7 @@ exports.hunt = {
             return 2 /* IN_BATTLE */;
     },
     result: async function (pool, char, data) {
+        char.changed = true;
         char.change_stress(5);
         char.stash.inc('meat', 1);
         char.change_blood(5);
