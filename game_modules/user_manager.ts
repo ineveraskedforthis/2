@@ -1,21 +1,31 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserManager = void 0;
-const user_1 = require("./user");
+import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
+import { User } from "./user";
+import { World } from "./world";
+
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
-var { constants } = require("./static_data/constants.js");
-var common = require("./common.js");
-class UserManager {
-    constructor(world) {
+var {constants} = require("./static_data/constants.js")
+var common = require("./common.js")
+
+type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
+type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
+
+
+export class UserManager{
+    world: World
+    users: User[]
+    users_online: boolean[]
+
+    constructor(world: World) {
         this.users = [];
         this.users_online = [];
         this.world = world;
     }
-    async reg_player(pool, data) {
+
+    async reg_player(pool: any, data: {login: string, password: string}): Promise<RegResponce> {
         var login_is_available = await this.check_login(pool, data.login);
         if (!login_is_available) {
-            return { reg_prompt: 'login-is-not-available', user: undefined };
+            return {reg_prompt: 'login-is-not-available', user: undefined};
         }
         var hash = await bcrypt.hash(data.password, salt);
         var new_user = this.create_new_user();
@@ -23,25 +33,28 @@ class UserManager {
         new_user.set_password_hash(hash);
         var id = await new_user.init(pool);
         this.users[id] = new_user;
-        return ({ reg_prompt: 'ok', user: new_user });
+        return({reg_prompt: 'ok', user: new_user});
     }
+
     create_new_user() {
-        return new user_1.User(this.world);
+        return new User(this.world)
     }
-    async login_player(pool, data) {
+
+    async login_player(pool: any, data: {login: string, password: string}): Promise<LoginResponce> {
         var user_data = await this.load_user_data_from_db(pool, data.login);
         if (user_data == undefined) {
-            return { login_prompt: 'wrong-login', user: undefined };
+            return {login_prompt: 'wrong-login', user: undefined};
         }
         var password_hash = user_data.password_hash;
         var f = await bcrypt.compare(data.password, password_hash);
         if (f) {
             var user = await this.load_user_to_memory(pool, user_data);
-            return ({ login_prompt: 'ok', user: user });
+            return({login_prompt: 'ok', user: user});
         }
-        return { login_prompt: 'wrong-password', user: undefined };
+        return {login_prompt: 'wrong-password', user: undefined};
     }
-    new_user_online(user) {
+
+    new_user_online(user: User) {
         if (user.id != -1) {
             this.users_online[user.id] = true;
             console.log(user.login, ' logged in');
@@ -49,38 +62,43 @@ class UserManager {
             socket_manager.update_user_list();
         }
     }
-    user_disconnects(user) {
+    
+    user_disconnects(user: User) {
         if (this.users_online[user.id]) {
             this.users_online[user.id] = false;
             let socket_manager = this.world.socket_manager;
             socket_manager.update_user_list();
         }
     }
-    get_user_from_character(character) {
-        return this.users[character.user_id];
+
+    get_user_from_character(character: CharacterGenericPart):User {
+        return this.users[character.user_id]
     }
-    get_user(user_id) {
-        return this.users[user_id];
+
+    get_user(user_id: number) {
+        return this.users[user_id]
     }
-    async check_login(pool, login) {
+
+    async check_login(pool: any, login: string) {
         var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
         if (res.rows.length == 0) {
             return true;
         }
         return false;
     }
-    async load_user_data_from_db(pool, login) {
+
+    async load_user_data_from_db(pool: any, login: string) {
         var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
         if (res.rows.length == 0) {
             return undefined;
         }
         return res.rows[0];
     }
-    async load_user_to_memory(pool, data) {
+
+    async load_user_to_memory(pool: string, data: any) {
         var user = this.create_new_user();
         await user.load_from_json(pool, data);
         this.users[user.id] = user;
         return user;
     }
 }
-exports.UserManager = UserManager;

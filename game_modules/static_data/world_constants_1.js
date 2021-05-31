@@ -1,8 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CONSTS = void 0;
+exports.TAGS = exports.CONSTS = void 0;
 exports.CONSTS = {
-    TAGS: ['food', 'clothes', 'meat', 'water', 'leather', 'tools', 'zaz'],
     ENEMY_TAGS: ['rat', 'elodino', 'graci'],
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
     development: {
@@ -262,6 +261,7 @@ exports.CONSTS = {
         evasion: { practice: 0, theory: 0 },
     }
 };
+exports.TAGS = ['food', 'clothes', 'meat', 'water', 'leather', 'tools', 'zaz'];
 // function add_skill(tag, max_level, req_level = 0, req_skills = [], action = undefined, r_t = true) {
 //     CONSTS.SKILLS[tag] = {tag: tag, max_level: max_level, req_level: req_level, req_skills: req_skills, action: action, req_teacher: r_t};
 // }

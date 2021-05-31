@@ -138,16 +138,16 @@ module.exports = class EntityManager {
         let keys = Object.keys(this.agents);
             keys.sort(function() {return Math.random() - 0.5});
             for (let i of keys) {
-                await this.agents[i].update(pool);
+                await this.agents[i].update(pool, dt);
             }
     }
 
-    async update_chars(pool) {
+    async update_chars(pool, dt) {
         for (let i in this.chars) {
             if (!this.chars[i].is_dead()) {
                 let char = this.chars[i]
                 if (!char.in_battle()) {
-                    await char.update(pool);
+                    await char.update(pool, dt);
                 }
             }
         }
@@ -166,7 +166,7 @@ module.exports = class EntityManager {
             }
             let res = battle.is_over();
             if (res == -1) {
-                await battle.update(pool)
+                await battle.update(pool, dt)
             } else {
 
                 
@@ -188,13 +188,13 @@ module.exports = class EntityManager {
         for (let i in this.areas) {
             let area = this.areas[i]
             for (let faction_id in area.faction_influence) {
-                let faction = this.factions[faction_id]
-                let leader = this.chars[faction.leader_id]
-                if ((faction.tag != 'steppe_rats') & (area.get_influence('steppe_rats') >= 10)) {
-                    let quest_money_reward = Math.floor(area.get_influence('steppe_rats') / 10)
-                    let quest_reputation_reward = Math.floor(area.get_influence('steppe_rats') / 5)
-                    await this.new_quest(pool, leader, 'meat', quest_money_reward, quest_reputation_reward)
-                }
+                // let faction = this.factions[faction_id]
+                // let leader = this.chars[faction.leader_id]
+                // if ((faction.tag != 'steppe_rats') & (area.get_influence('steppe_rats') >= 10)) {
+                //     let quest_money_reward = Math.floor(area.get_influence('steppe_rats') / 10)
+                //     let quest_reputation_reward = Math.floor(area.get_influence('steppe_rats') / 5)
+                //     await this.new_quest(pool, leader, 'meat', quest_money_reward, quest_reputation_reward)
+                // }
             }
         }
     }

@@ -96,6 +96,8 @@ class CharacterGenericPart {
         this.user_id = -1;
         this.cell_id = -1;
         this.faction_id = -1;
+        this.action_started = false;
+        this.action_progress = 0;
     }
     init_base_values(name, cell_id, user_id = -1) {
         this.name = name;
@@ -106,13 +108,13 @@ class CharacterGenericPart {
         this.cell_id = cell_id;
         this.faction_id = -1;
     }
-    async update(pool) {
+    async update(pool, dt) {
         await this.status_check(pool);
         if (this.flags.dead) {
             return;
         }
         if (!this.in_battle()) {
-            this.out_of_battle_update();
+            this.out_of_battle_update(dt);
         }
         else {
             this.battle_update();
@@ -120,6 +122,17 @@ class CharacterGenericPart {
         this.flags_handling_update();
         await this.save_to_db(pool, this.changed || this.stash.changed || this.savings.changed);
         this.changed = false;
+    }
+    update_action_progress(dt) {
+        if (this.action_started) {
+            this.action_progress += dt;
+        }
+        else {
+            return;
+        }
+        if ((this.current_action != undefined) && this.action_progress >= 10) {
+            this.world.action_manager.action(this.current_action, this, this.action_target);
+        }
     }
     flags_handling_update() {
         let sm = this.world.socket_manager;
@@ -132,7 +145,7 @@ class CharacterGenericPart {
             this.savings.changed = false;
         }
         if (this.stash.changed) {
-            sm.send_stash_update(this);
+            sm.send_stash_update_to_character(this);
             this.stash.changed = false;
         }
     }
@@ -146,12 +159,15 @@ class CharacterGenericPart {
             await this.world.kill(pool, this.id);
         }
     }
-    out_of_battle_update() {
+    out_of_battle_update(dt) {
     }
     battle_update() {
     }
     async on_move(pool) {
         return undefined;
+    }
+    get_user() {
+        return this.world.user_manager.get_user(this.user_id);
     }
     get_item_lvl() {
         return 1;
@@ -210,9 +226,9 @@ class CharacterGenericPart {
         return this.world.get_cell_by_id(this.cell_id);
     }
     get_faction() {
-        if (this.faction_id != -1) {
-            return this.world.get_faction_from_id(this.faction_id);
-        }
+        // if (this.faction_id != -1) {
+        //     return this.world.get_faction_from_id(this.faction_id)
+        // }
         return undefined;
     }
     change_hp(x) {
@@ -270,9 +286,9 @@ class CharacterGenericPart {
         this.stash.transfer(target.stash, tag, x);
     }
     transfer_all(target) {
-        for (var tag of this.world.constants.TAGS) {
-            var x = this.stash.get(tag);
-            this.transfer(target, tag, x);
+        for (var i_tag of this.world.get_stash_tags_list()) {
+            var x = this.stash.get(i_tag);
+            this.transfer(target, i_tag, x);
         }
     }
     transfer_all_inv(target) {
@@ -306,7 +322,7 @@ class CharacterGenericPart {
         }
     }
     clear_orders() {
-        for (var tag of this.world.constants.TAGS) {
+        for (var tag of this.world.get_stash_tags_list()) {
             this.clear_tag_orders(tag);
         }
     }
@@ -530,6 +546,9 @@ class CharacterGenericPart {
     }
     async on_move_default(pool, data) {
         let tmp = this.world.get_territory(data.x, data.y);
+        if (tmp == undefined) {
+            return 2;
+        }
         this.add_explored(this.world.get_id_from_territory(tmp));
         this.world.socket_manager.send_explored(this);
         let res = await this.on_move(pool);

@@ -1,11 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const clean = require("./character_actions/clean.js");
-const cook_meat = require("./character_actions/cook_meat.js");
-const hunt = require("./character_actions/hunt.js");
-const move = require("./character_actions/move.js");
-const rest = require("./character_actions/rest.js");
-const eat_1 = require("./character_actions/eat");
 const character_generic_part_js_1 = require("./character_generic_part.js");
 class Character extends character_generic_part_js_1.CharacterGenericPart {
     async init(pool, name, cell_id, user_id = -1) {
@@ -21,12 +15,12 @@ class Character extends character_generic_part_js_1.CharacterGenericPart {
     // update ticks
     battle_update() {
         let dice = Math.random();
-        if (dice < 0.1) {
+        if (dice < 0.5) {
             this.change_stress(1);
         }
         this.equip.update(this);
     }
-    out_of_battle_update() {
+    out_of_battle_update(dt) {
         if (this.is_dead()) {
             return;
         }
@@ -36,19 +30,10 @@ class Character extends character_generic_part_js_1.CharacterGenericPart {
         this.change_rage(rage_change);
         let d_stress = this.get_stress_change();
         this.change_stress(d_stress);
+        this.update_action_progress(dt);
     }
     get_stress_change() {
         return 0;
-    }
-    // 
-    async status_check(pool) {
-        if (this.status.hp <= 0) {
-            this.status.hp = 0;
-            await this.world.kill(pool, this.id);
-        }
-        if (this.status.stress >= 100) {
-            await this.world.kill(pool, this.id);
-        }
     }
     //on action
     async on_move(pool) {
@@ -57,18 +42,5 @@ class Character extends character_generic_part_js_1.CharacterGenericPart {
         // let res = await this.attack_local_monster(pool, danger) 
         return undefined;
     }
-    async move(pool, data) { }
-    async clean() { }
-    async rest() { }
-    async hunt() { }
-    async cook_meat() { }
-    async eat() {
-        eat_1.eat(this);
-    }
 }
-Character.prototype.move = move;
-Character.prototype.clean = clean;
-Character.prototype.rest = rest;
-Character.prototype.hunt = hunt;
-Character.prototype.cook_meat = cook_meat;
 module.exports = Character;

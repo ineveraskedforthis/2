@@ -11,6 +11,9 @@ import { tag } from "../static_data/type_script_types";
 import {Stash} from "./stash"
 import {AttackResult} from "./misc/attack_result";
 import {DamageByTypeObject, damage_types} from "./misc/damage_types"
+import { World } from "../world";
+import { CharacterAction } from "../manager_classes/action_manager";
+import { User } from "../user";
 
 class SkillObject {
     practice: number;
@@ -23,7 +26,7 @@ class SkillObject {
 
 
 export interface PerksTable {
-    meat_master: boolean;
+    meat_master?: boolean;
 }
 
 
@@ -37,7 +40,7 @@ class SkillList {
     magic_mastery: SkillObject;
     blocking: SkillObject;
     evasion: SkillObject;
-    perks: PerksTable|{};
+    perks: PerksTable;
 
     constructor() {
         this.clothier = new SkillObject();
@@ -119,7 +122,7 @@ class CharacterFlags {
 }
 
 export class CharacterGenericPart {
-    world: any;
+    world: World;
     equip: any;
     stash: Stash;
     savings: any;
@@ -137,6 +140,11 @@ export class CharacterGenericPart {
     user_id: number;
     cell_id: number;
     faction_id: number;
+
+    action_progress: number;
+    action_started: boolean;
+    current_action: undefined|CharacterAction
+    action_target: any
 
     constructor(world:any) {
         this.world = world;
@@ -175,6 +183,9 @@ export class CharacterGenericPart {
         this.user_id = -1
         this.cell_id = -1
         this.faction_id = -1
+
+        this.action_started = false
+        this.action_progress = 0
     }
 
     init_base_values(name: string, cell_id: number, user_id = -1) {
@@ -187,7 +198,7 @@ export class CharacterGenericPart {
         this.faction_id = -1;
     }
 
-    async update(pool: any) {
+    async update(pool: any, dt: number) {
         await this.status_check(pool);
 
         if (this.flags.dead) {
@@ -195,7 +206,7 @@ export class CharacterGenericPart {
         }
         
         if (!this.in_battle()) {
-            this.out_of_battle_update()
+            this.out_of_battle_update(dt)
         } else {
             this.battle_update()
         }
@@ -203,6 +214,17 @@ export class CharacterGenericPart {
         this.flags_handling_update();        
         await this.save_to_db(pool, this.changed || this.stash.changed || this.savings.changed);
         this.changed = false;
+    }
+
+    update_action_progress(dt: number) {
+        if (this.action_started) {
+            this.action_progress += dt
+        } else {
+            return
+        } 
+        if ((this.current_action != undefined) && this.action_progress >= 10) {
+            this.world.action_manager.action(this.current_action, this, this.action_target)
+        }
     }
 
     flags_handling_update() {
@@ -216,7 +238,7 @@ export class CharacterGenericPart {
             this.savings.changed = false;
         }
         if (this.stash.changed) {
-            sm.send_stash_update(this);
+            sm.send_stash_update_to_character(this);
             this.stash.changed = false;
         }
     }
@@ -235,7 +257,7 @@ export class CharacterGenericPart {
         }
     }
 
-    out_of_battle_update() {
+    out_of_battle_update(dt: number) {
 
     }
 
@@ -245,6 +267,10 @@ export class CharacterGenericPart {
 
     async on_move(pool: any) {
         return undefined
+    }
+
+    get_user():User {
+        return this.world.user_manager.get_user(this.user_id)
     }
 
     get_item_lvl() {
@@ -314,9 +340,9 @@ export class CharacterGenericPart {
     }
 
     get_faction() {
-        if (this.faction_id != -1) {
-            return this.world.get_faction_from_id(this.faction_id)
-        }
+        // if (this.faction_id != -1) {
+        //     return this.world.get_faction_from_id(this.faction_id)
+        // }
         return undefined
     }
 
@@ -385,9 +411,9 @@ export class CharacterGenericPart {
     }
 
     transfer_all(target: any) {
-        for (var tag of this.world.constants.TAGS) {
-            var x = this.stash.get(tag);
-            this.transfer(target, tag, x);
+        for (var i_tag of this.world.get_stash_tags_list()) {
+            var x = this.stash.get(i_tag);
+            this.transfer(target, i_tag, x);
         }
     }
 
@@ -433,7 +459,7 @@ export class CharacterGenericPart {
     }
 
     clear_orders() {
-        for (var tag of this.world.constants.TAGS) {
+        for (var tag of this.world.get_stash_tags_list()) {
             this.clear_tag_orders(tag)
         }
     }
@@ -743,6 +769,9 @@ export class CharacterGenericPart {
 
     async on_move_default(pool:any, data:any) {
         let tmp = this.world.get_territory(data.x, data.y)
+        if (tmp == undefined) {
+            return 2
+        }
         this.add_explored(this.world.get_id_from_territory(tmp));
         this.world.socket_manager.send_explored(this);
         let res = await this.on_move(pool)

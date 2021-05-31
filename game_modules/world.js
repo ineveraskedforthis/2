@@ -4,10 +4,11 @@ exports.World = void 0;
 var basic_characters = require("./basic_characters.js");
 var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
-var UserManager = require("./user_manager.js");
-var SocketManager = require("./socket_manager.js");
 var EntityManager = require("./entity_manager.js");
 const world_constants_1_1 = require("./static_data/world_constants_1");
+const action_manager_1 = require("./manager_classes/action_manager");
+const socket_manager_1 = require("./socket_manager");
+const user_manager_1 = require("./user_manager");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -28,7 +29,8 @@ class World {
         this.x = x;
         this.y = y;
         this.constants = world_constants_1_1.CONSTS;
-        this.user_manager = new UserManager(this);
+        this.user_manager = new user_manager_1.UserManager(this);
+        this.action_manager = new action_manager_1.ActionManager(this, undefined);
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
         this.HISTORY_PRICE['food'] = 50;
@@ -40,12 +42,13 @@ class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
-        this.socket_manager = undefined;
+        this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this);
         this.entity_manager = undefined;
         this.territories = {};
     }
     async init(pool) {
-        this.socket_manager = new SocketManager(pool, this.io, this);
+        this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this);
+        this.action_manager = new action_manager_1.ActionManager(this, pool);
         this.entity_manager = new EntityManager(this);
         await this.entity_manager.init(pool);
         await common.send_query(pool, constants.save_world_size_query, [this.x, this.y]);
@@ -66,7 +69,7 @@ class World {
         living_area.set_influence(steppe_rats, 50);
     }
     async load(pool) {
-        this.socket_manager = new SocketManager(pool, this.io, this);
+        this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this);
         this.entity_manager = new EntityManager(this);
         await this.entity_manager.load(pool);
         await this.load_size(pool);
@@ -76,8 +79,8 @@ class World {
         this.x = size.rows[0].x;
         this.y = size.rows[0].y;
     }
-    async update(pool) {
-        await this.entity_manager.update_battles(pool);
+    async update(pool, dt) {
+        await this.entity_manager.update_battles(pool, dt);
         // don't ask any questions about variable names
         this.battle_tick += 1;
         if (this.battle_tick >= 2) {
@@ -89,22 +92,21 @@ class World {
         this.pops_tick += 1;
         if (this.pops_tick >= 180) {
             this.pops_tick = 0;
-            await this.entity_manager.update_agents(pool);
-            await this.entity_manager.update_factions(pool);
-            await this.entity_manager.update_areas(pool);
+            await this.entity_manager.update_agents(pool, dt);
+            await this.entity_manager.update_factions(pool, dt);
+            await this.entity_manager.update_areas(pool, dt);
         }
-        await this.entity_manager.update_chars(pool);
+        await this.entity_manager.update_chars(pool, dt);
         if (this.map_tick >= 1) {
             await this.entity_manager.update_map(pool);
             this.map_tick = 0;
         }
         this.map_tick += 1;
         this.socket_manager.update_user_list();
-        if (this.vacuum_stage++ > 100) {
-            common.send_query(pool, 'VACUUM market_orders');
-            // console.log('vacuum');
-            this.vacuum_stage = 0;
-        }
+    }
+    get_stash_tags_list() {
+        let data = world_constants_1_1.TAGS;
+        return data;
     }
     get_cell_teacher(x, y) {
         return undefined;

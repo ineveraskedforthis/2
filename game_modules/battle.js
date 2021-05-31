@@ -233,7 +233,7 @@ class BattleReworked2 {
             if ((char == undefined) || char.is_dead()) {
                 return { responce: 'dead_unit' };
             }
-            await char.update(pool);
+            await char.update(pool, 0);
             let dt = unit.next_turn_after;
             this.heap.update(dt);
             if (char.is_dead()) {

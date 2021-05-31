@@ -79,7 +79,10 @@ export class BattleAI {
             var target_id = BattleAI.calculate_closest_enemy(battle, index)
             if (target_id != null) {
                 target_char = battle.world.get_char_from_id(battle.get_unit(target_id).char_id)
-            }            
+            } else return false
+        }
+        if (target_char == undefined) {
+            return false
         }
         var value1 = BattleAI.get_value_from_tactic_trigger_tag(target_char, tag);
         if (value1 == undefined) {

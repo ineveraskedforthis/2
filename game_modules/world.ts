@@ -3,16 +3,16 @@ var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
 import {loot_chance_weight, loot_affixes_weight, item_tag, affix_tag} from "./static_data/item_tags";
 
-var UserManager = require("./user_manager.js");
-var SocketManager = require("./socket_manager.js");
 var EntityManager = require("./entity_manager.js");
 
-import {CONSTS} from './static_data/world_constants_1';
+import {CONSTS, TAGS} from './static_data/world_constants_1';
 import {MarketOrder} from './market/market_order'
 import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
 import { BattleReworked2 } from "./battle";
-
-
+import { ActionManager } from "./manager_classes/action_manager";
+import {tag} from './static_data/type_script_types'
+import {SocketManager} from './socket_manager'
+import {UserManager} from './user_manager'
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -36,14 +36,15 @@ export class World {
     x: number
     y: number
     constants: typeof CONSTS;
-    user_manager: any
+    user_manager: UserManager
+    action_manager: ActionManager
     BASE_BATTLE_RANGE: number;
     HISTORY_PRICE: any;
     vacuum_stage:number;
     battle_tick: number;
     pops_tick: number;
     map_tick: number;
-    socket_manager: typeof SocketManager;
+    socket_manager: SocketManager;
     entity_manager: typeof EntityManager;
     territories: {[_: string]: any}
 
@@ -53,6 +54,7 @@ export class World {
         this.y = y;
         this.constants = CONSTS;
         this.user_manager = new UserManager(this);
+        this.action_manager = new ActionManager(this, undefined)
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
         this.HISTORY_PRICE['food'] = 50;
@@ -64,7 +66,7 @@ export class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
-        this.socket_manager = undefined;
+        this.socket_manager = new SocketManager(undefined, io, this);
         this.entity_manager = undefined
 
         this.territories = {}
@@ -72,6 +74,7 @@ export class World {
 
     async init(pool: any) {
         this.socket_manager = new SocketManager(pool, this.io, this);
+        this.action_manager = new ActionManager(this, pool)
         this.entity_manager = new EntityManager(this);
         await this.entity_manager.init(pool);
         await common.send_query(pool, constants.save_world_size_query, [this.x, this.y])
@@ -117,9 +120,9 @@ export class World {
         this.y = size.rows[0].y;
     }
 
-    async update(pool: any) {
+    async update(pool: any, dt: number) {
 
-        await this.entity_manager.update_battles(pool)
+        await this.entity_manager.update_battles(pool, dt)
 
 
         // don't ask any questions about variable names
@@ -134,13 +137,13 @@ export class World {
         this.pops_tick += 1;
         if (this.pops_tick >= 180) {
             this.pops_tick = 0;
-            await this.entity_manager.update_agents(pool)
-            await this.entity_manager.update_factions(pool)
-            await this.entity_manager.update_areas(pool)
+            await this.entity_manager.update_agents(pool, dt)
+            await this.entity_manager.update_factions(pool, dt)
+            await this.entity_manager.update_areas(pool, dt)
         }
         
         
-        await this.entity_manager.update_chars(pool)
+        await this.entity_manager.update_chars(pool, dt)
 
         if (this.map_tick >= 1) {
             await this.entity_manager.update_map(pool)
@@ -149,27 +152,26 @@ export class World {
         this.map_tick += 1;
         
         this.socket_manager.update_user_list();
+    }
 
-        if (this.vacuum_stage++ > 100) {
-            common.send_query(pool, 'VACUUM market_orders');
-            // console.log('vacuum');
-            this.vacuum_stage = 0;
-        }
+    get_stash_tags_list() {
+        let data: tag[] = TAGS 
+        return data
     }
 
     get_cell_teacher(x: number, y: number) {
         return undefined
     }
 
-    get_char_from_id(id: number) {
+    get_char_from_id(id: number): CharacterGenericPart {
         return this.entity_manager.chars[id]
     }
 
-    get_character_by_id(id: number) {
+    get_character_by_id(id: number): CharacterGenericPart {
         return this.entity_manager.chars[id]
     }
 
-    get_battle_from_id(id: number) {
+    get_battle_from_id(id: number): BattleReworked2 {
         return this.entity_manager.battles[id]
     }
 
@@ -240,7 +242,7 @@ export class World {
         return await this.entity_manager.load_character_data_to_memory(pool, data)
     }
 
-    async create_new_character(pool: any, name: string, cell_id: number, user_id: number, territory_tag: string) {
+    async create_new_character(pool: any, name: string, cell_id: number|undefined, user_id: number, territory_tag: string): Promise<CharacterGenericPart> {
         return await this.entity_manager.create_new_character(pool, name, cell_id, user_id, territory_tag)
     }
 

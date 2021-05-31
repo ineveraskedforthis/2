@@ -9,6 +9,7 @@ var Savings = require("./base_game_classes/savings.js");
 import {BattleAI} from './battle_ai'
 import type {CharacterGenericPart} from './base_game_classes/character_generic_part'
 import { tag } from "./static_data/type_script_types";
+import { World } from "./world";
 
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
@@ -208,7 +209,7 @@ export class UnitData {
 
 
 export class BattleReworked2 {
-    world: any;
+    world: World;
     heap: UnitsHeap;
     id: number;
     savings: any;
@@ -306,7 +307,7 @@ export class BattleReworked2 {
                 return {responce: 'dead_unit'}
             }
 
-            await char.update(pool)
+            await char.update(pool, 0)
             let dt = unit.next_turn_after
             this.heap.update(dt)
 

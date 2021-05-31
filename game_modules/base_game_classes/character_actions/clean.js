@@ -1,16 +1,35 @@
-module.exports = function clean() {
-    if (!this.in_battle()) {
-        let cell = this.get_cell();
-        let tmp = this.stash.get('water');
-        if (cell.can_clean()) {
-            this.change_blood(-20)
-            return 'ok'
-        } else if (tmp > 0) {
-            this.change_blood(-20);
-            this.stash.inc('water', -1);
-            return 'ok'
-        } else {
-            return 'no available water'
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.clean = void 0;
+exports.clean = {
+    check: async function (pool, char, data) {
+        if (!char.in_battle()) {
+            let cell = char.get_cell();
+            let tmp = char.stash.get('water');
+            if (cell.can_clean()) {
+                return 1 /* OK */;
+            }
+            else if (tmp > 0) {
+                return 1 /* OK */;
+            }
+            return 3 /* NO_RESOURCE */;
         }
-    }
-}
+        return 2 /* IN_BATTLE */;
+    },
+    result: async function (pool, char, data) {
+        let cell = char.get_cell();
+        let tmp = char.stash.get('water');
+        if (cell.can_clean()) {
+            char.change_blood(-20);
+            char.send_status_update();
+        }
+        else if (tmp > 0) {
+            char.change_blood(-20);
+            char.stash.inc('water', -1);
+            char.send_stash_update();
+            char.send_status_update();
+        }
+    },
+    start: async function (pool, char, data) {
+    },
+};
