@@ -170,6 +170,7 @@ class BattleReworked2 {
         this.changed = false;
         this.waiting_for_input = false;
         this.draw = false;
+        this.ended = false;
     }
     async init(pool) {
         this.id = await this.load_to_db(pool);

@@ -217,6 +217,7 @@ export class BattleReworked2 {
     changed: boolean;
     draw: boolean;
     waiting_for_input:boolean;
+    ended: boolean
 
 
     constructor(world: any) {
@@ -228,6 +229,7 @@ export class BattleReworked2 {
         this.changed = false
         this.waiting_for_input = false
         this.draw = false
+        this.ended = false
     }
 
     async init(pool: any) {

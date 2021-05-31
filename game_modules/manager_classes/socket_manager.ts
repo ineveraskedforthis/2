@@ -100,18 +100,18 @@ export class SocketManager {
     }
 
     async buyout(user: User, msg: string) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            let market = character.get_cell().get_item_market();
-            if (market == undefined) return;
-            let id = parseInt(msg);
-            if (isNaN(id)) {
-                return
-            }
-            await market.buyout(this.pool, character, id)
-            this.send_item_market_update_to_character(character);
-            this.send_equip_update_to_character(character);
-        }
+        // if (user.logged_in) {
+        //     let character = user.get_character();
+        //     let market = character.get_cell().get_item_market();
+        //     if (market == undefined) return;
+        //     let id = parseInt(msg);
+        //     if (isNaN(id)) {
+        //         return
+        //     }
+        //     // await market.buyout(this.pool, character, id)
+        //     this.send_item_market_update_to_character(character);
+        //     this.send_equip_update_to_character(character);
+        // }
     }
 
     async equip(user: User, msg: number) {
@@ -537,12 +537,16 @@ export class SocketManager {
 
     send_message_to_character_user(character: CharacterGenericPart, msg: any) {
         let user = this.world.user_manager.get_user_from_character(character);
-        this.send_message_to_user(user, msg);
+        if (user != undefined) {
+            this.send_message_to_user(user, msg);
+        }       
     }
 
     send_to_character_user(character:CharacterGenericPart, tag: string, msg: any) {
         let user = this.world.user_manager.get_user_from_character(character);
-        this.send_to_user(user, tag, msg);
+        if (user != undefined) {
+            this.send_to_user(user, tag, msg);
+        }        
     }
 
     send_message_to_user(user: User, msg: string) {
@@ -568,7 +572,9 @@ export class SocketManager {
 
     send_savings_update(character: CharacterGenericPart) {
         let user = this.world.user_manager.get_user_from_character(character);
-        this.send_to_user(user, 'savings', character.savings.get());
+        if (user != undefined) {
+            this.send_to_user(user, 'savings', character.savings.get());
+        }        
     }
 
     send_status_update(character: CharacterGenericPart) {
@@ -581,6 +587,9 @@ export class SocketManager {
 
     send_updates_to_char(character: CharacterGenericPart) {
         let user = this.world.user_manager.get_user_from_character(character);
+        if (user == undefined) {
+            return
+        }
         let socket = this.get_user_socket(user)
         if (socket != undefined) {
            this.send_char_info(user)
@@ -589,6 +598,9 @@ export class SocketManager {
 
     send_equip_update_to_character(character: CharacterGenericPart) {
         let user = this.world.user_manager.get_user_from_character(character);
+        if (user == undefined) {
+            return
+        }
         let socket = this.get_user_socket(user)
         if (socket != undefined) {
            this.send_equip_update(user)
@@ -597,10 +609,12 @@ export class SocketManager {
 
     send_stash_update_to_character(character: CharacterGenericPart) {
         let user = this.world.user_manager.get_user_from_character(character);
-        let socket = this.get_user_socket(user)
-        if (socket != undefined) {
-           this.send_stash_update(user)
-        }
+        if (user != undefined) {
+            let socket = this.get_user_socket(user)
+            if (socket != undefined) {
+                this.send_stash_update(user)
+            }
+        }        
     }
 
     send_char_info(user: User) {
@@ -655,10 +669,10 @@ export class SocketManager {
     }
 
     send_item_market_update_to_character(character: CharacterGenericPart) {
-        let market = character.get_cell().get_item_market();
-        if (market == undefined) return;
-        let data = market.get_orders_list()
-        this.send_to_character_user(character, 'item-market-data', data)
+        // let market = character.get_cell().get_item_market();
+        // if (market == undefined) return;
+        // let data = market.get_orders_list()
+        // this.send_to_character_user(character, 'item-market-data', data)
     }
 
     send_item_market_update(market: any) {
@@ -718,15 +732,17 @@ export class SocketManager {
     }
 
     send_all_market_info() {
-        for (let market of this.world.entity_manager.markets) {
-            this.send_market_info(market)
-        }
+        // for (let market of this.world.entity_manager.markets) {
+        //     this.send_market_info(market)
+        // }
     }
 
     send_teacher_info(character: CharacterGenericPart) {
         let cell = character.get_cell();
-        let res = this.world.get_cell_teacher(cell.i, cell.j);
-        this.send_to_character_user(character, 'local-skills', res)
+        if (cell != undefined) {
+            let res = this.world.get_cell_teacher(cell.i, cell.j);
+            this.send_to_character_user(character, 'local-skills', res)
+        }        
     }
 
 

@@ -24,7 +24,7 @@ interface Actions {
     clean: boolean
 }
 
-class Cell {
+export class Cell {
 
     world:any;
     map:any;
@@ -36,6 +36,8 @@ class Cell {
 
     market_id: number;
     item_market_id: number;
+    visited_recently: boolean;
+    last_visit: number
 
     development: Development;
     resources: CellResources;
@@ -48,7 +50,8 @@ class Cell {
         this.id = world.get_cell_id_by_x_y(i, j);
         this.tag = 'cell';
         this.name = name;
-
+        this.visited_recently = false;
+        this.last_visit = 0;
         this.market_id = -1
         this.item_market_id = -1
         if (development == undefined) {
@@ -107,7 +110,19 @@ class Cell {
         return undefined
     }
 
-    async update(pool:any) {
+    visit() {
+        this.visited_recently = true
+        this.last_visit = 0
+    }
+
+    async update(pool:any, dt: number) {
+        if (this.visited_recently) {
+            this.last_visit += dt
+            if (this.last_visit > 20) {
+                this.visited_recently = false
+                this.last_visit = 0
+            }
+        }
         // if (this.market.changed) {
         //     this.world.socket_manager.send_market_info(this)
         // }
@@ -165,5 +180,3 @@ class Cell {
         ]);
     }
 }
-
-module.exports = Cell;

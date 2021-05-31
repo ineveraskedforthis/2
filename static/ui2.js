@@ -792,6 +792,7 @@ socket.on('market-data', data => goods_market.update_data(data));
 socket.on('item-market-data', data => {item_market_table.update(data)});
 
 socket.on('action-ping', data => restart_action_bar(data.time))
+socket.on('cell-visited', data => map.mark_visited(data))
 
 function update_tags(msg) {
     let market_div = document.querySelector('.goods_list') 
@@ -917,7 +918,7 @@ function reg(msg) {
 
 
 function restart_action_bar(time) {
-    console.log('???')
+    // console.log('???')
     globals.action_total_time = time
     globals.action_in_progress = true
     globals.action_time = 0

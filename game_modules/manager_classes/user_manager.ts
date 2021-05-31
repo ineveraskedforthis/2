@@ -71,7 +71,7 @@ export class UserManager{
         }
     }
 
-    get_user_from_character(character: CharacterGenericPart):User {
+    get_user_from_character(character: CharacterGenericPart):User|undefined {
         return this.users[character.user_id]
     }
 

@@ -3,11 +3,13 @@ import {CharacterGenericPart} from './base_game_classes/character_generic_part'
 
 class PredefinedMonster extends CharacterGenericPart {
 
-    async init(pool: any, cell_id: number, name = 'monster') {        
-        this.specific_part_of_init(cell_id)
+    async init(pool: any, name = 'monster', cell_id: number) {        
         if (name != null) {
             this.name = name
         }
+        
+        this.specific_part_of_init(cell_id)
+        
         this.id = await this.load_to_db(pool);
         await this.load_to_db(pool);
         return this.id;

@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Cell = void 0;
 var Market = require("./market/market.js");
 var common = require("./common.js");
 const constants_js_1 = require("./static_data/constants.js");
@@ -12,6 +13,8 @@ class Cell {
         this.id = world.get_cell_id_by_x_y(i, j);
         this.tag = 'cell';
         this.name = name;
+        this.visited_recently = false;
+        this.last_visit = 0;
         this.market_id = -1;
         this.item_market_id = -1;
         if (development == undefined) {
@@ -59,7 +62,18 @@ class Cell {
     get_market() {
         return undefined;
     }
-    async update(pool) {
+    visit() {
+        this.visited_recently = true;
+        this.last_visit = 0;
+    }
+    async update(pool, dt) {
+        if (this.visited_recently) {
+            this.last_visit += dt;
+            if (this.last_visit > 20) {
+                this.visited_recently = false;
+                this.last_visit = 0;
+            }
+        }
         // if (this.market.changed) {
         //     this.world.socket_manager.send_market_info(this)
         // }
@@ -105,4 +119,4 @@ class Cell {
         ]);
     }
 }
-module.exports = Cell;
+exports.Cell = Cell;

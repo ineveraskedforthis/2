@@ -33,6 +33,7 @@ exports.cook_meat = {
             if (dice < check) {
                 char.change_stress(1);
                 char.stash.inc('food', 1);
+                char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared');
                 char.send_stash_update();
                 char.send_status_update();
                 return 1 /* OK */;
@@ -44,6 +45,7 @@ exports.cook_meat = {
                 }
                 char.change_stress(5);
                 char.send_status_update();
+                char.world.socket_manager.send_to_character_user(char, 'alert', 'failed');
                 return 4 /* FAILED */;
             }
         }

@@ -5,6 +5,9 @@ exports.clean = {
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();
+            if (cell == undefined) {
+                return 6 /* INVALID_CELL */;
+            }
             let tmp = char.stash.get('water');
             if (cell.can_clean()) {
                 return 1 /* OK */;
@@ -18,6 +21,9 @@ exports.clean = {
     },
     result: async function (pool, char, data) {
         let cell = char.get_cell();
+        if (cell == undefined) {
+            return 6 /* INVALID_CELL */;
+        }
         let tmp = char.stash.get('water');
         if (cell.can_clean()) {
             char.changed = true;

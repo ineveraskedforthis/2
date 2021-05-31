@@ -144,6 +144,7 @@ export class Map {
         this.curr_territory = undefined;
         this.curr_section = undefined;
         this.sections = undefined;
+        this.visit_spotted = []
         this.x = 10;
         this.y = 10;
 
@@ -210,6 +211,11 @@ export class Map {
         }        
     }
 
+    mark_visited(data) {
+        this.visit_spotted = data
+        // console.log(this.visit_spotted)
+    }
+
     check_move(a, b) {
         for (let i of directions) {
             if ((i[0] == a) && (i[1] == b)) {
@@ -224,11 +230,11 @@ export class Map {
     }
 
     explore(data) {
-        console.log('explore')
-        console.log(data)
+        // console.log('explore')
+        // console.log(data)
         for (let i in data) {
             if (terr_id[i] in this.fog_of_war) {
-                console.log(terr_id[i])
+                // console.log(terr_id[i])
                 this.fog_of_war[terr_id[i]] = !data[i]
             }
         }
@@ -262,6 +268,13 @@ export class Map {
                     
                 }
             }
+        }
+
+        ctx.fillStyle = "#00ff00";
+        ctx.font = '20px Times New Roman';
+        for (let i in this.visit_spotted) {
+            let centre = this.get_hex_centre(this.visit_spotted[i].x, this.visit_spotted[i].y)
+            ctx.fillText(`??`, centre[0] - 10, centre[1]);
         }
 
         if (this.selected != undefined){
@@ -459,6 +472,7 @@ export class Map {
         this.curr_pos = [i, j];
         this.curr_territory = get_territory_tag(i, j);
         this.send_cell_action('move')
+        // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];
     }
 

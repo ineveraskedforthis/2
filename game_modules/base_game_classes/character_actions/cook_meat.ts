@@ -31,8 +31,9 @@ export const cook_meat = {
             char.stash.inc('meat', -1)
             char.send_stash_update()
             if (dice < check) {        
-                char.change_stress(1)        
+                char.change_stress(1)
                 char.stash.inc('food', 1)
+                char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared')
                 char.send_stash_update()
                 char.send_status_update()
                 return CharacterActionResponce.OK

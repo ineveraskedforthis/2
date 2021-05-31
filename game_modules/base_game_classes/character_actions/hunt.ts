@@ -6,6 +6,9 @@ export const hunt = {
     check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();
+            if (cell == undefined) {
+                return CharacterActionResponce.INVALID_CELL
+            }
             if (cell.can_hunt()) {
                 return CharacterActionResponce.OK
             } else {

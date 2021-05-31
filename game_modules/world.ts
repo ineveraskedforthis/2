@@ -3,7 +3,8 @@ var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
 import {loot_chance_weight, loot_affixes_weight, item_tag, affix_tag} from "./static_data/item_tags";
 
-var EntityManager = require("./entity_manager.js");
+
+import {EntityManager} from './manager_classes/entity_manager'
 
 import {CONSTS, TAGS} from './static_data/world_constants_1';
 import {MarketOrder} from './market/market_order'
@@ -13,6 +14,7 @@ import { ActionManager } from "./manager_classes/action_manager";
 import {tag} from './static_data/type_script_types'
 import {SocketManager} from './manager_classes/socket_manager'
 import {UserManager} from './manager_classes/user_manager'
+import { Cell } from "./cell";
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -45,7 +47,7 @@ export class World {
     pops_tick: number;
     map_tick: number;
     socket_manager: SocketManager;
-    entity_manager: typeof EntityManager;
+    entity_manager: EntityManager;
     territories: {[_: string]: any}
 
     ACTION_TIME: number
@@ -72,7 +74,7 @@ export class World {
         this.pops_tick = 1000;
         this.map_tick = 0;
         this.socket_manager = new SocketManager(undefined, io, this);
-        this.entity_manager = undefined
+        this.entity_manager = new EntityManager(this);
 
         this.territories = {}
     }
@@ -100,7 +102,7 @@ export class World {
 
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
 
-        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, undefined)
+        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, 'colony')
         mayor.savings.inc(10000);
 
         this.entity_manager.set_faction_leader(ith_colony, mayor)
@@ -127,33 +129,11 @@ export class World {
 
     async update(pool: any, dt: number) {
 
-        await this.entity_manager.update_battles(pool, dt)
-
-        // don't ask any questions about variable names
-        this.battle_tick += 1;
-        if (this.battle_tick >= 2) {
-            this.battle_tick = 0;
-        }
-        if (this.battle_tick == 0){            
-            // this.socket_manager.send_all_market_info()
-        }
-
-        this.pops_tick += 1;
-        if (this.pops_tick >= 180) {
-            this.pops_tick = 0;
-            await this.entity_manager.update_agents(pool, dt)
-            await this.entity_manager.update_factions(pool, dt)
-            await this.entity_manager.update_areas(pool, dt)
-        }
-        
-        
+        await this.entity_manager.update_battles(pool)
+        await this.entity_manager.update_cells(pool, dt)
+        await this.entity_manager.update_factions(pool)
+        await this.entity_manager.update_areas(pool)
         await this.entity_manager.update_chars(pool, dt)
-
-        if (this.map_tick >= 1) {
-            await this.entity_manager.update_map(pool)
-            this.map_tick = 0;
-        } 
-        this.map_tick += 1;
         
         this.socket_manager.update_user_list();
     }
@@ -222,7 +202,7 @@ export class World {
         return this.entity_manager.get_item_order(id);
     }
 
-    get_from_id_tag(id: number, tag: string){
+    get_from_id_tag(id: number, tag: 'chara'|'cell'){
         return this.entity_manager.get_from_id_tag(id, tag)
     }
 
@@ -371,6 +351,9 @@ export class World {
             return undefined
         }
         let cell = char.get_cell();
+        if (cell == undefined) {
+            return
+        }
         let terr_tag = this.get_territory(cell.i, cell.j)
         let enemy_tag = this.get_enemy(cell.i, cell.j)
         if ((enemy_tag == undefined) || (terr_tag == undefined)) {

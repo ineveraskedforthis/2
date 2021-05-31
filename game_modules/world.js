@@ -4,7 +4,7 @@ exports.World = void 0;
 var basic_characters = require("./basic_characters.js");
 var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
-var EntityManager = require("./entity_manager.js");
+const entity_manager_1 = require("./manager_classes/entity_manager");
 const world_constants_1_1 = require("./static_data/world_constants_1");
 const action_manager_1 = require("./manager_classes/action_manager");
 const socket_manager_1 = require("./manager_classes/socket_manager");
@@ -44,13 +44,13 @@ class World {
         this.pops_tick = 1000;
         this.map_tick = 0;
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this);
-        this.entity_manager = undefined;
+        this.entity_manager = new entity_manager_1.EntityManager(this);
         this.territories = {};
     }
     async init(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this);
         this.action_manager = new action_manager_1.ActionManager(this, pool);
-        this.entity_manager = new EntityManager(this);
+        this.entity_manager = new entity_manager_1.EntityManager(this);
         await this.entity_manager.init(pool);
         await common.send_query(pool, constants.save_world_size_query, [this.x, this.y]);
         // await this.generate_territories()
@@ -62,7 +62,7 @@ class World {
         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony');
         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats');
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
-        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, undefined);
+        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, 'colony');
         mayor.savings.inc(10000);
         this.entity_manager.set_faction_leader(ith_colony, mayor);
         port_chunk.set_influence(ith_colony, 100);
@@ -71,7 +71,7 @@ class World {
     }
     async load(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this);
-        this.entity_manager = new EntityManager(this);
+        this.entity_manager = new entity_manager_1.EntityManager(this);
         await this.entity_manager.load(pool);
         await this.load_size(pool);
     }
@@ -81,28 +81,11 @@ class World {
         this.y = size.rows[0].y;
     }
     async update(pool, dt) {
-        await this.entity_manager.update_battles(pool, dt);
-        // don't ask any questions about variable names
-        this.battle_tick += 1;
-        if (this.battle_tick >= 2) {
-            this.battle_tick = 0;
-        }
-        if (this.battle_tick == 0) {
-            // this.socket_manager.send_all_market_info()
-        }
-        this.pops_tick += 1;
-        if (this.pops_tick >= 180) {
-            this.pops_tick = 0;
-            await this.entity_manager.update_agents(pool, dt);
-            await this.entity_manager.update_factions(pool, dt);
-            await this.entity_manager.update_areas(pool, dt);
-        }
+        await this.entity_manager.update_battles(pool);
+        await this.entity_manager.update_cells(pool, dt);
+        await this.entity_manager.update_factions(pool);
+        await this.entity_manager.update_areas(pool);
         await this.entity_manager.update_chars(pool, dt);
-        if (this.map_tick >= 1) {
-            await this.entity_manager.update_map(pool);
-            this.map_tick = 0;
-        }
-        this.map_tick += 1;
         this.socket_manager.update_user_list();
     }
     get_stash_tags_list() {
@@ -284,6 +267,9 @@ class World {
             return undefined;
         }
         let cell = char.get_cell();
+        if (cell == undefined) {
+            return;
+        }
         let terr_tag = this.get_territory(cell.i, cell.j);
         let enemy_tag = this.get_enemy(cell.i, cell.j);
         if ((enemy_tag == undefined) || (terr_tag == undefined)) {

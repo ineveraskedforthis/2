@@ -5,6 +5,9 @@ export const clean = {
     check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();
+            if (cell == undefined) {
+                return CharacterActionResponce.INVALID_CELL
+            }
             let tmp = char.stash.get('water');
             if (cell.can_clean()) {
                 return CharacterActionResponce.OK
@@ -18,6 +21,9 @@ export const clean = {
 
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
         let cell = char.get_cell();
+        if (cell == undefined) {
+            return CharacterActionResponce.INVALID_CELL
+        }
         let tmp = char.stash.get('water');
         if (cell.can_clean()) {
             char.changed = true

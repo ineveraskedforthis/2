@@ -5,6 +5,9 @@ exports.rest = {
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();
+            if (cell == undefined) {
+                return 6 /* INVALID_CELL */;
+            }
             if (cell.can_rest()) {
                 return 1 /* OK */;
             }

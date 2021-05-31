@@ -14,6 +14,7 @@ exports.move = {
         }
         if (char.world.can_move(data.x, data.y)) {
             let { x, y } = char.world.get_cell_x_y_by_id(char.cell_id);
+            char.change_stress(2);
             let dx = data.x - x;
             let dy = data.y - y;
             if (char.verify_move(dx, dy)) {

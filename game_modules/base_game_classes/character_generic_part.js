@@ -11,6 +11,7 @@ const character_defines = require("./misc/char_related_constants.js");
 const stash_1 = require("./stash");
 const attack_result_1 = require("./misc/attack_result");
 const damage_types_1 = require("./misc/damage_types");
+let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class SkillObject {
     constructor() {
         this.practice = 0;
@@ -99,6 +100,12 @@ class CharacterGenericPart {
         this.action_started = false;
         this.action_progress = 0;
     }
+    async init(pool, name, cell_id, user_id = -1) {
+        this.init_base_values(name, cell_id, user_id);
+        this.id = await this.load_to_db(pool);
+        await this.save_to_db(pool);
+        return this.id;
+    }
     init_base_values(name, cell_id, user_id = -1) {
         this.name = name;
         if (user_id != -1) {
@@ -116,9 +123,14 @@ class CharacterGenericPart {
         if (!this.in_battle()) {
             this.out_of_battle_update(dt);
             this.update_action_progress(dt);
+            this.update_visited();
         }
         else {
             this.battle_update();
+        }
+        let cell = this.get_cell();
+        if (cell != undefined) {
+            cell.visit();
         }
         this.flags_handling_update();
         await this.save_to_db(pool, this.changed || this.stash.changed || this.savings.changed);
@@ -138,17 +150,23 @@ class CharacterGenericPart {
     flags_handling_update() {
         let sm = this.world.socket_manager;
         if (this.status_changed) {
-            sm.send_status_update(this);
+            if (this.is_player()) {
+                sm.send_status_update(this);
+            }
             this.status_changed = false;
             this.changed = true;
         }
         if (this.savings.changed) {
-            sm.send_savings_update(this);
+            if (this.is_player()) {
+                sm.send_savings_update(this);
+            }
             this.savings.changed = false;
             this.changed = true;
         }
         if (this.stash.changed) {
-            sm.send_stash_update_to_character(this);
+            if (this.is_player()) {
+                sm.send_stash_update_to_character(this);
+            }
             this.stash.changed = false;
             this.changed = true;
         }
@@ -302,28 +320,28 @@ class CharacterGenericPart {
     }
     //market interactions
     buy(tag, amount, money, max_price = null) {
-        let cell = this.get_cell();
-        if (cell.has_market()) {
-            cell.market.buy(tag, this, amount, money, max_price);
-        }
+        // let cell = this.get_cell();
+        // // if (cell.has_market()) {            
+        //     // cell.market.buy(tag, this, amount, money, max_price);
+        // }        
     }
     sell(tag, amount, price) {
-        let cell = this.get_cell();
-        if (cell.has_market()) {
-            cell.market.sell(tag, this, amount, price);
-        }
+        // let cell = this.get_cell();
+        // if (cell.has_market()) {
+        //     // cell.market.sell(tag, this, amount, price);
+        // }        
     }
     sell_item(index, buyout_price, starting_price) {
-        let cell = this.get_cell();
-        if (cell.has_market()) {
-            cell.item_market.sell(this, index, buyout_price, starting_price);
-        }
+        // let cell = this.get_cell();
+        // if (cell.has_market()) {
+        //     // cell.item_market.sell(this, index, buyout_price, starting_price);
+        // }        
     }
     clear_tag_orders(tag) {
-        let cell = this.get_cell();
-        if (cell.has_market()) {
-            cell.market.clear_agent_orders(this, tag);
-        }
+        // let cell = this.get_cell();
+        // if (cell.has_market()) {
+        //     // cell.market.clear_agent_orders(this, tag)
+        // }
     }
     clear_orders() {
         for (var tag of this.world.get_stash_tags_list()) {
@@ -512,7 +530,7 @@ class CharacterGenericPart {
     }
     get_local_market() {
         var cell = this.world.get_cell_by_id(this.cell_id);
-        return cell.market;
+        // return cell.market;
     }
     get_action_points() {
         return 10;
@@ -553,6 +571,21 @@ class CharacterGenericPart {
         this.misc.explored[tag] = true;
         this.changed = true;
     }
+    async update_visited() {
+        let cell = this.get_cell();
+        if (cell != undefined) {
+            let visited = [];
+            for (let direction of dp) {
+                let x = cell.i + direction[0];
+                let y = cell.j + direction[1];
+                let border_cell = this.world.get_cell(x, y);
+                if ((border_cell != undefined) && border_cell.visited_recently) {
+                    visited.push({ x: x, y: y });
+                }
+            }
+            this.world.socket_manager.send_to_character_user(this, 'cell-visited', visited);
+        }
+    }
     async on_move_default(pool, data) {
         let tmp = this.world.get_territory(data.x, data.y);
         if (tmp == undefined) {
@@ -560,6 +593,7 @@ class CharacterGenericPart {
         }
         this.add_explored(this.world.get_id_from_territory(tmp));
         this.world.socket_manager.send_explored(this);
+        this.update_visited();
         let res = await this.on_move(pool);
         if (res != undefined) {
             return 2;
