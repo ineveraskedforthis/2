@@ -57,6 +57,7 @@ class Misc {
         this.in_battle_id = -1;
         this.tactic = {};
         this.ai_tag = 'dummy';
+        this.tag = 'test';
     }
 }
 class CharacterFlags {
@@ -73,7 +74,6 @@ class CharacterGenericPart {
         this.equip = new Equip();
         this.stash = new stash_1.Stash();
         this.savings = new Savings();
-        this.tag = 'chara';
         this.status = new Status();
         this.status.hp = 100;
         this.skills = new SkillList();
@@ -131,6 +131,7 @@ class CharacterGenericPart {
         let cell = this.get_cell();
         if (cell != undefined) {
             cell.visit();
+            cell.enter(this);
         }
         this.flags_handling_update();
         await this.save_to_db(pool, this.changed || this.stash.changed || this.savings.changed);
@@ -195,7 +196,7 @@ class CharacterGenericPart {
         return 1;
     }
     get_tag() {
-        return this.tag;
+        return this.misc.tag;
     }
     get_hp() {
         return this.status.hp;

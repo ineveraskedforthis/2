@@ -5,7 +5,7 @@ import {loot_chance_weight, loot_affixes_weight, item_tag, affix_tag} from "./st
 
 
 import {EntityManager} from './manager_classes/entity_manager'
-
+import {Rat} from './basic_characters'
 import {CONSTS, TAGS} from './static_data/world_constants_1';
 import {MarketOrder} from './market/market_order'
 import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
@@ -100,6 +100,8 @@ export class World {
         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony')
         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats')
 
+        let test_rat = await this.entity_manager.create_monster(pool, Rat, this.get_cell_id_by_x_y(6, 5))
+
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
 
         let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, 'colony')
@@ -117,6 +119,7 @@ export class World {
     async load(pool: any) {
         this.socket_manager = new SocketManager(pool, this.io, this);
         this.entity_manager = new EntityManager(this);
+        this.action_manager = new ActionManager(this, pool)
         await this.entity_manager.load(pool);
         await this.load_size(pool);
     }
@@ -324,6 +327,13 @@ export class World {
     }
 
     can_move(x: number, y: number) {
+        if ((x < 0) || (x >= this.x)) {
+            return false
+        }
+        if ((y < 0) || (y >= this.y)) {
+            return false
+        }
+
         let ter = this.get_territory(x, y)
         if (ter == undefined) {
             return false    

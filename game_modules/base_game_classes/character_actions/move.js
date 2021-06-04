@@ -6,12 +6,6 @@ exports.move = {
         if (char.in_battle()) {
             return 2 /* IN_BATTLE */;
         }
-        if (data.x < 0 || data.x >= char.world.x) {
-            return 0 /* CANNOT_MOVE_THERE */;
-        }
-        if (data.y < 0 || data.y >= char.world.y) {
-            return 0 /* CANNOT_MOVE_THERE */;
-        }
         if (char.world.can_move(data.x, data.y)) {
             let { x, y } = char.world.get_cell_x_y_by_id(char.cell_id);
             char.change_stress(2);
@@ -30,7 +24,15 @@ exports.move = {
     result: async function (pool, char) {
         char.changed = true;
         let data = char.action_target;
+        let old_cell = char.get_cell();
+        if (old_cell != undefined) {
+            old_cell.exit(char);
+        }
         char.cell_id = char.world.get_cell_id_by_x_y(data.x, data.y);
+        let new_cell = char.get_cell();
+        if (new_cell != undefined) {
+            new_cell.enter(char);
+        }
         let user = char.get_user();
         user.socket.emit('map-pos', data);
         char.send_status_update();

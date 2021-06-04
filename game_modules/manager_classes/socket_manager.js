@@ -227,9 +227,16 @@ class SocketManager {
         console.log('attack');
         if (user.logged_in && !user.get_character().in_battle()) {
             let char = user.get_character();
-            let battle = await this.world.attack_local_monster(this.pool, char, 1);
-            if (battle != undefined) {
-                battle.send_data_start();
+            let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.ATTACK, char, undefined);
+            if (res == 1 /* OK */) {
+                let battle_id = char.get_battle_id();
+                let battle = this.world.get_battle_from_id(battle_id);
+                if (battle != undefined) {
+                    battle.send_data_start();
+                }
+            }
+            else if (res == 3 /* NO_RESOURCE */) {
+                user.socket.emit('alert', 'no_enemies_here');
             }
         }
     }

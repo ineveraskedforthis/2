@@ -98,6 +98,7 @@ class Misc {
     in_battle_id: number;
     tactic: any;
     ai_tag: string;
+    tag: string;
     constructor() {
         this.model = 'empty'
         this.explored = {}
@@ -105,6 +106,7 @@ class Misc {
         this.in_battle_id = -1
         this.tactic = {}
         this.ai_tag = 'dummy'
+        this.tag = 'test'
     }
 }
 
@@ -128,7 +130,6 @@ export class CharacterGenericPart {
     equip: any;
     stash: Stash;
     savings: any;
-    tag: string;
     status: Status;
     skills: SkillList;
     stats: InnateStats;
@@ -153,7 +154,6 @@ export class CharacterGenericPart {
         this.equip = new Equip();
         this.stash = new Stash();
         this.savings = new Savings();
-        this.tag = 'chara'
 
         this.status = new Status()
         this.status.hp = 100
@@ -204,6 +204,7 @@ export class CharacterGenericPart {
         }   
         this.user_id = user_id;
         this.cell_id = cell_id;
+        
         this.faction_id = -1;
     }
 
@@ -224,6 +225,7 @@ export class CharacterGenericPart {
         let cell = this.get_cell()
         if (cell != undefined) {
             cell.visit()
+            cell.enter(this)
         }
 
         this.flags_handling_update();        
@@ -303,7 +305,7 @@ export class CharacterGenericPart {
     }
 
     get_tag() {
-        return this.tag
+        return this.misc.tag
     }
 
     get_hp() {
@@ -858,7 +860,6 @@ export class CharacterGenericPart {
     get_tactic() {
         return [this.world.constants.default_tactic_slot]
     }
-
 
 
     //db interactions

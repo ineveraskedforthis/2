@@ -62,7 +62,7 @@ class MarketOrder {
         tmp.owner_id = this.owner_id;
         if (this.owner != undefined) {
             tmp.owner_name = this.owner.name;
-            tmp.owner_tag = this.owner.tag;
+            tmp.owner_tag = this.owner.get_tag;
         }
         tmp.amount = this.amount;
         tmp.price = this.price;

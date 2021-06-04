@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Graci = exports.Elodino = exports.Rat = void 0;
 var Character = require("./base_game_classes/character");
 const character_generic_part_1 = require("./base_game_classes/character_generic_part");
 class PredefinedMonster extends character_generic_part_1.CharacterGenericPart {
@@ -8,6 +9,9 @@ class PredefinedMonster extends character_generic_part_1.CharacterGenericPart {
             this.name = name;
         }
         this.specific_part_of_init(cell_id);
+        if (name != 'monster') {
+            this.name = name;
+        }
         this.id = await this.load_to_db(pool);
         await this.load_to_db(pool);
         return this.id;
@@ -26,6 +30,7 @@ class Rat extends PredefinedMonster {
         this.equip.data.right_hand = { tag: 'empty', affixes: 1, a0: { tag: 'sharp', tier: 1 } };
         this.stash.inc('meat', 1);
         this.misc.model = 'rat';
+        this.misc.tag = 'rat';
     }
     rgo_check(character) {
         let skinning = character.skills.skinning.practice;
@@ -57,6 +62,7 @@ class Rat extends PredefinedMonster {
         return 2;
     }
 }
+exports.Rat = Rat;
 class Elodino extends PredefinedMonster {
     specific_part_of_init(cell_id) {
         this.init_base_values('elodino', cell_id);
@@ -74,6 +80,7 @@ class Elodino extends PredefinedMonster {
         return 5;
     }
 }
+exports.Elodino = Elodino;
 class Graci extends PredefinedMonster {
     specific_part_of_init(cell_id) {
         this.init_base_values('graci', cell_id);
@@ -97,8 +104,4 @@ class Graci extends PredefinedMonster {
     change_blood(x) {
     }
 }
-module.exports = {
-    rat: Rat,
-    graci: Graci,
-    elodino: Elodino,
-};
+exports.Graci = Graci;

@@ -6,6 +6,7 @@ import { cook_meat } from "../base_game_classes/character_actions/cook_meat"
 import { clean } from '../base_game_classes/character_actions/clean'
 import { rest } from "../base_game_classes/character_actions/rest"
 import { hunt } from "../base_game_classes/character_actions/hunt"
+import { attack } from "../base_game_classes/character_actions/attack"
 
 export const enum CharacterActionResponce {
     CANNOT_MOVE_THERE,
@@ -24,6 +25,7 @@ type Action = {
     check: ActionCheckFunction
     start: ActionFunction
     result: ActionFunction
+    immediate?: boolean
 }
 
 
@@ -42,6 +44,7 @@ export class ActionManager {
         this.add_action(eat)
         this.add_action(hunt)
         this.add_action(rest)
+        this.add_action(attack)
     }
 
     add_action(action: Action) {
@@ -56,10 +59,14 @@ export class ActionManager {
         let check = await action.check(this.pool, char, data)
         if (check == CharacterActionResponce.OK) {
             char.send_action_ping()
-            await action.start(this.pool, char, data)
-            char.action_started = true
-            char.current_action = action_id
-            char.action_progress = 0
+            if (action.immediate) {
+                await this.action(action_id, char, undefined)
+            } else {
+                await action.start(this.pool, char, data)
+                char.action_started = true
+                char.current_action = action_id
+                char.action_progress = 0
+            }            
         }
         return check
     }
@@ -82,6 +89,7 @@ export enum CharacterAction {
     EAT = 3,
     HUNT = 4,
     REST = 5,
+    ATTACK = 6
 }
 
 

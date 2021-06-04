@@ -6,12 +6,6 @@ export const move ={
         if (char.in_battle()) {
             return CharacterActionResponce.IN_BATTLE
         }
-        if (data.x < 0 || data.x >= char.world.x) {
-            return CharacterActionResponce.CANNOT_MOVE_THERE
-        }
-        if (data.y < 0 || data.y >= char.world.y) {
-            return CharacterActionResponce.CANNOT_MOVE_THERE
-        }
 
         if (char.world.can_move(data.x, data.y)) {
             let {x, y} = char.world.get_cell_x_y_by_id(char.cell_id)
@@ -33,7 +27,16 @@ export const move ={
     result: async function (pool: any, char: CharacterGenericPart) {
         char.changed = true;
         let data = char.action_target
+        let old_cell = char.get_cell()
+        if (old_cell != undefined) {
+            old_cell.exit(char)
+        }
         char.cell_id = char.world.get_cell_id_by_x_y(data.x, data.y);
+        let new_cell = char.get_cell()
+        if (new_cell != undefined) {
+            new_cell.enter(char)
+        }
+
         let user = char.get_user()
         user.socket.emit('map-pos', data);
         char.send_status_update()

@@ -4,15 +4,13 @@ class Character extends CharacterGenericPart {
     async init(pool: any, name: string, cell_id: number, user_id = -1) {
         this.init_base_values(name, cell_id, user_id);
         this.id = await this.load_to_db(pool);
+        this.misc.tag = 'test'
         await this.save_to_db(pool);
         return this.id;
     }  
 
     // tag 
 
-    get_tag() {
-        return 'test'
-    }
 
     // update ticks
 

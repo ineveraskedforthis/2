@@ -1,5 +1,6 @@
 var Market = require("./market/market.js")
 var common = require("./common.js")
+import { CharacterGenericPart } from "./base_game_classes/character_generic_part.js";
 import {constants} from "./static_data/constants.js";
 
 
@@ -41,6 +42,7 @@ export class Cell {
 
     development: Development;
     resources: CellResources;
+    characters_list: Set<number>
 
     constructor(world: any, map: any, i: number, j:number, name:string, development: Development, res: CellResources) {
         this.world = world;
@@ -54,6 +56,9 @@ export class Cell {
         this.last_visit = 0;
         this.market_id = -1
         this.item_market_id = -1
+
+        this.characters_list = new Set()
+
         if (development == undefined) {
             this.development = {rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0};
         } else {
@@ -66,6 +71,20 @@ export class Cell {
             this.resources = res
         }
     }
+
+
+    get_characters_list() {
+        return this.characters_list
+    }
+
+    enter(char: CharacterGenericPart) {
+        this.characters_list.add(char.id)
+    }
+
+    exit(char: CharacterGenericPart) {
+        this.characters_list.delete(char.id)
+    }
+
 
     async init(pool:any) {
         await this.load_to_db(pool);

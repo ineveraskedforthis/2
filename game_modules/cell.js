@@ -17,6 +17,7 @@ class Cell {
         this.last_visit = 0;
         this.market_id = -1;
         this.item_market_id = -1;
+        this.characters_list = new Set();
         if (development == undefined) {
             this.development = { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0 };
         }
@@ -29,6 +30,15 @@ class Cell {
         else {
             this.resources = res;
         }
+    }
+    get_characters_list() {
+        return this.characters_list;
+    }
+    enter(char) {
+        this.characters_list.add(char.id);
+    }
+    exit(char) {
+        this.characters_list.delete(char.id);
     }
     async init(pool) {
         await this.load_to_db(pool);

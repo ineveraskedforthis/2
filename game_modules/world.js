@@ -5,6 +5,7 @@ var basic_characters = require("./basic_characters.js");
 var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
 const entity_manager_1 = require("./manager_classes/entity_manager");
+const basic_characters_1 = require("./basic_characters");
 const world_constants_1_1 = require("./static_data/world_constants_1");
 const action_manager_1 = require("./manager_classes/action_manager");
 const socket_manager_1 = require("./manager_classes/socket_manager");
@@ -61,6 +62,7 @@ class World {
         let living_area = await this.entity_manager.create_area(pool, 'living_area');
         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony');
         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats');
+        let test_rat = await this.entity_manager.create_monster(pool, basic_characters_1.Rat, this.get_cell_id_by_x_y(6, 5));
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
         let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, 'colony');
         mayor.savings.inc(10000);
@@ -72,6 +74,7 @@ class World {
     async load(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this);
         this.entity_manager = new entity_manager_1.EntityManager(this);
+        this.action_manager = new action_manager_1.ActionManager(this, pool);
         await this.entity_manager.load(pool);
         await this.load_size(pool);
     }
@@ -244,6 +247,12 @@ class World {
         return data[tag];
     }
     can_move(x, y) {
+        if ((x < 0) || (x >= this.x)) {
+            return false;
+        }
+        if ((y < 0) || (y >= this.y)) {
+            return false;
+        }
         let ter = this.get_territory(x, y);
         if (ter == undefined) {
             return false;

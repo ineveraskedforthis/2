@@ -147,12 +147,15 @@ class EntityManager {
         // this.map.clear_dead_orders(pool);
     }
     async update_chars(pool, dt) {
-        for (let i in this.chars) {
+        for (let i = 0; i < this.chars.length; i++) {
             if ((this.chars[i] != undefined) && !this.chars[i].is_dead()) {
                 let char = this.chars[i];
                 if (!char.in_battle()) {
                     await char.update(pool, dt);
                 }
+            }
+            else if ((this.chars[i] != undefined) && this.chars[i].is_dead()) {
+                this.kill(pool, i);
             }
         }
     }

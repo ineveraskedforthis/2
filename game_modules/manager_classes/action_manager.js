@@ -7,6 +7,7 @@ const cook_meat_1 = require("../base_game_classes/character_actions/cook_meat");
 const clean_1 = require("../base_game_classes/character_actions/clean");
 const rest_1 = require("../base_game_classes/character_actions/rest");
 const hunt_1 = require("../base_game_classes/character_actions/hunt");
+const attack_1 = require("../base_game_classes/character_actions/attack");
 class ActionManager {
     constructor(world, pool) {
         this.pool = pool;
@@ -18,6 +19,7 @@ class ActionManager {
         this.add_action(eat_1.eat);
         this.add_action(hunt_1.hunt);
         this.add_action(rest_1.rest);
+        this.add_action(attack_1.attack);
     }
     add_action(action) {
         this.actions.push(action);
@@ -30,10 +32,15 @@ class ActionManager {
         let check = await action.check(this.pool, char, data);
         if (check == 1 /* OK */) {
             char.send_action_ping();
-            await action.start(this.pool, char, data);
-            char.action_started = true;
-            char.current_action = action_id;
-            char.action_progress = 0;
+            if (action.immediate) {
+                await this.action(action_id, char, undefined);
+            }
+            else {
+                await action.start(this.pool, char, data);
+                char.action_started = true;
+                char.current_action = action_id;
+                char.action_progress = 0;
+            }
         }
         return check;
     }
@@ -56,4 +63,5 @@ var CharacterAction;
     CharacterAction[CharacterAction["EAT"] = 3] = "EAT";
     CharacterAction[CharacterAction["HUNT"] = 4] = "HUNT";
     CharacterAction[CharacterAction["REST"] = 5] = "REST";
+    CharacterAction[CharacterAction["ATTACK"] = 6] = "ATTACK";
 })(CharacterAction = exports.CharacterAction || (exports.CharacterAction = {}));

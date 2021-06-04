@@ -9,6 +9,10 @@ class PredefinedMonster extends CharacterGenericPart {
         }
         
         this.specific_part_of_init(cell_id)
+
+        if (name != 'monster') {
+            this.name = name
+        }
         
         this.id = await this.load_to_db(pool);
         await this.load_to_db(pool);
@@ -20,7 +24,7 @@ class PredefinedMonster extends CharacterGenericPart {
     }
 }
 
-class Rat extends PredefinedMonster {
+export class Rat extends PredefinedMonster {
 
     specific_part_of_init(cell_id: number) {
         this.init_base_values('rat', cell_id);
@@ -33,6 +37,7 @@ class Rat extends PredefinedMonster {
         this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 1}}
         this.stash.inc('meat', 1);
         this.misc.model = 'rat'
+        this.misc.tag = 'rat'
     }
 
     rgo_check(character: CharacterGenericPart) {
@@ -69,7 +74,7 @@ class Rat extends PredefinedMonster {
     }
 }
 
-class Elodino extends PredefinedMonster  {
+export class Elodino extends PredefinedMonster  {
     specific_part_of_init(cell_id: number) {
         this.init_base_values('elodino', cell_id);
         this.equip.data.right_hand = {tag: 'empty', affixes: 1, a0: {tag: 'sharp', tier: 2}}
@@ -89,7 +94,7 @@ class Elodino extends PredefinedMonster  {
     }
 }
 
-class Graci extends PredefinedMonster  {
+export class Graci extends PredefinedMonster  {
     specific_part_of_init(cell_id: number) {
         this.init_base_values('graci', cell_id);
         this.status.hp = 200
@@ -116,12 +121,4 @@ class Graci extends PredefinedMonster  {
 
     change_blood(x: number) {
     }
-}
-
-
-
-module.exports = {
-    rat: Rat,
-    graci: Graci,
-    elodino: Elodino,
 }
