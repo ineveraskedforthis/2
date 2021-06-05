@@ -68,6 +68,7 @@ export function init_map_control(map, globals) {
         globals.pressed = true;
         globals.prev_mouse_x = null;
         globals.prev_mouse_y = null;
+        globals.map_zoom = 1
 
         map.last_time_down = Date.now() 
 
@@ -133,9 +134,43 @@ export function init_map_control(map, globals) {
 
 export class Map {
     constructor(canvas, container, socket) {
+
+        this.tiles = []
+        this.tiles.push(new Image)
+        this.tiles[0].src = 'static/img/tiles/red_steppe.png';
+
+        this.tiles.push(new Image)
+        this.tiles[1].src = 'static/img/tiles/house.png';
+
+        this.tiles.push(new Image)
+        this.tiles[2].src = 'static/img/tiles/urban_1.png';
+
+        this.tiles.push(new Image)
+        this.tiles[3].src = 'static/img/tiles/urban_3.png';
+
+        this.tiles.push(new Image)
+        this.tiles[4].src = 'static/img/tiles/city.png';
+        this.tiles.push(new Image)
+        this.tiles[5].src = 'static/img/tiles/sea.png';
+        this.tiles.push(new Image)
+        this.tiles[6].src = 'static/img/tiles/coast.png';
+
+        this.tiles.push(new Image)
+        this.tiles[7].src = 'static/img/tiles/forest_1.png';
+        this.tiles.push(new Image)
+        this.tiles[8].src = 'static/img/tiles/forest_2.png';
+        this.tiles.push(new Image)
+        this.tiles[9].src = 'static/img/tiles/forest_3.png';
+
+        this.tiles.push(new Image)
+        this.tiles[10].src = 'static/img/tiles/rupture.png';
+
+        this.tiles.push(new Image)
+        this.tiles[11].src = 'static/img/tiles/rural.png';
+
         this.canvas = canvas;
         this.socket = socket
-        this.hex_side = 20;
+        this.hex_side = 23;
         this.camera = [50, 600];
         this.hex_shift = [-100, -680];
         this.hovered = null;
@@ -144,6 +179,13 @@ export class Map {
         this.curr_territory = undefined;
         this.curr_section = undefined;
         this.sections = undefined;
+
+        this.hex_h = this.hex_side * Math.sqrt(3) / 2
+        this.hex_w = this.hex_side / 2
+
+        this.data = {}
+        this.terrain = []
+
         this.visit_spotted = []
         this.x = 10;
         this.y = 10;
@@ -225,6 +267,20 @@ export class Map {
         return false
     }
 
+    load_data(data) {
+        for (let i in data) {
+            this.data[i] = data[i]
+        }
+    } 
+    
+    load_terrain(data) {
+        // console.log(data)
+        if (this.terrain[data.x] == undefined) {
+            this.terrain[data.x] = []
+        }
+        this.terrain[data.x][data.y] = data.ter
+    } 
+
     toogle_territory(tag) {
         this.fog_of_war[tag] = !this.fog_of_war[tag];
     }
@@ -243,14 +299,14 @@ export class Map {
     draw(images) {
         var ctx = this.canvas.getContext('2d');
         ctx.clearRect(0, 0, 2000, 2000);
-        ctx.drawImage(images['map'], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
-        for (i in this.fog_of_war) {
-            if (this.fog_of_war[i]) {
-                ctx.drawImage(images['fog_' + i], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
-            }
-        }
-        for (var i = 0; i < 100; i++) {
-            for (var j = 0; j < 100; j++) {
+        // ctx.drawImage(images['map'], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
+        // for (i in this.fog_of_war) {
+        //     if (this.fog_of_war[i]) {
+        //         ctx.drawImage(images['fog_' + i], 0 - this.camera[0], 0 - this.camera[1], 2000, 2000)
+        //     }
+        // }
+        for (var i = -2; i < 30; i++) {
+            for (var j = 0; j < 30; j++) {
                 if (this.hovered != null && this.hovered[0] == i && this.hovered[1] == j) {
                     this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.6)');
                 } else if (this.curr_pos[0] == i && this.curr_pos[1] == j) {
@@ -259,19 +315,19 @@ export class Map {
                 } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
                     this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.6)');                    
                 } else {
-                    if ((get_territory_tag(i, j) == this.curr_territory) & (this.curr_territory != undefined) & (this.sections != undefined)) {
-                        let color = this.get_section_color(this.get_section(i, j))
-                        if (color != undefined) {
-                            this.draw_hex(i, j, 'fill', color);
-                        }
-                    }
-                    
+                    // if ((get_territory_tag(i, j) == this.curr_territory) & (this.curr_territory != undefined) & (this.sections != undefined)) {
+                    //     let color = this.get_section_color(this.get_section(i, j))
+                    //     if (color != undefined) {
+                    //         this.draw_hex(i, j, 'fill', color);
+                    //     }
+                    // }
+                    this.draw_hex(i, j, 'fill', '(0, 0, 0, 0)');
                 }
             }
         }
 
-        ctx.fillStyle = "#00ff00";
-        ctx.font = '20px Times New Roman';
+        ctx.fillStyle = "#000000";
+        ctx.font = 'bold 20px sans-serif';
         for (let i in this.visit_spotted) {
             let centre = this.get_hex_centre(this.visit_spotted[i].x, this.visit_spotted[i].y)
             ctx.fillText(`??`, centre[0] - 10, centre[1]);
@@ -330,17 +386,62 @@ export class Map {
     }
 
     draw_hex(i, j, mode, color) {
+        let tag = i + '_' + j
+        // if (!((tag) in this.data)) {
+        //     return
+        // }
+
         var ctx = this.canvas.getContext('2d');
-        var h = this.hex_side * Math.sqrt(3) / 2;
-        var w = this.hex_side / 2;
+        var h = this.hex_h;
+        var w = this.hex_w;
         var center_x = (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
         var center_y = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
+
+        
+
         if (mode == 'circle') {
             ctx.strokeStyle = 'rgba' + color;
             ctx.beginPath();
             ctx.arc(center_x, center_y, 5, 0, Math.PI * 2, true);
             ctx.stroke();
+            return
         }
+
+        if (this.terrain[i] == undefined || this.terrain[i][j] == undefined) {
+            return
+        }
+
+        if (this.terrain[i][j] == 'sea') {
+            ctx.drawImage(this.tiles[5], center_x - this.hex_side, center_y - h)
+        } else if (this.terrain[i][j] == 'city') {
+            ctx.drawImage(this.tiles[4], center_x - this.hex_side, center_y - h)
+        } else if (this.terrain[i][j] == 'steppe') {
+            ctx.drawImage(this.tiles[0], center_x - this.hex_side, center_y - h)
+        } else if (this.terrain[i][j] == 'coast') {
+            ctx.drawImage(this.tiles[6], center_x - this.hex_side, center_y - h)
+        } else{
+            return
+        }
+        
+        if ((tag) in this.data) {
+            if (this.data[tag].urban >= 2) {
+                ctx.drawImage(this.tiles[3], center_x - this.hex_side, center_y - h)
+            } else if (this.data[tag].urban == 1) {
+                ctx.drawImage(this.tiles[2], center_x - this.hex_side, center_y - h)
+            } else if (this.data[tag].wild == 1) {
+                ctx.drawImage(this.tiles[7], center_x - this.hex_side, center_y - h)
+            } else if (this.data[tag].wild == 2) {
+                ctx.drawImage(this.tiles[8], center_x - this.hex_side, center_y - h)
+            } else if (this.data[tag].wild == 3) {
+                ctx.drawImage(this.tiles[9], center_x - this.hex_side, center_y - h)
+            } else if (this.data[tag].rupture == 1) {
+                ctx.drawImage(this.tiles[10], center_x - this.hex_side, center_y - h)
+            } else if (this.data[tag].rural >= 1) {
+                ctx.drawImage(this.tiles[11], center_x - this.hex_side, center_y - h)
+            }
+        }
+        
+        
 
         ctx.fillStyle = 'rgba' + color;
         ctx.beginPath();
@@ -437,15 +538,23 @@ export class Map {
 
             for (let d of directions) {
                 let tmp = [curr[0] + d[0], curr[1] + d[1]]
-                let territory = get_territory_tag(tmp[0], tmp[1])
-                if ((!used[st(tmp)]) && (territory != 'unknown') && (territory != 'sea') && (!this.fog_of_war[territory])) {
-                    queue[right] = tmp;
-                    prev[st(tmp)] = curr
-                    right++;
-                    if ((tmp[0] == this.selected[0]) && (tmp[1] == this.selected[1])) {
-                        return prev
-                    }                    
-                }                
+                if (this.terrain[tmp[0]] != undefined ) {
+                    let ter = this.terrain[tmp[0]][tmp[1]]
+                    if (ter != 'sea' && ter != undefined) {
+                        if (this.data[tmp[0] + '_' + tmp[1]] == undefined || this.data[tmp[0] + '_' + tmp[1]].rupture != 1) {
+                            let tmps = st(tmp)
+                            if (!used[tmps]) {
+                                queue[right] = tmp;
+                                prev[tmps] = curr
+                                right++;
+                                if ((tmp[0] == this.selected[0]) && (tmp[1] == this.selected[1])) {
+                                    return prev
+                                }                    
+                            }  
+                        }                         
+                    }
+                }
+                             
             }
             
 

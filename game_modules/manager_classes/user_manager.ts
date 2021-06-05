@@ -4,7 +4,7 @@ import { World } from "../world";
 
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
-var {constants} = require("../static_data/constants.js")
+import {constants} from '../static_data/constants'
 var common = require("../common.js")
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}

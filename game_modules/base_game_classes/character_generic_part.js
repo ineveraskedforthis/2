@@ -52,7 +52,7 @@ class InnateStats {
 class Misc {
     constructor() {
         this.model = 'empty';
-        this.explored = {};
+        this.explored = [];
         this.battle_id = -1;
         this.in_battle_id = -1;
         this.tactic = {};
@@ -113,6 +113,18 @@ class CharacterGenericPart {
         }
         this.user_id = user_id;
         this.cell_id = cell_id;
+        let cell = this.get_cell();
+        if (cell != undefined) {
+            this.misc.explored[cell.id] = true;
+            for (let direction of dp) {
+                let x = cell.i + direction[0];
+                let y = cell.j + direction[1];
+                let border_cell = this.world.get_cell(x, y);
+                if (border_cell != undefined) {
+                    this.misc.explored[border_cell.id] = true;
+                }
+            }
+        }
         this.faction_id = -1;
     }
     async update(pool, dt) {
@@ -424,6 +436,11 @@ class CharacterGenericPart {
     mod_attack_damage_with_stats(result) {
         let phys_power = this.get_phys_power() / 10;
         let magic_power = this.get_magic_power() / 10;
+        if (this.skills.perks.claws) {
+            if (result.weapon_type == 'noweapon') {
+                result.damage.pierce += 10;
+            }
+        }
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * phys_power));
         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * phys_power));
@@ -569,8 +586,8 @@ class CharacterGenericPart {
     }
     // exploration
     add_explored(tag) {
-        this.misc.explored[tag] = true;
-        this.changed = true;
+        // this.misc.explored[tag] = true;
+        // this.changed = true
     }
     async update_visited() {
         let cell = this.get_cell();
@@ -582,6 +599,19 @@ class CharacterGenericPart {
                 let border_cell = this.world.get_cell(x, y);
                 if ((border_cell != undefined) && border_cell.visited_recently) {
                     visited.push({ x: x, y: y });
+                }
+                if (border_cell != undefined && this.misc.explored[border_cell.id] != true) {
+                    this.misc.explored[border_cell.id] = true;
+                    let data = this.world.constants.development;
+                    let res1 = {};
+                    res1[x + '_' + y] = data[x + '_' + y];
+                    if (data[x + '_' + y] != undefined) {
+                        this.world.socket_manager.send_to_character_user(this, 'map-data-cells', res1);
+                    }
+                    if (this.world.constants.terrain[x] != undefined && this.world.constants.terrain[x][y] != undefined) {
+                        let res2 = { x: x, y: y, ter: this.world.constants.terrain[x][y] };
+                        this.world.socket_manager.send_to_character_user(this, 'map-data-terrain', res2);
+                    }
                 }
             }
             this.world.socket_manager.send_to_character_user(this, 'cell-visited', visited);

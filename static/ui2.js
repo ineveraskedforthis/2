@@ -794,6 +794,9 @@ socket.on('item-market-data', data => {item_market_table.update(data)});
 socket.on('action-ping', data => restart_action_bar(data.time))
 socket.on('cell-visited', data => map.mark_visited(data))
 
+socket.on('map-data-cells', data => {console.log(data); map.load_data(data)})
+socket.on('map-data-terrain', data => {map.load_terrain(data)})
+
 function update_tags(msg) {
     let market_div = document.querySelector('.goods_list') 
     let inventory_div = document.getElementById('goods_stash')

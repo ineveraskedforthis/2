@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityManager = void 0;
-var { constants } = require("../static_data/constants.js");
+const constants_1 = require("../static_data/constants");
 var common = require("../common.js");
 const OrderItem = require("../market/market_items.js");
 const Area = require('../base_game_classes/area.js');
@@ -81,7 +81,7 @@ class EntityManager {
         return x * this.world.y + y;
     }
     async load_characters(pool) {
-        let res = await common.send_query(pool, constants.load_chars_query);
+        let res = await common.send_query(pool, constants_1.constants.load_chars_query);
         for (let i of res.rows) {
             let char = new character_generic_part_1.CharacterGenericPart(this.world);
             char.load_from_json(i);
@@ -90,7 +90,7 @@ class EntityManager {
         console.log('characters loaded');
     }
     async load_orders(pool) {
-        let res = await common.send_query(pool, constants.load_orders_query);
+        let res = await common.send_query(pool, constants_1.constants.load_orders_query);
         for (let i of res.rows) {
             let order = new market_order_1.MarketOrder(this.world);
             order.load_from_json(i);
@@ -99,7 +99,7 @@ class EntityManager {
         console.log('orders loaded');
     }
     async load_item_orders(pool) {
-        let res = await common.send_query(pool, constants.load_item_orders_query);
+        let res = await common.send_query(pool, constants_1.constants.load_item_orders_query);
         for (let i of res.rows) {
             let order = new OrderItem(this.world);
             order.load_from_json(i);
@@ -108,7 +108,7 @@ class EntityManager {
         console.log('item orders loaded');
     }
     async load_battles(pool) {
-        let res = await common.send_query(pool, constants.load_battles_query);
+        let res = await common.send_query(pool, constants_1.constants.load_battles_query);
         for (let i of res.rows) {
             let battle = new battle_1.BattleReworked2(this.world);
             battle.load_from_json(i);
@@ -117,7 +117,7 @@ class EntityManager {
         console.log('battles loaded');
     }
     async load_areas(pool) {
-        let res = await common.send_query(pool, constants.load_areas_query);
+        let res = await common.send_query(pool, constants_1.constants.load_areas_query);
         for (let i of res.rows) {
             let obj = new Area(this.world);
             obj.load_from_json(i);
@@ -126,7 +126,7 @@ class EntityManager {
         console.log('areas loaded');
     }
     async load_factions(pool) {
-        let res = await common.send_query(pool, constants.load_factions_query);
+        let res = await common.send_query(pool, constants_1.constants.load_factions_query);
         for (let i of res.rows) {
             let faction = new Faction(this.world);
             faction.load_from_json(i);
@@ -135,7 +135,7 @@ class EntityManager {
         console.log('factions loaded');
     }
     async load_quests(pool) {
-        let res = await common.send_query(pool, constants.load_quests_query);
+        let res = await common.send_query(pool, constants_1.constants.load_quests_query);
         for (let i of res.rows) {
             let quest = new Quest(this.world);
             quest.load_from_json(i);
@@ -245,12 +245,6 @@ class EntityManager {
         }
         // this.chars[character.id] = null;
     }
-    async create_monster(pool, monster_class, cell_id) {
-        var monster = new monster_class(this.world);
-        await monster.init(pool, 'monster', cell_id);
-        this.chars[monster.id] = monster;
-        return monster;
-    }
     async create_battle(pool, attackers, defenders) {
         var battle = new battle_1.BattleReworked2(this.world);
         await battle.init(pool);
@@ -263,13 +257,8 @@ class EntityManager {
         this.battles[battle.id] = battle;
         return battle;
     }
-    async create_new_character(pool, name, cell_id, user_id, territory_tag) {
+    async create_new_character(pool, name, cell_id, user_id) {
         let char = new character_generic_part_1.CharacterGenericPart(this.world);
-        if (cell_id == undefined) {
-            let data = this.world.constants.starting_position;
-            let tmp = data[territory_tag];
-            cell_id = this.get_cell_id_by_x_y(tmp[0], tmp[1]);
-        }
         await char.init(pool, name, cell_id, user_id);
         this.chars[char.id] = char;
         return char;
@@ -298,7 +287,7 @@ class EntityManager {
         this.battles[id].ended = true;
     }
     async load_character_data_from_db(pool, char_id) {
-        var res = await common.send_query(pool, constants.select_char_by_id_query, [char_id]);
+        var res = await common.send_query(pool, constants_1.constants.select_char_by_id_query, [char_id]);
         if (res.rows.length == 0) {
             return null;
         }

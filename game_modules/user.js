@@ -35,7 +35,7 @@ class User {
         return this.world.get_char_from_id(this.char_id);
     }
     async get_new_char(pool) {
-        let character = await this.world.create_new_character(pool, this.login, undefined, this.id, 'colony');
+        let character = await this.world.create_new_character(pool, this.login, this.world.get_cell_id_by_x_y(0, 3), this.id);
         this.char_id = character.id;
         character.user_id = this.id;
         character.add_explored(1);

@@ -1,11 +1,9 @@
-var basic_characters = require("./basic_characters.js");
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
 import {loot_chance_weight, loot_affixes_weight, item_tag, affix_tag} from "./static_data/item_tags";
 
 
 import {EntityManager} from './manager_classes/entity_manager'
-import {Rat} from './basic_characters'
 import {CONSTS, TAGS} from './static_data/world_constants_1';
 import {MarketOrder} from './market/market_order'
 import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
@@ -15,6 +13,7 @@ import {tag} from './static_data/type_script_types'
 import {SocketManager} from './manager_classes/socket_manager'
 import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
+import { rat } from "./base_game_classes/races/rat";
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -100,11 +99,11 @@ export class World {
         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony')
         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats')
 
-        let test_rat = await this.entity_manager.create_monster(pool, Rat, this.get_cell_id_by_x_y(6, 5))
-
+        let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat', this.get_cell_id_by_x_y(6, 5), -1)
+        rat(test_rat)
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
 
-        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, 'colony')
+        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
         mayor.savings.inc(10000);
 
         this.entity_manager.set_faction_leader(ith_colony, mayor)
@@ -213,10 +212,6 @@ export class World {
         await this.entity_manager.kill(pool, char_id)
     }
 
-    async create_monster(pool: any, monster_class: string, cell_id: number) {
-        return await this.entity_manager.create_monster(pool, monster_class, cell_id)
-    }
-
     async create_battle(pool: any, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
         return await this.entity_manager.create_battle(pool, attackers, defenders)
     }
@@ -229,8 +224,8 @@ export class World {
         return await this.entity_manager.load_character_data_to_memory(pool, data)
     }
 
-    async create_new_character(pool: any, name: string, cell_id: number|undefined, user_id: number, territory_tag: string): Promise<CharacterGenericPart> {
-        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id, territory_tag)
+    async create_new_character(pool: any, name: string, cell_id: number, user_id: number): Promise<CharacterGenericPart> {
+        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id)
     }
 
     // get_loot_tag(dice, dead_tag) {
@@ -334,12 +329,19 @@ export class World {
             return false
         }
 
-        let ter = this.get_territory(x, y)
-        if (ter == undefined) {
-            return false    
+        let data = this.constants.terrain
+        if (! (x in data)) {
+            return false
         }
-        let data:{[_: string]: boolean} = this.constants.move
-        return data[ter]
+        let ter = data[x][y]
+        let cell = this.get_cell(x, y)
+        if (cell == undefined) return true
+        if (ter == 'coast' || ter == 'steppe' || ter == 'city') {
+            if (cell.development.rupture == 1 || cell.development.wild == 3) {
+                return false
+            }
+            return true
+        }
     }
 
     get_enemy(x: number, y: number) {
@@ -356,26 +358,26 @@ export class World {
         
     }
 
-    async attack_local_monster(pool:any, char: CharacterGenericPart, enemies_amount = 1): Promise<(BattleReworked2 | undefined)> {
-        if (enemies_amount == 0) {
-            return undefined
-        }
-        let cell = char.get_cell();
-        if (cell == undefined) {
-            return
-        }
-        let terr_tag = this.get_territory(cell.i, cell.j)
-        let enemy_tag = this.get_enemy(cell.i, cell.j)
-        if ((enemy_tag == undefined) || (terr_tag == undefined)) {
-            return undefined
-        }
-        let enemies = []
-        for (let i = 0; i < enemies_amount; i++) {
-            enemies.push(await this.create_monster(pool, basic_characters[enemy_tag], char.cell_id))
-        }
-        let battle = await this.create_battle(pool, [char], enemies);
-        return battle
-    }
+    // async attack_local_monster(pool:any, char: CharacterGenericPart, enemies_amount = 1): Promise<(BattleReworked2 | undefined)> {
+    //     if (enemies_amount == 0) {
+    //         return undefined
+    //     }
+    //     let cell = char.get_cell();
+    //     if (cell == undefined) {
+    //         return
+    //     }
+    //     let terr_tag = this.get_territory(cell.i, cell.j)
+    //     let enemy_tag = this.get_enemy(cell.i, cell.j)
+    //     if ((enemy_tag == undefined) || (terr_tag == undefined)) {
+    //         return undefined
+    //     }
+    //     let enemies = []
+    //     for (let i = 0; i < enemies_amount; i++) {
+    //         enemies.push(await this.create_monster(pool, basic_characters[enemy_tag], char.cell_id))
+    //     }
+    //     let battle = await this.create_battle(pool, [char], enemies);
+    //     return battle
+    // }
 
     // async attack_local_outpost(pool: any, char: CharacterGenericPart) {
     //     let cell = char.get_cell();

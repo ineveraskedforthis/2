@@ -79,7 +79,7 @@ class Cell {
     async update(pool, dt) {
         if (this.visited_recently) {
             this.last_visit += dt;
-            if (this.last_visit > 20) {
+            if (this.last_visit > 10) {
                 this.visited_recently = false;
                 this.last_visit = 0;
             }

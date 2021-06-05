@@ -1,4 +1,4 @@
-var {constants} = require("../static_data/constants.js");
+import {constants} from '../static_data/constants'
 var common = require("../common.js");
 const OrderItem = require("../market/market_items.js");
 const Area = require('../base_game_classes/area.js')
@@ -295,13 +295,6 @@ export class EntityManager {
         // this.chars[character.id] = null;
     }
 
-    async create_monster(pool: any, monster_class: any, cell_id: number) {
-        var monster = new monster_class(this.world);
-        await monster.init(pool, 'monster', cell_id);
-        this.chars[monster.id] = monster;
-        return monster;
-    }
-
     async create_battle(pool: any, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
         var battle = new BattleReworked2(this.world);
         await battle.init(pool);
@@ -315,14 +308,8 @@ export class EntityManager {
         return battle;
     }
 
-    async create_new_character(pool: any, name: string, cell_id: number|undefined, user_id: number, territory_tag: string) {
+    async create_new_character(pool: any, name: string, cell_id: number, user_id: number) {
         let char = new CharacterGenericPart(this.world);
-        if (cell_id == undefined) {
-            let data: {[_ in string]: number[]} = this.world.constants.starting_position
-            let tmp = data[territory_tag]
-            cell_id = this.get_cell_id_by_x_y(tmp[0], tmp[1]);
-        }
-        
         await char.init(pool, name, cell_id, user_id);
         this.chars[char.id] = char
         return char

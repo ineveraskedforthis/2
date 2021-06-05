@@ -4,8 +4,7 @@ exports.SocketManager = void 0;
 const action_manager_1 = require("./action_manager");
 const user_1 = require("../user");
 var common = require("../common.js");
-var { constants } = require("../static_data/constants.js");
-var basic_characters = require("../basic_characters.js");
+const constants_1 = require("../static_data/constants");
 class SocketManager {
     constructor(pool, io, world) {
         this.world = world;
@@ -207,6 +206,27 @@ class SocketManager {
         this.send_teacher_info(character);
         let user = character.get_user();
         this.send_char_info(user);
+        for (let i = 0; i < character.misc.explored.length; i++) {
+            if (character.misc.explored[i]) {
+                let cell = this.world.get_cell_by_id(i);
+                if (cell != undefined) {
+                    let x = cell.i;
+                    let y = cell.j;
+                    let data = this.world.constants.development;
+                    let res1 = {};
+                    res1[x + '_' + y] = data[x + '_' + y];
+                    if (data[x + '_' + y] != undefined) {
+                        user.socket.emit('map-data-cells', res1);
+                    }
+                    if (this.world.constants.terrain[x] != undefined && this.world.constants.terrain[x][y] != undefined) {
+                        let res2 = { x: x, y: y, ter: this.world.constants.terrain[x][y] };
+                        user.socket.emit('map-data-terrain', res2);
+                    }
+                }
+            }
+        }
+        // user.socket.emit('map-data-cells', this.world.constants.development)
+        // user.socket.emit('map-data-terrain', this.world.constants.terrain)
     }
     // actions
     async move(user, data) {
@@ -570,7 +590,7 @@ class SocketManager {
     update_market_info(market) {
         var data = market.get_orders_list();
         let cell = market.get_cell();
-        if (constants.logging.sockets.update_market_info) {
+        if (constants_1.constants.logging.sockets.update_market_info) {
             console.log('sending market orders to client');
             console.log(data);
         }
@@ -684,11 +704,11 @@ class SocketManager {
         this.io.emit('new-message', message);
     }
     async load_message_to_database(message) {
-        let res = await common.send_query(this.pool, constants.new_message_query, [message.msg, message.user]);
-        await common.send_query(this.pool, constants.clear_old_messages_query, [res.rows[0].id - 50]);
+        let res = await common.send_query(this.pool, constants_1.constants.new_message_query, [message.msg, message.user]);
+        await common.send_query(this.pool, constants_1.constants.clear_old_messages_query, [res.rows[0].id - 50]);
     }
     async load_messages_from_database() {
-        var rows = await common.send_query(this.pool, constants.get_messages_query);
+        var rows = await common.send_query(this.pool, constants_1.constants.get_messages_query);
         return rows;
     }
     async battle_action(user, action) {

@@ -1,15 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.World = void 0;
-var basic_characters = require("./basic_characters.js");
 var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
 const entity_manager_1 = require("./manager_classes/entity_manager");
-const basic_characters_1 = require("./basic_characters");
 const world_constants_1_1 = require("./static_data/world_constants_1");
 const action_manager_1 = require("./manager_classes/action_manager");
 const socket_manager_1 = require("./manager_classes/socket_manager");
 const user_manager_1 = require("./manager_classes/user_manager");
+const rat_1 = require("./base_game_classes/races/rat");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -62,9 +61,10 @@ class World {
         let living_area = await this.entity_manager.create_area(pool, 'living_area');
         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony');
         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats');
-        let test_rat = await this.entity_manager.create_monster(pool, basic_characters_1.Rat, this.get_cell_id_by_x_y(6, 5));
+        let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat', this.get_cell_id_by_x_y(6, 5), -1);
+        rat_1.rat(test_rat);
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
-        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1, 'colony');
+        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1);
         mayor.savings.inc(10000);
         this.entity_manager.set_faction_leader(ith_colony, mayor);
         port_chunk.set_influence(ith_colony, 100);
@@ -147,9 +147,6 @@ class World {
     async kill(pool, char_id) {
         await this.entity_manager.kill(pool, char_id);
     }
-    async create_monster(pool, monster_class, cell_id) {
-        return await this.entity_manager.create_monster(pool, monster_class, cell_id);
-    }
     async create_battle(pool, attackers, defenders) {
         return await this.entity_manager.create_battle(pool, attackers, defenders);
     }
@@ -159,8 +156,8 @@ class World {
     async load_character_data_to_memory(pool, data) {
         return await this.entity_manager.load_character_data_to_memory(pool, data);
     }
-    async create_new_character(pool, name, cell_id, user_id, territory_tag) {
-        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id, territory_tag);
+    async create_new_character(pool, name, cell_id, user_id) {
+        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id);
     }
     // get_loot_tag(dice, dead_tag) {
     //     let tmp = 0
@@ -253,12 +250,20 @@ class World {
         if ((y < 0) || (y >= this.y)) {
             return false;
         }
-        let ter = this.get_territory(x, y);
-        if (ter == undefined) {
+        let data = this.constants.terrain;
+        if (!(x in data)) {
             return false;
         }
-        let data = this.constants.move;
-        return data[ter];
+        let ter = data[x][y];
+        let cell = this.get_cell(x, y);
+        if (cell == undefined)
+            return true;
+        if (ter == 'coast' || ter == 'steppe' || ter == 'city') {
+            if (cell.development.rupture == 1 || cell.development.wild == 3) {
+                return false;
+            }
+            return true;
+        }
     }
     get_enemy(x, y) {
         let terr_tag = this.get_territory(x, y);
@@ -270,26 +275,6 @@ class World {
         return tag;
     }
     create_quest() {
-    }
-    async attack_local_monster(pool, char, enemies_amount = 1) {
-        if (enemies_amount == 0) {
-            return undefined;
-        }
-        let cell = char.get_cell();
-        if (cell == undefined) {
-            return;
-        }
-        let terr_tag = this.get_territory(cell.i, cell.j);
-        let enemy_tag = this.get_enemy(cell.i, cell.j);
-        if ((enemy_tag == undefined) || (terr_tag == undefined)) {
-            return undefined;
-        }
-        let enemies = [];
-        for (let i = 0; i < enemies_amount; i++) {
-            enemies.push(await this.create_monster(pool, basic_characters[enemy_tag], char.cell_id));
-        }
-        let battle = await this.create_battle(pool, [char], enemies);
-        return battle;
     }
 }
 exports.World = World;

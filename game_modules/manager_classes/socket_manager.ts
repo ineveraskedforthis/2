@@ -5,8 +5,7 @@ import { User } from "../user";
 import { World } from "../world";
 
 var common = require("../common.js");
-var {constants} = require("../static_data/constants.js");
-var basic_characters = require("../basic_characters.js");
+import {constants} from '../static_data/constants'
 
 
 interface UserData {
@@ -256,6 +255,28 @@ export class SocketManager {
         this.send_teacher_info(character);
         let user = character.get_user();
         this.send_char_info(user);
+        for (let i = 0; i < character.misc.explored.length; i++) {
+            if (character.misc.explored[i]) {
+                let cell = this.world.get_cell_by_id(i)
+                if (cell != undefined) {
+                    let x = cell.i
+                    let y = cell.j
+                    let data: any = this.world.constants.development
+                    let res1: any = {}
+                    res1[x + '_' + y] = data[x + '_' + y]
+                    if (data[x + '_' + y] != undefined) {
+                        user.socket.emit('map-data-cells', res1)
+                    }                   
+
+                    if (this.world.constants.terrain[x] != undefined && this.world.constants.terrain[x][y] != undefined) {
+                        let res2 = {x: x, y: y, ter: this.world.constants.terrain[x][y]}
+                        user.socket.emit('map-data-terrain', res2)
+                    }
+                }
+            }            
+        }
+        // user.socket.emit('map-data-cells', this.world.constants.development)
+        // user.socket.emit('map-data-terrain', this.world.constants.terrain)
     }
 
     // actions

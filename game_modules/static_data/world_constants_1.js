@@ -32,7 +32,80 @@ exports.CONSTS = {
         '3_6': { rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0 },
         '3_7': { rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0 },
         '3_8': { rural: 0, urban: 1, wild: 0, ruins: 0, wastelands: 0 },
+        // ########################
+        // ######## steppe ########
+        // ########################
+        //ruptures
+        '10_6': { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0, rupture: 1 },
+        '16_6': { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0, rupture: 1 },
+        '12_11': { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0, rupture: 1 },
+        '18_19': { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0, rupture: 1 },
+        '7_5': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '10_8': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '9_8': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        // ########################
+        // ######## forest ########
+        // ########################
+        //north part of forest
+        //forest 1
+        '17_3': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '16_3': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '16_4': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '18_3': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '16_5': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '17_6': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '17_7': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '16_7': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '15_7': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '17_8': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '17_9': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '18_10': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '18_11': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '18_12': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '18_13': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '17_13': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '16_12': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '17_14': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '17_15': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        '18_15': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
+        //forest 2
+        '18_14': { rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0 },
+        '17_4': { rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0 },
+        '17_5': { rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0 },
+        '18_6': { rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0 },
+        '18_8': { rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0 },
+        '18_9': { rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0 },
+        //forest 3
+        '18_4': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0 },
+        '18_5': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0 },
+        '18_7': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0 },
     },
+    terrain: [['sea', 'sea', 'sea', 'city', 'city', 'sea', 'sea'],
+        ['sea', 'sea', 'city', 'city', 'city', 'city', 'city', 'sea', 'sea'],
+        ['sea', 'sea', 'coast', 'steppe', 'steppe', 'city', 'city', 'city', 'sea', 'sea'],
+        ['sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'city', 'city', 'sea', 'sea'],
+        ['sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'coast', 'sea', 'sea'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'coast', 'sea', 'sea'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'coast', 'sea', 'sea'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'coast', 'sea', 'sea'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'coast', 'sea', 'sea'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'coast', 'sea', 'sea'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'coast', 'coast', 'coast', 'coast', 'coast'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe',],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe'],
+        ['sea', 'sea', 'sea', 'coast', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe', 'steppe'],
+    ],
+    // terrain: {
+    //     'mages_quarter': 'city',
+    //     'port': 'city',
+    //     'living_area': 'red_steppe',
+    //     'north_rat_coast': 'red_steppe'
+    // },
     resources: {
         //coast colony
         '3_2': { water: true, prey: false, forest: false, fish: true },
@@ -85,7 +158,7 @@ exports.CONSTS = {
         'rat_plains': ['4_2', '4_3', '4_4', '4_5', '4_6', '4_7', '4_8',
             '5_3', '5_4', '5_5', '5_6', '5_7', '5_8', '5_9',
             '6_3', '6_4', '6_5', '6_6', '6_7', '6_8', '6_9', '6_10',
-            '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10']
+            '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10'],
     },
     sections: {
         hexes: {

@@ -9,7 +9,7 @@ export const move ={
 
         if (char.world.can_move(data.x, data.y)) {
             let {x, y} = char.world.get_cell_x_y_by_id(char.cell_id)
-            char.change_stress(2);
+            
             let dx = data.x - x;
             let dy = data.y - y;
             if (char.verify_move(dx, dy)) {
@@ -36,9 +36,10 @@ export const move ={
         if (new_cell != undefined) {
             new_cell.enter(char)
         }
-
+        char.change_stress(2);
         let user = char.get_user()
         user.socket.emit('map-pos', data);
+        char.update_visited()
         char.send_status_update()
         return await char.on_move_default(pool, data)   
     }

@@ -4,7 +4,7 @@ exports.UserManager = void 0;
 const user_1 = require("../user");
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
-var { constants } = require("../static_data/constants.js");
+const constants_1 = require("../static_data/constants");
 var common = require("../common.js");
 class UserManager {
     constructor(world) {
@@ -63,14 +63,14 @@ class UserManager {
         return this.users[user_id];
     }
     async check_login(pool, login) {
-        var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
+        var res = await common.send_query(pool, constants_1.constants.find_user_by_login_query, [login]);
         if (res.rows.length == 0) {
             return true;
         }
         return false;
     }
     async load_user_data_from_db(pool, login) {
-        var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
+        var res = await common.send_query(pool, constants_1.constants.find_user_by_login_query, [login]);
         if (res.rows.length == 0) {
             return undefined;
         }

@@ -10,6 +10,7 @@ interface Development {
     wild: 0|1|2|3;
     ruins: 0|1|2|3;
     wastelands: 0|1|2|3;
+    rupture?: 0|1
 }
 
 interface CellResources {
@@ -137,7 +138,7 @@ export class Cell {
     async update(pool:any, dt: number) {
         if (this.visited_recently) {
             this.last_visit += dt
-            if (this.last_visit > 20) {
+            if (this.last_visit > 10) {
                 this.visited_recently = false
                 this.last_visit = 0
             }
