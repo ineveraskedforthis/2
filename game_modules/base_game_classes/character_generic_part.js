@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CharacterGenericPart = exports.Status = void 0;
 var common = require("../common.js");
-var { constants } = require("../static_data/constants.js");
+// var {constants} = require("../static_data/constants.js");
 const Equip = require("./equip.js");
 const Savings = require("./savings.js");
 const spells = require("../static_data/spells.js");
@@ -11,6 +11,7 @@ const character_defines = require("./misc/char_related_constants.js");
 const stash_1 = require("./stash");
 const attack_result_1 = require("./misc/attack_result");
 const damage_types_1 = require("./misc/damage_types");
+const constants_1 = require("../static_data/constants");
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class SkillObject {
     constructor() {
@@ -701,7 +702,7 @@ class CharacterGenericPart {
     //db interactions
     async save_status_to_db(pool, save = true) {
         if (save) {
-            await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
+            // await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
         }
     }
     async load_from_json(data) {
@@ -736,7 +737,7 @@ class CharacterGenericPart {
         };
     }
     async load_to_db(pool) {
-        let result = await common.send_query(pool, constants.new_char_query, [
+        let result = await common.send_query(pool, constants_1.constants.new_char_query, [
             this.user_id,
             this.cell_id,
             this.faction_id,
@@ -754,7 +755,7 @@ class CharacterGenericPart {
     }
     async save_to_db(pool, save = true) {
         if (save) {
-            await common.send_query(pool, constants.update_char_query, [
+            await common.send_query(pool, constants_1.constants.update_char_query, [
                 this.id,
                 this.cell_id,
                 this.faction_id,
@@ -771,7 +772,7 @@ class CharacterGenericPart {
         }
     }
     async delete_from_db(pool) {
-        await common.send_query(pool, constants.delete_char_query, [this.id]);
+        await common.send_query(pool, constants_1.constants.delete_char_query, [this.id]);
     }
 }
 exports.CharacterGenericPart = CharacterGenericPart;

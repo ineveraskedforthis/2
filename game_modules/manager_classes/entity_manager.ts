@@ -188,7 +188,7 @@ export class EntityManager {
                     await this.world.ai_manager.decision(char)
                 }
             } else if ((this.chars[i] != undefined) && this.chars[i].is_dead()) {
-                this.kill(pool, i)
+                await this.kill(pool, i)
             }
         }
     }
@@ -282,6 +282,7 @@ export class EntityManager {
             await character.set_flag('dead', true);
             console.log('kill ' + char_id);
             this.chars[char_id].deleted = true
+            await character.delete_from_db(pool);
             if (character.is_player()) {
                 var user = this.world.user_manager.get_user_from_character(character);
                 if (user == undefined) {
@@ -290,8 +291,7 @@ export class EntityManager {
                 user.send_death_message()
                 var id = await user.get_new_char(pool);
                 this.chars[id] = user.get_character();
-            }                 
-            await character.delete_from_db(pool);
+            }            
         }
         
         // this.chars[character.id] = null;

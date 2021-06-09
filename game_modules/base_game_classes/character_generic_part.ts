@@ -1,5 +1,5 @@
 var common = require("../common.js");
-var {constants} = require("../static_data/constants.js");
+// var {constants} = require("../static_data/constants.js");
 const Equip = require("./equip.js");
 const Savings = require("./savings.js");
 const spells = require("../static_data/spells.js");
@@ -14,7 +14,7 @@ import {DamageByTypeObject, damage_types} from "./misc/damage_types"
 import { World } from "../world";
 import { CharacterAction } from "../manager_classes/action_manager";
 import { User } from "../user";
-import { brotliDecompress } from "zlib";
+import { constants } from "../static_data/constants";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
@@ -947,7 +947,7 @@ export class CharacterGenericPart {
 
     async save_status_to_db(pool:any, save = true) {
         if (save) {
-            await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
+            // await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
         }
     }
 
