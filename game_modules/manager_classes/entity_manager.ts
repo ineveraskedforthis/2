@@ -185,6 +185,7 @@ export class EntityManager {
                 let char = this.chars[i]
                 if (!char.in_battle()) {
                     await char.update(pool, dt);
+                    await this.world.ai_manager.decision(char)
                 }
             } else if ((this.chars[i] != undefined) && this.chars[i].is_dead()) {
                 this.kill(pool, i)
@@ -276,10 +277,11 @@ export class EntityManager {
     async kill(pool: any, char_id: number) {
         
         let character = this.chars[char_id];
-        if (!character.is_dead()) {
+        if ((character.get_hp() == 0) && (!character.deleted)) {
             await character.clear_orders();
             await character.set_flag('dead', true);
             console.log('kill ' + char_id);
+            this.chars[char_id].deleted = true
             if (character.is_player()) {
                 var user = this.world.user_manager.get_user_from_character(character);
                 if (user == undefined) {
@@ -288,7 +290,7 @@ export class EntityManager {
                 user.send_death_message()
                 var id = await user.get_new_char(pool);
                 this.chars[id] = user.get_character();
-            }
+            }                 
             await character.delete_from_db(pool);
         }
         
@@ -296,6 +298,17 @@ export class EntityManager {
     }
 
     async create_battle(pool: any, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
+        for (let i = 0; i < attackers.length; i++) {
+            if (attackers[i].in_battle() || attackers[i].is_dead()) {
+                return
+            }
+        }
+        for (let i = 0; i < defenders.length; i++) {
+            if (defenders[i].in_battle() || attackers[i].is_dead()) {
+                return
+            }
+        }
+
         var battle = new BattleReworked2(this.world);
         await battle.init(pool);
         for (let i = 0; i < attackers.length; i++) {
@@ -305,6 +318,7 @@ export class EntityManager {
             battle.add_fighter(defenders[i], 1, {x: Math.random() * 5 - 2.5, y: Math.random() * 4 + 5});
         }
         this.battles[battle.id] = battle;
+        battle.send_data_start()
         return battle;
     }
 

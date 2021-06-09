@@ -32,11 +32,15 @@ exports.move = {
         if (new_cell != undefined) {
             new_cell.enter(char);
         }
-        char.change_stress(2);
-        let user = char.get_user();
-        user.socket.emit('map-pos', data);
-        char.update_visited();
-        char.send_status_update();
+        char.change_fatigue(2);
+        if (char.is_player()) {
+            let user = char.get_user();
+            if (user.socket != undefined) {
+                user.socket.emit('map-pos', data);
+                char.update_visited();
+                char.send_status_update();
+            }
+        }
         return await char.on_move_default(pool, data);
     }
 };

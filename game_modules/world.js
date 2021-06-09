@@ -9,6 +9,7 @@ const action_manager_1 = require("./manager_classes/action_manager");
 const socket_manager_1 = require("./manager_classes/socket_manager");
 const user_manager_1 = require("./manager_classes/user_manager");
 const rat_1 = require("./base_game_classes/races/rat");
+const ai_manager_1 = require("./manager_classes/ai_manager");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -45,6 +46,7 @@ class World {
         this.map_tick = 0;
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this);
         this.entity_manager = new entity_manager_1.EntityManager(this);
+        this.ai_manager = new ai_manager_1.AiManager(this);
         this.territories = {};
     }
     async init(pool) {
@@ -61,12 +63,14 @@ class World {
         let living_area = await this.entity_manager.create_area(pool, 'living_area');
         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony');
         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats');
-        let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat', this.get_cell_id_by_x_y(6, 5), -1);
-        rat_1.rat(test_rat);
+        for (let i = 1; i < 60; i++) {
+            let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(6, 5), -1);
+            await rat_1.rat(pool, test_rat);
+        }
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
-        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1);
-        mayor.savings.inc(10000);
-        this.entity_manager.set_faction_leader(ith_colony, mayor);
+        // let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
+        // mayor.savings.inc(10000);
+        // this.entity_manager.set_faction_leader(ith_colony, mayor)
         port_chunk.set_influence(ith_colony, 100);
         living_area.set_influence(ith_colony, 50);
         living_area.set_influence(steppe_rats, 50);

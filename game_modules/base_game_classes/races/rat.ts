@@ -1,7 +1,8 @@
 import { CharacterGenericPart } from "../character_generic_part";
 
-export function rat(char: CharacterGenericPart) {
+export async function rat(pool: any, char: CharacterGenericPart) {
     char.misc.tag = 'rat'
+    char.misc.ai_tag = 'agressive_walker'
     char.misc.model = 'rat'
     char.stats.phys_power = 5
     char.stats.magic_power = 5
@@ -10,4 +11,5 @@ export function rat(char: CharacterGenericPart) {
     char.stats.max.hp = 50
 
     char.skills.perks.claws = true
+    await char.save_to_db(pool)
 }

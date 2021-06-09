@@ -8,7 +8,7 @@ exports.rest = {
             if (cell == undefined) {
                 return 6 /* INVALID_CELL */;
             }
-            if (cell.can_rest()) {
+            if (cell.can_rest() || (char.misc.tag == 'rat')) {
                 return 1 /* OK */;
             }
             return 3 /* NO_RESOURCE */;
@@ -17,7 +17,8 @@ exports.rest = {
     },
     result: async function (pool, char, data) {
         char.changed = true;
-        char.change_stress(-20);
+        char.change_fatigue(-20);
+        char.change_stress(-5);
         char.send_status_update();
     },
     start: async function (pool, char, data) {

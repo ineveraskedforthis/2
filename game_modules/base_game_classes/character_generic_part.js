@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterGenericPart = void 0;
+exports.CharacterGenericPart = exports.Status = void 0;
 var common = require("../common.js");
 var { constants } = require("../static_data/constants.js");
 const Equip = require("./equip.js");
@@ -38,8 +38,10 @@ class Status {
         this.rage = 0;
         this.blood = 0;
         this.stress = 0;
+        this.fatigue = 0;
     }
 }
+exports.Status = Status;
 class InnateStats {
     constructor() {
         this.max = new Status();
@@ -82,6 +84,7 @@ class CharacterGenericPart {
         this.stats.max.rage = 100;
         this.stats.max.blood = 100;
         this.stats.max.stress = 100;
+        this.stats.max.fatigue = 100;
         this.stats.movement_speed = 1;
         this.stats.phys_power = 10;
         this.stats.magic_power = 10;
@@ -92,6 +95,7 @@ class CharacterGenericPart {
         this.flags = new CharacterFlags();
         this.changed = false;
         this.status_changed = false;
+        this.deleted = false;
         this.id = -1;
         this.name = 'unknown';
         this.user_id = -1;
@@ -195,8 +199,10 @@ class CharacterGenericPart {
         }
     }
     out_of_battle_update(dt) {
+        this.change_rage(-1);
     }
     battle_update() {
+        this.change_stress(1);
     }
     async on_move(pool) {
         return undefined;
@@ -218,6 +224,12 @@ class CharacterGenericPart {
     }
     get_rage() {
         return this.status.rage;
+    }
+    get_fatigue() {
+        return this.status.fatigue;
+    }
+    get_stress() {
+        return this.status.stress;
     }
     get_hp_change() {
         return 0;
@@ -257,6 +269,9 @@ class CharacterGenericPart {
     get_max_blood() {
         return this.stats.max.blood;
     }
+    get_max_fatigue() {
+        return this.stats.max.fatigue;
+    }
     get_cell() {
         return this.world.get_cell_by_id(this.cell_id);
     }
@@ -273,6 +288,9 @@ class CharacterGenericPart {
             this.changed = true;
             this.status_changed = true;
             this.send_status_update();
+        }
+        if (this.get_hp() == 0) {
+            this.flags.dead = true;
         }
     }
     change_rage(x) {
@@ -297,6 +315,15 @@ class CharacterGenericPart {
         let tmp = this.status.stress;
         this.status.stress = Math.max(0, this.status.stress + x);
         if (tmp != this.status.stress) {
+            this.changed = true;
+            this.status_changed = true;
+            this.send_status_update();
+        }
+    }
+    change_fatigue(x) {
+        let tmp = this.status.fatigue;
+        this.status.fatigue = Math.max(0, this.status.fatigue + x);
+        if (tmp != this.status.fatigue) {
             this.changed = true;
             this.status_changed = true;
             this.send_status_update();
@@ -384,6 +411,20 @@ class CharacterGenericPart {
     }
     //rgo
     rgo_check(character) {
+        if (this.get_tag() == 'rat') {
+            character.stash.inc('meat', 1);
+            if (this.skills.skinning.practice >= 10) {
+                character.stash.inc('meat', 1);
+                character.stash.inc('leather', 1);
+            }
+            let dice = Math.random();
+            if (dice > 0.05 * this.skills.skinning.practice) {
+                character.skills.skinning.practice += 1;
+            }
+            character.send_stash_update();
+            character.send_skills_update();
+            character.changed = true;
+        }
     }
     //attack calculations
     async attack(pool, target) {
@@ -441,6 +482,8 @@ class CharacterGenericPart {
                 result.damage.pierce += 10;
             }
         }
+        result.attacker_status_change.rage = 5;
+        result.attacker_status_change.fatigue = 1;
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * phys_power));
         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * phys_power));
@@ -589,7 +632,7 @@ class CharacterGenericPart {
         // this.misc.explored[tag] = true;
         // this.changed = true
     }
-    async update_visited() {
+    update_visited() {
         let cell = this.get_cell();
         if (cell != undefined) {
             let visited = [];

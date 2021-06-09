@@ -1,5 +1,6 @@
-import { damage_type, Status, weapon_type } from "../../static_data/type_script_types"
+import { damage_type, weapon_type } from "../../static_data/type_script_types"
 import { DamageByTypeObject } from "./damage_types";
+import {Status} from '../character_generic_part'
 
 export class AttackResult {
     flags: {
@@ -35,14 +36,16 @@ export class AttackResult {
             hp: 0,
             rage: 0,
             stress: 0,
-            blood: 0
+            blood: 0,
+            fatigue: 0
         }
 
         this.attacker_status_change = {
             hp: 0,
             rage: 0,
             stress: 0,
-            blood: 0
+            blood: 0,
+            fatigue: 0
         }
 
         this.new_pos = undefined

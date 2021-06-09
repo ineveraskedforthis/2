@@ -17,13 +17,15 @@ class AttackResult {
             hp: 0,
             rage: 0,
             stress: 0,
-            blood: 0
+            blood: 0,
+            fatigue: 0
         };
         this.attacker_status_change = {
             hp: 0,
             rage: 0,
             stress: 0,
-            blood: 0
+            blood: 0,
+            fatigue: 0
         };
         this.new_pos = undefined;
         this.damage = new damage_types_1.DamageByTypeObject();

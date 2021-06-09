@@ -796,6 +796,7 @@ socket.on('cell-visited', data => map.mark_visited(data))
 
 socket.on('map-data-cells', data => {console.log(data); map.load_data(data)})
 socket.on('map-data-terrain', data => {map.load_terrain(data)})
+socket.on('map-data-reset', data => {map.reset()})
 
 function update_tags(msg) {
     let market_div = document.querySelector('.goods_list') 

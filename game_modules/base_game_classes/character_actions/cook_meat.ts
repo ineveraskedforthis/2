@@ -30,8 +30,8 @@ export const cook_meat = {
             let dice = Math.random()
             char.stash.inc('meat', -1)
             char.send_stash_update()
-            if (dice < check) {        
-                char.change_stress(1)
+            char.change_fatigue(10)
+            if (dice < check) {
                 char.stash.inc('food', 1)
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared')
                 char.send_stash_update()

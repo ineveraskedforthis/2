@@ -281,6 +281,11 @@ export class Map {
         this.terrain[data.x][data.y] = data.ter
     } 
 
+    reset() {
+        this.terrain = []
+        this.data = []
+    }
+
     toogle_territory(tag) {
         this.fog_of_war[tag] = !this.fog_of_war[tag];
     }

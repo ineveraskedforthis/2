@@ -14,6 +14,7 @@ import {SocketManager} from './manager_classes/socket_manager'
 import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
 import { rat } from "./base_game_classes/races/rat";
+import { AiManager } from "./manager_classes/ai_manager";
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -47,6 +48,7 @@ export class World {
     map_tick: number;
     socket_manager: SocketManager;
     entity_manager: EntityManager;
+    ai_manager: AiManager;
     territories: {[_: string]: any}
 
     ACTION_TIME: number
@@ -75,6 +77,8 @@ export class World {
         this.socket_manager = new SocketManager(undefined, io, this);
         this.entity_manager = new EntityManager(this);
 
+        this.ai_manager = new AiManager(this)
+
         this.territories = {}
     }
 
@@ -95,18 +99,20 @@ export class World {
         let port_chunk = await this.entity_manager.create_area(pool, 'port')
         let living_area = await this.entity_manager.create_area(pool, 'living_area')
 
-
         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony')
         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats')
 
-        let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat', this.get_cell_id_by_x_y(6, 5), -1)
-        rat(test_rat)
+        for (let i = 1; i < 60; i++) {
+            let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(6, 5), -1)
+            await rat(pool, test_rat)
+        }
+        
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
 
-        let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
-        mayor.savings.inc(10000);
+        // let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
+        // mayor.savings.inc(10000);
 
-        this.entity_manager.set_faction_leader(ith_colony, mayor)
+        // this.entity_manager.set_faction_leader(ith_colony, mayor)
 
         port_chunk.set_influence(ith_colony, 100)
         living_area.set_influence(ith_colony, 50)

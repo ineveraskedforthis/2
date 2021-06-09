@@ -60,16 +60,18 @@ class SkillList {
     }
 }
 
-class Status {
+export class Status {
     hp:number;
     rage:number;
     blood:number;
     stress:number;
+    fatigue:number;
     constructor() {
         this.hp = 0
         this.rage = 0
         this.blood = 0
         this.stress = 0
+        this.fatigue = 0
     }
 }
 
@@ -139,6 +141,7 @@ export class CharacterGenericPart {
     flags: CharacterFlags;
     changed: boolean;
     status_changed: boolean;
+    deleted: boolean
 
     id: number
     name: string;
@@ -168,6 +171,7 @@ export class CharacterGenericPart {
         this.stats.max.rage = 100;
         this.stats.max.blood = 100;
         this.stats.max.stress = 100;
+        this.stats.max.fatigue = 100;
         this.stats.movement_speed = 1;
         this.stats.phys_power = 10;
         this.stats.magic_power = 10;
@@ -181,6 +185,7 @@ export class CharacterGenericPart {
 
         this.changed = false;
         this.status_changed = false;
+        this.deleted = false;
 
         this.id = -1;
         this.name = 'unknown'
@@ -299,11 +304,11 @@ export class CharacterGenericPart {
     }
 
     out_of_battle_update(dt: number) {
-
-    }
+        this.change_rage(-1)
+    }   
 
     battle_update() {
-
+        this.change_stress(1)
     }
 
     async on_move(pool: any) {
@@ -321,7 +326,6 @@ export class CharacterGenericPart {
     get_tag() {
         return this.misc.tag
     }
-
     get_hp() {
         return this.status.hp
     }
@@ -330,6 +334,12 @@ export class CharacterGenericPart {
     }
     get_rage() {
         return this.status.rage
+    }
+    get_fatigue() {
+        return this.status.fatigue
+    }
+    get_stress() {
+        return this.status.stress
     }
 
     get_hp_change() {
@@ -376,6 +386,10 @@ export class CharacterGenericPart {
         return this.stats.max.blood
     }
 
+    get_max_fatigue() {
+        return this.stats.max.fatigue
+    }
+
     get_cell() {
         return this.world.get_cell_by_id(this.cell_id);
     }
@@ -394,6 +408,9 @@ export class CharacterGenericPart {
             this.changed = true;
             this.status_changed = true;
             this.send_status_update()
+        }
+        if (this.get_hp() == 0) {
+            this.flags.dead = true
         }
     }
 
@@ -421,6 +438,16 @@ export class CharacterGenericPart {
         let tmp = this.status.stress;
         this.status.stress = Math.max(0, this.status.stress + x);
         if (tmp != this.status.stress) {
+            this.changed = true
+            this.status_changed = true;
+            this.send_status_update()
+        }
+    }
+
+    change_fatigue(x: number) {
+        let tmp = this.status.fatigue;
+        this.status.fatigue = Math.max(0, this.status.fatigue + x);
+        if (tmp != this.status.fatigue) {
             this.changed = true
             this.status_changed = true;
             this.send_status_update()
@@ -530,7 +557,21 @@ export class CharacterGenericPart {
 
     //rgo
     rgo_check(character:CharacterGenericPart) {
+        if (this.get_tag() == 'rat') {
+            character.stash.inc('meat', 1)
+            if (this.skills.skinning.practice >= 10) {
+                character.stash.inc('meat', 1)
+                character.stash.inc('leather', 1)
+            }
+            let dice = Math.random()
+            if (dice > 0.05 * this.skills.skinning.practice) {
+                character.skills.skinning.practice += 1
 
+            }
+            character.send_stash_update()
+            character.send_skills_update()
+            character.changed = true
+        }
     }
 
 
@@ -603,6 +644,9 @@ export class CharacterGenericPart {
                 result.damage.pierce += 10
             }
         }
+
+        result.attacker_status_change.rage = 5
+        result.attacker_status_change.fatigue = 1
 
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * phys_power));

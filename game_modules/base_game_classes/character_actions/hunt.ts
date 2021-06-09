@@ -19,7 +19,7 @@ export const hunt = {
 
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
         char.changed = true
-        char.change_stress(5)
+        char.change_fatigue(10)
         char.stash.inc('meat', 1)
         char.change_blood(5)
         char.send_status_update()

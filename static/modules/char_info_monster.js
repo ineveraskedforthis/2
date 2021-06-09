@@ -24,6 +24,9 @@ export class CharInfoMonster {
 
         this.stress =               document.getElementById('stress_data');
         this.stress_display =       document.getElementById('stress_value_display');
+
+        this.fatigue =               document.getElementById('fatigue_data');
+        this.fatigue_display =       document.getElementById('fatigue_value_display');
     }
 
     update_name(data) {
@@ -50,5 +53,8 @@ export class CharInfoMonster {
 
         this.stress.innerHTML = data.c.stress;
         this.stress_display.style.width = `${Math.floor(data.c.stress)}%`;
+
+        this.fatigue.innerHTML = data.c.fatigue;
+        this.fatigue_display.style.width = `${Math.floor(data.c.fatigue)}%`;
     }
 }

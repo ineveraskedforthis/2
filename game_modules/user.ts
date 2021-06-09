@@ -49,13 +49,18 @@ export class User {
     }
 
     async get_new_char(pool: any) {
+        let old_character = this.get_character()
+        old_character.user_id = -1
         let character = await this.world.create_new_character(pool, this.login, this.world.get_cell_id_by_x_y(0, 3), this.id)
         this.char_id = character.id
         character.user_id = this.id;
         character.add_explored(1);
         await this.save_to_db(pool);
+        console.log('NEW CHARACTER')
         if (this.socket != undefined) {
+            this.socket.emit('reset-map')
             this.world.socket_manager.send_all(character)
+            this.socket.emit('battle-action', {action: 'stop_battle'})
         }
         return this.char_id
     }
@@ -81,6 +86,7 @@ export class User {
         if (this.world.get_char_from_id(this.char_id) != undefined) {
             if (this.get_character().get_hp() == 0) {
                 await this.world.kill(pool, this.char_id)
+                await this.get_new_char(pool)
             }
         } else {
             await this.get_new_char(pool)

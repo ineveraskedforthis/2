@@ -8,9 +8,9 @@ export const rest = {
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            if (cell.can_rest()) {
+            if (cell.can_rest() || (char.misc.tag == 'rat')) {
                 return CharacterActionResponce.OK
-            }
+            } 
             return CharacterActionResponce.NO_RESOURCE
         } 
         return CharacterActionResponce.IN_BATTLE
@@ -18,7 +18,8 @@ export const rest = {
 
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
         char.changed = true
-        char.change_stress(-20)
+        char.change_fatigue(-20)
+        char.change_stress(-5)
         char.send_status_update()
     },
 

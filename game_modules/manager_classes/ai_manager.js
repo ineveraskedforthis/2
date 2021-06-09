@@ -31,15 +31,15 @@ class AiManager {
         let a = cell.get_characters_list();
         for (let id of a) {
             let target_char = this.world.get_char_from_id(id);
-            if ((target_char.get_tag() == 'test') && (char.get_tag() == 'rat') || (target_char.get_tag() == 'test') && (char.get_tag() == 'rat')) {
-                if (!target_char.in_battle()) {
+            if ((target_char.get_tag() == 'test') && (char.get_tag() == 'rat') || (target_char.get_tag() == 'rat') && (char.get_tag() == 'char')) {
+                if (!target_char.in_battle() && !target_char.is_dead()) {
                     return target_char.id;
                 }
             }
         }
         return -1;
     }
-    random_walk(char) {
+    async random_walk(char) {
         let cell = char.get_cell();
         if (cell == undefined) {
             return;
@@ -47,24 +47,30 @@ class AiManager {
         let possible_moves = [];
         for (let d of dp) {
             let tmp = [d[0] + cell.i, d[1] + cell.j];
-            if (this.world.can_move(tmp[0], tmp[1])) {
+            if (this.world.can_move(tmp[0], tmp[1]) && this.world.get_territory(tmp[0], tmp[1]) != 'colony') {
                 possible_moves.push(tmp);
             }
         }
         if (possible_moves.length > 0) {
             let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
-            this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, move_direction);
+            await this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, { x: move_direction[0], y: move_direction[1] });
         }
     }
-    decision(char) {
-        if (char.misc.ai_tag == 'rat') {
+    async decision(char) {
+        // console.log(char.misc.ai_tag)
+        if ((char.misc.ai_tag == 'agressive_walker') && (!char.is_player())) {
             if (!char.in_battle() && !char.action_started) {
-                let target = this.enemies_in_cell(char);
-                if (target != -1) {
-                    this.world.action_manager.start_action(action_manager_1.CharacterAction.ATTACK, char, target);
+                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                    await this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
                 }
                 else {
-                    this.random_walk(char);
+                    let target = this.enemies_in_cell(char);
+                    if (target != -1) {
+                        await this.world.action_manager.start_action(action_manager_1.CharacterAction.ATTACK, char, target);
+                    }
+                    else {
+                        await this.random_walk(char);
+                    }
                 }
             }
         }
