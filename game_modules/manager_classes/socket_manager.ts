@@ -236,7 +236,7 @@ export class SocketManager {
             user.socket.emit('session', session);
             this.sessions[session] = user;
 
-            console.log('user ' + data.login + ' registrated')
+            console.log('user ' + data.login + ' registered')
         }
     }
 

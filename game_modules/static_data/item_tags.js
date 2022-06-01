@@ -1,85 +1,185 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.loot_affixes_weight = exports.loot_chance_weight = exports.slots = exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.item_base_resists = exports.item_base_range = exports.item_base_damage = void 0;
-exports.item_base_damage = {
-    sword: (result) => {
-        result.damage = { blunt: 5, pierce: 10, slice: 20, fire: 0 };
-        return result;
-    },
-    empty: (result) => {
-        result.damage = { blunt: 3, pierce: 1, slice: 1, fire: 0 };
-        return result;
-    },
-    fist: (result) => {
-        result.damage = { blunt: 10, pierce: 1, slice: 1, fire: 0 };
-        return result;
-    },
-    spear: (result) => {
-        result.damage = { blunt: 5, pierce: 20, slice: 5, fire: 0 };
-        return result;
-    },
-    mace: (result) => {
-        result.damage = { blunt: 60, pierce: 0, slice: 0, fire: 0 };
-        return result;
-    },
-};
-exports.item_base_range = {
-    sword: (range) => {
-        range += 0;
-        return range;
-    },
-    empty: (range) => {
-        range += 0;
-        return range;
-    },
-    fist: (range) => {
-        range += 0;
-        return range;
-    },
-    spear: (range) => {
-        range += 2;
-        return range;
-    },
-    mace: (range) => {
-        range += 0;
-        return range;
-    },
-};
-exports.item_base_resists = {
-    empty: (resists) => {
-        return resists;
-    },
-    rat_leather_armour: (resists) => {
-        resists.pierce += 3;
-        resists.slice += 3;
-        return resists;
-    },
-    rat_fur_cap: (resists) => {
-        resists.pierce += 1;
-        resists.slice += 1;
-        return resists;
-    },
-    rat_leather_leggins: (resists) => {
-        resists.pierce += 2;
-        resists.slice += 2;
-        return resists;
-    },
-    rat_leather_boots: (resists) => {
-        resists.slice += 1;
-        return resists;
-    },
-    rat_leather_gauntlets: (resists) => {
-        resists.slice += 1;
-        return resists;
-    },
-    elodino_flesh_dress: (resists) => {
-        return resists;
-    },
-    graci_hair: (resists) => {
-        resists.slice += 1;
-        return resists;
+exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.base_damage = exports.base_resist = exports.Weapon = exports.Armour = exports.affix = exports.ARMOUR_TYPE = void 0;
+var ARMOUR_TYPE;
+(function (ARMOUR_TYPE) {
+    ARMOUR_TYPE[ARMOUR_TYPE["BODY"] = 0] = "BODY";
+    ARMOUR_TYPE[ARMOUR_TYPE["LEGS"] = 1] = "LEGS";
+    ARMOUR_TYPE[ARMOUR_TYPE["ARMS"] = 2] = "ARMS";
+    ARMOUR_TYPE[ARMOUR_TYPE["HEAD"] = 3] = "HEAD";
+    ARMOUR_TYPE[ARMOUR_TYPE["FOOT"] = 4] = "FOOT";
+})(ARMOUR_TYPE = exports.ARMOUR_TYPE || (exports.ARMOUR_TYPE = {}));
+function protection_rating(x) {
+    switch (x) {
+        case ARMOUR_TYPE.BODY: return 5;
+        case ARMOUR_TYPE.LEGS: return 2;
+        case ARMOUR_TYPE.ARMS: return 1;
+        case ARMOUR_TYPE.HEAD: return 2;
+        case ARMOUR_TYPE.FOOT: return 1;
     }
-};
+}
+function density(mat) {
+    switch (mat) {
+        case 0 /* RAT_SKIN */: return 2;
+        case 1 /* BONE */: return 3;
+        case 2 /* ELODINO */: return 1;
+        case 3 /* GRACI_HAIR */: return 2;
+        case 4 /* WOOD */: return 3;
+        case 5 /* STEEL */: return 20;
+    }
+}
+function hardness(mat) {
+    if (mat == 0 /* RAT_SKIN */) {
+        return 4;
+    }
+    if (mat == 1 /* BONE */) {
+        return 10;
+    }
+    if (mat == 2 /* ELODINO */) {
+        return 1;
+    }
+    if (mat == 3 /* GRACI_HAIR */) {
+        return 2;
+    }
+    if (mat == 4 /* WOOD */) {
+        return 3;
+    }
+    if (mat == 5 /* STEEL */) {
+        return 20;
+    }
+    return 1;
+}
+// quality shows how well impact part of something serves it's purpose:
+// for example: edges
+// at 100 whole damage will be converted to slice, 
+// at 0 it will act just as fancy club 
+class affix {
+    constructor(tag, tier) {
+        this.tag = tag;
+        this.tier = tier;
+    }
+}
+exports.affix = affix;
+class Armour {
+    constructor(data) {
+        this.durability = data.durability;
+        this.material = data.material;
+        this.type = data.type;
+        this.quality = data.quality;
+        this.affixes = data.affixes;
+    }
+    get_weight() {
+        return density(this.material) * protection_rating(this.type);
+    }
+    get_json() {
+        let data = {};
+        data.durability = this.durability;
+        data.material = this.material;
+        data.type = this.type;
+        data.quality = this.quality;
+        data.affixes = this.affixes;
+        return data;
+    }
+}
+exports.Armour = Armour;
+class Weapon {
+    constructor(data) {
+        this.durability = data.durability;
+        this.shaft_length = data.shaft_length;
+        this.shaft_material = data.shaft_material;
+        this.shaft_weight = data.shaft_weight;
+        this.impact_size = data.impact_size;
+        this.impact_material = data.impact_material;
+        this.impact_type = data.impact_type;
+        this.impact_quality = data.impact_quality;
+        this.impact_weight = data.impact_weight;
+        this.affixes = data.affixes;
+    }
+    get_weight() {
+        return this.shaft_weight + this.impact_weight;
+    }
+    get_length() {
+        let length = 0;
+        switch (this.impact_size) {
+            case 1 /* SMALL */: length = length + 0.1;
+            case 2 /* MEDIUM */: length = length + 1;
+            case 3 /* LARGE */: length = length + 2;
+        }
+        switch (this.shaft_length) {
+            case 0 /* HAND */: length = length + 0.1;
+            case 1 /* SHORT */: length = length + 1;
+            case 2 /* LONG */: length = length + 2;
+        }
+        return length;
+    }
+    get_json() {
+        let data = {
+            durability: this.durability,
+            shaft_length: this.shaft_length,
+            shaft_material: this.shaft_material,
+            shaft_weight: this.shaft_weight,
+            impact_size: this.impact_size,
+            impact_material: this.impact_material,
+            impact_type: this.impact_type,
+            impact_quality: this.impact_quality,
+            impact_weight: this.impact_weight,
+            affixes: this.affixes
+        };
+        return data;
+    }
+}
+exports.Weapon = Weapon;
+function base_resist(result, item) {
+    let temp_protection = protection_rating(item.type);
+    let temp_hardness = hardness(item.material);
+    result.blunt = result.blunt + temp_protection * temp_hardness;
+    result.slice = result.slice + temp_protection * temp_hardness * 2;
+    result.pierce = result.pierce + temp_protection * temp_hardness;
+    return result;
+}
+exports.base_resist = base_resist;
+function base_damage(result, item) {
+    switch (item.impact_type) {
+        case 1 /* EDGE */: {
+            let effective_weight = (item.impact_weight * item.shaft_length + item.shaft_weight);
+            result.damage.slice = effective_weight * item.impact_quality / 100;
+            result.damage.blunt = effective_weight * (100 - item.impact_quality) / 100;
+        }
+        case 0 /* POINT */: {
+            let effective_weight = (item.impact_weight + item.shaft_weight);
+            result.damage.pierce = effective_weight * item.impact_quality / 100;
+            result.damage.blunt = effective_weight * (100 - item.impact_quality) / 100;
+        }
+        case 2 /* HEAD */: {
+            let effective_weight = (item.impact_weight * item.shaft_length + item.shaft_weight);
+            result.damage.blunt = effective_weight;
+        }
+    }
+    return result;
+}
+exports.base_damage = base_damage;
+// export const item_base_damage = {
+//         sword: (result:AttackResult) => {
+//             result.damage = {blunt: 5, pierce: 10, slice: 20, fire: 0}
+//             return result
+//         },
+//         empty: (result:AttackResult) => {
+//             result.damage = {blunt: 3, pierce: 1, slice: 1, fire: 0}
+//             return result
+//         },
+//         fist: (result:AttackResult) => {
+//             result.damage = {blunt: 10, pierce: 1, slice: 1, fire: 0};
+//             return result
+//         },
+//         spear: (result:AttackResult) => {
+//             result.damage = {blunt: 5, pierce: 20, slice: 5, fire: 0}
+//             return result
+//         },
+//         mace: (result:AttackResult) => {
+//             result.damage = {blunt: 60, pierce: 0, slice: 0, fire: 0}
+//             return result
+//         },
+//     }
 exports.damage_affixes_effects = {
     sharp: (result, tier) => {
         result.damage.pierce += tier * 5;
@@ -196,104 +296,4 @@ exports.update_character = {
     pain_shell: (agent, tier) => {
         agent.change_hp(-1 * tier);
     }
-};
-exports.slots = {
-    sword: 'right_hand',
-    spear: 'right_hand',
-    mace: 'right_hand',
-    rat_leather_armour: 'body',
-    elodino_flesh_dress: 'body',
-    rat_fur_cap: 'head',
-    graci_hair: 'head',
-    rat_leather_leggins: 'legs',
-    rat_leather_gauntlets: 'arms',
-    rat_leather_boots: 'foot'
-};
-exports.loot_chance_weight = {
-    rat: {
-        sword: 30,
-        spear: 30,
-        mace: 30,
-        rat_leather_armour: 100,
-        rat_fur_cap: 100,
-        rat_leather_leggins: 100,
-        rat_leather_gauntlets: 50,
-        rat_leather_boots: 50,
-    },
-    elodino: {
-        sword: 300,
-        spear: 300,
-        mace: 300,
-        elodino_flesh_dress: 100
-    },
-    graci: {
-        sword: 100,
-        spear: 100,
-        mace: 100,
-        graci_hair: 100,
-    },
-    test: {}
-};
-exports.loot_affixes_weight = {
-    sword: {
-        sharp: 60,
-        heavy: 100,
-        hot: 30,
-        precise: 50,
-        power_battery: 10,
-        madness: 20,
-        calm: 10,
-        daemonic: 1,
-        notched: 60
-    },
-    spear: {
-        heavy: 5,
-        hot: 50,
-        sharp: 50,
-        power_battery: 50,
-        precise: 50,
-        calm: 10,
-        daemonic: 1,
-    },
-    mace: {
-        heavy: 150,
-        hot: 50,
-        precise: 50,
-        power_battery: 50,
-        madness: 50,
-        daemonic: 1
-    },
-    rat_leather_armour: {
-        thick: 2,
-        power_battery: 1,
-        hard: 1
-    },
-    rat_fur_cap: {
-        thick: 2,
-        power_battery: 1,
-        hard: 1
-    },
-    elodino_flesh_dress: {
-        power_battery: 10,
-        elodino_pleasure: 2
-    },
-    graci_hair: {
-        power_battery: 10,
-        thick: 2,
-        power_of_graci_beauty: 3,
-    },
-    rat_leather_leggins: {
-        thick: 2,
-        power_battery: 1
-    },
-    rat_leather_gauntlets: {
-        thick: 2,
-        power_battery: 2
-    },
-    rat_leather_boots: {
-        thick: 2,
-        power_battery: 1
-    },
-    empty: {},
-    fist: {}
 };

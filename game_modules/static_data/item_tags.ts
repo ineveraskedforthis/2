@@ -1,92 +1,301 @@
+import { textChangeRangeIsUnchanged } from "typescript"
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
 import type { AttackResult } from "../base_game_classes/misc/attack_result"
 import type { DamageByTypeObject } from "../base_game_classes/misc/damage_types"
 
-export type item_tag = 'sword'|'empty'|'fist'|'spear'|'mace'|'rat_leather_armour'|'rat_fur_cap'|'elodino_flesh_dress'|'graci_hair'|'rat_leather_leggins'|'rat_leather_gauntlets'|'rat_leather_boots'
 export type affix_tag = 'sharp'|'heavy'|'hot'|'precise'|'power_battery'|'madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'elodino_pleasure'|'power_of_graci_beauty'
 
-export const item_base_damage = {
-        sword: (result:AttackResult) => {
-            result.damage = {blunt: 5, pierce: 10, slice: 20, fire: 0}
-            return result
-        },
-        empty: (result:AttackResult) => {
-            result.damage = {blunt: 3, pierce: 1, slice: 1, fire: 0}
-            return result
-        },
-        fist: (result:AttackResult) => {
-            result.damage = {blunt: 10, pierce: 1, slice: 1, fire: 0};
-            return result
-        },
-        spear: (result:AttackResult) => {
-            result.damage = {blunt: 5, pierce: 20, slice: 5, fire: 0}
-            return result
-        },
-        mace: (result:AttackResult) => {
-            result.damage = {blunt: 60, pierce: 0, slice: 0, fire: 0}
-            return result
-        },
+export enum ARMOUR_TYPE {
+    BODY,
+    LEGS,
+    ARMS,
+    HEAD,
+    FOOT,
+}
+
+function protection_rating(x: ARMOUR_TYPE): number {
+    switch(x) {
+        case ARMOUR_TYPE.BODY: return 5;
+        case ARMOUR_TYPE.LEGS: return 2;
+        case ARMOUR_TYPE.ARMS: return 1;
+        case ARMOUR_TYPE.HEAD: return 2;
+        case ARMOUR_TYPE.FOOT: return 1;
+    }    
+}
+
+const enum ITEM_MATERIAL {
+    RAT_SKIN,
+    BONE,
+    ELODINO,
+    GRACI_HAIR,
+    WOOD,
+    STEEL
+}
+
+function density (mat: ITEM_MATERIAL): number {
+    switch(mat) {
+        case ITEM_MATERIAL.RAT_SKIN: return 2;
+        case ITEM_MATERIAL.BONE: return 3;
+        case ITEM_MATERIAL.ELODINO: return 1;
+        case ITEM_MATERIAL.GRACI_HAIR: return 2
+        case ITEM_MATERIAL.WOOD: return 3
+        case ITEM_MATERIAL.STEEL: return 20
+    }
+}
+
+function hardness (mat: ITEM_MATERIAL): number {
+    if (mat == ITEM_MATERIAL.RAT_SKIN) {
+        return 4
+    }
+    if (mat == ITEM_MATERIAL.BONE) {
+        return 10
+    }
+    if (mat == ITEM_MATERIAL.ELODINO) {
+        return 1
+    }
+    if (mat == ITEM_MATERIAL.GRACI_HAIR) {
+        return 2
+    }
+    if (mat == ITEM_MATERIAL.WOOD) {
+        return 3
+    }
+    if (mat == ITEM_MATERIAL.STEEL) {
+        return 20
+    }
+    return 1
+}
+
+const enum IMPACT_TYPE {
+    POINT,
+    EDGE,
+    HEAD,
+}
+
+const enum IMPACT_SIZE {
+    SMALL = 1, // spear/knife like, 1 unit,
+    MEDIUM = 2, // 2 units
+    LARGE = 3, // long sword
+}
+
+const enum SHAFT_LEGTH {
+    HAND = 0, // 1 unit of material
+    SHORT = 1, // 2 units, javelin/mace
+    LONG = 2, // 3 units, something like long pike, imagine longsword edge on long shaft lmao
+}
+
+
+// quality shows how well impact part of something serves it's purpose:
+// for example: edges
+// at 100 whole damage will be converted to slice, 
+// at 0 it will act just as fancy club 
+
+
+
+
+
+export class affix{
+    tag: affix_tag;
+    tier: number;
+    constructor(tag: affix_tag, tier: number) {
+        this.tag = tag;
+        this.tier = tier;
+    }
+}
+
+//so how items will work
+//all items have durability: characteristic of how long they will last
+//i decided to not make them the same class to avoid being 
+
+//armour will have base protection rating based on type
+//quality makes them last longer
+//material will decide what kind of protection 1 unit of protection rating gives
+
+interface ArmourConstructorArgument {
+    durability: number; 
+    material: ITEM_MATERIAL;
+    type: ARMOUR_TYPE;
+    quality: number
+    affixes: affix[]
+}
+
+export class Armour {
+    durability: number;
+    material: ITEM_MATERIAL;
+    type: ARMOUR_TYPE;
+    quality: number;
+
+    affixes: affix[]
+
+    constructor(data: ArmourConstructorArgument) {
+        this.durability = data.durability
+        this.material = data.material
+        this.type = data.type
+        this.quality = data.quality
+        this.affixes = data.affixes
     }
 
-
-export const item_base_range = {
-        sword: (range: number) => {
-            range += 0;
-            return range
-        },
-        empty: (range: number) => {
-            range += 0;
-            return range
-        },
-        fist: (range: number) => {
-            range += 0;
-            return range
-        },
-        spear: (range: number) => {
-            range += 2;
-            return range
-        },
-        mace: (range: number) => {
-            range += 0;
-            return range
-        },
+    get_weight() {
+        return density(this.material) * protection_rating(this.type) 
     }
 
-export const item_base_resists = {
-        empty: (resists: DamageByTypeObject) => {
-            return resists
-        },
-        rat_leather_armour: (resists: DamageByTypeObject) => {
-            resists.pierce += 3;
-            resists.slice += 3;
-            return resists;
-        },
-        rat_fur_cap: (resists: DamageByTypeObject) => {
-            resists.pierce += 1;
-            resists.slice += 1;
-            return resists;
-        },
-        rat_leather_leggins: (resists: DamageByTypeObject) => {
-            resists.pierce += 2;
-            resists.slice += 2;
-            return resists;
-        },
-        rat_leather_boots: (resists: DamageByTypeObject) => {
-            resists.slice += 1;
-            return resists;
-        },
-        rat_leather_gauntlets: (resists: DamageByTypeObject) => {
-            resists.slice += 1;
-            return resists;
-        },
-        elodino_flesh_dress: (resists: DamageByTypeObject) => {
-            return resists;
-        },
-        graci_hair: (resists: DamageByTypeObject) => {
-            resists.slice += 1;
-            return resists;
+    get_json() {
+        let data:any = {}
+        data.durability     = this.durability
+        data.material       = this.material
+        data.type           = this.type
+        data.quality        = this.quality
+        data.affixes        = this.affixes
+        return data
+    }
+}
+
+
+
+// weapons will be kind of modular
+// they will have two parts: handle and impact part
+// both of them could have different materials, length and weight
+// impact part can be enchanted
+// weight of shaft matters less for edge and head attacks
+// weight doesn't matter that much for point attacks
+
+interface WeaponConstructorArgument {
+    durability: number,
+    shaft_length: SHAFT_LEGTH,
+    shaft_material: ITEM_MATERIAL, 
+    shaft_weight: number,
+    impact_size: IMPACT_SIZE, 
+    impact_material: ITEM_MATERIAL, 
+    impact_type: IMPACT_TYPE, 
+    impact_quality: number,
+    impact_weight: number
+    affixes: affix[]
+}
+
+
+export class Weapon {
+    durability: number;
+    shaft_length: SHAFT_LEGTH;
+    shaft_material: ITEM_MATERIAL;
+    impact_size: number;
+    impact_material: ITEM_MATERIAL;
+    impact_type: IMPACT_TYPE;
+    impact_quality: number;
+
+    shaft_weight: number;
+    impact_weight: number;
+
+    affixes: affix[]
+
+
+    constructor(data: WeaponConstructorArgument) {
+
+        this.durability = data.durability;
+
+        this.shaft_length = data.shaft_length
+        this.shaft_material = data.shaft_material;
+        this.shaft_weight = data.shaft_weight
+
+
+        this.impact_size = data.impact_size;
+        this.impact_material = data.impact_material;
+        this.impact_type = data.impact_type;
+        this.impact_quality = data.impact_quality;
+        this.impact_weight = data.impact_weight
+
+        this.affixes = data.affixes
+    }
+
+    get_weight() {
+        return this.shaft_weight + this.impact_weight
+    }
+
+    get_length() {
+        let length = 0
+        switch(this.impact_size) {
+            case IMPACT_SIZE.SMALL: length = length + 0.1
+            case IMPACT_SIZE.MEDIUM: length = length + 1
+            case IMPACT_SIZE.LARGE: length = length + 2
+        }
+        switch(this.shaft_length) {
+            case SHAFT_LEGTH.HAND: length = length + 0.1
+            case SHAFT_LEGTH.SHORT: length = length + 1
+            case SHAFT_LEGTH.LONG: length = length + 2
+        }
+        return length
+    }
+
+    get_json() {
+        let data:WeaponConstructorArgument = {
+            durability: this.durability,
+
+            shaft_length: this.shaft_length,
+            shaft_material: this.shaft_material,
+            shaft_weight: this.shaft_weight,
+
+
+            impact_size: this.impact_size,
+            impact_material: this.impact_material,
+            impact_type: this.impact_type,
+            impact_quality: this.impact_quality,
+            impact_weight: this.impact_weight,
+
+            affixes: this.affixes
+        }
+        return data
+    }
+}
+
+export function base_resist(result: DamageByTypeObject, item: Armour) {
+    let temp_protection = protection_rating(item.type)
+    let temp_hardness = hardness(item.material)
+    result.blunt = result.blunt + temp_protection * temp_hardness
+    result.slice = result.slice + temp_protection * temp_hardness * 2
+    result.pierce = result.pierce + temp_protection * temp_hardness
+    return result
+}
+
+export function base_damage(result: AttackResult, item: Weapon) {
+    switch(item.impact_type) {
+        case IMPACT_TYPE.EDGE: {
+            let effective_weight = (item.impact_weight * item.shaft_length + item.shaft_weight)
+            result.damage.slice = effective_weight * item.impact_quality / 100
+            result.damage.blunt = effective_weight * (100 - item.impact_quality) / 100
+        }
+        case IMPACT_TYPE.POINT: {
+            let effective_weight = (item.impact_weight + item.shaft_weight)
+            result.damage.pierce = effective_weight * item.impact_quality / 100
+            result.damage.blunt = effective_weight * (100 - item.impact_quality) / 100
+        }
+        case IMPACT_TYPE.HEAD: {
+            let effective_weight = (item.impact_weight * item.shaft_length + item.shaft_weight)
+            result.damage.blunt = effective_weight;
         }
     }
+    return result
+}
+
+// export const item_base_damage = {
+//         sword: (result:AttackResult) => {
+//             result.damage = {blunt: 5, pierce: 10, slice: 20, fire: 0}
+//             return result
+//         },
+//         empty: (result:AttackResult) => {
+//             result.damage = {blunt: 3, pierce: 1, slice: 1, fire: 0}
+//             return result
+//         },
+//         fist: (result:AttackResult) => {
+//             result.damage = {blunt: 10, pierce: 1, slice: 1, fire: 0};
+//             return result
+//         },
+//         spear: (result:AttackResult) => {
+//             result.damage = {blunt: 5, pierce: 20, slice: 5, fire: 0}
+//             return result
+//         },
+//         mace: (result:AttackResult) => {
+//             result.damage = {blunt: 60, pierce: 0, slice: 0, fire: 0}
+//             return result
+//         },
+//     }
 
 export const damage_affixes_effects = {
         sharp: (result: AttackResult, tier: number) => {
@@ -215,116 +424,5 @@ export const update_character = {
 
         pain_shell: (agent: CharacterGenericPart, tier: number) => {
             agent.change_hp(-1 * tier);
-        }
-    }
-
-export const slots = {
-        sword: 'right_hand',
-        spear: 'right_hand',
-        mace: 'right_hand',
-        rat_leather_armour: 'body',
-        elodino_flesh_dress: 'body',
-        rat_fur_cap: 'head',
-        graci_hair: 'head',
-        rat_leather_leggins: 'legs',
-        rat_leather_gauntlets: 'arms',
-        rat_leather_boots: 'foot'
-    }
-
-export const loot_chance_weight = {
-        rat: {
-            sword:                     30,
-            spear:                     30,
-            mace:                      30,
-            rat_leather_armour:       100,
-            rat_fur_cap:              100,
-            rat_leather_leggins:      100,
-            rat_leather_gauntlets:     50,
-            rat_leather_boots:         50,
-        },
-        elodino: {
-            sword: 300,
-            spear: 300,
-            mace: 300,
-            elodino_flesh_dress: 100
-        },
-        graci: {
-            sword: 100,
-            spear: 100,
-            mace: 100,
-            graci_hair: 100,
-        },
-        test: {
-
-        }
-    }
-
-type affix_weights = {[_ in item_tag]: {[_ in affix_tag]?: number}}
-
-export const loot_affixes_weight: affix_weights = {
-        sword: {
-            sharp: 60,
-            heavy: 100,
-            hot: 30,
-            precise: 50,
-            power_battery: 10,
-            madness: 20,
-            calm: 10,
-            daemonic: 1,
-            notched: 60
-        },
-        spear: {
-            heavy: 5,
-            hot: 50,
-            sharp: 50,
-            power_battery: 50,
-            precise: 50,
-            calm: 10,
-            daemonic: 1,
-        },
-        mace: {
-            heavy: 150,
-            hot: 50,
-            precise: 50,
-            power_battery: 50,
-            madness: 50,
-            daemonic: 1
-        },
-        rat_leather_armour: {
-            thick: 2,
-            power_battery: 1,
-            hard: 1
-        },
-        rat_fur_cap: {
-            thick: 2,
-            power_battery: 1,
-            hard: 1
-        },
-        elodino_flesh_dress: {
-            power_battery: 10,
-            elodino_pleasure: 2
-        },
-        graci_hair: {
-            power_battery: 10,
-            thick: 2,
-            power_of_graci_beauty: 3,
-        },
-        rat_leather_leggins: {
-            thick: 2,
-            power_battery: 1
-        },
-        rat_leather_gauntlets: {
-            thick: 2,
-            power_battery: 2
-        },
-        rat_leather_boots: {
-            thick: 2,
-            power_battery: 1
-        },
-        empty: {
-
-        },
-        fist: {
-
         }
     }

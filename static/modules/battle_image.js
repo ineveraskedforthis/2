@@ -589,6 +589,9 @@ export class BattleImage {
             if (data.result.flags.crit) {
                 return data.actor_name + ': critical_damage';
             }
+            if (data.result.flags.evade || data.result.flags.miss) {
+                return data.actor_name + ' missed';
+            }
             return data.actor_name + ': deals ' + data.result.total_damage + ' damage';
         } else if (data.action.startsWith('kinetic_bolt')) {
             if (data.result.flags.crit) {

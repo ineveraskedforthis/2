@@ -1,54 +1,70 @@
-var {item_base_damage, item_base_range, item_base_resists, damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character} = require("../static_data/item_tags.js");
-let items = require("../static_data/weapons.js");
-const { empty } = require("../static_data/weapons.js");
-const item_tags = require("../static_data/item_tags.js");
-
-const EQUIP_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms']
-
-
-module.exports = class Equip {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Equip = void 0;
+var { damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character } = require("../static_data/item_tags.js");
+const item_tags_1 = require("../static_data/item_tags");
+const inventory_1 = require("./inventory");
+const damage_types_1 = require("./misc/damage_types");
+class EquipData {
     constructor() {
-        this.data = {
-            right_hand: empty,
-            body: empty,
-            legs: empty,
-            foot: empty,
-            head: empty,
-            arms: empty,
-            backpack: []
-        }
-        this.changed = false
+        this.weapon = undefined;
+        this.armour = new Map();
+        this.backpack = new inventory_1.Inventory();
     }
-
-    transfer_all() {
-        for (let tag of EQUIP_TAGS) {
-            this.unequip(tag);
+    get_json() {
+        let result = {};
+        result.weapon = this.weapon?.get_json();
+        result.armour = {};
+        for (let tag of this.armour.keys()) {
+            result.armour[tag] = this.armour?.get(tag);
         }
-        for (let i = 0; i < this.data.backpack.length; i++) {
-            targer.equip.add_item(this.data.backpack[i])
-            this.data.backpack[i] = undefined
-        }
+        result.backpack = this.backpack.get_json();
     }
-
+    load_json(json) {
+        this.weapon = new item_tags_1.Weapon(json.weapon);
+        for (let tag of this.armour.keys()) {
+            this.armour.set(tag, new item_tags_1.Armour(json.armour[tag]));
+        }
+        this.backpack.load_from_json(json.backpack);
+    }
+}
+class Equip {
+    constructor() {
+        this.data = new EquipData();
+        this.changed = false;
+    }
+    transfer_all(target) {
+        this.unequip_weapon();
+        for (let tag of this.data.armour.keys()) {
+            this.unequip_armour(tag);
+        }
+        this.data.backpack.transfer_all(target);
+    }
     get_weapon_range(range) {
-        let right_hand = this.data.right_hand;
-        return  item_base_range[right_hand.tag](range);
-    }
-
-    get_weapon_damage(result) {
-        let right_hand = this.data.right_hand;
-        result = item_base_damage[right_hand.tag](result);
-        for (let i=0; i<right_hand.affixes; i++) {
-            let affix = right_hand['a' + i];
-            result = damage_affixes_effects[affix.tag](result, affix.tier);
+        let right_hand = this.data.weapon;
+        if (right_hand == undefined) {
+            return range;
         }
-        return result
+        return range + right_hand.get_length();
     }
-
+    get_weapon_damage(result) {
+        let right_hand = this.data.weapon;
+        if (right_hand != undefined) {
+            result = item_tags_1.base_damage(result, right_hand);
+            for (let i = 0; i < right_hand.affixes.length; i++) {
+                let affix = right_hand.affixes[i];
+                result = damage_affixes_effects[affix.tag](result, affix.tier);
+            }
+        }
+        return result;
+    }
     get_item_power(item) {
         let result = 0;
-        for (let i = 0; i < item.affixes; i++) {
-            let affix = item['a' + i];
+        if (item == undefined) {
+            return result;
+        }
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
             let f = get_power[affix.tag];
             if (f != undefined) {
                 result = f(result, affix.tier);
@@ -56,14 +72,13 @@ module.exports = class Equip {
         }
         return result;
     }
-
     get_item_resists(item, resists) {
-        let base = item_base_resists[item.tag];
-        if (base != undefined) {
-            resists = item_base_resists[item.tag](resists);
-        }        
-        for (let i = 0; i < item.affixes; i++) {
-            let affix = item['a' + i];
+        if (item == undefined) {
+            return resists;
+        }
+        resists = item_tags_1.base_resist(resists, item);
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
             let f = protection_affixes_effects[affix.tag];
             if (f != undefined) {
                 resists = f(resists, affix.tier);
@@ -71,91 +86,97 @@ module.exports = class Equip {
         }
         return resists;
     }
-
     get_magic_power() {
         let result = 0;
-        for (let i of EQUIP_TAGS) {
-            result += this.get_item_power(this.data[i])
+        result += this.get_item_power(this.data.weapon);
+        for (let tag of this.data.armour.keys()) {
+            result += this.get_item_power(this.data.armour.get(tag));
         }
-        return result
+        return result;
     }
-
     get_phys_power_modifier() {
-        return 1
+        return 1;
     }
-
-    
     get_magic_power_modifier() {
-        return 1
+        return 1;
     }
-
     update(agent) {
-        for (let i of EQUIP_TAGS) {
-            this.get_item_update(this.data[i], agent);
+        for (let i of this.data.armour.keys()) {
+            this.get_item_update(this.data.armour.get(i), agent);
         }
     }
-
     get_item_update(item, agent) {
-        for (let i = 0; i < item.affixes; i++) {
-            let affix = item['a' + i];
+        if (item == undefined) {
+            return;
+        }
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
             let f = update_character[affix.tag];
             if (f != undefined) {
                 f(agent, affix.tier);
             }
         }
     }
-
-    equip(index) {
+    equip_armour(index) {
         let backpack = this.data.backpack;
-        if (backpack[index] != undefined) {
-            let slot = slots[backpack[index].tag];
-            let tmp = this.data[slot];
-            this.data[slot] = backpack[index]
-            if (tmp.tag != 'empty' & tmp.tag != 'fist') {
-                backpack[index] = tmp;
-            } else {
-                backpack[index] = undefined;
-            }
-        }
-    }
-
-    unequip(tag) {
-        if (!(EQUIP_TAGS.includes(tag))) {
-            return true
-        }
-        let item = this.data[tag];
-        if ((item.tag == 'empty') || (item.tag == 'fist')) {
-            return
-        }
-        if (tag == 'right_hand') {
-            this.data[tag] = items.fist;
-        } else {
-            this.data[tag] = empty;   
-        }             
-        if ((item.tag != 'empty') || (item.tag != 'fist')) {
-            this.add_item(item);
-        }
-    }
-
-    get_resists() {
-        let resists = {blunt: 0, pierce: 0, slice: 0, fire: 0};
-        for (let i of EQUIP_TAGS) {
-            resists = this.get_item_resists(this.data[i], resists)
-        }
-        return resists
-    }
-
-    get_json() {
-        return this.data;
-    }
-
-    load_from_json(json) {
-        this.data = json;
-    }
-
-    add_item(item) {
+        let item = backpack.armours[index];
         if (item != undefined) {
-            this.data.backpack.push(item);
+            let slot = item.type;
+            let tmp = this.data.armour.get(slot);
+            this.data.armour.set(slot, item);
+            backpack.armours[index] = tmp;
         }
+    }
+    equip_weapon(index) {
+        let backpack = this.data.backpack;
+        let item = backpack.weapons[index];
+        if (item != undefined) {
+            let tmp = this.data.weapon;
+            this.data.weapon = tmp;
+            backpack.weapons[index] = tmp;
+        }
+    }
+    unequip_weapon() {
+        if (this.data.weapon == undefined)
+            return;
+        this.add_weapon(this.data.weapon);
+        this.data.weapon = undefined;
+    }
+    unequip_armour(tag) {
+        if (!(tag in item_tags_1.ARMOUR_TYPE)) {
+            return;
+        }
+        let item = this.data.armour.get(tag);
+        if (item == undefined) {
+            return;
+        }
+        else {
+            this.add_armour(item);
+            this.data.armour.set(tag, undefined);
+        }
+    }
+    add_weapon(item) {
+        if (item != undefined) {
+            this.data.backpack.weapons.push(item);
+        }
+    }
+    add_armour(item) {
+        if (item != undefined) {
+            this.data.backpack.armours.push(item);
+        }
+    }
+    get_resists() {
+        let resists = new damage_types_1.DamageByTypeObject;
+        for (let i of this.data.armour.keys()) {
+            resists = this.get_item_resists(this.data.armour.get(i), resists);
+        }
+        return resists;
+    }
+    get_json() {
+        return this.data.get_json();
+    }
+    load_from_json(json) {
+        this.data.load_json(json);
     }
 }
+exports.Equip = Equip;

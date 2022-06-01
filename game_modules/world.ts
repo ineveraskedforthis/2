@@ -1,6 +1,6 @@
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
-import {loot_chance_weight, loot_affixes_weight, item_tag, affix_tag} from "./static_data/item_tags";
+import {affix_tag} from "./static_data/item_tags";
 
 
 import {EntityManager} from './manager_classes/entity_manager'

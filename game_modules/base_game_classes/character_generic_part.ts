@@ -1,12 +1,13 @@
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
-const Equip = require("./equip.js");
+
 const Savings = require("./savings.js");
 const spells = require("../static_data/spells.js");
 
 const generate_empty_resists = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
 
+import {Equip} from "../base_game_classes/equip"
 import { tag } from "../static_data/type_script_types";
 import {Stash} from "./stash"
 import {AttackResult} from "./misc/attack_result";
@@ -436,7 +437,7 @@ export class CharacterGenericPart {
 
     change_stress(x: number) {
         let tmp = this.status.stress;
-        this.status.stress = Math.max(0, this.status.stress + x);
+        this.status.stress = Math.max(0, Math.min(this.get_max_stress(), this.status.stress + x));
         if (tmp != this.status.stress) {
             this.changed = true
             this.status_changed = true;
@@ -446,7 +447,7 @@ export class CharacterGenericPart {
 
     change_fatigue(x: number) {
         let tmp = this.status.fatigue;
-        this.status.fatigue = Math.max(0, this.status.fatigue + x);
+        this.status.fatigue = Math.max(0, Math.min(this.get_max_fatigue(), this.status.fatigue + x));
         if (tmp != this.status.fatigue) {
             this.changed = true
             this.status_changed = true;
@@ -588,8 +589,6 @@ export class CharacterGenericPart {
         result = target.roll_evasion(result);
         result = target.roll_block(result);
 
-        this.change_status(result.attacker_status_change)
-
         let dice = Math.random()
         if (dice > this.skills[result.weapon_type].practice / 50) {
             this.skills[result.weapon_type].practice += 1
@@ -597,6 +596,8 @@ export class CharacterGenericPart {
         this.send_skills_update()
         
         result = await target.take_damage(pool, result);
+        this.change_status(result.attacker_status_change)
+
         if (result.flags.killing_strike) {
             target.transfer_all_inv(this)
             target.rgo_check(this)
@@ -618,10 +619,16 @@ export class CharacterGenericPart {
 
     async take_damage(pool: any, result: any): Promise<AttackResult> {
         let res = this.get_resists();
+        
         if (!result.flags.evade && !result.flags.miss) {
             for (let i of damage_types) {
                 if (result.damage[i] > 0) {
                     let curr_damage = Math.max(0, result.damage[i] - res[i]);
+                    if ((curr_damage > 0) && ((i == 'slice') || (i == 'pierce'))) {
+                        if (this.get_tag() == 'rat' || this.get_tag() == 'test') {
+                            result.attacker_status_change.blood += curr_damage
+                        }
+                    }
                     result.total_damage += curr_damage;
                     this.change_hp(-curr_damage);
                     if (this.get_hp() == 0) {

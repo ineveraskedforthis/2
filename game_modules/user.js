@@ -36,7 +36,9 @@ class User {
     }
     async get_new_char(pool) {
         let old_character = this.get_character();
-        old_character.user_id = -1;
+        if (old_character != undefined) {
+            old_character.user_id = -1;
+        }
         let character = await this.world.create_new_character(pool, this.login, this.world.get_cell_id_by_x_y(0, 3), this.id);
         this.char_id = character.id;
         character.user_id = this.id;
@@ -44,7 +46,7 @@ class User {
         await this.save_to_db(pool);
         console.log('NEW CHARACTER');
         if (this.socket != undefined) {
-            this.socket.emit('reset-map');
+            this.socket.emit('map-data-reset');
             this.world.socket_manager.send_all(character);
             this.socket.emit('battle-action', { action: 'stop_battle' });
         }
