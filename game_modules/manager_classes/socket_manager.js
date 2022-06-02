@@ -188,7 +188,7 @@ class SocketManager {
             let session = this.generate_session(20);
             user.socket.emit('session', session);
             this.sessions[session] = user;
-            console.log('user ' + data.login + ' registrated');
+            console.log('user ' + data.login + ' registered');
         }
     }
     send_all(character) {

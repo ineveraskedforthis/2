@@ -19,11 +19,16 @@ class EquipData {
             result.armour[tag] = this.armour?.get(tag);
         }
         result.backpack = this.backpack.get_json();
+        return result;
     }
     load_json(json) {
-        this.weapon = new item_tags_1.Weapon(json.weapon);
+        if (json.weapon != undefined) {
+            this.weapon = new item_tags_1.Weapon(json.weapon);
+        }
         for (let tag of this.armour.keys()) {
-            this.armour.set(tag, new item_tags_1.Armour(json.armour[tag]));
+            if (json.armour[tag] != undefined) {
+                this.armour.set(tag, new item_tags_1.Armour(json.armour[tag]));
+            }
         }
         this.backpack.load_from_json(json.backpack);
     }

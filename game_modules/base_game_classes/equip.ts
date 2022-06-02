@@ -1,6 +1,6 @@
 var {damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character} = require("../static_data/item_tags.js");
 
-import { idText, isWhileStatement } from "typescript";
+import { idText, isJSDocCommentContainingNode, isWhileStatement } from "typescript";
 import {Armour, ARMOUR_TYPE, base_damage, base_resist, Weapon} from "../static_data/item_tags"
 import { CharacterGenericPart } from "./character_generic_part";
 import { Inventory } from "./inventory";
@@ -25,12 +25,17 @@ class EquipData {
             result.armour[tag] = this.armour?.get(tag)
         }
         result.backpack = this.backpack.get_json()
+        return result
     }
 
     load_json(json:any){
-        this.weapon = new Weapon(json.weapon)
+        if (json.weapon != undefined) {
+            this.weapon = new Weapon(json.weapon)
+        }        
         for (let tag of this.armour.keys()) {
-            this.armour.set(tag, new Armour(json.armour[tag]))
+            if (json.armour[tag] != undefined) {
+                this.armour.set(tag, new Armour(json.armour[tag]))
+            }            
         }
         this.backpack.load_from_json(json.backpack)
     }
