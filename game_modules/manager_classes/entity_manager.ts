@@ -10,7 +10,7 @@ import {Cell} from '../cell'
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
 import { MarketOrder } from "../market/market_order";
 import { BattleReworked2 } from "../battle";
-import { tag } from "../static_data/type_script_types";
+import { ITEM_MATERIAL } from '../static_data/item_tags';
 
 
 export class EntityManager {
@@ -241,7 +241,7 @@ export class EntityManager {
         }
     }
     
-    async new_quest(pool: any, leader: CharacterGenericPart, item_tag: tag, money_reward: number, reputation_reward: number, tag: string) {
+    async new_quest(pool: any, leader: CharacterGenericPart, item_tag: ITEM_MATERIAL, money_reward: number, reputation_reward: number, tag: string) {
         // let quest = await this.create_quest(pool, item_tag, money_reward, reputation_reward);
         // leader.add_quest(quest, tag)
     }
@@ -343,7 +343,7 @@ export class EntityManager {
         return faction
     }
 
-    async create_quest(pool: any, item: tag, reward_money: number, reward_reputation: number) {
+    async create_quest(pool: any, item: ITEM_MATERIAL, reward_money: number, reward_reputation: number) {
         let quest = new Quest(this.world)
         let id = await quest.init(pool, item, reward_money, reward_reputation)
         this.quests[id] = quest;

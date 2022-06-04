@@ -4,7 +4,7 @@ exports.eat = void 0;
 exports.eat = {
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
-            let tmp = char.stash.get('food');
+            let tmp = char.stash.get(char.world.materials.FOOD);
             if (tmp > 0) {
                 return 1 /* OK */;
             }
@@ -15,7 +15,7 @@ exports.eat = {
     result: async function (pool, char, data) {
         char.changed = true;
         char.change_hp(10);
-        char.stash.inc('food', -1);
+        char.stash.inc(char.world.materials.FOOD, -1);
         char.send_stash_update();
         char.send_status_update();
     },

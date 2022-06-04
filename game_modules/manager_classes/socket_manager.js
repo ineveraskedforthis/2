@@ -5,6 +5,7 @@ const action_manager_1 = require("./action_manager");
 const user_1 = require("../user");
 var common = require("../common.js");
 const constants_1 = require("../static_data/constants");
+const item_tags_1 = require("../static_data/item_tags");
 class SocketManager {
     constructor(pool, io, world) {
         this.world = world;
@@ -45,7 +46,8 @@ class SocketManager {
             socket.on('new-message', async (msg) => this.send_message(user, msg + ''));
             socket.on('char-info-detailed', () => this.send_char_info(user));
             socket.on('send-market-data', (msg) => { user.market_data = msg; });
-            socket.on('equip', async (msg) => this.equip(user, msg));
+            socket.on('equip_armour', async (msg) => this.equip_armour(user, msg));
+            socket.on('equip_weapon', async (msg) => this.equip_weapon(user, msg));
             socket.on('unequip', async (msg) => this.unequip(user, msg));
             socket.on('eat', async () => this.eat(user));
             socket.on('clean', async () => this.clean(user));
@@ -84,16 +86,44 @@ class SocketManager {
         //     this.send_equip_update_to_character(character);
         // }
     }
-    async equip(user, msg) {
+    async equip_armour(user, msg) {
         if (user.logged_in) {
             let character = user.get_character();
-            await character.equip_item(msg);
+            await character.equip_armour(msg);
         }
     }
+    async equip_weapon(user, msg) {
+        if (user.logged_in) {
+            let character = user.get_character();
+            await character.equip_weapon(msg);
+        }
+    }
+    // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
     async unequip(user, msg) {
         if (user.logged_in) {
             let character = user.get_character();
-            character.unequip_tag(msg);
+            if (msg == "right_hand") {
+                character.unequip_weapon();
+            }
+            else {
+                switch (msg) {
+                    case 'body': {
+                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.BODY);
+                    }
+                    case 'legs': {
+                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.LEGS);
+                    }
+                    case 'foot': {
+                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.FOOT);
+                    }
+                    case 'head': {
+                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.HEAD);
+                    }
+                    case 'arms': {
+                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.ARMS);
+                    }
+                }
+            }
         }
     }
     async sell_item(user, msg) {

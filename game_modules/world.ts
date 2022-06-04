@@ -1,20 +1,20 @@
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
-import {affix_tag} from "./static_data/item_tags";
+import {affix_tag, ITEM_MATERIAL} from "./static_data/item_tags";
 
 
 import {EntityManager} from './manager_classes/entity_manager'
-import {CONSTS, TAGS} from './static_data/world_constants_1';
+import {CONSTS} from './static_data/world_constants_1';
 import {MarketOrder} from './market/market_order'
 import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
 import { BattleReworked2 } from "./battle";
 import { ActionManager } from "./manager_classes/action_manager";
-import {tag} from './static_data/type_script_types'
 import {SocketManager} from './manager_classes/socket_manager'
 import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
 import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
+import { MaterialsManager, material_index } from "./manager_classes/materials_manager";
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -49,7 +49,10 @@ export class World {
     socket_manager: SocketManager;
     entity_manager: EntityManager;
     ai_manager: AiManager;
+    materials_manager: MaterialsManager;
     territories: {[_: string]: any}
+
+    materials: {[_: string]: material_index}
 
     ACTION_TIME: number
 
@@ -70,12 +73,35 @@ export class World {
         this.HISTORY_PRICE['leather'] = 50;
         this.HISTORY_PRICE['meat'] = 50;
         this.HISTORY_PRICE['tools'] = 0;
+
         this.vacuum_stage = 0;
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
+
+
+        this.materials_manager = new MaterialsManager()
+
+        this.materials = {}
+
+        this.materials.RAT_SKIN = this.materials_manager.create_material(2, 2, 'rat_skin')
+        this.materials.RAT_BONE = this.materials_manager.create_material(3, 5, 'rat_bone')
+        this.materials.ELODINO_FLESH = this.materials_manager.create_material(1, 1, 'elodino_flesh')
+        this.materials.GRACI_HAIR = this.materials_manager.create_material(5, 20, 'graci_hair')
+        this.materials.WOOD = this.materials_manager.create_material(5, 3, 'wood')
+        this.materials.STEEL = this.materials_manager.create_material(20, 20, 'steel')
+        this.materials.FOOD = this.materials_manager.create_material(2, 1, 'food')
+        this.materials.ZAZ = this.materials_manager.create_material(1, 10, 'zaz')
+        this.materials.MEAT = this.materials_manager.create_material(3, 1, 'meat')
+        this.materials.WATER = this.materials_manager.create_material(2, 1, 'water')
+
+
+
+
+
         this.socket_manager = new SocketManager(undefined, io, this);
         this.entity_manager = new EntityManager(this);
+        
 
         this.ai_manager = new AiManager(this)
 
@@ -86,6 +112,8 @@ export class World {
         this.socket_manager = new SocketManager(pool, this.io, this);
         this.action_manager = new ActionManager(this, pool)
         this.entity_manager = new EntityManager(this);
+        
+
         await this.entity_manager.init(pool);
         await common.send_query(pool, constants.save_world_size_query, [this.x, this.y])
         
@@ -147,8 +175,10 @@ export class World {
     }
 
     get_stash_tags_list() {
-        let data: tag[] = TAGS 
-        return data
+        return this.materials_manager.get_materials_list()
+    }
+    get_materials_json() {
+        return this.materials_manager.get_materials_json()
     }
 
     get_cell_teacher(x: number, y: number) {

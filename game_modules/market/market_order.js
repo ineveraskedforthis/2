@@ -8,7 +8,7 @@ class MarketOrder {
         this.id = -1;
         this.world = world;
         this.typ = 'sell';
-        this.tag = 'meat';
+        this.tag = 1;
         this.owner = undefined;
         this.owner_id = -1;
         this.amount = 0;

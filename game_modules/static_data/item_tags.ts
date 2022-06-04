@@ -2,6 +2,7 @@ import { textChangeRangeIsUnchanged } from "typescript"
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
 import type { AttackResult } from "../base_game_classes/misc/attack_result"
 import type { DamageByTypeObject } from "../base_game_classes/misc/damage_types"
+import { WEAPON_TYPE, weapon_type } from "./type_script_types"
 
 export type affix_tag = 'sharp'|'heavy'|'hot'|'precise'|'power_battery'|'madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'elodino_pleasure'|'power_of_graci_beauty'
 
@@ -23,46 +24,15 @@ function protection_rating(x: ARMOUR_TYPE): number {
     }    
 }
 
-const enum ITEM_MATERIAL {
-    RAT_SKIN,
-    BONE,
-    ELODINO,
-    GRACI_HAIR,
-    WOOD,
-    STEEL
-}
-
-function density (mat: ITEM_MATERIAL): number {
-    switch(mat) {
-        case ITEM_MATERIAL.RAT_SKIN: return 2;
-        case ITEM_MATERIAL.BONE: return 3;
-        case ITEM_MATERIAL.ELODINO: return 1;
-        case ITEM_MATERIAL.GRACI_HAIR: return 2
-        case ITEM_MATERIAL.WOOD: return 3
-        case ITEM_MATERIAL.STEEL: return 20
+export class ITEM_MATERIAL {
+    density: number
+    hardness: number
+    string_tag: string
+    constructor(density: number, hardness:number, string_tag: string) {
+        this.density = density
+        this.hardness = hardness
+        this.string_tag = string_tag
     }
-}
-
-function hardness (mat: ITEM_MATERIAL): number {
-    if (mat == ITEM_MATERIAL.RAT_SKIN) {
-        return 4
-    }
-    if (mat == ITEM_MATERIAL.BONE) {
-        return 10
-    }
-    if (mat == ITEM_MATERIAL.ELODINO) {
-        return 1
-    }
-    if (mat == ITEM_MATERIAL.GRACI_HAIR) {
-        return 2
-    }
-    if (mat == ITEM_MATERIAL.WOOD) {
-        return 3
-    }
-    if (mat == ITEM_MATERIAL.STEEL) {
-        return 20
-    }
-    return 1
 }
 
 const enum IMPACT_TYPE {
@@ -135,7 +105,7 @@ export class Armour {
     }
 
     get_weight() {
-        return density(this.material) * protection_rating(this.type) 
+        return this.material.density * protection_rating(this.type) 
     }
 
     get_json() {
@@ -224,6 +194,19 @@ export class Weapon {
         return length
     }
 
+    get_weapon_type():weapon_type {
+        switch(this.shaft_length) {
+            case SHAFT_LEGTH.LONG: return WEAPON_TYPE.POLEARMS 
+            case SHAFT_LEGTH.SHORT: return WEAPON_TYPE.POLEARMS
+            case SHAFT_LEGTH.HAND: switch(this.impact_size) {
+                case IMPACT_SIZE.SMALL: return WEAPON_TYPE.ONEHAND
+                case IMPACT_SIZE.MEDIUM: return WEAPON_TYPE.ONEHAND
+                case IMPACT_SIZE.LARGE: return WEAPON_TYPE.TWOHANDED
+            }
+        }
+        return WEAPON_TYPE.NOWEAPON
+    }
+
     get_json() {
         let data:WeaponConstructorArgument = {
             durability: this.durability,
@@ -247,7 +230,7 @@ export class Weapon {
 
 export function base_resist(result: DamageByTypeObject, item: Armour) {
     let temp_protection = protection_rating(item.type)
-    let temp_hardness = hardness(item.material)
+    let temp_hardness = item.material.hardness
     result.blunt = result.blunt + temp_protection * temp_hardness
     result.slice = result.slice + temp_protection * temp_hardness * 2
     result.pierce = result.pierce + temp_protection * temp_hardness

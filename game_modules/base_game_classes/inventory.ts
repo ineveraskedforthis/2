@@ -1,5 +1,6 @@
 import {Weapon, Armour} from "../static_data/item_tags"
 import { CharacterGenericPart } from "./character_generic_part";
+import { Equip } from "./equip";
 
 export class Inventory{
     weapons: (Weapon|undefined)[];
@@ -12,13 +13,15 @@ export class Inventory{
         this.total_weight = 0;
     }
 
-    transfer_all(target: CharacterGenericPart) {
+    transfer_all(target: {equip: Equip}) {
         for (let i = 0; i < this.weapons.length; i++) {
-            target.equip.add_weapon(this.weapons[i])
+            let weapon = this.weapons[i]
+            if (weapon != undefined) {target.equip.add_weapon(weapon)}            
             this.remove_weapon(i)
         }
         for (let i = 0; i < this.armours.length; i++) {
-            target.equip.add_armour(this.armours[i])
+            let armour = this.armours[i]
+            if (armour != undefined) {target.equip.add_armour(armour)}            
             this.remove_armour(i)
         }
     }

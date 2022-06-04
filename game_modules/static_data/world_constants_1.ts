@@ -1,5 +1,3 @@
- import {tag} from '../static_data/type_script_types'
- 
  export const CONSTS = {
     ENEMY_TAGS: ['rat', 'elodino', 'graci'],
     damage_types: new Set(['blunt', 'pierce', 'slice', 'fire']),
@@ -369,8 +367,6 @@
         evasion: {practice: 0, theory: 0},
     }
 }
-
-export const TAGS: tag[] = ['food', 'clothes', 'meat', 'water', 'leather', 'tools', 'zaz']
 
 
 // function add_skill(tag, max_level, req_level = 0, req_skills = [], action = undefined, r_t = true) {

@@ -10,6 +10,7 @@ const socket_manager_1 = require("./manager_classes/socket_manager");
 const user_manager_1 = require("./manager_classes/user_manager");
 const rat_1 = require("./base_game_classes/races/rat");
 const ai_manager_1 = require("./manager_classes/ai_manager");
+const materials_manager_1 = require("./manager_classes/materials_manager");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -44,6 +45,18 @@ class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
+        this.materials_manager = new materials_manager_1.MaterialsManager();
+        this.materials = {};
+        this.materials.RAT_SKIN = this.materials_manager.create_material(2, 2, 'rat_skin');
+        this.materials.RAT_BONE = this.materials_manager.create_material(3, 5, 'rat_bone');
+        this.materials.ELODINO_FLESH = this.materials_manager.create_material(1, 1, 'elodino_flesh');
+        this.materials.GRACI_HAIR = this.materials_manager.create_material(5, 20, 'graci_hair');
+        this.materials.WOOD = this.materials_manager.create_material(5, 3, 'wood');
+        this.materials.STEEL = this.materials_manager.create_material(20, 20, 'steel');
+        this.materials.FOOD = this.materials_manager.create_material(2, 1, 'food');
+        this.materials.ZAZ = this.materials_manager.create_material(1, 10, 'zaz');
+        this.materials.MEAT = this.materials_manager.create_material(3, 1, 'meat');
+        this.materials.WATER = this.materials_manager.create_material(2, 1, 'water');
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         this.ai_manager = new ai_manager_1.AiManager(this);
@@ -96,8 +109,10 @@ class World {
         this.socket_manager.update_user_list();
     }
     get_stash_tags_list() {
-        let data = world_constants_1_1.TAGS;
-        return data;
+        return this.materials_manager.get_materials_list();
+    }
+    get_materials_json() {
+        return this.materials_manager.get_materials_json();
     }
     get_cell_teacher(x, y) {
         return undefined;

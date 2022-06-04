@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.base_damage = exports.base_resist = exports.Weapon = exports.Armour = exports.affix = exports.ARMOUR_TYPE = void 0;
+exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.base_damage = exports.base_resist = exports.Weapon = exports.Armour = exports.affix = exports.ITEM_MATERIAL = exports.ARMOUR_TYPE = void 0;
 var ARMOUR_TYPE;
 (function (ARMOUR_TYPE) {
     ARMOUR_TYPE[ARMOUR_TYPE["BODY"] = 0] = "BODY";
@@ -18,37 +18,14 @@ function protection_rating(x) {
         case ARMOUR_TYPE.FOOT: return 1;
     }
 }
-function density(mat) {
-    switch (mat) {
-        case 0 /* RAT_SKIN */: return 2;
-        case 1 /* BONE */: return 3;
-        case 2 /* ELODINO */: return 1;
-        case 3 /* GRACI_HAIR */: return 2;
-        case 4 /* WOOD */: return 3;
-        case 5 /* STEEL */: return 20;
+class ITEM_MATERIAL {
+    constructor(density, hardness, string_tag) {
+        this.density = density;
+        this.hardness = hardness;
+        this.string_tag = string_tag;
     }
 }
-function hardness(mat) {
-    if (mat == 0 /* RAT_SKIN */) {
-        return 4;
-    }
-    if (mat == 1 /* BONE */) {
-        return 10;
-    }
-    if (mat == 2 /* ELODINO */) {
-        return 1;
-    }
-    if (mat == 3 /* GRACI_HAIR */) {
-        return 2;
-    }
-    if (mat == 4 /* WOOD */) {
-        return 3;
-    }
-    if (mat == 5 /* STEEL */) {
-        return 20;
-    }
-    return 1;
-}
+exports.ITEM_MATERIAL = ITEM_MATERIAL;
 // quality shows how well impact part of something serves it's purpose:
 // for example: edges
 // at 100 whole damage will be converted to slice, 
@@ -69,7 +46,7 @@ class Armour {
         this.affixes = data.affixes;
     }
     get_weight() {
-        return density(this.material) * protection_rating(this.type);
+        return this.material.density * protection_rating(this.type);
     }
     get_json() {
         let data = {};
@@ -112,6 +89,18 @@ class Weapon {
         }
         return length;
     }
+    get_weapon_type() {
+        switch (this.shaft_length) {
+            case 2 /* LONG */: return "polearms" /* POLEARMS */;
+            case 1 /* SHORT */: return "polearms" /* POLEARMS */;
+            case 0 /* HAND */: switch (this.impact_size) {
+                case 1 /* SMALL */: return "onehand" /* ONEHAND */;
+                case 2 /* MEDIUM */: return "onehand" /* ONEHAND */;
+                case 3 /* LARGE */: return "twohanded" /* TWOHANDED */;
+            }
+        }
+        return "noweapon" /* NOWEAPON */;
+    }
     get_json() {
         let data = {
             durability: this.durability,
@@ -131,7 +120,7 @@ class Weapon {
 exports.Weapon = Weapon;
 function base_resist(result, item) {
     let temp_protection = protection_rating(item.type);
-    let temp_hardness = hardness(item.material);
+    let temp_hardness = item.material.hardness;
     result.blunt = result.blunt + temp_protection * temp_hardness;
     result.slice = result.slice + temp_protection * temp_hardness * 2;
     result.pierce = result.pierce + temp_protection * temp_hardness;

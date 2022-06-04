@@ -5,7 +5,7 @@ import { CharacterActionResponce } from "../../manager_classes/action_manager";
 export const cook_meat = {
     check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
-            let tmp = char.stash.get('meat')
+            let tmp = char.stash.get(char.world.materials.MEAT)
             if (tmp > 0)  {
                 return CharacterActionResponce.OK
             }
@@ -15,8 +15,8 @@ export const cook_meat = {
     },
 
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
-        let tmp = char.stash.get('meat')
-        if (tmp > 0) {
+        let tmp = char.stash.get(char.world.materials.MEAT)
+        if (tmp > 0) { 
             char.changed = true
             let skill = char.skills.cooking.practice
             let check = 0;
@@ -28,11 +28,11 @@ export const cook_meat = {
                 check = 0.7 * skill / 20
             }
             let dice = Math.random()
-            char.stash.inc('meat', -1)
+            char.stash.inc(char.world.materials.MEAT, -1)
             char.send_stash_update()
             char.change_fatigue(10)
             if (dice < check) {
-                char.stash.inc('food', 1)
+                char.stash.inc(char.world.materials.FOOD, 1)
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared')
                 char.send_stash_update()
                 char.send_status_update()

@@ -8,7 +8,6 @@ const generate_empty_resists = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
 
 import {Equip} from "../base_game_classes/equip"
-import { tag } from "../static_data/type_script_types";
 import {Stash} from "./stash"
 import {AttackResult} from "./misc/attack_result";
 import {DamageByTypeObject, damage_types} from "./misc/damage_types"
@@ -16,6 +15,8 @@ import { World } from "../world";
 import { CharacterAction } from "../manager_classes/action_manager";
 import { User } from "../user";
 import { constants } from "../static_data/constants";
+import { ARMOUR_TYPE } from "../static_data/item_tags";
+import { material_index } from "../manager_classes/materials_manager";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
@@ -41,6 +42,7 @@ class SkillList {
     onehand: SkillObject;
     polearms: SkillObject;
     noweapon: SkillObject;
+    twohanded: SkillObject
     skinning: SkillObject;
     magic_mastery: SkillObject;
     blocking: SkillObject;
@@ -53,6 +55,7 @@ class SkillList {
         this.onehand = new SkillObject();
         this.polearms = new SkillObject();
         this.noweapon = new SkillObject();
+        this.twohanded = new SkillObject();
         this.skinning = new SkillObject();
         this.magic_mastery = new SkillObject();
         this.blocking = new SkillObject();
@@ -132,7 +135,7 @@ class CharacterFlags {
 
 export class CharacterGenericPart {
     world: World;
-    equip: any;
+    equip: Equip;
     stash: Stash;
     savings: any;
     status: Status;
@@ -465,17 +468,25 @@ export class CharacterGenericPart {
 
     //equip and stash interactions
 
-    equip_item(index:number) {
-        this.equip.equip(index);
+    equip_armour(index:number) {
+        this.equip.equip_armour(index);
         this.changed = true;
     }
 
-    unequip_tag(tag:string) {
-        this.equip.unequip(tag);
+    equip_weapon(index:number) {
+        this.equip.equip_weapon(index);
         this.changed = true;
     }
 
-    transfer(target:any, tag:tag, x:number) {
+    unequip_weapon() {
+        this.equip.unequip_weapon()
+    }
+
+    unequip_armour(tag:ARMOUR_TYPE) {
+        this.equip.unequip_armour(tag)
+    }
+
+    transfer(target:any, tag:material_index, x:number) {
         this.stash.transfer(target.stash, tag, x);
     }
 
@@ -489,7 +500,7 @@ export class CharacterGenericPart {
     transfer_all_inv(target: {stash: Stash, savings: any, equip: any}) {
         this.transfer_all(target)
         this.savings.transfer_all(target.savings)
-        this.equip.transfer_all()
+        this.equip.transfer_all(target)
     }
 
 
@@ -499,14 +510,14 @@ export class CharacterGenericPart {
     //market interactions
 
 
-    buy(tag:tag, amount: number, money: number, max_price = null) {
+    buy(tag:material_index, amount: number, money: number, max_price = null) {
         // let cell = this.get_cell();
         // // if (cell.has_market()) {            
         //     // cell.market.buy(tag, this, amount, money, max_price);
         // }        
     }
 
-    sell(tag:tag, amount: number, price: number) {
+    sell(tag:material_index, amount: number, price: number) {
         // let cell = this.get_cell();
         // if (cell.has_market()) {
         //     // cell.market.sell(tag, this, amount, price);
@@ -520,7 +531,7 @@ export class CharacterGenericPart {
         // }        
     }
 
-    clear_tag_orders(tag:tag) {
+    clear_tag_orders(tag:material_index) {
         // let cell = this.get_cell();
         // if (cell.has_market()) {
         //     // cell.market.clear_agent_orders(this, tag)
@@ -559,10 +570,10 @@ export class CharacterGenericPart {
     //rgo
     rgo_check(character:CharacterGenericPart) {
         if (this.get_tag() == 'rat') {
-            character.stash.inc('meat', 1)
+            character.stash.inc(this.world.materials.RAT_MEAT, 1)
             if (this.skills.skinning.practice >= 10) {
-                character.stash.inc('meat', 1)
-                character.stash.inc('leather', 1)
+                character.stash.inc(this.world.materials.RAT_MEAT, 1)
+                character.stash.inc(this.world.materials.RAT_SKIN, 1)
             }
             let dice = Math.random()
             if (dice > 0.05 * this.skills.skinning.practice) {
@@ -618,7 +629,7 @@ export class CharacterGenericPart {
     }
 
     async take_damage(pool: any, result: any): Promise<AttackResult> {
-        let res = this.get_resists();
+        let res:any = this.get_resists();
         
         if (!result.flags.evade && !result.flags.miss) {
             for (let i of damage_types) {
@@ -740,14 +751,8 @@ export class CharacterGenericPart {
     }
 
     get_resists() {
-        let res:any = new DamageByTypeObject()
-
-        let res_e = this.equip.get_resists();
-        for (let i of this.world.constants.damage_types) {
-            res[i] += res_e[i];
-        }
-
-        return res
+        let res = new DamageByTypeObject()
+        return res.add_object(this.equip.get_resists())
     }    
 
     get_evasion_chance() {

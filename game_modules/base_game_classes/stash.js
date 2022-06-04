@@ -3,39 +3,39 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stash = void 0;
 class Stash {
     constructor() {
-        this.data = {
-            clothes: 0,
-            food: 0,
-            leather: 0,
-            meat: 0,
-            tools: 0,
-            water: 0,
-            zaz: 0,
-        };
+        this.data = [];
         this.changed = false;
     }
     get_json() {
-        return this.data;
+        let data = {};
+        for (let tag = 1; tag < this.data.length; tag++) {
+            data[tag] = this.data[tag];
+        }
+        return data;
     }
-    load_from_json(x) {
-        this.data = x;
+    load_from_json(data) {
+        for (let i in data) {
+            this.data[i] = data[i];
+        }
     }
     inc(tag, x) {
-        this.check_tag(tag);
+        let tag_stash = this.get(tag);
         var tmp = undefined;
-        if (this.data[tag] + x < 0) {
-            tmp = -this.data[tag];
-            this.data[tag] = 0;
+        if (tag_stash == undefined) {
+            tag_stash = 0;
+        }
+        if (tag_stash + x < 0) {
+            tmp = -tag_stash;
+            this.set(tag, 0);
         }
         else {
             tmp = x;
-            this.data[tag] += x;
+            this.set(tag, tag_stash + x);
         }
         this.changed = true;
         return tmp;
     }
     set(tag, x) {
-        this.check_tag(tag);
         if (x < 0) {
             this.data[tag] = 0;
         }
@@ -45,17 +45,19 @@ class Stash {
         this.changed = true;
     }
     get(tag) {
-        this.check_tag(tag);
-        return this.data[tag];
+        let tmp = this.data[tag];
+        if (tmp == undefined)
+            return 0;
+        return tmp;
     }
     transfer(target, tag, amount) {
         var tmp = this.inc(tag, -amount);
         target.inc(tag, -tmp);
         return -tmp;
     }
-    check_tag(tag) {
-        if (!(tag in this.data)) {
-            this.data[tag] = 0;
+    transfer_all(target) {
+        for (let tag = 1; tag < this.data.length; tag++) {
+            this.transfer(target, tag, this.data[tag]);
         }
     }
 }

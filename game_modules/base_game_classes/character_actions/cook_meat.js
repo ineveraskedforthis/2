@@ -4,7 +4,7 @@ exports.cook_meat = void 0;
 exports.cook_meat = {
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
-            let tmp = char.stash.get('meat');
+            let tmp = char.stash.get(char.world.materials.MEAT);
             if (tmp > 0) {
                 return 1 /* OK */;
             }
@@ -13,7 +13,7 @@ exports.cook_meat = {
         return 2 /* IN_BATTLE */;
     },
     result: async function (pool, char, data) {
-        let tmp = char.stash.get('meat');
+        let tmp = char.stash.get(char.world.materials.MEAT);
         if (tmp > 0) {
             char.changed = true;
             let skill = char.skills.cooking.practice;
@@ -28,11 +28,11 @@ exports.cook_meat = {
                 check = 0.7 * skill / 20;
             }
             let dice = Math.random();
-            char.stash.inc('meat', -1);
+            char.stash.inc(char.world.materials.MEAT, -1);
             char.send_stash_update();
             char.change_fatigue(10);
             if (dice < check) {
-                char.stash.inc('food', 1);
+                char.stash.inc(char.world.materials.FOOD, 1);
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared');
                 char.send_stash_update();
                 char.send_status_update();

@@ -10,11 +10,17 @@ class Inventory {
     }
     transfer_all(target) {
         for (let i = 0; i < this.weapons.length; i++) {
-            target.equip.add_weapon(this.weapons[i]);
+            let weapon = this.weapons[i];
+            if (weapon != undefined) {
+                target.equip.add_weapon(weapon);
+            }
             this.remove_weapon(i);
         }
         for (let i = 0; i < this.armours.length; i++) {
-            target.equip.add_armour(this.armours[i]);
+            let armour = this.armours[i];
+            if (armour != undefined) {
+                target.equip.add_armour(armour);
+            }
             this.remove_armour(i);
         }
     }

@@ -8,8 +8,9 @@ import {geom} from './geom'
 var Savings = require("./base_game_classes/savings.js");
 import {BattleAI} from './battle_ai'
 import type {CharacterGenericPart} from './base_game_classes/character_generic_part'
-import { tag } from "./static_data/type_script_types";
 import { World } from "./world";
+import { ITEM_MATERIAL } from "./static_data/item_tags";
+import { material_index } from "./manager_classes/materials_manager";
 
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
@@ -494,7 +495,7 @@ export class BattleReworked2 {
         this.changed = true;
     }
 
-    async transfer(target:{stash: Stash}, tag:tag, x:number) {
+    async transfer(target:{stash: Stash}, tag:material_index, x:number) {
         this.stash.transfer(target.stash, tag, x);
         this.changed = true
     }

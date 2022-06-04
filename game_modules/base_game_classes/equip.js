@@ -55,6 +55,7 @@ class Equip {
     get_weapon_damage(result) {
         let right_hand = this.data.weapon;
         if (right_hand != undefined) {
+            result.weapon_type = right_hand.get_weapon_type();
             result = item_tags_1.base_damage(result, right_hand);
             for (let i = 0; i < right_hand.affixes.length; i++) {
                 let affix = right_hand.affixes[i];
@@ -131,6 +132,7 @@ class Equip {
             this.data.armour.set(slot, item);
             backpack.armours[index] = tmp;
         }
+        this.changed = true;
     }
     equip_weapon(index) {
         let backpack = this.data.backpack;
@@ -140,12 +142,14 @@ class Equip {
             this.data.weapon = tmp;
             backpack.weapons[index] = tmp;
         }
+        this.changed = true;
     }
     unequip_weapon() {
         if (this.data.weapon == undefined)
             return;
         this.add_weapon(this.data.weapon);
         this.data.weapon = undefined;
+        this.changed = true;
     }
     unequip_armour(tag) {
         if (!(tag in item_tags_1.ARMOUR_TYPE)) {
@@ -159,16 +163,19 @@ class Equip {
             this.add_armour(item);
             this.data.armour.set(tag, undefined);
         }
+        this.changed = true;
     }
     add_weapon(item) {
         if (item != undefined) {
             this.data.backpack.weapons.push(item);
         }
+        this.changed = true;
     }
     add_armour(item) {
         if (item != undefined) {
             this.data.backpack.armours.push(item);
         }
+        this.changed = true;
     }
     get_resists() {
         let resists = new damage_types_1.DamageByTypeObject;

@@ -8,7 +8,7 @@ export const clean = {
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            let tmp = char.stash.get('water');
+            let tmp = char.stash.get(char.world.materials.WATER);
             if (cell.can_clean()) {
                 return CharacterActionResponce.OK
             } else if (tmp > 0)  {
@@ -24,7 +24,7 @@ export const clean = {
         if (cell == undefined) {
             return CharacterActionResponce.INVALID_CELL
         }
-        let tmp = char.stash.get('water');
+        let tmp = char.stash.get(char.world.materials.WATER);
         if (cell.can_clean()) {
             char.changed = true
             char.change_blood(-20)
@@ -32,7 +32,7 @@ export const clean = {
         } else if (tmp > 0) {
             char.changed = true
             char.change_blood(-20);
-            char.stash.inc('water', -1);
+            char.stash.inc(char.world.materials.WATER, -1);
             char.send_stash_update()
             char.send_status_update()
         }

@@ -6,6 +6,7 @@ import { World } from "../world";
 
 var common = require("../common.js");
 import {constants} from '../static_data/constants'
+import { ARMOUR_TYPE } from "../static_data/item_tags";
 
 
 interface UserData {
@@ -69,7 +70,8 @@ export class SocketManager {
             socket.on('new-message', async (msg: any) => this.send_message(user, msg + ''));
             socket.on('char-info-detailed', () => this.send_char_info(user));
             socket.on('send-market-data', (msg: any) => {user.market_data = msg});
-            socket.on('equip', async (msg: any) => this.equip(user, msg));
+            socket.on('equip_armour', async (msg: any) => this.equip_armour(user, msg));
+            socket.on('equip_weapon', async (msg: any) => this.equip_weapon(user, msg));
             socket.on('unequip', async (msg: any) => this.unequip(user, msg));
 
             socket.on('eat', async () => this.eat(user));
@@ -113,17 +115,35 @@ export class SocketManager {
         // }
     }
 
-    async equip(user: User, msg: number) {
+    async equip_armour(user: User, msg: number) {
         if (user.logged_in) {
             let character = user.get_character();
-            await character.equip_item(msg);
+            await character.equip_armour(msg);
         }
     }
 
+    async equip_weapon(user: User, msg: number) {
+        if (user.logged_in) {
+            let character = user.get_character();
+            await character.equip_weapon(msg);
+        }
+    }
+
+    // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
     async unequip(user:User, msg: string) {
         if (user.logged_in) {
             let character = user.get_character();
-            character.unequip_tag(msg);
+            if (msg == "right_hand") {
+                character.unequip_weapon()
+            } else {
+                switch(msg) {
+                    case 'body': {character.unequip_armour(ARMOUR_TYPE.BODY);}
+                    case 'legs': {character.unequip_armour(ARMOUR_TYPE.LEGS)}
+                    case 'foot': {character.unequip_armour(ARMOUR_TYPE.FOOT)}
+                    case 'head': {character.unequip_armour(ARMOUR_TYPE.HEAD)}
+                    case 'arms': {character.unequip_armour(ARMOUR_TYPE.ARMS)}
+                }
+            }            
         }
     }
 

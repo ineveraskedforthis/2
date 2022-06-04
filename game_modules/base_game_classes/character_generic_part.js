@@ -26,6 +26,7 @@ class SkillList {
         this.onehand = new SkillObject();
         this.polearms = new SkillObject();
         this.noweapon = new SkillObject();
+        this.twohanded = new SkillObject();
         this.skinning = new SkillObject();
         this.magic_mastery = new SkillObject();
         this.blocking = new SkillObject();
@@ -337,13 +338,19 @@ class CharacterGenericPart {
         this.change_blood(dstatus.blood);
     }
     //equip and stash interactions
-    equip_item(index) {
-        this.equip.equip(index);
+    equip_armour(index) {
+        this.equip.equip_armour(index);
         this.changed = true;
     }
-    unequip_tag(tag) {
-        this.equip.unequip(tag);
+    equip_weapon(index) {
+        this.equip.equip_weapon(index);
         this.changed = true;
+    }
+    unequip_weapon() {
+        this.equip.unequip_weapon();
+    }
+    unequip_armour(tag) {
+        this.equip.unequip_armour(tag);
     }
     transfer(target, tag, x) {
         this.stash.transfer(target.stash, tag, x);
@@ -357,7 +364,7 @@ class CharacterGenericPart {
     transfer_all_inv(target) {
         this.transfer_all(target);
         this.savings.transfer_all(target.savings);
-        this.equip.transfer_all();
+        this.equip.transfer_all(target);
     }
     //market interactions
     buy(tag, amount, money, max_price = null) {
@@ -413,10 +420,10 @@ class CharacterGenericPart {
     //rgo
     rgo_check(character) {
         if (this.get_tag() == 'rat') {
-            character.stash.inc('meat', 1);
+            character.stash.inc(this.world.materials.RAT_MEAT, 1);
             if (this.skills.skinning.practice >= 10) {
-                character.stash.inc('meat', 1);
-                character.stash.inc('leather', 1);
+                character.stash.inc(this.world.materials.RAT_MEAT, 1);
+                character.stash.inc(this.world.materials.RAT_SKIN, 1);
             }
             let dice = Math.random();
             if (dice > 0.05 * this.skills.skinning.practice) {
@@ -551,11 +558,7 @@ class CharacterGenericPart {
     }
     get_resists() {
         let res = new damage_types_1.DamageByTypeObject();
-        let res_e = this.equip.get_resists();
-        for (let i of this.world.constants.damage_types) {
-            res[i] += res_e[i];
-        }
-        return res;
+        return res.add_object(this.equip.get_resists());
     }
     get_evasion_chance() {
         return character_defines.evasion + this.skills.evasion.practice * 0.01;

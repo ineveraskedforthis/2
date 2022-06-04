@@ -1,6 +1,5 @@
 var {damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character} = require("../static_data/item_tags.js");
 
-import { idText, isJSDocCommentContainingNode, isWhileStatement } from "typescript";
 import {Armour, ARMOUR_TYPE, base_damage, base_resist, Weapon} from "../static_data/item_tags"
 import { CharacterGenericPart } from "./character_generic_part";
 import { Inventory } from "./inventory";
@@ -51,7 +50,7 @@ export class Equip {
         this.changed = false
     }
 
-    transfer_all(target: CharacterGenericPart) {
+    transfer_all(target: {equip: Equip}) {
         this.unequip_weapon()
         for (let tag of this.data.armour.keys()) {
             this.unequip_armour(tag);
@@ -67,7 +66,9 @@ export class Equip {
 
     get_weapon_damage(result:AttackResult) {
         let right_hand = this.data.weapon;
+        
         if (right_hand != undefined){
+            result.weapon_type = right_hand.get_weapon_type()
             result = base_damage(result, right_hand)
             for (let i = 0; i < right_hand.affixes.length; i++) {
                 let affix = right_hand.affixes[i];
@@ -150,6 +151,7 @@ export class Equip {
             this.data.armour.set(slot, item)
             backpack.armours[index] = tmp
         }
+        this.changed = true
     }
 
     equip_weapon(index:number) {
@@ -160,12 +162,14 @@ export class Equip {
             this.data.weapon = tmp;
             backpack.weapons[index] = tmp
         }
+        this.changed = true
     }
 
     unequip_weapon() {
         if (this.data.weapon == undefined) return
         this.add_weapon(this.data.weapon)
         this.data.weapon = undefined
+        this.changed = true
     }
 
     unequip_armour(tag:ARMOUR_TYPE) {
@@ -178,18 +182,21 @@ export class Equip {
             this.add_armour(item);
             this.data.armour.set(tag, undefined)
         }
+        this.changed = true
     }
 
     add_weapon(item:Weapon) {
         if (item != undefined) {
             this.data.backpack.weapons.push(item);
         }
+        this.changed = true
     }
 
     add_armour(item:Armour) {
         if (item != undefined) {
             this.data.backpack.armours.push(item);
         }
+        this.changed = true
     }
 
     get_resists() {

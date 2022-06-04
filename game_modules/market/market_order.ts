@@ -1,14 +1,14 @@
 var common = require("../common.js");
 import {constants} from "../static_data/constants.js";
 import type {World} from "../world";
-import type {tag} from "../static_data/type_script_types"
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part.js";
+import { material_index } from "../manager_classes/materials_manager.js";
 
 export class MarketOrder {
     world: World;
     id: number;
     typ: 'sell'|'buy'
-    tag: tag
+    tag: material_index
     owner_id: number
     owner: CharacterGenericPart|undefined
     amount: number
@@ -19,7 +19,7 @@ export class MarketOrder {
         this.id = -1
         this.world = world;
         this.typ = 'sell'
-        this.tag = 'meat'
+        this.tag = 1 as material_index
         this.owner = undefined
         this.owner_id = -1
         this.amount = 0
@@ -27,7 +27,7 @@ export class MarketOrder {
         this.market_id = 0
     }
 
-    async init(pool:any, typ:'sell'|'buy', tag: tag, owner: CharacterGenericPart, amount: number, price: number, market_id: number) {
+    async init(pool:any, typ:'sell'|'buy', tag: material_index, owner: CharacterGenericPart, amount: number, price: number, market_id: number) {
         this.typ = typ;
         this.tag = tag;
         this.owner_id = owner.id;
