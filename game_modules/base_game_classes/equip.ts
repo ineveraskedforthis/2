@@ -199,6 +199,20 @@ export class Equip {
         this.changed = true
     }
 
+    // ['right_hand', 'body', 'legs', 'foot', 'head', 'arms']
+    // UNFINISHED
+    get_data() {
+        return {
+            right_hand: '',
+            body: '',
+            legs: '',
+            foot: '',
+            head: '',
+            arms: '',
+            backpack: this.data.backpack.get_json()
+        }
+    }
+
     get_resists() {
         let resists = new DamageByTypeObject;
         for (let i of this.data.armour.keys()) {

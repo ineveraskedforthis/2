@@ -711,12 +711,15 @@ function update_savings(msg) {
 }
 
 function update_stash(data) {
-    for (let tag in data) {
+    console.log("STAAAAASH")
+    console.log(data)
+    for (let tag in stash_id_to_tag) {
         let stash = document.getElementById('goods_stash')
-        let div = stash.querySelector('.' + tag + ' > .goods_amount_in_inventory')
+        console.log(tag, stash_id_to_tag[tag])
+        let div = stash.querySelector('.' + stash_id_to_tag[tag] + ' > .goods_amount_in_inventory')
         if (div != null)  {
-            div.innerHTML = data[tag]
-        }            
+            div.innerHTML = data[tag] || 0
+        }
     }
 }
 
@@ -760,7 +763,7 @@ socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 
 socket.on('char-info-detailed', msg => character_screen.update(msg))
-socket.on('stash-update', msg => {goods_market.update_inventory(msg); update_stash(msg)});
+socket.on('stash-update', msg => {console.log('stash-update'); goods_market.update_inventory(msg); update_stash(msg)});
 socket.on('equip-update', msg => {character_screen.update_equip(msg); update_equip(msg)});
 
 socket.on('log-message', msg => new_log_message(msg));
@@ -798,10 +801,19 @@ socket.on('map-data-cells', data => {console.log(data); map.load_data(data)})
 socket.on('map-data-terrain', data => {map.load_terrain(data)})
 socket.on('map-data-reset', data => {map.reset()})
 
+var stash_tag_to_id = {}
+var stash_id_to_tag = {}
+
 function update_tags(msg) {
+    console.log("TAAAAAAGS")
+    console.log(msg)
     let market_div = document.querySelector('.goods_list') 
     let inventory_div = document.getElementById('goods_stash')
-    for (var tag of msg) {
+    
+    stash_tag_to_id = msg
+
+    for (var tag in msg) {
+        stash_id_to_tag[msg[tag]] = tag
 
         {
             let div_cell = document.createElement('div');
@@ -880,9 +892,6 @@ function update_tags(msg) {
 
             inventory_div.appendChild(div_cell)
         }
-
-
-
     }
 }
 

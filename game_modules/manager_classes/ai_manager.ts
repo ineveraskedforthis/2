@@ -83,7 +83,7 @@ export class AiManager {
                     } else {
                         await this.random_walk(char)
                     }
-                }                
+                }
             }
         }
     }

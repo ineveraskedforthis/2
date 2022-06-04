@@ -142,7 +142,7 @@ class SocketManager {
     }
     async connection(socket) {
         console.log('a user connected');
-        socket.emit('tags', this.world.get_stash_tags_list());
+        socket.emit('tags', this.world.get_materials_json());
         socket.emit('skill-tags', this.world.constants.SKILLS);
         socket.emit('tags-tactic', { target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee'] });
         socket.emit('sections', this.world.constants.sections);
@@ -609,11 +609,13 @@ class SocketManager {
     send_equip_update(user) {
         if (user != null) {
             let char = user.get_character();
-            user.socket.emit('equip-update', char.equip.data);
+            user.socket.emit('equip-update', char.equip.get_data());
         }
     }
     send_stash_update(user) {
+        console.log("send stash update");
         if (user != null) {
+            console.log("send stash update to user");
             let char = user.get_character();
             user.socket.emit('stash-update', char.stash.data);
         }

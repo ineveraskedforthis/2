@@ -196,9 +196,11 @@ export class CharacterScreen {
     }
 
     update_backpack(data) {
+        console.log('update_backpack')
+        console.log(data)
         let inv = data.backpack;
         this.table.innerHTML = '';
-        for (let i = 0; i < inv.length; i++) {
+        for (let i = 0; i < inv.armours.length; i++) {
             if (inv[i] != null) {
                 let row = this.table.insertRow();
                 let type = row.insertCell(0); 

@@ -7,6 +7,7 @@ import { World } from "../world";
 var common = require("../common.js");
 import {constants} from '../static_data/constants'
 import { ARMOUR_TYPE } from "../static_data/item_tags";
+import { privateEncrypt } from "crypto";
 
 
 interface UserData {
@@ -53,7 +54,7 @@ export class SocketManager {
         this.io.on('connection', async (socket: any) => {
             let user = new User(this.world)
             user.set_socket(socket)
-            this.sockets.add(user);            
+            this.sockets.add(user);
             this.connection(socket)
 
 
@@ -165,7 +166,7 @@ export class SocketManager {
     async connection(socket: any) {
         console.log('a user connected');
         
-        socket.emit('tags', this.world.get_stash_tags_list());
+        socket.emit('tags', this.world.get_materials_json());
         socket.emit('skill-tags', this.world.constants.SKILLS);
         socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee']})
         
@@ -683,12 +684,14 @@ export class SocketManager {
     send_equip_update(user: User) {
         if (user != null) {
             let char = user.get_character()
-            user.socket.emit('equip-update', char.equip.data)
+            user.socket.emit('equip-update', char.equip.get_data())
         }
     }
     
     send_stash_update(user: User) {
+        console.log("send stash update")
         if (user != null) {
+            console.log("send stash update to user")
             let char = user.get_character()
             user.socket.emit('stash-update', char.stash.data)
         }

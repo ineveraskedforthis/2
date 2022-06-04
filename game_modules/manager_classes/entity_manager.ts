@@ -24,6 +24,8 @@ export class EntityManager {
     factions: any[]
     quests: any[]
 
+    time_since_last_decision_update: number
+
     constructor(world: World) {
         this.world = world;
         this.chars = [];
@@ -36,6 +38,7 @@ export class EntityManager {
 
         this.factions = []
         this.quests = []
+        this.time_since_last_decision_update = 0
     }
 
     async init(pool: any) {
@@ -180,12 +183,15 @@ export class EntityManager {
 
 
     async update_chars(pool: any, dt: number) {
+        this.time_since_last_decision_update += dt
+        let decision_flag = false
+        if (this.time_since_last_decision_update > 10000) {decision_flag = true}
         for (let i = 0; i < this.chars.length; i++) {
             if ((this.chars[i] != undefined) && !this.chars[i].is_dead()) {
                 let char = this.chars[i]
                 if (!char.in_battle()) {
                     await char.update(pool, dt);
-                    await this.world.ai_manager.decision(char)
+                    if (decision_flag) {await this.world.ai_manager.decision(char)}
                 }
             } else if ((this.chars[i] != undefined) && this.chars[i].is_dead()) {
                 await this.kill(pool, i)
