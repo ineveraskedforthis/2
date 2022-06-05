@@ -319,11 +319,16 @@ export class GoodsMarket {
     }
 
     update_inventory(data) {
-        for (let tag in data) {
-            let div = this.container.querySelector('.' + tag + ' > .goods_amount_in_inventory')
+        for (let tag in this.stash_id_to_tag) {
+            let div = this.container.querySelector('.' + this.stash_id_to_tag[tag] + ' > .goods_amount_in_inventory')
             if (div != null)  {
-                div.innerHTML = data[tag]
-            }            
+                div.innerHTML = data[tag] || 0
+            }
         }
+    }
+
+    update_tags(stash_tag_to_id, stash_id_to_tag) {
+        this.stash_tag_to_id = stash_tag_to_id
+        this.stash_id_to_tag = stash_id_to_tag
     }
 }

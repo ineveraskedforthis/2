@@ -19,6 +19,9 @@ var globals = {
     socket: socket
 }
 
+var stash_tag_to_id = {}
+var stash_id_to_tag = {}
+
 const char_info_monster = new CharInfoMonster();
 const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket);
 init_map_control(map, globals);
@@ -801,16 +804,19 @@ socket.on('map-data-cells', data => {console.log(data); map.load_data(data)})
 socket.on('map-data-terrain', data => {map.load_terrain(data)})
 socket.on('map-data-reset', data => {map.reset()})
 
-var stash_tag_to_id = {}
-var stash_id_to_tag = {}
+
 
 function update_tags(msg) {
     console.log("TAAAAAAGS")
     console.log(msg)
+
+    
+
     let market_div = document.querySelector('.goods_list') 
     let inventory_div = document.getElementById('goods_stash')
     
     stash_tag_to_id = msg
+    console.log(stash_tag_to_id)
 
     for (var tag in msg) {
         stash_id_to_tag[msg[tag]] = tag
@@ -893,6 +899,8 @@ function update_tags(msg) {
             inventory_div.appendChild(div_cell)
         }
     }
+
+    goods_market.update_tags(stash_tag_to_id, stash_id_to_tag)
 }
 
 function change_bg(tag) {
