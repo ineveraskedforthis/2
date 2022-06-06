@@ -213,8 +213,17 @@ function show_scene(scene_id) {
     document.getElementById(scene_id).style.visibility = 'visible';    
 }
 
+{
+    let tab = document.getElementById('battle_tab');
+    tab.classList.add('hidden');
+}
+
+
 function toogle_tab(tag) {
+    console.log('toogle tab ' + tag)
     let tab = document.getElementById(tag + '_tab');
+    console.log(tab.classList.contains('hidden'))
+    console.log(tab.classList)
     if (tab.classList.contains('hidden')) {
         tab.classList.remove('hidden');
         return 'on'
@@ -222,6 +231,16 @@ function toogle_tab(tag) {
         tab.classList.add('hidden');
         return 'off'
     }
+}
+
+function turn_tab_on(tag) {
+    let tab = document.getElementById(tag + '_tab');
+    tab.classList.remove('hidden');
+}
+
+function turn_tab_off(tag) {
+    let tab = document.getElementById(tag + '_tab');
+    tab.classList.add('hidden');
 }
 
 for (let tag of game_tabs) {
@@ -697,13 +716,14 @@ function update_equip(data) {
 //EQUIP DISPLAY END
 
 function start_battle(data) {
-    toogle_tab('battle')
+    console.log('start battle')
+    turn_tab_on('battle')
     battle_image.clear()
     battle_image.load(data)
 }
 
 function end_battle() {
-    toogle_tab('battle')
+    turn_tab_off('battle')
     battle_image.clear()
 }
 

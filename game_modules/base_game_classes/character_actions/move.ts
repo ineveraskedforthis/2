@@ -13,6 +13,9 @@ export const move ={
             if (char.verify_move(dx, dy)) {
                 return CharacterActionResponce.OK
             }
+            if ((dx == 0 && dy ==0)) {
+                return CharacterActionResponce.ZERO_MOTION
+            }
             return CharacterActionResponce.CANNOT_MOVE_THERE
         }
         return CharacterActionResponce.CANNOT_MOVE_THERE

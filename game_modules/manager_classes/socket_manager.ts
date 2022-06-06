@@ -288,7 +288,7 @@ export class SocketManager {
                     res1[x + '_' + y] = data[x + '_' + y]
                     if (data[x + '_' + y] != undefined) {
                         user.socket.emit('map-data-cells', res1)
-                    }                   
+                    }
 
                     if (this.world.constants.terrain[x] != undefined && this.world.constants.terrain[x][y] != undefined) {
                         let res2 = {x: x, y: y, ter: this.world.constants.terrain[x][y]}
@@ -326,6 +326,7 @@ export class SocketManager {
                 let battle_id = char.get_battle_id()
                 let battle = this.world.get_battle_from_id(battle_id)
                 if (battle != undefined) {
+                    console.log('battle had started')
                     battle.send_data_start()
                 }
             } else if (res == CharacterActionResponce.NO_RESOURCE) {
@@ -536,6 +537,7 @@ export class SocketManager {
     }
 
     send_battle_data_start(battle: BattleReworked2) {
+        console.log('sending battle info')
         let units = battle.get_units()
         let data = battle.get_data()
         let status = battle.get_status()
@@ -689,9 +691,8 @@ export class SocketManager {
     }
     
     send_stash_update(user: User) {
-        console.log("send stash update")
+        // console.log("send stash update")
         if (user != null) {
-            console.log("send stash update to user")
             let char = user.get_character()
             user.socket.emit('stash-update', char.stash.data)
         }

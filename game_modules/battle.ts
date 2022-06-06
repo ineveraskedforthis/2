@@ -406,7 +406,7 @@ export class BattleReworked2 {
 
 
         if (action.action == 'flee') {
-            if (unit.action_points_left > 3) {
+            if (unit.action_points_left >= 3) {
                 unit.action_points_left -= 3
                 let dice = Math.random();
                 this.changed = true
@@ -415,7 +415,7 @@ export class BattleReworked2 {
                     
                     return {action: 'flee', who: unit_index};
                 } else {
-                    return {action: 'pff', who: unit_index};
+                    return {action: 'flee-failed', who: unit_index};
                 }
             }
         } 

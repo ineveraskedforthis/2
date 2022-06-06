@@ -115,7 +115,7 @@ export class Cell {
     }
 
     can_hunt(): boolean{
-        return (this.development.wild > 0)
+        return ((this.development.wild > 0) || (this.resources.prey))
     }
 
     can_rest(): boolean{

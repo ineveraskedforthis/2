@@ -283,6 +283,7 @@ class SocketManager {
                 let battle_id = char.get_battle_id();
                 let battle = this.world.get_battle_from_id(battle_id);
                 if (battle != undefined) {
+                    console.log('battle had started');
                     battle.send_data_start();
                 }
             }
@@ -478,6 +479,7 @@ class SocketManager {
         }
     }
     send_battle_data_start(battle) {
+        console.log('sending battle info');
         let units = battle.get_units();
         let data = battle.get_data();
         let status = battle.get_status();
@@ -613,9 +615,8 @@ class SocketManager {
         }
     }
     send_stash_update(user) {
-        console.log("send stash update");
+        // console.log("send stash update")
         if (user != null) {
-            console.log("send stash update to user");
             let char = user.get_character();
             user.socket.emit('stash-update', char.stash.data);
         }

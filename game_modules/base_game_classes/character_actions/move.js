@@ -13,6 +13,9 @@ exports.move = {
             if (char.verify_move(dx, dy)) {
                 return 1 /* OK */;
             }
+            if ((dx == 0 && dy == 0)) {
+                return 7 /* ZERO_MOTION */;
+            }
             return 0 /* CANNOT_MOVE_THERE */;
         }
         return 0 /* CANNOT_MOVE_THERE */;

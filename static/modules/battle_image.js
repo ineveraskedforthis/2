@@ -602,6 +602,10 @@ export class BattleImage {
             return data.actor_name + '   CHAAAAAAAAAARGE   ' + data.result.total_damage + ' damage'
         } else if (data.action.startsWith('stop_battle')) {
             return 'battle has ended'
+        } else if (data.action.startsWith('flee-failed')) {
+            return this.names[data.who] + ' failed to retreat'
+        } else if (data.action.startsWith('flee')) {
+            return this.names[data.who] + ' retreats'
         }
     }
 }

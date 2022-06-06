@@ -40,10 +40,11 @@ class EntityManager {
     }
     async init_cells(pool) {
         let data = this.world.constants.development;
+        let data_res = this.world.constants.resources;
         for (var i = 0; i < this.world.x; i++) {
             var tmp = [];
             for (var j = 0; j < this.world.y; j++) {
-                var cell = new cell_1.Cell(this.world, this, i, j, '', data[i + '_' + j], data[i + '_' + j]);
+                var cell = new cell_1.Cell(this.world, this, i, j, '', data[i + '_' + j], data_res[i + '_' + j]);
                 await cell.init(pool);
                 tmp.push(cell);
             }
@@ -150,10 +151,14 @@ class EntityManager {
     async update_chars(pool, dt) {
         this.time_since_last_decision_update += dt;
         let decision_flag = false;
-        if (this.time_since_last_decision_update > 10000) {
+        // console.log(this.time_since_last_decision_update)
+        if (this.time_since_last_decision_update > 60) {
+            // console.log('decision_time'); 
             decision_flag = true;
+            this.time_since_last_decision_update = 0;
         }
         for (let i = 0; i < this.chars.length; i++) {
+            // console.log(this.chars[i]?.get_cell()?.i, this.chars[i]?.get_cell()?.j)
             if ((this.chars[i] != undefined) && !this.chars[i].is_dead()) {
                 let char = this.chars[i];
                 if (!char.in_battle()) {

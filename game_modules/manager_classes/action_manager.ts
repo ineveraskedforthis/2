@@ -15,7 +15,8 @@ export const enum CharacterActionResponce {
     NO_RESOURCE,
     FAILED,
     ALREADY_IN_ACTION,
-    INVALID_CELL
+    INVALID_CELL,
+    ZERO_MOTION
 }
 
 type ActionCheckFunction = ((pool: any, char: CharacterGenericPart, data: any) => Promise<CharacterActionResponce>) 
