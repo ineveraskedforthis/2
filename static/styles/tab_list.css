@@ -123,3 +123,8 @@
     height:auto;
     width:auto;
 }
+
+
+.tab_label {
+    padding-left: 20px;
+}

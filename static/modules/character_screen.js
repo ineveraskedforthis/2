@@ -82,8 +82,20 @@ export class CharacterScreen {
         this.socket = socket;
 
         for (let i of EQUIPMENT_TAGS) {
-        let tmp = document.getElementById('eq_' + i + '_image');
+            let tmp = document.getElementById('eq_' + i);
+            
             ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
+
+            let name_label = document.createElement('div')
+            name_label.innerHTML = i
+            name_label.classList.add('slot_label')
+            tmp.appendChild(name_label)
+
+            let item_label = document.createElement('div')
+            item_label.classList.add('item_label')
+            item_label.innerHTML = "???"
+            tmp.appendChild(item_label)
+        
         }
 
 
@@ -103,10 +115,7 @@ export class CharacterScreen {
         this.table = document.getElementById('inventory_items');
         this.inventory_stash_div = document.getElementById('inventory_stash')
         this.misc = document.createElement('misc');
-        let label1 = document.createElement('p');
 
-        label1.innerHTML = 'Equipment:';
-        this.equip_div.appendChild(label1);
 
         this.stats_div.appendChild(this.misc);
 
@@ -241,8 +250,8 @@ export class CharacterScreen {
         for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
             let tag = EQUIPMENT_TAGS[i]
             let item = data[tag]
-            let image = document.getElementById('eq_' + tag + '_image');
-            image.style = get_item_image(item.tag)
+            // let image = document.getElementById('eq_' + tag + '_image');
+            // image.style = get_item_image(item.tag)
             let tooltip = document.getElementById('eq_' + tag + '_tooltip')
             tooltip.innerHTML = ''
             let tmp = document.createElement('div');
