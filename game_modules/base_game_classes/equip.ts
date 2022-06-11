@@ -157,11 +157,17 @@ export class Equip {
     equip_weapon(index:number) {
         let backpack = this.data.backpack;
         let item = backpack.weapons[index]
+        console.log('equip weapon')
+        console.log(item?.get_tag())
         if (item != undefined) {
             let tmp = this.data.weapon;
-            this.data.weapon = tmp;
+            this.data.weapon = backpack.weapons[index];
             backpack.weapons[index] = tmp
+            console.log(tmp?.get_tag())
+            console.log(backpack.weapons[index]?.get_tag())
+            console.log(this.data.weapon?.get_tag())
         }
+        console.log(this.data.weapon?.get_tag())
         this.changed = true
     }
 
@@ -203,13 +209,13 @@ export class Equip {
     // UNFINISHED
     get_data() {
         return {
-            right_hand: this.data.weapon?.get_tag(),
-            body: this.data.armour.get(ARMOUR_TYPE.BODY)?.get_tag(),
-            legs: this.data.armour.get(ARMOUR_TYPE.LEGS)?.get_tag(),
-            foot: this.data.armour.get(ARMOUR_TYPE.FOOT)?.get_tag(),
-            head: this.data.armour.get(ARMOUR_TYPE.HEAD)?.get_tag(),
-            arms: this.data.armour.get(ARMOUR_TYPE.ARMS)?.get_tag(),
-            backpack: this.data.backpack.get_json()
+            right_hand: this.data.weapon?.get_data(),
+            body: this.data.armour.get(ARMOUR_TYPE.BODY)?.get_data(),
+            legs: this.data.armour.get(ARMOUR_TYPE.LEGS)?.get_data(),
+            foot: this.data.armour.get(ARMOUR_TYPE.FOOT)?.get_data(),
+            head: this.data.armour.get(ARMOUR_TYPE.HEAD)?.get_data(),
+            arms: this.data.armour.get(ARMOUR_TYPE.ARMS)?.get_data(),
+            backpack: this.data.backpack.get_data()
         }
     }
 

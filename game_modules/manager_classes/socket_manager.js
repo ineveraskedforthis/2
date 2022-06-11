@@ -46,8 +46,8 @@ class SocketManager {
             socket.on('new-message', async (msg) => this.send_message(user, msg + ''));
             socket.on('char-info-detailed', () => this.send_char_info(user));
             socket.on('send-market-data', (msg) => { user.market_data = msg; });
-            socket.on('equip_armour', async (msg) => this.equip_armour(user, msg));
-            socket.on('equip_weapon', async (msg) => this.equip_weapon(user, msg));
+            socket.on('equip-armour', async (msg) => this.equip_armour(user, msg));
+            socket.on('equip-weapon', async (msg) => this.equip_weapon(user, msg));
             socket.on('unequip', async (msg) => this.unequip(user, msg));
             socket.on('eat', async () => this.eat(user));
             socket.on('clean', async () => this.clean(user));
@@ -96,8 +96,10 @@ class SocketManager {
     }
     async equip_weapon(user, msg) {
         if (user.logged_in) {
+            console.log('equip ', msg);
             let character = user.get_character();
             await character.equip_weapon(msg);
+            this.send_equip_update_to_character(character);
         }
     }
     // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'

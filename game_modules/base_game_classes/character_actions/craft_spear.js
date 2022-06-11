@@ -33,8 +33,9 @@ exports.craft_spear = {
             // if (dice < check) {
             let spear = new item_tags_1.Weapon(char.world.spear_argument);
             char.equip.add_weapon(spear);
-            char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared');
+            char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
             char.send_stash_update();
+            char.send_equip_update();
             char.send_status_update();
             return 1 /* OK */;
             // } else {

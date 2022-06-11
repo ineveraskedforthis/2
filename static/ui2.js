@@ -2,7 +2,7 @@
 var socket = io();
 
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip']
+const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'backpack_weapon']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';
@@ -708,7 +708,8 @@ for (let i = 0; i<3; i++) {
 function update_equip(data) {
     for (let tag of EQUIPMENT_TAGS) {
         let div = document.querySelector('.character_image.equip.' + tag);
-        let item_tag = data[tag].tag;
+
+        let item_tag = data[tag]?.tag||'empty';
         div.style = "background: no-repeat center/100% url(/static/img/" + item_tag + "_big.png);"
     }
 }
@@ -738,7 +739,7 @@ function update_stash(data) {
     console.log(data)
     for (let tag in stash_id_to_tag) {
         let stash = document.getElementById('goods_stash')
-        console.log(tag, stash_id_to_tag[tag])
+        // console.log(tag, stash_id_to_tag[tag])
         let div = stash.querySelector('.' + stash_id_to_tag[tag] + ' > .goods_amount_in_inventory')
         if (div != null)  {
             div.innerHTML = data[tag] || 0
@@ -825,7 +826,7 @@ socket.on('item-market-data', data => {item_market_table.update(data)});
 socket.on('action-ping', data => restart_action_bar(data.time))
 socket.on('cell-visited', data => map.mark_visited(data))
 
-socket.on('map-data-cells', data => {console.log(data); map.load_data(data)})
+socket.on('map-data-cells', data => { map.load_data(data)})
 socket.on('map-data-terrain', data => {map.load_terrain(data)})
 socket.on('map-data-reset', data => {map.reset()})
 

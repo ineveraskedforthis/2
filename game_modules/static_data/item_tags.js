@@ -67,6 +67,9 @@ class Armour {
             case ARMOUR_TYPE.FOOT: return tag + '_boots';
         }
     }
+    get_data() {
+        return { tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes };
+    }
 }
 exports.Armour = Armour;
 function shaft_length_to_number(x) {
@@ -145,6 +148,9 @@ class Weapon {
             return 'mace';
         if (this.impact_type == 1 /* EDGE */)
             return 'sword';
+    }
+    get_data() {
+        return { tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes };
     }
 }
 exports.Weapon = Weapon;

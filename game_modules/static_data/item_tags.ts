@@ -127,6 +127,9 @@ export class Armour {
             case ARMOUR_TYPE.FOOT: return tag + '_boots'
         }
     }
+    get_data() {
+        return {tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes}
+    }
 }
 
 
@@ -251,6 +254,10 @@ export class Weapon {
         if (this.impact_type == IMPACT_TYPE.POINT) return 'spear'
         if (this.impact_type == IMPACT_TYPE.HEAD) return 'mace'
         if (this.impact_type == IMPACT_TYPE.EDGE) return 'sword'
+    }
+
+    get_data() {
+        return {tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes}
     }
 }
 

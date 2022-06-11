@@ -8,8 +8,8 @@ function send_update_request(socket) {
     socket.emit('char-info-detailed');
 }
 
-function send_equip_message(socket, index) {
-    socket.emit('equip', index);
+function send_equip_weapon_message(socket, index) {
+    socket.emit('equip-weapon', index);
     socket.emit('char-info-detailed');
 }
 
@@ -209,19 +209,22 @@ export class CharacterScreen {
         console.log(data)
         let inv = data.backpack;
         this.table.innerHTML = '';
-        for (let i = 0; i < inv.armours.length; i++) {
-            if (inv[i] != null) {
+        for (let i = 0; i < inv.weapons.length; i++) {
+            console.log(i)
+            console.log(inv.weapons[i])
+            if (inv.weapons[i] != null) {
+                let weapon = inv.weapons[i]
                 let row = this.table.insertRow();
                 let type = row.insertCell(0); 
-                type.innerHTML = inv[i].tag
-                for (let j = 0; j < inv[i].affixes; j++){
-                    let affix = inv[i]['a' + j];
+                type.innerHTML = weapon.tag
+                for (let j = 0; j < weapon.affixes; j++){
+                    let affix = weapon.affixes_list[j];
                     let a = row.insertCell(j + 1);
                     if (affix != undefined){
                         a.innerHTML = affix.tag + ' ' + affix.tier;
                     }
                 }
-                for (let j = inv[i].affixes + 1; j < 8; j++) {
+                for (let j = weapon.affixes + 1; j < 8; j++) {
                     row.insertCell(j)
                 }
                 let button = document.createElement('button');
@@ -229,7 +232,7 @@ export class CharacterScreen {
                 let tmp = row.insertCell(8)
                 tmp.appendChild(button);
                 ((index) => 
-                    button.onclick = () => send_equip_message(this.socket, index)
+                    button.onclick = () => send_equip_weapon_message(this.socket, index)
                 )(i)
                 tmp = row.insertCell(9);
                 let radio_button = document.createElement('input');
@@ -247,21 +250,26 @@ export class CharacterScreen {
     }
 
     update_equip(data) {
+        console.log('update_equip')
         for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
+            
             let tag = EQUIPMENT_TAGS[i]
             let item = data[tag]
+            console.log(tag)
+            console.log(item)
             // let image = document.getElementById('eq_' + tag + '_image');
             // image.style = get_item_image(item.tag)
             let label = document.querySelector('#eq_' + tag + '> .item_label')
-            label.innerHTML = item.tag
+            console.log(item?.tag)
+            label.innerHTML = item?.tag||'empty'
 
             let tooltip = document.getElementById('eq_' + tag + '_tooltip')
             tooltip.innerHTML = ''
             let tmp = document.createElement('div');
             let tmp2 = document.createElement('p');
-            tmp2.innerHTML = item.tag
+            tmp2.innerHTML = item?.tag||'empty'
             tmp.appendChild(tmp2)
-            for (let j = 0; j < item.affixes; j++){
+            for (let j = 0; j < item?.affixes; j++){
                 let affix = item['a' + j];
                 if (affix != undefined){
                     let p = document.createElement('p')

@@ -412,6 +412,11 @@ class CharacterGenericPart {
             this.world.socket_manager.send_stash_update_to_character(this);
         }
     }
+    send_equip_update() {
+        if (this.is_player()) {
+            this.world.socket_manager.send_equip_update_to_character(this);
+        }
+    }
     send_action_ping() {
         if (this.is_player()) {
             this.world.socket_manager.send_action_ping_to_character(this);

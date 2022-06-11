@@ -54,6 +54,22 @@ class Inventory {
         }
         return data;
     }
+    get_data() {
+        let data = {};
+        data.armours = [];
+        data.weapons = [];
+        for (let i of this.armours) {
+            if (i != undefined) {
+                data.armours.push({ tag: i.get_tag(), affixes: i.affixes.length, affixes_list: i.affixes });
+            }
+        }
+        for (let i of this.weapons) {
+            if (i != undefined) {
+                data.weapons.push({ tag: i.get_tag(), affixes: i.affixes.length, affixes_list: i.affixes });
+            }
+        }
+        return data;
+    }
     load_from_json(data) {
         for (let i of data.armours) {
             this.armours.push(new item_tags_1.Armour(i));
