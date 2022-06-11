@@ -195,7 +195,7 @@
                 <div id = "equip_button", class = 'control_button tooltip'><span class="tooltiptext">Equipment screen</span></div>
                 <!-- <div id = "quest_button", class = 'control_button tooltip'><span class="tooltiptext">Quests screen</span></div> -->
                 <div id = "stash_button", class = 'control_button tooltip'><span class="tooltiptext">Stash</span></div>
-                <div id = "backpack_weapon_button", class = 'control_button tooltip'><span class="tooltiptext">Backpack</span></div>
+                <div id = "backpack_button", class = 'control_button tooltip'><span class="tooltiptext">Backpack</span></div>
                 <div id = "craft_button", class = 'control_button tooltip'><span class="tooltiptext">Craft</span></div>
             </div>
 
@@ -383,12 +383,19 @@
                 <div id = 'stats', class = 'character_screen_frame'></div>
             </div>>
 
-            <div id = "backpack_weapon_tab" class="game_tab hidden movable noselect">
-                <div id = 'inventory', class = 'character_screen_frame'>
-                    <table id = 'inventory_items'></table>
-                    <div id = 'inventory_stash'>
-                    </div>
+            <div id = "backpack_tab" class="game_tab hidden movable noselect">
+                <div class="header_container">
+                    <div id="open_armour_header" class="selected header">Armour</div>
+                    <div id="open_weapon_header" class="header">Weapon</div>
+                    <div id="open_all_header" class="header">All</div>
                 </div>
+
+                <table id="backpack_armour_tab" class = "backpack_tab"></table>
+
+                <table id="backpack_weapon_tab" class = "backpack_tab hidden"></table>
+
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
             </div>
 
             <div id = "actions_tab" class="game_tab hidden movable noselect">

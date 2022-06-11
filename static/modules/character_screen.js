@@ -111,8 +111,11 @@ export class CharacterScreen {
         this.button.innerHTML = 'update';
         this.actions_div.appendChild(this.button);
 
-        this.table = document.createElement('table');
-        this.table = document.getElementById('inventory_items');
+        this.table_weapon = document.getElementById('backpack_weapon_tab');
+        this.table_armour = document.getElementById('backpack_armour_tab');
+
+
+
         this.inventory_stash_div = document.getElementById('inventory_stash')
         this.misc = document.createElement('misc');
 
@@ -205,16 +208,13 @@ export class CharacterScreen {
     }
 
     update_backpack(data) {
-        console.log('update_backpack')
-        console.log(data)
         let inv = data.backpack;
-        this.table.innerHTML = '';
+        this.table_weapon.innerHTML = '';
+        this.table_armour.innerHTML = '';
         for (let i = 0; i < inv.weapons.length; i++) {
-            console.log(i)
-            console.log(inv.weapons[i])
             if (inv.weapons[i] != null) {
                 let weapon = inv.weapons[i]
-                let row = this.table.insertRow();
+                let row = this.table_weapon.insertRow();
                 let type = row.insertCell(0); 
                 type.innerHTML = weapon.tag
                 for (let j = 0; j < weapon.affixes; j++){
@@ -234,14 +234,50 @@ export class CharacterScreen {
                 ((index) => 
                     button.onclick = () => send_equip_weapon_message(this.socket, index)
                 )(i)
-                tmp = row.insertCell(9);
-                let radio_button = document.createElement('input');
-                radio_button.setAttribute('type', 'radio');
-                radio_button.setAttribute('name', 'sell_item');
-                radio_button.setAttribute('value', i);
-                tmp.appendChild(radio_button);
+                // tmp = row.insertCell(9);
+                // let radio_button = document.createElement('input');
+                // radio_button.setAttribute('type', 'radio');
+                // radio_button.setAttribute('name', 'sell_item');
+                // radio_button.setAttribute('value', i);
+                // tmp.appendChild(radio_button);
             }
         }
+        
+        for (let i = 0; i < inv.armours.length; i++) {
+            if (inv.armours[i] != null) {
+                let armour = inv.armours[i]
+                let row = this.table_armour.insertRow();
+                let type = row.insertCell(0); 
+                type.innerHTML = armour.tag
+                for (let j = 0; j < armour.affixes; j++){
+                    let affix = armour.affixes_list[j];
+                    let a = row.insertCell(j + 1);
+                    if (affix != undefined){
+                        a.innerHTML = affix.tag + ' ' + affix.tier;
+                    }
+                }
+                for (let j = armour.affixes + 1; j < 8; j++) {
+                    row.insertCell(j)
+                }
+
+                let button = document.createElement('button');
+                button.innerHTML = 'equip';
+                let tmp = row.insertCell(8)
+                tmp.appendChild(button);
+                ((index) => 
+                    button.onclick = () => send_equip_armour_message(this.socket, index)
+                )(i)
+
+
+                // tmp = row.insertCell(9);
+                // let radio_button = document.createElement('input');
+                // radio_button.setAttribute('type', 'radio');
+                // radio_button.setAttribute('name', 'sell_item');
+                // radio_button.setAttribute('value', i);
+                // tmp.appendChild(radio_button);
+            }
+        }
+
         
     }
 

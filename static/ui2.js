@@ -2,7 +2,7 @@
 var socket = io();
 
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'backpack_weapon']
+const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'backpack']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';
@@ -425,6 +425,28 @@ document.getElementById('perks_header').onclick = () => {
     show_skill_tab('perks')
     skill_tab_deselect('skills')
     hide_skill_tab('skills')
+}
+
+document.getElementById('open_armour_header').onclick = () => {
+    skill_tab_select('open_armour')
+    show_skill_tab('backpack_armour')
+    skill_tab_deselect('open_weapon')
+    skill_tab_deselect('open_all')
+    hide_skill_tab('backpack_weapon')
+}
+document.getElementById('open_weapon_header').onclick = () => {
+    skill_tab_select('open_weapon')
+    show_skill_tab('backpack_weapon')
+    skill_tab_deselect('open_armour')
+    skill_tab_deselect('open_all')
+    hide_skill_tab('backpack_armour')
+}
+document.getElementById('open_all_header').onclick = () => {
+    skill_tab_select('open_all')
+    show_skill_tab('backpack_weapon')
+    show_skill_tab('backpack_armour')
+    skill_tab_deselect('open_armour')
+    skill_tab_deselect('open_weapon')
 }
 
 function set_skill_description(tag) {

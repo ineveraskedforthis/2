@@ -6,7 +6,34 @@
     width: 100%;
 }
 
+.header_container{
+    height: 25px;
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 30px;
+}
 
+.header_container> .header{
+    /* width: auto; */
+    flex-grow: 1;
+    height: 100%;
+    text-align: center;
+    border: white 1px solid;
+    padding: 4px;
+    margin: 10px;
+}
+
+.header_container> .header:hover{
+    background-color: rgba(255, 232, 0, 0.5);
+}
+
+.header_container> .header.selected{
+    background-color: rgba(10, 10, 200, 0.5);
+}
+
+.backpack_tab {
+    margin: 10px;
+}
 
 #cs_first_column{
     height: 100%;
