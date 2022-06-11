@@ -477,12 +477,15 @@ function build_skill_div(tag){
     let name_label = document.createElement('div')
     name_label.classList.add('label')
     name_label.innerHTML = SKILL_NAMES[tag]
-    skill_div.appendChild(name_label)
+    
 
     let practice_bar_container = document.createElement('div')
     let practice_bar = document.createElement('span')
     practice_bar_container.classList.add('hbar')
     practice_bar_container.appendChild(practice_bar)
+
+    practice_bar_container.appendChild(name_label)
+
     skill_div.appendChild(practice_bar_container)
 
     let practice_number = document.createElement('div')

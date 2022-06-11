@@ -1,12 +1,13 @@
 #skills{
-    display: flex;
-    flex-direction: column;
+    /* display: flex; */
+    /* flex-direction: column; */
     height: 100%;
 }
 #skills_header_container{
-    height: 5%;
+    height: 25px;
     display: flex;
     flex-direction: row;
+    flex-grow: 1;
 }
 
 #skills_header_container > .header{
@@ -14,7 +15,7 @@
     height: 100%;
     text-align: center;
     border: white 1px solid;
-    padding: 4px;
+    /* padding: 4px; */
 }
 
 #skills_header_container > .header:hover{
@@ -27,19 +28,22 @@
 
 
 #skills_body{
-    margin-top: 10px;
-    height: 90%;
+    /* margin-top: 10px; */
+    /* top:10px; */
+    height:calc(100% - 25px);
     border: white 1px solid;
+    /* flex-grow: 1; */
     display: flex;
     flex-direction: column;
-    padding: 5px;
+    /* padding: 5px; */
     position: relative;
 }
 
 .tab{
-    position: absolute;
-    height: 50%px;
+    /* position: absolute; */
+    /* height: 50%; */
     width: 100%;
+    flex-grow: 1;
     /* align-self: center;
     display: grid;
     grid-template-columns: repeat(auto-fill, 100px);
@@ -47,16 +51,19 @@
     grid-gap: 10px; */
     display: flex;
     flex-direction: column;
-    overflow: auto;
+    overflow-y: scroll;
+    overflow-x: auto;
+    /* text-align: right; */
 }
 .tab > div{
-    visibility: inherit;
+    /* visibility: inherit; */
     display: flex;
     flex-direction: row;
     margin: 5px;
     /* border: gray 1px solid; */
     height: auto;
-    width: 200px;
+    width: 230px;
+    
 
     text-shadow:
      -1px -1px 0 rgb(139, 80, 80),  
@@ -66,10 +73,12 @@
     color: rgb(251, 225, 225);
 }
 
-.tab > div > .label{
-    padding: 5px;
+.tab > div > div> .label{
+    position: absolute;
+    top:4px;
+    padding-left: 5px;
     width: 170px;
-    z-index: 5;
+    z-index: 1;
 }
 
 .tab > div > .practice_n{
@@ -77,12 +86,15 @@
     padding: 5px;
     z-index: 5;
     right: 0%;
+    text-align: right;
+    width:20px;
 }
 
 
 
 .tab > div > .hbar{
-    position: absolute;
+    /* position: absolute; */
+    display: block;
     border: tomato 1px solid;
     width: 200px;
     height: 25px;
@@ -144,11 +156,11 @@
 }
 
 .selected_description{
-    height: 20%;
+    /* height: 20%; */
     align-self: center;
     border: white 1px solid;
-    position: absolute;
-    padding: 3%;
-    bottom: 0%;
-    width: 94%
+    /* position: absolute; */
+    /* padding: 3%; */
+    /* bottom: 0%; */
+    width: 100%
 }
