@@ -62,10 +62,16 @@ class Inventory {
             if (i != undefined) {
                 data.armours.push({ tag: i.get_tag(), affixes: i.affixes.length, affixes_list: i.affixes });
             }
+            else {
+                data.weapons.push(undefined);
+            }
         }
         for (let i of this.weapons) {
             if (i != undefined) {
                 data.weapons.push({ tag: i.get_tag(), affixes: i.affixes.length, affixes_list: i.affixes });
+            }
+            else {
+                data.weapons.push(undefined);
             }
         }
         return data;

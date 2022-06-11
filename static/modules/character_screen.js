@@ -286,7 +286,9 @@ export class CharacterScreen {
     }
 
     update_equip(data) {
+
         console.log('update_equip')
+        console.log(data)
         for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
             
             let tag = EQUIPMENT_TAGS[i]
