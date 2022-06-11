@@ -57,19 +57,43 @@ class Armour {
         data.affixes = this.affixes;
         return data;
     }
+    get_tag() {
+        let tag = this.material.string_tag;
+        switch (this.type) {
+            case ARMOUR_TYPE.ARMS: return tag + '_gloves';
+            case ARMOUR_TYPE.LEGS: return tag + '_pants';
+            case ARMOUR_TYPE.BODY: return tag + '_armour';
+            case ARMOUR_TYPE.HEAD: return tag + '_helmet';
+            case ARMOUR_TYPE.FOOT: return tag + '_boots';
+        }
+    }
 }
 exports.Armour = Armour;
+function shaft_length_to_number(x) {
+    switch (x) {
+        case 0 /* HAND */: return 0.1;
+        case 1 /* SHORT */: return +1;
+        case 2 /* LONG */: return +2;
+    }
+}
+function impact_size_to_number(x) {
+    switch (x) {
+        case 1 /* SMALL */: return 0.1;
+        case 2 /* MEDIUM */: return 1;
+        case 3 /* LARGE */: return 2;
+    }
+}
 class Weapon {
     constructor(data) {
         this.durability = data.durability;
         this.shaft_length = data.shaft_length;
         this.shaft_material = data.shaft_material;
-        this.shaft_weight = data.shaft_weight;
+        this.shaft_weight = shaft_length_to_number(this.shaft_length) * this.shaft_material.density;
         this.impact_size = data.impact_size;
         this.impact_material = data.impact_material;
         this.impact_type = data.impact_type;
         this.impact_quality = data.impact_quality;
-        this.impact_weight = data.impact_weight;
+        this.impact_weight = impact_size_to_number(this.impact_size) * this.impact_material.density;
         this.affixes = data.affixes;
     }
     get_weight() {
@@ -106,15 +130,21 @@ class Weapon {
             durability: this.durability,
             shaft_length: this.shaft_length,
             shaft_material: this.shaft_material,
-            shaft_weight: this.shaft_weight,
             impact_size: this.impact_size,
             impact_material: this.impact_material,
             impact_type: this.impact_type,
             impact_quality: this.impact_quality,
-            impact_weight: this.impact_weight,
             affixes: this.affixes
         };
         return data;
+    }
+    get_tag() {
+        if (this.impact_type == 0 /* POINT */)
+            return 'spear';
+        if (this.impact_type == 2 /* HEAD */)
+            return 'mace';
+        if (this.impact_type == 1 /* EDGE */)
+            return 'sword';
     }
 }
 exports.Weapon = Weapon;

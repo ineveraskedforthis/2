@@ -7,6 +7,9 @@ import { clean } from '../base_game_classes/character_actions/clean'
 import { rest } from "../base_game_classes/character_actions/rest"
 import { hunt } from "../base_game_classes/character_actions/hunt"
 import { attack } from "../base_game_classes/character_actions/attack"
+import { craft_spear } from "../base_game_classes/character_actions/craft_spear"
+import { gather_wood } from "../base_game_classes/character_actions/gather_wood"
+
 
 export const enum CharacterActionResponce {
     CANNOT_MOVE_THERE,
@@ -46,6 +49,8 @@ export class ActionManager {
         this.add_action(hunt)
         this.add_action(rest)
         this.add_action(attack)
+        this.add_action(craft_spear)
+        this.add_action(gather_wood)
     }
 
     add_action(action: Action) {
@@ -90,7 +95,9 @@ export enum CharacterAction {
     EAT = 3,
     HUNT = 4,
     REST = 5,
-    ATTACK = 6
+    ATTACK = 6,
+    CRAFT_SPEAR = 7,
+    GATHER_WOOD = 8
 }
 
 

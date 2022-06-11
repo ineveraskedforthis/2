@@ -80,12 +80,14 @@ export class SocketManager {
             socket.on('rest', async () => this.rest(user));
             socket.on('move', async (msg: any) => this.move(user, msg));
             socket.on('hunt', async () => this.hunt(user))
+            socket.on('gather_wood', async () => this.gather_wood(user))
 
             socket.on('session', async (msg: any) => this.login_with_session(user, msg));
             socket.on('clear_orders', async () => this.clear_orders(user));
             socket.on('sell-item', async (msg: any) => this.sell_item(user, msg));
             socket.on('buyout', async (msg: any) => this.buyout(user, msg));
             socket.on('cfood', async () => this.craft_food(user));
+            socket.on('mspear', async () => this.craft_spear(user))
             // socket.on('cclothes', async () => this.craft_clothes(user));
             // socket.on('ench', async (msg: any) => this.enchant(user));
             socket.on('disench', async (msg: any) => this.disenchant(user, msg));
@@ -429,6 +431,18 @@ export class SocketManager {
         }
     }
 
+    async gather_wood(user: User) {
+        if (user.logged_in) {
+            let char = user.get_character();
+            let res = await this.world.action_manager.start_action(CharacterAction.GATHER_WOOD, char, undefined)
+            if (res == CharacterActionResponce.NO_RESOURCE)  {
+                user.socket.emit('alert', 'no wood here')
+            } else if (res == CharacterActionResponce.IN_BATTLE) {
+                user.socket.emit('alert', 'you are in battle')
+            }
+        }
+    }
+
     async rest(user: User) {
         if (user.logged_in) {
             let char = user.get_character();
@@ -446,13 +460,27 @@ export class SocketManager {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(CharacterAction.COOK_MEAT, char, undefined)
             if (res == CharacterActionResponce.NO_RESOURCE)  {
-                user.socket.emit('alert', 'no place to rest here')
+                user.socket.emit('alert', 'not enough resources')
             } else if (res == CharacterActionResponce.IN_BATTLE) {
                 user.socket.emit('alert', 'you are in battle')
             } else if (res == CharacterActionResponce.FAILED) {
                 user.socket.emit('alert', 'failed')
             }
         }        
+    }
+
+    async craft_spear(user: User) {
+        if (user.logged_in) {
+            let char = user.get_character();
+            let res = await this.world.action_manager.start_action(CharacterAction.CRAFT_SPEAR, char, undefined)
+            if (res == CharacterActionResponce.NO_RESOURCE)  {
+                user.socket.emit('alert', 'not enough resources')
+            } else if (res == CharacterActionResponce.IN_BATTLE) {
+                user.socket.emit('alert', 'you are in battle')
+            } else if (res == CharacterActionResponce.FAILED) {
+                user.socket.emit('alert', 'failed')
+            }
+        }  
     }
 
     // async craft_clothes(user: User) {

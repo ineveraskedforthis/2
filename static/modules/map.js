@@ -210,6 +210,15 @@ export class Map {
             )(this.socket);
         }
 
+        
+
+        {
+            let button = document.getElementById('gather_wood_button');
+            (() => 
+                    button.onclick = () => this.send_cell_action('gather_wood')
+            )(this.socket);
+        }
+
         {
             let button = document.getElementById('hunt_button');
             (() => 

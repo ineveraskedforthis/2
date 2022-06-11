@@ -2,6 +2,7 @@ import { textChangeRangeIsUnchanged } from "typescript"
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
 import type { AttackResult } from "../base_game_classes/misc/attack_result"
 import type { DamageByTypeObject } from "../base_game_classes/misc/damage_types"
+import { World } from "../world"
 import { WEAPON_TYPE, weapon_type } from "./type_script_types"
 
 export type affix_tag = 'sharp'|'heavy'|'hot'|'precise'|'power_battery'|'madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'elodino_pleasure'|'power_of_graci_beauty'
@@ -35,19 +36,19 @@ export class ITEM_MATERIAL {
     }
 }
 
-const enum IMPACT_TYPE {
+export const enum IMPACT_TYPE {
     POINT,
     EDGE,
     HEAD,
 }
 
-const enum IMPACT_SIZE {
+export const enum IMPACT_SIZE {
     SMALL = 1, // spear/knife like, 1 unit,
     MEDIUM = 2, // 2 units
     LARGE = 3, // long sword
 }
 
-const enum SHAFT_LEGTH {
+export const enum SHAFT_LEGTH {
     HAND = 0, // 1 unit of material
     SHORT = 1, // 2 units, javelin/mace
     LONG = 2, // 3 units, something like long pike, imagine longsword edge on long shaft lmao
@@ -58,9 +59,6 @@ const enum SHAFT_LEGTH {
 // for example: edges
 // at 100 whole damage will be converted to slice, 
 // at 0 it will act just as fancy club 
-
-
-
 
 
 export class affix{
@@ -117,6 +115,18 @@ export class Armour {
         data.affixes        = this.affixes
         return data
     }
+
+    get_tag() {
+        let tag = this.material.string_tag
+
+        switch(this.type) {
+            case ARMOUR_TYPE.ARMS: return tag + '_gloves'
+            case ARMOUR_TYPE.LEGS: return tag + '_pants'
+            case ARMOUR_TYPE.BODY: return tag + '_armour'
+            case ARMOUR_TYPE.HEAD: return tag + '_helmet'
+            case ARMOUR_TYPE.FOOT: return tag + '_boots'
+        }
+    }
 }
 
 
@@ -128,19 +138,33 @@ export class Armour {
 // weight of shaft matters less for edge and head attacks
 // weight doesn't matter that much for point attacks
 
-interface WeaponConstructorArgument {
+export interface WeaponConstructorArgument {
     durability: number,
     shaft_length: SHAFT_LEGTH,
-    shaft_material: ITEM_MATERIAL, 
-    shaft_weight: number,
+    shaft_material: ITEM_MATERIAL,
     impact_size: IMPACT_SIZE, 
     impact_material: ITEM_MATERIAL, 
     impact_type: IMPACT_TYPE, 
     impact_quality: number,
-    impact_weight: number
     affixes: affix[]
 }
 
+
+function shaft_length_to_number(x: SHAFT_LEGTH): number {
+    switch(x) {
+        case SHAFT_LEGTH.HAND: return 0.1
+        case SHAFT_LEGTH.SHORT: return + 1
+        case SHAFT_LEGTH.LONG: return + 2
+    }
+}
+
+function impact_size_to_number(x: IMPACT_SIZE) {
+    switch(x) {
+        case IMPACT_SIZE.SMALL: return 0.1
+        case IMPACT_SIZE.MEDIUM: return 1
+        case IMPACT_SIZE.LARGE: return 2
+    }
+}
 
 export class Weapon {
     durability: number;
@@ -163,14 +187,13 @@ export class Weapon {
 
         this.shaft_length = data.shaft_length
         this.shaft_material = data.shaft_material;
-        this.shaft_weight = data.shaft_weight
-
+        this.shaft_weight = shaft_length_to_number(this.shaft_length) * this.shaft_material.density
 
         this.impact_size = data.impact_size;
         this.impact_material = data.impact_material;
         this.impact_type = data.impact_type;
         this.impact_quality = data.impact_quality;
-        this.impact_weight = data.impact_weight
+        this.impact_weight = impact_size_to_number(this.impact_size) * this.impact_material.density
 
         this.affixes = data.affixes
     }
@@ -213,18 +236,21 @@ export class Weapon {
 
             shaft_length: this.shaft_length,
             shaft_material: this.shaft_material,
-            shaft_weight: this.shaft_weight,
-
 
             impact_size: this.impact_size,
             impact_material: this.impact_material,
             impact_type: this.impact_type,
             impact_quality: this.impact_quality,
-            impact_weight: this.impact_weight,
 
             affixes: this.affixes
         }
         return data
+    }
+
+    get_tag() {
+        if (this.impact_type == IMPACT_TYPE.POINT) return 'spear'
+        if (this.impact_type == IMPACT_TYPE.HEAD) return 'mace'
+        if (this.impact_type == IMPACT_TYPE.EDGE) return 'sword'
     }
 }
 

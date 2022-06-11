@@ -8,6 +8,8 @@ const clean_1 = require("../base_game_classes/character_actions/clean");
 const rest_1 = require("../base_game_classes/character_actions/rest");
 const hunt_1 = require("../base_game_classes/character_actions/hunt");
 const attack_1 = require("../base_game_classes/character_actions/attack");
+const craft_spear_1 = require("../base_game_classes/character_actions/craft_spear");
+const gather_wood_1 = require("../base_game_classes/character_actions/gather_wood");
 class ActionManager {
     constructor(world, pool) {
         this.pool = pool;
@@ -20,6 +22,8 @@ class ActionManager {
         this.add_action(hunt_1.hunt);
         this.add_action(rest_1.rest);
         this.add_action(attack_1.attack);
+        this.add_action(craft_spear_1.craft_spear);
+        this.add_action(gather_wood_1.gather_wood);
     }
     add_action(action) {
         this.actions.push(action);
@@ -64,4 +68,6 @@ var CharacterAction;
     CharacterAction[CharacterAction["HUNT"] = 4] = "HUNT";
     CharacterAction[CharacterAction["REST"] = 5] = "REST";
     CharacterAction[CharacterAction["ATTACK"] = 6] = "ATTACK";
+    CharacterAction[CharacterAction["CRAFT_SPEAR"] = 7] = "CRAFT_SPEAR";
+    CharacterAction[CharacterAction["GATHER_WOOD"] = 8] = "GATHER_WOOD";
 })(CharacterAction = exports.CharacterAction || (exports.CharacterAction = {}));

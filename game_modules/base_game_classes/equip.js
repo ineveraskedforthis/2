@@ -181,12 +181,12 @@ class Equip {
     // UNFINISHED
     get_data() {
         return {
-            right_hand: '',
-            body: '',
-            legs: '',
-            foot: '',
-            head: '',
-            arms: '',
+            right_hand: this.data.weapon?.get_tag(),
+            body: this.data.armour.get(item_tags_1.ARMOUR_TYPE.BODY)?.get_tag(),
+            legs: this.data.armour.get(item_tags_1.ARMOUR_TYPE.LEGS)?.get_tag(),
+            foot: this.data.armour.get(item_tags_1.ARMOUR_TYPE.FOOT)?.get_tag(),
+            head: this.data.armour.get(item_tags_1.ARMOUR_TYPE.HEAD)?.get_tag(),
+            arms: this.data.armour.get(item_tags_1.ARMOUR_TYPE.ARMS)?.get_tag(),
             backpack: this.data.backpack.get_json()
         };
     }

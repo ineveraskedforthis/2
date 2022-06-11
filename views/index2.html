@@ -209,6 +209,13 @@
                     <div>=></div>
                     <div class="goods_icon" style="background: no-repeat center/100% url(/static/img/stash_food.png);"> </div>
                 </div>
+
+                <div id = "make_spear" class="craft_option">
+                    <div class="goods_icon" style="background: no-repeat center/100% url(/static/img/stash_wood.png);"> 3 </div>
+                    <div>=></div>
+                    <div class="goods_icon" > spear </div>
+                </div>
+
                 <div class="corner top"></div>
                 <div class="corner bottom"></div>
             </div>
@@ -237,6 +244,9 @@
                         </div>
                         <div id='rest_button' class="button">
                             Rest
+                        </div>
+                        <div id='gather_wood_button' class="button">
+                            Gather Wood
                         </div>
                         <div id='local_description'></div>
                     </div>
@@ -384,7 +394,7 @@
                 <div id = 'character_screen_actions', class = 'character_screen_frame'></div>
             </div>
 
-            <div id="equip_tab" class="game_tab  movable noselect">
+            <div id="equip_tab" class="game_tab hidden movable noselect">
                 <div id = 'equip', class = 'character_screen_frame'>
                     <p class = "tab_label"> Equipment: </p>
                     <div id = 'eq_head', class = 'item_frame tooltip'> 

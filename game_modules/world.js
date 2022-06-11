@@ -47,6 +47,7 @@ class World {
         this.map_tick = 0;
         this.materials_manager = new materials_manager_1.MaterialsManager();
         this.materials = {};
+        //frfrfgrs
         this.materials.RAT_SKIN = this.materials_manager.create_material(2, 2, 'rat_skin');
         this.materials.RAT_BONE = this.materials_manager.create_material(3, 5, 'rat_bone');
         this.materials.ELODINO_FLESH = this.materials_manager.create_material(1, 1, 'elodino_flesh');
@@ -57,6 +58,17 @@ class World {
         this.materials.ZAZ = this.materials_manager.create_material(1, 10, 'zaz');
         this.materials.MEAT = this.materials_manager.create_material(3, 1, 'meat');
         this.materials.WATER = this.materials_manager.create_material(2, 1, 'water');
+        let SPEAR_ARGUMENT = {
+            durability: 100,
+            shaft_length: 2 /* LONG */,
+            shaft_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
+            impact_size: 1 /* SMALL */,
+            impact_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
+            impact_type: 0 /* POINT */,
+            impact_quality: 50,
+            affixes: []
+        };
+        this.spear_argument = SPEAR_ARGUMENT;
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         this.ai_manager = new ai_manager_1.AiManager(this);

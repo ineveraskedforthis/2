@@ -252,6 +252,9 @@ export class CharacterScreen {
             let item = data[tag]
             // let image = document.getElementById('eq_' + tag + '_image');
             // image.style = get_item_image(item.tag)
+            let label = document.querySelector('#eq_' + tag + '> .item_label')
+            label.innerHTML = item.tag
+
             let tooltip = document.getElementById('eq_' + tag + '_tooltip')
             tooltip.innerHTML = ''
             let tmp = document.createElement('div');

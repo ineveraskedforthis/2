@@ -1,6 +1,6 @@
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
-import {affix_tag, ITEM_MATERIAL} from "./static_data/item_tags";
+import {affix_tag, IMPACT_SIZE, IMPACT_TYPE, ITEM_MATERIAL, SHAFT_LEGTH, WeaponConstructorArgument} from "./static_data/item_tags";
 
 
 import {EntityManager} from './manager_classes/entity_manager'
@@ -51,6 +51,7 @@ export class World {
     ai_manager: AiManager;
     materials_manager: MaterialsManager;
     territories: {[_: string]: any}
+    spear_argument: WeaponConstructorArgument
 
     materials: {[_: string]: material_index}
 
@@ -83,7 +84,7 @@ export class World {
         this.materials_manager = new MaterialsManager()
 
         this.materials = {}
-
+//frfrfgrs
         this.materials.RAT_SKIN = this.materials_manager.create_material(2, 2, 'rat_skin')
         this.materials.RAT_BONE = this.materials_manager.create_material(3, 5, 'rat_bone')
         this.materials.ELODINO_FLESH = this.materials_manager.create_material(1, 1, 'elodino_flesh')
@@ -94,6 +95,21 @@ export class World {
         this.materials.ZAZ = this.materials_manager.create_material(1, 10, 'zaz')
         this.materials.MEAT = this.materials_manager.create_material(3, 1, 'meat')
         this.materials.WATER = this.materials_manager.create_material(2, 1, 'water')
+
+
+
+        let SPEAR_ARGUMENT: WeaponConstructorArgument = {
+            durability: 100,
+            shaft_length: SHAFT_LEGTH.LONG,
+            shaft_material: this.materials_manager.get_material_with_index(this.materials.WOOD), 
+            impact_size: IMPACT_SIZE.SMALL, 
+            impact_material: this.materials_manager.get_material_with_index(this.materials.WOOD), 
+            impact_type:IMPACT_TYPE.POINT, 
+            impact_quality: 50,
+            affixes: []
+        }
+
+        this.spear_argument = SPEAR_ARGUMENT
 
 
 
