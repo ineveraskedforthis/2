@@ -2,6 +2,10 @@ import { CharacterGenericPart } from "../character_generic_part";
 import {CharacterActionResponce} from '../../manager_classes/action_manager'
 
 export const move ={
+    duration(char: CharacterGenericPart) {
+        return 1 + char.get_fatigue() / 30;
+    },
+
     check: async function (pool: any, char: CharacterGenericPart, data: any) {
         if (char.in_battle()) {
             return CharacterActionResponce.IN_BATTLE

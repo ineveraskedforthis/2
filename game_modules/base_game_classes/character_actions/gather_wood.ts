@@ -3,6 +3,10 @@ import type { CharacterGenericPart } from "../character_generic_part";
 
 
 export const gather_wood = {
+    duration(char: CharacterGenericPart) {
+        return 2 + char.get_fatigue() / 10;
+    },
+
     check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();

@@ -107,6 +107,7 @@ class CharacterGenericPart {
         this.faction_id = -1;
         this.action_started = false;
         this.action_progress = 0;
+        this.action_duration = 0;
     }
     async init(pool, name, cell_id, user_id = -1) {
         this.init_base_values(name, cell_id, user_id);
@@ -164,7 +165,7 @@ class CharacterGenericPart {
         else {
             return;
         }
-        if ((this.current_action != undefined) && this.action_progress >= this.world.ACTION_TIME) {
+        if ((this.current_action != undefined) && (this.action_progress >= this.action_duration)) {
             this.world.action_manager.action(this.current_action, this, this.action_target);
         }
     }
@@ -419,9 +420,9 @@ class CharacterGenericPart {
             this.world.socket_manager.send_equip_update_to_character(this);
         }
     }
-    send_action_ping() {
+    send_action_ping(duration) {
         if (this.is_player()) {
-            this.world.socket_manager.send_action_ping_to_character(this);
+            this.world.socket_manager.send_action_ping_to_character(this, duration);
         }
     }
     //rgo

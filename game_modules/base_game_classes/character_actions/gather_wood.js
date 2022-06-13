@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gather_wood = void 0;
 exports.gather_wood = {
+    duration(char) {
+        return 2 + char.get_fatigue() / 10;
+    },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();

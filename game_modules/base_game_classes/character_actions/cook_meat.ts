@@ -3,6 +3,10 @@ import { CharacterActionResponce } from "../../manager_classes/action_manager";
 
 
 export const cook_meat = {
+    duration(char: CharacterGenericPart) {
+        return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;
+    },
+
     check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(char.world.materials.MEAT)

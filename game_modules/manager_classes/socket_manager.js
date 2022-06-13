@@ -787,8 +787,8 @@ class SocketManager {
             }
         }
     }
-    send_action_ping_to_character(char) {
-        this.send_to_character_user(char, 'action-ping', { tag: 'start', time: this.world.ACTION_TIME });
+    send_action_ping_to_character(char, duration) {
+        this.send_to_character_user(char, 'action-ping', { tag: 'start', time: duration });
     }
 }
 exports.SocketManager = SocketManager;

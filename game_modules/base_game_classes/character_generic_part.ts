@@ -160,6 +160,7 @@ export class CharacterGenericPart {
     faction_id: number;
 
     action_progress: number;
+    action_duration: number;
     action_started: boolean;
     current_action: undefined|CharacterAction
     action_target: any
@@ -205,6 +206,7 @@ export class CharacterGenericPart {
 
         this.action_started = false
         this.action_progress = 0
+        this.action_duration = 0
     }
 
     async init(pool: any, name: string, cell_id: number, user_id = -1) {
@@ -268,7 +270,7 @@ export class CharacterGenericPart {
         } else {
             return
         }
-        if ((this.current_action != undefined) && this.action_progress >= this.world.ACTION_TIME) {
+        if ((this.current_action != undefined) && (this.action_progress >= this.action_duration)) {
             this.world.action_manager.action(this.current_action, this, this.action_target)
         }
     }
@@ -573,9 +575,9 @@ export class CharacterGenericPart {
         }
     }
 
-    send_action_ping() {
+    send_action_ping(duration: number) {
         if (this.is_player()) {
-            this.world.socket_manager.send_action_ping_to_character(this)
+            this.world.socket_manager.send_action_ping_to_character(this, duration)
         }
     }
 

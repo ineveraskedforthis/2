@@ -3,6 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.craft_spear = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
 exports.craft_spear = {
+    duration(char) {
+        return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
+    },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(char.world.materials.WOOD);

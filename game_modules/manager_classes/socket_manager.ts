@@ -876,7 +876,7 @@ export class SocketManager {
         }
     }
 
-    send_action_ping_to_character(char: CharacterGenericPart) {
-        this.send_to_character_user(char, 'action-ping', {tag: 'start', time: this.world.ACTION_TIME})
+    send_action_ping_to_character(char: CharacterGenericPart, duration: number) {
+        this.send_to_character_user(char, 'action-ping', {tag: 'start', time: duration})
     }
 }

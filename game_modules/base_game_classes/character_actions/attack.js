@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.attack = void 0;
 exports.attack = {
+    duration(char) {
+        return 0;
+    },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();

@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.eat = void 0;
 exports.eat = {
+    duration(char) {
+        return 1 + char.get_fatigue() / 20;
+    },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(char.world.materials.FOOD);

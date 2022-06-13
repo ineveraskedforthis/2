@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.move = void 0;
 exports.move = {
+    duration(char) {
+        return 1 + char.get_fatigue() / 30;
+    },
     check: async function (pool, char, data) {
         if (char.in_battle()) {
             return 2 /* IN_BATTLE */;

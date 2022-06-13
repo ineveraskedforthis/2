@@ -3,6 +3,10 @@ import type { CharacterGenericPart } from "../character_generic_part";
 
 
 export const attack = {
+    duration(char: CharacterGenericPart) {
+        return 0
+    },
+
     check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();

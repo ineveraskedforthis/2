@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.clean = void 0;
 exports.clean = {
+    duration(char) {
+        return 1 + char.get_fatigue() / 20;
+    },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();

@@ -29,6 +29,7 @@ type Action = {
     check: ActionCheckFunction
     start: ActionFunction
     result: ActionFunction
+    duration: (char: CharacterGenericPart) => number;
     immediate?: boolean
 }
 
@@ -64,7 +65,8 @@ export class ActionManager {
         let action = this.actions[action_id];
         let check = await action.check(this.pool, char, data)
         if (check == CharacterActionResponce.OK) {
-            char.send_action_ping()
+            let duration = action.duration(char)
+            char.send_action_ping(duration)            
             if (action.immediate) {
                 await this.action(action_id, char, undefined)
             } else {
@@ -72,6 +74,7 @@ export class ActionManager {
                 char.action_started = true
                 char.current_action = action_id
                 char.action_progress = 0
+                char.action_duration = duration
             }            
         }
         return check
