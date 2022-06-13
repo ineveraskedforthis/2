@@ -31,6 +31,8 @@ class SkillList {
         this.magic_mastery = new SkillObject();
         this.blocking = new SkillObject();
         this.evasion = new SkillObject();
+        this.woodwork = new SkillObject();
+        this.hunt = new SkillObject();
         this.perks = {};
     }
 }

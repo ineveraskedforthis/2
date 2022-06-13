@@ -72,7 +72,7 @@ export class AiManager {
 
     async decision(char: CharacterGenericPart) {
         // console.log(char.misc.ai_tag)
-        if ((char.misc.ai_tag == 'agressive_walker') && (!char.is_player())) {
+        if ((char.misc.ai_tag == 'aggressive_walker') && (!char.is_player())) {
             if (!char.in_battle() && !char.action_started) {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
                     await this.world.action_manager.start_action(CharacterAction.REST, char, undefined)

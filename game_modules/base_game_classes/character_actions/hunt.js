@@ -20,9 +20,20 @@ exports.hunt = {
     },
     result: async function (pool, char, data) {
         char.changed = true;
+        let skill = char.skills.hunt.practice;
+        let dice = Math.random();
         char.change_fatigue(10);
-        char.stash.inc(char.world.materials.MEAT, 1);
-        char.change_blood(5);
+        if (dice * 100 > skill) {
+            char.stash.inc(char.world.materials.MEAT, 1);
+            char.change_blood(5);
+        }
+        else {
+            let dice = Math.random();
+            if (dice * 100 > skill) {
+                char.skills.hunt.practice += 1;
+            }
+            char.change_stress(1);
+        }
         char.send_status_update();
         char.send_stash_update();
     },

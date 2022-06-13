@@ -385,6 +385,8 @@ const SKILL_NAMES = {
     magic_mastery: 'Magic',
     blocking: 'Blocking attacks',
     evasion: 'Evading attacks',
+    woodwork: 'Woodworking',
+    hunt: 'Hunting'
 }
 
 var CURR_SKILL_DESC = undefined
@@ -500,9 +502,9 @@ function update_skill_data(data) {
     for (let tag in SKILL_TAGS) {
         let div = document.getElementById(tag + '_skill_div')
         let amount = div.querySelector('.practice_n')
-        amount.innerHTML = data[tag].practice
+        amount.innerHTML = data[tag]?.practice
         let span = div.querySelector('.hbar > span')
-        span.style.width = data[tag].practice + '%'
+        span.style.width = data[tag]?.practice + '%'
     }
 }
 

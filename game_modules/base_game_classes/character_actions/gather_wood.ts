@@ -21,7 +21,8 @@ export const gather_wood = {
         char.changed = true
         char.change_fatigue(10)
         char.stash.inc(char.world.materials.WOOD, 1)
-        char.change_blood(5)
+        char.change_blood(1)
+        char.change_stress(1)
         char.send_status_update()
         char.send_stash_update()
     },

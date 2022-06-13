@@ -17,37 +17,30 @@ exports.craft_spear = {
         let tmp = char.stash.get(char.world.materials.WOOD);
         if (tmp > 2) {
             char.changed = true;
-            // let skill = char.skills.cooking.practice
-            // let check = 0;
-            // if (char.skills.perks.meat_master) {
-            //     check = 1
-            // } else if (skill > 20) {
-            //     check = 0.7
-            // } else {
-            //     check = 0.7 * skill / 20
-            // }
-            // let dice = Math.random()
+            let skill = char.skills.woodwork.practice;
             char.stash.inc(char.world.materials.WOOD, -3);
             char.send_stash_update();
             char.change_fatigue(10);
             // if (dice < check) {
-            let spear = new item_tags_1.Weapon(char.world.spear_argument);
-            char.equip.add_weapon(spear);
-            char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
-            char.send_stash_update();
-            char.send_equip_update();
-            char.send_status_update();
-            return 1 /* OK */;
-            // } else {
-            //     if (skill < 19) {
-            //         char.skills.cooking.practice += 1
-            //         char.send_skills_update()
-            //     }
-            //     char.change_stress(5)
-            //     char.send_status_update()
-            //     char.world.socket_manager.send_to_character_user(char, 'alert', 'failed')
-            //     return CharacterActionResponce.FAILED
-            // }
+            let dice = Math.random();
+            if (dice * 100 < skill) {
+                let spear = new item_tags_1.Weapon(char.world.spear_argument);
+                char.equip.add_weapon(spear);
+                char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
+                char.send_stash_update();
+                char.send_equip_update();
+                char.send_status_update();
+                return 1 /* OK */;
+            }
+            else {
+                char.change_stress(1);
+                if (skill < 20) {
+                    char.skills.woodwork.practice += 1;
+                    char.send_skills_update();
+                    char.changed = true;
+                }
+                return 4 /* FAILED */;
+            }
         }
     },
     start: async function (pool, char, data) {
