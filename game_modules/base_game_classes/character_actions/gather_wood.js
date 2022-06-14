@@ -29,6 +29,7 @@ exports.gather_wood = {
         char.change_stress(1);
         char.send_status_update();
         char.send_stash_update();
+        return 1 /* OK */;
     },
     start: async function (pool, char, data) {
     },

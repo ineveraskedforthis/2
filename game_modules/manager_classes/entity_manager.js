@@ -97,6 +97,7 @@ class EntityManager {
             let order = new market_order_1.MarketOrder(this.world);
             order.load_from_json(i);
             this.orders[order.id] = order;
+            this.get_cell_by_id(order.cell_id)?.add_order(order.id);
         }
         console.log('orders loaded');
     }
@@ -222,6 +223,7 @@ class EntityManager {
     }
     async add_order(pool, order) {
         this.orders[order.id] = order;
+        this.get_cell_by_id(order.cell_id)?.add_order(order.id);
     }
     add_item_order(order) {
         this.item_orders[order.id] = order;

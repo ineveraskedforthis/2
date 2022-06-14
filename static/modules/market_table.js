@@ -176,7 +176,8 @@ export class GoodsMarket {
     }
 
     update_data(data) {
-        // console.log(data)
+        console.log('update_data')
+        console.log(data)
         this.data = data;
         for (let tag in data.buy) {
             let total_price = 0;

@@ -4,19 +4,22 @@ import type {World} from "../world";
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part.js";
 import { material_index } from "../manager_classes/materials_manager.js";
 
+export type market_order_index = number & { __brand: "index of the order"}
+
+
 export class MarketOrder {
     world: World;
-    id: number;
+    id: market_order_index;
     typ: 'sell'|'buy'
     tag: material_index
     owner_id: number
     owner: CharacterGenericPart|undefined
     amount: number
     price: number
-    market_id: number
+    cell_id: number
 
     constructor(world: World) {
-        this.id = -1
+        this.id = -1 as market_order_index
         this.world = world;
         this.typ = 'sell'
         this.tag = 1 as material_index
@@ -24,17 +27,17 @@ export class MarketOrder {
         this.owner_id = -1
         this.amount = 0
         this.price = 0
-        this.market_id = 0
+        this.cell_id = 0
     }
 
-    async init(pool:any, typ:'sell'|'buy', tag: material_index, owner: CharacterGenericPart, amount: number, price: number, market_id: number) {
+    async init(pool:any, typ:'sell'|'buy', tag: material_index, owner: CharacterGenericPart, amount: number, price: number, cell_id: number) {
         this.typ = typ;
         this.tag = tag;
         this.owner_id = owner.id;
         this.owner = owner
         this.amount = amount;
         this.price = price;
-        this.market_id = market_id;
+        this.cell_id = cell_id;
         if (constants.logging.market_order.init) {
             console.log('market order init');
         }
@@ -43,7 +46,7 @@ export class MarketOrder {
     }
 
     async load_to_db(pool: any) {
-        let result = await common.send_query(pool, constants.insert_market_order_query, [this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
+        let result = await common.send_query(pool, constants.insert_market_order_query, [this.typ, this.tag, this.owner_id, this.amount, this.price, this.cell_id]);
         return result.rows[0].id;
     }
 
@@ -63,7 +66,7 @@ export class MarketOrder {
         this.amount = data.amount;
         this.price = data.price;
         this.id = data.id;
-        this.market_id = data.market_id;
+        this.cell_id = data.cell_id;
         if (this.owner == undefined) {
             return false
         } else {
@@ -83,7 +86,7 @@ export class MarketOrder {
         tmp.amount = this.amount;
         tmp.price = this.price;
         tmp.id = this.id;
-        tmp.market_id = this.market_id;
+        tmp.cell_id = this.cell_id;
         return tmp;
     }
 }

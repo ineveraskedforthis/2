@@ -79,7 +79,9 @@ class CharacterGenericPart {
         this.world = world;
         this.equip = new equip_1.Equip();
         this.stash = new stash_1.Stash();
+        this.trade_stash = new stash_1.Stash();
         this.savings = new Savings();
+        this.trade_savings = new Savings();
         this.status = new Status();
         this.status.hp = 100;
         this.skills = new SkillList();
@@ -152,7 +154,6 @@ class CharacterGenericPart {
         let cell = this.get_cell();
         if (cell != undefined) {
             cell.visit();
-            cell.enter(this);
         }
         this.flags_handling_update();
         await this.save_to_db(pool, this.changed || this.stash.changed || this.savings.changed);

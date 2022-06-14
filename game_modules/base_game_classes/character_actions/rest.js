@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.rest = void 0;
 exports.rest = {
     duration(char) {
-        return 0.1 + char.get_fatigue() / 10;
+        return 0.1 + char.get_fatigue() / 20;
     },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {

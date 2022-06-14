@@ -1,7 +1,10 @@
 var Market = require("./market/market.js")
 var common = require("./common.js")
 import { CharacterGenericPart } from "./base_game_classes/character_generic_part.js";
+import { material_index } from "./manager_classes/materials_manager.js";
+import { MarketOrder, market_order_index } from "./market/market_order.js";
 import {constants} from "./static_data/constants.js";
+import { World } from "./world.js";
 
 
 interface Development {
@@ -28,7 +31,7 @@ interface Actions {
 
 export class Cell {
 
-    world:any;
+    world: World;
     map:any;
     i: number;
     j: number;
@@ -44,6 +47,7 @@ export class Cell {
     development: Development;
     resources: CellResources;
     characters_list: Set<number>
+    orders: Set<market_order_index>
 
     constructor(world: any, map: any, i: number, j:number, name:string, development: Development, res: CellResources) {
         this.world = world;
@@ -57,6 +61,7 @@ export class Cell {
         this.last_visit = 0;
         this.market_id = -1
         this.item_market_id = -1
+        this.orders = new Set()
 
         this.characters_list = new Set()
 
@@ -80,6 +85,7 @@ export class Cell {
 
     enter(char: CharacterGenericPart) {
         this.characters_list.add(char.id)
+        this.world.socket_manager.send_market_info_character(this, char)
     }
 
     exit(char: CharacterGenericPart) {
@@ -133,6 +139,81 @@ export class Cell {
     visit() {
         this.visited_recently = true
         this.last_visit = 0
+    }
+
+    add_order(x: market_order_index) {
+        this.orders.add(x)
+        this.world.socket_manager.send_market_info(this)
+    }
+
+    async execute_sell_order(pool: any, order_index:market_order_index, amount: number, buyer: CharacterGenericPart) {
+        let order = this.world.entity_manager.get_order(order_index)
+        let order_owner = order.owner
+
+        if ((order_owner != undefined) && (order.amount >= amount)){
+            order.amount -= amount;
+            order_owner.transfer(buyer.stash, order.tag, amount);
+            buyer.savings.transfer(order_owner.trade_savings, amount * order.price);
+
+            buyer.changed = true;
+            order_owner.changed = true;
+
+            await order.save_to_db(pool);
+            return amount * order.price;
+        }
+        
+        return 0
+    }
+
+    async execute_buy_order(pool: any, order_index:market_order_index, amount: number, seller: CharacterGenericPart) {
+        let order = this.world.entity_manager.get_order(order_index)
+        let order_owner = order.owner
+        
+        if ((order_owner != undefined) && (order.amount >= amount)) {
+
+            order.amount -= amount;
+            seller.stash.transfer(order_owner.trade_stash, order.tag, amount);
+            order_owner.savings.transfer(seller, amount);
+
+            seller.changed = true;
+            order_owner.changed = true;
+
+            await order.save_to_db(pool);
+            return amount * order.price;
+        }
+        
+        return 0
+    }
+
+    async new_order(pool: any, typ: 'sell'|'buy', tag:material_index, amount:number, price:number, agent: CharacterGenericPart) {
+        amount = Math.floor(amount);
+        price = Math.floor(price);
+        if (typ == 'sell') {
+            var tmp = agent.stash.transfer(agent.trade_stash, tag, amount);
+            var order = new MarketOrder(this.world);
+            var order_id = await order.init(pool, typ, tag, agent, tmp, price, this.id);
+            this.orders.add(order_id);
+            await this.world.add_order(pool, order);
+        }
+
+        if (typ == 'buy') {
+            if (price != 0) {
+                let savings = agent.savings.get();
+                let true_amount = Math.min(amount, Math.floor(savings / price));
+                agent.savings.transfer(agent.trade_savings, true_amount * price);
+                let order = new MarketOrder(this.world);
+                let order_id = await order.init(pool, typ, tag, agent, true_amount, price, this.id);
+                this.orders.add(order_id);
+
+                await this.world.add_order(pool, order);
+            } else {
+                let order = new MarketOrder(this.world);
+                let order_id = await order.init(pool, typ, tag, agent, amount, price, this.id);
+                this.orders.add(order_id);
+
+                await this.world.add_order(pool, order);
+            }
+        }
     }
 
     async update(pool:any, dt: number) {

@@ -143,7 +143,9 @@ export class CharacterGenericPart {
     world: World;
     equip: Equip;
     stash: Stash;
+    trade_stash: Stash;
     savings: any;
+    trade_savings: any;
     status: Status;
     skills: SkillList;
     stats: InnateStats;
@@ -168,8 +170,12 @@ export class CharacterGenericPart {
     constructor(world:any) {
         this.world = world;
         this.equip = new Equip();
+
         this.stash = new Stash();
+        this.trade_stash = new Stash();
+
         this.savings = new Savings();
+        this.trade_savings = new Savings();
 
         this.status = new Status()
         this.status.hp = 100
@@ -256,7 +262,7 @@ export class CharacterGenericPart {
         let cell = this.get_cell()
         if (cell != undefined) {
             cell.visit()
-            cell.enter(this)
+            
         }
 
         this.flags_handling_update();        

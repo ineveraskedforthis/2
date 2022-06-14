@@ -8,6 +8,7 @@ var common = require("../common.js");
 import {constants} from '../static_data/constants'
 import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { privateEncrypt } from "crypto";
+import { Cell } from "../cell";
 
 
 interface UserData {
@@ -728,19 +729,16 @@ export class SocketManager {
         }
     }
 
-    update_market_info(market: any) {
-        var data = market.get_orders_list();
-        let cell = market.get_cell();
-        if (constants.logging.sockets.update_market_info) {
-            console.log('sending market orders to client');
-            console.log(data);
-        }
+    update_market_info(market: Cell) {
+        let data = market.orders;
+        console.log('sending market orders to client');
+        console.log(data);
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
                 try {
                     let cell1 = char.get_cell();
-                    if (i.online & i.market_data && (cell1.id==cell.id)) {
+                    if (i.online & i.market_data && (cell1.id==market.id)) {
                         i.socket.emit('market-data', data);
                     }
                 } catch(error) {
@@ -774,42 +772,35 @@ export class SocketManager {
         }
     }
 
-    send_market_info(market: any) {
-        let cell: any = market.get_cell()
-
-        let data:any = {
-            buy: {},
-            sell: {},
-            avg: {}
-        }
-
-        for (let tag of this.world.get_stash_tags_list()) {
-            data.buy[tag] = [];
-            data.sell[tag] = []
-            for (let i of market.buy_orders[tag].values()) {
-                let order = this.world.get_order(i);
-                data.buy[tag].push(order.get_json());
-            }
-            for (let i of market.sell_orders[tag].values()) {
-                let order = this.world.get_order(i);
-                data.sell[tag].push(order.get_json());
-            }
-            data.avg[tag] = market.guess_tag_cost(tag, 1)
-        }
-        
+    send_market_info(market: Cell) {
+        let data = market.orders;
+        console.log('sending market orders to client');
+        console.log(data);
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
                 try {
                     let cell1: any = char.get_cell();
-                    if (i.online && i.market_data && (cell1.id == cell.id)) {
+                    if (i.online && i.market_data && (cell1.id == market.id)) {
                         i.socket.emit('market-data', data)
                     }
                 } catch(error) {
                     console.log(i.current_user.login)
                 }
-                
             }
+        }
+    }
+
+    send_market_info_character(market: Cell, character: CharacterGenericPart) {
+        
+        
+        let user = this.world.user_manager.get_user_from_character(character);
+            if (user != undefined) {
+                let data = market.orders;
+            console.log('sending market orders to characters');
+            console.log(data);
+        
+            this.send_to_character_user(character, 'market-data', data)
         }
     }
 

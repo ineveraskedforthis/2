@@ -124,6 +124,7 @@ export class EntityManager {
             let order = new MarketOrder(this.world);
             order.load_from_json(i);
             this.orders[order.id] = order;
+            this.get_cell_by_id(order.cell_id)?.add_order(order.id)
         }
         console.log('orders loaded')
     }
@@ -257,13 +258,11 @@ export class EntityManager {
     async new_quest(pool: any, leader: CharacterGenericPart, item_tag: ITEM_MATERIAL, money_reward: number, reputation_reward: number, tag: string) {
         // let quest = await this.create_quest(pool, item_tag, money_reward, reputation_reward);
         // leader.add_quest(quest, tag)
-    }
-
-
-    
+    }    
 
     async add_order(pool: any, order: MarketOrder) {
         this.orders[order.id] = order;
+        this.get_cell_by_id(order.cell_id)?.add_order(order.id)
     }
 
     add_item_order(order: any) {

@@ -2,7 +2,7 @@
 var socket = io();
 
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'backpack']
+const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'backpack', 'market']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';

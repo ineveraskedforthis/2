@@ -29,6 +29,7 @@ export const gather_wood = {
         char.change_stress(1)
         char.send_status_update()
         char.send_stash_update()
+        return CharacterActionResponce.OK
     },
 
     start: async function(pool: any, char:CharacterGenericPart, data: any) {

@@ -13,16 +13,16 @@ class MarketOrder {
         this.owner_id = -1;
         this.amount = 0;
         this.price = 0;
-        this.market_id = 0;
+        this.cell_id = 0;
     }
-    async init(pool, typ, tag, owner, amount, price, market_id) {
+    async init(pool, typ, tag, owner, amount, price, cell_id) {
         this.typ = typ;
         this.tag = tag;
         this.owner_id = owner.id;
         this.owner = owner;
         this.amount = amount;
         this.price = price;
-        this.market_id = market_id;
+        this.cell_id = cell_id;
         if (constants_js_1.constants.logging.market_order.init) {
             console.log('market order init');
         }
@@ -30,7 +30,7 @@ class MarketOrder {
         return this.id;
     }
     async load_to_db(pool) {
-        let result = await common.send_query(pool, constants_js_1.constants.insert_market_order_query, [this.typ, this.tag, this.owner_id, this.amount, this.price, this.market_id]);
+        let result = await common.send_query(pool, constants_js_1.constants.insert_market_order_query, [this.typ, this.tag, this.owner_id, this.amount, this.price, this.cell_id]);
         return result.rows[0].id;
     }
     async save_to_db(pool) {
@@ -47,7 +47,7 @@ class MarketOrder {
         this.amount = data.amount;
         this.price = data.price;
         this.id = data.id;
-        this.market_id = data.market_id;
+        this.cell_id = data.cell_id;
         if (this.owner == undefined) {
             return false;
         }
@@ -67,7 +67,7 @@ class MarketOrder {
         tmp.amount = this.amount;
         tmp.price = this.price;
         tmp.id = this.id;
-        tmp.market_id = this.market_id;
+        tmp.cell_id = this.cell_id;
         return tmp;
     }
 }
