@@ -420,9 +420,9 @@ class CharacterGenericPart {
             this.world.socket_manager.send_equip_update_to_character(this);
         }
     }
-    send_action_ping(duration) {
+    send_action_ping(duration, is_move) {
         if (this.is_player()) {
-            this.world.socket_manager.send_action_ping_to_character(this, duration);
+            this.world.socket_manager.send_action_ping_to_character(this, duration, is_move);
         }
     }
     //rgo

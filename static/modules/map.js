@@ -180,6 +180,9 @@ export class Map {
         this.curr_section = undefined;
         this.sections = undefined;
 
+        this.move_flag = false
+        this.movement_progress = 0
+
         this.hex_h = this.hex_side * Math.sqrt(3) / 2
         this.hex_w = this.hex_side / 2
 
@@ -253,13 +256,20 @@ export class Map {
 
     send_cell_action(action) {
         if ((action == 'move') && (this.check_move(this.selected[0] - this.curr_pos[0], this.selected[1] - this.curr_pos[1]))) {
+            this.move_target = this.selected
             this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
         } else if ((this.selected[0] == this.curr_pos[0]) && (this.selected[1] == this.curr_pos[1])) {
             this.socket.emit(action, {x: this.selected[0], y: this.selected[1]})
-        } else if (this.real_path.length > 1) {
+        } else if (action == 'continue_move') {
             this.path_progress += 1
+            this.move_target = this.real_path[this.path_progress + 1]
+            this.socket.emit('move', {x: this.real_path[this.path_progress + 1][0], y: this.real_path[this.path_progress + 1][1]})    
+        } else if ((this.real_path.length > 1) && ((this.move_flag == false)|| (this.movement_progress > 0.99))) {
+            this.path_progress = 1
+            this.path = this.create_path()
+            this.move_target = this.real_path[this.path_progress + 1]
             this.socket.emit('move', {x: this.real_path[this.path_progress + 1][0], y: this.real_path[this.path_progress + 1][1]})            
-        }        
+        }
     }
 
     mark_visited(data) {
@@ -325,7 +335,7 @@ export class Map {
                     this.draw_hex(i, j, 'fill', '(0, 255, 0, 0.6)');
                 } else if (this.curr_pos[0] == i && this.curr_pos[1] == j) {
                     this.draw_hex(i, j, 'fill', '(0, 0, 255, 0.6)');
-                    this.draw_hex(i, j, 'circle', '(0, 255, 0, 1)');
+                    // this.draw_hex(i, j, 'circle', '(0, 255, 0, 1)');
                 } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
                     this.draw_hex(i, j, 'fill', '(255, 255, 0, 0.6)');                    
                 } else {
@@ -339,6 +349,7 @@ export class Map {
                 }
             }
         }
+        this.draw_player_circle()
 
         ctx.fillStyle = "#000000";
         ctx.font = 'bold 20px sans-serif';
@@ -397,6 +408,25 @@ export class Map {
         var tx = (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
         var ty = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
         return [tx, ty]
+    }
+
+    draw_player_circle() {
+        var ctx = this.canvas.getContext('2d');
+        if (this.move_flag) {
+            let c = this.get_hex_centre(this.curr_pos[0], this.curr_pos[1])
+            let b = this.get_hex_centre(this.move_target[0], this.move_target[1])
+
+            ctx.strokeStyle = 'rgba' + '(0, 255, 0, 1)';
+            ctx.beginPath();
+            ctx.arc(c[0] * (1 - this.movement_progress) + b[0] * this.movement_progress, 
+                    c[1] * (1 - this.movement_progress) + b[1] * this.movement_progress, 
+                    5, 0, Math.PI * 2, true);
+            ctx.stroke();
+
+            // this.draw_hex(this.curr_pos[0], this.curr_pos[1], 'circle', '(0, 255, 0, 1)');
+        } else {
+            this.draw_hex(this.curr_pos[0], this.curr_pos[1], 'circle', '(0, 255, 0, 1)');
+        }        
     }
 
     draw_hex(i, j, mode, color) {
@@ -592,12 +622,17 @@ export class Map {
     }
 
     set_curr_pos(i, j) {
+        let tmp0 = this.curr_pos[0]
+        let tmp1 = this.curr_pos[1]
         this.curr_pos = [i, j];
         this.curr_territory = get_territory_tag(i, j);
-        this.send_cell_action('move')
+        if ((tmp0 != 0) || (tmp1 != 0)) {
+            this.send_cell_action('continue_move')
+        }
         // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];
     }
+
 
     load_sections(data) {
         console.log(data);

@@ -580,9 +580,9 @@ export class CharacterGenericPart {
         }
     }
 
-    send_action_ping(duration: number) {
+    send_action_ping(duration: number, is_move:boolean) {
         if (this.is_player()) {
-            this.world.socket_manager.send_action_ping_to_character(this, duration)
+            this.world.socket_manager.send_action_ping_to_character(this, duration, is_move)
         }
     }
 

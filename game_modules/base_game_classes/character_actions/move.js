@@ -49,5 +49,6 @@ exports.move = {
         }
         char.world.entity_manager.transfer_orders(char, char.cell_id);
         return await char.on_move_default(pool, data);
-    }
+    },
+    is_move: true
 };

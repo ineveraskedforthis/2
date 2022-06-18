@@ -30,6 +30,7 @@ type Action = {
     start: ActionFunction
     result: ActionFunction
     duration: (char: CharacterGenericPart) => number;
+    is_move?: boolean
     immediate?: boolean
 }
 
@@ -66,7 +67,7 @@ export class ActionManager {
         let check = await action.check(this.pool, char, data)
         if (check == CharacterActionResponce.OK) {
             let duration = action.duration(char)
-            char.send_action_ping(duration)            
+            char.send_action_ping(duration, action.is_move||false)            
             if (action.immediate) {
                 await this.action(action_id, char, undefined)
             } else {

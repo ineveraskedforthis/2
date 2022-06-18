@@ -36,7 +36,7 @@ class ActionManager {
         let check = await action.check(this.pool, char, data);
         if (check == 1 /* OK */) {
             let duration = action.duration(char);
-            char.send_action_ping(duration);
+            char.send_action_ping(duration, action.is_move || false);
             if (action.immediate) {
                 await this.action(action_id, char, undefined);
             }
