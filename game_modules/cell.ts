@@ -146,6 +146,16 @@ export class Cell {
         this.world.socket_manager.send_market_info(this)
     }
 
+    remove_order(x: market_order_index) {
+        this.orders.delete(x)
+        this.world.socket_manager.send_market_info(this)
+    }
+
+    transfer_order(ord: market_order_index, target_cell: Cell) {
+        this.remove_order(ord)
+        target_cell.add_order(ord)
+    }
+
     async execute_sell_order(pool: any, order_index:market_order_index, amount: number, buyer: CharacterGenericPart) {
         let order = this.world.entity_manager.get_order(order_index)
         let order_owner = order.owner
@@ -190,10 +200,8 @@ export class Cell {
         price = Math.floor(price);
         if (typ == 'sell') {
             var tmp = agent.stash.transfer(agent.trade_stash, tag, amount);
-            var order = new MarketOrder(this.world);
-            var order_id = await order.init(pool, typ, tag, agent, tmp, price, this.id);
-            this.orders.add(order_id);
-            await this.world.add_order(pool, order);
+            var order = await this.world.entity_manager.generate_order(pool, typ, tag, agent, tmp, price, this.id)
+            return order
         }
 
         if (typ == 'buy') {
@@ -201,17 +209,11 @@ export class Cell {
                 let savings = agent.savings.get();
                 let true_amount = Math.min(amount, Math.floor(savings / price));
                 agent.savings.transfer(agent.trade_savings, true_amount * price);
-                let order = new MarketOrder(this.world);
-                let order_id = await order.init(pool, typ, tag, agent, true_amount, price, this.id);
-                this.orders.add(order_id);
-
-                await this.world.add_order(pool, order);
+                let order = await this.world.entity_manager.generate_order(pool, typ, tag, agent, true_amount, price, this.id)
+                return order
             } else {
-                let order = new MarketOrder(this.world);
-                let order_id = await order.init(pool, typ, tag, agent, amount, price, this.id);
-                this.orders.add(order_id);
-
-                await this.world.add_order(pool, order);
+                let order = await this.world.entity_manager.generate_order(pool, typ, tag, agent, amount, price, this.id)
+                return order
             }
         }
     }

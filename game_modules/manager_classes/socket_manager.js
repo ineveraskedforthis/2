@@ -320,7 +320,7 @@ class SocketManager {
         }
         if ((user.logged_in) && flag) {
             let char = user.get_character();
-            char.buy(msg.tag, msg.amount, msg.money, msg.max_price);
+            // char.buy(msg.tag, msg.amount, msg.money, msg.max_price);
             this.send_savings_update(char);
             this.send_stash_update_to_character(char);
         }
@@ -332,7 +332,7 @@ class SocketManager {
         }
         if ((user.logged_in) && flag) {
             let char = user.get_character();
-            char.sell(msg.tag, msg.amount, msg.price);
+            // char.sell( msg.tag, msg.amount, msg.price);
             this.send_savings_update(char);
             this.send_stash_update_to_character(char);
         }

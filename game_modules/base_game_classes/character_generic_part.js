@@ -371,18 +371,17 @@ class CharacterGenericPart {
         this.equip.transfer_all(target);
     }
     //market interactions
-    buy(tag, amount, money, max_price = null) {
-        // let cell = this.get_cell();
-        // // if (cell.has_market()) {            
-        //     // cell.market.buy(tag, this, amount, money, max_price);
-        // }        
-    }
-    sell(tag, amount, price) {
-        // let cell = this.get_cell();
-        // if (cell.has_market()) {
-        //     // cell.market.sell(tag, this, amount, price);
-        // }        
-    }
+    // buy(tag:material_index, amount: number, money: number, max_price = null) {
+    //     let cell = this.get_cell();
+    //     let order = this.world.entity_manager.add_order
+    // }
+    // sell(tag:material_index, amount: number, price: number) {
+    //     let cell = this.get_cell();
+    //     let order = this.world.entity_manager.generate_order()
+    //     if (cell.has_market()) {
+    //         cell.market.sell(tag, this, amount, price);
+    //     }        
+    // }
     sell_item(index, buyout_price, starting_price) {
         // let cell = this.get_cell();
         // if (cell.has_market()) {

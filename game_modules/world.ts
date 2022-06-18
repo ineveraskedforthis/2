@@ -240,10 +240,6 @@ export class World {
         return x;
     }
 
-    async add_order(pool: any, order: MarketOrder) {
-        this.entity_manager.add_order(pool, order);
-    }
-
     add_item_order(order: MarketOrder) {
         this.entity_manager.add_item_order(order);
     }

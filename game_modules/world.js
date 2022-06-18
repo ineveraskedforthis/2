@@ -160,9 +160,6 @@ class World {
         await common.send_query(pool, constants.set_id_query, [str, x]);
         return x;
     }
-    async add_order(pool, order) {
-        this.entity_manager.add_order(pool, order);
-    }
     add_item_order(order) {
         this.entity_manager.add_item_order(order);
     }

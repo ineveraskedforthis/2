@@ -101,6 +101,17 @@ class EntityManager {
         }
         console.log('orders loaded');
     }
+    transfer_orders(character, cell_id) {
+        let target_cell = this.get_cell_by_id(cell_id);
+        if (target_cell != undefined) {
+            for (let order of this.orders) {
+                if (order.owner == character) {
+                    this.get_cell_by_id(order.cell_id)?.transfer_order(order.id, target_cell);
+                    order.cell_id = cell_id;
+                }
+            }
+        }
+    }
     async load_item_orders(pool) {
         let res = await common.send_query(pool, constants_1.constants.load_item_orders_query);
         for (let i of res.rows) {
@@ -220,6 +231,13 @@ class EntityManager {
     async new_quest(pool, leader, item_tag, money_reward, reputation_reward, tag) {
         // let quest = await this.create_quest(pool, item_tag, money_reward, reputation_reward);
         // leader.add_quest(quest, tag)
+    }
+    async generate_order(pool, typ, tag, owner, amount, price, cell_id) {
+        let order = new market_order_1.MarketOrder(this.world);
+        await order.init(pool, typ, tag, owner, amount, price, cell_id);
+        this.orders[order.id] = order;
+        this.get_cell_by_id(order.cell_id)?.add_order(order.id);
+        return order;
     }
     async add_order(pool, order) {
         this.orders[order.id] = order;

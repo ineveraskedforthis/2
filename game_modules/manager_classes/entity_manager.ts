@@ -11,6 +11,7 @@ import { CharacterGenericPart } from "../base_game_classes/character_generic_par
 import { MarketOrder } from "../market/market_order";
 import { BattleReworked2 } from "../battle";
 import { ITEM_MATERIAL } from '../static_data/item_tags';
+import { material_index } from './materials_manager';
 
 
 export class EntityManager {
@@ -127,6 +128,19 @@ export class EntityManager {
             this.get_cell_by_id(order.cell_id)?.add_order(order.id)
         }
         console.log('orders loaded')
+    }
+
+    transfer_orders(character:CharacterGenericPart, cell_id: number) {
+        let target_cell = this.get_cell_by_id(cell_id)
+        if (target_cell != undefined) {
+            for (let order of this.orders) {
+                if (order.owner == character) {
+                    this.get_cell_by_id(order.cell_id)?.transfer_order(order.id, target_cell)
+                    order.cell_id = cell_id
+                }
+            }
+        }
+        
     }
 
     async load_item_orders(pool: any) {
@@ -258,7 +272,16 @@ export class EntityManager {
     async new_quest(pool: any, leader: CharacterGenericPart, item_tag: ITEM_MATERIAL, money_reward: number, reputation_reward: number, tag: string) {
         // let quest = await this.create_quest(pool, item_tag, money_reward, reputation_reward);
         // leader.add_quest(quest, tag)
-    }    
+    }
+
+    async generate_order(pool: any, typ:"sell"|"buy", tag:material_index, owner:CharacterGenericPart, amount:number, price:number, cell_id:number) {
+        let order = new MarketOrder(this.world)
+        await order.init(pool, typ, tag, owner, amount, price, cell_id)
+
+        this.orders[order.id] = order
+        this.get_cell_by_id(order.cell_id)?.add_order(order.id)
+        return order
+    }
 
     async add_order(pool: any, order: MarketOrder) {
         this.orders[order.id] = order;
