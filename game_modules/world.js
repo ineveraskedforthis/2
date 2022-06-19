@@ -69,13 +69,13 @@ class World {
             affixes: []
         };
         this.spear_argument = SPEAR_ARGUMENT;
-        this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this);
+        this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this, false);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         this.ai_manager = new ai_manager_1.AiManager(this);
         this.territories = {};
     }
     async init(pool) {
-        this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this);
+        this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);
         this.action_manager = new action_manager_1.ActionManager(this, pool);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         await this.entity_manager.init(pool);
@@ -101,7 +101,7 @@ class World {
         living_area.set_influence(steppe_rats, 50);
     }
     async load(pool) {
-        this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this);
+        this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         this.action_manager = new action_manager_1.ActionManager(this, pool);
         await this.entity_manager.load(pool);

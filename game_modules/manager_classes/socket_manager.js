@@ -7,15 +7,16 @@ var common = require("../common.js");
 const constants_1 = require("../static_data/constants");
 const item_tags_1 = require("../static_data/item_tags");
 class SocketManager {
-    constructor(pool, io, world) {
+    constructor(pool, io, world, flag_ready) {
         this.world = world;
         this.io = io;
         this.pool = pool;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
-        // if (pool != undefined) {
-        this.real_shit();
-        // }
+        // @ts-ignore: Unreachable code error
+        if (((pool != undefined) || (global.flag_nodb)) && (flag_ready)) {
+            this.real_shit();
+        }
         this.sockets = new Set();
         this.sessions = {};
     }
@@ -771,6 +772,7 @@ class SocketManager {
         if (global.flag_nodb) {
             return { rows: [] };
         }
+        console.log(this.pool == undefined);
         var rows = await common.send_query(this.pool, constants_1.constants.get_messages_query);
         return rows;
     }

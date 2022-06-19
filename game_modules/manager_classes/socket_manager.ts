@@ -28,15 +28,17 @@ export class SocketManager {
     sockets: any
     sessions: {[_ in string]: User}
 
-    constructor(pool: any, io: any, world: World) {
+    constructor(pool: any, io: any, world: World, flag_ready: boolean) {
         this.world = world;
         this.io = io;
         this.pool = pool;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
-        // if (pool != undefined) {
+
+        // @ts-ignore: Unreachable code error
+        if (((pool != undefined) || (global.flag_nodb)) && (flag_ready)) {
             this.real_shit();
-        // }
+        }
         this.sockets = new Set();
         this.sessions = {};
     }
@@ -859,6 +861,7 @@ export class SocketManager {
         if (global.flag_nodb) {
             return {rows: []}
         }
+        console.log(this.pool == undefined)
         var rows = await common.send_query(this.pool, constants.get_messages_query);
         return rows
     }

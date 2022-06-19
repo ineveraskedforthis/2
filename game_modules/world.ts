@@ -115,7 +115,7 @@ export class World {
 
 
 
-        this.socket_manager = new SocketManager(undefined, io, this);
+        this.socket_manager = new SocketManager(undefined, io, this, false);
         this.entity_manager = new EntityManager(this);
         
 
@@ -125,7 +125,7 @@ export class World {
     }
 
     async init(pool: any) {
-        this.socket_manager = new SocketManager(pool, this.io, this);
+        this.socket_manager = new SocketManager(pool, this.io, this, true);
         this.action_manager = new ActionManager(this, pool)
         this.entity_manager = new EntityManager(this);
         
@@ -166,7 +166,7 @@ export class World {
 
 
     async load(pool: any) {
-        this.socket_manager = new SocketManager(pool, this.io, this);
+        this.socket_manager = new SocketManager(pool, this.io, this, true);
         this.entity_manager = new EntityManager(this);
         this.action_manager = new ActionManager(this, pool)
         await this.entity_manager.load(pool);
