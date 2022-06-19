@@ -30,6 +30,13 @@ class MarketOrder {
         return this.id;
     }
     async load_to_db(pool) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1;
+            // @ts-ignore: Unreachable code error
+            return global.last_id;
+        }
         let result = await common.send_query(pool, constants_js_1.constants.insert_market_order_query, [this.typ, this.tag, this.owner_id, this.amount, this.price, this.cell_id]);
         return result.rows[0].id;
     }

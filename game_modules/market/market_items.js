@@ -143,6 +143,13 @@ class MarketItems {
     }
 
     async load_to_db(pool) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1
+            // @ts-ignore: Unreachable code error
+            return global.last_id
+        }
         let result = await common.send_query(pool, constants.insert_market_items_query, [Array.from(this.orders.values())]);
         return result.rows[0].id;
     }
@@ -183,6 +190,13 @@ class OrderItem {
     }
 
     async load_to_db(pool) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1
+            // @ts-ignore: Unreachable code error
+            return global.last_id
+        }
         let result = await common.send_query(pool, constants.insert_item_order_query, [this.item, this.owner_id, this.buyout_price, this.current_price, this.latest_bidder, this.end_time, this.market_id]);
         return result.rows[0].id;
     }

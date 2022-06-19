@@ -151,6 +151,13 @@ class World {
         return { x: Math.floor(id / this.y), y: id % this.y };
     }
     async get_new_id(pool, str) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1;
+            // @ts-ignore: Unreachable code error
+            return global.last_id;
+        }
         // console.log(str);
         var x = await common.send_query(pool, constants.get_id_query, [str]);
         x = x.rows[0];

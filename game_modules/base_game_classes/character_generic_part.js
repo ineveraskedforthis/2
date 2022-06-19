@@ -753,6 +753,13 @@ class CharacterGenericPart {
         };
     }
     async load_to_db(pool) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1;
+            // @ts-ignore: Unreachable code error
+            return global.last_id;
+        }
         let result = await common.send_query(pool, constants_1.constants.new_char_query, [
             this.user_id,
             this.cell_id,

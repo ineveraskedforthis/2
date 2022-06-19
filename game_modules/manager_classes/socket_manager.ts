@@ -34,9 +34,9 @@ export class SocketManager {
         this.pool = pool;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
-        if (pool != undefined) {
+        // if (pool != undefined) {
             this.real_shit();
-        }
+        // }
         this.sockets = new Set();
         this.sessions = {};
     }
@@ -846,11 +846,19 @@ export class SocketManager {
     }
 
     async load_message_to_database(message: {msg: string, user: string}) {
+         // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            return
+        }
         let res = await common.send_query(this.pool, constants.new_message_query, [message.msg, message.user]);
         await common.send_query(this.pool, constants.clear_old_messages_query, [res.rows[0].id - 50]);
     }
 
     async load_messages_from_database() {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            return {rows: []}
+        }
         var rows = await common.send_query(this.pool, constants.get_messages_query);
         return rows
     }

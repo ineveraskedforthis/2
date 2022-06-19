@@ -13,9 +13,9 @@ class SocketManager {
         this.pool = pool;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
-        if (pool != undefined) {
-            this.real_shit();
-        }
+        // if (pool != undefined) {
+        this.real_shit();
+        // }
         this.sockets = new Set();
         this.sessions = {};
     }
@@ -759,10 +759,18 @@ class SocketManager {
         this.io.emit('new-message', message);
     }
     async load_message_to_database(message) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            return;
+        }
         let res = await common.send_query(this.pool, constants_1.constants.new_message_query, [message.msg, message.user]);
         await common.send_query(this.pool, constants_1.constants.clear_old_messages_query, [res.rows[0].id - 50]);
     }
     async load_messages_from_database() {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            return { rows: [] };
+        }
         var rows = await common.send_query(this.pool, constants_1.constants.get_messages_query);
         return rows;
     }

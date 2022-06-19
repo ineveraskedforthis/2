@@ -34,6 +34,13 @@ module.exports = class Faction {
     }
 
     async load_to_db(pool) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1
+            // @ts-ignore: Unreachable code error
+            return global.last_id
+        }
         let res = await common.send_query(pool, constants.insert_faction_query, [this.tag, this.savings.get_json(), this.leader_id]);
         return res.rows[0].id
     }    

@@ -51,6 +51,10 @@ module.exports = class Area {
     }
 
     async load_to_db(pool) {
+        if (global.flag_nodb) {
+            global.last_id += 1
+            return global.last_id
+        }
         let res = await common.send_query(pool, constants.insert_area_query, [this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
         return res.rows[0].id
     }   

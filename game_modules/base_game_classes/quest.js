@@ -34,6 +34,13 @@ module.exports = class Quest {
     }
 
     async load_to_db(pool) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1
+            // @ts-ignore: Unreachable code error
+            return global.last_id
+        }
         let res = await common.send_query(pool, constants.insert_quest_query, [this.money.get_json(), this.stash.get_json(), this.required_item_tag, this.reward_money, this.reward_reputation]);
         return res.rows[0].id
     }

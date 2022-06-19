@@ -12,6 +12,9 @@ module.exports =
     },
 
     send_query: async function (pool, query, args) {
+        if (global.flag_nodb) {
+            return
+        }
         if (constants.logging.db_queries) {
             console.log('!!!!!!!!!!!!!!!')
             console.log(query)

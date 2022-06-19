@@ -239,6 +239,13 @@ export class BattleReworked2 {
     }
 
     async load_to_db(pool: any) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1
+            // @ts-ignore: Unreachable code error
+            return global.last_id
+        }
         let res =  await common.send_query(pool, constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
         return res.rows[0].id
     }
