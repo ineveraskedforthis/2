@@ -857,6 +857,51 @@ socket.on('map-data-cells', data => { map.load_data(data)})
 socket.on('map-data-terrain', data => {map.load_terrain(data)})
 socket.on('map-data-reset', data => {map.reset()})
 
+socket.on('cell-characters', data => {update_characters_list(data)})
+
+function update_characters_list(data) {
+    let list_div = document.getElementById('characters_list')
+    globals.local_characters = data
+
+    for (let item of data) {
+        let character_div = document.createElement('div')
+        let character_name = document.createElement('div')
+        character_name.innerHTML = item.name
+
+        character_div.appendChild(character_name)
+        character_div.id = 'ListCharacterId_' + item.id
+        character_div.classList.add('list_item');
+
+        ((id) => character_div.onclick = () => {
+            select_character(id)
+        })(item.id)
+
+        list_div.appendChild(character_div)
+    }
+}
+
+function select_character(id) {
+    if (globals.selected_character != undefined) {
+        let character_div = document.getElementById('ListCharacterId_' + globals.selected_character)
+        character_div.classList.remove('selected')
+    }
+
+    globals.selected_character = id
+    let character_div = document.getElementById('ListCharacterId_' + id)
+    character_div.classList.add('selected')
+}
+
+{
+    let test_data = [
+        {name: 'Someone', id: 100},
+        {name: 'Noone', id: 200},
+        {name: 'Who?', id: 300},
+        {name: "He", id: 400}]
+    
+    
+    update_characters_list(test_data)
+}
+
 
 
 function update_tags(msg) {

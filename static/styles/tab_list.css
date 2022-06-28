@@ -124,6 +124,12 @@
     width:auto;
 }
 
+#local_characters_tab {
+    top: 200px;
+    left: 200px;
+    width: 300px;
+    padding-top: 20px;
+}
 
 .tab_label {
     padding-left: 20px;
