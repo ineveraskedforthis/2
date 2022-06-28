@@ -11,7 +11,7 @@ exports.attack = {
             if (cell == undefined) {
                 return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
-            let targets = cell.get_characters_list();
+            let targets = cell.get_characters_set();
             let target = undefined;
             for (let id of targets) {
                 let target_char = char.world.get_char_from_id(id);

@@ -28,7 +28,7 @@ class AiManager {
         let cell = char.get_cell();
         if (cell == undefined)
             return false;
-        let a = cell.get_characters_list();
+        let a = cell.get_characters_set();
         for (let id of a) {
             let target_char = this.world.get_char_from_id(id);
             if ((target_char.get_tag() == 'test') && (char.get_tag() == 'rat') || (target_char.get_tag() == 'rat') && (char.get_tag() == 'char')) {

@@ -33,6 +33,14 @@ class Cell {
         }
     }
     get_characters_list() {
+        let result = [];
+        for (let item of this.characters_list.values()) {
+            let return_item = { id: item, name: this.world.entity_manager.chars[item].name };
+            result.push(return_item);
+        }
+        return result;
+    }
+    get_characters_set() {
         return this.characters_list;
     }
     enter(char) {

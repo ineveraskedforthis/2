@@ -88,6 +88,10 @@ export class Cell {
         return result
     }
 
+    get_characters_set() {
+        return this.characters_list
+    }
+
     enter(char: CharacterGenericPart) {
         this.characters_list.add(char.id)
         this.world.socket_manager.send_market_info_character(this, char)
