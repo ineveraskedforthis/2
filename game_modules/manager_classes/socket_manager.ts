@@ -284,6 +284,14 @@ export class SocketManager {
         this.send_teacher_info(character);
         let user = character.get_user();
         this.send_char_info(user);
+
+        let cell = this.world.entity_manager.get_cell_by_id(character.cell_id)
+        if (cell != undefined) {
+            this.send_cell_updates(cell)
+        }
+        
+
+
         for (let i = 0; i < character.misc.explored.length; i++) {
             if (character.misc.explored[i]) {
                 let cell = this.world.get_cell_by_id(i)
@@ -790,6 +798,15 @@ export class SocketManager {
                     console.log(i.current_user.login)
                 }
             }
+        }
+    }
+
+    send_cell_updates(cell: Cell) {
+        let characters_list = cell.get_characters_list()
+        for (let item of characters_list) {
+            let id = item.id
+            let character = this.world.entity_manager.chars[id]
+            this.send_to_character_user(character, 'cell-characters', characters_list)
         }
     }
 

@@ -88,6 +88,10 @@ class EntityManager {
             let char = new character_generic_part_1.CharacterGenericPart(this.world);
             char.load_from_json(i);
             this.chars[char.id] = char;
+            let cell = this.get_cell_by_id(char.cell_id);
+            if (cell != undefined) {
+                cell.enter(char);
+            }
         }
         console.log('characters loaded');
     }

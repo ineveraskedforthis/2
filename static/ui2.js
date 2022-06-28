@@ -860,8 +860,12 @@ socket.on('map-data-reset', data => {map.reset()})
 socket.on('cell-characters', data => {update_characters_list(data)})
 
 function update_characters_list(data) {
+    console.log('update characters_list')
+    console.log(data)
     let list_div = document.getElementById('characters_list')
     globals.local_characters = data
+
+    list_div.innerHTML = ''
 
     for (let item of data) {
         let character_div = document.createElement('div')

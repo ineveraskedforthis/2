@@ -95,10 +95,12 @@ export class Cell {
     enter(char: CharacterGenericPart) {
         this.characters_list.add(char.id)
         this.world.socket_manager.send_market_info_character(this, char)
+        this.world.socket_manager.send_cell_updates(this)
     }
 
     exit(char: CharacterGenericPart) {
         this.characters_list.delete(char.id)
+        this.world.socket_manager.send_cell_updates(this)
     }
 
 
