@@ -60,11 +60,11 @@ class World {
         this.materials.WATER = this.materials_manager.create_material(2, 1, 'water');
         let SPEAR_ARGUMENT = {
             durability: 100,
-            shaft_length: 2 /* LONG */,
+            shaft_length: 2 /* SHAFT_LEGTH.LONG */,
             shaft_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
-            impact_size: 1 /* SMALL */,
+            impact_size: 1 /* IMPACT_SIZE.SMALL */,
             impact_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
-            impact_type: 0 /* POINT */,
+            impact_type: 0 /* IMPACT_TYPE.POINT */,
             impact_quality: 50,
             affixes: []
         };
@@ -90,7 +90,7 @@ class World {
         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats');
         for (let i = 1; i < 60; i++) {
             let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(6, 5), -1);
-            await rat_1.rat(pool, test_rat);
+            await (0, rat_1.rat)(pool, test_rat);
         }
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
         // let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)

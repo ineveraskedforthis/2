@@ -9,11 +9,11 @@ exports.cook_meat = {
         if (!char.in_battle()) {
             let tmp = char.stash.get(char.world.materials.MEAT);
             if (tmp > 0) {
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
-            return 3 /* NO_RESOURCE */;
+            return 3 /* CharacterActionResponce.NO_RESOURCE */;
         }
-        return 2 /* IN_BATTLE */;
+        return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
         let tmp = char.stash.get(char.world.materials.MEAT);
@@ -39,7 +39,7 @@ exports.cook_meat = {
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared');
                 char.send_stash_update();
                 char.send_status_update();
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
             else {
                 if (skill < 19) {
@@ -49,7 +49,7 @@ exports.cook_meat = {
                 char.change_stress(5);
                 char.send_status_update();
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'failed');
-                return 4 /* FAILED */;
+                return 4 /* CharacterActionResponce.FAILED */;
             }
         }
     },

@@ -271,10 +271,10 @@ class SocketManager {
         }
         let char = user.get_character();
         let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, data);
-        if (res == 0 /* CANNOT_MOVE_THERE */) {
+        if (res == 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */) {
             user.socket.emit('alert', 'can\'t go there');
         }
-        else if (res == 2 /* IN_BATTLE */) {
+        else if (res == 2 /* CharacterActionResponce.IN_BATTLE */) {
             user.socket.emit('alert', 'you are in battle');
         }
     }
@@ -284,7 +284,7 @@ class SocketManager {
         if (user.logged_in && !user.get_character().in_battle()) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.ATTACK, char, undefined);
-            if (res == 1 /* OK */) {
+            if (res == 1 /* CharacterActionResponce.OK */) {
                 let battle_id = char.get_battle_id();
                 let battle = this.world.get_battle_from_id(battle_id);
                 if (battle != undefined) {
@@ -292,7 +292,7 @@ class SocketManager {
                     battle.send_data_start();
                 }
             }
-            else if (res == 3 /* NO_RESOURCE */) {
+            else if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'no_enemies_here');
             }
         }
@@ -354,10 +354,10 @@ class SocketManager {
         if (user.logged_in) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.EAT, char, undefined);
-            if (res == 3 /* NO_RESOURCE */) {
+            if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'not enough food');
             }
-            else if (res == 2 /* IN_BATTLE */) {
+            else if (res == 2 /* CharacterActionResponce.IN_BATTLE */) {
                 user.socket.emit('alert', 'you are in battle');
             }
         }
@@ -366,10 +366,10 @@ class SocketManager {
         if (user.logged_in) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.CLEAN, char, undefined);
-            if (res == 3 /* NO_RESOURCE */) {
+            if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'no water available');
             }
-            else if (res == 2 /* IN_BATTLE */) {
+            else if (res == 2 /* CharacterActionResponce.IN_BATTLE */) {
                 user.socket.emit('alert', 'you are in battle');
             }
         }
@@ -378,10 +378,10 @@ class SocketManager {
         if (user.logged_in) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.HUNT, char, undefined);
-            if (res == 3 /* NO_RESOURCE */) {
+            if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'no prey here');
             }
-            else if (res == 2 /* IN_BATTLE */) {
+            else if (res == 2 /* CharacterActionResponce.IN_BATTLE */) {
                 user.socket.emit('alert', 'you are in battle');
             }
         }
@@ -390,10 +390,10 @@ class SocketManager {
         if (user.logged_in) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.GATHER_WOOD, char, undefined);
-            if (res == 3 /* NO_RESOURCE */) {
+            if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'no wood here');
             }
-            else if (res == 2 /* IN_BATTLE */) {
+            else if (res == 2 /* CharacterActionResponce.IN_BATTLE */) {
                 user.socket.emit('alert', 'you are in battle');
             }
         }
@@ -402,10 +402,10 @@ class SocketManager {
         if (user.logged_in) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
-            if (res == 3 /* NO_RESOURCE */) {
+            if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'no place to rest here');
             }
-            else if (res == 2 /* IN_BATTLE */) {
+            else if (res == 2 /* CharacterActionResponce.IN_BATTLE */) {
                 user.socket.emit('alert', 'you are in battle');
             }
         }
@@ -414,13 +414,13 @@ class SocketManager {
         if (user.logged_in) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.COOK_MEAT, char, undefined);
-            if (res == 3 /* NO_RESOURCE */) {
+            if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'not enough resources');
             }
-            else if (res == 2 /* IN_BATTLE */) {
+            else if (res == 2 /* CharacterActionResponce.IN_BATTLE */) {
                 user.socket.emit('alert', 'you are in battle');
             }
-            else if (res == 4 /* FAILED */) {
+            else if (res == 4 /* CharacterActionResponce.FAILED */) {
                 user.socket.emit('alert', 'failed');
             }
         }
@@ -429,13 +429,13 @@ class SocketManager {
         if (user.logged_in) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.CRAFT_SPEAR, char, undefined);
-            if (res == 3 /* NO_RESOURCE */) {
+            if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'not enough resources');
             }
-            else if (res == 2 /* IN_BATTLE */) {
+            else if (res == 2 /* CharacterActionResponce.IN_BATTLE */) {
                 user.socket.emit('alert', 'you are in battle');
             }
-            else if (res == 4 /* FAILED */) {
+            else if (res == 4 /* CharacterActionResponce.FAILED */) {
                 user.socket.emit('alert', 'failed');
             }
         }

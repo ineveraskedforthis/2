@@ -7,21 +7,21 @@ exports.move = {
     },
     check: async function (pool, char, data) {
         if (char.in_battle()) {
-            return 2 /* IN_BATTLE */;
+            return 2 /* CharacterActionResponce.IN_BATTLE */;
         }
         if (char.world.can_move(data.x, data.y)) {
             let { x, y } = char.world.get_cell_x_y_by_id(char.cell_id);
             let dx = data.x - x;
             let dy = data.y - y;
             if (char.verify_move(dx, dy)) {
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
             if ((dx == 0 && dy == 0)) {
-                return 7 /* ZERO_MOTION */;
+                return 7 /* CharacterActionResponce.ZERO_MOTION */;
             }
-            return 0 /* CANNOT_MOVE_THERE */;
+            return 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */;
         }
-        return 0 /* CANNOT_MOVE_THERE */;
+        return 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */;
     },
     start: async function (pool, char, data) {
         char.action_target = data;

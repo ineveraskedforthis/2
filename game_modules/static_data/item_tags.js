@@ -74,16 +74,16 @@ class Armour {
 exports.Armour = Armour;
 function shaft_length_to_number(x) {
     switch (x) {
-        case 0 /* HAND */: return 0.1;
-        case 1 /* SHORT */: return +1;
-        case 2 /* LONG */: return +2;
+        case 0 /* SHAFT_LEGTH.HAND */: return 0.1;
+        case 1 /* SHAFT_LEGTH.SHORT */: return +1;
+        case 2 /* SHAFT_LEGTH.LONG */: return +2;
     }
 }
 function impact_size_to_number(x) {
     switch (x) {
-        case 1 /* SMALL */: return 0.1;
-        case 2 /* MEDIUM */: return 1;
-        case 3 /* LARGE */: return 2;
+        case 1 /* IMPACT_SIZE.SMALL */: return 0.1;
+        case 2 /* IMPACT_SIZE.MEDIUM */: return 1;
+        case 3 /* IMPACT_SIZE.LARGE */: return 2;
     }
 }
 class Weapon {
@@ -105,28 +105,28 @@ class Weapon {
     get_length() {
         let length = 0;
         switch (this.impact_size) {
-            case 1 /* SMALL */: length = length + 0.1;
-            case 2 /* MEDIUM */: length = length + 1;
-            case 3 /* LARGE */: length = length + 2;
+            case 1 /* IMPACT_SIZE.SMALL */: length = length + 0.1;
+            case 2 /* IMPACT_SIZE.MEDIUM */: length = length + 1;
+            case 3 /* IMPACT_SIZE.LARGE */: length = length + 2;
         }
         switch (this.shaft_length) {
-            case 0 /* HAND */: length = length + 0.1;
-            case 1 /* SHORT */: length = length + 1;
-            case 2 /* LONG */: length = length + 2;
+            case 0 /* SHAFT_LEGTH.HAND */: length = length + 0.1;
+            case 1 /* SHAFT_LEGTH.SHORT */: length = length + 1;
+            case 2 /* SHAFT_LEGTH.LONG */: length = length + 2;
         }
         return length;
     }
     get_weapon_type() {
         switch (this.shaft_length) {
-            case 2 /* LONG */: return "polearms" /* POLEARMS */;
-            case 1 /* SHORT */: return "polearms" /* POLEARMS */;
-            case 0 /* HAND */: switch (this.impact_size) {
-                case 1 /* SMALL */: return "onehand" /* ONEHAND */;
-                case 2 /* MEDIUM */: return "onehand" /* ONEHAND */;
-                case 3 /* LARGE */: return "twohanded" /* TWOHANDED */;
+            case 2 /* SHAFT_LEGTH.LONG */: return "polearms" /* WEAPON_TYPE.POLEARMS */;
+            case 1 /* SHAFT_LEGTH.SHORT */: return "polearms" /* WEAPON_TYPE.POLEARMS */;
+            case 0 /* SHAFT_LEGTH.HAND */: switch (this.impact_size) {
+                case 1 /* IMPACT_SIZE.SMALL */: return "onehand" /* WEAPON_TYPE.ONEHAND */;
+                case 2 /* IMPACT_SIZE.MEDIUM */: return "onehand" /* WEAPON_TYPE.ONEHAND */;
+                case 3 /* IMPACT_SIZE.LARGE */: return "twohanded" /* WEAPON_TYPE.TWOHANDED */;
             }
         }
-        return "noweapon" /* NOWEAPON */;
+        return "noweapon" /* WEAPON_TYPE.NOWEAPON */;
     }
     get_json() {
         let data = {
@@ -142,11 +142,11 @@ class Weapon {
         return data;
     }
     get_tag() {
-        if (this.impact_type == 0 /* POINT */)
+        if (this.impact_type == 0 /* IMPACT_TYPE.POINT */)
             return 'spear';
-        if (this.impact_type == 2 /* HEAD */)
+        if (this.impact_type == 2 /* IMPACT_TYPE.HEAD */)
             return 'mace';
-        if (this.impact_type == 1 /* EDGE */)
+        if (this.impact_type == 1 /* IMPACT_TYPE.EDGE */)
             return 'sword';
     }
     get_data() {
@@ -165,17 +165,17 @@ function base_resist(result, item) {
 exports.base_resist = base_resist;
 function base_damage(result, item) {
     switch (item.impact_type) {
-        case 1 /* EDGE */: {
+        case 1 /* IMPACT_TYPE.EDGE */: {
             let effective_weight = (item.impact_weight * item.shaft_length + item.shaft_weight);
             result.damage.slice = effective_weight * item.impact_quality / 100;
             result.damage.blunt = effective_weight * (100 - item.impact_quality) / 100;
         }
-        case 0 /* POINT */: {
+        case 0 /* IMPACT_TYPE.POINT */: {
             let effective_weight = (item.impact_weight + item.shaft_weight);
             result.damage.pierce = effective_weight * item.impact_quality / 100;
             result.damage.blunt = effective_weight * (100 - item.impact_quality) / 100;
         }
-        case 2 /* HEAD */: {
+        case 2 /* IMPACT_TYPE.HEAD */: {
             let effective_weight = (item.impact_weight * item.shaft_length + item.shaft_weight);
             result.damage.blunt = effective_weight;
         }

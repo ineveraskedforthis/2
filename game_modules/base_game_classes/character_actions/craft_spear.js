@@ -10,11 +10,11 @@ exports.craft_spear = {
         if (!char.in_battle()) {
             let tmp = char.stash.get(char.world.materials.WOOD);
             if (tmp > 2) {
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
-            return 3 /* NO_RESOURCE */;
+            return 3 /* CharacterActionResponce.NO_RESOURCE */;
         }
-        return 2 /* IN_BATTLE */;
+        return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
         let tmp = char.stash.get(char.world.materials.WOOD);
@@ -33,7 +33,7 @@ exports.craft_spear = {
                 char.send_stash_update();
                 char.send_equip_update();
                 char.send_status_update();
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
             else {
                 char.change_stress(1);
@@ -42,7 +42,7 @@ exports.craft_spear = {
                     char.send_skills_update();
                     char.changed = true;
                 }
-                return 4 /* FAILED */;
+                return 4 /* CharacterActionResponce.FAILED */;
             }
         }
     },

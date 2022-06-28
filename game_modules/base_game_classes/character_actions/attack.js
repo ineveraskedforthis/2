@@ -9,7 +9,7 @@ exports.attack = {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
-                return 6 /* INVALID_CELL */;
+                return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
             let targets = cell.get_characters_list();
             let target = undefined;
@@ -22,15 +22,15 @@ exports.attack = {
                 }
             }
             if (target == undefined) {
-                return 3 /* NO_RESOURCE */;
+                return 3 /* CharacterActionResponce.NO_RESOURCE */;
             }
             else {
                 char.action_target = target.id;
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
         }
         else
-            return 2 /* IN_BATTLE */;
+            return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
         let target_char = char.world.get_char_from_id(char.action_target);

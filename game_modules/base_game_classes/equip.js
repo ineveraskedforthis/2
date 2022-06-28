@@ -56,7 +56,7 @@ class Equip {
         let right_hand = this.data.weapon;
         if (right_hand != undefined) {
             result.weapon_type = right_hand.get_weapon_type();
-            result = item_tags_1.base_damage(result, right_hand);
+            result = (0, item_tags_1.base_damage)(result, right_hand);
             for (let i = 0; i < right_hand.affixes.length; i++) {
                 let affix = right_hand.affixes[i];
                 result = damage_affixes_effects[affix.tag](result, affix.tier);
@@ -82,7 +82,7 @@ class Equip {
         if (item == undefined) {
             return resists;
         }
-        resists = item_tags_1.base_resist(resists, item);
+        resists = (0, item_tags_1.base_resist)(resists, item);
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = protection_affixes_effects[affix.tag];

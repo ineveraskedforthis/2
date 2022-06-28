@@ -891,6 +891,7 @@ function select_character(id) {
     character_div.classList.add('selected')
 }
 
+
 {
     let test_data = [
         {name: 'Someone', id: 100},

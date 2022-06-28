@@ -9,14 +9,14 @@ exports.rest = {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
-                return 6 /* INVALID_CELL */;
+                return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
             if (cell.can_rest() || (char.misc.tag == 'rat')) {
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
-            return 3 /* NO_RESOURCE */;
+            return 3 /* CharacterActionResponce.NO_RESOURCE */;
         }
-        return 2 /* IN_BATTLE */;
+        return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
         char.changed = true;

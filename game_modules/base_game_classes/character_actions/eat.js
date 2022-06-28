@@ -9,11 +9,11 @@ exports.eat = {
         if (!char.in_battle()) {
             let tmp = char.stash.get(char.world.materials.FOOD);
             if (tmp > 0) {
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
-            return 3 /* NO_RESOURCE */;
+            return 3 /* CharacterActionResponce.NO_RESOURCE */;
         }
-        return 2 /* IN_BATTLE */;
+        return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
         char.changed = true;

@@ -30,11 +30,11 @@ class ActionManager {
     }
     async start_action(action_id, char, data) {
         if (char.action_started) {
-            return 5 /* ALREADY_IN_ACTION */;
+            return 5 /* CharacterActionResponce.ALREADY_IN_ACTION */;
         }
         let action = this.actions[action_id];
         let check = await action.check(this.pool, char, data);
-        if (check == 1 /* OK */) {
+        if (check == 1 /* CharacterActionResponce.OK */) {
             let duration = action.duration(char);
             char.send_action_ping(duration, action.is_move || false);
             if (action.immediate) {
@@ -54,7 +54,7 @@ class ActionManager {
         let action = this.actions[action_id];
         char.action_started = false;
         let check = await action.check(this.pool, char, data);
-        if (check == 1 /* OK */) {
+        if (check == 1 /* CharacterActionResponce.OK */) {
             return await action.result(this.pool, char, data);
         }
         return check;

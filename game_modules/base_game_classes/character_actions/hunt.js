@@ -9,17 +9,17 @@ exports.hunt = {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
-                return 6 /* INVALID_CELL */;
+                return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
             if (cell.can_hunt()) {
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
             else {
-                return 3 /* NO_RESOURCE */;
+                return 3 /* CharacterActionResponce.NO_RESOURCE */;
             }
         }
         else
-            return 2 /* IN_BATTLE */;
+            return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
         char.changed = true;
@@ -31,7 +31,7 @@ exports.hunt = {
             char.change_blood(5);
             char.send_status_update();
             char.send_stash_update();
-            return 1 /* OK */;
+            return 1 /* CharacterActionResponce.OK */;
         }
         else {
             let dice = Math.random();
@@ -42,7 +42,7 @@ exports.hunt = {
             char.change_stress(1);
             char.send_status_update();
             char.send_stash_update();
-            return 4 /* FAILED */;
+            return 4 /* CharacterActionResponce.FAILED */;
         }
     },
     start: async function (pool, char, data) {

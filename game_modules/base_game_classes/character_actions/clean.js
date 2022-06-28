@@ -9,23 +9,23 @@ exports.clean = {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
-                return 6 /* INVALID_CELL */;
+                return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
             let tmp = char.stash.get(char.world.materials.WATER);
             if (cell.can_clean()) {
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
             else if (tmp > 0) {
-                return 1 /* OK */;
+                return 1 /* CharacterActionResponce.OK */;
             }
-            return 3 /* NO_RESOURCE */;
+            return 3 /* CharacterActionResponce.NO_RESOURCE */;
         }
-        return 2 /* IN_BATTLE */;
+        return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
         let cell = char.get_cell();
         if (cell == undefined) {
-            return 6 /* INVALID_CELL */;
+            return 6 /* CharacterActionResponce.INVALID_CELL */;
         }
         let tmp = char.stash.get(char.world.materials.WATER);
         if (cell.can_clean()) {
