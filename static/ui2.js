@@ -25,8 +25,9 @@ var stash_id_to_tag = {}
 const char_info_monster = new CharInfoMonster();
 const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket);
 init_map_control(map, globals);
-const battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
+var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 init_battle_control(battle_image, globals);
+window.battle_image = battle_image
 const character_screen = new CharacterScreen(socket);
 
 
@@ -150,6 +151,9 @@ game_scene.onmousemove = event => {
 
 // MESSAGES STUFF
 function new_log_message(msg) {
+    if (msg == null) {
+        return
+    }
     var log = document.getElementById('log');
     var new_line = document.createElement('p');
     var text = document.createTextNode(msg);
@@ -842,7 +846,7 @@ socket.on('battle-action', data => {
     if (res == 'battle has ended') end_battle();
 })
 socket.on('enemy-update', data => battle_image.update_enemy(data))
-socket.on('player-position', data => battle_image.set_player(data))
+socket.on('player-position', data => {((bi, data) => (bi.set_player(data)))(battle_image, data)})
 
 socket.on('skill-tags', data => load_skill_tags(data));
 socket.on('skills', msg => update_skill_data(msg));

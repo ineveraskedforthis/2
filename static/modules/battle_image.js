@@ -134,6 +134,7 @@ export class BattleImage {
         this.background_flag = false;
         this.movement_speed = 0.3;
         this.scale = 1;
+        this.player = undefined
         
     }
 
@@ -160,7 +161,7 @@ export class BattleImage {
         this.hovered = undefined
         this.selected = undefined
         this.anchor = undefined
-        this.player = undefined
+        // this.player = undefined
 
         this.action_queue = [];
         this.l = 0;
@@ -279,7 +280,7 @@ export class BattleImage {
             ctx.strokeStyle = "rgba(0, 0, 0, 1)"
             ctx.strokeRect(a.x, a.y, c.x - a.x, c.y - a.y)
 
-
+            // draw characters
             for (let i in this.positions) {
                 if (!this.killed[i]) {
                     let pos = this.get_centre(this.positions[i])
@@ -308,6 +309,7 @@ export class BattleImage {
                     ctx.stroke();
 
 
+                    //draw nameplates
                     ctx.font = '15px serif';
                     if (this.selected == i) {
                         ctx.fillStyle = "rgba(1, 1, 1, 1)"
@@ -322,7 +324,11 @@ export class BattleImage {
                     }
                     ctx.strokeRect(pos.x - 50, pos.y - 120, 100, 20)
                     ctx.strokeRect(pos.x - 50, pos.y - 100, 100, 20)
-                    ctx.fillText(this.names[i] + '   ' + this.hps[i] + ' hp', pos.x - 45, pos.y - 105);
+                    let string = this.names[i]
+                    if (i == this.player) {
+                        string = string + '(YOU)'
+                    }
+                    ctx.fillText(string + ' || ' + this.hps[i] + ' hp', pos.x - 45, pos.y - 105);
                     ctx.fillText('ap:  ' + Math.floor(this.aps[i] * 10) / 10, pos.x - 45, pos.y - 85);
                     
                 }                
@@ -402,10 +408,12 @@ export class BattleImage {
         this.container.querySelector(".enemy_list").appendChild(div)
     }
 
-    set_player(battle_id) {
+    set_player(in_battle_id) {
         console.log('set_player_position')
-        console.log(battle_id)
-        this.player = battle_id
+        console.log(in_battle_id)
+        this.player = in_battle_id
+        console.log(this.player)
+        this.update_player_actions_availability()
     }
     
     update_pos(battle_id) {
@@ -565,10 +573,27 @@ export class BattleImage {
             div.innerHTML = data[i].name + '<br> hp: ' + this.hps[i] + '<br> ap: ' + Math.floor(this.aps[i] * 10) / 10
         }
 
+        this.update_player_actions_availability()        
+    }
+
+    update_player_actions_availability() {
+        console.log('update_actions_availability')
+        console.log(this.player)
+        if (this.player == undefined) {
+            return
+        }
+
+        if (this.aps == undefined) {
+            return
+        }
+
+        if (this.aps[this.player] == undefined) {
+            return
+        }
 
         for (let i of this.actions) {
             let div = this.container.querySelector('.battle_control>.' + i.tag)
-            if ((i.cost != undefined) && (data[this.player].ap < i.cost)) {
+            if ((i.cost != undefined) && (this.aps[this.player].ap < i.cost)) {
                 div.classList.add('disabled')
             } else {
                 div.classList.remove('disabled')
@@ -587,6 +612,8 @@ export class BattleImage {
         this.current_turn = i
     }
 
+    // returns log message
+    // returns null if no message needed
     battle_action(data) {
         if (data == null) {
             return ''
@@ -594,6 +621,26 @@ export class BattleImage {
         this.update_action(data)
         console.log('battle action data')
         console.log(data)
+        if (data.action == 'end_turn') {
+            return 'end_of_the_turn'
+        }
+        if (data.action == 'not_enough_ap') {
+            alert('Not enough action points')
+            return 'not_enough_ap'
+        }
+        if (data.action == 'pff') {
+            return 'something wrong has happened'
+        }
+        if (data.action == 'not_your_turn') {
+            alert('Not your turn')
+            return 'not_your_turn'
+        }
+        if (data.action == 'new_turn') {
+            return null
+        }
+        if (data.action == 'move') {
+            return data.actor_name + ' moved (' + data.target.x + ' ' + data.target.y + ')'
+        }
         if (data.action == 'attack') {
             if (data.result.flags.crit) {
                 return data.actor_name + ': critical_damage';
@@ -614,7 +661,10 @@ export class BattleImage {
         } else if (data.action.startsWith('flee-failed')) {
             return this.names[data.who] + ' failed to retreat'
         } else if (data.action.startsWith('flee')) {
+            alert('You had retreated from the battle')
             return this.names[data.who] + ' retreats'
         }
+
+        return 'untreated case of battle action !!!!' + data.action
     }
 }

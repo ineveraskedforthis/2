@@ -204,7 +204,7 @@ export class CharacterScreen {
         //     }
         // }
 
-        console.log('character_screen_loaded')
+        // console.log('character_screen_loaded')
     }
 
     update_backpack(data) {
@@ -287,18 +287,18 @@ export class CharacterScreen {
 
     update_equip(data) {
 
-        console.log('update_equip')
-        console.log(data)
+        // console.log('update_equip')
+        // console.log(data)
         for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
             
             let tag = EQUIPMENT_TAGS[i]
             let item = data[tag]
-            console.log(tag)
-            console.log(item)
+            // console.log(tag)
+            // console.log(item)
             // let image = document.getElementById('eq_' + tag + '_image');
             // image.style = get_item_image(item.tag)
             let label = document.querySelector('#eq_' + tag + '> .item_label')
-            console.log(item?.tag)
+            // console.log(item?.tag)
             label.innerHTML = item?.tag||'empty'
 
             let tooltip = document.getElementById('eq_' + tag + '_tooltip')

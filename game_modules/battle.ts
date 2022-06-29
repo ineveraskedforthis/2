@@ -400,15 +400,23 @@ export class BattleReworked2 {
             if (action.target != null) {
                 let unit2 = this.heap.get_unit(action.target);
                 let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
-                if ((geom.dist(unit.position, unit2.position) <= char.get_range()) && unit.action_points_left >= 1) {
-                    let target_char = this.world.get_char_from_id(unit2.char_id);
-                    let result = await character.attack(pool, target_char);
-                    unit.action_points_left -= 1
-                    this.changed = true
-                    return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
+
+                if (unit.action_points_left < 1) {
+                    return { action: 'not_enough_ap' }
                 }
+
+                if (geom.dist(unit.position, unit2.position) > char.get_range()) {
+                    return { action: 'not_enough_range' }
+                }
+
+                let target_char = this.world.get_char_from_id(unit2.char_id);
+                let result = await character.attack(pool, target_char);
+                unit.action_points_left -= 1
+                this.changed = true
+                return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
             }
-            return {action: 'pff'};
+
+            return { action: 'no_target_selected' };
         } 
 
 
@@ -425,6 +433,7 @@ export class BattleReworked2 {
                     return {action: 'flee-failed', who: unit_index};
                 }
             }
+            return {action: 'not_enough_ap'}
         } 
         
 
@@ -590,10 +599,11 @@ export class BattleReworked2 {
 
     async process_input(pool: any, unit_index: number, input: Action) {
         if (!this.waiting_for_input) {
-            return {action: 'pff', who: unit_index}
+            return {action: 'action_in_progress', who: unit_index}
         }
+
         if (this.heap.selected != unit_index) {
-            return {action: 'pff', who: unit_index}
+            return {action: 'not_your_turn', who: unit_index}
         }
 
         if (input != undefined) {
