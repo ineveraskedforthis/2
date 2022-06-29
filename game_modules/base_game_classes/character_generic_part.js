@@ -335,6 +335,15 @@ class CharacterGenericPart {
             this.send_status_update();
         }
     }
+    set_fatigue(x) {
+        let tmp = this.status.fatigue;
+        this.status.fatigue = Math.max(0, x);
+        if (x != tmp) {
+            this.changed = true;
+            this.status_changed = true;
+            this.send_status_update();
+        }
+    }
     change_status(dstatus) {
         this.change_hp(dstatus.hp);
         this.change_rage(dstatus.rage);

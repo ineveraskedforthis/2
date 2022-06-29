@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.clean = void 0;
 exports.clean = {
     duration(char) {
-        return 1 + char.get_fatigue() / 20;
+        return 1 + char.get_fatigue() / 50 + char.get_blood() / 50;
     },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
@@ -30,7 +30,7 @@ exports.clean = {
         let tmp = char.stash.get(char.world.materials.WATER);
         if (cell.can_clean()) {
             char.changed = true;
-            char.change_blood(-20);
+            char.change_blood(-100);
             char.send_status_update();
         }
         else if (tmp > 0) {

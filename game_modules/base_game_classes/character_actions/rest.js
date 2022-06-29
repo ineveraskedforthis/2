@@ -11,10 +11,16 @@ exports.rest = {
             if (cell == undefined) {
                 return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
-            if (cell.can_rest() || (char.misc.tag == 'rat')) {
+            if (char.misc.tag == 'rat') {
                 return 1 /* CharacterActionResponce.OK */;
             }
-            return 3 /* CharacterActionResponce.NO_RESOURCE */;
+            if (cell.can_rest()) {
+                return 1 /* CharacterActionResponce.OK */;
+            }
+            if (char.get_fatigue() < 40) {
+                return 3 /* CharacterActionResponce.NO_RESOURCE */;
+            }
+            return 1 /* CharacterActionResponce.OK */;
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
@@ -24,15 +30,11 @@ exports.rest = {
         if (cell == undefined)
             return;
         if (cell.can_rest() || (char.misc.tag == 'rat')) {
-            char.change_fatigue(-20);
-            char.change_stress(-5);
+            char.set_fatigue(0);
+            char.change_stress(-4);
         }
         else {
-            let df = 10;
-            if (char.get_fatigue() - df < 40) {
-                df = char.get_fatigue() - 40;
-            }
-            char.change_fatigue(df);
+            char.set_fatigue(40);
         }
         char.send_status_update();
     },

@@ -12,10 +12,19 @@ export const rest = {
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            if (cell.can_rest() || (char.misc.tag == 'rat')) {
+            if (char.misc.tag == 'rat') {
                 return CharacterActionResponce.OK
-            } 
-            return CharacterActionResponce.NO_RESOURCE
+            }
+
+            if (cell.can_rest()) {
+                 return CharacterActionResponce.OK
+            }
+
+            if (char.get_fatigue() < 40) {
+                return CharacterActionResponce.NO_RESOURCE
+            }
+
+            return CharacterActionResponce.OK
         } 
         return CharacterActionResponce.IN_BATTLE
     },
@@ -25,14 +34,10 @@ export const rest = {
         let cell = char.get_cell();
         if (cell == undefined) return 
         if (cell.can_rest() || (char.misc.tag == 'rat')) {
-            char.change_fatigue(-20)
-            char.change_stress(-5)
+            char.set_fatigue(0)
+            char.change_stress(-4)
         } else {
-            let df = 10
-            if (char.get_fatigue() - df < 40) {
-                df = char.get_fatigue() - 40
-            }
-            char.change_fatigue(df)
+            char.set_fatigue(40)
         }
 
         char.send_status_update()

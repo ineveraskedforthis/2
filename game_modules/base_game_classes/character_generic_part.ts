@@ -472,6 +472,16 @@ export class CharacterGenericPart {
         }
     }
 
+    set_fatigue(x: number) {
+        let tmp = this.status.fatigue
+        this.status.fatigue = Math.max(0, x)
+        if (x != tmp) {
+            this.changed = true
+            this.status_changed = true;
+            this.send_status_update()
+        } 
+    }
+
     change_status(dstatus: Status) {
         this.change_hp(dstatus.hp)
         this.change_rage(dstatus.rage);
@@ -602,7 +612,7 @@ export class CharacterGenericPart {
             if (dice > 0.05 * character.skills.skinning.practice) {
                 character.skills.skinning.practice += 1
             }
-            
+
             character.send_stash_update()
             character.send_skills_update()
             character.changed = true
