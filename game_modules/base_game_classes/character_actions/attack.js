@@ -16,7 +16,7 @@ exports.attack = {
             for (let id of targets) {
                 let target_char = char.world.get_char_from_id(id);
                 if ((target_char.get_tag() == 'test') && (char.get_tag() == 'rat') || (target_char.get_tag() == 'rat') && (char.get_tag() == 'test')) {
-                    if (!target_char.in_battle() && Math.random() > 0.8) {
+                    if (!target_char.in_battle()) {
                         target = target_char;
                     }
                 }
