@@ -340,6 +340,7 @@ class BattleReworked2 {
                     return { action: 'flee-failed', who: unit_index };
                 }
             }
+            return { action: 'not_enough_ap' };
         }
         if (action.action == 'spell_target') {
             if (unit.action_points_left > 3) {
@@ -495,21 +496,26 @@ class BattleReworked2 {
             return { action: 'action_in_progress', who: unit_index };
         }
         if (this.heap.selected != unit_index) {
-            return { action: 'not_your_turn', who: unit_index };
+            let char1 = this.get_char(this.get_unit(this.heap.selected));
+            let char2 = this.get_char(this.get_unit(unit_index));
+            if (char1.id != char2.id) {
+                return { action: 'not_your_turn', who: unit_index };
+            }
         }
         if (input != undefined) {
             this.changed = true;
+            let index = this.heap.selected;
             if (input.action == 'move') {
-                return await this.action(pool, unit_index, { action: 'move', target: input.target });
+                return await this.action(pool, index, { action: 'move', target: input.target });
             }
             else if (input.action == 'attack') {
-                return await this.action(pool, unit_index, battle_ai_1.BattleAI.convert_attack_to_action(this, unit_index, input.target));
+                return await this.action(pool, index, battle_ai_1.BattleAI.convert_attack_to_action(this, index, input.target));
             }
             else if (input.action == 'flee') {
-                return await this.action(pool, unit_index, { action: 'flee' });
+                return await this.action(pool, index, { action: 'flee' });
             }
             else {
-                return await this.action(pool, unit_index, input);
+                return await this.action(pool, index, input);
             }
         }
     }
