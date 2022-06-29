@@ -589,13 +589,17 @@ export class CharacterGenericPart {
     //rgo
     rgo_check(character:CharacterGenericPart) {
         if (this.get_tag() == 'rat') {
-            character.stash.inc(this.world.materials.RAT_MEAT, 1)
-            if (this.skills.skinning.practice >= 10) {
-                character.stash.inc(this.world.materials.RAT_MEAT, 1)
+            character.stash.inc(this.world.materials.MEAT, 1)
+            if (character.skills.skinning.practice >= 10) {
+                character.stash.inc(this.world.materials.MEAT, 1)
                 character.stash.inc(this.world.materials.RAT_SKIN, 1)
             }
             let dice = Math.random()
-            if (dice > 0.05 * this.skills.skinning.practice) {
+
+            // 0.05 * 100 = 5.0
+            // 0.05 * 20  = 1.0
+            // 0.05 * 10  = 0.5
+            if (dice > 0.05 * character.skills.skinning.practice) {
                 character.skills.skinning.practice += 1
 
             }
