@@ -186,7 +186,7 @@ export class BattleImage {
         console.log('load battle')
         this.init()
         for (var i in data) {
-            this.add_fighter(i, data[i].tag, data[i].position, data[i].range, data[i].is_player)
+            this.add_fighter(i, data[i].tag, data[i].position, data[i].range)
         } 
     }
 
@@ -376,7 +376,7 @@ export class BattleImage {
     
     add_fighter(battle_id, tag, pos, range, is_player, name, hp) {
         console.log("add fighter")
-        console.log(battle_id, tag, pos)
+        console.log(battle_id, tag, pos, range)
         this.battle_ids.add(battle_id)
         this.new_positions[battle_id] = {x:pos.x, y:pos.y};
         this.prev_positions[battle_id] = {x:pos.x, y:pos.y};
@@ -389,9 +389,6 @@ export class BattleImage {
         this.images[battle_id] = new AnimatedImage(tag)
         this.range[battle_id] = range;
         this.killed[battle_id] = false
-        if (is_player) {
-            this.player = battle_id
-        }
 
         let div = document.createElement('div')
         div.innerHTML = 'hp: ' + this.hps[battle_id] + '<br> ap: ' + this.aps[battle_id]
@@ -403,6 +400,12 @@ export class BattleImage {
         div.onmouseleave = this.remove_hover
 
         this.container.querySelector(".enemy_list").appendChild(div)
+    }
+
+    set_player(battle_id) {
+        console.log('set_player_position')
+        console.log(battle_id)
+        this.player = battle_id
     }
     
     update_pos(battle_id) {

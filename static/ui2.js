@@ -842,6 +842,7 @@ socket.on('battle-action', data => {
     if (res == 'battle has ended') end_battle();
 })
 socket.on('enemy-update', data => battle_image.update_enemy(data))
+socket.on('player-position', data => battle_image.set_player(data))
 
 socket.on('skill-tags', data => load_skill_tags(data));
 socket.on('skills', msg => update_skill_data(msg));

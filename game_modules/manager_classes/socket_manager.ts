@@ -604,10 +604,15 @@ export class SocketManager {
         if (character.in_battle()) {
             let battle = this.world.get_battle_from_id(character.get_battle_id());
             if (battle != null) {
+                
+                let position = character.get_in_battle_id()
+
+                this.send_to_character_user(character, 'player-position', position)
                 this.send_to_user(user, 'battle-has-started', battle.get_data());
                 this.send_to_user(user, 'battle-action', {action: 'new_turn', target: battle.heap.selected});
                 let status = battle.get_status()
                 this.send_to_character_user(character, 'enemy-update', status);
+                
             } else {
                 character.set_flag('in_battle', false)
             }
@@ -623,8 +628,10 @@ export class SocketManager {
         for (let i in units) {
             let char = this.world.get_character_by_id(units[i].char_id)
             if ((char != undefined) && char.is_player()) {
+                let position = char.get_in_battle_id()
                 this.send_to_character_user(char, 'battle-has-started', data);
                 this.send_to_character_user(char, 'enemy-update', status)
+                this.send_to_character_user(char, 'player-position', position)
             }
         } 
     }
@@ -638,6 +645,8 @@ export class SocketManager {
             if ((char != undefined) && char.is_player()) {
                 this.send_to_character_user(char, 'enemy-update', status)
                 this.send_to_character_user(char, 'battle-update', data)
+
+                // this.send_to_character_user(char, 'player-position', position)
             }
         } 
     }

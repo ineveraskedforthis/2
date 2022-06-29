@@ -93,6 +93,10 @@ export class UserManager{
 
     async load_user_data_from_db(pool: any, login: string) {
         var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
+         // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            return undefined;
+        }
         if (res.rows.length == 0) {
             return undefined;
         }
