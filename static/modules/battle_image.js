@@ -285,7 +285,7 @@ export class BattleImage {
                     let pos = this.get_centre(this.positions[i])
                     ctx.strokeStyle = "rgba(0, 0, 0, 1)"
                     ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
+                    ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range[i], 0, 2 * Math.PI);
                     if (this.selected == i) {
                         ctx.fillStyle = "rgba(10, 10, 200, 0.7)"
                     } else if (this.hovered == i) {
@@ -295,10 +295,12 @@ export class BattleImage {
                     }
                     ctx.fill();
 
+
                     ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
+                    ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range[i], 0, 2 * Math.PI);
                     ctx.stroke();
 
+                    //draw small circle at unit base
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
                     ctx.stroke();
