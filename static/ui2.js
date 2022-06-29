@@ -859,6 +859,16 @@ socket.on('map-data-reset', data => {map.reset()})
 
 socket.on('cell-characters', data => {update_characters_list(data)})
 
+
+
+function attack_selected_character() {
+    socket.emit('attack-character', globals.selected_character)
+}
+{
+    let attack_button = document.getElementById("attack_selected_charater")
+    attack_button.onclick = attack_selected_character
+}
+
 function update_characters_list(data) {
     console.log('update characters_list')
     console.log(data)

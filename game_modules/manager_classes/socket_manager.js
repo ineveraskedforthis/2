@@ -39,6 +39,7 @@ class SocketManager {
             socket.on('login', async (msg) => this.login(user, msg));
             socket.on('reg', async (msg) => this.registration(user, msg));
             socket.on('attack', async (msg) => this.attack(user, msg));
+            socket.on('attack-character', async (msg) => this.attack_character(user, msg));
             // socket.on('attack-outpost', async (msg: any) => this.attack_local_outpost(user, msg));
             socket.on('buy', async (msg) => this.buy(user, msg));
             socket.on('sell', async (msg) => this.sell(user, msg));
@@ -298,6 +299,29 @@ class SocketManager {
             }
             else if (res == 3 /* CharacterActionResponce.NO_RESOURCE */) {
                 user.socket.emit('alert', 'no_enemies_here');
+            }
+        }
+    }
+    //data is a raw id of character
+    async attack_character(user, data) {
+        console.log('attack_character');
+        if (user.logged_in && !user.get_character().in_battle()) {
+            data = Number(data);
+            if (!(data in this.world.entity_manager.chars)) {
+                return;
+            }
+            let target_character = this.world.get_char_from_id(data);
+            let char = user.get_character();
+            if (target_character.in_battle()) {
+                return;
+            }
+            if (target_character.cell_id != char.cell_id) {
+                return;
+            }
+            let battle = await this.world.create_battle(this.pool, [char], [target_character]);
+            if (battle != undefined) {
+                console.log('battle had started');
+                battle.send_data_start();
             }
         }
     }
