@@ -1085,6 +1085,7 @@ function draw(time) {
 
     if (globals.action_in_progress) {
         globals.action_time += delta
+        globals.action_ratio = globals.action_time / globals.action_total_time
         let div = document.getElementById('action_progress_bar')
         if (globals.action_total_time <= globals.action_time) {
             globals.action_in_progress = false
@@ -1111,7 +1112,7 @@ function draw(time) {
             battle_image.draw(images, delta);
         }
         if (!document.getElementById('map_tab').classList.contains('hidden')){
-            map.draw(images, time);
+            map.draw(images, delta);
         }
     }
     window.requestAnimationFrame(draw);
