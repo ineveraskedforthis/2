@@ -283,6 +283,8 @@ export class BattleImage {
             for (let i in this.positions) {
                 if (!this.killed[i]) {
                     let pos = this.get_centre(this.positions[i])
+
+                    //draw character attack radius circle and color it depending on it's status in ui
                     ctx.strokeStyle = "rgba(0, 0, 0, 1)"
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range[i], 0, 2 * Math.PI);
@@ -295,7 +297,7 @@ export class BattleImage {
                     }
                     ctx.fill();
 
-
+                    //draw a border of circle above
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range[i], 0, 2 * Math.PI);
                     ctx.stroke();
