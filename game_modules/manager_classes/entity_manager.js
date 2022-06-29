@@ -269,6 +269,8 @@ class EntityManager {
         if ((character.get_hp() == 0) && (!character.deleted)) {
             await character.clear_orders();
             await character.set_flag('dead', true);
+            let cell = this.get_cell_by_id(character.cell_id);
+            cell?.exit(character);
             console.log('kill ' + char_id);
             this.chars[char_id].deleted = true;
             await character.delete_from_db(pool);
