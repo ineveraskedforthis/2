@@ -62,6 +62,9 @@ class Equip {
                 result = damage_affixes_effects[affix.tag](result, affix.tier);
             }
         }
+        else {
+            result.damage.blunt += 5;
+        }
         return result;
     }
     get_item_power(item) {
