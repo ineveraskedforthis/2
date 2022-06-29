@@ -443,7 +443,9 @@ export class Map {
 
     draw_pentagon(ctx, x, y, r) {
         let epsilon = 6 * Math.PI / 5
+        // let xi = 2 * Math.PI / 5
         let start = this.time 
+        // let shift = globals.action_ratio
 
         ctx.beginPath();
         ctx.moveTo(x + Math.cos(start) * r, y + Math.sin(start) * r);
@@ -453,6 +455,9 @@ export class Map {
             let dy = Math.sin(start) * r
             ctx.lineTo(x + dx, y + dy);
             start = start + epsilon
+            // if (shift != undefined) {
+            //     start = start + xi * shift
+            // }
         }
 
         ctx.stroke();

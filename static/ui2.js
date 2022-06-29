@@ -922,6 +922,78 @@ function select_character(id) {
     update_characters_list(test_data)
 }
 
+let market_div = document.querySelector('.goods_list')
+
+function create_market_order_row(good_tag, amount, sell_price, buy_price) {
+    let div_cell = document.createElement('div');
+    div_cell.classList.add('goods_type');
+    div_cell.classList.add(good_tag);
+
+    {
+        let div_image = document.createElement('div');
+        div_image.classList.add('goods_icon');
+        div_image.style = "background: no-repeat center/100% url(/static/img/stash_" + good_tag + ".png);"
+        div_cell.appendChild(div_image)
+    }
+
+    {
+        let div_text = document.createElement('div');
+        div_text.innerHTML = good_tag;
+        div_text.classList.add('goods_name');
+        div_cell.appendChild(div_text);
+    }
+
+    {
+        let avg_price = document.createElement('div');
+        avg_price.innerHTML = buy_price;
+        avg_price.classList.add('goods_avg_buy_price');
+        div_cell.appendChild(avg_price);
+    }
+
+    {
+        let avg_price = document.createElement('div');
+        avg_price.innerHTML = sell_price;
+        avg_price.classList.add('goods_avg_sell_price');
+        div_cell.appendChild(avg_price);
+    }
+
+    {
+        let div = document.createElement('div');
+        div.innerHTML = amount;
+        div.classList.add('goods_amount_in_inventory');
+        div_cell.appendChild(div);
+    }
+
+    // ((good_tag) => div_cell.onclick = () => {
+    //     goods_market.select(good_tag)
+    // })(good_tag)
+
+    market_div.appendChild(div_cell)
+}
+
+function update_market(data) {
+    
+    for (let item of data) {
+        console.log(item)
+        let sell_price = '?'
+        let buy_price = '?'
+        if (item.typ == 'sell') {sell_price = item.price}
+        if (item.typ == 'buy') {buy_price = item.price}
+        let tag = stash_id_to_tag[item.tag]
+        create_market_order_row(tag, item.amount, sell_price, buy_price)
+    } 
+}
+        // tmp.typ = this.typ;
+        // tmp.tag = this.tag;
+        // tmp.owner_id = this.owner_id;
+        // if (this.owner != undefined) {
+        //     tmp.owner_name = this.owner.name;
+        //     tmp.owner_tag = this.owner.get_tag;
+        // }
+        // tmp.amount = this.amount;
+        // tmp.price = this.price;
+        // tmp.id = this.id;
+
 
 
 function update_tags(msg) {
@@ -930,7 +1002,7 @@ function update_tags(msg) {
 
     
 
-    let market_div = document.querySelector('.goods_list') 
+     
     let inventory_div = document.getElementById('goods_stash')
     
     stash_tag_to_id = msg
@@ -940,54 +1012,8 @@ function update_tags(msg) {
         stash_id_to_tag[msg[tag]] = tag
 
         {
-            let div_cell = document.createElement('div');
-            div_cell.classList.add('goods_type');
-            div_cell.classList.add(tag);
-
-            {
-                let div_image = document.createElement('div');
-                div_image.classList.add('goods_icon');
-                div_image.style = "background: no-repeat center/100% url(/static/img/stash_" + tag + ".png);"
-                div_cell.appendChild(div_image)
-            }
-
-            {
-                let div_text = document.createElement('div');
-                div_text.innerHTML = tag;
-                div_text.classList.add('goods_name');
-                div_cell.appendChild(div_text);
-            }
-
-            {
-                let avg_price = document.createElement('div');
-                avg_price.innerHTML = '?';
-                avg_price.classList.add('goods_avg_buy_price');
-                div_cell.appendChild(avg_price);
-            }
-
-            {
-                let avg_price = document.createElement('div');
-                avg_price.innerHTML = '?';
-                avg_price.classList.add('goods_avg_sell_price');
-                div_cell.appendChild(avg_price);
-            }
-
-            {
-                let div = document.createElement('div');
-                div.innerHTML = '?';
-                div.classList.add('goods_amount_in_inventory');
-                div_cell.appendChild(div);
-            }
-
-            ((tag) => div_cell.onclick = () => {
-                goods_market.select(tag)
-            })(tag)
-
-            market_div.appendChild(div_cell)
-
-
             // stash
-            div_cell = document.createElement('div');
+            let div_cell = document.createElement('div');
             div_cell.classList.add('goods_type_stash');
             div_cell.classList.add('tooltip')
             div_cell.classList.add(tag);
@@ -1019,6 +1045,21 @@ function update_tags(msg) {
     }
 
     goods_market.update_tags(stash_tag_to_id, stash_id_to_tag)
+
+
+
+    {
+        let test_market_data = [
+            {typ: 'sell', amount: 20, tag: 2, owner_name: 'Someone', price: 4},
+            {typ: 'sell', amount: 20, tag: 2, owner_name: 'Someone', price: 14},
+            {typ: 'buy', amount: 20, tag: 3, owner_name: 'Someone', price: 130},
+            {typ: 'sell', amount: 20, tag: 1, owner_name: 'Someone2', price: 70},
+            {typ: 'sell', amount: 20, tag: 4, owner_name: 'Someon3e', price: 1},
+            {typ: 'buy', amount: 20, tag: 5, owner_name: 'Some4one', price: 5},
+            {typ: 'sell', amount: 200, tag: 5, owner_name: 'Someo5ne', price: 220},
+        ]
+        update_market(test_market_data)
+    }
 }
 
 function change_bg(tag) {
