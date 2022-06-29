@@ -592,6 +592,8 @@ export class BattleImage {
             return ''
         }
         this.update_action(data)
+        console.log('battle action data')
+        console.log(data)
         if (data.action == 'attack') {
             if (data.result.flags.crit) {
                 return data.actor_name + ': critical_damage';

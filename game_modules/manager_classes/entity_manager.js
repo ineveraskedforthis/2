@@ -313,6 +313,8 @@ class EntityManager {
         let char = new character_generic_part_1.CharacterGenericPart(this.world);
         await char.init(pool, name, cell_id, user_id);
         this.chars[char.id] = char;
+        let cell = char.get_cell();
+        cell?.enter(char);
         return char;
     }
     async create_area(pool, tag) {
