@@ -367,6 +367,10 @@ export class SocketManager {
             let target_character = this.world.get_char_from_id(data as number)
             let char = user.get_character();
 
+            if (target_character.id == char.id) {
+                return
+            }
+
             if (target_character.in_battle()) {
                 return
             }
