@@ -218,7 +218,8 @@ export class BattleReworked2 {
     changed: boolean;
     draw: boolean;
     waiting_for_input:boolean;
-    ended: boolean
+    ended: boolean;
+    last_turn: number;
 
 
     constructor(world: any) {
@@ -231,10 +232,12 @@ export class BattleReworked2 {
         this.waiting_for_input = false
         this.draw = false
         this.ended = false
+        this.last_turn = Date.now() //milliseconds
     }
 
     async init(pool: any) {
         this.id = await this.load_to_db(pool);
+        this.last_turn = Date.now()
         return this.id;
     }
 
@@ -300,7 +303,19 @@ export class BattleReworked2 {
             this.save_to_db(pool)
         }
 
-        if (!this.waiting_for_input) {
+        let current_time = Date.now()
+        if (current_time - this.last_turn > 60 * 1000) {
+            let unit = this.heap.get_selected_unit()
+            let char = this.get_char(unit)
+
+            let res = await this.process_input(pool, char.get_in_battle_id(), {action: 'end_turn'})
+            this.send_action(res)
+            this.send_update()
+        }
+
+        if ((!this.waiting_for_input)) {
+            this.last_turn = current_time
+            
             // heap manipulations
             let tmp = this.heap.pop()
             if (tmp == undefined) {
@@ -345,6 +360,7 @@ export class BattleReworked2 {
             return {responce: 'waiting_for_input'}
         }
     }
+
 
     get_units() {
         return this.heap.data
