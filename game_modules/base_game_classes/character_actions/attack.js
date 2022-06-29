@@ -22,7 +22,7 @@ exports.attack = {
                 }
             }
             if (target == undefined) {
-                return 3 /* CharacterActionResponce.NO_RESOURCE */;
+                return 8 /* CharacterActionResponce.NO_POTENTIAL_ENEMY */;
             }
             else {
                 char.action_target = target.id;

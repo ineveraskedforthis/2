@@ -601,8 +601,8 @@ export class CharacterGenericPart {
             // 0.05 * 10  = 0.5
             if (dice > 0.05 * character.skills.skinning.practice) {
                 character.skills.skinning.practice += 1
-
             }
+            
             character.send_stash_update()
             character.send_skills_update()
             character.changed = true

@@ -339,6 +339,8 @@ export class SocketManager {
         if (user.logged_in && !user.get_character().in_battle()) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(CharacterAction.ATTACK, char, undefined)
+            console.log(res)
+            console.log(CharacterActionResponce.NO_POTENTIAL_ENEMY)
             if (res == CharacterActionResponce.OK) {
                 let battle_id = char.get_battle_id()
                 let battle = this.world.get_battle_from_id(battle_id)
@@ -346,8 +348,8 @@ export class SocketManager {
                     console.log('battle had started')
                     battle.send_data_start()
                 }
-            } else if (res == CharacterActionResponce.NO_RESOURCE) {
-                user.socket.emit('alert', 'no_enemies_here')
+            } else if (res == CharacterActionResponce.NO_POTENTIAL_ENEMY) {
+                user.socket.emit('alert', 'No enemies')
             }    
         }
     }

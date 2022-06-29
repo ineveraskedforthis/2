@@ -804,7 +804,7 @@ function process_stash_click(tag) {
 // SOCKET ONS
 
 socket.on('tags', msg => update_tags(msg));
-socket.on('alert', msg => new_log_message(msg));
+socket.on('alert', msg => {my_alert(msg); new_log_message(msg)});
 
 socket.on('sections', msg => map.load_sections(msg));
 

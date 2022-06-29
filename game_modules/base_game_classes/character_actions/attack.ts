@@ -24,7 +24,7 @@ export const attack = {
                 }
             } 
             if (target == undefined) {
-                return CharacterActionResponce.NO_RESOURCE
+                return CharacterActionResponce.NO_POTENTIAL_ENEMY
             } else {
                 char.action_target = target.id
                 return CharacterActionResponce.OK
