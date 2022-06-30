@@ -2,6 +2,7 @@ body {
 
     background-image: url(/static/img/background_1.png);
     background-repeat: repeat;
+    overflow: hidden;
 }
 
 #bg_fade {
@@ -81,10 +82,10 @@ body {
 
 #game_container {
     position: absolute;
-    width: 90%;
-    height: 90%;
-    margin-left: 5%;
-    margin-top: 2%;
+    width: 1800px;
+    height: 900px;
+    margin-left: 50px;
+    margin-top: 30px;
 }
 
 .game_scene {
@@ -107,7 +108,7 @@ body {
 
 
 .game_frame {
-    background: rgba(143, 31, 31, 0.507);
+    background: rgba(136, 62, 62, 0.527);;
 }
 
 
@@ -157,7 +158,7 @@ body {
     top: 10%;
     width: 50%;
     height: 70%;
-    background: rgba(143, 31, 31, 0.527);
+    background: rgba(91, 33, 33, 0.879);
     color: rgb(13, 228, 77);
 }
 
@@ -171,12 +172,57 @@ body {
 
 
 
+#goods_stash {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+}
 
 
+.goods_type_stash {
+    position: relative;
+    width: auto;
+    height: auto;
+    padding: 5px;
+    margin: 2px;
+    border: white 1px solid;
+    background-color: rgb(206, 156, 164);
+    color: rgb(60, 7, 7);
+}
+
+.goods_type_stash:hover {
+    background-color: yellow;
+}
+
+.goods_type_stash:active {
+    background-color: greenyellow;
+}
+
+.goods_type_stash > .goods_amount_in_inventory {
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+}
+.goods_type_stash > .tooltiptext {
+    width: auto;
+}
 
 
+.craft_option {
+    display: flex;
+    flex-direction: row;
+    margin: 5px;
+    width: auto;
+    height: auto;
+}
 
+.craft_option:hover {
+    background-color: yellow;
+}
 
+.craft_option:active{
+    background-color: greenyellow;
+}
 
 
 
@@ -188,4 +234,21 @@ body {
 }
 
 
+#characters_list {
+    margin-top: 20px;
+}
 
+#characters_list > div {
+    height: 20px;
+    width: 100%;
+}
+
+#characters_list > div:hover {
+    background-color: yellow;
+    color: blue;
+}
+
+#characters_list > div.selected {
+    background-color: greenyellow;
+    color: blue;
+}

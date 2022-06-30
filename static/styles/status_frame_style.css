@@ -6,13 +6,13 @@
     display: flex;
     flex-direction: column;
     height: auto;
-    width: 200px;
+    width: 204px;
 }
 
 div#status_frame>div{
     /* border: rgb(168, 9, 9) solid 1px; */
     display: flex;    
-    width: 95%;
+    width: 100%;
 }
 
 #name_row{
@@ -37,9 +37,6 @@ div#status_frame>div{
 }
 
 
-
-
-
 #bars_row{
     height: auto;
     width: 100%;
@@ -47,15 +44,32 @@ div#status_frame>div{
     flex-direction: column;
 }
 
+#bars_row>div{
+    width: 200px;
+    height: 25px;
+}
+
+div#bars_row>div>.hbar{
+    width: 100%;
+    height: 100%
+}
+
 #hp_bar>span{
     background-color: rgb(1, 153, 64);
+    background-image: url(/static/img/hp_bar_on.png);
 }
 #hp_bar>div{
     background-color: rgb(120,120,120);
 }
+#hp_bar{
+    background-image: url(/static/img/hp_bar_off.png);
+}
 
 #stress_bar>span{
     background-color: rgb(0,0,0);
+}
+#stress_bar{
+    background-image: url(/static/img/bar_off_stress.png);
 }
 #stress_bar>div{
     background-color: rgb(120,120,120);
@@ -63,14 +77,23 @@ div#status_frame>div{
 
 #blood_bar>span{
     background-color: rgb(160, 0, 0);
+    background-image: url(/static/img/bar_on_blood.png);
 }
 #blood_bar>div{
     background-color: rgb(120,120,120);
 }
+#blood_bar{
+    background-image: url(/static/img/bar_off_blood.png);
+}
 
 #rage_bar>span{
     background-color: rgb(228, 180, 24);
+    background-image: url(/static/img/bar_on_rage.png);
 }
+#rage_bar{
+    background-image: url(/static/img/bar_off_rage.png);
+}
+
 #rage_bar>div{
     background-color: rgb(120,120,120);
 }
@@ -79,15 +102,7 @@ div#status_frame>div{
     background-color: rgb(120,120,120);
 }
 
-div#bars_row>div{
-    width: 100%;
-    height: 20px;
-}
 
-div#bars_row>div>.hbar{
-    width: 100%;
-    height: 100%
-}
 
 
 

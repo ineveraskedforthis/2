@@ -5,34 +5,35 @@
 
 #map_column{
     height: 100%;
-    width: 62.5%;
+    width: 100%;
     border: rgb(168, 9, 9) solid 1px;
     overflow: hidden;
 }
 
-#description_column{
-    width: 35%;
-    height: 100%;
-}
 
 #local_description{
+    position: absolute;
+    left: 30%;
+    top: 0%;
     height: 200px;
-    width: 100%;
+    width: 70%;
     overflow: hidden;
+    border-left: rgb(168, 9, 9) solid 1px;
 }
 
 #map_control{
     height: auto;
-    width: 100%;
-    overflow: auto;
+    width: 30%;
+    overflow: hidden;
 }
 
 #map_control > .button {
     height: 30px;
-    width: 50%;
+    width: 100%;
     left: 5px;
     background: rgba(105, 119, 52, 0.247);
     border: rgb(168, 9, 9) solid 1px;
+
 }
 
 #map_control > .button:hover {
@@ -41,4 +42,14 @@
 
 #map_control > .button:active {
     background: rgba(178, 219, 28, 0.66);
+}
+
+#map_context {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 400px;
+    background: rgba(151, 0, 0, 0.66);
+    border: rgb(168, 9, 9) solid 1px;
+    overflow: hidden;
 }

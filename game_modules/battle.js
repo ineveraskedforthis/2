@@ -1,316 +1,537 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BattleReworked2 = exports.UnitData = void 0;
+const stash_1 = require("./base_game_classes/stash");
 var common = require("./common.js");
-var constants = require("./constants.js");
-const geom = require("./geom.js")
-
-var Stash = require("./stash.js");
-var Savings = require("./savings.js");
-var BattleAI = require("./battle_ai.js")
-
-
-class BattleReworked {
-    constructor(world) {
-        this.world = world;
-        this.units = [];
-        this.stash = new Stash();
-        this.savings = new Savings();
-        this.data = {};
-        this.data.draw = false;
-        this.data.collected_exp = 0;
-        this.data.turn = 0;
-        this.queued_action = []
+var { constants } = require("./static_data/constants.js");
+const geom_1 = require("./geom");
+const battle_ai_1 = require("./battle_ai");
+const savings_1 = require("./base_game_classes/savings");
+class UnitsHeap {
+    constructor() {
+        this.data = [];
+        this.heap = [];
+        this.last = 0;
+        this.selected = -1;
+        this.changed = false;
     }
-
+    get_value(i) {
+        return this.data[this.heap[i]].next_turn_after;
+    }
+    get_units_amount() {
+        return this.data.length;
+    }
+    get_unit(i) {
+        return this.data[i];
+    }
+    get_selected_unit() {
+        return this.data[this.selected];
+    }
+    push(obj) {
+        this.heap[this.last] = obj;
+        this.last += 1;
+        this.shift_up(this.last - 1);
+        this.changed = true;
+    }
+    shift_up(i) {
+        let tmp = i;
+        while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor((tmp - 1) / 2))) {
+            this.swap(tmp, Math.floor((tmp - 1) / 2));
+            tmp = Math.floor((tmp - 1) / 2);
+        }
+        this.changed = true;
+    }
+    shift_down(i) {
+        let tmp = i;
+        while (tmp * 2 + 1 < this.last) {
+            if (tmp * 2 + 2 < this.last) {
+                if ((this.get_value(tmp * 2 + 2) < this.get_value(tmp * 2 + 1)) && (this.get_value(tmp * 2 + 2) < this.get_value(tmp))) {
+                    this.swap(tmp, tmp * 2 + 2);
+                    tmp = tmp * 2 + 2;
+                }
+                else if (this.get_value(tmp * 2 + 1) < this.get_value(tmp)) {
+                    this.swap(tmp, tmp * 2 + 1);
+                    tmp = tmp * 2 + 1;
+                }
+                else {
+                    break;
+                }
+            }
+            else if (this.get_value(tmp * 2 + 1) < this.get_value(tmp)) {
+                this.swap(tmp, tmp * 2 + 1);
+                tmp = tmp * 2 + 1;
+            }
+            else {
+                break;
+            }
+        }
+        this.changed = true;
+    }
+    add_unit(u) {
+        this.data.push(u);
+        this.push(this.data.length - 1);
+        this.changed = true;
+    }
+    swap(a, b) {
+        let s = this.heap[a];
+        this.heap[a] = this.heap[b];
+        this.heap[b] = s;
+        this.changed = true;
+    }
+    pop() {
+        if (this.last == 0) {
+            return undefined;
+        }
+        let tmp = this.heap[0];
+        this.selected = tmp;
+        this.last -= 1;
+        this.heap[0] = this.heap[this.last];
+        this.heap.length = this.last;
+        this.shift_down(0);
+        this.changed = true;
+        return tmp;
+    }
+    update(dt) {
+        for (let i in this.data) {
+            this.data[i].update(dt);
+        }
+        this.changed = true;
+    }
+    get_json() {
+        return {
+            data: this.data,
+            last: this.last,
+            heap: this.heap,
+            selected: this.selected
+        };
+    }
+    load_from_json(j) {
+        for (let i in j.data) {
+            let unit = new UnitData();
+            unit.load_from_json(j.data[i]);
+            this.data.push(unit);
+        }
+        this.last = j.last;
+        this.heap = j.heap;
+        this.selected = j.selected;
+    }
+}
+class UnitData {
+    constructor() {
+        this.action_points_left = 0;
+        this.action_points_max = 0;
+        this.initiative = 100;
+        this.speed = 0;
+        this.next_turn_after = 100;
+        this.position = { x: 0, y: 0 };
+        this.char_id = -1;
+        this.team = -1;
+        this.dead = true;
+    }
+    init(char, position, team) {
+        let ap = char.get_action_points();
+        this.action_points_left = ap;
+        this.action_points_max = ap;
+        this.initiative = char.get_initiative();
+        this.speed = char.get_speed();
+        this.next_turn_after = char.get_initiative();
+        this.position = position;
+        this.char_id = char.id;
+        this.team = team;
+        this.dead = false;
+    }
+    load_from_json(data) {
+        this.action_points_left = data.action_points_left;
+        this.action_points_max = data.action_points_max;
+        this.initiative = data.initiative;
+        this.speed = data.speed;
+        this.next_turn_after = data.next_turn_after;
+        this.position = data.position;
+        this.char_id = data.char_id;
+        this.team = data.team;
+        this.dead = data.dead;
+    }
+    update(dt) {
+        this.next_turn_after = this.next_turn_after - dt;
+    }
+    end_turn() {
+        this.next_turn_after = this.initiative;
+        this.action_points_left = Math.min((this.action_points_left + this.speed), this.action_points_max);
+    }
+}
+exports.UnitData = UnitData;
+class BattleReworked2 {
+    constructor(world) {
+        this.heap = new UnitsHeap();
+        this.world = world;
+        this.id = -1;
+        this.savings = new savings_1.Savings();
+        this.stash = new stash_1.Stash();
+        this.changed = false;
+        this.waiting_for_input = false;
+        this.draw = false;
+        this.ended = false;
+        this.last_turn = Date.now(); //milliseconds
+    }
     async init(pool) {
         this.id = await this.load_to_db(pool);
+        this.last_turn = Date.now();
         return this.id;
     }
-
+    async load_to_db(pool) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1;
+            // @ts-ignore: Unreachable code error
+            return global.last_id;
+        }
+        let res = await common.send_query(pool, constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
+        return res.rows[0].id;
+    }
+    load_from_json(data) {
+        this.id = data.id;
+        this.heap.load_from_json(data.heap);
+        this.savings.load_from_json(data.savings);
+        this.stash.load_from_json(data.stash);
+        this.waiting_for_input = data.waiting_for_input;
+    }
+    async save_to_db(pool) {
+        await common.send_query(pool, constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
+        this.changed = false;
+    }
+    async delete_from_db(pool) {
+        await common.send_query(pool, constants.delete_battle_query, [this.id]);
+    }
+    // networking
+    send_data_start() {
+        this.world.socket_manager.send_battle_data_start(this);
+        if (this.waiting_for_input) {
+            this.send_action({ action: 'new_turn', target: this.heap.selected });
+        }
+    }
+    send_update() {
+        this.world.socket_manager.send_battle_update(this);
+        if (this.waiting_for_input) {
+            this.send_action({ action: 'new_turn', target: this.heap.selected });
+        }
+    }
+    send_current_turn() {
+        this.send_action({ action: 'new_turn', target: this.heap.selected });
+    }
+    send_action(a) {
+        this.world.socket_manager.send_battle_action(this, a);
+    }
+    send_stop() {
+        this.world.socket_manager.send_stop_battle(this);
+    }
     async update(pool) {
-        var log = [];
-        let i = this.data.turn;
-        let unit = this.units[i];
-        var char = this.world.get_char_from_id(unit.id)
-        if (char == undefined) {
-            await this.next_turn(pool)
-            return log
+        if (this.changed || this.heap.changed) {
+            this.save_to_db(pool);
         }
-        if (char.get_hp() > 0) {
-            if (char.is_player()) {
-                if (this.queued_action[i] != undefined) {
-                    await char.update(pool)
-                    log.push(await this.action(pool, i, this.queued_action[i]));
-                    this.queued_action[i] = undefined
-                    await this.next_turn(pool)
-                }
-            } else {
-                await char.update(pool)
-                for (let i = 0; i < char.data.movement_speed; i++) {
-                    let log_entry = await BattleAI.action(pool, this, char, true)
-                    log.push(log_entry)
-                }
-                await this.next_turn(pool)
+        let current_time = Date.now();
+        if (current_time - this.last_turn > 60 * 1000) {
+            let unit = this.heap.get_selected_unit();
+            let char = this.get_char(unit);
+            let res = await this.process_input(pool, char.get_in_battle_id(), { action: 'end_turn' });
+            this.send_action(res);
+            this.send_update();
+        }
+        if ((!this.waiting_for_input)) {
+            this.last_turn = current_time;
+            // heap manipulations
+            let tmp = this.heap.pop();
+            if (tmp == undefined) {
+                return { responce: 'no_units_left' };
             }
-        } else {
-            await this.next_turn(pool)
+            let unit = this.heap.get_unit(tmp);
+            let time_passed = unit.next_turn_after;
+            this.heap.update(time_passed);
+            //character stuff
+            let char = this.world.get_char_from_id(unit.char_id);
+            if ((char == undefined) || char.is_dead()) {
+                return { responce: 'dead_unit' };
+            }
+            await char.update(pool, 0);
+            let dt = unit.next_turn_after;
+            this.heap.update(dt);
+            if (char.is_dead()) {
+                unit.dead = true;
+                return { responce: 'char_is_dead' };
+            }
+            this.send_action({ action: 'new_turn', target: tmp });
+            //actual actions
+            if (char.is_player()) {
+                this.waiting_for_input = true;
+                this.changed = true;
+                return { responce: 'waiting_for_input' };
+            }
+            else {
+                let log_obj = [];
+                await this.make_turn(pool);
+                unit.end_turn();
+                this.heap.push(tmp);
+                this.changed = true;
+                return { responce: 'end_turn', data: log_obj };
+            }
         }
-        if (this.changed) {
-            this.save_to_db(pool)
+        else {
+            return { responce: 'waiting_for_input' };
         }
-        return log;
     }
-
-    async next_turn(pool) {
-        this.data.turn += 1;
-        if (this.data.turn >= this.unit_amount()) {
-            this.data.turn = 0
-        }   
-        await this.save_to_db(pool);
+    get_units() {
+        return this.heap.data;
     }
-
+    get_unit(i) {
+        return this.heap.get_unit(i);
+    }
+    get_char(unit) {
+        return this.world.get_char_from_id(unit.char_id);
+    }
+    async make_turn(pool) {
+        let unit = this.heap.get_selected_unit();
+        let char = this.get_char(unit);
+        let action = battle_ai_1.BattleAI.action(this, unit, char);
+        while (action.action != 'end_turn') {
+            let logged_action = await this.action(pool, this.heap.selected, action);
+            this.send_action(logged_action);
+            this.send_update();
+            action = battle_ai_1.BattleAI.action(this, unit, char);
+        }
+        this.changed = true;
+    }
+    async action(pool, unit_index, action) {
+        let unit = this.heap.get_unit(unit_index);
+        var character = this.world.get_char_from_id(unit.char_id);
+        //no action
+        if (action.action == null) {
+            return { action: 'pff', who: unit_index };
+        }
+        //move toward enemy
+        if (action.action == 'move') {
+            let tmp = geom_1.geom.minus(action.target, unit.position);
+            if (geom_1.geom.norm(tmp) * 2 > unit.action_points_left) {
+                tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / 2);
+            }
+            unit.position.x = tmp.x + unit.position.x;
+            unit.position.y = tmp.y + unit.position.y;
+            let points_spent = geom_1.geom.norm(tmp) * 2;
+            unit.action_points_left -= points_spent;
+            this.changed = true;
+            return { action: 'move', who: unit_index, target: unit.position, actor_name: character.name };
+        }
+        if (action.action == 'attack') {
+            if (action.target != null) {
+                let unit2 = this.heap.get_unit(action.target);
+                let char = this.world.get_char_from_id(unit.char_id);
+                if (unit.action_points_left < 1) {
+                    return { action: 'not_enough_ap' };
+                }
+                if (geom_1.geom.dist(unit.position, unit2.position) > char.get_range()) {
+                    return { action: 'not_enough_range' };
+                }
+                let target_char = this.world.get_char_from_id(unit2.char_id);
+                let result = await character.attack(pool, target_char);
+                unit.action_points_left -= 1;
+                this.changed = true;
+                return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
+            }
+            return { action: 'no_target_selected' };
+        }
+        if (action.action == 'flee') {
+            if (unit.action_points_left >= 3) {
+                unit.action_points_left -= 3;
+                let dice = Math.random();
+                this.changed = true;
+                if (dice <= 0.4) {
+                    this.draw = true;
+                    return { action: 'flee', who: unit_index };
+                }
+                else {
+                    return { action: 'flee-failed', who: unit_index };
+                }
+            }
+            return { action: 'not_enough_ap' };
+        }
+        if (action.action == 'spell_target') {
+            if (unit.action_points_left > 3) {
+                let spell_tag = action.spell_tag;
+                let unit2 = this.heap.get_unit(action.target);
+                let target_char = this.world.get_char_from_id(unit2.char_id);
+                let result = await character.spell_attack(pool, target_char, spell_tag);
+                if (result.flags.close_distance) {
+                    let dist = geom_1.geom.dist(unit.position, unit2.position);
+                    if (dist > 1.9) {
+                        let v = geom_1.geom.minus(unit2.position, unit.position);
+                        let u = geom_1.geom.mult(geom_1.geom.normalize(v), 0.9);
+                        v = geom_1.geom.minus(v, u);
+                        unit.position.x = v.x;
+                        unit.position.y = v.y;
+                    }
+                    result.new_pos = { x: unit.position.x, y: unit.position.y };
+                }
+                unit.action_points_left -= 3;
+                this.changed = true;
+                return { action: spell_tag, who: unit_index, result: result, actor_name: character.name };
+            }
+        }
+        if (action.action == 'end_turn') {
+            this.waiting_for_input = false;
+            unit.end_turn();
+            this.heap.push(unit_index);
+            this.changed = true;
+            return { action: 'end_turn', who: unit_index };
+        }
+        this.changed = true;
+    }
     get_data() {
         let data = {};
-        for (var i = 0; i < this.units.length; i++) {
-            let unit = this.units[i];
-            var character = this.world.get_char_from_id(unit.id)
+        for (var i = 0; i < this.heap.data.length; i++) {
+            let unit = this.heap.data[i];
+            var character = this.world.get_char_from_id(unit.char_id);
             if (character != undefined) {
-                data[i] = {}
-                data[i].id = unit.id;
-                data[i].position = {x: unit.x, y: unit.y};
-                data[i].rotation = unit.phi;
-                data[i].tag = character.data.model;
+                data[i] = {};
+                data[i].id = unit.char_id;
+                data[i].position = { x: unit.position.x, y: unit.position.y };
+                data[i].tag = character.get_model();
                 data[i].is_player = character.is_player();
                 data[i].range = character.get_range();
                 data[i].hp = character.get_hp();
             }
         }
-        return data
+        return data;
     }
-
-    async add_fighter(pool, agent, team, position) {
-        console.log('add fighter')
-        let unit = {}
-        unit.id = agent.id;
-        unit.team = team;
-        unit.dead = false;
+    add_fighter(agent, team, position) {
+        console.log('add fighter');
         if (position == undefined) {
             if (team == 1) {
-                unit.x = 0
-                unit.y = 10
-            } else {
-                unit.x = 0
-                unit.y = 0
+                position = { x: 0, y: 10 };
             }
-        } else {
-            unit.x = position.x
-            unit.y = position.y
+            else {
+                position = { x: 0, y: 0 };
+            }
         }
-
-        this.units.push(unit);
-        await agent.set(pool, 'battle_id', this.id, false);
-        await agent.set(pool, 'index_in_battle', this.units.length - 1, false);
-        await agent.set(pool, 'in_battle', true);
+        let unit = new UnitData();
+        unit.init(agent, position, team);
+        this.heap.add_unit(unit);
+        agent.set_flag('in_battle', true);
+        agent.set_in_battle_id(this.heap.data.length - 1);
+        agent.set_battle_id(this.id);
         this.changed = true;
     }
-
+    async transfer(target, tag, x) {
+        this.stash.transfer(target.stash, tag, x);
+        this.changed = true;
+    }
     get_team_status(team) {
-        let tmp = []
-        for (let i in this.units) {
-            let unit = this.units[i]
+        let tmp = [];
+        for (let i in this.heap.data) {
+            let unit = this.heap.data[i];
             if (unit.team == team) {
-                let char = this.world.get_char_from_id(unit.id)
+                let char = this.world.get_char_from_id(unit.char_id);
                 if (char != undefined) {
-                    tmp.push({name: char.name, hp: char.hp})
+                    tmp.push({ name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after });
                 }
-                
             }
         }
-        return tmp
+        return tmp;
     }
-
-    is_over() {
-        var hp = [0, 0];
-        for (var i = 0; i < this.units.length; i++) {
-            let unit = this.units[i]
-            var char = this.world.get_char_from_id(unit.id);
-            if (char != null) {
-                hp[unit.team] += char.hp
+    get_status() {
+        let tmp = [];
+        for (let i in this.heap.data) {
+            let unit = this.heap.data[i];
+            let char = this.world.get_char_from_id(unit.char_id);
+            if (char != undefined) {
+                tmp.push({ name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left });
             }
-            if ((char == null) || (char.hp == 0)) {
+        }
+        return tmp;
+    }
+    is_over() {
+        var team_lost = [];
+        for (let team = 0; team < 10; team++) {
+            team_lost[team] = true;
+        }
+        for (var i = 0; i < this.heap.data.length; i++) {
+            let unit = this.heap.data[i];
+            var char = this.world.get_char_from_id(unit.char_id);
+            if ((char == undefined) || (char.get_hp() == 0)) {
                 if (!unit.dead) {
-                    this.data.collected_exp += char.get_exp_reward();
                     unit.dead = true;
                 }
             }
+            else {
+                team_lost[unit.team] = false;
+            }
         }
-        if (hp[0] == 0) {
-            return 1;
+        if (this.draw == true) {
+            return 'draw';
         }
-        if (hp[1] == 0) {
-            return 0;
-        }
-        if (this.data.draw == true) {
-            return 2;
+        else {
+            let teams_left = 0;
+            let team_not_lost = -1;
+            for (let team = 0; team < 10; team++) {
+                if (!team_lost[team]) {
+                    teams_left += 1;
+                    team_not_lost = team;
+                }
+            }
+            if (teams_left > 1) {
+                return -1;
+            }
+            else if (teams_left == 1) {
+                return team_not_lost;
+            }
+            else {
+                return 'draw';
+            }
         }
         return -1;
     }
-
-    reward() {
-        return this.data.collected_exp;
+    clean_up_battle() {
+        for (let i = 0; i < this.heap.get_units_amount(); i++) {
+            let unit = this.heap.get_unit(i);
+            let char = this.world.get_char_from_id(unit.char_id);
+            if (char != undefined) {
+                char.set_flag('in_battle', false);
+                char.set_battle_id(-1);
+            }
+            this.changed = true;
+        }
+        this.send_stop();
     }
-
-    async reward_team(pool, team, exp) {
-        var n = 0;
-        for (let i = 0; i < this.units.length; i++){
-            let unit = this.units[i];
-            if (unit.team == team) {
-                n += 1
+    reward() { }
+    async reward_team(pool, team) { }
+    async process_input(pool, unit_index, input) {
+        if (!this.waiting_for_input) {
+            return { action: 'action_in_progress', who: unit_index };
+        }
+        if (this.heap.selected != unit_index) {
+            let char1 = this.get_char(this.get_unit(this.heap.selected));
+            let char2 = this.get_char(this.get_unit(unit_index));
+            if (char1.id != char2.id) {
+                return { action: 'not_your_turn', who: unit_index };
             }
         }
-
-        for (let i = 0; i < this.units.length; i++) {
-            let unit = this.units[i];
-            let char = this.world.get_char_from_id(unit.id);
-            if (char != undefined)                {
-                if (team != 2) {
-                    if ((unit.team == team) && (!char.data.dead)) {
-                        await char.give_exp(pool, Math.floor(exp / n));
-                    }
-                }
-                await char.set(pool, 'in_battle', false);
+        if (input != undefined) {
+            this.changed = true;
+            let index = this.heap.selected;
+            if (input.action == 'move') {
+                return await this.action(pool, index, { action: 'move', target: input.target });
+            }
+            else if (input.action == 'attack') {
+                return await this.action(pool, index, battle_ai_1.BattleAI.convert_attack_to_action(this, index, input.target));
+            }
+            else if (input.action == 'flee') {
+                return await this.action(pool, index, { action: 'flee' });
+            }
+            else {
+                return await this.action(pool, index, input);
             }
         }
-
-        if (team != 2) {
-            // first added unit of team who is alive is a leader
-            var i = 0;
-            while ((this.units[i].team != team) & (!this.units[i].dead)) {
-                i += 1;
-            }
-            if (i >= this.units.length) {
-                return
-            }
-
-            var leader = this.world.get_char_from_id(this.units[i].id);
-
-            // leader gets all generated loot items
-            for (let i = 0; i < this.units.length; i ++) {
-                let unit = this.units[i];
-                let character = this.world.get_char_from_id(unit.id);
-                if ((character != undefined) && (character.hp == 0)) {
-                    await character.transfer_all(pool, this);
-                    leader.equip.add_item(this.world.generate_loot(character.get_item_lvl(), character.get_tag()));
-                }
-            }
-
-            //leader gets all loot stash
-            for (var tag of this.world.constants.TAGS) {
-                var x = this.stash.get(tag);
-                await this.transfer(pool, leader, tag, x);
-            }
-        }
-        this.save_to_db(pool);
     }
-
-    async load_to_db(pool) {
-        let res =  await common.send_query(pool, constants.new_battle_query, [this.units, this.savings.get_json(), this.stash.get_json(), this.data]);
-        return res.rows[0].id
-    }
-
-    load_from_json(data) {
-        console.log(data)
-        this.id = data.id
-        this.units = data.units
-        this.data = data.data
-        this.savings.load_from_json(data.savings)
-        this.stash.load_from_json(data.stash)
-    }
-
-    async save_to_db(pool) {
-        await common.send_query(pool, constants.update_battle_query, [this.id, this.units, this.savings.get_json(), this.stash.get_json(), this.data])
-        this.changed = false
-    }
-
-    async delete_from_db(pool) {
-        await common.send_query(pool, constants.delete_battle_query, [this.id]);
-    }
-
-    async transfer(pool, target, tag, x) {
-        this.stash.transfer(target.stash, tag, x);
-        this.changed = true;
-        target.changed = true;
-    }
-
-    unit_amount() {
-        return this.units.length;
-    }
-
-    async action(pool, actor_index, action) {
-        let unit = this.units[actor_index]
-        var character = this.world.get_char_from_id(unit.id);
-
-        //no action
-        if (action.action == null) {
-            return {action: 'pff', who: actor_index};
-        }
-
-        //move toward enemy
-        if (action.action == 'move') {
-            unit.x = action.target.x + unit.x;
-            unit.y = action.target.y + unit.y;
-            return {action: 'move', who: actor_index, target: action.target, actor_name: character.name}
-        } else if (action.action == 'attack') {
-            if (action.target != null) {
-                let unit2 = this.units[action.target];
-                let target_char = this.world.get_char_from_id(unit2.id);
-                let result = await character.attack(pool, target_char);
-                return {action: 'attack', attacker: actor_index, target: action.target, result: result, actor_name: character.name};
-            }
-            return {action: 'pff'};
-        } else if (action.action == 'flee') {
-            let dice = Math.random();
-            if (dice <= 0.4) {
-                this.data.draw = true;
-                return {action: 'flee', who: actor_index};
-            } else {
-                return {action: 'pff', who: actor_index};
-            }
-        } else if (action.action.startsWith('spell:')) {
-            let spell_tag = action.action.substring(6);
-            let unit2 = this.units[action.target];
-            let target_char = this.world.get_char_from_id(unit2.id);
-            let result = await character.spell_attack(pool, target_char, spell_tag);
-            if ('close_distance' in result) {
-                let dist = geom.dist(unit, unit2)
-                if (dist > 1.9) {
-                    let v = geom.minus(unit2, unit);
-                    let u = geom.mult(geom.normalize(v), 0.9);
-                    v = geom.minus(v, u)
-                    unit.x = v.x
-                    unit.y = v.y
-                }
-                result.new_pos = {x: unit.x, y: unit.y};
-            }
-            return {action: spell_tag, who: actor_index, result: result, actor_name: character.name};
-        }
-    }
-    push_action(index, action) {
-        if (action != undefined) {
-            if (action.action == 'move') {
-                this.queued_action[index] = {action: 'move', target: geom.normalize(geom.minus(action.target, this.units[index]))}
-            }
-            if (action.action == 'attack') {
-                this.queued_action[index] = BattleAI.convert_attack_to_action(this, index, action.target);
-            }
-            if (action.action == 'flee') {
-                this.queued_action[index] = {action: 'flee'}
-            }
-            if (action.action.startsWith('spell')) {
-                this.queued_action[index] = {action: action.action, target: action.target}
-            }
-        }
+    units_amount() {
+        return this.heap.get_units_amount();
     }
 }
-
-
-
-module.exports = BattleReworked;
+exports.BattleReworked2 = BattleReworked2;

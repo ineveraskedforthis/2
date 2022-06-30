@@ -94,53 +94,53 @@ export class GoodsMarket {
         this.sell_amount_div = container.querySelector('#sell_amount > .current')
         this.sell_amount = 0;
         this.buy_amount = 0;
-        {
-            let button = container.querySelector('#sell_amount > .plus')
-            button.onclick = (event) => {
-                event.preventDefault();
-                this.inc_sell()
-            }
-        }
+        // {
+        //     let button = container.querySelector('#sell_amount > .plus')
+        //     // button.onclick = (event) => {
+        //     //     event.preventDefault();
+        //     //     this.inc_sell()
+        //     // }
+        // }
 
-        {
-            let button = container.querySelector('#sell_amount > .minus')
-            button.onclick = (event) => {
-                event.preventDefault();
-                this.dec_sell()
-            }
-        }
+        // {
+        //     let button = container.querySelector('#sell_amount > .minus')
+        //     button.onclick = (event) => {
+        //         event.preventDefault();
+        //         this.dec_sell()
+        //     }
+        // }
 
-        {
-            let button = container.querySelector('#buy_amount > .plus')
-            button.onclick = (event) => {
-                event.preventDefault();
-                this.inc_buy()
-            }
-        }
+        // {
+        //     let button = container.querySelector('#buy_amount > .plus')
+        //     button.onclick = (event) => {
+        //         event.preventDefault();
+        //         this.inc_buy()
+        //     }
+        // }
 
-        {
-            let button = container.querySelector('#buy_amount > .minus')
-            button.onclick = (event) => {
-                event.preventDefault();
-                this.dec_buy()
-            }
-        }
+        // {
+        //     let button = container.querySelector('#buy_amount > .minus')
+        //     button.onclick = (event) => {
+        //         event.preventDefault();
+        //         this.dec_buy()
+        //     }
+        // }
 
-        {
-            let button = container.querySelector('#confirm_buy')
-            button.onclick = (event) => {
-                event.preventDefault();
-                this.buy()
-            }
-        }
+        // {
+        //     let button = container.querySelector('#confirm_buy')
+        //     button.onclick = (event) => {
+        //         event.preventDefault();
+        //         this.buy()
+        //     }
+        // }
 
-        {
-            let button = container.querySelector('#confirm_sell')
-            button.onclick = (event) => {
-                event.preventDefault();
-                this.sell()
-            }
-        }
+        // {
+        //     let button = container.querySelector('#confirm_sell')
+        //     button.onclick = (event) => {
+        //         event.preventDefault();
+        //         this.sell()
+        //     }
+        // }
 
         this.socket = socket;
     }
@@ -176,7 +176,8 @@ export class GoodsMarket {
     }
 
     update_data(data) {
-        // console.log(data)
+        console.log('update_data')
+        console.log(data)
         this.data = data;
         for (let tag in data.buy) {
             let total_price = 0;
@@ -319,11 +320,16 @@ export class GoodsMarket {
     }
 
     update_inventory(data) {
-        for (let tag in data) {
-            let div = this.container.querySelector('.' + tag + ' > .goods_amount_in_inventory')
+        for (let tag in this.stash_id_to_tag) {
+            let div = this.container.querySelector('.' + this.stash_id_to_tag[tag] + ' > .goods_amount_in_inventory')
             if (div != null)  {
-                div.innerHTML = data[tag]
-            }            
+                div.innerHTML = data[tag] || 0
+            }
         }
+    }
+
+    update_tags(stash_tag_to_id, stash_id_to_tag) {
+        this.stash_tag_to_id = stash_tag_to_id
+        this.stash_id_to_tag = stash_id_to_tag
     }
 }

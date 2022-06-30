@@ -1,40 +1,39 @@
-var basic_characters = require("./basic_characters.js");
-var constants = require("./constants.js");
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.World = void 0;
+var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
-var {loot_chance_weight, loot_affixes_weight} = require("./item_tags");
-const StateMachines = require("./StateMachines.js");
-
-var UserManager = require("./user_manager.js");
-var SocketManager = require("./socket_manager.js");
-var EntityManager = require("./entity_manager.js");
-const Character = require("./character.js");
-
-
-
-const total_loot_chance_weight = {}
-for (let i in  loot_chance_weight) {
-    total_loot_chance_weight[i] = 0
-    for (let j in loot_chance_weight[i]) {
-        total_loot_chance_weight[i] += loot_chance_weight[i][j]
-    }
-}
-
-var total_affixes_weight = {}
-for (let tag in loot_affixes_weight) {
-    total_affixes_weight[tag] = 0
-    for (let i in loot_affixes_weight[tag]) {
-        total_affixes_weight[tag] += loot_affixes_weight[tag][i]
-    }
-}
-
-
-module.exports = class World {
+const entity_manager_1 = require("./manager_classes/entity_manager");
+const world_constants_1_1 = require("./static_data/world_constants_1");
+const action_manager_1 = require("./manager_classes/action_manager");
+const socket_manager_1 = require("./manager_classes/socket_manager");
+const user_manager_1 = require("./manager_classes/user_manager");
+const rat_1 = require("./base_game_classes/races/rat");
+const ai_manager_1 = require("./manager_classes/ai_manager");
+const materials_manager_1 = require("./manager_classes/materials_manager");
+// const total_loot_chance_weight: {[index: tmp]: number} = {}
+// for (let i in loot_chance_weight) {
+//     total_loot_chance_weight[i] = 0
+//     for (let j in loot_chance_weight[i]) {
+//         total_loot_chance_weight[i] += loot_chance_weight[i][j]
+//     }
+// }
+// var total_affixes_weight = {}
+// for (let tag in loot_affixes_weight) {
+//     total_affixes_weight[tag] = 0
+//     for (let i in loot_affixes_weight[tag]) {
+//         total_affixes_weight[tag] += loot_affixes_weight[tag][i]
+//     }
+// }
+class World {
     constructor(io, x, y) {
         this.io = io;
         this.x = x;
         this.y = y;
-        this.constants = require("./world_constants_1.js");
-        this.user_manager = new UserManager(this);
+        this.ACTION_TIME = 2;
+        this.constants = world_constants_1_1.CONSTS;
+        this.user_manager = new user_manager_1.UserManager(this);
+        this.action_manager = new action_manager_1.ActionManager(this, undefined);
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
         this.HISTORY_PRICE['food'] = 50;
@@ -46,117 +45,129 @@ module.exports = class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
+        this.materials_manager = new materials_manager_1.MaterialsManager();
+        this.materials = {};
+        //frfrfgrs
+        this.materials.RAT_SKIN = this.materials_manager.create_material(2, 2, 'rat_skin');
+        this.materials.RAT_BONE = this.materials_manager.create_material(3, 5, 'rat_bone');
+        this.materials.ELODINO_FLESH = this.materials_manager.create_material(1, 1, 'elodino_flesh');
+        this.materials.GRACI_HAIR = this.materials_manager.create_material(5, 20, 'graci_hair');
+        this.materials.WOOD = this.materials_manager.create_material(5, 3, 'wood');
+        this.materials.STEEL = this.materials_manager.create_material(20, 20, 'steel');
+        this.materials.FOOD = this.materials_manager.create_material(2, 1, 'food');
+        this.materials.ZAZ = this.materials_manager.create_material(1, 10, 'zaz');
+        this.materials.MEAT = this.materials_manager.create_material(3, 1, 'meat');
+        this.materials.WATER = this.materials_manager.create_material(2, 1, 'water');
+        let SPEAR_ARGUMENT = {
+            durability: 100,
+            shaft_length: 2 /* SHAFT_LEGTH.LONG */,
+            shaft_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
+            impact_size: 1 /* IMPACT_SIZE.SMALL */,
+            impact_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
+            impact_type: 0 /* IMPACT_TYPE.POINT */,
+            impact_quality: 50,
+            affixes: []
+        };
+        this.spear_argument = SPEAR_ARGUMENT;
+        this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this, false);
+        this.entity_manager = new entity_manager_1.EntityManager(this);
+        this.ai_manager = new ai_manager_1.AiManager(this);
+        this.territories = {};
     }
-
     async init(pool) {
-        this.socket_manager = new SocketManager(pool, this.io, this);
-        this.entity_manager = new EntityManager(this);
+        this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);
+        this.action_manager = new action_manager_1.ActionManager(this, pool);
+        this.entity_manager = new entity_manager_1.EntityManager(this);
         await this.entity_manager.init(pool);
-        await common.send_query(pool, constants.save_world_size_query, [this.x, this.y])
+        await common.send_query(pool, constants.save_world_size_query, [this.x, this.y]);
+        // await this.generate_territories()
         await this.add_starting_agents(pool);
     }
-
-
     async add_starting_agents(pool) {
-        let pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'water', 1000, StateMachines.AIs['water']);
-        pop.stash.inc('water', 10000);
-
-        for (let i = 1; i <= 3; i++) {
-            pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'cook ' + i, 10000, StateMachines.AIs['meat_to_heal']);
+        let port_chunk = await this.entity_manager.create_area(pool, 'port');
+        let living_area = await this.entity_manager.create_area(pool, 'living_area');
+        let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony');
+        let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats');
+        for (let i = 1; i < 60; i++) {
+            let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(6, 5), -1);
+            await (0, rat_1.rat)(pool, test_rat);
         }
-
-        // for (let i = 1; i <= 13; i++) {
-        //     pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'meat ' + i, Math.floor(100 * i * i / 10), StateMachines.AIs['hunters']);
-        // }
-
-        for (let i = 1; i <= 3; i++) {
-            pop = await this.entity_manager.create_pop(pool, 0, 3, 1, {'food': 0, 'clothes': 0, 'meat': 0}, 'pepe', 'clothiers ' + i, 10000, StateMachines.AIs['clothiers']);
-        }
+        // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
+        // let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
+        // mayor.savings.inc(10000);
+        // this.entity_manager.set_faction_leader(ith_colony, mayor)
+        port_chunk.set_influence(ith_colony, 100);
+        living_area.set_influence(ith_colony, 50);
+        living_area.set_influence(steppe_rats, 50);
+        /// test person
+        let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
+        // test_person.change_hp(-90)
+        let MEAT = this.materials.MEAT;
+        test_person.stash.inc(MEAT, 10);
+        test_person.savings.set(5000);
+        await test_person.buy(pool, MEAT, 100, 5);
+        let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
+        meat_bag.stash.inc(MEAT, 200);
+        meat_bag.change_hp(-99);
     }
-
-
     async load(pool) {
-        this.socket_manager = new SocketManager(pool, this.io, this);
-        this.entity_manager = new EntityManager(this);
+        this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);
+        this.entity_manager = new entity_manager_1.EntityManager(this);
+        this.action_manager = new action_manager_1.ActionManager(this, pool);
         await this.entity_manager.load(pool);
         await this.load_size(pool);
     }
-
     async load_size(pool) {
         let size = await common.send_query(pool, constants.load_world_size_query);
         this.x = size.rows[0].x;
         this.y = size.rows[0].y;
     }
-
-    async update(pool) {
-
-        await this.entity_manager.update_battles(pool)
-
-
-        // don't ask any questions about variable names
-        this.battle_tick += 1;
-        if (this.battle_tick >= 2) {
-            this.battle_tick = 0;
-        }
-        if (this.battle_tick == 0){            
-            this.socket_manager.send_all_market_info()
-        }
-
-        this.pops_tick += 1;
-        if (this.pops_tick >= 180) {
-            this.pops_tick = 0;
-            await this.entity_manager.update_agents(pool)
-        }
-        
-        
-        await this.entity_manager.update_chars(pool)
-
-        if (this.map_tick >= 1) {
-            await this.entity_manager.update_map(pool)
-            this.map_tick = 0;
-        } 
-        this.map_tick += 1;
-        
+    async update(pool, dt) {
+        await this.entity_manager.update_battles(pool);
+        await this.entity_manager.update_cells(pool, dt);
+        await this.entity_manager.update_factions(pool);
+        await this.entity_manager.update_areas(pool);
+        await this.entity_manager.update_chars(pool, dt);
         this.socket_manager.update_user_list();
-
-        if (this.vacuum_stage++ > 100) {
-            common.send_query(pool, 'VACUUM market_orders');
-            // console.log('vacuum');
-            this.vacuum_stage = 0;
-        }
     }
-
+    get_stash_tags_list() {
+        return this.materials_manager.get_materials_list();
+    }
+    get_materials_json() {
+        return this.materials_manager.get_materials_json();
+    }
     get_cell_teacher(x, y) {
-        let tag = x + '_' + y;
-        let skill_group = this.constants.teachers[tag]
-        return this.constants.skill_groups[skill_group];
+        return undefined;
     }
-
     get_char_from_id(id) {
-        return this.entity_manager.chars[id]
+        return this.entity_manager.chars[id];
     }
-
+    get_character_by_id(id) {
+        return this.entity_manager.chars[id];
+    }
     get_battle_from_id(id) {
-        return this.entity_manager.battles[id]
+        return this.entity_manager.battles[id];
     }
-
     get_cell(x, y) {
         return this.entity_manager.get_cell(x, y);
     }
-
     get_cell_by_id(id) {
         return this.entity_manager.get_cell_by_id(id);
     }
-
     get_cell_id_by_x_y(x, y) {
         return this.entity_manager.get_cell_id_by_x_y(x, y);
     }
-
     get_cell_x_y_by_id(id) {
-        return {x: Math.floor(id / this.y), y: id % this.y}
+        return { x: Math.floor(id / this.y), y: id % this.y };
     }
-
     async get_new_id(pool, str) {
+        // @ts-ignore: Unreachable code error
+        if (global.flag_nodb) {
+            // @ts-ignore: Unreachable code error
+            global.last_id += 1;
+            // @ts-ignore: Unreachable code error
+            return global.last_id;
+        }
         // console.log(str);
         var x = await common.send_query(pool, constants.get_id_query, [str]);
         x = x.rows[0];
@@ -166,190 +177,149 @@ module.exports = class World {
         await common.send_query(pool, constants.set_id_query, [str, x]);
         return x;
     }
-
-    async add_order(pool, order) {
-        this.entity_manager.add_order(pool, order);
-    }
-
     add_item_order(order) {
         this.entity_manager.add_item_order(order);
     }
-
-    get_order (order_id) {
+    get_order(order_id) {
         return this.entity_manager.get_order(order_id);
     }
-
-    get_item_order (id) {
+    get_item_order(id) {
         return this.entity_manager.get_item_order(id);
     }
-
-    get_from_id_tag(id, tag){
-        return this.entity_manager.get_from_id_tag(id, tag)
+    get_from_id_tag(id, tag) {
+        return this.entity_manager.get_from_id_tag(id, tag);
     }
-
     async kill(pool, char_id) {
-        await this.entity_manager.kill(pool, char_id)
+        await this.entity_manager.kill(pool, char_id);
     }
-
-    async create_monster(pool, monster_class, cell_id) {
-        return await this.entity_manager.create_monster(pool, monster_class, cell_id)
-    }
-
-    async create_pop(pool, x, y, size, needs, race_tag, name, savings, state) {
-        return await this.entity_manager.create_pop(pool, x, y, size, needs, race_tag, name, savings, state)
-    }
-
     async create_battle(pool, attackers, defenders) {
-        return await this.entity_manager.create_battle(pool, attackers, defenders)
+        return await this.entity_manager.create_battle(pool, attackers, defenders);
     }
-
     async load_character_data_from_db(pool, char_id) {
-        return await this.entity_manager.load_character_data_from_db(pool, char_id)
+        return await this.entity_manager.load_character_data_from_db(pool, char_id);
     }
-
     async load_character_data_to_memory(pool, data) {
-        return await this.entity_manager.load_character_data_to_memory(pool, data)
+        return await this.entity_manager.load_character_data_to_memory(pool, data);
     }
-
-    async create_new_character(pool, name, cell_id, user_id, territory_tag) {
-        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id, territory_tag)
+    async create_new_character(pool, name, cell_id, user_id) {
+        return await this.entity_manager.create_new_character(pool, name, cell_id, user_id);
     }
-
-    get_loot_tag(dice, dead_tag) {
-        let tmp = 0
-        // console.log(dead_tag)
-        // console.log(loot_chance_weight[dead_tag])
-        // console.log(total_loot_chance_weight[dead_tag] * dice)
-        for (let i in loot_chance_weight[dead_tag]) {
-            // console.log(i)
-            tmp += loot_chance_weight[dead_tag][i];
-            if (total_loot_chance_weight[dead_tag] * dice <= tmp) {
-                return i
-            }
-        }
-    }
-
-    get_affix_tag(item_tag, dice) {
-        let tmp = 0
-        for (let i in loot_affixes_weight[item_tag]) {
-            tmp += loot_affixes_weight[item_tag][i];
-            if (total_affixes_weight[item_tag] * dice <= tmp) {
-                return i
-            }
-        }
-    }
-
-    roll_affix(item_tag, level) {
-        let dice = Math.random();
-        let affix = {}
-        affix.tag = this.get_affix_tag(item_tag, dice)
-        let dice2 = Math.random();
-        affix.tier = 1
-        affix.tier += Math.floor(level * dice2 / 2)
-        return affix;
-    }
-
-    roll_affixes(item, level) {
-        if (item.affixes != undefined) {
-            for (let i = 0; i < item.affixes; i++) {
-                item['a' + i] = undefined
-            }
-            item.affixes = undefined;
-        }
-        let dice = Math.random()
-        let num_of_affixes = 0
-        if (dice * (1 + level / 10) > 0.5 ) {
-            num_of_affixes += 1
-        }
-        if (dice * (1 + level / 100) > 0.9) {
-            num_of_affixes += 1
-        }
-        item.affixes = num_of_affixes;
-        for (let i = 0; i < num_of_affixes; i++) {
-            item['a' + i] = this.roll_affix(item.tag, level)
-        }
-        return item
-    }
-
-    generate_loot(level, dead_tag) {
-        let loot_dice = Math.random();
-        if (loot_dice < 0.3) {
-            return undefined;
-        }
-        let item = {};
-        let tag_dice = Math.random();
-        
-        item.tag = this.get_loot_tag(tag_dice, dead_tag)  
-        item = this.roll_affixes(item, level)
-        // console.log(item, dead_tag)      
-        return item;
-    }    
-    
-    // eslint-disable-next-line no-unused-vars
-    get_tick_death_rate(race) {
-        return 0.001
-    }
-
-    // eslint-disable-next-line no-unused-vars
-    get_tick_max_growth(race) {
-        return 0.001
-    }
-
+    // get_loot_tag(dice, dead_tag) {
+    //     let tmp = 0
+    //     // console.log(dead_tag)
+    //     // console.log(loot_chance_weight[dead_tag])
+    //     // console.log(total_loot_chance_weight[dead_tag] * dice)
+    //     for (let i in loot_chance_weight[dead_tag]) {
+    //         // console.log(i)
+    //         tmp += loot_chance_weight[dead_tag][i];
+    //         if (total_loot_chance_weight[dead_tag] * dice <= tmp) {
+    //             return i
+    //         }
+    //     }
+    // }
+    // get_affix_tag(item_tag: item_tag, dice):affix_tag {
+    //     let tmp = 0
+    //     for (let affix in loot_affixes_weight[item_tag]) {
+    //         if (affix in loot_affixes_weight[item_tag]) {
+    //             tmp += loot_affixes_weight[item_tag][affix];
+    //             if (total_affixes_weight[item_tag] * dice <= tmp) {
+    //                 return affix
+    //             }
+    //         }            
+    //     }
+    // }
+    // roll_affix(item_tag: item_tag, level: number) {
+    //     let dice = Math.random();
+    //     let dice2 = Math.random();
+    //     let affix = {tag: this.get_affix_tag(item_tag, dice), tier: 1 + Math.floor(level * dice2 / 2)}
+    //     return affix;
+    // }
+    // roll_affixes(item: any, level: number) {
+    //     if (item.affixes != undefined) {
+    //         for (let i = 0; i < item.affixes; i++) {
+    //             item['a' + i] = undefined
+    //         }
+    //         item.affixes = undefined;
+    //     }
+    //     let dice = Math.random()
+    //     let num_of_affixes = 0
+    //     if (dice * (1 + level / 10) > 0.5 ) {
+    //         num_of_affixes += 1
+    //     }
+    //     if (dice * (1 + level / 100) > 0.9) {
+    //         num_of_affixes += 1
+    //     }
+    //     item.affixes = num_of_affixes;
+    //     for (let i = 0; i < num_of_affixes; i++) {
+    //         item['a' + i] = this.roll_affix(item.tag, level)
+    //     }
+    //     return item
+    // }
+    // generate_loot(level: number, dead_tag: any) {
+    //     let loot_dice = Math.random();
+    //     if (loot_dice < 0.3) {
+    //         return undefined;
+    //     }
+    //     let tag_dice = Math.random();
+    //     let item = {tag: this.get_loot_tag(tag_dice, dead_tag)};      
+    //     item = this.roll_affixes(item, level)
+    //     // console.log(item, dead_tag)      
+    //     return item;
+    // }    
+    // // eslint-disable-next-line no-unused-vars
+    // get_tick_death_rate(race) {
+    //     return 0.001
+    // }
+    // // eslint-disable-next-line no-unused-vars
+    // get_tick_max_growth(race) {
+    //     return 0.001
+    // }
     get_territory(x, y) {
         let tmp = x + '_' + y;
+        let data = this.constants.territories;
         for (let i in this.constants.territories) {
-            if (this.constants.territories[i].indexOf(tmp) > -1) {
-                return i
+            if (data[i].indexOf(tmp) > -1) {
+                return i;
             }
         }
-        return undefined
+        return undefined;
     }
-
     get_id_from_territory(tag) {
-        return this.constants.id_terr[tag]
+        let data = this.constants.id_terr;
+        return data[tag];
     }
-
     can_move(x, y) {
-        let ter = this.get_territory(x, y)
-        if (ter == undefined) {
-            return false    
+        if ((x < 0) || (x >= this.x)) {
+            return false;
         }
-        return this.constants.move[ter]
+        if ((y < 0) || (y >= this.y)) {
+            return false;
+        }
+        let data = this.constants.terrain;
+        if (!(x in data)) {
+            return false;
+        }
+        let ter = data[x][y];
+        let cell = this.get_cell(x, y);
+        if (cell == undefined)
+            return true;
+        if (ter == 'coast' || ter == 'steppe' || ter == 'city') {
+            if (cell.development.rupture == 1 || cell.development.wild == 3) {
+                return false;
+            }
+            return true;
+        }
     }
-
-    get_enemy(x,y) {
-        let terr_tag = this.get_territory(x, y)
-        let tag = this.constants.enemies[terr_tag];
+    get_enemy(x, y) {
+        let terr_tag = this.get_territory(x, y);
+        if (terr_tag == undefined) {
+            return;
+        }
+        let data = this.constants.enemies;
+        let tag = data[terr_tag];
         return tag;
     }
-
-    async attack_local_monster(pool, char, enemies_amount = 1) {
-        if (enemies_amount == 0) {
-            return undefined
-        }
-        let cell = char.get_cell();
-        let terr_tag = this.get_territory(cell.i, cell.j)
-        let tag = this.constants.enemies[terr_tag];
-        let enemies = []
-        for (let i = 0; i < enemies_amount; i++) {
-            enemies.push(await this.create_monster(pool, basic_characters[tag], char.cell_id))
-        }
-        let battle = await this.create_battle(pool, [char], enemies);
-        return battle
-    }
-
-    async attack_local_outpost(pool, char) {
-        let cell = char.get_cell();
-        let tmp = cell.i + '_' + cell.j;
-        if (tmp in this.constants.outposts) {
-            let outpost = this.constants.outposts[tmp];
-            let enemies = [];
-            for (let i = 0; i < outpost.enemy_amount; i++) {
-                enemies.push(await this.create_monster(pool, basic_characters[outpost.enemy], char.cell_id))
-            }
-            let battle = await this.create_battle(pool, [char], enemies);
-            battle.stash.inc(outpost.res, outpost.res_amount)
-            return battle
-        }
+    create_quest() {
     }
 }
+exports.World = World;

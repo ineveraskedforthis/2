@@ -8,8 +8,8 @@ function send_update_request(socket) {
     socket.emit('char-info-detailed');
 }
 
-function send_equip_message(socket, index) {
-    socket.emit('equip', index);
+function send_equip_weapon_message(socket, index) {
+    socket.emit('equip-weapon', index);
     socket.emit('char-info-detailed');
 }
 
@@ -24,7 +24,6 @@ function send_clean_request(socket) {
 }
 
 function send_craft_food_request(socket) {
-    socket.emit('cfood')
     socket.emit('char-info-detailed');
 }
 
@@ -83,8 +82,20 @@ export class CharacterScreen {
         this.socket = socket;
 
         for (let i of EQUIPMENT_TAGS) {
-        let tmp = document.getElementById('eq_' + i + '_image');
+            let tmp = document.getElementById('eq_' + i);
+            
             ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
+
+            let name_label = document.createElement('div')
+            name_label.innerHTML = i
+            name_label.classList.add('slot_label')
+            tmp.appendChild(name_label)
+
+            let item_label = document.createElement('div')
+            item_label.classList.add('item_label')
+            item_label.innerHTML = "???"
+            tmp.appendChild(item_label)
+        
         }
 
 
@@ -100,30 +111,30 @@ export class CharacterScreen {
         this.button.innerHTML = 'update';
         this.actions_div.appendChild(this.button);
 
-        this.table = document.createElement('table');
-        this.table = document.getElementById('inventory_items');
+        this.table_weapon = document.getElementById('backpack_weapon_tab');
+        this.table_armour = document.getElementById('backpack_armour_tab');
+
+
+
         this.inventory_stash_div = document.getElementById('inventory_stash')
         this.misc = document.createElement('misc');
-        let label1 = document.createElement('p');
 
-        label1.innerHTML = 'Equipment:';
-        this.equip_div.appendChild(label1);
 
         this.stats_div.appendChild(this.misc);
 
-        this.button = document.createElement('button');
-        (() => 
-                this.button.onclick = () => send_eat_request(this.socket)
-        )();
-        this.button.innerHTML = 'eat';
-        this.actions_div.appendChild(this.button);
+        // this.button = document.createElement('button');
+        // (() => 
+        //         this.button.onclick = () => send_eat_request(this.socket)
+        // )();
+        // this.button.innerHTML = 'eat';
+        // this.actions_div.appendChild(this.button);
 
-        this.button = document.createElement('button');
-        (() => 
-                this.button.onclick = () => send_clean_request(this.socket)
-        )();
-        this.button.innerHTML = 'clean';
-        this.actions_div.appendChild(this.button);
+        // this.button = document.createElement('button');
+        // (() => 
+        //         this.button.onclick = () => send_clean_request(this.socket)
+        // )();
+        // this.button.innerHTML = 'clean';
+        // this.actions_div.appendChild(this.button);
 
         this.button = document.createElement('button');
         (() => 
@@ -154,64 +165,66 @@ export class CharacterScreen {
 
 
         //craft
-        this.craft_div = document.getElementById('craft')
-        {   
-            {
-                let button = document.createElement('button');
-                (() => 
-                        button.onclick = () => send_craft_food_request(this.socket)
-                )();
-                button.innerHTML = 'craft_food';
-                this.craft_div.appendChild(button);
-            }
+        // this.craft_div = document.getElementById('craft')
+        // {   
+        //     {
+        //         let button = document.createElement('button');
+        //         (() => 
+        //                 button.onclick = () => send_craft_food_request(this.socket)
+        //         )();
+        //         button.innerHTML = 'craft_food';
+        //         this.craft_div.appendChild(button);
+        //     }
 
-            {
-                let button = document.createElement('button');
-                (() => 
-                        button.onclick = () => send_craft_clothes_request(this.socket)
-                )();
-                button.innerHTML = 'craft_clothes';
-                this.craft_div.appendChild(button);
-            }
+        //     {
+        //         let button = document.createElement('button');
+        //         (() => 
+        //                 button.onclick = () => send_craft_clothes_request(this.socket)
+        //         )();
+        //         button.innerHTML = 'craft_clothes';
+        //         this.craft_div.appendChild(button);
+        //     }
 
-            {
-                let button = document.createElement('button');
-                (() => 
-                        button.onclick = () => send_enchant_request(this.socket)
-                )();
-                button.innerHTML = 'enchant selected';
-                this.craft_div.appendChild(button);
-            }
+        //     {
+        //         let button = document.createElement('button');
+        //         (() => 
+        //                 button.onclick = () => send_enchant_request(this.socket)
+        //         )();
+        //         button.innerHTML = 'enchant selected';
+        //         this.craft_div.appendChild(button);
+        //     }
 
-            {
-                let button = document.createElement('button');
-                (() => 
-                        button.onclick = () => send_disenchant_request(this.socket)
-                )();
-                button.innerHTML = 'disenchant selected (item will be destroyed)';
-                this.craft_div.appendChild(button);
-            }
-        }
+        //     {
+        //         let button = document.createElement('button');
+        //         (() => 
+        //                 button.onclick = () => send_disenchant_request(this.socket)
+        //         )();
+        //         button.innerHTML = 'disenchant selected (item will be destroyed)';
+        //         this.craft_div.appendChild(button);
+        //     }
+        // }
 
-        console.log('character_screen_loaded')
+        // console.log('character_screen_loaded')
     }
 
     update_backpack(data) {
         let inv = data.backpack;
-        this.table.innerHTML = '';
-        for (let i = 0; i < inv.length; i++) {
-            if (inv[i] != null) {
-                let row = this.table.insertRow();
+        this.table_weapon.innerHTML = '';
+        this.table_armour.innerHTML = '';
+        for (let i = 0; i < inv.weapons.length; i++) {
+            if (inv.weapons[i] != null) {
+                let weapon = inv.weapons[i]
+                let row = this.table_weapon.insertRow();
                 let type = row.insertCell(0); 
-                type.innerHTML = inv[i].tag
-                for (let j = 0; j < inv[i].affixes; j++){
-                    let affix = inv[i]['a' + j];
+                type.innerHTML = weapon.tag
+                for (let j = 0; j < weapon.affixes; j++){
+                    let affix = weapon.affixes_list[j];
                     let a = row.insertCell(j + 1);
                     if (affix != undefined){
                         a.innerHTML = affix.tag + ' ' + affix.tier;
                     }
                 }
-                for (let j = inv[i].affixes + 1; j < 8; j++) {
+                for (let j = weapon.affixes + 1; j < 8; j++) {
                     row.insertCell(j)
                 }
                 let button = document.createElement('button');
@@ -219,41 +232,82 @@ export class CharacterScreen {
                 let tmp = row.insertCell(8)
                 tmp.appendChild(button);
                 ((index) => 
-                    button.onclick = () => send_equip_message(this.socket, index)
+                    button.onclick = () => send_equip_weapon_message(this.socket, index)
                 )(i)
-                tmp = row.insertCell(9);
-                let radio_button = document.createElement('input');
-                radio_button.setAttribute('type', 'radio');
-                radio_button.setAttribute('name', 'sell_item');
-                radio_button.setAttribute('value', i);
-                tmp.appendChild(radio_button);
+                // tmp = row.insertCell(9);
+                // let radio_button = document.createElement('input');
+                // radio_button.setAttribute('type', 'radio');
+                // radio_button.setAttribute('name', 'sell_item');
+                // radio_button.setAttribute('value', i);
+                // tmp.appendChild(radio_button);
             }
         }
+        
+        for (let i = 0; i < inv.armours.length; i++) {
+            if (inv.armours[i] != null) {
+                let armour = inv.armours[i]
+                let row = this.table_armour.insertRow();
+                let type = row.insertCell(0); 
+                type.innerHTML = armour.tag
+                for (let j = 0; j < armour.affixes; j++){
+                    let affix = armour.affixes_list[j];
+                    let a = row.insertCell(j + 1);
+                    if (affix != undefined){
+                        a.innerHTML = affix.tag + ' ' + affix.tier;
+                    }
+                }
+                for (let j = armour.affixes + 1; j < 8; j++) {
+                    row.insertCell(j)
+                }
+
+                let button = document.createElement('button');
+                button.innerHTML = 'equip';
+                let tmp = row.insertCell(8)
+                tmp.appendChild(button);
+                ((index) => 
+                    button.onclick = () => send_equip_armour_message(this.socket, index)
+                )(i)
+
+
+                // tmp = row.insertCell(9);
+                // let radio_button = document.createElement('input');
+                // radio_button.setAttribute('type', 'radio');
+                // radio_button.setAttribute('name', 'sell_item');
+                // radio_button.setAttribute('value', i);
+                // tmp.appendChild(radio_button);
+            }
+        }
+
         
     }
 
     update_stash(data) {
-        for (let tag in data) {
-            let div = this.inventory_stash_div.querySelector('.' + tag + ' > .goods_amount_in_inventory')
-            if (div != null)  {
-                div.innerHTML = data[tag]
-            }            
-        }
+
     }
 
     update_equip(data) {
+
+        // console.log('update_equip')
+        // console.log(data)
         for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
+            
             let tag = EQUIPMENT_TAGS[i]
             let item = data[tag]
-            let image = document.getElementById('eq_' + tag + '_image');
-            image.style = get_item_image(item.tag)
+            // console.log(tag)
+            // console.log(item)
+            // let image = document.getElementById('eq_' + tag + '_image');
+            // image.style = get_item_image(item.tag)
+            let label = document.querySelector('#eq_' + tag + '> .item_label')
+            // console.log(item?.tag)
+            label.innerHTML = item?.tag||'empty'
+
             let tooltip = document.getElementById('eq_' + tag + '_tooltip')
             tooltip.innerHTML = ''
             let tmp = document.createElement('div');
             let tmp2 = document.createElement('p');
-            tmp2.innerHTML = item.tag
+            tmp2.innerHTML = item?.tag||'empty'
             tmp.appendChild(tmp2)
-            for (let j = 0; j < item.affixes; j++){
+            for (let j = 0; j < item?.affixes; j++){
                 let affix = item['a' + j];
                 if (affix != undefined){
                     let p = document.createElement('p')

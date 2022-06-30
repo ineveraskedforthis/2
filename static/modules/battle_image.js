@@ -25,8 +25,9 @@ export function init_battle_control(battle_image, globals) {
     battle_image.socket = globals.socket;
 
     battle_image.add_action({name: 'move', tag: 'move'})
-    battle_image.add_action({name: 'attack', tag: 'attack'})
-    battle_image.add_action({name: 'flee', tag: 'flee'})
+    battle_image.add_action({name: 'attack', tag: 'attack', cost: 1})
+    battle_image.add_action({name: 'retreat', tag: 'flee', cost: 3})
+    battle_image.add_action({name: 'end turn', tag: 'end_turn', cost: 0})
 }
 
 class AnimatedImage {
@@ -122,14 +123,19 @@ export class BattleImage {
     constructor(canvas, canvas_background) {
         this.canvas = canvas;
         this.canvas_background = canvas_background;
+
+        this.container = document.getElementById('battle_tab')
+
         this.background = "colony";
+        this.actions = []
         this.init()
-        this.w = 800;
-        this.h = 400;
+        this.w = 700;
+        this.h = 450;
         this.background_flag = false;
         this.movement_speed = 0.3;
         this.scale = 1;
-        this.container = document.getElementById('battle_tab')
+        this.player = undefined
+        
     }
 
     init() {
@@ -145,10 +151,17 @@ export class BattleImage {
         this.animation_tick = 0;
         this.range = {}
 
+        this.names = {}
+        this.hps = {}
+        this.aps = {}
+
+        let div = this.container.querySelector('.enemy_list')
+        div.innerHTML = ''
+
         this.hovered = undefined
         this.selected = undefined
         this.anchor = undefined
-        this.player = undefined
+        // this.player = undefined
 
         this.action_queue = [];
         this.l = 0;
@@ -174,7 +187,7 @@ export class BattleImage {
         console.log('load battle')
         this.init()
         for (var i in data) {
-            this.add_fighter(i, data[i].tag, data[i].position, data[i].range, data[i].is_player)
+            this.add_fighter(i, data[i].tag, data[i].position, data[i].range)
         } 
     }
 
@@ -187,6 +200,9 @@ export class BattleImage {
     }
 
     update_action(action){
+        if (action.action == 'pff') {
+            return 'bad_action'
+        }
         this.action_queue.push(action);
         this.r += 1
     }
@@ -221,8 +237,10 @@ export class BattleImage {
                 console.log('move', action.who)
                 who = action.who;
                 this.images[who].set_action(action.action)
-                this.new_positions[who].x = this.prev_positions[who].x + action.target.x;
-                this.new_positions[who].y = this.prev_positions[who].y + action.target.y;
+                // this.new_positions[who].x = this.prev_positions[who].x + action.target.x;
+                // this.new_positions[who].y = this.prev_positions[who].y + action.target.y;
+                this.new_positions[who].x = action.target.x;
+                this.new_positions[who].y = action.target.y;
             }
             else if (action.action == 'charge') {
                 who = action.who;
@@ -236,7 +254,11 @@ export class BattleImage {
             else if (action.action == 'stop_battle') {
                 console.log('stop_battle')
                 return this.init()
-            } else this.images[action.who].set_action('idle')
+            } else if (action.action == 'new_turn') {
+                this.set_current_turn(action.target)
+            } else if (action.who != undefined) {
+                this.images[action.who].set_action('idle')
+            }
             this.l +=1
             
             this.movement -= this.movement_speed;
@@ -253,11 +275,20 @@ export class BattleImage {
             let ctx = this.canvas.getContext('2d');
             ctx.clearRect(0, 0, this.w, this.h);
 
+            let a = this.get_centre({x: -4, y: -3})
+            let c = this.get_centre({x: 4, y: 10})
+            ctx.strokeStyle = "rgba(0, 0, 0, 1)"
+            ctx.strokeRect(a.x, a.y, c.x - a.x, c.y - a.y)
+
+            // draw characters
             for (let i in this.positions) {
                 if (!this.killed[i]) {
                     let pos = this.get_centre(this.positions[i])
+
+                    //draw character attack radius circle and color it depending on it's status in ui
+                    ctx.strokeStyle = "rgba(0, 0, 0, 1)"
                     ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
+                    ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range[i], 0, 2 * Math.PI);
                     if (this.selected == i) {
                         ctx.fillStyle = "rgba(10, 10, 200, 0.7)"
                     } else if (this.hovered == i) {
@@ -267,13 +298,39 @@ export class BattleImage {
                     }
                     ctx.fill();
 
+                    //draw a border of circle above
                     ctx.beginPath();
-                    ctx.arc(pos.x, pos.y, BATTLE_SCALE, 0, 2 * Math.PI);
+                    ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range[i], 0, 2 * Math.PI);
                     ctx.stroke();
 
+                    //draw small circle at unit base
                     ctx.beginPath();
                     ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
                     ctx.stroke();
+
+
+                    //draw nameplates
+                    ctx.font = '15px serif';
+                    if (this.selected == i) {
+                        ctx.fillStyle = "rgba(1, 1, 1, 1)"
+                        ctx.strokeStyle = "rgba(0, 0, 0, 1)"
+                    } else if (this.hovered == i) {
+                        ctx.fillStyle = "rgba(1, 1, 1, 1)"
+                        ctx.strokeStyle = "rgba(0, 0, 0, 1)"
+                        
+                    } else {
+                        ctx.fillStyle = "rgba(0, 0, 0, 0.1)"
+                        ctx.strokeStyle = "rgba(0, 0, 0, 0.1)"
+                    }
+                    ctx.strokeRect(pos.x - 50, pos.y - 120, 100, 20)
+                    ctx.strokeRect(pos.x - 50, pos.y - 100, 100, 20)
+                    let string = this.names[i]
+                    if (i == this.player) {
+                        string = string + '(YOU)'
+                    }
+                    ctx.fillText(string + ' || ' + this.hps[i] + ' hp', pos.x - 45, pos.y - 105);
+                    ctx.fillText('ap:  ' + Math.floor(this.aps[i] * 10) / 10, pos.x - 45, pos.y - 85);
+                    
                 }                
             }
             
@@ -289,10 +346,10 @@ export class BattleImage {
             }
             if (this.anchor != undefined) {
                 let ctx = this.canvas.getContext('2d');
-                ctx.beginPath();
-                ctx.arc(this.anchor.x, this.anchor.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
                 ctx.strokeStyle = 'rgba(255, 255, 0, 1)';
                 ctx.fillStyle = "rgba(10, 10, 200, 0.9)";
+                ctx.beginPath();
+                ctx.arc(this.anchor.x, this.anchor.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
                 ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
@@ -323,19 +380,40 @@ export class BattleImage {
         
     }
     
-    add_fighter(battle_id, tag, pos, range, is_player) {
+    add_fighter(battle_id, tag, pos, range, is_player, name, hp) {
         console.log("add fighter")
-        console.log(battle_id, tag, pos)
+        console.log(battle_id, tag, pos, range)
         this.battle_ids.add(battle_id)
         this.new_positions[battle_id] = {x:pos.x, y:pos.y};
         this.prev_positions[battle_id] = {x:pos.x, y:pos.y};
+
+        this.names[battle_id] = 'test'
+        this.hps[battle_id] = 'test'
+        this.aps[battle_id] = 'test'
+
         this.positions[battle_id] = {x:pos.x, y:pos.y};
         this.images[battle_id] = new AnimatedImage(tag)
         this.range[battle_id] = range;
         this.killed[battle_id] = false
-        if (is_player) {
-            this.player = battle_id
-        }
+
+        let div = document.createElement('div')
+        div.innerHTML = 'hp: ' + this.hps[battle_id] + '<br> ap: ' + this.aps[battle_id]
+        div.classList.add('fighter_' + battle_id)
+        div.classList.add('enemy_status')
+
+        div.onclick = () => this.set_selection(battle_id)
+        div.onmouseenter = () => this.set_hover(battle_id)
+        div.onmouseleave = this.remove_hover
+
+        this.container.querySelector(".enemy_list").appendChild(div)
+    }
+
+    set_player(in_battle_id) {
+        console.log('set_player_position')
+        console.log(in_battle_id)
+        this.player = in_battle_id
+        console.log(this.player)
+        this.update_player_actions_availability()
     }
     
     update_pos(battle_id) {
@@ -351,14 +429,14 @@ export class BattleImage {
     get_centre(pos) {
         let centre = {x: pos.y, y: pos.x};
         centre.x = -centre.x * BATTLE_SCALE + 520;
-        centre.y = centre.y * BATTLE_SCALE + 300;
+        centre.y = centre.y * BATTLE_SCALE + this.h / 2;
         return centre
     }
 
     reverse_centre(pos) {
         let tmp = {x: pos.x, y: pos.y}
         tmp.x = (tmp.x - 520) / (-BATTLE_SCALE);
-        tmp.y = (tmp.y - 300) / (BATTLE_SCALE)
+        tmp.y = (tmp.y - this.h / 2) / (BATTLE_SCALE)
         return {x: tmp.y, y: tmp.x}
     }
 
@@ -378,14 +456,52 @@ export class BattleImage {
             dx = dx * dx;
             dy = dy * dy;
             if (dx + dy < 400) {
-                this.hovered = i;
                 hovered = true;
+                this.set_hover(i)
             }
         } 
         if (!hovered) {
-            this.hovered = undefined;
+            this.remove_hover()
         }
     }
+
+    set_hover(i) {
+        if (this.hovered != undefined) {
+            let div = this.container.querySelector('.enemy_list > .fighter_' + this.hovered)
+            div.classList.remove('hovered_unit')
+        }
+        this.hovered = i;
+        let div = this.container.querySelector('.enemy_list > .fighter_' + i)
+        div.classList.add('hovered_unit')
+    }
+
+    remove_hover() {
+        if (this.hovered != undefined) {
+            let div = this.container.querySelector('.enemy_list > .fighter_' + this.hovered)
+            div.classList.remove('hovered_unit')
+        }
+        this.hovered = undefined;
+    }
+
+    set_selection(i) {
+        if (this.selected != undefined) {
+            let div = this.container.querySelector('.enemy_list > .fighter_' + this.selected)
+            div.classList.remove('selected_unit')
+        }
+        this.selected = i;
+        this.anchor = undefined
+        let div = this.container.querySelector('.enemy_list > .fighter_' + i)
+        div.classList.add('selected_unit')
+    }
+
+    remove_selection() {
+        if (this.selected != undefined) {
+            let div = this.container.querySelector('.enemy_list > .fighter_' + this.selected)
+            div.classList.remove('selected_unit')
+        }
+        this.selected = undefined;
+    }
+
     press(pos) {
         let selected = false;
         for (let i in this.positions) {
@@ -395,14 +511,13 @@ export class BattleImage {
             dx = dx * dx;
             dy = dy * dy;
             if (dx + dy < 400) {
-                this.selected = i;
-                this.anchor = undefined
+                this.set_selection(i)
                 selected = true
             }
         } 
         if (!selected) {
+            this.remove_selection()
             this.anchor = pos;
-            this.selected = undefined;
         }
     }
 
@@ -412,8 +527,7 @@ export class BattleImage {
         }
     }
 
-    send_action(tag) {        
-        console.log(tag)
+    send_action(tag) {
         if (tag.startsWith('spell')) {
             if (this.selected != undefined) {
                 this.socket.emit('battle-action', {action: tag, target: this.selected})
@@ -428,40 +542,115 @@ export class BattleImage {
             }
         } else if (tag == 'flee') {
             this.socket.emit('battle-action', {action: 'flee'})
+        } else if (tag == 'end_turn') {
+            this.socket.emit('battle-action', {action: 'end_turn'})
         }
     }
 
     add_action(action_type) {
+        this.actions.push(action_type)
         let action_div = document.createElement('div');
         action_div.classList.add('battle_action');
-        action_div.innerHTML = action_type.name;
+        action_div.classList.add(action_type.tag)
+        if (action_type.cost != undefined) {
+            action_div.innerHTML = action_type.name + '<br>ap: ' + action_type.cost;
+        } else {
+            action_div.innerHTML = action_type.name
+        }
+        
         action_div.onclick = () => this.send_action(action_type.tag)
         let div = this.container.querySelector('.battle_control');
         div.appendChild(action_div)
     }
 
     update_enemy(data) {
-        let div = document.getElementById('enemy_status');
-        div.innerHTML = ''
-        for (let i of data) {
-            let label = document.createElement('p');
-            label.innerHTML = i.name + ' | | ' + i.hp + ' hp' 
-            div.appendChild(label)
+        for (let i in data) {
+            this.names[i] = data[i].name
+            this.hps[i] = data[i].hp
+            this.aps[i] = data[i].ap
+
+            let div = this.container.querySelector('.enemy_list > .fighter_' + i)
+            div.innerHTML = data[i].name + '<br> hp: ' + this.hps[i] + '<br> ap: ' + Math.floor(this.aps[i] * 10) / 10
         }
+
+        this.update_player_actions_availability()        
     }
 
+    update_player_actions_availability() {
+        console.log('update_actions_availability')
+        console.log(this.player)
+        if (this.player == undefined) {
+            return
+        }
+
+        if (this.aps == undefined) {
+            return
+        }
+
+        if (this.aps[this.player] == undefined) {
+            return
+        }
+
+        for (let i of this.actions) {
+            let div = this.container.querySelector('.battle_control>.' + i.tag)
+            if ((i.cost != undefined) && (this.aps[this.player].ap < i.cost)) {
+                div.classList.add('disabled')
+            } else {
+                div.classList.remove('disabled')
+            }
+        } 
+    }
+
+    set_current_turn(i) {
+        console.log('new turn ' + i)
+        if (this.current_turn != undefined) {
+            let div = this.container.querySelector('.enemy_list > .fighter_' + this.current_turn)
+            div.classList.remove('current_turn')    
+        }
+        let div = this.container.querySelector('.enemy_list > .fighter_' + i)
+        div.classList.add('current_turn')
+        this.current_turn = i
+    }
+
+    // returns log message
+    // returns null if no message needed
     battle_action(data) {
         if (data == null) {
             return ''
         }
         this.update_action(data)
+        console.log('battle action data')
+        console.log(data)
+        if (data.action == 'end_turn') {
+            return 'end_of_the_turn'
+        }
+        if (data.action == 'not_enough_ap') {
+            alert('Not enough action points')
+            return 'not_enough_ap'
+        }
+        if (data.action == 'pff') {
+            return 'something wrong has happened'
+        }
+        if (data.action == 'not_your_turn') {
+            alert('Not your turn')
+            return 'not_your_turn'
+        }
+        if (data.action == 'new_turn') {
+            return null
+        }
+        if (data.action == 'move') {
+            return data.actor_name + ' moved (' + data.target.x + ' ' + data.target.y + ')'
+        }
         if (data.action == 'attack') {
-            if (data.result.crit) {
+            if (data.result.flags.crit) {
                 return data.actor_name + ': critical_damage';
+            }
+            if (data.result.flags.evade || data.result.flags.miss) {
+                return data.actor_name + ' missed';
             }
             return data.actor_name + ': deals ' + data.result.total_damage + ' damage';
         } else if (data.action.startsWith('kinetic_bolt')) {
-            if (data.result.crit) {
+            if (data.result.flags.crit) {
                 return data.actor_name + ': critical_damage'
             }
             return data.actor_name + ': deals with magic bolt ' + data.result.total_damage + ' damage'
@@ -469,6 +658,13 @@ export class BattleImage {
             return data.actor_name + '   CHAAAAAAAAAARGE   ' + data.result.total_damage + ' damage'
         } else if (data.action.startsWith('stop_battle')) {
             return 'battle has ended'
+        } else if (data.action.startsWith('flee-failed')) {
+            return this.names[data.who] + ' failed to retreat'
+        } else if (data.action.startsWith('flee')) {
+            alert('You had retreated from the battle')
+            return this.names[data.who] + ' retreats'
         }
+
+        return 'untreated case of battle action !!!!' + data.action
     }
 }

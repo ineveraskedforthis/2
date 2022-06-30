@@ -76,7 +76,13 @@
     background-image: url(/static/img/auc_button_pressed.png);
 }
 
-
+.noselect {
+    user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+}
 
 #market_tab {
     width: 790px;
@@ -86,10 +92,10 @@
 }
 
 #skilltree_tab {
-    left: 6px;
-    top: 51%;
-    height: 400px;
-    width: 420px;
+    left: 8px;
+    top: 280px;
+    height: 485px;
+    width: 290px;
 }
 
 #map_tab {
@@ -100,8 +106,32 @@
 }
 
 #battle_tab {
-    left: 202px;
-    top: 10%;
-    width: 80%;
-    height: 80%;
+    left: 250px;
+    top: 20px;
+    width: 920px;
+    height: 542px;
+}
+
+#stash_tab {
+    top:0px;
+    height: auto;
+    width: auto;
+}
+
+#craft_tab {
+    top: 200px;
+    height:auto;
+    width:auto;
+}
+
+#local_characters_tab {
+    top: 200px;
+    left: 200px;
+    width: 300px;
+    /* padding-top: 20px; */
+}
+
+.tab_label {
+    top: 20px;
+    padding-left: 20px;
 }

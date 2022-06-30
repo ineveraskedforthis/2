@@ -1,4 +1,4 @@
-const constants = require("./constants.js")
+const {constants} = require("./static_data/constants.js")
 var validator = require('validator');
 
 module.exports = 
@@ -12,6 +12,9 @@ module.exports =
     },
 
     send_query: async function (pool, query, args) {
+        if (global.flag_nodb) {
+            return
+        }
         if (constants.logging.db_queries) {
             console.log('!!!!!!!!!!!!!!!')
             console.log(query)
@@ -74,14 +77,6 @@ module.exports =
         }
         return 'ok';
     },
-
-    validate_buy_data: function (world, data) {
-        return (world.constants.TAGS.indexOf(data.tag) > -1) && (!isNaN(data.amount)) & (!isNaN(data.amount)) && (!isNaN(data.amount) || data.max_price == null);
-    },
-
-    validate_sell_data: function (world, data) {
-        return (world.constants.TAGS.indexOf(data.tag) > -1) && (!isNaN(data.amount)) && (!isNaN(data.price));
-    }, 
 
     flag_log: function(msg, flag) {
         if (flag) {

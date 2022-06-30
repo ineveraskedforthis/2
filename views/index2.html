@@ -19,6 +19,8 @@
     <link rel="stylesheet" type="text/css" href="static/styles/market.css">
     <link rel="stylesheet" type="text/css" href="static/styles/char_screen.css">
     <link rel="stylesheet" type="text/css" href="static/styles/battle.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/quests.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/equiped_items.css">
 </head>
 <body>
 
@@ -28,7 +30,7 @@
         logout
     </button>
 
-    <div id="base_background"></div>
+    <!-- <div id="base_background"></div> -->
 
     <div id="game_container">
         <div id = "login_scene" class="game_scene">
@@ -95,7 +97,7 @@
             </div>
         </div>
         <div id="actual_game_scene" class="game_scene">
-            <div class="character_image_col">
+            <div class="character_image_col noselect">
                 <div id="character_image_body" class="character_image"></div>
                 <div id="character_image_eyes" class="character_image"></div>
                 <div id="character_image_chin" class="character_image"></div>
@@ -109,26 +111,7 @@
             </div>
 
 
-            <div id="status_frame" class="game_frame">
-                <div id = "name_row"> 
-                    <div id = "name"> </div> 
-                    <div id = "level" class = "tooltip"> lvl: <div id = "level_data"></div><span class="tooltiptext">More levels - more skillpoints</span></div>
-                </div>
-
-                <div id = "exp_row" class="tooltip">
-                    <span class="tooltiptext">progress on gaining new level</span>
-                    <div id="exp_label">exp: </div>
-                    <div id="exp_bar" class = "hbar"><span id="exp_value_display"></span></div>
-                    <div>
-                        <div id="exp_current" style="display: inline"></div>/<div id="exp_required" style="display: inline"></div>
-                    </div>                    
-                </div>
-
-                <div id = "skill_points" class="tooltip">
-                    <span class="tooltiptext">spend them on developing skills</span>
-                    skill points: <div id="skill_points_data"></div>
-                </div>
-
+            <div id="status_frame" class="game_frame noselect">
                 <div id = "bars_row">
                     <div id = "hp_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
@@ -170,22 +153,22 @@
                         </div>
                         <div id = "stress_data" class = "bar_data"></div>
                     </div>
-                </div>
-
-                
-
-                
-
-                <div id = "savings" class="tooltip">
-                    <span class="tooltiptext">used for interaction with market and item market</span>
-                    <div id="savings_label">savings: </div>
-                    <div id="savings_data"></div>
+                    <div id = "fatigue_column" class = "bar_column tooltip">
+                        <span class="tooltiptext">
+                        Fatigue: how tired you are.<br>
+                        <i class="red">Rises</i> when you are doing stuff. <i class="red">Reduces</i> your ability to do actions.
+                        </span>
+                        <div id = "fatigue_bar" class = "hbar">
+                            <span id="fatigue_value_display"></span>
+                        </div>
+                        <div id = "fatigue_data" class = "bar_data"></div>
+                    </div>
                 </div>
             </div>
 
             <div id="messages_frame" class="game_frame">
                 <div class="container">
-                    <div class="header">
+                    <div class="header noselect">
                         <div id="open_chat_button" class="selected">chat</div>
                         <div id="open_log_button" >logs</div>
                         <div>3</div>
@@ -203,78 +186,130 @@
                 </div>
             </div>
 
-            <div id="tab_list_frame" class="game_frame">
+            <div id="tab_list_frame" class="game_frame noselect">
                 <!-- <div id = "battle_button", class = 'control_button tooltip'><span class="tooltiptext">Attack</span></div> -->
                 <div id = "market_button", class = 'control_button tooltip'><span class="tooltiptext">Market</span></div>
                 <!-- <div id = "tactics_button", class = 'control_button tooltip'><span class="tooltiptext">Tactics</span></div> -->
                 <div id = "skilltree_button", class = 'control_button tooltip'><span class="tooltiptext">Skills</span></div>
                 <div id = "map_button", class = 'control_button tooltip'><span class="tooltiptext">Map</span></div>
-                <div id = "character_button", class = 'control_button tooltip'><span class="tooltiptext">Character screen</span></div>
+                <div id = "equip_button", class = 'control_button tooltip'><span class="tooltiptext">Equipment screen</span></div>
+                <!-- <div id = "quest_button", class = 'control_button tooltip'><span class="tooltiptext">Quests screen</span></div> -->
+                <div id = "stash_button", class = 'control_button tooltip'><span class="tooltiptext">Stash</span></div>
+                <div id = "backpack_button", class = 'control_button tooltip'><span class="tooltiptext">Backpack</span></div>
+                <div id = "craft_button", class = 'control_button tooltip'><span class="tooltiptext">Craft</span></div>
             </div>
 
-            <div id = 'map_tab', class = "game_tab hidden movable">
-                <div id = 'map_column'>
-                    <canvas id='map_canvas' width=800 height=800 oncontextmenu="return false;"></canvas>
+            <div id = "action_progress_bar" class = "hidden">
+            <span>
+            </span>
+            </div>
+
+            <div id="local_characters_tab", class="game_tab movable noselect">
+                <div> Local characters. </div>
+                <div> <button id="attack_selected_charater"> Attack </button> </div>
+                <div id="characters_list"></div>
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
+            </div>
+
+            <div id="craft_tab", class="game_tab hidden movable noselect">
+                <div id = "cook_meat" class="craft_option">
+                    <div class="goods_icon" style="background: no-repeat center/100% url(/static/img/stash_meat.png);"> </div>
+                    <div>=></div>
+                    <div class="goods_icon" style="background: no-repeat center/100% url(/static/img/stash_food.png);"> </div>
                 </div>
-                <div id = 'description_column'> 
-                    <div id='local_description'></div>
+
+                <div id = "make_spear" class="craft_option">
+                    <div class="goods_icon" style="background: no-repeat center/100% url(/static/img/stash_wood.png);"> 3 </div>
+                    <div>=></div>
+                    <div class="goods_icon" > spear </div>
+                </div>
+
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
+            </div>
+
+            <div id="stash_tab", class="game_tab hidden movable noselect">
+                <div id = "goods_stash"></div>
+                <div id = "savings"></div>
+                <div id = "savings_trade"></div>
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
+            </div>
+
+            <div id = 'map_tab', class = "game_tab hidden movable noselect">
+                <div id = 'map_context' class="hidden">
                     <div id='map_control'>
                         <div id='move_button' class = 'button'>
-                            Move to selected
+                            Move
                         </div>
                         <div id='attack_button' class = 'button'>
-                            Hunt at local hex
+                            Attack
                         </div>
-                        <div id='search_button' class = 'button'>
-                            Search at local hex
+                        <div id='hunt_button' class = 'button'>
+                            Hunt
                         </div>
+                        <div id='clean_button' class="button">
+                            Clean
+                        </div>
+                        <div id='rest_button' class="button">
+                            Rest
+                        </div>
+                        <div id='gather_wood_button' class="button">
+                            Gather Wood
+                        </div>
+                        <div id='local_description'></div>
                     </div>
+                </div>
+                <div id = 'map_column'>
+                    <canvas id='map_canvas' width=800 height=400 oncontextmenu="return false;"></canvas>
+                </div>
+                <div id = 'description_column'> 
+                    
+                    
                 </div> 
                 <div class="corner top"></div>
-                <div class="corner bottom"></div>
+                <!-- <div class="corner bottom"></div> -->
             </div>
 
-            <div id = 'battle_tab', class="game_tab hidden movable">
-
+            <div id = 'battle_tab', class="game_tab hidden movable noselect">
                 <div class = 'battle_display'>
-                    <canvas id='battle_canvas' width=600 height=400, class="_battle_canvas"></canvas>
-                    <canvas id='battle_canvas_background' width=600 height=400, class="_battle_canvas"></canvas>
+                    <canvas id='battle_canvas' width=700 height=450, class="_battle_canvas"></canvas>
+                    <canvas id='battle_canvas_background' width=700 height=450, class="_battle_canvas"></canvas>
                 </div>
 
-                <div class = 'battle_control'>                    
-                </div>                
+                <div class = 'battle_control'></div>                
+
+                <div class = 'aps'></div>
 
                 <div class="enemy_list">
-                    <div id='enemy_status'>
-
-                    </div>
-                </div>             
-                
+                    <div class='enemy_status'></div>
+                </div>
 
                 <div class="corner top"></div>
-                <div class="corner bottom"></div>
+                <!-- <div class="corner bottom"></div> -->
             </div>
 
             
-            <div id = 'skilltree_tab', class="game_tab hidden movable">
+            <div id = 'skilltree_tab', class="game_tab hidden movable noselect">
                 <div id = 'skills'> 
-                    <div id = 'skills_header'>
-                        <div id = 'learned_skills_tab' class="skills_tab">
-                            Learned skills
+                    <div id = 'skills_header_container'>
+                        <div id = 'skills_header' class="header">
+                            Skills
                         </div>
-                        <div id = 'local_skills_tab' class="skills_tab">
-                            Local skill trainers
+                        <div id = 'perks_header' class="header">
+                            Perks
                         </div>
                     </div>
                     <div id = 'skills_body'>
-                        <div id = 'learned_skills' class = 'skills_list'>
+                        <div id = 'skills_tab' class = 'tab'>
                             
                         </div>
 
-                        <div id = 'local_skills' class = 'skills_list hidden'>
+                        <div id = 'perks_tab' class = 'tab hidden'>
                         </div>
 
-                        <div id = 'skills_description'>
+                        <div class = 'selected_description'>
                         </div>
                     </div>                    
                 </div>
@@ -282,7 +317,7 @@
                 <div class="corner bottom"></div>
             </div>
 
-            <div id = 'market_tab', class="game_tab hidden movable">
+            <div id = 'market_tab', class="game_tab hidden movable noselect">
                 <div id = 'market'> 
                     <div class="header">
                         <div id="open_market" class="selected">Common goods</div>
@@ -291,55 +326,24 @@
                     <div class="market_body">
                         <div class="goods_market market_tab" >
                             <div class="goods_list">
-                                <div class="goods_type">
-                                    <div class="goods_icon"></div>
-                                    <div class="goods_name">Tag</div>
-                                    <div class="goods_avg_buy_price">Average buy price</div>
-                                    <div class="goods_avg_sell_price">Average sell price</div>
-                                    <div class="goods_amount_in_inventory">Your inventory</div>
-                                </div>
-                            </div>
-                            <div class="market_control">
-                                <div class="header">Market control.</div>
-                                <div class="description">Description</div>
-
-                                <div class="buy_panel control_panel">
-                                    <div class="textnumber">
-                                        <div>Available on market</div>
-                                        <div id="supply">0</div>
-                                    </div>
-                                    <div id="buy_amount" class="trade_amount">
-                                        <div class="plus">+1</div>
-                                        <div class="current">0</div>
-                                        <div class="minus">-1</div>
-                                        <div class="reset">Reset</div>
-                                    </div>
-                                    <div class="textnumber">
-                                        <div>Estimated spendings.</div>
-                                        <div id="buy_cost"> 0</div>
-                                    </div>
-                                    <div id="confirm_buy" class="button">BUY</div>
-                                </div>
-
-                                <div class="sell_panel control_panel">
-                                    <div class="textnumber">
-                                        <div>Demand on market</div>
-                                        <div id="demand">0</div>
-                                    </div>
-                                    <div id="sell_amount" class="trade_amount">
-                                        <div class="plus">+1</div>
-                                        <div class="current">0</div>
-                                        <div class="minus">-1</div>
-                                        <div class="reset">Reset</div>
-                                    </div>
-                                    <div class="textnumber">
-                                        <div>Estimated profits</div>
-                                        <div id="profit">0</div>
-                                    </div>
-                                    <div id="confirm_sell" class="button">SELL</div>
-                                </div>
 
                             </div>
+
+                            <p>
+
+                            <div class="market_control"> 
+                            
+                                <select name="order_material" id="create_order_material"></select>
+                                <select name="order_type" id="create_order_type">
+                                    <option value="sell">Sell</option>
+                                    <option value="buy">Buy</option>
+                                </select>
+                                <input type="text" id="create_order_amount" placeholder="Amount">
+                                <input type="text" id="create_order_price" placeholder="Price">
+                                <button id="create_order_button"> Send </button>
+
+                            </div>
+
                         </div>
                     
                         <div class="auction_body market_tab hidden">
@@ -352,58 +356,74 @@
                 <div class="corner bottom"></div>
             </div>
 
-            <div id="character_tab" class="game_tab hidden movable">
-                <div id = 'character_screen'>
-                    <div id = 'cs_first_column' class = 'tooltip'>
-                        <span class = 'tooltiptext'>
-                                pow: power of spells <br>
-                                musculature: power of phys attacks <br>
-                                resists: how much damage is reduced from different parts of attacks
-                        </span>
-                        <div id = 'stats', class = 'character_screen_frame'></div>
-                    </div>
 
-                    <div id = 'cs_second_column'>
+            <div id = "stats_tab" class="game_tab hidden movable noselect">
+                <div id = 'stats', class = 'character_screen_frame'></div>
+            </div>>
 
-                        <div id = 'inventory', class = 'character_screen_frame'>
-                            <table id = 'inventory_items'></table>
-                            <div id = 'inventory_stash'>
-                            </div>
-                        </div>
-                        <div id = 'craft', class = 'character_screen_frame'></div>
-
-                    </div>
-
-                    <div id = 'cs_third_column'>
-                        <div id = 'equip', class = 'character_screen_frame'>
-                            <div id = 'eq_head', class = 'item_frame tooltip'> 
-                                <div id="eq_head_image", class = 'item_image'></div>
-                                <span id="eq_head_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_right_hand', class = 'item_frame tooltip'>
-                                <div id="eq_right_hand_image", class = 'item_image'></div>
-                                <span id="eq_right_hand_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_body', class = 'item_frame tooltip'>
-                                <div id="eq_body_image", class = 'item_image'></div>
-                                <span id="eq_body_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_legs', class = 'item_frame tooltip'>      
-                                <div id="eq_legs_image", class = 'item_image'></div>
-                                <span id="eq_legs_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_foot', class = 'item_frame tooltip'>      
-                                <div id="eq_foot_image", class = 'item_image'></div>
-                                <span id="eq_foot_tooltip", class="tooltiptext"></span>
-                            </div>
-                            <div id = 'eq_arms', class = 'item_frame tooltip'>      
-                                <div id="eq_arms_image", class = 'item_image'></div>
-                                <span id="eq_arms_tooltip", class="tooltiptext"></span>
-                            </div>
-                        </div>
-                        <div id = 'character_screen_actions', class = 'character_screen_frame'></div>
-                    </div>                    
+            <div id = "backpack_tab" class="game_tab hidden movable noselect">
+                <div class="header_container">
+                    <div id="open_armour_header" class="selected header">Armour</div>
+                    <div id="open_weapon_header" class="header">Weapon</div>
+                    <div id="open_all_header" class="header">All</div>
                 </div>
+
+                <table id="backpack_armour_tab" class = "backpack_tab"></table>
+
+                <table id="backpack_weapon_tab" class = "backpack_tab hidden"></table>
+
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
+            </div>
+
+            <div id = "actions_tab" class="game_tab hidden movable noselect">
+                <div id = 'character_screen_actions', class = 'character_screen_frame'></div>
+            </div>
+
+            <div id="equip_tab" class="game_tab hidden movable noselect">
+                <div id = 'equip', class = 'character_screen_frame'>
+                    <p class = "tab_label"> Equipment: </p>
+                    <div id = 'eq_head', class = 'item_frame tooltip'> 
+                        <!-- <div id="eq_head_image", class = 'item_image'></div> -->
+                        <span id="eq_head_tooltip", class="tooltiptext"></span>
+                    </div>
+                    <div id = 'eq_right_hand', class = 'item_frame tooltip'>
+                        <!-- <div id="eq_right_hand_image", class = 'item_image'></div> -->
+                        <span id="eq_right_hand_tooltip", class="tooltiptext"></span>
+                    </div>
+                    <div id = 'eq_body', class = 'item_frame tooltip'>
+                        <!-- <div id="eq_body_image", class = 'item_image'></div> -->
+                        <span id="eq_body_tooltip", class="tooltiptext"></span>
+                    </div>
+                    <div id = 'eq_legs', class = 'item_frame tooltip'>      
+                        <!-- <div id="eq_legs_image", class = 'item_image'></div> -->
+                        <span id="eq_legs_tooltip", class="tooltiptext"></span>
+                    </div>
+                    <div id = 'eq_foot', class = 'item_frame tooltip'>      
+                        <!-- <div id="eq_foot_image", class = 'item_image'></div> -->
+                        <span id="eq_foot_tooltip", class="tooltiptext"></span>
+                    </div>
+                    <div id = 'eq_arms', class = 'item_frame tooltip'>      
+                        <!-- <div id="eq_arms_image", class = 'item_image'></div> -->
+                        <span id="eq_arms_tooltip", class="tooltiptext"></span>
+                    </div>
+                </div>
+                <div class="corner top"></div>
+                <div class="corner bottom"></div>
+            </div>
+
+            <div id="quest_tab" class="game_tab hidden movable noselect">
+
+                <div class="quest_givers">
+                </div>
+
+                <div class="quest_screen">
+                    <div class="quest_list">
+                    </div>
+                    <div class="quest_portrait">
+                    </div>
+                </div>
+
                 <div class="corner top"></div>
                 <div class="corner bottom"></div>
             </div>
