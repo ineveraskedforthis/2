@@ -325,10 +325,10 @@ class BattleReworked2 {
                 let unit2 = this.heap.get_unit(action.target);
                 let char = this.world.get_char_from_id(unit.char_id);
                 if (unit.action_points_left < 1) {
-                    return { action: 'not_enough_ap' };
+                    return { action: 'not_enough_ap', who: unit_index };
                 }
                 if (geom_1.geom.dist(unit.position, unit2.position) > char.get_range()) {
-                    return { action: 'not_enough_range' };
+                    return { action: 'not_enough_range', who: unit_index };
                 }
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let result = await character.attack(pool, target_char);
@@ -351,7 +351,7 @@ class BattleReworked2 {
                     return { action: 'flee-failed', who: unit_index };
                 }
             }
-            return { action: 'not_enough_ap' };
+            return { action: 'not_enough_ap', who: unit_index };
         }
         if (action.action == 'spell_target') {
             if (unit.action_points_left > 3) {

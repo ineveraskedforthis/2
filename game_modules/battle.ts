@@ -419,11 +419,11 @@ export class BattleReworked2 {
                 let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
 
                 if (unit.action_points_left < 1) {
-                    return { action: 'not_enough_ap' }
+                    return { action: 'not_enough_ap', who: unit_index}
                 }
 
                 if (geom.dist(unit.position, unit2.position) > char.get_range()) {
-                    return { action: 'not_enough_range' }
+                    return { action: 'not_enough_range', who: unit_index}
                 }
 
                 let target_char = this.world.get_char_from_id(unit2.char_id);
@@ -450,7 +450,7 @@ export class BattleReworked2 {
                     return {action: 'flee-failed', who: unit_index};
                 }
             }
-            return {action: 'not_enough_ap'}
+            return {action: 'not_enough_ap', who: unit_index}
         } 
         
 
