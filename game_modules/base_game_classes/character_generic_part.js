@@ -751,8 +751,12 @@ class CharacterGenericPart {
         this.flags = data.flags;
         this.savings = new savings_1.Savings();
         this.savings.load_from_json(data.savings);
+        this.trade_savings = new savings_1.Savings();
+        this.trade_savings.load_from_json(data.trade_savings);
         this.stash = new stash_1.Stash();
         this.stash.load_from_json(data.stash);
+        this.trade_stash = new stash_1.Stash();
+        this.trade_stash.load_from_json(data.trade_stash);
         this.equip = new equip_1.Equip();
         this.equip.load_from_json(data.equip);
     }
@@ -788,7 +792,9 @@ class CharacterGenericPart {
             this.misc,
             this.flags,
             this.savings.get_json(),
+            this.trade_savings.get_json(),
             this.stash.get_json(),
+            this.trade_stash.get_json(),
             this.equip.get_json()
         ]);
         return result.rows[0].id;
@@ -805,7 +811,9 @@ class CharacterGenericPart {
                 this.misc,
                 this.flags,
                 this.savings.get_json(),
+                this.trade_savings.get_json(),
                 this.stash.get_json(),
+                this.trade_stash.get_json(),
                 this.equip.get_json()
             ]);
             this.changed = false;
