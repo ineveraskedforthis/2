@@ -60,7 +60,7 @@ async function create_tables(client) {
     await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, item_market_id int, development jsonb, resources jsonb)');
 
     await client.query('CREATE TABLE markets (id int PRIMARY KEY, data jsonb)');
-    await client.query("CREATE TABLE market_orders (id serial primary key, typ varchar(5), tag varchar(30), owner_id int, owner_tag varchar(5), amount int, price int, market_id int)");
+    await client.query("CREATE TABLE market_orders (id serial primary key, typ varchar(5), tag varchar(30), owner_id int, owner_tag varchar(5), amount int, price int, cell_id int)");
                             
     await client.query("CREATE TABLE items_orders (id serial primary key, item jsonb, owner_id int, buyout_price int, current_price int, latest_bidder int, end_time bigint, market_id int)")
     await client.query('CREATE TABLE items_markets (id serial primary key, orders int[])');

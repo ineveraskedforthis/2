@@ -16,7 +16,7 @@ import { Savings } from "./base_game_classes/savings";
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
 export interface AttackAction {action: "attack", target: number}
-interface FleeAction {action: "flee"}
+interface FleeAction {action: "flee", who: number}
 interface SpellTargetAction {action: "spell_target", target: number, spell_tag: "power_bolt"|"charge"}
 interface EndTurn {action: 'end_turn'}
 interface NullAction {action: null}
@@ -635,7 +635,7 @@ export class BattleReworked2 {
             } else if (input.action == 'attack') {
                 return await this.action(pool, index, BattleAI.convert_attack_to_action(this, index, input.target))
             } else if (input.action == 'flee') {
-                return await this.action(pool, index, {action: 'flee'})
+                return await this.action(pool, index, {action: 'flee', who: index})
             } else {
                 return await this.action(pool, index, input)
             }

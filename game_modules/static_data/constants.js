@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.constants = void 0;
 exports.constants = {
-    version: 298,
+    version: 300,
     logging: {
         agent: {
             buy: false
@@ -36,7 +36,7 @@ exports.constants = {
     new_battle_query: 'INSERT INTO battles (heap, savings, stash, waiting_for_input) VALUES ($1, $2, $3, $4) RETURNING id',
     new_cell_query: 'INSERT INTO cells (id, x, y, name, market_id, item_market_id, development, resources) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
     new_market_query: 'INSERT INTO markets (id, data) VALUES ($1, $2)',
-    insert_market_order_query: 'INSERT INTO market_orders (typ, tag, owner_id, owner_tag, amount, price, cell_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+    insert_market_order_query: 'INSERT INTO market_orders (typ, tag, owner_id, amount, price, cell_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
     insert_agent_query: 'INSERT INTO agents (cell_id, name, savings, stash) VALUES ($1, $2, $3, $4) RETURNING id',
     insert_consumer_query: 'INSERT INTO consumers (cell_id, name, savings, stash, data) VALUES ($1, $2, $3, $4, $5) RETURNING id',
     insert_pop_query: 'INSERT INTO pops (cell_id, name, savings, stash, data, race_tag, ai_tag) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
@@ -49,7 +49,7 @@ exports.constants = {
     update_battle_query: 'UPDATE battles SET heap = ($2), savings = ($3), stash = ($4), waiting_for_input = ($5) WHERE id = ($1)',
     update_market_order_query: 'UPDATE market_orders SET amount = ($2) WHERE id = ($1)',
     update_market_query: 'UPDATE markets SET data = ($2) WHERE id = ($1)',
-    update_char_query: 'UPDATE chars SET cell_id = ($2), faction_id = ($3), status = ($4), skills = ($5), stats = ($6), misc = ($7), flags = ($8), savings = ($9), trade_savings = ($10), stash = ($11), trade_stash = ($12) equip = ($13) WHERE id = ($1)',
+    update_char_query: 'UPDATE chars SET cell_id = ($2), faction_id = ($3), status = ($4), skills = ($5), stats = ($6), misc = ($7), flags = ($8), savings = ($9), trade_savings = ($10), stash = ($11), trade_stash = ($12), equip = ($13) WHERE id = ($1)',
     update_agent_query: 'UPDATE agents SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5) WHERE id = ($1)',
     update_consumer_query: 'UPDATE consumers SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6) WHERE id = ($1)',
     update_pop_query: 'UPDATE pops SET cell_id = ($2), name = ($3), savings = ($4), stash = ($5), data = ($6), race_tag = ($7), ai_tag = ($8) WHERE id = ($1)',

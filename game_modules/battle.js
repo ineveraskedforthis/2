@@ -523,7 +523,7 @@ class BattleReworked2 {
                 return await this.action(pool, index, battle_ai_1.BattleAI.convert_attack_to_action(this, index, input.target));
             }
             else if (input.action == 'flee') {
-                return await this.action(pool, index, { action: 'flee' });
+                return await this.action(pool, index, { action: 'flee', who: index });
             }
             else {
                 return await this.action(pool, index, input);

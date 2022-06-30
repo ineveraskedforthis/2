@@ -123,7 +123,7 @@ class BattleAI {
             }
         }
         if (action_tag == 'flee') {
-            return { action: 'flee' };
+            return { action: 'flee', who: index };
         }
         if (action_tag == 'spell_target') {
             if (true_target == null)

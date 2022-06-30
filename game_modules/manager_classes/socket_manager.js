@@ -355,10 +355,6 @@ class SocketManager {
             if (cell == undefined) {
                 return;
             }
-            console.log(amount);
-            console.log(order_id);
-            console.log(cell.orders);
-            console.log(order_id);
             if (cell.orders.has(order_id)) {
                 let order = this.world.get_order(order_id);
                 let responce = 'ok';
@@ -884,8 +880,6 @@ class SocketManager {
         let user = this.world.user_manager.get_user_from_character(character);
         if (user != undefined) {
             let data = this.prepare_market_orders(market);
-            // console.log('sending market orders to characters');
-            // console.log(data);
             this.send_to_character_user(character, 'market-data', data);
         }
     }

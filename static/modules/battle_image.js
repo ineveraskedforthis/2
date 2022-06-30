@@ -624,14 +624,14 @@ export class BattleImage {
         if (data.action == 'end_turn') {
             return 'end_of_the_turn'
         }
-        if (data.action == 'not_enough_ap') {
+        if ((data.action == 'not_enough_ap') && (data.who == this.player)) {
             alert('Not enough action points')
             return 'not_enough_ap'
         }
         if (data.action == 'pff') {
             return 'something wrong has happened'
         }
-        if (data.action == 'not_your_turn') {
+        if ((data.action == 'not_your_turn') && (data.who == this.player)){
             alert('Not your turn')
             return 'not_your_turn'
         }
@@ -661,7 +661,12 @@ export class BattleImage {
         } else if (data.action.startsWith('flee-failed')) {
             return this.names[data.who] + ' failed to retreat'
         } else if (data.action.startsWith('flee')) {
-            alert('You had retreated from the battle')
+            if (data.action.who == this.player) {
+                alert('You had retreated from the battle')
+            } else {
+                alert('Someone had retreated from the battle')
+            }
+            
             return this.names[data.who] + ' retreats'
         }
 
