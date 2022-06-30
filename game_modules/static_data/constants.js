@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.constants = void 0;
 exports.constants = {
-    version: 297,
+    version: 298,
     logging: {
         agent: {
             buy: false

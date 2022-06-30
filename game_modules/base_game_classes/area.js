@@ -1,7 +1,8 @@
-const Savings = require("./savings.js");
+
 const {Stash} = require("./stash.js");
 const common = require("../common.js")
 const {constants} = require("../static_data/constants.js");
+const { Savings } = require("./savings.js");
 
 module.exports = class Area {
     constructor(world) {

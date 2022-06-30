@@ -350,7 +350,7 @@ export class SocketManager {
                 }
             } else if (res == CharacterActionResponce.NO_POTENTIAL_ENEMY) {
                 user.socket.emit('alert', 'No enemies')
-            }    
+            }
         }
     }
 

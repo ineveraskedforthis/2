@@ -1,6 +1,7 @@
 var Market = require("./market/market.js")
 var common = require("./common.js")
 import { CharacterGenericPart } from "./base_game_classes/character_generic_part.js";
+import { money } from "./base_game_classes/savings.js";
 import { material_index } from "./manager_classes/materials_manager.js";
 import { MarketOrder, market_order_index } from "./market/market_order.js";
 import {constants} from "./static_data/constants.js";
@@ -174,7 +175,7 @@ export class Cell {
         if ((order_owner != undefined) && (order.amount >= amount)){
             order.amount -= amount;
             order_owner.transfer(buyer.stash, order.tag, amount);
-            buyer.savings.transfer(order_owner.trade_savings, amount * order.price);
+            buyer.savings.transfer(order_owner.trade_savings, amount * order.price as money);
 
             buyer.changed = true;
             order_owner.changed = true;
@@ -194,7 +195,7 @@ export class Cell {
 
             order.amount -= amount;
             seller.stash.transfer(order_owner.trade_stash, order.tag, amount);
-            order_owner.savings.transfer(seller, amount);
+            order_owner.savings.transfer(seller.savings, amount * order.price as money);
 
             seller.changed = true;
             order_owner.changed = true;
@@ -206,9 +207,7 @@ export class Cell {
         return 0
     }
 
-    async new_order(pool: any, typ: 'sell'|'buy', tag:material_index, amount:number, price:number, agent: CharacterGenericPart) {
-        amount = Math.floor(amount);
-        price = Math.floor(price);
+    async new_order(pool: any, typ: 'sell'|'buy', tag:material_index, amount:number, price:money, agent: CharacterGenericPart) {
         if (typ == 'sell') {
             var tmp = agent.stash.transfer(agent.trade_stash, tag, amount);
             var order = await this.world.entity_manager.generate_order(pool, typ, tag, agent, tmp, price, this.id)
@@ -219,7 +218,7 @@ export class Cell {
             if (price != 0) {
                 let savings = agent.savings.get();
                 let true_amount = Math.min(amount, Math.floor(savings / price));
-                agent.savings.transfer(agent.trade_savings, true_amount * price);
+                agent.savings.transfer(agent.trade_savings, true_amount * price as money);
                 let order = await this.world.entity_manager.generate_order(pool, typ, tag, agent, true_amount, price, this.id)
                 return order
             } else {

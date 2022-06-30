@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CharacterGenericPart = exports.Status = void 0;
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
-const Savings = require("./savings.js");
 const spells = require("../static_data/spells.js");
 const generate_empty_resists = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
@@ -12,6 +11,7 @@ const stash_1 = require("./stash");
 const attack_result_1 = require("./misc/attack_result");
 const damage_types_1 = require("./misc/damage_types");
 const constants_1 = require("../static_data/constants");
+const savings_1 = require("./savings");
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class SkillObject {
     constructor() {
@@ -80,8 +80,8 @@ class CharacterGenericPart {
         this.equip = new equip_1.Equip();
         this.stash = new stash_1.Stash();
         this.trade_stash = new stash_1.Stash();
-        this.savings = new Savings();
-        this.trade_savings = new Savings();
+        this.savings = new savings_1.Savings();
+        this.trade_savings = new savings_1.Savings();
         this.status = new Status();
         this.status.hp = 100;
         this.skills = new SkillList();
@@ -744,7 +744,7 @@ class CharacterGenericPart {
         this.stats = data.stats;
         this.misc = data.misc;
         this.flags = data.flags;
-        this.savings = new Savings();
+        this.savings = new savings_1.Savings();
         this.savings.load_from_json(data.savings);
         this.stash = new stash_1.Stash();
         this.stash.load_from_json(data.stash);

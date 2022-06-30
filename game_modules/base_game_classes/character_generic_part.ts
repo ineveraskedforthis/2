@@ -1,7 +1,6 @@
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
 
-const Savings = require("./savings.js");
 const spells = require("../static_data/spells.js");
 
 const generate_empty_resists = require("./misc/empty_resists.js");
@@ -17,6 +16,7 @@ import { User } from "../user";
 import { constants } from "../static_data/constants";
 import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { material_index } from "../manager_classes/materials_manager";
+import { Savings } from "./savings";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
@@ -144,8 +144,8 @@ export class CharacterGenericPart {
     equip: Equip;
     stash: Stash;
     trade_stash: Stash;
-    savings: any;
-    trade_savings: any;
+    savings: Savings;
+    trade_savings: Savings;
     status: Status;
     skills: SkillList;
     stats: InnateStats;

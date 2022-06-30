@@ -120,7 +120,7 @@ class Cell {
         if ((order_owner != undefined) && (order.amount >= amount)) {
             order.amount -= amount;
             seller.stash.transfer(order_owner.trade_stash, order.tag, amount);
-            order_owner.savings.transfer(seller, amount);
+            order_owner.savings.transfer(seller.savings, amount * order.price);
             seller.changed = true;
             order_owner.changed = true;
             await order.save_to_db(pool);
@@ -129,8 +129,6 @@ class Cell {
         return 0;
     }
     async new_order(pool, typ, tag, amount, price, agent) {
-        amount = Math.floor(amount);
-        price = Math.floor(price);
         if (typ == 'sell') {
             var tmp = agent.stash.transfer(agent.trade_stash, tag, amount);
             var order = await this.world.entity_manager.generate_order(pool, typ, tag, agent, tmp, price, this.id);

@@ -3,6 +3,7 @@ import {constants} from "../static_data/constants.js";
 import type {World} from "../world";
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part.js";
 import { material_index } from "../manager_classes/materials_manager.js";
+import { money } from "../base_game_classes/savings.js";
 
 export type market_order_index = number & { __brand: "index of the order"}
 
@@ -15,7 +16,7 @@ export class MarketOrder {
     owner_id: number
     owner: CharacterGenericPart|undefined
     amount: number
-    price: number
+    price: money
     cell_id: number
 
     constructor(world: World) {
@@ -26,11 +27,11 @@ export class MarketOrder {
         this.owner = undefined
         this.owner_id = -1
         this.amount = 0
-        this.price = 0
+        this.price = 0 as money
         this.cell_id = 0
     }
 
-    async init(pool:any, typ:'sell'|'buy', tag: material_index, owner: CharacterGenericPart, amount: number, price: number, cell_id: number) {
+    async init(pool:any, typ:'sell'|'buy', tag: material_index, owner: CharacterGenericPart, amount: number, price: money, cell_id: number) {
         this.typ = typ;
         this.tag = tag;
         this.owner_id = owner.id;

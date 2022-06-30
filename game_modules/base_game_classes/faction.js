@@ -1,6 +1,7 @@
-const Savings = require("./savings.js");
+
 var common = require("../common.js");
 const {constants} = require("../static_data/constants.js");
+const { Savings } = require("./savings.js");
 
 module.exports = class Faction {
     constructor(world) {

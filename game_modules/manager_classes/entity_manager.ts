@@ -12,6 +12,7 @@ import { MarketOrder } from "../market/market_order";
 import { BattleReworked2 } from "../battle";
 import { ITEM_MATERIAL } from '../static_data/item_tags';
 import { material_index } from './materials_manager';
+import { money } from '../base_game_classes/savings';
 
 
 export class EntityManager {
@@ -278,7 +279,7 @@ export class EntityManager {
         // leader.add_quest(quest, tag)
     }
 
-    async generate_order(pool: any, typ:"sell"|"buy", tag:material_index, owner:CharacterGenericPart, amount:number, price:number, cell_id:number) {
+    async generate_order(pool: any, typ:"sell"|"buy", tag:material_index, owner:CharacterGenericPart, amount:number, price:money, cell_id:number) {
         let order = new MarketOrder(this.world)
         await order.init(pool, typ, tag, owner, amount, price, cell_id)
 
@@ -369,7 +370,7 @@ export class EntityManager {
         let char = new CharacterGenericPart(this.world);
         await char.init(pool, name, cell_id, user_id);
         console.log('his id is ' + char.id)
-        
+
         this.chars[char.id] = char
         let cell = char.get_cell()
         cell?.enter(char)
