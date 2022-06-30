@@ -16,7 +16,7 @@ import { User } from "../user";
 import { constants } from "../static_data/constants";
 import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { material_index } from "../manager_classes/materials_manager";
-import { Savings } from "./savings";
+import { money, Savings } from "./savings";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
@@ -534,18 +534,13 @@ export class CharacterGenericPart {
     //market interactions
 
 
-    // buy(tag:material_index, amount: number, money: number, max_price = null) {
-    //     let cell = this.get_cell();
-    //     let order = this.world.entity_manager.add_order
-    // }
+    async buy(pool: any, tag:material_index, amount: number, price: money) {
+        let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id)
+    }
 
-    // sell(tag:material_index, amount: number, price: number) {
-    //     let cell = this.get_cell();
-    //     let order = this.world.entity_manager.generate_order()
-    //     if (cell.has_market()) {
-    //         cell.market.sell(tag, this, amount, price);
-    //     }        
-    // }
+    async sell(pool:any, tag:material_index, amount: number, price: money) {
+        let order = await this.world.entity_manager.generate_order(pool, 'sell', tag, this, amount, price, this.cell_id)
+    }
 
     sell_item(index: number, buyout_price: number, starting_price: number) {
         // let cell = this.get_cell();

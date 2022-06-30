@@ -8,7 +8,7 @@ const Quest = require('../base_game_classes/quest.js')
 import { World } from "../world";
 import {Cell} from '../cell'
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
-import { MarketOrder } from "../market/market_order";
+import { MarketOrder, market_order_index } from "../market/market_order";
 import { BattleReworked2 } from "../battle";
 import { ITEM_MATERIAL } from '../static_data/item_tags';
 import { material_index } from './materials_manager';
@@ -139,7 +139,7 @@ export class EntityManager {
         let target_cell = this.get_cell_by_id(cell_id)
         if (target_cell != undefined) {
             for (let order of this.orders) {
-                if (order.owner == character) {
+                if ((order != undefined) && (order.owner == character)) {
                     this.get_cell_by_id(order.cell_id)?.transfer_order(order.id, target_cell)
                     order.cell_id = cell_id
                 }
@@ -297,7 +297,7 @@ export class EntityManager {
         this.item_orders[order.id] = order
     }
 
-    get_order (order_id: number) {
+    get_order (order_id: market_order_index) {
         return this.orders[order_id];
     }
 

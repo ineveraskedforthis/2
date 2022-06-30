@@ -789,17 +789,30 @@ export class SocketManager {
         }
     }
 
-    update_market_info(market: Cell) {
+    prepare_market_orders(market: Cell) {
         let data = market.orders;
+
+        let orders_array = Array.from(data)
+        let responce = []
+        for (let order_id of orders_array) {
+            let order = this.world.get_order(order_id)
+            responce.push(order.get_json())
+        }
+        // console.log(responce)
+        return responce
+    }
+
+    update_market_info(market: Cell) {
         console.log('sending market orders to client');
-        console.log(data);
+        let responce = this.prepare_market_orders(market)     
+
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
                 try {
                     let cell1 = char.get_cell();
                     if (i.online & i.market_data && (cell1.id==market.id)) {
-                        i.socket.emit('market-data', data);
+                        i.socket.emit('market-data', responce);
                     }
                 } catch(error) {
                     console.log(i.current_user.login);
@@ -833,16 +846,16 @@ export class SocketManager {
     }
 
     send_market_info(market: Cell) {
-        let data = market.orders;
-        console.log('sending market orders to client');
-        console.log(data);
+        console.log('sending market orders to client 2');
+        let responce = this.prepare_market_orders(market)
+        console.log(responce);
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
                 try {
                     let cell1: any = char.get_cell();
                     if (i.online && i.market_data && (cell1.id == market.id)) {
-                        i.socket.emit('market-data', data)
+                        i.socket.emit('market-data', responce)
                     }
                 } catch(error) {
                     console.log(i.current_user.login)
@@ -861,15 +874,12 @@ export class SocketManager {
     }
 
     send_market_info_character(market: Cell, character: CharacterGenericPart) {
-        
-        
         let user = this.world.user_manager.get_user_from_character(character);
-            if (user != undefined) {
-                let data = market.orders;
-            console.log('sending market orders to characters');
-            console.log(data);
-        
-            this.send_to_character_user(character, 'market-data', data)
+        if (user != undefined) {
+            let data = this.prepare_market_orders(market)
+        console.log('sending market orders to characters');
+        console.log(data);
+        this.send_to_character_user(character, 'market-data', data)
         }
     }
 

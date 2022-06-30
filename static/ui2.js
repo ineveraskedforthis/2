@@ -852,8 +852,13 @@ socket.on('skill-tags', data => load_skill_tags(data));
 socket.on('skills', msg => update_skill_data(msg));
 // socket.on('local-skills', msg => update_local_skills(msg))
 
-socket.on('market-data', data => goods_market.update_data(data));
+// socket.on('market-data', data => goods_market.update_data(data));
+
+socket.on('market-data', data => update_market(data));
+
 socket.on('item-market-data', data => {item_market_table.update(data)});
+
+
 
 socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
 socket.on('cell-visited', data => map.mark_visited(data))
@@ -972,7 +977,11 @@ function create_market_order_row(good_tag, amount, sell_price, buy_price) {
 }
 
 function update_market(data) {
-    
+    console.log('update market')
+    console.log(data)
+
+    market_div.innerHTML = ''
+
     for (let item of data) {
         console.log(item)
         let sell_price = '?'

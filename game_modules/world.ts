@@ -5,7 +5,7 @@ import {affix_tag, IMPACT_SIZE, IMPACT_TYPE, ITEM_MATERIAL, SHAFT_LEGTH, WeaponC
 
 import {EntityManager} from './manager_classes/entity_manager'
 import {CONSTS} from './static_data/world_constants_1';
-import {MarketOrder} from './market/market_order'
+import {MarketOrder, market_order_index} from './market/market_order'
 import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
 import { BattleReworked2 } from "./battle";
 import { ActionManager } from "./manager_classes/action_manager";
@@ -167,9 +167,10 @@ export class World {
         /// test person
         let test_person = await this.create_new_character(pool, 'Person', this.get_cell_id_by_x_y(0, 3), -1)
         test_person.change_hp(-90)
-        test_person.stash.inc(this.materials.MEAT, 10)
-        // test_person.savings
+        let MEAT = this.materials.MEAT
+        test_person.stash.inc(MEAT, 10)
         test_person.savings.set(5000 as money)
+        await test_person.buy(pool, MEAT, 100, 5 as money)
     }
 
 
@@ -259,7 +260,7 @@ export class World {
         this.entity_manager.add_item_order(order);
     }
 
-    get_order (order_id: number) {
+    get_order (order_id: market_order_index) {
         return this.entity_manager.get_order(order_id);
     }
 

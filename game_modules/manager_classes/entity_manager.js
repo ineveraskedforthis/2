@@ -109,7 +109,7 @@ class EntityManager {
         let target_cell = this.get_cell_by_id(cell_id);
         if (target_cell != undefined) {
             for (let order of this.orders) {
-                if (order.owner == character) {
+                if ((order != undefined) && (order.owner == character)) {
                     this.get_cell_by_id(order.cell_id)?.transfer_order(order.id, target_cell);
                     order.cell_id = cell_id;
                 }

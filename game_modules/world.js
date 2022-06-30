@@ -102,9 +102,10 @@ class World {
         /// test person
         let test_person = await this.create_new_character(pool, 'Person', this.get_cell_id_by_x_y(0, 3), -1);
         test_person.change_hp(-90);
-        test_person.stash.inc(this.materials.MEAT, 10);
-        // test_person.savings
+        let MEAT = this.materials.MEAT;
+        test_person.stash.inc(MEAT, 10);
         test_person.savings.set(5000);
+        await test_person.buy(pool, MEAT, 100, 5);
     }
     async load(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);
