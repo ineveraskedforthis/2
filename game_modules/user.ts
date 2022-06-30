@@ -54,11 +54,15 @@ export class User {
     }
 
     get_character() {
+        let real_user = this.world.user_manager.get_user(this.id)
+        if (real_user != undefined) {
+            return this.world.get_char_from_id(real_user.char_id)
+        }
         return this.world.get_char_from_id(this.char_id)
     }
 
     async get_new_char(pool: any) {
-        console.log('user ' + this.id + ' recieves a new character')
+        console.log('user ' + this.id + ' receives a new character')
 
         let old_character = this.get_character()
         if (old_character != undefined) {
@@ -68,13 +72,10 @@ export class User {
         this.char_id = character.id
         character.user_id = this.id;
         
-        // console.log(this.id)
-        // console.log(this.world.user_manager.users)
         if ((this.world.user_manager.get_user(this.id)) != undefined) {
             this.world.user_manager.get_user(this.id).char_id = character.id
         }
 
-        console.log()
 
         character.add_explored(1);
         await this.save_to_db(pool);

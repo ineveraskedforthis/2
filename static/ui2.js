@@ -830,7 +830,7 @@ socket.on('log-message', msg => new_log_message(msg));
 socket.on('new-message', msg => new_message(msg));
 
 socket.on('map-pos', msg => {
-    let location = map.set_curr_pos(msg.x, msg.y);
+    let location = map.set_curr_pos(msg.x, msg.y, msg.teleport_flag);
     change_bg(location);
 });
 socket.on('explore', msg => {map.explore(msg)});

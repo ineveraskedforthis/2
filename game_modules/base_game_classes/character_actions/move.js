@@ -42,6 +42,7 @@ exports.move = {
         if (char.is_player()) {
             let user = char.get_user();
             if (user.socket != undefined) {
+                data.teleport_flag = false;
                 user.socket.emit('map-pos', data);
                 char.update_visited();
                 char.send_status_update();

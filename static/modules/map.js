@@ -257,7 +257,13 @@ export class Map {
     }
 
     send_cell_action(action) {
-        if ((action == 'move') && (this.check_move(this.selected[0] - this.curr_pos[0], this.selected[1] - this.curr_pos[1]))) {
+        console.log('selected')
+        console.log(this.selected)
+        console.log('current')
+        console.log(this.curr_pos)
+        let adj_flag = this.check_move(this.selected[0] - this.curr_pos[0], this.selected[1] - this.curr_pos[1])
+        console.log(adj_flag)
+        if ((action == 'move') && (adj_flag)) {
             this.move_target = this.selected
             this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
         } else if ((this.selected[0] == this.curr_pos[0]) && (this.selected[1] == this.curr_pos[1])) {
@@ -660,14 +666,18 @@ export class Map {
         return ((v1[0] - v2[0]) * (v1[0] - v2[0]) + (v1[1] - v2[1]) * (v1[1] - v2[1])) /10000
     }
 
-    set_curr_pos(i, j) {
+    set_curr_pos(i, j, teleport_flag) {
         let tmp0 = this.curr_pos[0]
         let tmp1 = this.curr_pos[1]
         this.curr_pos = [i, j];
         this.curr_territory = get_territory_tag(i, j);
-        if ((tmp0 != 0) || (tmp1 != 0)) {
-            this.send_cell_action('continue_move')
+        
+        if (!teleport_flag) {
+            if ((tmp0 != 0) || (tmp1 != 0)) {
+                this.send_cell_action('continue_move')
+            }
         }
+        
         // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];
     }

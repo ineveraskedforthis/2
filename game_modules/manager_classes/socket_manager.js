@@ -237,15 +237,12 @@ class SocketManager {
         // this.send_tactics_info(character);
         this.send_savings_update(character);
         this.send_skills_info(character);
-        this.send_map_pos_info(character);
+        this.send_map_pos_info(character, true);
         this.send_new_actions(character);
         this.send_item_market_update_to_character(character);
         this.send_explored(character);
         this.send_teacher_info(character);
         let user = character.get_user();
-        console.log(character.id);
-        console.log(character.user_id);
-        console.log(user.id);
         this.send_char_info(user);
         let cell = this.world.entity_manager.get_cell_by_id(character.cell_id);
         if (cell != undefined) {
@@ -289,12 +286,10 @@ class SocketManager {
     }
     // eslint-disable-next-line no-unused-vars
     async attack(user, data) {
-        console.log('attack');
+        console.log('attack random enemy');
         if (user.logged_in && !user.get_character().in_battle()) {
             let char = user.get_character();
             let res = await this.world.action_manager.start_action(action_manager_1.CharacterAction.ATTACK, char, undefined);
-            console.log(res);
-            console.log(8 /* CharacterActionResponce.NO_POTENTIAL_ENEMY */);
             if (res == 1 /* CharacterActionResponce.OK */) {
                 let battle_id = char.get_battle_id();
                 let battle = this.world.get_battle_from_id(battle_id);
@@ -521,10 +516,11 @@ class SocketManager {
             this.send_new_tactic_action(character, i);
         }
     }
-    send_map_pos_info(character) {
+    send_map_pos_info(character, teleport_flag) {
         let cell_id = character.cell_id;
         let pos = this.world.get_cell_x_y_by_id(cell_id);
-        this.send_to_character_user(character, 'map-pos', pos);
+        let data = { x: pos.x, y: pos.y, teleport_flag: teleport_flag };
+        this.send_to_character_user(character, 'map-pos', data);
     }
     send_skills_info(character) {
         this.send_to_character_user(character, 'skills', character.skills);
