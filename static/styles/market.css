@@ -42,7 +42,7 @@
     width: 100%;
     overflow: auto;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
 }
 
 #market > .market_body > .goods_market > .goods_list {
@@ -86,9 +86,10 @@
 }
 
 #market > .market_body > .goods_market > .market_control {
-    width: 39%;
-    height: 95%;
-    border: #590000 1px solid;
+    height: 20px;
+    /* width: 39%; */
+    /* height: 95%; */
+    /* border: #590000 1px solid; */
 }
 
 #market > .market_body > .goods_market > .market_control > .header {

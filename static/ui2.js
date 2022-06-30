@@ -1034,6 +1034,7 @@ function update_tags(msg) {
 
      
     let inventory_div = document.getElementById('goods_stash')
+    let material_select = document.getElementById('create_order_material')
     
     stash_tag_to_id = msg
     console.log(stash_tag_to_id)
@@ -1071,6 +1072,12 @@ function update_tags(msg) {
             }
 
             inventory_div.appendChild(div_cell)
+
+            let option = document.createElement('option')
+            option.value = msg[tag]
+            option.innerHTML = tag
+            material_select.appendChild(option)
+
         }
     }
 
