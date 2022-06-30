@@ -10,7 +10,7 @@ import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { privateEncrypt } from "crypto";
 import { Cell } from "../cell";
 import { isNumberObject } from "util/types";
-
+import { MarketOrder, market_order_index } from "../market/market_order.js";
 
 interface UserData {
     socket: any,
@@ -91,6 +91,7 @@ export class SocketManager {
             socket.on('clear_orders', async () => this.clear_orders(user));
             socket.on('sell-item', async (msg: any) => this.sell_item(user, msg));
             socket.on('buyout', async (msg: any) => this.buyout(user, msg));
+            socket.on('execute-order', async (msg: any) => this.execute_order(user, msg.amount, msg.order))
             socket.on('cfood', async () => this.craft_food(user));
             socket.on('mspear', async () => this.craft_spear(user))
             // socket.on('cclothes', async () => this.craft_clothes(user));
@@ -408,6 +409,47 @@ export class SocketManager {
             char.clear_orders();
             this.send_savings_update(char);
             this.send_char_info(user);
+        }
+    }
+
+    async execute_order(user: User, amount: number, order_id: market_order_index) {
+        if (user.logged_in) {
+            let character = user.get_character()
+            let cell = character.get_cell()
+            if (cell == undefined) {
+                return
+            }
+
+            console.log(amount)
+            console.log(order_id)
+
+            console.log(cell.orders)
+            console.log(order_id)
+            if (cell.orders.has(order_id)) {
+                let order = this.world.get_order(order_id)
+                let responce = 'ok'
+                if (order.typ == 'buy') {
+                    responce = await cell.execute_buy_order(this.pool, order_id, amount, character)
+                    this.send_savings_update(character)
+                    let own = order.owner
+                    if (own != undefined) {
+                        this.send_stash_update_to_character(own)
+                    }
+                }
+                if (order.typ == 'sell') {
+                    responce = await cell.execute_sell_order(this.pool, order_id, amount, character)
+                    this.send_stash_update_to_character(character)
+                    let own = order.owner
+                    if (own != undefined) {
+                        this.send_savings_update(own)                        
+                    }
+                }
+                this.send_market_info(cell)
+
+                user.socket.emit('alert', responce)
+            } else {
+                user.socket.emit('alert', 'Selected order does not exists')
+            }
         }
     }
 
@@ -805,7 +847,7 @@ export class SocketManager {
     }
 
     update_market_info(market: Cell) {
-        console.log('sending market orders to client');
+        // console.log('sending market orders to client');
         let responce = this.prepare_market_orders(market)     
 
         for (let i of this.sockets) {
@@ -848,9 +890,9 @@ export class SocketManager {
     }
 
     send_market_info(market: Cell) {
-        console.log('sending market orders to client 2');
+        // console.log('sending market orders to client 2');
         let responce = this.prepare_market_orders(market)
-        console.log(responce);
+        // console.log(responce);
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
@@ -879,8 +921,8 @@ export class SocketManager {
         let user = this.world.user_manager.get_user_from_character(character);
         if (user != undefined) {
             let data = this.prepare_market_orders(market)
-        console.log('sending market orders to characters');
-        console.log(data);
+        // console.log('sending market orders to characters');
+        // console.log(data);
         this.send_to_character_user(character, 'market-data', data)
         }
     }

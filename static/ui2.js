@@ -929,17 +929,25 @@ function select_character(id) {
 
 let market_div = document.querySelector('.goods_list')
 
-function create_market_order_row(good_tag, amount, sell_price, buy_price) {
+function send_execute_order_request(order_id, amount) {
+    socket.emit('execute-order', {amount: amount, order: order_id})
+}
+
+function create_market_order_row(good_tag, amount, sell_price, buy_price, dummy_flag, order_id) {
     let div_cell = document.createElement('div');
     div_cell.classList.add('goods_type');
-    div_cell.classList.add(good_tag);
+    
 
-    {
-        let div_image = document.createElement('div');
-        div_image.classList.add('goods_icon');
-        div_image.style = "background: no-repeat center/100% url(/static/img/stash_" + good_tag + ".png);"
-        div_cell.appendChild(div_image)
+    if (!dummy_flag) {
+        div_cell.classList.add(good_tag);
+        {
+            let div_image = document.createElement('div');
+            div_image.classList.add('goods_icon');
+            div_image.style = "background: no-repeat center/100% url(/static/img/stash_" + good_tag + ".png);"
+            div_cell.appendChild(div_image)
+        }
     }
+    
 
     {
         let div_text = document.createElement('div');
@@ -969,6 +977,17 @@ function create_market_order_row(good_tag, amount, sell_price, buy_price) {
         div_cell.appendChild(div);
     }
 
+    if (!dummy_flag) {
+        {
+            let div = document.createElement('div');
+            div.innerHTML = 'Buy/Sell 1';
+            div.classList.add('market_button');
+            div_cell.appendChild(div);
+
+            ((order_id, button) => button.onclick = () => send_execute_order_request(order_id, 1))(order_id, div)
+        }
+    }
+
     // ((good_tag) => div_cell.onclick = () => {
     //     goods_market.select(good_tag)
     // })(good_tag)
@@ -982,6 +1001,8 @@ function update_market(data) {
 
     market_div.innerHTML = ''
 
+    create_market_order_row('Item type', 'Amount', 'Sell price', 'Buy_price', true)
+
     for (let item of data) {
         console.log(item)
         let sell_price = '?'
@@ -989,7 +1010,7 @@ function update_market(data) {
         if (item.typ == 'sell') {sell_price = item.price}
         if (item.typ == 'buy') {buy_price = item.price}
         let tag = stash_id_to_tag[item.tag]
-        create_market_order_row(tag, item.amount, sell_price, buy_price)
+        create_market_order_row(tag, item.amount, sell_price, buy_price, false, item.id)
     } 
 }
         // tmp.typ = this.typ;

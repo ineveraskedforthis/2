@@ -173,6 +173,12 @@ export class Cell {
         let order_owner = order.owner
 
         if ((order_owner != undefined) && (order.amount >= amount)){
+            
+
+            if (buyer.savings.get() < amount * order.price) {
+                return 'not_enough_money'
+            }
+            
             order.amount -= amount;
             order_owner.transfer(buyer.stash, order.tag, amount);
             buyer.savings.transfer(order_owner.trade_savings, amount * order.price as money);
@@ -181,17 +187,23 @@ export class Cell {
             order_owner.changed = true;
 
             await order.save_to_db(pool);
-            return amount * order.price;
+
+            return 'ok'
         }
         
-        return 0
+        return 'invalid_order'
     }
 
     async execute_buy_order(pool: any, order_index:market_order_index, amount: number, seller: CharacterGenericPart) {
         let order = this.world.entity_manager.get_order(order_index)
         let order_owner = order.owner
         
+
         if ((order_owner != undefined) && (order.amount >= amount)) {
+            
+            if (seller.stash.get(order.tag) < amount) {
+                return 'not_enough_items_in_stash'
+            }
 
             order.amount -= amount;
             seller.stash.transfer(order_owner.trade_stash, order.tag, amount);
@@ -201,10 +213,10 @@ export class Cell {
             order_owner.changed = true;
 
             await order.save_to_db(pool);
-            return amount * order.price;
+            return 'ok'
         }
         
-        return 0
+        return 'invalid_order'
     }
 
     async new_order(pool: any, typ: 'sell'|'buy', tag:material_index, amount:number, price:money, agent: CharacterGenericPart) {

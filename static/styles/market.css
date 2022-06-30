@@ -131,16 +131,16 @@
     background-color: rgba(0, 255, 0, 0.10);
 }
 
-.control_panel > .button {
+.market_button {
     background-color: rgba(80, 21, 11, 0.123);
 }
 
-.control_panel > .button:hover {
-    background-color: rgba(148, 156, 36, 0.425);
+.market_button:hover {
+    background-color: rgba(217, 228, 53, 0.425);
 }
 
-.control_panel > .button:active {
-    background-color: rgba(145, 148, 102, 0.671);
+.market_button:active {
+    background-color: rgba(237, 254, 1, 0.928);
 }
 
 .trade_amount {

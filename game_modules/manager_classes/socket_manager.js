@@ -61,6 +61,7 @@ class SocketManager {
             socket.on('clear_orders', async () => this.clear_orders(user));
             socket.on('sell-item', async (msg) => this.sell_item(user, msg));
             socket.on('buyout', async (msg) => this.buyout(user, msg));
+            socket.on('execute-order', async (msg) => this.execute_order(user, msg.amount, msg.order));
             socket.on('cfood', async () => this.craft_food(user));
             socket.on('mspear', async () => this.craft_spear(user));
             // socket.on('cclothes', async () => this.craft_clothes(user));
@@ -345,6 +346,44 @@ class SocketManager {
             char.clear_orders();
             this.send_savings_update(char);
             this.send_char_info(user);
+        }
+    }
+    async execute_order(user, amount, order_id) {
+        if (user.logged_in) {
+            let character = user.get_character();
+            let cell = character.get_cell();
+            if (cell == undefined) {
+                return;
+            }
+            console.log(amount);
+            console.log(order_id);
+            console.log(cell.orders);
+            console.log(order_id);
+            if (cell.orders.has(order_id)) {
+                let order = this.world.get_order(order_id);
+                let responce = 'ok';
+                if (order.typ == 'buy') {
+                    responce = await cell.execute_buy_order(this.pool, order_id, amount, character);
+                    this.send_savings_update(character);
+                    let own = order.owner;
+                    if (own != undefined) {
+                        this.send_stash_update_to_character(own);
+                    }
+                }
+                if (order.typ == 'sell') {
+                    responce = await cell.execute_sell_order(this.pool, order_id, amount, character);
+                    this.send_stash_update_to_character(character);
+                    let own = order.owner;
+                    if (own != undefined) {
+                        this.send_savings_update(own);
+                    }
+                }
+                this.send_market_info(cell);
+                user.socket.emit('alert', responce);
+            }
+            else {
+                user.socket.emit('alert', 'Selected order does not exists');
+            }
         }
     }
     async buy(user, msg) {
