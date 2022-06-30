@@ -286,12 +286,14 @@ export class SocketManager {
         this.send_explored(character);
         this.send_teacher_info(character);
         let user = character.get_user();
+        
 
         this.send_char_info(user);
 
         let cell = this.world.entity_manager.get_cell_by_id(character.cell_id)
         if (cell != undefined) {
             this.send_cell_updates(cell)
+            this.send_market_info_character(cell, character)
         }
         
 

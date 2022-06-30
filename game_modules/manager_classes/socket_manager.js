@@ -247,6 +247,7 @@ class SocketManager {
         let cell = this.world.entity_manager.get_cell_by_id(character.cell_id);
         if (cell != undefined) {
             this.send_cell_updates(cell);
+            this.send_market_info_character(cell, character);
         }
         for (let i = 0; i < character.misc.explored.length; i++) {
             if (character.misc.explored[i]) {
