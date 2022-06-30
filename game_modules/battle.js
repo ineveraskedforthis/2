@@ -5,8 +5,8 @@ const stash_1 = require("./base_game_classes/stash");
 var common = require("./common.js");
 var { constants } = require("./static_data/constants.js");
 const geom_1 = require("./geom");
-var Savings = require("./base_game_classes/savings.js");
 const battle_ai_1 = require("./battle_ai");
+const savings_1 = require("./base_game_classes/savings");
 class UnitsHeap {
     constructor() {
         this.data = [];
@@ -165,7 +165,7 @@ class BattleReworked2 {
         this.heap = new UnitsHeap();
         this.world = world;
         this.id = -1;
-        this.savings = new Savings();
+        this.savings = new savings_1.Savings();
         this.stash = new stash_1.Stash();
         this.changed = false;
         this.waiting_for_input = false;

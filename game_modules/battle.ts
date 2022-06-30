@@ -5,12 +5,13 @@ var common = require("./common.js");
 var {constants} = require("./static_data/constants.js");
 
 import {geom} from './geom'
-var Savings = require("./base_game_classes/savings.js");
+
 import {BattleAI} from './battle_ai'
 import type {CharacterGenericPart} from './base_game_classes/character_generic_part'
 import { World } from "./world";
 import { ITEM_MATERIAL } from "./static_data/item_tags";
 import { material_index } from "./manager_classes/materials_manager";
+import { Savings } from "./base_game_classes/savings";
 
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}

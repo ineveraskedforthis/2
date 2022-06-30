@@ -104,6 +104,7 @@ class World {
         test_person.change_hp(-90);
         test_person.stash.inc(this.materials.MEAT, 10);
         // test_person.savings
+        test_person.savings.set(5000);
     }
     async load(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);

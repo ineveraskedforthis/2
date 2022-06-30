@@ -15,6 +15,7 @@ import { Cell } from "./cell";
 import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
 import { MaterialsManager, material_index } from "./manager_classes/materials_manager";
+import { money } from "./base_game_classes/savings";
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -168,6 +169,7 @@ export class World {
         test_person.change_hp(-90)
         test_person.stash.inc(this.materials.MEAT, 10)
         // test_person.savings
+        test_person.savings.set(5000 as money)
     }
 
 
