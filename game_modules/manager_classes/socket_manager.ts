@@ -11,6 +11,7 @@ import { privateEncrypt } from "crypto";
 import { Cell } from "../cell";
 import { isNumberObject } from "util/types";
 import { MarketOrder, market_order_index } from "../market/market_order.js";
+import { material_index } from "./materials_manager";
 
 interface UserData {
     socket: any,
@@ -444,6 +445,7 @@ export class SocketManager {
                         this.send_savings_update(own)                        
                     }
                 }
+                
                 this.send_market_info(cell)
 
                 user.socket.emit('alert', responce)
@@ -454,28 +456,107 @@ export class SocketManager {
     }
 
     async buy(user: User, msg: any) {
-        var flag = common.validate_buy_data(this.world, msg);
-        if (isNaN(msg.max_price) || isNaN(msg.money) || isNaN(msg.amount)) {
+        console.log('buy')
+        console.log(msg)
+        if (isNaN(msg.price)) {
+            user.socket.emit('alert', 'invalid_price')
             return
         }
-        if ((user.logged_in) && flag) {
+        msg.price = Math.floor(msg.price)
+        if (msg.price < 0) {
+            user.socket.emit('alert', 'invalid_price')
+        }
+        
+
+        if (isNaN(msg.amount)) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+        msg.amount = Math.floor(msg.amount)
+        if (msg.amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+
+
+        if (isNaN(msg.material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+        msg.material = Math.floor(msg.material)
+        if (!this.world.materials_manager.validate_material(msg.material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+
+
+        if ((user.logged_in)) {
             let char = user.get_character();
-            // char.buy(msg.tag, msg.amount, msg.money, msg.max_price);
+            let responce = await char.buy(this.pool, msg.material as material_index, msg.amount, msg.price)
+            if (responce != 'ok') {
+                user.socket.emit('alert', responce)
+                return
+            }
             this.send_savings_update(char);
             this.send_stash_update_to_character(char);
+            let cell = char.get_cell()
+            if (cell != undefined) {
+                this.send_market_info(cell)
+            }
         }
     }
 
     async sell(user: User, msg: any) {
-        var flag = common.validate_sell_data(this.world, msg);
-        if (isNaN(msg.amount) || isNaN(msg.price)) {
+        console.log('sell')
+        console.log(msg)
+        if (isNaN(msg.price)) {
+            user.socket.emit('alert', 'invalid_price')
             return
         }
-        if ((user.logged_in) && flag) {
+        msg.price = Math.floor(msg.price)
+        if (msg.price < 0) {
+            user.socket.emit('alert', 'invalid_price')
+            return
+        }
+        
+
+        if (isNaN(msg.amount)) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+        msg.amount = Math.floor(msg.amount)
+        if (msg.amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+
+
+        if (isNaN(msg.material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+        msg.material = Math.floor(msg.material)
+        if (!this.world.materials_manager.validate_material(msg.material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+
+
+        if ((user.logged_in)) {
             let char = user.get_character();
-            // char.sell( msg.tag, msg.amount, msg.price);
+            let responce = await char.sell(this.pool, msg.material as material_index, msg.amount, msg.price)
+            if (responce != 'ok') {
+                user.socket.emit('alert', responce)
+                return
+            }
+
             this.send_savings_update(char);
             this.send_stash_update_to_character(char);
+            let cell = char.get_cell()
+            if (cell != undefined) {
+                this.send_market_info(cell)
+            }
+            user.socket.emit('alert', responce)
         }
     }
 
@@ -760,6 +841,7 @@ export class SocketManager {
         let user = this.world.user_manager.get_user_from_character(character);
         if (user != undefined) {
             this.send_to_user(user, 'savings', character.savings.get());
+            this.send_to_user(user, 'savings-trade', character.trade_savings.get());
         }        
     }
 

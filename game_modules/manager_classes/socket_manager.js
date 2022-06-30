@@ -387,27 +387,93 @@ class SocketManager {
         }
     }
     async buy(user, msg) {
-        var flag = common.validate_buy_data(this.world, msg);
-        if (isNaN(msg.max_price) || isNaN(msg.money) || isNaN(msg.amount)) {
+        console.log('buy');
+        console.log(msg);
+        if (isNaN(msg.price)) {
+            user.socket.emit('alert', 'invalid_price');
             return;
         }
-        if ((user.logged_in) && flag) {
+        msg.price = Math.floor(msg.price);
+        if (msg.price < 0) {
+            user.socket.emit('alert', 'invalid_price');
+        }
+        if (isNaN(msg.amount)) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        msg.amount = Math.floor(msg.amount);
+        if (msg.amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        if (isNaN(msg.material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        msg.material = Math.floor(msg.material);
+        if (!this.world.materials_manager.validate_material(msg.material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        if ((user.logged_in)) {
             let char = user.get_character();
-            // char.buy(msg.tag, msg.amount, msg.money, msg.max_price);
+            let responce = await char.buy(this.pool, msg.material, msg.amount, msg.price);
+            if (responce != 'ok') {
+                user.socket.emit('alert', responce);
+                return;
+            }
             this.send_savings_update(char);
             this.send_stash_update_to_character(char);
+            let cell = char.get_cell();
+            if (cell != undefined) {
+                this.send_market_info(cell);
+            }
         }
     }
     async sell(user, msg) {
-        var flag = common.validate_sell_data(this.world, msg);
-        if (isNaN(msg.amount) || isNaN(msg.price)) {
+        console.log('sell');
+        console.log(msg);
+        if (isNaN(msg.price)) {
+            user.socket.emit('alert', 'invalid_price');
             return;
         }
-        if ((user.logged_in) && flag) {
+        msg.price = Math.floor(msg.price);
+        if (msg.price < 0) {
+            user.socket.emit('alert', 'invalid_price');
+            return;
+        }
+        if (isNaN(msg.amount)) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        msg.amount = Math.floor(msg.amount);
+        if (msg.amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        if (isNaN(msg.material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        msg.material = Math.floor(msg.material);
+        if (!this.world.materials_manager.validate_material(msg.material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        if ((user.logged_in)) {
             let char = user.get_character();
-            // char.sell( msg.tag, msg.amount, msg.price);
+            let responce = await char.sell(this.pool, msg.material, msg.amount, msg.price);
+            if (responce != 'ok') {
+                user.socket.emit('alert', responce);
+                return;
+            }
             this.send_savings_update(char);
             this.send_stash_update_to_character(char);
+            let cell = char.get_cell();
+            if (cell != undefined) {
+                this.send_market_info(cell);
+            }
+            user.socket.emit('alert', responce);
         }
     }
     // async up_skill(user, msg) {
@@ -666,6 +732,7 @@ class SocketManager {
         let user = this.world.user_manager.get_user_from_character(character);
         if (user != undefined) {
             this.send_to_user(user, 'savings', character.savings.get());
+            this.send_to_user(user, 'savings-trade', character.trade_savings.get());
         }
     }
     send_status_update(character) {
@@ -743,7 +810,7 @@ class SocketManager {
         return responce;
     }
     update_market_info(market) {
-        console.log('sending market orders to client');
+        // console.log('sending market orders to client');
         let responce = this.prepare_market_orders(market);
         for (let i of this.sockets) {
             if (i.current_user != null) {
@@ -784,9 +851,9 @@ class SocketManager {
         }
     }
     send_market_info(market) {
-        console.log('sending market orders to client 2');
+        // console.log('sending market orders to client 2');
         let responce = this.prepare_market_orders(market);
-        console.log(responce);
+        // console.log(responce);
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
@@ -814,8 +881,8 @@ class SocketManager {
         let user = this.world.user_manager.get_user_from_character(character);
         if (user != undefined) {
             let data = this.prepare_market_orders(market);
-            console.log('sending market orders to characters');
-            console.log(data);
+            // console.log('sending market orders to characters');
+            // console.log(data);
             this.send_to_character_user(character, 'market-data', data);
         }
     }

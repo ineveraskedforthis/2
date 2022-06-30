@@ -125,8 +125,8 @@ class Cell {
                 return 'not_enough_items_in_stash';
             }
             order.amount -= amount;
-            seller.stash.transfer(order_owner.trade_stash, order.tag, amount);
-            order_owner.savings.transfer(seller.savings, amount * order.price);
+            seller.stash.transfer(order_owner.stash, order.tag, amount);
+            order_owner.trade_savings.transfer(seller.savings, amount * order.price);
             seller.changed = true;
             order_owner.changed = true;
             await order.save_to_db(pool);

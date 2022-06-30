@@ -178,7 +178,7 @@ export class Cell {
             if (buyer.savings.get() < amount * order.price) {
                 return 'not_enough_money'
             }
-            
+
             order.amount -= amount;
             order_owner.transfer(buyer.stash, order.tag, amount);
             buyer.savings.transfer(order_owner.trade_savings, amount * order.price as money);
@@ -206,8 +206,8 @@ export class Cell {
             }
 
             order.amount -= amount;
-            seller.stash.transfer(order_owner.trade_stash, order.tag, amount);
-            order_owner.savings.transfer(seller.savings, amount * order.price as money);
+            seller.stash.transfer(order_owner.stash, order.tag, amount);
+            order_owner.trade_savings.transfer(seller.savings, amount * order.price as money);
 
             seller.changed = true;
             order_owner.changed = true;

@@ -381,10 +381,20 @@ class CharacterGenericPart {
     }
     //market interactions
     async buy(pool, tag, amount, price) {
-        let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id);
+        if (this.savings.get() > amount * price) {
+            this.savings.transfer(this.trade_savings, amount * price);
+            let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id);
+            return 'ok';
+        }
+        return 'not_enough_money';
     }
     async sell(pool, tag, amount, price) {
+        if (this.stash.get(tag) < amount) {
+            return 'not_enough_items';
+        }
+        this.stash.transfer(this.trade_stash, tag, amount);
         let order = await this.world.entity_manager.generate_order(pool, 'sell', tag, this, amount, price, this.cell_id);
+        return 'ok';
     }
     sell_item(index, buyout_price, starting_price) {
         // let cell = this.get_cell();

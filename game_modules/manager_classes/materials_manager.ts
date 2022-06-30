@@ -44,4 +44,11 @@ export class MaterialsManager{
     get_material_with_tag(tag:string) {
         return this.materials[this.mat_dict[tag]]
     }
+
+    validate_material(x: number) {
+        if (x < this.new_material_id) {
+            return true
+        }
+        return false
+    }
 }

@@ -762,7 +762,10 @@ function end_battle() {
 
 //stash update
 function update_savings(msg) {
-    document.getElementById('savings').innerHTML = 'Savings: ' + msg
+    document.getElementById('savings').innerHTML = 'Money: ' + msg
+}
+function update_savings_trade(msg) {
+    document.getElementById('savings_trade').innerHTML = 'Money reserved in trade: ' + msg
 }
 
 function update_stash(data) {
@@ -819,11 +822,12 @@ socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 socket.on('hp', msg => char_info_monster.update_status(msg));
 socket.on('exp', msg => char_info_monster.update_exp(msg));
 socket.on('savings', msg => update_savings(msg));
+socket.on('savings-trade', msg => update_savings_trade(msg));
 socket.on('status', msg => char_info_monster.update_status(msg));
 socket.on('name', msg => char_info_monster.update_name(msg));
 
 socket.on('char-info-detailed', msg => character_screen.update(msg))
-socket.on('stash-update', msg => {console.log('stash-update'); goods_market.update_inventory(msg); update_stash(msg)});
+socket.on('stash-update', msg => {console.log('stash-update'); update_stash(msg)});
 socket.on('equip-update', msg => {character_screen.update_equip(msg); update_equip(msg)});
 
 socket.on('log-message', msg => new_log_message(msg));
@@ -1098,6 +1102,21 @@ function update_tags(msg) {
         update_market(test_market_data)
     }
 }
+
+
+{
+    let order_button = document.getElementById('create_order_button')
+    order_button.onclick = (() => {
+        let material = document.getElementById('create_order_material').value
+        let type = document.getElementById('create_order_type').value
+        let amount = document.getElementById('create_order_amount').value
+        let price = document.getElementById('create_order_price').value
+
+        socket.emit(type, {material: Number(material), amount: Number(amount), price: Number(price)})
+        // console.log(material, type, amount, price)
+    })
+}
+
 
 function change_bg(tag) {
     let div = document.getElementById('actual_game_scene');

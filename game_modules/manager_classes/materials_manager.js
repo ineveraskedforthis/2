@@ -33,5 +33,11 @@ class MaterialsManager {
     get_material_with_tag(tag) {
         return this.materials[this.mat_dict[tag]];
     }
+    validate_material(x) {
+        if (x < this.new_material_id) {
+            return true;
+        }
+        return false;
+    }
 }
 exports.MaterialsManager = MaterialsManager;

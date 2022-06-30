@@ -535,11 +535,21 @@ export class CharacterGenericPart {
 
 
     async buy(pool: any, tag:material_index, amount: number, price: money) {
-        let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id)
+        if (this.savings.get() > amount * price) {
+            this.savings.transfer(this.trade_savings, amount * price as money)
+            let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id)
+            return 'ok'
+        }
+        return 'not_enough_money'        
     }
 
     async sell(pool:any, tag:material_index, amount: number, price: money) {
+        if (this.stash.get(tag) < amount) {
+            return 'not_enough_items'
+        }
+        this.stash.transfer(this.trade_stash, tag, amount)
         let order = await this.world.entity_manager.generate_order(pool, 'sell', tag, this, amount, price, this.cell_id)
+        return 'ok'
     }
 
     sell_item(index: number, buyout_price: number, starting_price: number) {
@@ -1006,9 +1016,15 @@ export class CharacterGenericPart {
         this.flags = data.flags;
 
         this.savings = new Savings();        
-        this.savings.load_from_json(data.savings);        
+        this.savings.load_from_json(data.savings);     
+        this.trade_savings = new Savings()
+        this.trade_savings.load_from_json(data.trade_savings)
+
         this.stash = new Stash();
         this.stash.load_from_json(data.stash);
+        this.trade_stash = new Stash()
+        this.trade_stash.load_from_json(data.trade_stash)
+
         this.equip = new Equip();
         this.equip.load_from_json(data.equip);        
     }
@@ -1049,7 +1065,9 @@ export class CharacterGenericPart {
             this.misc,
             this.flags,
             this.savings.get_json(), 
+            this.trade_savings.get_json(),
             this.stash.get_json(), 
+            this.trade_stash.get_json(),
             this.equip.get_json()]);
         return result.rows[0].id;
     }
@@ -1067,7 +1085,9 @@ export class CharacterGenericPart {
                 this.misc,
                 this.flags,
                 this.savings.get_json(),
+                this.trade_savings.get_json(),
                 this.stash.get_json(),
+                this.trade_stash.get_json(),
                 this.equip.get_json()]);
             this.changed = false;
         }

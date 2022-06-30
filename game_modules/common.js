@@ -78,14 +78,6 @@ module.exports =
         return 'ok';
     },
 
-    validate_buy_data: function (world, data) {
-        return (world.constants.TAGS.indexOf(data.tag) > -1) && (!isNaN(data.amount)) & (!isNaN(data.amount)) && (!isNaN(data.amount) || data.max_price == null);
-    },
-
-    validate_sell_data: function (world, data) {
-        return (world.constants.TAGS.indexOf(data.tag) > -1) && (!isNaN(data.amount)) && (!isNaN(data.price));
-    }, 
-
     flag_log: function(msg, flag) {
         if (flag) {
             console.log(msg)
