@@ -161,11 +161,12 @@ class SocketManager {
     async login_with_session(user, session) {
         console.log('attempt to login with session');
         if (session in this.sessions) {
-            user.init_by_user(this.sessions[session]);
+            user.init_by_user_id(this.sessions[session]);
             this.world.user_manager.get_user(user.id).socket = user.socket;
             let user_manager = this.world.user_manager;
             user_manager.new_user_online(user);
             user.socket.emit('log-message', 'hello ' + user.login);
+            this.world.user_manager.get_user(user.id).socket.emit('log-message', 'session hello ' + user.login);
             user.socket.emit('is-login-completed', 'ok');
             this.send_battle_data_to_user(user);
             this.send_all(user.get_character());
@@ -190,14 +191,14 @@ class SocketManager {
         user.socket.emit('is-login-completed', answer.login_prompt);
         if (answer.login_prompt == 'ok') {
             answer.user.set_socket(user.socket);
-            user.init_by_user(answer.user);
+            user.init_by_user_data(answer.user);
             user_manager.new_user_online(user);
             user.socket.emit('log-message', 'hello ' + data.login);
             this.send_battle_data_to_user(answer.user);
             this.send_all(user.get_character());
             let session = this.generate_session(20);
             user.socket.emit('session', session);
-            this.sessions[session] = user;
+            this.sessions[session] = user.id;
             console.log('user ' + data.login + ' logged in');
         }
     }
@@ -217,13 +218,13 @@ class SocketManager {
         user.socket.emit('is-reg-completed', answer.reg_prompt);
         if (answer.reg_prompt == 'ok') {
             answer.user.set_socket(user.socket);
-            user.init_by_user(answer.user);
+            user.init_by_user_data(answer.user);
             user_manager.new_user_online(user);
             user.socket.emit('log-message', 'hello ' + data.login);
             this.send_all(user.get_character());
             let session = this.generate_session(20);
             user.socket.emit('session', session);
-            this.sessions[session] = user;
+            this.sessions[session] = user.id;
             console.log('user ' + data.login + ' registered');
         }
     }
@@ -242,6 +243,9 @@ class SocketManager {
         this.send_explored(character);
         this.send_teacher_info(character);
         let user = character.get_user();
+        console.log(character.id);
+        console.log(character.user_id);
+        console.log(user.id);
         this.send_char_info(user);
         let cell = this.world.entity_manager.get_cell_by_id(character.cell_id);
         if (cell != undefined) {
@@ -257,11 +261,11 @@ class SocketManager {
                     let res1 = {};
                     res1[x + '_' + y] = data[x + '_' + y];
                     if (data[x + '_' + y] != undefined) {
-                        user.socket.emit('map-data-cells', res1);
+                        this.send_to_character_user(character, 'map-data-cells', res1);
                     }
                     if (this.world.constants.terrain[x] != undefined && this.world.constants.terrain[x][y] != undefined) {
                         let res2 = { x: x, y: y, ter: this.world.constants.terrain[x][y] };
-                        user.socket.emit('map-data-terrain', res2);
+                        this.send_to_character_user(character, 'map-data-terrain', res2);
                     }
                 }
             }

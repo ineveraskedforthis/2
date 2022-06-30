@@ -18,11 +18,19 @@ class User {
         await this.load_to_db(pool);
         return this.id;
     }
-    init_by_user(user) {
+    init_by_user_id(user_id) {
+        let user = this.world.user_manager.get_user(user_id);
         this.id = user.id;
         this.char_id = user.char_id;
         this.login = user.login;
         this.password_hash = user.password_hash;
+        this.logged_in = true;
+    }
+    init_by_user_data(user_data) {
+        this.id = user_data.id;
+        this.char_id = user_data.char_id;
+        this.login = user_data.login;
+        this.password_hash = user_data.password_hash;
         this.logged_in = true;
     }
     set_login(login) {
@@ -35,6 +43,7 @@ class User {
         return this.world.get_char_from_id(this.char_id);
     }
     async get_new_char(pool) {
+        console.log('user ' + this.id + ' recieves a new character');
         let old_character = this.get_character();
         if (old_character != undefined) {
             old_character.user_id = -1;
@@ -42,6 +51,12 @@ class User {
         let character = await this.world.create_new_character(pool, this.login, this.world.get_cell_id_by_x_y(0, 3), this.id);
         this.char_id = character.id;
         character.user_id = this.id;
+        // console.log(this.id)
+        // console.log(this.world.user_manager.users)
+        if ((this.world.user_manager.get_user(this.id)) != undefined) {
+            this.world.user_manager.get_user(this.id).char_id = character.id;
+        }
+        console.log();
         character.add_explored(1);
         await this.save_to_db(pool);
         console.log('NEW CHARACTER');

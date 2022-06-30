@@ -99,6 +99,10 @@ class World {
         port_chunk.set_influence(ith_colony, 100);
         living_area.set_influence(ith_colony, 50);
         living_area.set_influence(steppe_rats, 50);
+        /// test person
+        let test_person = await this.create_new_character(pool, 'Person', this.get_cell_id_by_x_y(0, 3), -1);
+        test_person.change_hp(-90);
+        test_person.stash.inc(this.materials.MEAT, 10);
     }
     async load(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);

@@ -310,8 +310,10 @@ class EntityManager {
         return battle;
     }
     async create_new_character(pool, name, cell_id, user_id) {
+        console.log('character ' + name + ' is created');
         let char = new character_generic_part_1.CharacterGenericPart(this.world);
         await char.init(pool, name, cell_id, user_id);
+        console.log('his id is ' + char.id);
         this.chars[char.id] = char;
         let cell = char.get_cell();
         cell?.enter(char);

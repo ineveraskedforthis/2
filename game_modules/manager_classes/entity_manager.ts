@@ -364,8 +364,12 @@ export class EntityManager {
     }
 
     async create_new_character(pool: any, name: string, cell_id: number, user_id: number) {
+        console.log('character ' + name + ' is created')
+        
         let char = new CharacterGenericPart(this.world);
         await char.init(pool, name, cell_id, user_id);
+        console.log('his id is ' + char.id)
+        
         this.chars[char.id] = char
         let cell = char.get_cell()
         cell?.enter(char)

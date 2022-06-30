@@ -162,6 +162,12 @@ export class World {
         living_area.set_influence(ith_colony, 50)
         living_area.set_influence(steppe_rats, 50)
 
+
+        /// test person
+        let test_person = await this.create_new_character(pool, 'Person', this.get_cell_id_by_x_y(0, 3), -1)
+        test_person.change_hp(-90)
+        test_person.stash.inc(this.materials.MEAT, 10)
+
     }
 
 
