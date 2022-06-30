@@ -420,12 +420,6 @@ export class SocketManager {
             if (cell == undefined) {
                 return
             }
-
-            console.log(amount)
-            console.log(order_id)
-
-            console.log(cell.orders)
-            console.log(order_id)
             if (cell.orders.has(order_id)) {
                 let order = this.world.get_order(order_id)
                 let responce = 'ok'
@@ -445,7 +439,7 @@ export class SocketManager {
                         this.send_savings_update(own)                        
                     }
                 }
-                
+
                 this.send_market_info(cell)
 
                 user.socket.emit('alert', responce)
@@ -972,9 +966,12 @@ export class SocketManager {
     }
 
     send_market_info(market: Cell) {
-        // console.log('sending market orders to client 2');
         let responce = this.prepare_market_orders(market)
-        // console.log(responce);
+        let list = Array.from(market.characters_list)
+        for (let item of list) {
+            let character = this.world.get_char_from_id(item)
+            this.send_to_character_user(character, 'market-data', responce)
+        }
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
@@ -1003,8 +1000,6 @@ export class SocketManager {
         let user = this.world.user_manager.get_user_from_character(character);
         if (user != undefined) {
             let data = this.prepare_market_orders(market)
-        // console.log('sending market orders to characters');
-        // console.log(data);
         this.send_to_character_user(character, 'market-data', data)
         }
     }

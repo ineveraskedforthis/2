@@ -851,9 +851,12 @@ class SocketManager {
         }
     }
     send_market_info(market) {
-        // console.log('sending market orders to client 2');
         let responce = this.prepare_market_orders(market);
-        // console.log(responce);
+        let list = Array.from(market.characters_list);
+        for (let item of list) {
+            let character = this.world.get_char_from_id(item);
+            this.send_to_character_user(character, 'market-data', responce);
+        }
         for (let i of this.sockets) {
             if (i.current_user != null) {
                 let char = i.current_user.character;
