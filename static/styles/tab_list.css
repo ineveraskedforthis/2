@@ -17,63 +17,63 @@
 
 
 .control_button {
-    background-image: url(/static/img/attack_button.png);
+    background-image: url(/static/img/tab_buttons/attack_button.png);
     background-position: center;
     background-repeat: no-repeat;
 }
 
 .control_button:hover {
-    background-image: url(/static/img/attack_button_hovered.png);
+    background-image: url(/static/img/tab_buttons/attack_button_hovered.png);
 }
 
 .control_button:active {
-    background-image: url(/static/img/attack_button_pressed.png);
+    background-image: url(/static/img/tab_buttons/attack_button_pressed.png);
 }
 
 .control_button.active {
-    background-image: url(/static/img/attack_button_pressed.png);
+    background-image: url(/static/img/tab_buttons/attack_button_pressed.png);
 }
 
 
 #character_button {
-    background-image: url(/static/img/character_button.png);
+    background-image: url(/static/img/tab_buttons/character_button.png);
 }
 #character_button:hover {
-    background-image: url(/static/img/character_button_hovered.png);
+    background-image: url(/static/img/tab_buttons/character_button_hovered.png);
 }
 #character_button:active {
-    background-image: url(/static/img/character_button_pressed.png);
+    background-image: url(/static/img/tab_buttons/character_button_pressed.png);
 }
 #character_button.active {
-    background-image: url(/static/img/character_button_pressed.png);
+    background-image: url(/static/img/tab_buttons/character_button_pressed.png);
 }
 
 
 #skilltree_button {
-    background-image: url(/static/img/skills_button.png);
+    background-image: url(/static/img/tab_buttons/skills_button.png);
 }
 #skilltree_button:hover {
-    background-image: url(/static/img/skills_button_hovered.png);
+    background-image: url(/static/img/tab_buttons/skills_button_hovered.png);
 }
 #skilltree_button:active {
-    background-image: url(/static/img/skills_button_pressed.png);
+    background-image: url(/static/img/tab_buttons/skills_button_pressed.png);
 }
 #skilltree_button.active {
-    background-image: url(/static/img/skills_button_pressed.png);
+    background-image: url(/static/img/tab_buttons/skills_button_pressed.png);
 }
 
 
 #market_button {
-    background-image: url(/static/img/auc_button.png);
+    background-image: url(/static/img/tab_buttons/auc_button.png);
 }
 #market_button:hover {
-    background-image: url(/static/img/auc_button_hovered.png);
+    background-image: url(/static/img/tab_buttons/auc_button_hovered.png);
 }
 #market_button:active {
-    background-image: url(/static/img/auc_button_pressed.png);
+    background-image: url(/static/img/tab_buttons/auc_button_pressed.png);
 }
 #market_button.active {
-    background-image: url(/static/img/auc_button_pressed.png);
+    background-image: url(/static/img/tab_buttons/auc_button_pressed.png);
 }
 
 .noselect {
