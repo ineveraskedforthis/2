@@ -503,6 +503,7 @@ class CharacterGenericPart {
                     result.total_damage += curr_damage;
                     this.change_hp(-curr_damage);
                     if (this.get_hp() == 0) {
+                        await this.world.entity_manager.remove_orders(pool, this);
                         result.flags.killing_strike = true;
                     }
                 }

@@ -247,6 +247,37 @@ class EntityManager {
         this.orders[order.id] = order;
         this.get_cell_by_id(order.cell_id)?.add_order(order.id);
     }
+    async remove_orders(pool, character) {
+        let temporary_list = [];
+        for (let order of this.orders) {
+            if (order != undefined) {
+                if (order.owner_id == character.id) {
+                    temporary_list.push(order.id);
+                }
+            }
+        }
+        for (let id of temporary_list) {
+            await this.remove_order(pool, id);
+        }
+        let cell = character.get_cell();
+        if (cell != undefined) {
+            this.world.socket_manager.update_market_info(cell);
+        }
+    }
+    async remove_order(pool, order_id) {
+        let order = this.orders[order_id];
+        let cell = this.get_cell_by_id(order.cell_id);
+        cell?.remove_order(order_id);
+        let character = order.owner;
+        if (order.typ == 'buy') {
+            character?.trade_savings.transfer(character.savings, order.amount * order.price);
+        }
+        if (order.typ == 'sell') {
+            character?.trade_stash.transfer(character.stash, order.tag, order.amount);
+        }
+        order.amount = 0;
+        await order.delete_from_db(pool);
+    }
     add_item_order(order) {
         this.item_orders[order.id] = order;
     }

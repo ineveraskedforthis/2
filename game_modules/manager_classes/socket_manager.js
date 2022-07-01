@@ -800,7 +800,9 @@ class SocketManager {
         let responce = [];
         for (let order_id of orders_array) {
             let order = this.world.get_order(order_id);
-            responce.push(order.get_json());
+            if (order.amount > 0) {
+                responce.push(order.get_json());
+            }
         }
         // console.log(responce)
         return responce;

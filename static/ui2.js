@@ -876,6 +876,9 @@ socket.on('cell-characters', data => {update_characters_list(data)})
 
 
 function attack_selected_character() {
+    if (globals.selected_character == undefined) {
+        return
+    }
     socket.emit('attack-character', globals.selected_character)
 }
 {
@@ -891,6 +894,8 @@ function update_characters_list(data) {
 
     list_div.innerHTML = ''
 
+    let flag_remove_selection = true
+
     for (let item of data) {
         let character_div = document.createElement('div')
         let character_name = document.createElement('div')
@@ -904,14 +909,24 @@ function update_characters_list(data) {
             select_character(id)
         })(item.id)
 
+        if (item.id == globals.selected_character) {
+            flag_remove_selection = true
+        }
+
         list_div.appendChild(character_div)
+    }
+
+    if (flag_remove_selection) {
+        globals.selected_character = undefined
     }
 }
 
 function select_character(id) {
     if (globals.selected_character != undefined) {
         let character_div = document.getElementById('ListCharacterId_' + globals.selected_character)
-        character_div.classList.remove('selected')
+        if (character_div != undefined) {
+            character_div.classList.remove('selected')
+        }        
     }
 
     globals.selected_character = id
