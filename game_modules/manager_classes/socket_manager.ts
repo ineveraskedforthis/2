@@ -407,7 +407,7 @@ export class SocketManager {
     async clear_orders(user: User) {
         if (user.logged_in) {
             let char = user.get_character();
-            char.clear_orders();
+            await char.clear_orders(this.pool);
             this.send_savings_update(char);
             this.send_char_info(user);
         }

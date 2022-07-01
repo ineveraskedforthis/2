@@ -198,9 +198,11 @@ class CharacterGenericPart {
     async status_check(pool) {
         if (this.status.hp <= 0) {
             this.status.hp = 0;
+            await this.world.entity_manager.remove_orders(pool, this);
             await this.world.kill(pool, this.id);
         }
         if (this.status.stress >= 100) {
+            await this.world.entity_manager.remove_orders(pool, this);
             await this.world.kill(pool, this.id);
         }
     }
@@ -402,16 +404,8 @@ class CharacterGenericPart {
         //     // cell.item_market.sell(this, index, buyout_price, starting_price);
         // }        
     }
-    clear_tag_orders(tag) {
-        // let cell = this.get_cell();
-        // if (cell.has_market()) {
-        //     // cell.market.clear_agent_orders(this, tag)
-        // }
-    }
-    clear_orders() {
-        for (var tag of this.world.get_stash_tags_list()) {
-            this.clear_tag_orders(tag);
-        }
+    async clear_orders(pool) {
+        await this.world.entity_manager.remove_orders(pool, this);
     }
     // network simplification functions
     send_skills_update() {

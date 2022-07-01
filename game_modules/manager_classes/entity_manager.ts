@@ -354,7 +354,7 @@ export class EntityManager {
         
         let character = this.chars[char_id];
         if ((character.get_hp() == 0) && (!character.deleted)) {
-            await character.clear_orders();
+            await character.clear_orders(pool);
             await character.set_flag('dead', true);
             let cell = this.get_cell_by_id(character.cell_id)
             cell?.exit(character)
