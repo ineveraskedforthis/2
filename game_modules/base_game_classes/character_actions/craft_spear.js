@@ -42,6 +42,7 @@ exports.craft_spear = {
                     char.send_skills_update();
                     char.changed = true;
                 }
+                char.world.socket_manager.send_to_character_user(char, 'alert', 'failed');
                 return 4 /* CharacterActionResponce.FAILED */;
             }
         }
