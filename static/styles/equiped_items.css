@@ -4,10 +4,7 @@
     flex-direction: column;
 }
 
-#equip_tab {
-    height: auto;
-    width: 400px;
-}
+
 
 .character_screen_frame{
     border: rgb(56, 143, 6) solid 1px;

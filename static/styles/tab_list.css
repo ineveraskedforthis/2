@@ -92,15 +92,15 @@
 }
 
 #skilltree_tab {
-    left: 8px;
-    top: 280px;
-    height: 485px;
+    left: 1000px;
+    top: 230px;
+    height: 390px;
     width: 290px;
 }
 
 #map_tab {
-    left: 440px;
-    top: 51%;
+    left: 280px;
+    top: 150px;
     width: 700px;
     height: 400px;
 }
@@ -112,23 +112,40 @@
     height: 542px;
 }
 
-#stash_tab {
-    top:0px;
+#local_characters_tab {
+    top: 150px;
+    left: 10px;
+    width: 250px;
+    height: 400px;
+    /* padding-top: 20px; */
+}
+
+
+#backpack_tab {
+    top: 5px;
+    left: 1350px;
+    height: 100px;
+    width: 400px;
+}
+
+#equip_tab {
+    top: 5px;
     height: auto;
-    width: auto;
+    left: 1000px;
+    width: 300px;
 }
 
 #craft_tab {
-    top: 200px;
+    top: 5px;
+    left: 830px;
     height:auto;
     width:auto;
 }
 
-#local_characters_tab {
-    top: 200px;
-    left: 200px;
-    width: 300px;
-    /* padding-top: 20px; */
+#stash_tab {
+    top: 5px;
+    height: auto;
+    width: auto;
 }
 
 .tab_label {
