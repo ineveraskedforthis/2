@@ -1,7 +1,7 @@
-import exp from "constants";
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
-import { money } from "../base_game_classes/savings";
+import { money, Savings } from "../base_game_classes/savings";
 import { EntityManager } from "../manager_classes/entity_manager";
+import { SocketManager } from "../manager_classes/socket_manager";
 import { Armour, ArmourConstructorArgument, Weapon, WeaponConstructorArgument } from "../static_data/item_tags";
 import { World } from "../world";
 
@@ -26,17 +26,24 @@ function nodb_mode_id():number|undefined {
     return undefined
 }
 
+function nodb_mode_check():boolean {
+    // @ts-ignore: Unreachable code error
+    return global.flag_nodb
+}
+
 enum AuctionResponce {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
     EMPTY_BACKPACK_SLOT = 'empty_backpack_slot',
-    OK = 'ok'
+    NO_SUCH_ORDER = 'no_such_order',
+    OK = 'ok',
+    NOT_ENOUGH_MONEY = 'not_enough_money'
 }
     
 
-namespace AuctionOrderManagement {
-    export async function build_weapon_order(pool: any, owner: CharacterGenericPart, item: Weapon, buyout_price: money, starting_price: money, end_time: number, market_id: auction_id) {
+export namespace AuctionOrderManagement {
+    export async function build_order(pool: any, owner: CharacterGenericPart, item: Weapon|Armour, buyout_price: money, starting_price: money, end_time: number, market_id: auction_id) {
         let order_id = await AuctionOrderManagement.insert_to_db( pool, 
-                                                            {meat: item.get_json(), type: 'weapon'},
+                                                            item,
                                                             owner.id,
                                                             buyout_price,
                                                             starting_price,
@@ -97,7 +104,7 @@ namespace AuctionOrderManagement {
     }
 }
 
-namespace AuctionManagement {
+export namespace AuctionManagement {
     export async function build(pool: any, cell_id: number): Promise<Auction> {
         let id = await AuctionManagement.insert_to_db(pool)
         let auction = new Auction(id, cell_id)
@@ -114,63 +121,91 @@ namespace AuctionManagement {
         return result.rows[0].id;
     }
 
-    export async function sell_armour(pool: any, seller: CharacterGenericPart, auction: Auction, backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
+    export async function sell(pool: any, seller: CharacterGenericPart, auction: Auction, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
         if (auction.cell_id != seller.cell_id) {
             return {responce: AuctionResponce.NOT_IN_THE_SAME_CELL}
         }
+
+        let item = null
+
+        switch(type){
+            case 'armour': item = seller.equip.data.backpack.armours[backpack_id];
+            case 'weapon': item = seller.equip.data.backpack.weapons[backpack_id]
+        }
         
-        let item = seller.equip.data.backpack.armours[backpack_id]
+
         if (item == undefined) {
             return {responce: AuctionResponce.EMPTY_BACKPACK_SLOT}
         }
 
+        let time = Date.now() + time_intervals[1]
 
+        let order = await AuctionOrderManagement.build_order(pool, seller, item, buyout_price, starting_price, time, auction.id)
+        auction.add_order(order) 
 
         return {responce: AuctionResponce.OK}
     }
+
+    export async function save(pool: any, market: Auction) {
+        if (nodb_mode_check()) {
+            return
+        }
+
+        if (market.changed) {
+            await common.send_query(pool, constants.update_market_items_query, [market.id, Array.from(market.orders.values()), market.cell_id]);
+        }
+    }
+
+    export async function load(pool: any, id: auction_id) {
+        if (nodb_mode_check()) {
+            return
+        }
+
+        let tmp = await common.send_query(pool, constants.select_market_items_by_id_query, [id]);
+        tmp = tmp.rows[0];
+        let auction = new Auction(id, tmp.cell_id)
+        auction.set_orders(new Set(tmp.orders))
+
+        return auction
+    }
+    
+    export function auction_to_orders_list(manager: EntityManager, market: Auction): OrderItem[] {
+        let tmp = []
+        for (let index of market.orders) {
+            let order = manager.get_item_order(index)
+            tmp.push(order)
+        }
+        return tmp
+    }
+
+    export function auction_to_orders_json_list(manager: EntityManager, market: Auction): OrderItemJson[] {
+                let tmp = []
+        for (let index of market.orders) {
+            let order = manager.get_item_order(index)
+            tmp.push(AuctionOrderManagement.order_to_json(order))
+        }
+        return tmp
+    }
+
+    export async function buyout(pool: any, manager: EntityManager, socket_manager: SocketManager, market: Auction, buyer: CharacterGenericPart, id: auction_order_id) {
+        if (!market.orders.has(id)) {
+            return AuctionResponce.NO_SUCH_ORDER
+        }
+
+        let order = manager.get_item_order(id)
+        if (buyer.savings.get() < order.buyout_price) {
+            return AuctionResponce.NOT_ENOUGH_MONEY
+        }
+
+        let item = order.item
+
+        order.finish()
+        buyer.savings.transfer(order.owner.savings, order.buyout_price)
+
+        socket_manager.send_savings_update(buyer)
+    }
 }
 
-class Auction {
-    orders: Set<OrderItem>
-    changed: boolean
-    cell_id: number
-    id: number
-
-    constructor(id: auction_id, cell_id: number) {
-        this.id = id
-        this.orders = new Set();
-        this.changed = false;
-        this.cell_id = cell_id
-    }
-
-    async sell(pool:any, seller, index, buyout_price, starting_price) {
-        let item = seller.equip.data.backpack[index]
-        if (item == undefined) {
-            return 
-        }
-        seller.equip.data.backpack[index] = undefined;
-        await seller.save_to_db(pool);
-        await this.new_order(pool, seller, item, buyout_price, starting_price, 1);
-    }
-
-    async new_order(pool, seller, item, buyout_price, starting_price, time_interval) {
-        let order = new OrderItem(this.world);
-        let time = Date.now();
-        let dt = time_intervals[time_interval];
-        let id = await order.init(pool, seller, item, buyout_price, starting_price, time + dt)
-        this.orders.add(id)
-        this.world.add_item_order(order);
-        this.CHANGED = true
-    }
-
-    async buyout(pool, buyer, id) {
-        if (!(this.orders.has(id))) {
-            return
-        }
-        let order = this.world.get_item_order(id);
-        if (buyer.savings.get() < order.buyout_price) {
-            return
-        }
         let item = order.item;
         buyer.savings.transfer(order.owner.savings, order.buyout_price);
         let sm = this.world.socket_manager;
@@ -182,6 +217,35 @@ class Auction {
         this.orders.delete(id);
         await order.delete_from_db(pool);
         this.CHANGED = true
+
+
+export class Auction {
+    orders: Set<auction_order_id>
+    changed: boolean
+    cell_id: number
+    savings: Savings
+    id: auction_id
+
+    constructor(id: auction_id, cell_id: number) {
+        this.id = id
+        this.orders = new Set();
+        this.changed = false;
+        this.cell_id = cell_id
+        this.savings = new Savings()
+    }
+
+    add_order(order: OrderItem) {
+        this.orders.add(order.id)
+        this.changed = true
+    }
+
+    set_orders(orders: Set<auction_order_id>) {
+        this.orders = orders
+        this.changed = true
+    }
+
+    async buyout(pool, buyer, id) {
+
     }
 
     async bid(pool, bidder, new_price, id) {
@@ -245,29 +309,6 @@ class Auction {
         }        
     }
 
-    get_orders_list() {
-        var tmp = [];
-        for (let i of this.orders) {
-            let order = this.world.get_item_order(i);
-            tmp.push(order.get_json());
-        }
-        return tmp;
-    }
-
-    async load_from_json(data) {
-        this.orders = new Set(data.orders);
-    }
-
-    async load(pool, id) {
-        this.id = id
-        let tmp = await common.send_query(pool, constants.select_market_items_by_id_query, [this.id]);
-        tmp = tmp.rows[0];
-        this.load_from_json(tmp)
-    }
-
-    async save_to_db(pool) {
-        await common.send_query(pool, constants.update_market_items_query, [this.id, Array.from(this.orders.values())]);
-    }
 
 }
 
@@ -282,9 +323,16 @@ interface OrderItemJson {
     owner_name: string;
     latest_bidder_name: string;
     market_id: auction_id;
+    flags: OrderFlags
 }
 
-class OrderItem {
+interface OrderFlags {
+        finished: boolean,
+        profit_sent: boolean,
+        item_sent: boolean
+    }
+
+export class OrderItem {
     item: Weapon|Armour;
     owner: CharacterGenericPart;
     owner_id: number;
@@ -294,8 +342,9 @@ class OrderItem {
     end_time: number;
     id: auction_order_id
     market_id: auction_id
+    flags: OrderFlags
 
-    constructor(item: Weapon|Armour, owner: CharacterGenericPart, latest_bidder:CharacterGenericPart, buyout_price: money, current_price: money, end_time: number, id: auction_order_id, market_id: auction_id) {
+    constructor(item: Weapon|Armour, owner: CharacterGenericPart, latest_bidder:CharacterGenericPart, buyout_price: money, current_price: money, end_time: number, id: auction_order_id, market_id: auction_id, flags: OrderFlags) {
         this.item = item;
         this.owner = owner;
         this.owner_id = owner.id;
@@ -305,6 +354,7 @@ class OrderItem {
         this.end_time = end_time;
         this.id = id;
         this.market_id = market_id
+        this.flags = flags
     }
 
 
@@ -321,6 +371,10 @@ class OrderItem {
             this.latest_bidder.save_to_db(pool);
             this.current_price = 0 as money;
         }
+    }
+
+    finish() {
+        this.flags.finished = true
     }
 
 

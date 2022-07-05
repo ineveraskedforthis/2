@@ -1,6 +1,5 @@
 import {constants} from '../static_data/constants'
 var common = require("../common.js");
-const OrderItem = require("../market/market_items.js");
 const Area = require('../base_game_classes/area.js')
 const Faction = require('../base_game_classes/faction.js')
 const Quest = require('../base_game_classes/quest.js')
@@ -13,6 +12,7 @@ import { BattleReworked2 } from "../battle";
 import { ITEM_MATERIAL } from '../static_data/item_tags';
 import { material_index } from './materials_manager';
 import { money } from '../base_game_classes/savings';
+import { AuctionOrderManagement, auction_order_id, OrderItem } from '../market/market_items';
 
 
 export class EntityManager {
@@ -20,7 +20,7 @@ export class EntityManager {
     cells: Cell[][]
     chars: CharacterGenericPart[]
     orders: MarketOrder[]
-    item_orders: any[]
+    item_orders: OrderItem[]
     battles: BattleReworked2[]
     areas: any[]
     factions: any[]
@@ -151,8 +151,7 @@ export class EntityManager {
     async load_item_orders(pool: any) {
         let res = await common.send_query(pool, constants.load_item_orders_query);
         for (let i of res.rows) {
-            let order = new OrderItem(this.world);
-            order.load_from_json(i);
+            let order = AuctionOrderManagement.json_to_order(i, this)
             this.item_orders[order.id] = order;
         }
         console.log('item orders loaded')
@@ -337,7 +336,7 @@ export class EntityManager {
         return this.orders[order_id];
     }
 
-    get_item_order (id: number) {
+    get_item_order (id: auction_order_id) {
         return this.item_orders[id];
     }
 
