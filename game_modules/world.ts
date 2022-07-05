@@ -16,6 +16,7 @@ import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
 import { MaterialsManager, material_index } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
+import { auction_order_id } from "./market/market_items";
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -107,7 +108,8 @@ export class World {
             impact_material: this.materials_manager.get_material_with_index(this.materials.WOOD), 
             impact_type:IMPACT_TYPE.POINT, 
             impact_quality: 50,
-            affixes: []
+            affixes: [],
+            item_type: 'weapon'
         }
 
         this.spear_argument = SPEAR_ARGUMENT
@@ -270,7 +272,7 @@ export class World {
         return this.entity_manager.get_order(order_id);
     }
 
-    get_item_order (id: number) {
+    get_item_order (id: auction_order_id) {
         return this.entity_manager.get_item_order(id);
     }
 

@@ -44,17 +44,20 @@ class Armour {
         this.type = data.type;
         this.quality = data.quality;
         this.affixes = data.affixes;
+        this.item_type = 'armour';
     }
     get_weight() {
         return this.material.density * protection_rating(this.type);
     }
     get_json() {
-        let data = {};
-        data.durability = this.durability;
-        data.material = this.material;
-        data.type = this.type;
-        data.quality = this.quality;
-        data.affixes = this.affixes;
+        let data = {
+            durability: this.durability,
+            material: this.material,
+            type: this.type,
+            quality: this.quality,
+            affixes: this.affixes,
+            item_type: this.item_type
+        };
         return data;
     }
     get_tag() {
@@ -68,7 +71,7 @@ class Armour {
         }
     }
     get_data() {
-        return { tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes };
+        return { tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes, item_type: this.item_type };
     }
 }
 exports.Armour = Armour;
@@ -98,6 +101,7 @@ class Weapon {
         this.impact_quality = data.impact_quality;
         this.impact_weight = impact_size_to_number(this.impact_size) * this.impact_material.density;
         this.affixes = data.affixes;
+        this.item_type = 'weapon';
     }
     get_weight() {
         return this.shaft_weight + this.impact_weight;
@@ -137,7 +141,8 @@ class Weapon {
             impact_material: this.impact_material,
             impact_type: this.impact_type,
             impact_quality: this.impact_quality,
-            affixes: this.affixes
+            affixes: this.affixes,
+            item_type: this.item_type
         };
         return data;
     }
@@ -150,7 +155,7 @@ class Weapon {
             return 'sword';
     }
     get_data() {
-        return { tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes };
+        return { tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes, item_type: this.item_type };
     }
 }
 exports.Weapon = Weapon;

@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.EntityManager = void 0;
 const constants_1 = require("../static_data/constants");
 var common = require("../common.js");
-const OrderItem = require("../market/market_items.js");
 const Area = require('../base_game_classes/area.js');
 const Faction = require('../base_game_classes/faction.js');
 const Quest = require('../base_game_classes/quest.js');
@@ -11,6 +10,7 @@ const cell_1 = require("../cell");
 const character_generic_part_1 = require("../base_game_classes/character_generic_part");
 const market_order_1 = require("../market/market_order");
 const battle_1 = require("../battle");
+const market_items_1 = require("../market/market_items");
 class EntityManager {
     constructor(world) {
         this.world = world;
@@ -119,8 +119,7 @@ class EntityManager {
     async load_item_orders(pool) {
         let res = await common.send_query(pool, constants_1.constants.load_item_orders_query);
         for (let i of res.rows) {
-            let order = new OrderItem(this.world);
-            order.load_from_json(i);
+            let order = market_items_1.AuctionOrderManagement.json_to_order(i, this);
             this.item_orders[order.id] = order;
         }
         console.log('item orders loaded');

@@ -66,7 +66,8 @@ class World {
             impact_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
             impact_type: 0 /* IMPACT_TYPE.POINT */,
             impact_quality: 50,
-            affixes: []
+            affixes: [],
+            item_type: 'weapon'
         };
         this.spear_argument = SPEAR_ARGUMENT;
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this, false);
