@@ -120,7 +120,7 @@ body {
     background-color: yellowgreen;
     width: 10px;
     height: 10px;
-    z-index: 3;
+    z-index: 1;
 }
 
 .movable > .top {

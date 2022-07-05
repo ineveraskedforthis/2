@@ -90,6 +90,10 @@ for (let corner of bottom_corners) {
         {
             globals.pressed_resize_bottom = true
             globals.current_resize = corner.parentElement
+
+            let tag = corner.parentElement.id.split('_')[0]
+            pop_tab(tag)
+            push_tab(tag)
         } else {
             globals.pressed_resize_bottom = false
         }
@@ -103,6 +107,10 @@ for (let corner of top_corners) {
         {
             globals.pressed_resize_top = true
             globals.current_resize = corner.parentElement
+
+            let tag = corner.parentElement.id.split('_')[0]
+            pop_tab(tag)
+            push_tab(tag)
         } else {
             globals.pressed_resize_top = false
         }
@@ -222,19 +230,46 @@ function show_scene(scene_id) {
     tab.classList.add('hidden');
 }
 
+var tabs_queue = []
+var tabs_position = {}
 
 function toogle_tab(tag) {
-    console.log('toogle tab ' + tag)
+    // console.log('toogle tab ' + tag)
     let tab = document.getElementById(tag + '_tab');
-    console.log(tab.classList.contains('hidden'))
-    console.log(tab.classList)
+    // console.log(tab.classList.contains('hidden'))
+    // console.log(tab.classList)
     if (tab.classList.contains('hidden')) {
         tab.classList.remove('hidden');
+        push_tab(tag)
         return 'on'
     } else {
         tab.classList.add('hidden');
+        pop_tab(tag)
         return 'off'
     }
+}
+
+function push_tab(tag) {
+    let tab = document.getElementById(tag + '_tab');
+    tabs_queue.push(tag)
+    tabs_position[tag] = tabs_queue.length - 1
+    tab.style.zIndex = +tabs_queue.length + 1
+}
+
+
+
+function pop_tab(tag) {
+    tabs_queue.splice(tabs_position[tag], 1)
+    update_z_levels_tabs()
+}
+
+function update_z_levels_tabs() {
+    for (let i in tabs_queue) {
+        let tab_tag = tabs_queue[i]
+        tabs_position[tab_tag] = i
+        let tab = document.getElementById(tab_tag + '_tab');
+        tab.style.zIndex = tabs_position[tab_tag]
+    } 
 }
 
 function turn_tab_on(tag) {
