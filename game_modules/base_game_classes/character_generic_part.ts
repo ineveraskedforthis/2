@@ -794,19 +794,19 @@ export class CharacterGenericPart {
 
     get_weapon_skill(weapon_type:WEAPON_TYPE):number {
         switch(weapon_type) {
-            case WEAPON_TYPE.NOWEAPON:  return this.skills.noweapon.practice
-            case WEAPON_TYPE.ONEHAND:   return this.skills.onehand.practice
-            case WEAPON_TYPE.POLEARMS:  return this.skills.polearms.practice
-            case WEAPON_TYPE.TWOHANDED: return this.skills.twohanded.practice
+            case WEAPON_TYPE.NOWEAPON:  return this.skills.noweapon.practice;
+            case WEAPON_TYPE.ONEHAND:   return this.skills.onehand.practice;
+            case WEAPON_TYPE.POLEARMS:  return this.skills.polearms.practice;
+            case WEAPON_TYPE.TWOHANDED: return this.skills.twohanded.practice;
         }
     }
 
     change_weapon_skill(weapon_type:WEAPON_TYPE, x: number) {
         switch(weapon_type) {
-            case WEAPON_TYPE.NOWEAPON:  this.skills.noweapon.practice       += x
-            case WEAPON_TYPE.ONEHAND:   this.skills.onehand.practice        += x
-            case WEAPON_TYPE.POLEARMS:  this.skills.polearms.practice       += x
-            case WEAPON_TYPE.TWOHANDED: this.skills.twohanded.practice      += x
+            case WEAPON_TYPE.NOWEAPON:  this.skills.noweapon.practice       += x;break;
+            case WEAPON_TYPE.ONEHAND:   this.skills.onehand.practice        += x;break;
+            case WEAPON_TYPE.POLEARMS:  this.skills.polearms.practice       += x;break;
+            case WEAPON_TYPE.TWOHANDED: this.skills.twohanded.practice      += x;break;
         }
     }
 

@@ -121,18 +121,23 @@ class SocketManager {
                 switch (msg) {
                     case 'body': {
                         character.unequip_armour(item_tags_1.ARMOUR_TYPE.BODY);
+                        break;
                     }
                     case 'legs': {
                         character.unequip_armour(item_tags_1.ARMOUR_TYPE.LEGS);
+                        break;
                     }
                     case 'foot': {
                         character.unequip_armour(item_tags_1.ARMOUR_TYPE.FOOT);
+                        break;
                     }
                     case 'head': {
                         character.unequip_armour(item_tags_1.ARMOUR_TYPE.HEAD);
+                        break;
                     }
                     case 'arms': {
                         character.unequip_armour(item_tags_1.ARMOUR_TYPE.ARMS);
+                        break;
                     }
                 }
             }

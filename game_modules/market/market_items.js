@@ -117,8 +117,12 @@ var AuctionManagement;
         }
         let item = null;
         switch (type) {
-            case 'armour': item = seller.equip.data.backpack.armours[backpack_id];
-            case 'weapon': item = seller.equip.data.backpack.weapons[backpack_id];
+            case 'armour':
+                item = seller.equip.data.backpack.armours[backpack_id];
+                break;
+            case 'weapon':
+                item = seller.equip.data.backpack.weapons[backpack_id];
+                break;
         }
         if (item == undefined) {
             return { responce: AuctionResponce.EMPTY_BACKPACK_SLOT };

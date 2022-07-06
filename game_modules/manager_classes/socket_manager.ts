@@ -153,11 +153,11 @@ export class SocketManager {
                 character.unequip_weapon()
             } else {
                 switch(msg) {
-                    case 'body': {character.unequip_armour(ARMOUR_TYPE.BODY);}
-                    case 'legs': {character.unequip_armour(ARMOUR_TYPE.LEGS)}
-                    case 'foot': {character.unequip_armour(ARMOUR_TYPE.FOOT)}
-                    case 'head': {character.unequip_armour(ARMOUR_TYPE.HEAD)}
-                    case 'arms': {character.unequip_armour(ARMOUR_TYPE.ARMS)}
+                    case 'body': {character.unequip_armour(ARMOUR_TYPE.BODY);break;}
+                    case 'legs': {character.unequip_armour(ARMOUR_TYPE.LEGS);break;}
+                    case 'foot': {character.unequip_armour(ARMOUR_TYPE.FOOT);break;}
+                    case 'head': {character.unequip_armour(ARMOUR_TYPE.HEAD);break;}
+                    case 'arms': {character.unequip_armour(ARMOUR_TYPE.ARMS);break;}
                 }
             }            
         }
