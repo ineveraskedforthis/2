@@ -262,8 +262,8 @@ export class Map {
     update_probability(data) {
         let text= Math.floor(data.value * 100) + '%'
 
-        let chance_label_map = document.getElementById(data.tag + '_chance')       
-        chance_label_map.innerHTML = text
+        // let chance_label_map = document.getElementById(data.tag + '_chance')
+        // chance_label_map.innerHTML = text
 
         let chance_label_desktop = document.getElementById(data.tag + '_chance_desktop')
         chance_label_desktop.innerHTML = text
