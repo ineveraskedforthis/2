@@ -2,7 +2,7 @@
 var socket = io();
 
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'backpack', 'market']
+const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'backpack', 'market', 'local_characters']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {BattleImage, init_battle_control} from './modules/battle_image.js';
@@ -317,13 +317,28 @@ function push_tab(tag) {
     save_tab(tag)
 }
 
-
-
 function pop_tab(tag) {
     tabs_queue.splice(tabs_position[tag], 1)
     update_z_levels_tabs()
     save_tab(tag)
 }
+
+window.addEventListener('keydown', function(event) {
+    if (event.defaultPrevented) {
+        return
+    }
+
+    // console.log(event.code)
+
+    if (event.code == "Escape") {
+        // console.log('!!!')
+        let length = tabs_queue.length
+        // console.log(length)
+        if (length > 0) {
+            toogle_tab(tabs_queue[length - 1])
+        }
+    }
+})
 
 function update_z_levels_tabs() {
     for (let i in tabs_queue) {
