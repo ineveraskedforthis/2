@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.hunt = void 0;
+exports.character_to_hunt_probability = exports.hunt_probability = exports.hunt = void 0;
 exports.hunt = {
     duration(char) {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.hunt.practice) / 20;
@@ -48,3 +48,12 @@ exports.hunt = {
     start: async function (pool, char, data) {
     },
 };
+function hunt_probability(skill) {
+    return Math.min(skill / 100, 1);
+}
+exports.hunt_probability = hunt_probability;
+function character_to_hunt_probability(character) {
+    let skill = character.skills.woodwork.practice;
+    return hunt_probability(skill);
+}
+exports.character_to_hunt_probability = character_to_hunt_probability;

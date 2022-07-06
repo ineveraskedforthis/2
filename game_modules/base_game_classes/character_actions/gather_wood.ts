@@ -1,3 +1,4 @@
+import { Cell } from "../../cell";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import type { CharacterGenericPart } from "../character_generic_part";
 
@@ -34,4 +35,8 @@ export const gather_wood = {
 
     start: async function(pool: any, char:CharacterGenericPart, data: any) {
     },
+}
+
+export function can_gather_wood(cell:Cell) {
+    return cell.development.wild > 0
 }

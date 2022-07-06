@@ -53,3 +53,12 @@ export const hunt = {
     start: async function(pool: any, char:CharacterGenericPart, data: any) {
     },
 }
+
+export function hunt_probability(skill: number) {
+    return Math.min(skill / 100, 1)
+}
+
+export function character_to_hunt_probability(character:CharacterGenericPart) {
+    let skill = character.skills.woodwork.practice
+    return hunt_probability(skill)
+}

@@ -746,7 +746,7 @@ function update_skill_data(data) {
 //             list.appendChild(skill_divs[tag])
 //         }
 //     }    
-// }
+// }s
 
 // function update_skill_data(data) {
 //     console.log('update skills')
@@ -994,6 +994,9 @@ socket.on('cell-visited', data => map.mark_visited(data))
 socket.on('map-data-cells', data => { map.load_data(data)})
 socket.on('map-data-terrain', data => {map.load_terrain(data)})
 socket.on('map-data-reset', data => {map.reset()})
+socket.on('map-action-status', data => map.update_action_status(data))
+
+socket.on('cell-action-chance', msg => map.update_probability(msg))
 
 socket.on('cell-characters', data => {update_characters_list(data)})
 

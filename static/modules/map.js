@@ -225,7 +225,19 @@ export class Map {
             desktop_button.id = action_tag + '_button_desktop';
             desktop_button.classList.add('desktop_action_button');
 
-            desktop_button.innerHTML = action_tag;
+            {
+                let label = document.createElement('div')
+                label.innerHTML = action_tag
+                desktop_button.appendChild(label)
+            }
+
+            {
+                let chance_label = document.createElement('div')
+                chance_label.innerHTML = '100%'
+                chance_label.id = action_tag + '_chance_desktop'
+                chance_label.classList.add('probability')
+                desktop_button.appendChild(chance_label)
+            }
 
             ((button, map_manager, action_tag) => 
                     button.onclick = () => map_manager.send_local_cell_action(action_tag)
@@ -233,6 +245,8 @@ export class Map {
 
             desktop_container.appendChild(desktop_button)
         }
+
+        
         
         this.container = container;
         this.description = document.createElement('div');
@@ -243,6 +257,30 @@ export class Map {
         this.path = {}
         this.real_path = []
         this.path_progress = 0
+    }
+
+    update_probability(data) {
+        let text= Math.floor(data.value * 100) + '%'
+
+        let chance_label_map = document.getElementById(data.tag + '_chance')       
+        chance_label_map.innerHTML = text
+
+        let chance_label_desktop = document.getElementById(data.tag + '_chance_desktop')
+        chance_label_desktop.innerHTML = text
+    }
+
+    update_action_status(data) {
+        console.log(data)
+        let button1 = document.getElementById(data.tag + '_button')
+        let button2 = document.getElementById(data.tag + '_button_desktop')
+
+        if (!data.value) {
+            // button1.classList.add('unavailable')
+            button2.classList.add('unavailable')
+        } else {
+            // button1.classList.remove('unavailable')
+            button2.classList.remove('unavailable')
+        }
     }
 
     send_cell_action(action) {

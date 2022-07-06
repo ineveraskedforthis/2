@@ -14,6 +14,8 @@ import { MarketOrder, market_order_index } from "../market/market_order.js";
 import { material_index } from "./materials_manager";
 import { character_to_cook_meat_probability } from "../base_game_classes/character_actions/cook_meat";
 import { character_to_craft_spear_probability } from "../base_game_classes/character_actions/craft_spear";
+import { character_to_hunt_probability } from "../base_game_classes/character_actions/hunt";
+import { can_gather_wood } from "../base_game_classes/character_actions/gather_wood";
 
 interface UserData {
     socket: any,
@@ -719,6 +721,7 @@ export class SocketManager {
         this.send_to_character_user(character, 'skills', character.skills)
         this.send_to_character_user(character, 'craft-probability', {tag: 'cook_meat', value: character_to_cook_meat_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_spear', value: character_to_craft_spear_probability(character)})
+        this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
     }
 
     // send_tactics_info(character) {
@@ -999,6 +1002,9 @@ export class SocketManager {
             let id = item.id
             let character = this.world.entity_manager.chars[id]
             this.send_to_character_user(character, 'cell-characters', characters_list)
+            this.send_to_character_user(character, 'map-action-status', {tag: 'hunt', value: cell.can_hunt()})
+            this.send_to_character_user(character, 'map-action-status', {tag: 'gather_wood', value: can_gather_wood(cell)})
+            this.send_to_character_user(character, 'map-action-status', {tag: 'clean', value: cell.can_clean()})
         }
     }
 

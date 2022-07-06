@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.gather_wood = void 0;
+exports.can_gather_wood = exports.gather_wood = void 0;
 exports.gather_wood = {
     duration(char) {
         return 2 + char.get_fatigue() / 10;
@@ -34,3 +34,7 @@ exports.gather_wood = {
     start: async function (pool, char, data) {
     },
 };
+function can_gather_wood(cell) {
+    return cell.development.wild > 0;
+}
+exports.can_gather_wood = can_gather_wood;

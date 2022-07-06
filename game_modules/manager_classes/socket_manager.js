@@ -8,6 +8,8 @@ const constants_1 = require("../static_data/constants");
 const item_tags_1 = require("../static_data/item_tags");
 const cook_meat_1 = require("../base_game_classes/character_actions/cook_meat");
 const craft_spear_1 = require("../base_game_classes/character_actions/craft_spear");
+const hunt_1 = require("../base_game_classes/character_actions/hunt");
+const gather_wood_1 = require("../base_game_classes/character_actions/gather_wood");
 class SocketManager {
     constructor(pool, io, world, flag_ready) {
         this.world = world;
@@ -630,6 +632,7 @@ class SocketManager {
         this.send_to_character_user(character, 'skills', character.skills);
         this.send_to_character_user(character, 'craft-probability', { tag: 'cook_meat', value: (0, cook_meat_1.character_to_cook_meat_probability)(character) });
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_spear', value: (0, craft_spear_1.character_to_craft_spear_probability)(character) });
+        this.send_to_character_user(character, 'cell-action-chance', { tag: 'hunt', value: (0, hunt_1.character_to_hunt_probability)(character) });
     }
     // send_tactics_info(character) {
     //     // this.send_to_character_user(character, 'tactic', character.data.tactic)
@@ -880,6 +883,9 @@ class SocketManager {
             let id = item.id;
             let character = this.world.entity_manager.chars[id];
             this.send_to_character_user(character, 'cell-characters', characters_list);
+            this.send_to_character_user(character, 'map-action-status', { tag: 'hunt', value: cell.can_hunt() });
+            this.send_to_character_user(character, 'map-action-status', { tag: 'gather_wood', value: (0, gather_wood_1.can_gather_wood)(cell) });
+            this.send_to_character_user(character, 'map-action-status', { tag: 'clean', value: cell.can_clean() });
         }
     }
     send_market_info_character(market, character) {
