@@ -83,6 +83,55 @@ socket.on('connect', () => {
 
 
 // MOVABLE STUFF 
+
+
+var tabs_queue = []
+
+var tabs_position = {}
+
+
+let tabs_properties = JSON.parse(localStorage.getItem('tabs_properties'))
+
+function save_tab(tag) {
+    let tab = document.getElementById(tag + '_tab')
+    tabs_properties[tag] = {
+        top: tab.style.top,
+        left: tab.style.left,
+        width: tab.style.width,
+        height: tab.style.height,
+        zIndex: tab.style.zIndex,
+        active: !tab.classList.contains('hidden')
+    }
+    localStorage.setItem('tabs_properties', JSON.stringify(tabs_properties))
+}
+
+function load_tab(tag) {
+    console.log(tag)
+    let tab = document.getElementById(tag + '_tab')
+    tab.style.top = tabs_properties[tag].top
+    tab.style.left = tabs_properties[tag].left
+    tab.style.width = tabs_properties[tag].width
+    tab.style.height = tabs_properties[tag].height
+    tab.style.zIndex = tabs_properties[tag].zIndex
+
+    if (tabs_properties[tag].active) {
+        toogle_tab(tag)
+    }
+}
+
+if (tabs_properties == null) {
+    tabs_properties = {}
+}
+
+for (let tag of game_tabs) {
+    console.log(tabs_properties)
+    if (tag in tabs_properties) {
+        load_tab(tag)
+    } else {
+        save_tab(tag)
+    }
+} 
+
 let bottom_corners = document.querySelectorAll('.movable > .bottom')
 for (let corner of bottom_corners) {
     (corner => {corner.onmousedown = (event) =>{
@@ -96,6 +145,8 @@ for (let corner of bottom_corners) {
             push_tab(tag)
         } else {
             globals.pressed_resize_bottom = false
+            let tag = corner.parentElement.id.split('_')[0]
+            save_tab(tag)
         }
     }})(corner)
 }
@@ -113,6 +164,8 @@ for (let corner of top_corners) {
             push_tab(tag)
         } else {
             globals.pressed_resize_top = false
+            let tag = corner.parentElement.id.split('_')[0]
+            save_tab(tag)    
         }
     }})(corner)
 }
@@ -230,12 +283,14 @@ function show_scene(scene_id) {
     tab.classList.add('hidden');
 }
 
-var tabs_queue = []
-var tabs_position = {}
 
 function toogle_tab(tag) {
     // console.log('toogle tab ' + tag)
     let tab = document.getElementById(tag + '_tab');
+    let button = document.getElementById(tag + '_button')
+
+    button.classList.toggle('active')
+
     // console.log(tab.classList.contains('hidden'))
     // console.log(tab.classList)
     if (tab.classList.contains('hidden')) {
@@ -243,10 +298,14 @@ function toogle_tab(tag) {
         push_tab(tag)
         return 'on'
     } else {
+        
         tab.classList.add('hidden');
         pop_tab(tag)
+        
         return 'off'
     }
+
+    
 }
 
 function push_tab(tag) {
@@ -254,6 +313,8 @@ function push_tab(tag) {
     tabs_queue.push(tag)
     tabs_position[tag] = tabs_queue.length - 1
     tab.style.zIndex = +tabs_queue.length + 1
+
+    save_tab(tag)
 }
 
 
@@ -261,6 +322,7 @@ function push_tab(tag) {
 function pop_tab(tag) {
     tabs_queue.splice(tabs_position[tag], 1)
     update_z_levels_tabs()
+    save_tab(tag)
 }
 
 function update_z_levels_tabs() {
@@ -269,6 +331,8 @@ function update_z_levels_tabs() {
         tabs_position[tab_tag] = i
         let tab = document.getElementById(tab_tag + '_tab');
         tab.style.zIndex = tabs_position[tab_tag]
+
+        save_tab(tab_tag)
     } 
 }
 
@@ -289,7 +353,7 @@ for (let tag of game_tabs) {
     let button = document.getElementById(tag + '_button');
     button.onclick = () => {
         let res = toogle_tab(tag);
-        button.classList.toggle('active')
+        
         console.log(tag, res)
         if ((tag == 'market') & (res == 'on')) {
             socket.emit('send-market-data', true)
