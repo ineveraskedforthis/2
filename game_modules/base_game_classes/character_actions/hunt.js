@@ -53,7 +53,7 @@ function hunt_probability(skill) {
 }
 exports.hunt_probability = hunt_probability;
 function character_to_hunt_probability(character) {
-    let skill = character.skills.woodwork.practice;
+    let skill = character.skills.hunt.practice;
     return hunt_probability(skill);
 }
 exports.character_to_hunt_probability = character_to_hunt_probability;

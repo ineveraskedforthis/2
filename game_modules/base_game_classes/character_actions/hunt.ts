@@ -59,6 +59,6 @@ export function hunt_probability(skill: number) {
 }
 
 export function character_to_hunt_probability(character:CharacterGenericPart) {
-    let skill = character.skills.woodwork.practice
+    let skill = character.skills.hunt.practice
     return hunt_probability(skill)
 }
