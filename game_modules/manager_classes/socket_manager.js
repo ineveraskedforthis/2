@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketManager = void 0;
+const battle_1 = require("../battle");
 const action_manager_1 = require("./action_manager");
 const user_1 = require("../user");
 var common = require("../common.js");
@@ -273,6 +274,8 @@ class SocketManager {
                 }
             }
         }
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'end_turn', value: 1 });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'move', value: 1 });
         // user.socket.emit('map-data-cells', this.world.constants.development)
         // user.socket.emit('map-data-terrain', this.world.constants.terrain)
     }
@@ -633,6 +636,8 @@ class SocketManager {
         this.send_to_character_user(character, 'craft-probability', { tag: 'cook_meat', value: (0, cook_meat_1.character_to_cook_meat_probability)(character) });
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_spear', value: (0, craft_spear_1.character_to_craft_spear_probability)(character) });
         this.send_to_character_user(character, 'cell-action-chance', { tag: 'hunt', value: (0, hunt_1.character_to_hunt_probability)(character) });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'flee', value: (0, battle_1.flee_chance)(character) });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance() });
     }
     // send_tactics_info(character) {
     //     // this.send_to_character_user(character, 'tactic', character.data.tactic)
@@ -740,6 +745,7 @@ class SocketManager {
     }
     send_status_update(character) {
         this.send_to_character_user(character, 'status', { c: character.status, m: character.stats.max });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance() });
     }
     send_explored(character) {
         this.send_to_character_user(character, 'explore', character.misc.explored);

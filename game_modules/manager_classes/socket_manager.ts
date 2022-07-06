@@ -1,5 +1,5 @@
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
-import { BattleReworked2 } from "../battle";
+import { BattleReworked2, flee_chance } from "../battle";
 import { CharacterAction, CharacterActionResponce } from "./action_manager";
 import { User } from "../user";
 import { World } from "../world";
@@ -324,6 +324,10 @@ export class SocketManager {
                 }
             }            
         }
+
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'end_turn', value: 1})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'move', value: 1})
+
         // user.socket.emit('map-data-cells', this.world.constants.development)
         // user.socket.emit('map-data-terrain', this.world.constants.terrain)
     }
@@ -722,6 +726,8 @@ export class SocketManager {
         this.send_to_character_user(character, 'craft-probability', {tag: 'cook_meat', value: character_to_cook_meat_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_spear', value: character_to_craft_spear_probability(character)})
         this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})
     }
 
     // send_tactics_info(character) {
@@ -848,6 +854,7 @@ export class SocketManager {
 
     send_status_update(character: CharacterGenericPart) {
         this.send_to_character_user(character, 'status', {c: character.status, m: character.stats.max})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})
     }
 
     send_explored(character: CharacterGenericPart) {

@@ -442,7 +442,7 @@ export class BattleReworked2 {
                 unit.action_points_left -= 3
                 let dice = Math.random();
                 this.changed = true
-                if (dice <= 0.4) {
+                if (dice <= flee_chance(character)) {
                     this.draw = true;
                     
                     return {action: 'flee', who: unit_index};
@@ -645,4 +645,9 @@ export class BattleReworked2 {
     units_amount() {
         return this.heap.get_units_amount()
     }
+}
+
+
+export function flee_chance(character: CharacterGenericPart) {
+    return 0.4
 }

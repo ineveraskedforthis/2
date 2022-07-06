@@ -463,8 +463,8 @@ class CharacterGenericPart {
         result = target.roll_evasion(result);
         result = target.roll_block(result);
         let dice = Math.random();
-        if (dice > this.skills[result.weapon_type].practice / 50) {
-            this.skills[result.weapon_type].practice += 1;
+        if (dice > this.get_weapon_skill(result.weapon_type) / 50) {
+            this.change_weapon_skill(result.weapon_type, 1);
         }
         this.send_skills_update();
         result = await target.take_damage(pool, result);
@@ -583,8 +583,37 @@ class CharacterGenericPart {
     get_evasion_chance() {
         return character_defines.evasion + this.skills.evasion.practice * 0.01;
     }
+    get_weapon_skill(weapon_type) {
+        switch (weapon_type) {
+            case "noweapon" /* WEAPON_TYPE.NOWEAPON */: return this.skills.noweapon.practice;
+            case "onehand" /* WEAPON_TYPE.ONEHAND */: return this.skills.onehand.practice;
+            case "polearms" /* WEAPON_TYPE.POLEARMS */: return this.skills.polearms.practice;
+            case "twohanded" /* WEAPON_TYPE.TWOHANDED */: return this.skills.twohanded.practice;
+        }
+    }
+    change_weapon_skill(weapon_type, x) {
+        switch (weapon_type) {
+            case "noweapon" /* WEAPON_TYPE.NOWEAPON */: this.skills.noweapon.practice += x;
+            case "onehand" /* WEAPON_TYPE.ONEHAND */: this.skills.onehand.practice += x;
+            case "polearms" /* WEAPON_TYPE.POLEARMS */: this.skills.polearms.practice += x;
+            case "twohanded" /* WEAPON_TYPE.TWOHANDED */: this.skills.twohanded.practice += x;
+        }
+    }
     get_accuracy(result) {
-        let base_accuracy = character_defines.accuracy + this.skills[result.weapon_type].practice * character_defines.skill_accuracy_modifier;
+        let base_accuracy = character_defines.accuracy + this.get_weapon_skill(result.weapon_type) * character_defines.skill_accuracy_modifier;
+        let blood_burden = character_defines.blood_accuracy_burden;
+        let rage_burden = character_defines.rage_accuracy_burden;
+        let blood_acc_loss = this.status.blood * blood_burden;
+        let rage_acc_loss = this.status.rage * rage_burden;
+        return Math.min(1, Math.max(0.2, base_accuracy - blood_acc_loss - rage_acc_loss));
+    }
+    get_attack_chance() {
+        let weapon = this.equip.data.weapon;
+        let weapon_type = "noweapon" /* WEAPON_TYPE.NOWEAPON */;
+        if (weapon != undefined) {
+            weapon_type = weapon.get_weapon_type();
+        }
+        let base_accuracy = character_defines.accuracy + this.get_weapon_skill(weapon_type) * character_defines.skill_accuracy_modifier;
         let blood_burden = character_defines.blood_accuracy_burden;
         let rage_burden = character_defines.rage_accuracy_burden;
         let blood_acc_loss = this.status.blood * blood_burden;

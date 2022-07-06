@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BattleReworked2 = exports.UnitData = void 0;
+exports.flee_chance = exports.BattleReworked2 = exports.UnitData = void 0;
 const stash_1 = require("./base_game_classes/stash");
 var common = require("./common.js");
 var { constants } = require("./static_data/constants.js");
@@ -343,7 +343,7 @@ class BattleReworked2 {
                 unit.action_points_left -= 3;
                 let dice = Math.random();
                 this.changed = true;
-                if (dice <= 0.4) {
+                if (dice <= flee_chance(character)) {
                     this.draw = true;
                     return { action: 'flee', who: unit_index };
                 }
@@ -535,3 +535,7 @@ class BattleReworked2 {
     }
 }
 exports.BattleReworked2 = BattleReworked2;
+function flee_chance(character) {
+    return 0.4;
+}
+exports.flee_chance = flee_chance;

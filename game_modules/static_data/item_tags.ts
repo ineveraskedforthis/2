@@ -3,7 +3,7 @@ import type { CharacterGenericPart } from "../base_game_classes/character_generi
 import type { AttackResult } from "../base_game_classes/misc/attack_result"
 import type { DamageByTypeObject } from "../base_game_classes/misc/damage_types"
 import { World } from "../world"
-import { WEAPON_TYPE, weapon_type } from "./type_script_types"
+import { WEAPON_TYPE } from "./type_script_types"
 
 export type affix_tag = 'sharp'|'heavy'|'hot'|'precise'|'power_battery'|'madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'elodino_pleasure'|'power_of_graci_beauty'
 
@@ -232,7 +232,7 @@ export class Weapon {
         return length
     }
 
-    get_weapon_type():weapon_type {
+    get_weapon_type():WEAPON_TYPE {
         switch(this.shaft_length) {
             case SHAFT_LEGTH.LONG: return WEAPON_TYPE.POLEARMS 
             case SHAFT_LEGTH.SHORT: return WEAPON_TYPE.POLEARMS

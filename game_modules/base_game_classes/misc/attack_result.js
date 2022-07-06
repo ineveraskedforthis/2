@@ -29,7 +29,7 @@ class AttackResult {
         };
         this.new_pos = undefined;
         this.damage = new damage_types_1.DamageByTypeObject();
-        this.weapon_type = 'noweapon';
+        this.weapon_type = "noweapon" /* WEAPON_TYPE.NOWEAPON */;
         this.chance_to_hit = 0;
         this.total_damage = 0;
     }

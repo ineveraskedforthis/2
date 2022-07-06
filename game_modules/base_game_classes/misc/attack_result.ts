@@ -1,4 +1,4 @@
-import { damage_type, weapon_type } from "../../static_data/type_script_types"
+import { damage_type, WEAPON_TYPE } from "../../static_data/type_script_types"
 import { DamageByTypeObject } from "./damage_types";
 import {Status} from '../character_generic_part'
 
@@ -14,7 +14,7 @@ export class AttackResult {
     }
     defender_status_change:Status;
     attacker_status_change:Status;
-    weapon_type:weapon_type;
+    weapon_type:WEAPON_TYPE;
     total_damage:number;
     damage: DamageByTypeObject;
     chance_to_hit: number;
@@ -51,7 +51,7 @@ export class AttackResult {
         this.new_pos = undefined
 
         this.damage = new DamageByTypeObject();
-        this.weapon_type = 'noweapon'
+        this.weapon_type = WEAPON_TYPE.NOWEAPON
         this.chance_to_hit = 0;
         this.total_damage = 0;
     }

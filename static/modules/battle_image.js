@@ -405,6 +405,8 @@ export class BattleImage {
         div.onmouseenter = () => this.set_hover(battle_id)
         div.onmouseleave = this.remove_hover
 
+        this.action_divs = {}
+
         this.container.querySelector(".enemy_list").appendChild(div)
     }
 
@@ -549,18 +551,44 @@ export class BattleImage {
 
     add_action(action_type) {
         this.actions.push(action_type)
+
+        console.log(action_type)
+        
         let action_div = document.createElement('div');
         action_div.classList.add('battle_action');
         action_div.classList.add(action_type.tag)
+        
+        {
+            let label = document.createElement('div')
+            label.innerHTML = action_type.name
+            action_div.appendChild(label)
+        }
+
         if (action_type.cost != undefined) {
-            action_div.innerHTML = action_type.name + '<br>ap: ' + action_type.cost;
-        } else {
-            action_div.innerHTML = action_type.name
+            let label = document.createElement('div')
+            label.innerHTML = 'ap: ' + action_type.cost;
+            action_div.appendChild(label)
+        }
+
+        {
+            let label = document.createElement('div')
+            label.id = action_type.tag + '_chance_b'
+            label.innerHTML = '???%'
+            action_div.appendChild(label)
         }
         
         action_div.onclick = () => this.send_action(action_type.tag)
+
+        // this.action_divs[action_type.name] = action_div
+
         let div = this.container.querySelector('.battle_control');
         div.appendChild(action_div)
+    }
+
+    update_action_probability(tag, value) {
+        console.log(tag, value)
+        let label = document.getElementById(tag + '_chance_b')
+        label.innerHTML = Math.floor(value * 100) + '%'
     }
 
     update_enemy(data) {

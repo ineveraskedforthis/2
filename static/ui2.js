@@ -964,6 +964,7 @@ socket.on('map-pos', msg => {
 socket.on('explore', msg => {map.explore(msg)});
 
 socket.on('new-action', msg => battle_image.add_action({name: msg, tag:msg}));
+socket.on('b-action-chance', msg => battle_image.update_action_probability(msg.tag, msg.value))
 
 socket.on('battle-has-started', data => start_battle(data))
 socket.on('battle-has-ended', data => end_battle(data))

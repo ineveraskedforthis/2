@@ -68,7 +68,7 @@
 }
 
 .battle_control> .battle_action{
-    border: rgb(143, 6, 6) solid 2px;
+    border: rgb(143, 6, 6) solid 1px;
     width: 70px;
     height: 44px;
     text-align: center;
@@ -86,7 +86,7 @@
     border: rgb(0, 0, 0) solid 2px;
 }
 
-.battle_control>div:hover{
+.battle_control> div:hover{
     border: rgb(21, 240, 39) solid 2px;
 }
 
