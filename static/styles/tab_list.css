@@ -35,16 +35,16 @@
 }
 
 
-#character_button {
+#equip_button {
     background-image: url(/static/img/tab_buttons/character_button.png);
 }
-#character_button:hover {
+#equip_button:hover {
     background-image: url(/static/img/tab_buttons/character_button_hovered.png);
 }
-#character_button:active {
+#equip_button:active {
     background-image: url(/static/img/tab_buttons/character_button_pressed.png);
 }
-#character_button.active {
+#equip_button.active {
     background-image: url(/static/img/tab_buttons/character_button_pressed.png);
 }
 
@@ -88,13 +88,13 @@
     width: 790px;
     height: 335px;
     left: 270px;
-    top:10px;
+    top: 200px;
 }
 
 #skilltree_tab {
     left: 1000px;
-    top: 230px;
-    height: 390px;
+    top: 5px;
+    height: 545px;
     width: 290px;
 }
 
@@ -126,7 +126,7 @@
 #equip_tab {
     top: 5px;
     height: auto;
-    left: 1000px;
+    left: 1400px;
     width: 300px;
 }
 
