@@ -108,7 +108,7 @@ class Cell {
                 return 'not_enough_money';
             }
             order.amount -= amount;
-            order_owner.transfer(buyer.stash, order.tag, amount);
+            order_owner.stash.transfer(buyer.stash, order.tag, amount);
             buyer.savings.transfer(order_owner.trade_savings, amount * order.price);
             buyer.changed = true;
             order_owner.changed = true;

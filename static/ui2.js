@@ -354,11 +354,13 @@ function update_z_levels_tabs() {
 function turn_tab_on(tag) {
     let tab = document.getElementById(tag + '_tab');
     tab.classList.remove('hidden');
+    push_tab(tag)
 }
 
 function turn_tab_off(tag) {
     let tab = document.getElementById(tag + '_tab');
     tab.classList.add('hidden');
+    pop_tab(tag)
 }
 
 for (let tag of game_tabs) {
