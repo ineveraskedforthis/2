@@ -201,6 +201,7 @@ export class Map {
             'rest_of_the_world': true,
         }
 
+
         {
             let button = document.getElementById('move_button');
             (() => 
@@ -208,41 +209,29 @@ export class Map {
             )(this.socket);
         }
 
-        {
-            let button = document.getElementById('attack_button');
-            (() => 
-                    button.onclick = () => this.send_cell_action('attack')
-            )(this.socket);
-        }
+        let rest_of_actions = ['attack', 'gather_wood', 'hunt', 'clean', 'rest']
 
-        
 
-        {
-            let button = document.getElementById('gather_wood_button');
-            (() => 
-                    button.onclick = () => this.send_cell_action('gather_wood')
-            )(this.socket);
-        }
+        let desktop_container = document.getElementById('desktop_actions')
 
-        {
-            let button = document.getElementById('hunt_button');
-            (() => 
-                    button.onclick = () => this.send_cell_action('hunt')
-            )(this.socket);
-        }
 
-        {
-            let button = document.getElementById('clean_button');
-            (() => 
-                    button.onclick = () => this.send_cell_action('clean')
-            )(this.socket);
-        }
+        for (let action_tag of rest_of_actions) {
+            let map_button = document.getElementById(action_tag + '_button');
+            ((button, map_manager, action_tag) => 
+                    button.onclick = () => map_manager.send_cell_action(action_tag)
+            )(map_button, this, action_tag);
 
-        {
-            let button = document.getElementById('rest_button');
-            (() => 
-                    button.onclick = () => this.send_cell_action('rest')
-            )(this.socket);
+            let desktop_button = document.createElement('div')
+            desktop_button.id = action_tag + '_button_desktop';
+            desktop_button.classList.add('desktop_action_button');
+
+            desktop_button.innerHTML = action_tag;
+
+            ((button, map_manager, action_tag) => 
+                    button.onclick = () => map_manager.send_local_cell_action(action_tag)
+            )(desktop_button, this, action_tag);
+
+            desktop_container.appendChild(desktop_button)
         }
         
         this.container = container;
@@ -257,12 +246,7 @@ export class Map {
     }
 
     send_cell_action(action) {
-        console.log('selected')
-        console.log(this.selected)
-        console.log('current')
-        console.log(this.curr_pos)
         let adj_flag = this.check_move(this.selected[0] - this.curr_pos[0], this.selected[1] - this.curr_pos[1])
-        console.log(adj_flag)
         if ((action == 'move') && (adj_flag)) {
             this.move_target = this.selected
             this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
@@ -278,6 +262,10 @@ export class Map {
             this.move_target = this.real_path[this.path_progress + 1]
             this.socket.emit('move', {x: this.real_path[this.path_progress + 1][0], y: this.real_path[this.path_progress + 1][1]})            
         }
+    }
+
+    send_local_cell_action(action) {
+        this.socket.emit(action, {x: this.curr_pos[0], y: this.curr_pos[1]})
     }
 
     mark_visited(data) {

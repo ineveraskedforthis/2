@@ -146,6 +146,39 @@ body {
     height: 30%;
 }
 
+#desktop_actions {
+    position: absolute;
+    bottom: 0%;
+    height:50px;
+    left: 0%;
+    width: 70%;
+
+    display: flex;
+
+    justify-content: space-around;
+    /* flex-flow: row wrap; */
+    align-items: stretch;
+}
+
+#desktop_actions > div {
+    text-align: center;
+    padding-top: 8px;
+    flex-grow: 1;
+    /* width:max-content; */
+    border: 3px solid crimson;
+}
+
+#desktop_actions > div:hover {
+    background-color: yellow;
+    color: blue;
+}
+
+#desktop_actions > div:active {
+    background-color: greenyellow;
+    color: blue;
+}
+
+
 
 .red {
     color: crimson;
