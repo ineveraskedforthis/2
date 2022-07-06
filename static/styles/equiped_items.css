@@ -7,7 +7,7 @@
 #backpack_tab {
     top: 5px;
     /* width: 100%; */
-    height: calc(100% - 205px);
+    height: 300px;
 }
 
 .character_screen_frame{

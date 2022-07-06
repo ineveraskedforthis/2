@@ -95,7 +95,7 @@
     left: 1000px;
     top: 5px;
     height: 545px;
-    width: 290px;
+    width: 300px;
 }
 
 #map_tab {
@@ -126,8 +126,8 @@
 #equip_tab {
     top: 5px;
     height: auto;
-    left: 1400px;
-    width: 300px;
+    left: 1310px;
+    width: 430px;
 }
 
 #craft_tab {
