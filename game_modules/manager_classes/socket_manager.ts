@@ -12,6 +12,8 @@ import { Cell } from "../cell";
 import { isNumberObject } from "util/types";
 import { MarketOrder, market_order_index } from "../market/market_order.js";
 import { material_index } from "./materials_manager";
+import { character_to_cook_meat_probability } from "../base_game_classes/character_actions/cook_meat";
+import { character_to_craft_spear_probability } from "../base_game_classes/character_actions/craft_spear";
 
 interface UserData {
     socket: any,
@@ -715,6 +717,8 @@ export class SocketManager {
 
     send_skills_info(character: CharacterGenericPart) {
         this.send_to_character_user(character, 'skills', character.skills)
+        this.send_to_character_user(character, 'craft-probability', {tag: 'cook_meat', value: character_to_cook_meat_probability(character)})
+        this.send_to_character_user(character, 'craft-probability', {tag: 'craft_spear', value: character_to_craft_spear_probability(character)})
     }
 
     // send_tactics_info(character) {
@@ -807,7 +811,7 @@ export class SocketManager {
         let user = this.world.user_manager.get_user_from_character(character);
         if (user != undefined) {
             this.send_to_user(user, tag, msg);
-        }        
+        }
     }
 
     send_message_to_user(user: User, msg: string) {

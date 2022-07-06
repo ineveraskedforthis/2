@@ -914,9 +914,17 @@ function process_stash_click(tag) {
 }
 
 {
-    let div = document.getElementById('make_spear')
+    let div = document.getElementById('craft_spear')
     div.onclick = () => socket.emit('mspear')
 }
+
+function update_craft_probability(data) {
+    console.log(data)
+    let div = document.getElementById(data.tag + '_chance')
+    div.innerHTML = Math.floor(data.value * 100) + '%'
+}
+
+socket.on('craft-probability', msg => update_craft_probability(msg))
 
 
 

@@ -245,8 +245,17 @@ body {
     display: flex;
     flex-direction: row;
     margin: 5px;
-    width: auto;
+    width: 150px;
     height: auto;
+}
+
+.craft_option > div {
+    flex-grow: 1;
+}
+
+.craft_option > .probability {
+    flex-grow: 2;
+    text-align: right;
 }
 
 .craft_option:hover {

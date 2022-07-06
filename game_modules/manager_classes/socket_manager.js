@@ -6,6 +6,8 @@ const user_1 = require("../user");
 var common = require("../common.js");
 const constants_1 = require("../static_data/constants");
 const item_tags_1 = require("../static_data/item_tags");
+const cook_meat_1 = require("../base_game_classes/character_actions/cook_meat");
+const craft_spear_1 = require("../base_game_classes/character_actions/craft_spear");
 class SocketManager {
     constructor(pool, io, world, flag_ready) {
         this.world = world;
@@ -626,6 +628,8 @@ class SocketManager {
     }
     send_skills_info(character) {
         this.send_to_character_user(character, 'skills', character.skills);
+        this.send_to_character_user(character, 'craft-probability', { tag: 'cook_meat', value: (0, cook_meat_1.character_to_cook_meat_probability)(character) });
+        this.send_to_character_user(character, 'craft-probability', { tag: 'craft_spear', value: (0, craft_spear_1.character_to_craft_spear_probability)(character) });
     }
     // send_tactics_info(character) {
     //     // this.send_to_character_user(character, 'tactic', character.data.tactic)

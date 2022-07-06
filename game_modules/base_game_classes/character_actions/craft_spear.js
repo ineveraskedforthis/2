@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.craft_spear = void 0;
+exports.character_to_craft_spear_probability = exports.craft_spear_probability = exports.craft_spear = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
 exports.craft_spear = {
     duration(char) {
@@ -26,7 +26,7 @@ exports.craft_spear = {
             char.change_fatigue(10);
             // if (dice < check) {
             let dice = Math.random();
-            if (dice * 100 < skill) {
+            if (dice < craft_spear_probability(skill)) {
                 let spear = new item_tags_1.Weapon(char.world.spear_argument);
                 char.equip.add_weapon(spear);
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
@@ -50,3 +50,12 @@ exports.craft_spear = {
     start: async function (pool, char, data) {
     },
 };
+function craft_spear_probability(skill) {
+    return Math.min(skill / 30, 1);
+}
+exports.craft_spear_probability = craft_spear_probability;
+function character_to_craft_spear_probability(character) {
+    let skill = character.skills.woodwork.practice;
+    return craft_spear_probability(skill);
+}
+exports.character_to_craft_spear_probability = character_to_craft_spear_probability;

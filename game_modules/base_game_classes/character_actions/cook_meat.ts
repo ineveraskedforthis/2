@@ -1,4 +1,4 @@
-import { CharacterGenericPart } from "../character_generic_part";
+import { CharacterGenericPart, PerksTable } from "../character_generic_part";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 
 
@@ -23,14 +23,8 @@ export const cook_meat = {
         if (tmp > 0) { 
             char.changed = true
             let skill = char.skills.cooking.practice
-            let check = 0;
-            if (char.skills.perks.meat_master) {
-                check = 1
-            } else if (skill > 20) {
-                check = 0.7
-            } else {
-                check = 0.7 * skill / 20
-            }
+            let check = cook_meat_probability(skill, char.skills.perks)
+
             let dice = Math.random()
             char.stash.inc(char.world.materials.MEAT, -1)
             char.send_stash_update()
@@ -56,4 +50,22 @@ export const cook_meat = {
 
     start: async function(pool: any, char:CharacterGenericPart, data: any) {
     },
+}
+
+export function cook_meat_probability(skill: number, perks:PerksTable){
+    let check = 0;
+    if (perks.meat_master) {
+        check = 1
+    } else if (skill > 20) {
+        check = 0.7
+    } else {
+        check = 0.7 * skill / 20
+    }
+    return check
+}
+
+export function character_to_cook_meat_probability(character:CharacterGenericPart) {
+    let skill = character.skills.cooking.practice
+    let perks = character.skills.perks
+    return cook_meat_probability(skill, perks)
 }

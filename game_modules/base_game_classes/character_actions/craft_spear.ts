@@ -1,4 +1,4 @@
-import { CharacterGenericPart } from "../character_generic_part";
+import { CharacterGenericPart, PerksTable } from "../character_generic_part";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Weapon } from "../../static_data/item_tags";
 import { textChangeRangeIsUnchanged } from "typescript";
@@ -31,7 +31,7 @@ export const craft_spear = {
             char.change_fatigue(10)
             // if (dice < check) {
             let dice = Math.random()
-            if (dice * 100 < skill) {
+            if (dice < craft_spear_probability(skill)) {
                 let spear = new Weapon(char.world.spear_argument)
                 char.equip.add_weapon(spear)
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made')
@@ -54,4 +54,13 @@ export const craft_spear = {
 
     start: async function(pool: any, char:CharacterGenericPart, data: any) {
     },
+}
+
+export function craft_spear_probability(skill: number) {
+    return Math.min(skill / 30, 1)
+}
+
+export function character_to_craft_spear_probability(character:CharacterGenericPart) {
+    let skill = character.skills.woodwork.practice
+    return craft_spear_probability(skill)
 }
