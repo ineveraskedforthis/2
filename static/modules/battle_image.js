@@ -1,3 +1,4 @@
+import { time } from 'console';
 import {draw_image, get_pos_in_canvas} from './common.js'
 
 let BATTLE_SCALE = 50
@@ -119,6 +120,174 @@ function intersect(line, plane) {
     return sum(mult(t, line.vector), line.point)
 }
 
+class BattleData {
+    constructor(id, name, hp, ap, range, position) {
+        this.id = id
+        this.name = name
+        this.hp = hp
+        this.ap = ap
+        this.range = range
+        this.position = position
+        this.killed = false
+        if (hp == 0) {
+            this.killed = true
+        }
+    }
+}
+
+class MoveAnimation {
+    constructor(start_time, start, end, movement_speed) {
+        this.type = type
+        this.start_time = start_time
+
+        this.direction = minus(end, start)
+        let distance = Math.sqrt(dot(this.direction, direction))
+        let duration = distance / movement_speed 
+        this.end_time = start_time + duration
+
+        this.start = start 
+        this.end = end
+
+        this.tag = 'move'
+    }
+
+    get_data(time) {
+        let ratio = (time - this.start_time) / this.duration
+        return sum(this.start, mult(ratio, this.direction))
+    }
+}
+
+function build_character_div(unit_data, battle_data) {
+    let div = document.createElement('div')
+    div.innerHTML = 'hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap
+    div.classList.add('fighter_' + unit_data.id)
+    div.classList.add('enemy_status')
+    div.onclick = () => battle_data.set_selection(unit_data.id)
+    div.onmouseenter = () => battle_data.set_hover(unit_data.id)
+    div.onmouseleave = battle_data.remove_hover
+    return div
+}
+
+export class BattleImageNext {
+    constructor(canvas, canvas_background) {
+        this.canvas = canvas 
+        this.canvas_background = canvas_background
+        this.canvas_context = canvas.getContext('2d')
+
+        this.container = document.getElementById('battle_tab')
+        this.background = "colony";
+        this.background_flag = false
+
+        this.w = 700
+        this.h = 450
+        this.movement_speed = 0.3
+        this.scale = 1
+
+        this.reset_data()
+    }
+
+    reset_data() {
+        this.canvas_context.clearRect(0, 0, this.w, this.h);
+
+        this.events_list = []
+        this.current_animations = []
+        this.units_data = {}
+
+        this.battle_ids = new Set()
+
+        {
+            let div = this.container.querySelector('.enemy_list')
+            div.innerHTML = ''
+        }
+    }
+
+    load(data) {
+        console.log('load battle')
+        this.init()
+        for (var i in data) {
+            this.add_fighter(i, data[i].tag, data[i].position, data[i].range)
+        }
+    }
+
+    add_fighter(battle_id, tag, pos, range, is_player, name, hp) {
+        console.log("add fighter")
+        console.log(battle_id, tag, pos, range)
+
+        let unit = new BattleData(battle_id, name, hp, '???', range, pos)
+        this.battle_ids.add(battle_id)
+        this.units_data[battle_id] = unit
+
+        this.images[battle_id] = new AnimatedImage(tag)
+
+        let div = build_character_div(unit, this)
+        this.container.querySelector(".enemy_list").appendChild(div)
+    }
+
+    change_bg(bg) {
+        this.background = bg;
+        let ctx = this.canvas_background.getContext('2d');
+        draw_image(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
+        this.background_flag = true;
+    }
+
+    update(data) {
+        for (let i in data) {
+            if ((data[i] == undefined) || (data[i].hp == 0)) {
+                this.units_data[i]?.killed = true
+            }
+        }
+    }
+
+    set_player(in_battle_id) {
+        console.log('set_player_position')
+        console.log(in_battle_id)
+        this.player = in_battle_id
+        console.log(this.player)
+        this.update_player_actions_availability()
+    }
+
+    update_enemy(data) {
+        for (let i in data) {
+            this.units_data[i].name = data[i].name
+            this.names[i] = data[i].name
+            this.hps[i] = data[i].hp
+            this.aps[i] = data[i].ap
+
+            let div = this.container.querySelector('.enemy_list > .fighter_' + i)
+            div.innerHTML = data[i].name + '<br> hp: ' + this.hps[i] + '<br> ap: ' + Math.floor(this.aps[i] * 10) / 10
+        }
+
+        this.update_player_actions_availability()        
+    }
+
+    update_player_actions_availability() {
+        console.log('update_actions_availability')
+        console.log(this.player)
+        if (this.player == undefined) {
+            return
+        }
+
+        if (this.aps == undefined) {
+            return
+        }
+
+        if (this.aps[this.player] == undefined) {
+            return
+        }
+
+        for (let i of this.actions) {
+            let div = this.container.querySelector('.battle_control>.' + i.tag)
+            if ((i.cost != undefined) && (this.aps[this.player].ap < i.cost)) {
+                div.classList.add('disabled')
+            } else {
+                div.classList.remove('disabled')
+            }
+        } 
+    }
+
+}
+
+
 export class BattleImage {
     constructor(canvas, canvas_background) {
         this.canvas = canvas;
@@ -135,7 +304,8 @@ export class BattleImage {
         this.movement_speed = 0.3;
         this.scale = 1;
         this.player = undefined
-        
+
+                
     }
 
     init() {
@@ -149,8 +319,11 @@ export class BattleImage {
         this.tick = 0;
         this.movement = 0;
         this.animation_tick = 0;
-        this.range = {}
 
+        this.units_data = {}
+        this.units_animations = {}
+
+        this.range = {}
         this.names = {}
         this.hps = {}
         this.aps = {}
@@ -164,40 +337,25 @@ export class BattleImage {
         // this.player = undefined
 
         this.action_queue = [];
+
+        this.entity_animations = {}
+
         this.l = 0;
         this.r = 0;
         this.prev_positions = {}
         this.new_positions = {}
     }
 
-    change_bg(bg) {
-        this.background = bg;
-        console.log('draw_background')
-        let ctx = this.canvas_background.getContext('2d');
-        draw_image(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
-        this.background_flag = true;
-    }
+    
 
     clear() {
         console.log('clear battle')
         this.update_action({action: 'stop_battle'})
     }
 
-    load(data) {
-        console.log('load battle')
-        this.init()
-        for (var i in data) {
-            this.add_fighter(i, data[i].tag, data[i].position, data[i].range)
-        } 
-    }
+    
 
-    update(data) {
-        for (let i in data) {
-            if ((data[i] == undefined) || (data[i].hp == 0)) {
-                this.killed[i] = true
-            }
-        }
-    }
+    
 
     update_action(action){
         if (action.action == 'pff') {
@@ -380,43 +538,9 @@ export class BattleImage {
         
     }
     
-    add_fighter(battle_id, tag, pos, range, is_player, name, hp) {
-        console.log("add fighter")
-        console.log(battle_id, tag, pos, range)
-        this.battle_ids.add(battle_id)
-        this.new_positions[battle_id] = {x:pos.x, y:pos.y};
-        this.prev_positions[battle_id] = {x:pos.x, y:pos.y};
 
-        this.names[battle_id] = 'test'
-        this.hps[battle_id] = 'test'
-        this.aps[battle_id] = 'test'
 
-        this.positions[battle_id] = {x:pos.x, y:pos.y};
-        this.images[battle_id] = new AnimatedImage(tag)
-        this.range[battle_id] = range;
-        this.killed[battle_id] = false
 
-        let div = document.createElement('div')
-        div.innerHTML = 'hp: ' + this.hps[battle_id] + '<br> ap: ' + this.aps[battle_id]
-        div.classList.add('fighter_' + battle_id)
-        div.classList.add('enemy_status')
-
-        div.onclick = () => this.set_selection(battle_id)
-        div.onmouseenter = () => this.set_hover(battle_id)
-        div.onmouseleave = this.remove_hover
-
-        this.action_divs = {}
-
-        this.container.querySelector(".enemy_list").appendChild(div)
-    }
-
-    set_player(in_battle_id) {
-        console.log('set_player_position')
-        console.log(in_battle_id)
-        this.player = in_battle_id
-        console.log(this.player)
-        this.update_player_actions_availability()
-    }
     
     update_pos(battle_id) {
         if (!(battle_id in this.prev_positions)) {
@@ -591,43 +715,7 @@ export class BattleImage {
         label.innerHTML = Math.floor(value * 100) + '%'
     }
 
-    update_enemy(data) {
-        for (let i in data) {
-            this.names[i] = data[i].name
-            this.hps[i] = data[i].hp
-            this.aps[i] = data[i].ap
 
-            let div = this.container.querySelector('.enemy_list > .fighter_' + i)
-            div.innerHTML = data[i].name + '<br> hp: ' + this.hps[i] + '<br> ap: ' + Math.floor(this.aps[i] * 10) / 10
-        }
-
-        this.update_player_actions_availability()        
-    }
-
-    update_player_actions_availability() {
-        console.log('update_actions_availability')
-        console.log(this.player)
-        if (this.player == undefined) {
-            return
-        }
-
-        if (this.aps == undefined) {
-            return
-        }
-
-        if (this.aps[this.player] == undefined) {
-            return
-        }
-
-        for (let i of this.actions) {
-            let div = this.container.querySelector('.battle_control>.' + i.tag)
-            if ((i.cost != undefined) && (this.aps[this.player].ap < i.cost)) {
-                div.classList.add('disabled')
-            } else {
-                div.classList.remove('disabled')
-            }
-        } 
-    }
 
     set_current_turn(i) {
         console.log('new turn ' + i)
