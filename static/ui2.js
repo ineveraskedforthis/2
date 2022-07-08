@@ -9,11 +9,11 @@ import {CharInfoMonster} from './modules/char_info_monster.js';
 import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
 
-// import { BattleImageNext } from './modules/battle_image.js';
-// import { init_battle_control } from './modules/battle_image_init.js'
+import { BattleImageNext } from './modules/battle_image.js';
+import { init_battle_control } from './modules/battle_image_init.js'
 
-import * as BattleImageNext from  './modules/battle_image.js';
-import * as init_battle_control from './modules/battle_image_init.js'
+// import * as BattleImageNext from  './modules/battle_image.js';
+// import * as init_battle_control from './modules/battle_image_init.js'
 
 var globals = {
     prev_mouse_x: null,
@@ -980,7 +980,7 @@ socket.on('battle-action', data => {
     new_log_message(res)
     if (res == 'battle has ended') end_battle();
 })
-socket.on('enemy-update', data => battle_image.update_enemy(data))
+socket.on('enemy-update', data => battle_image.update(data))
 socket.on('player-position', data => {((bi, data) => (bi.set_player(data)))(battle_image, data)})
 
 socket.on('skill-tags', data => load_skill_tags(data));

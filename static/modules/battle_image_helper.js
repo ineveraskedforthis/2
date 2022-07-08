@@ -1,13 +1,9 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BattleUnitView = exports.BattleUnit = exports.NewTurnEvent = exports.RetreatEvent = exports.AttackEvent = exports.ClearBattleEvent = exports.UpdateDataEvent = exports.MovementBattleEvent = exports.AnimatedImage = exports.get_mouse_pos_in_canvas = exports.draw_image = exports.position_c = exports.BATTLE_ANIMATION_TICK = exports.BATTLE_MOVEMENT_SPEED = exports.BATTLE_SCALE = exports.diff = void 0;
-function diff(a, b) {
+export function diff(a, b) {
 }
-exports.diff = diff;
-exports.BATTLE_SCALE = 50;
-exports.BATTLE_MOVEMENT_SPEED = 0.3;
-exports.BATTLE_ANIMATION_TICK = 1 / 15;
-var position_c;
+export const BATTLE_SCALE = 50;
+export const BATTLE_MOVEMENT_SPEED = 0.3;
+export const BATTLE_ANIMATION_TICK = 1 / 15;
+export var position_c;
 (function (position_c) {
     function diff_canvas(a, b) {
         return { x: a.x - b.x, y: a.y - b.y };
@@ -31,15 +27,15 @@ var position_c;
     position_c.scalar_mult = scalar_mult;
     function battle_to_canvas(pos, canvas_h, canvas_w) {
         let centre = { x: pos.y, y: pos.x };
-        centre.x = -centre.x * exports.BATTLE_SCALE + 520;
-        centre.y = centre.y * exports.BATTLE_SCALE + canvas_h / 2;
+        centre.x = -centre.x * BATTLE_SCALE + 520;
+        centre.y = centre.y * BATTLE_SCALE + canvas_h / 2;
         return raw_to_canvas(centre);
     }
     position_c.battle_to_canvas = battle_to_canvas;
     function canvas_to_battle(pos, canvas_h, canvas_w) {
         let tmp = { x: pos.x, y: pos.y };
-        tmp.x = (tmp.x - 520) / (-exports.BATTLE_SCALE);
-        tmp.y = (tmp.y - canvas_h / 2) / (exports.BATTLE_SCALE);
+        tmp.x = (tmp.x - 520) / (-BATTLE_SCALE);
+        tmp.y = (tmp.y - canvas_h / 2) / (BATTLE_SCALE);
         return raw_to_battle({ x: tmp.y, y: tmp.x });
     }
     position_c.canvas_to_battle = canvas_to_battle;
@@ -57,12 +53,11 @@ var position_c;
         return [position.x - w / 10, position.y - h / 5 + 10, w / 5, h / 5];
     }
     position_c.image_to_canvas = image_to_canvas;
-})(position_c = exports.position_c || (exports.position_c = {}));
-function draw_image(context, image, x, y, w, h) {
+})(position_c || (position_c = {}));
+export function draw_image(context, image, x, y, w, h) {
     context.drawImage(image, x, y, w, h);
 }
-exports.draw_image = draw_image;
-function get_mouse_pos_in_canvas(canvas, event) {
+export function get_mouse_pos_in_canvas(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     let tmp = {
         x: event.clientX - rect.left,
@@ -70,8 +65,7 @@ function get_mouse_pos_in_canvas(canvas, event) {
     };
     return position_c.raw_to_canvas(tmp);
 }
-exports.get_mouse_pos_in_canvas = get_mouse_pos_in_canvas;
-class AnimatedImage {
+export class AnimatedImage {
     constructor(image_name) {
         this.tag = image_name;
         this.current = 0;
@@ -83,9 +77,9 @@ class AnimatedImage {
     }
     update(dt, images) {
         this.animation_tick += dt;
-        while (this.animation_tick > exports.BATTLE_ANIMATION_TICK) {
+        while (this.animation_tick > BATTLE_ANIMATION_TICK) {
             this.current += 1;
-            this.animation_tick = this.animation_tick - exports.BATTLE_ANIMATION_TICK;
+            this.animation_tick = this.animation_tick - BATTLE_ANIMATION_TICK;
             if (!(this.get_image_name() in images)) {
                 this.current = 0;
             }
@@ -108,8 +102,7 @@ class AnimatedImage {
         draw_image(ctx, images[this.get_image_name()], Math.floor(data[0]), Math.floor(data[1]), Math.floor(data[2]), Math.floor(data[3]));
     }
 }
-exports.AnimatedImage = AnimatedImage;
-class MovementBattleEvent {
+export class MovementBattleEvent {
     constructor(unit_id, target) {
         this.type = 'movement';
         this.target = target;
@@ -124,8 +117,7 @@ class MovementBattleEvent {
         return unit.name + ' moved (' + this.target.x + ' ' + this.target.y + ')';
     }
 }
-exports.MovementBattleEvent = MovementBattleEvent;
-class UpdateDataEvent {
+export class UpdateDataEvent {
     constructor(unit_id, data) {
         this.unit = unit_id;
         this.data = data;
@@ -139,8 +131,7 @@ class UpdateDataEvent {
         return 'ok';
     }
 }
-exports.UpdateDataEvent = UpdateDataEvent;
-class ClearBattleEvent {
+export class ClearBattleEvent {
     constructor() {
         this.type = 'clear';
     }
@@ -152,8 +143,7 @@ class ClearBattleEvent {
         "battle is finished";
     }
 }
-exports.ClearBattleEvent = ClearBattleEvent;
-class AttackEvent {
+export class AttackEvent {
     constructor(unit, target, data) {
         this.type = 'attack';
         this.unit_id = unit;
@@ -179,8 +169,7 @@ class AttackEvent {
         return result + this.data.total_damage + ' damage';
     }
 }
-exports.AttackEvent = AttackEvent;
-class RetreatEvent {
+export class RetreatEvent {
     constructor(unit_id) {
         this.unit_id = unit_id;
         this.type = 'retreat';
@@ -198,8 +187,7 @@ class RetreatEvent {
         return unit.name + ' retreats';
     }
 }
-exports.RetreatEvent = RetreatEvent;
-class NewTurnEvent {
+export class NewTurnEvent {
     constructor(unit) {
         this.type = 'new_turn';
         this.unit = unit;
@@ -211,8 +199,7 @@ class NewTurnEvent {
         return 'new_turn';
     }
 }
-exports.NewTurnEvent = NewTurnEvent;
-class BattleUnit {
+export class BattleUnit {
     constructor(id, name, hp, ap, range, position, tag) {
         this.id = id;
         this.name = name;
@@ -227,16 +214,18 @@ class BattleUnit {
         this.tag = tag;
     }
     update(hp, ap, position) {
-        this.hp = hp;
-        this.ap = ap;
-        this.position = position;
+        if (hp != undefined)
+            this.hp = hp;
+        if (ap != undefined)
+            this.ap = ap;
+        if (position != undefined)
+            this.position = position;
         if (hp == 0) {
             this.killed = true;
         }
     }
 }
-exports.BattleUnit = BattleUnit;
-class BattleUnitView {
+export class BattleUnitView {
     constructor(unit) {
         this.unit = unit;
         this.killed = unit.killed;
@@ -251,7 +240,7 @@ class BattleUnitView {
         if (battle.player_id == this.unit.id) {
             battle.update_player_actions_availability();
         }
-        let div = battle.container.querySelector('.enemy_list > .fighter_' + this.unit);
+        let div = battle.container.querySelector('.enemy_list > .fighter_' + this.unit.id);
         div.innerHTML = this.unit.name + '<br> hp: ' + this.unit.hp + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10;
     }
     draw(dt, battle, images) {
@@ -267,13 +256,13 @@ class BattleUnitView {
             switch (this.animation_sequence[1]) {
                 case "move": {
                     // update position and change animation depending on movement
-                    if (norm < exports.BATTLE_MOVEMENT_SPEED * dt) {
+                    if (norm < BATTLE_MOVEMENT_SPEED * dt) {
                         this.position = unit.position;
                         this.a_image.set_action('idle');
                         flag_animation_finished = true;
                     }
                     else {
-                        this.position = position_c.sum(this.position, position_c.scalar_mult(exports.BATTLE_MOVEMENT_SPEED / norm * dt, direction));
+                        this.position = position_c.sum(this.position, position_c.scalar_mult(BATTLE_MOVEMENT_SPEED / norm * dt, direction));
                         this.a_image.set_action('move');
                     }
                     break;
@@ -307,7 +296,7 @@ class BattleUnitView {
         //draw character attack radius circle and color it depending on it's status in ui
         ctx.strokeStyle = "rgba(0, 0, 0, 1)";
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, exports.BATTLE_SCALE * unit.range, 0, 2 * Math.PI);
+        ctx.arc(pos.x, pos.y, BATTLE_SCALE * unit.range, 0, 2 * Math.PI);
         if (battle.selected == unit.id) {
             ctx.fillStyle = "rgba(10, 10, 200, 0.7)"; // blue if selecter
         }
@@ -320,11 +309,11 @@ class BattleUnitView {
         ctx.fill();
         //draw a border of circle above
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, exports.BATTLE_SCALE * unit.range, 0, 2 * Math.PI);
+        ctx.arc(pos.x, pos.y, BATTLE_SCALE * unit.range, 0, 2 * Math.PI);
         ctx.stroke();
         //draw small circle at unit's base
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, exports.BATTLE_SCALE / 10, 0, 2 * Math.PI);
+        ctx.arc(pos.x, pos.y, BATTLE_SCALE / 10, 0, 2 * Math.PI);
         ctx.stroke();
         //draw nameplates
         ctx.font = '15px serif';
@@ -356,4 +345,3 @@ class BattleUnitView {
         this.a_image.update(dt, images);
     }
 }
-exports.BattleUnitView = BattleUnitView;

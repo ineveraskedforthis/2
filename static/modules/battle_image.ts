@@ -1,4 +1,4 @@
-import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, battle_id, battle_position, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, SocketBattleData, UpdateDataEvent} from './battle_image_helper'
+import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, battle_id, battle_position, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, SocketBattleData, UpdateDataEvent} from './battle_image_helper.js'
 declare var alert: (data: string) => {}
 
 

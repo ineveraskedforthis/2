@@ -1,5 +1,4 @@
-import { AttackResult } from "../../game_modules/base_game_classes/misc/attack_result"
-import { BattleImageNext } from "./battle_image"
+import { BattleImageNext } from "./battle_image.js"
 
 declare var alert: (data: string) => {}
 
@@ -203,7 +202,7 @@ export class AttackEvent {
     type: 'attack'
     unit_id: battle_id
     target_id: battle_id
-    data: AttackResult
+    data: any
 
     constructor(unit: battle_id, target: battle_id, data: any) {
         this.type = 'attack'
@@ -319,9 +318,9 @@ export class BattleUnit {
     }
 
     update(hp: number, ap: number, position: battle_position) {
-        this.hp = hp
-        this.ap = ap
-        this.position = position
+        if (hp != undefined) this.hp = hp;
+        if (ap != undefined) this.ap = ap
+        if (position != undefined) this.position = position
 
         if (hp == 0) {
             this.killed = true
@@ -357,7 +356,7 @@ export class BattleUnitView {
         if (battle.player_id == this.unit.id) {
             battle.update_player_actions_availability()
         }
-        let div = battle.container.querySelector('.enemy_list > .fighter_' + this.unit)
+        let div = battle.container.querySelector('.enemy_list > .fighter_' + this.unit.id)
         div.innerHTML = this.unit.name + '<br> hp: ' + this.unit.hp + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10
     }
 

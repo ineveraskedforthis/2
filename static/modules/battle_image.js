@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.BattleImageNext = void 0;
-const battle_image_helper_1 = require("./battle_image_helper");
+import { AnimatedImage, AttackEvent, BattleUnit, BattleUnitView, BATTLE_SCALE, ClearBattleEvent, draw_image, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent } from './battle_image_helper.js';
 function build_character_div(unit_data, battle_data) {
     let div = document.createElement('div');
     div.innerHTML = 'hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap;
@@ -12,7 +9,7 @@ function build_character_div(unit_data, battle_data) {
     div.onmouseleave = battle_data.remove_hover;
     return div;
 }
-class BattleImageNext {
+export class BattleImageNext {
     constructor(canvas, canvas_background) {
         this.canvas = canvas;
         this.canvas_background = canvas_background;
@@ -57,25 +54,25 @@ class BattleImageNext {
     add_fighter(battle_id, tag, pos, range, name, hp) {
         console.log("add fighter");
         console.log(battle_id, tag, pos, range);
-        let unit = new battle_image_helper_1.BattleUnit(battle_id, name, hp, 0, range, pos, tag);
-        let unit_view = new battle_image_helper_1.BattleUnitView(unit);
+        let unit = new BattleUnit(battle_id, name, hp, 0, range, pos, tag);
+        let unit_view = new BattleUnitView(unit);
         this.battle_ids.add(battle_id);
         this.units_data[battle_id] = unit;
         this.units_views[battle_id] = unit_view;
-        this.images[battle_id] = new battle_image_helper_1.AnimatedImage(tag);
+        this.images[battle_id] = new AnimatedImage(tag);
         let div = build_character_div(unit, this);
         this.container.querySelector(".enemy_list").appendChild(div);
     }
     change_bg(bg) {
         this.background = bg;
         let ctx = this.canvas_background.getContext('2d');
-        (0, battle_image_helper_1.draw_image)(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
+        draw_image(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
         this.background_flag = true;
     }
     update(data) {
         for (let i in data) {
             let index = Number(i);
-            let event = new battle_image_helper_1.UpdateDataEvent(index, data[i]);
+            let event = new UpdateDataEvent(index, data[i]);
             this.events_list.push(event);
         }
     }
@@ -109,7 +106,7 @@ class BattleImageNext {
         let hovered = false;
         for (let unit_id of this.battle_ids) {
             let unit_view = this.units_views[unit_id];
-            let centre = battle_image_helper_1.position_c.battle_to_canvas(unit_view.position, this.h, this.w);
+            let centre = position_c.battle_to_canvas(unit_view.position, this.h, this.w);
             let dx = centre.x - pos.x;
             let dy = centre.y - pos.y;
             dx = dx * dx;
@@ -140,7 +137,7 @@ class BattleImageNext {
         this.hovered = undefined;
     }
     clear() {
-        let event = new battle_image_helper_1.ClearBattleEvent;
+        let event = new ClearBattleEvent;
         this.events_list.push(event);
     }
     draw(images, dt) {
@@ -153,7 +150,7 @@ class BattleImageNext {
         // draw background only once (no camera movement support yet)
         if (!this.background_flag) {
             let ctx = this.canvas_background.getContext('2d');
-            (0, battle_image_helper_1.draw_image)(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
+            draw_image(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
             this.background_flag = true;
         }
         //sort views by y coordinate
@@ -172,13 +169,13 @@ class BattleImageNext {
             ctx.strokeStyle = 'rgba(255, 255, 0, 1)';
             ctx.fillStyle = "rgba(10, 10, 200, 0.9)";
             ctx.beginPath();
-            ctx.arc(this.anchor.x, this.anchor.y, battle_image_helper_1.BATTLE_SCALE / 10, 0, 2 * Math.PI);
+            ctx.arc(this.anchor.x, this.anchor.y, BATTLE_SCALE / 10, 0, 2 * Math.PI);
             ctx.fill();
             ctx.stroke();
             ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
             if (this.player_id != undefined) {
                 let player = this.units_views[this.player_id];
-                let centre = battle_image_helper_1.position_c.battle_to_canvas(player.position, this.h, this.w);
+                let centre = position_c.battle_to_canvas(player.position, this.h, this.w);
                 ctx.beginPath();
                 ctx.moveTo(centre.x, centre.y);
                 ctx.lineTo(this.anchor.x, this.anchor.y);
@@ -188,8 +185,8 @@ class BattleImageNext {
         if ((this.selected != undefined) && (this.player_id != undefined)) {
             let player = this.units_views[this.player_id];
             let target = this.units_views[this.selected];
-            let centre1 = battle_image_helper_1.position_c.battle_to_canvas(player.position, this.h, this.w);
-            let centre2 = battle_image_helper_1.position_c.battle_to_canvas(target.position, this.h, this.w);
+            let centre1 = position_c.battle_to_canvas(player.position, this.h, this.w);
+            let centre2 = position_c.battle_to_canvas(target.position, this.h, this.w);
             this.canvas_context.beginPath();
             this.canvas_context.moveTo(centre1.x, centre1.y);
             this.canvas_context.lineTo(centre2.x, centre2.y);
@@ -217,7 +214,7 @@ class BattleImageNext {
         let selected = false;
         for (let i of this.battle_ids) {
             let unit = this.units_views[i];
-            let centre = battle_image_helper_1.position_c.battle_to_canvas(unit.position, this.h, this.w);
+            let centre = position_c.battle_to_canvas(unit.position, this.h, this.w);
             let dx = centre.x - pos.x;
             let dy = centre.y - pos.y;
             dx = dx * dx;
@@ -240,7 +237,7 @@ class BattleImageNext {
         }
         else if (tag == 'move') {
             if (this.anchor != undefined) {
-                this.socket.emit('battle-action', { action: 'move', target: battle_image_helper_1.position_c.canvas_to_battle(this.anchor, this.h, this.w) });
+                this.socket.emit('battle-action', { action: 'move', target: position_c.canvas_to_battle(this.anchor, this.h, this.w) });
             }
         }
         else if (tag == 'attack') {
@@ -318,24 +315,24 @@ class BattleImageNext {
         }
         // handle real actions
         if (action.action == 'move') {
-            let event = new battle_image_helper_1.MovementBattleEvent(action.who, action.target);
+            let event = new MovementBattleEvent(action.who, action.target);
             console.log('move', action.who);
             this.events_list.push(event);
         }
         else if (action.action == 'attack') {
-            let event = new battle_image_helper_1.AttackEvent(action.attacker, action.target, action.result);
+            let event = new AttackEvent(action.attacker, action.target, action.result);
             this.events_list.push(event);
         }
         else if (action.action == 'stop_battle') {
-            let event = new battle_image_helper_1.ClearBattleEvent();
+            let event = new ClearBattleEvent();
             this.events_list.push(event);
         }
         else if (action.action == 'new_turn') {
-            let event = new battle_image_helper_1.NewTurnEvent(action.target);
+            let event = new NewTurnEvent(action.target);
             this.events_list.push(event);
         }
         else if (action.action == 'flee') {
-            this.events_list.push(new battle_image_helper_1.RetreatEvent(action.who));
+            this.events_list.push(new RetreatEvent(action.who));
         }
         else {
             console.log('unhandled input');
@@ -343,7 +340,6 @@ class BattleImageNext {
         }
     }
 }
-exports.BattleImageNext = BattleImageNext;
 // returns log message
 // returns null if no message needed
 // battle_action(data) {

@@ -1,5 +1,5 @@
-import { BattleImageNext } from "./battle_image";
-import { get_mouse_pos_in_canvas } from "./battle_image_helper";
+import { BattleImageNext } from "./battle_image.js";
+import { get_mouse_pos_in_canvas } from "./battle_image_helper.js";
 
 export function init_battle_control(battle_image:BattleImageNext, globals:any) {
     let socket = globals.socket;
