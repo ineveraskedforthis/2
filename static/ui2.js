@@ -9,8 +9,11 @@ import {CharInfoMonster} from './modules/char_info_monster.js';
 import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
 
-import { BattleImageNext } from './modules/battle_image.js';
-import { init_battle_control } from './modules/battle_image_init.js'
+// import { BattleImageNext } from './modules/battle_image.js';
+// import { init_battle_control } from './modules/battle_image_init.js'
+
+import * as BattleImageNext from  './modules/battle_image.js';
+import * as init_battle_control from './modules/battle_image_init.js'
 
 var globals = {
     prev_mouse_x: null,
