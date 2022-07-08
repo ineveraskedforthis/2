@@ -1,9 +1,7 @@
-import { time } from 'console';
-import {draw_image, get_pos_in_canvas} from './common.js'
+import {AnimatedImage, battle_position, Canvas, CanvasContext, draw_image, get_mouse_pos_in_canvas, Image} from './battle_image_helper'
 
-let BATTLE_SCALE = 50
 
-export function init_battle_control(battle_image, globals) {
+export function init_battle_control(battle_image:BattleImageNext, globals:any) {
     let socket = globals.socket;
     battle_image.canvas.onmousedown = event => {
         event.preventDefault();
@@ -11,12 +9,12 @@ export function init_battle_control(battle_image, globals) {
     }
 
     battle_image.canvas.onmousemove = event => {
-        let mouse_pos = get_pos_in_canvas(battle_image.canvas, event);
+        let mouse_pos = get_mouse_pos_in_canvas(battle_image.canvas, event);
         battle_image.hover(mouse_pos);
     };
 
     battle_image.canvas.onmouseup = event => {
-        let mouse_pos = get_pos_in_canvas(battle_image.canvas, event);
+        let mouse_pos = get_mouse_pos_in_canvas(battle_image.canvas, event);
         if (globals.bcp) {
             battle_image.press(mouse_pos);
             globals.bcp = false;
@@ -31,84 +29,22 @@ export function init_battle_control(battle_image, globals) {
     battle_image.add_action({name: 'end turn', tag: 'end_turn', cost: 0})
 }
 
-class AnimatedImage {
-    constructor(image_name) {
-        this.tag = image_name;
-        this.current = 0
-        this.action = 'idle'
-    }
 
-    get_image_name() {
-        return this.tag + '_' + this.action + '_' + ("0000" + this.current).slice(-4)
-    }
-    
-    update(images) {
-        this.current += 1;
-        if (!(this.get_image_name() in images)) {
-            this.current = 0
-        }
-    }
 
-    set_action(tag) {
-        if (tag != this.action ){
-            this.action = tag
-            this.current = 0;
-        }
-    }
 
-    get_w(images) {
-        return images[this.get_image_name()].width
-    }
-    
-    get_h(images) {
-        return images[this.get_image_name()].height
-    }
 
-    draw(ctx, x, y, w, h, images) {
-        draw_image(ctx, images[this.get_image_name()], Math.floor(x), Math.floor(y), Math.floor(w), Math.floor(h))
-    }
-}
-
-class Vector {
-    constructor(x, y, z) {
-        this.data = [x, y, z]
-    }
-}
-
-class Line {
-    constructor(p, v) {
-        this.vector = v;
-        this.point = p;
-    }
-}
-
-class Plane {
-    constructor(n, p) {
-        this.normal_vector = n;
-        this.point = p;
-    }
-}
-
-function mult(s, v) {
-    return new Vector(s * v.data[0], s * v.data[1], s * v.data[2])
-}
-
-function sum(a, b) {
-    var c = new Vector(a.data[0] + b.data[0], a.data[1] + b.data[1], a.data[2] + b.data[2])
-    return c
-}
-
-function minus(a, b) {
-    var c = new Vector(a.data[0] - b.data[0], a.data[1] - b.data[1], a.data[2] - b.data[2])
-    return c
-}
-
-function dot(a, b) {
-    return a.data[0] * b.data[1] + a.data[1] * b.data[1] + a.data[2] * b.data[2];
-}
 
 function two_points_to_line(a, b) {
     return new Line(a, minus(b, a))
+}
+
+
+
+calculate_canvas_pos(pos, image, images) {
+    let centre = this.get_centre(pos);
+    let w = image.get_w(images);
+    let h = image.get_h(images);
+    return [centre.x - w/10, centre.y - h/5 + 10, w/5, h/5]
 }
 
 function intersect(line, plane) {
@@ -120,8 +56,26 @@ function intersect(line, plane) {
     return sum(mult(t, line.vector), line.point)
 }
 
-class BattleData {
-    constructor(id, name, hp, ap, range, position) {
+interface SocketBattleUnit {
+    tag: string, 
+    position: battle_position, 
+    range: number, 
+    hp: number, 
+    name: string
+}
+
+type SocketBattleData = {[_ in number]: SocketBattleUnit};
+
+class BattleUnit {
+    id: battle_id
+    name: string
+    hp: number
+    ap: number
+    range: number
+    position: battle_position
+    killed: boolean
+
+    constructor(id: battle_id, name: string, hp: number, ap: number, range: number, position: battle_position) {
         this.id = id
         this.name = name
         this.hp = hp
@@ -157,7 +111,7 @@ class MoveAnimation {
     }
 }
 
-function build_character_div(unit_data, battle_data) {
+function build_character_div(unit_data: BattleUnit, battle_data:BattleImageNext) {
     let div = document.createElement('div')
     div.innerHTML = 'hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap
     div.classList.add('fighter_' + unit_data.id)
@@ -168,8 +122,35 @@ function build_character_div(unit_data, battle_data) {
     return div
 }
 
+
+declare var document: any;
+declare var images: {[_ in string]: Image};
+
+
+type battle_id = number & { __brand: "battle"}
+
 export class BattleImageNext {
-    constructor(canvas, canvas_background) {
+    canvas: Canvas;
+    canvas_background: Canvas;
+    canvas_context: CanvasContext;
+    container: any;
+    socket: any;
+
+    background: string
+    background_flag:boolean
+
+    w:number
+    h:number
+    movement_speed:number
+    scale:number
+
+    events_list: Event[]
+    current_animations: MoveAnimation[]
+    units_data: {[_ in battle_id]: BattleUnit}
+    battle_ids: Set<battle_id>;
+    images: {[_ in battle_id]: AnimatedImage}
+
+    constructor(canvas:Canvas, canvas_background:Canvas) {
         this.canvas = canvas 
         this.canvas_background = canvas_background
         this.canvas_context = canvas.getContext('2d')
@@ -183,6 +164,12 @@ export class BattleImageNext {
         this.movement_speed = 0.3
         this.scale = 1
 
+        this.events_list = []
+        this.current_animations = []
+        this.units_data = {}
+        this.battle_ids = new Set()
+        this.images = {}
+
         this.reset_data()
     }
 
@@ -192,7 +179,6 @@ export class BattleImageNext {
         this.events_list = []
         this.current_animations = []
         this.units_data = {}
-
         this.battle_ids = new Set()
 
         {
@@ -201,19 +187,19 @@ export class BattleImageNext {
         }
     }
 
-    load(data) {
+    load(data: SocketBattleData) {
         console.log('load battle')
-        this.init()
+        this.reset_data()
         for (var i in data) {
-            this.add_fighter(i, data[i].tag, data[i].position, data[i].range)
+            this.add_fighter(Number(i) as battle_id, data[i].tag, data[i].position, data[i].range, data[i].name, data[i].hp)
         }
     }
 
-    add_fighter(battle_id, tag, pos, range, is_player, name, hp) {
+    add_fighter(battle_id:battle_id, tag:string, pos:battle_position, range:number, name:string, hp:number) {
         console.log("add fighter")
         console.log(battle_id, tag, pos, range)
 
-        let unit = new BattleData(battle_id, name, hp, '???', range, pos)
+        let unit = new BattleUnit(battle_id, name, hp, 0, range, pos)
         this.battle_ids.add(battle_id)
         this.units_data[battle_id] = unit
 
@@ -223,17 +209,21 @@ export class BattleImageNext {
         this.container.querySelector(".enemy_list").appendChild(div)
     }
 
-    change_bg(bg) {
+    change_bg(bg:string) {
         this.background = bg;
         let ctx = this.canvas_background.getContext('2d');
         draw_image(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
         this.background_flag = true;
     }
 
-    update(data) {
+    update(data: SocketBattleData) {
+        let event = new 
         for (let i in data) {
+            let index = Number(i) as battle_id
             if ((data[i] == undefined) || (data[i].hp == 0)) {
-                this.units_data[i]?.killed = true
+                this.units_data[index].killed = true
+            } else {
+                this.units_data[index]
             }
         }
     }
@@ -284,6 +274,49 @@ export class BattleImageNext {
             }
         } 
     }
+
+
+    hover(pos) {
+        let hovered = false;
+        for (let unit_id in this.units_data) {
+            let centre = this.get_centre(this.units_data[unit_id])
+            let dx = centre.x - pos.x;
+            let dy = centre.y - pos.y;
+            dx = dx * dx;
+            dy = dy * dy;
+            if (dx + dy < 400) {
+                hovered = true;
+                this.set_hover(i)
+            }
+        } 
+        if (!hovered) {
+            this.remove_hover()
+        }
+    }
+
+    set_hover(i) {
+        if (this.hovered != undefined) {
+            let div = this.container.querySelector('.enemy_list > .fighter_' + this.hovered)
+            div.classList.remove('hovered_unit')
+        }
+        this.hovered = i;
+        let div = this.container.querySelector('.enemy_list > .fighter_' + i)
+        div.classList.add('hovered_unit')
+    }
+
+    remove_hover() {
+        if (this.hovered != undefined) {
+            let div = this.container.querySelector('.enemy_list > .fighter_' + this.hovered)
+            div.classList.remove('hovered_unit')
+        }
+        this.hovered = undefined;
+    }
+
+    clear() {
+        this.events_list.push({action: 'stop_battle', time: -1})
+    }
+
+
 
 }
 
@@ -552,62 +585,9 @@ export class BattleImage {
         }
     }
 
-    get_centre(pos) {
-        let centre = {x: pos.y, y: pos.x};
-        centre.x = -centre.x * BATTLE_SCALE + 520;
-        centre.y = centre.y * BATTLE_SCALE + this.h / 2;
-        return centre
-    }
 
-    reverse_centre(pos) {
-        let tmp = {x: pos.x, y: pos.y}
-        tmp.x = (tmp.x - 520) / (-BATTLE_SCALE);
-        tmp.y = (tmp.y - this.h / 2) / (BATTLE_SCALE)
-        return {x: tmp.y, y: tmp.x}
-    }
 
-    calculate_canvas_pos(pos, image, images) {
-        let centre = this.get_centre(pos);
-        let w = image.get_w(images);
-        let h = image.get_h(images);
-        return [centre.x - w/10, centre.y - h/5 + 10, w/5, h/5]
-    }
 
-    hover(pos) {
-        let hovered = false;
-        for (let i in this.positions) {
-            let centre = this.get_centre(this.positions[i])
-            let dx = centre.x - pos.x;
-            let dy = centre.y - pos.y;
-            dx = dx * dx;
-            dy = dy * dy;
-            if (dx + dy < 400) {
-                hovered = true;
-                this.set_hover(i)
-            }
-        } 
-        if (!hovered) {
-            this.remove_hover()
-        }
-    }
-
-    set_hover(i) {
-        if (this.hovered != undefined) {
-            let div = this.container.querySelector('.enemy_list > .fighter_' + this.hovered)
-            div.classList.remove('hovered_unit')
-        }
-        this.hovered = i;
-        let div = this.container.querySelector('.enemy_list > .fighter_' + i)
-        div.classList.add('hovered_unit')
-    }
-
-    remove_hover() {
-        if (this.hovered != undefined) {
-            let div = this.container.querySelector('.enemy_list > .fighter_' + this.hovered)
-            div.classList.remove('hovered_unit')
-        }
-        this.hovered = undefined;
-    }
 
     set_selection(i) {
         if (this.selected != undefined) {
