@@ -5,9 +5,12 @@ var socket = io();
 const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'local_characters']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
-import {BattleImage, init_battle_control} from './modules/battle_image.js';
+// import {init_battle_control} from './modules/battle_image.js';
 import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
+
+import { BattleImageNext } from './modules/battle_image.js';
+import { init_battle_control } from './modules/battle_image_init.js'
 
 var globals = {
     prev_mouse_x: null,
@@ -25,7 +28,7 @@ var stash_id_to_tag = {}
 const char_info_monster = new CharInfoMonster();
 const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket);
 init_map_control(map, globals);
-var battle_image = new BattleImage(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
+var battle_image = new BattleImageNext(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 init_battle_control(battle_image, globals);
 window.battle_image = battle_image
 const character_screen = new CharacterScreen(socket);
@@ -970,7 +973,7 @@ socket.on('battle-has-started', data => start_battle(data))
 socket.on('battle-has-ended', data => end_battle(data))
 socket.on('battle-update', data => battle_image.update(data))
 socket.on('battle-action', data => {
-    let res = battle_image.battle_action(data);
+    let res = battle_image.handle_socket_data(data);
     new_log_message(res)
     if (res == 'battle has ended') end_battle();
 })
