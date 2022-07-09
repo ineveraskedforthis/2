@@ -98,8 +98,6 @@ export class BattleImageNext {
         this.update_player_actions_availability();
     }
     update_player_actions_availability() {
-        console.log('update_actions_availability');
-        console.log(this.player_id);
         if (this.player_id == undefined) {
             return;
         }
@@ -297,7 +295,6 @@ export class BattleImageNext {
         div.appendChild(action_div);
     }
     update_action_probability(tag, value) {
-        console.log(tag, value);
         let label = document.getElementById(tag + '_chance_b');
         label.innerHTML = Math.floor(value * 100) + '%';
     }

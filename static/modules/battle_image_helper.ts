@@ -12,9 +12,6 @@ interface position {
 export type battle_position = position & { __brand: "battle"}
 export type canvas_position = position & { __brand: "canvas"}
 
-export function diff(a: battle_position, b:battle_position) {
-    
-}
 
 export type Canvas = any & { __brand: "canvas"};
 export type CanvasContext = any & { __brand: "canvas_context"};
@@ -27,14 +24,12 @@ export type battle_id = number & { __brand: "battle"}
 export const BATTLE_SCALE = 50
 export const BATTLE_MOVEMENT_SPEED = 4
 export const BATTLE_ANIMATION_TICK = 1 / 15
+export const BATTLE_ATTACK_DURATION = 0.5
 
 export namespace position_c {
 
-    export function diff_canvas(a: canvas_position, b: canvas_position): canvas_position {
-        return {x: a.x - b.x, y:a.y - b.y} as canvas_position
-    }
-    export function diff_battle(a: battle_position, b: battle_position): battle_position {
-        return {x: a.x - b.x, y:a.y - b.y} as battle_position
+    export function diff<Type extends position>(a: Type, b: Type): Type {
+        return {x: a.x - b.x, y:a.y - b.y} as Type
     }
 
     export function norm<Type extends position>(a: Type): number {
@@ -153,7 +148,7 @@ export class MovementBattleEvent {
 
     effect(battle: BattleImageNext) {
         let unit_view = battle.units_views[this.unit_id]
-        unit_view.animation_sequence.push('move')
+        unit_view.animation_sequence.push({type: 'move', data: ''})
     }
 
     generate_log_message(battle: BattleImageNext):string {
@@ -175,7 +170,7 @@ export class UpdateDataEvent {
 
     effect(battle: BattleImageNext) {
         battle.units_data[this.unit].update(this.data.hp, this.data.ap, this.data.position as battle_position)
-        battle.units_views[this.unit].animation_sequence.push('update')
+        battle.units_views[this.unit].animation_sequence.push({type: 'update', data: ''})
     }
 
     generate_log_message():string {
@@ -200,6 +195,20 @@ export class ClearBattleEvent {
     }
 }
 
+function get_attack_direction(a: BattleUnitView, d: BattleUnitView) {
+    let hor = 'left'
+    if (a.position.x < d.position.x) {
+        hor = 'right'
+    }
+
+    let ver = 'up'
+    if (a.position.y < d.position.y) {
+        ver = 'down'
+    }
+
+    return hor + '_' + ver
+}
+
 export class AttackEvent {
     type: 'attack'
     unit_id: battle_id
@@ -215,8 +224,15 @@ export class AttackEvent {
 
     effect(battle: BattleImageNext) {
         let unit_view_attacker = battle.units_views[this.unit_id]
-        // let unit_view_defender = battle.units_views[this.target_id]
-        unit_view_attacker.animation_sequence.push('attack')
+        let unit_view_defender = battle.units_views[this.target_id]
+
+        let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
+        direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+
+        if (this.data.flags.evade || this.data.flags.miss) {
+            unit_view_defender.animation_sequence.push({type: 'dodge', data: direction_vec})
+        }
+        unit_view_attacker.animation_sequence.push({type: 'attack', data: direction_vec})
         // unit_view_defender.animation_sequence.push('attack')
     }
 
@@ -319,6 +335,11 @@ export class BattleUnit {
     }
 }
 
+interface animation_event {
+    type: "move"|"attack"|"update"|'dodge'
+    data: any
+}
+
 export class BattleUnitView {
     side_bar_div: any
     position: battle_position
@@ -328,8 +349,9 @@ export class BattleUnitView {
     unit: BattleUnit
     a_image: AnimatedImage
     animation_timer: number
+    animation_something: number
 
-    animation_sequence: ("move"|"attack"|"update")[]
+    animation_sequence: animation_event[]
     
     constructor(unit: BattleUnit) {
         this.unit = unit
@@ -339,6 +361,7 @@ export class BattleUnitView {
         this.hp = unit.hp
         this.animation_sequence = []
         this.animation_timer = 0
+        this.animation_something = 0
 
         this.a_image = new AnimatedImage(unit.tag)
     }
@@ -357,7 +380,7 @@ export class BattleUnitView {
         }
         let unit = this.unit
 
-        let direction = position_c.diff_battle(unit.position, this.position)
+        let direction = position_c.diff(unit.position, this.position)
         let norm = position_c.norm(direction)
 
         //handling animation sequence 
@@ -365,7 +388,8 @@ export class BattleUnitView {
         let flag_animation_finished = false
 
         if (this.animation_sequence.length > 0) {
-            switch(this.animation_sequence[1]) {
+            let event = this.animation_sequence[0]
+            switch(event.type) {
                 case "move": {
                     // update position and change animation depending on movement
                     if (norm < BATTLE_MOVEMENT_SPEED * dt) {
@@ -383,9 +407,33 @@ export class BattleUnitView {
                 case "attack": {
                     this.a_image.set_action('attack')
                     this.animation_timer += dt
-                    if (this.animation_timer > 1) {
+
+                    let scale = -Math.sin(this.animation_timer / BATTLE_ATTACK_DURATION * Math.PI)
+                    let shift = position_c.scalar_mult(scale, event.data as battle_position)
+                    this.position = position_c.sum(this.unit.position, shift)
+
+                    let position = position_c.battle_to_canvas(this.position, battle.h, battle.w)
+                    battle.canvas_context.drawImage(images['attack_' + this.animation_something], position.x - 100, position.y - 100)
+                    if (this.animation_timer > BATTLE_ATTACK_DURATION) {
                         flag_animation_finished = true
                         this.animation_timer = 0
+                        this.position = this.unit.position
+                        this.animation_something = 1 - this.animation_something
+                    }
+                    break
+                }
+                case "dodge": {
+                    this.animation_timer += dt
+
+                    let scale = -Math.sin(this.animation_timer / BATTLE_ATTACK_DURATION * Math.PI) * 2
+                    let shift = position_c.scalar_mult(scale, event.data as battle_position)
+                    this.position = position_c.sum(this.unit.position, shift)
+
+                    if (this.animation_timer > BATTLE_ATTACK_DURATION) {
+                        flag_animation_finished = true
+                        this.animation_timer = 0
+                        this.position = this.unit.position
+                        this.animation_something = 1 - this.animation_something
                     }
                     break
                 }
@@ -401,6 +449,8 @@ export class BattleUnitView {
         
         // remove one animation from sequence, when it is finished
         if ((flag_animation_finished) && (this.animation_sequence.length > 0)){
+            console.log('animation finished')
+            console.log(this.animation_sequence[0].type)
             this.a_image.set_action('idle')
             this.animation_sequence.splice(0, 1)
         }

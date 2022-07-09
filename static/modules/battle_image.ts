@@ -168,8 +168,6 @@ export class BattleImageNext {
 
 
     update_player_actions_availability() {
-        console.log('update_actions_availability')
-        console.log(this.player_id)
         if (this.player_id == undefined) {
             return
         }
@@ -397,7 +395,6 @@ export class BattleImageNext {
     }
 
     update_action_probability(tag:string, value:number) {
-        console.log(tag, value)
         let label = document.getElementById(tag + '_chance_b')
         label.innerHTML = Math.floor(value * 100) + '%'
     }

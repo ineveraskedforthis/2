@@ -52,6 +52,9 @@ for (let i = 0; i < 4; i++) {
 }
 add_image_to_load('test_idle_0000', 'test_idle_0000')
 
+add_image_to_load('attack_0', './battle/attack_0')
+add_image_to_load('attack_1', './battle/attack_1')
+
 load('rat', 4, 4, 4);
 load('graci', 1, 10, 1);
 load('elodino', 1, 5, 2);

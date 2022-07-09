@@ -221,6 +221,9 @@ function new_log_message(msg) {
     if (msg == null) {
         return
     }
+    if (msg == 'you_are_dead') {
+        turn_tab_off('battle')
+    }
     var log = document.getElementById('log');
     var new_line = document.createElement('p');
     var text = document.createTextNode(msg);

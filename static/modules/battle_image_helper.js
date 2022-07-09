@@ -1,18 +1,13 @@
-export function diff(a, b) {
-}
 export const BATTLE_SCALE = 50;
 export const BATTLE_MOVEMENT_SPEED = 4;
 export const BATTLE_ANIMATION_TICK = 1 / 15;
+export const BATTLE_ATTACK_DURATION = 0.5;
 export var position_c;
 (function (position_c) {
-    function diff_canvas(a, b) {
+    function diff(a, b) {
         return { x: a.x - b.x, y: a.y - b.y };
     }
-    position_c.diff_canvas = diff_canvas;
-    function diff_battle(a, b) {
-        return { x: a.x - b.x, y: a.y - b.y };
-    }
-    position_c.diff_battle = diff_battle;
+    position_c.diff = diff;
     function norm(a) {
         return Math.sqrt(a.x * a.x + a.y * a.y);
     }
@@ -110,7 +105,7 @@ export class MovementBattleEvent {
     }
     effect(battle) {
         let unit_view = battle.units_views[this.unit_id];
-        unit_view.animation_sequence.push('move');
+        unit_view.animation_sequence.push({ type: 'move', data: '' });
     }
     generate_log_message(battle) {
         let unit = battle.units_data[this.unit_id];
@@ -125,7 +120,7 @@ export class UpdateDataEvent {
     }
     effect(battle) {
         battle.units_data[this.unit].update(this.data.hp, this.data.ap, this.data.position);
-        battle.units_views[this.unit].animation_sequence.push('update');
+        battle.units_views[this.unit].animation_sequence.push({ type: 'update', data: '' });
     }
     generate_log_message() {
         return 'ok';
@@ -143,6 +138,17 @@ export class ClearBattleEvent {
         return "battle is finished";
     }
 }
+function get_attack_direction(a, d) {
+    let hor = 'left';
+    if (a.position.x < d.position.x) {
+        hor = 'right';
+    }
+    let ver = 'up';
+    if (a.position.y < d.position.y) {
+        ver = 'down';
+    }
+    return hor + '_' + ver;
+}
 export class AttackEvent {
     constructor(unit, target, data) {
         this.type = 'attack';
@@ -152,8 +158,13 @@ export class AttackEvent {
     }
     effect(battle) {
         let unit_view_attacker = battle.units_views[this.unit_id];
-        // let unit_view_defender = battle.units_views[this.target_id]
-        unit_view_attacker.animation_sequence.push('attack');
+        let unit_view_defender = battle.units_views[this.target_id];
+        let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position);
+        direction_vec = position_c.scalar_mult(1 / position_c.norm(direction_vec), direction_vec);
+        if (this.data.flags.evade || this.data.flags.miss) {
+            unit_view_defender.animation_sequence.push({ type: 'dodge', data: direction_vec });
+        }
+        unit_view_attacker.animation_sequence.push({ type: 'attack', data: direction_vec });
         // unit_view_defender.animation_sequence.push('attack')
     }
     generate_log_message(battle) {
@@ -234,6 +245,7 @@ export class BattleUnitView {
         this.hp = unit.hp;
         this.animation_sequence = [];
         this.animation_timer = 0;
+        this.animation_something = 0;
         this.a_image = new AnimatedImage(unit.tag);
     }
     update(battle) {
@@ -248,12 +260,13 @@ export class BattleUnitView {
             return;
         }
         let unit = this.unit;
-        let direction = position_c.diff_battle(unit.position, this.position);
+        let direction = position_c.diff(unit.position, this.position);
         let norm = position_c.norm(direction);
         //handling animation sequence 
         let flag_animation_finished = false;
         if (this.animation_sequence.length > 0) {
-            switch (this.animation_sequence[1]) {
+            let event = this.animation_sequence[0];
+            switch (event.type) {
                 case "move": {
                     // update position and change animation depending on movement
                     if (norm < BATTLE_MOVEMENT_SPEED * dt) {
@@ -270,9 +283,29 @@ export class BattleUnitView {
                 case "attack": {
                     this.a_image.set_action('attack');
                     this.animation_timer += dt;
-                    if (this.animation_timer > 1) {
+                    let scale = -Math.sin(this.animation_timer / BATTLE_ATTACK_DURATION * Math.PI);
+                    let shift = position_c.scalar_mult(scale, event.data);
+                    this.position = position_c.sum(this.unit.position, shift);
+                    let position = position_c.battle_to_canvas(this.position, battle.h, battle.w);
+                    battle.canvas_context.drawImage(images['attack_' + this.animation_something], position.x - 100, position.y - 100);
+                    if (this.animation_timer > BATTLE_ATTACK_DURATION) {
                         flag_animation_finished = true;
                         this.animation_timer = 0;
+                        this.position = this.unit.position;
+                        this.animation_something = 1 - this.animation_something;
+                    }
+                    break;
+                }
+                case "dodge": {
+                    this.animation_timer += dt;
+                    let scale = -Math.sin(this.animation_timer / BATTLE_ATTACK_DURATION * Math.PI) * 2;
+                    let shift = position_c.scalar_mult(scale, event.data);
+                    this.position = position_c.sum(this.unit.position, shift);
+                    if (this.animation_timer > BATTLE_ATTACK_DURATION) {
+                        flag_animation_finished = true;
+                        this.animation_timer = 0;
+                        this.position = this.unit.position;
+                        this.animation_something = 1 - this.animation_something;
                     }
                     break;
                 }
@@ -288,6 +321,8 @@ export class BattleUnitView {
         }
         // remove one animation from sequence, when it is finished
         if ((flag_animation_finished) && (this.animation_sequence.length > 0)) {
+            console.log('animation finished');
+            console.log(this.animation_sequence[0].type);
             this.a_image.set_action('idle');
             this.animation_sequence.splice(0, 1);
         }
