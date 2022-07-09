@@ -12,6 +12,7 @@ import { World } from "./world";
 import { ITEM_MATERIAL } from "./static_data/item_tags";
 import { material_index } from "./manager_classes/materials_manager";
 import { Savings } from "./base_game_classes/savings";
+import { SocketBattleData } from "../shared/battle_data";
 
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
@@ -487,19 +488,21 @@ export class BattleReworked2 {
         this.changed = true
     }
 
-    get_data() {
-        let data:any = {};
+    get_data():SocketBattleData {
+        let data:SocketBattleData = {};
         for (var i = 0; i < this.heap.data.length; i++) {
             let unit = this.heap.data[i];
             var character:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
             if (character != undefined) {
-                data[i] = {}
-                data[i].id = unit.char_id;
-                data[i].position = {x: unit.position.x, y: unit.position.y};
-                data[i].tag = character.get_model();
-                data[i].is_player = character.is_player();
-                data[i].range = character.get_range();
-                data[i].hp = character.get_hp();
+                data[i] = {
+                    id: unit.char_id,
+                    position: {x: unit.position.x, y: unit.position.y},
+                    tag: character.get_model(),
+                    range: character.get_range(),
+                    hp: character.get_hp(),
+                    name: character.name,
+                    ap: unit.action_points_left
+                }
             }
         }
         return data

@@ -976,9 +976,7 @@ socket.on('battle-has-started', data => start_battle(data))
 socket.on('battle-has-ended', data => end_battle(data))
 socket.on('battle-update', data => battle_image.update(data))
 socket.on('battle-action', data => {
-    let res = battle_image.handle_socket_data(data);
-    new_log_message(res)
-    if (res == 'battle has ended') end_battle();
+    battle_image.handle_socket_data(data);
 })
 socket.on('enemy-update', data => battle_image.update(data))
 socket.on('player-position', data => {((bi, data) => (bi.set_player(data)))(battle_image, data)})

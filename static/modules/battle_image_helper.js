@@ -1,7 +1,7 @@
 export function diff(a, b) {
 }
 export const BATTLE_SCALE = 50;
-export const BATTLE_MOVEMENT_SPEED = 0.3;
+export const BATTLE_MOVEMENT_SPEED = 4;
 export const BATTLE_ANIMATION_TICK = 1 / 15;
 export var position_c;
 (function (position_c) {
@@ -18,11 +18,11 @@ export var position_c;
     }
     position_c.norm = norm;
     function sum(a, b) {
-        return { x: a.x - b.x, y: a.y - b.y };
+        return { x: a.x + b.x, y: a.y + b.y };
     }
     position_c.sum = sum;
     function scalar_mult(x, a) {
-        return { x: x * a.x, y: a.y };
+        return { x: x * a.x, y: x * a.y };
     }
     position_c.scalar_mult = scalar_mult;
     function battle_to_canvas(pos, canvas_h, canvas_w) {
@@ -140,7 +140,7 @@ export class ClearBattleEvent {
         battle.reset_data();
     }
     generate_log_message() {
-        "battle is finished";
+        return "battle is finished";
     }
 }
 export class AttackEvent {
@@ -160,11 +160,11 @@ export class AttackEvent {
         let unit = battle.units_data[this.unit_id];
         let target = battle.units_data[this.target_id];
         let result = unit.name + ' attacks ' + target.name + ': ';
-        if (this.data.flags.crit) {
-            return result + this.data.total_damage + ' damage (CRITICAL)';
-        }
         if (this.data.flags.evade || this.data.flags.miss) {
             return result + ' MISS!';
+        }
+        if (this.data.flags.crit) {
+            return result + this.data.total_damage + ' damage (CRITICAL)';
         }
         return result + this.data.total_damage + ' damage';
     }
@@ -195,7 +195,7 @@ export class NewTurnEvent {
     effect(battle) {
         battle.set_current_turn(this.unit);
     }
-    generate_log() {
+    generate_log_message() {
         return 'new_turn';
     }
 }

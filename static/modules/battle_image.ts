@@ -1,7 +1,21 @@
-import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, battle_id, battle_position, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, SocketBattleData, UpdateDataEvent} from './battle_image_helper.js'
+import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, battle_id, battle_position, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent} from './battle_image_helper.js'
+
+import { SocketBattleData } from "../../shared/battle_data"
+
 declare var alert: (data: string) => {}
 
-
+function new_log_message(msg: string) {
+    if (msg == null) {
+        return
+    }
+    if (msg == 'ok') return;
+    var log = document.getElementById('log');
+    var new_line = document.createElement('p');
+    var text = document.createTextNode(msg);
+    new_line.append(text);
+    log.appendChild(new_line);
+    log.scrollTop = log.scrollHeight
+}
 
 interface battle_action {
     name: string,
@@ -105,15 +119,15 @@ export class BattleImageNext {
         console.log('load battle')
         this.reset_data()
         for (var i in data) {
-            this.add_fighter(Number(i) as battle_id, data[i].tag, data[i].position, data[i].range, data[i].name, data[i].hp)
+            this.add_fighter(Number(i) as battle_id, data[i].tag, data[i].position as battle_position, data[i].range, data[i].name, data[i].hp, data[i].ap)
         }
     }
 
-    add_fighter(battle_id:battle_id, tag:string, pos:battle_position, range:number, name:string, hp:number) {
+    add_fighter(battle_id:battle_id, tag:string, pos:battle_position, range:number, name:string, hp:number, ap: number) {
         console.log("add fighter")
         console.log(battle_id, tag, pos, range)
 
-        let unit = new BattleUnit(battle_id, name, hp, 0, range, pos, tag)
+        let unit = new BattleUnit(battle_id, name, hp, ap, range, pos, tag)
         let unit_view = new BattleUnitView(unit)
 
         this.battle_ids.add(battle_id)
@@ -136,6 +150,9 @@ export class BattleImageNext {
     update(data: SocketBattleData) {
         for (let i in data) {
             let index = Number(i) as battle_id
+
+            console.log('update')
+            console.log(data[i])
 
             let event = new UpdateDataEvent(index, data[i])
             this.events_list.push(event)
@@ -220,6 +237,8 @@ export class BattleImageNext {
         //handle_events
         for (let event of this.events_list) {
             event.effect(this)
+            let log_entry = event.generate_log_message(this)
+            new_log_message(log_entry)
         }
         this.events_list = []
 

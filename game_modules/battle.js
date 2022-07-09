@@ -390,13 +390,15 @@ class BattleReworked2 {
             let unit = this.heap.data[i];
             var character = this.world.get_char_from_id(unit.char_id);
             if (character != undefined) {
-                data[i] = {};
-                data[i].id = unit.char_id;
-                data[i].position = { x: unit.position.x, y: unit.position.y };
-                data[i].tag = character.get_model();
-                data[i].is_player = character.is_player();
-                data[i].range = character.get_range();
-                data[i].hp = character.get_hp();
+                data[i] = {
+                    id: unit.char_id,
+                    position: { x: unit.position.x, y: unit.position.y },
+                    tag: character.get_model(),
+                    range: character.get_range(),
+                    hp: character.get_hp(),
+                    name: character.name,
+                    ap: unit.action_points_left
+                };
             }
         }
         return data;

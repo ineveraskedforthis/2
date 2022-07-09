@@ -803,6 +803,7 @@ export class SocketManager {
             if (character != undefined) {
                 if (character.is_player()) {
                     this.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
+                    this.send_to_character_user(character, 'battle-has-ended', '')
                     this.send_updates_to_char(character)
                 }
             }

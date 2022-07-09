@@ -1,4 +1,17 @@
 import { AnimatedImage, AttackEvent, BattleUnit, BattleUnitView, BATTLE_SCALE, ClearBattleEvent, draw_image, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent } from './battle_image_helper.js';
+function new_log_message(msg) {
+    if (msg == null) {
+        return;
+    }
+    if (msg == 'ok')
+        return;
+    var log = document.getElementById('log');
+    var new_line = document.createElement('p');
+    var text = document.createTextNode(msg);
+    new_line.append(text);
+    log.appendChild(new_line);
+    log.scrollTop = log.scrollHeight;
+}
 function build_character_div(unit_data, battle_data) {
     let div = document.createElement('div');
     div.innerHTML = 'hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap;
@@ -48,13 +61,13 @@ export class BattleImageNext {
         console.log('load battle');
         this.reset_data();
         for (var i in data) {
-            this.add_fighter(Number(i), data[i].tag, data[i].position, data[i].range, data[i].name, data[i].hp);
+            this.add_fighter(Number(i), data[i].tag, data[i].position, data[i].range, data[i].name, data[i].hp, data[i].ap);
         }
     }
-    add_fighter(battle_id, tag, pos, range, name, hp) {
+    add_fighter(battle_id, tag, pos, range, name, hp, ap) {
         console.log("add fighter");
         console.log(battle_id, tag, pos, range);
-        let unit = new BattleUnit(battle_id, name, hp, 0, range, pos, tag);
+        let unit = new BattleUnit(battle_id, name, hp, ap, range, pos, tag);
         let unit_view = new BattleUnitView(unit);
         this.battle_ids.add(battle_id);
         this.units_data[battle_id] = unit;
@@ -72,6 +85,8 @@ export class BattleImageNext {
     update(data) {
         for (let i in data) {
             let index = Number(i);
+            console.log('update');
+            console.log(data[i]);
             let event = new UpdateDataEvent(index, data[i]);
             this.events_list.push(event);
         }
@@ -144,6 +159,8 @@ export class BattleImageNext {
         //handle_events
         for (let event of this.events_list) {
             event.effect(this);
+            let log_entry = event.generate_log_message(this);
+            new_log_message(log_entry);
         }
         this.events_list = [];
         this.canvas_context.clearRect(0, 0, this.w, this.h);

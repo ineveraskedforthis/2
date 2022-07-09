@@ -1,5 +1,7 @@
 import { BattleImageNext } from "./battle_image.js"
 
+import { SocketBattleUnitData } from "../../shared/battle_data"
+
 declare var alert: (data: string) => {}
 
 interface position {
@@ -23,7 +25,7 @@ export type Image = any & { __brand: "image"};
 export type battle_id = number & { __brand: "battle"}
 
 export const BATTLE_SCALE = 50
-export const BATTLE_MOVEMENT_SPEED = 0.3
+export const BATTLE_MOVEMENT_SPEED = 4
 export const BATTLE_ANIMATION_TICK = 1 / 15
 
 export namespace position_c {
@@ -40,11 +42,11 @@ export namespace position_c {
     }
 
     export function sum<Type extends position>(a: Type, b: Type): Type {
-        return {x: a.x - b.x, y:a.y - b.y} as Type
+        return {x: a.x + b.x, y:a.y + b.y} as Type
     }
 
     export function scalar_mult<Type extends position>(x: number, a: Type): Type {
-        return {x: x * a.x, y: a.y} as Type
+        return {x: x * a.x, y: x * a.y} as Type
     }
 
     export function battle_to_canvas(pos: battle_position, canvas_h: number, canvas_w: number) {
@@ -154,7 +156,7 @@ export class MovementBattleEvent {
         unit_view.animation_sequence.push('move')
     }
 
-    generate_log_message(battle: BattleImageNext) {
+    generate_log_message(battle: BattleImageNext):string {
         let unit = battle.units_data[this.unit_id]
         return unit.name + ' moved (' + this.target.x + ' ' + this.target.y + ')'
     }
@@ -163,20 +165,20 @@ export class MovementBattleEvent {
 export class UpdateDataEvent {
     type: 'update'
     unit: battle_id
-    data: SocketBattleUnit 
+    data: SocketBattleUnitData
 
-    constructor(unit_id: battle_id, data: SocketBattleUnit) {
+    constructor(unit_id: battle_id, data: SocketBattleUnitData) {
         this.unit = unit_id
         this.data = data
         this.type = 'update'
     }
 
     effect(battle: BattleImageNext) {
-        battle.units_data[this.unit].update(this.data.hp, this.data.ap, this.data.position)
+        battle.units_data[this.unit].update(this.data.hp, this.data.ap, this.data.position as battle_position)
         battle.units_views[this.unit].animation_sequence.push('update')
     }
 
-    generate_log_message() {
+    generate_log_message():string {
         return 'ok'
     }
 }
@@ -193,8 +195,8 @@ export class ClearBattleEvent {
         battle.reset_data()
     }
 
-    generate_log_message() {
-        "battle is finished"
+    generate_log_message():string {
+        return "battle is finished"
     }
 }
 
@@ -218,16 +220,17 @@ export class AttackEvent {
         // unit_view_defender.animation_sequence.push('attack')
     }
 
-    generate_log_message(battle: BattleImageNext) {
+    generate_log_message(battle: BattleImageNext):string {
         let unit = battle.units_data[this.unit_id]
         let target = battle.units_data[this.target_id]
         let result = unit.name + ' attacks ' + target.name + ': '
-        if (this.data.flags.crit) {
-            return result + this.data.total_damage + ' damage (CRITICAL)'
-        }
+
         if (this.data.flags.evade || this.data.flags.miss) {
             return result + ' MISS!';
         }
+        if (this.data.flags.crit) {
+            return result + this.data.total_damage + ' damage (CRITICAL)'
+        }        
         return result + this.data.total_damage + ' damage'
     }
 }
@@ -249,7 +252,7 @@ export class RetreatEvent {
         }
     }
 
-    generate_log_message(battle: BattleImageNext) {
+    generate_log_message(battle: BattleImageNext):string {
         let unit = battle.units_data[this.unit_id]
         return unit.name + ' retreats'
     }
@@ -272,7 +275,7 @@ export class NewTurnEvent {
         battle.set_current_turn(this.unit)
     }
 
-    generate_log() {
+    generate_log_message():string {
         return 'new_turn'
     }
 }
@@ -280,18 +283,6 @@ export class NewTurnEvent {
 
 export type BattleEvent = MovementBattleEvent|UpdateDataEvent|ClearBattleEvent|AttackEvent|NewTurnEvent|RetreatEvent
 
-
-
-export interface SocketBattleUnit {
-    tag: string, 
-    position: battle_position, 
-    range: number, 
-    hp: number, 
-    ap: number,
-    name: string
-}
-
-export type SocketBattleData = {[_ in number]: SocketBattleUnit};
 
 export class BattleUnit {
     id: battle_id
