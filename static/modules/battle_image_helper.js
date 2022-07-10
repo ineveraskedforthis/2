@@ -255,6 +255,9 @@ export class BattleUnitView {
         if (battle.player_id == this.unit.id) {
             battle.update_player_actions_availability();
         }
+        this.hp = this.unit.hp;
+        this.ap = this.unit.ap;
+        this.killed = this.unit.killed;
         let div = battle.container.querySelector('.enemy_list > .fighter_' + this.unit.id);
         div.innerHTML = this.unit.name + '<br> hp: ' + this.unit.hp + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10;
     }

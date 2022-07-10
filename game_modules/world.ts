@@ -56,6 +56,7 @@ export class World {
     materials_manager: MaterialsManager;
     territories: {[_: string]: any}
     spear_argument: WeaponConstructorArgument
+    bone_spear_argument: WeaponConstructorArgument
 
     materials: {[_: string]: material_index}
 
@@ -114,7 +115,20 @@ export class World {
             item_type: 'weapon'
         }
 
+        let BONE_SPEAR_ARGUMENT: WeaponConstructorArgument = {
+            durability: 100,
+            shaft_length: SHAFT_LEGTH.LONG,
+            shaft_material: this.materials_manager.get_material_with_index(this.materials.WOOD), 
+            impact_size: IMPACT_SIZE.SMALL, 
+            impact_material: this.materials_manager.get_material_with_index(this.materials.RAT_BONE), 
+            impact_type:IMPACT_TYPE.POINT, 
+            impact_quality: 100,
+            affixes: [],
+            item_type: 'weapon'
+        }
+
         this.spear_argument = SPEAR_ARGUMENT
+        this.bone_spear_argument = BONE_SPEAR_ARGUMENT
 
 
 

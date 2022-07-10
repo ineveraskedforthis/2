@@ -373,6 +373,10 @@ export class BattleUnitView {
         if (battle.player_id == this.unit.id) {
             battle.update_player_actions_availability()
         }
+        this.hp = this.unit.hp
+        this.ap = this.unit.ap 
+        this.killed = this.unit.killed
+
         let div = battle.container.querySelector('.enemy_list > .fighter_' + this.unit.id)
         div.innerHTML = this.unit.name + '<br> hp: ' + this.unit.hp + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10
     }
@@ -455,8 +459,8 @@ export class BattleUnitView {
         
         // remove one animation from sequence, when it is finished
         if ((flag_animation_finished) && (this.animation_sequence.length > 0)){
-            console.log('animation finished')
-            console.log(this.animation_sequence[0].type)
+            // console.log('animation finished')
+            // console.log(this.animation_sequence[0].type)
             this.a_image.set_action('idle')
             this.animation_sequence.splice(0, 1)
         }
