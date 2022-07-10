@@ -12,6 +12,7 @@ const rat_1 = require("./base_game_classes/races/rat");
 const ai_manager_1 = require("./manager_classes/ai_manager");
 const materials_manager_1 = require("./manager_classes/materials_manager");
 const graci_1 = require("./base_game_classes/races/graci");
+const elo_1 = require("./base_game_classes/races/elo");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -95,8 +96,12 @@ class World {
             await (0, rat_1.rat)(pool, test_rat);
         }
         for (let i = 1; i < 20; i++) {
-            let test_graci = await this.entity_manager.create_new_character(pool, 'Her Majesty Graci ' + i, this.get_cell_id_by_x_y(6, 5), -1);
+            let test_graci = await this.entity_manager.create_new_character(pool, 'Her Majesty Graci ' + i, this.get_cell_id_by_x_y(13, 9), -1);
             await (0, graci_1.graci)(pool, test_graci);
+        }
+        for (let i = 1; i < 30; i++) {
+            let test_elo = await this.entity_manager.create_new_character(pool, 'Sir Elodino ' + i, this.get_cell_id_by_x_y(18, 10), -1);
+            await (0, elo_1.elo)(pool, test_elo);
         }
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
         // let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
@@ -107,7 +112,7 @@ class World {
         living_area.set_influence(steppe_rats, 50);
         /// test person
         let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
-        test_person.change_hp(-90);
+        // test_person.change_hp(-90)
         let MEAT = this.materials.MEAT;
         test_person.stash.inc(MEAT, 10);
         test_person.savings.set(5000);
@@ -115,7 +120,7 @@ class World {
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
         meat_bag.stash.inc(MEAT, 200);
         await meat_bag.sell(pool, MEAT, 10, 10);
-        meat_bag.change_hp(-99);
+        // meat_bag.change_hp(-99)
     }
     async load(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);
