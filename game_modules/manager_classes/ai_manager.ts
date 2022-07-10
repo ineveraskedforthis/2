@@ -51,7 +51,7 @@ export class AiManager {
         return -1
     }
 
-    async random_walk(char: CharacterGenericPart) {
+    async random_steppe_walk(char: CharacterGenericPart) {
         let cell = char.get_cell()
         if (cell == undefined) {
             return
@@ -59,21 +59,58 @@ export class AiManager {
         let possible_moves = []
         for (let d of dp) {      
             let tmp = [d[0] + cell.i, d[1] + cell.j]
-            if (this.world.can_move(tmp[0], tmp[1]) && this.world.get_territory(tmp[0], tmp[1]) != 'colony') {
-                possible_moves.push(tmp)
-            }
+            let territory = this.world.get_territory(tmp[0], tmp[1])
+            let new_cell = this.world.get_cell(tmp[0], tmp[1])
+            if (new_cell != undefined) {
+                if (this.world.can_move(tmp[0], tmp[1]) && (territory != 'colony') && (new_cell.development['wild'] < 1)) {
+                    possible_moves.push(tmp)
+                }
+            } 
+        }
+        if (possible_moves.length > 0) {
+            let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)]
+            await this.world.action_manager.start_action(CharacterAction.MOVE, char, {x: move_direction[0], y: move_direction[1]})  
+        }   
+    }
+
+    async random_forest_walk(char: CharacterGenericPart) {
+        let cell = char.get_cell()
+        if (cell == undefined) {
+            return
+        }
+        let possible_moves = []
+        for (let d of dp) {      
+            let tmp = [d[0] + cell.i, d[1] + cell.j]
+            let territory = this.world.get_territory(tmp[0], tmp[1])
+            let new_cell = this.world.get_cell(tmp[0], tmp[1])
+            if (new_cell != undefined) {
+                if (this.world.can_move(tmp[0], tmp[1]) && (territory != 'colony') && (new_cell.development['wild'] > 0)) {
+                    possible_moves.push(tmp)
+                }
+            } 
         }
         if (possible_moves.length > 0) {
             let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)]
             await this.world.action_manager.start_action(CharacterAction.MOVE, char, {x: move_direction[0], y: move_direction[1]})  
         }
-        
     }
 
     async decision(char: CharacterGenericPart) {
         // console.log(char.misc.ai_tag)
-        if ((char.misc.ai_tag == 'aggressive_walker') && (!char.is_player())) {
-            if (!char.in_battle() && !char.action_started) {
+        if (char.is_player()) {
+            return
+        }
+
+        if (char.in_battle()) {
+            return
+        }
+
+        if (char.action_started) {
+            return
+        }
+
+        switch(char.misc.ai_tag) {
+            case 'steppe_walker_agressive': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
                     await this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
                 } else {
@@ -81,9 +118,26 @@ export class AiManager {
                     if (target != -1) {
                         await this.world.action_manager.start_action(CharacterAction.ATTACK, char, target)
                     } else {
-                        await this.random_walk(char)
+                        await this.random_steppe_walk(char)
                     }
                 }
+                break
+            }
+            case 'steppe_walker_passive': {
+                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                    await this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
+                } else {
+                    await this.random_steppe_walk(char)
+                }
+                break
+            }
+            case 'forest_walker': {
+                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                    await this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
+                } else {
+                    await this.random_forest_walk(char)
+                }
+                break
             }
         }
     }

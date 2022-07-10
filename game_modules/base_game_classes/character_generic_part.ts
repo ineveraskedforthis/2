@@ -112,7 +112,7 @@ class Misc {
     battle_id: number;
     in_battle_id: number;
     tactic: any;
-    ai_tag: string;
+    ai_tag: 'steppe_walker_agressive'|'dummy'|'steppe_walker_passive'|'forest_walker';
     tag: string;
     constructor() {
         this.model = 'empty'
