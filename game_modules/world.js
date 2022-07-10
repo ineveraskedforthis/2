@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.World = void 0;
 var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
+const item_tags_1 = require("./static_data/item_tags");
 const entity_manager_1 = require("./manager_classes/entity_manager");
 const world_constants_1_1 = require("./static_data/world_constants_1");
 const action_manager_1 = require("./manager_classes/action_manager");
@@ -82,8 +83,17 @@ class World {
             affixes: [],
             item_type: 'weapon'
         };
+        let RAT_SKIN_PANTS_ARGUMENT = {
+            durability: 100,
+            material: this.materials_manager.get_material_with_index(this.materials.RAT_SKIN),
+            type: item_tags_1.ARMOUR_TYPE.LEGS,
+            quality: 100,
+            affixes: [],
+            item_type: 'armour'
+        };
         this.spear_argument = SPEAR_ARGUMENT;
         this.bone_spear_argument = BONE_SPEAR_ARGUMENT;
+        this.rat_skin_pants_argument = RAT_SKIN_PANTS_ARGUMENT;
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this, false);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         this.ai_manager = new ai_manager_1.AiManager(this);
@@ -129,9 +139,10 @@ class World {
         test_person.stash.inc(MEAT, 10);
         test_person.stash.inc(this.materials.WOOD, 100);
         test_person.stash.inc(this.materials.RAT_BONE, 100);
+        test_person.stash.inc(this.materials.WOOD, 100);
+        test_person.stash.inc(this.materials.RAT_SKIN, 100);
         test_person.savings.set(5000);
         await test_person.buy(pool, MEAT, 100, 5);
-        test_person.stash.inc(this.materials.WOOD, 100);
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
         meat_bag.stash.inc(MEAT, 200);
         await meat_bag.sell(pool, MEAT, 10, 10);

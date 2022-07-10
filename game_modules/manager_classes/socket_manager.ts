@@ -16,6 +16,7 @@ import { character_to_cook_meat_probability } from "../base_game_classes/charact
 import { character_to_craft_spear_probability } from "../base_game_classes/character_actions/craft_spear";
 import { character_to_hunt_probability } from "../base_game_classes/character_actions/hunt";
 import { can_gather_wood } from "../base_game_classes/character_actions/gather_wood";
+import { character_to_craft_rat_pants_probability } from "../base_game_classes/character_actions/craft_rat_pants";
 
 interface UserData {
     socket: any,
@@ -100,6 +101,7 @@ export class SocketManager {
             socket.on('cfood', async () => this.craft_food(user));
             socket.on('mspear', async () => this.craft_spear(user))
             socket.on('mbspear', async () => this.craft_bone_spear(user))
+            socket.on('mrpants', async () => this.craft_rat_pants(user))
             // socket.on('cclothes', async () => this.craft_clothes(user));
             // socket.on('ench', async (msg: any) => this.enchant(user));
             socket.on('disench', async (msg: any) => this.disenchant(user, msg));
@@ -134,6 +136,7 @@ export class SocketManager {
         if (user.logged_in) {
             let character = user.get_character();
             await character.equip_armour(msg);
+            this.send_equip_update_to_character(character)
         }
     }
 
@@ -678,6 +681,20 @@ export class SocketManager {
         }  
     }
 
+    async craft_rat_pants(user: User) {
+        if (user.logged_in) {
+            let char = user.get_character();
+            let res = await this.world.action_manager.start_action(CharacterAction.CRAFT_RAT_PANTS, char, undefined)
+            if (res == CharacterActionResponce.NO_RESOURCE)  {
+                user.socket.emit('alert', 'not enough resources')
+            } else if (res == CharacterActionResponce.IN_BATTLE) {
+                user.socket.emit('alert', 'you are in battle')
+            } else if (res == CharacterActionResponce.FAILED) {
+                user.socket.emit('alert', 'failed')
+            }
+        }  
+    }
+
     // async craft_clothes(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
@@ -741,6 +758,7 @@ export class SocketManager {
         this.send_to_character_user(character, 'craft-probability', {tag: 'cook_meat', value: character_to_cook_meat_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_spear', value: character_to_craft_spear_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_bone_spear', value: character_to_craft_spear_probability(character)})
+        this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_pants', value: character_to_craft_rat_pants_probability(character)})
         this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})

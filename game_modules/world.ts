@@ -1,6 +1,6 @@
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
-import {affix_tag, IMPACT_SIZE, IMPACT_TYPE, ITEM_MATERIAL, SHAFT_LEGTH, WeaponConstructorArgument} from "./static_data/item_tags";
+import {affix_tag, ArmourConstructorArgument, ARMOUR_TYPE, IMPACT_SIZE, IMPACT_TYPE, ITEM_MATERIAL, SHAFT_LEGTH, WeaponConstructorArgument} from "./static_data/item_tags";
 
 
 import {EntityManager} from './manager_classes/entity_manager'
@@ -57,6 +57,7 @@ export class World {
     territories: {[_: string]: any}
     spear_argument: WeaponConstructorArgument
     bone_spear_argument: WeaponConstructorArgument
+    rat_skin_pants_argument: ArmourConstructorArgument
 
     materials: {[_: string]: material_index}
 
@@ -127,8 +128,18 @@ export class World {
             item_type: 'weapon'
         }
 
+        let RAT_SKIN_PANTS_ARGUMENT: ArmourConstructorArgument = {
+            durability: 100,
+            material: this.materials_manager.get_material_with_index(this.materials.RAT_SKIN),
+            type: ARMOUR_TYPE.LEGS,
+            quality: 100,
+            affixes: [],
+            item_type: 'armour'
+        }
+
         this.spear_argument = SPEAR_ARGUMENT
         this.bone_spear_argument = BONE_SPEAR_ARGUMENT
+        this.rat_skin_pants_argument = RAT_SKIN_PANTS_ARGUMENT
 
 
 
@@ -199,9 +210,11 @@ export class World {
         test_person.stash.inc(MEAT, 10)
         test_person.stash.inc(this.materials.WOOD, 100)
         test_person.stash.inc(this.materials.RAT_BONE, 100)
+        test_person.stash.inc(this.materials.WOOD, 100)
+        test_person.stash.inc(this.materials.RAT_SKIN, 100)
         test_person.savings.set(5000 as money)
         await test_person.buy(pool, MEAT, 100, 5 as money)
-        test_person.stash.inc(this.materials.WOOD, 100)
+        
 
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
         meat_bag.stash.inc(MEAT, 200)

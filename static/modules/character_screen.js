@@ -13,6 +13,11 @@ function send_equip_weapon_message(socket, index) {
     socket.emit('char-info-detailed');
 }
 
+function send_equip_armour_message(socket, index) {
+    socket.emit('equip-armour', index);
+    socket.emit('char-info-detailed');
+}
+
 function send_eat_request(socket) {
     socket.emit('eat');
     socket.emit('char-info-detailed');
@@ -211,6 +216,7 @@ export class CharacterScreen {
         let inv = data.backpack;
         this.table_weapon.innerHTML = '';
         this.table_armour.innerHTML = '';
+        console.log(inv)
         for (let i = 0; i < inv.weapons.length; i++) {
             if (inv.weapons[i] != null) {
                 let weapon = inv.weapons[i]
