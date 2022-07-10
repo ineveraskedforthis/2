@@ -1,16 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.character_to_craft_spear_probability = exports.craft_spear_probability = exports.craft_spear = void 0;
+exports.craft_bone_spear = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
-const market_items_1 = require("../../market/market_items");
-exports.craft_spear = {
+const craft_spear_1 = require("./craft_spear");
+exports.craft_bone_spear = {
     duration(char) {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
     },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(char.world.materials.WOOD);
-            if (tmp > 2) {
+            let tmp_2 = char.stash.get(char.world.materials.RAT_BONE);
+            if ((tmp > 2) && (tmp_2 > 3)) {
                 return 1 /* CharacterActionResponce.OK */;
             }
             return 3 /* CharacterActionResponce.NO_RESOURCE */;
@@ -19,16 +20,18 @@ exports.craft_spear = {
     },
     result: async function (pool, char, data) {
         let tmp = char.stash.get(char.world.materials.WOOD);
-        if (tmp > 2) {
+        let tmp_2 = char.stash.get(char.world.materials.RAT_BONE);
+        if ((tmp > 2) && (tmp_2 > 3)) {
             char.changed = true;
             let skill = char.skills.woodwork.practice;
             char.stash.inc(char.world.materials.WOOD, -3);
+            char.stash.inc(char.world.materials.RAT_BONE, -4);
             char.send_stash_update();
             char.change_fatigue(10);
             // if (dice < check) {
             let dice = Math.random();
-            if (dice < craft_spear_probability(skill)) {
-                let spear = new item_tags_1.Weapon(char.world.spear_argument);
+            if (dice < (0, craft_spear_1.craft_spear_probability)(skill)) {
+                let spear = new item_tags_1.Weapon(char.world.bone_spear_argument);
                 char.equip.add_weapon(spear);
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
                 char.send_stash_update();
@@ -51,14 +54,3 @@ exports.craft_spear = {
     start: async function (pool, char, data) {
     },
 };
-function craft_spear_probability(skill) {
-    if ((0, market_items_1.nodb_mode_check)())
-        return 1;
-    return Math.min(skill / 30, 1);
-}
-exports.craft_spear_probability = craft_spear_probability;
-function character_to_craft_spear_probability(character) {
-    let skill = character.skills.woodwork.practice;
-    return craft_spear_probability(skill);
-}
-exports.character_to_craft_spear_probability = character_to_craft_spear_probability;

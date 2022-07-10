@@ -328,8 +328,8 @@ export class BattleUnitView {
         }
         // remove one animation from sequence, when it is finished
         if ((flag_animation_finished) && (this.animation_sequence.length > 0)) {
-            console.log('animation finished');
-            console.log(this.animation_sequence[0].type);
+            // console.log('animation finished')
+            // console.log(this.animation_sequence[0].type)
             this.a_image.set_action('idle');
             this.animation_sequence.splice(0, 1);
         }

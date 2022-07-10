@@ -25,7 +25,7 @@ function nodb_mode_id():number|undefined {
     return undefined
 }
 
-function nodb_mode_check():boolean {
+export function nodb_mode_check():boolean {
     // @ts-ignore: Unreachable code error
     return global.flag_nodb
 }

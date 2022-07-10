@@ -147,12 +147,16 @@ class Weapon {
         return data;
     }
     get_tag() {
-        if (this.impact_type == 0 /* IMPACT_TYPE.POINT */)
-            return 'spear';
-        if (this.impact_type == 2 /* IMPACT_TYPE.HEAD */)
-            return 'mace';
-        if (this.impact_type == 1 /* IMPACT_TYPE.EDGE */)
-            return 'sword';
+        let imp_type = this.impact_type;
+        switch (imp_type) {
+            case 0 /* IMPACT_TYPE.POINT */: {
+                if (this.impact_material.string_tag == 'rat_bone')
+                    return 'bone_spear';
+                return 'spear';
+            }
+            case 2 /* IMPACT_TYPE.HEAD */: return 'mace';
+            case 1 /* IMPACT_TYPE.EDGE */: return 'sword';
+        }
     }
     get_data() {
         return { tag: this.get_tag(), affixes: this.affixes.length, affixes_list: this.affixes, item_type: this.item_type };
@@ -177,7 +181,7 @@ function base_damage(result, item) {
         }
         case 0 /* IMPACT_TYPE.POINT */: {
             let effective_weight = (item.impact_weight + item.shaft_weight);
-            result.damage.pierce = effective_weight * item.impact_quality / 100;
+            result.damage.pierce = 2 * effective_weight * item.impact_quality / 100;
             result.damage.blunt = effective_weight * (100 - item.impact_quality) / 100;
         }
         case 2 /* IMPACT_TYPE.HEAD */: {

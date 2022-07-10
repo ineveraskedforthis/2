@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderItem = exports.Auction = exports.AuctionManagement = exports.AuctionOrderManagement = void 0;
+exports.OrderItem = exports.Auction = exports.AuctionManagement = exports.AuctionOrderManagement = exports.nodb_mode_check = void 0;
 const savings_1 = require("../base_game_classes/savings");
 const item_tags_1 = require("../static_data/item_tags");
 const common = require("../common.js");
@@ -21,6 +21,7 @@ function nodb_mode_check() {
     // @ts-ignore: Unreachable code error
     return global.flag_nodb;
 }
+exports.nodb_mode_check = nodb_mode_check;
 var AuctionResponce;
 (function (AuctionResponce) {
     AuctionResponce["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";

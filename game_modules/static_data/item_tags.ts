@@ -264,10 +264,16 @@ export class Weapon {
         return data
     }
 
-    get_tag() {
-        if (this.impact_type == IMPACT_TYPE.POINT) return 'spear'
-        if (this.impact_type == IMPACT_TYPE.HEAD) return 'mace'
-        if (this.impact_type == IMPACT_TYPE.EDGE) return 'sword'
+    get_tag(): string {
+        let imp_type = this.impact_type
+        switch (imp_type) {
+            case IMPACT_TYPE.POINT: {
+                if (this.impact_material.string_tag == 'rat_bone') return 'bone_spear'
+                return 'spear'
+            }
+            case IMPACT_TYPE.HEAD : return 'mace'
+            case IMPACT_TYPE.EDGE : return 'sword'
+        }
     }
 
     get_data() {
@@ -293,7 +299,7 @@ export function base_damage(result: AttackResult, item: Weapon) {
         }
         case IMPACT_TYPE.POINT: {
             let effective_weight = (item.impact_weight + item.shaft_weight)
-            result.damage.pierce = effective_weight * item.impact_quality / 100
+            result.damage.pierce = 2 * effective_weight * item.impact_quality / 100
             result.damage.blunt = effective_weight * (100 - item.impact_quality) / 100
         }
         case IMPACT_TYPE.HEAD: {

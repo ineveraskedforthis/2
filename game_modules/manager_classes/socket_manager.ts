@@ -99,6 +99,7 @@ export class SocketManager {
             socket.on('execute-order', async (msg: any) => this.execute_order(user, msg.amount, msg.order))
             socket.on('cfood', async () => this.craft_food(user));
             socket.on('mspear', async () => this.craft_spear(user))
+            socket.on('mbspear', async () => this.craft_bone_spear(user))
             // socket.on('cclothes', async () => this.craft_clothes(user));
             // socket.on('ench', async (msg: any) => this.enchant(user));
             socket.on('disench', async (msg: any) => this.disenchant(user, msg));
@@ -663,6 +664,20 @@ export class SocketManager {
         }  
     }
 
+    async craft_bone_spear(user: User) {
+        if (user.logged_in) {
+            let char = user.get_character();
+            let res = await this.world.action_manager.start_action(CharacterAction.CRAFT_BONE_SPEAR, char, undefined)
+            if (res == CharacterActionResponce.NO_RESOURCE)  {
+                user.socket.emit('alert', 'not enough resources')
+            } else if (res == CharacterActionResponce.IN_BATTLE) {
+                user.socket.emit('alert', 'you are in battle')
+            } else if (res == CharacterActionResponce.FAILED) {
+                user.socket.emit('alert', 'failed')
+            }
+        }  
+    }
+
     // async craft_clothes(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
@@ -725,6 +740,7 @@ export class SocketManager {
         this.send_to_character_user(character, 'skills', character.skills)
         this.send_to_character_user(character, 'craft-probability', {tag: 'cook_meat', value: character_to_cook_meat_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_spear', value: character_to_craft_spear_probability(character)})
+        this.send_to_character_user(character, 'craft-probability', {tag: 'craft_bone_spear', value: character_to_craft_spear_probability(character)})
         this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})

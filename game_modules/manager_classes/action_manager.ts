@@ -9,6 +9,7 @@ import { hunt } from "../base_game_classes/character_actions/hunt"
 import { attack } from "../base_game_classes/character_actions/attack"
 import { craft_spear } from "../base_game_classes/character_actions/craft_spear"
 import { gather_wood } from "../base_game_classes/character_actions/gather_wood"
+import { craft_bone_spear } from "../base_game_classes/character_actions/craft_bone_spear"
 
 
 export const enum CharacterActionResponce {
@@ -54,6 +55,7 @@ export class ActionManager {
         this.add_action(attack)
         this.add_action(craft_spear)
         this.add_action(gather_wood)
+        this.add_action(craft_bone_spear)
     }
 
     add_action(action: Action) {
@@ -102,7 +104,8 @@ export enum CharacterAction {
     REST = 5,
     ATTACK = 6,
     CRAFT_SPEAR = 7,
-    GATHER_WOOD = 8
+    GATHER_WOOD = 8,
+    CRAFT_BONE_SPEAR = 9
 }
 
 

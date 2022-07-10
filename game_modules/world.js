@@ -71,7 +71,19 @@ class World {
             affixes: [],
             item_type: 'weapon'
         };
+        let BONE_SPEAR_ARGUMENT = {
+            durability: 100,
+            shaft_length: 2 /* SHAFT_LEGTH.LONG */,
+            shaft_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
+            impact_size: 1 /* IMPACT_SIZE.SMALL */,
+            impact_material: this.materials_manager.get_material_with_index(this.materials.RAT_BONE),
+            impact_type: 0 /* IMPACT_TYPE.POINT */,
+            impact_quality: 100,
+            affixes: [],
+            item_type: 'weapon'
+        };
         this.spear_argument = SPEAR_ARGUMENT;
+        this.bone_spear_argument = BONE_SPEAR_ARGUMENT;
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this, false);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         this.ai_manager = new ai_manager_1.AiManager(this);
@@ -112,11 +124,14 @@ class World {
         living_area.set_influence(steppe_rats, 50);
         /// test person
         let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
-        // test_person.change_hp(-90)
+        test_person.change_hp(-90);
         let MEAT = this.materials.MEAT;
         test_person.stash.inc(MEAT, 10);
+        test_person.stash.inc(this.materials.WOOD, 100);
+        test_person.stash.inc(this.materials.RAT_BONE, 100);
         test_person.savings.set(5000);
         await test_person.buy(pool, MEAT, 100, 5);
+        test_person.stash.inc(this.materials.WOOD, 100);
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
         meat_bag.stash.inc(MEAT, 200);
         await meat_bag.sell(pool, MEAT, 10, 10);
