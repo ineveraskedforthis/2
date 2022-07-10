@@ -363,13 +363,28 @@ function update_z_levels_tabs() {
 function turn_tab_on(tag) {
     let tab = document.getElementById(tag + '_tab');
     tab.classList.remove('hidden');
+    if (tag != 'battle') {
+        let button = document.getElementById(tag + '_button')
+        button.classList.toggle('active')
+    }    
+
     push_tab(tag)
 }
 
 function turn_tab_off(tag) {
     let tab = document.getElementById(tag + '_tab');
     tab.classList.add('hidden');
+
+    if (tag != 'battle') {
+        let button = document.getElementById(tag + '_button')
+        button.classList.toggle('active')
+    }   
+
     pop_tab(tag)
+}
+
+function tag_to_turn_off_f(tag) {
+    return () => turn_tab_off(tag)
 }
 
 for (let tag of game_tabs) {
@@ -387,6 +402,14 @@ for (let tag of game_tabs) {
             socket.emit('send-market-data', false)
         }
     }
+
+    {
+        let tab = document.getElementById(tag + '_tab')
+        let div = document.createElement('div')
+        div.classList.add('close_tab')
+        div.onclick = tag_to_turn_off_f(tag)
+        tab.appendChild(div)
+    }    
 }
 //CHANGE SCENES STUFF
 
