@@ -230,9 +230,12 @@ export class AttackEvent {
         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
 
         if (this.data.flags.evade || this.data.flags.miss) {
-            unit_view_defender.animation_sequence.push({type: 'dodge', data: direction_vec})
+            unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
+        } else {
+            unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: false}})
         }
         unit_view_attacker.animation_sequence.push({type: 'attack', data: direction_vec})
+        
         // unit_view_defender.animation_sequence.push('attack')
     }
 
@@ -336,7 +339,7 @@ export class BattleUnit {
 }
 
 interface animation_event {
-    type: "move"|"attack"|"update"|'dodge'
+    type: "move"|"attack"|"update"|'attacked'
     data: any
 }
 
@@ -374,17 +377,14 @@ export class BattleUnitView {
         div.innerHTML = this.unit.name + '<br> hp: ' + this.unit.hp + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10
     }
 
-    draw(dt: number, battle: BattleImageNext, images:ImagesDict) {
-        if (this.killed) {
-            return
-        }
+    handle_events(dt: number, battle: BattleImageNext, images:ImagesDict) {
+
         let unit = this.unit
 
         let direction = position_c.diff(unit.position, this.position)
         let norm = position_c.norm(direction)
 
-        //handling animation sequence 
-
+         //handling animation sequence 
         let flag_animation_finished = false
 
         if (this.animation_sequence.length > 0) {
@@ -408,12 +408,10 @@ export class BattleUnitView {
                     this.a_image.set_action('attack')
                     this.animation_timer += dt
 
-                    let scale = -Math.sin(this.animation_timer / BATTLE_ATTACK_DURATION * Math.PI)
+                    let scale = -Math.sin(this.animation_timer / BATTLE_ATTACK_DURATION * Math.PI)/2
                     let shift = position_c.scalar_mult(scale, event.data as battle_position)
                     this.position = position_c.sum(this.unit.position, shift)
-
-                    let position = position_c.battle_to_canvas(this.position, battle.h, battle.w)
-                    battle.canvas_context.drawImage(images['attack_' + this.animation_something], position.x - 100, position.y - 100)
+                    
                     if (this.animation_timer > BATTLE_ATTACK_DURATION) {
                         flag_animation_finished = true
                         this.animation_timer = 0
@@ -422,12 +420,20 @@ export class BattleUnitView {
                     }
                     break
                 }
-                case "dodge": {
+                case "attacked": {
+
                     this.animation_timer += dt
 
-                    let scale = -Math.sin(this.animation_timer / BATTLE_ATTACK_DURATION * Math.PI) * 2
-                    let shift = position_c.scalar_mult(scale, event.data as battle_position)
-                    this.position = position_c.sum(this.unit.position, shift)
+                    if (event.data.dodge) {
+                        let scale = -Math.sin(this.animation_timer / BATTLE_ATTACK_DURATION * Math.PI) * 2
+                        let shift = position_c.scalar_mult(scale, event.data.direction as battle_position)
+                        this.position = position_c.sum(this.unit.position, shift)
+                    } else {
+                        let position = position_c.battle_to_canvas(this.unit.position, battle.h, battle.w)
+                        battle.canvas_context.drawImage(images['attack_' + this.animation_something], position.x - 50, position.y - 80, 100, 100)
+                    }
+
+                    
 
                     if (this.animation_timer > BATTLE_ATTACK_DURATION) {
                         flag_animation_finished = true
@@ -454,7 +460,13 @@ export class BattleUnitView {
             this.a_image.set_action('idle')
             this.animation_sequence.splice(0, 1)
         }
-        
+    }
+
+    draw(dt: number, battle: BattleImageNext, images:ImagesDict) {
+        if (this.killed) {
+            return
+        }
+        let unit = this.unit
 
         let pos = position_c.battle_to_canvas(this.position, battle.h, battle.w)
         let ctx = battle.canvas_context
@@ -513,5 +525,7 @@ export class BattleUnitView {
         let image_pos = position_c.image_to_canvas(pos, this.a_image, images)
         this.a_image.draw(battle.canvas_context, image_pos, images)
         this.a_image.update(dt, images)
+
+        this.handle_events(dt, battle, images)
     }  
 }
