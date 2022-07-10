@@ -61,16 +61,18 @@ export class Inventory{
         let data:any = {}
         data.armours = []
         data.weapons = []
-        for (let i of this.armours) {
-            if (i != undefined) {
-                data.armours.push({tag: i.get_tag(), affixes: i.affixes.length, affixes_list: i.affixes})
+        for (let i in this.armours) {
+            let item = this.armours[i]
+            if (item != undefined) {
+                data.armours.push({tag: item.get_tag(), affixes: item.affixes.length, affixes_list: item.affixes})
             } else {
-                data.weapons.push(undefined)
+                data.armours.push(undefined)
             }
         } 
-        for (let i of this.weapons) {
-            if (i != undefined) {
-                data.weapons.push({tag: i.get_tag(), affixes: i.affixes.length, affixes_list: i.affixes})
+        for (let i in this.weapons) {
+            let item = this.weapons[i]
+            if (item != undefined) {
+                data.weapons.push({tag: item.get_tag(), affixes: item.affixes.length, affixes_list: item.affixes})
             } else {
                 data.weapons.push(undefined)
             }

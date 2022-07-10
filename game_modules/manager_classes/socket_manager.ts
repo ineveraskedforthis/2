@@ -946,6 +946,8 @@ export class SocketManager {
     send_equip_update(user: User) {
         if (user != null) {
             let char = user.get_character()
+            console.log(char.equip.data.backpack.get_data())
+            console.log(char.equip.data.backpack)
             user.socket.emit('equip-update', char.equip.get_data())
         }
     }
