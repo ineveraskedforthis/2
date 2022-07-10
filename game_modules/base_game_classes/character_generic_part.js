@@ -12,6 +12,7 @@ const attack_result_1 = require("./misc/attack_result");
 const damage_types_1 = require("./misc/damage_types");
 const constants_1 = require("../static_data/constants");
 const savings_1 = require("./savings");
+const generate_loot_1 = require("./races/generate_loot");
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class SkillObject {
     constructor() {
@@ -435,23 +436,10 @@ class CharacterGenericPart {
     }
     //rgo
     rgo_check(character) {
-        if (this.get_tag() == 'rat') {
-            character.stash.inc(this.world.materials.MEAT, 1);
-            if (character.skills.skinning.practice >= 10) {
-                character.stash.inc(this.world.materials.MEAT, 1);
-                character.stash.inc(this.world.materials.RAT_SKIN, 1);
-            }
-            let dice = Math.random();
-            // 0.05 * 100 = 5.0
-            // 0.05 * 20  = 1.0
-            // 0.05 * 10  = 0.5
-            if (dice > 0.05 * character.skills.skinning.practice) {
-                character.skills.skinning.practice += 1;
-            }
-            character.send_stash_update();
-            character.send_skills_update();
-            character.changed = true;
-        }
+        (0, generate_loot_1.generate_loot)(character, this.get_tag());
+        character.send_stash_update();
+        character.send_skills_update();
+        character.changed = true;
     }
     //attack calculations
     async attack(pool, target) {
@@ -490,9 +478,7 @@ class CharacterGenericPart {
                 if (result.damage[i] > 0) {
                     let curr_damage = Math.max(0, result.damage[i] - res[i]);
                     if ((curr_damage > 0) && ((i == 'slice') || (i == 'pierce'))) {
-                        if (this.get_tag() == 'rat' || this.get_tag() == 'test') {
-                            result.attacker_status_change.blood += curr_damage;
-                        }
+                        result.attacker_status_change.blood += curr_damage;
                     }
                     result.total_damage += curr_damage;
                     this.change_hp(-curr_damage);

@@ -11,6 +11,7 @@ const user_manager_1 = require("./manager_classes/user_manager");
 const rat_1 = require("./base_game_classes/races/rat");
 const ai_manager_1 = require("./manager_classes/ai_manager");
 const materials_manager_1 = require("./manager_classes/materials_manager");
+const graci_1 = require("./base_game_classes/races/graci");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -92,6 +93,10 @@ class World {
         for (let i = 1; i < 60; i++) {
             let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(6, 5), -1);
             await (0, rat_1.rat)(pool, test_rat);
+        }
+        for (let i = 1; i < 20; i++) {
+            let test_graci = await this.entity_manager.create_new_character(pool, 'Her Majesty Graci ' + i, this.get_cell_id_by_x_y(6, 5), -1);
+            await (0, graci_1.graci)(pool, test_graci);
         }
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
         // let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
