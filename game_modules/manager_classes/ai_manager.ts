@@ -1,4 +1,5 @@
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
+import { hostile } from "../base_game_classes/races/racial_hostility";
 import { World } from "../world";
 import { CharacterAction } from "./action_manager";
 
@@ -42,7 +43,7 @@ export class AiManager {
         let a = cell.get_characters_set()
         for (let id of a) {
             let target_char = this.world.get_char_from_id(id)
-            if ((target_char.get_tag() == 'test') && (char.get_tag() == 'rat') || (target_char.get_tag() == 'rat') && (char.get_tag() == 'char')) {
+            if (hostile(char.get_tag(), target_char.get_tag())) {
                 if (!target_char.in_battle() && !target_char.is_dead()) {
                     return target_char.id
                 }                

@@ -106,14 +106,17 @@ class InnateStats {
     }
 }
 
+export type tagAI = 'steppe_walker_agressive'|'dummy'|'steppe_walker_passive'|'forest_walker'
+export type tagRACE = 'human'|'rat'|'graci'|'elo'|'test'
+
 class Misc {
     model: string;
     explored: boolean[];
     battle_id: number;
     in_battle_id: number;
     tactic: any;
-    ai_tag: 'steppe_walker_agressive'|'dummy'|'steppe_walker_passive'|'forest_walker';
-    tag: string;
+    ai_tag: tagAI;
+    tag: tagRACE;
     constructor() {
         this.model = 'empty'
         this.explored = []

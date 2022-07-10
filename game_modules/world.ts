@@ -17,6 +17,7 @@ import { AiManager } from "./manager_classes/ai_manager";
 import { MaterialsManager, material_index } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
 import { auction_order_id } from "./market/market_items";
+import { graci } from "./base_game_classes/races/graci";
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -152,6 +153,11 @@ export class World {
         for (let i = 1; i < 60; i++) {
             let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(6, 5), -1)
             await rat(pool, test_rat)
+        }
+
+        for (let i = 1; i < 20; i++) {
+            let test_graci = await this.entity_manager.create_new_character(pool, 'Her Majesty Graci ' + i, this.get_cell_id_by_x_y(6, 5), -1)
+            await graci(pool, test_graci)
         }
         
         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
