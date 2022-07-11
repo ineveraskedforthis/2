@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.craft_bone_spear = void 0;
+const materials_manager_1 = require("../../manager_classes/materials_manager");
 const item_tags_1 = require("../../static_data/item_tags");
 const craft_spear_1 = require("./craft_spear");
 exports.craft_bone_spear = {
@@ -9,8 +10,8 @@ exports.craft_bone_spear = {
     },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
-            let tmp = char.stash.get(char.world.materials.WOOD);
-            let tmp_2 = char.stash.get(char.world.materials.RAT_BONE);
+            let tmp = char.stash.get(materials_manager_1.WOOD);
+            let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
             if ((tmp > 2) && (tmp_2 > 3)) {
                 return 1 /* CharacterActionResponce.OK */;
             }
@@ -19,13 +20,13 @@ exports.craft_bone_spear = {
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
-        let tmp = char.stash.get(char.world.materials.WOOD);
-        let tmp_2 = char.stash.get(char.world.materials.RAT_BONE);
+        let tmp = char.stash.get(materials_manager_1.WOOD);
+        let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
         if ((tmp > 2) && (tmp_2 > 3)) {
             char.changed = true;
             let skill = char.skills.woodwork.practice;
-            char.stash.inc(char.world.materials.WOOD, -3);
-            char.stash.inc(char.world.materials.RAT_BONE, -4);
+            char.stash.inc(materials_manager_1.WOOD, -3);
+            char.stash.inc(materials_manager_1.RAT_BONE, -4);
             char.send_stash_update();
             char.change_fatigue(10);
             // if (dice < check) {

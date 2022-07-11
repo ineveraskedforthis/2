@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.character_to_hunt_probability = exports.hunt_probability = exports.hunt = void 0;
+const materials_manager_1 = require("../../manager_classes/materials_manager");
 exports.hunt = {
     duration(char) {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.hunt.practice) / 20;
@@ -27,7 +28,7 @@ exports.hunt = {
         let dice = Math.random();
         char.change_fatigue(10);
         if (dice * 100 < skill) {
-            char.stash.inc(char.world.materials.MEAT, 1);
+            char.stash.inc(materials_manager_1.MEAT, 1);
             char.change_blood(5);
             char.send_status_update();
             char.send_stash_update();

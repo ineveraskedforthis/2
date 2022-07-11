@@ -1,5 +1,6 @@
 import { CharacterGenericPart } from "../character_generic_part";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
+import { WATER } from "../../manager_classes/materials_manager";
 
 export const clean = {
     duration(char: CharacterGenericPart) {
@@ -12,7 +13,7 @@ export const clean = {
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            let tmp = char.stash.get(char.world.materials.WATER);
+            let tmp = char.stash.get(WATER);
             if (cell.can_clean()) {
                 return CharacterActionResponce.OK
             } else if (tmp > 0)  {
@@ -28,7 +29,7 @@ export const clean = {
         if (cell == undefined) {
             return CharacterActionResponce.INVALID_CELL
         }
-        let tmp = char.stash.get(char.world.materials.WATER);
+        let tmp = char.stash.get(WATER);
         if (cell.can_clean()) {
             char.changed = true
             char.change_blood(-100)
@@ -36,7 +37,7 @@ export const clean = {
         } else if (tmp > 0) {
             char.changed = true
             char.change_blood(-20);
-            char.stash.inc(char.world.materials.WATER, -1);
+            char.stash.inc(WATER, -1);
             char.send_stash_update()
             char.send_status_update()
         }

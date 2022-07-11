@@ -1,5 +1,6 @@
 import { Cell } from "../../cell";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
+import { WOOD } from "../../manager_classes/materials_manager";
 import type { CharacterGenericPart } from "../character_generic_part";
 
 
@@ -25,7 +26,7 @@ export const gather_wood = {
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
         char.changed = true
         char.change_fatigue(10)
-        char.stash.inc(char.world.materials.WOOD, 1)
+        char.stash.inc(WOOD, 1)
         char.change_blood(1)
         char.change_stress(1)
         char.send_status_update()

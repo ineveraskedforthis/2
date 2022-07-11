@@ -11,7 +11,7 @@ import { privateEncrypt } from "crypto";
 import { Cell } from "../cell";
 import { isNumberObject } from "util/types";
 import { MarketOrder, market_order_index } from "../market/market_order.js";
-import { material_index } from "./materials_manager";
+import { materials, material_index } from "./materials_manager";
 import { character_to_cook_meat_probability } from "../base_game_classes/character_actions/cook_meat";
 import { character_to_craft_spear_probability } from "../base_game_classes/character_actions/craft_spear";
 import { character_to_hunt_probability } from "../base_game_classes/character_actions/hunt";
@@ -490,7 +490,7 @@ export class SocketManager {
             return
         }
         msg.material = Math.floor(msg.material)
-        if (!this.world.materials_manager.validate_material(msg.material)) {
+        if (!materials.validate_material(msg.material)) {
             user.socket.emit('alert', 'invalid_material')
             return
         }
@@ -542,7 +542,7 @@ export class SocketManager {
             return
         }
         msg.material = Math.floor(msg.material)
-        if (!this.world.materials_manager.validate_material(msg.material)) {
+        if (!materials.validate_material(msg.material)) {
             user.socket.emit('alert', 'invalid_material')
             return
         }
@@ -946,8 +946,8 @@ export class SocketManager {
     send_equip_update(user: User) {
         if (user != null) {
             let char = user.get_character()
-            console.log(char.equip.data.backpack.get_data())
-            console.log(char.equip.data.backpack)
+            // console.log(char.equip.data.backpack.get_data())
+            // console.log(char.equip.data.backpack)
             user.socket.emit('equip-update', char.equip.get_data())
         }
     }

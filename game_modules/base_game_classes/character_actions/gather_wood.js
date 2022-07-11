@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.can_gather_wood = exports.gather_wood = void 0;
+const materials_manager_1 = require("../../manager_classes/materials_manager");
 exports.gather_wood = {
     duration(char) {
         return 2 + char.get_fatigue() / 10;
@@ -24,7 +25,7 @@ exports.gather_wood = {
     result: async function (pool, char, data) {
         char.changed = true;
         char.change_fatigue(10);
-        char.stash.inc(char.world.materials.WOOD, 1);
+        char.stash.inc(materials_manager_1.WOOD, 1);
         char.change_blood(1);
         char.change_stress(1);
         char.send_status_update();

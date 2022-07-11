@@ -37,11 +37,11 @@ export class MaterialsManager{
         return this.list_of_indices
     }
 
-    get_material_with_index(n:material_index) {
+    index_to_material(n:material_index) {
         return this.materials[n]
     }
 
-    get_material_with_tag(tag:string) {
+    tag_to_material(tag:string) {
         return this.materials[this.mat_dict[tag]]
     }
 
@@ -53,3 +53,15 @@ export class MaterialsManager{
     }
 }
 
+export const materials = new MaterialsManager()
+
+export const RAT_SKIN = materials.create_material(2, 2, 'rat_skin')
+export const RAT_BONE = materials.create_material(3, 5, 'rat_bone')
+export const ELODINO_FLESH = materials.create_material(1, 1, 'elodino_flesh')
+export const GRACI_HAIR = materials.create_material(5, 20, 'graci_hair')
+export const WOOD = materials.create_material(5, 3, 'wood')
+export const STEEL = materials.create_material(20, 20, 'steel')
+export const FOOD = materials.create_material(2, 1, 'food')
+export const ZAZ = materials.create_material(1, 10, 'zaz')
+export const MEAT = materials.create_material(3, 1, 'meat')
+export const WATER = materials.create_material(2, 1, 'water')

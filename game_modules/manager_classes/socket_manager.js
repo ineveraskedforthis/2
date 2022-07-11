@@ -7,6 +7,7 @@ const user_1 = require("../user");
 var common = require("../common.js");
 const constants_1 = require("../static_data/constants");
 const item_tags_1 = require("../static_data/item_tags");
+const materials_manager_1 = require("./materials_manager");
 const cook_meat_1 = require("../base_game_classes/character_actions/cook_meat");
 const craft_spear_1 = require("../base_game_classes/character_actions/craft_spear");
 const hunt_1 = require("../base_game_classes/character_actions/hunt");
@@ -423,7 +424,7 @@ class SocketManager {
             return;
         }
         msg.material = Math.floor(msg.material);
-        if (!this.world.materials_manager.validate_material(msg.material)) {
+        if (!materials_manager_1.materials.validate_material(msg.material)) {
             user.socket.emit('alert', 'invalid_material');
             return;
         }
@@ -468,7 +469,7 @@ class SocketManager {
             return;
         }
         msg.material = Math.floor(msg.material);
-        if (!this.world.materials_manager.validate_material(msg.material)) {
+        if (!materials_manager_1.materials.validate_material(msg.material)) {
             user.socket.emit('alert', 'invalid_material');
             return;
         }

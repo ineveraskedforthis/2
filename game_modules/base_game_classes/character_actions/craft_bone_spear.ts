@@ -1,4 +1,5 @@
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
+import { RAT_BONE, WOOD } from "../../manager_classes/materials_manager";
 import { Weapon } from "../../static_data/item_tags";
 import { CharacterGenericPart } from "../character_generic_part";
 import { craft_spear_probability } from "./craft_spear";
@@ -10,8 +11,8 @@ export const craft_bone_spear = {
 
     check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
-            let tmp = char.stash.get(char.world.materials.WOOD)
-            let tmp_2 = char.stash.get(char.world.materials.RAT_BONE)
+            let tmp = char.stash.get(WOOD)
+            let tmp_2 = char.stash.get(RAT_BONE)
             if ((tmp > 2) && (tmp_2 > 3))  {
                 return CharacterActionResponce.OK
             }
@@ -21,14 +22,14 @@ export const craft_bone_spear = {
     },
 
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
-        let tmp = char.stash.get(char.world.materials.WOOD)
-        let tmp_2 = char.stash.get(char.world.materials.RAT_BONE)
+        let tmp = char.stash.get(WOOD)
+        let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp > 2) && (tmp_2 > 3)) { 
             char.changed = true
             let skill = char.skills.woodwork.practice;
 
-            char.stash.inc(char.world.materials.WOOD, -3)
-            char.stash.inc(char.world.materials.RAT_BONE, -4)
+            char.stash.inc(WOOD, -3)
+            char.stash.inc(RAT_BONE, -4)
             char.send_stash_update()
             char.change_fatigue(10)
             // if (dice < check) {

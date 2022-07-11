@@ -1,5 +1,6 @@
 import type { CharacterGenericPart } from "../character_generic_part";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
+import { FOOD } from "../../manager_classes/materials_manager";
 
 export const eat = {
     duration(char: CharacterGenericPart) {
@@ -8,7 +9,7 @@ export const eat = {
 
     check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
-            let tmp = char.stash.get(char.world.materials.FOOD);
+            let tmp = char.stash.get(FOOD);
             if (tmp > 0) {
                 return CharacterActionResponce.OK
             }
@@ -20,7 +21,7 @@ export const eat = {
     result: async function(pool: any, char:CharacterGenericPart, data: any) {
         char.changed = true
         char.change_hp(10);
-        char.stash.inc(char.world.materials.FOOD, -1);
+        char.stash.inc(FOOD, -1);
         char.send_stash_update()
         char.send_status_update()
     },

@@ -2,6 +2,7 @@ import { CharacterGenericPart, PerksTable } from "../character_generic_part";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Armour, ArmourConstructorArgument, Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
+import { RAT_SKIN } from "../../manager_classes/materials_manager";
 
 export const craft_rat_armour = {}
 
@@ -24,7 +25,7 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
     
         check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
             if (!char.in_battle()) {
-                let tmp = char.stash.get(char.world.materials.RAT_SKIN)
+                let tmp = char.stash.get(RAT_SKIN)
                 if (tmp >= cost)  {
                     return CharacterActionResponce.OK
                 }
@@ -34,12 +35,12 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
         },
     
         result: async function(pool: any, char:CharacterGenericPart, data: any) {
-            let tmp = char.stash.get(char.world.materials.RAT_SKIN)
+            let tmp = char.stash.get(RAT_SKIN)
             if (tmp >= cost) {
                 char.changed = true
                 let skill = char.skills.clothier.practice;
     
-                char.stash.inc(char.world.materials.RAT_SKIN, -cost)
+                char.stash.inc(RAT_SKIN, -cost)
                 char.send_stash_update()
                 char.change_fatigue(10)
                 // if (dice < check) {

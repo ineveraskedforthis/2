@@ -48,25 +48,15 @@ class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
-        this.materials_manager = new materials_manager_1.MaterialsManager();
-        this.materials = {};
+        // materials = new MaterialsManager()
+        // this.materials = {}
         //frfrfgrs
-        this.materials.RAT_SKIN = this.materials_manager.create_material(2, 2, 'rat_skin');
-        this.materials.RAT_BONE = this.materials_manager.create_material(3, 5, 'rat_bone');
-        this.materials.ELODINO_FLESH = this.materials_manager.create_material(1, 1, 'elodino_flesh');
-        this.materials.GRACI_HAIR = this.materials_manager.create_material(5, 20, 'graci_hair');
-        this.materials.WOOD = this.materials_manager.create_material(5, 3, 'wood');
-        this.materials.STEEL = this.materials_manager.create_material(20, 20, 'steel');
-        this.materials.FOOD = this.materials_manager.create_material(2, 1, 'food');
-        this.materials.ZAZ = this.materials_manager.create_material(1, 10, 'zaz');
-        this.materials.MEAT = this.materials_manager.create_material(3, 1, 'meat');
-        this.materials.WATER = this.materials_manager.create_material(2, 1, 'water');
         let SPEAR_ARGUMENT = {
             durability: 100,
             shaft_length: 2 /* SHAFT_LEGTH.LONG */,
-            shaft_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
+            shaft_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
             impact_size: 1 /* IMPACT_SIZE.SMALL */,
-            impact_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
+            impact_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
             impact_type: 0 /* IMPACT_TYPE.POINT */,
             impact_quality: 50,
             affixes: [],
@@ -75,9 +65,9 @@ class World {
         let BONE_SPEAR_ARGUMENT = {
             durability: 100,
             shaft_length: 2 /* SHAFT_LEGTH.LONG */,
-            shaft_material: this.materials_manager.get_material_with_index(this.materials.WOOD),
+            shaft_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
             impact_size: 1 /* IMPACT_SIZE.SMALL */,
-            impact_material: this.materials_manager.get_material_with_index(this.materials.RAT_BONE),
+            impact_material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE),
             impact_type: 0 /* IMPACT_TYPE.POINT */,
             impact_quality: 100,
             affixes: [],
@@ -85,8 +75,32 @@ class World {
         };
         let RAT_SKIN_PANTS_ARGUMENT = {
             durability: 100,
-            material: this.materials_manager.get_material_with_index(this.materials.RAT_SKIN),
+            material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
             type: item_tags_1.ARMOUR_TYPE.LEGS,
+            quality: 100,
+            affixes: [],
+            item_type: 'armour'
+        };
+        let RAT_SKIN_ARMOUR_ARGUMENT = {
+            durability: 100,
+            material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
+            type: item_tags_1.ARMOUR_TYPE.BODY,
+            quality: 100,
+            affixes: [],
+            item_type: 'armour'
+        };
+        let RAT_SKIN_HELMET_ARGUMENT = {
+            durability: 100,
+            material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
+            type: item_tags_1.ARMOUR_TYPE.HEAD,
+            quality: 100,
+            affixes: [],
+            item_type: 'armour'
+        };
+        let RAT_SKIN_GLOVES_ARGUMENT = {
+            durability: 100,
+            material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
+            type: item_tags_1.ARMOUR_TYPE.ARMS,
             quality: 100,
             affixes: [],
             item_type: 'armour'
@@ -94,6 +108,9 @@ class World {
         this.spear_argument = SPEAR_ARGUMENT;
         this.bone_spear_argument = BONE_SPEAR_ARGUMENT;
         this.rat_skin_pants_argument = RAT_SKIN_PANTS_ARGUMENT;
+        this.rat_skin_gloves_argument = RAT_SKIN_GLOVES_ARGUMENT;
+        this.rat_skin_armour_argument = RAT_SKIN_ARMOUR_ARGUMENT;
+        this.rat_skin_helmet_argument = RAT_SKIN_HELMET_ARGUMENT;
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this, false);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         this.ai_manager = new ai_manager_1.AiManager(this);
@@ -135,17 +152,16 @@ class World {
         /// test person
         let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
         test_person.change_hp(-90);
-        let MEAT = this.materials.MEAT;
-        test_person.stash.inc(MEAT, 10);
-        test_person.stash.inc(this.materials.WOOD, 100);
-        test_person.stash.inc(this.materials.RAT_BONE, 100);
-        test_person.stash.inc(this.materials.WOOD, 100);
-        test_person.stash.inc(this.materials.RAT_SKIN, 100);
+        test_person.stash.inc(materials_manager_1.MEAT, 10);
+        test_person.stash.inc(materials_manager_1.WOOD, 100);
+        test_person.stash.inc(materials_manager_1.RAT_BONE, 100);
+        test_person.stash.inc(materials_manager_1.WOOD, 100);
+        test_person.stash.inc(materials_manager_1.RAT_SKIN, 100);
         test_person.savings.set(5000);
-        await test_person.buy(pool, MEAT, 100, 5);
+        await test_person.buy(pool, materials_manager_1.MEAT, 100, 5);
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
-        meat_bag.stash.inc(MEAT, 200);
-        await meat_bag.sell(pool, MEAT, 10, 10);
+        meat_bag.stash.inc(materials_manager_1.MEAT, 200);
+        await meat_bag.sell(pool, materials_manager_1.MEAT, 10, 10);
         // meat_bag.change_hp(-99)
     }
     async load(pool) {
@@ -169,10 +185,10 @@ class World {
         this.socket_manager.update_user_list();
     }
     get_stash_tags_list() {
-        return this.materials_manager.get_materials_list();
+        return materials_manager_1.materials.get_materials_list();
     }
     get_materials_json() {
-        return this.materials_manager.get_materials_json();
+        return materials_manager_1.materials.get_materials_json();
     }
     get_cell_teacher(x, y) {
         return undefined;

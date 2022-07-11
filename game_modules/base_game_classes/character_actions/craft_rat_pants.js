@@ -3,13 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.character_to_craft_rat_pants_probability = exports.craft_rat_pants_probability = exports.craft_rat_pants = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
 const market_items_1 = require("../../market/market_items");
+const materials_manager_1 = require("../../manager_classes/materials_manager");
 exports.craft_rat_pants = {
     duration(char) {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;
     },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {
-            let tmp = char.stash.get(char.world.materials.RAT_SKIN);
+            let tmp = char.stash.get(materials_manager_1.RAT_SKIN);
             if (tmp >= 4) {
                 return 1 /* CharacterActionResponce.OK */;
             }
@@ -18,11 +19,11 @@ exports.craft_rat_pants = {
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: async function (pool, char, data) {
-        let tmp = char.stash.get(char.world.materials.RAT_SKIN);
+        let tmp = char.stash.get(materials_manager_1.RAT_SKIN);
         if (tmp >= 4) {
             char.changed = true;
             let skill = char.skills.clothier.practice;
-            char.stash.inc(char.world.materials.RAT_SKIN, -4);
+            char.stash.inc(materials_manager_1.RAT_SKIN, -4);
             char.send_stash_update();
             char.change_fatigue(10);
             // if (dice < check) {
