@@ -87,14 +87,16 @@ class World {
         living_area.set_influence(steppe_rats, 50);
         /// test person
         let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
-        test_person.change_hp(-90);
+        // test_person.change_hp(-90)
         test_person.stash.inc(materials_manager_1.MEAT, 10);
         test_person.stash.inc(materials_manager_1.WOOD, 100);
+        test_person.stash.inc(materials_manager_1.FOOD, 500);
         test_person.stash.inc(materials_manager_1.RAT_BONE, 100);
         test_person.stash.inc(materials_manager_1.WOOD, 100);
         test_person.stash.inc(materials_manager_1.RAT_SKIN, 100);
         test_person.savings.set(5000);
         await test_person.buy(pool, materials_manager_1.MEAT, 100, 5);
+        await test_person.sell(pool, materials_manager_1.FOOD, 200, 15);
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
         meat_bag.stash.inc(materials_manager_1.MEAT, 200);
         await meat_bag.sell(pool, materials_manager_1.MEAT, 10, 10);

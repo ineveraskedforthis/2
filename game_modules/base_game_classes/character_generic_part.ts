@@ -543,6 +543,7 @@ export class CharacterGenericPart {
 
     async buy(pool: any, tag:material_index, amount: number, price: money) {
         if (this.savings.get() > amount * price) {
+            console.log('sell ' + tag + ' ' + amount + ' ' + price)
             this.savings.transfer(this.trade_savings, amount * price as money)
             let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id)
             return 'ok'
@@ -551,9 +552,11 @@ export class CharacterGenericPart {
     }
 
     async sell(pool:any, tag:material_index, amount: number, price: money) {
+        // console.log(this.stash.get(tag), amount)
         if (this.stash.get(tag) < amount) {
             return 'not_enough_items'
         }
+        console.log('sell ' + tag + ' ' + amount + ' ' + price)
         this.stash.transfer(this.trade_stash, tag, amount)
         let order = await this.world.entity_manager.generate_order(pool, 'sell', tag, this, amount, price, this.cell_id)
         return 'ok'

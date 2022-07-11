@@ -13,7 +13,7 @@ import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
 import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
-import { materials, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./manager_classes/materials_manager";
+import { FOOD, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
 import { auction_order_id } from "./market/market_items";
 import { graci } from "./base_game_classes/races/graci";
@@ -147,14 +147,17 @@ export class World {
 
         /// test person
         let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1)
-        test_person.change_hp(-90)
+        // test_person.change_hp(-90)
         test_person.stash.inc(MEAT, 10)
         test_person.stash.inc(WOOD, 100)
+        test_person.stash.inc(FOOD, 500)
         test_person.stash.inc(RAT_BONE, 100)
         test_person.stash.inc(WOOD, 100)
         test_person.stash.inc(RAT_SKIN, 100)
         test_person.savings.set(5000 as money)
         await test_person.buy(pool, MEAT, 100, 5 as money)
+        await test_person.sell(pool, FOOD, 200, 15 as money)
+
         
 
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)

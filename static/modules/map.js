@@ -543,15 +543,18 @@ export class Map {
                 ctx.drawImage(this.tiles[3], center_x - this.hex_side, center_y - h)
             } else if (this.data[tag].urban == 1) {
                 ctx.drawImage(this.tiles[2], center_x - this.hex_side, center_y - h)
-            } else if (this.data[tag].wild == 1) {
+            } 
+            if (this.data[tag].wild == 1) {
                 ctx.drawImage(this.tiles[7], center_x - this.hex_side, center_y - h)
             } else if (this.data[tag].wild == 2) {
                 ctx.drawImage(this.tiles[8], center_x - this.hex_side, center_y - h)
             } else if (this.data[tag].wild == 3) {
                 ctx.drawImage(this.tiles[9], center_x - this.hex_side, center_y - h)
-            } else if (this.data[tag].rupture == 1) {
+            } 
+            if (this.data[tag].rupture == 1) {
                 ctx.drawImage(this.tiles[10], center_x - this.hex_side, center_y - h)
-            } else if (this.data[tag].rural >= 1) {
+            } 
+            if (this.data[tag].rural >= 1) {
                 ctx.drawImage(this.tiles[11], center_x - this.hex_side, center_y - h)
             }
         }
