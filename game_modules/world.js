@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.World = void 0;
 var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
-const item_tags_1 = require("./static_data/item_tags");
 const entity_manager_1 = require("./manager_classes/entity_manager");
 const world_constants_1_1 = require("./static_data/world_constants_1");
 const action_manager_1 = require("./manager_classes/action_manager");
@@ -48,69 +47,6 @@ class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
-        // materials = new MaterialsManager()
-        // this.materials = {}
-        //frfrfgrs
-        let SPEAR_ARGUMENT = {
-            durability: 100,
-            shaft_length: 2 /* SHAFT_LEGTH.LONG */,
-            shaft_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-            impact_size: 1 /* IMPACT_SIZE.SMALL */,
-            impact_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-            impact_type: 0 /* IMPACT_TYPE.POINT */,
-            impact_quality: 50,
-            affixes: [],
-            item_type: 'weapon'
-        };
-        let BONE_SPEAR_ARGUMENT = {
-            durability: 100,
-            shaft_length: 2 /* SHAFT_LEGTH.LONG */,
-            shaft_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-            impact_size: 1 /* IMPACT_SIZE.SMALL */,
-            impact_material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE),
-            impact_type: 0 /* IMPACT_TYPE.POINT */,
-            impact_quality: 100,
-            affixes: [],
-            item_type: 'weapon'
-        };
-        let RAT_SKIN_PANTS_ARGUMENT = {
-            durability: 100,
-            material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-            type: item_tags_1.ARMOUR_TYPE.LEGS,
-            quality: 100,
-            affixes: [],
-            item_type: 'armour'
-        };
-        let RAT_SKIN_ARMOUR_ARGUMENT = {
-            durability: 100,
-            material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-            type: item_tags_1.ARMOUR_TYPE.BODY,
-            quality: 100,
-            affixes: [],
-            item_type: 'armour'
-        };
-        let RAT_SKIN_HELMET_ARGUMENT = {
-            durability: 100,
-            material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-            type: item_tags_1.ARMOUR_TYPE.HEAD,
-            quality: 100,
-            affixes: [],
-            item_type: 'armour'
-        };
-        let RAT_SKIN_GLOVES_ARGUMENT = {
-            durability: 100,
-            material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-            type: item_tags_1.ARMOUR_TYPE.ARMS,
-            quality: 100,
-            affixes: [],
-            item_type: 'armour'
-        };
-        this.spear_argument = SPEAR_ARGUMENT;
-        this.bone_spear_argument = BONE_SPEAR_ARGUMENT;
-        this.rat_skin_pants_argument = RAT_SKIN_PANTS_ARGUMENT;
-        this.rat_skin_gloves_argument = RAT_SKIN_GLOVES_ARGUMENT;
-        this.rat_skin_armour_argument = RAT_SKIN_ARMOUR_ARGUMENT;
-        this.rat_skin_helmet_argument = RAT_SKIN_HELMET_ARGUMENT;
         this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this, false);
         this.entity_manager = new entity_manager_1.EntityManager(this);
         this.ai_manager = new ai_manager_1.AiManager(this);

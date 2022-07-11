@@ -3,6 +3,7 @@ import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Armour, Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
 import { RAT_SKIN } from "../../manager_classes/materials_manager";
+import { RAT_SKIN_PANTS_ARGUMENT } from "../../static_data/items_set_up";
 
 
 export const craft_rat_pants = {
@@ -33,7 +34,7 @@ export const craft_rat_pants = {
             // if (dice < check) {
             let dice = Math.random()
             if (dice < craft_rat_pants_probability(skill)) {
-                let armour = new Armour(char.world.rat_skin_pants_argument)
+                let armour = new Armour(RAT_SKIN_PANTS_ARGUMENT)
                 char.equip.add_armour(armour)
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'pants are made')
                 char.send_stash_update()

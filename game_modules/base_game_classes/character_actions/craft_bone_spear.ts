@@ -1,5 +1,6 @@
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { RAT_BONE, WOOD } from "../../manager_classes/materials_manager";
+import { BONE_SPEAR_ARGUMENT } from "../../static_data/items_set_up";
 import { Weapon } from "../../static_data/item_tags";
 import { CharacterGenericPart } from "../character_generic_part";
 import { craft_spear_probability } from "./craft_spear";
@@ -35,7 +36,7 @@ export const craft_bone_spear = {
             // if (dice < check) {
             let dice = Math.random()
             if (dice < craft_spear_probability(skill)) {
-                let spear = new Weapon(char.world.bone_spear_argument)
+                let spear = new Weapon(BONE_SPEAR_ARGUMENT)
                 char.equip.add_weapon(spear)
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made')
                 char.send_stash_update()

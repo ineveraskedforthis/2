@@ -1,6 +1,5 @@
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
-import {affix_tag, ArmourConstructorArgument, ARMOUR_TYPE, IMPACT_SIZE, IMPACT_TYPE, ITEM_MATERIAL, SHAFT_LEGTH, WeaponConstructorArgument} from "./static_data/item_tags";
 
 
 import {EntityManager} from './manager_classes/entity_manager'
@@ -14,7 +13,7 @@ import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
 import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
-import { materials, MaterialsManager, material_index, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./manager_classes/materials_manager";
+import { materials, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
 import { auction_order_id } from "./market/market_items";
 import { graci } from "./base_game_classes/races/graci";
@@ -54,12 +53,12 @@ export class World {
     entity_manager: EntityManager;
     ai_manager: AiManager;
     territories: {[_: string]: any}
-    spear_argument: WeaponConstructorArgument
-    bone_spear_argument: WeaponConstructorArgument
-    rat_skin_pants_argument: ArmourConstructorArgument
-    rat_skin_gloves_argument: ArmourConstructorArgument
-    rat_skin_armour_argument: ArmourConstructorArgument
-    rat_skin_helmet_argument: ArmourConstructorArgument
+    // spear_argument: WeaponConstructorArgument
+    // bone_spear_argument: WeaponConstructorArgument
+    // rat_skin_pants_argument: ArmourConstructorArgument
+    // rat_skin_gloves_argument: ArmourConstructorArgument
+    // rat_skin_armour_argument: ArmourConstructorArgument
+    // rat_skin_helmet_argument: ArmourConstructorArgument
 
     // materials: {[_: string]: material_index}
 
@@ -87,85 +86,6 @@ export class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
-
-
-        // materials = new MaterialsManager()
-
-        // this.materials = {}
-//frfrfgrs
-
-        let SPEAR_ARGUMENT: WeaponConstructorArgument = {
-            durability: 100,
-            shaft_length: SHAFT_LEGTH.LONG,
-            shaft_material: materials.index_to_material(WOOD), 
-            impact_size: IMPACT_SIZE.SMALL, 
-            impact_material: materials.index_to_material(WOOD), 
-            impact_type:IMPACT_TYPE.POINT, 
-            impact_quality: 50,
-            affixes: [],
-            item_type: 'weapon'
-        }
-
-        let BONE_SPEAR_ARGUMENT: WeaponConstructorArgument = {
-            durability: 100,
-            shaft_length: SHAFT_LEGTH.LONG,
-            shaft_material: materials.index_to_material(WOOD), 
-            impact_size: IMPACT_SIZE.SMALL, 
-            impact_material: materials.index_to_material(RAT_BONE), 
-            impact_type:IMPACT_TYPE.POINT, 
-            impact_quality: 100,
-            affixes: [],
-            item_type: 'weapon'
-        }
-
-        let RAT_SKIN_PANTS_ARGUMENT: ArmourConstructorArgument = {
-            durability: 100,
-            material: materials.index_to_material(RAT_SKIN),
-            type: ARMOUR_TYPE.LEGS,
-            quality: 100,
-            affixes: [],
-            item_type: 'armour'
-        }
-
-        let RAT_SKIN_ARMOUR_ARGUMENT: ArmourConstructorArgument = {
-            durability: 100,
-            material: materials.index_to_material(RAT_SKIN),
-            type: ARMOUR_TYPE.BODY,
-            quality: 100,
-            affixes: [],
-            item_type: 'armour'
-        }
-
-        let RAT_SKIN_HELMET_ARGUMENT: ArmourConstructorArgument = {
-            durability: 100,
-            material: materials.index_to_material(RAT_SKIN),
-            type: ARMOUR_TYPE.HEAD,
-            quality: 100,
-            affixes: [],
-            item_type: 'armour'
-        }
-
-        let RAT_SKIN_GLOVES_ARGUMENT: ArmourConstructorArgument = {
-            durability: 100,
-            material: materials.index_to_material(RAT_SKIN),
-            type: ARMOUR_TYPE.ARMS,
-            quality: 100,
-            affixes: [],
-            item_type: 'armour'
-        }
-
-
-
-        this.spear_argument = SPEAR_ARGUMENT
-        this.bone_spear_argument = BONE_SPEAR_ARGUMENT
-        this.rat_skin_pants_argument = RAT_SKIN_PANTS_ARGUMENT
-        this.rat_skin_gloves_argument = RAT_SKIN_GLOVES_ARGUMENT
-        this.rat_skin_armour_argument = RAT_SKIN_ARMOUR_ARGUMENT
-        this.rat_skin_helmet_argument = RAT_SKIN_HELMET_ARGUMENT
-
-
-
-
 
         this.socket_manager = new SocketManager(undefined, io, this, false);
         this.entity_manager = new EntityManager(this);

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.craft_bone_spear = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
+const items_set_up_1 = require("../../static_data/items_set_up");
 const item_tags_1 = require("../../static_data/item_tags");
 const craft_spear_1 = require("./craft_spear");
 exports.craft_bone_spear = {
@@ -32,7 +33,7 @@ exports.craft_bone_spear = {
             // if (dice < check) {
             let dice = Math.random();
             if (dice < (0, craft_spear_1.craft_spear_probability)(skill)) {
-                let spear = new item_tags_1.Weapon(char.world.bone_spear_argument);
+                let spear = new item_tags_1.Weapon(items_set_up_1.BONE_SPEAR_ARGUMENT);
                 char.equip.add_weapon(spear);
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
                 char.send_stash_update();

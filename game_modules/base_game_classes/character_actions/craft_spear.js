@@ -4,6 +4,7 @@ exports.character_to_craft_spear_probability = exports.craft_spear_probability =
 const item_tags_1 = require("../../static_data/item_tags");
 const market_items_1 = require("../../market/market_items");
 const materials_manager_1 = require("../../manager_classes/materials_manager");
+const items_set_up_1 = require("../../static_data/items_set_up");
 exports.craft_spear = {
     duration(char) {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
@@ -29,7 +30,7 @@ exports.craft_spear = {
             // if (dice < check) {
             let dice = Math.random();
             if (dice < craft_spear_probability(skill)) {
-                let spear = new item_tags_1.Weapon(char.world.spear_argument);
+                let spear = new item_tags_1.Weapon(items_set_up_1.SPEAR_ARGUMENT);
                 char.equip.add_weapon(spear);
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
                 char.send_stash_update();

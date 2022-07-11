@@ -3,6 +3,7 @@ import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
 import { WOOD } from "../../manager_classes/materials_manager";
+import { SPEAR_ARGUMENT } from "../../static_data/items_set_up";
 
 
 export const craft_spear = {
@@ -33,7 +34,7 @@ export const craft_spear = {
             // if (dice < check) {
             let dice = Math.random()
             if (dice < craft_spear_probability(skill)) {
-                let spear = new Weapon(char.world.spear_argument)
+                let spear = new Weapon(SPEAR_ARGUMENT)
                 char.equip.add_weapon(spear)
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made')
                 char.send_stash_update()
