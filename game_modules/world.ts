@@ -58,6 +58,9 @@ export class World {
     spear_argument: WeaponConstructorArgument
     bone_spear_argument: WeaponConstructorArgument
     rat_skin_pants_argument: ArmourConstructorArgument
+    rat_skin_gloves_argument: ArmourConstructorArgument
+    rat_skin_armour_argument: ArmourConstructorArgument
+    rat_skin_helmet_argument: ArmourConstructorArgument
 
     materials: {[_: string]: material_index}
 
@@ -137,9 +140,41 @@ export class World {
             item_type: 'armour'
         }
 
+        let RAT_SKIN_ARMOUR_ARGUMENT: ArmourConstructorArgument = {
+            durability: 100,
+            material: this.materials_manager.get_material_with_index(this.materials.RAT_SKIN),
+            type: ARMOUR_TYPE.BODY,
+            quality: 100,
+            affixes: [],
+            item_type: 'armour'
+        }
+
+        let RAT_SKIN_HELMET_ARGUMENT: ArmourConstructorArgument = {
+            durability: 100,
+            material: this.materials_manager.get_material_with_index(this.materials.RAT_SKIN),
+            type: ARMOUR_TYPE.HEAD,
+            quality: 100,
+            affixes: [],
+            item_type: 'armour'
+        }
+
+        let RAT_SKIN_GLOVES_ARGUMENT: ArmourConstructorArgument = {
+            durability: 100,
+            material: this.materials_manager.get_material_with_index(this.materials.RAT_SKIN),
+            type: ARMOUR_TYPE.ARMS,
+            quality: 100,
+            affixes: [],
+            item_type: 'armour'
+        }
+
+
+
         this.spear_argument = SPEAR_ARGUMENT
         this.bone_spear_argument = BONE_SPEAR_ARGUMENT
         this.rat_skin_pants_argument = RAT_SKIN_PANTS_ARGUMENT
+        this.rat_skin_gloves_argument = RAT_SKIN_GLOVES_ARGUMENT
+        this.rat_skin_armour_argument = RAT_SKIN_ARMOUR_ARGUMENT
+        this.rat_skin_helmet_argument = RAT_SKIN_HELMET_ARGUMENT
 
 
 
