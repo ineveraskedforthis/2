@@ -77,16 +77,16 @@ class Armour {
 exports.Armour = Armour;
 function shaft_length_to_number(x) {
     switch (x) {
-        case 0 /* SHAFT_LEGTH.HAND */: return 0.1;
-        case 1 /* SHAFT_LEGTH.SHORT */: return +1;
-        case 2 /* SHAFT_LEGTH.LONG */: return +2;
+        case 0 /* SHAFT_LEGTH.HAND */: return 0.5;
+        case 1 /* SHAFT_LEGTH.SHORT */: return +1.0;
+        case 2 /* SHAFT_LEGTH.LONG */: return +1.5;
     }
 }
 function impact_size_to_number(x) {
     switch (x) {
-        case 1 /* IMPACT_SIZE.SMALL */: return 0.1;
-        case 2 /* IMPACT_SIZE.MEDIUM */: return 1;
-        case 3 /* IMPACT_SIZE.LARGE */: return 2;
+        case 1 /* IMPACT_SIZE.SMALL */: return 0.5;
+        case 2 /* IMPACT_SIZE.MEDIUM */: return 1.0;
+        case 3 /* IMPACT_SIZE.LARGE */: return 1.5;
     }
 }
 class Weapon {
@@ -109,14 +109,14 @@ class Weapon {
     get_length() {
         let length = 0;
         switch (this.impact_size) {
-            case 1 /* IMPACT_SIZE.SMALL */: length = length + 0.1;
-            case 2 /* IMPACT_SIZE.MEDIUM */: length = length + 1;
-            case 3 /* IMPACT_SIZE.LARGE */: length = length + 2;
+            case 1 /* IMPACT_SIZE.SMALL */: length = length + 0.4;
+            case 2 /* IMPACT_SIZE.MEDIUM */: length = length + 0.5;
+            case 3 /* IMPACT_SIZE.LARGE */: length = length + 1.0;
         }
         switch (this.shaft_length) {
-            case 0 /* SHAFT_LEGTH.HAND */: length = length + 0.1;
-            case 1 /* SHAFT_LEGTH.SHORT */: length = length + 1;
-            case 2 /* SHAFT_LEGTH.LONG */: length = length + 2;
+            case 0 /* SHAFT_LEGTH.HAND */: length = length + 0.3;
+            case 1 /* SHAFT_LEGTH.SHORT */: length = length + 0.5;
+            case 2 /* SHAFT_LEGTH.LONG */: length = length + 1.0;
         }
         return length;
     }

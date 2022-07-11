@@ -50,7 +50,7 @@ class Equip {
         if (right_hand == undefined) {
             return range;
         }
-        return range + right_hand.get_length();
+        return right_hand.get_length();
     }
     get_weapon_damage(result) {
         let right_hand = this.data.weapon;

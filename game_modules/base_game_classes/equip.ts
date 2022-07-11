@@ -61,7 +61,7 @@ export class Equip {
     get_weapon_range(range:number) {
         let right_hand = this.data.weapon;
         if (right_hand == undefined) {return range}
-        return range + right_hand.get_length();
+        return right_hand.get_length();
     }
 
     get_weapon_damage(result:AttackResult) {

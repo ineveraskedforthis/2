@@ -402,12 +402,14 @@ export class BattleReworked2 {
         //move toward enemy
         if (action.action == 'move') {
             let tmp = geom.minus(action.target, unit.position)
-            if (geom.norm(tmp) * 2 > unit.action_points_left) {
-                tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / 2)
+
+            let MOVE_COST = 3
+            if (geom.norm(tmp) * MOVE_COST > unit.action_points_left) {
+                tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / MOVE_COST)
             }
             unit.position.x = tmp.x + unit.position.x;
             unit.position.y = tmp.y + unit.position.y;
-            let points_spent = geom.norm(tmp) * 2
+            let points_spent = geom.norm(tmp) * MOVE_COST
             unit.action_points_left -= points_spent
             this.changed = true
             return {action: 'move', who: unit_index, target: unit.position, actor_name: character.name}

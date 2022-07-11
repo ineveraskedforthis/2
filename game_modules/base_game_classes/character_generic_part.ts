@@ -859,7 +859,9 @@ export class CharacterGenericPart {
     }
     
     get_range() {
-        return this.equip.get_weapon_range(1);
+        let base_range = 0.6
+        if (this.misc.tag == 'graci') base_range = 1.3;
+        return this.equip.get_weapon_range(base_range);
     }
 
     get_model() {
