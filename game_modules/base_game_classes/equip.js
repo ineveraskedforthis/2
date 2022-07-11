@@ -140,8 +140,8 @@ class Equip {
     equip_weapon(index) {
         let backpack = this.data.backpack;
         let item = backpack.weapons[index];
-        console.log(item);
-        console.log(backpack.weapons);
+        // console.log(item)
+        // console.log(backpack.weapons)
         if (item != undefined) {
             let tmp = this.data.weapon;
             this.data.weapon = backpack.weapons[index];

@@ -47,7 +47,7 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
                 if (dice < craft_rat_armour_probability(skill)) {
                     let armour = new Armour(arg)
                     char.equip.add_armour(armour)
-                    char.world.socket_manager.send_to_character_user(char, 'alert', 'pants are made')
+                    char.world.socket_manager.send_to_character_user(char, 'alert', 'finished')
                     char.send_stash_update()
                     char.send_equip_update()
                     char.send_status_update()

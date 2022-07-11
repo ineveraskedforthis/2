@@ -960,6 +960,26 @@ function process_stash_click(tag) {
     div.onclick = () => socket.emit('mrpants')
 }
 
+{
+    let div = document.getElementById('craft_rat_armour')
+    div.onclick = () => socket.emit('mrarmour')
+}
+
+{
+    let div = document.getElementById('craft_rat_gloves')
+    div.onclick = () => socket.emit('mrgloves')
+}
+
+{
+    let div = document.getElementById('craft_rat_helmet')
+    div.onclick = () => socket.emit('mrhelmet')
+}
+
+{
+    let div = document.getElementById('craft_rat_boots')
+    div.onclick = () => socket.emit('mrboots')
+}
+
 function update_craft_probability(data) {
     console.log(data)
     let div = document.getElementById(data.tag + '_chance')
