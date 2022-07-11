@@ -3,8 +3,7 @@ import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Armour, ArmourConstructorArgument, Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
 import { RAT_SKIN } from "../../manager_classes/materials_manager";
-
-export const craft_rat_armour = {}
+import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../static_data/items_set_up";
 
 function craft_rat_armour_probability(skill: number) {
     if (nodb_mode_check()) return 1;
@@ -71,4 +70,8 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
     }
 }
 
-// generate_rat_skin_craft()
+export const craft_rat_armour = generate_rat_skin_craft(RAT_SKIN_ARMOUR_ARGUMENT, 10)
+export const craft_rat_gloves = generate_rat_skin_craft(RAT_SKIN_GLOVES_ARGUMENT, 5)
+export const craft_rat_pants = generate_rat_skin_craft(RAT_SKIN_PANTS_ARGUMENT, 8)
+export const craft_rat_helmet = generate_rat_skin_craft(RAT_SKIN_HELMET_ARGUMENT, 5)
+export const craft_rat_boots = generate_rat_skin_craft(RAT_SKIN_BOOTS_ARGUMENT, 5)

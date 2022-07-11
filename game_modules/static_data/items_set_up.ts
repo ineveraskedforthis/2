@@ -54,6 +54,15 @@ export const RAT_SKIN_HELMET_ARGUMENT: ArmourConstructorArgument = {
     item_type: 'armour'
 }
 
+export const RAT_SKIN_BOOTS_ARGUMENT: ArmourConstructorArgument = {
+    durability: 100,
+    material: materials.index_to_material(RAT_SKIN),
+    type: ARMOUR_TYPE.FOOT,
+    quality: 100,
+    affixes: [],
+    item_type: 'armour'
+}
+
 export const RAT_SKIN_GLOVES_ARGUMENT: ArmourConstructorArgument = {
     durability: 100,
     material: materials.index_to_material(RAT_SKIN),

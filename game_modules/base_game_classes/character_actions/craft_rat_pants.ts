@@ -6,7 +6,7 @@ import { RAT_SKIN } from "../../manager_classes/materials_manager";
 import { RAT_SKIN_PANTS_ARGUMENT } from "../../static_data/items_set_up";
 
 
-export const craft_rat_pants = {
+const craft_rat_pants = {
     duration(char: CharacterGenericPart) {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;
     },

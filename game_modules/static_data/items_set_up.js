@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = void 0;
+exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const item_tags_1 = require("./item_tags");
 exports.SPEAR_ARGUMENT = {
@@ -45,6 +45,14 @@ exports.RAT_SKIN_HELMET_ARGUMENT = {
     durability: 100,
     material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
     type: item_tags_1.ARMOUR_TYPE.HEAD,
+    quality: 100,
+    affixes: [],
+    item_type: 'armour'
+};
+exports.RAT_SKIN_BOOTS_ARGUMENT = {
+    durability: 100,
+    material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
+    type: item_tags_1.ARMOUR_TYPE.FOOT,
     quality: 100,
     affixes: [],
     item_type: 'armour'

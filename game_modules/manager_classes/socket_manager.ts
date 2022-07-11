@@ -142,7 +142,7 @@ export class SocketManager {
 
     async equip_weapon(user: User, msg: number) {
         if (user.logged_in) {
-            console.log('equip ', msg)
+            // console.log('equip ', msg)
             let character = user.get_character();
             await character.equip_weapon(msg);
             this.send_equip_update_to_character(character)

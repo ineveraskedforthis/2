@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.character_to_craft_rat_armour_probability = exports.craft_rat_armour = void 0;
+exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.character_to_craft_rat_armour_probability = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
 const market_items_1 = require("../../market/market_items");
 const materials_manager_1 = require("../../manager_classes/materials_manager");
-exports.craft_rat_armour = {};
+const items_set_up_1 = require("../../static_data/items_set_up");
 function craft_rat_armour_probability(skill) {
     if ((0, market_items_1.nodb_mode_check)())
         return 1;
@@ -65,4 +65,8 @@ function generate_rat_skin_craft(arg, cost) {
         },
     };
 }
-// generate_rat_skin_craft()
+exports.craft_rat_armour = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT, 10);
+exports.craft_rat_gloves = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_GLOVES_ARGUMENT, 5);
+exports.craft_rat_pants = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_PANTS_ARGUMENT, 8);
+exports.craft_rat_helmet = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_HELMET_ARGUMENT, 5);
+exports.craft_rat_boots = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_BOOTS_ARGUMENT, 5);

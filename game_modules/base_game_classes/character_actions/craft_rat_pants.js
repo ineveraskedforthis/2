@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.character_to_craft_rat_pants_probability = exports.craft_rat_pants_probability = exports.craft_rat_pants = void 0;
+exports.character_to_craft_rat_pants_probability = exports.craft_rat_pants_probability = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
 const market_items_1 = require("../../market/market_items");
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../static_data/items_set_up");
-exports.craft_rat_pants = {
+const craft_rat_pants = {
     duration(char) {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;
     },
