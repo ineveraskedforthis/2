@@ -8,7 +8,7 @@ const items_set_up_1 = require("../../static_data/items_set_up");
 function craft_rat_armour_probability(skill) {
     if ((0, market_items_1.nodb_mode_check)())
         return 1;
-    return Math.min(skill / 30, 1);
+    return Math.min(0.05 + skill / 20, 1);
 }
 function character_to_craft_rat_armour_probability(character) {
     let skill = character.skills.clothier.practice;

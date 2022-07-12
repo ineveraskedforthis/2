@@ -13,6 +13,7 @@ import { ITEM_MATERIAL } from '../static_data/item_tags';
 import { material_index } from './materials_manager';
 import { money } from '../base_game_classes/savings';
 import { AuctionOrderManagement, auction_order_id, OrderItem } from '../market/market_items';
+import { rat } from '../base_game_classes/races/rat';
 
 
 export class EntityManager {
@@ -211,6 +212,9 @@ export class EntityManager {
             decision_flag = true; 
             this.time_since_last_decision_update = 0
         }
+
+        let rats = 0
+
         for (let i = 0; i < this.chars.length; i++) {
             // console.log(this.chars[i]?.get_cell()?.i, this.chars[i]?.get_cell()?.j)
             if ((this.chars[i] != undefined) && !this.chars[i].is_dead()) {
@@ -218,10 +222,19 @@ export class EntityManager {
                 if (!char.in_battle()) {
                     await char.update(pool, dt);
                     if (decision_flag) {await this.world.ai_manager.decision(char)}
+
+                    if (char.misc.tag == 'rat') {
+                        rats += 1
+                    }
                 }
             } else if ((this.chars[i] != undefined) && this.chars[i].is_dead()) {
                 await this.kill(pool, i)
             }
+        }
+
+        for (let i = rats; i < 60; i++) {
+            let test_rat = await this.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(9, 9), -1)
+            await rat(pool, test_rat)
         }
     }
 

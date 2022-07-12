@@ -21,21 +21,21 @@ function generate_loot(killer, dead) {
         case 'rat': {
             killer.stash.inc(materials_manager_1.MEAT, 1);
             killer.stash.inc(materials_manager_1.RAT_BONE, 2);
+            killer.stash.inc(materials_manager_1.RAT_SKIN, 2);
             let luck = Math.random();
             let skill = killer.skills.skinning.practice;
-            if (luck * skill + 0.5 * skill > SKIN_RAT_DIFFICULTY) {
-                killer.stash.inc(materials_manager_1.MEAT, 1);
-                killer.stash.inc(materials_manager_1.RAT_BONE, 2);
-                killer.stash.inc(materials_manager_1.RAT_SKIN, 1);
+            if (luck * (skill) + skill > SKIN_RAT_DIFFICULTY) {
+                killer.stash.inc(materials_manager_1.MEAT, 2);
+                killer.stash.inc(materials_manager_1.RAT_SKIN, 4);
             }
-            let learning_dice = Math.random();
-            if (learning_dice > 0.05 * skill) {
+            // let learning_dice = Math.random() * 20
+            if (skill < SKIN_RAT_DIFFICULTY) {
                 killer.skills.skinning.practice += 1;
             }
             return true;
         }
         case 'graci': {
-            killer.stash.inc(materials_manager_1.GRACI_HAIR, 1);
+            killer.stash.inc(materials_manager_1.GRACI_HAIR, 3);
             return true;
         }
     }

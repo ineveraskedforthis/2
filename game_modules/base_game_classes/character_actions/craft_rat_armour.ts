@@ -7,7 +7,7 @@ import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGU
 
 function craft_rat_armour_probability(skill: number) {
     if (nodb_mode_check()) return 1;
-    return Math.min(skill / 30, 1)
+    return Math.min(0.05 + skill / 20, 1)
 }
 
 export function character_to_craft_rat_armour_probability(character:CharacterGenericPart) {

@@ -32,6 +32,7 @@ export const hunt = {
 
         if (dice * 100 < skill) {
             char.stash.inc(MEAT, 1)
+
             char.change_blood(5)
             char.send_status_update()
             char.send_stash_update()
