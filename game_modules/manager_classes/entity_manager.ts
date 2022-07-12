@@ -341,6 +341,28 @@ export class EntityManager {
         await order.delete_from_db(pool)
     }
 
+    async remove_all_orders(pool: any, character: CharacterGenericPart) {
+        let cell = character.get_cell()
+        if (cell == undefined) {
+            return
+        }
+        let orders_to_delete = []
+        let orders = cell.orders
+        for (let order_id of orders) {
+            let order = this.get_order(order_id)
+            if (order.owner_id == character.id) {
+                orders_to_delete.push(order_id)
+            }
+        }
+
+        for (let order_id of orders_to_delete) {
+            await this.remove_order(pool, order_id)
+        }
+
+        character.trade_stash.transfer_all(character.stash)
+        character.trade_savings.transfer_all(character.savings)
+    }
+
     add_item_order(order: any) {
         this.item_orders[order.id] = order
     }

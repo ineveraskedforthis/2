@@ -1134,6 +1134,11 @@ function select_character(id) {
     update_characters_list(test_data)
 }
 
+{
+    let button = document.getElementById('clear_orders_button')
+    button.onclick = () => socket.emit('clear-orders')
+}
+
 let market_div = document.querySelector('.goods_list')
 
 function send_execute_order_request(order_id, amount) {
