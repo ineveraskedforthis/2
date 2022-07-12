@@ -11,6 +11,7 @@ const user_manager_1 = require("./manager_classes/user_manager");
 const rat_1 = require("./base_game_classes/races/rat");
 const ai_manager_1 = require("./manager_classes/ai_manager");
 const materials_manager_1 = require("./manager_classes/materials_manager");
+const market_items_1 = require("./market/market_items");
 const graci_1 = require("./base_game_classes/races/graci");
 const elo_1 = require("./base_game_classes/races/elo");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
@@ -87,7 +88,9 @@ class World {
         living_area.set_influence(steppe_rats, 50);
         /// test person
         let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
-        // test_person.change_hp(-90)
+        if ((0, market_items_1.nodb_mode_check)()) {
+            test_person.change_hp(-90);
+        }
         test_person.stash.inc(materials_manager_1.MEAT, 10);
         test_person.stash.inc(materials_manager_1.WOOD, 100);
         test_person.stash.inc(materials_manager_1.FOOD, 500);

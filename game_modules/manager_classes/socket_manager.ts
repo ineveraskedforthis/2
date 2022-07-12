@@ -93,6 +93,7 @@ export class SocketManager {
 
             socket.on('session', async (msg: any) => this.login_with_session(user, msg));
             socket.on('clear-orders', async () => this.clear_orders(user));
+            socket.on('clear-order', async (msg: any) => this.clear_order(user, msg));
             socket.on('sell-item', async (msg: any) => this.sell_item(user, msg));
             socket.on('buyout', async (msg: any) => this.buyout(user, msg));
             socket.on('execute-order', async (msg: any) => this.execute_order(user, msg.amount, msg.order))
@@ -422,6 +423,21 @@ export class SocketManager {
         if (user.logged_in) {
             let char = user.get_character();
             await this.world.entity_manager.remove_orders(this.pool, char)
+            this.send_savings_update(char);
+            this.send_stash_update(user);
+            this.send_char_info(user);
+        }
+    }
+
+    async clear_order(user: User, data: number) {
+        if (user.logged_in) {
+            let char = user.get_character();
+            let order = this.world.entity_manager.orders[data]
+            if (order.owner_id != char.id) {
+                user.socket.emit('alert', 'not your order')
+                return
+            }
+            await this.world.entity_manager.remove_order(this.pool, data as market_order_index)
             this.send_savings_update(char);
             this.send_stash_update(user);
             this.send_char_info(user);

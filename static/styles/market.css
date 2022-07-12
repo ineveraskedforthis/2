@@ -134,6 +134,9 @@
 
 .market_button {
     background-color: rgba(80, 21, 11, 0.123);
+    border: #590000 1px solid;
+    width: 100px;
+    text-align: center;
 }
 
 .market_button:hover {

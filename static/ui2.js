@@ -1198,6 +1198,15 @@ function create_market_order_row(good_tag, amount, sell_price, buy_price, dummy_
 
             ((order_id, button) => button.onclick = () => send_execute_order_request(order_id, 1))(order_id, div)
         }
+
+        {
+            let div = document.createElement('div');
+            div.innerHTML = 'Remove';
+            div.classList.add('market_button');
+            div_cell.appendChild(div);
+
+            ((order_id, button) => button.onclick = () => socket.emit('clear-order', order_id))(order_id, div)
+        }
     }
 
     // ((good_tag) => div_cell.onclick = () => {

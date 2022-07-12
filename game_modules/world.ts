@@ -15,7 +15,7 @@ import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
 import { FOOD, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
-import { auction_order_id } from "./market/market_items";
+import { auction_order_id, nodb_mode_check } from "./market/market_items";
 import { graci } from "./base_game_classes/races/graci";
 import { elo } from "./base_game_classes/races/elo";
 
@@ -147,7 +147,8 @@ export class World {
 
         /// test person
         let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1)
-        // test_person.change_hp(-90)
+        if (nodb_mode_check()) {test_person.change_hp(-90)}
+        
         test_person.stash.inc(MEAT, 10)
         test_person.stash.inc(WOOD, 100)
         test_person.stash.inc(FOOD, 500)
