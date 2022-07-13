@@ -8,7 +8,7 @@ var common = require("../common.js");
 import {constants} from '../static_data/constants'
 import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { Cell } from "../cell";
-import { MarketOrder, market_order_index } from "../market/market_order.js";
+import { MarketOrder, MarketOrderJson, market_order_index } from "../market/market_order.js";
 import { materials, material_index } from "./materials_manager";
 import { character_to_cook_meat_probability } from "../base_game_classes/character_actions/cook_meat";
 import { character_to_craft_spear_probability } from "../base_game_classes/character_actions/craft_spear";
@@ -946,7 +946,7 @@ export class SocketManager {
         let data = market.orders;
 
         let orders_array = Array.from(data)
-        let responce = []
+        let responce: MarketOrderJson[] = []
         for (let order_id of orders_array) {
             let order = this.world.get_order(order_id)
             if (order.amount > 0) {
@@ -1058,11 +1058,11 @@ export class SocketManager {
 
 
     update_user_list(){
-        var tmp = [];
+        var tmp: number[] = [];
         var users_online = this.world.user_manager.users_online;
-        for (var i in users_online) {
-            if (users_online[i]) {
-                tmp.push(i);
+        for (var user of this.world.user_manager.users) {
+            if (users_online[user.id]) {
+                tmp.push(user.id);
             }
         }
         this.io.emit('users-online', tmp);

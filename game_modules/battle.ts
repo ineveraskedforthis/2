@@ -539,13 +539,13 @@ export class BattleReworked2 {
     }
 
     get_team_status(team: number) {
-        let tmp = []
+        let tmp:{name: string, hp: number, next_turn: number, ap: number}[] = []
         for (let i in this.heap.data) {
             let unit = this.heap.data[i]
             if (unit.team == team) {
                 let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
                 if (char != undefined) {
-                    tmp.push({name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after})
+                    tmp.push({name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left})
                 }
             }
         }
@@ -553,7 +553,7 @@ export class BattleReworked2 {
     }
 
     get_status() {
-        let tmp = []
+        let tmp:{name: string, hp: number, next_turn: number, ap: number}[] = []
         for (let i in this.heap.data) {
             let unit = this.heap.data[i]
             let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)

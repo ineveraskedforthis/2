@@ -21,7 +21,7 @@ class Stash {
     }
     inc(tag, x) {
         let tag_stash = this.get(tag);
-        var tmp = undefined;
+        var tmp = 0;
         if (tag_stash == undefined) {
             tag_stash = 0;
         }

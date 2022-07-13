@@ -7,6 +7,16 @@ import { money } from "../base_game_classes/savings.js";
 
 export type market_order_index = number & { __brand: "index of the order"}
 
+export interface MarketOrderJson {
+    typ: 'sell'|'buy',
+    tag: material_index,
+    owner_id: number,
+    owner_name: string|undefined,
+    amount: number
+    price: money
+    id: market_order_index
+    cell_id: number
+}
 
 export class MarketOrder {
     world: World;
@@ -82,19 +92,17 @@ export class MarketOrder {
         }
     }
 
-    get_json() {
-        var tmp: any = {};
-        tmp.typ = this.typ;
-        tmp.tag = this.tag;
-        tmp.owner_id = this.owner_id;
-        if (this.owner != undefined) {
-            tmp.owner_name = this.owner.name;
-            tmp.owner_tag = this.owner.get_tag;
-        }
-        tmp.amount = this.amount;
-        tmp.price = this.price;
-        tmp.id = this.id;
-        tmp.cell_id = this.cell_id;
+    get_json():MarketOrderJson {
+        var tmp:MarketOrderJson = {
+            typ: this.typ,
+            tag: this.tag,
+            owner_id: this.owner_id,
+            owner_name: this.owner?.name,
+            amount: this.amount,
+            price: this.price,
+            id: this.id,
+            cell_id: this.cell_id
+        };
         return tmp;
     }
 }

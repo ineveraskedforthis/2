@@ -433,7 +433,7 @@ class BattleReworked2 {
             if (unit.team == team) {
                 let char = this.world.get_char_from_id(unit.char_id);
                 if (char != undefined) {
-                    tmp.push({ name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after });
+                    tmp.push({ name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left });
                 }
             }
         }

@@ -941,7 +941,7 @@ export class CharacterGenericPart {
     update_visited() {
         let cell = this.get_cell()
         if (cell != undefined) {
-            let visited = []
+            let visited: {x: number, y: number}[] = []
             for (let direction of dp) {
                 let x = cell.i + direction[0]
                 let y = cell.j + direction[1]

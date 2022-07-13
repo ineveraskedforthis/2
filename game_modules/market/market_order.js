@@ -63,18 +63,16 @@ class MarketOrder {
         }
     }
     get_json() {
-        var tmp = {};
-        tmp.typ = this.typ;
-        tmp.tag = this.tag;
-        tmp.owner_id = this.owner_id;
-        if (this.owner != undefined) {
-            tmp.owner_name = this.owner.name;
-            tmp.owner_tag = this.owner.get_tag;
-        }
-        tmp.amount = this.amount;
-        tmp.price = this.price;
-        tmp.id = this.id;
-        tmp.cell_id = this.cell_id;
+        var tmp = {
+            typ: this.typ,
+            tag: this.tag,
+            owner_id: this.owner_id,
+            owner_name: this.owner?.name,
+            amount: this.amount,
+            price: this.price,
+            id: this.id,
+            cell_id: this.cell_id
+        };
         return tmp;
     }
 }

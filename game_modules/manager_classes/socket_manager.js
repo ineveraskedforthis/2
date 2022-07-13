@@ -940,9 +940,9 @@ class SocketManager {
     update_user_list() {
         var tmp = [];
         var users_online = this.world.user_manager.users_online;
-        for (var i in users_online) {
-            if (users_online[i]) {
-                tmp.push(i);
+        for (var user of this.world.user_manager.users) {
+            if (users_online[user.id]) {
+                tmp.push(user.id);
             }
         }
         this.io.emit('users-online', tmp);
