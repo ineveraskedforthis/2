@@ -1061,9 +1061,11 @@ export class SocketManager {
         var tmp: number[] = [];
         var users_online = this.world.user_manager.users_online;
         for (var user of this.world.user_manager.users) {
-            if (users_online[user.id]) {
-                tmp.push(user.id);
-            }
+            if (user != undefined) {
+                if (users_online[user.id]) {
+                    tmp.push(user.id);
+                }
+            }            
         }
         this.io.emit('users-online', tmp);
     }
