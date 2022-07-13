@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stash = void 0;
+const materials_manager_1 = require("../manager_classes/materials_manager");
 class Stash {
     constructor() {
         this.data = [];
@@ -8,8 +9,8 @@ class Stash {
     }
     get_json() {
         let data = {};
-        for (let tag = 1; tag < this.data.length; tag++) {
-            data[tag] = this.data[tag];
+        for (let material of materials_manager_1.materials.get_materials_list()) {
+            data[material] = this.data[material];
         }
         return data;
     }
@@ -56,7 +57,7 @@ class Stash {
         return -tmp;
     }
     transfer_all(target) {
-        for (let tag = 1; tag < this.data.length; tag++) {
+        for (let tag of materials_manager_1.materials.get_materials_list()) {
             this.transfer(target, tag, this.data[tag]);
         }
     }
