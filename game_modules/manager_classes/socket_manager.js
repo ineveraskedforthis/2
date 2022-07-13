@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketManager = void 0;
+const character_generic_part_1 = require("../base_game_classes/character_generic_part");
 const battle_1 = require("../battle");
 const action_manager_1 = require("./action_manager");
 const user_1 = require("../user");
@@ -82,6 +83,8 @@ class SocketManager {
             // socket.on('ench', async (msg: any) => this.enchant(user));
             socket.on('disench', async (msg) => this.disenchant(user, msg));
             socket.on('battle-action', async (msg) => this.battle_action(user, msg));
+            socket.on('request-perks', (msg) => this.send_perks_info(user, msg));
+            socket.on('learn-perk', (msg) => this.send_learn_perk_request(user, msg.id, msg.tag));
         });
     }
     disconnect(user) {
@@ -935,6 +938,69 @@ class SocketManager {
         if (cell != undefined) {
             let res = this.world.get_cell_teacher(cell.i, cell.j);
             this.send_to_character_user(character, 'local-skills', res);
+        }
+    }
+    send_perks_info(user, character_id) {
+        console.log('request perks from ' + character_id);
+        let character = user.get_character();
+        let target_character = this.world.entity_manager.chars[character_id];
+        if (target_character == undefined) {
+            user.socket.emit('alert', 'character does not exist');
+            return;
+        }
+        if (character == undefined) {
+            user.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        if (character.cell_id != target_character.cell_id) {
+            user.socket.emit('alert', 'not in the same cell');
+            return;
+        }
+        let data = target_character.skills.perks;
+        let responce = {};
+        for (let i of character_generic_part_1.perks_list) {
+            if (data[i] == true) {
+                responce[i] = (0, character_generic_part_1.perk_price)(i);
+            }
+        }
+        user.socket.emit('perks-info', responce);
+    }
+    send_learn_perk_request(user, character_id, perk_tag) {
+        let character = user.get_character();
+        let target_character = this.world.entity_manager.chars[character_id];
+        if (target_character == undefined) {
+            return;
+        }
+        if (character == undefined) {
+            return;
+        }
+        if (character.cell_id != target_character.cell_id) {
+            user.socket.emit('alert', 'not in the same cell');
+            return;
+        }
+        if (target_character.skills.perks[perk_tag] != true) {
+            user.socket.emit('alert', "target doesn't know this perk");
+            return;
+        }
+        if (target_character.is_player()) {
+            let target_user = target_character.get_user();
+            let target_socket = target_user.socket;
+            if (target_socket == undefined) {
+                user.socket.emit('alert', 'target is offline');
+            }
+            else {
+                target_user.socket.emit('learn_perk_request', perk_tag);
+            }
+        }
+        else {
+            let savings = character.savings.get();
+            let price = (0, character_generic_part_1.perk_price)(perk_tag);
+            if (savings > (0, character_generic_part_1.perk_price)(perk_tag)) {
+                character.savings.transfer(target_character.savings, price);
+                character.learn_perk(perk_tag);
+                user.socket.emit('perk learnt');
+                this.send_skills_info(character);
+            }
         }
     }
     update_user_list() {

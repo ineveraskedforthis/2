@@ -148,3 +148,11 @@
     top: 20px;
     padding-left: 20px;
 }
+
+#available_perks {
+    top: 50px;
+    left: 500px;
+    height: 500px;
+    width: 500px;
+    z-index: 10;
+}

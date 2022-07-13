@@ -1,4 +1,4 @@
-import { CharacterGenericPart, Perks } from "../base_game_classes/character_generic_part";
+import { CharacterGenericPart, Perks, perks_list, perk_price } from "../base_game_classes/character_generic_part";
 import { BattleReworked2, flee_chance } from "../battle";
 import { CharacterAction, CharacterActionResponce } from "./action_manager";
 import { User } from "../user";
@@ -15,6 +15,7 @@ import { character_to_craft_spear_probability } from "../base_game_classes/chara
 import { character_to_hunt_probability } from "../base_game_classes/character_actions/hunt";
 import { can_gather_wood } from "../base_game_classes/character_actions/gather_wood";
 import { character_to_craft_rat_armour_probability } from "../base_game_classes/character_actions/craft_rat_armour";
+import { money } from "../base_game_classes/savings";
 
 interface UserData {
     socket: any,
@@ -109,6 +110,9 @@ export class SocketManager {
             // socket.on('ench', async (msg: any) => this.enchant(user));
             socket.on('disench', async (msg: any) => this.disenchant(user, msg));
             socket.on('battle-action', async (msg: any) => this.battle_action(user, msg));
+
+            socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
+            socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
         });
     }
 
@@ -1058,20 +1062,31 @@ export class SocketManager {
 
 
     send_perks_info(user: User, character_id: number) {
+        // console.log('request perks from ' + character_id )
         let character = user.get_character()
         let target_character = this.world.entity_manager.chars[character_id]
         if (target_character == undefined) {
+            user.socket.emit('alert', 'character does not exist')
             return
         }
         if (character == undefined) {
+            user.socket.emit('alert', 'your character does not exist')
             return
         }
         if (character.cell_id != target_character.cell_id) {
             user.socket.emit('alert', 'not in the same cell')
             return
         }
+
+        let data = target_character.skills.perks
+        let responce:{[_ in Perks]?: number} = {}
+        for (let i of perks_list) {
+            if (data[i] == true) {
+                responce[i] = perk_price(i)
+            }
+        }
         
-        user.socket.emit('perks-info', target_character.skills.perks)
+        user.socket.emit('perks-info', responce)
     }
 
     send_learn_perk_request(user: User, character_id: number, perk_tag:Perks) {
@@ -1098,12 +1113,20 @@ export class SocketManager {
             if (target_socket == undefined) {
                 user.socket.emit('alert', 'target is offline')
             } else {
-                user.socket.emit('learn_perk_request', perk_tag)
-            }            
+                target_user.socket.emit('learn_perk_request', perk_tag)
+            }
         } else {
-            =
-        }
-        
+            let savings = character.savings.get()
+            let price = perk_price(perk_tag) as money
+            if (savings > perk_price(perk_tag)) {
+                character.savings.transfer(target_character.savings, price)
+                character.learn_perk(perk_tag)
+                user.socket.emit('perk learnt')
+                this.send_skills_info(character)
+            } else {
+                user.socket.emit('alert', 'not enough money')
+            }
+        }        
     }
 
 

@@ -38,6 +38,12 @@ export interface PerksTable {
     claws?: boolean; // + unarmed damage
 }
 
+export function perk_price(tag: Perks) {
+    switch(tag) {
+        case 'meat_master': return 100
+    }
+}
+
 
 class SkillList {
     clothier: SkillObject;

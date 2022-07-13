@@ -100,6 +100,10 @@ class World {
         test_person.savings.set(5000);
         await test_person.buy(pool, materials_manager_1.MEAT, 100, 5);
         await test_person.sell(pool, materials_manager_1.FOOD, 200, 15);
+        let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1);
+        cook.learn_perk("meat_master");
+        cook.stash.inc(materials_manager_1.FOOD, 1000);
+        await test_person.sell(pool, materials_manager_1.FOOD, 200, 10);
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
         meat_bag.stash.inc(materials_manager_1.MEAT, 200);
         await meat_bag.sell(pool, materials_manager_1.MEAT, 10, 10);

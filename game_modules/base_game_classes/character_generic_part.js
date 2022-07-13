@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterGenericPart = exports.Status = void 0;
+exports.CharacterGenericPart = exports.Status = exports.perk_price = exports.perks_list = void 0;
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
 const spells = require("../static_data/spells.js");
@@ -20,6 +20,13 @@ class SkillObject {
         this.theory = 0;
     }
 }
+exports.perks_list = ['meat_master'];
+function perk_price(tag) {
+    switch (tag) {
+        case 'meat_master': return 100;
+    }
+}
+exports.perk_price = perk_price;
 class SkillList {
     constructor() {
         this.clothier = new SkillObject();
@@ -755,6 +762,10 @@ class CharacterGenericPart {
     }
     get_tactic() {
         return [this.world.constants.default_tactic_slot];
+    }
+    learn_perk(tag) {
+        this.skills.perks[tag] = true;
+        this.changed = true;
     }
     //db interactions
     async save_status_to_db(pool, save = true) {

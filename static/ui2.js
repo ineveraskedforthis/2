@@ -551,20 +551,24 @@ var learned_skill_divs = {}
 function show_skill_tab(tag) {
     let tab = document.getElementById(tag + '_tab');
     tab.classList.remove('hidden');
+    tab.style.height = '100%'
 }
 
 function hide_skill_tab(tag) {
     let tab = document.getElementById(tag + '_tab');
     tab.classList.add('hidden');
+    tab.style.height = '0%'
 }
 
 function skill_tab_select(tag) {
     let tab = document.getElementById(tag + '_header')
     tab.classList.add('selected')
+    
 }
 function skill_tab_deselect(tag) {
     let tab = document.getElementById(tag + '_header')
     tab.classList.remove('selected')
+    
 }
 
 document.getElementById('skills_header').onclick = () => {
@@ -617,6 +621,8 @@ function set_skill_description(tag) {
 var SKILL_TAGS = {}
 
 function load_skill_tags(data){
+    console.log('load skills')
+    console.log(data)
     SKILL_TAGS = data;
     for (let tag in SKILL_TAGS) {
         let div = build_skill_div(tag)
@@ -651,12 +657,21 @@ function build_skill_div(tag){
 }
 
 function update_skill_data(data) {
+    console.log('update skill data')
+    console.log(data)
     for (let tag in SKILL_TAGS) {
         let div = document.getElementById(tag + '_skill_div')
         let amount = div.querySelector('.practice_n')
         amount.innerHTML = data[tag]?.practice
         let span = div.querySelector('.hbar > span')
         span.style.width = data[tag]?.practice + '%'
+    }
+    let div2 = document.getElementById('perks_tab');
+    div2.innerHTML = ''
+    for (let tag in data.perks) {
+        let div = document.createElement('div')
+        div.innerHTML = tag
+        div2.append(div)
     }
 }
 
@@ -1209,6 +1224,8 @@ function create_market_order_row(good_tag, amount, sell_price, buy_price, dummy_
         }
     }
 
+
+
     // ((good_tag) => div_cell.onclick = () => {
     //     goods_market.select(good_tag)
     // })(good_tag)
@@ -1246,12 +1263,64 @@ function update_market(data) {
         // tmp.id = this.id;
 
 
+// perks related
+
+function request_perks() {
+    socket.emit('request-perks', globals.selected_character)
+}
+
+{
+    let button = document.getElementById('request_perks_selected_charater')
+    button.onclick = request_perks
+}
+
+
+{
+    let button = document.getElementById('close_perks')
+    button.onclick = () => close_perks()
+}
+
+function close_perks() {
+    let big_div = document.getElementById('available_perks')
+    big_div.classList.add('hidden')
+}
+
+function send_perk_learning_request(i) {
+    return () => socket.emit('learn-perk', {tag: i, id: globals.selected_character})
+}
+
+function build_perks_list(data) {
+    console.log('build perks')
+    let big_div = document.getElementById('available_perks')
+    let div_for_a_list = document.getElementById('perks_for_learning')
+
+    div_for_a_list.innerHTML = ''
+    
+    for (let i in data) {
+        let list_entry = document.createElement('div')
+
+        let label = document.createElement('div')
+        label.innerHTML = i
+        list_entry.appendChild(label)
+
+        let button = document.createElement('button')
+        button.onclick = send_perk_learning_request(i)
+        button.innerHTML = 'learn (' + data[i] + ')'
+        list_entry.appendChild(button)
+
+        div_for_a_list.appendChild(list_entry)
+    }
+    
+    big_div.classList.remove('hidden')
+}
+
+socket.on('perks-info', (msg) => {build_perks_list(msg)})
+
+
 
 function update_tags(msg) {
     console.log("TAAAAAAGS")
-    console.log(msg)
-
-    
+    console.log(msg)   
 
      
     let inventory_div = document.getElementById('goods_stash')

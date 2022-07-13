@@ -212,11 +212,19 @@
 
             <div id="local_characters_tab", class="game_tab movable noselect hidden">
                 <div> Local characters. </div>
-                <div> <button id="attack_selected_charater"> Attack </button> </div>
+                <div>
+                    <button id="attack_selected_charater"> Attack </button>
+                    <button id="request_perks_selected_charater"> Request perks list. </button>
+                </div>
                 <div id="characters_list"></div>
                 <div class="corner top"></div>
                 <div class="corner bottom"></div>
             </div>
+
+            <div id="available_perks", class="game_tab hidden">
+                <button id="close_perks"> Close </button>
+                <div id="perks_for_learning"></div>
+            </div> 
 
             <div id="craft_tab", class="game_tab hidden movable noselect">
                 <div id = "cook_meat" class="craft_option">
