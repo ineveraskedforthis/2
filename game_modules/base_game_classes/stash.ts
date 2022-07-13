@@ -1,4 +1,4 @@
-import { MaterialsManager, material_index } from "../manager_classes/materials_manager";
+import { materials, MaterialsManager, material_index } from "../manager_classes/materials_manager";
 import { ITEM_MATERIAL } from "../static_data/item_tags";
 import type {StashData} from "../static_data/type_script_types"
 
@@ -14,9 +14,9 @@ export class Stash {
     }
 
     get_json() {
-        let data:any = {}
-        for (let tag = 1; tag < this.data.length; tag++) {
-            data[tag] = this.data[tag]
+        let data:{[_ in material_index]: number} = {};
+        for (let material of materials.get_materials_list()) {
+            data[material] = this.data[material as number];
         }
         return data
     }
@@ -66,8 +66,9 @@ export class Stash {
     }
 
     transfer_all(target: Stash) {
-        for (let tag = 1; tag < this.data.length; tag++) {
-            this.transfer(target, tag as material_index, this.data[tag])
+
+        for (let tag of materials.get_materials_list()) {
+            this.transfer(target, tag, this.data[tag])
         }
     }
 }

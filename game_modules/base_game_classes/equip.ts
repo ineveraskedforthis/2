@@ -21,7 +21,7 @@ class EquipData {
         result.weapon = this.weapon?.get_json()
         result.armour = {}
         for (let tag of this.armour.keys()) {
-            result.armour[tag] = this.armour?.get(tag)
+            result.armour[tag] = this.armour?.get(tag)?.get_json()
         }
         result.backpack = this.backpack.get_json()
         return result
