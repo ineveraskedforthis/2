@@ -31,9 +31,10 @@ class SkillObject {
     }
 }
 
-
+export type Perks = 'meat_master'
+export const perks_list:Perks[] = ['meat_master']
 export interface PerksTable {
-    meat_master?: boolean;
+    meat_master?: boolean; //100% chance to prepare meat
     claws?: boolean; // + unarmed damage
 }
 
@@ -1014,6 +1015,11 @@ export class CharacterGenericPart {
 
     get_tactic() {
         return [this.world.constants.default_tactic_slot]
+    }
+
+    learn_perk(tag: Perks) {
+        this.skills.perks[tag] = true
+        this.changed = true
     }
 
 

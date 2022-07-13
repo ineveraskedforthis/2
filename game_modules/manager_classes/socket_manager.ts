@@ -1,4 +1,4 @@
-import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
+import { CharacterGenericPart, Perks } from "../base_game_classes/character_generic_part";
 import { BattleReworked2, flee_chance } from "../battle";
 import { CharacterAction, CharacterActionResponce } from "./action_manager";
 import { User } from "../user";
@@ -1054,6 +1054,56 @@ export class SocketManager {
             let res = this.world.get_cell_teacher(cell.i, cell.j);
             this.send_to_character_user(character, 'local-skills', res)
         }        
+    }
+
+
+    send_perks_info(user: User, character_id: number) {
+        let character = user.get_character()
+        let target_character = this.world.entity_manager.chars[character_id]
+        if (target_character == undefined) {
+            return
+        }
+        if (character == undefined) {
+            return
+        }
+        if (character.cell_id != target_character.cell_id) {
+            user.socket.emit('alert', 'not in the same cell')
+            return
+        }
+        
+        user.socket.emit('perks-info', target_character.skills.perks)
+    }
+
+    send_learn_perk_request(user: User, character_id: number, perk_tag:Perks) {
+        let character = user.get_character()
+        let target_character = this.world.entity_manager.chars[character_id]
+        if (target_character == undefined) {
+            return
+        }
+        if (character == undefined) {
+            return
+        }
+        if (character.cell_id != target_character.cell_id) {
+            user.socket.emit('alert', 'not in the same cell')
+            return
+        }
+        if (target_character.skills.perks[perk_tag] != true) {
+            user.socket.emit('alert', "target doesn't know this perk")
+            return
+        }
+
+        if (target_character.is_player()) {
+            let target_user = target_character.get_user()
+            let target_socket = target_user.socket
+            if (target_socket == undefined) {
+                user.socket.emit('alert', 'target is offline')
+            } else {
+                user.socket.emit('learn_perk_request', perk_tag)
+            }            
+        } else {
+            =
+        }
+        
     }
 
 
