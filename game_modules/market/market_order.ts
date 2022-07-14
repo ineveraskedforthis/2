@@ -1,6 +1,6 @@
 var common = require("../common.js");
 import {constants} from "../static_data/constants.js";
-import type {World} from "../world";
+import type {PgPool, World} from "../world";
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part.js";
 import { material_index } from "../manager_classes/materials_manager.js";
 import { money } from "../base_game_classes/savings.js";
@@ -56,7 +56,7 @@ export class MarketOrder {
         return this.id;
     }
 
-    async load_to_db(pool: any) {
+    async load_to_db(pool: PgPool) {
         // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
             // @ts-ignore: Unreachable code error
@@ -68,11 +68,11 @@ export class MarketOrder {
         return result.rows[0].id;
     }
 
-    async save_to_db(pool: any) {
+    async save_to_db(pool: PgPool) {
         await common.send_query(pool, constants.update_market_order_query, [this.id, this.amount]);
     }
 
-    async delete_from_db(pool: any) {
+    async delete_from_db(pool: PgPool) {
         await common.send_query(pool, constants.delete_market_order_query, [this.id]);
     }
 

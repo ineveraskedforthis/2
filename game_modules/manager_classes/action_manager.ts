@@ -1,5 +1,5 @@
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part"
-import type { World } from "../world"
+import type { PgPool, World } from "../world"
 import { move } from '../base_game_classes/character_actions/move'
 import { eat } from "../base_game_classes/character_actions/eat"
 import { cook_meat } from "../base_game_classes/character_actions/cook_meat"
@@ -25,8 +25,8 @@ export const enum CharacterActionResponce {
     NO_POTENTIAL_ENEMY
 }
 
-type ActionCheckFunction = ((pool: any, char: CharacterGenericPart, data: any) => Promise<CharacterActionResponce>) 
-type ActionFunction = ((pool: any, char: CharacterGenericPart, data: any) => any)
+type ActionCheckFunction = ((pool: PgPool, char: CharacterGenericPart, data: any) => Promise<CharacterActionResponce>) 
+type ActionFunction = ((pool: PgPool, char: CharacterGenericPart, data: any) => any)
 
 type Action = {
     check: ActionCheckFunction
@@ -40,10 +40,10 @@ type Action = {
 
 export class ActionManager {
     world: World
-    pool: any
+    pool: PgPool
     actions: Action[]
 
-    constructor(world: World, pool: any) {
+    constructor(world: World, pool: PgPool) {
         this.pool = pool
         this.world = world
         this.actions = []

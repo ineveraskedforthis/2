@@ -2,7 +2,7 @@
 // var Character = require("./base_game_classes/character")
 // import {CharacterGenericPart} from './base_game_classes/character_generic_part'
 // class PredefinedMonster extends CharacterGenericPart {
-//     async init(pool: any, name = 'monster', cell_id: number) {        
+//     async init(pool: PgPool, name = 'monster', cell_id: number) {        
 //         if (name != null) {
 //             this.name = name
 //         }

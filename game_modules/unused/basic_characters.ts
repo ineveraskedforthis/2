@@ -3,7 +3,7 @@
 
 // class PredefinedMonster extends CharacterGenericPart {
 
-//     async init(pool: any, name = 'monster', cell_id: number) {        
+//     async init(pool: PgPool, name = 'monster', cell_id: number) {        
 //         if (name != null) {
 //             this.name = name
 //         }

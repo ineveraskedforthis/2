@@ -6,11 +6,12 @@ const spells = require("../static_data/spells.js");
 const generate_empty_resists = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
 
+
 import {Equip} from "../base_game_classes/equip"
 import {Stash} from "./stash"
 import {AttackResult} from "./misc/attack_result";
 import {DamageByTypeObject, damage_types} from "./misc/damage_types"
-import { World } from "../world";
+import { PgPool, World } from "../world";
 import { CharacterAction } from "../manager_classes/action_manager";
 import { User } from "../user";
 import { constants } from "../static_data/constants";
@@ -236,8 +237,8 @@ export class CharacterGenericPart {
         this.action_progress = 0
         this.action_duration = 0
     }
-
-    async init(pool: any, name: string, cell_id: number, user_id = -1) {
+    
+    async init(pool: PgPool, name: string, cell_id: number, user_id = -1) {
         this.init_base_values(name, cell_id, user_id);
         this.id = await this.load_to_db(pool);
         await this.save_to_db(pool);
@@ -267,7 +268,7 @@ export class CharacterGenericPart {
         this.faction_id = -1;
     }
 
-    async update(pool: any, dt: number) {
+    async update(pool: PgPool, dt: number) {
         await this.status_check(pool);
 
         if (this.flags.dead) {
@@ -332,7 +333,7 @@ export class CharacterGenericPart {
 
     //some stuff defined per concrete character class
 
-    async status_check(pool: any) {
+    async status_check(pool: PgPool) {
         if (this.status.hp <= 0) {
             this.status.hp = 0;
             await this.world.entity_manager.remove_orders(pool, this)
@@ -353,7 +354,7 @@ export class CharacterGenericPart {
         this.change_stress(1)
     }
 
-    async on_move(pool: any) {
+    async on_move(pool: PgPool) {
         return undefined
     }
 
@@ -558,7 +559,7 @@ export class CharacterGenericPart {
     //market interactions
 
 
-    async buy(pool: any, tag:material_index, amount: number, price: money) {
+    async buy(pool: PgPool, tag:material_index, amount: number, price: money) {
         if (this.savings.get() > amount * price) {
             console.log('sell ' + tag + ' ' + amount + ' ' + price)
             this.savings.transfer(this.trade_savings, amount * price as money)
@@ -631,7 +632,7 @@ export class CharacterGenericPart {
 
     //attack calculations
 
-    async attack(pool: any, target: CharacterGenericPart) {
+    async attack(pool: PgPool, target: CharacterGenericPart) {
         let result = new AttackResult()
 
         result = this.equip.get_weapon_damage(result);
@@ -657,7 +658,7 @@ export class CharacterGenericPart {
         return result;
     }
 
-    async spell_attack(pool: any, target: any, tag: string) {
+    async spell_attack(pool: PgPool, target: any, tag: string) {
         let result = new AttackResult()
 
         result = spells[tag](result);
@@ -669,7 +670,7 @@ export class CharacterGenericPart {
         return result;
     }
 
-    async take_damage(pool: any, result: any): Promise<AttackResult> {
+    async take_damage(pool: PgPool, result: any): Promise<AttackResult> {
         let res:any = this.get_resists();
         
         if (!result.flags.evade && !result.flags.miss) {

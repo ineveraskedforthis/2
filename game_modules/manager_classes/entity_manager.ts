@@ -4,7 +4,7 @@ const Area = require('../base_game_classes/area.js')
 const Faction = require('../base_game_classes/faction.js')
 const Quest = require('../base_game_classes/quest.js')
 
-import { World } from "../world";
+import { PgPool, World } from "../world";
 import {Cell} from '../cell'
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
 import { MarketOrder, market_order_index } from "../market/market_order";
@@ -44,11 +44,11 @@ export class EntityManager {
         this.time_since_last_decision_update = 0
     }
 
-    async init(pool: any) {
+    async init(pool: PgPool) {
         await this.init_cells(pool);
     }
 
-    async load(pool: any) {
+    async load(pool: PgPool) {
         await this.load_cells(pool)
         await this.load_characters(pool);
         await this.load_orders(pool);
@@ -60,7 +60,7 @@ export class EntityManager {
         await this.clear_dead_orders(pool);
     }
 
-    async init_cells(pool: any) {
+    async init_cells(pool: PgPool) {
         let data: {[_ in string]: any} = this.world.constants.development 
         let data_res: {[_ in string]: any} = this.world.constants.resources
         for (var i = 0; i < this.world.x; i++) {
@@ -74,7 +74,7 @@ export class EntityManager {
         }
     }
 
-    async load_cells(pool: any) {
+    async load_cells(pool: PgPool) {
         for (let i = 0; i < this.world.x; i++) {
             let tmp = []
             for (let j = 0; j < this.world.y; j++) {
@@ -111,7 +111,7 @@ export class EntityManager {
         return x * this.world.y + y
     }
 
-    async load_characters(pool: any) {
+    async load_characters(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_chars_query);
         for (let i of res.rows) {
             let char = new CharacterGenericPart(this.world);
@@ -125,7 +125,7 @@ export class EntityManager {
         console.log('characters loaded')
     }
 
-    async load_orders(pool: any) {
+    async load_orders(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_orders_query);
         for (let i of res.rows) {
             let order = new MarketOrder(this.world);
@@ -149,7 +149,7 @@ export class EntityManager {
         
     }
 
-    async load_item_orders(pool: any) {
+    async load_item_orders(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_item_orders_query);
         for (let i of res.rows) {
             let order = AuctionOrderManagement.json_to_order(i, this)
@@ -158,7 +158,7 @@ export class EntityManager {
         console.log('item orders loaded')
     }
 
-    async load_battles(pool: any) {
+    async load_battles(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_battles_query);
         for (let i of res.rows) {
             let battle = new BattleReworked2(this.world);
@@ -168,7 +168,7 @@ export class EntityManager {
         console.log('battles loaded')
     }
 
-    async load_areas(pool: any) {
+    async load_areas(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_areas_query);
         for (let i of res.rows) {
             let obj = new Area(this.world);
@@ -178,7 +178,7 @@ export class EntityManager {
         console.log('areas loaded')
     }
 
-    async load_factions(pool: any) {
+    async load_factions(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_factions_query);
         for (let i of res.rows) {
             let faction = new Faction(this.world);
@@ -188,7 +188,7 @@ export class EntityManager {
         console.log('factions loaded')
     }
 
-    async load_quests(pool: any) {
+    async load_quests(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_quests_query);
         for (let i of res.rows) {
             let quest = new Quest(this.world);
@@ -198,12 +198,12 @@ export class EntityManager {
         console.log('quests loaded')
     }
 
-    async clear_dead_orders(pool: any) {
+    async clear_dead_orders(pool: PgPool) {
         // this.map.clear_dead_orders(pool);
     }
 
 
-    async update_chars(pool: any, dt: number) {
+    async update_chars(pool: PgPool, dt: number) {
         this.time_since_last_decision_update += dt
         let decision_flag = false
         // console.log(this.time_since_last_decision_update)
@@ -246,7 +246,7 @@ export class EntityManager {
         }
     }   
 
-    async update_battles(pool: any) {
+    async update_battles(pool: PgPool) {
         for (let i in this.battles) {
             var battle = this.battles[i]
             if ((battle == null) || (battle == undefined) || battle.ended) {
@@ -263,7 +263,7 @@ export class EntityManager {
         }
     }
 
-    async update_factions(pool: any) {
+    async update_factions(pool: PgPool) {
     }
 
     set_faction_leader(faction: any, leader: CharacterGenericPart) {
@@ -271,7 +271,7 @@ export class EntityManager {
         leader.set_faction(faction)
     }
 
-    async update_areas(pool: any) {
+    async update_areas(pool: PgPool) {
         for (let i in this.areas) {
             let area = this.areas[i]
             for (let faction_id in area.faction_influence) {
@@ -286,12 +286,12 @@ export class EntityManager {
         }
     }
     
-    async new_quest(pool: any, leader: CharacterGenericPart, item_tag: ITEM_MATERIAL, money_reward: number, reputation_reward: number, tag: string) {
+    async new_quest(pool: PgPool, leader: CharacterGenericPart, item_tag: ITEM_MATERIAL, money_reward: number, reputation_reward: number, tag: string) {
         // let quest = await this.create_quest(pool, item_tag, money_reward, reputation_reward);
         // leader.add_quest(quest, tag)
     }
 
-    async generate_order(pool: any, typ:"sell"|"buy", tag:material_index, owner:CharacterGenericPart, amount:number, price:money, cell_id:number) {
+    async generate_order(pool: PgPool, typ:"sell"|"buy", tag:material_index, owner:CharacterGenericPart, amount:number, price:money, cell_id:number) {
         let order = new MarketOrder(this.world)
         await order.init(pool, typ, tag, owner, amount, price, cell_id)
 
@@ -300,7 +300,7 @@ export class EntityManager {
         return order
     }
 
-    async add_order(pool: any, order: MarketOrder) {
+    async add_order(pool: PgPool, order: MarketOrder) {
         this.orders[order.id] = order;
         this.get_cell_by_id(order.cell_id)?.add_order(order.id)
     }
@@ -326,7 +326,7 @@ export class EntityManager {
         }        
     }
 
-    async remove_order(pool: any, order_id: market_order_index) {
+    async remove_order(pool: PgPool, order_id: market_order_index) {
         let order = this.orders[order_id]
         let cell = this.get_cell_by_id(order.cell_id)
         cell?.remove_order(order_id)
@@ -341,7 +341,7 @@ export class EntityManager {
         await order.delete_from_db(pool)
     }
 
-    async remove_all_orders(pool: any, character: CharacterGenericPart) {
+    async remove_all_orders(pool: PgPool, character: CharacterGenericPart) {
         let cell = character.get_cell()
         if (cell == undefined) {
             return
@@ -384,7 +384,7 @@ export class EntityManager {
         }
     }
 
-    async kill(pool: any, char_id: number) {
+    async kill(pool: PgPool, char_id: number) {
         
         let character = this.chars[char_id];
         if ((character.get_hp() == 0) && (!character.deleted)) {
@@ -409,7 +409,7 @@ export class EntityManager {
         // this.chars[character.id] = null;
     }
 
-    async create_battle(pool: any, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
+    async create_battle(pool: PgPool, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
         for (let i = 0; i < attackers.length; i++) {
             if (attackers[i].in_battle() || attackers[i].is_dead()) {
                 return
@@ -434,7 +434,7 @@ export class EntityManager {
         return battle;
     }
 
-    async create_new_character(pool: any, name: string, cell_id: number, user_id: number) {
+    async create_new_character(pool: PgPool, name: string, cell_id: number, user_id: number) {
         console.log('character ' + name + ' is created')
         
         let char = new CharacterGenericPart(this.world);
@@ -447,34 +447,34 @@ export class EntityManager {
         return char
     }
 
-    async create_area(pool: any, tag: string) {
+    async create_area(pool: PgPool, tag: string) {
         let area = new Area(this.world)
         let id = await area.init(pool, tag, {}, {});
         this.areas[id] = area;
         return area
     }
 
-    async create_faction(pool: any, tag: string) {
+    async create_faction(pool: PgPool, tag: string) {
         let faction = new Faction(this.world)
         let id = await faction.init(pool, tag)
         this.factions[id] = faction;
         return faction
     }
 
-    async create_quest(pool: any, item: ITEM_MATERIAL, reward_money: number, reward_reputation: number) {
+    async create_quest(pool: PgPool, item: ITEM_MATERIAL, reward_money: number, reward_reputation: number) {
         let quest = new Quest(this.world)
         let id = await quest.init(pool, item, reward_money, reward_reputation)
         this.quests[id] = quest;
         return quest;
     }
 
-    async delete_battle(pool: any, id: number) {
+    async delete_battle(pool: PgPool, id: number) {
         var battle = this.battles[id];
         await battle.delete_from_db(pool);
         this.battles[id].ended = true;
     }
     
-    async load_character_data_from_db(pool: any, char_id: number) {
+    async load_character_data_from_db(pool: PgPool, char_id: number) {
         var res = await common.send_query(pool, constants.select_char_by_id_query, [char_id]);
         if (res.rows.length == 0) {
             return null;
@@ -482,7 +482,7 @@ export class EntityManager {
         return res.rows[0];
     }
 
-    async load_character_data_to_memory(pool: any, data: any) {
+    async load_character_data_to_memory(pool: PgPool, data: any) {
         var character = new CharacterGenericPart(this.world);
         await character.load_from_json(data)
         this.chars[data.id] = character;

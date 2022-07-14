@@ -1,6 +1,9 @@
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
 
+export interface PgPool {
+    
+}
 
 import {EntityManager} from './manager_classes/entity_manager'
 import {CONSTS} from './static_data/world_constants_1';
@@ -73,7 +76,7 @@ export class World {
 
         this.constants = CONSTS;
         this.user_manager = new UserManager(this);
-        this.action_manager = new ActionManager(this, undefined)
+        this.action_manager = new ActionManager(this, undefined as unknown as PgPool)
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
         this.HISTORY_PRICE['food'] = 50;
@@ -87,7 +90,7 @@ export class World {
         this.pops_tick = 1000;
         this.map_tick = 0;
 
-        this.socket_manager = new SocketManager(undefined, io, this, false);
+        this.socket_manager = new SocketManager(undefined as unknown as PgPool, io, this, false);
         this.entity_manager = new EntityManager(this);
         
 
@@ -96,7 +99,7 @@ export class World {
         this.territories = {}
     }
 
-    async init(pool: any) {
+    async init(pool: PgPool) {
         this.socket_manager = new SocketManager(pool, this.io, this, true);
         this.action_manager = new ActionManager(this, pool)
         this.entity_manager = new EntityManager(this);
@@ -111,7 +114,7 @@ export class World {
     }
 
 
-    async add_starting_agents(pool: any) {
+    async add_starting_agents(pool: PgPool) {
         let port_chunk = await this.entity_manager.create_area(pool, 'port')
         let living_area = await this.entity_manager.create_area(pool, 'living_area')
 
@@ -175,7 +178,7 @@ export class World {
     }
 
 
-    async load(pool: any) {
+    async load(pool: PgPool) {
         this.socket_manager = new SocketManager(pool, this.io, this, true);
         this.entity_manager = new EntityManager(this);
         this.action_manager = new ActionManager(this, pool)
@@ -183,13 +186,13 @@ export class World {
         await this.load_size(pool);
     }
 
-    async load_size(pool: any) {
+    async load_size(pool: PgPool) {
         let size = await common.send_query(pool, constants.load_world_size_query);
         this.x = size.rows[0].x;
         this.y = size.rows[0].y;
     }
 
-    async update(pool: any, dt: number) {
+    async update(pool: PgPool, dt: number) {
 
         await this.entity_manager.update_battles(pool)
         await this.entity_manager.update_cells(pool, dt)
@@ -239,7 +242,7 @@ export class World {
         return {x: Math.floor(id / this.y), y: id % this.y}
     }
 
-    async get_new_id(pool: any, str: string) {
+    async get_new_id(pool: PgPool, str: string) {
          // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
             // @ts-ignore: Unreachable code error
@@ -273,23 +276,23 @@ export class World {
         return this.entity_manager.get_from_id_tag(id, tag)
     }
 
-    async kill(pool: any, char_id: number) {
+    async kill(pool: PgPool, char_id: number) {
         await this.entity_manager.kill(pool, char_id)
     }
 
-    async create_battle(pool: any, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
+    async create_battle(pool: PgPool, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
         return await this.entity_manager.create_battle(pool, attackers, defenders)
     }
 
-    async load_character_data_from_db(pool: any, char_id: number) {
+    async load_character_data_from_db(pool: PgPool, char_id: number) {
         return await this.entity_manager.load_character_data_from_db(pool, char_id)
     }
 
-    async load_character_data_to_memory(pool: any, data: number) {
+    async load_character_data_to_memory(pool: PgPool, data: number) {
         return await this.entity_manager.load_character_data_to_memory(pool, data)
     }
 
-    async create_new_character(pool: any, name: string, cell_id: number, user_id: number): Promise<CharacterGenericPart> {
+    async create_new_character(pool: PgPool, name: string, cell_id: number, user_id: number): Promise<CharacterGenericPart> {
         return await this.entity_manager.create_new_character(pool, name, cell_id, user_id)
     }
 
@@ -444,7 +447,7 @@ export class World {
     //     return battle
     // }
 
-    // async attack_local_outpost(pool: any, char: CharacterGenericPart) {
+    // async attack_local_outpost(pool: PgPool, char: CharacterGenericPart) {
     //     let cell = char.get_cell();
     //     let tmp = cell.i + '_' + cell.j;
     //     if (tmp in this.constants.outposts) {

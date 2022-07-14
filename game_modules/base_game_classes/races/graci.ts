@@ -1,6 +1,7 @@
+import { PgPool } from "../../world";
 import { CharacterGenericPart } from "../character_generic_part";
 
-export async function graci(pool: any, char: CharacterGenericPart) {
+export async function graci(pool: PgPool, char: CharacterGenericPart) {
     char.misc.tag = 'graci'
     char.misc.ai_tag = 'steppe_walker_passive'
     char.misc.model = 'graci'

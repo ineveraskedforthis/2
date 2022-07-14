@@ -1,6 +1,6 @@
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
 import { User } from "../user";
-import { World } from "../world";
+import { PgPool, World } from "../world";
 
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
@@ -22,7 +22,7 @@ export class UserManager{
         this.world = world;
     }
 
-    async reg_player(pool: any, data: {login: string, password: string}): Promise<RegResponce> {
+    async reg_player(pool: PgPool, data: {login: string, password: string}): Promise<RegResponce> {
         var login_is_available = await this.check_login(pool, data.login);
         if (!login_is_available) {
             return {reg_prompt: 'login-is-not-available', user: undefined};
@@ -40,7 +40,7 @@ export class UserManager{
         return new User(this.world)
     }
 
-    async login_player(pool: any, data: {login: string, password: string}): Promise<LoginResponce> {
+    async login_player(pool: PgPool, data: {login: string, password: string}): Promise<LoginResponce> {
         var user_data = await this.load_user_data_from_db(pool, data.login);
         if (user_data == undefined) {
             return {login_prompt: 'wrong-login', user: undefined};
@@ -79,7 +79,7 @@ export class UserManager{
         return this.users[user_id]
     }
 
-    async check_login(pool: any, login: string) {
+    async check_login(pool: PgPool, login: string) {
         var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
          // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
@@ -91,7 +91,7 @@ export class UserManager{
         return false;
     }
 
-    async load_user_data_from_db(pool: any, login: string) {
+    async load_user_data_from_db(pool: PgPool, login: string) {
         var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
          // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
@@ -103,7 +103,7 @@ export class UserManager{
         return res.rows[0];
     }
 
-    async load_user_to_memory(pool: string, data: any) {
+    async load_user_to_memory(pool: PgPool, data: any) {
         var user = this.create_new_user();
         await user.load_from_json(pool, data);
         this.users[user.id] = user;

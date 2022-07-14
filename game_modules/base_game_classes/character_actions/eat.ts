@@ -1,13 +1,14 @@
 import type { CharacterGenericPart } from "../character_generic_part";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { FOOD } from "../../manager_classes/materials_manager";
+import { PgPool } from "../../world";
 
 export const eat = {
     duration(char: CharacterGenericPart) {
         return 1 + char.get_fatigue() / 20;
     },
 
-    check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(FOOD);
             if (tmp > 0) {
@@ -18,7 +19,7 @@ export const eat = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: any, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
         char.changed = true
         char.change_hp(10);
         char.stash.inc(FOOD, -1);
@@ -26,6 +27,6 @@ export const eat = {
         char.send_status_update()
     },
 
-    start: async function(pool: any, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
     },
 }

@@ -5,7 +5,7 @@ import { money } from "./base_game_classes/savings.js";
 import { material_index } from "./manager_classes/materials_manager.js";
 import { MarketOrder, market_order_index } from "./market/market_order.js";
 import {constants} from "./static_data/constants.js";
-import { World } from "./world.js";
+import { PgPool, World } from "./world.js";
 
 
 interface Development {
@@ -168,7 +168,7 @@ export class Cell {
         target_cell.add_order(ord)
     }
 
-    async execute_sell_order(pool: any, order_index:market_order_index, amount: number, buyer: CharacterGenericPart) {
+    async execute_sell_order(pool: PgPool, order_index:market_order_index, amount: number, buyer: CharacterGenericPart) {
         let order = this.world.entity_manager.get_order(order_index)
         let order_owner = order.owner
 
@@ -196,7 +196,7 @@ export class Cell {
         return 'invalid_order'
     }
 
-    async execute_buy_order(pool: any, order_index:market_order_index, amount: number, seller: CharacterGenericPart) {
+    async execute_buy_order(pool: PgPool, order_index:market_order_index, amount: number, seller: CharacterGenericPart) {
         let order = this.world.entity_manager.get_order(order_index)
         let order_owner = order.owner
         
@@ -221,7 +221,7 @@ export class Cell {
         return 'invalid_order'
     }
 
-    async new_order(pool: any, typ: 'sell'|'buy', tag:material_index, amount:number, price:money, agent: CharacterGenericPart) {
+    async new_order(pool: PgPool, typ: 'sell'|'buy', tag:material_index, amount:number, price:money, agent: CharacterGenericPart) {
         if (typ == 'sell') {
             var tmp = agent.stash.transfer(agent.trade_stash, tag, amount);
             var order = await this.world.entity_manager.generate_order(pool, typ, tag, agent, tmp, price, this.id)

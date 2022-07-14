@@ -2,6 +2,7 @@ import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { RAT_BONE, WOOD } from "../../manager_classes/materials_manager";
 import { BONE_SPEAR_ARGUMENT } from "../../static_data/items_set_up";
 import { Weapon } from "../../static_data/item_tags";
+import { PgPool } from "../../world";
 import { CharacterGenericPart } from "../character_generic_part";
 import { craft_spear_probability } from "./craft_spear";
 
@@ -10,7 +11,7 @@ export const craft_bone_spear = {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
     },
 
-    check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             let tmp_2 = char.stash.get(RAT_BONE)
@@ -22,7 +23,7 @@ export const craft_bone_spear = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: any, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
         let tmp = char.stash.get(WOOD)
         let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp > 2) && (tmp_2 > 3)) { 
@@ -56,6 +57,6 @@ export const craft_bone_spear = {
         }
     },
 
-    start: async function(pool: any, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
     },
 }

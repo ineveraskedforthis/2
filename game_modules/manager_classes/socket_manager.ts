@@ -2,7 +2,7 @@ import { CharacterGenericPart, Perks, perks_list, perk_price, perk_requirement }
 import { BattleReworked2, flee_chance } from "../battle";
 import { CharacterAction, CharacterActionResponce } from "./action_manager";
 import { User } from "../user";
-import { World } from "../world";
+import { PgPool, World } from "../world";
 
 var common = require("../common.js");
 import {constants} from '../static_data/constants'
@@ -26,7 +26,7 @@ interface UserData {
 
 
 export class SocketManager {
-    pool: any
+    pool: PgPool
     world: World
     io: any
     MESSAGES: []
@@ -34,7 +34,7 @@ export class SocketManager {
     sockets: any
     sessions: {[_ in string]: number}
 
-    constructor(pool: any, io: any, world: World, flag_ready: boolean) {
+    constructor(pool: PgPool, io: any, world: World, flag_ready: boolean) {
         this.world = world;
         this.io = io;
         this.pool = pool;

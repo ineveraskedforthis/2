@@ -3,6 +3,7 @@ import { money, Savings } from "../base_game_classes/savings";
 import { EntityManager } from "../manager_classes/entity_manager";
 import { SocketManager } from "../manager_classes/socket_manager";
 import { Armour, ArmourConstructorArgument, Weapon, WeaponConstructorArgument } from "../static_data/item_tags";
+import { PgPool } from "../world";
 
 const common = require("../common.js");
 const {constants} = require("../static_data/constants.js");
@@ -41,7 +42,7 @@ enum AuctionResponce {
     
 
 export namespace AuctionOrderManagement {
-    export async function build_order(pool: any, owner: CharacterGenericPart, latest_bidder: CharacterGenericPart, item: Weapon|Armour, buyout_price: money, starting_price: money, end_time: number, market_id: auction_id, flags: OrderFlags) {
+    export async function build_order(pool: PgPool, owner: CharacterGenericPart, latest_bidder: CharacterGenericPart, item: Weapon|Armour, buyout_price: money, starting_price: money, end_time: number, market_id: auction_id, flags: OrderFlags) {
         let order_id = await AuctionOrderManagement.insert_to_db( pool, 
                                                             item,
                                                             owner.id,
@@ -54,7 +55,7 @@ export namespace AuctionOrderManagement {
         return order
     }
 
-    export async function insert_to_db(pool: any,
+    export async function insert_to_db(pool: PgPool,
                                        item: Weapon|Armour, 
                                        owner_id: number, 
                                        buyout_price: money, 
@@ -104,15 +105,15 @@ export namespace AuctionOrderManagement {
         return order
     }
 
-    export async function save_db(pool: any, order: OrderItem) {
+    export async function save_db(pool: PgPool, order: OrderItem) {
         await common.send_query(pool, constants.update_item_order_query, [order.id, order.current_price, order.latest_bidder.id])
     }
 
-    export async function delete_db(pool: any, order: OrderItem) {
+    export async function delete_db(pool: PgPool, order: OrderItem) {
         await common.send_query(pool, constants.delete_item_order_query, [order.id]);
     }
 
-    export async function check_order(pool: any, order: OrderItem) {
+    export async function check_order(pool: PgPool, order: OrderItem) {
         if (order.dead()) {
             AuctionOrderManagement.delete_db(pool, order)
             return true
@@ -122,13 +123,13 @@ export namespace AuctionOrderManagement {
 }
 
 export namespace AuctionManagement {
-    export async function build(pool: any, cell_id: number): Promise<Auction> {
+    export async function build(pool: PgPool, cell_id: number): Promise<Auction> {
         let id = await AuctionManagement.insert_to_db(pool)
         let auction = new Auction(id, cell_id)
         return auction
     }
 
-    export async function insert_to_db(pool: any): Promise<auction_id> {
+    export async function insert_to_db(pool: PgPool): Promise<auction_id> {
         let nodb = nodb_mode_id()
         if (nodb != undefined) {
             return nodb as auction_id
@@ -138,7 +139,7 @@ export namespace AuctionManagement {
         return result.rows[0].id;
     }
 
-    export async function sell(pool: any, seller: CharacterGenericPart, auction: Auction, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
+    export async function sell(pool: PgPool, seller: CharacterGenericPart, auction: Auction, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
         if (auction.cell_id != seller.cell_id) {
             return {responce: AuctionResponce.NOT_IN_THE_SAME_CELL}
         }
@@ -173,7 +174,7 @@ export namespace AuctionManagement {
         return {responce: AuctionResponce.OK}
     }
 
-    export async function save(pool: any, market: Auction) {
+    export async function save(pool: PgPool, market: Auction) {
         if (nodb_mode_check()) {
             return
         }
@@ -183,7 +184,7 @@ export namespace AuctionManagement {
         }
     }
 
-    export async function load(pool: any, id: auction_id) {
+    export async function load(pool: PgPool, id: auction_id) {
         if (nodb_mode_check()) {
             return
         }
@@ -218,7 +219,7 @@ export namespace AuctionManagement {
     * Does NOT send item itself: use claim_item to recieve item from order.  
     * Does NOT send money to owner: use claim_money to recieve them from order.  
     * */
-    export async function buyout(pool: any, manager: EntityManager, socket_manager: SocketManager, market: Auction, buyer: CharacterGenericPart, id: auction_order_id) {
+    export async function buyout(pool: PgPool, manager: EntityManager, socket_manager: SocketManager, market: Auction, buyer: CharacterGenericPart, id: auction_order_id) {
         if (!market.orders.has(id)) {
             return AuctionResponce.NO_SUCH_ORDER
         }
@@ -244,7 +245,7 @@ export namespace AuctionManagement {
     /**
      * Claims item from finished order.
      */
-    export function claim_order_item(pool: any, manager: EntityManager, character:CharacterGenericPart, order_id: auction_order_id, market: Auction) {
+    export function claim_order_item(pool: PgPool, manager: EntityManager, character:CharacterGenericPart, order_id: auction_order_id, market: Auction) {
         if (!market.orders.has(order_id)) {
             return AuctionResponce.NO_SUCH_ORDER
         }
@@ -276,7 +277,7 @@ export namespace AuctionManagement {
     /**
      * Claims money from finished order.
      */
-    export function claim_order_money(pool: any, manager: EntityManager, character:CharacterGenericPart, order_id: auction_order_id, market: Auction){
+    export function claim_order_money(pool: PgPool, manager: EntityManager, character:CharacterGenericPart, order_id: auction_order_id, market: Auction){
         if (!market.orders.has(order_id)) {
             return AuctionResponce.NO_SUCH_ORDER
         }
@@ -301,7 +302,7 @@ export namespace AuctionManagement {
         AuctionOrderManagement.save_db(pool, order)
     }
 
-    async function update(pool: any, manager: EntityManager, socket_manager:SocketManager, market: Auction) {
+    async function update(pool: PgPool, manager: EntityManager, socket_manager:SocketManager, market: Auction) {
         let now = Date.now();
         for (let i of market.orders) {
             let order = manager.get_item_order(i);

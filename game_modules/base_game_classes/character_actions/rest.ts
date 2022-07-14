@@ -1,12 +1,13 @@
 import { CharacterGenericPart } from "../character_generic_part";
 import {CharacterActionResponce} from '../../manager_classes/action_manager'
+import { PgPool } from "../../world";
 
 export const rest = {
     duration(char: CharacterGenericPart) {
         return 0.1 + char.get_fatigue() / 20;
     },
 
-    check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -29,7 +30,7 @@ export const rest = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: any, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
         char.changed = true
         let cell = char.get_cell();
         if (cell == undefined) return 
@@ -43,6 +44,6 @@ export const rest = {
         char.send_status_update()
     },
 
-    start: async function(pool: any, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
     },
 }

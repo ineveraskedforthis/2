@@ -1,6 +1,7 @@
+import { PgPool } from "../../world";
 import { CharacterGenericPart } from "../character_generic_part";
 
-export async function elo(pool: any, char: CharacterGenericPart) {
+export async function elo(pool: PgPool, char: CharacterGenericPart) {
     char.misc.tag = 'elo'
     char.misc.ai_tag = 'forest_walker'
     char.misc.model = 'elodino'

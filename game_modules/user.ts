@@ -1,4 +1,4 @@
-import { World } from "./world";
+import { PgPool, World } from "./world";
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
 
@@ -21,7 +21,7 @@ export class User {
         this.logged_in = false
     }
 
-    async init(pool: any) {        
+    async init(pool: PgPool) {        
         this.id = await this.world.get_new_id(pool, 'user_id');
         await this.get_new_char(pool);
         await this.load_to_db(pool);
@@ -61,7 +61,7 @@ export class User {
         return this.world.get_char_from_id(this.char_id)
     }
 
-    async get_new_char(pool: any) {
+    async get_new_char(pool: PgPool) {
         console.log('user ' + this.id + ' receives a new character')
 
         let old_character = this.get_character()
@@ -98,7 +98,7 @@ export class User {
         }
     }
 
-    async load_from_json(pool: any, data: any) {
+    async load_from_json(pool: PgPool, data: any) {
         common.flag_log(data, constants.logging.user.load_from_json);
         this.id = data.id;
         this.set_login(data.login)
@@ -116,12 +116,12 @@ export class User {
         }
     }
 
-    async load_to_db(pool: any) {
+    async load_to_db(pool: PgPool) {
         console.log('loading user to db')
         await common.send_query(pool, constants.new_user_query, [this.login, this.password_hash, this.id, this.char_id]);
     }
 
-    async save_to_db(pool: any) {
+    async save_to_db(pool: PgPool) {
         console.log('saving user changes to db')
         await common.send_query(pool, constants.update_user_query, [this.id, this.char_id]);
     }

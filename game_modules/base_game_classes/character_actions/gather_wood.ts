@@ -1,6 +1,7 @@
 import { Cell } from "../../cell";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { WOOD } from "../../manager_classes/materials_manager";
+import { PgPool } from "../../world";
 import type { CharacterGenericPart } from "../character_generic_part";
 
 
@@ -9,7 +10,7 @@ export const gather_wood = {
         return 2 + char.get_fatigue() / 10;
     },
 
-    check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -23,7 +24,7 @@ export const gather_wood = {
         } else return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: any, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
         char.changed = true
         char.change_fatigue(10)
         char.stash.inc(WOOD, 1)
@@ -34,7 +35,7 @@ export const gather_wood = {
         return CharacterActionResponce.OK
     },
 
-    start: async function(pool: any, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
     },
 }
 

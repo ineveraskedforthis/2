@@ -8,7 +8,7 @@ import {geom} from './geom'
 
 import {BattleAI} from './battle_ai'
 import type {CharacterGenericPart} from './base_game_classes/character_generic_part'
-import { World } from "./world";
+import { PgPool, World } from "./world";
 import { ITEM_MATERIAL } from "./static_data/item_tags";
 import { material_index } from "./manager_classes/materials_manager";
 import { Savings } from "./base_game_classes/savings";
@@ -224,7 +224,7 @@ export class BattleReworked2 {
     last_turn: number;
 
 
-    constructor(world: any) {
+    constructor(world: World) {
         this.heap = new UnitsHeap();
         this.world = world;
         this.id = -1
@@ -237,13 +237,13 @@ export class BattleReworked2 {
         this.last_turn = Date.now() //milliseconds
     }
 
-    async init(pool: any) {
+    async init(pool: PgPool) {
         this.id = await this.load_to_db(pool);
         this.last_turn = Date.now()
         return this.id;
     }
 
-    async load_to_db(pool: any) {
+    async load_to_db(pool: PgPool) {
         // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
             // @ts-ignore: Unreachable code error
@@ -263,12 +263,12 @@ export class BattleReworked2 {
         this.waiting_for_input = data.waiting_for_input
     }
 
-    async save_to_db(pool: any) {
+    async save_to_db(pool: PgPool) {
         await common.send_query(pool, constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input])
         this.changed = false
     }
 
-    async delete_from_db(pool: any) {
+    async delete_from_db(pool: PgPool) {
         await common.send_query(pool, constants.delete_battle_query, [this.id]);
     }
 
@@ -376,7 +376,7 @@ export class BattleReworked2 {
         return this.world.get_char_from_id(unit.char_id)
     }
 
-    async make_turn(pool: any){
+    async make_turn(pool: PgPool){
         let unit = this.heap.get_selected_unit()
         let char = this.get_char(unit)
         let action:Action = BattleAI.action(this, unit, char);
@@ -617,9 +617,9 @@ export class BattleReworked2 {
     }
 
     reward() {}    
-    async reward_team(pool: any, team: number) {}
+    async reward_team(pool: PgPool, team: number) {}
 
-    async process_input(pool: any, unit_index: number, input: Action) {
+    async process_input(pool: PgPool, unit_index: number, input: Action) {
         if (!this.waiting_for_input) {
             return {action: 'action_in_progress', who: unit_index}
         }

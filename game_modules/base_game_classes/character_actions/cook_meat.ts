@@ -1,6 +1,7 @@
 import { CharacterGenericPart, PerksTable } from "../character_generic_part";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { FOOD, MEAT } from "../../manager_classes/materials_manager";
+import { PgPool } from "../../world";
 
 
 export const cook_meat = {
@@ -8,7 +9,7 @@ export const cook_meat = {
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;
     },
 
-    check: async function(pool: any, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(MEAT)
             if (tmp > 0)  {
@@ -19,7 +20,7 @@ export const cook_meat = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: any, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
         let tmp = char.stash.get(MEAT)
         if (tmp > 0) { 
             char.changed = true
@@ -49,7 +50,7 @@ export const cook_meat = {
         }
     },
 
-    start: async function(pool: any, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
     },
 }
 
