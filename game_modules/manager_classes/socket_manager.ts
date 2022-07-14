@@ -1107,15 +1107,7 @@ export class SocketManager {
             return
         }
 
-        if (target_character.is_player()) {
-            let target_user = target_character.get_user()
-            let target_socket = target_user.socket
-            if (target_socket == undefined) {
-                user.socket.emit('alert', 'target is offline')
-            } else {
-                target_user.socket.emit('learn_perk_request', perk_tag)
-            }
-        } else {
+        {
             let savings = character.savings.get()
             let price = perk_price(perk_tag) as money
             if (savings > perk_price(perk_tag)) {
@@ -1126,7 +1118,7 @@ export class SocketManager {
             } else {
                 user.socket.emit('alert', 'not enough money')
             }
-        }        
+        }
     }
 
 
