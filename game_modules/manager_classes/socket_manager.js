@@ -941,7 +941,7 @@ class SocketManager {
         }
     }
     send_perks_info(user, character_id) {
-        console.log('request perks from ' + character_id);
+        // console.log('request perks from ' + character_id )
         let character = user.get_character();
         let target_character = this.world.entity_manager.chars[character_id];
         if (target_character == undefined) {
@@ -982,25 +982,22 @@ class SocketManager {
             user.socket.emit('alert', "target doesn't know this perk");
             return;
         }
-        if (target_character.is_player()) {
-            let target_user = target_character.get_user();
-            let target_socket = target_user.socket;
-            if (target_socket == undefined) {
-                user.socket.emit('alert', 'target is offline');
-            }
-            else {
-                target_user.socket.emit('learn_perk_request', perk_tag);
-            }
-        }
-        else {
+        {
             let savings = character.savings.get();
             let price = (0, character_generic_part_1.perk_price)(perk_tag);
-            if (savings > (0, character_generic_part_1.perk_price)(perk_tag)) {
-                character.savings.transfer(target_character.savings, price);
-                character.learn_perk(perk_tag);
-                user.socket.emit('perk learnt');
-                this.send_skills_info(character);
+            if (savings < price) {
+                user.socket.emit('alert', 'not enough money');
+                return;
             }
+            let responce = (0, character_generic_part_1.perk_requirement)(perk_tag, character);
+            if (responce != 'ok') {
+                user.socket.emit('alert', responce);
+                return;
+            }
+            character.savings.transfer(target_character.savings, price);
+            character.learn_perk(perk_tag);
+            user.socket.emit('perk learnt');
+            this.send_skills_info(character);
         }
     }
     update_user_list() {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterGenericPart = exports.Status = exports.perk_price = exports.perks_list = void 0;
+exports.CharacterGenericPart = exports.Status = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
 const spells = require("../static_data/spells.js");
@@ -27,6 +27,17 @@ function perk_price(tag) {
     }
 }
 exports.perk_price = perk_price;
+function perk_requirement(tag, character) {
+    switch (tag) {
+        case 'meat_master': {
+            if (character.skills.cooking.practice < 15) {
+                return 'not_enough_cooking_skill_15';
+            }
+            return 'ok';
+        }
+    }
+}
+exports.perk_requirement = perk_requirement;
 class SkillList {
     constructor() {
         this.clothier = new SkillObject();

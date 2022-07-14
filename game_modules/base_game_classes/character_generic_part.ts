@@ -43,6 +43,16 @@ export function perk_price(tag: Perks) {
         case 'meat_master': return 100
     }
 }
+export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
+    switch(tag) {
+        case 'meat_master': {
+            if (character.skills.cooking.practice < 15) {
+                return 'not_enough_cooking_skill_15'
+            }
+            return 'ok'
+        }
+    }
+}
 
 
 class SkillList {

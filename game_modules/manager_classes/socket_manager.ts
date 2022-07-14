@@ -1,4 +1,4 @@
-import { CharacterGenericPart, Perks, perks_list, perk_price } from "../base_game_classes/character_generic_part";
+import { CharacterGenericPart, Perks, perks_list, perk_price, perk_requirement } from "../base_game_classes/character_generic_part";
 import { BattleReworked2, flee_chance } from "../battle";
 import { CharacterAction, CharacterActionResponce } from "./action_manager";
 import { User } from "../user";
@@ -1110,14 +1110,21 @@ export class SocketManager {
         {
             let savings = character.savings.get()
             let price = perk_price(perk_tag) as money
-            if (savings > perk_price(perk_tag)) {
-                character.savings.transfer(target_character.savings, price)
-                character.learn_perk(perk_tag)
-                user.socket.emit('perk learnt')
-                this.send_skills_info(character)
-            } else {
+            if (savings < price) {
                 user.socket.emit('alert', 'not enough money')
+                return
             }
+            
+            let responce = perk_requirement(perk_tag, character)
+            if (responce != 'ok') {
+                user.socket.emit('alert', responce)
+                return
+            } 
+
+            character.savings.transfer(target_character.savings, price)
+            character.learn_perk(perk_tag)
+            user.socket.emit('perk learnt')
+            this.send_skills_info(character)
         }
     }
 
