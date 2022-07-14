@@ -20,6 +20,9 @@ export class AttackResult {
     chance_to_hit: number;
     new_pos: {x: number, y:number}|undefined;
 
+    // attack_skill:number
+    // defence_skill:number
+
 
     constructor() {
         this.flags = {

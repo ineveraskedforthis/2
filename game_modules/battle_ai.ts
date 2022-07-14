@@ -1,5 +1,5 @@
 import type { CharacterGenericPart } from "./base_game_classes/character_generic_part";
-import type { BattleReworked2, Action, ActionTag, MoveAction, AttackAction, UnitData } from "./battle";
+import type { BattleReworked2, Action, ActionTag, MoveAction, AttackAction, UnitData, FastAttackAction } from "./battle";
 
 import {geom, point} from './geom'
 
@@ -92,7 +92,7 @@ export class BattleAI {
     }
 
 
-    static convert_attack_to_action(battle: BattleReworked2, ind1: number, ind2: number): AttackAction|MoveAction {
+    static convert_attack_to_action(battle: BattleReworked2, ind1: number, ind2: number, tag:"usual"|'fast'): AttackAction|MoveAction|FastAttackAction {
         let unit = battle.get_unit(ind1)
         let unit_2 = battle.get_unit(ind2)
         var actor = battle.world.get_char_from_id(unit.char_id);
@@ -105,6 +105,9 @@ export class BattleAI {
             target.y += geom.normalize(delta).y * (Math.max(dist - actor.get_range() + 0.1, 0));
             return {action: action_tag, target: target}
         } else {
+            switch(tag) {
+                case 'fast': return {action: 'fast_attack', target: ind2}
+            }
             return {action: 'attack', target: ind2}
         }
     }
@@ -123,7 +126,7 @@ export class BattleAI {
 
         if (action_tag == 'attack') {
             if (true_target == null) return {action: null}
-            let res = this.convert_attack_to_action(battle, index, true_target);
+            let res = this.convert_attack_to_action(battle, index, true_target, 'usual');
             action = res.action;
             action_target = res.target;
             if (res.action == 'move') {

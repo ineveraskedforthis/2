@@ -166,6 +166,14 @@ export class BattleImageNext {
         this.update_player_actions_availability()
     }
 
+    update_action_display(tag: string, flag: boolean) {
+        let div = document.getElementById('battle_action_' + tag)
+        if (flag) {
+            div.classList.remove('hidden')
+        } else {
+            div.classList.add('hidden')
+        }
+    }
 
     update_player_actions_availability() {
         if (this.player_id == undefined) {
@@ -351,9 +359,15 @@ export class BattleImageNext {
             if (this.selected != undefined) {
                 this.socket.emit('battle-action', {action: 'attack', target: this.selected})
             }
+        } else if (tag == 'fast_attack') {
+            if (this.selected != undefined) {
+                this.socket.emit('battle-action', {action: 'fast_attack', target: this.selected})
+            }
         } else if (tag == 'flee') {
             this.socket.emit('battle-action', {action: 'flee'})
-        } else if (tag == 'end_turn') {
+        } else if (tag == 'dodge') {
+            this.socket.emit('battle-action', {action: 'dodge'})
+        }else if (tag == 'end_turn') {
             this.socket.emit('battle-action', {action: 'end_turn'})
         }
     }
@@ -366,6 +380,7 @@ export class BattleImageNext {
         let action_div = document.createElement('div');
         action_div.classList.add('battle_action');
         action_div.classList.add(action_type.tag)
+        action_div.id = "battle_action_" + action_type.tag
         
         {
             let label = document.createElement('div')
@@ -423,6 +438,13 @@ export class BattleImageNext {
             if (action.who == this.player_id) {
                 alert('Not your turn')
                 return 'not_your_turn'
+            }
+            return 'ok'
+        }
+        if ((action.action == 'not_learnt') ){
+            if (action.who == this.player_id) {
+                alert('This action is not learnt')
+                return 'not_learnt'
             }
             return 'ok'
         }

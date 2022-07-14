@@ -1,4 +1,4 @@
-import { CharacterGenericPart, Perks, perks_list, perk_price, perk_requirement } from "../base_game_classes/character_generic_part";
+import { can_dodge, can_fast_attack, CharacterGenericPart, Perks, perks_list, perk_price, perk_requirement } from "../base_game_classes/character_generic_part";
 import { BattleReworked2, flee_chance } from "../battle";
 import { CharacterAction, CharacterActionResponce } from "./action_manager";
 import { User } from "../user";
@@ -170,7 +170,7 @@ export class SocketManager {
                     case 'head': {character.unequip_armour(ARMOUR_TYPE.HEAD);break;}
                     case 'arms': {character.unequip_armour(ARMOUR_TYPE.ARMS);break;}
                 }
-            }            
+            }
         }
     }
 
@@ -748,6 +748,21 @@ export class SocketManager {
         this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})
+        this.send_perk_related_skills_update(character)
+    }
+
+    send_perk_related_skills_update(character: CharacterGenericPart) {
+        let value = 0
+        if (can_dodge(character)) {
+            value = 1
+        }
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'dodge', value: value})
+
+        value = 0
+        if (can_fast_attack(character)) {
+            value = 1
+        }
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: value})
     }
 
     // send_tactics_info(character) {
@@ -902,6 +917,7 @@ export class SocketManager {
         if (socket != undefined) {
            this.send_equip_update(user)
         }
+        this.send_perk_related_skills_update(character)
     }
 
     send_stash_update_to_character(character: CharacterGenericPart) {
@@ -935,6 +951,7 @@ export class SocketManager {
             // console.log(char.equip.data.backpack.get_data())
             // console.log(char.equip.data.backpack)
             user.socket.emit('equip-update', char.equip.get_data())
+            this.send_perk_related_skills_update(char)
         }
     }
     

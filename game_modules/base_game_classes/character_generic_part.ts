@@ -15,7 +15,7 @@ import { PgPool, World } from "../world";
 import { CharacterAction } from "../manager_classes/action_manager";
 import { User } from "../user";
 import { constants } from "../static_data/constants";
-import { ARMOUR_TYPE } from "../static_data/item_tags";
+import { ARMOUR_TYPE, Weapon } from "../static_data/item_tags";
 import { material_index } from "../manager_classes/materials_manager";
 import { money, Savings } from "./savings";
 import { WEAPON_TYPE } from "../static_data/type_script_types";
@@ -32,16 +32,18 @@ class SkillObject {
     }
 }
 
-export type Perks = 'meat_master'
-export const perks_list:Perks[] = ['meat_master']
+export type Perks = 'meat_master'|'advanced_unarmed'
+export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed']
 export interface PerksTable {
     meat_master?: boolean; //100% chance to prepare meat
     claws?: boolean; // + unarmed damage
+    advanced_unarmed?:boolean; //allows unarmed dodge and fast attacks
 }
 
 export function perk_price(tag: Perks) {
     switch(tag) {
         case 'meat_master': return 100
+        case 'advanced_unarmed': return 200
     }
 }
 export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
@@ -52,9 +54,39 @@ export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
             }
             return 'ok'
         }
+        case 'advanced_unarmed': {
+            if (character.skills.noweapon.practice < 15) {
+                return 'not_enough_unarmed_skill_15'
+            }
+            return 'ok'
+        }
     }
 }
+function weapon_type(weapon: Weapon|undefined):WEAPON_TYPE {
+    if (weapon == undefined) {
+        return WEAPON_TYPE.NOWEAPON
+    }
+    return weapon.get_weapon_type()
+}
+export function can_dodge(character:CharacterGenericPart):boolean {
+    if (character.skills.perks.advanced_unarmed == true) {
+        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.NOWEAPON) {
+            return true
+        }
+    }
 
+    return false
+}
+
+export function can_fast_attack(character:CharacterGenericPart):boolean {
+    if (character.skills.perks.advanced_unarmed == true) {
+        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.NOWEAPON) {
+            return true
+        }
+    }
+
+    return false
+}
 
 class SkillList {
     clothier: SkillObject;
@@ -237,7 +269,7 @@ export class CharacterGenericPart {
         this.action_progress = 0
         this.action_duration = 0
     }
-    
+
     async init(pool: PgPool, name: string, cell_id: number, user_id = -1) {
         this.init_base_values(name, cell_id, user_id);
         this.id = await this.load_to_db(pool);
@@ -632,14 +664,14 @@ export class CharacterGenericPart {
 
     //attack calculations
 
-    async attack(pool: PgPool, target: CharacterGenericPart) {
+    async attack(pool: PgPool, target: CharacterGenericPart, mod:'fast'|'heavy'|'usual', dodge_flag: boolean) {
         let result = new AttackResult()
 
         result = this.equip.get_weapon_damage(result);
-        result = this.mod_attack_damage_with_stats(result);        
+        result = this.mod_attack_damage_with_stats(result, mod);
         result = this.roll_accuracy(result);
         result = this.roll_crit(result);
-        result = target.roll_evasion(result);
+        result = target.roll_dodge(result, mod, dodge_flag);
         result = target.roll_block(result);
 
         let dice = Math.random()
@@ -694,8 +726,14 @@ export class CharacterGenericPart {
         return result;
     }    
 
-    mod_attack_damage_with_stats(result: AttackResult) {
+    mod_attack_damage_with_stats(result: AttackResult, mod:'fast'|'usual'|'heavy') {
         let phys_power = this.get_phys_power() / 10
+        
+        switch(mod) {
+            case 'usual': {phys_power = phys_power * 2; break}
+            case 'heavy': {phys_power = phys_power * 5; break}
+        }
+        
         let magic_power = this.get_magic_power() / 10
 
         if (this.skills.perks.claws) {
@@ -754,10 +792,19 @@ export class CharacterGenericPart {
         return result
     }
 
-    roll_evasion(result: AttackResult) {
+    roll_dodge(result: AttackResult, mod: 'fast'|'heavy'|'usual', dodge_flag: boolean) {
         let dice = Math.random()
 
-        let evade_chance = this.get_evasion_chance();
+        let base_evade_chance = this.get_evasion_chance();
+        let attack_specific_dodge = 0;
+
+        if (dodge_flag) switch(mod){
+            case 'fast': {attack_specific_dodge = 0.2; break}
+            case 'usual': {attack_specific_dodge = 0.5; break}
+            case 'heavy': {attack_specific_dodge = 1; break}
+        }
+
+        let evade_chance = base_evade_chance + attack_specific_dodge
 
         if (dice < evade_chance) {
             result.flags.evade = true

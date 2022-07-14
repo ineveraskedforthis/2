@@ -662,6 +662,19 @@ class SocketManager {
         this.send_to_character_user(character, 'cell-action-chance', { tag: 'hunt', value: (0, hunt_1.character_to_hunt_probability)(character) });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'flee', value: (0, battle_1.flee_chance)(character) });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance() });
+        this.send_perk_related_skills_update(character);
+    }
+    send_perk_related_skills_update(character) {
+        let value = 0;
+        if ((0, character_generic_part_1.can_dodge)(character)) {
+            value = 1;
+        }
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'dodge', value: value });
+        value = 0;
+        if ((0, character_generic_part_1.can_fast_attack)(character)) {
+            value = 1;
+        }
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'fast_attack', value: value });
     }
     // send_tactics_info(character) {
     //     // this.send_to_character_user(character, 'tactic', character.data.tactic)
@@ -794,6 +807,7 @@ class SocketManager {
         if (socket != undefined) {
             this.send_equip_update(user);
         }
+        this.send_perk_related_skills_update(character);
     }
     send_stash_update_to_character(character) {
         let user = this.world.user_manager.get_user_from_character(character);
@@ -825,6 +839,7 @@ class SocketManager {
             // console.log(char.equip.data.backpack.get_data())
             // console.log(char.equip.data.backpack)
             user.socket.emit('equip-update', char.equip.get_data());
+            this.send_perk_related_skills_update(char);
         }
     }
     send_stash_update(user) {

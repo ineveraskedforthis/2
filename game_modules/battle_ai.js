@@ -81,7 +81,7 @@ class BattleAI {
         }
         return BattleAI.compare(value1, value, sign);
     }
-    static convert_attack_to_action(battle, ind1, ind2) {
+    static convert_attack_to_action(battle, ind1, ind2, tag) {
         let unit = battle.get_unit(ind1);
         let unit_2 = battle.get_unit(ind2);
         var actor = battle.world.get_char_from_id(unit.char_id);
@@ -95,6 +95,9 @@ class BattleAI {
             return { action: action_tag, target: target };
         }
         else {
+            switch (tag) {
+                case 'fast': return { action: 'fast_attack', target: ind2 };
+            }
             return { action: 'attack', target: ind2 };
         }
     }
@@ -112,7 +115,7 @@ class BattleAI {
         if (action_tag == 'attack') {
             if (true_target == null)
                 return { action: null };
-            let res = this.convert_attack_to_action(battle, index, true_target);
+            let res = this.convert_attack_to_action(battle, index, true_target, 'usual');
             action = res.action;
             action_target = res.target;
             if (res.action == 'move') {

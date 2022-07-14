@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AttackResult = void 0;
 const damage_types_1 = require("./damage_types");
 class AttackResult {
+    // attack_skill:number
+    // defence_skill:number
     constructor() {
         this.flags = {
             crit: false,

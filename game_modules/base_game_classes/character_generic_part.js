@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterGenericPart = exports.Status = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
+exports.CharacterGenericPart = exports.Status = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
 const spells = require("../static_data/spells.js");
@@ -20,10 +20,11 @@ class SkillObject {
         this.theory = 0;
     }
 }
-exports.perks_list = ['meat_master'];
+exports.perks_list = ['meat_master', 'advanced_unarmed'];
 function perk_price(tag) {
     switch (tag) {
         case 'meat_master': return 100;
+        case 'advanced_unarmed': return 200;
     }
 }
 exports.perk_price = perk_price;
@@ -35,9 +36,39 @@ function perk_requirement(tag, character) {
             }
             return 'ok';
         }
+        case 'advanced_unarmed': {
+            if (character.skills.noweapon.practice < 15) {
+                return 'not_enough_unarmed_skill_15';
+            }
+            return 'ok';
+        }
     }
 }
 exports.perk_requirement = perk_requirement;
+function weapon_type(weapon) {
+    if (weapon == undefined) {
+        return "noweapon" /* WEAPON_TYPE.NOWEAPON */;
+    }
+    return weapon.get_weapon_type();
+}
+function can_dodge(character) {
+    if (character.skills.perks.advanced_unarmed == true) {
+        if (weapon_type(character.equip.data.weapon) == "noweapon" /* WEAPON_TYPE.NOWEAPON */) {
+            return true;
+        }
+    }
+    return false;
+}
+exports.can_dodge = can_dodge;
+function can_fast_attack(character) {
+    if (character.skills.perks.advanced_unarmed == true) {
+        if (weapon_type(character.equip.data.weapon) == "noweapon" /* WEAPON_TYPE.NOWEAPON */) {
+            return true;
+        }
+    }
+    return false;
+}
+exports.can_fast_attack = can_fast_attack;
 class SkillList {
     constructor() {
         this.clothier = new SkillObject();
@@ -463,13 +494,13 @@ class CharacterGenericPart {
         character.changed = true;
     }
     //attack calculations
-    async attack(pool, target) {
+    async attack(pool, target, mod, dodge_flag) {
         let result = new attack_result_1.AttackResult();
         result = this.equip.get_weapon_damage(result);
-        result = this.mod_attack_damage_with_stats(result);
+        result = this.mod_attack_damage_with_stats(result, mod);
         result = this.roll_accuracy(result);
         result = this.roll_crit(result);
-        result = target.roll_evasion(result);
+        result = target.roll_dodge(result, mod, dodge_flag);
         result = target.roll_block(result);
         let dice = Math.random();
         if (dice > this.get_weapon_skill(result.weapon_type) / 50) {
@@ -514,8 +545,18 @@ class CharacterGenericPart {
         await this.save_to_db(pool);
         return result;
     }
-    mod_attack_damage_with_stats(result) {
+    mod_attack_damage_with_stats(result, mod) {
         let phys_power = this.get_phys_power() / 10;
+        switch (mod) {
+            case 'usual': {
+                phys_power = phys_power * 2;
+                break;
+            }
+            case 'heavy': {
+                phys_power = phys_power * 5;
+                break;
+            }
+        }
         let magic_power = this.get_magic_power() / 10;
         if (this.skills.perks.claws) {
             if (result.weapon_type == 'noweapon') {
@@ -558,9 +599,26 @@ class CharacterGenericPart {
         }
         return result;
     }
-    roll_evasion(result) {
+    roll_dodge(result, mod, dodge_flag) {
         let dice = Math.random();
-        let evade_chance = this.get_evasion_chance();
+        let base_evade_chance = this.get_evasion_chance();
+        let attack_specific_dodge = 0;
+        if (dodge_flag)
+            switch (mod) {
+                case 'fast': {
+                    attack_specific_dodge = 0.2;
+                    break;
+                }
+                case 'usual': {
+                    attack_specific_dodge = 0.5;
+                    break;
+                }
+                case 'heavy': {
+                    attack_specific_dodge = 1;
+                    break;
+                }
+            }
+        let evade_chance = base_evade_chance + attack_specific_dodge;
         if (dice < evade_chance) {
             result.flags.evade = true;
             result.flags.crit = false;
