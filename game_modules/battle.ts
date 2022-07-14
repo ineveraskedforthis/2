@@ -490,6 +490,7 @@ export class BattleReworked2 {
             }
 
             unit.dodge_turns = 2
+            unit.action_points_left -= 4
             return {action: 'dodge', who: unit_index}
         }
 
@@ -688,13 +689,20 @@ export class BattleReworked2 {
         if (input != undefined) {
             this.changed = true
             let index = this.heap.selected
+            let character = this.get_char(this.get_unit(this.heap.selected))
             if (input.action == 'move') {
                 return await this.action(pool, index, {action: 'move', target: input.target})
             } else if (input.action == 'attack') {
                 return await this.action(pool, index, BattleAI.convert_attack_to_action(this, index, input.target, 'usual'))
             } else if (input.action == 'fast_attack') {
+                if(!can_fast_attack(character)) {
+                    return {action: "not_learnt"}
+                }
                 return await this.action(pool, index, BattleAI.convert_attack_to_action(this, index, input.target, 'fast'))
             } else if (input.action == 'dodge') {
+                if(!can_dodge(character)) {
+                    return {action: "not_learnt"}
+                }
                 return await this.action(pool, index, {action: 'dodge', who: index})
             } else if (input.action == 'flee') {
                 return await this.action(pool, index, {action: 'flee', who: index})

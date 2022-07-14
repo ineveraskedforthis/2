@@ -376,6 +376,7 @@ class BattleReworked2 {
                 return { action: 'not_enough_ap', who: unit_index };
             }
             unit.dodge_turns = 2;
+            unit.action_points_left -= 4;
             return { action: 'dodge', who: unit_index };
         }
         if (action.action == 'flee') {
@@ -558,6 +559,7 @@ class BattleReworked2 {
         if (input != undefined) {
             this.changed = true;
             let index = this.heap.selected;
+            let character = this.get_char(this.get_unit(this.heap.selected));
             if (input.action == 'move') {
                 return await this.action(pool, index, { action: 'move', target: input.target });
             }
@@ -565,9 +567,15 @@ class BattleReworked2 {
                 return await this.action(pool, index, battle_ai_1.BattleAI.convert_attack_to_action(this, index, input.target, 'usual'));
             }
             else if (input.action == 'fast_attack') {
+                if (!(0, character_generic_part_1.can_fast_attack)(character)) {
+                    return { action: "not_learnt" };
+                }
                 return await this.action(pool, index, battle_ai_1.BattleAI.convert_attack_to_action(this, index, input.target, 'fast'));
             }
             else if (input.action == 'dodge') {
+                if (!(0, character_generic_part_1.can_dodge)(character)) {
+                    return { action: "not_learnt" };
+                }
                 return await this.action(pool, index, { action: 'dodge', who: index });
             }
             else if (input.action == 'flee') {

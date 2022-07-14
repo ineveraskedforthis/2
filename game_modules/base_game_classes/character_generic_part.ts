@@ -744,6 +744,12 @@ export class CharacterGenericPart {
             }
         }
 
+        if (this.skills.perks.advanced_unarmed) {
+            if (result.weapon_type == 'noweapon') {
+                result.damage.blunt += 10
+            }
+        }
+
         result.attacker_status_change.rage = 5
         result.attacker_status_change.fatigue = 1
 

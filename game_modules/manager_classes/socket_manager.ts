@@ -752,17 +752,9 @@ export class SocketManager {
     }
 
     send_perk_related_skills_update(character: CharacterGenericPart) {
-        let value = 0
-        if (can_dodge(character)) {
-            value = 1
-        }
-        this.send_to_character_user(character, 'b-action-chance', {tag: 'dodge', value: value})
-
-        value = 0
-        if (can_fast_attack(character)) {
-            value = 1
-        }
-        this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: value})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance()})
+        this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
+        this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
     }
 
     // send_tactics_info(character) {

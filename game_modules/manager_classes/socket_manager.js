@@ -665,16 +665,9 @@ class SocketManager {
         this.send_perk_related_skills_update(character);
     }
     send_perk_related_skills_update(character) {
-        let value = 0;
-        if ((0, character_generic_part_1.can_dodge)(character)) {
-            value = 1;
-        }
-        this.send_to_character_user(character, 'b-action-chance', { tag: 'dodge', value: value });
-        value = 0;
-        if ((0, character_generic_part_1.can_fast_attack)(character)) {
-            value = 1;
-        }
-        this.send_to_character_user(character, 'b-action-chance', { tag: 'fast_attack', value: value });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'fast_attack', value: character.get_attack_chance() });
+        this.send_to_character_user(character, 'action-display', { tag: 'dodge', value: (0, character_generic_part_1.can_dodge)(character) });
+        this.send_to_character_user(character, 'action-display', { tag: 'fast_attack', value: (0, character_generic_part_1.can_fast_attack)(character) });
     }
     // send_tactics_info(character) {
     //     // this.send_to_character_user(character, 'tactic', character.data.tactic)

@@ -98,6 +98,8 @@ export class BattleImageNext {
         this.update_player_actions_availability();
     }
     update_action_display(tag, flag) {
+        console.log(tag);
+        console.log(flag);
         let div = document.getElementById('battle_action_' + tag);
         if (flag) {
             div.classList.remove('hidden');

@@ -168,6 +168,11 @@ export class World {
         cook.stash.inc(FOOD, 1000)
         await test_person.sell(pool, FOOD, 200, 10 as money)
 
+
+
+        let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1)
+        monk.skills.noweapon.practice = 100
+        monk.learn_perk("advanced_unarmed")
         
 
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)

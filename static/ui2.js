@@ -1063,6 +1063,8 @@ socket.on('market-data', data => update_market(data));
 socket.on('item-market-data', data => {item_market_table.update(data)});
 
 
+socket.on('action-display', data => {battle_image.update_action_display(data.tag, data.value)})
+
 
 socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
 socket.on('cell-visited', data => map.mark_visited(data))

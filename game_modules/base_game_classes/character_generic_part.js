@@ -563,6 +563,11 @@ class CharacterGenericPart {
                 result.damage.pierce += 10;
             }
         }
+        if (this.skills.perks.advanced_unarmed) {
+            if (result.weapon_type == 'noweapon') {
+                result.damage.blunt += 10;
+            }
+        }
         result.attacker_status_change.rage = 5;
         result.attacker_status_change.fatigue = 1;
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));

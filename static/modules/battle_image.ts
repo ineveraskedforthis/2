@@ -167,6 +167,8 @@ export class BattleImageNext {
     }
 
     update_action_display(tag: string, flag: boolean) {
+        console.log(tag)
+        console.log(flag)
         let div = document.getElementById('battle_action_' + tag)
         if (flag) {
             div.classList.remove('hidden')

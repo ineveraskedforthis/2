@@ -174,8 +174,11 @@ export class AttackEvent {
         let unit = battle.units_data[this.unit_id];
         let target = battle.units_data[this.target_id];
         let result = unit.name + ' attacks ' + target.name + ': ';
-        if (this.data.flags.evade || this.data.flags.miss) {
+        if (this.data.flags.miss) {
             return result + ' MISS!';
+        }
+        if (this.data.flags.evade) {
+            return result + ' DODGE!';
         }
         if (this.data.flags.crit) {
             return result + this.data.total_damage + ' damage (CRITICAL)';
