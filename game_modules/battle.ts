@@ -17,11 +17,15 @@ import { SocketBattleData } from "../shared/battle_data";
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
 export interface AttackAction {action: "attack", target: number}
+interface HeavyAttackAction {action: "heavy_attack", target: number}
+interface FastAttackAction {action: "fast_attack", target: number}
+interface ChargeAction {action: "flee", target: number}
+interface DodgeAction {action: "dodge"}
 interface FleeAction {action: "flee", who: number}
 interface SpellTargetAction {action: "spell_target", target: number, spell_tag: "power_bolt"|"charge"}
 interface EndTurn {action: 'end_turn'}
 interface NullAction {action: null}
-export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction
+export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction
 export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null
 
 type ActionLog = Action[]

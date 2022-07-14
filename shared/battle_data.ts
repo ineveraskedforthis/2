@@ -14,3 +14,5 @@ export interface SocketBattleUnitData {
 }
 
 export type SocketBattleData = {[_ in number]: SocketBattleUnitData};
+
+export type battle_id = number & { __brand: "battle"}

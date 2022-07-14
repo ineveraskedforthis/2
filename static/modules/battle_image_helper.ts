@@ -1,6 +1,6 @@
 import { BattleImageNext } from "./battle_image.js"
 
-import { SocketBattleUnitData } from "../../shared/battle_data"
+import { SocketBattleUnitData, battle_id } from "../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 
@@ -17,9 +17,6 @@ export type Canvas = any & { __brand: "canvas"};
 export type CanvasContext = any & { __brand: "canvas_context"};
 export type ImagesDict = {[_: string] : Image}
 export type Image = any & { __brand: "image"};
-
-
-export type battle_id = number & { __brand: "battle"}
 
 export const BATTLE_SCALE = 50
 export const BATTLE_MOVEMENT_SPEED = 4
