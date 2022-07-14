@@ -275,6 +275,7 @@ export class BattleReworked2 {
     async save_to_db(pool: PgPool) {
         await common.send_query(pool, constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input])
         this.changed = false
+        this.heap.changed = false
     }
 
     async delete_from_db(pool: PgPool) {
@@ -428,6 +429,7 @@ export class BattleReworked2 {
         
         if (action.action == 'attack') {
             if (action.target != null) {
+
                 let unit2 = this.heap.get_unit(action.target);
                 let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
 

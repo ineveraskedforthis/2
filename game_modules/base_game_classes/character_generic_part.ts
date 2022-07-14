@@ -667,12 +667,14 @@ export class CharacterGenericPart {
     async attack(pool: PgPool, target: CharacterGenericPart, mod:'fast'|'heavy'|'usual', dodge_flag: boolean) {
         let result = new AttackResult()
 
+
         result = this.equip.get_weapon_damage(result);
         result = this.mod_attack_damage_with_stats(result, mod);
         result = this.roll_accuracy(result);
         result = this.roll_crit(result);
         result = target.roll_dodge(result, mod, dodge_flag);
         result = target.roll_block(result);
+
 
         let dice = Math.random()
         if (dice > this.get_weapon_skill(result.weapon_type) / 50) {

@@ -125,6 +125,10 @@ export class BattleAI {
         }
 
         if (action_tag == 'attack') {
+            let unit = battle.get_unit(index)
+            if (unit.action_points_left < 3) {
+                return {action: "end_turn"}
+            }
             if (true_target == null) return {action: null}
             let res = this.convert_attack_to_action(battle, index, true_target, 'usual');
             action = res.action;

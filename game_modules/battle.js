@@ -204,6 +204,7 @@ class BattleReworked2 {
     async save_to_db(pool) {
         await common.send_query(pool, constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
         this.changed = false;
+        this.heap.changed = false;
     }
     async delete_from_db(pool) {
         await common.send_query(pool, constants.delete_battle_query, [this.id]);
