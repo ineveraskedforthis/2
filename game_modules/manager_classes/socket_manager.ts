@@ -753,6 +753,7 @@ export class SocketManager {
 
     send_perk_related_skills_update(character: CharacterGenericPart) {
         this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance()})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance()})
         this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
         this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
         this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
