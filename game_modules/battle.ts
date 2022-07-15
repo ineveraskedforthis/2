@@ -7,7 +7,7 @@ var {constants} = require("./static_data/constants.js");
 import {geom} from './geom'
 
 import {BattleAI} from './battle_ai'
-import {can_dodge, can_fast_attack, CharacterGenericPart} from './base_game_classes/character_generic_part'
+import {can_dodge, can_fast_attack, can_push_back, CharacterGenericPart} from './base_game_classes/character_generic_part'
 import { PgPool, World } from "./world";
 import { ITEM_MATERIAL } from "./static_data/item_tags";
 import { material_index } from "./manager_classes/materials_manager";
@@ -19,14 +19,15 @@ export interface MoveAction {action: "move", target: {x: number, y:number}}
 export interface AttackAction {action: "attack", target: number}
 export interface HeavyAttackAction {action: "heavy_attack", target: number}
 export interface FastAttackAction {action: "fast_attack", target: number}
-interface ChargeAction {action: "flee", target: number}
+interface ChargeAction {action: "charge", target: number}
 interface DodgeAction {action: "dodge", who: number}
+interface PushBack {action: "push_back", target: number}
 interface FleeAction {action: "flee", who: number}
 interface SpellTargetAction {action: "spell_target", target: number, spell_tag: "power_bolt"|"charge"}
 interface EndTurn {action: 'end_turn'}
 interface NullAction {action: null}
-export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction
-export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'
+export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction|PushBack
+export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'|'push_back'
 
 type ActionLog = Action[]
 
@@ -452,6 +453,49 @@ export class BattleReworked2 {
             return { action: 'no_target_selected' };
         } 
 
+        if (action.action == 'push_back') {
+            if(!can_push_back(character)) {
+                return {action: "not_learnt"}
+            }
+            if (action.target != null) {
+                let unit2 = this.heap.get_unit(action.target);
+                let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+
+                if (unit.action_points_left < 5) {
+                    return { action: 'not_enough_ap', who: unit_index}
+                }
+
+                let range = char.get_range()
+
+                if (geom.dist(unit.position, unit2.position) > range) {
+                    return { action: 'not_enough_range', who: unit_index}
+                }
+
+                let target_char = this.world.get_char_from_id(unit2.char_id);
+                let dodge_flag = (unit2.dodge_turns > 0)
+                let result = await character.attack(pool, target_char, 'heavy', dodge_flag);
+                unit.action_points_left -= 5
+                this.changed = true
+
+                if (!(result.flags.evade || result.flags.miss)) {
+                    let a = unit.position
+                    let b = unit2.position
+                    let c = {x: b.x - a.x, y: b.y - a.y}
+                    let norm = Math.sqrt(c.x * c.x + c.y * c.y)
+                    let power_ratio = character.get_phys_power() / target_char.get_phys_power()
+                    let scale = range * power_ratio / norm / 2
+
+                    c = {x: c.x * scale, y: c.y * scale}
+
+                    unit2.position = {x: b.x + c.x, y: b.y + c.y}
+                }
+
+                return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
+            }
+
+            return { action: 'no_target_selected' };
+        }
+
         if (action.action == 'fast_attack') {
             if(!can_fast_attack(character)) {
                 return {action: "not_learnt"}
@@ -704,6 +748,11 @@ export class BattleReworked2 {
                     return {action: "not_learnt"}
                 }
                 return await this.action(pool, index, {action: 'dodge', who: index})
+            } else if (input.action == 'push_back') {
+                if(!can_push_back(character)) {
+                    return {action: "not_learnt"}
+                }
+                return await this.action(pool, index, {action: 'push_back', target: input.target})
             } else if (input.action == 'flee') {
                 return await this.action(pool, index, {action: 'flee', who: index})
             } else {

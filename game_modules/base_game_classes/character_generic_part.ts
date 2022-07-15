@@ -32,18 +32,20 @@ class SkillObject {
     }
 }
 
-export type Perks = 'meat_master'|'advanced_unarmed'
-export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed']
+export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'
+export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed','advanced_polearm']
 export interface PerksTable {
     meat_master?: boolean; //100% chance to prepare meat
     claws?: boolean; // + unarmed damage
     advanced_unarmed?:boolean; //allows unarmed dodge and fast attacks
+    advanced_polearm?:boolean
 }
 
 export function perk_price(tag: Perks) {
     switch(tag) {
         case 'meat_master': return 100
         case 'advanced_unarmed': return 200
+        case 'advanced_polearm': return 200
     }
 }
 export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
@@ -57,6 +59,12 @@ export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
         case 'advanced_unarmed': {
             if (character.skills.noweapon.practice < 15) {
                 return 'not_enough_unarmed_skill_15'
+            }
+            return 'ok'
+        }
+        case 'advanced_polearm': {
+            if (character.skills.polearms.practice < 15) {
+                return 'not_enough_polearms_skill_15'
             }
             return 'ok'
         }
@@ -84,7 +92,15 @@ export function can_fast_attack(character:CharacterGenericPart):boolean {
             return true
         }
     }
+    return false
+}
 
+export function can_push_back(character:CharacterGenericPart):boolean {
+    if (character.skills.perks.advanced_polearm == true) {
+        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.POLEARMS) {
+            return true
+        }
+    }
     return false
 }
 
