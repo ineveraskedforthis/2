@@ -668,6 +668,7 @@ class SocketManager {
         this.send_to_character_user(character, 'b-action-chance', { tag: 'fast_attack', value: character.get_attack_chance() });
         this.send_to_character_user(character, 'action-display', { tag: 'dodge', value: (0, character_generic_part_1.can_dodge)(character) });
         this.send_to_character_user(character, 'action-display', { tag: 'fast_attack', value: (0, character_generic_part_1.can_fast_attack)(character) });
+        this.send_to_character_user(character, 'action-display', { tag: 'push_back', value: (0, character_generic_part_1.can_push_back)(character) });
     }
     // send_tactics_info(character) {
     //     // this.send_to_character_user(character, 'tactic', character.data.tactic)

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterGenericPart = exports.Status = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
+exports.CharacterGenericPart = exports.Status = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
 const spells = require("../static_data/spells.js");
@@ -20,11 +20,12 @@ class SkillObject {
         this.theory = 0;
     }
 }
-exports.perks_list = ['meat_master', 'advanced_unarmed'];
+exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm'];
 function perk_price(tag) {
     switch (tag) {
         case 'meat_master': return 100;
         case 'advanced_unarmed': return 200;
+        case 'advanced_polearm': return 200;
     }
 }
 exports.perk_price = perk_price;
@@ -39,6 +40,12 @@ function perk_requirement(tag, character) {
         case 'advanced_unarmed': {
             if (character.skills.noweapon.practice < 15) {
                 return 'not_enough_unarmed_skill_15';
+            }
+            return 'ok';
+        }
+        case 'advanced_polearm': {
+            if (character.skills.polearms.practice < 15) {
+                return 'not_enough_polearms_skill_15';
             }
             return 'ok';
         }
@@ -69,6 +76,15 @@ function can_fast_attack(character) {
     return false;
 }
 exports.can_fast_attack = can_fast_attack;
+function can_push_back(character) {
+    if (character.skills.perks.advanced_polearm == true) {
+        if (weapon_type(character.equip.data.weapon) == "polearms" /* WEAPON_TYPE.POLEARMS */) {
+            return true;
+        }
+    }
+    return false;
+}
+exports.can_push_back = can_push_back;
 class SkillList {
     constructor() {
         this.clothier = new SkillObject();

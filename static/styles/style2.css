@@ -133,6 +133,10 @@ body {
     background-image: url(/static/img/tab_buttons/close_tab_active.png);
 }
 
+.display_none {
+    display: none;
+}
+
 
 .movable > .corner {
     background-color: yellowgreen;

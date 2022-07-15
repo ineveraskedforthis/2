@@ -102,10 +102,10 @@ export class BattleImageNext {
         console.log(flag);
         let div = document.getElementById('battle_action_' + tag);
         if (flag) {
-            div.classList.remove('hidden');
+            div.classList.remove('display_none');
         }
         else {
-            div.classList.add('hidden');
+            div.classList.add('display_none');
         }
     }
     update_player_actions_availability() {
@@ -274,6 +274,11 @@ export class BattleImageNext {
         else if (tag == 'fast_attack') {
             if (this.selected != undefined) {
                 this.socket.emit('battle-action', { action: 'fast_attack', target: this.selected });
+            }
+        }
+        else if (tag == 'push_back') {
+            if (this.selected != undefined) {
+                this.socket.emit('battle-action', { action: 'push_back', target: this.selected });
             }
         }
         else if (tag == 'flee') {

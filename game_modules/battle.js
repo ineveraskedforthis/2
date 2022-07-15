@@ -346,6 +346,39 @@ class BattleReworked2 {
             }
             return { action: 'no_target_selected' };
         }
+        if (action.action == 'push_back') {
+            if (!(0, character_generic_part_1.can_push_back)(character)) {
+                return { action: "not_learnt" };
+            }
+            if (action.target != null) {
+                let unit2 = this.heap.get_unit(action.target);
+                let char = this.world.get_char_from_id(unit.char_id);
+                if (unit.action_points_left < 5) {
+                    return { action: 'not_enough_ap', who: unit_index };
+                }
+                let range = char.get_range();
+                if (geom_1.geom.dist(unit.position, unit2.position) > range) {
+                    return { action: 'not_enough_range', who: unit_index };
+                }
+                let target_char = this.world.get_char_from_id(unit2.char_id);
+                let dodge_flag = (unit2.dodge_turns > 0);
+                let result = await character.attack(pool, target_char, 'heavy', dodge_flag);
+                unit.action_points_left -= 5;
+                this.changed = true;
+                if (!(result.flags.evade || result.flags.miss)) {
+                    let a = unit.position;
+                    let b = unit2.position;
+                    let c = { x: b.x - a.x, y: b.y - a.y };
+                    let norm = Math.sqrt(c.x * c.x + c.y * c.y);
+                    let power_ratio = character.get_phys_power() / target_char.get_phys_power();
+                    let scale = range * power_ratio / norm / 2;
+                    c = { x: c.x * scale, y: c.y * scale };
+                    unit2.position = { x: b.x + c.x, y: b.y + c.y };
+                }
+                return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
+            }
+            return { action: 'no_target_selected' };
+        }
         if (action.action == 'fast_attack') {
             if (!(0, character_generic_part_1.can_fast_attack)(character)) {
                 return { action: "not_learnt" };
@@ -577,6 +610,12 @@ class BattleReworked2 {
                     return { action: "not_learnt" };
                 }
                 return await this.action(pool, index, { action: 'dodge', who: index });
+            }
+            else if (input.action == 'push_back') {
+                if (!(0, character_generic_part_1.can_push_back)(character)) {
+                    return { action: "not_learnt" };
+                }
+                return await this.action(pool, index, { action: 'push_back', target: input.target });
             }
             else if (input.action == 'flee') {
                 return await this.action(pool, index, { action: 'flee', who: index });

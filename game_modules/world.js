@@ -14,6 +14,8 @@ const materials_manager_1 = require("./manager_classes/materials_manager");
 const market_items_1 = require("./market/market_items");
 const graci_1 = require("./base_game_classes/races/graci");
 const elo_1 = require("./base_game_classes/races/elo");
+const item_tags_1 = require("./static_data/item_tags");
+const items_set_up_1 = require("./static_data/items_set_up");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -107,6 +109,12 @@ class World {
         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1);
         monk.skills.noweapon.practice = 100;
         monk.learn_perk("advanced_unarmed");
+        let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1);
+        spearman.skills.polearms.practice = 100;
+        spearman.learn_perk("advanced_polearm");
+        let spear = new item_tags_1.Weapon(items_set_up_1.BONE_SPEAR_ARGUMENT);
+        spearman.equip.data.weapon = spear;
+        spearman.changed = true;
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
         meat_bag.stash.inc(materials_manager_1.MEAT, 200);
         await meat_bag.sell(pool, materials_manager_1.MEAT, 10, 10);

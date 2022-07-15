@@ -21,6 +21,8 @@ import { money } from "./base_game_classes/savings";
 import { auction_order_id, nodb_mode_check } from "./market/market_items";
 import { graci } from "./base_game_classes/races/graci";
 import { elo } from "./base_game_classes/races/elo";
+import { Weapon } from './static_data/item_tags';
+import { BONE_SPEAR_ARGUMENT } from './static_data/items_set_up';
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -173,6 +175,14 @@ export class World {
         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1)
         monk.skills.noweapon.practice = 100
         monk.learn_perk("advanced_unarmed")
+
+
+        let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
+        spearman.skills.polearms.practice = 100
+        spearman.learn_perk("advanced_polearm")
+        let spear = new Weapon(BONE_SPEAR_ARGUMENT)
+        spearman.equip.data.weapon = spear
+        spearman.changed = true
         
 
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
