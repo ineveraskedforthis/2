@@ -1,4 +1,4 @@
-import { can_dodge, can_fast_attack, can_push_back, CharacterGenericPart, Perks, perks_list, perk_price, perk_requirement } from "../base_game_classes/character_generic_part";
+import { can_cast_magic_bolt, can_dodge, can_fast_attack, can_push_back, CharacterGenericPart, Perks, perks_list, perk_price, perk_requirement } from "../base_game_classes/character_generic_part";
 import { BattleReworked2, flee_chance } from "../battle";
 import { CharacterAction, CharacterActionResponce } from "./action_manager";
 import { User } from "../user";
@@ -754,9 +754,12 @@ export class SocketManager {
     send_perk_related_skills_update(character: CharacterGenericPart) {
         this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance()})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance()})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
+
         this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
         this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
         this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
+        this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
     }
 
     // send_tactics_info(character) {
@@ -954,6 +957,7 @@ export class SocketManager {
         if (user != null) {
             let char = user.get_character()
             user.socket.emit('stash-update', char.stash.data)
+            this.send_perk_related_skills_update(char)
         }
     }
 

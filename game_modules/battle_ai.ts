@@ -2,12 +2,15 @@ import type { CharacterGenericPart } from "./base_game_classes/character_generic
 import type { BattleReworked2, Action, ActionTag, MoveAction, AttackAction, UnitData, FastAttackAction } from "./battle";
 
 import {geom, point} from './geom'
+import { spells, spell_tags } from "./static_data/spells";
 
 type trigger_tag = 'hp'|'rage'|'blood'|'stress'
 type sign_tag = '<'|'<='|'=='|'>'|'>='
 type target_tag = 'me'|'closest_enemy'
 
-type SpellTag = "power_bolt"|"charge"
+
+
+// type SpellTag = "power_bolt"|"charge"
 
 export class BattleAI {
 
@@ -113,7 +116,7 @@ export class BattleAI {
     }
 
     //decide what action agent should do
-    static get_action(battle: BattleReworked2, index: number, target_tag:target_tag, action_tag: ActionTag, spell_tag:SpellTag): Action {
+    static get_action(battle: BattleReworked2, index: number, target_tag:target_tag, action_tag: ActionTag, spell_tag:spell_tags): Action {
         var action = null;
         var action_target = null;
         var true_target: number|null = -1;

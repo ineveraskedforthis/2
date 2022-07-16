@@ -16,7 +16,7 @@ import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
 import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
-import { FOOD, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./manager_classes/materials_manager";
+import { FOOD, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
 import { auction_order_id, nodb_mode_check } from "./market/market_items";
 import { graci } from "./base_game_classes/races/graci";
@@ -160,9 +160,11 @@ export class World {
         test_person.stash.inc(RAT_BONE, 100)
         test_person.stash.inc(WOOD, 100)
         test_person.stash.inc(RAT_SKIN, 100)
+        test_person.stash.inc(ZAZ, 100)
         test_person.savings.set(5000 as money)
         await test_person.buy(pool, MEAT, 100, 5 as money)
         await test_person.sell(pool, FOOD, 200, 15 as money)
+        await test_person.sell(pool, ZAZ, 100, 200 as money)
 
 
         let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1)
@@ -175,6 +177,7 @@ export class World {
         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1)
         monk.skills.noweapon.practice = 100
         monk.learn_perk("advanced_unarmed")
+        monk.changed = true
 
 
         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
@@ -189,6 +192,16 @@ export class World {
         meat_bag.stash.inc(MEAT, 200)
         await meat_bag.sell(pool, MEAT, 10, 10 as money)
         // meat_bag.change_hp(-99)
+
+
+        let mage = await this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1)
+        mage.skills.magic_mastery.practice = 100
+        mage.learn_perk('mage_initiation')
+        mage.learn_perk('magic_bolt')
+        mage.stash.inc(ZAZ, 300)
+        await mage.sell(pool, ZAZ, 200, 50 as money)
+        mage.changed = true
+
 
     }
 

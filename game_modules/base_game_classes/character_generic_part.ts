@@ -1,7 +1,6 @@
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
 
-const spells = require("../static_data/spells.js");
 
 const generate_empty_resists = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
@@ -16,10 +15,11 @@ import { CharacterAction } from "../manager_classes/action_manager";
 import { User } from "../user";
 import { constants } from "../static_data/constants";
 import { ARMOUR_TYPE, Weapon } from "../static_data/item_tags";
-import { material_index } from "../manager_classes/materials_manager";
+import { material_index, ZAZ } from "../manager_classes/materials_manager";
 import { money, Savings } from "./savings";
 import { WEAPON_TYPE } from "../static_data/type_script_types";
 import { generate_loot } from "./races/generate_loot";
+import { spells, spell_tags } from "../static_data/spells";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
@@ -125,6 +125,9 @@ export function can_push_back(character:CharacterGenericPart):boolean {
 
 export function can_cast_magic_bolt(character: CharacterGenericPart):boolean {
     if (character.skills.perks.magic_bolt) {
+        return true
+    }
+    if (character.stash.get(ZAZ) > 0) {
         return true
     }
     return false
@@ -734,11 +737,20 @@ export class CharacterGenericPart {
         return result;
     }
 
-    async spell_attack(pool: PgPool, target: any, tag: string) {
+    async spell_attack(pool: PgPool, target: CharacterGenericPart, tag: spell_tags) {
         let result = new AttackResult()
 
+        if (tag == 'bolt') {
+            let bolt_difficulty = 30
+            let dice = Math.random() * bolt_difficulty
+            let skill = this.skills.magic_mastery.practice
+            if (skill < dice) {
+                this.skills.magic_mastery.practice += 1
+            }
+        }
+
         result = spells[tag](result);
-        result = this.mod_spell_damage_with_stats(result);
+        result = this.mod_spell_damage_with_stats(result, tag);
 
         this.change_status(result.attacker_status_change)
 
@@ -803,13 +815,25 @@ export class CharacterGenericPart {
         return result
     }
 
-    mod_spell_damage_with_stats(result: AttackResult) {
-        let power = this.get_magic_power() / 10
+    mod_spell_damage_with_stats(result: AttackResult, tag:spell_tags) {
+        let power_mod = this.get_magic_power() / 10
+        let skill_mod = this.skills.magic_mastery.practice / 10
+        let damage_mod = power_mod * (skill_mod + 1)
 
-        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * power));
-        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * power));
-        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * power));
-        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * power));
+        if (this.skills.perks.magic_bolt) {
+            damage_mod = damage_mod * 1.5
+        }
+
+        if (this.skills.perks.mage_initiation) {
+            damage_mod = damage_mod * 1.5
+        }
+
+        damage_mod = Math.floor(damage_mod)
+
+        result.damage['blunt']  = Math.floor(Math.max(1, result.damage['blunt']     * damage_mod));
+        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce']    * damage_mod));
+        result.damage['slice']  = Math.floor(Math.max(0, result.damage['slice']     * damage_mod));
+        result.damage['fire']   = Math.floor(Math.max(0, result.damage['fire']      * damage_mod));
 
         return result
     }

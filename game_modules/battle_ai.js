@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleAI = void 0;
 const geom_1 = require("./geom");
+// type SpellTag = "power_bolt"|"charge"
 class BattleAI {
     static calculate_closest_enemy(battle, index) {
         var closest_enemy = null;

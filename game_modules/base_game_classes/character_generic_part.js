@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterGenericPart = exports.Status = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
+exports.CharacterGenericPart = exports.Status = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
 var common = require("../common.js");
 // var {constants} = require("../static_data/constants.js");
-const spells = require("../static_data/spells.js");
 const generate_empty_resists = require("./misc/empty_resists.js");
 const character_defines = require("./misc/char_related_constants.js");
 const equip_1 = require("../base_game_classes/equip");
@@ -11,8 +10,10 @@ const stash_1 = require("./stash");
 const attack_result_1 = require("./misc/attack_result");
 const damage_types_1 = require("./misc/damage_types");
 const constants_1 = require("../static_data/constants");
+const materials_manager_1 = require("../manager_classes/materials_manager");
 const savings_1 = require("./savings");
 const generate_loot_1 = require("./races/generate_loot");
+const spells_1 = require("../static_data/spells");
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class SkillObject {
     constructor() {
@@ -20,12 +21,14 @@ class SkillObject {
         this.theory = 0;
     }
 }
-exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm'];
+exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt'];
 function perk_price(tag) {
     switch (tag) {
         case 'meat_master': return 100;
         case 'advanced_unarmed': return 200;
         case 'advanced_polearm': return 200;
+        case 'mage_initiation': return 1000;
+        case 'magic_bolt': return 100;
     }
 }
 exports.perk_price = perk_price;
@@ -46,6 +49,21 @@ function perk_requirement(tag, character) {
         case 'advanced_polearm': {
             if (character.skills.polearms.practice < 15) {
                 return 'not_enough_polearms_skill_15';
+            }
+            return 'ok';
+        }
+        case 'mage_initiation': {
+            if (character.skills.magic_mastery.practice < 15) {
+                return 'not_enough_magic_skill_15';
+            }
+            return 'ok';
+        }
+        case 'magic_bolt': {
+            if (!character.skills.perks.mage_initiation) {
+                return 'not_initiated';
+            }
+            if (character.skills.magic_mastery.practice < 15) {
+                return 'not_enough_magic_skill_15';
             }
             return 'ok';
         }
@@ -85,6 +103,16 @@ function can_push_back(character) {
     return false;
 }
 exports.can_push_back = can_push_back;
+function can_cast_magic_bolt(character) {
+    if (character.skills.perks.magic_bolt) {
+        return true;
+    }
+    if (character.stash.get(materials_manager_1.ZAZ) > 0) {
+        return true;
+    }
+    return false;
+}
+exports.can_cast_magic_bolt = can_cast_magic_bolt;
 class SkillList {
     constructor() {
         this.clothier = new SkillObject();
@@ -533,8 +561,16 @@ class CharacterGenericPart {
     }
     async spell_attack(pool, target, tag) {
         let result = new attack_result_1.AttackResult();
-        result = spells[tag](result);
-        result = this.mod_spell_damage_with_stats(result);
+        if (tag == 'bolt') {
+            let bolt_difficulty = 30;
+            let dice = Math.random() * bolt_difficulty;
+            let skill = this.skills.magic_mastery.practice;
+            if (skill < dice) {
+                this.skills.magic_mastery.practice += 1;
+            }
+        }
+        result = spells_1.spells[tag](result);
+        result = this.mod_spell_damage_with_stats(result, tag);
         this.change_status(result.attacker_status_change);
         result = await target.take_damage(pool, result);
         return result;
@@ -592,12 +628,21 @@ class CharacterGenericPart {
         result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * magic_power));
         return result;
     }
-    mod_spell_damage_with_stats(result) {
-        let power = this.get_magic_power() / 10;
-        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * power));
-        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * power));
-        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * power));
-        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * power));
+    mod_spell_damage_with_stats(result, tag) {
+        let power_mod = this.get_magic_power() / 10;
+        let skill_mod = this.skills.magic_mastery.practice / 10;
+        let damage_mod = power_mod * (skill_mod + 1);
+        if (this.skills.perks.magic_bolt) {
+            damage_mod = damage_mod * 1.5;
+        }
+        if (this.skills.perks.mage_initiation) {
+            damage_mod = damage_mod * 1.5;
+        }
+        damage_mod = Math.floor(damage_mod);
+        result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * damage_mod));
+        result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * damage_mod));
+        result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * damage_mod));
+        result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * damage_mod));
         return result;
     }
     roll_accuracy(result) {

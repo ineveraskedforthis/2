@@ -99,9 +99,11 @@ class World {
         test_person.stash.inc(materials_manager_1.RAT_BONE, 100);
         test_person.stash.inc(materials_manager_1.WOOD, 100);
         test_person.stash.inc(materials_manager_1.RAT_SKIN, 100);
+        test_person.stash.inc(materials_manager_1.ZAZ, 100);
         test_person.savings.set(5000);
         await test_person.buy(pool, materials_manager_1.MEAT, 100, 5);
         await test_person.sell(pool, materials_manager_1.FOOD, 200, 15);
+        await test_person.sell(pool, materials_manager_1.ZAZ, 100, 200);
         let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1);
         cook.learn_perk("meat_master");
         cook.stash.inc(materials_manager_1.FOOD, 1000);
@@ -109,6 +111,7 @@ class World {
         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1);
         monk.skills.noweapon.practice = 100;
         monk.learn_perk("advanced_unarmed");
+        monk.changed = true;
         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1);
         spearman.skills.polearms.practice = 100;
         spearman.learn_perk("advanced_polearm");
@@ -119,6 +122,13 @@ class World {
         meat_bag.stash.inc(materials_manager_1.MEAT, 200);
         await meat_bag.sell(pool, materials_manager_1.MEAT, 10, 10);
         // meat_bag.change_hp(-99)
+        let mage = await this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1);
+        mage.skills.magic_mastery.practice = 100;
+        mage.learn_perk('mage_initiation');
+        mage.learn_perk('magic_bolt');
+        mage.stash.inc(materials_manager_1.ZAZ, 300);
+        await mage.sell(pool, materials_manager_1.ZAZ, 200, 50);
+        mage.changed = true;
     }
     async load(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);

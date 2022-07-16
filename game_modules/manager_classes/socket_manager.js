@@ -667,9 +667,11 @@ class SocketManager {
     send_perk_related_skills_update(character) {
         this.send_to_character_user(character, 'b-action-chance', { tag: 'fast_attack', value: character.get_attack_chance() });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'push_back', value: character.get_attack_chance() });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'magic_bolt', value: 1 });
         this.send_to_character_user(character, 'action-display', { tag: 'dodge', value: (0, character_generic_part_1.can_dodge)(character) });
         this.send_to_character_user(character, 'action-display', { tag: 'fast_attack', value: (0, character_generic_part_1.can_fast_attack)(character) });
         this.send_to_character_user(character, 'action-display', { tag: 'push_back', value: (0, character_generic_part_1.can_push_back)(character) });
+        this.send_to_character_user(character, 'action-display', { tag: 'magic_bolt', value: (0, character_generic_part_1.can_cast_magic_bolt)(character) });
     }
     // send_tactics_info(character) {
     //     // this.send_to_character_user(character, 'tactic', character.data.tactic)
@@ -842,6 +844,7 @@ class SocketManager {
         if (user != null) {
             let char = user.get_character();
             user.socket.emit('stash-update', char.stash.data);
+            this.send_perk_related_skills_update(char);
         }
     }
     prepare_market_orders(market) {

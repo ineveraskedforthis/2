@@ -2,11 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.damage_types = exports.DamageByTypeObject = void 0;
 class DamageByTypeObject {
-    constructor() {
-        this.blunt = 0;
-        this.pierce = 0;
-        this.slice = 0;
-        this.fire = 0;
+    constructor(blunt = 0, pierce = 0, slice = 0, fire = 0) {
+        this.blunt = blunt;
+        this.pierce = pierce;
+        this.slice = slice;
+        this.fire = fire;
     }
     add_object(x) {
         this.blunt = this.blunt + x.blunt;

@@ -3,11 +3,11 @@ export class DamageByTypeObject {
     pierce: number;
     slice: number;
     fire: number;
-    constructor() {
-        this.blunt = 0
-        this.pierce = 0
-        this.slice = 0
-        this.fire = 0
+    constructor(blunt: number = 0, pierce: number = 0, slice: number = 0, fire: number = 0) {
+        this.blunt = blunt
+        this.pierce = pierce
+        this.slice = slice
+        this.fire = fire
     }
 
     add_object(x: DamageByTypeObject):DamageByTypeObject {

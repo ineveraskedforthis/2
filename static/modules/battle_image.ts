@@ -365,6 +365,10 @@ export class BattleImageNext {
             if (this.selected != undefined) {
                 this.socket.emit('battle-action', {action: 'fast_attack', target: this.selected})
             }
+        } else if (tag == 'magic_bolt') {
+            if (this.selected != undefined) {
+                this.socket.emit('battle-action', {action: 'magic_bolt', target: this.selected})
+            }
         } else if (tag == 'push_back') {
             if (this.selected != undefined) {
                 this.socket.emit('battle-action', {action: 'push_back', target: this.selected})
