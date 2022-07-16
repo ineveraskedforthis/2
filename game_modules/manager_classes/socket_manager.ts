@@ -1199,6 +1199,7 @@ export class SocketManager {
                 let res = await battle.process_input(this.pool, char.get_in_battle_id(), action)
                 battle.send_action(res)
                 battle.send_update()
+                this.send_skills_info(char)
             }
         }
     }
