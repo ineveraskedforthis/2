@@ -100,6 +100,7 @@ class World {
         test_person.stash.inc(materials_manager_1.WOOD, 100);
         test_person.stash.inc(materials_manager_1.RAT_SKIN, 100);
         test_person.stash.inc(materials_manager_1.ZAZ, 100);
+        test_person.stash.inc(materials_manager_1.ELODINO_FLESH, 100);
         test_person.savings.set(5000);
         await test_person.buy(pool, materials_manager_1.MEAT, 100, 5);
         await test_person.sell(pool, materials_manager_1.FOOD, 200, 15);

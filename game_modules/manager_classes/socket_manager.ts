@@ -10,7 +10,7 @@ import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { Cell } from "../cell";
 import { MarketOrder, MarketOrderJson, market_order_index } from "../market/market_order.js";
 import { materials, material_index } from "./materials_manager";
-import { character_to_cook_meat_probability } from "../base_game_classes/character_actions/cook_meat";
+import { character_to_cook_elodino_probability, character_to_cook_meat_probability } from "../base_game_classes/character_actions/cook_meat";
 import { character_to_craft_spear_probability } from "../base_game_classes/character_actions/craft_spear";
 import { character_to_hunt_probability } from "../base_game_classes/character_actions/hunt";
 import { can_gather_wood } from "../base_game_classes/character_actions/gather_wood";
@@ -98,14 +98,15 @@ export class SocketManager {
             socket.on('sell-item', async (msg: any) => this.sell_item(user, msg));
             socket.on('buyout', async (msg: any) => this.buyout(user, msg));
             socket.on('execute-order', async (msg: any) => this.execute_order(user, msg.amount, msg.order))
-            socket.on('cfood', async () => this.craft(user, CharacterAction.COOK_MEAT));
-            socket.on('mspear', async () => this.craft(user, CharacterAction.CRAFT_SPEAR))
-            socket.on('mbspear', async () => this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
-            socket.on('mrpants', async () => this.craft(user, CharacterAction.CRAFT_RAT_PANTS))
-            socket.on('mrgloves', async () => this.craft(user, CharacterAction.CRAFT_RAT_GLOVES))
-            socket.on('mrboots', async () => this.craft(user, CharacterAction.CRAFT_RAT_BOOTS))
-            socket.on('mrhelmet', async () => this.craft(user, CharacterAction.CRAFT_RAT_HELMET))
-            socket.on('mrarmour', async () => this.craft(user, CharacterAction.CRAFT_RAT_ARMOUR))
+            socket.on('cfood', async () =>      this.craft(user, CharacterAction.COOK_MEAT));
+            socket.on('czaz', async () =>       this.craft(user, CharacterAction.COOK_ELODINO));
+            socket.on('mspear', async () =>     this.craft(user, CharacterAction.CRAFT_SPEAR))
+            socket.on('mbspear', async () =>    this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
+            socket.on('mrpants', async () =>    this.craft(user, CharacterAction.CRAFT_RAT_PANTS))
+            socket.on('mrgloves', async () =>   this.craft(user, CharacterAction.CRAFT_RAT_GLOVES))
+            socket.on('mrboots', async () =>    this.craft(user, CharacterAction.CRAFT_RAT_BOOTS))
+            socket.on('mrhelmet', async () =>   this.craft(user, CharacterAction.CRAFT_RAT_HELMET))
+            socket.on('mrarmour', async () =>   this.craft(user, CharacterAction.CRAFT_RAT_ARMOUR))
             // socket.on('cclothes', async () => this.craft_clothes(user));
             // socket.on('ench', async (msg: any) => this.enchant(user));
             socket.on('disench', async (msg: any) => this.disenchant(user, msg));
@@ -745,6 +746,8 @@ export class SocketManager {
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_gloves', value: character_to_craft_rat_armour_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_helmet', value: character_to_craft_rat_armour_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_boots', value: character_to_craft_rat_armour_probability(character)})
+        this.send_to_character_user(character, 'craft-probability', {tag: 'cook_elodino', value: character_to_cook_elodino_probability(character)})
+        
         this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})

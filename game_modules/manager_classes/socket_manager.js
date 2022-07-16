@@ -72,6 +72,7 @@ class SocketManager {
             socket.on('buyout', async (msg) => this.buyout(user, msg));
             socket.on('execute-order', async (msg) => this.execute_order(user, msg.amount, msg.order));
             socket.on('cfood', async () => this.craft(user, action_manager_1.CharacterAction.COOK_MEAT));
+            socket.on('czaz', async () => this.craft(user, action_manager_1.CharacterAction.COOK_ELODINO));
             socket.on('mspear', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_SPEAR));
             socket.on('mbspear', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_BONE_SPEAR));
             socket.on('mrpants', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_RAT_PANTS));
@@ -659,6 +660,7 @@ class SocketManager {
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_rat_gloves', value: (0, craft_rat_armour_1.character_to_craft_rat_armour_probability)(character) });
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_rat_helmet', value: (0, craft_rat_armour_1.character_to_craft_rat_armour_probability)(character) });
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_rat_boots', value: (0, craft_rat_armour_1.character_to_craft_rat_armour_probability)(character) });
+        this.send_to_character_user(character, 'craft-probability', { tag: 'cook_elodino', value: (0, cook_meat_1.character_to_cook_elodino_probability)(character) });
         this.send_to_character_user(character, 'cell-action-chance', { tag: 'hunt', value: (0, hunt_1.character_to_hunt_probability)(character) });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'flee', value: (0, battle_1.flee_chance)(character) });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance() });

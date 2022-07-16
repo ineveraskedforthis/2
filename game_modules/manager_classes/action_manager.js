@@ -32,6 +32,7 @@ class ActionManager {
         this.add_action(craft_rat_armour_1.craft_rat_gloves);
         this.add_action(craft_rat_armour_1.craft_rat_helmet);
         this.add_action(craft_rat_armour_1.craft_rat_boots);
+        this.add_action(cook_meat_1.cook_elo_to_zaz);
     }
     add_action(action) {
         this.actions.push(action);
@@ -86,4 +87,5 @@ var CharacterAction;
     CharacterAction[CharacterAction["CRAFT_RAT_GLOVES"] = 12] = "CRAFT_RAT_GLOVES";
     CharacterAction[CharacterAction["CRAFT_RAT_HELMET"] = 13] = "CRAFT_RAT_HELMET";
     CharacterAction[CharacterAction["CRAFT_RAT_BOOTS"] = 14] = "CRAFT_RAT_BOOTS";
+    CharacterAction[CharacterAction["COOK_ELODINO"] = 15] = "COOK_ELODINO";
 })(CharacterAction = exports.CharacterAction || (exports.CharacterAction = {}));

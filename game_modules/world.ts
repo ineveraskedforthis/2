@@ -16,7 +16,7 @@ import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
 import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
-import { FOOD, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";
+import { ELODINO_FLESH, FOOD, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
 import { auction_order_id, nodb_mode_check } from "./market/market_items";
 import { graci } from "./base_game_classes/races/graci";
@@ -161,6 +161,7 @@ export class World {
         test_person.stash.inc(WOOD, 100)
         test_person.stash.inc(RAT_SKIN, 100)
         test_person.stash.inc(ZAZ, 100)
+        test_person.stash.inc(ELODINO_FLESH, 100)
         test_person.savings.set(5000 as money)
         await test_person.buy(pool, MEAT, 100, 5 as money)
         await test_person.sell(pool, FOOD, 200, 15 as money)

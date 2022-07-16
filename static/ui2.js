@@ -961,6 +961,11 @@ function process_stash_click(tag) {
 }
 
 {
+    let div = document.getElementById('cook_elodino')
+    div.onclick = () => socket.emit('czaz')
+}
+
+{
     let div = document.getElementById('craft_spear')
     div.onclick = () => socket.emit('mspear')
 }

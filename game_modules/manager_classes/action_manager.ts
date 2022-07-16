@@ -2,7 +2,7 @@ import { CharacterGenericPart } from "../base_game_classes/character_generic_par
 import type { PgPool, World } from "../world"
 import { move } from '../base_game_classes/character_actions/move'
 import { eat } from "../base_game_classes/character_actions/eat"
-import { cook_meat } from "../base_game_classes/character_actions/cook_meat"
+import { cook_elo_to_zaz, cook_meat } from "../base_game_classes/character_actions/cook_meat"
 import { clean } from '../base_game_classes/character_actions/clean'
 import { rest } from "../base_game_classes/character_actions/rest"
 import { hunt } from "../base_game_classes/character_actions/hunt"
@@ -62,6 +62,7 @@ export class ActionManager {
         this.add_action(craft_rat_gloves)
         this.add_action(craft_rat_helmet)
         this.add_action(craft_rat_boots)
+        this.add_action(cook_elo_to_zaz)
     }
 
     add_action(action: Action) {
@@ -116,5 +117,6 @@ export enum CharacterAction {
     CRAFT_RAT_ARMOUR = 11,
     CRAFT_RAT_GLOVES = 12,
     CRAFT_RAT_HELMET = 13,
-    CRAFT_RAT_BOOTS = 14
+    CRAFT_RAT_BOOTS = 14,
+    COOK_ELODINO = 15
 }
