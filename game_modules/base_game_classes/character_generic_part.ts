@@ -32,13 +32,15 @@ class SkillObject {
     }
 }
 
-export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'
-export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed','advanced_polearm']
+export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'
+export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt']
 export interface PerksTable {
     meat_master?: boolean; //100% chance to prepare meat
     claws?: boolean; // + unarmed damage
     advanced_unarmed?:boolean; //allows unarmed dodge and fast attacks
     advanced_polearm?:boolean
+    mage_initiation?:boolean
+    magic_bolt?:boolean
 }
 
 export function perk_price(tag: Perks) {
@@ -46,6 +48,8 @@ export function perk_price(tag: Perks) {
         case 'meat_master': return 100
         case 'advanced_unarmed': return 200
         case 'advanced_polearm': return 200
+        case 'mage_initiation': return 1000
+        case 'magic_bolt': return 100
     }
 }
 export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
@@ -65,6 +69,21 @@ export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
         case 'advanced_polearm': {
             if (character.skills.polearms.practice < 15) {
                 return 'not_enough_polearms_skill_15'
+            }
+            return 'ok'
+        }
+        case 'mage_initiation': {
+            if (character.skills.magic_mastery.practice < 15) {
+                return 'not_enough_magic_skill_15'
+            }
+            return 'ok'
+        }
+        case 'magic_bolt': {
+            if (!character.skills.perks.mage_initiation) {
+                return 'not_initiated'
+            }
+            if (character.skills.magic_mastery.practice < 15) {
+                return 'not_enough_magic_skill_15'
             }
             return 'ok'
         }
@@ -100,6 +119,13 @@ export function can_push_back(character:CharacterGenericPart):boolean {
         if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.POLEARMS) {
             return true
         }
+    }
+    return false
+}
+
+export function can_cast_magic_bolt(character: CharacterGenericPart):boolean {
+    if (character.skills.perks.magic_bolt) {
+        return true
     }
     return false
 }
