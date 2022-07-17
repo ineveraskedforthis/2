@@ -551,13 +551,13 @@ var learned_skill_divs = {}
 function show_skill_tab(tag) {
     let tab = document.getElementById(tag + '_tab');
     tab.classList.remove('hidden');
-    tab.style.height = '100%'
+    // tab.style.height = undefined
 }
 
 function hide_skill_tab(tag) {
     let tab = document.getElementById(tag + '_tab');
     tab.classList.add('hidden');
-    tab.style.height = '0%'
+    // tab.style.height = '0%'
 }
 
 function skill_tab_select(tag) {
@@ -904,6 +904,11 @@ function update_equip(data) {
         let div = document.querySelector('.character_image.equip.' + tag);
 
         let item_tag = data[tag]?.tag||'empty';
+
+        if (tag == 'secondary') {
+            continue
+        }
+
         div.style = "background: no-repeat center/100% url(/static/img/" + item_tag + "_big.png);"
     }
 }

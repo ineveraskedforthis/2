@@ -219,9 +219,10 @@ export class CharacterScreen {
         this.table_armour.innerHTML = '';
         console.log(inv)
         for (let i = 0; i < inv.weapons.length; i++) {
-            if (inv.weapons[i] != null) {
+            if ((inv.weapons[i] != null) && (inv.weapons[i] != undefined)) {
                 let weapon = inv.weapons[i]
                 let row = this.table_weapon.insertRow();
+                // row.style.heigh = '24px'
                 let type = row.insertCell(0); 
                 type.innerHTML = weapon.tag
                 for (let j = 0; j < weapon.affixes; j++){

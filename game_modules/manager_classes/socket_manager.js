@@ -133,6 +133,10 @@ class SocketManager {
             }
             else {
                 switch (msg) {
+                    case 'secondary': {
+                        character.unequip_secondary();
+                        break;
+                    }
                     case 'body': {
                         character.unequip_armour(item_tags_1.ARMOUR_TYPE.BODY);
                         break;

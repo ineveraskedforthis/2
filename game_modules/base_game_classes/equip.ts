@@ -168,12 +168,15 @@ export class Equip {
         // console.log(backpack.weapons)
         if (item != undefined) {
             let tmp = this.data.weapon;
+            
             if (tmp == undefined) {
                 this.data.weapon = backpack.weapons[index];
+                backpack.weapons[index] = undefined
             } else {
                 let tmp2 = this.data.secondary
                 if (tmp2 == undefined) {
                     this.data.secondary = backpack.weapons[index];
+                    backpack.weapons[index] = undefined
                 } else {
                     this.data.weapon = backpack.weapons[index];
                     backpack.weapons[index] = tmp

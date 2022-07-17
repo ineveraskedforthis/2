@@ -458,6 +458,12 @@ class CharacterGenericPart {
     unequip_weapon() {
         this.equip.unequip_weapon();
     }
+    unequip_secondary() {
+        this.equip.unequip_secondary();
+    }
+    switch_weapon() {
+        this.equip.switch_weapon();
+    }
     unequip_armour(tag) {
         this.equip.unequip_armour(tag);
     }

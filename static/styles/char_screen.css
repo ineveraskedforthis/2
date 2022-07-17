@@ -34,6 +34,9 @@
 .backpack_tab {
     margin: 10px;
 }
+.backpack_tab > tbody > tr {
+    height: 24px;
+}
 
 #cs_first_column{
     height: 100%;
