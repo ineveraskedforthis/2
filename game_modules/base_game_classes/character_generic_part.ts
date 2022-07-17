@@ -608,6 +608,14 @@ export class CharacterGenericPart {
         this.equip.unequip_weapon()
     }
 
+    unequip_secondary() {
+        this.equip.unequip_secondary()
+    }
+
+    switch_weapon() {
+        this.equip.switch_weapon()
+    }
+
     unequip_armour(tag:ARMOUR_TYPE) {
         this.equip.unequip_armour(tag)
     }

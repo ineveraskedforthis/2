@@ -1,5 +1,5 @@
 
-export const EQUIPMENT_TAGS = ['right_hand', 'body', 'legs', 'foot', 'head', 'arms'];
+export const EQUIPMENT_TAGS = ['right_hand', 'secondary', 'body', 'legs', 'foot', 'head', 'arms'];
 
 
 
@@ -12,6 +12,7 @@ function send_equip_weapon_message(socket, index) {
     socket.emit('equip-weapon', index);
     socket.emit('char-info-detailed');
 }
+
 
 function send_equip_armour_message(socket, index) {
     socket.emit('equip-armour', index);

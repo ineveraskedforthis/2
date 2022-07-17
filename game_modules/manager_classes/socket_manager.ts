@@ -165,6 +165,7 @@ export class SocketManager {
                 character.unequip_weapon()
             } else {
                 switch(msg) {
+                    case 'secondary': {character.unequip_secondary();break;}
                     case 'body': {character.unequip_armour(ARMOUR_TYPE.BODY);break;}
                     case 'legs': {character.unequip_armour(ARMOUR_TYPE.LEGS);break;}
                     case 'foot': {character.unequip_armour(ARMOUR_TYPE.FOOT);break;}
