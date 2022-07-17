@@ -226,6 +226,13 @@ export class BattleImageNext {
         }
         this.selected = index;
         this.anchor = undefined;
+        if (this.player_id != undefined) {
+            let move_ap_div = document.getElementById('move' + '_ap_cost');
+            let a = this.units_data[this.player_id].position;
+            let b = this.units_data[this.selected].position;
+            let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
+            move_ap_div.innerHTML = 'ap: ' + dist * 3;
+        }
         let div = this.container.querySelector('.enemy_list > .fighter_' + index);
         div.classList.add('selected_unit');
     }
@@ -253,6 +260,13 @@ export class BattleImageNext {
         if (!selected) {
             this.remove_selection();
             this.anchor = pos;
+            if (this.player_id != undefined) {
+                let move_ap_div = document.getElementById('move' + '_ap_cost');
+                let a = this.units_data[this.player_id].position;
+                let b = position_c.canvas_to_battle(this.anchor, this.h, this.w);
+                let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
+                move_ap_div.innerHTML = 'ap: ' + dist * 3;
+            }
         }
     }
     send_action(tag) {
@@ -311,10 +325,13 @@ export class BattleImageNext {
             label.innerHTML = action_type.name;
             action_div.appendChild(label);
         }
-        if (action_type.cost != undefined) {
+        {
             let label = document.createElement('div');
-            label.innerHTML = 'ap: ' + action_type.cost;
+            label.id = action_type.tag + '_ap_cost';
             action_div.appendChild(label);
+            if (action_type.cost != undefined) {
+                label.innerHTML = 'ap: ' + action_type.cost;
+            }
         }
         {
             let label = document.createElement('div');

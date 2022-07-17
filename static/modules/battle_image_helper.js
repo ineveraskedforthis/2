@@ -8,6 +8,10 @@ export var position_c;
         return { x: a.x - b.x, y: a.y - b.y };
     }
     position_c.diff = diff;
+    function dist(a, b) {
+        return norm(diff(b, a));
+    }
+    position_c.dist = dist;
     function norm(a) {
         return Math.sqrt(a.x * a.x + a.y * a.y);
     }

@@ -29,6 +29,10 @@ export namespace position_c {
         return {x: a.x - b.x, y:a.y - b.y} as Type
     }
 
+    export function dist<Type extends position>(a: Type, b: Type):number {
+        return norm(diff(b, a))
+    }
+
     export function norm<Type extends position>(a: Type): number {
         return Math.sqrt(a.x * a.x + a.y * a.y)
     }

@@ -589,7 +589,7 @@ class CharacterGenericPart {
                 if (result.damage[i] > 0) {
                     let curr_damage = Math.max(0, result.damage[i] - res[i]);
                     if ((curr_damage > 0) && ((i == 'slice') || (i == 'pierce'))) {
-                        result.attacker_status_change.blood += curr_damage;
+                        result.attacker_status_change.blood += Math.floor(curr_damage / 10);
                     }
                     result.total_damage += curr_damage;
                     this.change_hp(-curr_damage);

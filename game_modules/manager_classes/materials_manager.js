@@ -52,3 +52,4 @@ exports.FOOD = exports.materials.create_material(2, 1, 'food');
 exports.ZAZ = exports.materials.create_material(1, 10, 'zaz');
 exports.MEAT = exports.materials.create_material(3, 1, 'meat');
 exports.WATER = exports.materials.create_material(2, 1, 'water');
+// export const ARROW_BONE = materials.create_material(0.5, 3, 'arrow_bone')
