@@ -2,6 +2,7 @@ import { textChangeRangeIsUnchanged } from "typescript"
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
 import type { AttackResult } from "../base_game_classes/misc/attack_result"
 import type { DamageByTypeObject } from "../base_game_classes/misc/damage_types"
+import { ARROW_BONE, material_index } from "../manager_classes/materials_manager"
 import { World } from "../world"
 import { WEAPON_TYPE } from "./type_script_types"
 
@@ -155,8 +156,8 @@ export interface WeaponConstructorArgument {
     impact_material: ITEM_MATERIAL, 
     impact_type: IMPACT_TYPE, 
     impact_quality: number,
-    affixes: affix[]
-
+    affixes: affix[],
+    ranged?: boolean,
     item_type: 'weapon'
 }
 
@@ -189,6 +190,8 @@ export class Weapon {
     shaft_weight: number;
     impact_weight: number;
 
+    ranged: boolean;
+
     affixes: affix[]
 
     item_type: 'weapon'
@@ -209,6 +212,12 @@ export class Weapon {
         this.impact_weight = impact_size_to_number(this.impact_size) * this.impact_material.density
 
         this.affixes = data.affixes
+
+        if (data.ranged == true) {
+            this.ranged = true
+        } else {
+            this.ranged = false
+        }
 
         this.item_type = 'weapon'
     }
@@ -287,6 +296,13 @@ export function base_resist(result: DamageByTypeObject, item: Armour) {
     result.blunt = result.blunt + temp_protection * temp_hardness
     result.slice = result.slice + temp_protection * temp_hardness * 2
     result.pierce = result.pierce + temp_protection * temp_hardness
+    return result
+}
+
+export function ranged_base_damage(result: AttackResult, arrow_type: material_index){
+    if (arrow_type == ARROW_BONE) {
+        result.damage.pierce += 10
+    }
     return result
 }
 
