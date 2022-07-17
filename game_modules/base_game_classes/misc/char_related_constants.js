@@ -5,7 +5,7 @@ module.exports = {
 
     accuracy: 0.50,
     skill_accuracy_modifier: 0.02,
-    blood_accuracy_burden: 0.005,
+    blood_accuracy_burden: 0.001,
     rage_accuracy_burden: 0.005,
 
     
