@@ -624,6 +624,7 @@ function load_skill_tags(data){
     console.log('load skills')
     console.log(data)
     SKILL_TAGS = data;
+    document.getElementById('skills_tab').innerHTML = ''
     for (let tag in SKILL_TAGS) {
         let div = build_skill_div(tag)
         document.getElementById('skills_tab').append(div)
@@ -1346,6 +1347,9 @@ function update_tags(msg) {
      
     let inventory_div = document.getElementById('goods_stash')
     let material_select = document.getElementById('create_order_material')
+
+    inventory_div.innerHTML = ''
+    material_select.innerHTML = ''
     
     stash_tag_to_id = msg
     console.log(stash_tag_to_id)
