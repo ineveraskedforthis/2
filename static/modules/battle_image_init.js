@@ -24,5 +24,6 @@ export function init_battle_control(battle_image, globals) {
     battle_image.add_action({ name: 'dodge', tag: 'dodge', cost: 4 });
     battle_image.add_action({ name: 'push back', tag: 'push_back', cost: 5 });
     battle_image.add_action({ name: 'retreat', tag: 'flee', cost: 3 });
+    battle_image.add_action({ name: 'switch weapon', tag: 'switch_weapon', cost: 3 });
     battle_image.add_action({ name: 'end turn', tag: 'end_turn', cost: 0 });
 }

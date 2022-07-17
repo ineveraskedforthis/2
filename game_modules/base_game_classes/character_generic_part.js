@@ -462,6 +462,7 @@ class CharacterGenericPart {
         this.equip.unequip_secondary();
     }
     switch_weapon() {
+        // console.log(this.name + ' switch_weapon')
         this.equip.switch_weapon();
     }
     unequip_armour(tag) {

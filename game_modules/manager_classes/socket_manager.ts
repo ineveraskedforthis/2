@@ -83,6 +83,7 @@ export class SocketManager {
             socket.on('send-market-data', (msg: any) => {user.market_data = msg});
             socket.on('equip-armour', async (msg: any) => this.equip_armour(user, msg));
             socket.on('equip-weapon', async (msg: any) => this.equip_weapon(user, msg));
+            socket.on('switch-weapon', async (msg: any) => this.switch_weapon(user))
             socket.on('unequip', async (msg: any) => this.unequip(user, msg));
 
             socket.on('eat', async () => this.eat(user));
@@ -153,6 +154,19 @@ export class SocketManager {
             // console.log('equip ', msg)
             let character = user.get_character();
             await character.equip_weapon(msg);
+            this.send_equip_update_to_character(character)
+        }
+    }
+
+    async switch_weapon(user:User) {
+        if (user.logged_in) {
+            // console.log('equip ', msg)
+            let character = user.get_character();
+            if (character.in_battle()) {
+                user.socket.emit('alert', 'in_battle')
+                return
+            }
+            await character.switch_weapon();
             this.send_equip_update_to_character(character)
         }
     }

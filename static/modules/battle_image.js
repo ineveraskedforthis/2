@@ -286,6 +286,9 @@ export class BattleImageNext {
                 this.socket.emit('battle-action', { action: 'push_back', target: this.selected });
             }
         }
+        else if (tag == 'switch_weapon') {
+            this.socket.emit('battle-action', { action: 'switch_weapon' });
+        }
         else if (tag == 'flee') {
             this.socket.emit('battle-action', { action: 'flee' });
         }

@@ -613,6 +613,7 @@ export class CharacterGenericPart {
     }
 
     switch_weapon() {
+        // console.log(this.name + ' switch_weapon')
         this.equip.switch_weapon()
     }
 

@@ -957,6 +957,15 @@ function process_stash_click(tag) {
 }
 //
 
+function send_switch_weapon_request() {
+    socket.emit('switch-weapon')
+}
+
+{
+    let button = document.getElementById('send_switch_weapon_request')
+    button.onclick = send_switch_weapon_request
+}
+
 
 //craft 
 

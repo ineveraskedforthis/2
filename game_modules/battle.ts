@@ -27,8 +27,9 @@ interface MagicBoltAction {action: "magic_bolt", target: number}
 interface SpellTargetAction {action: "spell_target", target: number, spell_tag: "charge"|"bolt"}
 interface EndTurn {action: 'end_turn'}
 interface NullAction {action: null}
-export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction|PushBack|MagicBoltAction
-export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'|'push_back'|'magic_bolt'
+interface SwitchWeaponAction {action: "switch_weapon", who: number}
+export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction|PushBack|MagicBoltAction|SwitchWeaponAction
+export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'|'push_back'|'magic_bolt'|'switch_weapon'
 
 type ActionLog = Action[]
 
@@ -459,7 +460,7 @@ export class BattleReworked2 {
 
         if (action.action == 'magic_bolt') {
             if (!can_cast_magic_bolt(character)) {
-                console.log('???')
+                // console.log('???')
                 return {action: "not_learnt", who: unit_index}
             }
             if (action.target == null) {
@@ -584,6 +585,16 @@ export class BattleReworked2 {
             }
             return {action: 'not_enough_ap', who: unit_index}
         } 
+
+        if (action.action == 'switch_weapon') {
+            // console.log('????')
+            if (unit.action_points_left < 3) {
+                return {action: 'not_enough_ap', who: unit_index}
+            }
+            unit.action_points_left -= 3
+            character.switch_weapon()
+            return {action: 'switch_weapon', who: unit_index}
+        }
         
 
         if (action.action == 'spell_target') {
@@ -788,6 +799,8 @@ export class BattleReworked2 {
                 return await this.action(pool, index, {action: 'magic_bolt', target: input.target})
             } else if (input.action == 'flee') {
                 return await this.action(pool, index, {action: 'flee', who: index})
+            } else if (input.action == 'switch_weapon') {
+                return await this.action(pool, index, {action: 'switch_weapon', who: index})
             } else {
                 return await this.action(pool, index, input)
             }

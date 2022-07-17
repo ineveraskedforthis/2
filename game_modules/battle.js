@@ -351,7 +351,7 @@ class BattleReworked2 {
         }
         if (action.action == 'magic_bolt') {
             if (!(0, character_generic_part_1.can_cast_magic_bolt)(character)) {
-                console.log('???');
+                // console.log('???')
                 return { action: "not_learnt", who: unit_index };
             }
             if (action.target == null) {
@@ -450,6 +450,15 @@ class BattleReworked2 {
                 }
             }
             return { action: 'not_enough_ap', who: unit_index };
+        }
+        if (action.action == 'switch_weapon') {
+            // console.log('????')
+            if (unit.action_points_left < 3) {
+                return { action: 'not_enough_ap', who: unit_index };
+            }
+            unit.action_points_left -= 3;
+            character.switch_weapon();
+            return { action: 'switch_weapon', who: unit_index };
         }
         if (action.action == 'spell_target') {
             if (unit.action_points_left > 3) {
@@ -646,6 +655,9 @@ class BattleReworked2 {
             }
             else if (input.action == 'flee') {
                 return await this.action(pool, index, { action: 'flee', who: index });
+            }
+            else if (input.action == 'switch_weapon') {
+                return await this.action(pool, index, { action: 'switch_weapon', who: index });
             }
             else {
                 return await this.action(pool, index, input);

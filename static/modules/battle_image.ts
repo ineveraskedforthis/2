@@ -373,6 +373,8 @@ export class BattleImageNext {
             if (this.selected != undefined) {
                 this.socket.emit('battle-action', {action: 'push_back', target: this.selected})
             }
+        } else if (tag == 'switch_weapon') {
+            this.socket.emit('battle-action', {action: 'switch_weapon'})
         } else if (tag == 'flee') {
             this.socket.emit('battle-action', {action: 'flee'})
         } else if (tag == 'dodge') {

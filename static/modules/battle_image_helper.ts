@@ -166,7 +166,7 @@ export class UpdateDataEvent {
     }
 
     effect(battle: BattleImageNext) {
-        battle.units_data[this.unit].update(this.data.hp, this.data.ap, this.data.position as battle_position)
+        battle.units_data[this.unit].update(this.data.hp, this.data.ap, this.data.position as battle_position, this.data.range)
         battle.units_views[this.unit].animation_sequence.push({type: 'update', data: ''})
     }
 
@@ -327,11 +327,11 @@ export class BattleUnit {
         this.tag = tag
     }
 
-    update(hp: number, ap: number, position: battle_position) {
+    update(hp: number, ap: number, position: battle_position, range: number) {
         if (hp != undefined) this.hp = hp;
         if (ap != undefined) this.ap = ap
         if (position != undefined) this.position = position
-
+        if (range != undefined) this.range = range
         if (hp == 0) {
             this.killed = true
         }
