@@ -20,7 +20,8 @@ export function character_to_craft_rat_armour_probability(character:CharacterGen
 function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
     return {
         duration(char: CharacterGenericPart) {
-            return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;
+            return 0.5
+            return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;            
         },
     
         check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {

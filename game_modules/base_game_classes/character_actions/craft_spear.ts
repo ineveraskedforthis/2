@@ -9,6 +9,7 @@ import { PgPool } from "../../world";
 
 export const craft_spear = {
     duration(char: CharacterGenericPart) {
+        return 0.5
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
     },
 

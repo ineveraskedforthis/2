@@ -6,7 +6,8 @@ import { PgPool } from "../../world";
 
 export const cook_meat = {
     duration(char: CharacterGenericPart) {
-        return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;
+        // return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;
+        return 0.5
     },
 
     check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
