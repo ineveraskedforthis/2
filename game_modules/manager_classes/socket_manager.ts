@@ -103,6 +103,7 @@ export class SocketManager {
             socket.on('czaz', async () =>       this.craft(user, CharacterAction.COOK_ELODINO));
             socket.on('mspear', async () =>     this.craft(user, CharacterAction.CRAFT_SPEAR))
             socket.on('mbspear', async () =>    this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
+            socket.on('mbow', async () =>       this.craft(user, CharacterAction.CRAFT_WOOD_BOW))
             socket.on('mrpants', async () =>    this.craft(user, CharacterAction.CRAFT_RAT_PANTS))
             socket.on('mrgloves', async () =>   this.craft(user, CharacterAction.CRAFT_RAT_GLOVES))
             socket.on('mrboots', async () =>    this.craft(user, CharacterAction.CRAFT_RAT_BOOTS))
@@ -762,7 +763,9 @@ export class SocketManager {
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_helmet', value: character_to_craft_rat_armour_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_boots', value: character_to_craft_rat_armour_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'cook_elodino', value: character_to_cook_elodino_probability(character)})
+        this.send_to_character_user(character, 'craft-probability', {tag: 'craft_wood_bow', value: character_to_craft_spear_probability(character)})
         
+
         this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})

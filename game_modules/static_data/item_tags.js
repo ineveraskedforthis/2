@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.base_damage = exports.base_resist = exports.Weapon = exports.Armour = exports.affix = exports.ITEM_MATERIAL = exports.ARMOUR_TYPE = void 0;
+exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.base_damage = exports.ranged_base_damage = exports.base_resist = exports.Weapon = exports.Armour = exports.affix = exports.ITEM_MATERIAL = exports.ARMOUR_TYPE = void 0;
+const materials_manager_1 = require("../manager_classes/materials_manager");
 var ARMOUR_TYPE;
 (function (ARMOUR_TYPE) {
     ARMOUR_TYPE[ARMOUR_TYPE["BODY"] = 0] = "BODY";
@@ -101,6 +102,12 @@ class Weapon {
         this.impact_quality = data.impact_quality;
         this.impact_weight = impact_size_to_number(this.impact_size) * this.impact_material.density;
         this.affixes = data.affixes;
+        if (data.ranged == true) {
+            this.ranged = true;
+        }
+        else {
+            this.ranged = false;
+        }
         this.item_type = 'weapon';
     }
     get_weight() {
@@ -148,6 +155,9 @@ class Weapon {
     }
     get_tag() {
         let imp_type = this.impact_type;
+        if (this.ranged) {
+            return 'bow';
+        }
         switch (imp_type) {
             case 0 /* IMPACT_TYPE.POINT */: {
                 if (this.impact_material.string_tag == 'rat_bone')
@@ -172,6 +182,13 @@ function base_resist(result, item) {
     return result;
 }
 exports.base_resist = base_resist;
+function ranged_base_damage(result, arrow_type) {
+    if (arrow_type == materials_manager_1.ARROW_BONE) {
+        result.damage.pierce += 10;
+    }
+    return result;
+}
+exports.ranged_base_damage = ranged_base_damage;
 function base_damage(result, item) {
     switch (item.impact_type) {
         case 1 /* IMPACT_TYPE.EDGE */: {

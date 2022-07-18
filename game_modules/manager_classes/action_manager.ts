@@ -9,7 +9,7 @@ import { hunt } from "../base_game_classes/character_actions/hunt"
 import { attack } from "../base_game_classes/character_actions/attack"
 import { craft_spear } from "../base_game_classes/character_actions/craft_spear"
 import { gather_wood } from "../base_game_classes/character_actions/gather_wood"
-import { craft_bone_spear } from "../base_game_classes/character_actions/craft_bone_spear"
+import { craft_bone_spear, craft_wood_bow } from "../base_game_classes/character_actions/craft_bone_spear"
 import { craft_rat_armour, craft_rat_boots, craft_rat_gloves, craft_rat_helmet, craft_rat_pants } from "../base_game_classes/character_actions/craft_rat_armour"
 
 
@@ -63,6 +63,7 @@ export class ActionManager {
         this.add_action(craft_rat_helmet)
         this.add_action(craft_rat_boots)
         this.add_action(cook_elo_to_zaz)
+        this.add_action(craft_wood_bow)
     }
 
     add_action(action: Action) {
@@ -118,5 +119,6 @@ export enum CharacterAction {
     CRAFT_RAT_GLOVES = 12,
     CRAFT_RAT_HELMET = 13,
     CRAFT_RAT_BOOTS = 14,
-    COOK_ELODINO = 15
+    COOK_ELODINO = 15,
+    CRAFT_WOOD_BOW = 16
 }

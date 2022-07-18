@@ -275,6 +275,9 @@ export class Weapon {
 
     get_tag(): string {
         let imp_type = this.impact_type
+        if (this.ranged) {
+            return 'bow'
+        }
         switch (imp_type) {
             case IMPACT_TYPE.POINT: {
                 if (this.impact_material.string_tag == 'rat_bone') return 'bone_spear'
