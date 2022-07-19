@@ -1,5 +1,5 @@
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
-import { RAT_BONE, WOOD } from "../../manager_classes/materials_manager";
+import { ARROW_BONE, RAT_BONE, WOOD } from "../../manager_classes/materials_manager";
 import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT } from "../../static_data/items_set_up";
 import { Weapon } from "../../static_data/item_tags";
 import { PgPool } from "../../world";
@@ -53,6 +53,50 @@ export const craft_bone_spear = {
                 }
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'failed')
                 return CharacterActionResponce.FAILED
+            }
+        }
+    },
+
+    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    },
+}
+
+export const craft_bone_arrow = {
+    duration(char: CharacterGenericPart) {
+        return 0.5;
+    },
+
+    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+        if (!char.in_battle()) {
+            let tmp = char.stash.get(WOOD)
+            let tmp_2 = char.stash.get(RAT_BONE)
+            if ((tmp >= 1) && (tmp_2 >= 10))  {
+                return CharacterActionResponce.OK
+            }
+            return CharacterActionResponce.NO_RESOURCE
+        } 
+        return CharacterActionResponce.IN_BATTLE
+    },
+
+    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+        let tmp = char.stash.get(WOOD)
+        let tmp_2 = char.stash.get(RAT_BONE)
+        if ((tmp >= 1) && (tmp_2 >= 10)) { 
+            char.changed = true
+            let skill = char.skills.woodwork.practice;
+
+            char.stash.inc(WOOD, -1)
+            char.stash.inc(RAT_BONE, -10)
+            char.send_stash_update()
+            char.change_fatigue(10)
+            // if (dice < check) {
+            let dice = Math.random()
+            let amount = Math.round((craft_spear_probability(skill) / dice) * 10)
+            char.stash.inc(ARROW_BONE, amount)
+            char.send_stash_update()
+            char.send_status_update()
+            if (skill < 10) {
+                char.skills.woodwork.practice += 1
             }
         }
     },

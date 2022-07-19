@@ -4,7 +4,8 @@ exports.cook_elo_to_zaz = exports.character_to_cook_meat_probability = exports.c
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 exports.cook_meat = {
     duration(char) {
-        return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;
+        // return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;
+        return 0.5;
     },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {

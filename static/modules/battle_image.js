@@ -90,6 +90,16 @@ export class BattleImageNext {
             let event = new UpdateDataEvent(index, data[i]);
             this.events_list.push(event);
         }
+        if (this.selected != undefined) {
+            if (this.player_id != undefined) {
+                let move_ap_div = document.getElementById('move' + '_ap_cost');
+                let a = this.units_data[this.player_id].position;
+                let b = this.units_data[this.selected].position;
+                let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
+                move_ap_div.innerHTML = 'ap: ' + dist * 3;
+                this.socket.emit('req-ranged-accuracy', dist);
+            }
+        }
     }
     set_player(battle_id) {
         console.log('set_player_position');
@@ -232,6 +242,7 @@ export class BattleImageNext {
             let b = this.units_data[this.selected].position;
             let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
             move_ap_div.innerHTML = 'ap: ' + dist * 3;
+            this.socket.emit('req-ranged-accuracy', dist);
         }
         let div = this.container.querySelector('.enemy_list > .fighter_' + index);
         div.classList.add('selected_unit');
@@ -300,6 +311,11 @@ export class BattleImageNext {
                 this.socket.emit('battle-action', { action: 'push_back', target: this.selected });
             }
         }
+        else if (tag == 'shoot') {
+            if (this.selected != undefined) {
+                this.socket.emit('battle-action', { action: 'shoot', target: this.selected });
+            }
+        }
         else if (tag == 'switch_weapon') {
             this.socket.emit('battle-action', { action: 'switch_weapon' });
         }
@@ -345,6 +361,7 @@ export class BattleImageNext {
         div.appendChild(action_div);
     }
     update_action_probability(tag, value) {
+        console.log(tag, value);
         let label = document.getElementById(tag + '_chance_b');
         label.innerHTML = Math.floor(value * 100) + '%';
     }

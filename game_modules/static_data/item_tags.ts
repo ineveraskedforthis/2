@@ -164,15 +164,15 @@ export interface WeaponConstructorArgument {
 
 function shaft_length_to_number(x: SHAFT_LEGTH): number {
     switch(x) {
-        case SHAFT_LEGTH.HAND: return       0.5
-        case SHAFT_LEGTH.SHORT: return +    1.0
-        case SHAFT_LEGTH.LONG: return +     1.5
+        case SHAFT_LEGTH.HAND: return       0.2
+        case SHAFT_LEGTH.SHORT: return +    0.8
+        case SHAFT_LEGTH.LONG: return +     2.0
     }
 }
 
 function impact_size_to_number(x: IMPACT_SIZE) {
     switch(x) {
-        case IMPACT_SIZE.SMALL: return  0.5
+        case IMPACT_SIZE.SMALL: return  0.3
         case IMPACT_SIZE.MEDIUM: return 1.0
         case IMPACT_SIZE.LARGE: return  1.5
     }
@@ -228,17 +228,7 @@ export class Weapon {
 
     get_length() {
         let length = 0
-        switch(this.impact_size) {
-            case IMPACT_SIZE.SMALL: length = length + 0.4
-            case IMPACT_SIZE.MEDIUM: length = length + 0.5
-            case IMPACT_SIZE.LARGE: length = length + 1.0
-        }
-        switch(this.shaft_length) {
-            case SHAFT_LEGTH.HAND: length = length + 0.3
-            case SHAFT_LEGTH.SHORT: length = length + 0.5
-            case SHAFT_LEGTH.LONG: length = length + 1.0
-        }
-        return length
+        return impact_size_to_number(this.impact_size) + shaft_length_to_number(this.shaft_length)
     }
 
     get_weapon_type():WEAPON_TYPE {
@@ -268,7 +258,8 @@ export class Weapon {
 
             affixes: this.affixes,
 
-            item_type: this.item_type
+            item_type: this.item_type,
+            ranged: this.ranged
         }
         return data
     }

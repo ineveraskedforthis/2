@@ -7,7 +7,8 @@ export const enum WEAPON_TYPE {
     ONEHAND = 'onehand',
     POLEARMS = 'polearms',
     NOWEAPON = 'noweapon',
-    TWOHANDED = 'twohanded'
+    TWOHANDED = 'twohanded',
+    RANGED = 'ranged'
 }
 
 export type damage_type = 'blunt'|'pierce'|'slice'|'fire'

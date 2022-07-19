@@ -15,7 +15,7 @@ import { CharacterAction } from "../manager_classes/action_manager";
 import { User } from "../user";
 import { constants } from "../static_data/constants";
 import { ARMOUR_TYPE, Weapon } from "../static_data/item_tags";
-import { material_index, ZAZ } from "../manager_classes/materials_manager";
+import { ARROW_BONE, material_index, ZAZ } from "../manager_classes/materials_manager";
 import { money, Savings } from "./savings";
 import { WEAPON_TYPE } from "../static_data/type_script_types";
 import { generate_loot } from "./races/generate_loot";
@@ -133,6 +133,19 @@ export function can_cast_magic_bolt(character: CharacterGenericPart):boolean {
     return false
 }
 
+export function can_shoot(character: CharacterGenericPart): boolean {
+    if (character.equip.data.weapon == undefined) {
+        return false
+    }
+    if (character.equip.data.weapon.ranged != true) {
+        return false
+    }
+    if (character.stash.get(ARROW_BONE) >= 1) {
+        return true
+    }
+    return false
+}
+
 class SkillList {
     clothier: SkillObject;
     cooking: SkillObject;
@@ -146,6 +159,7 @@ class SkillList {
     evasion: SkillObject;
     woodwork: SkillObject;
     hunt: SkillObject;
+    ranged: SkillObject
 
 
     perks: PerksTable;
@@ -163,6 +177,7 @@ class SkillList {
         this.evasion = new SkillObject();
         this.woodwork = new SkillObject();
         this.hunt = new SkillObject();
+        this.ranged = new SkillObject();
         this.perks = {}
     }
 }
@@ -615,6 +630,7 @@ export class CharacterGenericPart {
     switch_weapon() {
         // console.log(this.name + ' switch_weapon')
         this.equip.switch_weapon()
+        this.send_equip_update()
     }
 
     unequip_armour(tag:ARMOUR_TYPE) {
@@ -718,13 +734,13 @@ export class CharacterGenericPart {
 
     //attack calculations
 
-    async attack(pool: PgPool, target: CharacterGenericPart, mod:'fast'|'heavy'|'usual', dodge_flag: boolean) {
+    async attack(pool: PgPool, target: CharacterGenericPart, mod:'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean, distance: number) {
         let result = new AttackResult()
 
 
-        result = this.equip.get_weapon_damage(result);
+        result = this.equip.get_weapon_damage(result, (mod == 'ranged'));
         result = this.mod_attack_damage_with_stats(result, mod);
-        result = this.roll_accuracy(result);
+        result = this.roll_accuracy(result, mod, distance);
         result = this.roll_crit(result);
         result = target.roll_dodge(result, mod, dodge_flag);
         result = target.roll_block(result);
@@ -736,7 +752,7 @@ export class CharacterGenericPart {
         }
         this.send_skills_update()
         
-        result = await target.take_damage(pool, result);
+        result = await target.take_damage(pool, mod, result);
         this.change_status(result.attacker_status_change)
 
         if (result.flags.killing_strike) {
@@ -763,19 +779,20 @@ export class CharacterGenericPart {
 
         this.change_status(result.attacker_status_change)
 
-        result = await target.take_damage(pool, result);
+        result = await target.take_damage(pool, 'ranged', result);
         return result;
     }
 
-    async take_damage(pool: PgPool, result: any): Promise<AttackResult> {
+    async take_damage(pool: PgPool, mod:'fast'|'heavy'|'usual'|'ranged', result: AttackResult): Promise<AttackResult> {
         let res:any = this.get_resists();
         
         if (!result.flags.evade && !result.flags.miss) {
             for (let i of damage_types) {
                 if (result.damage[i] > 0) {
                     let curr_damage = Math.max(0, result.damage[i] - res[i]);
-                    if ((curr_damage > 0) && ((i == 'slice') || (i == 'pierce'))) {
+                    if ((curr_damage > 0) && ((i == 'slice') || (i == 'pierce')) && !(mod == 'ranged')) {
                         result.attacker_status_change.blood += Math.floor(curr_damage / 10)
+                        result.defender_status_change.blood += Math.floor(curr_damage / 10)
                     }
                     result.total_damage += curr_damage;
                     this.change_hp(-curr_damage);
@@ -783,7 +800,7 @@ export class CharacterGenericPart {
                         await this.world.entity_manager.remove_orders(pool, this)
                         result.flags.killing_strike = true
                     }
-                }                
+                }
             }
             this.change_status(result.defender_status_change)
         }
@@ -791,12 +808,13 @@ export class CharacterGenericPart {
         return result;
     }    
 
-    mod_attack_damage_with_stats(result: AttackResult, mod:'fast'|'usual'|'heavy') {
+    mod_attack_damage_with_stats(result: AttackResult, mod:'fast'|'usual'|'heavy'|'ranged') {
         let phys_power = this.get_phys_power() / 10
         
         switch(mod) {
             case 'usual': {phys_power = phys_power * 2; break}
             case 'heavy': {phys_power = phys_power * 5; break}
+            case 'ranged': {phys_power = phys_power * 2; break}
         }
         
         let magic_power = this.get_magic_power() / 10
@@ -813,7 +831,10 @@ export class CharacterGenericPart {
             }
         }
 
-        result.attacker_status_change.rage = 5
+        if (mod != 'ranged') {
+            result.attacker_status_change.rage = 5
+        }
+        
         result.attacker_status_change.fatigue = 1
 
         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
@@ -847,10 +868,10 @@ export class CharacterGenericPart {
         return result
     }
 
-    roll_accuracy(result: AttackResult) {
+    roll_accuracy(result: AttackResult, mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
         let dice = Math.random();
 
-        result.chance_to_hit = this.get_accuracy(result)
+        result.chance_to_hit = this.get_accuracy(result, mod, distance)
         
         if (dice > result.chance_to_hit) {
             result.flags.miss = true;
@@ -875,7 +896,7 @@ export class CharacterGenericPart {
         return result
     }
 
-    roll_dodge(result: AttackResult, mod: 'fast'|'heavy'|'usual', dodge_flag: boolean) {
+    roll_dodge(result: AttackResult, mod: 'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean) {
         let dice = Math.random()
 
         let base_evade_chance = this.get_evasion_chance();
@@ -885,6 +906,7 @@ export class CharacterGenericPart {
             case 'fast': {attack_specific_dodge = 0.2; break}
             case 'usual': {attack_specific_dodge = 0.5; break}
             case 'heavy': {attack_specific_dodge = 1; break}
+            case 'ranged': {attack_specific_dodge = 0.2;break}
         }
 
         let evade_chance = base_evade_chance + attack_specific_dodge
@@ -936,6 +958,7 @@ export class CharacterGenericPart {
             case WEAPON_TYPE.ONEHAND:   return this.skills.onehand.practice;
             case WEAPON_TYPE.POLEARMS:  return this.skills.polearms.practice;
             case WEAPON_TYPE.TWOHANDED: return this.skills.twohanded.practice;
+            case WEAPON_TYPE.RANGED:    return this.skills.ranged.practice;
         }
     }
 
@@ -945,10 +968,11 @@ export class CharacterGenericPart {
             case WEAPON_TYPE.ONEHAND:   this.skills.onehand.practice        += x;break;
             case WEAPON_TYPE.POLEARMS:  this.skills.polearms.practice       += x;break;
             case WEAPON_TYPE.TWOHANDED: this.skills.twohanded.practice      += x;break;
+            case WEAPON_TYPE.RANGED:    this.skills.ranged.practice         += x;break;
         }
     }
 
-    get_accuracy(result: AttackResult) {
+    get_accuracy(result: {weapon_type: WEAPON_TYPE}, mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
         let base_accuracy = character_defines.accuracy + this.get_weapon_skill(result.weapon_type) * character_defines.skill_accuracy_modifier
 
         let blood_burden = character_defines.blood_accuracy_burden;
@@ -957,26 +981,27 @@ export class CharacterGenericPart {
         let blood_acc_loss = this.status.blood * blood_burden;
         let rage_acc_loss = this.status.rage * rage_burden;
 
-        return Math.min(1, Math.max(0.2, base_accuracy - blood_acc_loss - rage_acc_loss))
+        let final = base_accuracy - blood_acc_loss - rage_acc_loss
+
+        if ((distance != undefined) && (mod == 'ranged')) {
+            if (distance > 0.2) {
+                final = final / Math.sqrt(distance)
+            } else {
+                final = final / 0.2
+            }
+        }
+
+        return Math.min(1, Math.max(0.2, final))
     }    
 
-    get_attack_chance() {
-
+    get_attack_chance(mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
         let weapon = this.equip.data.weapon
         let weapon_type = WEAPON_TYPE.NOWEAPON
         if (weapon != undefined) {
             weapon_type = weapon.get_weapon_type()
         }
 
-        let base_accuracy = character_defines.accuracy + this.get_weapon_skill(weapon_type) * character_defines.skill_accuracy_modifier
-
-        let blood_burden = character_defines.blood_accuracy_burden;
-        let rage_burden = character_defines.rage_accuracy_burden
-
-        let blood_acc_loss = this.status.blood * blood_burden;
-        let rage_acc_loss = this.status.rage * rage_burden;
-
-        return Math.min(1, Math.max(0.2, base_accuracy - blood_acc_loss - rage_acc_loss))
+        return this.get_accuracy({weapon_type: weapon_type}, mod, distance)
     }
 
     get_block_chance() {

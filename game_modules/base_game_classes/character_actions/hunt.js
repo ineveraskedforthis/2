@@ -4,7 +4,7 @@ exports.character_to_hunt_probability = exports.hunt_probability = exports.hunt 
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 exports.hunt = {
     duration(char) {
-        return 1 + char.get_fatigue() / 20 + (100 - char.skills.hunt.practice) / 20;
+        return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt.practice) / 100;
     },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {

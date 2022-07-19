@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.craft_wood_bow = exports.craft_bone_spear = void 0;
+exports.craft_wood_bow = exports.craft_bone_arrow = exports.craft_bone_spear = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../static_data/items_set_up");
 const item_tags_1 = require("../../static_data/item_tags");
@@ -50,6 +50,45 @@ exports.craft_bone_spear = {
                 }
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'failed');
                 return 4 /* CharacterActionResponce.FAILED */;
+            }
+        }
+    },
+    start: async function (pool, char, data) {
+    },
+};
+exports.craft_bone_arrow = {
+    duration(char) {
+        return 0.5;
+    },
+    check: async function (pool, char, data) {
+        if (!char.in_battle()) {
+            let tmp = char.stash.get(materials_manager_1.WOOD);
+            let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
+            if ((tmp >= 1) && (tmp_2 >= 10)) {
+                return 1 /* CharacterActionResponce.OK */;
+            }
+            return 3 /* CharacterActionResponce.NO_RESOURCE */;
+        }
+        return 2 /* CharacterActionResponce.IN_BATTLE */;
+    },
+    result: async function (pool, char, data) {
+        let tmp = char.stash.get(materials_manager_1.WOOD);
+        let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
+        if ((tmp >= 1) && (tmp_2 >= 10)) {
+            char.changed = true;
+            let skill = char.skills.woodwork.practice;
+            char.stash.inc(materials_manager_1.WOOD, -1);
+            char.stash.inc(materials_manager_1.RAT_BONE, -10);
+            char.send_stash_update();
+            char.change_fatigue(10);
+            // if (dice < check) {
+            let dice = Math.random();
+            let amount = Math.round(((0, craft_spear_1.craft_spear_probability)(skill) / dice) * 10);
+            char.stash.inc(materials_manager_1.ARROW_BONE, amount);
+            char.send_stash_update();
+            char.send_status_update();
+            if (skill < 10) {
+                char.skills.woodwork.practice += 1;
             }
         }
     },

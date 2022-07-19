@@ -337,17 +337,38 @@ class BattleReworked2 {
                 if (unit.action_points_left < 3) {
                     return { action: 'not_enough_ap', who: unit_index };
                 }
-                if (geom_1.geom.dist(unit.position, unit2.position) > char.get_range()) {
+                let dist = geom_1.geom.dist(unit.position, unit2.position);
+                if (dist > char.get_range()) {
                     return { action: 'not_enough_range', who: unit_index };
                 }
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let dodge_flag = (unit2.dodge_turns > 0);
-                let result = await character.attack(pool, target_char, 'usual', dodge_flag);
+                let result = await character.attack(pool, target_char, 'usual', dodge_flag, dist);
                 unit.action_points_left -= 3;
                 this.changed = true;
                 return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
             }
             return { action: 'no_target_selected' };
+        }
+        if (action.action == 'shoot') {
+            if (!(0, character_generic_part_1.can_shoot)(character)) {
+                return { action: "not_learnt", who: unit_index };
+            }
+            if (action.target == null) {
+                return { action: 'no_target_selected', who: unit_index };
+            }
+            if (unit.action_points_left < 3) {
+                return { action: 'not_enough_ap', who: unit_index };
+            }
+            let target_unit = this.heap.get_unit(action.target);
+            let target_char = this.world.get_char_from_id(target_unit.char_id);
+            let dodge_flag = (target_unit.dodge_turns > 0);
+            let dist = geom_1.geom.dist(unit.position, target_unit.position);
+            character.stash.inc(materials_manager_1.ARROW_BONE, -1);
+            let result = await character.attack(pool, target_char, 'ranged', dodge_flag, dist);
+            unit.action_points_left -= 3;
+            this.changed = true;
+            return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
         }
         if (action.action == 'magic_bolt') {
             if (!(0, character_generic_part_1.can_cast_magic_bolt)(character)) {
@@ -381,12 +402,13 @@ class BattleReworked2 {
                     return { action: 'not_enough_ap', who: unit_index };
                 }
                 let range = char.get_range();
-                if (geom_1.geom.dist(unit.position, unit2.position) > range) {
+                let dist = geom_1.geom.dist(unit.position, unit2.position);
+                if (dist > range) {
                     return { action: 'not_enough_range', who: unit_index };
                 }
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let dodge_flag = (unit2.dodge_turns > 0);
-                let result = await character.attack(pool, target_char, 'heavy', dodge_flag);
+                let result = await character.attack(pool, target_char, 'heavy', dodge_flag, dist);
                 unit.action_points_left -= 5;
                 this.changed = true;
                 if (!(result.flags.evade || result.flags.miss)) {
@@ -413,12 +435,13 @@ class BattleReworked2 {
                 if (unit.action_points_left < 1) {
                     return { action: 'not_enough_ap', who: unit_index };
                 }
-                if (geom_1.geom.dist(unit.position, unit2.position) > char.get_range()) {
+                let dist = geom_1.geom.dist(unit.position, unit2.position);
+                if (dist > char.get_range()) {
                     return { action: 'not_enough_range', who: unit_index };
                 }
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let dodge_flag = (unit2.dodge_turns > 0);
-                let result = await character.attack(pool, target_char, 'fast', dodge_flag);
+                let result = await character.attack(pool, target_char, 'fast', dodge_flag, dist);
                 unit.action_points_left -= 1;
                 this.changed = true;
                 return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
@@ -652,6 +675,9 @@ class BattleReworked2 {
             }
             else if (input.action == 'magic_bolt') {
                 return await this.action(pool, index, { action: 'magic_bolt', target: input.target });
+            }
+            else if (input.action == 'shoot') {
+                return await this.action(pool, index, { action: 'shoot', target: input.target });
             }
             else if (input.action == 'flee') {
                 return await this.action(pool, index, { action: 'flee', who: index });

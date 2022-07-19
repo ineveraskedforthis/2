@@ -6,7 +6,7 @@ import type { CharacterGenericPart } from "../character_generic_part";
 
 export const hunt = {
     duration(char: CharacterGenericPart) {
-        return 0.5 + char.get_fatigue() / 50 + (100 - char.skills.hunt.practice) / 50;
+        return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt.practice) / 100;
     },
 
     check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {

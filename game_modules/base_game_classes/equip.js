@@ -26,6 +26,8 @@ class EquipData {
     load_json(json) {
         if (json.weapon != undefined) {
             this.weapon = new item_tags_1.Weapon(json.weapon);
+        }
+        if (json.secondary != undefined) {
             this.secondary = new item_tags_1.Weapon(json.secondary);
         }
         for (let tag of this.armour.keys()) {
@@ -56,10 +58,15 @@ class Equip {
         }
         return right_hand.get_length();
     }
-    get_weapon_damage(result) {
+    get_weapon_damage(result, is_ranged) {
         let right_hand = this.data.weapon;
         if (right_hand != undefined) {
-            result.weapon_type = right_hand.get_weapon_type();
+            if (is_ranged) {
+                result.weapon_type = "ranged" /* WEAPON_TYPE.RANGED */;
+            }
+            else {
+                result.weapon_type = right_hand.get_weapon_type();
+            }
             result = (0, item_tags_1.base_damage)(result, right_hand);
             for (let i = 0; i < right_hand.affixes.length; i++) {
                 let affix = right_hand.affixes[i];

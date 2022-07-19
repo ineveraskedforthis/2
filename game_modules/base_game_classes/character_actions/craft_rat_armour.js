@@ -18,6 +18,7 @@ exports.character_to_craft_rat_armour_probability = character_to_craft_rat_armou
 function generate_rat_skin_craft(arg, cost) {
     return {
         duration(char) {
+            return 0.5;
             return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;
         },
         check: async function (pool, char, data) {

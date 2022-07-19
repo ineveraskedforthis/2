@@ -17,4 +17,4 @@ class DamageByTypeObject {
     }
 }
 exports.DamageByTypeObject = DamageByTypeObject;
-exports.damage_types = new Set(['blunt', 'pierce', 'slice', 'fire']);
+exports.damage_types = ['blunt', 'pierce', 'slice', 'fire'];

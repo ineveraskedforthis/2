@@ -533,12 +533,13 @@ const SKILL_NAMES = {
     onehand: 'One handed weapons',
     polearms: 'Polearms',
     noweapon: "Unarmed",
+    ranged: 'Ranged',
     skinning: 'Skinning animals',
     magic_mastery: 'Magic',
     blocking: 'Blocking attacks',
     evasion: 'Evading attacks',
     woodwork: 'Woodworking',
-    hunt: 'Hunting'
+    hunt: 'Hunting',    
 }
 
 var CURR_SKILL_DESC = undefined
@@ -993,6 +994,11 @@ function send_switch_weapon_request() {
 {
     let div = document.getElementById('craft_bone_spear')
     div.onclick = () => socket.emit('mbspear')
+}
+
+{
+    let div = document.getElementById('craft_bone_arrow')
+    div.onclick = () => socket.emit('marr')
 }
 
 {

@@ -19,4 +19,5 @@ export class DamageByTypeObject {
     }
 }
 
-export const damage_types = new Set(['blunt', 'pierce', 'slice', 'fire']);
+export const damage_types: damage_type[] = ['blunt', 'pierce', 'slice', 'fire'];
+export type damage_type = 'blunt'|'pierce'|'slice'|'fire'

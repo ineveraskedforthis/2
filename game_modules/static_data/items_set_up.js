@@ -6,7 +6,7 @@ const item_tags_1 = require("./item_tags");
 exports.BASIC_BOW_ARGUMENT = {
     durability: 100,
     shaft_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-    shaft_length: 1 /* SHAFT_LEGTH.SHORT */,
+    shaft_length: 0 /* SHAFT_LEGTH.HAND */,
     impact_size: 1 /* IMPACT_SIZE.SMALL */,
     impact_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
     impact_type: 2 /* IMPACT_TYPE.HEAD */,

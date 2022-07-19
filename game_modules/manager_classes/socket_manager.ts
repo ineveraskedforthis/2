@@ -1,4 +1,4 @@
-import { can_cast_magic_bolt, can_dodge, can_fast_attack, can_push_back, CharacterGenericPart, Perks, perks_list, perk_price, perk_requirement } from "../base_game_classes/character_generic_part";
+import { can_cast_magic_bolt, can_dodge, can_fast_attack, can_push_back, can_shoot, CharacterGenericPart, Perks, perks_list, perk_price, perk_requirement } from "../base_game_classes/character_generic_part";
 import { BattleReworked2, flee_chance } from "../battle";
 import { CharacterAction, CharacterActionResponce } from "./action_manager";
 import { User } from "../user";
@@ -104,6 +104,7 @@ export class SocketManager {
             socket.on('mspear', async () =>     this.craft(user, CharacterAction.CRAFT_SPEAR))
             socket.on('mbspear', async () =>    this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
             socket.on('mbow', async () =>       this.craft(user, CharacterAction.CRAFT_WOOD_BOW))
+            socket.on('marr', async () =>       this.craft(user, CharacterAction.CRAFT_BONE_ARROW))
             socket.on('mrpants', async () =>    this.craft(user, CharacterAction.CRAFT_RAT_PANTS))
             socket.on('mrgloves', async () =>   this.craft(user, CharacterAction.CRAFT_RAT_GLOVES))
             socket.on('mrboots', async () =>    this.craft(user, CharacterAction.CRAFT_RAT_BOOTS))
@@ -113,6 +114,7 @@ export class SocketManager {
             // socket.on('ench', async (msg: any) => this.enchant(user));
             socket.on('disench', async (msg: any) => this.disenchant(user, msg));
             socket.on('battle-action', async (msg: any) => this.battle_action(user, msg));
+            socket.on('req-ranged-accuracy', async (msg: any) => this.send_ranged_accuracy(user, msg))
 
             socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
             socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
@@ -764,17 +766,18 @@ export class SocketManager {
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_boots', value: character_to_craft_rat_armour_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'cook_elodino', value: character_to_cook_elodino_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_wood_bow', value: character_to_craft_spear_probability(character)})
+        this.send_to_character_user(character, 'craft-probability', {tag: 'craft_bone_arrow', value: character_to_craft_spear_probability(character)})
         
 
         this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
-        this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
         this.send_perk_related_skills_update(character)
     }
 
     send_perk_related_skills_update(character: CharacterGenericPart) {
-        this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance()})
-        this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance()})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance('fast')})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance('heavy')})
         this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
 
         this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
@@ -833,10 +836,20 @@ export class SocketManager {
             if ((char != undefined) && char.is_player()) {
                 this.send_to_character_user(char, 'enemy-update', status)
                 this.send_to_character_user(char, 'battle-update', data)
-
                 // this.send_to_character_user(char, 'player-position', position)
             }
         } 
+    }
+
+    send_ranged_accuracy(user:User, distance: number) {
+        if (!user.logged_in) {
+            return 
+        }
+        if (isNaN(distance)) {
+            return 
+        }
+        let char = user.get_character()
+        this.send_to_character_user(char, 'b-action-chance', {tag: 'shoot', value: char.get_attack_chance('ranged', distance)})
     }
 
     send_battle_action(battle: BattleReworked2, a: any) {
@@ -908,7 +921,7 @@ export class SocketManager {
 
     send_status_update(character: CharacterGenericPart) {
         this.send_to_character_user(character, 'status', {c: character.status, m: character.stats.max})
-        this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance()})
+        this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
     }
 
     send_explored(character: CharacterGenericPart) {
@@ -969,6 +982,7 @@ export class SocketManager {
             // console.log(char.equip.data.backpack.get_data())
             // console.log(char.equip.data.backpack)
             user.socket.emit('equip-update', char.equip.get_data())
+            this.send_to_character_user(char, 'action-display', {tag: 'shoot', value: can_shoot(char)})
             this.send_perk_related_skills_update(char)
         }
     }
@@ -978,6 +992,7 @@ export class SocketManager {
         if (user != null) {
             let char = user.get_character()
             user.socket.emit('stash-update', char.stash.data)
+            this.send_to_character_user(char, 'action-display', {tag: 'shoot', value: can_shoot(char)})
             this.send_perk_related_skills_update(char)
         }
     }

@@ -77,6 +77,7 @@ class SocketManager {
             socket.on('mspear', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_SPEAR));
             socket.on('mbspear', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_BONE_SPEAR));
             socket.on('mbow', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_WOOD_BOW));
+            socket.on('marr', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_BONE_ARROW));
             socket.on('mrpants', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_RAT_PANTS));
             socket.on('mrgloves', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_RAT_GLOVES));
             socket.on('mrboots', async () => this.craft(user, action_manager_1.CharacterAction.CRAFT_RAT_BOOTS));
@@ -86,6 +87,7 @@ class SocketManager {
             // socket.on('ench', async (msg: any) => this.enchant(user));
             socket.on('disench', async (msg) => this.disenchant(user, msg));
             socket.on('battle-action', async (msg) => this.battle_action(user, msg));
+            socket.on('req-ranged-accuracy', async (msg) => this.send_ranged_accuracy(user, msg));
             socket.on('request-perks', (msg) => this.send_perks_info(user, msg));
             socket.on('learn-perk', (msg) => this.send_learn_perk_request(user, msg.id, msg.tag));
         });
@@ -680,14 +682,15 @@ class SocketManager {
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_rat_boots', value: (0, craft_rat_armour_1.character_to_craft_rat_armour_probability)(character) });
         this.send_to_character_user(character, 'craft-probability', { tag: 'cook_elodino', value: (0, cook_meat_1.character_to_cook_elodino_probability)(character) });
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_wood_bow', value: (0, craft_spear_1.character_to_craft_spear_probability)(character) });
+        this.send_to_character_user(character, 'craft-probability', { tag: 'craft_bone_arrow', value: (0, craft_spear_1.character_to_craft_spear_probability)(character) });
         this.send_to_character_user(character, 'cell-action-chance', { tag: 'hunt', value: (0, hunt_1.character_to_hunt_probability)(character) });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'flee', value: (0, battle_1.flee_chance)(character) });
-        this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance() });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance('usual') });
         this.send_perk_related_skills_update(character);
     }
     send_perk_related_skills_update(character) {
-        this.send_to_character_user(character, 'b-action-chance', { tag: 'fast_attack', value: character.get_attack_chance() });
-        this.send_to_character_user(character, 'b-action-chance', { tag: 'push_back', value: character.get_attack_chance() });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'fast_attack', value: character.get_attack_chance('fast') });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'push_back', value: character.get_attack_chance('heavy') });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'magic_bolt', value: 1 });
         this.send_to_character_user(character, 'action-display', { tag: 'dodge', value: (0, character_generic_part_1.can_dodge)(character) });
         this.send_to_character_user(character, 'action-display', { tag: 'fast_attack', value: (0, character_generic_part_1.can_fast_attack)(character) });
@@ -741,6 +744,16 @@ class SocketManager {
                 // this.send_to_character_user(char, 'player-position', position)
             }
         }
+    }
+    send_ranged_accuracy(user, distance) {
+        if (!user.logged_in) {
+            return;
+        }
+        if (isNaN(distance)) {
+            return;
+        }
+        let char = user.get_character();
+        this.send_to_character_user(char, 'b-action-chance', { tag: 'shoot', value: char.get_attack_chance('ranged', distance) });
     }
     send_battle_action(battle, a) {
         let units = battle.get_units();
@@ -801,7 +814,7 @@ class SocketManager {
     }
     send_status_update(character) {
         this.send_to_character_user(character, 'status', { c: character.status, m: character.stats.max });
-        this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance() });
+        this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance('usual') });
     }
     send_explored(character) {
         this.send_to_character_user(character, 'explore', character.misc.explored);
@@ -857,6 +870,7 @@ class SocketManager {
             // console.log(char.equip.data.backpack.get_data())
             // console.log(char.equip.data.backpack)
             user.socket.emit('equip-update', char.equip.get_data());
+            this.send_to_character_user(char, 'action-display', { tag: 'shoot', value: (0, character_generic_part_1.can_shoot)(char) });
             this.send_perk_related_skills_update(char);
         }
     }
@@ -865,6 +879,7 @@ class SocketManager {
         if (user != null) {
             let char = user.get_character();
             user.socket.emit('stash-update', char.stash.data);
+            this.send_to_character_user(char, 'action-display', { tag: 'shoot', value: (0, character_generic_part_1.can_shoot)(char) });
             this.send_perk_related_skills_update(char);
         }
     }

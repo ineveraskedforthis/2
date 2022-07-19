@@ -78,14 +78,14 @@ class Armour {
 exports.Armour = Armour;
 function shaft_length_to_number(x) {
     switch (x) {
-        case 0 /* SHAFT_LEGTH.HAND */: return 0.5;
-        case 1 /* SHAFT_LEGTH.SHORT */: return +1.0;
-        case 2 /* SHAFT_LEGTH.LONG */: return +1.5;
+        case 0 /* SHAFT_LEGTH.HAND */: return 0.2;
+        case 1 /* SHAFT_LEGTH.SHORT */: return +0.8;
+        case 2 /* SHAFT_LEGTH.LONG */: return +2.0;
     }
 }
 function impact_size_to_number(x) {
     switch (x) {
-        case 1 /* IMPACT_SIZE.SMALL */: return 0.5;
+        case 1 /* IMPACT_SIZE.SMALL */: return 0.3;
         case 2 /* IMPACT_SIZE.MEDIUM */: return 1.0;
         case 3 /* IMPACT_SIZE.LARGE */: return 1.5;
     }
@@ -115,17 +115,7 @@ class Weapon {
     }
     get_length() {
         let length = 0;
-        switch (this.impact_size) {
-            case 1 /* IMPACT_SIZE.SMALL */: length = length + 0.4;
-            case 2 /* IMPACT_SIZE.MEDIUM */: length = length + 0.5;
-            case 3 /* IMPACT_SIZE.LARGE */: length = length + 1.0;
-        }
-        switch (this.shaft_length) {
-            case 0 /* SHAFT_LEGTH.HAND */: length = length + 0.3;
-            case 1 /* SHAFT_LEGTH.SHORT */: length = length + 0.5;
-            case 2 /* SHAFT_LEGTH.LONG */: length = length + 1.0;
-        }
-        return length;
+        return impact_size_to_number(this.impact_size) + shaft_length_to_number(this.shaft_length);
     }
     get_weapon_type() {
         switch (this.shaft_length) {
@@ -149,7 +139,8 @@ class Weapon {
             impact_type: this.impact_type,
             impact_quality: this.impact_quality,
             affixes: this.affixes,
-            item_type: this.item_type
+            item_type: this.item_type,
+            ranged: this.ranged
         };
         return data;
     }

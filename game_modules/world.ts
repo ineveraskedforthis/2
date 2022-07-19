@@ -16,7 +16,7 @@ import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
 import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
-import { ELODINO_FLESH, FOOD, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";
+import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
 import { auction_order_id, nodb_mode_check } from "./market/market_items";
 import { graci } from "./base_game_classes/races/graci";
@@ -171,7 +171,7 @@ export class World {
         let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1)
         cook.learn_perk("meat_master")
         cook.stash.inc(FOOD, 1000)
-        await test_person.sell(pool, FOOD, 200, 10 as money)
+        await cook.sell(pool, FOOD, 500, 10 as money)
 
 
 
@@ -180,6 +180,19 @@ export class World {
         monk.learn_perk("advanced_unarmed")
         monk.changed = true
 
+        let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
+        forest_cook.stash.inc(FOOD, 1000)
+        await forest_cook.sell(pool, FOOD, 500, 20 as money)
+        await forest_cook.buy(pool, MEAT, 500, 4 as money)
+        forest_cook.changed = true
+
+        let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(7, 5), -1)
+        fletcher.stash.inc(ARROW_BONE, 20000)
+        fletcher.savings.inc(2000 as money)
+        await fletcher.sell(pool, ARROW_BONE, 10000, 3 as money)
+        await fletcher.buy(pool, RAT_BONE, 1000, 1 as money)
+        await fletcher.buy(pool, WOOD, 1000, 2 as money)
+        fletcher.changed = true
 
         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
         spearman.skills.polearms.practice = 100
@@ -200,10 +213,11 @@ export class World {
         mage.learn_perk('mage_initiation')
         mage.learn_perk('magic_bolt')
         mage.stash.inc(ZAZ, 300)
+        mage.savings.inc(30000 as money)
         await mage.sell(pool, ZAZ, 200, 50 as money)
+        await mage.buy(pool, ELODINO_FLESH, 200, 50 as money)
+        await mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
         mage.changed = true
-
-
     }
 
 

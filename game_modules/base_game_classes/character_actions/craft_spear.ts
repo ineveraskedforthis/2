@@ -62,7 +62,7 @@ export const craft_spear = {
 
 export function craft_spear_probability(skill: number) {
     if (nodb_mode_check()) return 1;
-    return Math.min(skill / 30, 1)
+    return Math.min(skill / 30 + 0.1, 1)
 }
 
 export function character_to_craft_spear_probability(character:CharacterGenericPart) {

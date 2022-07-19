@@ -7,10 +7,10 @@ var {constants} = require("./static_data/constants.js");
 import {geom} from './geom'
 
 import {BattleAI} from './battle_ai'
-import {can_cast_magic_bolt, can_dodge, can_fast_attack, can_push_back, CharacterGenericPart} from './base_game_classes/character_generic_part'
+import {can_cast_magic_bolt, can_dodge, can_fast_attack, can_push_back, can_shoot, CharacterGenericPart} from './base_game_classes/character_generic_part'
 import { PgPool, World } from "./world";
 import { ITEM_MATERIAL } from "./static_data/item_tags";
-import { material_index, ZAZ } from "./manager_classes/materials_manager";
+import { ARROW_BONE, material_index, ZAZ } from "./manager_classes/materials_manager";
 import { Savings } from "./base_game_classes/savings";
 import { SocketBattleData } from "../shared/battle_data";
 
@@ -21,6 +21,7 @@ export interface HeavyAttackAction {action: "heavy_attack", target: number}
 export interface FastAttackAction {action: "fast_attack", target: number}
 interface ChargeAction {action: "charge", target: number}
 interface DodgeAction {action: "dodge", who: number}
+interface ShootAction {action: "shoot", target: number}
 interface PushBack {action: "push_back", target: number}
 interface FleeAction {action: "flee", who: number}
 interface MagicBoltAction {action: "magic_bolt", target: number}
@@ -28,8 +29,8 @@ interface SpellTargetAction {action: "spell_target", target: number, spell_tag: 
 interface EndTurn {action: 'end_turn'}
 interface NullAction {action: null}
 interface SwitchWeaponAction {action: "switch_weapon", who: number}
-export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction|PushBack|MagicBoltAction|SwitchWeaponAction
-export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'|'push_back'|'magic_bolt'|'switch_weapon'
+export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction|PushBack|MagicBoltAction|SwitchWeaponAction|ShootAction
+export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'|'push_back'|'magic_bolt'|'switch_weapon'|'shoot'
 
 type ActionLog = Action[]
 
@@ -443,13 +444,15 @@ export class BattleReworked2 {
                     return { action: 'not_enough_ap', who: unit_index}
                 }
 
-                if (geom.dist(unit.position, unit2.position) > char.get_range()) {
+                let dist = geom.dist(unit.position, unit2.position)
+
+                if (dist > char.get_range()) {
                     return { action: 'not_enough_range', who: unit_index}
                 }
 
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let dodge_flag = (unit2.dodge_turns > 0)
-                let result = await character.attack(pool, target_char, 'usual', dodge_flag);
+                let result = await character.attack(pool, target_char, 'usual', dodge_flag, dist);
                 unit.action_points_left -= 3
                 this.changed = true
                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
@@ -457,6 +460,31 @@ export class BattleReworked2 {
 
             return { action: 'no_target_selected' };
         } 
+
+        if (action.action == 'shoot') {
+            if (!can_shoot(character)) {
+                return {action: "not_learnt", who: unit_index}
+            }
+            if (action.target == null) {
+                return { action: 'no_target_selected', who: unit_index}
+            }
+            if (unit.action_points_left < 3) {
+                return { action: 'not_enough_ap', who: unit_index}
+            }
+
+            let target_unit = this.heap.get_unit(action.target);
+            let target_char = this.world.get_char_from_id(target_unit.char_id);
+            let dodge_flag = (target_unit.dodge_turns > 0)
+            let dist = geom.dist(unit.position, target_unit.position)
+
+            character.stash.inc(ARROW_BONE, -1)
+
+            let result = await character.attack(pool, target_char, 'ranged', dodge_flag, dist);
+            unit.action_points_left -= 3
+            this.changed = true
+
+            return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
+        }
 
         if (action.action == 'magic_bolt') {
             if (!can_cast_magic_bolt(character)) {
@@ -471,7 +499,6 @@ export class BattleReworked2 {
             }
             
             let target_unit = this.heap.get_unit(action.target);
-
             let target_char = this.world.get_char_from_id(target_unit.char_id);
 
             if (character.skills.perks.magic_bolt != true) {
@@ -498,14 +525,17 @@ export class BattleReworked2 {
                 }
 
                 let range = char.get_range()
+                let dist = geom.dist(unit.position, unit2.position)
 
-                if (geom.dist(unit.position, unit2.position) > range) {
+                if (dist > range) {
                     return { action: 'not_enough_range', who: unit_index}
                 }
 
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let dodge_flag = (unit2.dodge_turns > 0)
-                let result = await character.attack(pool, target_char, 'heavy', dodge_flag);
+                
+                
+                let result = await character.attack(pool, target_char, 'heavy', dodge_flag, dist);
                 unit.action_points_left -= 5
                 this.changed = true
 
@@ -539,14 +569,17 @@ export class BattleReworked2 {
                 if (unit.action_points_left < 1) {
                     return { action: 'not_enough_ap', who: unit_index}
                 }
+                
+                let dist = geom.dist(unit.position, unit2.position)
 
-                if (geom.dist(unit.position, unit2.position) > char.get_range()) {
+                if (dist > char.get_range()) {
                     return { action: 'not_enough_range', who: unit_index}
                 }
 
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let dodge_flag = (unit2.dodge_turns > 0)
-                let result = await character.attack(pool, target_char, 'fast', dodge_flag);
+                
+                let result = await character.attack(pool, target_char, 'fast', dodge_flag, dist);
                 unit.action_points_left -= 1
                 this.changed = true
                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
@@ -797,6 +830,8 @@ export class BattleReworked2 {
                 return await this.action(pool, index, {action: 'push_back', target: input.target})
             } else if (input.action == 'magic_bolt') {
                 return await this.action(pool, index, {action: 'magic_bolt', target: input.target})
+            } else if (input.action == 'shoot') { 
+                return await this.action(pool, index, {action: 'shoot', target: input.target})
             } else if (input.action == 'flee') {
                 return await this.action(pool, index, {action: 'flee', who: index})
             } else if (input.action == 'switch_weapon') {

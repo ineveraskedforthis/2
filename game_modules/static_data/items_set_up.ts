@@ -4,7 +4,7 @@ import {affix_tag, ArmourConstructorArgument, ARMOUR_TYPE, IMPACT_SIZE, IMPACT_T
 export const BASIC_BOW_ARGUMENT: WeaponConstructorArgument = {
     durability: 100,
     shaft_material: materials.index_to_material(WOOD),
-    shaft_length: SHAFT_LEGTH.SHORT,
+    shaft_length: SHAFT_LEGTH.HAND,
     impact_size: IMPACT_SIZE.SMALL,
     impact_material: materials.index_to_material(WOOD),
     impact_type: IMPACT_TYPE.HEAD,

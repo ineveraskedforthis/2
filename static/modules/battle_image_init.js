@@ -21,6 +21,7 @@ export function init_battle_control(battle_image, globals) {
     battle_image.add_action({ name: 'attack', tag: 'attack', cost: 3 });
     battle_image.add_action({ name: 'magic_bolt', tag: 'magic_bolt', cost: 3 });
     battle_image.add_action({ name: 'fast attack', tag: 'fast_attack', cost: 1 });
+    battle_image.add_action({ name: 'shoot', tag: 'shoot', cost: 3 });
     battle_image.add_action({ name: 'dodge', tag: 'dodge', cost: 4 });
     battle_image.add_action({ name: 'push back', tag: 'push_back', cost: 5 });
     battle_image.add_action({ name: 'retreat', tag: 'flee', cost: 3 });

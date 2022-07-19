@@ -7,6 +7,7 @@ const materials_manager_1 = require("../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../static_data/items_set_up");
 exports.craft_spear = {
     duration(char) {
+        return 0.5;
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
     },
     check: async function (pool, char, data) {
@@ -56,7 +57,7 @@ exports.craft_spear = {
 function craft_spear_probability(skill) {
     if ((0, market_items_1.nodb_mode_check)())
         return 1;
-    return Math.min(skill / 30, 1);
+    return Math.min(skill / 30 + 0.1, 1);
 }
 exports.craft_spear_probability = craft_spear_probability;
 function character_to_craft_spear_probability(character) {

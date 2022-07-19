@@ -4,7 +4,7 @@ exports.can_gather_wood = exports.gather_wood = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 exports.gather_wood = {
     duration(char) {
-        return 2 + char.get_fatigue() / 10;
+        return 1 + char.get_fatigue() / 50;
     },
     check: async function (pool, char, data) {
         if (!char.in_battle()) {

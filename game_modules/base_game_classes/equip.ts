@@ -1,6 +1,7 @@
 var {damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character} = require("../static_data/item_tags.js");
 
 import {Armour, ARMOUR_TYPE, base_damage, base_resist, Weapon} from "../static_data/item_tags"
+import { WEAPON_TYPE } from "../static_data/type_script_types";
 import { CharacterGenericPart } from "./character_generic_part";
 import { Inventory } from "./inventory";
 import { AttackResult } from "./misc/attack_result";
@@ -33,8 +34,10 @@ class EquipData {
     load_json(json:any){
         if (json.weapon != undefined) {
             this.weapon = new Weapon(json.weapon)
+        }
+        if (json.secondary != undefined) {
             this.secondary = new Weapon(json.secondary)
-        }        
+        }
         for (let tag of this.armour.keys()) {
             if (json.armour[tag] != undefined) {
                 this.armour.set(tag, new Armour(json.armour[tag]))
@@ -69,11 +72,15 @@ export class Equip {
         return right_hand.get_length();
     }
 
-    get_weapon_damage(result:AttackResult) {
+    get_weapon_damage(result:AttackResult, is_ranged: boolean) {
         let right_hand = this.data.weapon;
         
         if (right_hand != undefined){
-            result.weapon_type = right_hand.get_weapon_type()
+            if (is_ranged) {
+                result.weapon_type = WEAPON_TYPE.RANGED
+            } else {
+                result.weapon_type = right_hand.get_weapon_type()
+            }            
             result = base_damage(result, right_hand)
             for (let i = 0; i < right_hand.affixes.length; i++) {
                 let affix = right_hand.affixes[i];
