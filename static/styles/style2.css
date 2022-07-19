@@ -2,7 +2,7 @@ body {
 
     background-image: url(/static/img/background_1.png);
     background-repeat: repeat;
-    overflow: hidden;
+    /* overflow: hidden; */
 }
 
 #bg_fade {
