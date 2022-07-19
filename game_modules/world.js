@@ -108,11 +108,23 @@ class World {
         let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1);
         cook.learn_perk("meat_master");
         cook.stash.inc(materials_manager_1.FOOD, 1000);
-        await test_person.sell(pool, materials_manager_1.FOOD, 200, 10);
+        await cook.sell(pool, materials_manager_1.FOOD, 500, 10);
         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1);
         monk.skills.noweapon.practice = 100;
         monk.learn_perk("advanced_unarmed");
         monk.changed = true;
+        let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1);
+        forest_cook.stash.inc(materials_manager_1.FOOD, 1000);
+        await forest_cook.sell(pool, materials_manager_1.FOOD, 500, 20);
+        await forest_cook.buy(pool, materials_manager_1.MEAT, 500, 4);
+        forest_cook.changed = true;
+        let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(7, 5), -1);
+        fletcher.stash.inc(materials_manager_1.ARROW_BONE, 20000);
+        fletcher.savings.inc(2000);
+        await fletcher.sell(pool, materials_manager_1.ARROW_BONE, 10000, 3);
+        await fletcher.buy(pool, materials_manager_1.RAT_BONE, 1000, 1);
+        await fletcher.buy(pool, materials_manager_1.WOOD, 1000, 2);
+        fletcher.changed = true;
         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1);
         spearman.skills.polearms.practice = 100;
         spearman.learn_perk("advanced_polearm");
@@ -128,7 +140,10 @@ class World {
         mage.learn_perk('mage_initiation');
         mage.learn_perk('magic_bolt');
         mage.stash.inc(materials_manager_1.ZAZ, 300);
+        mage.savings.inc(30000);
         await mage.sell(pool, materials_manager_1.ZAZ, 200, 50);
+        await mage.buy(pool, materials_manager_1.ELODINO_FLESH, 200, 50);
+        await mage.buy(pool, materials_manager_1.GRACI_HAIR, 10, 1000);
         mage.changed = true;
     }
     async load(pool) {

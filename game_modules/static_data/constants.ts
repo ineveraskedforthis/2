@@ -1,5 +1,5 @@
 export const constants = {
-    version: 303,
+    version: 304,
     logging: {
         agent: {
             buy: false

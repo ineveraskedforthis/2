@@ -186,7 +186,7 @@ export class World {
         await forest_cook.buy(pool, MEAT, 500, 4 as money)
         forest_cook.changed = true
 
-        let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(7, 5), -1)
+        let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1)
         fletcher.stash.inc(ARROW_BONE, 20000)
         fletcher.savings.inc(2000 as money)
         await fletcher.sell(pool, ARROW_BONE, 10000, 3 as money)
