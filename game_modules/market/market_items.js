@@ -141,7 +141,6 @@ var AuctionManagement;
             // item_sent:false, 
             // profit_sent: false
         });
-        console.log(AuctionOrderManagement.order_to_json(order));
         entity_manager.add_item_order(order);
         socket_manager.send_item_market_update(order.owner.cell_id);
         return { responce: AuctionResponce.OK };
@@ -210,7 +209,7 @@ var AuctionManagement;
         if (order.owner.cell_id != buyer.cell_id) {
             return AuctionResponce.NOT_IN_THE_SAME_CELL;
         }
-        if (buyer.savings.get() < order.buyout_price) {
+        if ((buyer.id != order.owner_id) && (buyer.savings.get() < order.buyout_price)) {
             return AuctionResponce.NOT_ENOUGH_MONEY;
         }
         if (order.flags.finished) {

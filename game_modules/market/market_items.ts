@@ -233,7 +233,7 @@ export namespace AuctionManagement {
             return AuctionResponce.NOT_IN_THE_SAME_CELL
         }
 
-        if (buyer.savings.get() < order.buyout_price) {
+        if ((buyer.id != order.owner_id)&&(buyer.savings.get() < order.buyout_price)) {
             return AuctionResponce.NOT_ENOUGH_MONEY
         }
 

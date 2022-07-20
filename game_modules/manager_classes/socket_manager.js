@@ -877,8 +877,6 @@ class SocketManager {
     send_equip_update(user) {
         if (user != null) {
             let char = user.get_character();
-            // console.log(char.equip.data.backpack.get_data())
-            // console.log(char.equip.data.backpack)
             user.socket.emit('equip-update', char.equip.get_data());
             this.send_to_character_user(char, 'action-display', { tag: 'shoot', value: (0, character_generic_part_1.can_shoot)(char) });
             this.send_perk_related_skills_update(char);
@@ -1093,7 +1091,6 @@ class SocketManager {
         if (global.flag_nodb) {
             return { rows: [] };
         }
-        console.log(this.pool == undefined);
         var rows = await common.send_query(this.pool, constants_1.constants.get_messages_query);
         return rows;
     }
