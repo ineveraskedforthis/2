@@ -101,18 +101,17 @@ class SocketManager {
         }
     }
     async buyout(user, msg) {
-        // if (user.logged_in) {
-        //     let character = user.get_character();
-        //     let market = character.get_cell().get_item_market();
-        //     if (market == undefined) return;
-        //     let id = parseInt(msg);
-        //     if (isNaN(id)) {
-        //         return
-        //     }
-        //     // await market.buyout(this.pool, character, id)
-        //     this.send_item_market_update_to_character(character);
-        //     this.send_equip_update_to_character(character);
-        // }
+        if (user.logged_in) {
+            let character = user.get_character();
+            let id = parseInt(msg);
+            if (isNaN(id)) {
+                return;
+            }
+            let responce = await market_items_1.AuctionManagement.buyout(this.pool, this.world.entity_manager, this, character, id);
+            this.send_to_character_user(character, 'alert', responce);
+            this.send_item_market_update_to_character(character);
+            this.send_equip_update_to_character(character);
+        }
     }
     async equip_armour(user, msg) {
         if (user.logged_in) {
@@ -921,7 +920,7 @@ class SocketManager {
     }
     send_item_market_update(cell_id) {
         let data = market_items_1.AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, cell_id);
-        console.log('updating market at ' + cell_id);
+        // console.log('updating market at ' + cell_id)
         let cell = this.world.entity_manager.get_cell_by_id(cell_id);
         if (cell == undefined) {
             return;

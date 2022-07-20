@@ -184,9 +184,8 @@ export namespace AuctionManagement {
     export function cell_id_to_orders_list(manager: EntityManager, cell_id: number): OrderItem[] {
         let tmp = []
         for (let order of manager.item_orders) {
-            if (order == undefined) {
-                continue
-            }
+            if (order == undefined) continue;
+            if (order.flags.finished) continue;
             if (order.owner.cell_id == cell_id) {
                 tmp.push(order)
             }
@@ -197,9 +196,8 @@ export namespace AuctionManagement {
     export function cell_id_to_orders_socket_data_list(manager: EntityManager, cell_id: number): OrderItemSocketData[] {
         let tmp = []
         for (let order of manager.item_orders) {
-            if (order == undefined) {
-                continue
-            }
+            if (order == undefined) continue;
+            if (order.flags.finished) continue;
             if (order.owner.cell_id == cell_id) {
                 tmp.push(AuctionOrderManagement.order_to_socket_data(order))
             }
@@ -210,9 +208,8 @@ export namespace AuctionManagement {
     export function cell_id_to_orders_json_list(manager: EntityManager, cell_id: number): OrderItemJson[] {
         let tmp = []
         for (let order of manager.item_orders) {
-            if (order == undefined) {
-                continue
-            }
+            if (order == undefined) continue;
+            if (order.flags.finished) continue;
             if (order.owner.cell_id == cell_id) {
                 tmp.push(AuctionOrderManagement.order_to_json(order))
             }
@@ -257,6 +254,8 @@ export namespace AuctionManagement {
         socket_manager.send_item_market_update(order.owner.cell_id)
 
         AuctionOrderManagement.delete_db(pool, order)
+
+        return AuctionResponce.OK
     }
 
     export function cancel_order(pool: PgPool, manager: EntityManager, socket_manager: SocketManager, who: CharacterGenericPart, order_id: auction_order_id_raw) {

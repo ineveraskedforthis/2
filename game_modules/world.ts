@@ -211,7 +211,7 @@ export class World {
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
         meat_bag.stash.inc(MEAT, 200)
         await meat_bag.sell(pool, MEAT, 10, 10 as money)
-        // meat_bag.change_hp(-99)
+        if (nodb_mode_check()) {meat_bag.change_hp(-99)}
 
 
         let mage = await this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1)

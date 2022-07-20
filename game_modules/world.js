@@ -139,7 +139,9 @@ class World {
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
         meat_bag.stash.inc(materials_manager_1.MEAT, 200);
         await meat_bag.sell(pool, materials_manager_1.MEAT, 10, 10);
-        // meat_bag.change_hp(-99)
+        if ((0, market_items_1.nodb_mode_check)()) {
+            meat_bag.change_hp(-99);
+        }
         let mage = await this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1);
         mage.skills.magic_mastery.practice = 100;
         mage.learn_perk('mage_initiation');

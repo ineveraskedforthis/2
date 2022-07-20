@@ -16,7 +16,7 @@ import { character_to_hunt_probability } from "../base_game_classes/character_ac
 import { can_gather_wood } from "../base_game_classes/character_actions/gather_wood";
 import { character_to_craft_rat_armour_probability } from "../base_game_classes/character_actions/craft_rat_armour";
 import { money } from "../base_game_classes/savings";
-import { AuctionManagement } from "../market/market_items";
+import { AuctionManagement, auction_order_id_raw } from "../market/market_items";
 
 interface UserData {
     socket: any,
@@ -131,18 +131,17 @@ export class SocketManager {
     }
 
     async buyout(user: User, msg: string) {
-        // if (user.logged_in) {
-        //     let character = user.get_character();
-        //     let market = character.get_cell().get_item_market();
-        //     if (market == undefined) return;
-        //     let id = parseInt(msg);
-        //     if (isNaN(id)) {
-        //         return
-        //     }
-        //     // await market.buyout(this.pool, character, id)
-        //     this.send_item_market_update_to_character(character);
-        //     this.send_equip_update_to_character(character);
-        // }
+        if (user.logged_in) {
+            let character = user.get_character();
+            let id = parseInt(msg);
+            if (isNaN(id)) {
+                return
+            }
+            let responce = await AuctionManagement.buyout(this.pool, this.world.entity_manager, this, character, id as auction_order_id_raw)
+            this.send_to_character_user(character, 'alert', responce)
+            this.send_item_market_update_to_character(character);
+            this.send_equip_update_to_character(character);
+        }
     }
 
     async equip_armour(user: User, msg: number) {

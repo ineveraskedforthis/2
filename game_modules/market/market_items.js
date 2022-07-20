@@ -141,9 +141,10 @@ var AuctionManagement;
     function cell_id_to_orders_list(manager, cell_id) {
         let tmp = [];
         for (let order of manager.item_orders) {
-            if (order == undefined) {
+            if (order == undefined)
                 continue;
-            }
+            if (order.flags.finished)
+                continue;
             if (order.owner.cell_id == cell_id) {
                 tmp.push(order);
             }
@@ -154,9 +155,10 @@ var AuctionManagement;
     function cell_id_to_orders_socket_data_list(manager, cell_id) {
         let tmp = [];
         for (let order of manager.item_orders) {
-            if (order == undefined) {
+            if (order == undefined)
                 continue;
-            }
+            if (order.flags.finished)
+                continue;
             if (order.owner.cell_id == cell_id) {
                 tmp.push(AuctionOrderManagement.order_to_socket_data(order));
             }
@@ -167,9 +169,10 @@ var AuctionManagement;
     function cell_id_to_orders_json_list(manager, cell_id) {
         let tmp = [];
         for (let order of manager.item_orders) {
-            if (order == undefined) {
+            if (order == undefined)
                 continue;
-            }
+            if (order.flags.finished)
+                continue;
             if (order.owner.cell_id == cell_id) {
                 tmp.push(AuctionOrderManagement.order_to_json(order));
             }
@@ -207,6 +210,7 @@ var AuctionManagement;
         socket_manager.send_savings_update(buyer);
         socket_manager.send_item_market_update(order.owner.cell_id);
         AuctionOrderManagement.delete_db(pool, order);
+        return AuctionResponce.OK;
     }
     AuctionManagement.buyout = buyout;
     function cancel_order(pool, manager, socket_manager, who, order_id) {
