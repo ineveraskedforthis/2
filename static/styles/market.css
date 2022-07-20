@@ -40,14 +40,20 @@
     position: absolute;
     height: 100%;
     width: 100%;
-    overflow: auto;
+    /* overflow: auto; */
     display: flex;
     flex-direction: column;
+}
+
+#auction_house_tab {
+    overflow-y: scroll;
+    height: calc(100% - 20px);
 }
 
 #market > .market_body > .goods_market > .goods_list {
     height: 100%;
     width: 100%;
+    overflow-y: scroll;
 }
 
 #market > .market_body > .goods_market > .goods_list > .goods_type {

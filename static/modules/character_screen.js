@@ -1,8 +1,14 @@
 
 export const EQUIPMENT_TAGS = ['right_hand', 'secondary', 'body', 'legs', 'foot', 'head', 'arms'];
 
+let item_select_div = document.getElementById('create_auction_order_item')
 
-
+function add_option(name, type, id) {
+    let option = document.createElement('option')
+    option.value = JSON.stringify({index: id, type: type})
+    option.innerHTML = name
+    item_select_div.appendChild(option)
+}
 
 function send_update_request(socket) {
     socket.emit('char-info-detailed');
@@ -218,6 +224,9 @@ export class CharacterScreen {
         this.table_weapon.innerHTML = '';
         this.table_armour.innerHTML = '';
         console.log(inv)
+
+        item_select_div.innerHTML = ''
+
         for (let i = 0; i < inv.weapons.length; i++) {
             if ((inv.weapons[i] != null) && (inv.weapons[i] != undefined)) {
                 let weapon = inv.weapons[i]
@@ -242,12 +251,8 @@ export class CharacterScreen {
                 ((index) => 
                     button.onclick = () => send_equip_weapon_message(this.socket, index)
                 )(i)
-                // tmp = row.insertCell(9);
-                // let radio_button = document.createElement('input');
-                // radio_button.setAttribute('type', 'radio');
-                // radio_button.setAttribute('name', 'sell_item');
-                // radio_button.setAttribute('value', i);
-                // tmp.appendChild(radio_button);
+
+                add_option(weapon.tag, 'weapon', i)
             }
         }
         
@@ -276,13 +281,7 @@ export class CharacterScreen {
                     button.onclick = () => send_equip_armour_message(this.socket, index)
                 )(i)
 
-
-                // tmp = row.insertCell(9);
-                // let radio_button = document.createElement('input');
-                // radio_button.setAttribute('type', 'radio');
-                // radio_button.setAttribute('name', 'sell_item');
-                // radio_button.setAttribute('value', i);
-                // tmp.appendChild(radio_button);
+                add_option(armour.tag, 'armour', i)
             }
         }
 

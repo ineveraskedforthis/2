@@ -179,15 +179,16 @@ class SocketManager {
     }
     async sell_item(user, msg) {
         if (user.logged_in) {
+            console.log(msg);
             let character = user.get_character();
-            let ind = parseInt(msg.index);
-            let bo = parseInt(msg.buyout_price);
-            let sp = parseInt(msg.starting_price);
-            if ((isNaN(ind)) || (isNaN(bo)) || (isNaN(sp))) {
+            let index = parseInt(msg.index);
+            let type = msg.item_type;
+            let price = parseInt(msg.price);
+            if ((type != 'armour') && (type != 'weapon'))
                 return;
-            }
-            character.sell_item(ind, bo, sp);
-            let socket = user.socket;
+            if (isNaN(index) || isNaN(price))
+                return;
+            await market_items_1.AuctionManagement.sell(this.pool, this.world.entity_manager, this, character, type, index, price, price);
             this.send_char_info(user);
         }
     }

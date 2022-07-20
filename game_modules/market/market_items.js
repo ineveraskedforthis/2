@@ -106,14 +106,34 @@ var AuctionManagement;
         let item = null;
         switch (type) {
             case 'armour':
-                item = seller.equip.data.backpack.armours[backpack_id];
-                break;
+                {
+                    item = seller.equip.data.backpack.armours[backpack_id];
+                    break;
+                }
+                ;
             case 'weapon':
-                item = seller.equip.data.backpack.weapons[backpack_id];
-                break;
+                {
+                    item = seller.equip.data.backpack.weapons[backpack_id];
+                    break;
+                }
+                ;
         }
         if (item == undefined) {
             return { responce: AuctionResponce.EMPTY_BACKPACK_SLOT };
+        }
+        switch (type) {
+            case 'armour':
+                {
+                    seller.equip.data.backpack.armours[backpack_id] = undefined;
+                    break;
+                }
+                ;
+            case 'weapon':
+                {
+                    seller.equip.data.backpack.weapons[backpack_id] = undefined;
+                    break;
+                }
+                ;
         }
         let time = Date.now() + time_intervals[1];
         let order = await AuctionOrderManagement.build_order(pool, seller, seller, item, buyout_price, starting_price, time, cell, {
@@ -232,6 +252,30 @@ var AuctionManagement;
         AuctionOrderManagement.delete_db(pool, order);
     }
     AuctionManagement.cancel_order = cancel_order;
+    function cancel_order_safe(pool, manager, socket_manager, who, order_id) {
+        let order = manager.get_item_order(order_id);
+        let owner = order.owner;
+        order.flags.finished = true;
+        let item = order.item;
+        switch (item.item_type) {
+            case 'armour': owner.equip.add_armour(item);
+            case 'weapon': owner.equip.add_weapon(item);
+        }
+        socket_manager.send_item_market_update(order.owner.cell_id);
+        AuctionOrderManagement.delete_db(pool, order);
+    }
+    AuctionManagement.cancel_order_safe = cancel_order_safe;
+    function cancel_all_orders(pool, manager, socket_manager, who) {
+        for (let order of manager.item_orders) {
+            if (order == undefined)
+                continue;
+            if (order.flags.finished)
+                continue;
+            if (order.owner_id = who.id)
+                cancel_order_safe(pool, manager, socket_manager, who, order.id);
+        }
+    }
+    AuctionManagement.cancel_all_orders = cancel_all_orders;
 })(AuctionManagement = exports.AuctionManagement || (exports.AuctionManagement = {}));
 class OrderItem {
     constructor(item, owner, latest_bidder, buyout_price, current_price, end_time, id, flags) {

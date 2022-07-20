@@ -15,7 +15,7 @@ const time_intervals = [1000 * 60, hour * 12, hour * 24, hour * 48];
 
 export type auction_id = number & { __brand: "auction_id"}
 export type auction_order_id = number & { __brand: "auction_order_id"}
-export type auction_order_id_raw = number & { __brand: "auction_order_id_raw"}
+export type auction_order_id_raw = number & { __brand: "auction_order_id", __brand2: "raw"}
 
 function nodb_mode_id():number|undefined {
     // @ts-ignore: Unreachable code error
@@ -135,13 +135,18 @@ export namespace AuctionManagement {
         let cell = seller.cell_id
         let item = null
         switch(type){
-            case 'armour': item = seller.equip.data.backpack.armours[backpack_id];break;
-            case 'weapon': item = seller.equip.data.backpack.weapons[backpack_id];break;
+            case 'armour': {item = seller.equip.data.backpack.armours[backpack_id];break};
+            case 'weapon': {item = seller.equip.data.backpack.weapons[backpack_id];break};
         }
         
 
         if (item == undefined) {
             return {responce: AuctionResponce.EMPTY_BACKPACK_SLOT}
+        }
+
+        switch(type){
+            case 'armour': {seller.equip.data.backpack.armours[backpack_id] = undefined;break};
+            case 'weapon': {seller.equip.data.backpack.weapons[backpack_id] = undefined;break};
         }
 
         let time = Date.now() + time_intervals[1]
@@ -281,6 +286,30 @@ export namespace AuctionManagement {
         socket_manager.send_item_market_update(order.owner.cell_id)
 
         AuctionOrderManagement.delete_db(pool, order)
+    }
+
+    export function cancel_order_safe(pool: PgPool, manager: EntityManager, socket_manager: SocketManager, who: CharacterGenericPart, order_id: auction_order_id) {
+        let order = manager.get_item_order(order_id)
+        let owner = order.owner
+
+        order.flags.finished = true
+        let item = order.item
+        switch(item.item_type) {
+            case 'armour': owner.equip.add_armour(item as Armour);
+            case 'weapon': owner.equip.add_weapon(item as Weapon)
+        }
+
+        socket_manager.send_item_market_update(order.owner.cell_id)
+        AuctionOrderManagement.delete_db(pool, order)
+    }
+    
+
+    export function cancel_all_orders(pool: PgPool, manager: EntityManager, socket_manager: SocketManager, who: CharacterGenericPart) {
+        for (let order of manager.item_orders) {
+            if (order == undefined) continue;
+            if (order.flags.finished) continue;
+            if (order.owner_id = who.id) cancel_order_safe(pool, manager, socket_manager, who, order.id)
+        }
     }
 }
 

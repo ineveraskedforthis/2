@@ -21,7 +21,7 @@ export class ItemMarketTable {
         this.table_container.appendChild(table)
         this.container.appendChild(this.table_container)
 
-        this.control_container = document.createElement('div');
+        this.control_container = document.querySelector('.auction_control');
         {
             let buyout_button = document.createElement('button');
             ((socket) => 
@@ -30,7 +30,7 @@ export class ItemMarketTable {
             buyout_button.innerHTML = 'buyout';
             this.control_container.appendChild(buyout_button);
         }
-        this.container.appendChild(this.control_container);
+        // this.container.appendChild(this.control_container);
     }
 
     add_cell_to_row(row, data) {

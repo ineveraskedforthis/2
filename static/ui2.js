@@ -48,7 +48,7 @@ const character_screen = new CharacterScreen(socket);
 
 // market
 const goods_market = new GoodsMarket(document.querySelector('.goods_market'), socket);
-const item_market_table = new ItemMarketTable(document.querySelector('.auction_body'), socket);
+const item_market_table = new ItemMarketTable(document.getElementById('auction_house_tab'), socket);
 
 {
     let market_button = document.getElementById('open_market')
@@ -1435,6 +1435,17 @@ function update_tags(msg) {
         let price = document.getElementById('create_order_price').value
 
         socket.emit(type, {material: Number(material), amount: Number(amount), price: Number(price)})
+        // console.log(material, type, amount, price)
+    })
+}
+
+{
+    let order_button = document.getElementById('create_auction_order_button')
+    order_button.onclick = (() => {
+        let item = JSON.parse(document.getElementById('create_auction_order_item').value)
+        let price = document.getElementById('create_auction_order_price').value
+
+        socket.emit('sell-item', {index: Number(item.index), item_type: item.type, price: Number(price)})
         // console.log(material, type, amount, price)
     })
 }

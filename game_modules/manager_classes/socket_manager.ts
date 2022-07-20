@@ -195,15 +195,14 @@ export class SocketManager {
 
     async sell_item(user: User, msg: any) {
         if (user.logged_in) {
+            console.log(msg)
             let character = user.get_character();
-            let ind = parseInt(msg.index);
-            let bo = parseInt(msg.buyout_price);
-            let sp = parseInt(msg.starting_price);
-            if ((isNaN(ind)) || (isNaN(bo)) || (isNaN(sp))) {
-                return
-            }
-            character.sell_item(ind, bo, sp);
-            let socket = user.socket;
+            let index = parseInt(msg.index);
+            let type = msg.item_type
+            let price = parseInt(msg.price);
+            if ((type != 'armour') && (type != 'weapon')) return;
+            if (isNaN(index) || isNaN(price)) return;
+            await AuctionManagement.sell(this.pool, this.world.entity_manager, this, character, type, index, price as money, price as money)
             this.send_char_info(user);
         }
     }

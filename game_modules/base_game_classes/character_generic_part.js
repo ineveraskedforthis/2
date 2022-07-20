@@ -14,6 +14,7 @@ const materials_manager_1 = require("../manager_classes/materials_manager");
 const savings_1 = require("./savings");
 const generate_loot_1 = require("./races/generate_loot");
 const spells_1 = require("../static_data/spells");
+const market_items_1 = require("../market/market_items");
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class SkillObject {
     constructor() {
@@ -307,10 +308,12 @@ class CharacterGenericPart {
         if (this.status.hp <= 0) {
             this.status.hp = 0;
             await this.world.entity_manager.remove_orders(pool, this);
+            await market_items_1.AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this);
             await this.world.kill(pool, this.id);
         }
         if (this.status.stress >= 100) {
             await this.world.entity_manager.remove_orders(pool, this);
+            await market_items_1.AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this);
             await this.world.kill(pool, this.id);
         }
     }
@@ -525,6 +528,7 @@ class CharacterGenericPart {
     }
     async clear_orders(pool) {
         await this.world.entity_manager.remove_orders(pool, this);
+        await market_items_1.AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this);
     }
     // network simplification functions
     send_skills_update() {
@@ -611,6 +615,7 @@ class CharacterGenericPart {
                     this.change_hp(-curr_damage);
                     if (this.get_hp() == 0) {
                         await this.world.entity_manager.remove_orders(pool, this);
+                        await market_items_1.AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this);
                         result.flags.killing_strike = true;
                     }
                 }

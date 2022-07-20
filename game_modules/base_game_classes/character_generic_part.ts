@@ -20,6 +20,7 @@ import { money, Savings } from "./savings";
 import { WEAPON_TYPE } from "../static_data/type_script_types";
 import { generate_loot } from "./races/generate_loot";
 import { spells, spell_tags } from "../static_data/spells";
+import { AuctionManagement } from "../market/market_items";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
@@ -428,12 +429,15 @@ export class CharacterGenericPart {
     async status_check(pool: PgPool) {
         if (this.status.hp <= 0) {
             this.status.hp = 0;
+
             await this.world.entity_manager.remove_orders(pool, this)
+            await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
             await this.world.kill(pool, this.id);
         }
 
         if (this.status.stress >= 100) {
             await this.world.entity_manager.remove_orders(pool, this)
+            await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
             await this.world.kill(pool, this.id);
         }
     }
@@ -691,6 +695,7 @@ export class CharacterGenericPart {
 
     async clear_orders(pool:any) {
         await this.world.entity_manager.remove_orders(pool, this)
+        await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
     }
 
     // network simplification functions
@@ -798,6 +803,7 @@ export class CharacterGenericPart {
                     this.change_hp(-curr_damage);
                     if (this.get_hp() == 0) {
                         await this.world.entity_manager.remove_orders(pool, this)
+                        await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
                         result.flags.killing_strike = true
                     }
                 }
