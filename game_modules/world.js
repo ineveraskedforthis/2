@@ -89,22 +89,27 @@ class World {
         living_area.set_influence(ith_colony, 50);
         living_area.set_influence(steppe_rats, 50);
         /// test person
-        let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
-        if ((0, market_items_1.nodb_mode_check)()) {
-            test_person.change_hp(-90);
+        {
+            let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
+            if ((0, market_items_1.nodb_mode_check)()) {
+                test_person.change_hp(-90);
+            }
+            test_person.stash.inc(materials_manager_1.MEAT, 10);
+            test_person.stash.inc(materials_manager_1.WOOD, 100);
+            test_person.stash.inc(materials_manager_1.FOOD, 500);
+            test_person.stash.inc(materials_manager_1.RAT_BONE, 100);
+            test_person.stash.inc(materials_manager_1.WOOD, 100);
+            test_person.stash.inc(materials_manager_1.RAT_SKIN, 100);
+            test_person.stash.inc(materials_manager_1.ZAZ, 100);
+            test_person.stash.inc(materials_manager_1.ELODINO_FLESH, 100);
+            test_person.savings.set(5000);
+            await test_person.buy(pool, materials_manager_1.MEAT, 100, 5);
+            await test_person.sell(pool, materials_manager_1.FOOD, 200, 15);
+            await test_person.sell(pool, materials_manager_1.ZAZ, 100, 200);
+            let spear = new item_tags_1.Weapon(items_set_up_1.BONE_SPEAR_ARGUMENT);
+            test_person.equip.add_weapon(spear);
+            await market_items_1.AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", 0, 10, 10);
         }
-        test_person.stash.inc(materials_manager_1.MEAT, 10);
-        test_person.stash.inc(materials_manager_1.WOOD, 100);
-        test_person.stash.inc(materials_manager_1.FOOD, 500);
-        test_person.stash.inc(materials_manager_1.RAT_BONE, 100);
-        test_person.stash.inc(materials_manager_1.WOOD, 100);
-        test_person.stash.inc(materials_manager_1.RAT_SKIN, 100);
-        test_person.stash.inc(materials_manager_1.ZAZ, 100);
-        test_person.stash.inc(materials_manager_1.ELODINO_FLESH, 100);
-        test_person.savings.set(5000);
-        await test_person.buy(pool, materials_manager_1.MEAT, 100, 5);
-        await test_person.sell(pool, materials_manager_1.FOOD, 200, 15);
-        await test_person.sell(pool, materials_manager_1.ZAZ, 100, 200);
         let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1);
         cook.learn_perk("meat_master");
         cook.stash.inc(materials_manager_1.FOOD, 1000);
@@ -118,7 +123,7 @@ class World {
         await forest_cook.sell(pool, materials_manager_1.FOOD, 500, 20);
         await forest_cook.buy(pool, materials_manager_1.MEAT, 500, 4);
         forest_cook.changed = true;
-        let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(7, 5), -1);
+        let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1);
         fletcher.stash.inc(materials_manager_1.ARROW_BONE, 20000);
         fletcher.savings.inc(2000);
         await fletcher.sell(pool, materials_manager_1.ARROW_BONE, 10000, 3);

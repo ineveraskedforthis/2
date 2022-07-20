@@ -86,7 +86,7 @@ export const constants = {
     select_char_by_id_query: 'SELECT * FROM chars WHERE id = ($1)',
     select_cell_by_id_query: 'SELECT * FROM cells WHERE id = ($1)',
     select_market_by_id_query: 'SELECT * FROM markets WHERE id = ($1)',
-    select_market_items_by_id_query: 'SELECT * FROM items_markets WHERE id = ($1)',
+    // select_market_items_by_id_query: 'SELECT * FROM items_markets WHERE id = ($1)',
 
 
     new_message_query: 'INSERT INTO messages (message, sender) VALUES ($1, $2) RETURNING id',

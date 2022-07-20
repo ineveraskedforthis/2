@@ -53,6 +53,8 @@ export const move ={
             }
         }
         char.world.entity_manager.transfer_orders(char, char.cell_id)
+        if (old_cell != undefined) char.world.socket_manager.send_item_market_update(old_cell.id);
+        if (new_cell != undefined) char.world.socket_manager.send_item_market_update(new_cell.id);
         return await char.on_move_default(pool, data)   
     },
 

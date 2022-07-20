@@ -12,7 +12,7 @@ import { BattleReworked2 } from "../battle";
 import { ITEM_MATERIAL } from '../static_data/item_tags';
 import { material_index } from './materials_manager';
 import { money } from '../base_game_classes/savings';
-import { AuctionOrderManagement, auction_order_id, OrderItem } from '../market/market_items';
+import { AuctionOrderManagement, auction_order_id, auction_order_id_raw, OrderItem } from '../market/market_items';
 import { rat } from '../base_game_classes/races/rat';
 
 
@@ -363,7 +363,7 @@ export class EntityManager {
         character.trade_savings.transfer_all(character.savings)
     }
 
-    add_item_order(order: any) {
+    add_item_order(order: OrderItem) {
         this.item_orders[order.id] = order
     }
 
@@ -372,6 +372,10 @@ export class EntityManager {
     }
 
     get_item_order (id: auction_order_id) {
+        return this.item_orders[id];
+    }
+
+    raw_id_to_item_order (id: auction_order_id_raw):OrderItem|undefined {
         return this.item_orders[id];
     }
 

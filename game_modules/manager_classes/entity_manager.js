@@ -314,6 +314,9 @@ class EntityManager {
     get_item_order(id) {
         return this.item_orders[id];
     }
+    raw_id_to_item_order(id) {
+        return this.item_orders[id];
+    }
     get_from_id_tag(id, tag) {
         if (tag == 'chara') {
             return this.chars[id];

@@ -14,6 +14,7 @@ const craft_spear_1 = require("../base_game_classes/character_actions/craft_spea
 const hunt_1 = require("../base_game_classes/character_actions/hunt");
 const gather_wood_1 = require("../base_game_classes/character_actions/gather_wood");
 const craft_rat_armour_1 = require("../base_game_classes/character_actions/craft_rat_armour");
+const market_items_1 = require("../market/market_items");
 class SocketManager {
     constructor(pool, io, world, flag_ready) {
         this.world = world;
@@ -915,26 +916,21 @@ class SocketManager {
         }
     }
     send_item_market_update_to_character(character) {
-        // let market = character.get_cell().get_item_market();
-        // if (market == undefined) return;
-        // let data = market.get_orders_list()
-        // this.send_to_character_user(character, 'item-market-data', data)
+        let data = market_items_1.AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, character.cell_id);
+        this.send_to_character_user(character, 'item-market-data', data);
     }
-    send_item_market_update(market) {
-        let data = market.get_orders_list();
-        for (let i of this.sockets) {
-            if (i.current_user != null) {
-                let char = i.current_user.character;
-                try {
-                    let cell1 = char.get_cell();
-                    if (i.online && cell1.id == market.cell_id) {
-                        i.socket.emit('item-market-data', data);
-                    }
-                }
-                catch (error) {
-                    console.log(i.current_user.login);
-                }
-            }
+    send_item_market_update(cell_id) {
+        let data = market_items_1.AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, cell_id);
+        console.log('updating market at ' + cell_id);
+        let cell = this.world.entity_manager.get_cell_by_id(cell_id);
+        if (cell == undefined) {
+            return;
+        }
+        let characters_list = cell.get_characters_list();
+        for (let item of characters_list) {
+            let id = item.id;
+            let character = this.world.entity_manager.chars[id];
+            this.send_to_character_user(character, 'item-market-data', data);
         }
     }
     send_market_info(market) {

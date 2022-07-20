@@ -18,7 +18,7 @@ import { rat } from "./base_game_classes/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
-import { auction_order_id, nodb_mode_check } from "./market/market_items";
+import { AuctionManagement, auction_order_id, nodb_mode_check, OrderItem } from "./market/market_items";
 import { graci } from "./base_game_classes/races/graci";
 import { elo } from "./base_game_classes/races/elo";
 import { Weapon } from './static_data/item_tags';
@@ -151,21 +151,27 @@ export class World {
 
 
         /// test person
-        let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1)
-        if (nodb_mode_check()) {test_person.change_hp(-90)}
         
-        test_person.stash.inc(MEAT, 10)
-        test_person.stash.inc(WOOD, 100)
-        test_person.stash.inc(FOOD, 500)
-        test_person.stash.inc(RAT_BONE, 100)
-        test_person.stash.inc(WOOD, 100)
-        test_person.stash.inc(RAT_SKIN, 100)
-        test_person.stash.inc(ZAZ, 100)
-        test_person.stash.inc(ELODINO_FLESH, 100)
-        test_person.savings.set(5000 as money)
-        await test_person.buy(pool, MEAT, 100, 5 as money)
-        await test_person.sell(pool, FOOD, 200, 15 as money)
-        await test_person.sell(pool, ZAZ, 100, 200 as money)
+        {
+            let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1)
+            if (nodb_mode_check()) {test_person.change_hp(-90)}
+            
+            test_person.stash.inc(MEAT, 10)
+            test_person.stash.inc(WOOD, 100)
+            test_person.stash.inc(FOOD, 500)
+            test_person.stash.inc(RAT_BONE, 100)
+            test_person.stash.inc(WOOD, 100)
+            test_person.stash.inc(RAT_SKIN, 100)
+            test_person.stash.inc(ZAZ, 100)
+            test_person.stash.inc(ELODINO_FLESH, 100)
+            test_person.savings.set(5000 as money)
+            await test_person.buy(pool, MEAT, 100, 5 as money)
+            await test_person.sell(pool, FOOD, 200, 15 as money)
+            await test_person.sell(pool, ZAZ, 100, 200 as money)
+            let spear = new Weapon(BONE_SPEAR_ARGUMENT)
+            test_person.equip.add_weapon(spear)
+            await AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", 0, 10 as money, 10 as money)
+        }
 
 
         let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1)
@@ -218,6 +224,8 @@ export class World {
         await mage.buy(pool, ELODINO_FLESH, 200, 50 as money)
         await mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
         mage.changed = true
+
+
     }
 
 
@@ -303,7 +311,7 @@ export class World {
         return x;
     }
 
-    add_item_order(order: MarketOrder) {
+    add_item_order(order: OrderItem) {
         this.entity_manager.add_item_order(order);
     }
 
