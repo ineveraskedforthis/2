@@ -6,7 +6,7 @@ export async function elo(pool: PgPool, char: CharacterGenericPart) {
     char.misc.tag = 'elo'
     char.misc.ai_tag = 'forest_walker'
     char.misc.model = 'elodino'
-    char.stats.phys_power = 10
+    char.stats.phys_power = 15
     char.stats.magic_power = 20
 
     char.name = gen_from_moraes(moraes, 3)

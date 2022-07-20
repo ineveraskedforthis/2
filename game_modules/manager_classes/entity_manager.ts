@@ -14,6 +14,7 @@ import { material_index } from './materials_manager';
 import { money } from '../base_game_classes/savings';
 import { AuctionOrderManagement, auction_order_id, auction_order_id_raw, OrderItem } from '../market/market_items';
 import { rat } from '../base_game_classes/races/rat';
+import { elo } from '../base_game_classes/races/elo';
 
 
 export class EntityManager {
@@ -214,6 +215,7 @@ export class EntityManager {
         }
 
         let rats = 0
+        let elos = 0
 
         for (let i = 0; i < this.chars.length; i++) {
             // console.log(this.chars[i]?.get_cell()?.i, this.chars[i]?.get_cell()?.j)
@@ -226,6 +228,9 @@ export class EntityManager {
                     if (char.misc.tag == 'rat') {
                         rats += 1
                     }
+                    if (char.misc.tag == 'elo') {
+                        elos += 1
+                    }
                 }
             } else if ((this.chars[i] != undefined) && this.chars[i].is_dead()) {
                 await this.kill(pool, i)
@@ -235,6 +240,11 @@ export class EntityManager {
         for (let i = rats; i < 60; i++) {
             let test_rat = await this.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(9, 9), -1)
             await rat(pool, test_rat)
+        }
+
+        for (let i = elos; i < 40; i++) {
+            let test_rat = await this.create_new_character(pool, 'Mr. Elo ' + i, this.get_cell_id_by_x_y(18, 7), -1)
+            await elo(pool, test_rat)
         }
     }
 

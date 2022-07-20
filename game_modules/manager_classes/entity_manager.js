@@ -12,6 +12,7 @@ const market_order_1 = require("../market/market_order");
 const battle_1 = require("../battle");
 const market_items_1 = require("../market/market_items");
 const rat_1 = require("../base_game_classes/races/rat");
+const elo_1 = require("../base_game_classes/races/elo");
 class EntityManager {
     constructor(world) {
         this.world = world;
@@ -174,6 +175,7 @@ class EntityManager {
             this.time_since_last_decision_update = 0;
         }
         let rats = 0;
+        let elos = 0;
         for (let i = 0; i < this.chars.length; i++) {
             // console.log(this.chars[i]?.get_cell()?.i, this.chars[i]?.get_cell()?.j)
             if ((this.chars[i] != undefined) && !this.chars[i].is_dead()) {
@@ -186,6 +188,9 @@ class EntityManager {
                     if (char.misc.tag == 'rat') {
                         rats += 1;
                     }
+                    if (char.misc.tag == 'elo') {
+                        elos += 1;
+                    }
                 }
             }
             else if ((this.chars[i] != undefined) && this.chars[i].is_dead()) {
@@ -195,6 +200,10 @@ class EntityManager {
         for (let i = rats; i < 60; i++) {
             let test_rat = await this.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(9, 9), -1);
             await (0, rat_1.rat)(pool, test_rat);
+        }
+        for (let i = elos; i < 40; i++) {
+            let test_rat = await this.create_new_character(pool, 'Mr. Elo ' + i, this.get_cell_id_by_x_y(18, 7), -1);
+            await (0, elo_1.elo)(pool, test_rat);
         }
     }
     async update_cells(pool, dt) {

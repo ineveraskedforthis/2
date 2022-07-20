@@ -115,6 +115,10 @@ exports.cook_elo_to_zaz = {
             if (dice < check) {
                 char.stash.inc(materials_manager_1.ZAZ, 1);
                 char.stash.inc(materials_manager_1.MEAT, 1);
+                dice = Math.random() * 100;
+                if (dice * char.skills.magic_mastery.practice < 5) {
+                    char.skills.magic_mastery.practice += 1;
+                }
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared');
                 char.send_stash_update();
                 char.send_status_update();
@@ -124,10 +128,6 @@ exports.cook_elo_to_zaz = {
                 let dice = Math.random();
                 if (skill1 < COOK_ELODINO_DIFFICULTY * dice) {
                     char.skills.cooking.practice += 1;
-                }
-                dice = Math.random() * 100;
-                if (dice < 5) {
-                    char.skills.magic_mastery.practice += 1;
                 }
                 char.send_skills_update();
                 char.change_stress(5);

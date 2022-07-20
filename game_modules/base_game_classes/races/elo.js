@@ -7,7 +7,7 @@ async function elo(pool, char) {
     char.misc.tag = 'elo';
     char.misc.ai_tag = 'forest_walker';
     char.misc.model = 'elodino';
-    char.stats.phys_power = 10;
+    char.stats.phys_power = 15;
     char.stats.magic_power = 20;
     char.name = (0, generate_name_moraes_1.gen_from_moraes)(moraes, 3);
     char.status.hp = 200;
