@@ -1,6 +1,7 @@
 var {damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character} = require("../static_data/item_tags.js");
 
-import {Armour, ARMOUR_TYPE, base_damage, base_resist, Weapon} from "../static_data/item_tags"
+import { ARROW_BONE } from "../manager_classes/materials_manager";
+import {Armour, ARMOUR_TYPE, armour_types, base_damage, base_resist, ranged_base_damage, Weapon} from "../static_data/item_tags"
 import { WEAPON_TYPE } from "../static_data/type_script_types";
 import { CharacterGenericPart } from "./character_generic_part";
 import { Inventory } from "./inventory";
@@ -25,7 +26,7 @@ class EquipData {
         result.secondary = this.secondary?.get_json()
         result.armour = {}
         for (let tag of this.armour.keys()) {
-            result.armour[tag] = this.armour?.get(tag)?.get_json()
+            result.armour[tag] = this.armour.get(tag)?.get_json()
         }
         result.backpack = this.backpack.get_json()
         return result
@@ -38,7 +39,7 @@ class EquipData {
         if (json.secondary != undefined) {
             this.secondary = new Weapon(json.secondary)
         }
-        for (let tag of this.armour.keys()) {
+        for (let tag of armour_types) {
             if (json.armour[tag] != undefined) {
                 this.armour.set(tag, new Armour(json.armour[tag]))
             }            
@@ -78,10 +79,11 @@ export class Equip {
         if (right_hand != undefined){
             if (is_ranged) {
                 result.weapon_type = WEAPON_TYPE.RANGED
+                result = ranged_base_damage(result, ARROW_BONE)
             } else {
                 result.weapon_type = right_hand.get_weapon_type()
+                result = base_damage(result, right_hand)
             }            
-            result = base_damage(result, right_hand)
             for (let i = 0; i < right_hand.affixes.length; i++) {
                 let affix = right_hand.affixes[i];
                 result = damage_affixes_effects[affix.tag](result, affix.tier);

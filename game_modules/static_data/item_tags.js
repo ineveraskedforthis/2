@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.base_damage = exports.ranged_base_damage = exports.base_resist = exports.Weapon = exports.Armour = exports.affix = exports.ITEM_MATERIAL = exports.ARMOUR_TYPE = void 0;
+exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.base_damage = exports.ranged_base_damage = exports.base_resist = exports.Weapon = exports.Armour = exports.affix = exports.ITEM_MATERIAL = exports.armour_types = exports.ARMOUR_TYPE = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 var ARMOUR_TYPE;
 (function (ARMOUR_TYPE) {
@@ -10,6 +10,7 @@ var ARMOUR_TYPE;
     ARMOUR_TYPE[ARMOUR_TYPE["HEAD"] = 3] = "HEAD";
     ARMOUR_TYPE[ARMOUR_TYPE["FOOT"] = 4] = "FOOT";
 })(ARMOUR_TYPE = exports.ARMOUR_TYPE || (exports.ARMOUR_TYPE = {}));
+exports.armour_types = [ARMOUR_TYPE.ARMS, ARMOUR_TYPE.BODY, ARMOUR_TYPE.FOOT, ARMOUR_TYPE.HEAD, ARMOUR_TYPE.LEGS];
 function protection_rating(x) {
     switch (x) {
         case ARMOUR_TYPE.BODY: return 5;

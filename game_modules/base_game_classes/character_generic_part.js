@@ -788,12 +788,11 @@ class CharacterGenericPart {
         let rage_acc_loss = this.status.rage * rage_burden;
         let final = base_accuracy - blood_acc_loss - rage_acc_loss;
         if ((distance != undefined) && (mod == 'ranged')) {
-            if (distance > 0.2) {
-                final = final / Math.sqrt(distance);
-            }
-            else {
-                final = final / 0.2;
-            }
+            if (distance < 2)
+                distance = 2;
+            distance = Math.sqrt(distance - 2) / 2 + 2;
+            final = final / (distance - 1.5);
+            return Math.min(1, Math.max(0, final));
         }
         return Math.min(1, Math.max(0.2, final));
     }

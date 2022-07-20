@@ -15,6 +15,7 @@ export enum ARMOUR_TYPE {
     HEAD,
     FOOT,
 }
+export const armour_types: ARMOUR_TYPE[] = [ARMOUR_TYPE.ARMS, ARMOUR_TYPE.BODY, ARMOUR_TYPE.FOOT, ARMOUR_TYPE.HEAD, ARMOUR_TYPE.LEGS]
 
 function protection_rating(x: ARMOUR_TYPE): number {
     switch(x) {

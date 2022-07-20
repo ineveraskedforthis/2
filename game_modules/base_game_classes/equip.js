@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Equip = void 0;
 var { damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character } = require("../static_data/item_tags.js");
+const materials_manager_1 = require("../manager_classes/materials_manager");
 const item_tags_1 = require("../static_data/item_tags");
 const inventory_1 = require("./inventory");
 const damage_types_1 = require("./misc/damage_types");
@@ -18,7 +19,7 @@ class EquipData {
         result.secondary = this.secondary?.get_json();
         result.armour = {};
         for (let tag of this.armour.keys()) {
-            result.armour[tag] = this.armour?.get(tag)?.get_json();
+            result.armour[tag] = this.armour.get(tag)?.get_json();
         }
         result.backpack = this.backpack.get_json();
         return result;
@@ -30,7 +31,7 @@ class EquipData {
         if (json.secondary != undefined) {
             this.secondary = new item_tags_1.Weapon(json.secondary);
         }
-        for (let tag of this.armour.keys()) {
+        for (let tag of item_tags_1.armour_types) {
             if (json.armour[tag] != undefined) {
                 this.armour.set(tag, new item_tags_1.Armour(json.armour[tag]));
             }
@@ -63,11 +64,12 @@ class Equip {
         if (right_hand != undefined) {
             if (is_ranged) {
                 result.weapon_type = "ranged" /* WEAPON_TYPE.RANGED */;
+                result = (0, item_tags_1.ranged_base_damage)(result, materials_manager_1.ARROW_BONE);
             }
             else {
                 result.weapon_type = right_hand.get_weapon_type();
+                result = (0, item_tags_1.base_damage)(result, right_hand);
             }
-            result = (0, item_tags_1.base_damage)(result, right_hand);
             for (let i = 0; i < right_hand.affixes.length; i++) {
                 let affix = right_hand.affixes[i];
                 result = damage_affixes_effects[affix.tag](result, affix.tier);
