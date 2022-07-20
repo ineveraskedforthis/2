@@ -69,6 +69,7 @@ class SocketManager {
             socket.on('gather_wood', async () => this.gather_wood(user));
             socket.on('session', async (msg) => this.login_with_session(user, msg));
             socket.on('clear-orders', async () => this.clear_orders(user));
+            socket.on('clear-item-orders', async () => this.clear_item_orders(user));
             socket.on('clear-order', async (msg) => this.clear_order(user, msg));
             socket.on('sell-item', async (msg) => this.sell_item(user, msg));
             socket.on('buyout', async (msg) => this.buyout(user, msg));
@@ -392,6 +393,14 @@ class SocketManager {
             let char = user.get_character();
             await this.world.entity_manager.remove_orders(this.pool, char);
             this.send_savings_update(char);
+            this.send_stash_update(user);
+            this.send_char_info(user);
+        }
+    }
+    async clear_item_orders(user) {
+        if (user.logged_in) {
+            let char = user.get_character();
+            await market_items_1.AuctionManagement.cancel_all_orders(this.pool, this.world.entity_manager, this, char);
             this.send_stash_update(user);
             this.send_char_info(user);
         }

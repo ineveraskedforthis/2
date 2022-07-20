@@ -96,6 +96,7 @@ export class SocketManager {
 
             socket.on('session', async (msg: any) => this.login_with_session(user, msg));
             socket.on('clear-orders', async () => this.clear_orders(user));
+            socket.on('clear-item-orders', async () => this.clear_item_orders(user))
             socket.on('clear-order', async (msg: any) => this.clear_order(user, msg));
             socket.on('sell-item', async (msg: any) => this.sell_item(user, msg));
             socket.on('buyout', async (msg: any) => this.buyout(user, msg));
@@ -446,6 +447,15 @@ export class SocketManager {
             let char = user.get_character();
             await this.world.entity_manager.remove_orders(this.pool, char)
             this.send_savings_update(char);
+            this.send_stash_update(user);
+            this.send_char_info(user);
+        }
+    }
+
+    async clear_item_orders(user: User) {
+        if (user.logged_in) {
+            let char = user.get_character();
+            await AuctionManagement.cancel_all_orders(this.pool, this.world.entity_manager, this, char)
             this.send_stash_update(user);
             this.send_char_info(user);
         }
@@ -978,8 +988,6 @@ export class SocketManager {
     send_equip_update(user: User) {
         if (user != null) {
             let char = user.get_character()
-            // console.log(char.equip.data.backpack.get_data())
-            // console.log(char.equip.data.backpack)
             user.socket.emit('equip-update', char.equip.get_data())
             this.send_to_character_user(char, 'action-display', {tag: 'shoot', value: can_shoot(char)})
             this.send_perk_related_skills_update(char)
@@ -1218,7 +1226,6 @@ export class SocketManager {
         if (global.flag_nodb) {
             return {rows: []}
         }
-        console.log(this.pool == undefined)
         var rows = await common.send_query(this.pool, constants.get_messages_query);
         return rows
     }

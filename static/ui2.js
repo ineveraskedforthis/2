@@ -1187,6 +1187,11 @@ function select_character(id) {
     button.onclick = () => socket.emit('clear-orders')
 }
 
+{
+    let button = document.getElementById('clear_auction_orders_button')
+    button.onclick = () => socket.emit('clear-item-orders')
+}
+
 let market_div = document.querySelector('.goods_list')
 
 function send_execute_order_request(order_id, amount) {

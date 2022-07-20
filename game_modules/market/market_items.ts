@@ -164,8 +164,6 @@ export namespace AuctionManagement {
                                                                     // item_sent:false, 
                                                                     // profit_sent: false
                                                                 })
-        
-        console.log(AuctionOrderManagement.order_to_json(order))
         entity_manager.add_item_order(order)
         socket_manager.send_item_market_update(order.owner.cell_id)
 
