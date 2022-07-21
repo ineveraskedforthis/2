@@ -49,6 +49,33 @@
     background-image: url(/static/img/tab_buttons/character_button_pressed.png);
 }
 
+#equip_button {
+    background-image: url(/static/img/tab_buttons/character_button.png);
+}
+#equip_button:hover {
+    background-image: url(/static/img/tab_buttons/character_button_hovered.png);
+}
+#equip_button:active {
+    background-image: url(/static/img/tab_buttons/character_button_pressed.png);
+}
+#equip_button.active {
+    background-image: url(/static/img/tab_buttons/character_button_pressed.png);
+}
+
+
+#map_button {
+    background-image: url(/static/img/tab_buttons/map_button.png);
+}
+#map_button:hover {
+    background-image: url(/static/img/tab_buttons/map_button_hover.png);
+}
+#map_button:active {
+    background-image: url(/static/img/tab_buttons/map_button_active.png);
+}
+#map_button.active {
+    background-image: url(/static/img/tab_buttons/map_button_active.png);
+}
+
 
 #skilltree_button {
     background-image: url(/static/img/tab_buttons/skills_button.png);
