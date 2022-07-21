@@ -1,7 +1,9 @@
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
 import { hostile } from "../base_game_classes/races/racial_hostility";
-import { World } from "../world";
-import { CharacterAction } from "./action_manager";
+import { money } from "../base_game_classes/savings";
+import { PgPool, World } from "../world";
+import { ActionManager, CharacterAction } from "./action_manager";
+import { FOOD, MEAT } from "./materials_manager";
 
 
 // function MAYOR_AI(mayor: CharacterGenericPart) {
@@ -122,7 +124,7 @@ export class AiManager {
                         await this.random_steppe_walk(char)
                     }
                 }
-                break
+                return
             }
             case 'steppe_walker_passive': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
@@ -130,7 +132,7 @@ export class AiManager {
                 } else {
                     await this.random_steppe_walk(char)
                 }
-                break
+                return
             }
             case 'forest_walker': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
@@ -138,8 +140,30 @@ export class AiManager {
                 } else {
                     await this.random_forest_walk(char)
                 }
-                break
+                return
             }
+        }
+    }
+}
+
+namespace AI {
+    export async function cook_food(pool:PgPool, action_manager:ActionManager, character:CharacterGenericPart) {
+        let prepared_meat = character.trade_stash.get(FOOD) + character.stash.get(FOOD)
+        let resource = character.stash.get(MEAT)
+        let food_in_stash = character.stash.get(FOOD)
+        let base_buy_price = 5 as money
+        let base_sell_price = 10 as money
+
+        if (resource < 5) {
+            await character.buy(pool, MEAT, 10, base_buy_price)
+        }
+
+        if (prepared_meat < 10) {
+            await action_manager.start_action(CharacterAction.COOK_MEAT, character, undefined)
+        }
+
+        if (food_in_stash > 5) {
+            await character.sell(pool, FOOD, food_in_stash, base_sell_price)
         }
     }
 }
