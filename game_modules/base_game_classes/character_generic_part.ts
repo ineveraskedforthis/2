@@ -33,8 +33,8 @@ class SkillObject {
     }
 }
 
-export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'
-export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt']
+export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'
+export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher']
 export interface PerksTable {
     meat_master?: boolean; //100% chance to prepare meat
     claws?: boolean; // + unarmed damage
@@ -42,15 +42,17 @@ export interface PerksTable {
     advanced_polearm?:boolean
     mage_initiation?:boolean
     magic_bolt?:boolean
+    fletcher?:boolean
 }
 
-export function perk_price(tag: Perks) {
+export function perk_price(tag: Perks):number {
     switch(tag) {
         case 'meat_master': return 100
         case 'advanced_unarmed': return 200
         case 'advanced_polearm': return 200
         case 'mage_initiation': return 1000
         case 'magic_bolt': return 100
+        case 'fletcher': return 200
     }
 }
 export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
@@ -58,6 +60,12 @@ export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
         case 'meat_master': {
             if (character.skills.cooking.practice < 15) {
                 return 'not_enough_cooking_skill_15'
+            }
+            return 'ok'
+        }
+        case 'fletcher' : {
+            if (character.skills.woodwork.practice < 15) {
+                return 'not_enough_woodwork_skill_15'
             }
             return 'ok'
         }

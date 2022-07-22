@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.craft_wood_bow = exports.craft_bone_arrow = exports.craft_bone_spear = void 0;
+exports.craft_wood_bow = exports.craft_bone_arrow = exports.craft_bone_arrow_probability = exports.craft_bone_spear = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../static_data/items_set_up");
 const item_tags_1 = require("../../static_data/item_tags");
@@ -56,6 +56,14 @@ exports.craft_bone_spear = {
     start: async function (pool, char, data) {
     },
 };
+let BONE_ARROW_DIFFICULTY = 20;
+function craft_bone_arrow_probability(character) {
+    if (character.skills.perks.fletcher) {
+        return 1;
+    }
+    return 0.7 * Math.min(1, character.skills.woodwork.practice / BONE_ARROW_DIFFICULTY);
+}
+exports.craft_bone_arrow_probability = craft_bone_arrow_probability;
 exports.craft_bone_arrow = {
     duration(char) {
         return 0.5;
@@ -83,7 +91,7 @@ exports.craft_bone_arrow = {
             char.change_fatigue(10);
             // if (dice < check) {
             let dice = Math.random();
-            let amount = Math.round(((0, craft_spear_1.craft_spear_probability)(skill) / dice) * 10);
+            let amount = Math.round((craft_bone_arrow_probability(char) / dice) * 10);
             char.stash.inc(materials_manager_1.ARROW_BONE, amount);
             char.send_stash_update();
             char.send_status_update();

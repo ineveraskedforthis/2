@@ -61,6 +61,15 @@ export const craft_bone_spear = {
     },
 }
 
+let BONE_ARROW_DIFFICULTY = 20
+
+export function craft_bone_arrow_probability(character: CharacterGenericPart) {
+    if (character.skills.perks.fletcher) {
+        return 1
+    }
+    return 0.7 * Math.min(1, character.skills.woodwork.practice/BONE_ARROW_DIFFICULTY)
+}
+
 export const craft_bone_arrow = {
     duration(char: CharacterGenericPart) {
         return 0.5;
@@ -91,7 +100,7 @@ export const craft_bone_arrow = {
             char.change_fatigue(10)
             // if (dice < check) {
             let dice = Math.random()
-            let amount = Math.round((craft_spear_probability(skill) / dice) * 10)
+            let amount = Math.round((craft_bone_arrow_probability(char) / dice) * 10)
             char.stash.inc(ARROW_BONE, amount)
             char.send_stash_update()
             char.send_status_update()

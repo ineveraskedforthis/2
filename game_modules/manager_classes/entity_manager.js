@@ -281,7 +281,7 @@ class EntityManager {
         let cell = character.get_cell();
         if (cell == undefined)
             return;
-        this.remove_orders_list(pool, cell, temporary_list);
+        await this.remove_orders_list(pool, cell, temporary_list);
     }
     async remove_orders_by_tag(pool, character, material) {
         let temporary_list = [];
@@ -294,7 +294,7 @@ class EntityManager {
         let cell = character.get_cell();
         if (cell == undefined)
             return;
-        this.remove_orders_list(pool, cell, temporary_list);
+        await this.remove_orders_list(pool, cell, temporary_list);
     }
     async remove_order(pool, order_id) {
         let order = this.orders[order_id];

@@ -15,6 +15,7 @@ const hunt_1 = require("../base_game_classes/character_actions/hunt");
 const gather_wood_1 = require("../base_game_classes/character_actions/gather_wood");
 const craft_rat_armour_1 = require("../base_game_classes/character_actions/craft_rat_armour");
 const market_items_1 = require("../market/market_items");
+const craft_bone_spear_1 = require("../base_game_classes/character_actions/craft_bone_spear");
 class SocketManager {
     constructor(pool, io, world, flag_ready) {
         this.world = world;
@@ -692,7 +693,7 @@ class SocketManager {
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_rat_boots', value: (0, craft_rat_armour_1.character_to_craft_rat_armour_probability)(character) });
         this.send_to_character_user(character, 'craft-probability', { tag: 'cook_elodino', value: (0, cook_meat_1.character_to_cook_elodino_probability)(character) });
         this.send_to_character_user(character, 'craft-probability', { tag: 'craft_wood_bow', value: (0, craft_spear_1.character_to_craft_spear_probability)(character) });
-        this.send_to_character_user(character, 'craft-probability', { tag: 'craft_bone_arrow', value: (0, craft_spear_1.character_to_craft_spear_probability)(character) });
+        this.send_to_character_user(character, 'craft-probability', { tag: 'craft_bone_arrow', value: (0, craft_bone_spear_1.craft_bone_arrow_probability)(character) });
         this.send_to_character_user(character, 'cell-action-chance', { tag: 'hunt', value: (0, hunt_1.character_to_hunt_probability)(character) });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'flee', value: (0, battle_1.flee_chance)(character) });
         this.send_to_character_user(character, 'b-action-chance', { tag: 'attack', value: character.get_attack_chance('usual') });

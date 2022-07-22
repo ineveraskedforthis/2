@@ -189,17 +189,14 @@ export class World {
         monk.changed = true
 
         let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
-        forest_cook.stash.inc(FOOD, 1000)
-        await forest_cook.sell(pool, FOOD, 500, 20 as money)
-        await forest_cook.buy(pool, MEAT, 500, 4 as money)
-        forest_cook.changed = true
+        forest_cook.stash.inc(FOOD, 10)
+        forest_cook.learn_perk("meat_master")
+        forest_cook.skills.cooking.practice = 100
 
         let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1)
-        fletcher.stash.inc(ARROW_BONE, 20000)
-        fletcher.savings.inc(2000 as money)
-        await fletcher.sell(pool, ARROW_BONE, 10000, 3 as money)
-        await fletcher.buy(pool, RAT_BONE, 1000, 1 as money)
-        await fletcher.buy(pool, WOOD, 1000, 2 as money)
+        fletcher.stash.inc(ARROW_BONE, 20)
+        fletcher.savings.inc(1000 as money)
+        fletcher.learn_perk('fletcher')
         fletcher.changed = true
 
         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)

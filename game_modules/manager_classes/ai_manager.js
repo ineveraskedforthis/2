@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiManager = void 0;
+const craft_bone_spear_1 = require("../base_game_classes/character_actions/craft_bone_spear");
 const racial_hostility_1 = require("../base_game_classes/races/racial_hostility");
 const action_manager_1 = require("./action_manager");
 const materials_manager_1 = require("./materials_manager");
@@ -136,6 +137,9 @@ class AiManager {
         if ((char.skills.cooking.practice > 40) || (char.skills.perks.meat_master)) {
             await AI.cook_food(pool, this.world.action_manager, char);
         }
+        if ((char.skills.woodwork.practice > 40) || (char.skills.perks.fletcher)) {
+            await AI.make_arrow(pool, this.world.action_manager, char);
+        }
     }
 }
 exports.AiManager = AiManager;
@@ -148,21 +152,77 @@ var AI;
         let base_buy_price = 5;
         let base_sell_price = 10;
         let savings = character.savings.get();
-        console.log("AI tick");
-        console.log(prepared_meat, resource, food_in_stash, savings);
+        // console.log("AI tick")
+        // console.log(prepared_meat, resource, food_in_stash, savings)
         // await character.world.entity_manager.remove_orders(pool, character)
         if ((resource < 5) && (savings > base_buy_price)) {
             await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.MEAT);
-            console.log(Math.floor(savings / base_buy_price), base_buy_price);
+            // console.log(Math.floor(savings / base_buy_price), base_buy_price)
             await character.buy(pool, materials_manager_1.MEAT, Math.floor(savings / base_buy_price), base_buy_price);
         }
         if (prepared_meat < 10) {
             await action_manager.start_action(action_manager_1.CharacterAction.COOK_MEAT, character, undefined);
         }
-        if (food_in_stash > 5) {
+        if (food_in_stash > 0) {
             await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.FOOD);
             await character.sell(pool, materials_manager_1.FOOD, food_in_stash, base_sell_price);
         }
     }
     AI.cook_food = cook_food;
+    async function make_arrow(pool, action_manager, character) {
+        await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.WOOD);
+        await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.RAT_BONE);
+        let arrows = character.trade_stash.get(materials_manager_1.ARROW_BONE) + character.stash.get(materials_manager_1.ARROW_BONE);
+        let wood = character.stash.get(materials_manager_1.WOOD);
+        let bones = character.stash.get(materials_manager_1.RAT_BONE);
+        let savings = character.savings.get();
+        let trade_savings = character.trade_savings.get();
+        let reserve_units = Math.min(wood, bones / 10);
+        let arrows_in_stash = character.stash.get(materials_manager_1.ARROW_BONE);
+        let base_price_wood = 5;
+        let base_price_bones = 1;
+        let input_price = (base_price_wood + 10 * base_price_bones);
+        let profit = 0.5;
+        let sell_price = Math.floor(input_price * (1 + profit) / (0, craft_bone_spear_1.craft_bone_arrow_probability)(character) / 10) + 1;
+        // bones_to_buy * b_p + wood_to_buy * w_p = savings
+        // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0
+        // so
+        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
+        // bones_to_buy       - wood_to_buy * 10             = -bones + 10 * wood
+        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
+        // bones_to_buy * b_p - wood_to_buy * 10 b_p         = (-bones + 10 * wood) * b_p
+        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
+        //                    - wood_to_buy * (10 b_p + w_p) = (-bones + 10 * wood) * b_p - savings
+        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
+        //                    - wood_to_buy                  = ((-bones + 10 * wood) * b_p - savings) / (10 b_p + w_p)
+        // bones_to_buy                                      = (savings - wood_to_buy * w_p) / b_p
+        //                    - wood_to_buy                  = ((-bones + 10 * wood) * b_p - savings) / (10 b_p + w_p)
+        // makes sense only if results are not negative
+        if (reserve_units < 5) {
+            let savings = character.savings.get();
+            let wood_to_buy = -((-bones + 10 * wood) * base_price_bones - savings) / (10 * base_price_bones + base_price_wood);
+            let bones_to_buy = (savings - wood_to_buy * base_price_wood) / base_price_bones;
+            console.log(savings, bones, wood);
+            console.log(wood_to_buy, bones_to_buy);
+            if ((wood_to_buy >= 1) && (bones_to_buy >= 1)) {
+                await character.buy(pool, materials_manager_1.WOOD, Math.floor(wood_to_buy), base_price_wood);
+                await character.buy(pool, materials_manager_1.RAT_BONE, Math.floor(bones_to_buy), base_price_bones);
+            }
+            else if ((wood_to_buy >= 1) && (bones_to_buy < 1)) {
+                await character.buy(pool, materials_manager_1.WOOD, Math.floor(savings / base_price_wood), base_price_wood);
+            }
+            else if ((wood_to_buy < 1) && (bones_to_buy >= 1)) {
+                await character.buy(pool, materials_manager_1.RAT_BONE, Math.floor(savings / materials_manager_1.RAT_BONE), base_price_bones);
+            }
+        }
+        if (arrows < 100) {
+            await action_manager.start_action(action_manager_1.CharacterAction.CRAFT_BONE_ARROW, character, undefined);
+        }
+        if (arrows_in_stash > 0) {
+            await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.ARROW_BONE);
+            arrows_in_stash = character.stash.get(materials_manager_1.ARROW_BONE);
+            await character.sell(pool, materials_manager_1.ARROW_BONE, arrows_in_stash, sell_price);
+        }
+    }
+    AI.make_arrow = make_arrow;
 })(AI || (AI = {}));

@@ -1,9 +1,10 @@
+import { craft_bone_arrow_probability } from "../base_game_classes/character_actions/craft_bone_spear";
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
 import { hostile } from "../base_game_classes/races/racial_hostility";
-import { money } from "../base_game_classes/savings";
+import { money, Savings } from "../base_game_classes/savings";
 import { PgPool, World } from "../world";
 import { ActionManager, CharacterAction } from "./action_manager";
-import { FOOD, MEAT } from "./materials_manager";
+import { ARROW_BONE, FOOD, MEAT, RAT_BONE, WOOD } from "./materials_manager";
 
 
 // function MAYOR_AI(mayor: CharacterGenericPart) {
@@ -152,6 +153,10 @@ export class AiManager {
         if ((char.skills.cooking.practice > 40) || (char.skills.perks.meat_master)) {
             await AI.cook_food(pool, this.world.action_manager, char)
         }
+
+        if ((char.skills.woodwork.practice > 40) || (char.skills.perks.fletcher)) {
+            await AI.make_arrow(pool, this.world.action_manager, char)
+        }
     }
 }
 
@@ -178,9 +183,79 @@ namespace AI {
             await action_manager.start_action(CharacterAction.COOK_MEAT, character, undefined)
         }
 
-        if (food_in_stash > 5) {
+        if (food_in_stash > 0) {
             await character.world.entity_manager.remove_orders_by_tag(pool, character, FOOD)
             await character.sell(pool, FOOD, food_in_stash, base_sell_price)
+        }
+    }
+
+    export async function make_arrow(pool:PgPool, action_manager:ActionManager, character:CharacterGenericPart) {
+        await character.world.entity_manager.remove_orders_by_tag(pool, character, WOOD)
+        await character.world.entity_manager.remove_orders_by_tag(pool, character, RAT_BONE)
+
+        let arrows = character.trade_stash.get(ARROW_BONE) + character.stash.get(ARROW_BONE)
+        let wood = character.stash.get(WOOD)
+        let bones = character.stash.get(RAT_BONE)
+        let savings = character.savings.get()
+        let trade_savings = character.trade_savings.get()
+
+        let reserve_units = Math.min(wood, bones / 10)
+
+        let arrows_in_stash = character.stash.get(ARROW_BONE)
+        let base_price_wood = 5 as money
+        let base_price_bones = 1 as money
+        let input_price = (base_price_wood + 10 * base_price_bones)
+        let profit = 0.5
+
+        let sell_price = Math.floor(input_price * (1 + profit) / craft_bone_arrow_probability(character) / 10) + 1 as money
+
+        // bones_to_buy * b_p + wood_to_buy * w_p = savings
+        // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0
+
+        // so
+        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
+        // bones_to_buy       - wood_to_buy * 10             = -bones + 10 * wood
+
+        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
+        // bones_to_buy * b_p - wood_to_buy * 10 b_p         = (-bones + 10 * wood) * b_p
+
+        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
+        //                    - wood_to_buy * (10 b_p + w_p) = (-bones + 10 * wood) * b_p - savings
+
+        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
+        //                    - wood_to_buy                  = ((-bones + 10 * wood) * b_p - savings) / (10 b_p + w_p)
+
+        // bones_to_buy                                      = (savings - wood_to_buy * w_p) / b_p
+        //                    - wood_to_buy                  = ((-bones + 10 * wood) * b_p - savings) / (10 b_p + w_p)
+        // makes sense only if results are not negative
+
+        if (reserve_units < 5) {
+
+            let savings = character.savings.get()
+            
+            let wood_to_buy = -((-bones + 10 * wood) * base_price_bones - savings) / (10 * base_price_bones + base_price_wood)
+            let bones_to_buy = (savings - wood_to_buy * base_price_wood) / base_price_bones
+            console.log(savings, bones, wood)
+            console.log(wood_to_buy, bones_to_buy)
+
+            if ((wood_to_buy >= 1) && (bones_to_buy >= 1)) {
+                await character.buy(pool, WOOD, Math.floor(wood_to_buy), base_price_wood)
+                await character.buy(pool, RAT_BONE, Math.floor(bones_to_buy), base_price_bones)
+            } else if ((wood_to_buy >= 1) && (bones_to_buy < 1)) {
+                await character.buy(pool, WOOD, Math.floor(savings / base_price_wood), base_price_wood)
+            } else if ((wood_to_buy < 1) && (bones_to_buy >= 1)) {
+                await character.buy(pool, RAT_BONE, Math.floor(savings / RAT_BONE), base_price_bones)
+            } 
+        }
+
+        if (arrows < 100) {
+            await action_manager.start_action(CharacterAction.CRAFT_BONE_ARROW, character, undefined)
+        }
+        
+        if (arrows_in_stash > 0) {
+            await character.world.entity_manager.remove_orders_by_tag(pool, character, ARROW_BONE)
+            arrows_in_stash = character.stash.get(ARROW_BONE)
+            await character.sell(pool, ARROW_BONE, arrows_in_stash, sell_price)
         }
     }
 }

@@ -17,6 +17,7 @@ import { can_gather_wood } from "../base_game_classes/character_actions/gather_w
 import { character_to_craft_rat_armour_probability } from "../base_game_classes/character_actions/craft_rat_armour";
 import { money } from "../base_game_classes/savings";
 import { AuctionManagement, auction_order_id_raw } from "../market/market_items";
+import { craft_bone_arrow_probability } from "../base_game_classes/character_actions/craft_bone_spear";
 
 interface UserData {
     socket: any,
@@ -775,7 +776,7 @@ export class SocketManager {
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_boots', value: character_to_craft_rat_armour_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'cook_elodino', value: character_to_cook_elodino_probability(character)})
         this.send_to_character_user(character, 'craft-probability', {tag: 'craft_wood_bow', value: character_to_craft_spear_probability(character)})
-        this.send_to_character_user(character, 'craft-probability', {tag: 'craft_bone_arrow', value: character_to_craft_spear_probability(character)})
+        this.send_to_character_user(character, 'craft-probability', {tag: 'craft_bone_arrow', value: craft_bone_arrow_probability(character)})
         
 
         this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})

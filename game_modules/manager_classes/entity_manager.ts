@@ -330,7 +330,7 @@ export class EntityManager {
         }
         let cell = character.get_cell()
         if (cell == undefined) return
-        this.remove_orders_list(pool, cell, temporary_list)
+        await this.remove_orders_list(pool, cell, temporary_list)
     }
 
     async remove_orders_by_tag(pool: PgPool, character: CharacterGenericPart, material: material_index) {
@@ -341,7 +341,7 @@ export class EntityManager {
         }
         let cell = character.get_cell()
         if (cell == undefined) return
-        this.remove_orders_list(pool, cell, temporary_list)
+        await this.remove_orders_list(pool, cell, temporary_list)
     }
 
     async remove_order(pool: PgPool, order_id: market_order_index) {
