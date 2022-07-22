@@ -98,7 +98,7 @@ export class AiManager {
         }
     }
 
-    async decision(char: CharacterGenericPart) {
+    async decision(pool: PgPool, char: CharacterGenericPart) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
             return
@@ -143,6 +143,15 @@ export class AiManager {
                 return
             }
         }
+
+        if ((char.get_fatigue() > 90) || (char.get_stress() > 40)) {
+            await this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
+            return
+        }
+
+        if ((char.skills.cooking.practice > 40) || (char.skills.perks.meat_master)) {
+            await AI.cook_food(pool, this.world.action_manager, char)
+        }
     }
 }
 
@@ -153,9 +162,16 @@ namespace AI {
         let food_in_stash = character.stash.get(FOOD)
         let base_buy_price = 5 as money
         let base_sell_price = 10 as money
+        let savings = character.savings.get()
+        // console.log("AI tick")
+        // console.log(prepared_meat, resource, food_in_stash, savings)
 
-        if (resource < 5) {
-            await character.buy(pool, MEAT, 10, base_buy_price)
+        // await character.world.entity_manager.remove_orders(pool, character)
+
+        if ((resource < 5) && (savings > base_buy_price)) {
+            await character.world.entity_manager.remove_orders_by_tag(pool, character, MEAT)
+            // console.log(Math.floor(savings / base_buy_price), base_buy_price)
+            await character.buy(pool, MEAT, Math.floor(savings / base_buy_price), base_buy_price)
         }
 
         if (prepared_meat < 10) {
@@ -163,6 +179,7 @@ namespace AI {
         }
 
         if (food_in_stash > 5) {
+            await character.world.entity_manager.remove_orders_by_tag(pool, character, FOOD)
             await character.sell(pool, FOOD, food_in_stash, base_sell_price)
         }
     }

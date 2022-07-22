@@ -176,8 +176,10 @@ export class World {
 
         let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1)
         cook.learn_perk("meat_master")
-        cook.stash.inc(FOOD, 1000)
-        await cook.sell(pool, FOOD, 500, 10 as money)
+        cook.skills.cooking.practice = 100
+        cook.stash.inc(FOOD, 10)
+        cook.savings.inc(500 as money)
+        // await cook.sell(pool, FOOD, 500, 10 as money)
 
 
 

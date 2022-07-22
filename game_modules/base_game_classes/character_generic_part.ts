@@ -666,7 +666,7 @@ export class CharacterGenericPart {
 
 
     async buy(pool: PgPool, tag:material_index, amount: number, price: money) {
-        if (this.savings.get() > amount * price) {
+        if (this.savings.get() >= amount * price) {
             console.log('sell ' + tag + ' ' + amount + ' ' + price)
             this.savings.transfer(this.trade_savings, amount * price as money)
             let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id)

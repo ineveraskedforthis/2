@@ -169,7 +169,7 @@ class EntityManager {
         this.time_since_last_decision_update += dt;
         let decision_flag = false;
         // console.log(this.time_since_last_decision_update)
-        if (this.time_since_last_decision_update > 60) {
+        if (this.time_since_last_decision_update > 20) {
             // console.log('decision_time'); 
             decision_flag = true;
             this.time_since_last_decision_update = 0;
@@ -183,7 +183,7 @@ class EntityManager {
                 if (!char.in_battle()) {
                     await char.update(pool, dt);
                     if (decision_flag) {
-                        await this.world.ai_manager.decision(char);
+                        await this.world.ai_manager.decision(pool, char);
                     }
                     if (char.misc.tag == 'rat') {
                         rats += 1;
@@ -264,22 +264,37 @@ class EntityManager {
         this.orders[order.id] = order;
         this.get_cell_by_id(order.cell_id)?.add_order(order.id);
     }
+    async remove_orders_list(pool, cell, list) {
+        for (let id of list) {
+            await this.remove_order(pool, id);
+        }
+        this.world.socket_manager.update_market_info(cell);
+    }
     async remove_orders(pool, character) {
         let temporary_list = [];
         for (let order of this.orders) {
-            if (order != undefined) {
-                if (order.owner_id == character.id) {
-                    temporary_list.push(order.id);
-                }
-            }
-        }
-        for (let id of temporary_list) {
-            await this.remove_order(pool, id);
+            if (order == undefined)
+                continue;
+            if (order.owner_id == character.id)
+                temporary_list.push(order.id);
         }
         let cell = character.get_cell();
-        if (cell != undefined) {
-            this.world.socket_manager.update_market_info(cell);
+        if (cell == undefined)
+            return;
+        this.remove_orders_list(pool, cell, temporary_list);
+    }
+    async remove_orders_by_tag(pool, character, material) {
+        let temporary_list = [];
+        for (let order of this.orders) {
+            if (order == undefined)
+                continue;
+            if ((order.owner_id == character.id) && (order.tag == material))
+                temporary_list.push(order.id);
         }
+        let cell = character.get_cell();
+        if (cell == undefined)
+            return;
+        this.remove_orders_list(pool, cell, temporary_list);
     }
     async remove_order(pool, order_id) {
         let order = this.orders[order_id];

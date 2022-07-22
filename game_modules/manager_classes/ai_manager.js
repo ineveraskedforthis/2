@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiManager = void 0;
 const racial_hostility_1 = require("../base_game_classes/races/racial_hostility");
 const action_manager_1 = require("./action_manager");
+const materials_manager_1 = require("./materials_manager");
 // function MAYOR_AI(mayor: CharacterGenericPart) {
 //     let faction = mayor.get_faction()
 //     let territories = faction.get_territories_list()
@@ -82,7 +83,7 @@ class AiManager {
             await this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, { x: move_direction[0], y: move_direction[1] });
         }
     }
-    async decision(char) {
+    async decision(pool, char) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
             return;
@@ -107,7 +108,7 @@ class AiManager {
                         await this.random_steppe_walk(char);
                     }
                 }
-                break;
+                return;
             }
             case 'steppe_walker_passive': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
@@ -116,7 +117,7 @@ class AiManager {
                 else {
                     await this.random_steppe_walk(char);
                 }
-                break;
+                return;
             }
             case 'forest_walker': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
@@ -125,9 +126,43 @@ class AiManager {
                 else {
                     await this.random_forest_walk(char);
                 }
-                break;
+                return;
             }
+        }
+        if ((char.get_fatigue() > 90) || (char.get_stress() > 40)) {
+            await this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
+            return;
+        }
+        if ((char.skills.cooking.practice > 40) || (char.skills.perks.meat_master)) {
+            await AI.cook_food(pool, this.world.action_manager, char);
         }
     }
 }
 exports.AiManager = AiManager;
+var AI;
+(function (AI) {
+    async function cook_food(pool, action_manager, character) {
+        let prepared_meat = character.trade_stash.get(materials_manager_1.FOOD) + character.stash.get(materials_manager_1.FOOD);
+        let resource = character.stash.get(materials_manager_1.MEAT);
+        let food_in_stash = character.stash.get(materials_manager_1.FOOD);
+        let base_buy_price = 5;
+        let base_sell_price = 10;
+        let savings = character.savings.get();
+        console.log("AI tick");
+        console.log(prepared_meat, resource, food_in_stash, savings);
+        // await character.world.entity_manager.remove_orders(pool, character)
+        if ((resource < 5) && (savings > base_buy_price)) {
+            await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.MEAT);
+            console.log(Math.floor(savings / base_buy_price), base_buy_price);
+            await character.buy(pool, materials_manager_1.MEAT, Math.floor(savings / base_buy_price), base_buy_price);
+        }
+        if (prepared_meat < 10) {
+            await action_manager.start_action(action_manager_1.CharacterAction.COOK_MEAT, character, undefined);
+        }
+        if (food_in_stash > 5) {
+            await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.FOOD);
+            await character.sell(pool, materials_manager_1.FOOD, food_in_stash, base_sell_price);
+        }
+    }
+    AI.cook_food = cook_food;
+})(AI || (AI = {}));

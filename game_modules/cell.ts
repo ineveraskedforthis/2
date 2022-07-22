@@ -179,8 +179,6 @@ export class Cell {
                 return 'not_enough_money'
             }
 
-            console.log()
-
             order.amount -= amount;
             order_owner.trade_stash.transfer(buyer.stash, order.tag, amount);
             buyer.savings.transfer(order_owner.trade_savings, amount * order.price as money);
@@ -208,7 +206,7 @@ export class Cell {
             }
 
             order.amount -= amount;
-            seller.stash.transfer(order_owner.trade_stash, order.tag, amount);
+            seller.stash.transfer(order_owner.stash, order.tag, amount);
             order_owner.trade_savings.transfer(seller.savings, amount * order.price as money);
 
             seller.changed = true;

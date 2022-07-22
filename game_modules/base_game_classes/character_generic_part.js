@@ -502,7 +502,7 @@ class CharacterGenericPart {
     }
     //market interactions
     async buy(pool, tag, amount, price) {
-        if (this.savings.get() > amount * price) {
+        if (this.savings.get() >= amount * price) {
             console.log('sell ' + tag + ' ' + amount + ' ' + price);
             this.savings.transfer(this.trade_savings, amount * price);
             let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id);
