@@ -2,17 +2,17 @@
     position: absolute;
     top:0%;
     right: 0%;
-    height: auto;
-    width: 72px;
+    height: 630;
+    width: 100px;
 }
 
 #tab_list_frame > .control_button {
     top: 5px;
     position: relative;
-    width: 66px;
-    height: 66px;
+    width: 95px;
+    height: 85px;
     float: top;
-    left: 3px;
+    left: 5px;
 }
 
 
