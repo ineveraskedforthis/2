@@ -190,8 +190,10 @@ export class World {
 
         let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
         forest_cook.stash.inc(FOOD, 10)
-        forest_cook.learn_perk("meat_master")
+        forest_cook.savings.inc(500 as money)
         forest_cook.skills.cooking.practice = 100
+        forest_cook.learn_perk("meat_master")
+        
 
         let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1)
         fletcher.stash.inc(ARROW_BONE, 20)
