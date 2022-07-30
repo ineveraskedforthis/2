@@ -77,6 +77,20 @@
 }
 
 
+#craft_button {
+    background-image: url(/static/img/tab_buttons/craft_button.png);
+}
+ #craft_button:hover {
+        background-image: url(/static/img/tab_buttons/craft_button_hovered.png);
+    }
+ #craft_button:active {
+        background-image: url(/static/img/tab_buttons/craft_button_pressed.png);
+    }
+  #craft_button.active {
+        background-image: url(/static/img/tab_buttons/craft_button_pressed.png);
+    }
+
+
 #skilltree_button {
     background-image: url(/static/img/tab_buttons/skills_button.png);
 }
