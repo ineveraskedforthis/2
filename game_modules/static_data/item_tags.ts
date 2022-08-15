@@ -1,12 +1,12 @@
 import { textChangeRangeIsUnchanged } from "typescript"
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
-import type { AttackResult } from "../base_game_classes/misc/attack_result"
+import { AttackResult } from "../base_game_classes/misc/attack_result"
 import type { DamageByTypeObject } from "../base_game_classes/misc/damage_types"
 import { ARROW_BONE, material_index } from "../manager_classes/materials_manager"
 import { World } from "../world"
 import { WEAPON_TYPE } from "./type_script_types"
 
-export type affix_tag = 'sharp'|'heavy'|'hot'|'precise'|'power_battery'|'madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'elodino_pleasure'|'power_of_graci_beauty'
+export type affix_tag = 'sharp'|'heavy'|'hot'|'precise'|'power_battery'|'madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'elodino_pleasure'|'power_of_graci_beauty'|'elder_beast_skin'|'protection'|'pain_shell'
 
 export enum ARMOUR_TYPE {
     BODY,
@@ -71,6 +71,8 @@ export class affix{
         this.tier = tier;
     }
 }
+
+
 
 //so how items will work
 //all items have durability: characteristic of how long they will last
@@ -344,7 +346,25 @@ export function base_damage(result: AttackResult, item: Weapon) {
 //         },
 //     }
 
-export const damage_affixes_effects = {
+type AttackModificationFunction = (result: AttackResult, tier: number) => AttackResult;
+type DamageModificationFunction = (result: DamageByTypeObject, tier: number) => DamageByTypeObject;
+
+
+function dummy_attack_mod(result: AttackResult, tier:number) {
+    return result
+}
+function dummy_damage_mod(result: DamageByTypeObject, tier:number) {
+    return result
+}
+
+export const damage_affixes_effects:{[_ in affix_tag]: AttackModificationFunction} = {
+        thick: dummy_attack_mod,
+        elodino_pleasure: dummy_attack_mod,
+        hard: dummy_attack_mod,
+        power_of_graci_beauty: dummy_attack_mod,
+        pain_shell: dummy_attack_mod,
+        elder_beast_skin: dummy_attack_mod,
+        protection: dummy_attack_mod,
         sharp: (result: AttackResult, tier: number) => {
             result.damage.pierce += tier * 5;
             result.damage.slice += tier * 5
@@ -389,7 +409,17 @@ export const damage_affixes_effects = {
         }
     }
 
-export const protection_affixes_effects = {
+
+
+export const protection_affixes_effects:{[_ in affix_tag]: DamageModificationFunction} = {
+        sharp: dummy_damage_mod,
+        hot: dummy_damage_mod,
+        notched: dummy_damage_mod,
+        daemonic: dummy_damage_mod,
+        heavy: dummy_damage_mod,
+        precise: dummy_damage_mod,
+        madness: dummy_damage_mod,
+        calm: dummy_damage_mod,
         thick: (resists: DamageByTypeObject, tier: number) => {
             resists.pierce += tier * 1;
             resists.slice += tier * 2;
@@ -443,7 +473,9 @@ export const protection_affixes_effects = {
         },
     }
 
-export const get_power = {
+type power_modification = (data: number, tier: number) => number
+
+export const get_power:{[_ in affix_tag]?: power_modification} = {
         power_battery: (data: number, tier: number) => {
             data += tier
             return data
@@ -458,7 +490,9 @@ export const get_power = {
         }
     }
 
-export const update_character = {
+type character_update_function = (agent: CharacterGenericPart, tier: number) => void
+
+export const update_character:{[_ in affix_tag]?: character_update_function} = {
         elder_beast_skin: (agent: CharacterGenericPart, tier: number) => {
             agent.change_stress(5 * tier);
             agent.change_rage(5 * tier);
