@@ -89,8 +89,9 @@ class World {
         living_area.set_influence(ith_colony, 50);
         living_area.set_influence(steppe_rats, 50);
         /// test person
+        let starting_cell_id = this.get_cell_id_by_x_y(0, 3);
         {
-            let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1);
+            let test_person = await this.create_new_character(pool, 'Trader', starting_cell_id, -1);
             if ((0, market_items_1.nodb_mode_check)()) {
                 test_person.change_hp(-90);
             }
@@ -110,7 +111,12 @@ class World {
             test_person.equip.add_weapon(spear);
             await market_items_1.AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", 0, 10, 10);
         }
-        let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1);
+        let armour_master = await this.create_new_character(pool, 'Armour master', starting_cell_id, -1);
+        armour_master.skills.clothier.practice = 100;
+        armour_master.skills.perks.skin_armour_master = true;
+        armour_master.stash.inc(materials_manager_1.RAT_SKIN, 40);
+        armour_master.savings.inc(1000);
+        let cook = await this.create_new_character(pool, 'Cook', starting_cell_id, -1);
         cook.learn_perk("meat_master");
         cook.skills.cooking.practice = 100;
         cook.stash.inc(materials_manager_1.FOOD, 10);
@@ -122,11 +128,12 @@ class World {
         monk.changed = true;
         let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1);
         forest_cook.stash.inc(materials_manager_1.FOOD, 10);
-        forest_cook.learn_perk("meat_master");
+        forest_cook.savings.inc(500);
         forest_cook.skills.cooking.practice = 100;
+        forest_cook.learn_perk("meat_master");
         let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1);
         fletcher.stash.inc(materials_manager_1.ARROW_BONE, 20);
-        fletcher.savings.inc(500);
+        fletcher.savings.inc(1000);
         fletcher.learn_perk('fletcher');
         fletcher.changed = true;
         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1);

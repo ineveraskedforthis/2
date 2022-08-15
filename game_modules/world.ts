@@ -151,9 +151,11 @@ export class World {
 
 
         /// test person
+
+        let starting_cell_id = this.get_cell_id_by_x_y(0, 3)
         
         {
-            let test_person = await this.create_new_character(pool, 'Trader', this.get_cell_id_by_x_y(0, 3), -1)
+            let test_person = await this.create_new_character(pool, 'Trader', starting_cell_id, -1)
             if (nodb_mode_check()) {test_person.change_hp(-90)}
             
             test_person.stash.inc(MEAT, 10)
@@ -174,7 +176,15 @@ export class World {
         }
 
 
-        let cook = await this.create_new_character(pool, 'Cook', this.get_cell_id_by_x_y(0, 3), -1)
+        let armour_master = await this.create_new_character(pool, 'Armour master', starting_cell_id, -1)
+        armour_master.skills.clothier.practice = 100
+        armour_master.skills.perks.skin_armour_master = true
+        armour_master.stash.inc(RAT_SKIN, 40)
+        armour_master.savings.inc(1000 as money)
+
+
+
+        let cook = await this.create_new_character(pool, 'Cook', starting_cell_id, -1)
         cook.learn_perk("meat_master")
         cook.skills.cooking.practice = 100
         cook.stash.inc(FOOD, 10)
@@ -226,6 +236,7 @@ export class World {
         await mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
         mage.changed = true
 
+        
 
     }
 

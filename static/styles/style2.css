@@ -109,6 +109,7 @@ body {
 
 .game_frame {
     background: rgba(136, 62, 62, 0.527);;
+    color: whitesmoke;
 }
 
 
@@ -175,6 +176,8 @@ body {
     left: 0%;
     width: 70%;
 
+    background-color: darkred;
+
     display: flex;
 
     justify-content: space-around;
@@ -214,7 +217,8 @@ body {
     width: 50%;
     height: 70%;
     background: rgba(91, 33, 33, 0.879);
-    color: rgb(13, 228, 77);
+    /* color: rgb(13, 228, 77); */
+    color: whitesmoke;
 }
 
 .hidden {

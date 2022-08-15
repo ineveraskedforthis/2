@@ -2,7 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiManager = void 0;
 const craft_bone_spear_1 = require("../base_game_classes/character_actions/craft_bone_spear");
+const craft_rat_armour_1 = require("../base_game_classes/character_actions/craft_rat_armour");
 const racial_hostility_1 = require("../base_game_classes/races/racial_hostility");
+const market_items_1 = require("../market/market_items");
+const item_tags_1 = require("../static_data/item_tags");
 const action_manager_1 = require("./action_manager");
 const materials_manager_1 = require("./materials_manager");
 // function MAYOR_AI(mayor: CharacterGenericPart) {
@@ -140,6 +143,9 @@ class AiManager {
         if ((char.skills.woodwork.practice > 40) || (char.skills.perks.fletcher)) {
             await AI.make_arrow(pool, this.world.action_manager, char);
         }
+        if ((char.skills.perks.skin_armour_master)) {
+            await AI.make_armour(pool, this.world.action_manager, char);
+        }
     }
 }
 exports.AiManager = AiManager;
@@ -225,4 +231,28 @@ var AI;
         }
     }
     AI.make_arrow = make_arrow;
+    async function make_armour(pool, action_manager, character) {
+        let base_price_skin = 10;
+        let resource = character.stash.get(materials_manager_1.RAT_SKIN);
+        let savings = character.savings.get();
+        let skin_to_buy = Math.floor(savings / base_price_skin);
+        console.log('armour');
+        console.log(resource, savings, skin_to_buy);
+        if (skin_to_buy > 5) {
+            await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.RAT_SKIN);
+            await character.buy(pool, materials_manager_1.RAT_SKIN, skin_to_buy, base_price_skin);
+        }
+        if (resource > craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
+            await action_manager.start_action(action_manager_1.CharacterAction.CRAFT_RAT_ARMOUR, character, undefined);
+        }
+        let data = character.equip.data.backpack.armours;
+        for (let index in data) {
+            index = index;
+            if (data[index]?.type == item_tags_1.ARMOUR_TYPE.BODY) {
+                let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 1.5);
+                await market_items_1.AuctionManagement.sell(pool, character.world.entity_manager, character.world.socket_manager, character, "armour", index, price, price);
+            }
+        }
+    }
+    AI.make_armour = make_armour;
 })(AI || (AI = {}));

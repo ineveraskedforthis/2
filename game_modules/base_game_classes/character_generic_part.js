@@ -22,7 +22,7 @@ class SkillObject {
         this.theory = 0;
     }
 }
-exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher'];
+exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master'];
 function perk_price(tag) {
     switch (tag) {
         case 'meat_master': return 100;
@@ -31,6 +31,7 @@ function perk_price(tag) {
         case 'mage_initiation': return 1000;
         case 'magic_bolt': return 100;
         case 'fletcher': return 200;
+        case 'skin_armour_master': return 1000;
     }
 }
 exports.perk_price = perk_price;
@@ -74,6 +75,11 @@ function perk_requirement(tag, character) {
                 return 'not_enough_magic_skill_15';
             }
             return 'ok';
+        }
+        case 'skin_armour_master': {
+            if (character.skills.clothier.practice < 15) {
+                return 'not_enough_clothier_skill_15';
+            }
         }
     }
 }
@@ -510,7 +516,7 @@ class CharacterGenericPart {
     //market interactions
     async buy(pool, tag, amount, price) {
         if (this.savings.get() >= amount * price) {
-            console.log('sell ' + tag + ' ' + amount + ' ' + price);
+            console.log('buy ' + tag + ' ' + amount + ' ' + price);
             this.savings.transfer(this.trade_savings, amount * price);
             let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id);
             return 'ok';
@@ -526,12 +532,6 @@ class CharacterGenericPart {
         this.stash.transfer(this.trade_stash, tag, amount);
         let order = await this.world.entity_manager.generate_order(pool, 'sell', tag, this, amount, price, this.cell_id);
         return 'ok';
-    }
-    sell_item(index, buyout_price, starting_price) {
-        // let cell = this.get_cell();
-        // if (cell.has_market()) {
-        //     // cell.item_market.sell(this, index, buyout_price, starting_price);
-        // }        
     }
     async clear_orders(pool) {
         await this.world.entity_manager.remove_orders(pool, this);

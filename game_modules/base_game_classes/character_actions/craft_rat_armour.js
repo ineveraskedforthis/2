@@ -1,18 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.character_to_craft_rat_armour_probability = void 0;
+exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = exports.character_to_craft_rat_armour_probability = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
 const market_items_1 = require("../../market/market_items");
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../static_data/items_set_up");
-function craft_rat_armour_probability(skill) {
+function craft_rat_armour_probability(skill, perk) {
     if ((0, market_items_1.nodb_mode_check)())
+        return 1;
+    if (perk)
         return 1;
     return Math.min(0.05 + skill / 20, 1);
 }
 function character_to_craft_rat_armour_probability(character) {
     let skill = character.skills.clothier.practice;
-    return craft_rat_armour_probability(skill);
+    return craft_rat_armour_probability(skill, character.skills.perks.skin_armour_master == true);
 }
 exports.character_to_craft_rat_armour_probability = character_to_craft_rat_armour_probability;
 function generate_rat_skin_craft(arg, cost) {
@@ -41,7 +43,7 @@ function generate_rat_skin_craft(arg, cost) {
                 char.change_fatigue(10);
                 // if (dice < check) {
                 let dice = Math.random();
-                if (dice < craft_rat_armour_probability(skill)) {
+                if (dice < craft_rat_armour_probability(skill, char.skills.perks.skin_armour_master == true)) {
                     let armour = new item_tags_1.Armour(arg);
                     char.equip.add_armour(armour);
                     char.world.socket_manager.send_to_character_user(char, 'alert', 'finished');
@@ -66,7 +68,8 @@ function generate_rat_skin_craft(arg, cost) {
         },
     };
 }
-exports.craft_rat_armour = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT, 10);
+exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = 10;
+exports.craft_rat_armour = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT, exports.RAT_SKIN_ARMOUR_SKIN_NEEDED);
 exports.craft_rat_gloves = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_GLOVES_ARGUMENT, 5);
 exports.craft_rat_pants = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_PANTS_ARGUMENT, 8);
 exports.craft_rat_helmet = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_HELMET_ARGUMENT, 5);

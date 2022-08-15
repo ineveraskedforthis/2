@@ -24,10 +24,12 @@
 }
 
 #messages_frame > .container > .header > div:hover {
+    color: black;
     background-image: url(/static/img/chat_button_selected.png);
 }
 
 #messages_frame > .container > .header > div.selected {
+    color: black;
     background-image: url(/static/img/chat_button_selected.png);
 }
 

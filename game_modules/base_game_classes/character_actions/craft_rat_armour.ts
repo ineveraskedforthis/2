@@ -6,14 +6,15 @@ import { RAT_SKIN } from "../../manager_classes/materials_manager";
 import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../static_data/items_set_up";
 import { PgPool } from "../../world";
 
-function craft_rat_armour_probability(skill: number) {
+function craft_rat_armour_probability(skill: number, perk:boolean) {
     if (nodb_mode_check()) return 1;
+    if (perk) return 1
     return Math.min(0.05 + skill / 20, 1)
 }
 
 export function character_to_craft_rat_armour_probability(character:CharacterGenericPart) {
     let skill = character.skills.clothier.practice
-    return craft_rat_armour_probability(skill)
+    return craft_rat_armour_probability(skill, character.skills.perks.skin_armour_master == true)
 }
 
 
@@ -46,7 +47,7 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
                 char.change_fatigue(10)
                 // if (dice < check) {
                 let dice = Math.random()
-                if (dice < craft_rat_armour_probability(skill)) {
+                if (dice < craft_rat_armour_probability(skill, char.skills.perks.skin_armour_master == true)) {
                     let armour = new Armour(arg)
                     char.equip.add_armour(armour)
                     char.world.socket_manager.send_to_character_user(char, 'alert', 'finished')
@@ -72,7 +73,9 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
     }
 }
 
-export const craft_rat_armour = generate_rat_skin_craft(RAT_SKIN_ARMOUR_ARGUMENT, 10)
+export const RAT_SKIN_ARMOUR_SKIN_NEEDED = 10
+
+export const craft_rat_armour = generate_rat_skin_craft(RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_ARMOUR_SKIN_NEEDED)
 export const craft_rat_gloves = generate_rat_skin_craft(RAT_SKIN_GLOVES_ARGUMENT, 5)
 export const craft_rat_pants = generate_rat_skin_craft(RAT_SKIN_PANTS_ARGUMENT, 8)
 export const craft_rat_helmet = generate_rat_skin_craft(RAT_SKIN_HELMET_ARGUMENT, 5)

@@ -39,7 +39,8 @@
     width: 802px;
     height: 523px;
     overflow: visible;
-    color: rgb(13, 228, 77);
+    /* color: rgb(13, 228, 77); */
+    color: whitesmoke;
 }
 
 #tutorial {

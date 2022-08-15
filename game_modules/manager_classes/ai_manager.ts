@@ -1,10 +1,13 @@
 import { craft_bone_arrow_probability } from "../base_game_classes/character_actions/craft_bone_spear";
+import { RAT_SKIN_ARMOUR_SKIN_NEEDED } from "../base_game_classes/character_actions/craft_rat_armour";
 import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
 import { hostile } from "../base_game_classes/races/racial_hostility";
 import { money, Savings } from "../base_game_classes/savings";
+import { AuctionManagement } from "../market/market_items";
+import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { PgPool, World } from "../world";
 import { ActionManager, CharacterAction } from "./action_manager";
-import { ARROW_BONE, FOOD, MEAT, RAT_BONE, WOOD } from "./materials_manager";
+import { ARROW_BONE, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./materials_manager";
 
 
 // function MAYOR_AI(mayor: CharacterGenericPart) {
@@ -157,6 +160,10 @@ export class AiManager {
         if ((char.skills.woodwork.practice > 40) || (char.skills.perks.fletcher)) {
             await AI.make_arrow(pool, this.world.action_manager, char)
         }
+
+        if ((char.skills.perks.skin_armour_master)) {
+            await AI.make_armour(pool, this.world.action_manager, char)
+        }
     }
 }
 
@@ -256,6 +263,37 @@ namespace AI {
             await character.world.entity_manager.remove_orders_by_tag(pool, character, ARROW_BONE)
             arrows_in_stash = character.stash.get(ARROW_BONE)
             await character.sell(pool, ARROW_BONE, arrows_in_stash, sell_price)
+        }
+    }
+
+    export async function make_armour(pool:PgPool, action_manager:ActionManager, character:CharacterGenericPart) {
+        let base_price_skin = 10 as money
+
+        let resource = character.stash.get(RAT_SKIN)
+        let savings = character.savings.get()
+        
+
+        let skin_to_buy = Math.floor(savings / base_price_skin)
+
+        console.log('armour')
+        console.log(resource, savings, skin_to_buy)
+        if (skin_to_buy > 5) {
+            await character.world.entity_manager.remove_orders_by_tag(pool, character, RAT_SKIN)
+
+            await character.buy(pool, RAT_SKIN, skin_to_buy, base_price_skin)
+        }
+
+        if (resource > RAT_SKIN_ARMOUR_SKIN_NEEDED) {
+            await action_manager.start_action(CharacterAction.CRAFT_RAT_ARMOUR, character, undefined)
+        }
+
+        let data = character.equip.data.backpack.armours
+        for (let index in data ) {
+            index = index as any
+            if (data[index]?.type == ARMOUR_TYPE.BODY) {
+                let price = Math.floor(base_price_skin * RAT_SKIN_ARMOUR_SKIN_NEEDED * 1.5) as money
+                await AuctionManagement.sell(pool, character.world.entity_manager, character.world.socket_manager, character, "armour", index as any, price, price)
+            }
         }
     }
 }

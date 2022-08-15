@@ -33,8 +33,8 @@ class SkillObject {
     }
 }
 
-export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'
-export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher']
+export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'|'skin_armour_master'
+export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master']
 export interface PerksTable {
     meat_master?: boolean; //100% chance to prepare meat
     claws?: boolean; // + unarmed damage
@@ -43,6 +43,7 @@ export interface PerksTable {
     mage_initiation?:boolean
     magic_bolt?:boolean
     fletcher?:boolean
+    skin_armour_master?:boolean
 }
 
 export function perk_price(tag: Perks):number {
@@ -53,6 +54,7 @@ export function perk_price(tag: Perks):number {
         case 'mage_initiation': return 1000
         case 'magic_bolt': return 100
         case 'fletcher': return 200
+        case 'skin_armour_master': return 1000
     }
 }
 export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
@@ -95,6 +97,11 @@ export function perk_requirement(tag:Perks, character: CharacterGenericPart) {
                 return 'not_enough_magic_skill_15'
             }
             return 'ok'
+        }
+        case 'skin_armour_master': {
+            if (character.skills.clothier.practice < 15) {
+                return 'not_enough_clothier_skill_15'
+            }
         }
     }
 }
@@ -675,7 +682,7 @@ export class CharacterGenericPart {
 
     async buy(pool: PgPool, tag:material_index, amount: number, price: money) {
         if (this.savings.get() >= amount * price) {
-            console.log('sell ' + tag + ' ' + amount + ' ' + price)
+            console.log('buy ' + tag + ' ' + amount + ' ' + price)
             this.savings.transfer(this.trade_savings, amount * price as money)
             let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id)
             return 'ok'
@@ -694,12 +701,6 @@ export class CharacterGenericPart {
         return 'ok'
     }
 
-    sell_item(index: number, buyout_price: number, starting_price: number) {
-        // let cell = this.get_cell();
-        // if (cell.has_market()) {
-        //     // cell.item_market.sell(this, index, buyout_price, starting_price);
-        // }        
-    }
 
     async clear_orders(pool:any) {
         await this.world.entity_manager.remove_orders(pool, this)
