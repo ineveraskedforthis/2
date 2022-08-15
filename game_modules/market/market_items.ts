@@ -307,7 +307,8 @@ export namespace AuctionManagement {
         for (let order of manager.item_orders) {
             if (order == undefined) continue;
             if (order.flags.finished) continue;
-            if (order.owner_id = who.id) cancel_order_safe(pool, manager, socket_manager, who, order.id)
+            console.log(order.owner_id, who.id)
+            if (order.owner_id == who.id) cancel_order_safe(pool, manager, socket_manager, who, order.id)
         }
     }
 }

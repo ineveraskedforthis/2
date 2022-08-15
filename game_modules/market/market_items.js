@@ -256,7 +256,7 @@ var AuctionManagement;
         let owner = order.owner;
         order.flags.finished = true;
         let item = order.item;
-        console.log(item);
+        // console.log(item)
         switch (item.item_type) {
             case 'armour':
                 owner.equip.add_armour(item);
@@ -273,7 +273,8 @@ var AuctionManagement;
                 continue;
             if (order.flags.finished)
                 continue;
-            if (order.owner_id = who.id)
+            console.log(order.owner_id, who.id);
+            if (order.owner_id == who.id)
                 cancel_order_safe(pool, manager, socket_manager, who, order.id);
         }
     }

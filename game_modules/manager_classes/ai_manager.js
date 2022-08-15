@@ -143,7 +143,7 @@ class AiManager {
         if ((char.skills.woodwork.practice > 40) || (char.skills.perks.fletcher == true)) {
             await AI.make_arrow(pool, this.world.action_manager, char);
         }
-        if ((char.skills.perks.skin_armour_master == true)) {
+        if ((char.skills.clothier.practice > 40) || (char.skills.perks.skin_armour_master == true)) {
             await AI.make_armour(pool, this.world.action_manager, char);
         }
     }
@@ -208,8 +208,8 @@ var AI;
             let savings = character.savings.get();
             let wood_to_buy = -((-bones + 10 * wood) * base_price_bones - savings) / (10 * base_price_bones + base_price_wood);
             let bones_to_buy = (savings - wood_to_buy * base_price_wood) / base_price_bones;
-            console.log(savings, bones, wood);
-            console.log(wood_to_buy, bones_to_buy);
+            // console.log(savings, bones, wood)
+            // console.log(wood_to_buy, bones_to_buy)
             if ((wood_to_buy >= 1) && (bones_to_buy >= 1)) {
                 await character.buy(pool, materials_manager_1.WOOD, Math.floor(wood_to_buy), base_price_wood);
                 await character.buy(pool, materials_manager_1.RAT_BONE, Math.floor(bones_to_buy), base_price_bones);
@@ -236,8 +236,8 @@ var AI;
         let resource = character.stash.get(materials_manager_1.RAT_SKIN);
         let savings = character.savings.get();
         let skin_to_buy = Math.floor(savings / base_price_skin);
-        console.log('armour');
-        console.log(resource, savings, skin_to_buy);
+        // console.log('armour')
+        // console.log(resource, savings, skin_to_buy)
         if (skin_to_buy > 5) {
             await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.RAT_SKIN);
             await character.buy(pool, materials_manager_1.RAT_SKIN, skin_to_buy, base_price_skin);
