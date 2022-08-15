@@ -1,11 +1,11 @@
 import { ARROW_BONE } from "../manager_classes/materials_manager";
-import {Armour, ARMOUR_TYPE, armour_types, base_damage, base_resist, ranged_base_damage, Weapon, damage_affixes_effects,protection_affixes_effects, get_power, update_character} from "../static_data/item_tags"
+import {Armour, ARMOUR_TYPE, armour_types, base_damage, base_resist, ranged_base_damage, Weapon} from "../static_data/item_tags"
 import { WEAPON_TYPE } from "../static_data/type_script_types";
+import { damage_affixes_effects, get_power, protection_affixes_effects, update_character } from "./affix";
 import { CharacterGenericPart } from "./character_generic_part";
 import { Inventory } from "./inventory";
 import { AttackResult } from "./misc/attack_result";
 import { DamageByTypeObject } from "./misc/damage_types";
-
 
 class EquipData {
     weapon: Weapon|undefined;
