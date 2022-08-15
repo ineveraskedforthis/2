@@ -256,8 +256,11 @@ var AuctionManagement;
         let owner = order.owner;
         order.flags.finished = true;
         let item = order.item;
+        console.log(item);
         switch (item.item_type) {
-            case 'armour': owner.equip.add_armour(item);
+            case 'armour':
+                owner.equip.add_armour(item);
+                break;
             case 'weapon': owner.equip.add_weapon(item);
         }
         socket_manager.send_item_market_update(order.owner.cell_id);

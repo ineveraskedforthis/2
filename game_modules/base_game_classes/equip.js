@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Equip = void 0;
-var { damage_affixes_effects, protection_affixes_effects, get_power, slots, update_character } = require("../static_data/item_tags.js");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const item_tags_1 = require("../static_data/item_tags");
+const affix_1 = require("./affix");
 const inventory_1 = require("./inventory");
 const damage_types_1 = require("./misc/damage_types");
 class EquipData {
@@ -72,7 +72,7 @@ class Equip {
             }
             for (let i = 0; i < right_hand.affixes.length; i++) {
                 let affix = right_hand.affixes[i];
-                result = damage_affixes_effects[affix.tag](result, affix.tier);
+                result = affix_1.damage_affixes_effects[affix.tag](result, affix.tier);
             }
         }
         else {
@@ -87,7 +87,7 @@ class Equip {
         }
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
-            let f = get_power[affix.tag];
+            let f = affix_1.get_power[affix.tag];
             if (f != undefined) {
                 result = f(result, affix.tier);
             }
@@ -101,7 +101,7 @@ class Equip {
         resists = (0, item_tags_1.base_resist)(resists, item);
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
-            let f = protection_affixes_effects[affix.tag];
+            let f = affix_1.protection_affixes_effects[affix.tag];
             if (f != undefined) {
                 resists = f(resists, affix.tier);
             }
@@ -133,7 +133,7 @@ class Equip {
         }
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
-            let f = update_character[affix.tag];
+            let f = affix_1.update_character[affix.tag];
             if (f != undefined) {
                 f(agent, affix.tier);
             }
@@ -209,10 +209,12 @@ class Equip {
         this.changed = true;
     }
     add_weapon(item) {
+        let responce = -1;
         if (item != undefined) {
-            this.data.backpack.weapons.push(item);
+            responce = this.data.backpack.weapons.push(item) - 1;
         }
         this.changed = true;
+        return responce;
     }
     add_armour(item) {
         if (item != undefined) {

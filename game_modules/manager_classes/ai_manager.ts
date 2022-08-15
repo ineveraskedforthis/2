@@ -153,15 +153,15 @@ export class AiManager {
             return
         }
 
-        if ((char.skills.cooking.practice > 40) || (char.skills.perks.meat_master)) {
+        if ((char.skills.cooking.practice > 40) || (char.skills.perks.meat_master == true)) {
             await AI.cook_food(pool, this.world.action_manager, char)
         }
 
-        if ((char.skills.woodwork.practice > 40) || (char.skills.perks.fletcher)) {
+        if ((char.skills.woodwork.practice > 40) || (char.skills.perks.fletcher == true)) {
             await AI.make_arrow(pool, this.world.action_manager, char)
         }
 
-        if ((char.skills.perks.skin_armour_master)) {
+        if ((char.skills.perks.skin_armour_master == true)) {
             await AI.make_armour(pool, this.world.action_manager, char)
         }
     }

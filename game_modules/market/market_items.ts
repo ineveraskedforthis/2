@@ -3,7 +3,7 @@ import { CharacterGenericPart } from "../base_game_classes/character_generic_par
 import { money, Savings } from "../base_game_classes/savings";
 import { EntityManager } from "../manager_classes/entity_manager";
 import { SocketManager } from "../manager_classes/socket_manager";
-import { affix, Armour, ArmourConstructorArgument, Weapon, WeaponConstructorArgument } from "../static_data/item_tags";
+import { Armour, ArmourConstructorArgument, Weapon, WeaponConstructorArgument } from "../static_data/item_tags";
 import { PgPool } from "../world";
 import { OrderItemSocketData } from "../../shared/market_order_data";
 
@@ -292,8 +292,9 @@ export namespace AuctionManagement {
 
         order.flags.finished = true
         let item = order.item
+        // console.log(item)
         switch(item.item_type) {
-            case 'armour': owner.equip.add_armour(item as Armour);
+            case 'armour': owner.equip.add_armour(item as Armour); break;
             case 'weapon': owner.equip.add_weapon(item as Weapon)
         }
 

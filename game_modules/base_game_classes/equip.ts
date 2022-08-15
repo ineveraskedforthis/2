@@ -227,10 +227,12 @@ export class Equip {
     }
 
     add_weapon(item:Weapon) {
+        let responce = -1
         if (item != undefined) {
-            this.data.backpack.weapons.push(item);
+            responce = this.data.backpack.weapons.push(item) - 1;
         }
         this.changed = true
+        return responce
     }
 
     add_armour(item:Armour) {

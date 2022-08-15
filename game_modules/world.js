@@ -16,6 +16,7 @@ const graci_1 = require("./base_game_classes/races/graci");
 const elo_1 = require("./base_game_classes/races/elo");
 const item_tags_1 = require("./static_data/item_tags");
 const items_set_up_1 = require("./static_data/items_set_up");
+const affix_1 = require("./base_game_classes/affix");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
 //     total_loot_chance_weight[i] = 0
@@ -108,8 +109,9 @@ class World {
             await test_person.sell(pool, materials_manager_1.FOOD, 200, 15);
             await test_person.sell(pool, materials_manager_1.ZAZ, 100, 200);
             let spear = new item_tags_1.Weapon(items_set_up_1.BONE_SPEAR_ARGUMENT);
-            test_person.equip.add_weapon(spear);
-            await market_items_1.AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", 0, 10, 10);
+            spear.affixes.push(new affix_1.affix('daemonic', 1));
+            let id = test_person.equip.add_weapon(spear);
+            await market_items_1.AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", id, 10, 10);
         }
         let armour_master = await this.create_new_character(pool, 'Armour master', starting_cell_id, -1);
         armour_master.skills.clothier.practice = 100;

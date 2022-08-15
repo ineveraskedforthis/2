@@ -23,6 +23,7 @@ import { graci } from "./base_game_classes/races/graci";
 import { elo } from "./base_game_classes/races/elo";
 import { Weapon } from './static_data/item_tags';
 import { BONE_SPEAR_ARGUMENT } from './static_data/items_set_up';
+import { affix } from './base_game_classes/affix';
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -171,8 +172,9 @@ export class World {
             await test_person.sell(pool, FOOD, 200, 15 as money)
             await test_person.sell(pool, ZAZ, 100, 200 as money)
             let spear = new Weapon(BONE_SPEAR_ARGUMENT)
-            test_person.equip.add_weapon(spear)
-            await AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", 0, 10 as money, 10 as money)
+            spear.affixes.push(new affix('daemonic', 1))
+            let id  = test_person.equip.add_weapon(spear)
+            await AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", id, 10 as money, 10 as money)
         }
 
 
