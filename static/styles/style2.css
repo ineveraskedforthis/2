@@ -248,6 +248,7 @@ body {
     border: white 1px solid;
     background-color: rgb(206, 156, 164);
     color: rgb(60, 7, 7);
+    border-radius: 10px;
 }
 
 .goods_type_stash:hover {
@@ -286,16 +287,20 @@ body {
 }
 
 .craft_option:hover {
-    background-color: yellow;
+    background: linear-gradient(0.25turn, palegoldenrod, transparent);
+}
+.craft_option:hover > .goods_icon {
+    color: black;
+    font-weight: bold;
 }
 
 .craft_option:active{
-    background-color: greenyellow;
+    background: linear-gradient(0.25turn, greenyellow, transparent);
 }
-
-
-
-
+.craft_option:active > .goods_icon {
+    color: black;
+    font-weight: bold;
+}
 
 .goods_icon {
     width: 30px;
