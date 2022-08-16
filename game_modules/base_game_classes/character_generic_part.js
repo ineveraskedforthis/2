@@ -743,6 +743,11 @@ class CharacterGenericPart {
         let power = this.stats.magic_power * this.equip.get_magic_power_modifier();
         return power;
     }
+    get_enchant_rating() {
+        let power = this.get_magic_power();
+        let skill = this.skills.magic_mastery.practice;
+        return (power / 10 * skill);
+    }
     get_phys_power() {
         let power = this.stats.phys_power * this.equip.get_phys_power_modifier();
         return power;
@@ -797,7 +802,7 @@ class CharacterGenericPart {
             final = final / (distance - 1.5);
             return Math.min(1, Math.max(0, final));
         }
-        return Math.min(1, Math.max(0.2, final));
+        return Math.min(1, Math.max(0.1, final));
     }
     get_attack_chance(mod, distance) {
         let weapon = this.equip.data.weapon;

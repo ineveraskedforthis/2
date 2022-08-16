@@ -3,7 +3,7 @@ import { CharacterGenericPart } from "./character_generic_part";
 import { AttackResult } from "./misc/attack_result";
 import { DamageByTypeObject } from "./misc/damage_types";
 
-export type affix_tag = 'sharp'|'heavy'|'hot'|'precise'|'of_power'|'of_madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'of_elodino_pleasure'|'of_graci_beauty'|'of_elder_beast'|'of_protection'|'of_painful_protection'
+export type affix_tag = 'of_heat'|'layered'|'sharp'|'heavy'|'hot'|'precise'|'of_power'|'of_madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'of_elodino_pleasure'|'of_graci_beauty'|'of_elder_beast'|'of_protection'|'of_painful_protection'
 
 export class affix{
     tag: affix_tag;
@@ -19,11 +19,11 @@ export function get_potential_affix_weapon(enchant_rating:number, item:Weapon):{
     potential_affix.push({tag: 'hot', weight: 1})
     potential_affix.push({tag: 'of_power', weight: 1})
     if ((item.impact_type == IMPACT_TYPE.POINT) || (item.impact_type == IMPACT_TYPE.EDGE)) {
-        potential_affix.push({tag: 'sharp', weight: 20})
+        potential_affix.push({tag: 'sharp', weight: 10})
     }
     if ((item.impact_type == IMPACT_TYPE.EDGE)||(item.impact_type == IMPACT_TYPE.HEAD)){
-        potential_affix.push({tag: 'sharp', weight: 10})
-        potential_affix.push({tag: 'heavy', weight: 10})
+        potential_affix.push({tag: 'sharp', weight: 6})
+        potential_affix.push({tag: 'heavy', weight: 5})
         potential_affix.push({tag: 'notched', weight: 2})
     }
 
@@ -37,14 +37,14 @@ export function get_potential_affix_weapon(enchant_rating:number, item:Weapon):{
 }
 
 export function get_potential_affix_armour(enchant_rating:number, item:Armour):{tag: affix_tag, weight: number}[] {
-    return [{tag: 'thick', weight: 10}, {tag: 'of_protection', weight: 1}]
+    return [{tag: 'thick', weight: 10}, {tag: 'layered', weight: 10}, {tag: 'hard', weight: 10}, {tag: 'of_heat', weight: 3}, {tag: 'of_power', weight: 3}, {tag: 'of_protection', weight: 1}, {tag: 'of_painful_protection', weight: 1}]
 }
 
 
 export function enchant_item(enchant_rating: number, item: Weapon|Armour, potential_affix:{tag: affix_tag, weight: number}[]) {
     // enchant success
     let current_affixes = item.affixes.length
-    let difficulty = current_affixes * current_affixes + 10
+    let difficulty = 10 * current_affixes * current_affixes
     let luck = Math.random()
     if (((luck + 1) * enchant_rating) < difficulty) {
         return 'fail'
@@ -98,6 +98,8 @@ export const damage_affixes_effects:{[_ in affix_tag]: AttackModificationFunctio
         of_painful_protection: dummy_attack_mod,
         of_elder_beast: dummy_attack_mod,
         of_protection: dummy_attack_mod,
+        layered: dummy_attack_mod,
+        of_heat: dummy_attack_mod,
         sharp: (result: AttackResult, tier: number) => {
             result.damage.pierce += tier * 5;
             result.damage.slice += tier * 5
@@ -156,6 +158,16 @@ export const protection_affixes_effects:{[_ in affix_tag]: DamageModificationFun
         thick: (resists: DamageByTypeObject, tier: number) => {
             resists.pierce += tier * 1;
             resists.slice += tier * 2;
+            return resists;
+        },
+
+        layered: (resists: DamageByTypeObject, tier: number) => {
+            resists.pierce += tier * 3;
+            return resists;
+        },
+
+        of_heat: (resists: DamageByTypeObject, tier: number) => {
+            resists.fire += tier * 3;
             return resists;
         },
 

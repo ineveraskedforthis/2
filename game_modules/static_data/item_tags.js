@@ -34,7 +34,7 @@ class Armour {
         this.material = data.material;
         this.type = data.type;
         this.quality = data.quality;
-        this.affixes = data.affixes;
+        this.affixes = [...data.affixes];
         this.item_type = 'armour';
     }
     get_weight() {
@@ -91,7 +91,7 @@ class Weapon {
         this.impact_type = data.impact_type;
         this.impact_quality = data.impact_quality;
         this.impact_weight = impact_size_to_number(this.impact_size) * this.impact_material.density;
-        this.affixes = data.affixes;
+        this.affixes = [...data.affixes];
         if (data.ranged == true) {
             this.ranged = true;
         }

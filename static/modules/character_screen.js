@@ -15,13 +15,23 @@ function send_update_request(socket) {
 }
 
 function send_equip_weapon_message(socket, index) {
-    socket.emit('equip-weapon', index);
+    let value = document.getElementById('enchant').checked
+    if (value) {
+        socket.emit('enchant-weapon', index);
+    } else {
+        socket.emit('equip-weapon', index);
+    }    
     socket.emit('char-info-detailed');
 }
 
 
 function send_equip_armour_message(socket, index) {
-    socket.emit('equip-armour', index);
+    let value = document.getElementById('enchant').checked
+    if (value) {
+        socket.emit('enchant-armour', index);
+    } else {
+        socket.emit('equip-armour', index);
+    }
     socket.emit('char-info-detailed');
 }
 
@@ -86,6 +96,47 @@ function send_sell_item_request(socket) {
     let starting_price = document.getElementById('starting_price').value;
 
     socket.emit('sell-item', {index: index, buyout_price: buyout_price, starting_price: starting_price});
+}
+
+function item_to_text_div(item) {
+    let name = item.tag
+    let amount_of_affixes = 0
+    for (let j = 0; j < item.affixes; j++){
+        let affix = item.affixes_list[j];
+        if (affix != undefined){
+            if (affix.tag.startsWith('of_')) name += ' ' + affix.tag.replaceAll('_', ' ')
+            else name = affix.tag.replaceAll('_', ' ') + ' ' + name
+            amount_of_affixes += 1
+        }
+    }
+    let result = document.createElement('div')
+    result.classList.add('item_tier_' + Math.min(amount_of_affixes, 4))
+    result.classList.add('item_label')
+    result.innerHTML = name
+    return result
+}
+
+function build_item_div(index, item, type, socket) {
+    let row = document.createElement('div')
+    
+    let label = item_to_text_div(item)
+    // let label_damage = item.base_damage.
+
+    row.appendChild(label)
+    row.classList.add('item_row')
+
+    if (type == 'weapon') {
+        ((index) => 
+            row.onclick = () => send_equip_weapon_message(socket, index)
+        )(index)
+    } else {
+        ((index) => 
+            row.onclick = () => send_equip_armour_message(socket, index)
+        )(index)
+    }
+    
+
+    return row    
 }
 
 export class CharacterScreen {
@@ -230,62 +281,20 @@ export class CharacterScreen {
         for (let i = 0; i < inv.weapons.length; i++) {
             if ((inv.weapons[i] != null) && (inv.weapons[i] != undefined)) {
                 let weapon = inv.weapons[i]
-                let row = this.table_weapon.insertRow();
-                // row.style.heigh = '24px'
-                let type = row.insertCell(0); 
-                type.innerHTML = weapon.tag
-                for (let j = 0; j < weapon.affixes; j++){
-                    let affix = weapon.affixes_list[j];
-                    let a = row.insertCell(j + 1);
-                    if (affix != undefined){
-                        a.innerHTML = affix.tag + ' ' + affix.tier;
-                    }
-                }
-                for (let j = weapon.affixes + 1; j < 8; j++) {
-                    row.insertCell(j)
-                }
-                let button = document.createElement('button');
-                button.innerHTML = 'equip';
-                let tmp = row.insertCell(8)
-                tmp.appendChild(button);
-                ((index) => 
-                    button.onclick = () => send_equip_weapon_message(this.socket, index)
-                )(i)
-
+                let row = build_item_div(i, weapon, 'weapon', this.socket)
+                this.table_weapon.appendChild(row)
                 add_option(weapon.tag, 'weapon', i)
             }
         }
         
         for (let i = 0; i < inv.armours.length; i++) {
-            if (inv.armours[i] != null) {
+            if ((inv.armours[i] != null) && (inv.armours[i] != undefined)) {
                 let armour = inv.armours[i]
-                let row = this.table_armour.insertRow();
-                let type = row.insertCell(0); 
-                type.innerHTML = armour.tag
-                for (let j = 0; j < armour.affixes; j++){
-                    let affix = armour.affixes_list[j];
-                    let a = row.insertCell(j + 1);
-                    if (affix != undefined){
-                        a.innerHTML = affix.tag + ' ' + affix.tier;
-                    }
-                }
-                for (let j = armour.affixes + 1; j < 8; j++) {
-                    row.insertCell(j)
-                }
-
-                let button = document.createElement('button');
-                button.innerHTML = 'equip';
-                let tmp = row.insertCell(8)
-                tmp.appendChild(button);
-                ((index) => 
-                    button.onclick = () => send_equip_armour_message(this.socket, index)
-                )(i)
-
+                let row = build_item_div(i, armour, 'armour', this.socket)
+                this.table_armour.appendChild(row)
                 add_option(armour.tag, 'armour', i)
             }
-        }
-
-        
+        }        
     }
 
     update_stash(data) {
@@ -306,8 +315,17 @@ export class CharacterScreen {
             // image.style = get_item_image(item.tag)
             let label = document.querySelector('#eq_' + tag + '> .item_label')
             // console.log(item?.tag)
-            label.innerHTML = item?.tag||'empty'
-
+            if (item == undefined) {
+                label.innerHTML = 'empty'
+                label.classList.remove(...label.classList);
+                label.classList.add('item_label')
+            } else {
+                let tmp = item_to_text_div(item)
+                label.innerHTML = tmp.innerHTML
+                label.classList = tmp.classList
+            }
+            
+            
             let tooltip = document.getElementById('eq_' + tag + '_tooltip')
             tooltip.innerHTML = ''
             let tmp = document.createElement('div');

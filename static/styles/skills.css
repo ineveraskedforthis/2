@@ -49,7 +49,7 @@
     grid-template-columns: repeat(auto-fill, 100px);
     grid-auto-rows: 100px;
     grid-gap: 10px; */
-    display: flex;
+    /* display: flex; */
     flex-direction: column;
     overflow-y: scroll;
     overflow-x: auto;

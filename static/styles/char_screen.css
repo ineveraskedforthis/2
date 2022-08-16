@@ -10,7 +10,7 @@
     height: 25px;
     display: flex;
     flex-direction: row;
-    margin-bottom: 30px;
+    /* margin-bottom: 30px; */
 }
 
 .header_container> .header{
@@ -20,7 +20,7 @@
     text-align: center;
     border: white 1px solid;
     padding: 4px;
-    margin: 10px;
+    /* margin: 10px; */
 }
 
 .header_container> .header:hover{
@@ -28,14 +28,50 @@
 }
 
 .header_container> .header.selected{
+    flex-grow: 2;
     background-color: rgba(10, 10, 200, 0.5);
 }
+
+.item_row {
+    height: 16px
+}
+
+.item_row:hover {
+    background: linear-gradient(0.25turn, transparent, palegoldenrod);
+}
+.item_row:active {
+    background: linear-gradient(0.25turn, transparent, yellow, yellow);
+}
+
+.item_tier_0 {
+    color: white;
+}
+.item_tier_1 {
+    color: lime;
+}
+.item_tier_2 {
+    color: skyblue
+}
+.item_tier_3 {
+    color: magenta;
+}
+.item_tier_4 {
+    color: gold;
+}
+
 
 .backpack_tab {
     margin: 10px;
 }
 .backpack_tab > tbody > tr {
     height: 24px;
+}
+
+#backpacks_collection {
+    position: absolute;
+    width: 100%;
+    height: 275px;
+    overflow-y: auto;
 }
 
 #cs_first_column{

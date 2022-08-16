@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.affix = void 0;
+exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.roll_affix_armour = exports.roll_affix_weapon = exports.enchant_item = exports.get_potential_affix_armour = exports.get_potential_affix_weapon = exports.affix = void 0;
 class affix {
     constructor(tag, tier) {
         this.tag = tag;
@@ -8,6 +8,65 @@ class affix {
     }
 }
 exports.affix = affix;
+function get_potential_affix_weapon(enchant_rating, item) {
+    let potential_affix = [];
+    potential_affix.push({ tag: 'hot', weight: 1 });
+    potential_affix.push({ tag: 'of_power', weight: 1 });
+    if ((item.impact_type == 0 /* IMPACT_TYPE.POINT */) || (item.impact_type == 1 /* IMPACT_TYPE.EDGE */)) {
+        potential_affix.push({ tag: 'sharp', weight: 10 });
+    }
+    if ((item.impact_type == 1 /* IMPACT_TYPE.EDGE */) || (item.impact_type == 2 /* IMPACT_TYPE.HEAD */)) {
+        potential_affix.push({ tag: 'sharp', weight: 6 });
+        potential_affix.push({ tag: 'heavy', weight: 5 });
+        potential_affix.push({ tag: 'notched', weight: 2 });
+    }
+    potential_affix.push({ tag: 'precise', weight: 5 });
+    if (enchant_rating > 20) {
+        potential_affix.push({ tag: 'daemonic', weight: 1 });
+        potential_affix.push({ tag: 'of_madness', weight: 1 });
+    }
+    return potential_affix;
+}
+exports.get_potential_affix_weapon = get_potential_affix_weapon;
+function get_potential_affix_armour(enchant_rating, item) {
+    return [{ tag: 'thick', weight: 10 }, { tag: 'layered', weight: 10 }, { tag: 'hard', weight: 10 }, { tag: 'of_heat', weight: 3 }, { tag: 'of_power', weight: 3 }, { tag: 'of_protection', weight: 1 }, { tag: 'of_painful_protection', weight: 1 }];
+}
+exports.get_potential_affix_armour = get_potential_affix_armour;
+function enchant_item(enchant_rating, item, potential_affix) {
+    // enchant success
+    let current_affixes = item.affixes.length;
+    let difficulty = 10 * current_affixes * current_affixes;
+    let luck = Math.random();
+    if (((luck + 1) * enchant_rating) < difficulty) {
+        return 'fail';
+    }
+    //selection of the affix
+    let total_weight = 0;
+    for (let aff of potential_affix) {
+        total_weight += aff.weight;
+    }
+    let rolled_position = Math.random() * total_weight;
+    let current_weight = 0;
+    for (let aff of potential_affix) {
+        current_weight = current_weight + aff.weight;
+        if (current_weight >= rolled_position) {
+            item.affixes.push(new affix(aff.tag, 1));
+            return 'ok';
+        }
+    }
+    return '???';
+}
+exports.enchant_item = enchant_item;
+function roll_affix_weapon(enchant_rating, item) {
+    let potential_affix = get_potential_affix_weapon(enchant_rating, item);
+    return enchant_item(enchant_rating, item, potential_affix);
+}
+exports.roll_affix_weapon = roll_affix_weapon;
+function roll_affix_armour(enchant_rating, item) {
+    let potential_affix = get_potential_affix_armour(enchant_rating, item);
+    return enchant_item(enchant_rating, item, potential_affix);
+}
+exports.roll_affix_armour = roll_affix_armour;
 function dummy_attack_mod(result, tier) {
     return result;
 }
@@ -16,12 +75,14 @@ function dummy_damage_mod(result, tier) {
 }
 exports.damage_affixes_effects = {
     thick: dummy_attack_mod,
-    elodino_pleasure: dummy_attack_mod,
+    of_elodino_pleasure: dummy_attack_mod,
     hard: dummy_attack_mod,
-    power_of_graci_beauty: dummy_attack_mod,
-    pain_shell: dummy_attack_mod,
-    elder_beast_skin: dummy_attack_mod,
-    protection: dummy_attack_mod,
+    of_graci_beauty: dummy_attack_mod,
+    of_painful_protection: dummy_attack_mod,
+    of_elder_beast: dummy_attack_mod,
+    of_protection: dummy_attack_mod,
+    layered: dummy_attack_mod,
+    of_heat: dummy_attack_mod,
     sharp: (result, tier) => {
         result.damage.pierce += tier * 5;
         result.damage.slice += tier * 5;
@@ -39,7 +100,7 @@ exports.damage_affixes_effects = {
         result.chance_to_hit += tier * 0.02;
         return result;
     },
-    madness: (result, tier) => {
+    of_madness: (result, tier) => {
         result.damage.blunt += 20 * tier;
         result.attacker_status_change.rage += 2 * tier;
         return result;
@@ -60,7 +121,7 @@ exports.damage_affixes_effects = {
         result.attacker_status_change.blood += 2 * tier;
         return result;
     },
-    power_battery: (result, tier) => {
+    of_power: (result, tier) => {
         result.damage.blunt += 1 * tier;
         return result;
     }
@@ -72,77 +133,81 @@ exports.protection_affixes_effects = {
     daemonic: dummy_damage_mod,
     heavy: dummy_damage_mod,
     precise: dummy_damage_mod,
-    madness: dummy_damage_mod,
+    of_madness: dummy_damage_mod,
     calm: dummy_damage_mod,
     thick: (resists, tier) => {
         resists.pierce += tier * 1;
         resists.slice += tier * 2;
         return resists;
     },
-    power_battery: (resists, tier) => {
+    layered: (resists, tier) => {
+        resists.pierce += tier * 3;
         return resists;
     },
+    of_heat: (resists, tier) => {
+        resists.fire += tier * 3;
+        return resists;
+    },
+    of_power: dummy_damage_mod,
     hard: (resists, tier) => {
         resists.blunt += tier * 1;
         resists.pierce += tier * 1;
         resists.slice += tier * 1;
         return resists;
     },
-    elder_beast_skin: (resists, tier) => {
+    of_elder_beast: (resists, tier) => {
         resists.blunt += 2 * tier;
         resists.pierce += 2 * tier;
         resists.slice += 2 * tier;
         return resists;
     },
-    elodino_pleasure: (resists, tier) => {
+    of_elodino_pleasure: (resists, tier) => {
         resists.blunt += -2 * tier;
         resists.pierce += -2 * tier;
         resists.slice += -2 * tier;
         resists.fire += -2 * tier;
         return resists;
     },
-    protection: (resists, tier) => {
+    of_protection: (resists, tier) => {
         resists.blunt += +2 * tier;
         resists.pierce += +2 * tier;
         resists.slice += +2 * tier;
         resists.fire += +2 * tier;
         return resists;
     },
-    pain_shell: (resists, tier) => {
+    of_painful_protection: (resists, tier) => {
         resists.blunt += +5 * tier;
         resists.pierce += +5 * tier;
         resists.slice += +5 * tier;
         resists.fire += +5 * tier;
         return resists;
     },
-    power_of_graci_beauty: (resists, tier) => {
-        return resists;
-    },
+    of_graci_beauty: dummy_damage_mod,
 };
 exports.get_power = {
-    power_battery: (data, tier) => {
-        data += tier;
-        return data;
-    },
-    elodino_pleasure: (data, tier) => {
+    of_power: (data, tier) => {
         data += tier * 2;
         return data;
     },
-    power_of_graci_beauty: (data, tier) => {
+    of_elodino_pleasure: (data, tier) => {
+        data += tier * 4;
+        return data;
+    },
+    of_graci_beauty: (data, tier) => {
         data += tier * 2;
         return data;
     }
 };
 exports.update_character = {
-    elder_beast_skin: (agent, tier) => {
+    of_elder_beast: (agent, tier) => {
         agent.change_stress(5 * tier);
         agent.change_rage(5 * tier);
         agent.change_hp(1 * tier);
     },
-    power_of_graci_beauty: (agent, tier) => {
+    of_graci_beauty: (agent, tier) => {
         agent.change_stress(1 * tier);
     },
-    pain_shell: (agent, tier) => {
+    of_painful_protection: (agent, tier) => {
         agent.change_hp(-1 * tier);
     }
 };

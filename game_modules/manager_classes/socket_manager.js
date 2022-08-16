@@ -16,6 +16,7 @@ const gather_wood_1 = require("../base_game_classes/character_actions/gather_woo
 const craft_rat_armour_1 = require("../base_game_classes/character_actions/craft_rat_armour");
 const market_items_1 = require("../market/market_items");
 const craft_bone_spear_1 = require("../base_game_classes/character_actions/craft_bone_spear");
+const affix_1 = require("../base_game_classes/affix");
 class SocketManager {
     constructor(pool, io, world, flag_ready) {
         this.world = world;
@@ -60,6 +61,8 @@ class SocketManager {
             socket.on('send-market-data', (msg) => { user.market_data = msg; });
             socket.on('equip-armour', async (msg) => this.equip_armour(user, msg));
             socket.on('equip-weapon', async (msg) => this.equip_weapon(user, msg));
+            socket.on('enchant-armour', async (msg) => this.enchant_armour(user, msg));
+            socket.on('enchant-weapon', async (msg) => this.enchant_weapon(user, msg));
             socket.on('switch-weapon', async (msg) => this.switch_weapon(user));
             socket.on('unequip', async (msg) => this.unequip(user, msg));
             socket.on('eat', async () => this.eat(user));
@@ -128,6 +131,40 @@ class SocketManager {
             let character = user.get_character();
             await character.equip_weapon(msg);
             this.send_equip_update_to_character(character);
+        }
+    }
+    async enchant_weapon(user, msg) {
+        if (user.logged_in) {
+            let character = user.get_character();
+            let item = character.equip.data.backpack.weapons[msg];
+            if (item != undefined) {
+                if (character.stash.get(materials_manager_1.ZAZ) > 1) {
+                    (0, affix_1.roll_affix_weapon)(character.get_enchant_rating(), item);
+                    character.stash.inc(materials_manager_1.ZAZ, -1);
+                    this.send_equip_update_to_character(character);
+                    this.send_stash_update_to_character(character);
+                }
+                else {
+                    this.send_to_character_user(character, 'alert', 'not_enough_zaz');
+                }
+            }
+        }
+    }
+    async enchant_armour(user, msg) {
+        if (user.logged_in) {
+            let character = user.get_character();
+            let item = character.equip.data.backpack.armours[msg];
+            if (item != undefined) {
+                if (character.stash.get(materials_manager_1.ZAZ) > 1) {
+                    (0, affix_1.roll_affix_armour)(character.get_enchant_rating(), item);
+                    character.stash.inc(materials_manager_1.ZAZ, -1);
+                    this.send_equip_update_to_character(character);
+                    this.send_stash_update_to_character(character);
+                }
+                else {
+                    this.send_to_character_user(character, 'alert', 'not_enough_zaz');
+                }
+            }
         }
     }
     async switch_weapon(user) {

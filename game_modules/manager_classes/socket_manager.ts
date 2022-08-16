@@ -86,8 +86,8 @@ export class SocketManager {
             socket.on('send-market-data', (msg: any) => {user.market_data = msg});
             socket.on('equip-armour', async (msg: any) => this.equip_armour(user, msg));
             socket.on('equip-weapon', async (msg: any) => this.equip_weapon(user, msg));
-            socket.on('equip-armour', async (msg: any) => this.enchant_armour(user, msg));
-            socket.on('equip-weapon', async (msg: any) => this.enchant_weapon(user, msg));
+            socket.on('enchant-armour', async (msg: any) => this.enchant_armour(user, msg));
+            socket.on('enchant-weapon', async (msg: any) => this.enchant_weapon(user, msg));
             socket.on('switch-weapon', async (msg: any) => this.switch_weapon(user))
             socket.on('unequip', async (msg: any) => this.unequip(user, msg));
 
@@ -179,7 +179,7 @@ export class SocketManager {
                 } else {
                     this.send_to_character_user(character, 'alert', 'not_enough_zaz')
                 }                
-            }            
+            }
         }
     }
 
