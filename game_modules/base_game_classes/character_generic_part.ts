@@ -946,6 +946,12 @@ export class CharacterGenericPart {
         return power;
     }
 
+    get_enchant_rating() {
+        let power = this.get_magic_power()
+        let skill = this.skills.magic_mastery.practice
+        return (power / 10 * skill)
+    }
+
     get_phys_power() {
         let power = this.stats.phys_power * this.equip.get_phys_power_modifier();
 

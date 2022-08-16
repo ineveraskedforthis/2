@@ -9,7 +9,7 @@ import {constants} from '../static_data/constants'
 import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { Cell } from "../cell";
 import { MarketOrder, MarketOrderJson, market_order_index } from "../market/market_order.js";
-import { materials, material_index } from "./materials_manager";
+import { materials, material_index, ZAZ } from "./materials_manager";
 import { character_to_cook_elodino_probability, character_to_cook_meat_probability } from "../base_game_classes/character_actions/cook_meat";
 import { character_to_craft_spear_probability } from "../base_game_classes/character_actions/craft_spear";
 import { character_to_hunt_probability } from "../base_game_classes/character_actions/hunt";
@@ -18,6 +18,7 @@ import { character_to_craft_rat_armour_probability } from "../base_game_classes/
 import { money } from "../base_game_classes/savings";
 import { AuctionManagement, auction_order_id_raw } from "../market/market_items";
 import { craft_bone_arrow_probability } from "../base_game_classes/character_actions/craft_bone_spear";
+import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
 
 interface UserData {
     socket: any,
@@ -85,6 +86,8 @@ export class SocketManager {
             socket.on('send-market-data', (msg: any) => {user.market_data = msg});
             socket.on('equip-armour', async (msg: any) => this.equip_armour(user, msg));
             socket.on('equip-weapon', async (msg: any) => this.equip_weapon(user, msg));
+            socket.on('equip-armour', async (msg: any) => this.enchant_armour(user, msg));
+            socket.on('equip-weapon', async (msg: any) => this.enchant_weapon(user, msg));
             socket.on('switch-weapon', async (msg: any) => this.switch_weapon(user))
             socket.on('unequip', async (msg: any) => this.unequip(user, msg));
 
@@ -160,6 +163,40 @@ export class SocketManager {
             let character = user.get_character();
             await character.equip_weapon(msg);
             this.send_equip_update_to_character(character)
+        }
+    }
+
+    async enchant_weapon(user: User, msg: number) {
+        if (user.logged_in) {
+            let character = user.get_character();
+            let item = character.equip.data.backpack.weapons[msg]
+            if (item != undefined) {
+                if (character.stash.get(ZAZ) > 1) {
+                    roll_affix_weapon(character.get_enchant_rating(), item)
+                    character.stash.inc(ZAZ, -1)
+                    this.send_equip_update_to_character(character)
+                    this.send_stash_update_to_character(character)
+                } else {
+                    this.send_to_character_user(character, 'alert', 'not_enough_zaz')
+                }                
+            }            
+        }
+    }
+
+    async enchant_armour(user: User, msg: number) {
+        if (user.logged_in) {
+            let character = user.get_character();
+            let item = character.equip.data.backpack.armours[msg]
+            if (item != undefined) {
+                if (character.stash.get(ZAZ) > 1) {
+                    roll_affix_armour(character.get_enchant_rating(), item)
+                    character.stash.inc(ZAZ, -1)
+                    this.send_equip_update_to_character(character)
+                    this.send_stash_update_to_character(character)
+                } else {
+                    this.send_to_character_user(character, 'alert', 'not_enough_zaz')
+                }                
+            }            
         }
     }
 
