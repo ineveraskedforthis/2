@@ -449,12 +449,6 @@ export class CharacterGenericPart {
             await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
             await this.world.kill(pool, this.id);
         }
-
-        if (this.status.stress >= 100) {
-            await this.world.entity_manager.remove_orders(pool, this)
-            await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
-            await this.world.kill(pool, this.id);
-        }
     }
 
     out_of_battle_update(dt: number) {
@@ -995,8 +989,9 @@ export class CharacterGenericPart {
 
         let blood_acc_loss = this.status.blood * blood_burden;
         let rage_acc_loss = this.status.rage * rage_burden;
+        let stress_acc_loss = this.status.stress * 0.01
 
-        let final = base_accuracy - blood_acc_loss - rage_acc_loss
+        let final = base_accuracy - blood_acc_loss - rage_acc_loss - stress_acc_loss
 
         if ((distance != undefined) && (mod == 'ranged')) {
             if (distance < 2) distance = 2
@@ -1005,7 +1000,7 @@ export class CharacterGenericPart {
             return Math.min(1, Math.max(0, final))
         }
 
-        return Math.min(1, Math.max(0.2, final))
+        return Math.min(1, Math.max(0.1, final))
     }    
 
     get_attack_chance(mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {

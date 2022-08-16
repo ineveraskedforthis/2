@@ -324,11 +324,6 @@ class CharacterGenericPart {
             await market_items_1.AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this);
             await this.world.kill(pool, this.id);
         }
-        if (this.status.stress >= 100) {
-            await this.world.entity_manager.remove_orders(pool, this);
-            await market_items_1.AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this);
-            await this.world.kill(pool, this.id);
-        }
     }
     out_of_battle_update(dt) {
         this.change_rage(-1);
@@ -793,7 +788,8 @@ class CharacterGenericPart {
         let rage_burden = character_defines.rage_accuracy_burden;
         let blood_acc_loss = this.status.blood * blood_burden;
         let rage_acc_loss = this.status.rage * rage_burden;
-        let final = base_accuracy - blood_acc_loss - rage_acc_loss;
+        let stress_acc_loss = this.status.stress * 0.01;
+        let final = base_accuracy - blood_acc_loss - rage_acc_loss - stress_acc_loss;
         if ((distance != undefined) && (mod == 'ranged')) {
             if (distance < 2)
                 distance = 2;

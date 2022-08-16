@@ -78,7 +78,9 @@ var AuctionOrderManagement;
         let item_data = data.item;
         let item = null;
         switch (item_data.item_type) {
-            case 'armour': item = new item_tags_1.Armour(data.item);
+            case 'armour':
+                item = new item_tags_1.Armour(data.item);
+                break;
             case 'weapon': item = new item_tags_1.Weapon(data.item);
         }
         let owner = entity_manager.chars[data.owner_id];
@@ -222,7 +224,9 @@ var AuctionManagement;
         buyer.savings.transfer(owner.savings, order.buyout_price);
         let item = order.item;
         switch (item.item_type) {
-            case 'armour': buyer.equip.add_armour(item);
+            case 'armour':
+                buyer.equip.add_armour(item);
+                break;
             case 'weapon': buyer.equip.add_weapon(item);
         }
         // order.flags.item_sent = true
@@ -244,7 +248,9 @@ var AuctionManagement;
         order.flags.finished = true;
         let item = order.item;
         switch (item.item_type) {
-            case 'armour': owner.equip.add_armour(item);
+            case 'armour':
+                owner.equip.add_armour(item);
+                break;
             case 'weapon': owner.equip.add_weapon(item);
         }
         socket_manager.send_item_market_update(order.owner.cell_id);

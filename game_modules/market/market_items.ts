@@ -105,7 +105,7 @@ export namespace AuctionOrderManagement {
         let item_data = data.item
         let item = null
         switch(item_data.item_type) {
-            case 'armour': item = new Armour(data.item as ArmourConstructorArgument);
+            case 'armour': item = new Armour(data.item as ArmourConstructorArgument); break;
             case 'weapon': item = new Weapon(data.item as WeaponConstructorArgument)
         }
 
@@ -248,7 +248,7 @@ export namespace AuctionManagement {
         buyer.savings.transfer(owner.savings, order.buyout_price)
         let item = order.item
         switch(item.item_type) {
-            case 'armour': buyer.equip.add_armour(item as Armour);
+            case 'armour': buyer.equip.add_armour(item as Armour); break;
             case 'weapon': buyer.equip.add_weapon(item as Weapon)
         }
         // order.flags.item_sent = true
@@ -277,7 +277,7 @@ export namespace AuctionManagement {
         order.flags.finished = true
         let item = order.item
         switch(item.item_type) {
-            case 'armour': owner.equip.add_armour(item as Armour);
+            case 'armour': owner.equip.add_armour(item as Armour); break;
             case 'weapon': owner.equip.add_weapon(item as Weapon)
         }
 
