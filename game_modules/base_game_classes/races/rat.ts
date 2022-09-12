@@ -18,6 +18,8 @@ export async function rat(pool: PgPool, char: CharacterGenericPart) {
     char.status.hp = 50
     char.stats.max.hp = 50
 
+    char.faction_id = 1
+
     char.skills.perks.claws = true
     await char.save_to_db(pool)
 }

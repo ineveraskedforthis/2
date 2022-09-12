@@ -551,6 +551,23 @@ class BattleReworked2 {
         agent.set_battle_id(this.id);
         this.changed = true;
     }
+    // agent joins battle on a side of team
+    join(agent, team) {
+        this.add_fighter(agent, team, undefined);
+    }
+    check_team_to_join(agent) {
+        if (agent.faction_id == -1)
+            return 'no_interest';
+        let data = this.get_units();
+        for (let item of data) {
+            let char_id = item.char_id;
+            let char = this.world.entity_manager.chars[char_id];
+            if (char.faction_id == agent.faction_id) {
+                return item.team;
+            }
+        }
+        return 'no_interest';
+    }
     async transfer(target, tag, x) {
         this.stash.transfer(target.stash, tag, x);
         this.changed = true;

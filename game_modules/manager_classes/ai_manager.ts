@@ -58,6 +58,20 @@ export class AiManager {
         return -1
     }
 
+    battles_in_cell(char: CharacterGenericPart) {
+        let battles:number[] = []
+        let cell = char.get_cell()
+        if (cell == undefined) return battles
+        let a = cell.get_characters_set()
+        for (let id of a) {
+            let target_char = this.world.get_char_from_id(id)
+            if (target_char.in_battle() && !target_char.is_dead()) {
+                battles.push(target_char.get_battle_id())
+            }        
+        } 
+        return battles
+    }
+
     async random_steppe_walk(char: CharacterGenericPart) {
         let cell = char.get_cell()
         if (cell == undefined) {
@@ -145,6 +159,18 @@ export class AiManager {
                     await this.random_forest_walk(char)
                 }
                 return
+            }
+        }
+
+        let battles = this.battles_in_cell(char)
+        for (let item of battles) {
+            let battle = this.world.entity_manager.battles[item]
+            if (!(battle.ended)) {
+                let team = battle.check_team_to_join(char)
+                if (team == 'no_interest') continue
+                else {
+                    battle.join(char, team)
+                }
             }
         }
 

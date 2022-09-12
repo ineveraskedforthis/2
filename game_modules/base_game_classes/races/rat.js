@@ -12,6 +12,7 @@ async function rat(pool, char) {
     char.name = (0, generate_name_moraes_1.gen_from_moraes)(moraes, 5);
     char.status.hp = 50;
     char.stats.max.hp = 50;
+    char.faction_id = 1;
     char.skills.perks.claws = true;
     await char.save_to_db(pool);
 }

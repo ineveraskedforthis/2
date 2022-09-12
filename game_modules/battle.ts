@@ -683,7 +683,7 @@ export class BattleReworked2 {
         return data
     }
 
-    add_fighter(agent:CharacterGenericPart, team:number, position:{x:number, y: number}) {
+    add_fighter(agent:CharacterGenericPart, team:number, position:{x:number, y: number}|undefined) {
         console.log('add fighter')
         
         if (position == undefined) {
@@ -704,6 +704,26 @@ export class BattleReworked2 {
         agent.set_battle_id(this.id)
 
         this.changed = true;
+    }
+
+    // agent joins battle on a side of team
+    join(agent: CharacterGenericPart, team: number) {
+        this.add_fighter(agent, team, undefined)
+    }
+
+    check_team_to_join(agent:CharacterGenericPart):number|'no_interest' {
+        if (agent.faction_id == -1) return 'no_interest'
+
+        let data = this.get_units()
+        for (let item of data) {
+            let char_id = item.char_id
+            let char = this.world.entity_manager.chars[char_id]
+            if (char.faction_id == agent.faction_id) {
+                return item.team
+            }
+        }
+
+        return 'no_interest'
     }
 
     async transfer(target:{stash: Stash}, tag:material_index, x:number) {

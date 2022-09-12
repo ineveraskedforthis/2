@@ -11,6 +11,8 @@ export async function elo(pool: PgPool, char: CharacterGenericPart) {
 
     char.name = gen_from_moraes(moraes, 3)
 
+    char.faction_id = 2
+
     char.status.hp = 200
     char.stats.max.hp = 200
 

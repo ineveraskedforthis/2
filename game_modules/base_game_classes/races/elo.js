@@ -10,6 +10,7 @@ async function elo(pool, char) {
     char.stats.phys_power = 15;
     char.stats.magic_power = 20;
     char.name = (0, generate_name_moraes_1.gen_from_moraes)(moraes, 3);
+    char.faction_id = 2;
     char.status.hp = 200;
     char.stats.max.hp = 200;
     char.skills.perks.claws = true;
