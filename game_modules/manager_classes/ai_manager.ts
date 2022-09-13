@@ -94,6 +94,24 @@ export class AiManager {
         }   
     }
 
+    check_battles_to_join(agent: CharacterGenericPart) {
+        let battles = this.battles_in_cell(agent)
+        for (let item of battles) {
+            let battle = this.world.entity_manager.battles[item]
+            console.log('check_battle')
+            if (!(battle.ended)) {
+                let team = battle.check_team_to_join(agent)
+                console.log(team)
+                if (team == 'no_interest') continue
+                else {
+                    battle.join(agent, team)
+                    return true
+                }
+            }
+        }
+        return false
+    }
+
     async random_forest_walk(char: CharacterGenericPart) {
         let cell = char.get_cell()
         if (cell == undefined) {
@@ -130,6 +148,9 @@ export class AiManager {
             return
         }
 
+        let responce = this.check_battles_to_join(char)
+        if (responce) return;
+
         switch(char.misc.ai_tag) {
             case 'steppe_walker_agressive': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
@@ -142,7 +163,7 @@ export class AiManager {
                         await this.random_steppe_walk(char)
                     }
                 }
-                return
+                break
             }
             case 'steppe_walker_passive': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
@@ -150,7 +171,7 @@ export class AiManager {
                 } else {
                     await this.random_steppe_walk(char)
                 }
-                return
+                break
             }
             case 'forest_walker': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
@@ -158,19 +179,7 @@ export class AiManager {
                 } else {
                     await this.random_forest_walk(char)
                 }
-                return
-            }
-        }
-
-        let battles = this.battles_in_cell(char)
-        for (let item of battles) {
-            let battle = this.world.entity_manager.battles[item]
-            if (!(battle.ended)) {
-                let team = battle.check_team_to_join(char)
-                if (team == 'no_interest') continue
-                else {
-                    battle.join(char, team)
-                }
+                break
             }
         }
 

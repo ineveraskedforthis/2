@@ -536,11 +536,13 @@ class BattleReworked2 {
     add_fighter(agent, team, position) {
         console.log('add fighter');
         if (position == undefined) {
+            let dx = Math.random() * 2;
+            let dy = Math.random() * 2;
             if (team == 1) {
-                position = { x: 0, y: 10 };
+                position = { x: 0 + dx, y: 8 + dy };
             }
             else {
-                position = { x: 0, y: 0 };
+                position = { x: 0 + dx, y: 0 + dy };
             }
         }
         let unit = new UnitData();
@@ -553,7 +555,9 @@ class BattleReworked2 {
     }
     // agent joins battle on a side of team
     join(agent, team) {
+        console.log(agent.name + ' joins battle on a side ' + team);
         this.add_fighter(agent, team, undefined);
+        this.send_data_start();
     }
     check_team_to_join(agent) {
         if (agent.faction_id == -1)

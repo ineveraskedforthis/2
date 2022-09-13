@@ -446,10 +446,10 @@ export class EntityManager {
         var battle = new BattleReworked2(this.world);
         await battle.init(pool);
         for (let i = 0; i < attackers.length; i++) {
-            battle.add_fighter(attackers[i], 0, {x: 0, y:0});
+            battle.add_fighter(attackers[i], 0, undefined);
         }
         for (let i = 0; i < defenders.length; i++) {
-            battle.add_fighter(defenders[i], 1, {x: Math.random() * 5 - 2.5, y: Math.random() * 4 + 5});
+            battle.add_fighter(defenders[i], 1, undefined);
         }
         this.battles[battle.id] = battle;
         battle.send_data_start()
