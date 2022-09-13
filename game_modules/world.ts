@@ -168,6 +168,7 @@ export class World {
             test_person.stash.inc(ZAZ, 100)
             test_person.stash.inc(ELODINO_FLESH, 100)
             test_person.savings.set(5000 as money)
+            test_person.faction_id = 3
             await test_person.buy(pool, MEAT, 100, 5 as money)
             await test_person.sell(pool, FOOD, 200, 15 as money)
             await test_person.sell(pool, ZAZ, 100, 200 as money)
@@ -183,6 +184,7 @@ export class World {
         armour_master.skills.perks.skin_armour_master = true
         armour_master.stash.inc(RAT_SKIN, 40)
         armour_master.savings.inc(1000 as money)
+        armour_master.faction_id = 3
 
 
 
@@ -191,6 +193,7 @@ export class World {
         cook.skills.cooking.practice = 100
         cook.stash.inc(FOOD, 10)
         cook.savings.inc(500 as money)
+        cook.faction_id = 3
         // await cook.sell(pool, FOOD, 500, 10 as money)
 
 
@@ -198,6 +201,7 @@ export class World {
         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1)
         monk.skills.noweapon.practice = 100
         monk.learn_perk("advanced_unarmed")
+        monk.faction_id = 3
         monk.changed = true
 
         let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
@@ -205,6 +209,7 @@ export class World {
         forest_cook.savings.inc(500 as money)
         forest_cook.skills.cooking.practice = 100
         forest_cook.learn_perk("meat_master")
+        forest_cook.faction_id = 3
         
 
         let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1)
@@ -212,6 +217,7 @@ export class World {
         fletcher.savings.inc(1000 as money)
         fletcher.learn_perk('fletcher')
         fletcher.changed = true
+        fletcher.faction_id = 3
 
         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
         spearman.skills.polearms.practice = 100
@@ -219,13 +225,14 @@ export class World {
         let spear = new Weapon(BONE_SPEAR_ARGUMENT)
         spearman.equip.data.weapon = spear
         spearman.changed = true
+        spearman.faction_id = 3
         
 
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
         meat_bag.stash.inc(MEAT, 200)
         await meat_bag.sell(pool, MEAT, 10, 10 as money)
         if (nodb_mode_check()) {meat_bag.change_hp(-99)}
-
+        meat_bag.faction_id = 3
 
         let mage = await this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1)
         mage.skills.magic_mastery.practice = 100
@@ -237,9 +244,7 @@ export class World {
         await mage.buy(pool, ELODINO_FLESH, 200, 50 as money)
         await mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
         mage.changed = true
-
-        
-
+        mage.faction_id = 3
     }
 
 

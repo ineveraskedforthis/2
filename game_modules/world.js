@@ -105,6 +105,7 @@ class World {
             test_person.stash.inc(materials_manager_1.ZAZ, 100);
             test_person.stash.inc(materials_manager_1.ELODINO_FLESH, 100);
             test_person.savings.set(5000);
+            test_person.faction_id = 3;
             await test_person.buy(pool, materials_manager_1.MEAT, 100, 5);
             await test_person.sell(pool, materials_manager_1.FOOD, 200, 15);
             await test_person.sell(pool, materials_manager_1.ZAZ, 100, 200);
@@ -118,38 +119,45 @@ class World {
         armour_master.skills.perks.skin_armour_master = true;
         armour_master.stash.inc(materials_manager_1.RAT_SKIN, 40);
         armour_master.savings.inc(1000);
+        armour_master.faction_id = 3;
         let cook = await this.create_new_character(pool, 'Cook', starting_cell_id, -1);
         cook.learn_perk("meat_master");
         cook.skills.cooking.practice = 100;
         cook.stash.inc(materials_manager_1.FOOD, 10);
         cook.savings.inc(500);
+        cook.faction_id = 3;
         // await cook.sell(pool, FOOD, 500, 10 as money)
         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1);
         monk.skills.noweapon.practice = 100;
         monk.learn_perk("advanced_unarmed");
+        monk.faction_id = 3;
         monk.changed = true;
         let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1);
         forest_cook.stash.inc(materials_manager_1.FOOD, 10);
         forest_cook.savings.inc(500);
         forest_cook.skills.cooking.practice = 100;
         forest_cook.learn_perk("meat_master");
+        forest_cook.faction_id = 3;
         let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1);
         fletcher.stash.inc(materials_manager_1.ARROW_BONE, 20);
         fletcher.savings.inc(1000);
         fletcher.learn_perk('fletcher');
         fletcher.changed = true;
+        fletcher.faction_id = 3;
         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1);
         spearman.skills.polearms.practice = 100;
         spearman.learn_perk("advanced_polearm");
         let spear = new item_tags_1.Weapon(items_set_up_1.BONE_SPEAR_ARGUMENT);
         spearman.equip.data.weapon = spear;
         spearman.changed = true;
+        spearman.faction_id = 3;
         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1);
         meat_bag.stash.inc(materials_manager_1.MEAT, 200);
         await meat_bag.sell(pool, materials_manager_1.MEAT, 10, 10);
         if ((0, market_items_1.nodb_mode_check)()) {
             meat_bag.change_hp(-99);
         }
+        meat_bag.faction_id = 3;
         let mage = await this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1);
         mage.skills.magic_mastery.practice = 100;
         mage.learn_perk('mage_initiation');
@@ -160,6 +168,7 @@ class World {
         await mage.buy(pool, materials_manager_1.ELODINO_FLESH, 200, 50);
         await mage.buy(pool, materials_manager_1.GRACI_HAIR, 10, 1000);
         mage.changed = true;
+        mage.faction_id = 3;
     }
     async load(pool) {
         this.socket_manager = new socket_manager_1.SocketManager(pool, this.io, this, true);
