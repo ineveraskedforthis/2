@@ -44,8 +44,8 @@ enum AuctionResponce {
     
 
 export namespace AuctionOrderManagement {
-    export async function build_order(pool: PgPool, owner: CharacterGenericPart, latest_bidder: CharacterGenericPart, item: Weapon|Armour, buyout_price: money, starting_price: money, end_time: number, cell_id: number, flags: OrderFlags) {
-        let order_id = await AuctionOrderManagement.insert_to_db( pool, 
+    export async function build_order(owner: CharacterGenericPart, latest_bidder: CharacterGenericPart, item: Weapon|Armour, buyout_price: money, starting_price: money, end_time: number, cell_id: number, flags: OrderFlags) {
+        let order_id = await AuctionOrderManagement.insert_to_db(
                                                             item,
                                                             owner.id,
                                                             buyout_price,
@@ -57,7 +57,7 @@ export namespace AuctionOrderManagement {
         return order
     }
 
-    export async function insert_to_db(pool: PgPool,
+    export async function insert_to_db(
                                        item: Weapon|Armour, 
                                        owner_id: number, 
                                        buyout_price: money, 
@@ -128,7 +128,7 @@ export namespace AuctionOrderManagement {
 
 export namespace AuctionManagement {
 
-    export async function sell(pool: PgPool, entity_manager: EntityManager, socket_manager: SocketManager, seller: CharacterGenericPart, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
+    export async function sell(entity_manager: EntityManager, socket_manager: SocketManager, seller: CharacterGenericPart, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
         // if (auction.cell_id != seller.cell_id) {
         //     return {responce: AuctionResponce.NOT_IN_THE_SAME_CELL}
         // }
@@ -151,7 +151,7 @@ export namespace AuctionManagement {
 
         let time = Date.now() + time_intervals[1]
 
-        let order = await AuctionOrderManagement.build_order(   pool, 
+        let order = await AuctionOrderManagement.build_order(   
                                                                 seller, 
                                                                 seller, 
                                                                 item, 

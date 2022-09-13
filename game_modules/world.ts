@@ -24,6 +24,7 @@ import { elo } from "./base_game_classes/races/elo";
 import { Weapon } from './static_data/item_tags';
 import { BONE_SPEAR_ARGUMENT } from './static_data/items_set_up';
 import { affix } from './base_game_classes/affix';
+import { init_battle_control } from '../static/modules/battle_image_init';
 
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {
@@ -47,17 +48,12 @@ export class World {
     x: number
     y: number
     constants: typeof CONSTS;
-    user_manager: UserManager
-    action_manager: ActionManager
     BASE_BATTLE_RANGE: number;
     HISTORY_PRICE: any;
     vacuum_stage:number;
     battle_tick: number;
     pops_tick: number;
     map_tick: number;
-    socket_manager: SocketManager;
-    entity_manager: EntityManager;
-    ai_manager: AiManager;
     territories: {[_: string]: any}
     // spear_argument: WeaponConstructorArgument
     // bone_spear_argument: WeaponConstructorArgument
@@ -70,16 +66,13 @@ export class World {
 
     ACTION_TIME: number
 
-    constructor(io: any, x: number, y: number) {
-        this.io = io;
+    constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
 
         this.ACTION_TIME = 2
 
         this.constants = CONSTS;
-        this.user_manager = new UserManager(this);
-        this.action_manager = new ActionManager(this, undefined as unknown as PgPool)
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
         this.HISTORY_PRICE['food'] = 50;
@@ -92,13 +85,6 @@ export class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
-
-        this.socket_manager = new SocketManager(undefined as unknown as PgPool, io, this, false);
-        this.entity_manager = new EntityManager(this);
-        
-
-        this.ai_manager = new AiManager(this)
-
         this.territories = {}
     }
 

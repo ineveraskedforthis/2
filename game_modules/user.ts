@@ -1,9 +1,27 @@
+import { entity_manager, user_manager, world_manager } from "../game_launch";
 import { PgPool, World } from "./world";
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
 
+export class DummyUser {
+    id: number
+    login: string
+    password_hash: string
+    char_id: number 
+    socket: any
+    market_data: any
+    logged_in: boolean
+    
+    constructor() {
+        this.id = -1
+        this.char_id = -1
+        this.login = 'no_login'
+        this.password_hash = ''
+        this.logged_in = false
+    }
+}
+
 export class User {
-    world: World
     id: number
     login: string
     password_hash: string
@@ -12,8 +30,7 @@ export class User {
     market_data: any
     logged_in: boolean
 
-    constructor(world:World) {
-        this.world = world;
+    constructor() {
         this.id = -1
         this.char_id = -1
         this.login = 'no_login'
@@ -29,7 +46,7 @@ export class User {
     }
 
     init_by_user_id(user_id: number) {
-        let user = this.world.user_manager.get_user(user_id)
+        let user = user_manager.get_user(user_id)
         this.id = user.id
         this.char_id = user.char_id
         this.login = user.login
@@ -54,11 +71,11 @@ export class User {
     }
 
     get_character() {
-        let real_user = this.world.user_manager.get_user(this.id)
+        let real_user = user_manager.get_user(this.id)
         if (real_user != undefined) {
-            return this.world.get_char_from_id(real_user.char_id)
+            return world_manager.get_char_from_id(real_user.char_id)
         }
-        return this.world.get_char_from_id(this.char_id)
+        return world_manager.get_char_from_id(this.char_id)
     }
 
     async get_new_char(pool: PgPool) {

@@ -1,43 +1,20 @@
-'use strict'
-require('dotenv').config({path: __dirname + '/.env'});
-
+'use strict';
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.io = void 0;
+const game_launch_1 = require("./game_launch");
+require('dotenv').config({ path: __dirname + '/.env' });
 const port = process.env.PORT || 3000;
-
 var express = require('express');
 var app = express();
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+;
+exports.io = require('socket.io')(http);
 var gameloop = require('node-gameloop');
 var path = require('path');
-var {World} = require("./game_modules/world.js");
+var { World } = require("./game_modules/world.js");
 var common = require("./game_modules/common.js");
-var {constants} = require("./game_modules/static_data/constants.js");
-
-var {Pool} = require('pg');
-var stage = process.env.STAGE;
-var dbname = process.env.DBNAME;
-var pool = undefined
-
-global.flag_nodb = false
-global.last_id = 0
-
-if (process.argv[2] == "nodb") {
-    global.flag_nodb = true
-} else {
-    if (stage == 'dev') {
-        console.log('local')
-        pool = new Pool({database: dbname});
-    } else{
-        console.log('remote')
-        pool = new Pool({
-            connectionString: process.env.DATABASE_URL,
-            ssl: {rejectUnauthorized: false}
-        });
-    }
-}
-
-
-
+var { constants } = require("./game_modules/static_data/constants.js");
+var pool = undefined;
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'static')));
 app.get('/', (req, res) => {
@@ -46,73 +23,4 @@ app.get('/', (req, res) => {
 http.listen(port, () => {
     console.log('listening on *:3000');
 });
-
-var world = new World(io, 27, 27);
-
-
-async function create_tables(client) {
-    await client.query('CREATE TABLE accounts (login varchar(200), password_hash varchar(200), id int PRIMARY KEY, char_id int)');
-    await client.query('CREATE TABLE chars (id serial primary key, user_id int, cell_id int, faction_id int, name varchar(200), status jsonb, skills jsonb, stats jsonb, misc jsonb, flags jsonb, savings jsonb, trade_savings jsonb, stash jsonb, trade_stash jsonb, equip jsonb)');
-    await client.query('CREATE TABLE last_id (id_type varchar(30), last_id int)');
-    await client.query('CREATE TABLE battles (id serial primary key, heap jsonb, savings jsonb, stash jsonb, waiting_for_input boolean)');
-    await client.query('CREATE TABLE worlds (x int, y int)');
-
-    await client.query('CREATE TABLE cells (id int PRIMARY KEY, x int, y int, name varchar(30), market_id int, item_market_id int, development jsonb, resources jsonb)');
-
-    await client.query('CREATE TABLE markets (id int PRIMARY KEY, data jsonb)');
-    await client.query("CREATE TABLE market_orders (id serial primary key, typ varchar(5), tag varchar(30), owner_id int, owner_tag varchar(5), amount int, price int, cell_id int)");
-                            
-    await client.query("CREATE TABLE items_orders (id serial primary key, item jsonb, owner_id int, buyout_price int, current_price int, latest_bidder int, end_time bigint, market_id int)")
-    await client.query('CREATE TABLE items_markets (id serial primary key, orders int[], cell_id int)');
-
-    await client.query('CREATE TABLE agents (id serial primary key, cell_id int, name varchar(200), savings jsonb, stash jsonb)')
-    await client.query('CREATE TABLE consumers (id serial primary key, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb)')
-    await client.query('CREATE TABLE pops (id serial primary key, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, race_tag varchar(50), ai_tag varchar(50))')
-    await client.query('CREATE TABLE enterprises (id int PRIMARY KEY, cell_id int, name varchar(200), savings jsonb, stash jsonb, data jsonb, ai_tag varchar(50))')
-    
-    await client.query('CREATE TABLE areas (id serial primary key, tag varchar(200), savings jsonb, stash jsonb, faction_influence jsonb, local_resources jsonb)')
-    await client.query('CREATE TABLE factions (id serial primary key, tag varchar(200), savings jsonb, leader_id int)')
-    await client.query('CREATE TABLE quests (id serial primary key, money jsonb, reward_money int, reward_reputation int)')
-
-    await client.query('CREATE TABLE if not exists messages (id serial PRIMARY KEY, message varchar(1000), sender varchar(200))')                  
-}
-
-
-(async () => {
-    try {
-        if (global.flag_nodb) {
-            console.log('nodb mode');
-            await world.init(pool);
-        } else {
-            console.log('connecting to db');
-            var client = await pool.connect();
-            console.log('connection ready, checking for version update');
-            let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'messages', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises', 'messages', 'items_orders', 'items_markets', 'areas', 'quests', 'factions']
-            let ver = await common.get_version(client);
-            console.log('version from db ');
-            console.log(ver.version);
-            console.log('current version of code');
-            console.log(constants.version);
-            if (( ver.version != constants.version )) {
-                console.log('drop database');
-                await common.drop_tables(client, tables);
-                await common.set_version(client, constants.version);
-                await create_tables(client)
-                
-                await common.init_ids(client);
-                await client.end();
-                await world.init(pool);
-            }
-            else {
-                await client.end();
-                await world.load(pool)
-            }
-            console.log('database is ready');
-        }
-        
-        // eslint-disable-next-line no-unused-vars
-        gameloop.setGameLoop(async delta => await world.update(pool, delta), 500);
-    } catch (e) {
-        console.log(e);
-    }
-})();
+(0, game_launch_1.launch)();

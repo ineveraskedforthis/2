@@ -7,9 +7,7 @@ const entity_manager_1 = require("./manager_classes/entity_manager");
 const world_constants_1_1 = require("./static_data/world_constants_1");
 const action_manager_1 = require("./manager_classes/action_manager");
 const socket_manager_1 = require("./manager_classes/socket_manager");
-const user_manager_1 = require("./manager_classes/user_manager");
 const rat_1 = require("./base_game_classes/races/rat");
-const ai_manager_1 = require("./manager_classes/ai_manager");
 const materials_manager_1 = require("./manager_classes/materials_manager");
 const market_items_1 = require("./market/market_items");
 const graci_1 = require("./base_game_classes/races/graci");
@@ -32,14 +30,11 @@ const affix_1 = require("./base_game_classes/affix");
 //     }
 // }
 class World {
-    constructor(io, x, y) {
-        this.io = io;
+    constructor(x, y) {
         this.x = x;
         this.y = y;
         this.ACTION_TIME = 2;
         this.constants = world_constants_1_1.CONSTS;
-        this.user_manager = new user_manager_1.UserManager(this);
-        this.action_manager = new action_manager_1.ActionManager(this, undefined);
         this.BASE_BATTLE_RANGE = 10;
         this.HISTORY_PRICE = {};
         this.HISTORY_PRICE['food'] = 50;
@@ -51,9 +46,6 @@ class World {
         this.battle_tick = 0;
         this.pops_tick = 1000;
         this.map_tick = 0;
-        this.socket_manager = new socket_manager_1.SocketManager(undefined, io, this, false);
-        this.entity_manager = new entity_manager_1.EntityManager(this);
-        this.ai_manager = new ai_manager_1.AiManager(this);
         this.territories = {};
     }
     async init(pool) {

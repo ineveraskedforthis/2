@@ -4,7 +4,6 @@ exports.SocketManager = void 0;
 const character_generic_part_1 = require("../base_game_classes/character_generic_part");
 const battle_1 = require("../battle");
 const action_manager_1 = require("./action_manager");
-const user_1 = require("../user");
 var common = require("../common.js");
 const constants_1 = require("../static_data/constants");
 const item_tags_1 = require("../static_data/item_tags");
@@ -17,17 +16,12 @@ const craft_rat_armour_1 = require("../base_game_classes/character_actions/craft
 const market_items_1 = require("../market/market_items");
 const craft_bone_spear_1 = require("../base_game_classes/character_actions/craft_bone_spear");
 const affix_1 = require("../base_game_classes/affix");
+const game_launch_1 = require("../../game_launch");
 class SocketManager {
-    constructor(pool, io, world, flag_ready) {
-        this.world = world;
+    constructor(io) {
         this.io = io;
-        this.pool = pool;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
-        // @ts-ignore: Unreachable code error
-        if (((pool != undefined) || (global.flag_nodb)) && (flag_ready)) {
-            this.real_shit();
-        }
         this.sockets = new Set();
         this.sessions = {};
     }
@@ -42,7 +36,7 @@ class SocketManager {
     }
     real_shit() {
         this.io.on('connection', async (socket) => {
-            let user = new user_1.User(this.world);
+            let user = game_launch_1.user_manager.create_new_user();
             user.set_socket(socket);
             this.sockets.add(user);
             this.connection(socket);

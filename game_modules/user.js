@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = void 0;
+const game_launch_1 = require("../game_launch");
 var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
 class User {
-    constructor(world) {
-        this.world = world;
+    constructor() {
         this.id = -1;
         this.char_id = -1;
         this.login = 'no_login';
@@ -19,7 +19,7 @@ class User {
         return this.id;
     }
     init_by_user_id(user_id) {
-        let user = this.world.user_manager.get_user(user_id);
+        let user = game_launch_1.user_manager.get_user(user_id);
         this.id = user.id;
         this.char_id = user.char_id;
         this.login = user.login;
@@ -40,11 +40,11 @@ class User {
         this.password_hash = hash;
     }
     get_character() {
-        let real_user = this.world.user_manager.get_user(this.id);
+        let real_user = game_launch_1.user_manager.get_user(this.id);
         if (real_user != undefined) {
-            return this.world.get_char_from_id(real_user.char_id);
+            return game_launch_1.world_manager.get_char_from_id(real_user.char_id);
         }
-        return this.world.get_char_from_id(this.char_id);
+        return game_launch_1.world_manager.get_char_from_id(this.char_id);
     }
     async get_new_char(pool) {
         console.log('user ' + this.id + ' receives a new character');

@@ -5,12 +5,12 @@ const user_1 = require("../user");
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 const constants_1 = require("../static_data/constants");
+const game_launch_1 = require("../../game_launch");
 var common = require("../common.js");
 class UserManager {
-    constructor(world) {
+    constructor() {
         this.users = [];
         this.users_online = [];
-        this.world = world;
     }
     async reg_player(pool, data) {
         var login_is_available = await this.check_login(pool, data.login);
@@ -26,7 +26,7 @@ class UserManager {
         return ({ reg_prompt: 'ok', user: new_user });
     }
     create_new_user() {
-        return new user_1.User(this.world);
+        return new user_1.User();
     }
     async login_player(pool, data) {
         var user_data = await this.load_user_data_from_db(pool, data.login);
@@ -45,15 +45,13 @@ class UserManager {
         if (user.id != -1) {
             this.users_online[user.id] = true;
             console.log(user.login, ' logged in');
-            let socket_manager = this.world.socket_manager;
-            socket_manager.update_user_list();
+            game_launch_1.socket_manager.update_user_list();
         }
     }
     user_disconnects(user) {
         if (this.users_online[user.id]) {
             this.users_online[user.id] = false;
-            let socket_manager = this.world.socket_manager;
-            socket_manager.update_user_list();
+            game_launch_1.socket_manager.update_user_list();
         }
     }
     get_user_from_character(character) {

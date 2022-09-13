@@ -1,43 +1,57 @@
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
-import { User } from "../user";
+import { DummyUser, User } from "../user";
 import { PgPool, World } from "../world";
-
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 import {constants} from '../static_data/constants'
+import { socket_manager } from "../../game_launch";
 var common = require("../common.js")
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
 
+export var users: User[]
+export var users_online: boolean[]
 
-export class UserManager{
-    world: World
-    users: User[]
-    users_online: boolean[]
 
-    constructor(world: World) {
-        this.users = [];
-        this.users_online = [];
-        this.world = world;
+namespace UserManagement {
+    function create_dummy_user() {
+        return new DummyUser()
     }
 
-    async reg_player(pool: PgPool, data: {login: string, password: string}): Promise<RegResponce> {
-        var login_is_available = await this.check_login(pool, data.login);
+    function register_player(data: {login: string, password: string}) {
+        var login_is_available = this.check_login(pool, data.login);
         if (!login_is_available) {
             return {reg_prompt: 'login-is-not-available', user: undefined};
         }
-        var hash = await bcrypt.hash(data.password, salt);
+        var hash = bcrypt.hash(data.password, salt);
         var new_user = this.create_new_user();
         new_user.set_login(data.login);
         new_user.set_password_hash(hash);
+        var id = 
         var id = await new_user.init(pool);
         this.users[id] = new_user;
         return({reg_prompt: 'ok', user: new_user});
     }
 
+}
+
+export class UserManager{
+    users: User[]
+    users_online: boolean[]
+
+
+    constructor() {
+        this.users = [];
+        this.users_online = [];
+    }
+
+    async reg_player(pool: PgPool, ): Promise<RegResponce> {
+        
+    }
+
     create_new_user() {
-        return new User(this.world)
+        return new User()
     }
 
     async login_player(pool: PgPool, data: {login: string, password: string}): Promise<LoginResponce> {
@@ -58,15 +72,13 @@ export class UserManager{
         if (user.id != -1) {
             this.users_online[user.id] = true;
             console.log(user.login, ' logged in');
-            let socket_manager = this.world.socket_manager;
-            socket_manager.update_user_list();
+            socket_manager.update_user_list()
         }
     }
     
     user_disconnects(user: User) {
         if (this.users_online[user.id]) {
             this.users_online[user.id] = false;
-            let socket_manager = this.world.socket_manager;
             socket_manager.update_user_list();
         }
     }

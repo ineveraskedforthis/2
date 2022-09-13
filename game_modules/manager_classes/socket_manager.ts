@@ -19,6 +19,8 @@ import { money } from "../base_game_classes/savings";
 import { AuctionManagement, auction_order_id_raw } from "../market/market_items";
 import { craft_bone_arrow_probability } from "../base_game_classes/character_actions/craft_bone_spear";
 import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
+import { io_type, Socket } from "../../server";
+import { entity_manager, user_manager, world_manager } from "../../game_launch";
 
 interface UserData {
     socket: any,
@@ -29,25 +31,16 @@ interface UserData {
 
 
 export class SocketManager {
-    pool: PgPool
-    world: World
     io: any
     MESSAGES: []
     MESSAGE_ID: number
-    sockets: any
+    sockets: Set<User>
     sessions: {[_ in string]: number}
 
-    constructor(pool: PgPool, io: any, world: World, flag_ready: boolean) {
-        this.world = world;
+    constructor(io: io_type) {
         this.io = io;
-        this.pool = pool;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
-
-        // @ts-ignore: Unreachable code error
-        if (((pool != undefined) || (global.flag_nodb)) && (flag_ready)) {
-            this.real_shit();
-        }
         this.sockets = new Set();
         this.sessions = {};
     }
@@ -64,7 +57,7 @@ export class SocketManager {
 
     real_shit() {
         this.io.on('connection', async (socket: any) => {
-            let user = new User(this.world)
+            let user = user_manager.create_new_user()
             user.set_socket(socket)
             this.sockets.add(user);
             this.connection(socket)
@@ -241,7 +234,7 @@ export class SocketManager {
             let price = parseInt(msg.price);
             if ((type != 'armour') && (type != 'weapon')) return;
             if (isNaN(index) || isNaN(price)) return;
-            await AuctionManagement.sell(this.pool, this.world.entity_manager, this, character, type, index, price as money, price as money)
+            await AuctionManagement.sell(entity_manager, this, character, type, index, price as money, price as money)
             this.send_char_info(user);
         }
     }
@@ -249,11 +242,11 @@ export class SocketManager {
     async connection(socket: any) {
         console.log('a user connected');
         
-        socket.emit('tags', this.world.get_materials_json());
-        socket.emit('skill-tags', this.world.constants.SKILLS);
+        socket.emit('tags', world_manager.get_materials_json());
+        socket.emit('skill-tags', world_manager.constants.SKILLS);
         socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee']})
         
-        socket.emit('sections', this.world.constants.sections);
+        socket.emit('sections', world_manager.constants.sections);
         var messages = await this.load_messages_from_database()
         for (let i = 0; i < messages.rows.length; i++) {
             let tmp = messages.rows[i];
@@ -265,8 +258,8 @@ export class SocketManager {
         console.log('attempt to login with session')
         if (session in this.sessions) {
             user.init_by_user_id(this.sessions[session]);
-            this.world.user_manager.get_user(user.id).socket = user.socket
-
+            user_manager.get_user(user.id).socket = user.socket
+            
             let user_manager = this.world.user_manager;
             user_manager.new_user_online(user);
 
