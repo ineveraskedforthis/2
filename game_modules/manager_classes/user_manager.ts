@@ -1,6 +1,5 @@
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
 import { SocketWrapper, TEMP_CHAR_ID, User, UserData, user_id, user_online_id } from "../user";
-import { PgPool, World } from "../world";
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 import {constants} from '../static_data/constants'

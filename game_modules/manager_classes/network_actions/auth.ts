@@ -6,11 +6,8 @@ import { ValidatorSM } from "./common_validations";
 var current_sessions:{[_: string]: user_id} = {}
 
 export namespace Auth {
-    export function login_with_session(sw: SocketWrapper, session: string)
-    {
+    export function login_with_session(sw: SocketWrapper, session: string) {
         console.log('attempt to login with session')
-        console.log(current_sessions)
-        console.log(session)
 
         // check if this session is legit
         if (current_sessions[session] == undefined) {
@@ -21,7 +18,7 @@ export namespace Auth {
 
         // retrieve user id and check if such user still exists
         let user_id = current_sessions[session]
-        if (UserManagement.user_exists(user_id)) {
+        if (!UserManagement.user_exists(user_id)) {
             sw.socket.emit('reset_session', undefined);
             return
         }

@@ -19,7 +19,7 @@ var Auth;
         console.log('session is legit');
         // retrieve user id and check if such user still exists
         let user_id = current_sessions[session];
-        if (user_manager_1.UserManagement.user_exists(user_id)) {
+        if (!user_manager_1.UserManagement.user_exists(user_id)) {
             sw.socket.emit('reset_session', undefined);
             return;
         }

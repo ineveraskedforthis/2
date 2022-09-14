@@ -273,6 +273,10 @@ function show_char_creation() {
     document.getElementById('page_1').style.visibility = 'inherit';
 }
 
+function show_main_menu() {
+    show_scene("main_menu")
+}
+
 function show_game() {
     show_scene("actual_game_scene")
 }
@@ -1471,8 +1475,9 @@ function login(msg) {
     if (msg != 'ok') {
         alert(msg);
     } else if (msg == 'ok') {
+        console.log('login success')
         // tactic_screen.reset_tactic()
-        show_game();
+        show_main_menu();
     }
     let tutorial_stage = localStorage.getItem('tutorial');
     if (tutorial_stage == null) {
@@ -1486,7 +1491,8 @@ function reg(msg) {
     } else if (msg == 'ok') {
         // tactic_screen.reset_tactic()
         // show_char_creation();
-        show_game();
+        console.log('registration success')
+        show_main_menu();
     }
 }
 
