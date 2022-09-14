@@ -1,28 +1,23 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserManagement = exports.users_online_list = exports.users_data_list = void 0;
+exports.UserManagement = exports.users_online_dict = exports.users_data_dict = void 0;
 const user_1 = require("../user");
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
-const fs_1 = require("fs");
-exports.users_data_list = {};
+const fs_1 = __importDefault(require("fs"));
+exports.users_data_dict = {};
+var users_data_list = [];
 var login_to_user_data = {};
-exports.users_online_list = {};
+exports.users_online_dict = {};
 var last_id = 0;
 var UserManagement;
 (function (UserManagement) {
-    function load_users_raw() {
-        (0, fs_1.readFile)('/data/users.txt', 'utf-8', (err, data) => {
-            if (err) {
-                return '';
-            }
-            return data;
-        });
-        return '';
-    }
     function load_users() {
         console.log('loading users');
-        let data = load_users_raw();
+        let data = fs_1.default.readFileSync('users.txt').toString();
         let lines = data.split('\n');
         for (let line of lines) {
             if (line == '') {
@@ -30,9 +25,14 @@ var UserManagement;
             }
             let data = line.split(' ');
             console.log(data);
-            let user = new user_1.UserData(Number(data[0]), Number(data[1]), data[2], data[3]);
-            exports.users_data_list[user.id] = user;
+            let char_id = '@';
+            if (data[1] != '@') {
+                char_id = Number(data[1]);
+            }
+            let user = new user_1.UserData(Number(data[0]), char_id, data[2], data[3]);
+            exports.users_data_dict[user.id] = user;
             login_to_user_data[user.login] = user;
+            users_data_list.push(user);
             if (user.id > last_id) {
                 last_id = user.id;
             }
@@ -40,12 +40,19 @@ var UserManagement;
     }
     UserManagement.load_users = load_users;
     function save_users() {
+        console.log('saving users');
+        let str = '';
+        for (let item of users_data_list) {
+            str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + '\n';
+        }
+        fs_1.default.writeFileSync('users.txt', str);
+        console.log('users saved');
     }
     UserManagement.save_users = save_users;
     function log_out(sw) {
         if (sw.user_id == '#')
             return;
-        exports.users_online_list[sw.user_id].logged_in = false;
+        exports.users_online_dict[sw.user_id].logged_in = false;
     }
     UserManagement.log_out = log_out;
     function link_socket_wrapper_and_user(sw, user) {
@@ -57,15 +64,17 @@ var UserManagement;
     function construct_user(sw, data) {
         let user = new user_1.User(sw.socket, data);
         sw.user_id = user.data.id;
-        exports.users_online_list[sw.user_id] = user;
+        exports.users_online_dict[sw.user_id] = user;
+        save_users();
         return user;
     }
     UserManagement.construct_user = construct_user;
     function construct_user_data(char_id, login, hash) {
         last_id = (last_id + 1);
         let user_data = new user_1.UserData(last_id, char_id, login, hash);
-        exports.users_data_list[last_id] = user_data;
+        exports.users_data_dict[last_id] = user_data;
         login_to_user_data[login] = user_data;
+        users_data_list.push(user_data);
         return user_data;
     }
     // async load_user_to_memory(pool: PgPool, data: any) {
@@ -101,21 +110,21 @@ var UserManagement;
     }
     UserManagement.register_user = register_user;
     function user_exists(id) {
-        if (exports.users_data_list[id] == undefined) {
+        if (exports.users_data_dict[id] == undefined) {
             return false;
         }
         return true;
     }
     UserManagement.user_exists = user_exists;
     function user_was_online(id) {
-        let x = exports.users_online_list[id];
+        let x = exports.users_online_dict[id];
         if (x == undefined)
             return false;
         return true;
     }
     UserManagement.user_was_online = user_was_online;
     function user_is_online(id) {
-        let x = exports.users_online_list[id];
+        let x = exports.users_online_dict[id];
         if (x == undefined)
             return false;
         if (x.logged_in)
@@ -123,11 +132,11 @@ var UserManagement;
     }
     UserManagement.user_is_online = user_is_online;
     function get_user(id) {
-        return exports.users_online_list[id];
+        return exports.users_online_dict[id];
     }
     UserManagement.get_user = get_user;
     function get_user_data(id) {
-        return exports.users_data_list[id];
+        return exports.users_data_dict[id];
     }
     UserManagement.get_user_data = get_user_data;
     // function get_new_char(pool: PgPool) {

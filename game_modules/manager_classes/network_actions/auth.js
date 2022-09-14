@@ -9,8 +9,6 @@ var Auth;
 (function (Auth) {
     function login_with_session(sw, session) {
         console.log('attempt to login with session');
-        console.log(current_sessions);
-        console.log(session);
         // check if this session is legit
         if (current_sessions[session] == undefined) {
             sw.socket.emit('reset_session', undefined);
