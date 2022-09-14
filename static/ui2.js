@@ -265,6 +265,8 @@ document.getElementById('send_message_button').onclick = (event) => {
 
 //MESSAGES STUFF END
 
+// Main menu:
+document.getElementById('to_character_creation').onclick = show_char_creation
 
 
 //CHANGE SCENES STUFF
@@ -872,6 +874,12 @@ document.getElementById('login-frame').onsubmit = (event) => {
 
 
 //CHARACTER CREATION STUFF
+var character_display = {
+    eyes: 0,
+    chin: 0,
+    mouth: 0
+}
+
 document.getElementById("next_1").onclick = (event) => {
     event.preventDefault();
     document.getElementById("page_2").style.visibility = 'inherit'
@@ -885,19 +893,26 @@ document.getElementById("next_2").onclick = (event) => {
 for (let i = 0; i<3; i++) {
     document.getElementById("eyes_"+ i).onclick = (event) => {
         event.preventDefault();
+        character_display.eyes = i
         document.getElementById("character_image_eyes").style.backgroundImage = 'url(/static/img/eyes_'+ i + '.png)'
+        document.getElementById("character_creation_image_eyes").style.backgroundImage = 'url(/static/img/eyes_'+ i + '.png)'
+        
     }
 }
 for (let i = 0; i<3; i++) {
     document.getElementById("chin_"+ i).onclick = (event) => {
         event.preventDefault();
+        character_display.chin = i
         document.getElementById("character_image_chin").style.backgroundImage = 'url(/static/img/chin_'+ i + '.png)'
+        document.getElementById("character_creation_image_chin").style.backgroundImage = 'url(/static/img/chin_'+ i + '.png)'
     }
 }
 for (let i = 0; i<3; i++) {
     document.getElementById("mouth_"+ i).onclick = (event) => {
         event.preventDefault();
+        character_display.mouth = i
         document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/mouth_'+ i + '.png)'
+        document.getElementById("character_creation_image_mouth").style.backgroundImage = 'url(/static/img/mouth_'+ i + '.png)'
     }
 }
 //CHARACTER CREATION STUFF ENDS
