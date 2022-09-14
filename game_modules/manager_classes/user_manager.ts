@@ -4,7 +4,7 @@ import { PgPool, World } from "../world";
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 import {constants} from '../static_data/constants'
-import { socket_manager } from "../../game_launch";
+import { entity_manager, socket_manager } from "../../game_launch";
 
 import { readFile } from "fs";
 import fs from "fs"
@@ -20,7 +20,7 @@ export var users_online: boolean[]
 
 export namespace UserManagement {
     export function create_dummy_user(socket: Socket) {
-        return new User(-1, -1, '', socket)
+        return new User(socket, -1, -1, '', '')
     }
 
     function load_users_raw() {
@@ -67,6 +67,11 @@ export namespace UserManagement {
         return({reg_prompt: 'ok', user: new_user});
     }
 
+    // assumes that user is valid
+    export function user_to_character(user: User) {
+        let character = entity_manager.chars[user.char_id]
+        return character
+    }
 }
 
 export class UserManager{

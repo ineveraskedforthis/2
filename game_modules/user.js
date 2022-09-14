@@ -16,11 +16,12 @@ class DummyUser {
 }
 exports.DummyUser = DummyUser;
 class User {
-    constructor(id, char_id, login, password_hash) {
-        this.id = -1;
-        this.char_id = -1;
-        this.login = 'no_login';
-        this.password_hash = '';
+    constructor(socket, id, char_id, login, password_hash) {
+        this.socket = socket;
+        this.id = id;
+        this.char_id = char_id;
+        this.login = login;
+        this.password_hash = password_hash;
         this.logged_in = false;
     }
     async init(pool) {
@@ -49,13 +50,6 @@ class User {
     }
     set_password_hash(hash) {
         this.password_hash = hash;
-    }
-    get_character() {
-        let real_user = game_launch_1.user_manager.get_user(this.id);
-        if (real_user != undefined) {
-            return game_launch_1.world_manager.get_char_from_id(real_user.char_id);
-        }
-        return game_launch_1.world_manager.get_char_from_id(this.char_id);
     }
     async get_new_char(pool) {
         console.log('user ' + this.id + ' receives a new character');

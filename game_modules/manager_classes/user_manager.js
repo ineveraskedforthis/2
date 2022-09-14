@@ -10,7 +10,7 @@ const fs_1 = require("fs");
 var UserManagement;
 (function (UserManagement) {
     function create_dummy_user(socket) {
-        return new user_1.DummyUser(socket);
+        return new user_1.User(socket, -1, -1, '', '');
     }
     UserManagement.create_dummy_user = create_dummy_user;
     function load_users_raw() {
@@ -56,6 +56,12 @@ var UserManagement;
         // this.users[id] = new_user;
         return ({ reg_prompt: 'ok', user: new_user });
     }
+    // assumes that user is valid
+    function user_to_character(user) {
+        let character = game_launch_1.entity_manager.chars[user.char_id];
+        return character;
+    }
+    UserManagement.user_to_character = user_to_character;
 })(UserManagement = exports.UserManagement || (exports.UserManagement = {}));
 class UserManager {
     constructor() {

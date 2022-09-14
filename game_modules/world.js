@@ -182,12 +182,6 @@ class World {
         await this.entity_manager.update_chars(pool, dt);
         this.socket_manager.update_user_list();
     }
-    get_stash_tags_list() {
-        return materials_manager_1.materials.get_materials_list();
-    }
-    get_materials_json() {
-        return materials_manager_1.materials.get_materials_json();
-    }
     get_cell_teacher(x, y) {
         return undefined;
     }

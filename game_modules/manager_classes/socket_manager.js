@@ -6,7 +6,6 @@ const battle_1 = require("../battle");
 const action_manager_1 = require("./action_manager");
 var common = require("../common.js");
 const constants_1 = require("../static_data/constants");
-const item_tags_1 = require("../static_data/item_tags");
 const materials_manager_1 = require("./materials_manager");
 const cook_meat_1 = require("../base_game_classes/character_actions/cook_meat");
 const craft_spear_1 = require("../base_game_classes/character_actions/craft_spear");
@@ -15,31 +14,19 @@ const gather_wood_1 = require("../base_game_classes/character_actions/gather_woo
 const craft_rat_armour_1 = require("../base_game_classes/character_actions/craft_rat_armour");
 const market_items_1 = require("../market/market_items");
 const craft_bone_spear_1 = require("../base_game_classes/character_actions/craft_bone_spear");
-const affix_1 = require("../base_game_classes/affix");
-const game_launch_1 = require("../../game_launch");
 const user_manager_1 = require("./user_manager");
+const skills_1 = require("../static_data/skills");
+const map_definitions_1 = require("../static_data/map_definitions");
 class SocketManager {
     constructor(io) {
         this.io = io;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
-        this.sockets = new Set();
+        this.active_users = new Set();
         this.sessions = {};
-    }
-    generate_session(length) {
-        var result = '';
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    }
-    real_shit() {
         this.io.on('connection', async (socket) => {
-            let user = user_manager_1.UserManagement.create_dummy_user();
-            user.set_socket(socket);
-            this.sockets.add(user);
+            let user = user_manager_1.UserManagement.create_dummy_user(socket);
+            this.active_users.add(user);
             this.connection(socket);
             socket.on('disconnect', () => this.disconnect(user));
             socket.on('login', async (msg) => this.login(user, msg));
@@ -93,149 +80,29 @@ class SocketManager {
             socket.on('learn-perk', (msg) => this.send_learn_perk_request(user, msg.id, msg.tag));
         });
     }
+    generate_session(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
     disconnect(user) {
         console.log('user disconnected');
-        var user_manager = this.world.user_manager;
         if (user.logged_in) {
             user.logged_in = false;
         }
     }
-    async buyout(user, msg) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            let id = parseInt(msg);
-            if (isNaN(id)) {
-                return;
-            }
-            let responce = await market_items_1.AuctionManagement.buyout(this.pool, this.world.entity_manager, this, character, id);
-            this.send_to_character_user(character, 'alert', responce);
-            this.send_item_market_update_to_character(character);
-            this.send_equip_update_to_character(character);
-        }
-    }
-    async equip_armour(user, msg) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            await character.equip_armour(msg);
-            this.send_equip_update_to_character(character);
-        }
-    }
-    async equip_weapon(user, msg) {
-        if (user.logged_in) {
-            // console.log('equip ', msg)
-            let character = user.get_character();
-            await character.equip_weapon(msg);
-            this.send_equip_update_to_character(character);
-        }
-    }
-    async enchant_weapon(user, msg) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            let item = character.equip.data.backpack.weapons[msg];
-            if (item != undefined) {
-                if (character.stash.get(materials_manager_1.ZAZ) > 1) {
-                    (0, affix_1.roll_affix_weapon)(character.get_enchant_rating(), item);
-                    character.stash.inc(materials_manager_1.ZAZ, -1);
-                    this.send_equip_update_to_character(character);
-                    this.send_stash_update_to_character(character);
-                }
-                else {
-                    this.send_to_character_user(character, 'alert', 'not_enough_zaz');
-                }
-            }
-        }
-    }
-    async enchant_armour(user, msg) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            let item = character.equip.data.backpack.armours[msg];
-            if (item != undefined) {
-                if (character.stash.get(materials_manager_1.ZAZ) > 1) {
-                    (0, affix_1.roll_affix_armour)(character.get_enchant_rating(), item);
-                    character.stash.inc(materials_manager_1.ZAZ, -1);
-                    this.send_equip_update_to_character(character);
-                    this.send_stash_update_to_character(character);
-                }
-                else {
-                    this.send_to_character_user(character, 'alert', 'not_enough_zaz');
-                }
-            }
-        }
-    }
-    async switch_weapon(user) {
-        if (user.logged_in) {
-            // console.log('equip ', msg)
-            let character = user.get_character();
-            if (character.in_battle()) {
-                user.socket.emit('alert', 'in_battle');
-                return;
-            }
-            await character.switch_weapon();
-            this.send_equip_update_to_character(character);
-        }
-    }
-    // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
-    async unequip(user, msg) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            if (msg == "right_hand") {
-                character.unequip_weapon();
-            }
-            else {
-                switch (msg) {
-                    case 'secondary': {
-                        character.unequip_secondary();
-                        break;
-                    }
-                    case 'body': {
-                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.BODY);
-                        break;
-                    }
-                    case 'legs': {
-                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.LEGS);
-                        break;
-                    }
-                    case 'foot': {
-                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.FOOT);
-                        break;
-                    }
-                    case 'head': {
-                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.HEAD);
-                        break;
-                    }
-                    case 'arms': {
-                        character.unequip_armour(item_tags_1.ARMOUR_TYPE.ARMS);
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    async sell_item(user, msg) {
-        if (user.logged_in) {
-            console.log(msg);
-            let character = user.get_character();
-            let index = parseInt(msg.index);
-            let type = msg.item_type;
-            let price = parseInt(msg.price);
-            if ((type != 'armour') && (type != 'weapon'))
-                return;
-            if (isNaN(index) || isNaN(price))
-                return;
-            await market_items_1.AuctionManagement.sell(game_launch_1.entity_manager, this, character, type, index, price, price);
-            this.send_char_info(user);
-        }
-    }
-    async connection(socket) {
+    connection(socket) {
         console.log('a user connected');
-        socket.emit('tags', game_launch_1.world_manager.get_materials_json());
-        socket.emit('skill-tags', game_launch_1.world_manager.constants.SKILLS);
-        socket.emit('tags-tactic', { target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee'] });
-        socket.emit('sections', game_launch_1.world_manager.constants.sections);
-        var messages = await this.load_messages_from_database();
-        for (let i = 0; i < messages.rows.length; i++) {
-            let tmp = messages.rows[i];
-            socket.emit('new-message', { id: tmp.id, msg: tmp.message, user: tmp.sender });
+        socket.emit('tags', materials_manager_1.materials.get_materials_json);
+        socket.emit('skill-tags', skills_1.SKILLS);
+        socket.emit('sections', map_definitions_1.SECTIONS);
+        var messages = this.MESSAGES;
+        for (let message of messages) {
+            socket.emit('new-message', { id: message.id, msg: message.content, user: message.sender });
         }
     }
     async login_with_session(user, session) {

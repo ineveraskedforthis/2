@@ -28,15 +28,16 @@ export class User {
     login: string
     password_hash: string
     char_id: number 
-    socket: any
+    socket: Socket
     market_data: any
     logged_in: boolean
 
-    constructor(id: number, char_id:number, login:string, password_hash:string) {
-        this.id = -1
-        this.char_id = -1
-        this.login = 'no_login'
-        this.password_hash = ''
+    constructor(socket: Socket, id: number, char_id:number, login:string, password_hash:string) {
+        this.socket = socket
+        this.id = id
+        this.char_id = char_id
+        this.login = login
+        this.password_hash = password_hash
         this.logged_in = false
     }
 
@@ -70,14 +71,6 @@ export class User {
 
     set_password_hash(hash: string) {
         this.password_hash = hash
-    }
-
-    get_character() {
-        let real_user = user_manager.get_user(this.id)
-        if (real_user != undefined) {
-            return world_manager.get_char_from_id(real_user.char_id)
-        }
-        return world_manager.get_char_from_id(this.char_id)
     }
 
     async get_new_char(pool: PgPool) {

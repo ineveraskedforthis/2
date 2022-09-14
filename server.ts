@@ -1,14 +1,11 @@
 'use strict'
 
-import { launch } from "./game_launch";
-
 require('dotenv').config({path: __dirname + '/.env'});
-
 const port = process.env.PORT || 3000;
 
 var express = require('express');
 var app = express();
-var http = require('http').createServer(app);
+export var http = require('http').createServer(app);
 
 export interface io_type {
     connect(url: string): Socket;
@@ -18,17 +15,8 @@ export interface Socket {
     emit(event: string, data: any):void;
 }
 
-
-export var io:io_type = require('socket.io')(http);
-
 var gameloop = require('node-gameloop');
 var path = require('path');
-var {World} = require("./game_modules/world.js");
-var common = require("./game_modules/common.js");
-var {constants} = require("./game_modules/static_data/constants.js");
-
-
-var pool = undefined
 
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'static')));
@@ -39,4 +27,6 @@ http.listen(port, () => {
     console.log('listening on *:3000');
 });
 
+
+import { launch } from "./game_launch";
 launch()

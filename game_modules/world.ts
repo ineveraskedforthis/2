@@ -259,12 +259,7 @@ export class World {
         this.socket_manager.update_user_list();
     }
 
-    get_stash_tags_list() {
-        return materials.get_materials_list()
-    }
-    get_materials_json() {
-        return materials.get_materials_json()
-    }
+    
 
     get_cell_teacher(x: number, y: number) {
         return undefined

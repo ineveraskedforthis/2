@@ -100,7 +100,7 @@ var AuctionOrderManagement;
 })(AuctionOrderManagement = exports.AuctionOrderManagement || (exports.AuctionOrderManagement = {}));
 var AuctionManagement;
 (function (AuctionManagement) {
-    async function sell(entity_manager, socket_manager, seller, type, backpack_id, buyout_price, starting_price) {
+    async function sell(entity_manager, seller, type, backpack_id, buyout_price, starting_price) {
         // if (auction.cell_id != seller.cell_id) {
         //     return {responce: AuctionResponce.NOT_IN_THE_SAME_CELL}
         // }
@@ -203,7 +203,7 @@ var AuctionManagement;
     AuctionManagement.cell_id_to_orders_json_list = cell_id_to_orders_json_list;
     /**  Sends money to seller and sends item to buyer
     * */
-    async function buyout(pool, manager, socket_manager, buyer, id) {
+    async function buyout(manager, buyer, id) {
         let order = manager.raw_id_to_item_order(id);
         if (order == undefined) {
             return AuctionResponce.NO_SUCH_ORDER;
@@ -236,7 +236,7 @@ var AuctionManagement;
         return AuctionResponce.OK;
     }
     AuctionManagement.buyout = buyout;
-    function cancel_order(pool, manager, socket_manager, who, order_id) {
+    function cancel_order(manager, who, order_id) {
         let order = manager.raw_id_to_item_order(order_id);
         if (order == undefined) {
             return AuctionResponce.NO_SUCH_ORDER;
@@ -257,7 +257,7 @@ var AuctionManagement;
         AuctionOrderManagement.delete_db(pool, order);
     }
     AuctionManagement.cancel_order = cancel_order;
-    function cancel_order_safe(pool, manager, socket_manager, who, order_id) {
+    function cancel_order_safe(manager, who, order_id) {
         let order = manager.get_item_order(order_id);
         let owner = order.owner;
         order.flags.finished = true;
@@ -273,7 +273,7 @@ var AuctionManagement;
         AuctionOrderManagement.delete_db(pool, order);
     }
     AuctionManagement.cancel_order_safe = cancel_order_safe;
-    function cancel_all_orders(pool, manager, socket_manager, who) {
+    function cancel_all_orders(manager, who) {
         for (let order of manager.item_orders) {
             if (order == undefined)
                 continue;

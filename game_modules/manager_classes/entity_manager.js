@@ -14,8 +14,7 @@ const market_items_1 = require("../market/market_items");
 const rat_1 = require("../base_game_classes/races/rat");
 const elo_1 = require("../base_game_classes/races/elo");
 class EntityManager {
-    constructor(world) {
-        this.world = world;
+    constructor() {
         this.chars = [];
         this.orders = [];
         this.item_orders = [];

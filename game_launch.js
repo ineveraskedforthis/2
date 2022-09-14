@@ -1,15 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.launch = exports.last_id = exports.users = exports.socket_manager = void 0;
+exports.launch = exports.last_id = exports.entity_manager = exports.users = exports.socket_manager = exports.io = void 0;
 const fs_1 = require("fs");
+const entity_manager_1 = require("./game_modules/manager_classes/entity_manager");
 const socket_manager_1 = require("./game_modules/manager_classes/socket_manager");
 const user_manager_1 = require("./game_modules/manager_classes/user_manager");
 const constants_1 = require("./game_modules/static_data/constants");
 const migrations_1 = require("./migrations");
 const server_1 = require("./server");
-exports.socket_manager = new socket_manager_1.SocketManager(server_1.io);
+exports.io = require('socket.io')(server_1.http);
+exports.socket_manager = new socket_manager_1.SocketManager(exports.io);
 exports.users = user_manager_1.UserManagement.load_users();
-// export var entity_manager = new EntityManager()
+exports.entity_manager = new entity_manager_1.EntityManager();
 // export var ai_manager = new AiManager()
 // export var world_manager = new World(27, 27)
 // export var user_manager = new UserManager()

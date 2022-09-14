@@ -128,7 +128,7 @@ export namespace AuctionOrderManagement {
 
 export namespace AuctionManagement {
 
-    export async function sell(entity_manager: EntityManager, socket_manager: SocketManager, seller: CharacterGenericPart, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
+    export async function sell(entity_manager: EntityManager, seller: CharacterGenericPart, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
         // if (auction.cell_id != seller.cell_id) {
         //     return {responce: AuctionResponce.NOT_IN_THE_SAME_CELL}
         // }
@@ -222,7 +222,7 @@ export namespace AuctionManagement {
 
     /**  Sends money to seller and sends item to buyer
     * */
-    export async function buyout(pool: PgPool, manager: EntityManager, socket_manager: SocketManager, buyer: CharacterGenericPart, id: auction_order_id_raw) {
+    export async function buyout(manager: EntityManager, buyer: CharacterGenericPart, id: auction_order_id_raw) {
         let order = manager.raw_id_to_item_order(id)
 
         if (order == undefined) {
@@ -261,7 +261,7 @@ export namespace AuctionManagement {
         return AuctionResponce.OK
     }
 
-    export function cancel_order(pool: PgPool, manager: EntityManager, socket_manager: SocketManager, who: CharacterGenericPart, order_id: auction_order_id_raw) {
+    export function cancel_order(manager: EntityManager, who: CharacterGenericPart, order_id: auction_order_id_raw) {
         let order = manager.raw_id_to_item_order(order_id)
 
         if (order == undefined) {
@@ -286,7 +286,7 @@ export namespace AuctionManagement {
         AuctionOrderManagement.delete_db(pool, order)
     }
 
-    export function cancel_order_safe(pool: PgPool, manager: EntityManager, socket_manager: SocketManager, who: CharacterGenericPart, order_id: auction_order_id) {
+    export function cancel_order_safe(manager: EntityManager, who: CharacterGenericPart, order_id: auction_order_id) {
         let order = manager.get_item_order(order_id)
         let owner = order.owner
 
@@ -303,7 +303,7 @@ export namespace AuctionManagement {
     }
     
 
-    export function cancel_all_orders(pool: PgPool, manager: EntityManager, socket_manager: SocketManager, who: CharacterGenericPart) {
+    export function cancel_all_orders(manager: EntityManager, who: CharacterGenericPart) {
         for (let order of manager.item_orders) {
             if (order == undefined) continue;
             if (order.flags.finished) continue;

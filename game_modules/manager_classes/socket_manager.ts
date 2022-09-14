@@ -20,8 +20,10 @@ import { AuctionManagement, auction_order_id_raw } from "../market/market_items"
 import { craft_bone_arrow_probability } from "../base_game_classes/character_actions/craft_bone_spear";
 import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
 import { io_type, Socket } from "../../server";
-import { entity_manager, user_manager, world_manager } from "../../game_launch";
+import { entity_manager } from "../../game_launch";
 import { UserManagement } from "./user_manager";
+import { SKILLS } from "../static_data/skills";
+import { SECTIONS } from "../static_data/map_definitions";
 
 interface UserData {
     socket: any,
@@ -30,37 +32,29 @@ interface UserData {
     market_data: boolean
 }
 
+interface Message {
+    id: number
+    content: string
+    sender: string
+}
 
 export class SocketManager {
     io: any
-    MESSAGES: []
+    MESSAGES: Message[]
     MESSAGE_ID: number
-    sockets: Set<User>
+    active_users: Set<User>
     sessions: {[_ in string]: number}
 
     constructor(io: io_type) {
         this.io = io;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
-        this.sockets = new Set();
+        this.active_users = new Set();
         this.sessions = {};
-    }
-
-    generate_session(length: number): string {
-        var result           = '';
-        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for ( var i = 0; i < length; i++ ) {
-           result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    }
-
-    real_shit() {
-        this.io.on('connection', async (socket: any) => {
-            let user = UserManagement.create_dummy_user()
-            user.set_socket(socket)
-            this.sockets.add(user);
+        
+        this.io.on('connection', async (socket: Socket) => {
+            let user = UserManagement.create_dummy_user(socket)
+            this.active_users.add(user);
             this.connection(socket)
 
 
@@ -78,12 +72,15 @@ export class SocketManager {
             socket.on('new-message', async (msg: any) => this.send_message(user, msg + ''));
             socket.on('char-info-detailed', () => this.send_char_info(user));
             socket.on('send-market-data', (msg: any) => {user.market_data = msg});
+
+
             socket.on('equip-armour', async (msg: any) => this.equip_armour(user, msg));
             socket.on('equip-weapon', async (msg: any) => this.equip_weapon(user, msg));
             socket.on('enchant-armour', async (msg: any) => this.enchant_armour(user, msg));
             socket.on('enchant-weapon', async (msg: any) => this.enchant_weapon(user, msg));
             socket.on('switch-weapon', async (msg: any) => this.switch_weapon(user))
             socket.on('unequip', async (msg: any) => this.unequip(user, msg));
+
 
             socket.on('eat', async () => this.eat(user));
             socket.on('clean', async () => this.clean(user));
@@ -93,12 +90,16 @@ export class SocketManager {
             socket.on('gather_wood', async () => this.gather_wood(user))
 
             socket.on('session', async (msg: any) => this.login_with_session(user, msg));
+
+
             socket.on('clear-orders', async () => this.clear_orders(user));
             socket.on('clear-item-orders', async () => this.clear_item_orders(user))
             socket.on('clear-order', async (msg: any) => this.clear_order(user, msg));
             socket.on('sell-item', async (msg: any) => this.sell_item(user, msg));
             socket.on('buyout', async (msg: any) => this.buyout(user, msg));
             socket.on('execute-order', async (msg: any) => this.execute_order(user, msg.amount, msg.order))
+
+
             socket.on('cfood', async () =>      this.craft(user, CharacterAction.COOK_MEAT));
             socket.on('czaz', async () =>       this.craft(user, CharacterAction.COOK_ELODINO));
             socket.on('mspear', async () =>     this.craft(user, CharacterAction.CRAFT_SPEAR))
@@ -121,137 +122,33 @@ export class SocketManager {
         });
     }
 
+    generate_session(length: number): string {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+           result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
     disconnect(user: User) {
         console.log('user disconnected');
-        var user_manager = this.world.user_manager;
         if (user.logged_in) {
             user.logged_in = false;
         }
     }
 
-    async buyout(user: User, msg: string) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            let id = parseInt(msg);
-            if (isNaN(id)) {
-                return
-            }
-            let responce = await AuctionManagement.buyout(this.pool, this.world.entity_manager, this, character, id as auction_order_id_raw)
-            this.send_to_character_user(character, 'alert', responce)
-            this.send_item_market_update_to_character(character);
-            this.send_equip_update_to_character(character);
-        }
-    }
-
-    async equip_armour(user: User, msg: number) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            await character.equip_armour(msg);
-            this.send_equip_update_to_character(character)
-        }
-    }
-
-    async equip_weapon(user: User, msg: number) {
-        if (user.logged_in) {
-            // console.log('equip ', msg)
-            let character = user.get_character();
-            await character.equip_weapon(msg);
-            this.send_equip_update_to_character(character)
-        }
-    }
-
-    async enchant_weapon(user: User, msg: number) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            let item = character.equip.data.backpack.weapons[msg]
-            if (item != undefined) {
-                if (character.stash.get(ZAZ) > 1) {
-                    roll_affix_weapon(character.get_enchant_rating(), item)
-                    character.stash.inc(ZAZ, -1)
-                    this.send_equip_update_to_character(character)
-                    this.send_stash_update_to_character(character)
-                } else {
-                    this.send_to_character_user(character, 'alert', 'not_enough_zaz')
-                }                
-            }
-        }
-    }
-
-    async enchant_armour(user: User, msg: number) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            let item = character.equip.data.backpack.armours[msg]
-            if (item != undefined) {
-                if (character.stash.get(ZAZ) > 1) {
-                    roll_affix_armour(character.get_enchant_rating(), item)
-                    character.stash.inc(ZAZ, -1)
-                    this.send_equip_update_to_character(character)
-                    this.send_stash_update_to_character(character)
-                } else {
-                    this.send_to_character_user(character, 'alert', 'not_enough_zaz')
-                }                
-            }            
-        }
-    }
-
-    async switch_weapon(user:User) {
-        if (user.logged_in) {
-            // console.log('equip ', msg)
-            let character = user.get_character();
-            if (character.in_battle()) {
-                user.socket.emit('alert', 'in_battle')
-                return
-            }
-            await character.switch_weapon();
-            this.send_equip_update_to_character(character)
-        }
-    }
-
-    // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
-    async unequip(user:User, msg: string) {
-        if (user.logged_in) {
-            let character = user.get_character();
-            if (msg == "right_hand") {
-                character.unequip_weapon()
-            } else {
-                switch(msg) {
-                    case 'secondary': {character.unequip_secondary();break;}
-                    case 'body': {character.unequip_armour(ARMOUR_TYPE.BODY);break;}
-                    case 'legs': {character.unequip_armour(ARMOUR_TYPE.LEGS);break;}
-                    case 'foot': {character.unequip_armour(ARMOUR_TYPE.FOOT);break;}
-                    case 'head': {character.unequip_armour(ARMOUR_TYPE.HEAD);break;}
-                    case 'arms': {character.unequip_armour(ARMOUR_TYPE.ARMS);break;}
-                }
-            }
-        }
-    }
-
-    async sell_item(user: User, msg: any) {
-        if (user.logged_in) {
-            console.log(msg)
-            let character = user.get_character();
-            let index = parseInt(msg.index);
-            let type = msg.item_type
-            let price = parseInt(msg.price);
-            if ((type != 'armour') && (type != 'weapon')) return;
-            if (isNaN(index) || isNaN(price)) return;
-            await AuctionManagement.sell(entity_manager, this, character, type, index, price as money, price as money)
-            this.send_char_info(user);
-        }
-    }
-
-    async connection(socket: any) {
+    connection(socket: Socket) {
         console.log('a user connected');
         
-        socket.emit('tags', world_manager.get_materials_json());
-        socket.emit('skill-tags', world_manager.constants.SKILLS);
-        socket.emit('tags-tactic', {target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee']})
+        socket.emit('tags', materials.get_materials_json);
+        socket.emit('skill-tags', SKILLS);        
+        socket.emit('sections', SECTIONS);
         
-        socket.emit('sections', world_manager.constants.sections);
-        var messages = await this.load_messages_from_database()
-        for (let i = 0; i < messages.rows.length; i++) {
-            let tmp = messages.rows[i];
-            socket.emit('new-message', {id: tmp.id, msg: tmp.message, user: tmp.sender})
+        var messages = this.MESSAGES
+        for (let message of messages) {
+            socket.emit('new-message', {id: message.id, msg: message.content, user: message.sender})
         }
     }
 

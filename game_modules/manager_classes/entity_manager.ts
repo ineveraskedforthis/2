@@ -30,8 +30,7 @@ export class EntityManager {
 
     time_since_last_decision_update: number
 
-    constructor(world: World) {
-        this.world = world;
+    constructor() {
         this.chars = [];
         this.orders = [];
         this.item_orders = [];

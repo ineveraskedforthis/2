@@ -7,12 +7,15 @@ import { UserManagement, UserManager } from "./game_modules/manager_classes/user
 import { constants } from "./game_modules/static_data/constants";
 import { World } from "./game_modules/world";
 import { migrate } from "./migrations";
-import { io } from "./server";
+import { http, io_type } from "./server";
 
+
+export var io:io_type = require('socket.io')(http);
 export var socket_manager = new SocketManager(io)
 export var users = UserManagement.load_users()
 
-// export var entity_manager = new EntityManager()
+
+export var entity_manager = new EntityManager()
 // export var ai_manager = new AiManager()
 // export var world_manager = new World(27, 27)
 // export var user_manager = new UserManager()
