@@ -32,13 +32,13 @@ var AuctionResponce;
 })(AuctionResponce || (AuctionResponce = {}));
 var AuctionOrderManagement;
 (function (AuctionOrderManagement) {
-    async function build_order(pool, owner, latest_bidder, item, buyout_price, starting_price, end_time, cell_id, flags) {
-        let order_id = await AuctionOrderManagement.insert_to_db(pool, item, owner.id, buyout_price, starting_price, owner.id, end_time, cell_id);
+    async function build_order(owner, latest_bidder, item, buyout_price, starting_price, end_time, cell_id, flags) {
+        let order_id = await AuctionOrderManagement.insert_to_db(item, owner.id, buyout_price, starting_price, owner.id, end_time, cell_id);
         let order = new OrderItem(item, owner, latest_bidder, buyout_price, starting_price, end_time, order_id, flags);
         return order;
     }
     AuctionOrderManagement.build_order = build_order;
-    async function insert_to_db(pool, item, owner_id, buyout_price, current_price, latest_bidder, end_time, cell_id) {
+    async function insert_to_db(item, owner_id, buyout_price, current_price, latest_bidder, end_time, cell_id) {
         let nodb = nodb_mode_id();
         if (nodb != undefined) {
             return nodb;
@@ -100,7 +100,7 @@ var AuctionOrderManagement;
 })(AuctionOrderManagement = exports.AuctionOrderManagement || (exports.AuctionOrderManagement = {}));
 var AuctionManagement;
 (function (AuctionManagement) {
-    async function sell(pool, entity_manager, socket_manager, seller, type, backpack_id, buyout_price, starting_price) {
+    async function sell(entity_manager, socket_manager, seller, type, backpack_id, buyout_price, starting_price) {
         // if (auction.cell_id != seller.cell_id) {
         //     return {responce: AuctionResponce.NOT_IN_THE_SAME_CELL}
         // }
@@ -138,7 +138,7 @@ var AuctionManagement;
                 ;
         }
         let time = Date.now() + time_intervals[1];
-        let order = await AuctionOrderManagement.build_order(pool, seller, seller, item, buyout_price, starting_price, time, cell, {
+        let order = await AuctionOrderManagement.build_order(seller, seller, item, buyout_price, starting_price, time, cell, {
             finished: false,
             // item_sent:false, 
             // profit_sent: false

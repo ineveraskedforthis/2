@@ -1,29 +1,68 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserManager = void 0;
+exports.UserManager = exports.UserManagement = exports.users_online = exports.users = void 0;
 const user_1 = require("../user");
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 const constants_1 = require("../static_data/constants");
 const game_launch_1 = require("../../game_launch");
-var common = require("../common.js");
+const fs_1 = require("fs");
+var UserManagement;
+(function (UserManagement) {
+    function create_dummy_user(socket) {
+        return new user_1.DummyUser(socket);
+    }
+    UserManagement.create_dummy_user = create_dummy_user;
+    function load_users_raw() {
+        (0, fs_1.readFile)('/data/users.txt', 'utf-8', (err, data) => {
+            if (err) {
+                return '';
+            }
+            return data;
+        });
+        return '';
+    }
+    async function load_users() {
+        console.log('loading users');
+        let data = load_users_raw();
+        let lines = data.split('\n');
+        let users_list = [];
+        for (let line of lines) {
+            if (line == '') {
+                continue;
+            }
+            let data = line.split(' ');
+            console.log(data);
+            let user = new user_1.User(Number(data[0]), Number(data[1]), data[2], data[3]);
+            users_list.push(user);
+        }
+        return exports.users;
+    }
+    UserManagement.load_users = load_users;
+    function save_users() {
+    }
+    UserManagement.save_users = save_users;
+    function register_player(data) {
+        var login_is_available = this.check_login(pool, data.login);
+        if (!login_is_available) {
+            return { reg_prompt: 'login-is-not-available', user: undefined };
+        }
+        var hash = bcrypt.hash(data.password, salt);
+        var new_user = this.create_new_user();
+        new_user.set_login(data.login);
+        new_user.set_password_hash(hash);
+        // var id = 
+        // var id = await new_user.init(pool);
+        // this.users[id] = new_user;
+        return ({ reg_prompt: 'ok', user: new_user });
+    }
+})(UserManagement = exports.UserManagement || (exports.UserManagement = {}));
 class UserManager {
     constructor() {
         this.users = [];
         this.users_online = [];
     }
-    async reg_player(pool, data) {
-        var login_is_available = await this.check_login(pool, data.login);
-        if (!login_is_available) {
-            return { reg_prompt: 'login-is-not-available', user: undefined };
-        }
-        var hash = await bcrypt.hash(data.password, salt);
-        var new_user = this.create_new_user();
-        new_user.set_login(data.login);
-        new_user.set_password_hash(hash);
-        var id = await new_user.init(pool);
-        this.users[id] = new_user;
-        return ({ reg_prompt: 'ok', user: new_user });
+    async reg_player(pool) {
     }
     create_new_user() {
         return new user_1.User();

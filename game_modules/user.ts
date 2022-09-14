@@ -1,4 +1,5 @@
 import { entity_manager, user_manager, world_manager } from "../game_launch";
+import { Socket } from "../server";
 import { PgPool, World } from "./world";
 var {constants} = require("./static_data/constants.js");
 var common = require("./common.js");
@@ -8,16 +9,17 @@ export class DummyUser {
     login: string
     password_hash: string
     char_id: number 
-    socket: any
+    socket: Socket
     market_data: any
     logged_in: boolean
     
-    constructor() {
+    constructor(socket:Socket) {
         this.id = -1
         this.char_id = -1
         this.login = 'no_login'
         this.password_hash = ''
         this.logged_in = false
+        this.socket = socket
     }
 }
 
@@ -30,7 +32,7 @@ export class User {
     market_data: any
     logged_in: boolean
 
-    constructor() {
+    constructor(id: number, char_id:number, login:string, password_hash:string) {
         this.id = -1
         this.char_id = -1
         this.login = 'no_login'

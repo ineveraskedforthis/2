@@ -5,7 +5,11 @@ var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 import {constants} from '../static_data/constants'
 import { socket_manager } from "../../game_launch";
-var common = require("../common.js")
+
+import { readFile } from "fs";
+import fs from "fs"
+
+import { Socket } from "../../server";
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
@@ -14,9 +18,38 @@ export var users: User[]
 export var users_online: boolean[]
 
 
-namespace UserManagement {
-    function create_dummy_user() {
-        return new DummyUser()
+export namespace UserManagement {
+    export function create_dummy_user(socket: Socket) {
+        return new User(-1, -1, '', socket)
+    }
+
+    function load_users_raw() {
+        readFile('/data/users.txt', 'utf-8', (err, data) => {
+            if (err) {
+                return ''
+            }
+            return data
+        })
+        return ''
+    }
+
+    export async function load_users() {
+        console.log('loading users')
+        let data = load_users_raw()
+        let lines = data.split('\n')
+        let users_list:User[] = []
+        for (let line of lines) {
+            if (line == '') {continue}
+            let data = line.split(' ')
+            console.log(data)
+            let user = new User(Number(data[0]), Number(data[1]), data[2], data[3])
+            users_list.push(user)
+        }
+        return users
+    }
+
+    export function save_users() {
+        
     }
 
     function register_player(data: {login: string, password: string}) {
@@ -28,9 +61,9 @@ namespace UserManagement {
         var new_user = this.create_new_user();
         new_user.set_login(data.login);
         new_user.set_password_hash(hash);
-        var id = 
-        var id = await new_user.init(pool);
-        this.users[id] = new_user;
+        // var id = 
+        // var id = await new_user.init(pool);
+        // this.users[id] = new_user;
         return({reg_prompt: 'ok', user: new_user});
     }
 

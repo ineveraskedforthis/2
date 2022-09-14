@@ -17,6 +17,7 @@ const market_items_1 = require("../market/market_items");
 const craft_bone_spear_1 = require("../base_game_classes/character_actions/craft_bone_spear");
 const affix_1 = require("../base_game_classes/affix");
 const game_launch_1 = require("../../game_launch");
+const user_manager_1 = require("./user_manager");
 class SocketManager {
     constructor(io) {
         this.io = io;
@@ -36,7 +37,7 @@ class SocketManager {
     }
     real_shit() {
         this.io.on('connection', async (socket) => {
-            let user = game_launch_1.user_manager.create_new_user();
+            let user = user_manager_1.UserManagement.create_dummy_user();
             user.set_socket(socket);
             this.sockets.add(user);
             this.connection(socket);
@@ -221,16 +222,16 @@ class SocketManager {
                 return;
             if (isNaN(index) || isNaN(price))
                 return;
-            await market_items_1.AuctionManagement.sell(this.pool, this.world.entity_manager, this, character, type, index, price, price);
+            await market_items_1.AuctionManagement.sell(game_launch_1.entity_manager, this, character, type, index, price, price);
             this.send_char_info(user);
         }
     }
     async connection(socket) {
         console.log('a user connected');
-        socket.emit('tags', this.world.get_materials_json());
-        socket.emit('skill-tags', this.world.constants.SKILLS);
+        socket.emit('tags', game_launch_1.world_manager.get_materials_json());
+        socket.emit('skill-tags', game_launch_1.world_manager.constants.SKILLS);
         socket.emit('tags-tactic', { target: ['undefined', 'me', 'closest_enemy'], value_tags: ['undefined', 'hp', 'blood', 'rage'], signs: ['undefined', '>', '>=', '<', '<=', '='], actions: ['undefined', 'attack', 'flee'] });
-        socket.emit('sections', this.world.constants.sections);
+        socket.emit('sections', game_launch_1.world_manager.constants.sections);
         var messages = await this.load_messages_from_database();
         for (let i = 0; i < messages.rows.length; i++) {
             let tmp = messages.rows[i];
@@ -241,7 +242,7 @@ class SocketManager {
         console.log('attempt to login with session');
         if (session in this.sessions) {
             user.init_by_user_id(this.sessions[session]);
-            this.world.user_manager.get_user(user.id).socket = user.socket;
+            user_manager.get_user(user.id).socket = user.socket;
             let user_manager = this.world.user_manager;
             user_manager.new_user_online(user);
             user.socket.emit('log-message', 'hello ' + user.login);

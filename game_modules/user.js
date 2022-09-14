@@ -1,11 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.User = void 0;
+exports.User = exports.DummyUser = void 0;
 const game_launch_1 = require("../game_launch");
 var { constants } = require("./static_data/constants.js");
 var common = require("./common.js");
+class DummyUser {
+    constructor(socket) {
+        this.id = -1;
+        this.char_id = -1;
+        this.login = 'no_login';
+        this.password_hash = '';
+        this.logged_in = false;
+        this.socket = socket;
+    }
+}
+exports.DummyUser = DummyUser;
 class User {
-    constructor() {
+    constructor(id, char_id, login, password_hash) {
         this.id = -1;
         this.char_id = -1;
         this.login = 'no_login';

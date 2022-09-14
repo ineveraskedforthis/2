@@ -21,6 +21,7 @@ import { craft_bone_arrow_probability } from "../base_game_classes/character_act
 import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
 import { io_type, Socket } from "../../server";
 import { entity_manager, user_manager, world_manager } from "../../game_launch";
+import { UserManagement } from "./user_manager";
 
 interface UserData {
     socket: any,
@@ -57,7 +58,7 @@ export class SocketManager {
 
     real_shit() {
         this.io.on('connection', async (socket: any) => {
-            let user = user_manager.create_new_user()
+            let user = UserManagement.create_dummy_user()
             user.set_socket(socket)
             this.sockets.add(user);
             this.connection(socket)

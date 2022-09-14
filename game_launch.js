@@ -1,22 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.launch = exports.last_id = exports.action_manager = exports.user_manager = exports.world_manager = exports.ai_manager = exports.entity_manager = exports.socket_manager = void 0;
+exports.launch = exports.last_id = exports.users = exports.socket_manager = void 0;
 const fs_1 = require("fs");
-const action_manager_1 = require("./game_modules/manager_classes/action_manager");
-const ai_manager_1 = require("./game_modules/manager_classes/ai_manager");
-const entity_manager_1 = require("./game_modules/manager_classes/entity_manager");
 const socket_manager_1 = require("./game_modules/manager_classes/socket_manager");
 const user_manager_1 = require("./game_modules/manager_classes/user_manager");
 const constants_1 = require("./game_modules/static_data/constants");
-const world_1 = require("./game_modules/world");
 const migrations_1 = require("./migrations");
 const server_1 = require("./server");
 exports.socket_manager = new socket_manager_1.SocketManager(server_1.io);
-exports.entity_manager = new entity_manager_1.EntityManager();
-exports.ai_manager = new ai_manager_1.AiManager();
-exports.world_manager = new world_1.World(27, 27);
-exports.user_manager = new user_manager_1.UserManager();
-exports.action_manager = new action_manager_1.ActionManager();
+exports.users = user_manager_1.UserManagement.load_users();
+// export var entity_manager = new EntityManager()
+// export var ai_manager = new AiManager()
+// export var world_manager = new World(27, 27)
+// export var user_manager = new UserManager()
+// export var action_manager = new ActionManager()
 exports.last_id = {
     user: 0,
 };

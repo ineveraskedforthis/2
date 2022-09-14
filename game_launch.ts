@@ -3,18 +3,20 @@ import { ActionManager } from "./game_modules/manager_classes/action_manager";
 import { AiManager } from "./game_modules/manager_classes/ai_manager";
 import { EntityManager } from "./game_modules/manager_classes/entity_manager";
 import { SocketManager } from "./game_modules/manager_classes/socket_manager";
-import { UserManager } from "./game_modules/manager_classes/user_manager";
+import { UserManagement, UserManager } from "./game_modules/manager_classes/user_manager";
 import { constants } from "./game_modules/static_data/constants";
 import { World } from "./game_modules/world";
 import { migrate } from "./migrations";
 import { io } from "./server";
 
 export var socket_manager = new SocketManager(io)
-export var entity_manager = new EntityManager()
-export var ai_manager = new AiManager()
-export var world_manager = new World(27, 27)
-export var user_manager = new UserManager()
-export var action_manager = new ActionManager()
+export var users = UserManagement.load_users()
+
+// export var entity_manager = new EntityManager()
+// export var ai_manager = new AiManager()
+// export var world_manager = new World(27, 27)
+// export var user_manager = new UserManager()
+// export var action_manager = new ActionManager()
 
 export var last_id = {
     user: 0,
