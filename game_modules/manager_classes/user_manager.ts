@@ -79,8 +79,11 @@ export namespace UserManagement {
     }
 
     function construct_user_data(char_id: number|TEMP_CHAR_ID, login: string, hash: string) {
-        last_id = last_id + 1
+        last_id = (last_id + 1)
         let user_data = new UserData(last_id, char_id, login, hash)
+        users_data_list[last_id as user_id] = user_data
+        login_to_user_data[login] = user_data
+
         return user_data
     }
 
@@ -92,14 +95,15 @@ export namespace UserManagement {
     // }
 
     export function login_user(sw: SocketWrapper, data: {login: string, password: string}): LoginResponce {
+        // check that user exists
         let user_data = login_to_user_data[data.login]
-
         if (user_data == undefined) {
             return {login_prompt: 'wrong-login', user: undefined};
         }
 
+        // compare hash of password with hash in storage
         var password_hash = user_data.password_hash;
-        let responce =  bcrypt.compare(data.password, password_hash)
+        let responce =  bcrypt.compareSync(data.password, password_hash)
         if (responce) {
             var user = construct_user(sw, user_data)
             return({login_prompt: 'ok', user: user});

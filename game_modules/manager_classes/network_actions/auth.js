@@ -9,17 +9,21 @@ var Auth;
 (function (Auth) {
     function login_with_session(sw, session) {
         console.log('attempt to login with session');
+        console.log(current_sessions);
+        console.log(session);
         // check if this session is legit
-        if (!(session in current_sessions)) {
+        if (current_sessions[session] == undefined) {
             sw.socket.emit('reset_session', undefined);
             return;
         }
+        console.log('session is legit');
         // retrieve user id and check if such user still exists
         let user_id = current_sessions[session];
         if (user_manager_1.UserManagement.user_exists(user_id)) {
             sw.socket.emit('reset_session', undefined);
             return;
         }
+        console.log('userid is ' + user_id);
         // if this user_id was already logged in, then attempt to login it
         if (user_manager_1.UserManagement.user_was_online(user_id)) {
             // if yes, then just update socket and status on old entry, depending on online status
@@ -27,16 +31,19 @@ var Auth;
                 sw.socket.emit('alert', 'you are already logged in elsewhere');
                 return;
             }
-            let user = user_manager_1.UserManagement.get_user(user_id);
+            var user = user_manager_1.UserManagement.get_user(user_id);
             user_manager_1.UserManagement.link_socket_wrapper_and_user(sw, user);
-            return;
         }
-        // if not, create new online user entry
-        let user_data = user_manager_1.UserManagement.get_user_data(user_id);
-        let user = user_manager_1.UserManagement.construct_user(sw, user_data);
-        user.logged_in = true;
+        else {
+            // if not, create new online user entry    
+            let user_data = user_manager_1.UserManagement.get_user_data(user_id);
+            var user = user_manager_1.UserManagement.construct_user(sw, user_data);
+            user.logged_in = true;
+        }
+        //send greeting to the user
         alerts_1.Alerts.log_to_user(user, 'hello ' + user.data.login);
         alerts_1.Alerts.login_is_completed(user);
+        console.log('user ' + user.data.login + ' logged in');
     }
     Auth.login_with_session = login_with_session;
     function login(sw, data) {
@@ -57,15 +64,17 @@ var Auth;
         var answer = user_manager_1.UserManagement.login_user(sw, data);
         sw.socket.emit('is-login-completed', answer.login_prompt);
         if (answer.login_prompt == 'ok') {
+            // send greeting
             let user = answer.user;
             alerts_1.Alerts.log_to_user(user, 'hello ' + data.login);
-            // this.send_battle_data_to_user(answer.user);
-            // this.send_all(user.get_character());
             // generate session for easier login later on
             let session = generate_session(20);
             user.socket.emit('session', session);
             current_sessions[session] = user.data.id;
             console.log('user ' + data.login + ' logged in');
+        }
+        else {
+            console.log('login failed: ' + answer.login_prompt);
         }
     }
     Auth.login = login;
@@ -85,13 +94,17 @@ var Auth;
         let answer = user_manager_1.UserManagement.register_user(sw, data);
         sw.socket.emit('is-reg-completed', answer.reg_prompt);
         if (answer.reg_prompt == 'ok') {
+            //send greeting
             let user = answer.user;
             user.socket.emit('log-message', 'hello ' + data.login);
             //generate session for easier login later on
             let session = generate_session(20);
             user.socket.emit('session', session);
             current_sessions[session] = user.data.id;
-            console.log('user ' + data.login + ' registered');
+            console.log('user ' + data.login + ' registrated');
+        }
+        else {
+            console.log('registration failed: ' + answer.reg_prompt);
         }
     }
     Auth.register = register;

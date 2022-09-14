@@ -62,8 +62,10 @@ var UserManagement;
     }
     UserManagement.construct_user = construct_user;
     function construct_user_data(char_id, login, hash) {
-        last_id = last_id + 1;
+        last_id = (last_id + 1);
         let user_data = new user_1.UserData(last_id, char_id, login, hash);
+        exports.users_data_list[last_id] = user_data;
+        login_to_user_data[login] = user_data;
         return user_data;
     }
     // async load_user_to_memory(pool: PgPool, data: any) {
@@ -73,12 +75,14 @@ var UserManagement;
     //     return user;
     // }
     function login_user(sw, data) {
+        // check that user exists
         let user_data = login_to_user_data[data.login];
         if (user_data == undefined) {
             return { login_prompt: 'wrong-login', user: undefined };
         }
+        // compare hash of password with hash in storage
         var password_hash = user_data.password_hash;
-        let responce = bcrypt.compare(data.password, password_hash);
+        let responce = bcrypt.compareSync(data.password, password_hash);
         if (responce) {
             var user = construct_user(sw, user_data);
             return ({ login_prompt: 'ok', user: user });

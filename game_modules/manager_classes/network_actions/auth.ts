@@ -9,12 +9,15 @@ export namespace Auth {
     export function login_with_session(sw: SocketWrapper, session: string)
     {
         console.log('attempt to login with session')
+        console.log(current_sessions)
+        console.log(session)
 
         // check if this session is legit
-        if (!(session in current_sessions)) {
+        if (current_sessions[session] == undefined) {
             sw.socket.emit('reset_session', undefined);
             return
         }
+        console.log('session is legit')
 
         // retrieve user id and check if such user still exists
         let user_id = current_sessions[session]
@@ -22,6 +25,7 @@ export namespace Auth {
             sw.socket.emit('reset_session', undefined);
             return
         }
+        console.log('userid is ' + user_id)
 
         // if this user_id was already logged in, then attempt to login it
         if (UserManagement.user_was_online(user_id)) {
@@ -31,18 +35,19 @@ export namespace Auth {
                 return
             }
 
-            let user = UserManagement.get_user(user_id as user_online_id) 
-            UserManagement.link_socket_wrapper_and_user(sw, user)            
-            return
+            var user = UserManagement.get_user(user_id as user_online_id) 
+            UserManagement.link_socket_wrapper_and_user(sw, user)
+        } else {
+            // if not, create new online user entry    
+            let user_data = UserManagement.get_user_data(user_id as user_id)
+            var user = UserManagement.construct_user(sw, user_data)
+            user.logged_in = true
         }
 
-        // if not, create new online user entry
-        let user_data = UserManagement.get_user_data(user_id as user_id)
-        let user = UserManagement.construct_user(sw, user_data)
-        user.logged_in = true
-
+        //send greeting to the user
         Alerts.log_to_user(user, 'hello ' + user.data.login)
         Alerts.login_is_completed(user)
+        console.log('user ' + user.data.login + ' logged in')
     }
 
     export function login(sw: SocketWrapper, data: {login: string, password: string}) {
@@ -66,11 +71,10 @@ export namespace Auth {
         var answer = UserManagement.login_user(sw, data);
         sw.socket.emit('is-login-completed', answer.login_prompt);
         if (answer.login_prompt == 'ok') {
+
+            // send greeting
             let user = answer.user
             Alerts.log_to_user(user, 'hello ' + data.login)
-
-            // this.send_battle_data_to_user(answer.user);
-            // this.send_all(user.get_character());
 
             // generate session for easier login later on
             let session = generate_session(20);
@@ -78,6 +82,8 @@ export namespace Auth {
             current_sessions[session] = user.data.id;
 
             console.log('user ' + data.login + ' logged in')
+        } else {
+            console.log('login failed: ' + answer.login_prompt)
         }
     }
 
@@ -99,6 +105,7 @@ export namespace Auth {
         let answer = UserManagement.register_user(sw, data)
         sw.socket.emit('is-reg-completed', answer.reg_prompt);
         if (answer.reg_prompt == 'ok') {
+            //send greeting
             let user = answer.user
             user.socket.emit('log-message', 'hello ' + data.login);
 
@@ -107,7 +114,9 @@ export namespace Auth {
             user.socket.emit('session', session);
             current_sessions[session] = user.data.id;
 
-            console.log('user ' + data.login + ' registered')
+            console.log('user ' + data.login + ' registrated')
+        } else {
+            console.log('registration failed: ' + answer.reg_prompt)
         }
     }
 
