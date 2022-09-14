@@ -12,7 +12,7 @@ import {AttackResult} from "./misc/attack_result";
 import {DamageByTypeObject, damage_types} from "./misc/damage_types"
 import { PgPool, World } from "../world";
 import { CharacterAction } from "../manager_classes/action_manager";
-import { User } from "../user";
+import { TEMP_USER_ID, User, user_id } from "../user";
 import { constants } from "../static_data/constants";
 import { ARMOUR_TYPE, Weapon } from "../static_data/item_tags";
 import { ARROW_BONE, material_index, ZAZ } from "../manager_classes/materials_manager";
@@ -288,7 +288,7 @@ export class CharacterGenericPart {
 
     id: number
     name: string;
-    user_id: number;
+    user_id: user_id|TEMP_USER_ID;
     cell_id: number;
     faction_id: number;
 

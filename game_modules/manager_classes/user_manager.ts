@@ -1,5 +1,5 @@
 import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
-import { DummyUser, User } from "../user";
+import { SocketWrapper, TEMP_CHAR_ID, User, UserData, user_id, user_online_id } from "../user";
 import { PgPool, World } from "../world";
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
@@ -14,14 +14,17 @@ import { Socket } from "../../server";
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
 
-export var users: User[]
-export var users_online: boolean[]
+
+export type UsersData = {[_ in user_id]: UserData}
+export type UsersOnline = {[id: user_online_id]: User}
+
+export var users_data_list: UsersData = {}
+var login_to_user_data: {[login: string]: UserData|undefined} = {}
+export var users_online_list: UsersOnline = {}
+var last_id = 0
 
 
 export namespace UserManagement {
-    export function create_dummy_user(socket: Socket) {
-        return new User(socket, -1, -1, '', '')
-    }
 
     function load_users_raw() {
         readFile('/data/users.txt', 'utf-8', (err, data) => {
@@ -33,130 +36,140 @@ export namespace UserManagement {
         return ''
     }
 
-    export async function load_users() {
+    export function load_users() {
         console.log('loading users')
         let data = load_users_raw()
         let lines = data.split('\n')
-        let users_list:User[] = []
+
         for (let line of lines) {
             if (line == '') {continue}
             let data = line.split(' ')
             console.log(data)
-            let user = new User(Number(data[0]), Number(data[1]), data[2], data[3])
-            users_list.push(user)
+
+            let user = new UserData(Number(data[0]), Number(data[1]), data[2], data[3])            
+            users_data_list[user.id] = user
+            login_to_user_data[user.login] = user
+
+            if (user.id > last_id) {
+                last_id = user.id
+            }
         }
-        return users
     }
 
     export function save_users() {
         
     }
 
-    function register_player(data: {login: string, password: string}) {
-        var login_is_available = this.check_login(pool, data.login);
-        if (!login_is_available) {
-            return {reg_prompt: 'login-is-not-available', user: undefined};
-        }
-        var hash = bcrypt.hash(data.password, salt);
-        var new_user = this.create_new_user();
-        new_user.set_login(data.login);
-        new_user.set_password_hash(hash);
-        // var id = 
-        // var id = await new_user.init(pool);
-        // this.users[id] = new_user;
-        return({reg_prompt: 'ok', user: new_user});
+    export function log_out(sw: SocketWrapper) {
+        if (sw.user_id == '#') return
+        users_online_list[sw.user_id].logged_in = false
     }
 
-    // assumes that user is valid
-    export function user_to_character(user: User) {
-        let character = entity_manager.chars[user.char_id]
-        return character
-    }
-}
-
-export class UserManager{
-    users: User[]
-    users_online: boolean[]
-
-
-    constructor() {
-        this.users = [];
-        this.users_online = [];
+    export function link_socket_wrapper_and_user(sw: SocketWrapper, user: User) {
+        user.socket = sw.socket
+        sw.user_id = user.data.id as user_online_id
+        user.logged_in = true
     }
 
-    async reg_player(pool: PgPool, ): Promise<RegResponce> {
-        
+    export function construct_user(sw: SocketWrapper, data: UserData) {
+        let user = new User(sw.socket, data)
+        sw.user_id = user.data.id as user_online_id
+        users_online_list[sw.user_id] = user;
+        return user
     }
 
-    create_new_user() {
-        return new User()
+    function construct_user_data(char_id: number|TEMP_CHAR_ID, login: string, hash: string) {
+        last_id = last_id + 1
+        let user_data = new UserData(last_id, char_id, login, hash)
+        return user_data
     }
 
-    async login_player(pool: PgPool, data: {login: string, password: string}): Promise<LoginResponce> {
-        var user_data = await this.load_user_data_from_db(pool, data.login);
+    // async load_user_to_memory(pool: PgPool, data: any) {
+    //     var user = this.create_new_user();
+    //     await user.load_from_json(pool, data);
+    //     this.users[user.id] = user;
+    //     return user;
+    // }
+
+    export function login_user(sw: SocketWrapper, data: {login: string, password: string}): LoginResponce {
+        let user_data = login_to_user_data[data.login]
+
         if (user_data == undefined) {
             return {login_prompt: 'wrong-login', user: undefined};
         }
+
         var password_hash = user_data.password_hash;
-        var f = await bcrypt.compare(data.password, password_hash);
-        if (f) {
-            var user = await this.load_user_to_memory(pool, user_data);
+        let responce =  bcrypt.compare(data.password, password_hash)
+        if (responce) {
+            var user = construct_user(sw, user_data)
             return({login_prompt: 'ok', user: user});
         }
         return {login_prompt: 'wrong-password', user: undefined};
     }
 
-    new_user_online(user: User) {
-        if (user.id != -1) {
-            this.users_online[user.id] = true;
-            console.log(user.login, ' logged in');
-            socket_manager.update_user_list()
+    export function register_user(sw: SocketWrapper, data: {login: string, password: string}):RegResponce {
+        if (login_to_user_data[data.login] != undefined) {
+            return {reg_prompt: 'login-is-not-available', user: undefined};
         }
+
+        let hash = bcrypt.hashSync(data.password, salt) 
+        let user_data = construct_user_data('@', data.login, hash)
+        let user = construct_user(sw, user_data)
+        return({reg_prompt: 'ok', user: user});
+    }
+
+    export function user_exists(id: number) {
+        if (users_data_list[id as user_id] == undefined) {
+            return false
+        }
+        return true
+    }
+
+    export function user_was_online(id: number) {
+        let x = users_online_list[id as user_online_id]
+        if (x == undefined) return false
+        return true
+    }
+
+    export function user_is_online(id: number) {
+        let x = users_online_list[id as user_online_id]
+        if (x == undefined) return false
+        if (x.logged_in) return false
+    }    
+
+    export function get_user(id: user_online_id) {
+        return users_online_list[id]
+    }
+
+    export function get_user_data(id: user_id) {
+        return users_data_list[id]
     }
     
-    user_disconnects(user: User) {
-        if (this.users_online[user.id]) {
-            this.users_online[user.id] = false;
-            socket_manager.update_user_list();
-        }
-    }
+    // function get_new_char(pool: PgPool) {
+    //     console.log('user ' + this.id + ' receives a new character')
 
-    get_user_from_character(character: CharacterGenericPart):User|undefined {
-        return this.users[character.user_id]
-    }
+    //     let old_character = this.get_character()
+    //     if (old_character != undefined) {
+    //         old_character.user_id = -1;
+    //     }  
+    //     let character = await this.world.create_new_character(pool, this.login, this.world.get_cell_id_by_x_y(0, 3), this.id)
+    //     this.char_id = character.id
+    //     character.user_id = this.id;
+        
+    //     if ((this.world.user_manager.get_user(this.id)) != undefined) {
+    //         this.world.user_manager.get_user(this.id).char_id = character.id
+    //     }
 
-    get_user(user_id: number) {
-        return this.users[user_id]
-    }
 
-    async check_login(pool: PgPool, login: string) {
-        var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
-         // @ts-ignore: Unreachable code error
-        if (global.flag_nodb) {
-            return true
-        }
-        if (res.rows.length == 0) {
-            return true;
-        }
-        return false;
-    }
+    //     character.add_explored(1);
+    //     await this.save_to_db(pool);
+    //     console.log('NEW CHARACTER')
+    //     if (this.socket != undefined) {
+    //         this.socket.emit('map-data-reset')
+    //         this.world.socket_manager.send_all(character)
+    //         this.socket.emit('battle-action', {action: 'stop_battle'})
+    //     }
+    //     return this.char_id
+    // }
 
-    async load_user_data_from_db(pool: PgPool, login: string) {
-        var res = await common.send_query(pool, constants.find_user_by_login_query, [login]);
-         // @ts-ignore: Unreachable code error
-        if (global.flag_nodb) {
-            return undefined;
-        }
-        if (res.rows.length == 0) {
-            return undefined;
-        }
-        return res.rows[0];
-    }
-
-    async load_user_to_memory(pool: PgPool, data: any) {
-        var user = this.create_new_user();
-        await user.load_from_json(pool, data);
-        this.users[user.id] = user;
-        return user;
-    }
 }

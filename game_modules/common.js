@@ -1,5 +1,5 @@
 const {constants} = require("./static_data/constants.js")
-var validator = require('validator');
+
 
 module.exports = 
 {
@@ -62,21 +62,7 @@ module.exports =
         return null;
     },
     
-    validate_creds: function (data) {
-        if (data.login.length == 0) {
-            return 'empty-login';
-        }
-        if (data.login.length >= 30) {
-            return 'too-long';
-        }
-        if (data.password.length == 0){
-            return 'empty-pass';
-        }
-        if (!validator.isAlphanumeric(data.login, 'en-US')){
-            return 'login-not-allowed-symbols';
-        }
-        return 'ok';
-    },
+
 
     flag_log: function(msg, flag) {
         if (flag) {

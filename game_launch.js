@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.launch = exports.last_id = exports.entity_manager = exports.users = exports.socket_manager = exports.io = void 0;
+exports.launch = exports.entity_manager = exports.users = exports.socket_manager = exports.io = void 0;
 const fs_1 = require("fs");
 const entity_manager_1 = require("./game_modules/manager_classes/entity_manager");
 const socket_manager_1 = require("./game_modules/manager_classes/socket_manager");
@@ -16,9 +16,6 @@ exports.entity_manager = new entity_manager_1.EntityManager();
 // export var world_manager = new World(27, 27)
 // export var user_manager = new UserManager()
 // export var action_manager = new ActionManager()
-exports.last_id = {
-    user: 0,
-};
 function launch() {
     try {
         console.log('reading save files');
