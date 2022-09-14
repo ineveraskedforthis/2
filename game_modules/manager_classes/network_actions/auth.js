@@ -4,7 +4,6 @@ exports.Auth = void 0;
 const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
 const common_validations_1 = require("./common_validations");
-// var validator = require('validator');
 var current_sessions = {};
 var Auth;
 (function (Auth) {

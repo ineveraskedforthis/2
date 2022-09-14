@@ -1,15 +1,12 @@
-import { SocketWrapper, User, UserData, user_id, user_online_id } from "../../user";
-import { UserManagement, UsersData, UsersOnline } from "../user_manager";
+import { SocketWrapper, user_id, user_online_id } from "../../user";
+import { UserManagement} from "../user_manager";
 import { Alerts } from "./alerts";
 import { ValidatorSM } from "./common_validations";
-// var validator = require('validator');
 
 var current_sessions:{[_: string]: user_id} = {}
 
 export namespace Auth {
-    export function login_with_session(
-                sw: SocketWrapper,
-                session: string) 
+    export function login_with_session(sw: SocketWrapper, session: string)
     {
         console.log('attempt to login with session')
 
