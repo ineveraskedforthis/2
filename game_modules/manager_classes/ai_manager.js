@@ -3,12 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AiManager = void 0;
 const craft_bone_spear_1 = require("../base_game_classes/character_actions/craft_bone_spear");
 const craft_rat_armour_1 = require("../base_game_classes/character_actions/craft_rat_armour");
-const racial_hostility_1 = require("../base_game_classes/races/racial_hostility");
+const racial_hostility_1 = require("../base_game_classes/character/races/racial_hostility");
 const market_items_1 = require("../market/market_items");
 const item_tags_1 = require("../static_data/item_tags");
 const action_manager_1 = require("./action_manager");
 const materials_manager_1 = require("./materials_manager");
-// function MAYOR_AI(mayor: CharacterGenericPart) {
+// function MAYOR_AI(mayor: Character) {
 //     let faction = mayor.get_faction()
 //     let territories = faction.get_territories_list()
 //     for (let ter of territories)  {

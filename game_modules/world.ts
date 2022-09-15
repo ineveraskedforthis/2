@@ -8,19 +8,19 @@ export interface PgPool {
 import {EntityManager} from './manager_classes/entity_manager'
 import {CONSTS} from './static_data/world_constants_1';
 import {MarketOrder, market_order_index} from './market/market_order'
-import { CharacterGenericPart } from "./base_game_classes/character_generic_part";
+import { Character } from "./base_game_classes/character/character";
 import { BattleReworked2 } from "./battle";
 import { ActionManager } from "./manager_classes/action_manager";
-import {SocketManager} from './manager_classes/socket_manager'
+import {SocketManager} from './client_communication/socket_manager'
 import {UserManager} from './manager_classes/user_manager'
 import { Cell } from "./cell";
-import { rat } from "./base_game_classes/races/rat";
+import { rat } from "./base_game_classes/character/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";
 import { money } from "./base_game_classes/savings";
 import { AuctionManagement, auction_order_id, nodb_mode_check, OrderItem } from "./market/market_items";
-import { graci } from "./base_game_classes/races/graci";
-import { elo } from "./base_game_classes/races/elo";
+import { graci } from "./base_game_classes/character/races/graci";
+import { elo } from "./base_game_classes/character/races/elo";
 import { Weapon } from './static_data/item_tags';
 import { BONE_SPEAR_ARGUMENT } from './static_data/items_set_up';
 import { affix } from './base_game_classes/affix';
@@ -265,11 +265,11 @@ export class World {
         return undefined
     }
 
-    get_char_from_id(id: number): CharacterGenericPart {
+    get_char_from_id(id: number): Character {
         return this.entity_manager.chars[id]
     }
 
-    get_character_by_id(id: number): CharacterGenericPart {
+    get_character_by_id(id: number): Character {
         return this.entity_manager.chars[id]
     }
 
@@ -331,7 +331,7 @@ export class World {
         await this.entity_manager.kill(pool, char_id)
     }
 
-    async create_battle(pool: PgPool, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
+    async create_battle(pool: PgPool, attackers: Character[], defenders: Character[]) {
         return await this.entity_manager.create_battle(pool, attackers, defenders)
     }
 
@@ -343,7 +343,7 @@ export class World {
         return await this.entity_manager.load_character_data_to_memory(pool, data)
     }
 
-    async create_new_character(pool: PgPool, name: string, cell_id: number, user_id: number): Promise<CharacterGenericPart> {
+    async create_new_character(pool: PgPool, name: string, cell_id: number, user_id: number): Promise<Character> {
         return await this.entity_manager.create_new_character(pool, name, cell_id, user_id)
     }
 
@@ -477,7 +477,7 @@ export class World {
         
     }
 
-    // async attack_local_monster(pool:any, char: CharacterGenericPart, enemies_amount = 1): Promise<(BattleReworked2 | undefined)> {
+    // async attack_local_monster(pool:any, char: Character, enemies_amount = 1): Promise<(BattleReworked2 | undefined)> {
     //     if (enemies_amount == 0) {
     //         return undefined
     //     }
@@ -498,7 +498,7 @@ export class World {
     //     return battle
     // }
 
-    // async attack_local_outpost(pool: PgPool, char: CharacterGenericPart) {
+    // async attack_local_outpost(pool: PgPool, char: Character) {
     //     let cell = char.get_cell();
     //     let tmp = cell.i + '_' + cell.j;
     //     if (tmp in this.constants.outposts) {

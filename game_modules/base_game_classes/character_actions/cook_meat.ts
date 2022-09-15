@@ -1,16 +1,16 @@
-import { CharacterGenericPart, PerksTable } from "../character_generic_part";
+import { Character, PerksTable } from "../character/character";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { ELODINO_FLESH, FOOD, MEAT, ZAZ } from "../../manager_classes/materials_manager";
 import { PgPool } from "../../world";
 
 
 export const cook_meat = {
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         // return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;
         return 0.5
     },
 
-    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(MEAT)
             if (tmp > 0)  {
@@ -21,7 +21,7 @@ export const cook_meat = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:Character, data: any) {
         let tmp = char.stash.get(MEAT)
         if (tmp > 0) { 
             char.changed = true
@@ -51,7 +51,7 @@ export const cook_meat = {
         }
     },
 
-    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:Character, data: any) {
     },
 }
 
@@ -79,14 +79,14 @@ export function cook_elodino_flesh_probability(cooking_skill: number, magic_skil
     return check
 }
 
-export function character_to_cook_elodino_probability(character: CharacterGenericPart) {
+export function character_to_cook_elodino_probability(character: Character) {
     let skill1 = character.skills.cooking.practice
     let skill2 = character.skills.magic_mastery.practice
     let perks = character.skills.perks
     return cook_elodino_flesh_probability(skill1, skill2, perks)
 }
 
-export function character_to_cook_meat_probability(character:CharacterGenericPart) {
+export function character_to_cook_meat_probability(character:Character) {
     let skill = character.skills.cooking.practice
     let perks = character.skills.perks
     return cook_meat_probability(skill, perks)
@@ -95,11 +95,11 @@ export function character_to_cook_meat_probability(character:CharacterGenericPar
 
 
 export const cook_elo_to_zaz = {
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         return Math.max(0.5, 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice - char.skills.magic_mastery.practice) / 20);
     },
 
-    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(ELODINO_FLESH)
             if (tmp >= 5)  {
@@ -110,7 +110,7 @@ export const cook_elo_to_zaz = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:Character, data: any) {
         let tmp = char.stash.get(ELODINO_FLESH)
         if (tmp > 0) { 
             char.changed = true
@@ -147,6 +147,6 @@ export const cook_elo_to_zaz = {
         }
     },
 
-    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:Character, data: any) {
     },
 }

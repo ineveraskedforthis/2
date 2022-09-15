@@ -280,6 +280,7 @@ function show_main_menu() {
 }
 
 function show_game() {
+    console.log('show game')
     show_scene("actual_game_scene")
 }
 
@@ -875,20 +876,30 @@ document.getElementById('login-frame').onsubmit = (event) => {
 
 //CHARACTER CREATION STUFF
 var character_display = {
-    eyes: 0,
+    eyes: 1,
     chin: 0,
     mouth: 0
 }
 
-document.getElementById("next_1").onclick = (event) => {
-    event.preventDefault();
-    document.getElementById("page_2").style.visibility = 'inherit'
-}
+// document.getElementById("next_1").onclick = (event) => {
+//     event.preventDefault();
+//     document.getElementById("page_2").style.visibility = 'inherit'
+// }
 
 document.getElementById("next_2").onclick = (event) => {
     event.preventDefault();
-    show_game();
+    let name = document.getElementById('char_name').value
+    let data = {
+        name: name,
+        mouth: character_display.mouth,
+        chin: character_display.chin,
+        eyes: character_display.eyes
+    }
+    console.log(data)
+    socket.emit('create_character', {name: '123'})
 }
+
+socket.on('character_exists', show_game)
 
 for (let i = 0; i<3; i++) {
     document.getElementById("eyes_"+ i).onclick = (event) => {

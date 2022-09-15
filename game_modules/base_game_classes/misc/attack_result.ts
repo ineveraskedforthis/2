@@ -1,6 +1,6 @@
 import { damage_type, WEAPON_TYPE } from "../../static_data/type_script_types"
 import { DamageByTypeObject } from "./damage_types";
-import {Status} from '../character_generic_part'
+import {Status} from '../character/character'
 
 export class AttackResult {
     flags: {

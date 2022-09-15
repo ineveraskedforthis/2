@@ -6,21 +6,21 @@ const Quest = require('../base_game_classes/quest.js')
 
 import { PgPool, World } from "../world";
 import {Cell} from '../cell'
-import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
+import { Character } from "../base_game_classes/character/character";
 import { MarketOrder, market_order_index } from "../market/market_order";
 import { BattleReworked2 } from "../battle";
 import { ITEM_MATERIAL } from '../static_data/item_tags';
 import { material_index } from './materials_manager';
 import { money } from '../base_game_classes/savings';
 import { AuctionOrderManagement, auction_order_id, auction_order_id_raw, OrderItem } from '../market/market_items';
-import { rat } from '../base_game_classes/races/rat';
-import { elo } from '../base_game_classes/races/elo';
+import { rat } from '../base_game_classes/character/races/rat';
+import { elo } from '../base_game_classes/character/races/elo';
 
 
 export class EntityManager {
     world: World
     cells: Cell[][]
-    chars: CharacterGenericPart[]
+    chars: Character[]
     orders: MarketOrder[]
     item_orders: OrderItem[]
     battles: BattleReworked2[]
@@ -114,7 +114,7 @@ export class EntityManager {
     async load_characters(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_chars_query);
         for (let i of res.rows) {
-            let char = new CharacterGenericPart(this.world);
+            let char = new Character(this.world);
             char.load_from_json(i);
             this.chars[char.id] = char;
             let cell = this.get_cell_by_id(char.cell_id)
@@ -136,7 +136,7 @@ export class EntityManager {
         console.log('orders loaded')
     }
 
-    transfer_orders(character:CharacterGenericPart, cell_id: number) {
+    transfer_orders(character:Character, cell_id: number) {
         let target_cell = this.get_cell_by_id(cell_id)
         if (target_cell != undefined) {
             for (let order of this.orders) {
@@ -275,7 +275,7 @@ export class EntityManager {
     async update_factions(pool: PgPool) {
     }
 
-    set_faction_leader(faction: any, leader: CharacterGenericPart) {
+    set_faction_leader(faction: any, leader: Character) {
         faction.set_leader(leader)
         leader.set_faction(faction)
     }
@@ -295,12 +295,12 @@ export class EntityManager {
         }
     }
     
-    async new_quest(pool: PgPool, leader: CharacterGenericPart, item_tag: ITEM_MATERIAL, money_reward: number, reputation_reward: number, tag: string) {
+    async new_quest(pool: PgPool, leader: Character, item_tag: ITEM_MATERIAL, money_reward: number, reputation_reward: number, tag: string) {
         // let quest = await this.create_quest(pool, item_tag, money_reward, reputation_reward);
         // leader.add_quest(quest, tag)
     }
 
-    async generate_order(pool: PgPool, typ:"sell"|"buy", tag:material_index, owner:CharacterGenericPart, amount:number, price:money, cell_id:number) {
+    async generate_order(pool: PgPool, typ:"sell"|"buy", tag:material_index, owner:Character, amount:number, price:money, cell_id:number) {
         let order = new MarketOrder(this.world)
         await order.init(pool, typ, tag, owner, amount, price, cell_id)
 
@@ -321,7 +321,7 @@ export class EntityManager {
         this.world.socket_manager.update_market_info(cell)
     }
 
-    async remove_orders(pool: PgPool, character: CharacterGenericPart) {
+    async remove_orders(pool: PgPool, character: Character) {
         let temporary_list:market_order_index[] = []
         for (let order of this.orders) {
             if (order == undefined) continue;
@@ -332,7 +332,7 @@ export class EntityManager {
         await this.remove_orders_list(pool, cell, temporary_list)
     }
 
-    async remove_orders_by_tag(pool: PgPool, character: CharacterGenericPart, material: material_index) {
+    async remove_orders_by_tag(pool: PgPool, character: Character, material: material_index) {
         let temporary_list:market_order_index[] = []
         for (let order of this.orders) {
             if (order == undefined) continue;
@@ -358,7 +358,7 @@ export class EntityManager {
         await order.delete_from_db(pool)
     }
 
-    async remove_all_orders(pool: PgPool, character: CharacterGenericPart) {
+    async remove_all_orders(pool: PgPool, character: Character) {
         let cell = character.get_cell()
         if (cell == undefined) {
             return
@@ -430,7 +430,7 @@ export class EntityManager {
         // this.chars[character.id] = null;
     }
 
-    async create_battle(pool: PgPool, attackers: CharacterGenericPart[], defenders: CharacterGenericPart[]) {
+    async create_battle(pool: PgPool, attackers: Character[], defenders: Character[]) {
         for (let i = 0; i < attackers.length; i++) {
             if (attackers[i].in_battle() || attackers[i].is_dead()) {
                 return
@@ -458,7 +458,7 @@ export class EntityManager {
     async create_new_character(pool: PgPool, name: string, cell_id: number, user_id: number) {
         console.log('character ' + name + ' is created')
         
-        let char = new CharacterGenericPart(this.world);
+        let char = new Character(this.world);
         await char.init(pool, name, cell_id, user_id);
         console.log('his id is ' + char.id)
 
@@ -504,7 +504,7 @@ export class EntityManager {
     }
 
     async load_character_data_to_memory(pool: PgPool, data: any) {
-        var character = new CharacterGenericPart(this.world);
+        var character = new Character(this.world);
         await character.load_from_json(data)
         this.chars[data.id] = character;
         return character;

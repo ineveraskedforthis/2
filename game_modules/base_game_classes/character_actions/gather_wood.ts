@@ -2,15 +2,15 @@ import { Cell } from "../../cell";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { WOOD } from "../../manager_classes/materials_manager";
 import { PgPool } from "../../world";
-import type { CharacterGenericPart } from "../character_generic_part";
+import type { Character } from "../character/character";
 
 
 export const gather_wood = {
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         return 1 + char.get_fatigue() / 50;
     },
 
-    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -24,7 +24,7 @@ export const gather_wood = {
         } else return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:Character, data: any) {
         char.changed = true
         char.change_fatigue(10)
         char.stash.inc(WOOD, 1)
@@ -35,7 +35,7 @@ export const gather_wood = {
         return CharacterActionResponce.OK
     },
 
-    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:Character, data: any) {
     },
 }
 

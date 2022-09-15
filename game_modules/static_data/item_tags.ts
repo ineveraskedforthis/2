@@ -1,6 +1,6 @@
 import { textChangeRangeIsUnchanged } from "typescript"
 import { affix } from "../base_game_classes/affix"
-import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
+import type { Character } from "../base_game_classes/character/character"
 import { AttackResult } from "../base_game_classes/misc/attack_result"
 import type { DamageByTypeObject } from "../base_game_classes/misc/damage_types"
 import { ARROW_BONE, material_index } from "../manager_classes/materials_manager"

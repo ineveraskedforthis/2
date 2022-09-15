@@ -1,0 +1,175 @@
+import { ARROW_BONE, ZAZ } from "../../manager_classes/materials_manager";
+import { Weapon } from "../../static_data/item_tags";
+import { WEAPON_TYPE } from "../../static_data/type_script_types";
+import { Character } from "./character";
+
+export class SkillObject {
+    practice: number;
+    theory: number
+    constructor() {
+        this.practice = 0
+        this.theory = 0
+    }
+}
+
+export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'|'skin_armour_master'
+export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master']
+export interface PerksTable {
+    meat_master?: boolean; //100% chance to prepare meat
+    claws?: boolean; // + unarmed damage
+    advanced_unarmed?:boolean; //allows unarmed dodge and fast attacks
+    advanced_polearm?:boolean
+    mage_initiation?:boolean
+    magic_bolt?:boolean
+    fletcher?:boolean
+    skin_armour_master?:boolean
+}
+
+export function perk_price(tag: Perks):number {
+    switch(tag) {
+        case 'meat_master': return 100
+        case 'advanced_unarmed': return 200
+        case 'advanced_polearm': return 200
+        case 'mage_initiation': return 1000
+        case 'magic_bolt': return 100
+        case 'fletcher': return 200
+        case 'skin_armour_master': return 1000
+    }
+}
+export function perk_requirement(tag:Perks, character: Character) {
+    switch(tag) {
+        case 'meat_master': {
+            if (character.skills.cooking.practice < 15) {
+                return 'not_enough_cooking_skill_15'
+            }
+            return 'ok'
+        }
+        case 'fletcher' : {
+            if (character.skills.woodwork.practice < 15) {
+                return 'not_enough_woodwork_skill_15'
+            }
+            return 'ok'
+        }
+        case 'advanced_unarmed': {
+            if (character.skills.noweapon.practice < 15) {
+                return 'not_enough_unarmed_skill_15'
+            }
+            return 'ok'
+        }
+        case 'advanced_polearm': {
+            if (character.skills.polearms.practice < 15) {
+                return 'not_enough_polearms_skill_15'
+            }
+            return 'ok'
+        }
+        case 'mage_initiation': {
+            if (character.skills.magic_mastery.practice < 15) {
+                return 'not_enough_magic_skill_15'
+            }
+            return 'ok'
+        }
+        case 'magic_bolt': {
+            if (!character.perks.mage_initiation) {
+                return 'not_initiated'
+            }
+            if (character.skills.magic_mastery.practice < 15) {
+                return 'not_enough_magic_skill_15'
+            }
+            return 'ok'
+        }
+        case 'skin_armour_master': {
+            if (character.skills.clothier.practice < 15) {
+                return 'not_enough_clothier_skill_15'
+            }
+        }
+    }
+}
+function weapon_type(weapon: Weapon|undefined):WEAPON_TYPE {
+    if (weapon == undefined) {
+        return WEAPON_TYPE.NOWEAPON
+    }
+    return weapon.get_weapon_type()
+}
+export function can_dodge(character:Character):boolean {
+    if (character.perks.advanced_unarmed == true) {
+        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.NOWEAPON) {
+            return true
+        }
+    }
+
+    return false
+}
+
+export function can_fast_attack(character:Character):boolean {
+    if (character.perks.advanced_unarmed == true) {
+        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.NOWEAPON) {
+            return true
+        }
+    }
+    return false
+}
+
+export function can_push_back(character:Character):boolean {
+    if (character.perks.advanced_polearm == true) {
+        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.POLEARMS) {
+            return true
+        }
+    }
+    return false
+}
+
+export function can_cast_magic_bolt(character: Character):boolean {
+    if (character.perks.magic_bolt) {
+        return true
+    }
+    if (character.stash.get(ZAZ) > 0) {
+        return true
+    }
+    return false
+}
+
+export function can_shoot(character: Character): boolean {
+    if (character.equip.data.weapon == undefined) {
+        return false
+    }
+    if (character.equip.data.weapon.ranged != true) {
+        return false
+    }
+    if (character.stash.get(ARROW_BONE) >= 1) {
+        return true
+    }
+    return false
+}
+
+export class SkillList {
+    clothier: SkillObject;
+    cooking: SkillObject;
+    onehand: SkillObject;
+    polearms: SkillObject;
+    noweapon: SkillObject;
+    twohanded: SkillObject
+    skinning: SkillObject;
+    magic_mastery: SkillObject;
+    blocking: SkillObject;
+    evasion: SkillObject;
+    woodwork: SkillObject;
+    hunt: SkillObject;
+    ranged: SkillObject
+
+
+    constructor() {
+        this.clothier = new SkillObject();
+        this.cooking = new SkillObject();
+        this.onehand = new SkillObject();
+        this.polearms = new SkillObject();
+        this.noweapon = new SkillObject();
+        this.twohanded = new SkillObject();
+        this.skinning = new SkillObject();
+        this.magic_mastery = new SkillObject();
+        this.blocking = new SkillObject();
+        this.evasion = new SkillObject();
+        this.woodwork = new SkillObject();
+        this.hunt = new SkillObject();
+        this.ranged = new SkillObject();
+    }
+}

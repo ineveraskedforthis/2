@@ -3,15 +3,15 @@ import { ARROW_BONE, RAT_BONE, WOOD } from "../../manager_classes/materials_mana
 import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT } from "../../static_data/items_set_up";
 import { Weapon } from "../../static_data/item_tags";
 import { PgPool } from "../../world";
-import { CharacterGenericPart } from "../character_generic_part";
+import { Character } from "../character/character";
 import { craft_spear_probability } from "./craft_spear";
 
 export const craft_bone_spear = {
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         return 0.5;
     },
 
-    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             let tmp_2 = char.stash.get(RAT_BONE)
@@ -23,7 +23,7 @@ export const craft_bone_spear = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:Character, data: any) {
         let tmp = char.stash.get(WOOD)
         let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp > 2) && (tmp_2 > 3)) { 
@@ -57,13 +57,13 @@ export const craft_bone_spear = {
         }
     },
 
-    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:Character, data: any) {
     },
 }
 
 let BONE_ARROW_DIFFICULTY = 20
 
-export function craft_bone_arrow_probability(character: CharacterGenericPart) {
+export function craft_bone_arrow_probability(character: Character) {
     if (character.skills.perks.fletcher) {
         return 1
     }
@@ -71,11 +71,11 @@ export function craft_bone_arrow_probability(character: CharacterGenericPart) {
 }
 
 export const craft_bone_arrow = {
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         return 0.5;
     },
 
-    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             let tmp_2 = char.stash.get(RAT_BONE)
@@ -87,7 +87,7 @@ export const craft_bone_arrow = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:Character, data: any) {
         let tmp = char.stash.get(WOOD)
         let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp >= 1) && (tmp_2 >= 10)) { 
@@ -110,16 +110,16 @@ export const craft_bone_arrow = {
         }
     },
 
-    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:Character, data: any) {
     },
 }
 
 export const craft_wood_bow = {
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         return 0.5;
     },
 
-    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             // let tmp_2 = char.stash.get(RAT_BONE)
@@ -131,7 +131,7 @@ export const craft_wood_bow = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:Character, data: any) {
         let tmp = char.stash.get(WOOD)
         // let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp >= 3)) { 
@@ -164,6 +164,6 @@ export const craft_wood_bow = {
         }
     },
 
-    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:Character, data: any) {
     },
 }

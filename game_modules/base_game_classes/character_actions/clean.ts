@@ -1,14 +1,14 @@
-import { CharacterGenericPart } from "../character_generic_part";
+import { Character } from "../character/character";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { WATER } from "../../manager_classes/materials_manager";
 import { PgPool } from "../../world";
 
 export const clean = {
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         return 1 + char.get_fatigue() / 50 + char.get_blood() / 50;
     },
 
-    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -25,7 +25,7 @@ export const clean = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:Character, data: any) {
         let cell = char.get_cell();
         if (cell == undefined) {
             return CharacterActionResponce.INVALID_CELL
@@ -44,6 +44,6 @@ export const clean = {
         }
     },
 
-    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:Character, data: any) {
     },
 }

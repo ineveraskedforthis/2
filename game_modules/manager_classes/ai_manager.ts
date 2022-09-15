@@ -1,7 +1,7 @@
 import { craft_bone_arrow_probability } from "../base_game_classes/character_actions/craft_bone_spear";
 import { RAT_SKIN_ARMOUR_SKIN_NEEDED } from "../base_game_classes/character_actions/craft_rat_armour";
-import type { CharacterGenericPart } from "../base_game_classes/character_generic_part"
-import { hostile } from "../base_game_classes/races/racial_hostility";
+import type { Character } from "../base_game_classes/character/character"
+import { hostile } from "../base_game_classes/character/races/racial_hostility";
 import { money, Savings } from "../base_game_classes/savings";
 import { AuctionManagement } from "../market/market_items";
 import { ARMOUR_TYPE } from "../static_data/item_tags";
@@ -10,7 +10,7 @@ import { ActionManager, CharacterAction } from "./action_manager";
 import { ARROW_BONE, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./materials_manager";
 
 
-// function MAYOR_AI(mayor: CharacterGenericPart) {
+// function MAYOR_AI(mayor: Character) {
 //     let faction = mayor.get_faction()
 //     let territories = faction.get_territories_list()
 //     for (let ter of territories)  {
@@ -39,11 +39,11 @@ export class AiManager {
 
     }
 
-    move_toward_colony(char: CharacterGenericPart) {
+    move_toward_colony(char: Character) {
 
     }
 
-    enemies_in_cell(char: CharacterGenericPart) {
+    enemies_in_cell(char: Character) {
         let cell = char.get_cell()
         if (cell == undefined) return false
         let a = cell.get_characters_set()
@@ -58,7 +58,7 @@ export class AiManager {
         return -1
     }
 
-    battles_in_cell(char: CharacterGenericPart) {
+    battles_in_cell(char: Character) {
         let battles:number[] = []
         let cell = char.get_cell()
         if (cell == undefined) return battles
@@ -72,7 +72,7 @@ export class AiManager {
         return battles
     }
 
-    async random_steppe_walk(char: CharacterGenericPart) {
+    async random_steppe_walk(char: Character) {
         let cell = char.get_cell()
         if (cell == undefined) {
             return
@@ -94,7 +94,7 @@ export class AiManager {
         }   
     }
 
-    check_battles_to_join(agent: CharacterGenericPart) {
+    check_battles_to_join(agent: Character) {
         let battles = this.battles_in_cell(agent)
         for (let item of battles) {
             let battle = this.world.entity_manager.battles[item]
@@ -112,7 +112,7 @@ export class AiManager {
         return false
     }
 
-    async random_forest_walk(char: CharacterGenericPart) {
+    async random_forest_walk(char: Character) {
         let cell = char.get_cell()
         if (cell == undefined) {
             return
@@ -134,7 +134,7 @@ export class AiManager {
         }
     }
 
-    async decision(pool: PgPool, char: CharacterGenericPart) {
+    async decision(pool: PgPool, char: Character) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
             return
@@ -203,7 +203,7 @@ export class AiManager {
 }
 
 namespace AI {
-    export async function cook_food(pool:PgPool, action_manager:ActionManager, character:CharacterGenericPart) {
+    export async function cook_food(pool:PgPool, action_manager:ActionManager, character:Character) {
         let prepared_meat = character.trade_stash.get(FOOD) + character.stash.get(FOOD)
         let resource = character.stash.get(MEAT)
         let food_in_stash = character.stash.get(FOOD)
@@ -231,7 +231,7 @@ namespace AI {
         }
     }
 
-    export async function make_arrow(pool:PgPool, action_manager:ActionManager, character:CharacterGenericPart) {
+    export async function make_arrow(pool:PgPool, action_manager:ActionManager, character:Character) {
         await character.world.entity_manager.remove_orders_by_tag(pool, character, WOOD)
         await character.world.entity_manager.remove_orders_by_tag(pool, character, RAT_BONE)
 
@@ -301,7 +301,7 @@ namespace AI {
         }
     }
 
-    export async function make_armour(pool:PgPool, action_manager:ActionManager, character:CharacterGenericPart) {
+    export async function make_armour(pool:PgPool, action_manager:ActionManager, character:Character) {
         let base_price_skin = 10 as money
 
         let resource = character.stash.get(RAT_SKIN)

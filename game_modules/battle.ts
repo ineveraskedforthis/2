@@ -1,5 +1,5 @@
 
-import { Stash } from "./base_game_classes/stash";
+import { Stash } from "./base_game_classes/inventories/stash";
 
 var common = require("./common.js");
 var {constants} = require("./static_data/constants.js");
@@ -7,7 +7,7 @@ var {constants} = require("./static_data/constants.js");
 import {geom} from './geom'
 
 import {BattleAI} from './battle_ai'
-import {can_cast_magic_bolt, can_dodge, can_fast_attack, can_push_back, can_shoot, CharacterGenericPart} from './base_game_classes/character_generic_part'
+import {can_cast_magic_bolt, can_dodge, can_fast_attack, can_push_back, can_shoot, Character} from './base_game_classes/character/character'
 import { PgPool, World } from "./world";
 import { ITEM_MATERIAL } from "./static_data/item_tags";
 import { ARROW_BONE, material_index, ZAZ } from "./manager_classes/materials_manager";
@@ -185,7 +185,7 @@ export class UnitData {
         this.dodge_turns = 0
     }
 
-    init(char:CharacterGenericPart, position: {x: number, y: number}, team: number) {
+    init(char:Character, position: {x: number, y: number}, team: number) {
         let ap = char.get_action_points()
         this.action_points_left = ap;
         this.action_points_max = ap;
@@ -343,7 +343,7 @@ export class BattleReworked2 {
             
 
             //character stuff
-            let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+            let char:Character = this.world.get_char_from_id(unit.char_id)
             if ((char == undefined) || char.is_dead()) {
                 return {responce: 'dead_unit'}
             }
@@ -409,7 +409,7 @@ export class BattleReworked2 {
         console.log(action)
 
         let unit = this.heap.get_unit(unit_index)
-        var character:CharacterGenericPart = this.world.get_char_from_id(unit.char_id);
+        var character:Character = this.world.get_char_from_id(unit.char_id);
 
         //no action
         if (action.action == null) {
@@ -438,7 +438,7 @@ export class BattleReworked2 {
             if (action.target != null) {
 
                 let unit2 = this.heap.get_unit(action.target);
-                let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+                let char:Character = this.world.get_char_from_id(unit.char_id)
 
                 if (unit.action_points_left < 3) {
                     return { action: 'not_enough_ap', who: unit_index}
@@ -518,7 +518,7 @@ export class BattleReworked2 {
             }
             if (action.target != null) {
                 let unit2 = this.heap.get_unit(action.target);
-                let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+                let char:Character = this.world.get_char_from_id(unit.char_id)
 
                 if (unit.action_points_left < 5) {
                     return { action: 'not_enough_ap', who: unit_index}
@@ -564,7 +564,7 @@ export class BattleReworked2 {
             }
             if (action.target != null) {
                 let unit2 = this.heap.get_unit(action.target);
-                let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+                let char:Character = this.world.get_char_from_id(unit.char_id)
 
                 if (unit.action_points_left < 1) {
                     return { action: 'not_enough_ap', who: unit_index}
@@ -667,7 +667,7 @@ export class BattleReworked2 {
         let data:SocketBattleData = {};
         for (var i = 0; i < this.heap.data.length; i++) {
             let unit = this.heap.data[i];
-            var character:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+            var character:Character = this.world.get_char_from_id(unit.char_id)
             if (character != undefined) {
                 data[i] = {
                     id: unit.char_id,
@@ -683,7 +683,7 @@ export class BattleReworked2 {
         return data
     }
 
-    add_fighter(agent:CharacterGenericPart, team:number, position:{x:number, y: number}|undefined) {
+    add_fighter(agent:Character, team:number, position:{x:number, y: number}|undefined) {
         console.log('add fighter')
         
         if (position == undefined) {
@@ -709,13 +709,13 @@ export class BattleReworked2 {
     }
 
     // agent joins battle on a side of team
-    join(agent: CharacterGenericPart, team: number) {
+    join(agent: Character, team: number) {
         console.log(agent.name + ' joins battle on a side ' + team)
         this.add_fighter(agent, team, undefined)
         this.send_data_start()
     }
 
-    check_team_to_join(agent:CharacterGenericPart):number|'no_interest' {
+    check_team_to_join(agent:Character):number|'no_interest' {
         if (agent.faction_id == -1) return 'no_interest'
 
         let data = this.get_units()
@@ -740,7 +740,7 @@ export class BattleReworked2 {
         for (let i in this.heap.data) {
             let unit = this.heap.data[i]
             if (unit.team == team) {
-                let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+                let char:Character = this.world.get_char_from_id(unit.char_id)
                 if (char != undefined) {
                     tmp.push({name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left})
                 }
@@ -753,7 +753,7 @@ export class BattleReworked2 {
         let tmp:{name: string, hp: number, next_turn: number, ap: number}[] = []
         for (let i in this.heap.data) {
             let unit = this.heap.data[i]
-            let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id)
+            let char:Character = this.world.get_char_from_id(unit.char_id)
             if (char != undefined) {
                 tmp.push({name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left})
             }
@@ -768,7 +768,7 @@ export class BattleReworked2 {
         }
         for (var i = 0; i < this.heap.data.length; i++) {
             let unit = this.heap.data[i]
-            var char: CharacterGenericPart = this.world.get_char_from_id(unit.char_id);
+            var char: Character = this.world.get_char_from_id(unit.char_id);
             if ((char == undefined) || (char.get_hp() == 0)) {
                 if (!unit.dead) {
                     unit.dead = true;
@@ -803,7 +803,7 @@ export class BattleReworked2 {
     clean_up_battle() {
         for (let i = 0; i < this.heap.get_units_amount(); i++) {
             let unit = this.heap.get_unit(i);
-            let char:CharacterGenericPart = this.world.get_char_from_id(unit.char_id);
+            let char:Character = this.world.get_char_from_id(unit.char_id);
             if (char != undefined) {
                 char.set_flag('in_battle', false);
                 char.set_battle_id(-1)
@@ -872,6 +872,6 @@ export class BattleReworked2 {
 }
 
 
-export function flee_chance(character: CharacterGenericPart) {
+export function flee_chance(character: Character) {
     return 0.4
 }

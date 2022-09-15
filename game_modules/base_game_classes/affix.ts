@@ -1,5 +1,5 @@
 import { Armour, IMPACT_TYPE, Weapon } from "../static_data/item_tags";
-import { CharacterGenericPart } from "./character_generic_part";
+import { Character } from "./character/character";
 import { AttackResult } from "./misc/attack_result";
 import { DamageByTypeObject } from "./misc/damage_types";
 
@@ -231,20 +231,20 @@ export const get_power:{[_ in affix_tag]?: power_modification} = {
         }
     }
 
-type character_update_function = (agent: CharacterGenericPart, tier: number) => void
+type character_update_function = (agent: Character, tier: number) => void
 
 export const update_character:{[_ in affix_tag]?: character_update_function} = {
-        of_elder_beast: (agent: CharacterGenericPart, tier: number) => {
+        of_elder_beast: (agent: Character, tier: number) => {
             agent.change_stress(5 * tier);
             agent.change_rage(5 * tier);
             agent.change_hp(1 * tier);
         },
 
-        of_graci_beauty: (agent: CharacterGenericPart, tier: number) => {
+        of_graci_beauty: (agent: Character, tier: number) => {
             agent.change_stress(1 * tier);
         },
 
-        of_painful_protection: (agent: CharacterGenericPart, tier: number) => {
+        of_painful_protection: (agent: Character, tier: number) => {
             agent.change_hp(-1 * tier);
         }
     }

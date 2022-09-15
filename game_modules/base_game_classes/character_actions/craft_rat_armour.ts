@@ -1,4 +1,4 @@
-import { CharacterGenericPart, PerksTable } from "../character_generic_part";
+import { Character, PerksTable } from "../character/character";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Armour, ArmourConstructorArgument, Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
@@ -12,7 +12,7 @@ function craft_rat_armour_probability(skill: number, perk:boolean) {
     return Math.min(0.05 + skill / 20, 1)
 }
 
-export function character_to_craft_rat_armour_probability(character:CharacterGenericPart) {
+export function character_to_craft_rat_armour_probability(character:Character) {
     let skill = character.skills.clothier.practice
     return craft_rat_armour_probability(skill, character.skills.perks.skin_armour_master == true)
 }
@@ -20,12 +20,12 @@ export function character_to_craft_rat_armour_probability(character:CharacterGen
 
 function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
     return {
-        duration(char: CharacterGenericPart) {
+        duration(char: Character) {
             return 0.5
             return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;            
         },
     
-        check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+        check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
             if (!char.in_battle()) {
                 let tmp = char.stash.get(RAT_SKIN)
                 if (tmp >= cost)  {
@@ -36,7 +36,7 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
             return CharacterActionResponce.IN_BATTLE
         },
     
-        result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+        result: async function(pool: PgPool, char:Character, data: any) {
             let tmp = char.stash.get(RAT_SKIN)
             if (tmp >= cost) {
                 char.changed = true
@@ -68,7 +68,7 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
             }
         },
     
-        start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+        start: async function(pool: PgPool, char:Character, data: any) {
         },
     }
 }

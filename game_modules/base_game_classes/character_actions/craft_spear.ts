@@ -1,4 +1,4 @@
-import { CharacterGenericPart, PerksTable } from "../character_generic_part";
+import { Character, PerksTable } from "../character/character";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
@@ -8,12 +8,12 @@ import { PgPool } from "../../world";
 
 
 export const craft_spear = {
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         return 0.5
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
     },
 
-    check: async function(pool: PgPool, char:CharacterGenericPart, data: any): Promise<CharacterActionResponce> {
+    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             if (tmp > 2)  {
@@ -24,7 +24,7 @@ export const craft_spear = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    result: async function(pool: PgPool, char:Character, data: any) {
         let tmp = char.stash.get(WOOD)
         if (tmp > 2) { 
             char.changed = true
@@ -56,7 +56,7 @@ export const craft_spear = {
         }
     },
 
-    start: async function(pool: PgPool, char:CharacterGenericPart, data: any) {
+    start: async function(pool: PgPool, char:Character, data: any) {
     },
 }
 
@@ -65,7 +65,7 @@ export function craft_spear_probability(skill: number) {
     return Math.min(skill / 30 + 0.1, 1)
 }
 
-export function character_to_craft_spear_probability(character:CharacterGenericPart) {
+export function character_to_craft_spear_probability(character:Character) {
     let skill = character.skills.woodwork.practice
     return craft_spear_probability(skill)
 }

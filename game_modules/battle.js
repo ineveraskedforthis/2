@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.flee_chance = exports.BattleReworked2 = exports.UnitData = void 0;
-const stash_1 = require("./base_game_classes/stash");
+const stash_1 = require("./base_game_classes/inventories/stash");
 var common = require("./common.js");
 var { constants } = require("./static_data/constants.js");
 const geom_1 = require("./geom");
 const battle_ai_1 = require("./battle_ai");
-const character_generic_part_1 = require("./base_game_classes/character_generic_part");
+const character_1 = require("./base_game_classes/character/character");
 const materials_manager_1 = require("./manager_classes/materials_manager");
 const savings_1 = require("./base_game_classes/savings");
 class UnitsHeap {
@@ -351,7 +351,7 @@ class BattleReworked2 {
             return { action: 'no_target_selected' };
         }
         if (action.action == 'shoot') {
-            if (!(0, character_generic_part_1.can_shoot)(character)) {
+            if (!(0, character_1.can_shoot)(character)) {
                 return { action: "not_learnt", who: unit_index };
             }
             if (action.target == null) {
@@ -371,7 +371,7 @@ class BattleReworked2 {
             return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
         }
         if (action.action == 'magic_bolt') {
-            if (!(0, character_generic_part_1.can_cast_magic_bolt)(character)) {
+            if (!(0, character_1.can_cast_magic_bolt)(character)) {
                 // console.log('???')
                 return { action: "not_learnt", who: unit_index };
             }
@@ -392,7 +392,7 @@ class BattleReworked2 {
             return { action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name };
         }
         if (action.action == 'push_back') {
-            if (!(0, character_generic_part_1.can_push_back)(character)) {
+            if (!(0, character_1.can_push_back)(character)) {
                 return { action: "not_learnt", who: unit_index };
             }
             if (action.target != null) {
@@ -426,7 +426,7 @@ class BattleReworked2 {
             return { action: 'no_target_selected' };
         }
         if (action.action == 'fast_attack') {
-            if (!(0, character_generic_part_1.can_fast_attack)(character)) {
+            if (!(0, character_1.can_fast_attack)(character)) {
                 return { action: "not_learnt", who: unit_index };
             }
             if (action.target != null) {
@@ -449,7 +449,7 @@ class BattleReworked2 {
             return { action: 'no_target_selected' };
         }
         if (action.action == 'dodge') {
-            if (!(0, character_generic_part_1.can_dodge)(character)) {
+            if (!(0, character_1.can_dodge)(character)) {
                 return { action: "not_learnt", who: unit_index };
             }
             if (unit.action_points_left < 4) {
@@ -677,19 +677,19 @@ class BattleReworked2 {
                 return await this.action(pool, index, battle_ai_1.BattleAI.convert_attack_to_action(this, index, input.target, 'usual'));
             }
             else if (input.action == 'fast_attack') {
-                if (!(0, character_generic_part_1.can_fast_attack)(character)) {
+                if (!(0, character_1.can_fast_attack)(character)) {
                     return { action: "not_learnt" };
                 }
                 return await this.action(pool, index, battle_ai_1.BattleAI.convert_attack_to_action(this, index, input.target, 'fast'));
             }
             else if (input.action == 'dodge') {
-                if (!(0, character_generic_part_1.can_dodge)(character)) {
+                if (!(0, character_1.can_dodge)(character)) {
                     return { action: "not_learnt" };
                 }
                 return await this.action(pool, index, { action: 'dodge', who: index });
             }
             else if (input.action == 'push_back') {
-                if (!(0, character_generic_part_1.can_push_back)(character)) {
+                if (!(0, character_1.can_push_back)(character)) {
                     return { action: "not_learnt" };
                 }
                 return await this.action(pool, index, { action: 'push_back', target: input.target });

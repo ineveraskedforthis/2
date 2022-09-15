@@ -1,7 +1,7 @@
 var common = require("../common.js");
 import {constants} from "../static_data/constants.js";
 import type {PgPool, World} from "../world";
-import type { CharacterGenericPart } from "../base_game_classes/character_generic_part.js";
+import type { Character } from "../base_game_classes/character/character.js";
 import { material_index } from "../manager_classes/materials_manager.js";
 import { money } from "../base_game_classes/savings.js";
 
@@ -24,7 +24,7 @@ export class MarketOrder {
     typ: 'sell'|'buy'
     tag: material_index
     owner_id: number
-    owner: CharacterGenericPart|undefined
+    owner: Character|undefined
     amount: number
     price: money
     cell_id: number
@@ -41,7 +41,7 @@ export class MarketOrder {
         this.cell_id = 0
     }
 
-    async init(pool:any, typ:'sell'|'buy', tag: material_index, owner: CharacterGenericPart, amount: number, price: money, cell_id: number) {
+    async init(pool:any, typ:'sell'|'buy', tag: material_index, owner: Character, amount: number, price: money, cell_id: number) {
         this.typ = typ;
         this.tag = tag;
         this.owner_id = owner.id;

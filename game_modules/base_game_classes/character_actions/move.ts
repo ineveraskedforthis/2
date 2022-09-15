@@ -1,13 +1,13 @@
-import { CharacterGenericPart } from "../character_generic_part";
+import { Character } from "../character/character";
 import {CharacterActionResponce} from '../../manager_classes/action_manager'
 import { PgPool } from "../../world";
 
 export const move ={
-    duration(char: CharacterGenericPart) {
+    duration(char: Character) {
         return 1 + char.get_fatigue() / 30;
     },
 
-    check: async function (pool: PgPool, char: CharacterGenericPart, data: any) {
+    check: async function (pool: PgPool, char: Character, data: any) {
         if (char.in_battle()) {
             return CharacterActionResponce.IN_BATTLE
         }
@@ -26,11 +26,11 @@ export const move ={
         return CharacterActionResponce.CANNOT_MOVE_THERE
     },
 
-    start: async function (pool: PgPool, char: CharacterGenericPart, data: any) {
+    start: async function (pool: PgPool, char: Character, data: any) {
         char.action_target = data
     },
 
-    result: async function (pool: PgPool, char: CharacterGenericPart) {
+    result: async function (pool: PgPool, char: Character) {
         char.changed = true;
         let data = char.action_target
         let old_cell = char.get_cell()

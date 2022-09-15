@@ -1,6 +1,6 @@
 var Market = require("./market/market.js")
 var common = require("./common.js")
-import { CharacterGenericPart } from "./base_game_classes/character_generic_part.js";
+import { Character } from "./base_game_classes/character/character.js";
 import { money } from "./base_game_classes/savings.js";
 import { material_index } from "./manager_classes/materials_manager.js";
 import { MarketOrder, market_order_index } from "./market/market_order.js";
@@ -93,13 +93,13 @@ export class Cell {
         return this.characters_list
     }
 
-    enter(char: CharacterGenericPart) {
+    enter(char: Character) {
         this.characters_list.add(char.id)
         this.world.socket_manager.send_market_info_character(this, char)
         this.world.socket_manager.send_cell_updates(this)
     }
 
-    exit(char: CharacterGenericPart) {
+    exit(char: Character) {
         this.characters_list.delete(char.id)
         this.world.socket_manager.send_cell_updates(this)
     }
@@ -168,7 +168,7 @@ export class Cell {
         target_cell.add_order(ord)
     }
 
-    async execute_sell_order(pool: PgPool, order_index:market_order_index, amount: number, buyer: CharacterGenericPart) {
+    async execute_sell_order(pool: PgPool, order_index:market_order_index, amount: number, buyer: Character) {
         let order = this.world.entity_manager.get_order(order_index)
         let order_owner = order.owner
 
@@ -194,7 +194,7 @@ export class Cell {
         return 'invalid_order'
     }
 
-    async execute_buy_order(pool: PgPool, order_index:market_order_index, amount: number, seller: CharacterGenericPart) {
+    async execute_buy_order(pool: PgPool, order_index:market_order_index, amount: number, seller: Character) {
         let order = this.world.entity_manager.get_order(order_index)
         let order_owner = order.owner
         
@@ -219,7 +219,7 @@ export class Cell {
         return 'invalid_order'
     }
 
-    async new_order(pool: PgPool, typ: 'sell'|'buy', tag:material_index, amount:number, price:money, agent: CharacterGenericPart) {
+    async new_order(pool: PgPool, typ: 'sell'|'buy', tag:material_index, amount:number, price:money, agent: Character) {
         if (typ == 'sell') {
             var tmp = agent.stash.transfer(agent.trade_stash, tag, amount);
             var order = await this.world.entity_manager.generate_order(pool, typ, tag, agent, tmp, price, this.id)

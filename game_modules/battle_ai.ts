@@ -1,4 +1,4 @@
-import type { CharacterGenericPart } from "./base_game_classes/character_generic_part";
+import type { Character } from "./base_game_classes/character/character";
 import type { BattleReworked2, Action, ActionTag, MoveAction, AttackAction, UnitData, FastAttackAction } from "./battle";
 
 import {geom, point} from './geom'
@@ -32,7 +32,7 @@ export class BattleAI {
 
 
     //tactics triggers block
-    static get_value_from_tactic_trigger_tag(agent:CharacterGenericPart, tag: trigger_tag) {
+    static get_value_from_tactic_trigger_tag(agent:Character, tag: trigger_tag) {
         if (agent == undefined) {
             return -1
         }
@@ -68,7 +68,7 @@ export class BattleAI {
         }
     }
 
-    static check_trigger(agent:CharacterGenericPart, battle:BattleReworked2, index: number, target: target_tag, tag: trigger_tag, sign: sign_tag, value: number) {
+    static check_trigger(agent:Character, battle:BattleReworked2, index: number, target: target_tag, tag: trigger_tag, sign: sign_tag, value: number) {
         if (target == undefined || tag == undefined || sign == undefined || value == undefined) {
             return false
         }
@@ -158,7 +158,7 @@ export class BattleAI {
          return {action: null}
     }
 
-    static action(battle: BattleReworked2, unit: UnitData, agent: CharacterGenericPart): Action {
+    static action(battle: BattleReworked2, unit: UnitData, agent: Character): Action {
         let tactic: any = agent.get_tactic()
         var index = agent.get_in_battle_id();
         let slot = tactic[0]

@@ -1,8 +1,8 @@
 import { constants } from "../static_data/constants";
-import { CharacterGenericPart } from "../base_game_classes/character_generic_part";
+import { Character } from "../base_game_classes/character/character";
 import { money, Savings } from "../base_game_classes/savings";
 import { EntityManager } from "../manager_classes/entity_manager";
-import { SocketManager } from "../manager_classes/socket_manager";
+import { SocketManager } from "../client_communication/socket_manager";
 import { Armour, ArmourConstructorArgument, Weapon, WeaponConstructorArgument } from "../static_data/item_tags";
 import { PgPool } from "../world";
 import { OrderItemSocketData } from "../../shared/market_order_data";
@@ -44,7 +44,7 @@ enum AuctionResponce {
     
 
 export namespace AuctionOrderManagement {
-    export async function build_order(owner: CharacterGenericPart, latest_bidder: CharacterGenericPart, item: Weapon|Armour, buyout_price: money, starting_price: money, end_time: number, cell_id: number, flags: OrderFlags) {
+    export async function build_order(owner: Character, latest_bidder: Character, item: Weapon|Armour, buyout_price: money, starting_price: money, end_time: number, cell_id: number, flags: OrderFlags) {
         let order_id = await AuctionOrderManagement.insert_to_db(
                                                             item,
                                                             owner.id,
@@ -128,7 +128,7 @@ export namespace AuctionOrderManagement {
 
 export namespace AuctionManagement {
 
-    export async function sell(entity_manager: EntityManager, seller: CharacterGenericPart, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
+    export async function sell(entity_manager: EntityManager, seller: Character, type: 'armour'|'weapon', backpack_id: number, buyout_price: money, starting_price:money): Promise<{ responce: AuctionResponce; }> {
         // if (auction.cell_id != seller.cell_id) {
         //     return {responce: AuctionResponce.NOT_IN_THE_SAME_CELL}
         // }
@@ -222,7 +222,7 @@ export namespace AuctionManagement {
 
     /**  Sends money to seller and sends item to buyer
     * */
-    export async function buyout(manager: EntityManager, buyer: CharacterGenericPart, id: auction_order_id_raw) {
+    export async function buyout(manager: EntityManager, buyer: Character, id: auction_order_id_raw) {
         let order = manager.raw_id_to_item_order(id)
 
         if (order == undefined) {
@@ -261,7 +261,7 @@ export namespace AuctionManagement {
         return AuctionResponce.OK
     }
 
-    export function cancel_order(manager: EntityManager, who: CharacterGenericPart, order_id: auction_order_id_raw) {
+    export function cancel_order(manager: EntityManager, who: Character, order_id: auction_order_id_raw) {
         let order = manager.raw_id_to_item_order(order_id)
 
         if (order == undefined) {
@@ -286,7 +286,7 @@ export namespace AuctionManagement {
         AuctionOrderManagement.delete_db(pool, order)
     }
 
-    export function cancel_order_safe(manager: EntityManager, who: CharacterGenericPart, order_id: auction_order_id) {
+    export function cancel_order_safe(manager: EntityManager, who: Character, order_id: auction_order_id) {
         let order = manager.get_item_order(order_id)
         let owner = order.owner
 
@@ -303,7 +303,7 @@ export namespace AuctionManagement {
     }
     
 
-    export function cancel_all_orders(manager: EntityManager, who: CharacterGenericPart) {
+    export function cancel_all_orders(manager: EntityManager, who: Character) {
         for (let order of manager.item_orders) {
             if (order == undefined) continue;
             if (order.flags.finished) continue;
@@ -335,16 +335,16 @@ interface OrderFlags {
 
 export class OrderItem {
     item: Weapon|Armour;
-    owner: CharacterGenericPart;
+    owner: Character;
     owner_id: number;
     buyout_price: money;
     current_price: money;
-    latest_bidder: CharacterGenericPart;
+    latest_bidder: Character;
     end_time: number;
     id: auction_order_id
     flags: OrderFlags
 
-    constructor(item: Weapon|Armour, owner: CharacterGenericPart, latest_bidder:CharacterGenericPart, buyout_price: money, current_price: money, end_time: number, id: auction_order_id, flags: OrderFlags) {
+    constructor(item: Weapon|Armour, owner: Character, latest_bidder:Character, buyout_price: money, current_price: money, end_time: number, id: auction_order_id, flags: OrderFlags) {
         this.item = item;
         this.owner = owner;
         this.owner_id = owner.id;

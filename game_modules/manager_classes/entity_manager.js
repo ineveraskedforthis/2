@@ -7,12 +7,12 @@ const Area = require('../base_game_classes/area.js');
 const Faction = require('../base_game_classes/faction.js');
 const Quest = require('../base_game_classes/quest.js');
 const cell_1 = require("../cell");
-const character_generic_part_1 = require("../base_game_classes/character_generic_part");
+const character_1 = require("../base_game_classes/character/character");
 const market_order_1 = require("../market/market_order");
 const battle_1 = require("../battle");
 const market_items_1 = require("../market/market_items");
-const rat_1 = require("../base_game_classes/races/rat");
-const elo_1 = require("../base_game_classes/races/elo");
+const rat_1 = require("../base_game_classes/character/races/rat");
+const elo_1 = require("../base_game_classes/character/races/elo");
 class EntityManager {
     constructor() {
         this.chars = [];
@@ -86,7 +86,7 @@ class EntityManager {
     async load_characters(pool) {
         let res = await common.send_query(pool, constants_1.constants.load_chars_query);
         for (let i of res.rows) {
-            let char = new character_generic_part_1.CharacterGenericPart(this.world);
+            let char = new character_1.Character(this.world);
             char.load_from_json(i);
             this.chars[char.id] = char;
             let cell = this.get_cell_by_id(char.cell_id);
@@ -395,7 +395,7 @@ class EntityManager {
     }
     async create_new_character(pool, name, cell_id, user_id) {
         console.log('character ' + name + ' is created');
-        let char = new character_generic_part_1.CharacterGenericPart(this.world);
+        let char = new character_1.Character(this.world);
         await char.init(pool, name, cell_id, user_id);
         console.log('his id is ' + char.id);
         this.chars[char.id] = char;
@@ -434,7 +434,7 @@ class EntityManager {
         return res.rows[0];
     }
     async load_character_data_to_memory(pool, data) {
-        var character = new character_generic_part_1.CharacterGenericPart(this.world);
+        var character = new character_1.Character(this.world);
         await character.load_from_json(data);
         this.chars[data.id] = character;
         return character;

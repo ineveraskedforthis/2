@@ -1,0 +1,55 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.User = exports.RequiredUpdates = exports.SocketWrapper = exports.UserData = void 0;
+class UserData {
+    constructor(id, char_id, login, password_hash) {
+        this.id = id;
+        this.char_id = char_id;
+        this.login = login;
+        this.password_hash = password_hash;
+    }
+}
+exports.UserData = UserData;
+class SocketWrapper {
+    constructor(socket) {
+        this.socket = socket;
+        this.user_id = '#';
+    }
+}
+exports.SocketWrapper = SocketWrapper;
+class RequiredUpdates {
+    constructor() {
+        this.character_status = false;
+        this.savings = false;
+        this.stash = false;
+        this.inventory = false;
+        this.character_created = false;
+    }
+    switch_on_all_data() {
+        this.character_status = true;
+        this.savings = true;
+        this.stash = true;
+        this.inventory = true;
+    }
+    turn_off_all() {
+        this.character_status = false;
+        this.savings = false;
+        this.stash = false;
+        this.inventory = false;
+        this.character_created = false;
+    }
+    new_character() {
+        this.switch_on_all_data();
+        this.character_created = true;
+    }
+}
+exports.RequiredUpdates = RequiredUpdates;
+class User {
+    constructor(socket, data) {
+        this.socket = socket;
+        this.data = data;
+        this.logged_in = false;
+        this.updates = new RequiredUpdates();
+    }
+}
+exports.User = User;

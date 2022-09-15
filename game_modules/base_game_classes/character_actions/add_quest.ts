@@ -1,7 +1,7 @@
 import { PgPool } from "../../world";
-import { CharacterGenericPart } from "../character_generic_part"
+import { Character } from "../character/character"
 
-export function add_quest(pool: PgPool, char:CharacterGenericPart) {
+export function add_quest(pool: PgPool, char:Character) {
     // let quest = char.action_target.quest
     // let tag = char.action_target.tag
     // char.misc.quest = {id: quest.id, tag: tag}
