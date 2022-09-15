@@ -32,4 +32,16 @@ export namespace Alerts {
         if (user == undefined) return
         generic_user_alert(user, tag, msg)
     }
+
+    export function craft(user: User, tag: string, value: number) {
+        Alerts.generic_user_alert(user, 'craft-probability', {tag: tag,  value: value})
+    }
+
+    export function skill(user: User, tag: string, value: number) {
+        Alerts.generic_user_alert(user, 'skill', {tag: tag, value: value})
+    }
+
+    export function battle_action(user: User, tag: string, value: number) {
+        Alerts.generic_user_alert(user, 'b-action-chance', {tag: tag, value: value})
+    }
 }

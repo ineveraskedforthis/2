@@ -3,14 +3,6 @@ import { Weapon } from "../../static_data/item_tags";
 import { WEAPON_TYPE } from "../../static_data/type_script_types";
 import { Character } from "./character";
 
-export class SkillObject {
-    practice: number;
-    theory: number
-    constructor() {
-        this.practice = 0
-        this.theory = 0
-    }
-}
 
 export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'|'skin_armour_master'
 export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master']
@@ -39,31 +31,31 @@ export function perk_price(tag: Perks):number {
 export function perk_requirement(tag:Perks, character: Character) {
     switch(tag) {
         case 'meat_master': {
-            if (character.skills.cooking.practice < 15) {
+            if (character.skills.cooking < 15) {
                 return 'not_enough_cooking_skill_15'
             }
             return 'ok'
         }
         case 'fletcher' : {
-            if (character.skills.woodwork.practice < 15) {
+            if (character.skills.woodwork < 15) {
                 return 'not_enough_woodwork_skill_15'
             }
             return 'ok'
         }
         case 'advanced_unarmed': {
-            if (character.skills.noweapon.practice < 15) {
+            if (character.skills.noweapon < 15) {
                 return 'not_enough_unarmed_skill_15'
             }
             return 'ok'
         }
         case 'advanced_polearm': {
-            if (character.skills.polearms.practice < 15) {
+            if (character.skills.polearms < 15) {
                 return 'not_enough_polearms_skill_15'
             }
             return 'ok'
         }
         case 'mage_initiation': {
-            if (character.skills.magic_mastery.practice < 15) {
+            if (character.skills.magic_mastery < 15) {
                 return 'not_enough_magic_skill_15'
             }
             return 'ok'
@@ -72,13 +64,13 @@ export function perk_requirement(tag:Perks, character: Character) {
             if (!character.perks.mage_initiation) {
                 return 'not_initiated'
             }
-            if (character.skills.magic_mastery.practice < 15) {
+            if (character.skills.magic_mastery < 15) {
                 return 'not_enough_magic_skill_15'
             }
             return 'ok'
         }
         case 'skin_armour_master': {
-            if (character.skills.clothier.practice < 15) {
+            if (character.skills.clothier < 15) {
                 return 'not_enough_clothier_skill_15'
             }
         }
@@ -142,34 +134,34 @@ export function can_shoot(character: Character): boolean {
 }
 
 export class SkillList {
-    clothier: SkillObject;
-    cooking: SkillObject;
-    onehand: SkillObject;
-    polearms: SkillObject;
-    noweapon: SkillObject;
-    twohanded: SkillObject
-    skinning: SkillObject;
-    magic_mastery: SkillObject;
-    blocking: SkillObject;
-    evasion: SkillObject;
-    woodwork: SkillObject;
-    hunt: SkillObject;
-    ranged: SkillObject
+    clothier: number;
+    cooking: number;
+    onehand: number;
+    polearms: number;
+    noweapon: number;
+    twohanded: number
+    skinning: number;
+    magic_mastery: number;
+    blocking: number;
+    evasion: number;
+    woodwork: number;
+    hunt: number;
+    ranged: number
 
 
     constructor() {
-        this.clothier = new SkillObject();
-        this.cooking = new SkillObject();
-        this.onehand = new SkillObject();
-        this.polearms = new SkillObject();
-        this.noweapon = new SkillObject();
-        this.twohanded = new SkillObject();
-        this.skinning = new SkillObject();
-        this.magic_mastery = new SkillObject();
-        this.blocking = new SkillObject();
-        this.evasion = new SkillObject();
-        this.woodwork = new SkillObject();
-        this.hunt = new SkillObject();
-        this.ranged = new SkillObject();
+        this.clothier       = 0;
+        this.cooking        = 0;
+        this.onehand        = 0;
+        this.polearms       = 0;
+        this.noweapon       = 0;
+        this.twohanded      = 0;
+        this.skinning       = 0;
+        this.magic_mastery  = 0;
+        this.blocking       = 0;
+        this.evasion        = 0;
+        this.woodwork       = 0;
+        this.hunt           = 0;
+        this.ranged         = 0;
     }
 }

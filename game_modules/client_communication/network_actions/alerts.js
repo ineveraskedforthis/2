@@ -37,4 +37,16 @@ var Alerts;
         generic_user_alert(user, tag, msg);
     }
     Alerts.generic_character_alert = generic_character_alert;
+    function craft(user, tag, value) {
+        Alerts.generic_user_alert(user, 'craft-probability', { tag: tag, value: value });
+    }
+    Alerts.craft = craft;
+    function skill(user, tag, value) {
+        Alerts.generic_user_alert(user, 'skill', { tag: tag, value: value });
+    }
+    Alerts.skill = skill;
+    function battle_action(user, tag, value) {
+        Alerts.generic_user_alert(user, 'b-action-chance', { tag: tag, value: value });
+    }
+    Alerts.battle_action = battle_action;
 })(Alerts = exports.Alerts || (exports.Alerts = {}));

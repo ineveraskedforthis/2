@@ -614,30 +614,6 @@ exports.Character = Character;
 //             case WEAPON_TYPE.RANGED:    this.skills.ranged.practice         += x;break;
 //         }
 //     }
-//     get_accuracy(result: {weapon_type: WEAPON_TYPE}, mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
-//         let base_accuracy = character_defines.accuracy + this.get_weapon_skill(result.weapon_type) * character_defines.skill_accuracy_modifier
-//         let blood_burden = character_defines.blood_accuracy_burden;
-//         let rage_burden = character_defines.rage_accuracy_burden
-//         let blood_acc_loss = this.status.blood * blood_burden;
-//         let rage_acc_loss = this.status.rage * rage_burden;
-//         let stress_acc_loss = this.status.stress * 0.01
-//         let final = base_accuracy - blood_acc_loss - rage_acc_loss - stress_acc_loss
-//         if ((distance != undefined) && (mod == 'ranged')) {
-//             if (distance < 2) distance = 2
-//             distance = Math.sqrt(distance - 2) / 2 + 2
-//             final = final / (distance - 1.5)
-//             return Math.min(1, Math.max(0, final))
-//         }
-//         return Math.min(1, Math.max(0.1, final))
-//     }    
-//     get_attack_chance(mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
-//         let weapon = this.equip.data.weapon
-//         let weapon_type = WEAPON_TYPE.NOWEAPON
-//         if (weapon != undefined) {
-//             weapon_type = weapon.get_weapon_type()
-//         }
-//         return this.get_accuracy({weapon_type: weapon_type}, mod, distance)
-//     }
 //     get_block_chance() {
 //         let tmp = character_defines.block + this.skills.blocking.practice * character_defines.skill_blocking_modifier;
 //         return tmp;

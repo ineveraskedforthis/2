@@ -1,22 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = exports.character_to_craft_rat_armour_probability = void 0;
+exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
-const market_items_1 = require("../../market/market_items");
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../static_data/items_set_up");
-function craft_rat_armour_probability(skill, perk) {
-    if ((0, market_items_1.nodb_mode_check)())
-        return 1;
-    if (perk)
-        return 1;
-    return Math.min(0.05 + skill / 20, 1);
-}
-function character_to_craft_rat_armour_probability(character) {
-    let skill = character.skills.clothier.practice;
-    return craft_rat_armour_probability(skill, character.skills.perks.skin_armour_master == true);
-}
-exports.character_to_craft_rat_armour_probability = character_to_craft_rat_armour_probability;
 function generate_rat_skin_craft(arg, cost) {
     return {
         duration(char) {

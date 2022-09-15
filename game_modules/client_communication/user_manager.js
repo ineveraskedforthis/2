@@ -171,16 +171,25 @@ var UserManagement;
         for (let item of users_to_update) {
             console.log('send_update to ' + item.data.login);
             if (item.updates.character_status) {
-                console.log('status');
                 updates_1.SendUpdate.status(item);
             }
             if (item.updates.savings) {
-                console.log('savings');
                 updates_1.SendUpdate.savings(item);
             }
             if (item.updates.character_created) {
-                console.log('character');
                 alerts_1.Alerts.generic_user_alert(item, 'character_exists', undefined);
+            }
+            if (item.updates.stash) {
+                updates_1.SendUpdate.stash(item);
+            }
+            if (item.updates.all_skills) {
+                updates_1.SendUpdate.all_skills(item);
+            }
+            if (item.updates.cooking) {
+                updates_1.SendUpdate.skill_cooking(item);
+            }
+            if (item.updates.cook_elo) {
+                updates_1.SendUpdate.cook_elo(item);
             }
             item.updates.turn_off_all();
         }

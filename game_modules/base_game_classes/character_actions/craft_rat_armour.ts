@@ -6,17 +6,6 @@ import { RAT_SKIN } from "../../manager_classes/materials_manager";
 import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../static_data/items_set_up";
 import { PgPool } from "../../world";
 
-function craft_rat_armour_probability(skill: number, perk:boolean) {
-    if (nodb_mode_check()) return 1;
-    if (perk) return 1
-    return Math.min(0.05 + skill / 20, 1)
-}
-
-export function character_to_craft_rat_armour_probability(character:Character) {
-    let skill = character.skills.clothier.practice
-    return craft_rat_armour_probability(skill, character.skills.perks.skin_armour_master == true)
-}
-
 
 function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
     return {

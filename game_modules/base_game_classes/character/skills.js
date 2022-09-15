@@ -1,14 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SkillList = exports.can_shoot = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = exports.SkillObject = void 0;
+exports.SkillList = exports.can_shoot = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
-class SkillObject {
-    constructor() {
-        this.practice = 0;
-        this.theory = 0;
-    }
-}
-exports.SkillObject = SkillObject;
 exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master'];
 function perk_price(tag) {
     switch (tag) {
@@ -25,31 +18,31 @@ exports.perk_price = perk_price;
 function perk_requirement(tag, character) {
     switch (tag) {
         case 'meat_master': {
-            if (character.skills.cooking.practice < 15) {
+            if (character.skills.cooking < 15) {
                 return 'not_enough_cooking_skill_15';
             }
             return 'ok';
         }
         case 'fletcher': {
-            if (character.skills.woodwork.practice < 15) {
+            if (character.skills.woodwork < 15) {
                 return 'not_enough_woodwork_skill_15';
             }
             return 'ok';
         }
         case 'advanced_unarmed': {
-            if (character.skills.noweapon.practice < 15) {
+            if (character.skills.noweapon < 15) {
                 return 'not_enough_unarmed_skill_15';
             }
             return 'ok';
         }
         case 'advanced_polearm': {
-            if (character.skills.polearms.practice < 15) {
+            if (character.skills.polearms < 15) {
                 return 'not_enough_polearms_skill_15';
             }
             return 'ok';
         }
         case 'mage_initiation': {
-            if (character.skills.magic_mastery.practice < 15) {
+            if (character.skills.magic_mastery < 15) {
                 return 'not_enough_magic_skill_15';
             }
             return 'ok';
@@ -58,13 +51,13 @@ function perk_requirement(tag, character) {
             if (!character.perks.mage_initiation) {
                 return 'not_initiated';
             }
-            if (character.skills.magic_mastery.practice < 15) {
+            if (character.skills.magic_mastery < 15) {
                 return 'not_enough_magic_skill_15';
             }
             return 'ok';
         }
         case 'skin_armour_master': {
-            if (character.skills.clothier.practice < 15) {
+            if (character.skills.clothier < 15) {
                 return 'not_enough_clothier_skill_15';
             }
         }
@@ -129,19 +122,19 @@ function can_shoot(character) {
 exports.can_shoot = can_shoot;
 class SkillList {
     constructor() {
-        this.clothier = new SkillObject();
-        this.cooking = new SkillObject();
-        this.onehand = new SkillObject();
-        this.polearms = new SkillObject();
-        this.noweapon = new SkillObject();
-        this.twohanded = new SkillObject();
-        this.skinning = new SkillObject();
-        this.magic_mastery = new SkillObject();
-        this.blocking = new SkillObject();
-        this.evasion = new SkillObject();
-        this.woodwork = new SkillObject();
-        this.hunt = new SkillObject();
-        this.ranged = new SkillObject();
+        this.clothier = 0;
+        this.cooking = 0;
+        this.onehand = 0;
+        this.polearms = 0;
+        this.noweapon = 0;
+        this.twohanded = 0;
+        this.skinning = 0;
+        this.magic_mastery = 0;
+        this.blocking = 0;
+        this.evasion = 0;
+        this.woodwork = 0;
+        this.hunt = 0;
+        this.ranged = 0;
     }
 }
 exports.SkillList = SkillList;

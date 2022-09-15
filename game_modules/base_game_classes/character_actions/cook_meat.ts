@@ -55,43 +55,6 @@ export const cook_meat = {
     },
 }
 
-export function cook_meat_probability(skill: number, perks:PerksTable){
-    let check = 0;
-    if (perks.meat_master) {
-        check = 1
-    } else if (skill > 20) {
-        check = 0.7
-    } else {
-        check = 0.7 * skill / 20
-    }
-    return check
-}
-
-const COOK_ELODINO_DIFFICULTY = 50
-
-export function cook_elodino_flesh_probability(cooking_skill: number, magic_skill: number, perks:PerksTable){
-    let check = 0;
-    if (perks.meat_master) {
-        check += 0.2
-    }
-    let worst_skill = Math.min(cooking_skill, magic_skill)
-    check = check + worst_skill / COOK_ELODINO_DIFFICULTY
-    return check
-}
-
-export function character_to_cook_elodino_probability(character: Character) {
-    let skill1 = character.skills.cooking.practice
-    let skill2 = character.skills.magic_mastery.practice
-    let perks = character.skills.perks
-    return cook_elodino_flesh_probability(skill1, skill2, perks)
-}
-
-export function character_to_cook_meat_probability(character:Character) {
-    let skill = character.skills.cooking.practice
-    let perks = character.skills.perks
-    return cook_meat_probability(skill, perks)
-}
-
 
 
 export const cook_elo_to_zaz = {

@@ -9,6 +9,7 @@ import { HumanTemplateNotAligned } from "../base_game_classes/character/races/hu
 import { Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
+import { isTemplateSpan } from "typescript";
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
@@ -181,16 +182,25 @@ export namespace UserManagement {
         for (let item of users_to_update) {
             console.log('send_update to ' + item.data.login)
             if (item.updates.character_status) {
-                console.log('status')
                 SendUpdate.status(item)
             }
             if (item.updates.savings) {
-                console.log('savings')
                 SendUpdate.savings(item)
             }
             if (item.updates.character_created) {
-                console.log('character')
                 Alerts.generic_user_alert(item, 'character_exists', undefined)
+            }
+            if (item.updates.stash) {
+                SendUpdate.stash(item)
+            }
+            if (item.updates.all_skills) {
+                SendUpdate.all_skills(item)
+            }
+            if (item.updates.cooking) {
+                SendUpdate.skill_cooking(item)
+            }
+            if (item.updates.cook_elo) {
+                SendUpdate.cook_elo(item)
             }
             item.updates.turn_off_all()
         }

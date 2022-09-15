@@ -74,7 +74,7 @@ class SocketManager {
     }
     connection(socket) {
         console.log('a user connected');
-        socket.emit('tags', materials_manager_1.materials.get_materials_json);
+        socket.emit('tags', materials_manager_1.materials.get_materials_json());
         socket.emit('skill-tags', skills_1.SKILLS);
         socket.emit('sections', map_definitions_1.SECTIONS);
         var messages = this.MESSAGES;

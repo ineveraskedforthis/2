@@ -24,12 +24,17 @@ class RequiredUpdates {
         this.stash = false;
         this.inventory = false;
         this.character_created = false;
+        this.all_skills = false;
+        this.cooking = false;
+        this.cook_elo = false;
     }
     switch_on_all_data() {
         this.character_status = true;
         this.savings = true;
         this.stash = true;
         this.inventory = true;
+        this.all_skills = true;
+        // this.cooking = true
     }
     turn_off_all() {
         this.character_status = false;
@@ -37,6 +42,20 @@ class RequiredUpdates {
         this.stash = false;
         this.inventory = false;
         this.character_created = false;
+        this.all_skills = false;
+        this.cooking = false;
+        this.cook_elo = false;
+    }
+    turn_on_cooking() {
+        if (this.all_skills)
+            return;
+        this.cooking = true;
+        this.cook_elo = true;
+    }
+    turn_on_all_skills() {
+        this.all_skills = true;
+        this.cooking = false;
+        this.cook_elo = false;
     }
     new_character() {
         this.switch_on_all_data();

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cook_elo_to_zaz = exports.character_to_cook_meat_probability = exports.character_to_cook_elodino_probability = exports.cook_elodino_flesh_probability = exports.cook_meat_probability = exports.cook_meat = void 0;
+exports.cook_elo_to_zaz = exports.cook_meat = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 exports.cook_meat = {
     duration(char) {
@@ -49,44 +49,6 @@ exports.cook_meat = {
     start: async function (pool, char, data) {
     },
 };
-function cook_meat_probability(skill, perks) {
-    let check = 0;
-    if (perks.meat_master) {
-        check = 1;
-    }
-    else if (skill > 20) {
-        check = 0.7;
-    }
-    else {
-        check = 0.7 * skill / 20;
-    }
-    return check;
-}
-exports.cook_meat_probability = cook_meat_probability;
-const COOK_ELODINO_DIFFICULTY = 50;
-function cook_elodino_flesh_probability(cooking_skill, magic_skill, perks) {
-    let check = 0;
-    if (perks.meat_master) {
-        check += 0.2;
-    }
-    let worst_skill = Math.min(cooking_skill, magic_skill);
-    check = check + worst_skill / COOK_ELODINO_DIFFICULTY;
-    return check;
-}
-exports.cook_elodino_flesh_probability = cook_elodino_flesh_probability;
-function character_to_cook_elodino_probability(character) {
-    let skill1 = character.skills.cooking.practice;
-    let skill2 = character.skills.magic_mastery.practice;
-    let perks = character.skills.perks;
-    return cook_elodino_flesh_probability(skill1, skill2, perks);
-}
-exports.character_to_cook_elodino_probability = character_to_cook_elodino_probability;
-function character_to_cook_meat_probability(character) {
-    let skill = character.skills.cooking.practice;
-    let perks = character.skills.perks;
-    return cook_meat_probability(skill, perks);
-}
-exports.character_to_cook_meat_probability = character_to_cook_meat_probability;
 exports.cook_elo_to_zaz = {
     duration(char) {
         return Math.max(0.5, 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice - char.skills.magic_mastery.practice) / 20);

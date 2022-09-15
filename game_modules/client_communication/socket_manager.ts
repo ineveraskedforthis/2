@@ -112,7 +112,7 @@ export class SocketManager {
     connection(socket: Socket) {
         console.log('a user connected');
         
-        socket.emit('tags', materials.get_materials_json);
+        socket.emit('tags', materials.get_materials_json());
         socket.emit('skill-tags', SKILLS);        
         socket.emit('sections', SECTIONS);
         
@@ -585,44 +585,7 @@ export class SocketManager {
     //     }
     // }
 
-    // send_map_pos_info(character: Character, teleport_flag:boolean) {
-    //     let cell_id = character.cell_id;
-    //     let pos = this.world.get_cell_x_y_by_id(cell_id);
-    //     let data = {x:pos.x,y:pos.y,teleport_flag:teleport_flag}
-    //     this.send_to_character_user(character, 'map-pos', data)
-    // }
 
-    // send_skills_info(character: Character) {
-    //     this.send_to_character_user(character, 'skills', character.skills)
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'cook_meat', value: character_to_cook_meat_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_spear', value: character_to_craft_spear_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_bone_spear', value: character_to_craft_spear_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_pants', value: character_to_craft_rat_armour_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_armour', value: character_to_craft_rat_armour_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_gloves', value: character_to_craft_rat_armour_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_helmet', value: character_to_craft_rat_armour_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_rat_boots', value: character_to_craft_rat_armour_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'cook_elodino', value: character_to_cook_elodino_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_wood_bow', value: character_to_craft_spear_probability(character)})
-    //     this.send_to_character_user(character, 'craft-probability', {tag: 'craft_bone_arrow', value: craft_bone_arrow_probability(character)})
-        
-
-    //     this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
-    //     this.send_perk_related_skills_update(character)
-    // }
-
-    // send_perk_related_skills_update(character: Character) {
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance('fast')})
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance('heavy')})
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
-
-    //     this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
-    //     this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
-    //     this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
-    //     this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
-    // }
 
     // // send_tactics_info(character) {
     // //     // this.send_to_character_user(character, 'tactic', character.data.tactic)
@@ -679,16 +642,7 @@ export class SocketManager {
     //     } 
     // }
 
-    // send_ranged_accuracy(user:User, distance: number) {
-    //     if (!user.logged_in) {
-    //         return 
-    //     }
-    //     if (isNaN(distance)) {
-    //         return 
-    //     }
-    //     let char = user.get_character()
-    //     this.send_to_character_user(char, 'b-action-chance', {tag: 'shoot', value: char.get_attack_chance('ranged', distance)})
-    // }
+
 
     // send_battle_action(battle: BattleReworked2, a: any) {
     //     let units = battle.get_units()
@@ -760,27 +714,7 @@ export class SocketManager {
     //     }
     // }
 
-    // send_equip_update_to_character(character: Character) {
-    //     let user = this.world.user_manager.get_user_from_character(character);
-    //     if (user == undefined) {
-    //         return
-    //     }
-    //     let socket = this.get_user_socket(user)
-    //     if (socket != undefined) {
-    //        this.send_equip_update(user)
-    //     }
-    //     this.send_perk_related_skills_update(character)
-    // }
 
-    // send_stash_update_to_character(character: Character) {
-    //     let user = this.world.user_manager.get_user_from_character(character);
-    //     if (user != undefined) {
-    //         let socket = this.get_user_socket(user)
-    //         if (socket != undefined) {
-    //             this.send_stash_update(user)
-    //         }
-    //     }        
-    // }
 
     // send_char_info(user: User) {
     //     if (user != null) {
@@ -797,24 +731,6 @@ export class SocketManager {
     //     }
     // }
 
-    // send_equip_update(user: User) {
-    //     if (user != null) {
-    //         let char = user.get_character()
-    //         user.socket.emit('equip-update', char.equip.get_data())
-    //         this.send_to_character_user(char, 'action-display', {tag: 'shoot', value: can_shoot(char)})
-    //         this.send_perk_related_skills_update(char)
-    //     }
-    // }
-    
-    // send_stash_update(user: User) {
-    //     // console.log("send stash update")
-    //     if (user != null) {
-    //         let char = user.get_character()
-    //         user.socket.emit('stash-update', char.stash.data)
-    //         this.send_to_character_user(char, 'action-display', {tag: 'shoot', value: can_shoot(char)})
-    //         this.send_perk_related_skills_update(char)
-    //     }
-    // }
 
     // prepare_market_orders(market: Cell) {
     //     let data = market.orders;
