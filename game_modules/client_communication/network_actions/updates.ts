@@ -11,7 +11,7 @@ export namespace SendUpdate {
         Alerts.generic_user_alert(user, 'savings', character.savings.get())
         Alerts.generic_user_alert(user, 'savings-trade', character.trade_savings.get()) 
     }
-
+ 
     export function status(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
