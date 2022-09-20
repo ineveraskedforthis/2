@@ -15,7 +15,7 @@ const children = {
 };
 function empty_function(user) { }
 const update_function = {
-    [0 /* UI_Part.ROOT */]: empty_function,
+    [0 /* UI_Part.ROOT */]: updates_1.SendUpdate.all,
     [1 /* UI_Part.HP */]: updates_1.SendUpdate.hp,
     [2 /* UI_Part.STATUS */]: updates_1.SendUpdate.status,
     [3 /* UI_Part.STASH */]: updates_1.SendUpdate.stash,

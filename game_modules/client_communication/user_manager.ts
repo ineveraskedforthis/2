@@ -183,6 +183,7 @@ export namespace UserManagement {
             console.log('send_update to ' + item.data.login)          
             if (item.character_created) {
                 Alerts.generic_user_alert(item, 'character_exists', undefined)
+                SendUpdate.all(item)
                 item.character_created = false
             }
             Update.update_root(item)

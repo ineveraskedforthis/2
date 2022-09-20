@@ -668,13 +668,17 @@ function build_skill_div(tag){
 function update_skill_data(data) {
     console.log('update skill data')
     console.log(data)
-    for (let tag in SKILL_TAGS) {
-        let div = document.getElementById(tag + '_skill_div')
-        let amount = div.querySelector('.practice_n')
-        amount.innerHTML = data[tag]?.practice
-        let span = div.querySelector('.hbar > span')
-        span.style.width = data[tag]?.practice + '%'
-    }
+    const tag = data.tag
+    const value = data.value
+
+    const div = document.getElementById(tag + '_skill_div')
+    const amount = div.querySelector('.practice_n')
+    amount.innerHTML = value
+    const span = div.querySelector('.hbar > span')
+    span.style.width = value + '%'
+}
+
+function update_perks(data) {
     let div2 = document.getElementById('perks_tab');
     div2.innerHTML = ''
     for (let tag in data.perks) {
@@ -1114,7 +1118,7 @@ socket.on('enemy-update', data => battle_image.update(data))
 socket.on('player-position', data => {((bi, data) => (bi.set_player(data)))(battle_image, data)})
 
 socket.on('skill-tags', data => load_skill_tags(data));
-socket.on('skills', msg => update_skill_data(msg));
+socket.on('skill', msg => update_skill_data(msg));
 // socket.on('local-skills', msg => update_local_skills(msg))
 
 // socket.on('market-data', data => goods_market.update_data(data));

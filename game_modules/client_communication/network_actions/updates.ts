@@ -5,6 +5,14 @@ import { User, user_id } from "../user";
 import { Alerts } from "./alerts";
 
 export namespace SendUpdate {
+    export function all(user: User) {
+        savings(user)
+        status(user)
+        stash(user)
+        equip(user)
+        all_skills(user)
+    }
+
     export function savings(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return

@@ -7,6 +7,14 @@ const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 var SendUpdate;
 (function (SendUpdate) {
+    function all(user) {
+        savings(user);
+        status(user);
+        stash(user);
+        equip(user);
+        all_skills(user);
+    }
+    SendUpdate.all = all;
     function savings(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)

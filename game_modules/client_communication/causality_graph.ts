@@ -6,6 +6,8 @@ import { updateLanguageServiceSourceFile } from "typescript";
 type mask = number & {__brand: 'mask'}
 
 
+// should rewrite later to classes/interfaces?
+// but they will add even more boilerplate......................
 
 const enum UI_Part {
     ROOT, HP, STATUS, STASH, SAVINGS, INVENTORY, SKILLS, COOKING_SKILL, COOKING_ELO, 
@@ -26,7 +28,7 @@ const children:{[_ in UI_Part]: UI_Part[]} = {
 function empty_function(user: User) {}
 
 const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
-    [UI_Part.ROOT]              : empty_function,
+    [UI_Part.ROOT]              : SendUpdate.all,
     [UI_Part.HP]                : SendUpdate.hp,
     [UI_Part.STATUS]            : SendUpdate.status,
     [UI_Part.STASH]             : SendUpdate.stash,

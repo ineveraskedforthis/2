@@ -11,6 +11,7 @@ const fs_1 = __importDefault(require("fs"));
 const system_1 = require("../base_game_classes/character/system");
 const human_1 = require("../base_game_classes/character/races/human");
 const systems_communication_1 = require("../systems_communication");
+const updates_1 = require("./network_actions/updates");
 const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
 exports.users_data_dict = {};
@@ -172,6 +173,7 @@ var UserManagement;
             console.log('send_update to ' + item.data.login);
             if (item.character_created) {
                 alerts_1.Alerts.generic_user_alert(item, 'character_exists', undefined);
+                updates_1.SendUpdate.all(item);
                 item.character_created = false;
             }
             causality_graph_1.Update.update_root(item);
