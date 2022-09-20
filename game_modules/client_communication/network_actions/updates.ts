@@ -91,6 +91,13 @@ export namespace SendUpdate {
 
         Alerts.battle_action(user, 'shoot', Accuracy.ranged(character, distance))
     }
+
+    export function hp(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.generic_user_alert(user, 'hp', {c: character.status.hp, m: character.stats.max.hp})
+    }
 }
 
 

@@ -1,5 +1,6 @@
 import { Socket } from "../../server";
 import { char_id } from "../base_game_classes/character/character";
+import { Update, update_flags } from "./causality_graph";
 
 export type user_id = number & {__brand: "user_id"}
 export type user_online_id = user_id & {__brand2: "online"}
@@ -93,13 +94,15 @@ export class RequiredUpdates {
 export class User {
     data: UserData
     socket: Socket
-    updates: RequiredUpdates
+    updates: update_flags
     logged_in: boolean
+    character_created: boolean
 
     constructor(socket: Socket, data: UserData) {
         this.socket = socket
         this.data = data
         this.logged_in = false
-        this.updates = new RequiredUpdates()
+        this.character_created = false
+        this.updates = Update.construct()
     }
 }

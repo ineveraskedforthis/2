@@ -31,7 +31,7 @@ export namespace Link {
             console.log('user is online')
             let user_online = UserManagement.get_user(user.id as user_online_id)
             UserManagement.add_user_to_update_queue(user_online.data.id)
-            user_online.updates.new_character()
+            user_online.character_created = true
         }
     }
 }
