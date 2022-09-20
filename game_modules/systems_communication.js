@@ -34,7 +34,7 @@ var Link;
             console.log('user is online');
             let user_online = user_manager_1.UserManagement.get_user(user.id);
             user_manager_1.UserManagement.add_user_to_update_queue(user_online.data.id);
-            user_online.updates.new_character();
+            user_online.character_created = true;
         }
     }
     Link.character_and_user_data = character_and_user_data;

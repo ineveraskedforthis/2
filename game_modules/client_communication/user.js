@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.RequiredUpdates = exports.SocketWrapper = exports.UserData = void 0;
+const causality_graph_1 = require("./causality_graph");
 class UserData {
     constructor(id, char_id, login, password_hash) {
         this.id = id;
@@ -68,7 +69,8 @@ class User {
         this.socket = socket;
         this.data = data;
         this.logged_in = false;
-        this.updates = new RequiredUpdates();
+        this.character_created = false;
+        this.updates = causality_graph_1.Update.construct();
     }
 }
 exports.User = User;

@@ -93,6 +93,13 @@ var SendUpdate;
         alerts_1.Alerts.battle_action(user, 'shoot', battle_calcs_1.Accuracy.ranged(character, distance));
     }
     SendUpdate.ranged = ranged;
+    function hp(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, 'hp', { c: character.status.hp, m: character.stats.max.hp });
+    }
+    SendUpdate.hp = hp;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
 // send_map_pos_info(character: Character, teleport_flag:boolean) {
 //     let cell_id = character.cell_id;

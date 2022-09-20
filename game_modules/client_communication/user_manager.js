@@ -11,8 +11,8 @@ const fs_1 = __importDefault(require("fs"));
 const system_1 = require("../base_game_classes/character/system");
 const human_1 = require("../base_game_classes/character/races/human");
 const systems_communication_1 = require("../systems_communication");
-const updates_1 = require("./network_actions/updates");
 const alerts_1 = require("./network_actions/alerts");
+const causality_graph_1 = require("./causality_graph");
 exports.users_data_dict = {};
 var users_data_list = [];
 var login_to_user_data = {};
@@ -170,28 +170,11 @@ var UserManagement;
         console.log('update loop');
         for (let item of users_to_update) {
             console.log('send_update to ' + item.data.login);
-            if (item.updates.character_status) {
-                updates_1.SendUpdate.status(item);
-            }
-            if (item.updates.savings) {
-                updates_1.SendUpdate.savings(item);
-            }
-            if (item.updates.character_created) {
+            if (item.character_created) {
                 alerts_1.Alerts.generic_user_alert(item, 'character_exists', undefined);
+                item.character_created = false;
             }
-            if (item.updates.stash) {
-                updates_1.SendUpdate.stash(item);
-            }
-            if (item.updates.all_skills) {
-                updates_1.SendUpdate.all_skills(item);
-            }
-            if (item.updates.cooking) {
-                updates_1.SendUpdate.skill_cooking(item);
-            }
-            if (item.updates.cook_elo) {
-                updates_1.SendUpdate.cook_elo(item);
-            }
-            item.updates.turn_off_all();
+            causality_graph_1.Update.update_root(item);
         }
         users_to_update.clear();
     }
