@@ -44,4 +44,8 @@ export namespace Alerts {
     export function battle_action(user: User, tag: string, value: number) {
         Alerts.generic_user_alert(user, 'b-action-chance', {tag: tag, value: value})
     }
+
+    export function map_action(user: User, tag: string, data: boolean) {
+        Alerts.generic_user_alert(user, 'map-action-status', {tag: tag, value: data})
+    }
 }

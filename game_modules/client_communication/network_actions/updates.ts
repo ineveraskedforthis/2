@@ -1,8 +1,11 @@
 import { Accuracy } from "../../base_game_classes/battle/battle_calcs";
 import { CraftProbability } from "../../base_game_classes/character/craft";
 import { SkillList } from "../../base_game_classes/character/skills";
+import { CharacterSystem } from "../../base_game_classes/character/system";
+import { Cell } from "../../map/cell";
+import { MarketOrderBulkJson } from "../../market/market_order";
 import { Convert } from "../../systems_communication";
-import { User, user_id } from "../user";
+import { User } from "../user";
 import { Alerts } from "./alerts";
 
 
@@ -124,7 +127,75 @@ export namespace SendUpdate {
 
         Alerts.generic_user_alert(user, 'hp', {c: character.status.hp, m: character.stats.max.hp})
     }
+
+    export function cell(cell: Cell) {
+        let characters_list = cell.get_characters_set()
+        for (let item of characters_list) {
+            let id = item.id
+            let character = CharacterSystem.id_to_character(id)
+            let user = Convert.character_to_user(character)
+
+            if (user != undefined) {
+                Alerts.generic_user_alert(user, 'cell-characters', characters_list)
+                Alerts.map_action(user, 'hunt'          , cell.can_hunt())
+                Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
+                Alerts.map_action(user, 'clean'         , cell.can_clean())
+            }
+        }
+    }
+
+    export function market(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        let data = 
+
+    //     let user = this.world.user_manager.get_user_from_character(character);
+    //     if (user != undefined) {
+    //         let data = this.prepare_market_orders(market)
+    //     this.send_to_character_user(character, 'market-data', data)
+    //     }
+    // }
+    }
 }
+
+function prepare_market_orders(market: Cell) {
+    let data = market.orders;
+    let orders_array = Array.from(data)
+    let responce: MarketOrderBulkJson[] = []
+    for (let order_id of orders_array) {
+
+        let order = this.world.get_order(order_id)
+        if (order.amount > 0) {
+            responce.push(order.get_json())
+        }
+    }
+    return responce
+}
+
+    // update_market_info(market: Cell) {
+    //     // console.log('sending market orders to client');
+    //     let responce = this.prepare_market_orders(market)     
+
+    //     for (let i of this.sockets) {
+    //         if (i.current_user != null) {
+    //             let char = i.current_user.character;
+    //             try {
+    //                 let cell1 = char.get_cell();
+    //                 if (i.online & i.market_data && (cell1.id==market.id)) {
+    //                     i.socket.emit('market-data', responce);
+    //                 }
+    //             } catch(error) {
+    //                 console.log(i.current_user.login);
+    //             }
+    //         }
+    //     }
+    // }
+
+    // send_item_market_update_to_character(character: Character) {
+    //     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, character.cell_id)
+    //     this.send_to_character_user(character, 'item-market-data', data)
+    // }
 
 
     // send_map_pos_info(character: Character, teleport_flag:boolean) {

@@ -1,4 +1,4 @@
-import { Cell } from "../../cell";
+import { Cell } from "../../map/cell";
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { WOOD } from "../../manager_classes/materials_manager";
 import { PgPool } from "../../world";

@@ -732,44 +732,7 @@ export class SocketManager {
     // }
 
 
-    // prepare_market_orders(market: Cell) {
-    //     let data = market.orders;
 
-    //     let orders_array = Array.from(data)
-    //     let responce: MarketOrderJson[] = []
-    //     for (let order_id of orders_array) {
-    //         let order = this.world.get_order(order_id)
-    //         if (order.amount > 0) {
-    //             responce.push(order.get_json())
-    //         }
-    //     }
-    //     // console.log(responce)
-    //     return responce
-    // }
-
-    // update_market_info(market: Cell) {
-    //     // console.log('sending market orders to client');
-    //     let responce = this.prepare_market_orders(market)     
-
-    //     for (let i of this.sockets) {
-    //         if (i.current_user != null) {
-    //             let char = i.current_user.character;
-    //             try {
-    //                 let cell1 = char.get_cell();
-    //                 if (i.online & i.market_data && (cell1.id==market.id)) {
-    //                     i.socket.emit('market-data', responce);
-    //                 }
-    //             } catch(error) {
-    //                 console.log(i.current_user.login);
-    //             }
-    //         }
-    //     }
-    // }
-
-    // send_item_market_update_to_character(character: Character) {
-    //     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, character.cell_id)
-    //     this.send_to_character_user(character, 'item-market-data', data)
-    // }
 
     // send_item_market_update(cell_id: number) {
     //     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, cell_id)
@@ -809,25 +772,9 @@ export class SocketManager {
     //     }
     // }
 
-    // send_cell_updates(cell: Cell) {
-    //     let characters_list = cell.get_characters_list()
-    //     for (let item of characters_list) {
-    //         let id = item.id
-    //         let character = this.world.entity_manager.chars[id]
-    //         this.send_to_character_user(character, 'cell-characters', characters_list)
-    //         this.send_to_character_user(character, 'map-action-status', {tag: 'hunt', value: cell.can_hunt()})
-    //         this.send_to_character_user(character, 'map-action-status', {tag: 'gather_wood', value: can_gather_wood(cell)})
-    //         this.send_to_character_user(character, 'map-action-status', {tag: 'clean', value: cell.can_clean()})
-    //     }
-    // }
 
-    // send_market_info_character(market: Cell, character: Character) {
-    //     let user = this.world.user_manager.get_user_from_character(character);
-    //     if (user != undefined) {
-    //         let data = this.prepare_market_orders(market)
-    //     this.send_to_character_user(character, 'market-data', data)
-    //     }
-    // }
+
+
 
     // send_all_market_info() {
     //     // for (let market of this.world.entity_manager.markets) {

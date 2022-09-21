@@ -1,5 +1,4 @@
-import { char_id } from "../base_game_classes/character/character";
-import { SocketWrapper, TEMP_CHAR_ID, TEMP_USER_ID, User, UserData, user_id, user_online_id } from "../client_communication/user";
+import { SocketWrapper, User, UserData } from "../client_communication/user";
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 
@@ -10,13 +9,14 @@ import { Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
 import { Update } from "./causality_graph";
+import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../id_types";
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
 
 
 export type UsersData = {[_ in user_id]: UserData}
-export type UsersOnline = {[id: user_online_id]: User}
+export type UsersOnline = {[_: user_online_id]: User}
 
 export var users_data_dict: UsersData                           = {}
 var users_data_list: UserData[]                                 = []
@@ -39,7 +39,7 @@ export namespace UserManagement {
             let data = line.split(' ')
             console.log(data)
 
-            let char_id:char_id|'@' = '@'
+            let char_id:char_id|TEMP_CHAR_ID = '@'
             if (data[1] != '@') {
                 char_id = Number(data[1]) as char_id
             }
@@ -166,14 +166,15 @@ export namespace UserManagement {
         Link.character_and_user_data(character, user)
     }
 
-    export function add_user_to_update_queue(id: user_id|TEMP_USER_ID) {
+    export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|'market') {
         console.log('add user to update')
         console.log(id)
         if (id == '#') return
         let user = get_user(id as user_online_id)
         if (user == undefined) return
         console.log('ok')
-
+        if (reason == 'character_creation') user.character_created = true;
+        if (reason == 'market') user.market_update = true
         users_to_update.add(user)
     }
 
@@ -185,6 +186,9 @@ export namespace UserManagement {
                 Alerts.generic_user_alert(item, 'character_exists', undefined)
                 SendUpdate.all(item)
                 item.character_created = false
+            }
+            if (item.market_update) {
+                SendUpdate.market(item)
             }
             Update.update_root(item)
         }

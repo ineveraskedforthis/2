@@ -5,7 +5,7 @@ const Faction = require('../base_game_classes/faction.js')
 const Quest = require('../base_game_classes/quest.js')
 
 import { PgPool, World } from "../world";
-import {Cell} from '../cell'
+import {Cell} from '../map/cell'
 import { Character } from "../base_game_classes/character/character";
 import { MarketOrder, market_order_index } from "../market/market_order";
 import { BattleReworked2 } from "../battle";

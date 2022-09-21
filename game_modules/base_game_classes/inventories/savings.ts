@@ -1,11 +1,3 @@
-export type money = number & { __brand: "money"}
-
-type savings_json = {
-    data: money,
-    prev_data: money,
-    income: number
-}
-
 export class Savings {
     data: money
     prev_data: money

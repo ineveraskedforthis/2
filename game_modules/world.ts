@@ -13,7 +13,7 @@ import { BattleReworked2 } from "./battle";
 import { ActionManager } from "./manager_classes/action_manager";
 import {SocketManager} from './client_communication/socket_manager'
 import {UserManager} from './manager_classes/user_manager'
-import { Cell } from "./cell";
+import { Cell } from "./map/cell";
 import { rat } from "./base_game_classes/character/races/rat";
 import { AiManager } from "./manager_classes/ai_manager";
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";

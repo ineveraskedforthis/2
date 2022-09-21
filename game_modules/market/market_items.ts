@@ -1,21 +1,14 @@
 import { constants } from "../static_data/constants";
 import { Character } from "../base_game_classes/character/character";
-import { money, Savings } from "../base_game_classes/savings";
-import { EntityManager } from "../manager_classes/entity_manager";
-import { SocketManager } from "../client_communication/socket_manager";
 import { Armour, ArmourConstructorArgument, Weapon, WeaponConstructorArgument } from "../static_data/item_tags";
-import { PgPool } from "../world";
 import { OrderItemSocketData } from "../../shared/market_order_data";
 
-const common = require("../common.js");
 
 const hour = 1000 * 60 * 60;
 const time_intervals = [1000 * 60, hour * 12, hour * 24, hour * 48];
 
 
-export type auction_id = number & { __brand: "auction_id"}
-export type auction_order_id = number & { __brand: "auction_order_id"}
-export type auction_order_id_raw = number & { __brand: "auction_order_id", __brand2: "raw"}
+// export type auction_id = number & { __brand: "auction_id"}
 
 function nodb_mode_id():number|undefined {
     // @ts-ignore: Unreachable code error
@@ -332,27 +325,3 @@ interface OrderFlags {
         // profit_sent: boolean,
         // item_sent: boolean
     }
-
-export class OrderItem {
-    item: Weapon|Armour;
-    owner: Character;
-    owner_id: number;
-    buyout_price: money;
-    current_price: money;
-    latest_bidder: Character;
-    end_time: number;
-    id: auction_order_id
-    flags: OrderFlags
-
-    constructor(item: Weapon|Armour, owner: Character, latest_bidder:Character, buyout_price: money, current_price: money, end_time: number, id: auction_order_id, flags: OrderFlags) {
-        this.item = item;
-        this.owner = owner;
-        this.owner_id = owner.id;
-        this.buyout_price = buyout_price;
-        this.current_price = current_price;
-        this.latest_bidder = latest_bidder;
-        this.end_time = end_time;
-        this.id = id;
-        this.flags = flags
-    }
-}

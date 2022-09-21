@@ -1,7 +1,9 @@
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
+import { SendUpdate } from "./client_communication/network_actions/updates";
 import { User, UserData, user_online_id } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
+import { Cell } from "./map/cell";
 
 
 export namespace Convert {
@@ -30,8 +32,30 @@ export namespace Link {
         if (UserManagement.user_is_online(user.id)) {
             console.log('user is online')
             let user_online = UserManagement.get_user(user.id as user_online_id)
-            UserManagement.add_user_to_update_queue(user_online.data.id)
-            user_online.character_created = true
+            UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation')
         }
     }
+
+    export function character_and_cell(character: Character, cell: Cell) {
+        cell.characters_set.add(character.id)
+        SendUpdate.cell(cell)
+        UserManagement.add_user_to_update_queue(character.user_id, 'market')
+    }
 }
+
+export namespace Unlink {
+    export function character_and_cell(character: Character, cell: Cell) {
+
+    }
+}
+    enter(char: Character) {
+        this.characters_set.add(char.id)
+        this.world.socket_manager.send_market_info_character(this, char)
+        
+        this.world.socket_manager.send_cell_updates(this)
+    }
+
+    exit(char: Character) {
+        this.characters_set.delete(char.id)
+        this.world.socket_manager.send_cell_updates(this)
+    }

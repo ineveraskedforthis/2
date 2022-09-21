@@ -1,20 +1,20 @@
 import {Stash} from "../inventories/stash"
-import { TEMP_USER_ID, user_id } from "../../client_communication/user";
 import { Archetype, CharacterFlags, InnateStats, Misc, Stats, Status } from "./character_parts";
 import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings, money } from "../inventories/savings";
+import { cell_id, char_id, TEMP_USER_ID, user_id } from "../../id_types";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
-
-export type char_id = number & {__brand: "character_id"}
 
 export class Character {
     id: char_id;
     battle_id: number;
     battle_unit_id: number;
     user_id: user_id|TEMP_USER_ID;
+    cell_id: cell_id;
+
     name: string;
 
     equip: Equip;
@@ -36,7 +36,7 @@ export class Character {
 
     model_variation: any;
 
-    constructor(id: number, battle_id: number, battle_unit_id: number, user_id: user_id|TEMP_USER_ID,
+    constructor(id: number, battle_id: number, battle_unit_id: number, user_id: user_id|TEMP_USER_ID, cell_id: cell_id,
                  name: string, archetype: Archetype, 
                  stats: Stats, max_hp: number) {
         
@@ -44,6 +44,8 @@ export class Character {
         this.battle_id = battle_id
         this.battle_unit_id = battle_unit_id
         this.user_id = user_id
+        this.cell_id = cell_id
+
         this.name = name
 
         this.archetype = archetype

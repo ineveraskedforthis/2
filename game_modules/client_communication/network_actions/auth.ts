@@ -1,4 +1,5 @@
-import { SocketWrapper, user_id, user_online_id } from "../user";
+import { user_id, user_online_id } from "../../id_types";
+import { SocketWrapper} from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
 import { ValidatorSM } from "./common_validations";

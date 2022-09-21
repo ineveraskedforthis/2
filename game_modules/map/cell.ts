@@ -1,11 +1,9 @@
-var Market = require("./market/market.js")
-var common = require("./common.js")
-import { Character } from "./base_game_classes/character/character.js";
-import { money } from "./base_game_classes/savings.js";
-import { material_index } from "./manager_classes/materials_manager.js";
-import { MarketOrder, market_order_index } from "./market/market_order.js";
-import {constants} from "./static_data/constants.js";
-import { PgPool, World } from "./world.js";
+import { Character } from "../base_game_classes/character/character.js";
+import { CharacterSystem } from "../base_game_classes/character/system.js";
+import { char_id, market_order_id } from "../types.js";
+import { material_index } from "../manager_classes/materials_manager.js";
+import { constants} from "../static_data/constants.js";
+import { PgPool, World } from "../world.js";
 
 
 interface Development {
@@ -47,8 +45,8 @@ export class Cell {
 
     development: Development;
     resources: CellResources;
-    characters_list: Set<number>
-    orders: Set<market_order_index>
+    characters_set: Set<char_id>
+    orders: Set<market_order_id>
 
     constructor(world: any, map: any, i: number, j:number, name:string, development: Development, res: CellResources) {
         this.world = world;
@@ -64,7 +62,7 @@ export class Cell {
         this.item_market_id = -1
         this.orders = new Set()
 
-        this.characters_list = new Set()
+        this.characters_set = new Set()
 
         if (development == undefined) {
             this.development = {rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0};
@@ -80,30 +78,19 @@ export class Cell {
     }
 
 
-    get_characters_list(): {id: number, name:string}[] {
+    get_characters_set(): {id: char_id, name:string}[] {
         let result = []
-        for (let item of this.characters_list.values()) {
-            let return_item = {id: item, name: this.world.entity_manager.chars[item].name}
+        for (let item of this.characters_set.values()) {
+            let character = CharacterSystem.id_to_character(item)
+            let return_item = {id: item, name: character.name}
             result.push(return_item)
         }
         return result
     }
 
-    get_characters_set() {
-        return this.characters_list
+    get_characters_id_set() {
+        return this.characters_set
     }
-
-    enter(char: Character) {
-        this.characters_list.add(char.id)
-        this.world.socket_manager.send_market_info_character(this, char)
-        this.world.socket_manager.send_cell_updates(this)
-    }
-
-    exit(char: Character) {
-        this.characters_list.delete(char.id)
-        this.world.socket_manager.send_cell_updates(this)
-    }
-
 
     async init(pool:any) {
         await this.load_to_db(pool);
@@ -153,22 +140,22 @@ export class Cell {
         this.last_visit = 0
     }
 
-    add_order(x: market_order_index) {
+    add_order(x: market_order_id) {
         this.orders.add(x)
         this.world.socket_manager.send_market_info(this)
     }
 
-    remove_order(x: market_order_index) {
+    remove_order(x: market_order_id) {
         this.orders.delete(x)
         this.world.socket_manager.send_market_info(this)
     }
 
-    transfer_order(ord: market_order_index, target_cell: Cell) {
+    transfer_order(ord: market_order_id, target_cell: Cell) {
         this.remove_order(ord)
         target_cell.add_order(ord)
     }
 
-    async execute_sell_order(pool: PgPool, order_index:market_order_index, amount: number, buyer: Character) {
+    async execute_sell_order(pool: PgPool, order_index:market_order_id, amount: number, buyer: Character) {
         let order = this.world.entity_manager.get_order(order_index)
         let order_owner = order.owner
 
@@ -194,7 +181,7 @@ export class Cell {
         return 'invalid_order'
     }
 
-    async execute_buy_order(pool: PgPool, order_index:market_order_index, amount: number, seller: Character) {
+    async execute_buy_order(pool: PgPool, order_index:market_order_id, amount: number, seller: Character) {
         let order = this.world.entity_manager.get_order(order_index)
         let order_owner = order.owner
         

@@ -1,12 +1,8 @@
 import { Socket } from "../../server";
-import { char_id } from "../base_game_classes/character/character";
+import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../id_types";
 import { Update, update_flags } from "./causality_graph";
 
-export type user_id = number & {__brand: "user_id"}
-export type user_online_id = user_id & {__brand2: "online"}
 
-export type TEMP_USER_ID = '#'
-export type TEMP_CHAR_ID = '@' 
 
 export class UserData {
     id: user_id
@@ -38,6 +34,7 @@ export class RequiredUpdates {
     stash: boolean;
     inventory: boolean;
     character_created: boolean
+
     all_skills: boolean
     cooking: boolean
     cook_elo: boolean
@@ -97,12 +94,14 @@ export class User {
     updates: update_flags
     logged_in: boolean
     character_created: boolean
+    market_update: boolean
 
     constructor(socket: Socket, data: UserData) {
         this.socket = socket
         this.data = data
         this.logged_in = false
         this.character_created = false
+        this.market_update = false
         this.updates = Update.construct()
     }
 }
