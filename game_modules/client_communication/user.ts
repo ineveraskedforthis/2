@@ -1,5 +1,5 @@
 import { Socket } from "../../server";
-import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../id_types";
+import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
 import { Update, update_flags } from "./causality_graph";
 
 

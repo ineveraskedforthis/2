@@ -3,7 +3,7 @@ import { Archetype, CharacterFlags, InnateStats, Misc, Stats, Status } from "./c
 import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings, money } from "../inventories/savings";
-import { cell_id, char_id, TEMP_USER_ID, user_id } from "../../id_types";
+import { cell_id, char_id, TEMP_USER_ID, user_id } from "../../types";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 

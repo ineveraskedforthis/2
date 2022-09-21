@@ -1,4 +1,4 @@
-import { materials, RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
+import { materials, RAT_BONE, RAT_SKIN, WOOD } from "../../manager_classes/materials_manager";
 import {ArmourConstructorArgument, ARMOUR_TYPE, IMPACT_SIZE, IMPACT_TYPE, ITEM_MATERIAL, SHAFT_LEGTH, WeaponConstructorArgument} from "./item_tags";
 
 export const BASIC_BOW_ARGUMENT: WeaponConstructorArgument = {

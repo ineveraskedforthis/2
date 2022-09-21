@@ -1,4 +1,4 @@
-import { user_id, user_online_id } from "../../id_types";
+import { user_id, user_online_id } from "../../types";
 import { SocketWrapper} from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
