@@ -6,7 +6,7 @@ export type user_id = number & {__brand: "user_id"}
 export type user_online_id = user_id & {__brand2: "online"}
 
 export type TEMP_USER_ID = '#'
-export type TEMP_CHAR_ID = '@'
+export type TEMP_CHAR_ID = '@' 
 
 export class UserData {
     id: user_id

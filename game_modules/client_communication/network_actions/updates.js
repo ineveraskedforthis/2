@@ -13,6 +13,7 @@ var SendUpdate;
         stash(user);
         equip(user);
         all_skills(user);
+        all_craft(user);
     }
     SendUpdate.all = all;
     function savings(user) {
@@ -62,35 +63,48 @@ var SendUpdate;
         if (character == undefined)
             return;
         alerts_1.Alerts.skill(user, 'cooking', character.skills.cooking);
-        alerts_1.Alerts.craft(user, 'cook_meat', craft_1.CraftProbability.meat_to_food(character));
     }
     SendUpdate.skill_cooking = skill_cooking;
-    function cook_elo(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        alerts_1.Alerts.craft(user, 'cook_elodin', craft_1.CraftProbability.elo_to_food(character));
-    }
-    SendUpdate.cook_elo = cook_elo;
-    function woodwork(user) {
+    function skill_woodwork(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
         alerts_1.Alerts.skill(user, 'woodwork', character.skills.woodwork);
+    }
+    SendUpdate.skill_woodwork = skill_woodwork;
+    function all_skills(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        for (let i in character.skills) {
+            alerts_1.Alerts.skill(user, i, character.skills[i]);
+        }
+    }
+    SendUpdate.all_skills = all_skills;
+    function all_craft(user) {
+        cooking_craft(user);
+        woodwork_craft(user);
+    }
+    SendUpdate.all_craft = all_craft;
+    function cooking_craft(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.craft(user, 'cook_elodin', craft_1.CraftProbability.elo_to_food(character));
+        alerts_1.Alerts.craft(user, 'cook_meat', craft_1.CraftProbability.meat_to_food(character));
+    }
+    SendUpdate.cooking_craft = cooking_craft;
+    function woodwork_craft(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
         let value = craft_1.CraftProbability.basic_wood(character);
         alerts_1.Alerts.craft(user, 'craft_spear', value);
         alerts_1.Alerts.craft(user, 'craft_bone_spear', value);
         alerts_1.Alerts.craft(user, 'craft_wood_bow', value);
         alerts_1.Alerts.craft(user, 'craft_bone_arrow', craft_1.CraftProbability.arrow(character));
     }
-    SendUpdate.woodwork = woodwork;
-    function all_skills(user) {
-        woodwork(user);
-        cook_elo(user);
-        skill_cooking(user);
-        skill_clothier(user);
-    }
-    SendUpdate.all_skills = all_skills;
+    SendUpdate.woodwork_craft = woodwork_craft;
     function ranged(user, distance) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
@@ -116,7 +130,7 @@ var SendUpdate;
 //     this.send_to_character_user(character, 'map-pos', data)
 // }
 // send_skills_info(character: Character) {
-//     this.send_to_character_user(character, 'skills', character.skills)
+//     
 //     this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
 //     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
 //     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})

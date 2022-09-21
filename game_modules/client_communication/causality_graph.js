@@ -3,15 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Update = void 0;
 const updates_1 = require("./network_actions/updates");
 const children = {
-    [0 /* UI_Part.ROOT */]: [8 /* UI_Part.COOKING_ELO */, 2 /* UI_Part.STATUS */, 6 /* UI_Part.SKILLS */, 5 /* UI_Part.INVENTORY */, 4 /* UI_Part.SAVINGS */, 3 /* UI_Part.STASH */],
+    [0 /* UI_Part.ROOT */]: [9 /* UI_Part.COOKING_CRAFT */, 2 /* UI_Part.STATUS */, 6 /* UI_Part.SKILLS */, 5 /* UI_Part.INVENTORY */, 4 /* UI_Part.SAVINGS */, 3 /* UI_Part.STASH */],
     [1 /* UI_Part.HP */]: [],
     [2 /* UI_Part.STATUS */]: [1 /* UI_Part.HP */],
     [3 /* UI_Part.STASH */]: [],
     [4 /* UI_Part.SAVINGS */]: [],
     [5 /* UI_Part.INVENTORY */]: [],
-    [6 /* UI_Part.SKILLS */]: [7 /* UI_Part.COOKING_SKILL */],
-    [7 /* UI_Part.COOKING_SKILL */]: [],
-    [8 /* UI_Part.COOKING_ELO */]: []
+    [6 /* UI_Part.SKILLS */]: [8 /* UI_Part.COOKING_SKILL */],
+    [7 /* UI_Part.CRAFT */]: [9 /* UI_Part.COOKING_CRAFT */],
+    [8 /* UI_Part.COOKING_SKILL */]: [],
+    [9 /* UI_Part.COOKING_CRAFT */]: []
 };
 function empty_function(user) { }
 const update_function = {
@@ -22,8 +23,9 @@ const update_function = {
     [4 /* UI_Part.SAVINGS */]: updates_1.SendUpdate.savings,
     [5 /* UI_Part.INVENTORY */]: updates_1.SendUpdate.equip,
     [6 /* UI_Part.SKILLS */]: updates_1.SendUpdate.all_skills,
-    [7 /* UI_Part.COOKING_SKILL */]: updates_1.SendUpdate.skill_cooking,
-    [8 /* UI_Part.COOKING_ELO */]: updates_1.SendUpdate.cook_elo
+    [7 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
+    [8 /* UI_Part.COOKING_SKILL */]: updates_1.SendUpdate.skill_cooking,
+    [9 /* UI_Part.COOKING_CRAFT */]: updates_1.SendUpdate.cooking_craft
 };
 const influence = {
     [0 /* UI_Part.ROOT */]: [],
@@ -32,9 +34,10 @@ const influence = {
     [3 /* UI_Part.STASH */]: [],
     [4 /* UI_Part.SAVINGS */]: [],
     [5 /* UI_Part.INVENTORY */]: [],
-    [6 /* UI_Part.SKILLS */]: [],
-    [7 /* UI_Part.COOKING_SKILL */]: [8 /* UI_Part.COOKING_ELO */],
-    [8 /* UI_Part.COOKING_ELO */]: []
+    [6 /* UI_Part.SKILLS */]: [7 /* UI_Part.CRAFT */],
+    [7 /* UI_Part.CRAFT */]: [],
+    [8 /* UI_Part.COOKING_SKILL */]: [9 /* UI_Part.COOKING_CRAFT */],
+    [9 /* UI_Part.COOKING_CRAFT */]: []
 };
 // if node: ask to update node and leave
 // else: try updating children
@@ -90,8 +93,9 @@ var Update;
             [4 /* UI_Part.SAVINGS */]: false,
             [5 /* UI_Part.INVENTORY */]: false,
             [6 /* UI_Part.SKILLS */]: false,
-            [7 /* UI_Part.COOKING_SKILL */]: false,
-            [8 /* UI_Part.COOKING_ELO */]: false,
+            [8 /* UI_Part.COOKING_SKILL */]: false,
+            [9 /* UI_Part.COOKING_CRAFT */]: false,
+            [7 /* UI_Part.CRAFT */]: false,
         };
     }
     Update.construct = construct;

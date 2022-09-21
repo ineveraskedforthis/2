@@ -1,6 +1,5 @@
 import { User } from "./user"
 import { SendUpdate } from "./network_actions/updates";
-import { updateLanguageServiceSourceFile } from "typescript";
 
 
 type mask = number & {__brand: 'mask'}
@@ -10,19 +9,20 @@ type mask = number & {__brand: 'mask'}
 // but they will add even more boilerplate......................
 
 const enum UI_Part {
-    ROOT, HP, STATUS, STASH, SAVINGS, INVENTORY, SKILLS, COOKING_SKILL, COOKING_ELO, 
+    ROOT, HP, STATUS, STASH, SAVINGS, INVENTORY, SKILLS, CRAFT, COOKING_SKILL, COOKING_CRAFT, 
 }
 
 const children:{[_ in UI_Part]: UI_Part[]} = {
-    [UI_Part.ROOT]              : [UI_Part.COOKING_ELO, UI_Part.STATUS, UI_Part.SKILLS, UI_Part.INVENTORY, UI_Part.SAVINGS, UI_Part.STASH],
+    [UI_Part.ROOT]              : [UI_Part.COOKING_CRAFT, UI_Part.STATUS, UI_Part.SKILLS, UI_Part.INVENTORY, UI_Part.SAVINGS, UI_Part.STASH],
     [UI_Part.HP]                : [],
     [UI_Part.STATUS]            : [UI_Part.HP],
     [UI_Part.STASH]             : [],
     [UI_Part.SAVINGS]           : [],
     [UI_Part.INVENTORY]         : [],
     [UI_Part.SKILLS]            : [UI_Part.COOKING_SKILL],
+    [UI_Part.CRAFT]             : [UI_Part.COOKING_CRAFT],
     [UI_Part.COOKING_SKILL]     : [],
-    [UI_Part.COOKING_ELO]       : []
+    [UI_Part.COOKING_CRAFT]     : []
 }
 
 function empty_function(user: User) {}
@@ -35,8 +35,9 @@ const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
     [UI_Part.SAVINGS]           : SendUpdate.savings,
     [UI_Part.INVENTORY]         : SendUpdate.equip,
     [UI_Part.SKILLS]            : SendUpdate.all_skills,
+    [UI_Part.CRAFT]             : SendUpdate.all_craft,
     [UI_Part.COOKING_SKILL]     : SendUpdate.skill_cooking,
-    [UI_Part.COOKING_ELO]       : SendUpdate.cook_elo
+    [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft
 }
 
 const influence:{[_ in UI_Part]: UI_Part[]} = {
@@ -46,9 +47,10 @@ const influence:{[_ in UI_Part]: UI_Part[]} = {
     [UI_Part.STASH]             : [],
     [UI_Part.SAVINGS]           : [],
     [UI_Part.INVENTORY]         : [],
-    [UI_Part.SKILLS]            : [],
-    [UI_Part.COOKING_SKILL]     : [UI_Part.COOKING_ELO],
-    [UI_Part.COOKING_ELO]       : []
+    [UI_Part.SKILLS]            : [UI_Part.CRAFT],
+    [UI_Part.CRAFT]             : [],
+    [UI_Part.COOKING_SKILL]     : [UI_Part.COOKING_CRAFT],
+    [UI_Part.COOKING_CRAFT]     : []
 }
 
 export type update_flags = {[_ in UI_Part]: boolean} 
@@ -103,7 +105,8 @@ export namespace Update {
             [UI_Part.INVENTORY]         : false,
             [UI_Part.SKILLS]            : false,
             [UI_Part.COOKING_SKILL]     : false,
-            [UI_Part.COOKING_ELO]       : false,
+            [UI_Part.COOKING_CRAFT]     : false,
+            [UI_Part.CRAFT]             : false,
         }
     }
 }

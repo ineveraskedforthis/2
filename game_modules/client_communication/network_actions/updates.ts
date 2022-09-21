@@ -1,8 +1,11 @@
 import { Accuracy } from "../../base_game_classes/battle/battle_calcs";
 import { CraftProbability } from "../../base_game_classes/character/craft";
+import { SkillList } from "../../base_game_classes/character/skills";
 import { Convert } from "../../systems_communication";
 import { User, user_id } from "../user";
 import { Alerts } from "./alerts";
+
+
 
 export namespace SendUpdate {
     export function all(user: User) {
@@ -11,6 +14,7 @@ export namespace SendUpdate {
         stash(user)
         equip(user)
         all_skills(user)
+        all_craft(user)
     }
 
     export function savings(user: User) {
@@ -58,35 +62,49 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.skill(user, 'cooking', character.skills.cooking)
-        Alerts.craft(user, 'cook_meat', CraftProbability.meat_to_food(character))
-        
+        Alerts.skill(user, 'cooking', character.skills.cooking)        
     }
 
-    export function cook_elo(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
-
-        Alerts.craft(user, 'cook_elodin', CraftProbability.elo_to_food(character))
-    }
-
-    export function woodwork(user: User) {
+    export function skill_woodwork(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
         Alerts.skill(user, 'woodwork', character.skills.woodwork)
+    }
+
+    export function all_skills(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        for (let i in character.skills) {
+            Alerts.skill(user, i, character.skills[i as keyof SkillList])
+        }        
+    }
+
+    export function all_craft(user: User) {
+        cooking_craft(user)
+        woodwork_craft(user)
+    }
+
+
+
+    export function cooking_craft(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.craft(user, 'cook_elodin', CraftProbability.elo_to_food(character))
+        Alerts.craft(user, 'cook_meat', CraftProbability.meat_to_food(character))
+    }
+
+    export function woodwork_craft(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
         let value = CraftProbability.basic_wood(character)
         Alerts.craft(user, 'craft_spear',       value)
         Alerts.craft(user, 'craft_bone_spear',  value)
         Alerts.craft(user, 'craft_wood_bow',    value)
         Alerts.craft(user, 'craft_bone_arrow', CraftProbability.arrow(character))
-    }
-
-    export function all_skills(user: User) {
-        woodwork(user)
-        cook_elo(user)
-        skill_cooking(user)
-        skill_clothier(user)
     }
 
     export function ranged(user: User, distance: number) {
@@ -117,7 +135,7 @@ export namespace SendUpdate {
     // }
 
     // send_skills_info(character: Character) {
-    //     this.send_to_character_user(character, 'skills', character.skills)
+    //     
        
 
     //     this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
