@@ -1,9 +1,10 @@
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { SendUpdate } from "./client_communication/network_actions/updates";
-import { User, UserData, user_online_id } from "./client_communication/user";
+import { User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { Cell } from "./map/cell";
+import { user_online_id } from "./types";
 
 
 export namespace Convert {
@@ -45,7 +46,8 @@ export namespace Link {
 
 export namespace Unlink {
     export function character_and_cell(character: Character, cell: Cell) {
-
+        character.cell_id = cell.id
+        
     }
 }
     enter(char: Character) {

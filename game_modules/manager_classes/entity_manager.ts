@@ -60,57 +60,6 @@ export class EntityManager {
         await this.clear_dead_orders(pool);
     }
 
-    async init_cells(pool: PgPool) {
-        let data: {[_ in string]: any} = this.world.constants.development 
-        let data_res: {[_ in string]: any} = this.world.constants.resources
-        for (var i = 0; i < this.world.x; i++) {
-            var tmp = []
-            for (var j = 0; j < this.world.y; j++) {
-                var cell = new Cell(this.world, this, i, j, '', data[i + '_' + j], data_res[i + '_' + j]);
-                await cell.init(pool);
-                tmp.push(cell);
-            }
-            this.cells.push(tmp);
-        }
-    }
-
-    async load_cells(pool: PgPool) {
-        for (let i = 0; i < this.world.x; i++) {
-            let tmp = []
-            for (let j = 0; j < this.world.y; j++) {
-                let cell = new Cell(this.world, this, i, j, '', {rural: 0, ruins:0, urban:0, wild: 0, wastelands: 0}, {water: false, prey: false, fish: false, forest: false});
-                tmp.push(cell);
-            }
-            this.cells.push(tmp);
-        }
-
-        for (let i = 0; i < this.world.x; i++) {
-            for (let j = 0; j < this.world.y; j++) {
-                await this.cells[i][j].load(pool);
-            }
-        }
-    }
-
-    get_cell(x: number, y: number) {
-        if (this.validate_cell(x, y)){
-            return this.cells[x][y];
-        }
-        return undefined
-    }
-
-    validate_cell(x: number, y: number) {
-        return (y >= 0) && (y < this.world.y) && (x >= 0) && (x < this.world.x)
-    }
-
-    get_cell_by_id(id: number) {
-        // console.log(id);
-        return this.get_cell(Math.floor(id / this.world.y), id % this.world.y);
-    }
-
-    get_cell_id_by_x_y(x: number, y: number) {
-        return x * this.world.y + y
-    }
-
     async load_characters(pool: PgPool) {
         let res = await common.send_query(pool, constants.load_chars_query);
         for (let i of res.rows) {

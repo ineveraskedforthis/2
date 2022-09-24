@@ -1,3 +1,11 @@
+import { world_dimensions } from "../types"
+
+
+export const WORLD_SIZE:world_dimensions = {
+    height: 27,
+    width: 27
+}
+
 export const STARTING_DEVELOPMENT = {
 
     // ########################

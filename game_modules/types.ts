@@ -18,3 +18,9 @@ export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'
 export type equip_slot = 'body'|'legs'|'arms'|'head'|'foot'|'weapon'
 export type armour_slot = 'body'|'legs'|'arms'|'head'|'foot'
 export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
+
+
+export interface world_dimensions {
+    height: number
+    width: number
+}

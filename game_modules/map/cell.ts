@@ -1,10 +1,8 @@
 import { Character } from "../base_game_classes/character/character.js";
 import { CharacterSystem } from "../base_game_classes/character/system.js";
-import { char_id, market_order_id } from "../types.js";
+import { cell_id, char_id, order_bulk_id, order_item_id} from "../types.js";
 import { material_index } from "../manager_classes/materials_manager.js";
 import { constants} from "../static_data/constants.js";
-import { PgPool, World } from "../world.js";
-
 
 interface Development {
     rural: 0|1|2|3;
@@ -29,39 +27,31 @@ interface Actions {
 }
 
 export class Cell {
+    x: number;
+    y: number;
+    id: cell_id;
 
-    world: World;
-    map:any;
-    i: number;
-    j: number;
-    id: number;
-    tag: string;
     name: string;
 
-    market_id: number;
-    item_market_id: number;
     visited_recently: boolean;
     last_visit: number
 
     development: Development;
     resources: CellResources;
     characters_set: Set<char_id>
-    orders: Set<market_order_id>
+    orders_bulk: Set<order_bulk_id>
+    orders_item: Set<order_item_id>
 
-    constructor(world: any, map: any, i: number, j:number, name:string, development: Development, res: CellResources) {
-        this.world = world;
-        this.map = map;
-        this.i = i;
-        this.j = j;
-        this.id = world.get_cell_id_by_x_y(i, j);
-        this.tag = 'cell';
+    constructor(id: cell_id, x: number, y:number, name:string, development: Development, res: CellResources) {
+        this.id = id
+        this.x = x
+        this.y = y
+
         this.name = name;
         this.visited_recently = false;
         this.last_visit = 0;
-        this.market_id = -1
-        this.item_market_id = -1
-        this.orders = new Set()
-
+        this.orders_bulk = new Set()
+        this.orders_item = new Set()
         this.characters_set = new Set()
 
         if (development == undefined) {
@@ -78,7 +68,7 @@ export class Cell {
     }
 
 
-    get_characters_set(): {id: char_id, name:string}[] {
+    get_characters_list(): {id: char_id, name:string}[] {
         let result = []
         for (let item of this.characters_set.values()) {
             let character = CharacterSystem.id_to_character(item)
