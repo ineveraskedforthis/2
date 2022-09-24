@@ -1,12 +1,24 @@
 import { world_dimensions } from "../types"
 
-
-export const WORLD_SIZE:world_dimensions = {
-    height: 27,
-    width: 27
+export interface Development {
+    rural: 0|1|2|3;
+    urban: 0|1|2|3;
+    wild: 0|1|2|3;
+    ruins: 0|1|2|3;
+    wastelands: 0|1|2|3;
+    rupture?: 0|1
 }
 
-export const STARTING_DEVELOPMENT = {
+export interface CellResources {
+    water: boolean;
+    prey: boolean;
+    forest: boolean;
+    fish: boolean
+}
+
+export const WORLD_SIZE:world_dimensions = [27, 27]
+
+export const STARTING_DEVELOPMENT: {[_ in string]: Development} = {
 
     // ########################
     // ######## IT'H ##########
@@ -131,7 +143,7 @@ export const STARTING_TERRAIN =
 //     'north_rat_coast': 'red_steppe'
 // },
 
-export const STARTING_RESOURCES = {
+export const STARTING_RESOURCES: {[_ in string]: CellResources} = {
     //coast colony
     '3_2': {water: true, prey: false, forest: false, fish: true},
     '2_2': {water: true, prey: false, forest: false, fish: true},

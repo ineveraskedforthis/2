@@ -20,7 +20,4 @@ export type armour_slot = 'body'|'legs'|'arms'|'head'|'foot'
 export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
 
 
-export interface world_dimensions {
-    height: number
-    width: number
-}
+export type world_dimensions = [number, number]

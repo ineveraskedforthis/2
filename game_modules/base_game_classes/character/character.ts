@@ -5,7 +5,7 @@ import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { cell_id, char_id, money, TEMP_USER_ID, user_id } from "../../types";
 
-let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
+
 
 export class Character {
     id: char_id;

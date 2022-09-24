@@ -1,10 +1,11 @@
 import { OrderItemSocketData } from "../../shared/market_order_data";
 import { Character } from "../base_game_classes/character/character";
 import { CharacterSystem } from "../base_game_classes/character/system";
+import { Stash } from "../base_game_classes/inventories/stash";
 import { Item } from "../base_game_classes/items/item";
 import { ItemSystem } from "../base_game_classes/items/system"
 import { material_index } from "../manager_classes/materials_manager";
-import { cell_id, money, order_bulk_id, order_item_id } from "../types";
+import { money, order_bulk_id, order_item_id } from "../types";
 import { OrderBulk, OrderItem, OrderItemJson } from "./classes";
 
 var orders_bulk:OrderBulk[] = []
@@ -22,6 +23,8 @@ enum AuctionResponce {
 }
 
 
+const empty_stash = new Stash()
+
 // this file does not handle networking
 
 
@@ -34,10 +37,83 @@ export namespace BulkOrders {
 
     }
 
+    // does not shadow resources, shadowing happens in create_type_order functions
     export function create(amount: number, price: money, typ:'sell'|'buy', tag: material_index, owner: Character) {
         last_id_bulk = last_id_bulk + 1
         let order = new OrderBulk(last_id_bulk as order_bulk_id, amount, price, typ, tag, owner.id)
         orders_bulk[last_id_bulk] = order        
+        return order
+    }
+
+    export function id_to_order(id: order_bulk_id): OrderBulk {
+        return orders_bulk[id]
+    }
+
+    export function execute_sell_order(id: order_bulk_id, amount: number, buyer: Character) {
+        const order = id_to_order(id)
+        const owner = CharacterSystem.id_to_character(order.owner_id)
+        const pay = amount * order.price as money
+
+        if (order.amount < amount)      return 'invalid_order' 
+        if (buyer.savings.get() < pay)  return 'not_enough_money'
+
+        const material = order.tag        
+
+        // shadow operations with imaginary items
+        order.amount -= amount;
+        const transaction_stash = new Stash()
+        transaction_stash.inc(material, amount)
+        CharacterSystem.to_trade_stash(owner, order.tag, -amount)
+
+        //actual transaction
+        CharacterSystem.transaction(owner, buyer, 
+                                    0 as money  , transaction_stash, 
+                                    pay         , empty_stash       )
+        return 'ok'        
+    }
+
+    export function execute_buy_order(id:order_bulk_id, amount: number, seller: Character) {
+        const order = id_to_order(id)
+        const owner = CharacterSystem.id_to_character(order.owner_id)
+        
+        if (order.amount < amount) return 'invalid_order'       
+        if (seller.stash.get(order.tag) < amount) return 'not_enough_items_in_stash'
+        
+        const pay = amount * order.price as money
+        const material = order.tag   
+
+        // shadow operations
+        order.amount -= amount;
+        const transaction_stash = new Stash()
+        transaction_stash.inc(material, amount)
+        CharacterSystem.to_trade_savings(owner, -pay as money)
+
+        //transaction
+        CharacterSystem.transaction(owner, seller,
+                                    pay          , empty_stash,
+                                    0 as money   , transaction_stash)
+        return 'ok'
+    }
+
+    export function new_buy_order(material: material_index, amount: number, price: money, owner: Character) {
+        //validation of input
+        if (price < 0) return 'invalid_price'
+        if (amount <= 0) return 'invalid_amount'
+        if (owner.savings.get() < price * amount) return 'not_enough_savings'
+
+        CharacterSystem.to_trade_savings(owner, amount * price as money)
+        const order = create(amount, price, 'buy', material, owner)
+        return order
+    }
+
+    export function new_sell_order(material: material_index, amount: number, price: money, owner: Character) {
+        //validation of input
+        if (price < 0) return 'invalid_price'
+        if (amount <= 0) return 'invalid_amount'
+        if (owner.stash.get(material) < amount) return 'not_enough_material'
+
+        CharacterSystem.to_trade_stash(owner, material, amount)
+        const order = create(amount, price, 'sell', material, owner)
         return order
     }
 }
