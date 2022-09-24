@@ -77,7 +77,7 @@ export namespace ItemOrders {
         const owner = CharacterSystem.id_to_character(order.owner_id)
 
         order.finished = true
-        owner.equip.add_item(order.item)
+        owner.equip.data.backpack.add(order.item)
         return AuctionResponce.OK
     }
 
@@ -127,7 +127,7 @@ export namespace ItemOrders {
     }
 
     export function sell(seller: Character, backpack_id: number, price: money){
-        const item = seller.equip.data.backpack.get_item[backpack_id]
+        const item = seller.equip.data.backpack.items[backpack_id]
         if (item == undefined) {
             return {responce: AuctionResponce.EMPTY_BACKPACK_SLOT}
         }
@@ -152,7 +152,7 @@ export namespace ItemOrders {
         
         order.finished = true
         buyer.savings.transfer(owner.savings, order.price)
-        buyer.equip.add_item(order.item)
+        buyer.equip.data.backpack.add(order.item)
 
         return AuctionResponce.OK
     }
@@ -165,38 +165,38 @@ export namespace ItemOrders {
 }
 
 
-export function cell_id_to_orders_list(manager: EntityManager, cell_id: number): OrderItem[] {
-    let tmp = []
-    for (let order of manager.item_orders) {
-        if (order == undefined) continue;
-        if (order.flags.finished) continue;
-        if (order.owner.cell_id == cell_id) {
-            tmp.push(order)
-        }
-    }
-    return tmp
-}
+// export function cell_id_to_orders_list(manager: EntityManager, cell_id: number): OrderItem[] {
+//     let tmp = []
+//     for (let order of manager.item_orders) {
+//         if (order == undefined) continue;
+//         if (order.flags.finished) continue;
+//         if (order.owner.cell_id == cell_id) {
+//             tmp.push(order)
+//         }
+//     }
+//     return tmp
+// }
 
-export function cell_id_to_orders_socket_data_list(manager: EntityManager, cell_id: number): OrderItemSocketData[] {
-    let tmp = []
-    for (let order of manager.item_orders) {
-        if (order == undefined) continue;
-        if (order.flags.finished) continue;
-        if (order.owner.cell_id == cell_id) {
-            tmp.push(AuctionOrderManagement.order_to_socket_data(order))
-        }
-    }
-    return tmp
-}
+// export function cell_id_to_orders_socket_data_list(manager: EntityManager, cell_id: number): OrderItemSocketData[] {
+//     let tmp = []
+//     for (let order of manager.item_orders) {
+//         if (order == undefined) continue;
+//         if (order.flags.finished) continue;
+//         if (order.owner.cell_id == cell_id) {
+//             tmp.push(AuctionOrderManagement.order_to_socket_data(order))
+//         }
+//     }
+//     return tmp
+// }
 
-export function cell_id_to_orders_json_list(manager: EntityManager, cell_id: number): OrderItemJson[] {
-    let tmp = []
-    for (let order of manager.item_orders) {
-        if (order == undefined) continue;
-        if (order.flags.finished) continue;
-        if (order.owner.cell_id == cell_id) {
-            tmp.push(AuctionOrderManagement.order_to_json(order))
-        }
-    }
-    return tmp
-}
+// export function cell_id_to_orders_json_list(manager: EntityManager, cell_id: number): OrderItemJson[] {
+//     let tmp = []
+//     for (let order of manager.item_orders) {
+//         if (order == undefined) continue;
+//         if (order.flags.finished) continue;
+//         if (order.owner.cell_id == cell_id) {
+//             tmp.push(AuctionOrderManagement.order_to_json(order))
+//         }
+//     }
+//     return tmp
+// }

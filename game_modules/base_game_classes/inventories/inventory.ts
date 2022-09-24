@@ -36,6 +36,7 @@ export class Inventory{
         this.changed = true
     }
 
+
     get_json():{items_array: ItemJson[]}  {
         const array:ItemJson[] = []
         for (let i of this.items) {
