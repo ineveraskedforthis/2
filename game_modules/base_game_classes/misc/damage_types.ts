@@ -1,4 +1,4 @@
-export class DamageByTypeObject {
+export class Damage {
     blunt: number;
     pierce: number;
     slice: number;
@@ -10,12 +10,27 @@ export class DamageByTypeObject {
         this.fire = fire
     }
 
-    add_object(x: DamageByTypeObject):DamageByTypeObject {
+    add(x: Damage):Damage {
         this.blunt = this.blunt + x.blunt
         this.pierce = this.pierce + x.pierce
         this.slice = this.slice + x.slice
         this.fire = this.fire + x.fire
         return this
+    }
+    subtract(x: Damage):Damage {
+        this.blunt=     this.blunt - x.blunt,
+        this.pierce=    this.pierce - x.pierce,
+        this.slice=     this.slice - x.slice,
+        this.fire=      this.fire - x.fire
+        return this
+    }
+    copy():Damage {
+        return new Damage(
+            this.blunt,
+            this.pierce,
+            this.slice,
+            this.fire
+        )
     }
 }
 

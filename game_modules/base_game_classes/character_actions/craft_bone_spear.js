@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.craft_wood_bow = exports.craft_bone_arrow = exports.craft_bone_arrow_probability = exports.craft_bone_spear = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
-const items_set_up_1 = require("../../static_data/items_set_up");
+const items_set_up_1 = require("../items/items_set_up");
 const item_tags_1 = require("../../static_data/item_tags");
 const craft_spear_1 = require("./craft_spear");
 exports.craft_bone_spear = {

@@ -13,7 +13,7 @@ const market_items_1 = require("./market/market_items");
 const graci_1 = require("./base_game_classes/character/races/graci");
 const elo_1 = require("./base_game_classes/character/races/elo");
 const item_tags_1 = require("./static_data/item_tags");
-const items_set_up_1 = require("./static_data/items_set_up");
+const items_set_up_1 = require("./base_game_classes/items/items_set_up");
 const affix_1 = require("./base_game_classes/affix");
 // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // for (let i in loot_chance_weight) {

@@ -1,4 +1,4 @@
-import { DamageByTypeObject } from "../misc/damage_types";
+import { Damage } from "../misc/damage_types";
 
 export class Status {
     hp:number;
@@ -15,6 +15,8 @@ export class Status {
     }
 }
 
+export type status_type = 'hp'|'rage'|'blood'|'stress'|'fatigue'
+
 export interface Stats {
     phys_power: number
     magic_power: number
@@ -24,7 +26,7 @@ export interface Stats {
 export class InnateStats {
     max: Status;
     stats: Stats
-    base_resists: DamageByTypeObject;
+    base_resists: Damage;
     constructor(speed: number, phys: number, magic: number, max_hp: number) {
         this.max = new Status();
         this.max.hp = max_hp
@@ -33,7 +35,7 @@ export class InnateStats {
             phys_power: phys,
             magic_power: magic,
         }
-        this.base_resists = new DamageByTypeObject();
+        this.base_resists = new Damage();
     }
 }
 

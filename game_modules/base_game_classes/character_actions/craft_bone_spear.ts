@@ -1,6 +1,6 @@
 import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { ARROW_BONE, RAT_BONE, WOOD } from "../../manager_classes/materials_manager";
-import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT } from "../../static_data/items_set_up";
+import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT } from "../items/items_set_up";
 import { Weapon } from "../../static_data/item_tags";
 import { PgPool } from "../../world";
 import { Character } from "../character/character";

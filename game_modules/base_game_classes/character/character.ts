@@ -1,12 +1,11 @@
 import {Stash} from "../inventories/stash"
-import { Archetype, CharacterFlags, InnateStats, Misc, Stats, Status } from "./character_parts";
+import { Archetype, CharacterFlags, InnateStats, Misc, Stats, Status, status_type } from "./character_parts";
 import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { cell_id, char_id, money, TEMP_USER_ID, user_id } from "../../types";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
-
 
 export class Character {
     id: char_id;
@@ -72,6 +71,15 @@ export class Character {
 
     set_model_variation(data:any) {
         this.model_variation = data
+    }
+
+    change(type: status_type, x: number) {
+        let tmp = this.status[type];
+        let new_status = tmp + x 
+        new_status = Math.min(this.stats.max[type], new_status)
+        new_status = Math.max(new_status, 0)
+
+        this.status[type] = new_status
     }
 }
 
@@ -392,15 +400,7 @@ export class Character {
 //         }
 //     }
 
-//     change_stress(x: number) {
-//         let tmp = this.status.stress;
-//         this.status.stress = Math.max(0, Math.min(this.get_max_stress(), this.status.stress + x));
-//         if (tmp != this.status.stress) {
-//             this.changed = true
-//             this.status_changed = true;
-//             this.send_status_update()
-//         }
-//     }
+
 
 //     change_fatigue(x: number) {
 //         let tmp = this.status.fatigue;

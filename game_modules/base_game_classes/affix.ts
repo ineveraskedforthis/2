@@ -1,34 +1,38 @@
-import { Armour, IMPACT_TYPE, Weapon } from "../static_data/item_tags";
+// import { Armour, IMPACT_TYPE, Weapon } from "../static_data/item_tags";
 import { Character } from "./character/character";
+import { Item } from "./items/item";
 import { AttackResult } from "./misc/attack_result";
-import { DamageByTypeObject } from "./misc/damage_types";
+import { Damage } from "./misc/damage_types";
 
 export type affix_tag = 'of_heat'|'layered'|'sharp'|'heavy'|'hot'|'precise'|'of_power'|'of_madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'of_elodino_pleasure'|'of_graci_beauty'|'of_elder_beast'|'of_protection'|'of_painful_protection'
 
 export class affix{
     tag: affix_tag;
-    tier: number;
-    constructor(tag: affix_tag, tier: number) {
+    // tier: number;
+    constructor(tag: affix_tag) {
         this.tag = tag;
-        this.tier = tier;
+        // this.tier = tier;
     }
 }
 
-export function get_potential_affix_weapon(enchant_rating:number, item:Weapon):{tag: affix_tag, weight: number}[] {
+export function get_potential_affix_weapon(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []
-    potential_affix.push({tag: 'hot', weight: 1})
-    potential_affix.push({tag: 'of_power', weight: 1})
-    if ((item.impact_type == IMPACT_TYPE.POINT) || (item.impact_type == IMPACT_TYPE.EDGE)) {
+    
+    // checking for phys damage mods
+    if ((item.damage.pierce > 0) || (item.damage.slice > 0)) {
         potential_affix.push({tag: 'sharp', weight: 10})
-    }
-    if ((item.impact_type == IMPACT_TYPE.EDGE)||(item.impact_type == IMPACT_TYPE.HEAD)){
-        potential_affix.push({tag: 'sharp', weight: 6})
-        potential_affix.push({tag: 'heavy', weight: 5})
         potential_affix.push({tag: 'notched', weight: 2})
     }
+    if ((item.damage.slice > 0) || (item.damage.blunt > 0)){
+        potential_affix.push({tag: 'heavy', weight: 5})
+    }
 
+    // adding universal mods
+    potential_affix.push({tag: 'hot', weight: 1})
+    potential_affix.push({tag: 'of_power', weight: 1})
     potential_affix.push({tag: 'precise', weight: 5})
 
+    // extra mods
     if (enchant_rating > 20) {
         potential_affix.push({tag: 'daemonic', weight: 1})
         potential_affix.push({tag: 'of_madness', weight: 1})
@@ -36,12 +40,12 @@ export function get_potential_affix_weapon(enchant_rating:number, item:Weapon):{
     return potential_affix
 }
 
-export function get_potential_affix_armour(enchant_rating:number, item:Armour):{tag: affix_tag, weight: number}[] {
+export function get_potential_affix_armour(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
     return [{tag: 'thick', weight: 10}, {tag: 'layered', weight: 10}, {tag: 'hard', weight: 10}, {tag: 'of_heat', weight: 3}, {tag: 'of_power', weight: 3}, {tag: 'of_protection', weight: 1}, {tag: 'of_painful_protection', weight: 1}]
 }
 
 
-export function enchant_item(enchant_rating: number, item: Weapon|Armour, potential_affix:{tag: affix_tag, weight: number}[]) {
+export function enchant_item(enchant_rating: number, item: Item, potential_affix:{tag: affix_tag, weight: number}[]) {
     // enchant success
     let current_affixes = item.affixes.length
     let difficulty = 10 * current_affixes * current_affixes
@@ -61,88 +65,117 @@ export function enchant_item(enchant_rating: number, item: Weapon|Armour, potent
     for (let aff of potential_affix) {
         current_weight = current_weight + aff.weight
         if (current_weight >= rolled_position) {
-            item.affixes.push(new affix(aff.tag, 1))
+            item.affixes.push(new affix(aff.tag))
             return 'ok'
         }
     }
     return '???'
 }
 
-export function roll_affix_weapon(enchant_rating:number, item:Weapon) {
+export function roll_affix_weapon(enchant_rating:number, item:Item) {
     let potential_affix = get_potential_affix_weapon(enchant_rating, item)
     return enchant_item(enchant_rating, item, potential_affix)
 }
 
-export function roll_affix_armour(enchant_rating:number, item:Armour) {
+export function roll_affix_armour(enchant_rating:number, item:Item) {
     let potential_affix = get_potential_affix_armour(enchant_rating, item)
     return enchant_item(enchant_rating, item, potential_affix)
 }
 
 
-type AttackModificationFunction = (result: AttackResult, tier: number) => AttackResult;
-type DamageModificationFunction = (result: DamageByTypeObject, tier: number) => DamageByTypeObject;
+type AttackModificationFunction = (result: AttackResult) => AttackResult;
+type DamageModificationFunction = (result: Damage) => Damage;
 
 
-function dummy_attack_mod(result: AttackResult, tier:number) {
+function dummy_attack_mod(result: AttackResult) {
     return result
 }
-function dummy_damage_mod(result: DamageByTypeObject, tier:number) {
+function dummy_damage_mod(result: Damage) {
     return result
 }
 
-export const damage_affixes_effects:{[_ in affix_tag]: AttackModificationFunction} = {
-        thick: dummy_attack_mod,
-        of_elodino_pleasure: dummy_attack_mod,
-        hard: dummy_attack_mod,
-        of_graci_beauty: dummy_attack_mod,
-        of_painful_protection: dummy_attack_mod,
-        of_elder_beast: dummy_attack_mod,
-        of_protection: dummy_attack_mod,
-        layered: dummy_attack_mod,
-        of_heat: dummy_attack_mod,
-        sharp: (result: AttackResult, tier: number) => {
-            result.damage.pierce += tier * 5;
-            result.damage.slice += tier * 5
-            return result
-        },
-        heavy: (result: AttackResult, tier: number) => {
-            result.damage.blunt += tier * 5;
-            return result
-        },
-        hot: (result: AttackResult, tier: number) => {
-            result.damage.fire += tier * 10
-            return result
-        },
-        precise: (result: AttackResult, tier: number) => {
-            result.chance_to_hit += tier * 0.02
-            return result
-        },
-        of_madness: (result: AttackResult, tier: number) => {
-            result.damage.blunt +=  20 * tier;
-            result.attacker_status_change.rage +=      2 * tier;
-            return result
-        },
-        calm: (result: AttackResult, tier: number) => {
-            result.attacker_status_change.rage +=     -1 * tier;
-            return result
-        },
-        daemonic: (result: AttackResult, tier: number) => {
-            result.damage.fire +=  300 * tier;
-            result.attacker_status_change.stress+=   90;
-            result.attacker_status_change.rage +=    100;
-            return result
-        },
-        notched: (result: AttackResult, tier: number) => {
-            result.damage.pierce +=  7 * tier;
-            result.damage.slice +=   7 * tier;
-            result.attacker_status_change.blood +=     2 * tier;
-            return result
-        },
-        of_power: (result: AttackResult, tier: number) => {
-            result.damage.blunt += 1 * tier;
-            return result
-        }
+export const attack_affixes_effects:{[_ in affix_tag]: AttackModificationFunction} = {
+    thick: dummy_attack_mod,
+    of_elodino_pleasure: dummy_attack_mod,
+    hard: dummy_attack_mod,
+    of_graci_beauty: dummy_attack_mod,
+    of_painful_protection: dummy_attack_mod,
+    of_elder_beast: dummy_attack_mod,
+    of_protection: dummy_attack_mod,
+    layered: dummy_attack_mod,
+    of_heat: dummy_attack_mod,
+    sharp: dummy_attack_mod,
+    heavy: dummy_attack_mod,
+    hot: dummy_attack_mod,
+    precise: (result: AttackResult) => {
+        result.chance_to_hit += 0.02
+        return result
+    },
+    of_madness: (result: AttackResult) => {
+        result.attacker_status_change.rage +=      2 ;
+        return result
+    },
+    calm: (result: AttackResult) => {
+        result.attacker_status_change.rage +=     -1 ;
+        return result
+    },
+    daemonic: (result: AttackResult) => {
+        result.attacker_status_change.stress+=   90;
+        result.attacker_status_change.rage +=    100;
+        return result
+    },
+    notched: (result: AttackResult) => {
+        result.attacker_status_change.blood += 2;
+        result.defender_status_change.blood += 2
+        return result
+    },
+    of_power: dummy_attack_mod
+}
+
+export const damage_affixes_effects:{[_ in affix_tag]: DamageModificationFunction} = {
+    thick: dummy_damage_mod,
+    of_elodino_pleasure: dummy_damage_mod,
+    hard: dummy_damage_mod,
+    of_graci_beauty: dummy_damage_mod,
+    of_painful_protection: dummy_damage_mod,
+    of_elder_beast: dummy_damage_mod,
+    of_protection: dummy_damage_mod,
+    layered: dummy_damage_mod,
+    of_heat: dummy_damage_mod,
+    sharp: (damage: Damage) => {
+        damage.pierce += 5;
+        damage.slice += 5
+        return damage
+    },
+    heavy: (damage: Damage) => {
+        damage.blunt += 5;
+        return damage
+    },
+    hot: (damage: Damage) => {
+        damage.fire += 10
+        return damage
+    },
+    precise: dummy_damage_mod,
+    of_madness: (damage: Damage) => {
+        damage.slice +=  20;
+        return damage
+    },
+    calm: dummy_damage_mod,
+    daemonic: (damage: Damage) => {
+        damage.fire +=  300;
+        return damage
+    },
+    notched: (damage: Damage) => {
+        damage.pierce +=  7 ;
+        damage.slice +=   7 ;
+        return damage
+    },
+    of_power: (damage: Damage) => {
+        damage.fire += 1;
+        return damage
     }
+}
+
 
 
 
@@ -155,96 +188,96 @@ export const protection_affixes_effects:{[_ in affix_tag]: DamageModificationFun
         precise: dummy_damage_mod,
         of_madness: dummy_damage_mod,
         calm: dummy_damage_mod,
-        thick: (resists: DamageByTypeObject, tier: number) => {
-            resists.pierce += tier * 1;
-            resists.slice += tier * 2;
+        thick: (resists: Damage) => {
+            resists.pierce += 5;
+            resists.slice += 10;
             return resists;
         },
 
-        layered: (resists: DamageByTypeObject, tier: number) => {
-            resists.pierce += tier * 3;
+        layered: (resists: Damage) => {
+            resists.pierce += 10;
             return resists;
         },
 
-        of_heat: (resists: DamageByTypeObject, tier: number) => {
-            resists.fire += tier * 3;
+        of_heat: (resists: Damage) => {
+            resists.fire += 5;
             return resists;
         },
 
         of_power: dummy_damage_mod,
 
-        hard: (resists: DamageByTypeObject, tier: number) => {
-            resists.blunt += tier * 1;
-            resists.pierce += tier * 1;
-            resists.slice += tier * 1;
+        hard: (resists: Damage) => {
+            resists.blunt += 3;
+            resists.pierce += 3;
+            resists.slice += 3;
             return resists
         },
 
-        of_elder_beast: (resists: DamageByTypeObject, tier: number) => {
-            resists.blunt +=      2 * tier;
-            resists.pierce +=     2 * tier;
-            resists.slice +=      2 * tier;
+        of_elder_beast: (resists: Damage) => {
+            resists.blunt +=      5 ;
+            resists.pierce +=     5 ;
+            resists.slice +=      5 ;
             return resists
         },
 
-        of_elodino_pleasure: (resists: DamageByTypeObject, tier: number) => {
-            resists.blunt +=     -2 * tier;
-            resists.pierce +=    -2 * tier;
-            resists.slice +=     -2 * tier;
-            resists.fire +=       -2 * tier;
+        of_elodino_pleasure: (resists: Damage) => {
+            resists.blunt +=     -2 ;
+            resists.pierce +=    -2 ;
+            resists.slice +=     -2 ;
+            resists.fire +=       -2 ;
             return resists
         },
 
-        of_protection: (resists: DamageByTypeObject, tier: number) => {
-            resists.blunt +=     +2 * tier;
-            resists.pierce +=    +2 * tier;
-            resists.slice +=     +2 * tier;
-            resists.fire +=       +2 * tier;
+        of_protection: (resists: Damage) => {
+            resists.blunt +=     +2 ;
+            resists.pierce +=    +2 ;
+            resists.slice +=     +2 ;
+            resists.fire +=       +2 ;
             return resists
         },
 
-        of_painful_protection: (resists: DamageByTypeObject, tier: number) => {
-            resists.blunt +=     +5 * tier;
-            resists.pierce +=    +5 * tier;
-            resists.slice +=     +5 * tier;
-            resists.fire +=       +5 * tier;
+        of_painful_protection: (resists: Damage) => {
+            resists.blunt +=     +5 ;
+            resists.pierce +=    +5 ;
+            resists.slice +=     +5 ;
+            resists.fire +=       +5 ;
             return resists
         },
 
         of_graci_beauty: dummy_damage_mod,
     }
 
-type power_modification = (data: number, tier: number) => number
+type power_modification = (data: number) => number
 
 export const get_power:{[_ in affix_tag]?: power_modification} = {
-        of_power: (data: number, tier: number) => {
-            data += tier * 2
+        of_power: (data: number) => {
+            data += 2
             return data
         }, 
-        of_elodino_pleasure: (data: number, tier: number) => {
-            data += tier * 4
+        of_elodino_pleasure: (data: number) => {
+            data += 4
             return data
         },
-        of_graci_beauty: (data: number, tier: number) => {
-            data += tier * 2
+        of_graci_beauty: (data: number) => {
+            data += 2
             return data
         }
     }
 
-type character_update_function = (agent: Character, tier: number) => void
+type character_update_function = (agent: Character) => void
 
 export const update_character:{[_ in affix_tag]?: character_update_function} = {
-        of_elder_beast: (agent: Character, tier: number) => {
-            agent.change_stress(5 * tier);
-            agent.change_rage(5 * tier);
-            agent.change_hp(1 * tier);
+        of_elder_beast: (agent: Character) => {
+            agent.change('stress', 5);
+            agent.change('rage', 5 );
+            agent.change('hp', 1 );
         },
 
-        of_graci_beauty: (agent: Character, tier: number) => {
-            agent.change_stress(1 * tier);
+        of_graci_beauty: (agent: Character) => {
+            agent.change('stress', 1);
         },
 
-        of_painful_protection: (agent: Character, tier: number) => {
-            agent.change_hp(-1 * tier);
+        of_painful_protection: (agent: Character) => {
+            agent.change('hp', -1);
         }
     }

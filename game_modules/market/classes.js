@@ -14,12 +14,13 @@ class OrderBulk {
 }
 exports.OrderBulk = OrderBulk;
 class OrderItem {
-    constructor(id, item, price, owner_id, finished) {
+    constructor(id, item, price, owner_id, cell_id, finished) {
         this.id = id;
+        this.owner_id = owner_id;
+        this.cell_id = cell_id;
         this.item = item;
         this.price = price;
         this.finished = finished;
-        this.owner_id = owner_id;
     }
 }
 exports.OrderItem = OrderItem;

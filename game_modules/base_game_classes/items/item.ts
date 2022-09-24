@@ -1,5 +1,17 @@
+import { equip_slot, weapon_tag } from "../../types"
 import { affix } from "../affix"
-import { equip_slot, ITEM_MATERIAL, weapon_tag } from "./item_tags"
+import { Damage } from "../misc/damage_types"
+
+export class ITEM_MATERIAL {
+    density: number
+    hardness: number
+    string_tag: string
+    constructor(density: number, hardness:number, string_tag: string) {
+        this.density = density
+        this.hardness = hardness
+        this.string_tag = string_tag
+    }
+}
 
 export class Item {
     durability: number
@@ -9,9 +21,10 @@ export class Item {
     weapon_tag: weapon_tag
     range: number
     model_tag: string
+    resists: Damage
+    damage: Damage
 
-
-    constructor(durability: number, affixes: affix[], slot: equip_slot, range: number, material:ITEM_MATERIAL, weapon_tag:weapon_tag, model_tag: string) {
+    constructor(durability: number, affixes: affix[], slot: equip_slot, range: number, material:ITEM_MATERIAL, weapon_tag:weapon_tag, model_tag: string, resists: Damage, damage: Damage) {
         this.durability = durability
         this.affixes = affixes
         this.slot = slot
@@ -19,6 +32,30 @@ export class Item {
         this.weapon_tag = weapon_tag
         this.model_tag = model_tag
         this.range = range
+        this.resists = resists
+        this.damage = damage
+    }
+
+    tag():string {
+        return this.model_tag
+    }
+
+    json():ItemJson {
+        return {
+            durability: this.durability,
+            affixes: this.affixes,
+            slot: this.slot,
+            material: this.material,
+            weapon_tag: this.weapon_tag,
+            model_tag: this.model_tag,
+            range: this.range,
+            resists: this.resists,
+            damage: this.damage
+        }
+    }
+
+    data():ItemData {
+        return {tag: this.tag(), affixes: this.affixes.length, affixes_list: this.affixes, item_type: this.slot}
     }
 }
 
@@ -28,11 +65,22 @@ export interface Itemlette {
 }
 
 
-export interface ItemDescription {
+export interface ItemJson {
     durability: number
     affixes: affix[]
     slot: equip_slot
     material: ITEM_MATERIAL
     weapon_tag: weapon_tag
     model_tag: string
+    resists: Damage
+    damage: Damage
+
+    range: number
+}
+
+export interface ItemData {
+    tag: string,
+    affixes: number
+    affixes_list: affix[]
+    item_type: equip_slot
 }

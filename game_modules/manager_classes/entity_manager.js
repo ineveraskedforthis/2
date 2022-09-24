@@ -8,7 +8,7 @@ const Faction = require('../base_game_classes/faction.js');
 const Quest = require('../base_game_classes/quest.js');
 const cell_1 = require("../map/cell");
 const character_1 = require("../base_game_classes/character/character");
-const market_order_1 = require("../market/market_order");
+const classes_1 = require("../market/classes");
 const battle_1 = require("../battle");
 const market_items_1 = require("../market/market_items");
 const rat_1 = require("../base_game_classes/character/races/rat");
@@ -99,7 +99,7 @@ class EntityManager {
     async load_orders(pool) {
         let res = await common.send_query(pool, constants_1.constants.load_orders_query);
         for (let i of res.rows) {
-            let order = new market_order_1.MarketOrder(this.world);
+            let order = new classes_1.MarketOrder(this.world);
             order.load_from_json(i);
             this.orders[order.id] = order;
             this.get_cell_by_id(order.cell_id)?.add_order(order.id);
@@ -253,7 +253,7 @@ class EntityManager {
         // leader.add_quest(quest, tag)
     }
     async generate_order(pool, typ, tag, owner, amount, price, cell_id) {
-        let order = new market_order_1.MarketOrder(this.world);
+        let order = new classes_1.MarketOrder(this.world);
         await order.init(pool, typ, tag, owner, amount, price, cell_id);
         this.orders[order.id] = order;
         this.get_cell_by_id(order.cell_id)?.add_order(order.id);

@@ -22,7 +22,7 @@ import { AuctionManagement, auction_order_id, nodb_mode_check, OrderItem } from 
 import { graci } from "./base_game_classes/character/races/graci";
 import { elo } from "./base_game_classes/character/races/elo";
 import { Weapon } from './static_data/item_tags';
-import { BONE_SPEAR_ARGUMENT } from './static_data/items_set_up';
+import { BONE_SPEAR_ARGUMENT } from './base_game_classes/items/items_set_up';
 import { affix } from './base_game_classes/affix';
 import { init_battle_control } from '../static/modules/battle_image_init';
 

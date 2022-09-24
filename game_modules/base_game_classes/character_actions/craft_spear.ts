@@ -3,7 +3,7 @@ import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
 import { WOOD } from "../../manager_classes/materials_manager";
-import { SPEAR_ARGUMENT } from "../../static_data/items_set_up";
+import { SPEAR_ARGUMENT } from "../items/items_set_up";
 import { PgPool } from "../../world";
 
 

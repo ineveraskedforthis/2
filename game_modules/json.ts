@@ -1,5 +1,5 @@
 import { CharacterSystem } from "./base_game_classes/character/system";
-import { MarketOrderBulk, MarketOrderBulkJson } from "./market/market_order";
+import { MarketOrderBulk, MarketOrderBulkJson } from "./market/classes";
 
 namespace JSONficate {
     export function market_order_bulk(order: MarketOrderBulk):MarketOrderBulkJson {

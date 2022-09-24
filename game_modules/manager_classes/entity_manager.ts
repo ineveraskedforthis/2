@@ -7,7 +7,7 @@ const Quest = require('../base_game_classes/quest.js')
 import { PgPool, World } from "../world";
 import {Cell} from '../map/cell'
 import { Character } from "../base_game_classes/character/character";
-import { MarketOrder, market_order_index } from "../market/market_order";
+import { MarketOrder, market_order_index } from "../market/classes";
 import { BattleReworked2 } from "../battle";
 import { ITEM_MATERIAL } from '../static_data/item_tags';
 import { material_index } from './materials_manager';

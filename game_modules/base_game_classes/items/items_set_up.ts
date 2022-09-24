@@ -1,85 +1,112 @@
 import { materials, RAT_BONE, RAT_SKIN, WOOD } from "../../manager_classes/materials_manager";
-import {ArmourConstructorArgument, ARMOUR_TYPE, IMPACT_SIZE, IMPACT_TYPE, ITEM_MATERIAL, SHAFT_LEGTH, WeaponConstructorArgument} from "./item_tags";
+import { equip_slot } from "../../types";
+import { Damage } from "../misc/damage_types";
+import { ItemJson, ITEM_MATERIAL } from "./item";
+import { ItemSystem } from "./system";
 
-export const BASIC_BOW_ARGUMENT: WeaponConstructorArgument = {
-    durability: 100,
-    shaft_material: materials.index_to_material(WOOD),
-    shaft_length: SHAFT_LEGTH.HAND,
-    impact_size: IMPACT_SIZE.SMALL,
-    impact_material: materials.index_to_material(WOOD),
-    impact_type: IMPACT_TYPE.HEAD,
-    impact_quality: 0,
-    affixes: [],
-    item_type: 'weapon',
-    ranged: true
+function base_resists(material: ITEM_MATERIAL, slot: equip_slot) {
+    const size = ItemSystem.size({slot: slot, weapon_tag: 'twohanded'})
+    const resists = new Damage(material.density, material.hardness * 2 * size, material.hardness * size, material.density)
+    return resists
 }
 
-export const SPEAR_ARGUMENT: WeaponConstructorArgument = {
+const wood = materials.index_to_material(WOOD)
+const skin = materials.index_to_material(RAT_SKIN)
+const empty_resists = new Damage()
+
+export const BASIC_BOW_ARGUMENT: ItemJson = {
     durability: 100,
-    shaft_length: SHAFT_LEGTH.LONG,
-    shaft_material: materials.index_to_material(WOOD), 
-    impact_size: IMPACT_SIZE.SMALL, 
-    impact_material: materials.index_to_material(WOOD), 
-    impact_type:IMPACT_TYPE.POINT, 
-    impact_quality: 50,
     affixes: [],
-    item_type: 'weapon'
+    slot: 'weapon',
+    material: wood,
+    weapon_tag: 'ranged',
+    model_tag: 'bow',
+    resists: empty_resists,
+    damage: new Damage(5, 0, 0),
+    range: 1
 }
 
-export const BONE_SPEAR_ARGUMENT: WeaponConstructorArgument = {
+export const SPEAR_ARGUMENT: ItemJson = {
     durability: 100,
-    shaft_length: SHAFT_LEGTH.LONG,
-    shaft_material: materials.index_to_material(WOOD), 
-    impact_size: IMPACT_SIZE.SMALL, 
-    impact_material: materials.index_to_material(RAT_BONE), 
-    impact_type:IMPACT_TYPE.POINT, 
-    impact_quality: 100,
     affixes: [],
-    item_type: 'weapon'
+    slot: 'weapon',
+    material: wood,
+    weapon_tag: 'polearms',
+    model_tag: 'spear',
+    resists: empty_resists,
+    damage: new Damage(2, 5, 1),
+    range: 2
 }
 
-export const RAT_SKIN_PANTS_ARGUMENT: ArmourConstructorArgument = {
+export const BONE_SPEAR_ARGUMENT: ItemJson = {
     durability: 100,
-    material: materials.index_to_material(RAT_SKIN),
-    type: ARMOUR_TYPE.LEGS,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'weapon',
+    material: wood,
+    weapon_tag: 'polearms',
+    model_tag: 'bone_spear',
+    resists: empty_resists,
+    damage: new Damage(2, 8, 3),
+    range: 2
 }
 
-export const RAT_SKIN_ARMOUR_ARGUMENT: ArmourConstructorArgument = {
+export const RAT_SKIN_PANTS_ARGUMENT: ItemJson = {
     durability: 100,
-    material: materials.index_to_material(RAT_SKIN),
-    type: ARMOUR_TYPE.BODY,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'legs',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_pants',
+    resists: base_resists(skin, 'legs'),
+    damage: new Damage(),
+    range: 1
 }
 
-export const RAT_SKIN_HELMET_ARGUMENT: ArmourConstructorArgument = {
+export const RAT_SKIN_ARMOUR_ARGUMENT: ItemJson = {
     durability: 100,
-    material: materials.index_to_material(RAT_SKIN),
-    type: ARMOUR_TYPE.HEAD,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'body',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_armour',
+    resists: base_resists(skin, 'body'),
+    damage: new Damage(),
+    range: 1
 }
 
-export const RAT_SKIN_BOOTS_ARGUMENT: ArmourConstructorArgument = {
+export const RAT_SKIN_HELMET_ARGUMENT: ItemJson = {
     durability: 100,
-    material: materials.index_to_material(RAT_SKIN),
-    type: ARMOUR_TYPE.FOOT,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'head',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_armour',
+    resists: base_resists(skin, 'head'),
+    damage: new Damage(),
+    range: 1
 }
 
-export const RAT_SKIN_GLOVES_ARGUMENT: ArmourConstructorArgument = {
+export const RAT_SKIN_BOOTS_ARGUMENT: ItemJson = {
     durability: 100,
-    material: materials.index_to_material(RAT_SKIN),
-    type: ARMOUR_TYPE.ARMS,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'foot',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_boots',
+    resists: base_resists(skin, 'foot'),
+    damage: new Damage(),
+    range: 1
+}
+
+export const RAT_SKIN_GLOVES_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'arms',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_gloves',
+    resists: base_resists(skin, 'arms'),
+    damage: new Damage(),
+    range: 1
 }
 

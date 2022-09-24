@@ -15,3 +15,8 @@ type savings_json = {
     prev_data: money,
     income: number
 }
+
+export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'
+export type equip_slot = 'body'|'legs'|'arms'|'head'|'foot'|'weapon'
+export type armour_slot = 'body'|'legs'|'arms'|'head'|'foot'
+export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']

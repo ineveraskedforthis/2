@@ -1,48 +1,63 @@
 import { ARROW_BONE } from "../../manager_classes/materials_manager";
-import { Armour, ARMOUR_TYPE, armour_types, base_damage, base_resist, ranged_base_damage, Weapon } from "../../static_data/item_tags";
 import { WEAPON_TYPE } from "../../static_data/type_script_types";
+import { armour_slot, armour_slots } from "../../types";
 import { damage_affixes_effects, get_power, protection_affixes_effects, update_character } from "../affix";
 import { Character } from "../character/character";
+import { Item, ItemJson } from "../items/item";
+import { ItemSystem } from "../items/system";
 import { AttackResult } from "../misc/attack_result";
-import { DamageByTypeObject } from "../misc/damage_types";
+import { Damage, damage_type } from "../misc/damage_types";
 import { Inventory } from "./inventory";
 
+interface EquipJson {
+    weapon?: ItemJson;
+    secondary?: ItemJson;
+    armour: {[_ in string]?: ItemJson};
+    backpack: {[_ in number]?: ItemJson};
+}
 
 class EquipData {
-    weapon: Weapon|undefined;
-    secondary: Weapon|undefined;
-    armour: Map<ARMOUR_TYPE, Armour|undefined>;
+    weapon?: Item;
+    secondary?: Item;
+    armour: {[_ in armour_slot]?: Item};
     backpack: Inventory
+
     constructor() {
+        // explicitly setting to undefined
         this.weapon = undefined
         this.secondary = undefined
-        this.armour = new Map<ARMOUR_TYPE, Armour|undefined>();
+        this.armour = {}
         this.backpack = new Inventory()
     }
-    get_json(){
-        let result:any = {}
-        result.weapon = this.weapon?.get_json()
-        result.secondary = this.secondary?.get_json()
-        result.armour = {}
-        for (let tag of this.armour.keys()) {
-            result.armour[tag] = this.armour.get(tag)?.get_json()
+
+    get_json(): EquipJson{
+        let result:EquipJson = {
+            weapon: this.weapon?.json(),
+            secondary: this.secondary?.json(),
+            armour: {},
+            backpack: {}
+        }
+        for (let tag of armour_slots) {
+            result.armour[tag] = this.armour[tag]?.json()
         }
         result.backpack = this.backpack.get_json()
         return result
     }
 
-    load_json(json:any){
+    load_json(json:EquipJson){
         if (json.weapon != undefined) {
-            this.weapon = new Weapon(json.weapon)
+                this.weapon                 = ItemSystem.create(json.weapon)
         }
         if (json.secondary != undefined) {
-            this.secondary = new Weapon(json.secondary)
+                this.secondary              = ItemSystem.create(json.secondary)
         }
-        for (let tag of armour_types) {
-            if (json.armour[tag] != undefined) {
-                this.armour.set(tag, new Armour(json.armour[tag]))
+        for (let tag of armour_slots) {
+            const tmp = json.armour[tag] 
+            if (tmp != undefined) {
+                this.armour[tag]            = ItemSystem.create(tmp)
             }            
         }
+
         this.backpack.load_from_json(json.backpack)
     }
 }
@@ -60,35 +75,56 @@ export class Equip {
     transfer_all(target: {equip: Equip}) {
         this.unequip_weapon()
         this.unequip_secondary()
-        for (let tag of this.data.armour.keys()) {
+        for (let tag of armour_slots) {
             this.unequip_armour(tag);
         }
         this.data.backpack.transfer_all(target)
     }
 
-    get_weapon_range(range:number) {
+
+    get_weapon_range(): undefined|number {
         let right_hand = this.data.weapon;
-        if (right_hand == undefined) {return range}
-        return right_hand.get_length();
+        if (right_hand == undefined) {return undefined}
+        return right_hand.range;
     }
 
-    get_weapon_damage(result:AttackResult, is_ranged: boolean) {
-        let right_hand = this.data.weapon;
+    get_melee_damage(type: damage_type): Damage|undefined {
+        const damage = new Damage()
+        const item = this.data.weapon;
+
+        if (item == undefined) return undefined
+
+        // calculating base damage of item
+        switch(type) {
+            case 'blunt': {damage.blunt = ItemSystem.weight(item) * item.damage.blunt; break}
+            case 'pierce': {damage.pierce = ItemSystem.weight(item) * item.damage.pierce; break}
+            case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice; break}
+        }
+        damage.fire = item.damage.fire
+
+        // summing up all affixes
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
+            damage = damage_affixes_effects[affix.tag](damage);
+        }
+
+        return damage
+    }
+
+    get_ranged_damage() {
+        const damage = new Damage()
+        if (this.data.weapon?.weapon_tag == 'ranged') {
+            damage.pierce = 10
+            return damage
+        }
+
         
-        if (right_hand != undefined){
-            if (is_ranged) {
-                result.weapon_type = WEAPON_TYPE.RANGED
-                result = ranged_base_damage(result, ARROW_BONE)
-            } else {
-                result.weapon_type = right_hand.get_weapon_type()
-                result = base_damage(result, right_hand)
-            }            
-            for (let i = 0; i < right_hand.affixes.length; i++) {
-                let affix = right_hand.affixes[i];
-                result = damage_affixes_effects[affix.tag](result, affix.tier);
-            }
-        } else {
-            result.damage.blunt += 5
+
+        if (this.data.weapon != undefined) {
+            
+            result = ranged_base_damage(result, ARROW_BONE)
+            result.weapon_type = 'ranged'
+            return result
         }
         return result
     }
@@ -108,7 +144,7 @@ export class Equip {
         return result;
     }
 
-    get_item_resists(item:Armour|undefined, resists:DamageByTypeObject) {
+    get_item_resists(item:Item|undefined, resists:DamageByTypeObject) {
         if (item == undefined) {return resists}
         resists = base_resist(resists, item)
         for (let i = 0; i < item.affixes.length; i++) {

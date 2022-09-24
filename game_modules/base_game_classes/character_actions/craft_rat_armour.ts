@@ -3,7 +3,7 @@ import { CharacterActionResponce } from "../../manager_classes/action_manager";
 import { Armour, ArmourConstructorArgument, Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
 import { RAT_SKIN } from "../../manager_classes/materials_manager";
-import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../static_data/items_set_up";
+import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../items/items_set_up";
 import { PgPool } from "../../world";
 
 

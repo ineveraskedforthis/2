@@ -3,7 +3,7 @@ import { CraftProbability } from "../../base_game_classes/character/craft";
 import { SkillList } from "../../base_game_classes/character/skills";
 import { CharacterSystem } from "../../base_game_classes/character/system";
 import { Cell } from "../../map/cell";
-import { MarketOrderBulkJson } from "../../market/market_order";
+import { MarketOrderBulkJson } from "../../market/classes";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";
 import { Alerts } from "./alerts";
