@@ -1,7 +1,5 @@
-import { materials, MaterialsManager, material_index } from "../../manager_classes/materials_manager";
-import { ITEM_MATERIAL } from "../../static_data/item_tags";
+import { materials, material_index } from "../../manager_classes/materials_manager";
 import type {StashData} from "../../static_data/type_script_types"
-
 
 export class Stash {
     // data: {[key: material_index]: number};

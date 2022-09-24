@@ -1,5 +1,5 @@
-import { get_power, protection_affixes_effects } from "../affix";
-import { Damage } from "../misc/damage_types";
+import { damage_affixes_effects, get_power, protection_affixes_effects } from "../affix";
+import { Damage, damage_type } from "../misc/damage_types";
 import { Item, ItemJson, Itemlette } from "./item";
 
 const empty_resists = new Damage()
@@ -54,6 +54,38 @@ export namespace ItemSystem {
             }
         }
         return result;
+    }
+
+    export function melee_damage(item: Item, type: damage_type) {
+        // calculating base damage of item
+        let damage = new Damage()
+        switch(type) {
+            case 'blunt': {damage.blunt = ItemSystem.weight(item) * item.damage.blunt; break}
+            case 'pierce': {damage.pierce = ItemSystem.weight(item) * item.damage.pierce; break}
+            case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice; break}
+        }
+        damage.fire = item.damage.fire
+
+        // summing up all affixes
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
+            damage = damage_affixes_effects[affix.tag](damage);
+        }
+
+        return damage
+    }
+
+    export function ranged_damage(weapon: Item): Damage {
+        const damage = new Damage()
+        if (weapon?.weapon_tag == 'ranged') {
+            damage.pierce = 10
+            return damage
+        }
+
+        damage.blunt = weight(weapon) * weapon.damage.blunt
+        damage.pierce = weight(weapon) * weapon.damage.pierce
+        damage.slice = weight(weapon) * weapon.damage.slice
+        return damage
     }
 
     export function resists(item:Item|undefined) {

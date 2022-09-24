@@ -91,42 +91,14 @@ export class Equip {
     get_melee_damage(type: damage_type): Damage|undefined {
         let damage = new Damage()
         const item = this.data.weapon;
-
         if (item == undefined) return undefined
-
-        // calculating base damage of item
-        switch(type) {
-            case 'blunt': {damage.blunt = ItemSystem.weight(item) * item.damage.blunt; break}
-            case 'pierce': {damage.pierce = ItemSystem.weight(item) * item.damage.pierce; break}
-            case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice; break}
-        }
-        damage.fire = item.damage.fire
-
-        // summing up all affixes
-        for (let i = 0; i < item.affixes.length; i++) {
-            let affix = item.affixes[i];
-            damage = damage_affixes_effects[affix.tag](damage);
-        }
-
-        return damage
+        return ItemSystem.melee_damage(item, type)
     }
 
     get_ranged_damage(): Damage|undefined {
-        const damage = new Damage()
-        const weapon = this.data.weapon
-        if (weapon?.weapon_tag == 'ranged') {
-            damage.pierce = 10
-            return damage
-        }
-
-        if (weapon != undefined) {
-            damage.blunt = ItemSystem.weight(weapon) * weapon.damage.blunt
-            damage.pierce = ItemSystem.weight(weapon) * weapon.damage.pierce
-            damage.slice = ItemSystem.weight(weapon) * weapon.damage.slice
-            return damage
-        }
-
-        return undefined
+        let weapon = this.data.weapon
+        if (weapon == undefined) return undefined
+        return ItemSystem.ranged_damage(weapon)
     }
 
     get_magic_power() {

@@ -10,10 +10,8 @@ export type order_item_id_raw = number      & { __brand: "auction_order_id", __b
 
 export type money = number & { __brand: "money"}
 
-type savings_json = {
-    data: money,
-    prev_data: money,
-    income: number
+export interface SavingsJson {
+    data: money
 }
 
 export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'

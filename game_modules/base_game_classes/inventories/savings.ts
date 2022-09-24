@@ -1,21 +1,17 @@
+import { money, SavingsJson } from "../../types";
+
 export class Savings {
     data: money
-    prev_data: money
-    income: number;
     changed: boolean
 
     constructor() {
         this.data = 0 as money;
-        this.prev_data = 0 as money;
-        this.income = 0;
         this.changed = false
     }
 
-    get_json():savings_json {
+    json():SavingsJson {
         var tmp = {
             data: this.data,
-            prev_data: this.prev_data,
-            income: this.income
         };
         return tmp;
     }
@@ -24,28 +20,18 @@ export class Savings {
         this.transfer(target, this.get())
     }
 
-    load_from_json(x:savings_json) {
+    from_json(x:SavingsJson) {
         this.data = x.data;
-        this.prev_data = x.prev_data;
-        this.income = x.income;
-    }
-
-    update() {
-        this.prev_data = this.data;
-        this.income = 0;
     }
 
     set(x: money) {
+        if (this.data == x) return
         this.data = x;
         this.changed = true;
     }
 
     get() {
         return this.data;
-    }
-
-    get_estimated_income() {
-        return this.data - this.prev_data;
     }
 
     inc(x:money) {
