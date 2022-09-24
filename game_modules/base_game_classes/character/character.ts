@@ -2,8 +2,8 @@ import {Stash} from "../inventories/stash"
 import { Archetype, CharacterFlags, InnateStats, Misc, Stats, Status } from "./character_parts";
 import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
-import { Savings, money } from "../inventories/savings";
-import { cell_id, char_id, TEMP_USER_ID, user_id } from "../../types";
+import { Savings} from "../inventories/savings";
+import { cell_id, char_id, money, TEMP_USER_ID, user_id } from "../../types";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 

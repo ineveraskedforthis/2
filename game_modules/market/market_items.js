@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderItem = exports.AuctionManagement = exports.AuctionOrderManagement = exports.nodb_mode_check = void 0;
+exports.AuctionManagement = exports.AuctionOrderManagement = exports.nodb_mode_check = void 0;
 const constants_1 = require("../static_data/constants");
 const item_tags_1 = require("../static_data/item_tags");
-const common = require("../common.js");
 const hour = 1000 * 60 * 60;
 const time_intervals = [1000 * 60, hour * 12, hour * 24, hour * 48];
+// export type auction_id = number & { __brand: "auction_id"}
 function nodb_mode_id() {
     // @ts-ignore: Unreachable code error
     if (global.flag_nodb) {
@@ -286,17 +286,3 @@ var AuctionManagement;
     }
     AuctionManagement.cancel_all_orders = cancel_all_orders;
 })(AuctionManagement = exports.AuctionManagement || (exports.AuctionManagement = {}));
-class OrderItem {
-    constructor(item, owner, latest_bidder, buyout_price, current_price, end_time, id, flags) {
-        this.item = item;
-        this.owner = owner;
-        this.owner_id = owner.id;
-        this.buyout_price = buyout_price;
-        this.current_price = current_price;
-        this.latest_bidder = latest_bidder;
-        this.end_time = end_time;
-        this.id = id;
-        this.flags = flags;
-    }
-}
-exports.OrderItem = OrderItem;

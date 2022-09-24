@@ -49,4 +49,8 @@ var Alerts;
         Alerts.generic_user_alert(user, 'b-action-chance', { tag: tag, value: value });
     }
     Alerts.battle_action = battle_action;
+    function map_action(user, tag, data) {
+        Alerts.generic_user_alert(user, 'map-action-status', { tag: tag, value: data });
+    }
+    Alerts.map_action = map_action;
 })(Alerts = exports.Alerts || (exports.Alerts = {}));

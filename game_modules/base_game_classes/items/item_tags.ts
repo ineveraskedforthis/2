@@ -7,6 +7,12 @@ import { ARROW_BONE, material_index } from "../manager_classes/materials_manager
 import { World } from "../world"
 import { WEAPON_TYPE } from "./type_script_types"
 
+
+export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'
+export type equip_slot = 'body'|'legs'|'arms'|'head'|'foot'|'weapon'
+
+
+
 export enum ARMOUR_TYPE {
     BODY,
     LEGS,

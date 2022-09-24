@@ -7,11 +7,11 @@ var character_list = [];
 var characters_dict = {};
 var CharacterSystem;
 (function (CharacterSystem) {
-    function template_to_character(template, name) {
+    function template_to_character(template, name, cell_id) {
         last_character_id = last_character_id + 1;
         if (name == undefined)
             name = template.name_generator();
-        let character = new character_1.Character(last_character_id, -1, -1, '#', name, template.archetype, template.stats, template.max_hp);
+        let character = new character_1.Character(last_character_id, -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
         character.stats.base_resists.add_object(template.base_resists);
         characters_dict[character.id] = character;
         character_list.push(character);

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.roll_affix_armour = exports.roll_affix_weapon = exports.enchant_item = exports.get_potential_affix_armour = exports.get_potential_affix_weapon = exports.affix = void 0;
+const item_tags_1 = require("../static_data/item_tags");
 class affix {
     constructor(tag, tier) {
         this.tag = tag;
@@ -12,10 +13,10 @@ function get_potential_affix_weapon(enchant_rating, item) {
     let potential_affix = [];
     potential_affix.push({ tag: 'hot', weight: 1 });
     potential_affix.push({ tag: 'of_power', weight: 1 });
-    if ((item.impact_type == 0 /* IMPACT_TYPE.POINT */) || (item.impact_type == 1 /* IMPACT_TYPE.EDGE */)) {
+    if ((item.impact_type == item_tags_1.IMPACT_TYPE.POINT) || (item.impact_type == item_tags_1.IMPACT_TYPE.EDGE)) {
         potential_affix.push({ tag: 'sharp', weight: 10 });
     }
-    if ((item.impact_type == 1 /* IMPACT_TYPE.EDGE */) || (item.impact_type == 2 /* IMPACT_TYPE.HEAD */)) {
+    if ((item.impact_type == item_tags_1.IMPACT_TYPE.EDGE) || (item.impact_type == item_tags_1.IMPACT_TYPE.HEAD)) {
         potential_affix.push({ tag: 'sharp', weight: 6 });
         potential_affix.push({ tag: 'heavy', weight: 5 });
         potential_affix.push({ tag: 'notched', weight: 2 });

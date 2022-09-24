@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.base_damage = exports.ranged_base_damage = exports.base_resist = exports.Weapon = exports.Armour = exports.ITEM_MATERIAL = exports.armour_types = exports.ARMOUR_TYPE = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
+const type_script_types_1 = require("./type_script_types");
 var ARMOUR_TYPE;
 (function (ARMOUR_TYPE) {
     ARMOUR_TYPE[ARMOUR_TYPE["BODY"] = 0] = "BODY";
@@ -109,15 +110,15 @@ class Weapon {
     }
     get_weapon_type() {
         switch (this.shaft_length) {
-            case 2 /* SHAFT_LEGTH.LONG */: return "polearms" /* WEAPON_TYPE.POLEARMS */;
-            case 1 /* SHAFT_LEGTH.SHORT */: return "polearms" /* WEAPON_TYPE.POLEARMS */;
+            case 2 /* SHAFT_LEGTH.LONG */: return type_script_types_1.WEAPON_TYPE.POLEARMS;
+            case 1 /* SHAFT_LEGTH.SHORT */: return type_script_types_1.WEAPON_TYPE.POLEARMS;
             case 0 /* SHAFT_LEGTH.HAND */: switch (this.impact_size) {
-                case 1 /* IMPACT_SIZE.SMALL */: return "onehand" /* WEAPON_TYPE.ONEHAND */;
-                case 2 /* IMPACT_SIZE.MEDIUM */: return "onehand" /* WEAPON_TYPE.ONEHAND */;
-                case 3 /* IMPACT_SIZE.LARGE */: return "twohanded" /* WEAPON_TYPE.TWOHANDED */;
+                case 1 /* IMPACT_SIZE.SMALL */: return type_script_types_1.WEAPON_TYPE.ONEHAND;
+                case 2 /* IMPACT_SIZE.MEDIUM */: return type_script_types_1.WEAPON_TYPE.ONEHAND;
+                case 3 /* IMPACT_SIZE.LARGE */: return type_script_types_1.WEAPON_TYPE.TWOHANDED;
             }
         }
-        return "noweapon" /* WEAPON_TYPE.NOWEAPON */;
+        return type_script_types_1.WEAPON_TYPE.NOWEAPON;
     }
     get_json() {
         let data = {

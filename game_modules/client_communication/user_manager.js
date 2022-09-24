@@ -155,7 +155,7 @@ var UserManagement;
         systems_communication_1.Link.character_and_user_data(character, user);
     }
     UserManagement.get_new_character = get_new_character;
-    function add_user_to_update_queue(id) {
+    function add_user_to_update_queue(id, reason) {
         console.log('add user to update');
         console.log(id);
         if (id == '#')
@@ -164,6 +164,10 @@ var UserManagement;
         if (user == undefined)
             return;
         console.log('ok');
+        if (reason == 'character_creation')
+            user.character_created = true;
+        if (reason == 'market')
+            user.market_update = true;
         users_to_update.add(user);
     }
     UserManagement.add_user_to_update_queue = add_user_to_update_queue;
@@ -175,6 +179,9 @@ var UserManagement;
                 alerts_1.Alerts.generic_user_alert(item, 'character_exists', undefined);
                 updates_1.SendUpdate.all(item);
                 item.character_created = false;
+            }
+            if (item.market_update) {
+                updates_1.SendUpdate.market(item);
             }
             causality_graph_1.Update.update_root(item);
         }

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendUpdate = void 0;
 const battle_calcs_1 = require("../../base_game_classes/battle/battle_calcs");
 const craft_1 = require("../../base_game_classes/character/craft");
+const system_1 = require("../../base_game_classes/character/system");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 var SendUpdate;
@@ -122,7 +123,68 @@ var SendUpdate;
         alerts_1.Alerts.generic_user_alert(user, 'hp', { c: character.status.hp, m: character.stats.max.hp });
     }
     SendUpdate.hp = hp;
+    function cell(cell) {
+        let characters_list = cell.get_characters_set();
+        for (let item of characters_list) {
+            let id = item.id;
+            let character = system_1.CharacterSystem.id_to_character(id);
+            let user = systems_communication_1.Convert.character_to_user(character);
+            if (user != undefined) {
+                alerts_1.Alerts.generic_user_alert(user, 'cell-characters', characters_list);
+                alerts_1.Alerts.map_action(user, 'hunt', cell.can_hunt());
+                // Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
+                alerts_1.Alerts.map_action(user, 'clean', cell.can_clean());
+            }
+        }
+    }
+    SendUpdate.cell = cell;
+    function market(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        // let data = 
+        //     let user = this.world.user_manager.get_user_from_character(character);
+        //     if (user != undefined) {
+        //         let data = this.prepare_market_orders(market)
+        //     this.send_to_character_user(character, 'market-data', data)
+        //     }
+        // }
+    }
+    SendUpdate.market = market;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
+// function prepare_market_orders(market: Cell) {
+//     let data = market.orders;
+//     let orders_array = Array.from(data)
+//     let responce: MarketOrderBulkJson[] = []
+//     for (let order_id of orders_array) {
+//         let order = this.world.get_order(order_id)
+//         if (order.amount > 0) {
+//             responce.push(order.get_json())
+//         }
+//     }
+//     return responce
+// }
+// update_market_info(market: Cell) {
+//     // console.log('sending market orders to client');
+//     let responce = this.prepare_market_orders(market)     
+//     for (let i of this.sockets) {
+//         if (i.current_user != null) {
+//             let char = i.current_user.character;
+//             try {
+//                 let cell1 = char.get_cell();
+//                 if (i.online & i.market_data && (cell1.id==market.id)) {
+//                     i.socket.emit('market-data', responce);
+//                 }
+//             } catch(error) {
+//                 console.log(i.current_user.login);
+//             }
+//         }
+//     }
+// }
+// send_item_market_update_to_character(character: Character) {
+//     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, character.cell_id)
+//     this.send_to_character_user(character, 'item-market-data', data)
+// }
 // send_map_pos_info(character: Character, teleport_flag:boolean) {
 //     let cell_id = character.cell_id;
 //     let pos = this.world.get_cell_x_y_by_id(cell_id);

@@ -8,11 +8,12 @@ const equip_1 = require("../inventories/equip");
 const savings_1 = require("../inventories/savings");
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class Character {
-    constructor(id, battle_id, battle_unit_id, user_id, name, archetype, stats, max_hp) {
+    constructor(id, battle_id, battle_unit_id, user_id, cell_id, name, archetype, stats, max_hp) {
         this.id = id;
         this.battle_id = battle_id;
         this.battle_unit_id = battle_unit_id;
         this.user_id = user_id;
+        this.cell_id = cell_id;
         this.name = name;
         this.archetype = archetype;
         this.equip = new equip_1.Equip();

@@ -138,7 +138,7 @@ export namespace SendUpdate {
             if (user != undefined) {
                 Alerts.generic_user_alert(user, 'cell-characters', characters_list)
                 Alerts.map_action(user, 'hunt'          , cell.can_hunt())
-                Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
+                // Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
                 Alerts.map_action(user, 'clean'         , cell.can_clean())
             }
         }
@@ -148,7 +148,7 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        let data = 
+        // let data = 
 
     //     let user = this.world.user_manager.get_user_from_character(character);
     //     if (user != undefined) {
@@ -159,19 +159,19 @@ export namespace SendUpdate {
     }
 }
 
-function prepare_market_orders(market: Cell) {
-    let data = market.orders;
-    let orders_array = Array.from(data)
-    let responce: MarketOrderBulkJson[] = []
-    for (let order_id of orders_array) {
+// function prepare_market_orders(market: Cell) {
+//     let data = market.orders;
+//     let orders_array = Array.from(data)
+//     let responce: MarketOrderBulkJson[] = []
+//     for (let order_id of orders_array) {
 
-        let order = this.world.get_order(order_id)
-        if (order.amount > 0) {
-            responce.push(order.get_json())
-        }
-    }
-    return responce
-}
+//         let order = this.world.get_order(order_id)
+//         if (order.amount > 0) {
+//             responce.push(order.get_json())
+//         }
+//     }
+//     return responce
+// }
 
     // update_market_info(market: Cell) {
     //     // console.log('sending market orders to client');

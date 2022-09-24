@@ -70,6 +70,7 @@ class User {
         this.data = data;
         this.logged_in = false;
         this.character_created = false;
+        this.market_update = false;
         this.updates = causality_graph_1.Update.construct();
     }
 }

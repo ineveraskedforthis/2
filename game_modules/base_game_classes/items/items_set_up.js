@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
-const materials_manager_1 = require("../manager_classes/materials_manager");
+const materials_manager_1 = require("../../manager_classes/materials_manager");
 const item_tags_1 = require("./item_tags");
 exports.BASIC_BOW_ARGUMENT = {
     durability: 100,
