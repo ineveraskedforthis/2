@@ -1,4 +1,8 @@
+import { get_power, protection_affixes_effects } from "../affix";
+import { Damage } from "../misc/damage_types";
 import { Item, ItemJson, Itemlette } from "./item";
+
+const empty_resists = new Damage()
 
 export namespace ItemSystem {
     export function size (item: Itemlette): number {
@@ -36,5 +40,33 @@ export namespace ItemSystem {
 
     export function weight(item: Item) {
         return item.material.density * size(item)
+    }
+
+    export function power(item:Item|undefined) {
+        if (item == undefined) return 0;
+
+        let result = 0
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
+            let f = get_power[affix.tag];
+            if (f != undefined) {
+                result = f(result);
+            }
+        }
+        return result;
+    }
+
+    export function resists(item:Item|undefined) {
+        if (item == undefined) {return empty_resists}
+
+        let result = item.resists        
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
+            let f = protection_affixes_effects[affix.tag];
+            if (f != undefined) {
+                result = f(result);
+            }
+        }
+        return result;
     }
 }

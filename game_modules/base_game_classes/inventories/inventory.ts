@@ -1,90 +1,67 @@
-import { Armour, Weapon } from "../../static_data/item_tags";
-import { Equip } from "./equip";
+import { Item, ItemData, ItemJson } from "../items/item";
+import { ItemSystem } from "../items/system";
 
 export class Inventory{
-    weapons: (Weapon|undefined)[];
-    armours: (Armour|undefined)[];
-    total_weight: number;
+    items: (Item|undefined)[]
+    changed: boolean
 
     constructor() {
-        this.weapons = [];
-        this.armours = [];
-        this.total_weight = 0;
+        this.items = [];
+        this.changed = false
     }
 
-    transfer_all(target: {equip: Equip}) {
-        for (let i = 0; i < this.weapons.length; i++) {
-            let weapon = this.weapons[i]
-            if (weapon != undefined) {target.equip.add_weapon(weapon)}            
-            this.remove_weapon(i)
+    add(item:Item|undefined) {
+        if (item == undefined) return
+        let responce = -1
+        if (item != undefined) {
+            responce = this.items.push(item) - 1;
         }
-        for (let i = 0; i < this.armours.length; i++) {
-            let armour = this.armours[i]
-            if (armour != undefined) {target.equip.add_armour(armour)}            
-            this.remove_armour(i)
-        }
+        this.changed = true
+        return responce
     }
-    remove_weapon(i: number) {
-        let weapon = this.weapons[i]
-        if (weapon != undefined) {
-            // this.total_weight = this.total_weight - weapon.get_weight()
-            this.weapons[i] = undefined
-        }
-    }
-    remove_armour(i: number) {
-        let armour = this.armours[i]
-        if (armour != undefined) {
-            // this.total_weight = this.total_weight - armour.get_weight()
-            this.armours[i] = undefined
+
+    transfer_all(target: Inventory) {
+        for (let i = 0; i < this.items.length; i++) {
+            let item = this.items[i]
+            if (item != undefined) {target.add(item)}            
+            this.remove(i)
         }
     }
 
-    get_json() {
-        let data:any = {}
-        data.armours = []
-        data.weapons = []
-        for (let i of this.armours) {
+    remove(i: number) {
+        let item = this.items[i]
+        if (item != undefined) {
+            this.items[i] = undefined
+        }
+        this.changed = true
+    }
+
+    get_json():{items_array: ItemJson[]}  {
+        const array:ItemJson[] = []
+        for (let i of this.items) {
             if (i != undefined) {
-                data.armours.push(i.get_json())
+                array.push(i.json())
             }
-        } 
-        for (let i of this.weapons) {
-            if (i != undefined) {
-                data.weapons.push(i.get_json())
-            }
-        } 
-        return data
-    }
-
-    get_data() {
-        let data:any = {}
-        data.armours = []
-        data.weapons = []
-        for (let i in this.armours) {
-            let item = this.armours[i]
-            if (item != undefined) {
-                data.armours.push({tag: item.get_tag(), affixes: item.affixes.length, affixes_list: item.affixes})
-            } else {
-                data.armours.push(undefined)
-            }
-        } 
-        for (let i in this.weapons) {
-            let item = this.weapons[i]
-            if (item != undefined) {
-                data.weapons.push({tag: item.get_tag(), affixes: item.affixes.length, affixes_list: item.affixes})
-            } else {
-                data.weapons.push(undefined)
-            }
-        } 
-        return data
-    }
-
-    load_from_json(data:any) {
-        for (let i of data.armours) {
-            this.armours.push(new Armour(i))
         }
-        for (let i of data.weapons) {
-            this.weapons.push(new Weapon(i))
+        return {items_array: array}
+    }
+
+    get_data():{items: ItemData[]} {
+        const array:ItemData[] = []
+        for (let i in this.items) {
+            let item = this.items[i]
+            if (item != undefined) {
+                array.push(item.data())
+            }
+        } 
+        return {items: array}
+    }
+
+    load_from_json(data:{[_ in number]?: ItemJson}) {
+        for (let i = 1; i <= 100; i++) {
+            const tmp = data[i]
+            if (tmp == undefined) return
+            this.items.push(ItemSystem.create(tmp))
         }
     }
 }
