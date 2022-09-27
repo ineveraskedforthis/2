@@ -1,19 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.move = void 0;
+const system_1 = require("../../map/system");
 exports.move = {
     duration(char) {
         return 1 + char.get_fatigue() / 30;
     },
-    check: async function (pool, char, data) {
+    check: async function (char, data) {
         if (char.in_battle()) {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
         }
-        if (char.world.can_move(data.x, data.y)) {
-            let { x, y } = char.world.get_cell_x_y_by_id(char.cell_id);
+        if (system_1.MapSystem.can_move([data.x, data.y])) {
+            let [x, y] = system_1.MapSystem.id_to_coordinate(char.cell_id);
             let dx = data.x - x;
             let dy = data.y - y;
-            if (char.verify_move(dx, dy)) {
+            if (system_1.MapSystem.is_valid_move(dx, dy)) {
                 return 1 /* CharacterActionResponce.OK */;
             }
             if ((dx == 0 && dy == 0)) {
@@ -23,10 +24,10 @@ exports.move = {
         }
         return 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */;
     },
-    start: async function (pool, char, data) {
-        char.action_target = data;
+    start: async function (char, data) {
+        char.next_cell = data;
     },
-    result: async function (pool, char) {
+    result: async function (char) {
         char.changed = true;
         let data = char.action_target;
         let old_cell = char.get_cell();

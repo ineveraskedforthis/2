@@ -17,6 +17,6 @@ const HumanStats = {
     magic_power: 10,
     movement_speed: 1
 };
-const HumanBaseResists = new damage_types_1.DamageByTypeObject(0, 0, 0, 0);
+const HumanBaseResists = new damage_types_1.Damage(0, 0, 0, 0);
 exports.HumanTemplateNotAligned = new templates_1.CharacterTemplate(0, HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists, -1);
 exports.HumanTemplateColony = new templates_1.CharacterTemplate(0, HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists, 3);

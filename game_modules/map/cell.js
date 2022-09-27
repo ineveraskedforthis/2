@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Cell = void 0;
 const system_js_1 = require("../base_game_classes/character/system.js");
 class Cell {
-    constructor(id, x, y, name, development, res) {
+    constructor(id, x, y, name, development, res, terrain) {
         this.id = id;
         this.x = x;
         this.y = y;
@@ -24,6 +24,12 @@ class Cell {
         }
         else {
             this.resources = res;
+        }
+        if (terrain == undefined) {
+            this.terrain = 'void';
+        }
+        else {
+            this.terrain = terrain;
         }
     }
     get_characters_list() {

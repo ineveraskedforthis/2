@@ -1,4 +1,4 @@
-import { world_dimensions } from "../types"
+import { terrain, world_dimensions } from "../types"
 
 export interface Development {
     rural: 0|1|2|3;
@@ -114,7 +114,7 @@ export const STARTING_DEVELOPMENT: {[_ in string]: Development} = {
 
 }
 
-export const STARTING_TERRAIN = 
+export const STARTING_TERRAIN: terrain[][] = 
          [['sea', 'sea', 'sea', 'city', 'city', 'sea', 'sea'], 
           ['sea', 'sea', 'city', 'city', 'city', 'city', 'city', 'sea', 'sea'],
           ['sea', 'sea', 'coast', 'steppe', 'steppe', 'city', 'city', 'city', 'sea', 'sea'],

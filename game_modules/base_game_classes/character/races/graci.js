@@ -1,15 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.graci = void 0;
-async function graci(pool, char) {
-    char.misc.tag = 'graci';
-    char.misc.ai_tag = 'steppe_walker_passive';
-    char.misc.model = 'graci';
-    char.stats.phys_power = 100;
-    char.stats.magic_power = 5;
-    char.status.hp = 1000;
-    char.stats.max.hp = 1000;
-    char.skills.perks.claws = true;
-    await char.save_to_db(pool);
+exports.GraciTemplate = void 0;
+const damage_types_1 = require("../../misc/damage_types");
+const templates_1 = require("../templates");
+const generate_name_moraes_1 = require("./generate_name_moraes");
+const GraciArchetype = {
+    model: 'graci',
+    ai_map: 'steppe_walker_passive',
+    ai_battle: 'basic',
+    race: 'graci'
+};
+const GraciStats = {
+    phys_power: 50,
+    magic_power: 5,
+    movement_speed: 3
+};
+const GraciResists = new damage_types_1.Damage(0, 0, 0, 0);
+const graci_moraes = ['O', 'u', 'la', 'ma', 'a', 'A', 'ou'];
+function generate_name() {
+    return (0, generate_name_moraes_1.gen_from_moraes)(graci_moraes, 2);
 }
-exports.graci = graci;
+exports.GraciTemplate = new templates_1.CharacterTemplate(0, GraciArchetype, generate_name, 1000, GraciStats, GraciResists, -1);

@@ -23,14 +23,14 @@ function generate_loot(killer, dead) {
             killer.stash.inc(materials_manager_1.RAT_BONE, 2);
             killer.stash.inc(materials_manager_1.RAT_SKIN, 2);
             let luck = Math.random();
-            let skill = killer.skills.skinning.practice;
+            let skill = killer.skills.skinning;
             if (luck * (skill) + skill > SKIN_RAT_DIFFICULTY) {
                 killer.stash.inc(materials_manager_1.MEAT, 2);
                 killer.stash.inc(materials_manager_1.RAT_SKIN, 4);
             }
             // let learning_dice = Math.random() * 20
             if (skill < SKIN_RAT_DIFFICULTY) {
-                killer.skills.skinning.practice += 1;
+                killer.skills.skinning += 1;
             }
             return true;
         }
@@ -39,5 +39,6 @@ function generate_loot(killer, dead) {
             return true;
         }
     }
+    return false;
 }
 exports.generate_loot = generate_loot;

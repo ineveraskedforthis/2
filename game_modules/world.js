@@ -357,27 +357,6 @@
 //         let data:{[_: string]: any} = this.constants.id_terr
 //         return data[tag]
 //     }
-//     can_move(x: number, y: number) {
-//         if ((x < 0) || (x >= this.x)) {
-//             return false
-//         }
-//         if ((y < 0) || (y >= this.y)) {
-//             return false
-//         }
-//         let data = this.constants.terrain
-//         if (! (x in data)) {
-//             return false
-//         }
-//         let ter = data[x][y]
-//         let cell = this.get_cell(x, y)
-//         if (cell == undefined) return true
-//         if (ter == 'coast' || ter == 'steppe' || ter == 'city') {
-//             if (cell.development.rupture == 1 || cell.development.wild == 3) {
-//                 return false
-//             }
-//             return true
-//         }
-//     }
 //     get_enemy(x: number, y: number) {
 //         let terr_tag = this.get_territory(x, y)
 //         if (terr_tag == undefined) {

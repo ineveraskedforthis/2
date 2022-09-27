@@ -1,5 +1,5 @@
 import { CharacterSystem } from "../base_game_classes/character/system.js";
-import { cell_id, char_id, order_bulk_id, order_item_id} from "../types.js";
+import { cell_id, char_id, order_bulk_id, order_item_id, terrain} from "../types.js";
 import { CellResources, Development } from "../static_data/map_definitions.js";
 
 
@@ -22,11 +22,13 @@ export class Cell {
 
     development: Development;
     resources: CellResources;
+    terrain: terrain;
+
     characters_set: Set<char_id>
     orders_bulk: Set<order_bulk_id>
     orders_item: Set<order_item_id>
 
-    constructor(id: cell_id, x: number, y:number, name:string, development: Development, res: CellResources) {
+    constructor(id: cell_id, x: number, y:number, name:string, development: Development, res: CellResources, terrain: terrain) {
         this.id = id
         this.x = x
         this.y = y
@@ -48,6 +50,12 @@ export class Cell {
             this.resources = {water: false, prey: false, forest: false, fish: false}
         } else {
             this.resources = res
+        }
+
+        if (terrain == undefined ) {
+            this.terrain = 'void'
+        } else {
+            this.terrain = terrain
         }
     }
 

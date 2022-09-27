@@ -14,11 +14,12 @@ var MapSystem;
         max_direction = Math.max(size[0], size[1]);
         const development = map_definitions_1.STARTING_DEVELOPMENT;
         const resources = map_definitions_1.STARTING_RESOURCES;
+        const terrain = map_definitions_1.STARTING_TERRAIN;
         for (let x = 0; x < size[0]; x++) {
             for (let y = 0; y < size[1]; y++) {
                 const string = x + '_' + 'y';
                 const id = coordinate_to_id(x, y);
-                const cell = new cell_1.Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string]);
+                const cell = new cell_1.Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string], terrain[x][y]);
                 cells[id] = cell;
             }
         }
@@ -65,4 +66,28 @@ var MapSystem;
         }
     }
     MapSystem.update = update;
+    function can_move(pos) {
+        if ((pos[0] < 0) || (pos[0] >= size[0])) {
+            return false;
+        }
+        if ((pos[1] < 0) || (pos[1] >= size[1])) {
+            return false;
+        }
+        let cell = coordinate_to_cell(pos);
+        if (cell == undefined) {
+            return false;
+        }
+        if (cell.terrain == 'coast' || cell.terrain == 'steppe' || cell.terrain == 'city') {
+            if (cell.development.rupture == 1) {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    }
+    MapSystem.can_move = can_move;
+    function is_valid_move(dx, dy) {
+        return ((dx == 0 && dy == 1) || (dx == 0 && dy == -1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0) || (dx == 1 && dy == 1) || (dx == -1 && dy == -1));
+    }
+    MapSystem.is_valid_move = is_valid_move;
 })(MapSystem = exports.MapSystem || (exports.MapSystem = {}));

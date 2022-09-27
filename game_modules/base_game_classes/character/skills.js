@@ -66,13 +66,13 @@ function perk_requirement(tag, character) {
 exports.perk_requirement = perk_requirement;
 function weapon_type(weapon) {
     if (weapon == undefined) {
-        return "noweapon" /* WEAPON_TYPE.NOWEAPON */;
+        return 'unarmed';
     }
-    return weapon.get_weapon_type();
+    return weapon.weapon_tag;
 }
 function can_dodge(character) {
     if (character.perks.advanced_unarmed == true) {
-        if (weapon_type(character.equip.data.weapon) == "noweapon" /* WEAPON_TYPE.NOWEAPON */) {
+        if (weapon_type(character.equip.data.weapon) == 'unarmed') {
             return true;
         }
     }
@@ -81,7 +81,7 @@ function can_dodge(character) {
 exports.can_dodge = can_dodge;
 function can_fast_attack(character) {
     if (character.perks.advanced_unarmed == true) {
-        if (weapon_type(character.equip.data.weapon) == "noweapon" /* WEAPON_TYPE.NOWEAPON */) {
+        if (weapon_type(character.equip.data.weapon) == 'unarmed') {
             return true;
         }
     }
@@ -111,7 +111,7 @@ function can_shoot(character) {
     if (character.equip.data.weapon == undefined) {
         return false;
     }
-    if (character.equip.data.weapon.ranged != true) {
+    if (character.equip.data.weapon.weapon_tag != 'ranged') {
         return false;
     }
     if (character.stash.get(materials_manager_1.ARROW_BONE) >= 1) {

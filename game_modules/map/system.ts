@@ -1,4 +1,4 @@
-import { STARTING_DEVELOPMENT, STARTING_RESOURCES, WORLD_SIZE } from "../static_data/map_definitions";
+import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
 import { cell_id, world_dimensions } from "../types";
 import { Cell} from "./cell";
 
@@ -14,12 +14,13 @@ export namespace MapSystem {
         max_direction = Math.max(size[0], size[1])
         const development = STARTING_DEVELOPMENT
         const resources = STARTING_RESOURCES
+        const terrain = STARTING_TERRAIN
 
         for (let x = 0; x < size[0]; x++) {
             for (let y = 0; y < size[1]; y++) {
                 const string = x + '_' + 'y'
                 const id = coordinate_to_id(x, y)
-                const cell = new Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string])
+                const cell = new Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string], terrain[x][y])
                 cells[id] = cell
             }
         }
@@ -63,5 +64,31 @@ export namespace MapSystem {
             if (cell == undefined) continue
             cell.update(dt)
         }
+    }
+
+    export function can_move(pos: [number, number]) {
+        if ((pos[0] < 0) || (pos[0] >= size[0])) {
+            return false
+        }
+        if ((pos[1] < 0) || (pos[1] >= size[1])) {
+            return false
+        }
+
+        let cell = coordinate_to_cell(pos)
+        if (cell == undefined) {
+            return false
+        }
+
+        if (cell.terrain == 'coast' || cell.terrain == 'steppe' || cell.terrain == 'city') {
+            if (cell.development.rupture == 1) {
+                return false
+            }
+            return true
+        }
+        return false
+    }
+
+    export function is_valid_move(dx: number, dy: number) {
+        return ((dx == 0 && dy == 1) || (dx == 0 && dy == -1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0) || (dx == 1 && dy == 1) || (dx == -1 && dy == -1))
     }
 }

@@ -1,6 +1,7 @@
 import { ARROW_BONE, ZAZ } from "../../manager_classes/materials_manager";
-import { Weapon } from "../../static_data/item_tags";
 import { WEAPON_TYPE } from "../../static_data/type_script_types";
+import { weapon_attack_tag, weapon_tag } from "../../types";
+import { Item } from "../items/item";
 import { Character } from "./character";
 
 
@@ -76,15 +77,15 @@ export function perk_requirement(tag:Perks, character: Character) {
         }
     }
 }
-function weapon_type(weapon: Weapon|undefined):WEAPON_TYPE {
+function weapon_type(weapon: Item|undefined):weapon_attack_tag {
     if (weapon == undefined) {
-        return WEAPON_TYPE.NOWEAPON
+        return 'unarmed'
     }
-    return weapon.get_weapon_type()
+    return weapon.weapon_tag
 }
 export function can_dodge(character:Character):boolean {
     if (character.perks.advanced_unarmed == true) {
-        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.NOWEAPON) {
+        if (weapon_type(character.equip.data.weapon) == 'unarmed') {
             return true
         }
     }
@@ -94,7 +95,7 @@ export function can_dodge(character:Character):boolean {
 
 export function can_fast_attack(character:Character):boolean {
     if (character.perks.advanced_unarmed == true) {
-        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.NOWEAPON) {
+        if (weapon_type(character.equip.data.weapon) == 'unarmed') {
             return true
         }
     }
@@ -124,7 +125,7 @@ export function can_shoot(character: Character): boolean {
     if (character.equip.data.weapon == undefined) {
         return false
     }
-    if (character.equip.data.weapon.ranged != true) {
+    if (character.equip.data.weapon.weapon_tag != 'ranged') {
         return false
     }
     if (character.stash.get(ARROW_BONE) >= 1) {

@@ -41,6 +41,24 @@ class Character {
         new_status = Math.max(new_status, 0);
         this.status[type] = new_status;
     }
+    get_hp() {
+        return this.status.hp;
+    }
+    get_blood() {
+        return this.status.blood;
+    }
+    get_rage() {
+        return this.status.rage;
+    }
+    get_fatigue() {
+        return this.status.fatigue;
+    }
+    get_stress() {
+        return this.status.stress;
+    }
+    in_battle() {
+        return (this.battle_id != -1);
+    }
 }
 exports.Character = Character;
 // export class CharacterOld {
@@ -210,21 +228,6 @@ exports.Character = Character;
 //     }
 //     get_tag() {
 //         return this.misc.tag
-//     }
-//     get_hp() {
-//         return this.status.hp
-//     }
-//     get_blood() {
-//         return this.status.blood
-//     }
-//     get_rage() {
-//         return this.status.rage
-//     }
-//     get_fatigue() {
-//         return this.status.fatigue
-//     }
-//     get_stress() {
-//         return this.status.stress
 //     }
 //     get_hp_change() {
 //         return 0

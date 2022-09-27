@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.add_quest = void 0;
-function add_quest(pool, char) {
+function add_quest(char) {
     // let quest = char.action_target.quest
     // let tag = char.action_target.tag
     // char.misc.quest = {id: quest.id, tag: tag}

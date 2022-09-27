@@ -3,7 +3,6 @@ import { CraftProbability } from "../../base_game_classes/character/craft";
 import { SkillList } from "../../base_game_classes/character/skills";
 import { CharacterSystem } from "../../base_game_classes/character/system";
 import { Cell } from "../../map/cell";
-import { MarketOrderBulkJson } from "../../market/classes";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";
 import { Alerts } from "./alerts";
@@ -129,7 +128,7 @@ export namespace SendUpdate {
     }
 
     export function cell(cell: Cell) {
-        let characters_list = cell.get_characters_set()
+        let characters_list = cell.get_characters_list()
         for (let item of characters_list) {
             let id = item.id
             let character = CharacterSystem.id_to_character(id)

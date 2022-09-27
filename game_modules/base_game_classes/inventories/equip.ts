@@ -202,20 +202,18 @@ export class Equip {
         this.data.armour[tag] = undefined
     }
 
-    // ['right_hand', 'body', 'legs', 'foot', 'head', 'arms']
-    // UNFINISHED
-    // get_data() {
-    //     return {
-    //         right_hand: this.data.weapon?.get_data(),
-    //         secondary: this.data.secondary?.get_data(),
-    //         body: this.data.armour.get(ARMOUR_TYPE.BODY)?.get_data(),
-    //         legs: this.data.armour.get(ARMOUR_TYPE.LEGS)?.get_data(),
-    //         foot: this.data.armour.get(ARMOUR_TYPE.FOOT)?.get_data(),
-    //         head: this.data.armour.get(ARMOUR_TYPE.HEAD)?.get_data(),
-    //         arms: this.data.armour.get(ARMOUR_TYPE.ARMS)?.get_data(),
-    //         backpack: this.data.backpack.get_data()
-    //     }
-    // }
+    get_data() {
+        return {
+            right_hand: this.data.weapon?.data(),
+            secondary: this.data.secondary?.data(),
+            body: this.data.armour['body']?.data(),
+            legs: this.data.armour['legs']?.data(),
+            foot: this.data.armour['foot']?.data(),
+            head: this.data.armour['head']?.data(),
+            arms: this.data.armour['arms']?.data(),
+            backpack: this.data.backpack.get_data()
+        }
+    }
 
     resists() {
         let resists = new Damage;
