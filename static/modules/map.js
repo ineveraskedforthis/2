@@ -321,6 +321,8 @@ export class Map {
     }
 
     load_data(data) {
+        console.log('loading map data')
+        console.log(data)
         for (let i in data) {
             this.data[i] = data[i]
         }

@@ -146,7 +146,10 @@ export namespace SendUpdate {
     export function explored(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
+
         Alerts.generic_user_alert(user, 'explore', character.explored)
+        map_position(user, true)
+        
         for (let i = 0; i < character.explored.length; i++) {
             if (character.explored[i]) {
                 let cell = MapSystem.id_to_cell(i as cell_id)
@@ -166,6 +169,18 @@ export namespace SendUpdate {
                 }
             }            
         }
+    }
+
+    export function map_position(user: User, teleport_flag:boolean) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+        let cell = Convert.character_to_cell(character)
+        let data = {
+            x:cell.x,
+            y:cell.y,
+            teleport_flag:teleport_flag
+        }
+        Alerts.generic_user_alert(user, 'map-pos', data)
     }
 
     export function local_characters(user: User) {
@@ -241,12 +256,7 @@ export namespace SendUpdate {
     // }
 
 
-    // send_map_pos_info(character: Character, teleport_flag:boolean) {
-    //     let cell_id = character.cell_id;
-    //     let pos = this.world.get_cell_x_y_by_id(cell_id);
-    //     let data = {x:pos.x,y:pos.y,teleport_flag:teleport_flag}
-    //     this.send_to_character_user(character, 'map-pos', data)
-    // }
+
 
     // send_skills_info(character: Character) {
     //     

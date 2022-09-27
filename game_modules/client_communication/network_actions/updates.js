@@ -140,6 +140,7 @@ var SendUpdate;
         if (character == undefined)
             return;
         alerts_1.Alerts.generic_user_alert(user, 'explore', character.explored);
+        map_position(user, true);
         for (let i = 0; i < character.explored.length; i++) {
             if (character.explored[i]) {
                 let cell = system_1.MapSystem.id_to_cell(i);
@@ -159,6 +160,19 @@ var SendUpdate;
         }
     }
     SendUpdate.explored = explored;
+    function map_position(user, teleport_flag) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        let cell = systems_communication_1.Convert.character_to_cell(character);
+        let data = {
+            x: cell.x,
+            y: cell.y,
+            teleport_flag: teleport_flag
+        };
+        alerts_1.Alerts.generic_user_alert(user, 'map-pos', data);
+    }
+    SendUpdate.map_position = map_position;
     function local_characters(user) {
         // prepare data
         const character = systems_communication_1.Convert.user_to_character(user);
@@ -225,12 +239,6 @@ var SendUpdate;
 // send_item_market_update_to_character(character: Character) {
 //     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, character.cell_id)
 //     this.send_to_character_user(character, 'item-market-data', data)
-// }
-// send_map_pos_info(character: Character, teleport_flag:boolean) {
-//     let cell_id = character.cell_id;
-//     let pos = this.world.get_cell_x_y_by_id(cell_id);
-//     let data = {x:pos.x,y:pos.y,teleport_flag:teleport_flag}
-//     this.send_to_character_user(character, 'map-pos', data)
 // }
 // send_skills_info(character: Character) {
 //     

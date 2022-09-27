@@ -45,6 +45,7 @@ var UserManagement;
                 last_id = user.id;
             }
         }
+        console.log('users are loaded');
     }
     UserManagement.load_users = load_users;
     function save_users() {
@@ -155,7 +156,6 @@ var UserManagement;
         console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')');
         systems_communication_1.Link.character_and_user_data(character, user);
         const cell = system_2.MapSystem.SAFE_id_to_cell(starting_cell);
-        console.log(cell);
         systems_communication_1.Link.character_and_cell(character, cell);
         // CREATE LATER A CHARACTER CREATION SEPARATE FUNCTION!!!
     }

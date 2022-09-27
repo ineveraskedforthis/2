@@ -19,7 +19,7 @@ export namespace MapSystem {
 
         for (let x = 0; x < size[0]; x++) {
             for (let y = 0; y < size[1]; y++) {
-                const string = x + '_' + 'y'
+                const string = x + '_' + y
                 const id = coordinate_to_id(x, y)
                 const tmp = terrain[x]
                 if (tmp == undefined) continue

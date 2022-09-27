@@ -18,7 +18,7 @@ var MapSystem;
         const terrain = map_definitions_1.STARTING_TERRAIN;
         for (let x = 0; x < size[0]; x++) {
             for (let y = 0; y < size[1]; y++) {
-                const string = x + '_' + 'y';
+                const string = x + '_' + y;
                 const id = coordinate_to_id(x, y);
                 const tmp = terrain[x];
                 if (tmp == undefined)
@@ -48,7 +48,6 @@ var MapSystem;
     }
     MapSystem.id_to_cell = id_to_cell;
     function SAFE_id_to_cell(id) {
-        console.log(cells);
         return cells[id];
     }
     MapSystem.SAFE_id_to_cell = SAFE_id_to_cell;

@@ -69,7 +69,7 @@ var Link;
         for (let item of neighbours) {
             character.explored[item.id] = true;
         }
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.MAP */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 9 /* UI_Part.EXPLORED */);
     }
     Link.character_and_cell = character_and_cell;
 })(Link = exports.Link || (exports.Link = {}));
