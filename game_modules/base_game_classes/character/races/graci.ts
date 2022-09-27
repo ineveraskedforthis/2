@@ -1,16 +1,26 @@
-import { PgPool } from "../../../world";
-import { Character } from "../character";
+import { Damage } from "../../misc/damage_types";
+import { Archetype, Stats } from "../character_parts";
+import { CharacterTemplate } from "../templates";
+import { gen_from_moraes } from "./generate_name_moraes";
 
-export async function graci(pool: PgPool, char: Character) {
-    char.misc.tag = 'graci'
-    char.misc.ai_tag = 'steppe_walker_passive'
-    char.misc.model = 'graci'
-    char.stats.phys_power = 100
-    char.stats.magic_power = 5
-
-    char.status.hp = 1000
-    char.stats.max.hp = 1000
-
-    char.skills.perks.claws = true
-    await char.save_to_db(pool)
+const GraciArchetype: Archetype = {
+    model: 'graci',
+    ai_map: 'steppe_walker_passive',
+    ai_battle: 'basic',
+    race: 'graci'
 }
+
+const GraciStats: Stats = {
+    phys_power: 50,
+    magic_power: 5,
+    movement_speed: 3
+}
+
+const GraciResists = new Damage(0, 0, 0, 0)
+
+const graci_moraes = ['O', 'u', 'la', 'ma', 'a', 'A', 'ou']
+function generate_name() {
+    return gen_from_moraes(graci_moraes, 2)
+}
+
+export const GraciTemplate = new CharacterTemplate(0, GraciArchetype, generate_name, 1000, GraciStats, GraciResists, -1)

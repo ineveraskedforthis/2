@@ -1,12 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuctionManagement = exports.SingularOrders = exports.BulkOrders = void 0;
+exports.ItemOrders = exports.BulkOrders = void 0;
 const system_1 = require("../base_game_classes/character/system");
+const stash_1 = require("../base_game_classes/inventories/stash");
 const system_2 = require("../base_game_classes/items/system");
 const classes_1 = require("./classes");
 var orders_bulk = [];
+var orders_item = [];
 var last_id_bulk = 0;
-var last_id_sing = 0;
+var last_id_item = 0;
 var AuctionResponce;
 (function (AuctionResponce) {
     AuctionResponce["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";
@@ -16,6 +18,8 @@ var AuctionResponce;
     AuctionResponce["NOT_ENOUGH_MONEY"] = "not_enough_money";
     AuctionResponce["INVALID_ORDER"] = "invalid_order";
 })(AuctionResponce || (AuctionResponce = {}));
+const empty_stash = new stash_1.Stash();
+// this file does not handle networking
 var BulkOrders;
 (function (BulkOrders) {
     function save() {
@@ -24,262 +28,235 @@ var BulkOrders;
     function load() {
     }
     BulkOrders.load = load;
+    // does not shadow resources, shadowing happens in create_type_order functions
     function create(amount, price, typ, tag, owner) {
         last_id_bulk = last_id_bulk + 1;
-        let order = new classes_1.OrderBulk(last_id_bulk, amount, price, typ, tag, owner.id, owner.cell_id);
-        orders_bulk.push(order);
+        let order = new classes_1.OrderBulk(last_id_bulk, amount, price, typ, tag, owner.id);
+        orders_bulk[last_id_bulk] = order;
         return order;
     }
     BulkOrders.create = create;
-})(BulkOrders = exports.BulkOrders || (exports.BulkOrders = {}));
-var SingularOrders;
-(function (SingularOrders) {
-    function save() {
+    function id_to_order(id) {
+        return orders_bulk[id];
     }
-    SingularOrders.save = save;
-    function load() {
+    BulkOrders.id_to_order = id_to_order;
+    function execute_sell_order(id, amount, buyer) {
+        const order = id_to_order(id);
+        const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        const pay = amount * order.price;
+        if (order.amount < amount)
+            return 'invalid_order';
+        if (buyer.savings.get() < pay)
+            return 'not_enough_money';
+        const material = order.tag;
+        // shadow operations with imaginary items
+        order.amount -= amount;
+        const transaction_stash = new stash_1.Stash();
+        transaction_stash.inc(material, amount);
+        system_1.CharacterSystem.to_trade_stash(owner, order.tag, -amount);
+        //actual transaction
+        system_1.CharacterSystem.transaction(owner, buyer, 0, transaction_stash, pay, empty_stash);
+        return 'ok';
     }
-    SingularOrders.load = load;
-    async function create(owner, item, price, cell_id, finished) {
-        last_id_sing = last_id_sing + 1;
-        let order = new classes_1.OrderItem(last_id_sing, item, price, owner.id, cell_id, finished);
+    BulkOrders.execute_sell_order = execute_sell_order;
+    function execute_buy_order(id, amount, seller) {
+        const order = id_to_order(id);
+        const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        if (order.amount < amount)
+            return 'invalid_order';
+        if (seller.stash.get(order.tag) < amount)
+            return 'not_enough_items_in_stash';
+        const pay = amount * order.price;
+        const material = order.tag;
+        // shadow operations
+        order.amount -= amount;
+        const transaction_stash = new stash_1.Stash();
+        transaction_stash.inc(material, amount);
+        system_1.CharacterSystem.to_trade_savings(owner, -pay);
+        //transaction
+        system_1.CharacterSystem.transaction(owner, seller, pay, empty_stash, 0, transaction_stash);
+        return 'ok';
+    }
+    BulkOrders.execute_buy_order = execute_buy_order;
+    function new_buy_order(material, amount, price, owner) {
+        //validation of input
+        if (price < 0)
+            return 'invalid_price';
+        if (amount <= 0)
+            return 'invalid_amount';
+        if (owner.savings.get() < price * amount)
+            return 'not_enough_savings';
+        system_1.CharacterSystem.to_trade_savings(owner, amount * price);
+        const order = create(amount, price, 'buy', material, owner);
         return order;
     }
-    SingularOrders.create = create;
-    function order_to_json(order) {
-        let owner = system_1.CharacterSystem.id_to_character(order.owner_id);
-        let responce = {
-            id: order.id,
-            item: order.item.get_json(),
-            owner_id: order.owner_id,
-            price: order.price,
-            // cell_id: owner.cell_id,
-            finished: order.finished
-        };
-        return responce;
+    BulkOrders.new_buy_order = new_buy_order;
+    function new_sell_order(material, amount, price, owner) {
+        //validation of input
+        if (price < 0)
+            return 'invalid_price';
+        if (amount <= 0)
+            return 'invalid_amount';
+        if (owner.stash.get(material) < amount)
+            return 'not_enough_material';
+        system_1.CharacterSystem.to_trade_stash(owner, material, amount);
+        const order = create(amount, price, 'sell', material, owner);
+        return order;
     }
-    SingularOrders.order_to_json = order_to_json;
+    BulkOrders.new_sell_order = new_sell_order;
+})(BulkOrders = exports.BulkOrders || (exports.BulkOrders = {}));
+var ItemOrders;
+(function (ItemOrders) {
+    function save() {
+    }
+    ItemOrders.save = save;
+    function load() {
+    }
+    ItemOrders.load = load;
+    function number_to_id(id) {
+        if (orders_item[id] == undefined)
+            return undefined;
+        return id;
+    }
+    ItemOrders.number_to_id = number_to_id;
+    function id_to_order(id) {
+        return orders_item[id];
+    }
+    ItemOrders.id_to_order = id_to_order;
+    function create(owner, item, price, finished) {
+        last_id_item = last_id_item + 1;
+        let order = new classes_1.OrderItem(last_id_item, item, price, owner.id, finished);
+        orders_item[last_id_item] = order;
+        return order;
+    }
+    ItemOrders.create = create;
+    function remove(id, who) {
+        const order = id_to_order(id);
+        if (order.owner_id != who.id) {
+            return AuctionResponce.INVALID_ORDER;
+        }
+        const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        order.finished = true;
+        owner.equip.data.backpack.add(order.item);
+        return AuctionResponce.OK;
+    }
+    ItemOrders.remove = remove;
+    function remove_unsafe(id, who) {
+        const true_id = number_to_id(id);
+        if (true_id == undefined)
+            return AuctionResponce.NO_SUCH_ORDER;
+        return remove(true_id, who);
+    }
+    ItemOrders.remove_unsafe = remove_unsafe;
+    function remove_all_character(who) {
+        for (let order of orders_item) {
+            if (order == undefined)
+                continue;
+            if (order.finished)
+                continue;
+            console.log(order.owner_id, who.id);
+            remove(order.id, who);
+        }
+    }
+    ItemOrders.remove_all_character = remove_all_character;
+    // export function order_to_json(order: OrderItem) {
+    //     let owner = CharacterSystem.id_to_character(order.owner_id)
+    //     let responce:OrderItemJson = {
+    //         id: order.id,
+    //         item: order.item.get_json(),
+    //         owner_id: order.owner_id,
+    //         price: order.price,
+    //         // cell_id: owner.cell_id,
+    //         finished: order.finished
+    //     }
+    //     return responce
+    // }
     function order_to_socket_data(order) {
         let owner = system_1.CharacterSystem.id_to_character(order.owner_id);
         return {
             seller_name: owner.name,
             price: order.price,
-            item_name: order.item.get_tag(),
+            item_name: order.item.tag(),
             affixes: [],
             id: order.id
         };
     }
-    SingularOrders.order_to_socket_data = order_to_socket_data;
-    function json_to_order(data, entity_manager) {
-        let item_data = data.item;
-        let item = system_2.ItemSystem;
-        null;
-        switch (item_data.item_type) {
-            case 'armour':
-                item = new Armour(data.item);
-                break;
-            case 'weapon': item = new Weapon(data.item);
-        }
-        let owner = entity_manager.chars[data.owner_id];
-        let latest_bidder = entity_manager.chars[data.latest_bidder_id];
-        let order = new classes_1.OrderItem(item, owner, latest_bidder, data.buyout_price, data.current_price, data.end_time, data.id, data.flags);
+    ItemOrders.order_to_socket_data = order_to_socket_data;
+    function json_to_order(data) {
+        let item = system_2.ItemSystem.create(data.item);
+        let order = new classes_1.OrderItem(data.id, item, data.price, data.owner_id, data.finished);
         return order;
     }
-    SingularOrders.json_to_order = json_to_order;
-    async function save_db(pool, order) {
-        await common.send_query(pool, constants.update_item_order_query, [order.id, order.current_price, order.latest_bidder.id]);
-    }
-    SingularOrders.save_db = save_db;
-    async function delete_db(pool, order) {
-        await common.send_query(pool, constants.delete_item_order_query, [order.id]);
-    }
-    SingularOrders.delete_db = delete_db;
-})(SingularOrders = exports.SingularOrders || (exports.SingularOrders = {}));
-var AuctionManagement;
-(function (AuctionManagement) {
-    async function sell(entity_manager, seller, type, backpack_id, buyout_price, starting_price) {
-        // if (auction.cell_id != seller.cell_id) {
-        //     return {responce: AuctionResponce.NOT_IN_THE_SAME_CELL}
-        // }
-        let cell = seller.cell_id;
-        let item = null;
-        switch (type) {
-            case 'armour':
-                {
-                    item = seller.equip.data.backpack.armours[backpack_id];
-                    break;
-                }
-                ;
-            case 'weapon':
-                {
-                    item = seller.equip.data.backpack.weapons[backpack_id];
-                    break;
-                }
-                ;
-        }
+    ItemOrders.json_to_order = json_to_order;
+    function sell(seller, backpack_id, price) {
+        const item = seller.equip.data.backpack.items[backpack_id];
         if (item == undefined) {
             return { responce: AuctionResponce.EMPTY_BACKPACK_SLOT };
         }
-        switch (type) {
-            case 'armour':
-                {
-                    seller.equip.data.backpack.armours[backpack_id] = undefined;
-                    break;
-                }
-                ;
-            case 'weapon':
-                {
-                    seller.equip.data.backpack.weapons[backpack_id] = undefined;
-                    break;
-                }
-                ;
-        }
-        let time = Date.now() + time_intervals[1];
-        let order = await AuctionOrderManagement.build_order(seller, seller, item, buyout_price, starting_price, time, cell, {
-            finished: false,
-            // item_sent:false, 
-            // profit_sent: false
-        });
-        entity_manager.add_item_order(order);
-        socket_manager.send_item_market_update(order.owner.cell_id);
+        const order = create(seller, item, price, false);
         return { responce: AuctionResponce.OK };
     }
-    AuctionManagement.sell = sell;
-    async function load(pool, entity_manager) {
-        if (nodb_mode_check()) {
-            return;
-        }
-        let responce = await common.send_query(pool, constants.load_item_orders_query);
-        for (let data of responce.rows) {
-            let order = AuctionOrderManagement.json_to_order(data, entity_manager);
-            entity_manager.add_item_order(order);
-        }
-    }
-    AuctionManagement.load = load;
-    function cell_id_to_orders_list(manager, cell_id) {
-        let tmp = [];
-        for (let order of manager.item_orders) {
-            if (order == undefined)
-                continue;
-            if (order.flags.finished)
-                continue;
-            if (order.owner.cell_id == cell_id) {
-                tmp.push(order);
-            }
-        }
-        return tmp;
-    }
-    AuctionManagement.cell_id_to_orders_list = cell_id_to_orders_list;
-    function cell_id_to_orders_socket_data_list(manager, cell_id) {
-        let tmp = [];
-        for (let order of manager.item_orders) {
-            if (order == undefined)
-                continue;
-            if (order.flags.finished)
-                continue;
-            if (order.owner.cell_id == cell_id) {
-                tmp.push(AuctionOrderManagement.order_to_socket_data(order));
-            }
-        }
-        return tmp;
-    }
-    AuctionManagement.cell_id_to_orders_socket_data_list = cell_id_to_orders_socket_data_list;
-    function cell_id_to_orders_json_list(manager, cell_id) {
-        let tmp = [];
-        for (let order of manager.item_orders) {
-            if (order == undefined)
-                continue;
-            if (order.flags.finished)
-                continue;
-            if (order.owner.cell_id == cell_id) {
-                tmp.push(AuctionOrderManagement.order_to_json(order));
-            }
-        }
-        return tmp;
-    }
-    AuctionManagement.cell_id_to_orders_json_list = cell_id_to_orders_json_list;
-    /**  Sends money to seller and sends item to buyer
-    * */
-    async function buyout(manager, buyer, id) {
-        let order = manager.raw_id_to_item_order(id);
-        if (order == undefined) {
-            return AuctionResponce.NO_SUCH_ORDER;
-        }
-        if (order.owner.cell_id != buyer.cell_id) {
+    ItemOrders.sell = sell;
+    function buy(id, buyer) {
+        const order = id_to_order(id);
+        const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        // make sure that they are in the same cell
+        if (owner.cell_id != buyer.cell_id) {
             return AuctionResponce.NOT_IN_THE_SAME_CELL;
         }
-        if ((buyer.id != order.owner_id) && (buyer.savings.get() < order.buyout_price)) {
+        // make sure that buyer has enough money
+        // but owner can buy it from himself
+        if ((buyer.id != order.owner_id) && (buyer.savings.get() < order.price)) {
             return AuctionResponce.NOT_ENOUGH_MONEY;
         }
-        if (order.flags.finished) {
+        // make sure that this order is still available to avoid duplication
+        if (order.finished) {
             return AuctionResponce.INVALID_ORDER;
         }
-        // order.return_money()
-        order.flags.finished = true;
-        order.latest_bidder = buyer;
-        let owner = order.owner;
-        buyer.savings.transfer(owner.savings, order.buyout_price);
-        let item = order.item;
-        switch (item.item_type) {
-            case 'armour':
-                buyer.equip.add_armour(item);
-                break;
-            case 'weapon': buyer.equip.add_weapon(item);
-        }
-        // order.flags.item_sent = true
-        socket_manager.send_savings_update(buyer);
-        socket_manager.send_item_market_update(order.owner.cell_id);
-        AuctionOrderManagement.delete_db(pool, order);
+        order.finished = true;
+        buyer.savings.transfer(owner.savings, order.price);
+        buyer.equip.data.backpack.add(order.item);
         return AuctionResponce.OK;
     }
-    AuctionManagement.buyout = buyout;
-    function cancel_order(manager, who, order_id) {
-        let order = manager.raw_id_to_item_order(order_id);
-        if (order == undefined) {
+    ItemOrders.buy = buy;
+    function buy_unsafe(id, buyer) {
+        let true_id = number_to_id(id);
+        if (true_id == undefined)
             return AuctionResponce.NO_SUCH_ORDER;
-        }
-        if (order.owner_id != who.id) {
-            return AuctionResponce.INVALID_ORDER;
-        }
-        let owner = order.owner;
-        order.flags.finished = true;
-        let item = order.item;
-        switch (item.item_type) {
-            case 'armour':
-                owner.equip.add_armour(item);
-                break;
-            case 'weapon': owner.equip.add_weapon(item);
-        }
-        socket_manager.send_item_market_update(order.owner.cell_id);
-        AuctionOrderManagement.delete_db(pool, order);
+        return buy(true_id, buyer);
     }
-    AuctionManagement.cancel_order = cancel_order;
-    function cancel_order_safe(manager, who, order_id) {
-        let order = manager.get_item_order(order_id);
-        let owner = order.owner;
-        order.flags.finished = true;
-        let item = order.item;
-        // console.log(item)
-        switch (item.item_type) {
-            case 'armour':
-                owner.equip.add_armour(item);
-                break;
-            case 'weapon': owner.equip.add_weapon(item);
-        }
-        socket_manager.send_item_market_update(order.owner.cell_id);
-        AuctionOrderManagement.delete_db(pool, order);
-    }
-    AuctionManagement.cancel_order_safe = cancel_order_safe;
-    function cancel_all_orders(manager, who) {
-        for (let order of manager.item_orders) {
-            if (order == undefined)
-                continue;
-            if (order.flags.finished)
-                continue;
-            console.log(order.owner_id, who.id);
-            if (order.owner_id == who.id)
-                cancel_order_safe(pool, manager, socket_manager, who, order.id);
-        }
-    }
-    AuctionManagement.cancel_all_orders = cancel_all_orders;
-})(AuctionManagement = exports.AuctionManagement || (exports.AuctionManagement = {}));
+    ItemOrders.buy_unsafe = buy_unsafe;
+})(ItemOrders = exports.ItemOrders || (exports.ItemOrders = {}));
+// export function cell_id_to_orders_list(manager: EntityManager, cell_id: number): OrderItem[] {
+//     let tmp = []
+//     for (let order of manager.item_orders) {
+//         if (order == undefined) continue;
+//         if (order.flags.finished) continue;
+//         if (order.owner.cell_id == cell_id) {
+//             tmp.push(order)
+//         }
+//     }
+//     return tmp
+// }
+// export function cell_id_to_orders_socket_data_list(manager: EntityManager, cell_id: number): OrderItemSocketData[] {
+//     let tmp = []
+//     for (let order of manager.item_orders) {
+//         if (order == undefined) continue;
+//         if (order.flags.finished) continue;
+//         if (order.owner.cell_id == cell_id) {
+//             tmp.push(AuctionOrderManagement.order_to_socket_data(order))
+//         }
+//     }
+//     return tmp
+// }
+// export function cell_id_to_orders_json_list(manager: EntityManager, cell_id: number): OrderItemJson[] {
+//     let tmp = []
+//     for (let order of manager.item_orders) {
+//         if (order == undefined) continue;
+//         if (order.flags.finished) continue;
+//         if (order.owner.cell_id == cell_id) {
+//             tmp.push(AuctionOrderManagement.order_to_json(order))
+//         }
+//     }
+//     return tmp
+// }

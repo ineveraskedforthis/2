@@ -1,4 +1,4 @@
-import { DamageByTypeObject } from "../../misc/damage_types";
+import { Damage } from "../../misc/damage_types";
 import { Archetype, Stats } from "../character_parts";
 import { CharacterTemplate } from "../templates";
 
@@ -19,7 +19,7 @@ const HumanStats:Stats = {
     movement_speed: 1
 }
 
-const HumanBaseResists = new DamageByTypeObject(0, 0, 0, 0)
+const HumanBaseResists = new Damage(0, 0, 0, 0)
 
 
 export const HumanTemplateNotAligned = new CharacterTemplate(0, HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists, -1)

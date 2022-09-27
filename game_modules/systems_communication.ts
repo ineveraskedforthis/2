@@ -50,14 +50,15 @@ export namespace Unlink {
         
     }
 }
-    enter(char: Character) {
-        this.characters_set.add(char.id)
-        this.world.socket_manager.send_market_info_character(this, char)
-        
-        this.world.socket_manager.send_cell_updates(this)
-    }
 
-    exit(char: Character) {
-        this.characters_set.delete(char.id)
-        this.world.socket_manager.send_cell_updates(this)
-    }
+    // enter(char: Character) {
+    //     this.characters_set.add(char.id)
+    //     this.world.socket_manager.send_market_info_character(this, char)
+        
+    //     this.world.socket_manager.send_cell_updates(this)
+    // }
+
+    // exit(char: Character) {
+    //     this.characters_set.delete(char.id)
+    //     this.world.socket_manager.send_cell_updates(this)
+    // }

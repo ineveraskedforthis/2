@@ -9,7 +9,7 @@ import { Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
 import { Update } from "./causality_graph";
-import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
+import { cell_id, char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
@@ -152,14 +152,14 @@ export namespace UserManagement {
         return users_data_dict[id]
     }
 
-    export function get_new_character(id: user_id, name: string, model_variation: any) {
+    export function get_new_character(id: user_id, name: string, model_variation: any, starting_cell: cell_id) {
         let user = get_user_data(id)
         if (user.char_id != '@') {
             console.log('attempt to generate character for user who already owns one')
             return
         }
 
-        let character = CharacterSystem.template_to_character(HumanTemplateNotAligned, name)
+        let character = CharacterSystem.template_to_character(HumanTemplateNotAligned, name, starting_cell)
         character.set_model_variation(model_variation)
 
         console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')')

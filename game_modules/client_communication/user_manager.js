@@ -143,13 +143,13 @@ var UserManagement;
         return exports.users_data_dict[id];
     }
     UserManagement.get_user_data = get_user_data;
-    function get_new_character(id, name, model_variation) {
+    function get_new_character(id, name, model_variation, starting_cell) {
         let user = get_user_data(id);
         if (user.char_id != '@') {
             console.log('attempt to generate character for user who already owns one');
             return;
         }
-        let character = system_1.CharacterSystem.template_to_character(human_1.HumanTemplateNotAligned, name);
+        let character = system_1.CharacterSystem.template_to_character(human_1.HumanTemplateNotAligned, name, starting_cell);
         character.set_model_variation(model_variation);
         console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')');
         systems_communication_1.Link.character_and_user_data(character, user);

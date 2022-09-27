@@ -1,25 +1,26 @@
-import { PgPool } from "../../../world";
-import { Character } from "../character";
+import { Damage } from "../../misc/damage_types";
+import { Archetype, Stats } from "../character_parts";
+import { CharacterTemplate } from "../templates";
 import { gen_from_moraes } from "./generate_name_moraes";
 
-let moraes = ['s', 'shi', "S'", "fu", 'fi']
-
-
-
-export async function rat(pool: PgPool, char: Character) {
-    char.misc.tag = 'rat'
-    char.misc.ai_tag = 'steppe_walker_agressive'
-    char.misc.model = 'rat'
-    char.stats.phys_power = 5
-    char.stats.magic_power = 5
-
-    char.name = gen_from_moraes(moraes, 5)
-
-    char.status.hp = 50
-    char.stats.max.hp = 50
-
-    char.faction_id = 1
-
-    char.skills.perks.claws = true
-    await char.save_to_db(pool)
+const RatArchetype: Archetype = {
+    model: 'rat',
+    ai_map: 'steppe_walker_agressive',
+    ai_battle: 'basic',
+    race: 'rat'
 }
+
+const RatStats: Stats = {
+    phys_power: 15,
+    magic_power: 20,
+    movement_speed: 2
+}
+
+const RatResists = new Damage(10, 0, 0, 20)
+
+const rat_moraes = ['s', 'shi', "S'", "fu", 'fi']
+function generate_name() {
+    return gen_from_moraes(rat_moraes, 5)
+}
+
+export const RatTemplate = new CharacterTemplate(0, RatArchetype, generate_name, 50, RatStats, RatResists, 1)

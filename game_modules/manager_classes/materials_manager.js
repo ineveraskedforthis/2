@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ARROW_BONE = exports.WATER = exports.MEAT = exports.ZAZ = exports.FOOD = exports.STEEL = exports.WOOD = exports.GRACI_HAIR = exports.ELODINO_FLESH = exports.RAT_BONE = exports.RAT_SKIN = exports.materials = exports.MaterialsManager = void 0;
-const item_tags_1 = require("../base_game_classes/items/item_tags");
+const item_1 = require("../base_game_classes/items/item");
 class MaterialsManager {
     constructor() {
         this.materials = [];
@@ -17,7 +17,7 @@ class MaterialsManager {
         return this.new_material_id - 1;
     }
     create_material(density, hardness, string_tag) {
-        let mat = new item_tags_1.ITEM_MATERIAL(density, hardness, string_tag);
+        let mat = new item_1.ITEM_MATERIAL(density, hardness, string_tag);
         let ind = this.add_material(mat);
         return ind;
     }

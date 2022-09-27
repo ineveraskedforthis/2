@@ -6,7 +6,6 @@ var common = require("../common.js");
 const Area = require('../base_game_classes/area.js');
 const Faction = require('../base_game_classes/faction.js');
 const Quest = require('../base_game_classes/quest.js');
-const cell_1 = require("../map/cell");
 const character_1 = require("../base_game_classes/character/character");
 const classes_1 = require("../market/classes");
 const battle_1 = require("../battle");
@@ -38,50 +37,6 @@ class EntityManager {
         await this.load_factions(pool);
         await this.load_quests(pool);
         await this.clear_dead_orders(pool);
-    }
-    async init_cells(pool) {
-        let data = this.world.constants.development;
-        let data_res = this.world.constants.resources;
-        for (var i = 0; i < this.world.x; i++) {
-            var tmp = [];
-            for (var j = 0; j < this.world.y; j++) {
-                var cell = new cell_1.Cell(this.world, this, i, j, '', data[i + '_' + j], data_res[i + '_' + j]);
-                await cell.init(pool);
-                tmp.push(cell);
-            }
-            this.cells.push(tmp);
-        }
-    }
-    async load_cells(pool) {
-        for (let i = 0; i < this.world.x; i++) {
-            let tmp = [];
-            for (let j = 0; j < this.world.y; j++) {
-                let cell = new cell_1.Cell(this.world, this, i, j, '', { rural: 0, ruins: 0, urban: 0, wild: 0, wastelands: 0 }, { water: false, prey: false, fish: false, forest: false });
-                tmp.push(cell);
-            }
-            this.cells.push(tmp);
-        }
-        for (let i = 0; i < this.world.x; i++) {
-            for (let j = 0; j < this.world.y; j++) {
-                await this.cells[i][j].load(pool);
-            }
-        }
-    }
-    get_cell(x, y) {
-        if (this.validate_cell(x, y)) {
-            return this.cells[x][y];
-        }
-        return undefined;
-    }
-    validate_cell(x, y) {
-        return (y >= 0) && (y < this.world.y) && (x >= 0) && (x < this.world.x);
-    }
-    get_cell_by_id(id) {
-        // console.log(id);
-        return this.get_cell(Math.floor(id / this.world.y), id % this.world.y);
-    }
-    get_cell_id_by_x_y(x, y) {
-        return x * this.world.y + y;
     }
     async load_characters(pool) {
         let res = await common.send_query(pool, constants_1.constants.load_chars_query);

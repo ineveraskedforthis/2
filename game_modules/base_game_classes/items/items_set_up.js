@@ -2,78 +2,101 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
-const item_tags_1 = require("./item_tags");
+const damage_types_1 = require("../misc/damage_types");
+const system_1 = require("./system");
+function base_resists(material, slot) {
+    const size = system_1.ItemSystem.size({ slot: slot, weapon_tag: 'twohanded' });
+    const resists = new damage_types_1.Damage(material.density, material.hardness * 2 * size, material.hardness * size, material.density);
+    return resists;
+}
+const wood = materials_manager_1.materials.index_to_material(materials_manager_1.WOOD);
+const skin = materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN);
+const empty_resists = new damage_types_1.Damage();
 exports.BASIC_BOW_ARGUMENT = {
     durability: 100,
-    shaft_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-    shaft_length: 0 /* SHAFT_LEGTH.HAND */,
-    impact_size: 1 /* IMPACT_SIZE.SMALL */,
-    impact_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-    impact_type: 2 /* IMPACT_TYPE.HEAD */,
-    impact_quality: 0,
     affixes: [],
-    item_type: 'weapon',
-    ranged: true
+    slot: 'weapon',
+    material: wood,
+    weapon_tag: 'ranged',
+    model_tag: 'bow',
+    resists: empty_resists,
+    damage: new damage_types_1.Damage(5, 0, 0),
+    range: 1
 };
 exports.SPEAR_ARGUMENT = {
     durability: 100,
-    shaft_length: 2 /* SHAFT_LEGTH.LONG */,
-    shaft_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-    impact_size: 1 /* IMPACT_SIZE.SMALL */,
-    impact_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-    impact_type: 0 /* IMPACT_TYPE.POINT */,
-    impact_quality: 50,
     affixes: [],
-    item_type: 'weapon'
+    slot: 'weapon',
+    material: wood,
+    weapon_tag: 'polearms',
+    model_tag: 'spear',
+    resists: empty_resists,
+    damage: new damage_types_1.Damage(2, 5, 1),
+    range: 2
 };
 exports.BONE_SPEAR_ARGUMENT = {
     durability: 100,
-    shaft_length: 2 /* SHAFT_LEGTH.LONG */,
-    shaft_material: materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
-    impact_size: 1 /* IMPACT_SIZE.SMALL */,
-    impact_material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE),
-    impact_type: 0 /* IMPACT_TYPE.POINT */,
-    impact_quality: 100,
     affixes: [],
-    item_type: 'weapon'
+    slot: 'weapon',
+    material: wood,
+    weapon_tag: 'polearms',
+    model_tag: 'bone_spear',
+    resists: empty_resists,
+    damage: new damage_types_1.Damage(2, 8, 3),
+    range: 2
 };
 exports.RAT_SKIN_PANTS_ARGUMENT = {
     durability: 100,
-    material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-    type: item_tags_1.ARMOUR_TYPE.LEGS,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'legs',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_pants',
+    resists: base_resists(skin, 'legs'),
+    damage: new damage_types_1.Damage(),
+    range: 1
 };
 exports.RAT_SKIN_ARMOUR_ARGUMENT = {
     durability: 100,
-    material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-    type: item_tags_1.ARMOUR_TYPE.BODY,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'body',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_armour',
+    resists: base_resists(skin, 'body'),
+    damage: new damage_types_1.Damage(),
+    range: 1
 };
 exports.RAT_SKIN_HELMET_ARGUMENT = {
     durability: 100,
-    material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-    type: item_tags_1.ARMOUR_TYPE.HEAD,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'head',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_armour',
+    resists: base_resists(skin, 'head'),
+    damage: new damage_types_1.Damage(),
+    range: 1
 };
 exports.RAT_SKIN_BOOTS_ARGUMENT = {
     durability: 100,
-    material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-    type: item_tags_1.ARMOUR_TYPE.FOOT,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'foot',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_boots',
+    resists: base_resists(skin, 'foot'),
+    damage: new damage_types_1.Damage(),
+    range: 1
 };
 exports.RAT_SKIN_GLOVES_ARGUMENT = {
     durability: 100,
-    material: materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-    type: item_tags_1.ARMOUR_TYPE.ARMS,
-    quality: 100,
     affixes: [],
-    item_type: 'armour'
+    slot: 'arms',
+    material: skin,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skin_gloves',
+    resists: base_resists(skin, 'arms'),
+    damage: new damage_types_1.Damage(),
+    range: 1
 };

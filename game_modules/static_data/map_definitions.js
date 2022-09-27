@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SECTIONS = exports.TERRITORIES = exports.STARTING_RESOURCES = exports.STARTING_TERRAIN = exports.STARTING_DEVELOPMENT = void 0;
+exports.SECTIONS = exports.TERRITORIES = exports.STARTING_RESOURCES = exports.STARTING_TERRAIN = exports.STARTING_DEVELOPMENT = exports.WORLD_SIZE = void 0;
+exports.WORLD_SIZE = [27, 27];
 exports.STARTING_DEVELOPMENT = {
     // ########################
     // ######## IT'H ##########

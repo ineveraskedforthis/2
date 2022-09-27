@@ -1,21 +1,26 @@
-import { PgPool } from "../../../world";
-import { Character } from "../character";
+import { Damage } from "../../misc/damage_types";
+import { Archetype, Stats } from "../character_parts";
+import { CharacterTemplate } from "../templates";
 import { gen_from_moraes } from "./generate_name_moraes";
-let moraes = ['xi', 'lo', 'mi', 'ki', 'a', 'i', 'ku']
-export async function elo(pool: PgPool, char: Character) {
-    char.misc.tag = 'elo'
-    char.misc.ai_tag = 'forest_walker'
-    char.misc.model = 'elodino'
-    char.stats.phys_power = 15
-    char.stats.magic_power = 20
 
-    char.name = gen_from_moraes(moraes, 3)
-
-    char.faction_id = 2
-
-    char.status.hp = 200
-    char.stats.max.hp = 200
-
-    char.skills.perks.claws = true
-    await char.save_to_db(pool)
+const ElodinoArchetype: Archetype = {
+    model: 'elo',
+    ai_map: 'forest_walker',
+    ai_battle: 'basic',
+    race: 'elo'
 }
+
+const ElodinoStats: Stats = {
+    phys_power: 15,
+    magic_power: 20,
+    movement_speed: 2
+}
+
+const ElodinoResists = new Damage(10, 0, 0, 20)
+
+const elo_moraes = ['xi', 'lo', 'mi', 'ki', 'a', 'i', 'ku']
+function generate_name() {
+    return gen_from_moraes(elo_moraes, 3)
+}
+
+export const EloTemplate = new CharacterTemplate(0, ElodinoArchetype, generate_name, 200, ElodinoStats, ElodinoResists, 2)

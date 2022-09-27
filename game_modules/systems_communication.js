@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
-const character_1 = require("./base_game_classes/character/character");
 const system_1 = require("./base_game_classes/character/system");
 const updates_1 = require("./client_communication/network_actions/updates");
 const user_manager_1 = require("./client_communication/user_manager");
@@ -49,17 +48,16 @@ var Link;
 var Unlink;
 (function (Unlink) {
     function character_and_cell(character, cell) {
+        character.cell_id = cell.id;
     }
     Unlink.character_and_cell = character_and_cell;
 })(Unlink = exports.Unlink || (exports.Unlink = {}));
-enter(char, character_1.Character);
-{
-    this.characters_set.add(char.id);
-    this.world.socket_manager.send_market_info_character(this, char);
-    this.world.socket_manager.send_cell_updates(this);
-}
-exit(char, character_1.Character);
-{
-    this.characters_set.delete(char.id);
-    this.world.socket_manager.send_cell_updates(this);
-}
+// enter(char: Character) {
+//     this.characters_set.add(char.id)
+//     this.world.socket_manager.send_market_info_character(this, char)
+//     this.world.socket_manager.send_cell_updates(this)
+// }
+// exit(char: Character) {
+//     this.characters_set.delete(char.id)
+//     this.world.socket_manager.send_cell_updates(this)
+// }

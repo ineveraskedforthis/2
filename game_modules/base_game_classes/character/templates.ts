@@ -1,4 +1,4 @@
-import { DamageByTypeObject } from "../misc/damage_types";
+import { Damage } from "../misc/damage_types";
 import { Archetype, Stats, Status } from "./character_parts";
 
 export class CharacterTemplate {
@@ -10,11 +10,11 @@ export class CharacterTemplate {
     
     max_hp: number;
     stats: Stats
-    base_resists: DamageByTypeObject;
+    base_resists: Damage;
 
     faction: number
     
-    constructor(money: number, archetype: Archetype, name_gen: () => string, max_hp: number, stats: Stats, base_resists:DamageByTypeObject, faction: number) {
+    constructor(money: number, archetype: Archetype, name_gen: () => string, max_hp: number, stats: Stats, base_resists:Damage, faction: number) {
         this.starting_money = money;
         this.archetype = archetype
         this.name_generator = name_gen

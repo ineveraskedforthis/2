@@ -21,7 +21,7 @@ class InnateStats {
             phys_power: phys,
             magic_power: magic,
         };
-        this.base_resists = new damage_types_1.DamageByTypeObject();
+        this.base_resists = new damage_types_1.Damage();
     }
 }
 exports.InnateStats = InnateStats;

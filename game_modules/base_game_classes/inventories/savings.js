@@ -4,39 +4,28 @@ exports.Savings = void 0;
 class Savings {
     constructor() {
         this.data = 0;
-        this.prev_data = 0;
-        this.income = 0;
         this.changed = false;
     }
-    get_json() {
+    json() {
         var tmp = {
             data: this.data,
-            prev_data: this.prev_data,
-            income: this.income
         };
         return tmp;
     }
     transfer_all(target) {
         this.transfer(target, this.get());
     }
-    load_from_json(x) {
+    from_json(x) {
         this.data = x.data;
-        this.prev_data = x.prev_data;
-        this.income = x.income;
-    }
-    update() {
-        this.prev_data = this.data;
-        this.income = 0;
     }
     set(x) {
+        if (this.data == x)
+            return;
         this.data = x;
         this.changed = true;
     }
     get() {
         return this.data;
-    }
-    get_estimated_income() {
-        return this.data - this.prev_data;
     }
     inc(x) {
         var a = this.get();

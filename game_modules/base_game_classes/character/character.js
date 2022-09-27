@@ -6,7 +6,6 @@ const character_parts_1 = require("./character_parts");
 const skills_1 = require("./skills");
 const equip_1 = require("../inventories/equip");
 const savings_1 = require("../inventories/savings");
-let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class Character {
     constructor(id, battle_id, battle_unit_id, user_id, cell_id, name, archetype, stats, max_hp) {
         this.id = id;
@@ -34,6 +33,13 @@ class Character {
     }
     set_model_variation(data) {
         this.model_variation = data;
+    }
+    change(type, x) {
+        let tmp = this.status[type];
+        let new_status = tmp + x;
+        new_status = Math.min(this.stats.max[type], new_status);
+        new_status = Math.max(new_status, 0);
+        this.status[type] = new_status;
     }
 }
 exports.Character = Character;
@@ -293,15 +299,6 @@ exports.Character = Character;
 //         let tmp = this.status.blood;
 //         this.status.blood = Math.max(0, Math.min(this.get_max_blood(), this.status.blood + x));
 //         if (tmp != this.status.blood) {
-//             this.changed = true
-//             this.status_changed = true;
-//             this.send_status_update()
-//         }
-//     }
-//     change_stress(x: number) {
-//         let tmp = this.status.stress;
-//         this.status.stress = Math.max(0, Math.min(this.get_max_stress(), this.status.stress + x));
-//         if (tmp != this.status.stress) {
 //             this.changed = true
 //             this.status_changed = true;
 //             this.send_status_update()

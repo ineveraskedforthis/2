@@ -1,5 +1,6 @@
 import { ELODINO_FLESH, GRACI_HAIR, MEAT, RAT_BONE, RAT_SKIN } from "../../../manager_classes/materials_manager";
-import { Character, tagRACE } from "../character";
+import { Character} from "../character";
+import { tagRACE } from "../character_parts";
 
 const SKIN_RAT_DIFFICULTY = 10
 const SKIN_HUMAN_DIFFICULTY = 40
@@ -19,7 +20,7 @@ export function generate_loot(killer:Character, dead:tagRACE): boolean {
                 killer.stash.inc(RAT_BONE, 2);
                 killer.stash.inc(RAT_SKIN, 2)
                 let luck = Math.random()
-                let skill = killer.skills.skinning.practice
+                let skill = killer.skills.skinning
 
                 if (luck * (skill) + skill > SKIN_RAT_DIFFICULTY) {
                     killer.stash.inc(MEAT, 2);
@@ -28,11 +29,12 @@ export function generate_loot(killer:Character, dead:tagRACE): boolean {
 
                 // let learning_dice = Math.random() * 20
                 if (skill < SKIN_RAT_DIFFICULTY) {
-                    killer.skills.skinning.practice += 1
+                    killer.skills.skinning += 1
                 }
 
                 return true
             }
         case 'graci': {killer.stash.inc(GRACI_HAIR, 3); return true}
     }
+    return false
 }

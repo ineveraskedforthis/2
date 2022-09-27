@@ -8,6 +8,7 @@ import { SECTIONS } from "../static_data/map_definitions";
 import { Auth } from "./network_actions/auth";
 import { ValidatorSM } from "./network_actions/common_validations";
 import { Alerts } from "./network_actions/alerts";
+import { MapSystem } from "../map/system";
 
 
 interface Message {
@@ -122,7 +123,7 @@ export class SocketManager {
         }
     }
 
-    create_character(sw: SocketWrapper, data: {name: string, eyes: number, chin: number, mouth: number}) {
+    create_character(sw: SocketWrapper, data: {name: string, eyes: number, chin: number, mouth: number, location: string}) {
         if (sw.user_id == '#') return
         let user = UserManagement.get_user(sw.user_id)
 
@@ -132,7 +133,11 @@ export class SocketManager {
             chin: data.chin,
             mouth: data.mouth
         }
-        UserManagement.get_new_character(sw.user_id, data.name, model_variation)
+
+        if (data.location == 'village') {var starting_cell = MapSystem.coordinate_to_id(0, 3)}
+        else                            {var starting_cell = MapSystem.coordinate_to_id(0, 3)}
+
+        UserManagement.get_new_character(sw.user_id, data.name, model_variation, starting_cell)
         UserManagement.update_users()
     }
 

@@ -9,6 +9,7 @@ const map_definitions_1 = require("../static_data/map_definitions");
 const auth_1 = require("./network_actions/auth");
 const common_validations_1 = require("./network_actions/common_validations");
 const alerts_1 = require("./network_actions/alerts");
+const system_1 = require("../map/system");
 class SocketManager {
     constructor(io) {
         this.io = io;
@@ -93,7 +94,13 @@ class SocketManager {
             chin: data.chin,
             mouth: data.mouth
         };
-        user_manager_1.UserManagement.get_new_character(sw.user_id, data.name, model_variation);
+        if (data.location == 'village') {
+            var starting_cell = system_1.MapSystem.coordinate_to_id(0, 3);
+        }
+        else {
+            var starting_cell = system_1.MapSystem.coordinate_to_id(0, 3);
+        }
+        user_manager_1.UserManagement.get_new_character(sw.user_id, data.name, model_variation, starting_cell);
         user_manager_1.UserManagement.update_users();
     }
 }
