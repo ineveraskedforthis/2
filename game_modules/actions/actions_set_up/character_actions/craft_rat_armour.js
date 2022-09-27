@@ -8,7 +8,7 @@ function generate_rat_skin_craft(arg, cost) {
     return {
         duration(char) {
             return 0.5;
-            return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;
+            return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier) / 20;
         },
         check:  function (pool, char, data) {
             if (!char.in_battle()) {
@@ -24,7 +24,7 @@ function generate_rat_skin_craft(arg, cost) {
             let tmp = char.stash.get(materials_manager_1.RAT_SKIN);
             if (tmp >= cost) {
                 char.changed = true;
-                let skill = char.skills.clothier.practice;
+                let skill = char.skills.clothier;
                 char.stash.inc(materials_manager_1.RAT_SKIN, -cost);
                 char.send_stash_update();
                 char.change_fatigue(10);
@@ -42,7 +42,7 @@ function generate_rat_skin_craft(arg, cost) {
                 else {
                     char.change_stress(1);
                     if (skill < 20) {
-                        char.skills.clothier.practice += 1;
+                        char.skills.clothier += 1;
                         char.send_skills_update();
                         char.changed = true;
                     }

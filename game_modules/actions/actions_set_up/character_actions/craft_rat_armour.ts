@@ -11,7 +11,7 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
     return {
         duration(char: Character) {
             return 0.5
-            return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier.practice) / 20;            
+            return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier) / 20;            
         },
     
         check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
@@ -29,7 +29,7 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
             let tmp = char.stash.get(RAT_SKIN)
             if (tmp >= cost) {
                 char.changed = true
-                let skill = char.skills.clothier.practice;
+                let skill = char.skills.clothier;
     
                 char.stash.inc(RAT_SKIN, -cost)
                 char.send_stash_update()
@@ -47,7 +47,7 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
                 } else {
                     char.change_stress(1)
                     if (skill < 20) {
-                        char.skills.clothier.practice += 1
+                        char.skills.clothier += 1
                         char.send_skills_update()
                         char.changed = true
                     }

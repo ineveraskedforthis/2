@@ -8,7 +8,7 @@ const items_set_up_1 = require("../../../base_game_classes/items/items_set_up");
 exports.craft_spear = {
     duration(char) {
         return 0.5;
-        return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
+        return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork) / 20;
     },
     check:  function (pool, char, data) {
         if (!char.in_battle()) {
@@ -24,7 +24,7 @@ exports.craft_spear = {
         let tmp = char.stash.get(materials_manager_1.WOOD);
         if (tmp > 2) {
             char.changed = true;
-            let skill = char.skills.woodwork.practice;
+            let skill = char.skills.woodwork;
             char.stash.inc(materials_manager_1.WOOD, -3);
             char.send_stash_update();
             char.change_fatigue(10);
@@ -42,7 +42,7 @@ exports.craft_spear = {
             else {
                 char.change_stress(1);
                 if (skill < 20) {
-                    char.skills.woodwork.practice += 1;
+                    char.skills.woodwork += 1;
                     char.send_skills_update();
                     char.changed = true;
                 }
@@ -61,7 +61,7 @@ function craft_spear_probability(skill) {
 }
 exports.craft_spear_probability = craft_spear_probability;
 function character_to_craft_spear_probability(character) {
-    let skill = character.skills.woodwork.practice;
+    let skill = character.skills.woodwork;
     return craft_spear_probability(skill);
 }
 exports.character_to_craft_spear_probability = character_to_craft_spear_probability;

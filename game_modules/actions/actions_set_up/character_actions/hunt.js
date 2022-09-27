@@ -4,7 +4,7 @@ exports.character_to_hunt_probability = exports.hunt_probability = exports.hunt 
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
 exports.hunt = {
     duration(char) {
-        return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt.practice) / 100;
+        return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
     },
     check:  function (pool, char, data) {
         if (!char.in_battle()) {
@@ -24,7 +24,7 @@ exports.hunt = {
     },
     result:  function (pool, char, data) {
         char.changed = true;
-        let skill = char.skills.hunt.practice;
+        let skill = char.skills.hunt;
         let dice = Math.random();
         char.change_fatigue(10);
         if (dice * 100 < skill) {
@@ -37,7 +37,7 @@ exports.hunt = {
         else {
             let dice = Math.random();
             if (dice * 100 > skill) {
-                char.skills.hunt.practice += 1;
+                char.skills.hunt += 1;
                 char.send_skills_update();
             }
             char.change_stress(1);
@@ -54,7 +54,7 @@ function hunt_probability(skill) {
 }
 exports.hunt_probability = hunt_probability;
 function character_to_hunt_probability(character) {
-    let skill = character.skills.hunt.practice;
+    let skill = character.skills.hunt;
     return hunt_probability(skill);
 }
 exports.character_to_hunt_probability = character_to_hunt_probability;

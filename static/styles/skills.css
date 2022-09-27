@@ -81,7 +81,7 @@
     z-index: 1;
 }
 
-.tab > div > .practice_n{
+.tab > div > _n{
     position: relative;
     padding: 5px;
     z-index: 5;

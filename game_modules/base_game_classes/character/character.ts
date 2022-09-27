@@ -573,9 +573,9 @@ export class Character {
 //         if (tag == 'bolt') {
 //             let bolt_difficulty = 30
 //             let dice = Math.random() * bolt_difficulty
-//             let skill = this.skills.magic_mastery.practice
+//             let skill = this.skills.magic_mastery
 //             if (skill < dice) {
-//                 this.skills.magic_mastery.practice += 1
+//                 this.skills.magic_mastery += 1
 //             }
 //         }
 
@@ -653,7 +653,7 @@ export class Character {
 
 //     mod_spell_damage_with_stats(result: AttackResult, tag:spell_tags) {
 //         let power_mod = this.get_magic_power() / 10
-//         let skill_mod = this.skills.magic_mastery.practice / 10
+//         let skill_mod = this.skills.magic_mastery / 10
 //         let damage_mod = power_mod * (skill_mod + 1)
 
 //         if (this.skills.perks.magic_bolt) {
@@ -745,7 +745,7 @@ export class Character {
 
 //     get_enchant_rating() {
 //         let power = this.get_magic_power()
-//         let skill = this.skills.magic_mastery.practice
+//         let skill = this.skills.magic_mastery
 //         return (power / 10 * skill)
 //     }
 
@@ -761,33 +761,33 @@ export class Character {
 //     }    
 
 //     get_evasion_chance() {
-//         return character_defines.evasion + this.skills.evasion.practice * 0.01
+//         return character_defines.evasion + this.skills.evasion * 0.01
 //     }
 
 //     get_weapon_skill(weapon_type:WEAPON_TYPE):number {
 //         switch(weapon_type) {
-//             case WEAPON_TYPE.NOWEAPON:  return this.skills.noweapon.practice;
-//             case WEAPON_TYPE.ONEHAND:   return this.skills.onehand.practice;
-//             case WEAPON_TYPE.POLEARMS:  return this.skills.polearms.practice;
-//             case WEAPON_TYPE.TWOHANDED: return this.skills.twohanded.practice;
-//             case WEAPON_TYPE.RANGED:    return this.skills.ranged.practice;
+//             case WEAPON_TYPE.NOWEAPON:  return this.skills.noweapon;
+//             case WEAPON_TYPE.ONEHAND:   return this.skills.onehand;
+//             case WEAPON_TYPE.POLEARMS:  return this.skills.polearms;
+//             case WEAPON_TYPE.TWOHANDED: return this.skills.twohanded;
+//             case WEAPON_TYPE.RANGED:    return this.skills.ranged;
 //         }
 //     }
 
 //     change_weapon_skill(weapon_type:WEAPON_TYPE, x: number) {
 //         switch(weapon_type) {
-//             case WEAPON_TYPE.NOWEAPON:  this.skills.noweapon.practice       += x;break;
-//             case WEAPON_TYPE.ONEHAND:   this.skills.onehand.practice        += x;break;
-//             case WEAPON_TYPE.POLEARMS:  this.skills.polearms.practice       += x;break;
-//             case WEAPON_TYPE.TWOHANDED: this.skills.twohanded.practice      += x;break;
-//             case WEAPON_TYPE.RANGED:    this.skills.ranged.practice         += x;break;
+//             case WEAPON_TYPE.NOWEAPON:  this.skills.noweapon       += x;break;
+//             case WEAPON_TYPE.ONEHAND:   this.skills.onehand        += x;break;
+//             case WEAPON_TYPE.POLEARMS:  this.skills.polearms       += x;break;
+//             case WEAPON_TYPE.TWOHANDED: this.skills.twohanded      += x;break;
+//             case WEAPON_TYPE.RANGED:    this.skills.ranged         += x;break;
 //         }
 //     }
 
 
 
 //     get_block_chance() {
-//         let tmp = character_defines.block + this.skills.blocking.practice * character_defines.skill_blocking_modifier;
+//         let tmp = character_defines.block + this.skills.blocking * character_defines.skill_blocking_modifier;
 
 //         return tmp;
 //     }
@@ -854,7 +854,7 @@ export class Character {
 
 //     get_craft_food_chance() {
 //         let chance = 0.0;
-//         chance += this.skills.cooking.practice * 0.05
+//         chance += this.skills.cooking * 0.05
 //         return chance
 //     } 
     

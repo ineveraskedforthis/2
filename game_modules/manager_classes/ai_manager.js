@@ -172,13 +172,13 @@ class AiManager {
             await this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
             return;
         }
-        if ((char.skills.cooking.practice > 40) || (char.skills.perks.meat_master == true)) {
+        if ((char.skills.cooking > 40) || (char.skills.perks.meat_master == true)) {
             await AI.cook_food(pool, this.world.action_manager, char);
         }
-        if ((char.skills.woodwork.practice > 40) || (char.skills.perks.fletcher == true)) {
+        if ((char.skills.woodwork > 40) || (char.skills.perks.fletcher == true)) {
             await AI.make_arrow(pool, this.world.action_manager, char);
         }
-        if ((char.skills.clothier.practice > 40) || (char.skills.perks.skin_armour_master == true)) {
+        if ((char.skills.clothier > 40) || (char.skills.perks.skin_armour_master == true)) {
             await AI.make_armour(pool, this.world.action_manager, char);
         }
     }

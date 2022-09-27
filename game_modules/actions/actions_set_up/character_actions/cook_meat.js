@@ -4,7 +4,7 @@ exports.cook_elo_to_zaz = exports.cook_meat = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
 exports.cook_meat = {
     duration(char) {
-        // return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;
+        // return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking) / 20;
         return 0.5;
     },
     check:  function (pool, char, data) {
@@ -21,7 +21,7 @@ exports.cook_meat = {
         let tmp = char.stash.get(materials_manager_1.MEAT);
         if (tmp > 0) {
             char.changed = true;
-            let skill = char.skills.cooking.practice;
+            let skill = char.skills.cooking;
             let check = cook_meat_probability(skill, char.skills.perks);
             let dice = Math.random();
             char.stash.inc(materials_manager_1.MEAT, -1);
@@ -36,7 +36,7 @@ exports.cook_meat = {
             }
             else {
                 if (skill < 19) {
-                    char.skills.cooking.practice += 1;
+                    char.skills.cooking += 1;
                     char.send_skills_update();
                 }
                 char.change_stress(5);
@@ -51,7 +51,7 @@ exports.cook_meat = {
 };
 exports.cook_elo_to_zaz = {
     duration(char) {
-        return Math.max(0.5, 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice - char.skills.magic_mastery.practice) / 20);
+        return Math.max(0.5, 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking - char.skills.magic_mastery) / 20);
     },
     check:  function (pool, char, data) {
         if (!char.in_battle()) {
@@ -67,8 +67,8 @@ exports.cook_elo_to_zaz = {
         let tmp = char.stash.get(materials_manager_1.ELODINO_FLESH);
         if (tmp > 0) {
             char.changed = true;
-            let skill1 = char.skills.cooking.practice;
-            let skill2 = char.skills.magic_mastery.practice;
+            let skill1 = char.skills.cooking;
+            let skill2 = char.skills.magic_mastery;
             let check = cook_elodino_flesh_probability(skill1, skill2, char.skills.perks);
             let dice = Math.random();
             char.stash.inc(materials_manager_1.ELODINO_FLESH, -5);
@@ -78,8 +78,8 @@ exports.cook_elo_to_zaz = {
                 char.stash.inc(materials_manager_1.ZAZ, 1);
                 char.stash.inc(materials_manager_1.MEAT, 1);
                 dice = Math.random() * 100;
-                if (dice * char.skills.magic_mastery.practice < 5) {
-                    char.skills.magic_mastery.practice += 1;
+                if (dice * char.skills.magic_mastery < 5) {
+                    char.skills.magic_mastery += 1;
                 }
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'meat prepared');
                 char.send_stash_update();
@@ -89,7 +89,7 @@ exports.cook_elo_to_zaz = {
             else {
                 let dice = Math.random();
                 if (skill1 < COOK_ELODINO_DIFFICULTY * dice) {
-                    char.skills.cooking.practice += 1;
+                    char.skills.cooking += 1;
                 }
                 char.send_skills_update();
                 char.change_stress(5);

@@ -25,7 +25,7 @@ exports.craft_bone_spear = {
         let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
         if ((tmp > 2) && (tmp_2 > 3)) {
             char.changed = true;
-            let skill = char.skills.woodwork.practice;
+            let skill = char.skills.woodwork;
             char.stash.inc(materials_manager_1.WOOD, -3);
             char.stash.inc(materials_manager_1.RAT_BONE, -4);
             char.send_stash_update();
@@ -44,7 +44,7 @@ exports.craft_bone_spear = {
             else {
                 char.change_stress(1);
                 if (skill < 20) {
-                    char.skills.woodwork.practice += 1;
+                    char.skills.woodwork += 1;
                     char.send_skills_update();
                     char.changed = true;
                 }
@@ -61,7 +61,7 @@ function craft_bone_arrow_probability(character) {
     if (character.skills.perks.fletcher) {
         return 1;
     }
-    return 0.7 * Math.min(1, character.skills.woodwork.practice / BONE_ARROW_DIFFICULTY);
+    return 0.7 * Math.min(1, character.skills.woodwork / BONE_ARROW_DIFFICULTY);
 }
 exports.craft_bone_arrow_probability = craft_bone_arrow_probability;
 exports.craft_bone_arrow = {
@@ -84,7 +84,7 @@ exports.craft_bone_arrow = {
         let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
         if ((tmp >= 1) && (tmp_2 >= 10)) {
             char.changed = true;
-            let skill = char.skills.woodwork.practice;
+            let skill = char.skills.woodwork;
             char.stash.inc(materials_manager_1.WOOD, -1);
             char.stash.inc(materials_manager_1.RAT_BONE, -10);
             char.send_stash_update();
@@ -96,7 +96,7 @@ exports.craft_bone_arrow = {
             char.send_stash_update();
             char.send_status_update();
             if (skill < 10) {
-                char.skills.woodwork.practice += 1;
+                char.skills.woodwork += 1;
             }
         }
     },
@@ -123,7 +123,7 @@ exports.craft_wood_bow = {
         // let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp >= 3)) {
             char.changed = true;
-            let skill = char.skills.woodwork.practice;
+            let skill = char.skills.woodwork;
             char.stash.inc(materials_manager_1.WOOD, -3);
             char.send_stash_update();
             char.change_fatigue(10);
@@ -141,7 +141,7 @@ exports.craft_wood_bow = {
             else {
                 char.change_stress(1);
                 if (skill < 20) {
-                    char.skills.woodwork.practice += 1;
+                    char.skills.woodwork += 1;
                     char.send_skills_update();
                     char.changed = true;
                 }

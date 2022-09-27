@@ -1,12 +1,13 @@
 import { Character } from "../../../base_game_classes/character/character";
+import { WOOD } from "../../../manager_classes/materials_manager";
 import { map_position } from "../../../types";
-import { ActionTargeted } from "../../action_manager";
+import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
 
 
 export const craft_spear:ActionTargeted = {
     duration(char: Character) {
         return 0.5
-        return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
+        return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork) / 20;
     },
 
     check: function(char:Character, data: map_position): CharacterActionResponce {
@@ -23,8 +24,7 @@ export const craft_spear:ActionTargeted = {
     result: function(char:Character, data: any) {
         let tmp = char.stash.get(WOOD)
         if (tmp > 2) { 
-            char.changed = true
-            let skill = char.skills.woodwork.practice;
+            let skill = char.skills.woodwork;
 
             char.stash.inc(WOOD, -3)
             char.send_stash_update()
@@ -42,7 +42,7 @@ export const craft_spear:ActionTargeted = {
             } else {
                 char.change_stress(1)
                 if (skill < 20) {
-                    char.skills.woodwork.practice += 1
+                    char.skills.woodwork += 1
                     char.send_skills_update()
                     char.changed = true
                 }
@@ -62,6 +62,6 @@ export function craft_spear_probability(skill: number) {
 }
 
 export function character_to_craft_spear_probability(character:Character) {
-    let skill = character.skills.woodwork.practice
+    let skill = character.skills.woodwork
     return craft_spear_probability(skill)
 }

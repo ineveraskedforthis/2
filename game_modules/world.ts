@@ -166,7 +166,7 @@
 
 
 //         let armour_master = await this.create_new_character(pool, 'Armour master', starting_cell_id, -1)
-//         armour_master.skills.clothier.practice = 100
+//         armour_master.skills.clothier = 100
 //         armour_master.skills.perks.skin_armour_master = true
 //         armour_master.stash.inc(RAT_SKIN, 40)
 //         armour_master.savings.inc(1000 as money)
@@ -176,7 +176,7 @@
 
 //         let cook = await this.create_new_character(pool, 'Cook', starting_cell_id, -1)
 //         cook.learn_perk("meat_master")
-//         cook.skills.cooking.practice = 100
+//         cook.skills.cooking = 100
 //         cook.stash.inc(FOOD, 10)
 //         cook.savings.inc(500 as money)
 //         cook.faction_id = 3
@@ -185,7 +185,7 @@
 
 
 //         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1)
-//         monk.skills.noweapon.practice = 100
+//         monk.skills.noweapon = 100
 //         monk.learn_perk("advanced_unarmed")
 //         monk.faction_id = 3
 //         monk.changed = true
@@ -193,7 +193,7 @@
 //         let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
 //         forest_cook.stash.inc(FOOD, 10)
 //         forest_cook.savings.inc(500 as money)
-//         forest_cook.skills.cooking.practice = 100
+//         forest_cook.skills.cooking = 100
 //         forest_cook.learn_perk("meat_master")
 //         forest_cook.faction_id = 3
         
@@ -206,7 +206,7 @@
 //         fletcher.faction_id = 3
 
 //         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
-//         spearman.skills.polearms.practice = 100
+//         spearman.skills.polearms = 100
 //         spearman.learn_perk("advanced_polearm")
 //         let spear = new Weapon(BONE_SPEAR_ARGUMENT)
 //         spearman.equip.data.weapon = spear
@@ -221,7 +221,7 @@
 //         meat_bag.faction_id = 3
 
 //         let mage = await this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1)
-//         mage.skills.magic_mastery.practice = 100
+//         mage.skills.magic_mastery = 100
 //         mage.learn_perk('mage_initiation')
 //         mage.learn_perk('magic_bolt')
 //         mage.stash.inc(ZAZ, 300)
