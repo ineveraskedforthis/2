@@ -1,6 +1,8 @@
+import { ActionManager, CharacterAction, CharacterActionResponce } from "../../actions/action_manager";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper } from "../user";
 import { UserManagement } from "../user_manager";
+import { Alerts } from "./alerts";
 
 export namespace HandleAction {
     export function move(sw: SocketWrapper, data: {x: unknown, y: unknown}) {
@@ -17,14 +19,15 @@ export namespace HandleAction {
             return
         }
 
-        const destination = {x: x, y: y}
-        let res = await this.world.action_manager.start_action(CharacterAction.MOVE, char, data)
-        if (res == CharacterActionResponce.CANNOT_MOVE_THERE) {
-            user.socket.emit('alert', 'can\'t go there');
-        } else if (res == CharacterActionResponce.IN_BATTLE) {
-            user.socket.emit('alert', 'you are in battle');
+        const destination: [number, number] = [x, y]
+
+        let responce = ActionManager.start_action_targeted(CharacterAction.MOVE, character, destination)
+
+        if (responce == CharacterActionResponce.CANNOT_MOVE_THERE) {
+            Alerts.impossible_move(user)
+        } else if (responce == CharacterActionResponce.IN_BATTLE) {
+            Alerts.in_battle(user)
         }
-        
     }
 }
 

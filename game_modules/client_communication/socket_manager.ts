@@ -892,7 +892,5 @@ export class SocketManager {
     //     }
     // }
 
-    // send_action_ping_to_character(char: Character, duration: number, is_move: boolean) {
-    //     this.send_to_character_user(char, 'action-ping', {tag: 'start', time: duration, is_move: is_move})
-    // }
+
 }

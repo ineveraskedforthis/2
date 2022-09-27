@@ -1,7 +1,7 @@
-import { Character } from "../character/character";
-import { CharacterActionResponce } from "../../manager_classes/action_manager";
-import { WATER } from "../../manager_classes/materials_manager";
-import { PgPool } from "../../world";
+import { Character } from "../../../base_game_classes/character/character";
+import { CharacterActionResponce } from "../../action_manager";
+import { WATER } from "../../../manager_classes/materials_manager";
+import { PgPool } from "../../../world";
 
 export const clean = {
     duration(char: Character) {

@@ -4,6 +4,8 @@ import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { cell_id, char_id, money, TEMP_USER_ID, user_id } from "../../types";
+import { Action } from "../../battle";
+import { ActionTargeted } from "../../actions/action_manager";
 
 export class Character {
     id: char_id;
@@ -31,6 +33,10 @@ export class Character {
     archetype: Archetype
     explored: boolean[];
     next_cell: cell_id|undefined
+
+    action: ActionTargeted|Action|undefined
+    action_progress: number
+    action_duration: number
 
     model_variation: any;
 
@@ -60,6 +66,9 @@ export class Character {
         this.status.rage = 0
         this.status.hp = max_hp
         this.status.stress = 0
+
+        this.action_progress = 0
+        this.action_duration = 0
 
         this.skills = new SkillList()
         this.perks = {}
@@ -516,34 +525,7 @@ export class Character {
 //         await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
 //     }
 
-//     // network simplification functions
-//     send_skills_update() {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_skills_info(this)
-//         }        
-//     }
-//     send_status_update() {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_status_update(this)
-//         }        
-//     }
-//     send_stash_update() {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_stash_update_to_character(this)
-//         }
-//     }
 
-//     send_equip_update() {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_equip_update_to_character(this)
-//         }
-//     }
-
-//     send_action_ping(duration: number, is_move:boolean) {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_action_ping_to_character(this, duration, is_move)
-//         }
-//     }
 
 //     //rgo
 //     rgo_check(character:Character) {

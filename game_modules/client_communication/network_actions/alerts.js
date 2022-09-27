@@ -8,6 +8,18 @@ var Alerts;
         generic_user_alert(user, 'not_enough', { tag: tag, req: required, cur: current });
     }
     Alerts.not_enough_to_user = not_enough_to_user;
+    function in_battle(user) {
+        generic_user_alert(user, 'alert', 'you are in battle');
+    }
+    Alerts.in_battle = in_battle;
+    function ok(user) {
+        generic_user_alert(user, 'alert', 'ok');
+    }
+    Alerts.ok = ok;
+    function impossible_move(user) {
+        generic_user_alert(user, 'alert', 'can\'t go there');
+    }
+    Alerts.impossible_move = impossible_move;
     function log_to_user(user, message) {
         user.socket.emit('log-message', message);
     }
@@ -53,4 +65,8 @@ var Alerts;
         Alerts.generic_user_alert(user, 'map-action-status', { tag: tag, value: data });
     }
     Alerts.map_action = map_action;
+    function action_ping(character, duration, is_move) {
+        generic_character_alert(character, 'action-ping', { tag: 'start', time: duration, is_move: is_move });
+    }
+    Alerts.action_ping = action_ping;
 })(Alerts = exports.Alerts || (exports.Alerts = {}));

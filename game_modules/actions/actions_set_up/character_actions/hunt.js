@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.character_to_hunt_probability = exports.hunt_probability = exports.hunt = void 0;
-const materials_manager_1 = require("../../manager_classes/materials_manager");
+const materials_manager_1 = require("../../../manager_classes/materials_manager");
 exports.hunt = {
     duration(char) {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt.practice) / 100;

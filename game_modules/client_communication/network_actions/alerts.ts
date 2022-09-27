@@ -7,6 +7,19 @@ export namespace Alerts {
         generic_user_alert(user, 'not_enough', {tag: tag, req: required, cur: current})
     }
 
+    export function in_battle(user: User) {
+        generic_user_alert(user, 'alert', 'you are in battle')
+    }
+
+    export function ok(user:User) {
+        generic_user_alert(user, 'alert', 'ok')
+    }
+
+    export function impossible_move(user: User) {
+        generic_user_alert(user, 'alert', 'can\'t go there');
+    }
+
+
     export function log_to_user(user: User, message: string) {
         user.socket.emit('log-message', message);
     }
@@ -47,5 +60,9 @@ export namespace Alerts {
 
     export function map_action(user: User, tag: string, data: boolean) {
         Alerts.generic_user_alert(user, 'map-action-status', {tag: tag, value: data})
+    }
+
+    export function action_ping(character: Character, duration: number, is_move:boolean) {
+        generic_character_alert(character, 'action-ping', {tag: 'start', time: duration, is_move: is_move})
     }
 }

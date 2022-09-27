@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = void 0;
 const item_tags_1 = require("../../static_data/item_tags");
-const materials_manager_1 = require("../../manager_classes/materials_manager");
-const items_set_up_1 = require("../items/items_set_up");
+const materials_manager_1 = require("../../../manager_classes/materials_manager");
+const items_set_up_1 = require("../../../base_game_classes/items/items_set_up");
 function generate_rat_skin_craft(arg, cost) {
     return {
         duration(char) {

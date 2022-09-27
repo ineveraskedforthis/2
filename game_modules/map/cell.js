@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Cell = void 0;
 const system_js_1 = require("../base_game_classes/character/system.js");
 class Cell {
+    // orders_bulk: Set<order_bulk_id>
+    // orders_item: Set<order_item_id>
     constructor(id, x, y, name, development, res, terrain) {
         this.id = id;
         this.x = x;
@@ -11,8 +13,8 @@ class Cell {
         this.visited_recently = false;
         this.last_visit = 0;
         this.changed_characters = true;
-        this.orders_bulk = new Set();
-        this.orders_item = new Set();
+        // this.orders_bulk = new Set()
+        // this.orders_item = new Set()
         this.characters_set = new Set();
         this.saved_characters_list = [];
         if (development == undefined) {
@@ -39,6 +41,10 @@ class Cell {
         this.changed_characters = true;
         this.visited_recently = true;
         this.last_visit = 0;
+    }
+    exit(id) {
+        this.characters_set.delete(id);
+        this.changed_characters = true;
     }
     get_characters_list() {
         if (this.changed_characters) {

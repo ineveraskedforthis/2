@@ -1,7 +1,7 @@
-import { Character, PerksTable } from "../character/character";
-import { CharacterActionResponce } from "../../manager_classes/action_manager";
-import { ELODINO_FLESH, FOOD, MEAT, ZAZ } from "../../manager_classes/materials_manager";
-import { PgPool } from "../../world";
+import { Character, PerksTable } from "../../../base_game_classes/character/character";
+import { CharacterActionResponce } from "../../action_manager";
+import { ELODINO_FLESH, FOOD, MEAT, ZAZ } from "../../../manager_classes/materials_manager";
+import { PgPool } from "../../../world";
 
 
 export const cook_meat = {

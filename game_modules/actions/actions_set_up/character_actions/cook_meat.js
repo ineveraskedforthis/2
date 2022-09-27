@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cook_elo_to_zaz = exports.cook_meat = void 0;
-const materials_manager_1 = require("../../manager_classes/materials_manager");
+const materials_manager_1 = require("../../../manager_classes/materials_manager");
 exports.cook_meat = {
     duration(char) {
         // return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice) / 20;

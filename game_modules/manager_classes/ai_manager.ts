@@ -1,12 +1,12 @@
-import { craft_bone_arrow_probability } from "../base_game_classes/character_actions/craft_bone_spear";
-import { RAT_SKIN_ARMOUR_SKIN_NEEDED } from "../base_game_classes/character_actions/craft_rat_armour";
+import { craft_bone_arrow_probability } from "../actions/actions_set_up/character_actions/craft_bone_spear";
+import { RAT_SKIN_ARMOUR_SKIN_NEEDED } from "../actions/actions_set_up/character_actions/craft_rat_armour";
 import type { Character } from "../base_game_classes/character/character"
 import { hostile } from "../base_game_classes/character/races/racial_hostility";
 import { money, Savings } from "../base_game_classes/savings";
 import { AuctionManagement } from "../market/market_items";
 import { ARMOUR_TYPE } from "../static_data/item_tags";
 import { PgPool, World } from "../world";
-import { ActionManager, CharacterAction } from "./action_manager";
+import { ActionManager, CharacterAction } from "../actions/action_manager";
 import { ARROW_BONE, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD } from "./materials_manager";
 
 

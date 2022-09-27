@@ -26,6 +26,8 @@ class Character {
         this.status.rage = 0;
         this.status.hp = max_hp;
         this.status.stress = 0;
+        this.action_progress = 0;
+        this.action_duration = 0;
         this.skills = new skills_1.SkillList();
         this.perks = {};
         this.stats = new character_parts_1.InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp);
@@ -391,32 +393,6 @@ exports.Character = Character;
 //     async clear_orders(pool:any) {
 //         await this.world.entity_manager.remove_orders(pool, this)
 //         await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
-//     }
-//     // network simplification functions
-//     send_skills_update() {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_skills_info(this)
-//         }        
-//     }
-//     send_status_update() {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_status_update(this)
-//         }        
-//     }
-//     send_stash_update() {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_stash_update_to_character(this)
-//         }
-//     }
-//     send_equip_update() {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_equip_update_to_character(this)
-//         }
-//     }
-//     send_action_ping(duration: number, is_move:boolean) {
-//         if (this.is_player()) {
-//             this.world.socket_manager.send_action_ping_to_character(this, duration, is_move)
-//         }
 //     }
 //     //rgo
 //     rgo_check(character:Character) {

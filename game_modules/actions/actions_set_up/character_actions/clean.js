@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.clean = void 0;
-const materials_manager_1 = require("../../manager_classes/materials_manager");
+const materials_manager_1 = require("../../../manager_classes/materials_manager");
 exports.clean = {
     duration(char) {
         return 1 + char.get_fatigue() / 50 + char.get_blood() / 50;

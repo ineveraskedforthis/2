@@ -10,6 +10,7 @@ const auth_1 = require("./network_actions/auth");
 const common_validations_1 = require("./network_actions/common_validations");
 const alerts_1 = require("./network_actions/alerts");
 const system_1 = require("../map/system");
+const actions_1 = require("./network_actions/actions");
 class SocketManager {
     constructor(io) {
         this.io = io;
@@ -42,7 +43,7 @@ class SocketManager {
             // socket.on('eat', async () => this.eat(user));
             // socket.on('clean', async () => this.clean(user));
             // socket.on('rest', async () => this.rest(user));
-            // socket.on('move', async (msg: any) => this.move(user, msg));
+            socket.on('move', async (msg) => actions_1.HandleAction.move(user, msg));
             // socket.on('hunt', async () => this.hunt(user))
             // socket.on('gather_wood', async () => this.gather_wood(user))            
             // socket.on('clear-orders', async () => this.clear_orders(user));

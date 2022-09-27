@@ -76,7 +76,17 @@ var Link;
 var Unlink;
 (function (Unlink) {
     function character_and_cell(character, cell) {
-        character.cell_id = cell.id;
+        cell.exit(character.id);
+        const locals = cell.get_characters_list();
+        for (let item of locals) {
+            const id = item.id;
+            const local_character = system_1.CharacterSystem.id_to_character(id);
+            const local_user = Convert.character_to_user(local_character);
+            if (local_user == undefined) {
+                continue;
+            }
+            user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 8 /* UI_Part.LOCAL_CHARACTERS */);
+        }
     }
     Unlink.character_and_cell = character_and_cell;
 })(Unlink = exports.Unlink || (exports.Unlink = {}));

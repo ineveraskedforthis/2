@@ -1,10 +1,10 @@
-import { Character, PerksTable } from "../character/character";
-import { CharacterActionResponce } from "../../manager_classes/action_manager";
+import { Character, PerksTable } from "../../../base_game_classes/character/character";
+import { CharacterActionResponce } from "../../action_manager";
 import { Weapon } from "../../static_data/item_tags";
 import { nodb_mode_check } from "../../market/market_items";
-import { WOOD } from "../../manager_classes/materials_manager";
-import { SPEAR_ARGUMENT } from "../items/items_set_up";
-import { PgPool } from "../../world";
+import { WOOD } from "../../../manager_classes/materials_manager";
+import { SPEAR_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
+import { PgPool } from "../../../world";
 
 
 export const craft_spear = {
