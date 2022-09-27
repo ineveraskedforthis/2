@@ -250,13 +250,13 @@ export class BattleReworked2 {
         this.last_turn = Date.now() //milliseconds
     }
 
-    async init(pool: PgPool) {
+     init(pool: PgPool) {
         this.id = await this.load_to_db(pool);
         this.last_turn = Date.now()
         return this.id;
     }
 
-    async load_to_db(pool: PgPool) {
+     load_to_db(pool: PgPool) {
         // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
             // @ts-ignore: Unreachable code error
@@ -276,13 +276,13 @@ export class BattleReworked2 {
         this.waiting_for_input = data.waiting_for_input
     }
 
-    async save_to_db(pool: PgPool) {
+     save_to_db(pool: PgPool) {
         await common.send_query(pool, constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input])
         this.changed = false
         this.heap.changed = false
     }
 
-    async delete_from_db(pool: PgPool) {
+     delete_from_db(pool: PgPool) {
         await common.send_query(pool, constants.delete_battle_query, [this.id]);
     }
 
@@ -314,7 +314,7 @@ export class BattleReworked2 {
         this.world.socket_manager.send_stop_battle(this)
     }
 
-    async update(pool:any) {
+     update(pool:any) {
         if (this.changed || this.heap.changed) {
             this.save_to_db(pool)
         }
@@ -391,7 +391,7 @@ export class BattleReworked2 {
         return this.world.get_char_from_id(unit.char_id)
     }
 
-    async make_turn(pool: PgPool){
+     make_turn(pool: PgPool){
         let unit = this.heap.get_selected_unit()
         let char = this.get_char(unit)
         let action:Action = BattleAI.action(this, unit, char);
@@ -404,7 +404,7 @@ export class BattleReworked2 {
         this.changed = true
     }
 
-    async action(pool:any, unit_index: number, action: Action) {
+     action(pool:any, unit_index: number, action: Action) {
         console.log('battle action')
         console.log(action)
 
@@ -730,7 +730,7 @@ export class BattleReworked2 {
         return 'no_interest'
     }
 
-    async transfer(target:{stash: Stash}, tag:material_index, x:number) {
+     transfer(target:{stash: Stash}, tag:material_index, x:number) {
         this.stash.transfer(target.stash, tag, x);
         this.changed = true
     }
@@ -814,9 +814,9 @@ export class BattleReworked2 {
     }
 
     reward() {}    
-    async reward_team(pool: PgPool, team: number) {}
+     reward_team(team: number) {}
 
-    async process_input(pool: PgPool, unit_index: number, input: Action) {
+     process_input(unit_index: number, input: Action) {
         if (!this.waiting_for_input) {
             return {action: 'action_in_progress', who: unit_index}
         }

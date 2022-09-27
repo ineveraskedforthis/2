@@ -11,13 +11,13 @@ module.exports = class Faction {
         this.leader_id = -1;
     }
 
-    async init(pool, tag) {
+     init(pool, tag) {
         this.tag = tag
         this.id = await this.load_to_db(pool);
         return this.id;
     }
 
-    async update(pool) {
+     update(pool) {
         if (this.changed || this.savings.changed) {
             this.save_to_db(pool)
         }
@@ -28,13 +28,13 @@ module.exports = class Faction {
         this.changed = true;
     }   
 
-    async save_to_db(pool) {
+     save_to_db(pool) {
         this.changed = false
         this.savings.changed = false
         await common.send_query(pool, constants.update_faction_query, [this.id, this.savings.get_json(), this.leader_id]);
     }
 
-    async load_to_db(pool) {
+     load_to_db(pool) {
         // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
             // @ts-ignore: Unreachable code error

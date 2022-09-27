@@ -9,7 +9,7 @@ export const hunt = {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt.practice) / 100;
     },
 
-    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -23,7 +23,7 @@ export const hunt = {
         } else return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:Character, data: any) {
+    result:  function(char:Character, data: any) {
         char.changed = true
 
         let skill = char.skills.hunt.practice
@@ -53,7 +53,7 @@ export const hunt = {
         
     },
 
-    start: async function(pool: PgPool, char:Character, data: any) {
+    start:  function(char:Character, data: any) {
     },
 }
 

@@ -11,7 +11,7 @@ module.exports =
         return l * l * 5 + 50 + 10 * l
     },
 
-    send_query: async function (pool, query, args) {
+    send_query:  function (pool, query, args) {
         if (global.flag_nodb) {
             return
         }
@@ -30,7 +30,7 @@ module.exports =
         }
     },
 
-    drop_tables: async function (client, tables) {
+    drop_tables:  function (client, tables) {
         for (let i = 0; i < tables.length; i++) {
             if (tables[i] != 'messages') {
                 await client.query('DROP TABLE IF EXISTS ' + tables[i]);
@@ -38,7 +38,7 @@ module.exports =
         }
     },
 
-    get_version: async function (client) {
+    get_version:  function (client) {
         await client.query('CREATE TABLE IF NOT EXISTS version (version int)');
         let res = await client.query('SELECT * FROM version');
         if (res.rows.length == 0) {
@@ -48,13 +48,13 @@ module.exports =
         return res.rows[0];
     },
 
-    set_version: async function (client, version) {
+    set_version:  function (client, version) {
         await client.query('DROP TABLE IF EXISTS version');
         await client.query('CREATE TABLE IF NOT EXISTS version (version int)');
         await client.query('INSERT INTO version (version) VALUES ($1)', [version]);
     },
         
-    init_ids: async function (client) {
+    init_ids:  function (client) {
         var id_types = ['battle_id', 'user_id', 'char_id', 'market_order_id', 'market_id', 'cell_id', 'agent_id', 'messages'];
         for (var i = 0; i < id_types.length; i++) {
             await client.query(constants.init_id_query, [id_types[i], 0]);

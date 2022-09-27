@@ -1,19 +1,15 @@
-import { Character, PerksTable } from "../../../base_game_classes/character/character";
-import { CharacterActionResponce } from "../../action_manager";
-import { Weapon } from "../../static_data/item_tags";
-import { nodb_mode_check } from "../../market/market_items";
-import { WOOD } from "../../../manager_classes/materials_manager";
-import { SPEAR_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
-import { PgPool } from "../../../world";
+import { Character } from "../../../base_game_classes/character/character";
+import { map_position } from "../../../types";
+import { ActionTargeted } from "../../action_manager";
 
 
-export const craft_spear = {
+export const craft_spear:ActionTargeted = {
     duration(char: Character) {
         return 0.5
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
     },
 
-    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
+    check: function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             if (tmp > 2)  {
@@ -24,7 +20,7 @@ export const craft_spear = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:Character, data: any) {
+    result: function(char:Character, data: any) {
         let tmp = char.stash.get(WOOD)
         if (tmp > 2) { 
             char.changed = true
@@ -56,7 +52,7 @@ export const craft_spear = {
         }
     },
 
-    start: async function(pool: PgPool, char:Character, data: any) {
+    start: function(char:Character, data: any) {
     },
 }
 

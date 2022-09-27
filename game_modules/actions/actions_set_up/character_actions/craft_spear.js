@@ -10,7 +10,7 @@ exports.craft_spear = {
         return 0.5;
         return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork.practice) / 20;
     },
-    check: async function (pool, char, data) {
+    check:  function (pool, char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(materials_manager_1.WOOD);
             if (tmp > 2) {
@@ -20,7 +20,7 @@ exports.craft_spear = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result: async function (pool, char, data) {
+    result:  function (pool, char, data) {
         let tmp = char.stash.get(materials_manager_1.WOOD);
         if (tmp > 2) {
             char.changed = true;
@@ -51,7 +51,7 @@ exports.craft_spear = {
             }
         }
     },
-    start: async function (pool, char, data) {
+    start:  function (pool, char, data) {
     },
 };
 function craft_spear_probability(skill) {

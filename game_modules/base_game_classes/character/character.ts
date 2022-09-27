@@ -192,7 +192,7 @@ export class Character {
 //         this.action_duration = 0
 //     }
 
-//     async init(pool: PgPool, name: string, cell_id: number, user_id = -1) {
+//      init(name: string, cell_id: number, user_id = -1) {
 //         this.init_base_values(name, cell_id, user_id);
 //         this.id = await this.load_to_db(pool);
 //         await this.save_to_db(pool);
@@ -222,7 +222,7 @@ export class Character {
 //         this.faction_id = -1;
 //     }
 
-//     async update(pool: PgPool, dt: number) {
+//      update(dt: number) {
 //         await this.status_check(pool);
 
 //         if (this.flags.dead) {
@@ -287,7 +287,7 @@ export class Character {
 
 //     //some stuff defined per concrete character class
 
-//     async status_check(pool: PgPool) {
+//      status_check(pool: PgPool) {
 //         if (this.status.hp <= 0) {
 //             this.status.hp = 0;
 
@@ -305,7 +305,7 @@ export class Character {
 //         this.change_stress(1)
 //     }
 
-//     async on_move(pool: PgPool) {
+//      on_move(pool: PgPool) {
 //         return undefined
 //     }
 
@@ -498,7 +498,7 @@ export class Character {
 //     //market interactions
 
 
-//     async buy(pool: PgPool, tag:material_index, amount: number, price: money) {
+//      buy(tag:material_index, amount: number, price: money) {
 //         if (this.savings.get() >= amount * price) {
 //             console.log('buy ' + tag + ' ' + amount + ' ' + price)
 //             this.savings.transfer(this.trade_savings, amount * price as money)
@@ -508,7 +508,7 @@ export class Character {
 //         return 'not_enough_money'        
 //     }
 
-//     async sell(pool:any, tag:material_index, amount: number, price: money) {
+//      sell(pool:any, tag:material_index, amount: number, price: money) {
 //         // console.log(this.stash.get(tag), amount)
 //         if (this.stash.get(tag) < amount) {
 //             return 'not_enough_items'
@@ -520,7 +520,7 @@ export class Character {
 //     }
 
 
-//     async clear_orders(pool:any) {
+//      clear_orders(pool:any) {
 //         await this.world.entity_manager.remove_orders(pool, this)
 //         await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
 //     }
@@ -539,7 +539,7 @@ export class Character {
 
 //     //attack calculations
 
-//     async attack(pool: PgPool, target: Character, mod:'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean, distance: number) {
+//      attack(target: Character, mod:'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean, distance: number) {
 //         let result = new AttackResult()
 
 
@@ -567,7 +567,7 @@ export class Character {
 //         return result;
 //     }
 
-//     async spell_attack(pool: PgPool, target: Character, tag: spell_tags) {
+//      spell_attack(target: Character, tag: spell_tags) {
 //         let result = new AttackResult()
 
 //         if (tag == 'bolt') {
@@ -588,7 +588,7 @@ export class Character {
 //         return result;
 //     }
 
-//     async take_damage(pool: PgPool, mod:'fast'|'heavy'|'usual'|'ranged', result: AttackResult): Promise<AttackResult> {
+//      take_damage(mod:'fast'|'heavy'|'usual'|'ranged', result: AttackResult): Promise<AttackResult> {
 //         let res:any = this.get_resists();
         
 //         if (!result.flags.evade && !result.flags.miss) {
@@ -923,7 +923,7 @@ export class Character {
 //         }
 //     }
 
-//     async on_move_default(pool:any, data:any) {
+//      on_move_default(pool:any, data:any) {
 //         let tmp = this.world.get_territory(data.x, data.y)
 //         if (tmp == undefined) {
 //             return 2
@@ -976,13 +976,13 @@ export class Character {
 
 //     //db interactions
 
-//     async save_status_to_db(pool:any, save = true) {
+//      save_status_to_db(pool:any, save = true) {
 //         if (save) {
 //             // await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
 //         }
 //     }
 
-//     async load_from_json(data:any) {
+//      load_from_json(data:any) {
 //         this.id = data.id;
 //         this.name = data.name;
 //         this.user_id = data.user_id;
@@ -1027,7 +1027,7 @@ export class Character {
 //         };
 //     }
 
-//     async load_to_db(pool:any) {
+//      load_to_db(pool:any) {
 //         // @ts-ignore: Unreachable code error
 //         if (global.flag_nodb) {
 //             // @ts-ignore: Unreachable code error
@@ -1053,7 +1053,7 @@ export class Character {
 //         return result.rows[0].id;
 //     }
 
-//     async save_to_db(pool:any, save = true) {
+//      save_to_db(pool:any, save = true) {
         
 //         if (save) {
 //             await common.send_query(pool, constants.update_char_query, [
@@ -1074,7 +1074,7 @@ export class Character {
 //         }
 //     }
 
-//     async delete_from_db(pool:any) {
+//      delete_from_db(pool:any) {
 //         await common.send_query(pool, constants.delete_char_query, [this.id]);
 //     }
 // }

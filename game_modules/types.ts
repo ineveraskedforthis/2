@@ -22,4 +22,5 @@ export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot
 
 
 export type world_dimensions = [number, number]
+export type map_position = [number, number]
 export type terrain = 'sea' | 'city' | 'steppe' | 'coast' | 'void'

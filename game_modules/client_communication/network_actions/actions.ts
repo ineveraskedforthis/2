@@ -31,7 +31,7 @@ export namespace HandleAction {
     }
 }
 
-    // async move(user: User, data: {x: number, y: number}) {
+    //  move(user: User, data: {x: number, y: number}) {
     //     if (!user.logged_in) {
     //         return 
     //     }

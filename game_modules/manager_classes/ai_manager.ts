@@ -72,7 +72,7 @@ export class AiManager {
         return battles
     }
 
-    async random_steppe_walk(char: Character) {
+     random_steppe_walk(char: Character) {
         let cell = char.get_cell()
         if (cell == undefined) {
             return
@@ -112,7 +112,7 @@ export class AiManager {
         return false
     }
 
-    async random_forest_walk(char: Character) {
+     random_forest_walk(char: Character) {
         let cell = char.get_cell()
         if (cell == undefined) {
             return
@@ -134,7 +134,7 @@ export class AiManager {
         }
     }
 
-    async decision(pool: PgPool, char: Character) {
+     decision(char: Character) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
             return
@@ -203,7 +203,7 @@ export class AiManager {
 }
 
 namespace AI {
-    export async function cook_food(pool:PgPool, action_manager:ActionManager, character:Character) {
+    export  function cook_food(pool:PgPool, action_manager:ActionManager, character:Character) {
         let prepared_meat = character.trade_stash.get(FOOD) + character.stash.get(FOOD)
         let resource = character.stash.get(MEAT)
         let food_in_stash = character.stash.get(FOOD)
@@ -231,7 +231,7 @@ namespace AI {
         }
     }
 
-    export async function make_arrow(pool:PgPool, action_manager:ActionManager, character:Character) {
+    export  function make_arrow(pool:PgPool, action_manager:ActionManager, character:Character) {
         await character.world.entity_manager.remove_orders_by_tag(pool, character, WOOD)
         await character.world.entity_manager.remove_orders_by_tag(pool, character, RAT_BONE)
 
@@ -301,7 +301,7 @@ namespace AI {
         }
     }
 
-    export async function make_armour(pool:PgPool, action_manager:ActionManager, character:Character) {
+    export  function make_armour(pool:PgPool, action_manager:ActionManager, character:Character) {
         let base_price_skin = 10 as money
 
         let resource = character.stash.get(RAT_SKIN)

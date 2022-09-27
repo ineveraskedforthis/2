@@ -32,7 +32,7 @@ var HandleAction;
     }
     HandleAction.move = move;
 })(HandleAction = exports.HandleAction || (exports.HandleAction = {}));
-// async move(user: User, data: {x: number, y: number}) {
+//  move(user: User, data: {x: number, y: number}) {
 //     if (!user.logged_in) {
 //         return 
 //     }

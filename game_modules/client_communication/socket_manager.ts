@@ -34,70 +34,70 @@ export class SocketManager {
         this.active_users = new Set();
         this.sessions = {};
 
-        this.io.on('connection', async (socket: Socket) => {
+        this.io.on('connection',  (socket: Socket) => {
             let user = new SocketWrapper(socket)
 
             this.active_users.add(user);
             this.connection(socket)
 
             socket.on('disconnect', () => this.disconnect(user));        
-            socket.on('login', async (msg: any) => Auth.login(user, msg));
-            socket.on('reg', async (msg: any) => Auth.register(user, msg));
-            socket.on('session', async (msg: any) => Auth.login_with_session(user, msg));
+            socket.on('login',  (msg: any) => Auth.login(user, msg));
+            socket.on('reg',  (msg: any) => Auth.register(user, msg));
+            socket.on('session',  (msg: any) => Auth.login_with_session(user, msg));
 
-            socket.on('create_character', async (msg:any) => this.create_character(user, msg));
+            socket.on('create_character',  (msg:any) => this.create_character(user, msg));
 
 
-            // socket.on('attack', async (msg: any) => this.attack(user, msg));
-            // socket.on('attack-character', async (msg: any) => this.attack_character(user, msg));
+            // socket.on('attack',  (msg: any) => this.attack(user, msg));
+            // socket.on('attack-character',  (msg: any) => this.attack_character(user, msg));
 
-            // socket.on('buy', async (msg: any) => this.buy(user, msg));
-            // socket.on('sell', async (msg: any) => this.sell(user, msg));
+            // socket.on('buy',  (msg: any) => this.buy(user, msg));
+            // socket.on('sell',  (msg: any) => this.sell(user, msg));
 
-            // socket.on('new-message', async (msg: any) => this.send_message(user, msg + ''));
+            // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
             // socket.on('char-info-detailed', () => this.send_char_info(user));
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
 
 
-            // socket.on('equip-armour', async (msg: any) => this.equip_armour(user, msg));
-            // socket.on('equip-weapon', async (msg: any) => this.equip_weapon(user, msg));
-            // socket.on('enchant-armour', async (msg: any) => this.enchant_armour(user, msg));
-            // socket.on('enchant-weapon', async (msg: any) => this.enchant_weapon(user, msg));
-            // socket.on('switch-weapon', async (msg: any) => this.switch_weapon(user))
-            // socket.on('unequip', async (msg: any) => this.unequip(user, msg));
+            // socket.on('equip-armour',  (msg: any) => this.equip_armour(user, msg));
+            // socket.on('equip-weapon',  (msg: any) => this.equip_weapon(user, msg));
+            // socket.on('enchant-armour',  (msg: any) => this.enchant_armour(user, msg));
+            // socket.on('enchant-weapon',  (msg: any) => this.enchant_weapon(user, msg));
+            // socket.on('switch-weapon',  (msg: any) => this.switch_weapon(user))
+            // socket.on('unequip',  (msg: any) => this.unequip(user, msg));
 
 
-            // socket.on('eat', async () => this.eat(user));
-            // socket.on('clean', async () => this.clean(user));
-            // socket.on('rest', async () => this.rest(user));
-            socket.on('move', async (msg: any) => HandleAction.move(user, msg));
-            // socket.on('hunt', async () => this.hunt(user))
-            // socket.on('gather_wood', async () => this.gather_wood(user))            
+            // socket.on('eat',  () => this.eat(user));
+            // socket.on('clean',  () => this.clean(user));
+            // socket.on('rest',  () => this.rest(user));
+            socket.on('move',  (msg: any) => HandleAction.move(user, msg));
+            // socket.on('hunt',  () => this.hunt(user))
+            // socket.on('gather_wood',  () => this.gather_wood(user))            
 
 
-            // socket.on('clear-orders', async () => this.clear_orders(user));
-            // socket.on('clear-item-orders', async () => this.clear_item_orders(user))
-            // socket.on('clear-order', async (msg: any) => this.clear_order(user, msg));
-            // socket.on('sell-item', async (msg: any) => this.sell_item(user, msg));
-            // socket.on('buyout', async (msg: any) => this.buyout(user, msg));
-            // socket.on('execute-order', async (msg: any) => this.execute_order(user, msg.amount, msg.order))
+            // socket.on('clear-orders',  () => this.clear_orders(user));
+            // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
+            // socket.on('clear-order',  (msg: any) => this.clear_order(user, msg));
+            // socket.on('sell-item',  (msg: any) => this.sell_item(user, msg));
+            // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
+            // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
 
 
-            // socket.on('cfood', async () =>      this.craft(user, CharacterAction.COOK_MEAT));
-            // socket.on('czaz', async () =>       this.craft(user, CharacterAction.COOK_ELODINO));
-            // socket.on('mspear', async () =>     this.craft(user, CharacterAction.CRAFT_SPEAR))
-            // socket.on('mbspear', async () =>    this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
-            // socket.on('mbow', async () =>       this.craft(user, CharacterAction.CRAFT_WOOD_BOW))
-            // socket.on('marr', async () =>       this.craft(user, CharacterAction.CRAFT_BONE_ARROW))
-            // socket.on('mrpants', async () =>    this.craft(user, CharacterAction.CRAFT_RAT_PANTS))
-            // socket.on('mrgloves', async () =>   this.craft(user, CharacterAction.CRAFT_RAT_GLOVES))
-            // socket.on('mrboots', async () =>    this.craft(user, CharacterAction.CRAFT_RAT_BOOTS))
-            // socket.on('mrhelmet', async () =>   this.craft(user, CharacterAction.CRAFT_RAT_HELMET))
-            // socket.on('mrarmour', async () =>   this.craft(user, CharacterAction.CRAFT_RAT_ARMOUR))
+            // socket.on('cfood',  () =>      this.craft(user, CharacterAction.COOK_MEAT));
+            // socket.on('czaz',  () =>       this.craft(user, CharacterAction.COOK_ELODINO));
+            // socket.on('mspear',  () =>     this.craft(user, CharacterAction.CRAFT_SPEAR))
+            // socket.on('mbspear',  () =>    this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
+            // socket.on('mbow',  () =>       this.craft(user, CharacterAction.CRAFT_WOOD_BOW))
+            // socket.on('marr',  () =>       this.craft(user, CharacterAction.CRAFT_BONE_ARROW))
+            // socket.on('mrpants',  () =>    this.craft(user, CharacterAction.CRAFT_RAT_PANTS))
+            // socket.on('mrgloves',  () =>   this.craft(user, CharacterAction.CRAFT_RAT_GLOVES))
+            // socket.on('mrboots',  () =>    this.craft(user, CharacterAction.CRAFT_RAT_BOOTS))
+            // socket.on('mrhelmet',  () =>   this.craft(user, CharacterAction.CRAFT_RAT_HELMET))
+            // socket.on('mrarmour',  () =>   this.craft(user, CharacterAction.CRAFT_RAT_ARMOUR))
 
-            // socket.on('disench', async (msg: any) => this.disenchant(user, msg));
-            // socket.on('battle-action', async (msg: any) => this.battle_action(user, msg));
-            // socket.on('req-ranged-accuracy', async (msg: any) => this.send_ranged_accuracy(user, msg))
+            // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
+            // socket.on('battle-action',  (msg: any) => this.battle_action(user, msg));
+            // socket.on('req-ranged-accuracy',  (msg: any) => this.send_ranged_accuracy(user, msg))
 
             // socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
             // socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
@@ -183,7 +183,7 @@ export class SocketManager {
 
 
     // // eslint-disable-next-line no-unused-vars
-    // async attack(user: User, data: any) {
+    //  attack(user: User, data: any) {
     //     console.log('attack random enemy')
     //     if (user.logged_in && !user.get_character().in_battle()) {
     //         let char = user.get_character();
@@ -202,7 +202,7 @@ export class SocketManager {
     // }
 
     // //data is a raw id of character
-    // async attack_character(user: User, data: any) {
+    //  attack_character(user: User, data: any) {
     //     console.log('attack_character')
         
     //     if (user.logged_in && !user.get_character().in_battle()) {
@@ -237,7 +237,7 @@ export class SocketManager {
     //     }
     // }
 
-    // // async attack_local_outpost(socket, user_data, data) {
+    // //  attack_local_outpost(socket, user_data, data) {
     // //     if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
     // //         let char = user_data.current_user.character;
     // //         let battle = await char.attack_local_outpost(this.pool);
@@ -247,7 +247,7 @@ export class SocketManager {
     // //     }
     // // }
 
-    // async clear_orders(user: User) {
+    //  clear_orders(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         await this.world.entity_manager.remove_orders(this.pool, char)
@@ -257,7 +257,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async clear_item_orders(user: User) {
+    //  clear_item_orders(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         await AuctionManagement.cancel_all_orders(this.pool, this.world.entity_manager, this, char)
@@ -266,7 +266,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async clear_order(user: User, data: number) {
+    //  clear_order(user: User, data: number) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let order = this.world.entity_manager.orders[data]
@@ -281,7 +281,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async execute_order(user: User, amount: number, order_id: market_order_index) {
+    //  execute_order(user: User, amount: number, order_id: market_order_index) {
     //     if (user.logged_in) {
     //         let character = user.get_character()
     //         let cell = character.get_cell()
@@ -317,7 +317,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async buy(user: User, msg: any) {
+    //  buy(user: User, msg: any) {
     //     console.log('buy')
     //     console.log(msg)
     //     if (isNaN(msg.price)) {
@@ -368,7 +368,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async sell(user: User, msg: any) {
+    //  sell(user: User, msg: any) {
     //     console.log('sell')
     //     console.log(msg)
     //     if (isNaN(msg.price)) {
@@ -422,7 +422,7 @@ export class SocketManager {
     //     }
     // }
 
-    // // async up_skill(user, msg) {
+    // //  up_skill(user, msg) {
     // //     if (msg in this.world.constants.SKILLS && user_data.current_user != null) {
     // //         let char = user_data.current_user.character;
     // //         let result = await char.add_skill(this.pool, msg + '');
@@ -435,7 +435,7 @@ export class SocketManager {
     // //     }
     // // }
 
-    // async eat(user: User) {
+    //  eat(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res = await this.world.action_manager.start_action(CharacterAction.EAT, char, undefined)
@@ -447,7 +447,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async clean(user: User) {
+    //  clean(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res = await this.world.action_manager.start_action(CharacterAction.CLEAN, char, undefined)
@@ -459,7 +459,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async hunt(user: User) {
+    //  hunt(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res = await this.world.action_manager.start_action(CharacterAction.HUNT, char, undefined)
@@ -471,7 +471,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async gather_wood(user: User) {
+    //  gather_wood(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res = await this.world.action_manager.start_action(CharacterAction.GATHER_WOOD, char, undefined)
@@ -483,7 +483,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async rest(user: User) {
+    //  rest(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res = await this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
@@ -496,7 +496,7 @@ export class SocketManager {
     // }
 
 
-    // async craft(user: User, craft_action: CharacterAction) {
+    //  craft(user: User, craft_action: CharacterAction) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res = await this.world.action_manager.start_action(craft_action, char, undefined)
@@ -510,7 +510,7 @@ export class SocketManager {
     //     }
     // }
 
-    // // async craft_clothes(user: User) {
+    // //  craft_clothes(user: User) {
     // //     if (user.logged_in) {
     // //         let char = user.get_character();
     // //         let res = await char.craft_clothes(this.pool);
@@ -520,7 +520,7 @@ export class SocketManager {
     // //     }
     // // }
 
-    // async enchant(user: User, msg: number) {
+    //  enchant(user: User, msg: number) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         // let res = await char.enchant(this.pool, msg);
@@ -530,7 +530,7 @@ export class SocketManager {
     //     }
     // }
 
-    // async disenchant(user: User, msg: number) {
+    //  disenchant(user: User, msg: number) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         // let res = await char.disenchant(this.pool, msg);
@@ -540,7 +540,7 @@ export class SocketManager {
     //     }
     // }
 
-    // // async set_tactic(user: User, msg: any) {
+    // //  set_tactic(user: User, msg: any) {
     // //     if (user.logged_in) {
     // //         let char = user.get_character();
     // //         // await char.set_tactic(this.pool, msg);
@@ -846,7 +846,7 @@ export class SocketManager {
     //     this.io.emit('users-online', tmp);
     // }
     
-    // async send_message(user: User, msg: string) {
+    //  send_message(user: User, msg: string) {
     //     if (msg.length > 1000) {
     //         user.socket.emit('new-message', 'message-too-long')
     //         return
@@ -861,7 +861,7 @@ export class SocketManager {
     //     this.io.emit('new-message', message);
     // }
 
-    // async load_message_to_database(message: {msg: string, user: string}) {
+    //  load_message_to_database(message: {msg: string, user: string}) {
     //      // @ts-ignore: Unreachable code error
     //     if (global.flag_nodb) {
     //         return
@@ -870,7 +870,7 @@ export class SocketManager {
     //     await common.send_query(this.pool, constants.clear_old_messages_query, [res.rows[0].id - 50]);
     // }
 
-    // async load_messages_from_database() {
+    //  load_messages_from_database() {
     //     // @ts-ignore: Unreachable code error
     //     if (global.flag_nodb) {
     //         return {rows: []}
@@ -879,7 +879,7 @@ export class SocketManager {
     //     return rows
     // }
 
-    // async battle_action(user:User, action: any) {
+    //  battle_action(user:User, action: any) {
     //     if (user.logged_in && user.get_character().in_battle()) {
     //         let char = user.get_character();
     //         let battle = this.world.get_battle_from_id(char.get_battle_id());

@@ -59,7 +59,7 @@ class AiManager {
         }
         return battles;
     }
-    async random_steppe_walk(char) {
+     random_steppe_walk(char) {
         let cell = char.get_cell();
         if (cell == undefined) {
             return;
@@ -98,7 +98,7 @@ class AiManager {
         }
         return false;
     }
-    async random_forest_walk(char) {
+     random_forest_walk(char) {
         let cell = char.get_cell();
         if (cell == undefined) {
             return;
@@ -119,7 +119,7 @@ class AiManager {
             await this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, { x: move_direction[0], y: move_direction[1] });
         }
     }
-    async decision(pool, char) {
+     decision(pool, char) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
             return;
@@ -186,7 +186,7 @@ class AiManager {
 exports.AiManager = AiManager;
 var AI;
 (function (AI) {
-    async function cook_food(pool, action_manager, character) {
+     function cook_food(pool, action_manager, character) {
         let prepared_meat = character.trade_stash.get(materials_manager_1.FOOD) + character.stash.get(materials_manager_1.FOOD);
         let resource = character.stash.get(materials_manager_1.MEAT);
         let food_in_stash = character.stash.get(materials_manager_1.FOOD);
@@ -210,7 +210,7 @@ var AI;
         }
     }
     AI.cook_food = cook_food;
-    async function make_arrow(pool, action_manager, character) {
+     function make_arrow(pool, action_manager, character) {
         await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.WOOD);
         await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.RAT_BONE);
         let arrows = character.trade_stash.get(materials_manager_1.ARROW_BONE) + character.stash.get(materials_manager_1.ARROW_BONE);
@@ -266,7 +266,7 @@ var AI;
         }
     }
     AI.make_arrow = make_arrow;
-    async function make_armour(pool, action_manager, character) {
+     function make_armour(pool, action_manager, character) {
         let base_price_skin = 10;
         let resource = character.stash.get(materials_manager_1.RAT_SKIN);
         let savings = character.savings.get();

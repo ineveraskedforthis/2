@@ -27,7 +27,7 @@ export function launch() {
         UserManagement.load_users()
 
         // console.log('database is ready');
-        // gameloop.setGameLoop(async delta => await world.update(pool, delta), 500);
+        // gameloop.setGameLoop( delta => await world.update(pool, delta), 500);
 
     } catch (e) {
         console.log(e);

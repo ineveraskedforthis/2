@@ -13,7 +13,7 @@ module.exports = class Quest {
         this.reward_reputation = 0
     }
 
-    async init(pool, item, reward_money, reward_reputation) {
+     init(pool, item, reward_money, reward_reputation) {
         this.required_item_tag = item
         this.reward_money = reward_money
         this.reward_reputation = reward_reputation
@@ -21,19 +21,19 @@ module.exports = class Quest {
         return this.id;
     }
 
-    async update(pool) {
+     update(pool) {
         if (this.changed) (
             this.save_to_db(pool)
         )
     }
 
-    async change_reward(reward_money, reward_reputation) {
+     change_reward(reward_money, reward_reputation) {
         this.changed = true
         this.reward_money = reward_money
         this.reward_reputation = reward_reputation
     }
 
-    async load_to_db(pool) {
+     load_to_db(pool) {
         // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
             // @ts-ignore: Unreachable code error
@@ -45,7 +45,7 @@ module.exports = class Quest {
         return res.rows[0].id
     }
 
-    async save_to_db(pool) {
+     save_to_db(pool) {
         this.changed = false
         this.savings.changed = false
         await common.send_query(pool, constants.update_quest_query, [this.id, this.money.get_json(), this.stash.get_json(), this.required_item_tag, this.reward_money, this.reward_reputation]);

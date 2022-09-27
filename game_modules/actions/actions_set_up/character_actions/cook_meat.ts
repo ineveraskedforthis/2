@@ -10,7 +10,7 @@ export const cook_meat = {
         return 0.5
     },
 
-    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(MEAT)
             if (tmp > 0)  {
@@ -21,7 +21,7 @@ export const cook_meat = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:Character, data: any) {
+    result:  function(char:Character, data: any) {
         let tmp = char.stash.get(MEAT)
         if (tmp > 0) { 
             char.changed = true
@@ -51,7 +51,7 @@ export const cook_meat = {
         }
     },
 
-    start: async function(pool: PgPool, char:Character, data: any) {
+    start:  function(char:Character, data: any) {
     },
 }
 
@@ -62,7 +62,7 @@ export const cook_elo_to_zaz = {
         return Math.max(0.5, 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking.practice - char.skills.magic_mastery.practice) / 20);
     },
 
-    check: async function(pool: PgPool, char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
             let tmp = char.stash.get(ELODINO_FLESH)
             if (tmp >= 5)  {
@@ -73,7 +73,7 @@ export const cook_elo_to_zaz = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: async function(pool: PgPool, char:Character, data: any) {
+    result:  function(char:Character, data: any) {
         let tmp = char.stash.get(ELODINO_FLESH)
         if (tmp > 0) { 
             char.changed = true
@@ -110,6 +110,6 @@ export const cook_elo_to_zaz = {
         }
     },
 
-    start: async function(pool: PgPool, char:Character, data: any) {
+    start:  function(char:Character, data: any) {
     },
 }

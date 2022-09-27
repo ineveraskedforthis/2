@@ -6,7 +6,7 @@ exports.hunt = {
     duration(char) {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt.practice) / 100;
     },
-    check: async function (pool, char, data) {
+    check:  function (pool, char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -22,7 +22,7 @@ exports.hunt = {
         else
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result: async function (pool, char, data) {
+    result:  function (pool, char, data) {
         char.changed = true;
         let skill = char.skills.hunt.practice;
         let dice = Math.random();
@@ -46,7 +46,7 @@ exports.hunt = {
             return 4 /* CharacterActionResponce.FAILED */;
         }
     },
-    start: async function (pool, char, data) {
+    start:  function (pool, char, data) {
     },
 };
 function hunt_probability(skill) {

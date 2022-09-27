@@ -16,7 +16,7 @@ module.exports = class Area {
         this.changed = false
     }
 
-    async init(pool, tag, factions_influence, local_resources) {
+     init(pool, tag, factions_influence, local_resources) {
         this.tag = tag
         this.factions_influence = factions_influence
         this.local_resources = local_resources
@@ -24,7 +24,7 @@ module.exports = class Area {
         return this.id;
     }
 
-    async update(pool) {
+     update(pool) {
         if (this.changed || this.savings.changed) {
             this.save_to_db(pool)
         }
@@ -51,7 +51,7 @@ module.exports = class Area {
         return this.factions_influence[faction.id]
     }
 
-    async load_to_db(pool) {
+     load_to_db(pool) {
         if (global.flag_nodb) {
             global.last_id += 1
             return global.last_id
@@ -60,7 +60,7 @@ module.exports = class Area {
         return res.rows[0].id
     }   
 
-    async save_to_db(pool) {
+     save_to_db(pool) {
         this.changed = false
         this.savings.changed = false
         await common.send_query(pool, constants.update_area_query, [this.id, this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);

@@ -88,7 +88,7 @@ class Cell {
     get_market() {
         return undefined;
     }
-    async update(dt) {
+     update(dt) {
         if (this.visited_recently) {
             this.last_visit += dt;
             if (this.last_visit > 10) {

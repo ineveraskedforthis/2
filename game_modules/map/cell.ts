@@ -129,7 +129,7 @@ export class Cell {
         return undefined
     }
 
-    async update(dt: number) {
+     update(dt: number) {
         if (this.visited_recently) {
             this.last_visit += dt
             if (this.last_visit > 10) {

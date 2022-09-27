@@ -179,12 +179,12 @@ class BattleReworked2 {
         this.ended = false;
         this.last_turn = Date.now(); //milliseconds
     }
-    async init(pool) {
+     init(pool) {
         this.id = await this.load_to_db(pool);
         this.last_turn = Date.now();
         return this.id;
     }
-    async load_to_db(pool) {
+     load_to_db(pool) {
         // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
             // @ts-ignore: Unreachable code error
@@ -202,12 +202,12 @@ class BattleReworked2 {
         this.stash.load_from_json(data.stash);
         this.waiting_for_input = data.waiting_for_input;
     }
-    async save_to_db(pool) {
+     save_to_db(pool) {
         await common.send_query(pool, constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
         this.changed = false;
         this.heap.changed = false;
     }
-    async delete_from_db(pool) {
+     delete_from_db(pool) {
         await common.send_query(pool, constants.delete_battle_query, [this.id]);
     }
     // networking
@@ -232,7 +232,7 @@ class BattleReworked2 {
     send_stop() {
         this.world.socket_manager.send_stop_battle(this);
     }
-    async update(pool) {
+     update(pool) {
         if (this.changed || this.heap.changed) {
             this.save_to_db(pool);
         }
@@ -295,7 +295,7 @@ class BattleReworked2 {
     get_char(unit) {
         return this.world.get_char_from_id(unit.char_id);
     }
-    async make_turn(pool) {
+     make_turn(pool) {
         let unit = this.heap.get_selected_unit();
         let char = this.get_char(unit);
         let action = battle_ai_1.BattleAI.action(this, unit, char);
@@ -307,7 +307,7 @@ class BattleReworked2 {
         }
         this.changed = true;
     }
-    async action(pool, unit_index, action) {
+     action(pool, unit_index, action) {
         console.log('battle action');
         console.log(action);
         let unit = this.heap.get_unit(unit_index);
@@ -572,7 +572,7 @@ class BattleReworked2 {
         }
         return 'no_interest';
     }
-    async transfer(target, tag, x) {
+     transfer(target, tag, x) {
         this.stash.transfer(target.stash, tag, x);
         this.changed = true;
     }
@@ -654,8 +654,8 @@ class BattleReworked2 {
         this.send_stop();
     }
     reward() { }
-    async reward_team(pool, team) { }
-    async process_input(pool, unit_index, input) {
+     reward_team(pool, team) { }
+     process_input(pool, unit_index, input) {
         if (!this.waiting_for_input) {
             return { action: 'action_in_progress', who: unit_index };
         }
