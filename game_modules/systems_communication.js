@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
 const system_1 = require("./base_game_classes/character/system");
-const updates_1 = require("./client_communication/network_actions/updates");
 const user_manager_1 = require("./client_communication/user_manager");
+const system_2 = require("./map/system");
 var Convert;
 (function (Convert) {
     function user_to_character(user) {
@@ -24,6 +24,11 @@ var Convert;
         return user_manager_1.UserManagement.get_user(data.id);
     }
     Convert.character_to_user = character_to_user;
+    function character_to_cell(character) {
+        let cell = system_2.MapSystem.SAFE_id_to_cell(character.cell_id);
+        return cell;
+    }
+    Convert.character_to_cell = character_to_cell;
 })(Convert = exports.Convert || (exports.Convert = {}));
 var Link;
 (function (Link) {
@@ -39,9 +44,32 @@ var Link;
     }
     Link.character_and_user_data = character_and_user_data;
     function character_and_cell(character, cell) {
-        cell.characters_set.add(character.id);
-        updates_1.SendUpdate.cell(cell);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 'market');
+        // add to the list and notify locals
+        // note: rewrite later to lazy sending: send local characters to local characters once in X seconds if there are changes
+        //       and send list immediately only to entering user
+        cell.enter(character.id);
+        const locals = cell.get_characters_list();
+        for (let item of locals) {
+            const id = item.id;
+            const local_character = system_1.CharacterSystem.id_to_character(id);
+            const local_user = Convert.character_to_user(local_character);
+            if (local_user == undefined) {
+                continue;
+            }
+            user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 8 /* UI_Part.LOCAL_CHARACTERS */);
+        }
+        // check if it is a user and needs updates, otherwise return immediately
+        const user = Convert.character_to_user(character);
+        if (user == undefined) {
+            return;
+        }
+        // exploration
+        character.explored[cell.id] = true;
+        let neighbours = system_2.MapSystem.neighbours_cells(cell.id);
+        for (let item of neighbours) {
+            character.explored[item.id] = true;
+        }
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.MAP */);
     }
     Link.character_and_cell = character_and_cell;
 })(Link = exports.Link || (exports.Link = {}));

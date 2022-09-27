@@ -14,6 +14,7 @@ const systems_communication_1 = require("../systems_communication");
 const updates_1 = require("./network_actions/updates");
 const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
+const system_2 = require("../map/system");
 exports.users_data_dict = {};
 var users_data_list = [];
 var login_to_user_data = {};
@@ -153,6 +154,10 @@ var UserManagement;
         character.set_model_variation(model_variation);
         console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')');
         systems_communication_1.Link.character_and_user_data(character, user);
+        const cell = system_2.MapSystem.SAFE_id_to_cell(starting_cell);
+        console.log(cell);
+        systems_communication_1.Link.character_and_cell(character, cell);
+        // CREATE LATER A CHARACTER CREATION SEPARATE FUNCTION!!!
     }
     UserManagement.get_new_character = get_new_character;
     function add_user_to_update_queue(id, reason) {
@@ -164,10 +169,12 @@ var UserManagement;
         if (user == undefined)
             return;
         console.log('ok');
-        if (reason == 'character_creation')
+        if (reason == 'character_creation') {
             user.character_created = true;
-        if (reason == 'market')
-            user.market_update = true;
+        }
+        else {
+            causality_graph_1.Update.on(user.updates, reason);
+        }
         users_to_update.add(user);
     }
     UserManagement.add_user_to_update_queue = add_user_to_update_queue;

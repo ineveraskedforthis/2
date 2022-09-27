@@ -10,6 +10,7 @@ const dp = [[0, 1], [0 ,-1],[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
 export namespace MapSystem {
     export function load() {
+        console.log('loading map')
         size = WORLD_SIZE
         max_direction = Math.max(size[0], size[1])
         const development = STARTING_DEVELOPMENT
@@ -20,10 +21,14 @@ export namespace MapSystem {
             for (let y = 0; y < size[1]; y++) {
                 const string = x + '_' + 'y'
                 const id = coordinate_to_id(x, y)
-                const cell = new Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string], terrain[x][y])
+                const tmp = terrain[x]
+                if (tmp == undefined) continue
+                const cell = new Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string], tmp[y])
                 cells[id] = cell
             }
         }
+
+        console.log('map is loaded')
     }
 
     export function coordinate_to_id(x:number, y:number) {
@@ -43,6 +48,10 @@ export namespace MapSystem {
         return cells[id]
     }
 
+    export function SAFE_id_to_cell(id: cell_id) {
+        return cells[id] as Cell
+    }
+
     export function neighbours(id: cell_id) {
         let arr = []
         const [x, y] = id_to_coordinate(id)
@@ -50,6 +59,19 @@ export namespace MapSystem {
             const [x1, y1] = [x + s, y + t]
             if (validate_coordinates([x1, y1])) {
                 arr.push([x1, y1])
+            }
+        }
+        return arr
+    }
+
+    export function neighbours_cells(id: cell_id): Cell[] {
+        let arr = []
+        const [x, y] = id_to_coordinate(id)
+        for (const [s, t] of dp) {
+            const [x1, y1] = [x + s, y + t]
+            if (validate_coordinates([x1, y1])) {
+                let cell = coordinate_to_cell([x1, y1])
+                if (cell != undefined) arr.push(cell)
             }
         }
         return arr

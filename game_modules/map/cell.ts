@@ -19,12 +19,16 @@ export class Cell {
 
     visited_recently: boolean;
     last_visit: number
+    
 
     development: Development;
     resources: CellResources;
     terrain: terrain;
 
+    changed_characters: boolean
     characters_set: Set<char_id>
+    saved_characters_list: {id: char_id, name:string}[]
+
     orders_bulk: Set<order_bulk_id>
     orders_item: Set<order_item_id>
 
@@ -36,9 +40,12 @@ export class Cell {
         this.name = name;
         this.visited_recently = false;
         this.last_visit = 0;
+        this.changed_characters = true
+
         this.orders_bulk = new Set()
         this.orders_item = new Set()
         this.characters_set = new Set()
+        this.saved_characters_list = []
 
         if (development == undefined) {
             this.development = {rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0};
@@ -59,14 +66,25 @@ export class Cell {
         }
     }
 
+    enter(id: char_id) {
+        this.characters_set.add(id)
+        this.changed_characters = true
+        this.visited_recently = true
+        this.last_visit = 0
+    }
+
     get_characters_list(): {id: char_id, name:string}[] {
-        let result = []
-        for (let item of this.characters_set.values()) {
-            let character = CharacterSystem.id_to_character(item)
-            let return_item = {id: item, name: character.name}
-            result.push(return_item)
+        if (this.changed_characters) {
+            this.changed_characters = false
+            let result = []
+            for (let item of this.characters_set.values()) {
+                let character = CharacterSystem.id_to_character(item)
+                let return_item = {id: item, name: character.name}
+                result.push(return_item)
+            }
+            return result
         }
-        return result
+        return this.saved_characters_list
     }
 
     get_characters_id_set() {
@@ -104,11 +122,6 @@ export class Cell {
 
     get_market() {
         return undefined
-    }
-
-    visit() {
-        this.visited_recently = true
-        this.last_visit = 0
     }
 
     async update(dt: number) {

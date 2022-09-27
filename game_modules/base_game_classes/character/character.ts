@@ -1,11 +1,9 @@
 import {Stash} from "../inventories/stash"
-import { Archetype, CharacterFlags, InnateStats, Misc, Stats, Status, status_type } from "./character_parts";
+import { Archetype, InnateStats, Stats, Status, status_type } from "./character_parts";
 import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { cell_id, char_id, money, TEMP_USER_ID, user_id } from "../../types";
-
-
 
 export class Character {
     id: char_id;

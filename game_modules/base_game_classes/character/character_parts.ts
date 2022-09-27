@@ -50,38 +50,3 @@ export interface Archetype {
     ai_battle: tagTactic;
     race: tagRACE;
 }
-
-
-
-
-export class Misc {
-    model: string;
-    explored: boolean[];
-    battle_id: number;
-    in_battle_id: number;
-    tactic: any;
-    ai_tag: tagAI;
-    tag: tagRACE;
-    constructor() {
-        this.model = 'empty'
-        this.explored = []
-        this.battle_id = -1
-        this.in_battle_id = -1
-        this.tactic = {}
-        this.ai_tag = 'dummy'
-        this.tag = 'test'
-    }
-}
-
-export class CharacterFlags {
-    player: boolean;
-    trainer: boolean;
-    dead: boolean;
-    in_battle: boolean;
-    constructor() {
-        this.player = false
-        this.trainer = false
-        this.dead = false
-        this.in_battle = false
-    }
-}

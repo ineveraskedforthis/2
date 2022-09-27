@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterFlags = exports.Misc = exports.InnateStats = exports.Status = void 0;
+exports.InnateStats = exports.Status = void 0;
 const damage_types_1 = require("../misc/damage_types");
 class Status {
     constructor() {
@@ -25,24 +25,3 @@ class InnateStats {
     }
 }
 exports.InnateStats = InnateStats;
-class Misc {
-    constructor() {
-        this.model = 'empty';
-        this.explored = [];
-        this.battle_id = -1;
-        this.in_battle_id = -1;
-        this.tactic = {};
-        this.ai_tag = 'dummy';
-        this.tag = 'test';
-    }
-}
-exports.Misc = Misc;
-class CharacterFlags {
-    constructor() {
-        this.player = false;
-        this.trainer = false;
-        this.dead = false;
-        this.in_battle = false;
-    }
-}
-exports.CharacterFlags = CharacterFlags;

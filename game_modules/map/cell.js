@@ -10,9 +10,11 @@ class Cell {
         this.name = name;
         this.visited_recently = false;
         this.last_visit = 0;
+        this.changed_characters = true;
         this.orders_bulk = new Set();
         this.orders_item = new Set();
         this.characters_set = new Set();
+        this.saved_characters_list = [];
         if (development == undefined) {
             this.development = { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0 };
         }
@@ -32,14 +34,24 @@ class Cell {
             this.terrain = terrain;
         }
     }
+    enter(id) {
+        this.characters_set.add(id);
+        this.changed_characters = true;
+        this.visited_recently = true;
+        this.last_visit = 0;
+    }
     get_characters_list() {
-        let result = [];
-        for (let item of this.characters_set.values()) {
-            let character = system_js_1.CharacterSystem.id_to_character(item);
-            let return_item = { id: item, name: character.name };
-            result.push(return_item);
+        if (this.changed_characters) {
+            this.changed_characters = false;
+            let result = [];
+            for (let item of this.characters_set.values()) {
+                let character = system_js_1.CharacterSystem.id_to_character(item);
+                let return_item = { id: item, name: character.name };
+                result.push(return_item);
+            }
+            return result;
         }
-        return result;
+        return this.saved_characters_list;
     }
     get_characters_id_set() {
         return this.characters_set;
@@ -69,10 +81,6 @@ class Cell {
     }
     get_market() {
         return undefined;
-    }
-    visit() {
-        this.visited_recently = true;
-        this.last_visit = 0;
     }
     async update(dt) {
         if (this.visited_recently) {

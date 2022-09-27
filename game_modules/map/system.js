@@ -10,6 +10,7 @@ const dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 var MapSystem;
 (function (MapSystem) {
     function load() {
+        console.log('loading map');
         size = map_definitions_1.WORLD_SIZE;
         max_direction = Math.max(size[0], size[1]);
         const development = map_definitions_1.STARTING_DEVELOPMENT;
@@ -19,10 +20,14 @@ var MapSystem;
             for (let y = 0; y < size[1]; y++) {
                 const string = x + '_' + 'y';
                 const id = coordinate_to_id(x, y);
-                const cell = new cell_1.Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string], terrain[x][y]);
+                const tmp = terrain[x];
+                if (tmp == undefined)
+                    continue;
+                const cell = new cell_1.Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string], tmp[y]);
                 cells[id] = cell;
             }
         }
+        console.log('map is loaded');
     }
     MapSystem.load = load;
     function coordinate_to_id(x, y) {
@@ -42,6 +47,11 @@ var MapSystem;
         return cells[id];
     }
     MapSystem.id_to_cell = id_to_cell;
+    function SAFE_id_to_cell(id) {
+        console.log(cells);
+        return cells[id];
+    }
+    MapSystem.SAFE_id_to_cell = SAFE_id_to_cell;
     function neighbours(id) {
         let arr = [];
         const [x, y] = id_to_coordinate(id);
@@ -54,6 +64,20 @@ var MapSystem;
         return arr;
     }
     MapSystem.neighbours = neighbours;
+    function neighbours_cells(id) {
+        let arr = [];
+        const [x, y] = id_to_coordinate(id);
+        for (const [s, t] of dp) {
+            const [x1, y1] = [x + s, y + t];
+            if (validate_coordinates([x1, y1])) {
+                let cell = coordinate_to_cell([x1, y1]);
+                if (cell != undefined)
+                    arr.push(cell);
+            }
+        }
+        return arr;
+    }
+    MapSystem.neighbours_cells = neighbours_cells;
     function validate_coordinates([x, y]) {
         return (y >= 0) && (x >= 0) && (x < size[0]) && (y < size[1]);
     }

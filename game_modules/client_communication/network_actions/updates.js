@@ -3,18 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendUpdate = void 0;
 const battle_calcs_1 = require("../../base_game_classes/battle/battle_calcs");
 const craft_1 = require("../../base_game_classes/character/craft");
-const system_1 = require("../../base_game_classes/character/system");
+const system_1 = require("../../map/system");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
-        savings(user);
         status(user);
-        stash(user);
-        equip(user);
+        belongings(user);
         all_skills(user);
         all_craft(user);
+        map_related(user);
     }
     SendUpdate.all = all;
     function savings(user) {
@@ -123,21 +122,6 @@ var SendUpdate;
         alerts_1.Alerts.generic_user_alert(user, 'hp', { c: character.status.hp, m: character.stats.max.hp });
     }
     SendUpdate.hp = hp;
-    function cell(cell) {
-        let characters_list = cell.get_characters_list();
-        for (let item of characters_list) {
-            let id = item.id;
-            let character = system_1.CharacterSystem.id_to_character(id);
-            let user = systems_communication_1.Convert.character_to_user(character);
-            if (user != undefined) {
-                alerts_1.Alerts.generic_user_alert(user, 'cell-characters', characters_list);
-                alerts_1.Alerts.map_action(user, 'hunt', cell.can_hunt());
-                // Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
-                alerts_1.Alerts.map_action(user, 'clean', cell.can_clean());
-            }
-        }
-    }
-    SendUpdate.cell = cell;
     function market(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
@@ -151,6 +135,63 @@ var SendUpdate;
         // }
     }
     SendUpdate.market = market;
+    function explored(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, 'explore', character.explored);
+        for (let i = 0; i < character.explored.length; i++) {
+            if (character.explored[i]) {
+                let cell = system_1.MapSystem.id_to_cell(i);
+                if (cell != undefined) {
+                    let x = cell.x;
+                    let y = cell.y;
+                    let data = cell.development;
+                    let res1 = {};
+                    res1[x + '_' + y] = data;
+                    if (data != undefined) {
+                        alerts_1.Alerts.generic_user_alert(user, 'map-data-cells', res1);
+                    }
+                    let res2 = { x: x, y: y, ter: cell.terrain };
+                    alerts_1.Alerts.generic_user_alert(user, 'map-data-terrain', res2);
+                }
+            }
+        }
+    }
+    SendUpdate.explored = explored;
+    function local_characters(user) {
+        // prepare data
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        const cell = systems_communication_1.Convert.character_to_cell(character);
+        let characters_list = cell.get_characters_list();
+        alerts_1.Alerts.generic_user_alert(user, 'cell-characters', characters_list);
+    }
+    SendUpdate.local_characters = local_characters;
+    function local_actions(user) {
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        const cell = systems_communication_1.Convert.character_to_cell(character);
+        alerts_1.Alerts.map_action(user, 'hunt', cell.can_hunt());
+        alerts_1.Alerts.map_action(user, 'clean', cell.can_clean());
+    }
+    SendUpdate.local_actions = local_actions;
+    function map_related(user) {
+        local_actions(user);
+        local_characters(user);
+        explored(user);
+    }
+    SendUpdate.map_related = map_related;
+    function belongings(user) {
+        stash(user);
+        savings(user);
+        equip(user);
+    }
+    SendUpdate.belongings = belongings;
+    //     // user.socket.emit('map-data-cells', this.world.constants.development)
+    //     // user.socket.emit('map-data-terrain', this.world.constants.terrain)
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
 // function prepare_market_orders(market: Cell) {
 //     let data = market.orders;

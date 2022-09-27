@@ -8,8 +8,9 @@ import { HumanTemplateNotAligned } from "../base_game_classes/character/races/hu
 import { Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
-import { Update } from "./causality_graph";
+import { UI_Part, Update } from "./causality_graph";
 import { cell_id, char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
+import { MapSystem } from "../map/system";
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
@@ -53,6 +54,7 @@ export namespace UserManagement {
                 last_id = user.id
             }
         }
+        console.log('users are loaded')
     }
 
     export function save_users() {
@@ -164,17 +166,23 @@ export namespace UserManagement {
 
         console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
+        const cell = MapSystem.SAFE_id_to_cell(starting_cell)
+
+        Link.character_and_cell(character, cell)
+
+        // CREATE LATER A CHARACTER CREATION SEPARATE FUNCTION!!!
     }
 
-    export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|'market') {
+    export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|UI_Part) {
         console.log('add user to update')
         console.log(id)
         if (id == '#') return
         let user = get_user(id as user_online_id)
         if (user == undefined) return
         console.log('ok')
-        if (reason == 'character_creation') user.character_created = true;
-        if (reason == 'market') user.market_update = true
+        if (reason == 'character_creation') {user.character_created = true} else {
+            Update.on(user.updates, reason)
+        }
         users_to_update.add(user)
     }
 

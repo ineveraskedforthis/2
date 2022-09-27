@@ -1,5 +1,6 @@
 import { readFile } from "fs";
 import { CharacterSystem } from "./game_modules/base_game_classes/character/system";
+import { MapSystem } from "./game_modules/map/system";
 import { SocketManager } from "./game_modules/client_communication/socket_manager";
 import { UserManagement } from "./game_modules/client_communication/user_manager";
 import { constants } from "./game_modules/static_data/constants";
@@ -9,14 +10,9 @@ import { http, io_type } from "./server";
 
 export var io:io_type = require('socket.io')(http);
 export var socket_manager = new SocketManager(io)
-export var users = UserManagement.load_users()
 
 
-// export var entity_manager = new EntityManager()
-// export var ai_manager = new AiManager()
-// export var world_manager = new World(27, 27)
-// export var user_manager = new UserManager()
-// export var action_manager = new ActionManager()
+
 
 export function launch() {
     try {
@@ -26,28 +22,13 @@ export function launch() {
         console.log(version)
         migrate(version, constants.version)
 
-        // let tables = ['accounts', 'chars', 'last_id', 'last_id', 'battles', 'worlds', 'messages', 'markets', 'cells', 'market_orders', 'agents', 'consumers', 'pops', 'enterprises', 'messages', 'items_orders', 'items_markets', 'areas', 'quests', 'factions']
-        // let ver = await common.get_version(client);
-        // console.log('version from db ');
-        // console.log(ver.version);
-        // console.log('current version of code');
-        // console.log(constants.version);
-        // if (( ver.version != constants.version )) {
-        //     console.log('drop database');
-        //     await common.drop_tables(client, tables);
-        //     await common.set_version(client, constants.version);
-        //     await create_tables(client)
-            
-        //     await common.init_ids(client);
-        //     await client.end();
-        //     await world.init(pool);
-        // }
-        // else {
-        //     await client.end();
-        //     await world.load(pool)
-        // }
+        CharacterSystem.load()
+        MapSystem.load()
+        UserManagement.load_users()
+
         // console.log('database is ready');
         // gameloop.setGameLoop(async delta => await world.update(pool, delta), 500);
+
     } catch (e) {
         console.log(e);
     }

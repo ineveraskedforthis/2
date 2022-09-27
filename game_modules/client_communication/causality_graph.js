@@ -3,41 +3,34 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Update = void 0;
 const updates_1 = require("./network_actions/updates");
 const children = {
-    [0 /* UI_Part.ROOT */]: [9 /* UI_Part.COOKING_CRAFT */, 2 /* UI_Part.STATUS */, 6 /* UI_Part.SKILLS */, 5 /* UI_Part.INVENTORY */, 4 /* UI_Part.SAVINGS */, 3 /* UI_Part.STASH */],
-    [1 /* UI_Part.HP */]: [],
-    [2 /* UI_Part.STATUS */]: [1 /* UI_Part.HP */],
-    [3 /* UI_Part.STASH */]: [],
-    [4 /* UI_Part.SAVINGS */]: [],
-    [5 /* UI_Part.INVENTORY */]: [],
-    [6 /* UI_Part.SKILLS */]: [8 /* UI_Part.COOKING_SKILL */],
-    [7 /* UI_Part.CRAFT */]: [9 /* UI_Part.COOKING_CRAFT */],
-    [8 /* UI_Part.COOKING_SKILL */]: [],
-    [9 /* UI_Part.COOKING_CRAFT */]: []
+    [0 /* UI_Part.ROOT */]: [1 /* UI_Part.STATUS */, 3 /* UI_Part.BELONGINGS */, 7 /* UI_Part.MAP */, 11 /* UI_Part.SKILLS */, 13 /* UI_Part.CRAFT */],
+    [1 /* UI_Part.STATUS */]: [2 /* UI_Part.HP */],
+    [3 /* UI_Part.BELONGINGS */]: [4 /* UI_Part.STASH */, 5 /* UI_Part.SAVINGS */, 6 /* UI_Part.INVENTORY */],
+    [7 /* UI_Part.MAP */]: [10 /* UI_Part.LOCAL_ACTIONS */, 9 /* UI_Part.EXPLORED */, 10 /* UI_Part.LOCAL_ACTIONS */],
+    [11 /* UI_Part.SKILLS */]: [12 /* UI_Part.COOKING_SKILL */],
+    [13 /* UI_Part.CRAFT */]: [14 /* UI_Part.COOKING_CRAFT */],
 };
 function empty_function(user) { }
 const update_function = {
     [0 /* UI_Part.ROOT */]: updates_1.SendUpdate.all,
-    [1 /* UI_Part.HP */]: updates_1.SendUpdate.hp,
-    [2 /* UI_Part.STATUS */]: updates_1.SendUpdate.status,
-    [3 /* UI_Part.STASH */]: updates_1.SendUpdate.stash,
-    [4 /* UI_Part.SAVINGS */]: updates_1.SendUpdate.savings,
-    [5 /* UI_Part.INVENTORY */]: updates_1.SendUpdate.equip,
-    [6 /* UI_Part.SKILLS */]: updates_1.SendUpdate.all_skills,
-    [7 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
-    [8 /* UI_Part.COOKING_SKILL */]: updates_1.SendUpdate.skill_cooking,
-    [9 /* UI_Part.COOKING_CRAFT */]: updates_1.SendUpdate.cooking_craft
+    [1 /* UI_Part.STATUS */]: updates_1.SendUpdate.status,
+    [2 /* UI_Part.HP */]: updates_1.SendUpdate.hp,
+    [3 /* UI_Part.BELONGINGS */]: updates_1.SendUpdate.belongings,
+    [4 /* UI_Part.STASH */]: updates_1.SendUpdate.stash,
+    [5 /* UI_Part.SAVINGS */]: updates_1.SendUpdate.savings,
+    [6 /* UI_Part.INVENTORY */]: updates_1.SendUpdate.equip,
+    [7 /* UI_Part.MAP */]: updates_1.SendUpdate.map_related,
+    [10 /* UI_Part.LOCAL_ACTIONS */]: updates_1.SendUpdate.local_actions,
+    [9 /* UI_Part.EXPLORED */]: updates_1.SendUpdate.explored,
+    [8 /* UI_Part.LOCAL_CHARACTERS */]: updates_1.SendUpdate.local_characters,
+    [11 /* UI_Part.SKILLS */]: updates_1.SendUpdate.all_skills,
+    [12 /* UI_Part.COOKING_SKILL */]: updates_1.SendUpdate.skill_cooking,
+    [13 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
+    [14 /* UI_Part.COOKING_CRAFT */]: updates_1.SendUpdate.cooking_craft,
 };
 const influence = {
-    [0 /* UI_Part.ROOT */]: [],
-    [1 /* UI_Part.HP */]: [],
-    [2 /* UI_Part.STATUS */]: [],
-    [3 /* UI_Part.STASH */]: [],
-    [4 /* UI_Part.SAVINGS */]: [],
-    [5 /* UI_Part.INVENTORY */]: [],
-    [6 /* UI_Part.SKILLS */]: [7 /* UI_Part.CRAFT */],
-    [7 /* UI_Part.CRAFT */]: [],
-    [8 /* UI_Part.COOKING_SKILL */]: [9 /* UI_Part.COOKING_CRAFT */],
-    [9 /* UI_Part.COOKING_CRAFT */]: []
+    [11 /* UI_Part.SKILLS */]: [13 /* UI_Part.CRAFT */],
+    [12 /* UI_Part.COOKING_SKILL */]: [14 /* UI_Part.COOKING_CRAFT */],
 };
 // if node: ask to update node and leave
 // else: try updating children
@@ -55,10 +48,12 @@ var Update;
             let current = queue[l];
             if (!something[current]) {
                 something[current] = true;
-                for (let i of influence[current]) {
-                    queue.push(i);
-                    r += 1;
-                }
+                const inf = influence[current];
+                if (inf != undefined)
+                    for (let i of inf) {
+                        queue.push(i);
+                        r += 1;
+                    }
             }
             l += 1;
         }
@@ -75,7 +70,11 @@ var Update;
             update_function[current];
             return;
         }
-        for (let i of children[current]) {
+        const ch = children[current];
+        if (ch == undefined) {
+            return;
+        }
+        for (let i of ch) {
             update(i, user, false);
         }
     }
@@ -87,15 +86,6 @@ var Update;
     function construct() {
         return {
             [0 /* UI_Part.ROOT */]: false,
-            [1 /* UI_Part.HP */]: false,
-            [2 /* UI_Part.STATUS */]: false,
-            [3 /* UI_Part.STASH */]: false,
-            [4 /* UI_Part.SAVINGS */]: false,
-            [5 /* UI_Part.INVENTORY */]: false,
-            [6 /* UI_Part.SKILLS */]: false,
-            [8 /* UI_Part.COOKING_SKILL */]: false,
-            [9 /* UI_Part.COOKING_CRAFT */]: false,
-            [7 /* UI_Part.CRAFT */]: false,
         };
     }
     Update.construct = construct;

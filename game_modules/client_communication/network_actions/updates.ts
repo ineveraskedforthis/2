@@ -3,7 +3,10 @@ import { CraftProbability } from "../../base_game_classes/character/craft";
 import { SkillList } from "../../base_game_classes/character/skills";
 import { CharacterSystem } from "../../base_game_classes/character/system";
 import { Cell } from "../../map/cell";
+import { MapSystem } from "../../map/system";
+import { Development } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";
+import { cell_id } from "../../types";
 import { User } from "../user";
 import { Alerts } from "./alerts";
 
@@ -11,12 +14,11 @@ import { Alerts } from "./alerts";
 
 export namespace SendUpdate {
     export function all(user: User) {
-        savings(user)
         status(user)
-        stash(user)
-        equip(user)
+        belongings(user)
         all_skills(user)
         all_craft(user)
+        map_related(user)
     }
 
     export function savings(user: User) {
@@ -127,22 +129,6 @@ export namespace SendUpdate {
         Alerts.generic_user_alert(user, 'hp', {c: character.status.hp, m: character.stats.max.hp})
     }
 
-    export function cell(cell: Cell) {
-        let characters_list = cell.get_characters_list()
-        for (let item of characters_list) {
-            let id = item.id
-            let character = CharacterSystem.id_to_character(id)
-            let user = Convert.character_to_user(character)
-
-            if (user != undefined) {
-                Alerts.generic_user_alert(user, 'cell-characters', characters_list)
-                Alerts.map_action(user, 'hunt'          , cell.can_hunt())
-                // Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
-                Alerts.map_action(user, 'clean'         , cell.can_clean())
-            }
-        }
-    }
-
     export function market(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
@@ -156,6 +142,64 @@ export namespace SendUpdate {
     //     }
     // }
     }
+
+    export function explored(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+        Alerts.generic_user_alert(user, 'explore', character.explored)
+        for (let i = 0; i < character.explored.length; i++) {
+            if (character.explored[i]) {
+                let cell = MapSystem.id_to_cell(i as cell_id)
+                if (cell != undefined) {
+                    let x = cell.x
+                    let y = cell.y
+                    let data = cell.development
+
+                    let res1: {[_ in string]: Development} = {}
+                    res1[x + '_' + y] = data
+                    if (data != undefined) {
+                        Alerts.generic_user_alert(user, 'map-data-cells', res1)
+                    }
+
+                    let res2 = {x: x, y: y, ter: cell.terrain}
+                    Alerts.generic_user_alert(user, 'map-data-terrain', res2)
+                }
+            }            
+        }
+    }
+
+    export function local_characters(user: User) {
+        // prepare data
+        const character = Convert.user_to_character(user)
+        if (character == undefined) return
+        const cell = Convert.character_to_cell(character)
+        let characters_list = cell.get_characters_list()
+
+        Alerts.generic_user_alert(user, 'cell-characters', characters_list)
+    }
+
+    export function local_actions(user: User) {
+        const character = Convert.user_to_character(user)
+        if (character == undefined) return
+        const cell = Convert.character_to_cell(character)
+        Alerts.map_action(user, 'hunt'          , cell.can_hunt())
+        Alerts.map_action(user, 'clean'         , cell.can_clean())
+    }
+
+    export function map_related(user: User) {
+        local_actions(user)
+        local_characters(user)
+        explored(user)
+    }
+
+    export function belongings(user: User) {
+        stash(user)
+        savings(user)
+        equip(user)
+    }
+        
+    //     // user.socket.emit('map-data-cells', this.world.constants.development)
+    //     // user.socket.emit('map-data-terrain', this.world.constants.terrain)
 }
 
 // function prepare_market_orders(market: Cell) {

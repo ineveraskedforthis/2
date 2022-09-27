@@ -1,4 +1,4 @@
-import { SocketWrapper, User } from "./user";
+import { SocketWrapper } from "./user";
 
 import { materials } from "../manager_classes/materials_manager";
 import { io_type, Socket } from "../../server";
@@ -168,32 +168,13 @@ export class SocketManager {
         
 
 
-    //     for (let i = 0; i < character.misc.explored.length; i++) {
-    //         if (character.misc.explored[i]) {
-    //             let cell = this.world.get_cell_by_id(i)
-    //             if (cell != undefined) {
-    //                 let x = cell.i
-    //                 let y = cell.j
-    //                 let data: any = this.world.constants.development
-    //                 let res1: any = {}
-    //                 res1[x + '_' + y] = data[x + '_' + y]
-    //                 if (data[x + '_' + y] != undefined) {
-    //                     this.send_to_character_user(character, 'map-data-cells', res1)
-    //                 }
 
-    //                 if (this.world.constants.terrain[x] != undefined && this.world.constants.terrain[x][y] != undefined) {
-    //                     let res2 = {x: x, y: y, ter: this.world.constants.terrain[x][y]}
-    //                     this.send_to_character_user(character, 'map-data-terrain', res2)
-    //                 }
-    //             }
-    //         }            
-    //     }
+
 
     //     this.send_to_character_user(character, 'b-action-chance', {tag: 'end_turn', value: 1})
     //     this.send_to_character_user(character, 'b-action-chance', {tag: 'move', value: 1})
 
-    //     // user.socket.emit('map-data-cells', this.world.constants.development)
-    //     // user.socket.emit('map-data-terrain', this.world.constants.terrain)
+
     // }
 
     // // actions
@@ -704,9 +685,7 @@ export class SocketManager {
     // }
 
 
-    // send_explored(character: Character) {
-    //     this.send_to_character_user(character, 'explore', character.misc.explored)
-    // }
+
 
     // send_updates_to_char(character: Character) {
     //     let user = this.world.user_manager.get_user_from_character(character);

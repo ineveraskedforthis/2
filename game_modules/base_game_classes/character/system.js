@@ -8,6 +8,8 @@ var character_list = [];
 var characters_dict = {};
 var CharacterSystem;
 (function (CharacterSystem) {
+    function load() { }
+    CharacterSystem.load = load;
     function template_to_character(template, name, cell_id) {
         last_character_id = last_character_id + 1;
         if (name == undefined)
@@ -16,6 +18,7 @@ var CharacterSystem;
         character.stats.base_resists.add(template.base_resists);
         characters_dict[character.id] = character;
         character_list.push(character);
+        character.explored[cell_id] = true;
         return character;
     }
     CharacterSystem.template_to_character = template_to_character;
