@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.character_to_craft_spear_probability = exports.craft_spear_probability = exports.craft_spear = void 0;
+const items_set_up_1 = require("../../../base_game_classes/items/items_set_up");
+const system_1 = require("../../../base_game_classes/items/system");
+const difficulty_1 = require("../../../calculations/difficulty");
 const user_manager_1 = require("../../../client_communication/user_manager");
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
 exports.craft_spear = {
@@ -25,25 +28,23 @@ exports.craft_spear = {
             char.change('fatigue', 10);
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
-            // if (dice < check) {
             let dice = Math.random();
             if (dice < craft_spear_probability(skill)) {
-                let spear = new Weapon(SPEAR_ARGUMENT);
-                char.equip.add_weapon(spear);
-                char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
-                char.send_stash_update();
-                char.send_equip_update();
-                char.send_status_update();
+                let spear = system_1.ItemSystem.create(items_set_up_1.SPEAR_ARGUMENT);
+                char.equip.data.backpack.add(spear);
+                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 6 /* UI_Part.INVENTORY */);
+                if (difficulty_1.Difficulty.success_to_skill_up(skill, difficulty_1.DIFFICULTY_SPEAR, 0)) {
+                    char.skills.woodwork += 1;
+                    user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 11 /* UI_Part.SKILLS */);
+                }
                 return 1 /* CharacterActionResponce.OK */;
             }
             else {
-                char.change_stress(1);
-                if (skill < 20) {
+                char.change('stress', 1);
+                if (difficulty_1.Difficulty.failure_to_skill_up(skill, difficulty_1.DIFFICULTY_SPEAR, 0)) {
                     char.skills.woodwork += 1;
-                    char.send_skills_update();
-                    char.changed = true;
+                    user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 11 /* UI_Part.SKILLS */);
                 }
-                char.world.socket_manager.send_to_character_user(char, 'alert', 'failed');
                 return 4 /* CharacterActionResponce.FAILED */;
             }
         }
@@ -52,9 +53,7 @@ exports.craft_spear = {
     },
 };
 function craft_spear_probability(skill) {
-    if (nodb_mode_check())
-        return 1;
-    return Math.min(skill / 30 + 0.1, 1);
+    return difficulty_1.Difficulty.success_ratio(skill, difficulty_1.DIFFICULTY_SPEAR, difficulty_1.BONUS_SPEAR);
 }
 exports.craft_spear_probability = craft_spear_probability;
 function character_to_craft_spear_probability(character) {

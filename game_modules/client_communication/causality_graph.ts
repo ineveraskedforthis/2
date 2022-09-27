@@ -79,6 +79,7 @@ export namespace Update {
             let current = queue[l]
             if (!something[current]) {
                 something[current] = true
+                console.log('activate ' + current)
                 const inf = influence[current]
                 if (inf != undefined) for (let i of inf) {
                     queue.push(i)

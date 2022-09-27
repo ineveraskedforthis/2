@@ -10,6 +10,7 @@ import { ValidatorSM } from "./network_actions/common_validations";
 import { Alerts } from "./network_actions/alerts";
 import { MapSystem } from "../map/system";
 import { HandleAction } from "./network_actions/actions";
+import { CharacterAction } from "../actions/action_manager";
 
 
 interface Message {
@@ -70,10 +71,10 @@ export class SocketManager {
             // socket.on('eat',  () => this.eat(user));
             // socket.on('clean',  () => this.clean(user));
             // socket.on('rest',  () => this.rest(user));
-            socket.on('move',  (msg: any) => HandleAction.move(user, msg));
+            socket.on('move', (msg: any) =>     HandleAction.move(user, msg));
             // socket.on('hunt',  () => this.hunt(user))
-            // socket.on('gather_wood',  () => this.gather_wood(user))            
-
+            socket.on('gather_wood', () =>      HandleAction.act(user, CharacterAction.GATHER_WOOD))            
+            
 
             // socket.on('clear-orders',  () => this.clear_orders(user));
             // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
@@ -85,7 +86,7 @@ export class SocketManager {
 
             // socket.on('cfood',  () =>      this.craft(user, CharacterAction.COOK_MEAT));
             // socket.on('czaz',  () =>       this.craft(user, CharacterAction.COOK_ELODINO));
-            // socket.on('mspear',  () =>     this.craft(user, CharacterAction.CRAFT_SPEAR))
+            socket.on('mspear', () =>           HandleAction.act(user, CharacterAction.CRAFT.SPEAR))
             // socket.on('mbspear',  () =>    this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
             // socket.on('mbow',  () =>       this.craft(user, CharacterAction.CRAFT_WOOD_BOW))
             // socket.on('marr',  () =>       this.craft(user, CharacterAction.CRAFT_BONE_ARROW))
@@ -135,8 +136,8 @@ export class SocketManager {
             mouth: data.mouth
         }
 
-        if (data.location == 'village') {var starting_cell = MapSystem.coordinate_to_id(0, 3)}
-        else                            {var starting_cell = MapSystem.coordinate_to_id(0, 3)}
+        if (data.location == 'village') {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
+        else                            {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
 
         UserManagement.get_new_character(sw.user_id, data.name, model_variation, starting_cell)
         UserManagement.update_users()

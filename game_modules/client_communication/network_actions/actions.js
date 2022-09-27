@@ -31,6 +31,27 @@ var HandleAction;
         }
     }
     HandleAction.move = move;
+    function act(sw, action) {
+        // do not handle unlogged or characterless
+        if (sw.user_id == '#')
+            return;
+        const user = user_manager_1.UserManagement.get_user(sw.user_id);
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        const destination = [0, 0];
+        let responce = action_manager_1.ActionManager.start_action(action, character, destination);
+        if (responce == 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */) {
+            alerts_1.Alerts.impossible_move(user);
+        }
+        else if (responce == 2 /* CharacterActionResponce.IN_BATTLE */) {
+            alerts_1.Alerts.in_battle(user);
+        }
+        else if (responce == 3 /* CharacterActionResponce.NO_RESOURCE */) {
+            alerts_1.Alerts.not_enough_to_user(user, '???', 0, 0);
+        }
+    }
+    HandleAction.act = act;
 })(HandleAction = exports.HandleAction || (exports.HandleAction = {}));
 //  move(user: User, data: {x: number, y: number}) {
 //     if (!user.logged_in) {

@@ -1,7 +1,7 @@
 import { CharacterActionResponce } from "../../action_manager";
 import { MEAT } from "../../../manager_classes/materials_manager";
-import { PgPool } from "../../../world";
 import type { Character } from "../../../base_game_classes/character/character";
+import { Convert } from "../../../systems_communication";
 
 
 export const hunt = {
@@ -9,9 +9,9 @@ export const hunt = {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
     },
 
-    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: any): CharacterActionResponce {
         if (!char.in_battle()) {
-            let cell = char.get_cell();
+            let cell = Convert.character_to_cell(char);
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
@@ -24,7 +24,6 @@ export const hunt = {
     },
 
     result:  function(char:Character, data: any) {
-        char.changed = true
 
         let skill = char.skills.hunt
         let dice = Math.random()

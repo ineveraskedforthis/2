@@ -23,7 +23,9 @@ const territories = {
         'rat_plains': ['4_2', '4_3', '4_4', '4_5', '4_6', '4_7', '4_8',
                        '5_3', '5_4', '5_5', '5_6', '5_7', '5_8', '5_9',
                        '6_3', '6_4', '6_5', '6_6', '6_7', '6_8', '6_9', '6_10',
-                       '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10']
+                       '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10'],
+
+        'forest': []
     }
 
 const terr_id = {
@@ -57,7 +59,7 @@ const BACKGROUNDS = {
     'rat_plains': 'red_steppe',
     'graci_plains': 'red_steppe',
     'sea': 'red_steppe',
-    'forest_boundary': 'forest',
+    'forest': 'forest',
     'unknown': 'red_steppe'
 }
 
@@ -709,6 +711,14 @@ export class Map {
             if ((tmp0 != 0) || (tmp1 != 0)) {
                 this.send_cell_action('continue_move')
             }
+        }
+
+        let tag = i + '_' + j
+        if (this.data[tag].urban >= 2) {
+            return 'colony'
+        } 
+        if (this.data[tag].wild >= 1) {
+            return 'forest'
         }
         
         // this.visit_spotted = []

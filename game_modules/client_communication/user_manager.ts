@@ -199,6 +199,7 @@ export namespace UserManagement {
                 SendUpdate.market(item)
             }
             Update.update_root(item)
+            Update.clear(item)
         }
         users_to_update.clear()
     }

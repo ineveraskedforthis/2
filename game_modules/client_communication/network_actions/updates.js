@@ -25,6 +25,7 @@ var SendUpdate;
     }
     SendUpdate.savings = savings;
     function status(user) {
+        console.log('update status');
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;

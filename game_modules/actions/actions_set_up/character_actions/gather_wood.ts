@@ -1,22 +1,25 @@
 import { Cell } from "../../../map/cell";
-import { CharacterActionResponce } from "../../action_manager";
+import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
 import { WOOD } from "../../../manager_classes/materials_manager";
-import { PgPool } from "../../../world";
 import type { Character } from "../../../base_game_classes/character/character";
+import { Convert } from "../../../systems_communication";
+import { map_position } from "../../../types";
+import { UserManagement } from "../../../client_communication/user_manager";
+import { UI_Part } from "../../../client_communication/causality_graph";
 
 
-export const gather_wood = {
+export const gather_wood: ActionTargeted = {
     duration(char: Character) {
         return 1 + char.get_fatigue() / 50;
     },
 
-    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
+    check: function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
-            let cell = char.get_cell();
+            let cell = Convert.character_to_cell(char);
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            if (cell.development.wild > 0) {
+            if (cell.can_gather_wood()) {
                 return CharacterActionResponce.OK
             } else {
                 return CharacterActionResponce.NO_RESOURCE
@@ -24,18 +27,19 @@ export const gather_wood = {
         } else return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
-        char.changed = true
-        char.change_fatigue(10)
+    result: function(char:Character, data: map_position) {
+
+        char.change('fatigue', 10)
+        char.change('blood', 1)
+        char.change('stress', 1)
         char.stash.inc(WOOD, 1)
-        char.change_blood(1)
-        char.change_stress(1)
-        char.send_status_update()
-        char.send_stash_update()
+
+        UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
+        UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
         return CharacterActionResponce.OK
     },
 
-    start:  function(char:Character, data: any) {
+    start: function(char:Character, data: any) {
     },
 }
 

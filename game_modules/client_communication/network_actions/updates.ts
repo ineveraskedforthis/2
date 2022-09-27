@@ -29,6 +29,7 @@ export namespace SendUpdate {
     }
  
     export function status(user: User) {
+        console.log('update status')
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
@@ -149,7 +150,7 @@ export namespace SendUpdate {
 
         Alerts.generic_user_alert(user, 'explore', character.explored)
         map_position(user, true)
-        
+
         for (let i = 0; i < character.explored.length; i++) {
             if (character.explored[i]) {
                 let cell = MapSystem.id_to_cell(i as cell_id)

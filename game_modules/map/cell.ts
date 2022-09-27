@@ -121,6 +121,10 @@ export class Cell {
         return (this.development.urban > 0)
     }
 
+    can_gather_wood(): boolean {
+        return (this.development.wild > 0)
+    }
+
     get_item_market() {
         return undefined
     }

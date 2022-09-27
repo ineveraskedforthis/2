@@ -1,8 +1,11 @@
 import { Character } from "../../../base_game_classes/character/character";
+import { Item } from "../../../base_game_classes/items/item";
+import { SPEAR_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
+import { ItemSystem } from "../../../base_game_classes/items/system";
+import { BONUS_SPEAR, Difficulty, DIFFICULTY_SPEAR } from "../../../calculations/difficulty";
 import { UI_Part } from "../../../client_communication/causality_graph";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { WOOD } from "../../../manager_classes/materials_manager";
-import { Convert } from "../../../systems_communication";
 import { map_position } from "../../../types";
 import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
 
@@ -34,24 +37,27 @@ export const craft_spear:ActionTargeted = {
             UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
             UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
             
-            // if (dice < check) {
             let dice = Math.random()
             if (dice < craft_spear_probability(skill)) {
-                let spear = new Weapon(SPEAR_ARGUMENT)
-                char.equip.add_weapon(spear)
-                char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made')
-                char.send_stash_update()
-                char.send_equip_update()
-                char.send_status_update()
+                let spear = ItemSystem.create(SPEAR_ARGUMENT)
+                char.equip.data.backpack.add(spear)
+
+                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.INVENTORY)
+
+                if (Difficulty.success_to_skill_up(skill, DIFFICULTY_SPEAR, 0)) {
+                    char.skills.woodwork += 1
+                    UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
+                }
+
                 return CharacterActionResponce.OK
             } else {
-                char.change_stress(1)
-                if (skill < 20) {
+
+                char.change('stress', 1)
+                if (Difficulty.failure_to_skill_up(skill, DIFFICULTY_SPEAR, 0)) {
                     char.skills.woodwork += 1
-                    char.send_skills_update()
-                    char.changed = true
+                    UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
                 }
-                char.world.socket_manager.send_to_character_user(char, 'alert', 'failed')
+                
                 return CharacterActionResponce.FAILED
             }
         }
@@ -62,8 +68,7 @@ export const craft_spear:ActionTargeted = {
 }
 
 export function craft_spear_probability(skill: number) {
-    if (nodb_mode_check()) return 1;
-    return Math.min(skill / 30 + 0.1, 1)
+    return Difficulty.success_ratio(skill, DIFFICULTY_SPEAR, BONUS_SPEAR)
 }
 
 export function character_to_craft_spear_probability(character:Character) {

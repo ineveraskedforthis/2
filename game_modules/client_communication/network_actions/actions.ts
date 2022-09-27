@@ -1,4 +1,4 @@
-import { ActionManager, CharacterAction, CharacterActionResponce } from "../../actions/action_manager";
+import { ActionManager, ActionTargeted, CharacterAction, CharacterActionResponce } from "../../actions/action_manager";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper } from "../user";
 import { UserManagement } from "../user_manager";
@@ -27,6 +27,26 @@ export namespace HandleAction {
             Alerts.impossible_move(user)
         } else if (responce == CharacterActionResponce.IN_BATTLE) {
             Alerts.in_battle(user)
+        }
+    }
+
+    export function act(sw: SocketWrapper, action: ActionTargeted) {
+        // do not handle unlogged or characterless
+        if (sw.user_id == '#') return
+        const user = UserManagement.get_user(sw.user_id)
+        const character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        const destination: [number, number] = [0, 0]
+
+        let responce = ActionManager.start_action(action, character, destination)
+
+        if (responce == CharacterActionResponce.CANNOT_MOVE_THERE) {
+            Alerts.impossible_move(user)
+        } else if (responce == CharacterActionResponce.IN_BATTLE) {
+            Alerts.in_battle(user)
+        } else if (responce == CharacterActionResponce.NO_RESOURCE) {
+            Alerts.not_enough_to_user(user, '???', 0, 0)
         }
     }
 }

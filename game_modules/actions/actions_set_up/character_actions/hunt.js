@@ -2,13 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.character_to_hunt_probability = exports.hunt_probability = exports.hunt = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
+const systems_communication_1 = require("../../../systems_communication");
 exports.hunt = {
     duration(char) {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let cell = char.get_cell();
+            let cell = systems_communication_1.Convert.character_to_cell(char);
             if (cell == undefined) {
                 return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
@@ -23,7 +24,6 @@ exports.hunt = {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        char.changed = true;
         let skill = char.skills.hunt;
         let dice = Math.random();
         char.change_fatigue(10);

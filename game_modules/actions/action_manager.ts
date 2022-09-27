@@ -6,8 +6,8 @@ import { move } from './actions_set_up/character_actions/move'
 // import { rest } from "./actions_set_up/character_actions/rest"
 // import { hunt } from "./actions_set_up/character_actions/hunt"
 // import { attack } from "./actions_set_up/character_actions/attack"
-// import { craft_spear } from "./actions_set_up/character_actions/craft_spear"
-// import { gather_wood } from "./actions_set_up/character_actions/gather_wood"
+import { craft_spear } from "./actions_set_up/character_actions/craft_spear"
+import { gather_wood } from "./actions_set_up/character_actions/gather_wood"
 // import { craft_bone_arrow, craft_bone_spear, craft_wood_bow } from "./actions_set_up/character_actions/craft_bone_spear"
 // import { craft_rat_armour, craft_rat_boots, craft_rat_gloves, craft_rat_helmet, craft_rat_pants } from "./actions_set_up/character_actions/craft_rat_armour"
 // import { cell_id } from "../types"
@@ -58,16 +58,16 @@ export namespace CharacterAction {
     // export const HUNT = hunt
     // export const REST = rest
     // export const ATTACK = attack
-    // export const GATHER_WOOD = gather_wood
+    export const GATHER_WOOD = gather_wood
 
     // export namespace COOK {
     //     export const MEAT = cook_meat
     //     export const ELODINO = cook_elo_to_zaz
     // }
 
-    // export namespace CRAFT {
+    export namespace CRAFT {
     //     export const BONE_SPEAR = craft_bone_spear
-    //     export const SPEAR = craft_spear
+        export const SPEAR = craft_spear
     //     export const RAT_PANTS = craft_rat_pants
     //     export const RAT_ARMOUR = craft_rat_armour
     //     export const RAT_GLOVES = craft_rat_gloves
@@ -75,7 +75,7 @@ export namespace CharacterAction {
     //     export const RAT_BOOTS = craft_rat_boots
     //     export const WOOD_BOW = craft_wood_bow
     //     export const BONE_ARROW = craft_bone_arrow
-    // }    
+    }    
 }
 
 export namespace ActionManager {

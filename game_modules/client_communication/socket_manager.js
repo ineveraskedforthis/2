@@ -11,6 +11,7 @@ const common_validations_1 = require("./network_actions/common_validations");
 const alerts_1 = require("./network_actions/alerts");
 const system_1 = require("../map/system");
 const actions_1 = require("./network_actions/actions");
+const action_manager_1 = require("../actions/action_manager");
 class SocketManager {
     constructor(io) {
         this.io = io;
@@ -45,7 +46,7 @@ class SocketManager {
             // socket.on('rest',  () => this.rest(user));
             socket.on('move', (msg) => actions_1.HandleAction.move(user, msg));
             // socket.on('hunt',  () => this.hunt(user))
-            // socket.on('gather_wood',  () => this.gather_wood(user))            
+            socket.on('gather_wood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_WOOD));
             // socket.on('clear-orders',  () => this.clear_orders(user));
             // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
             // socket.on('clear-order',  (msg: any) => this.clear_order(user, msg));
@@ -54,7 +55,7 @@ class SocketManager {
             // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
             // socket.on('cfood',  () =>      this.craft(user, CharacterAction.COOK_MEAT));
             // socket.on('czaz',  () =>       this.craft(user, CharacterAction.COOK_ELODINO));
-            // socket.on('mspear',  () =>     this.craft(user, CharacterAction.CRAFT_SPEAR))
+            socket.on('mspear', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.SPEAR));
             // socket.on('mbspear',  () =>    this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
             // socket.on('mbow',  () =>       this.craft(user, CharacterAction.CRAFT_WOOD_BOW))
             // socket.on('marr',  () =>       this.craft(user, CharacterAction.CRAFT_BONE_ARROW))
@@ -96,10 +97,10 @@ class SocketManager {
             mouth: data.mouth
         };
         if (data.location == 'village') {
-            var starting_cell = system_1.MapSystem.coordinate_to_id(0, 3);
+            var starting_cell = system_1.MapSystem.coordinate_to_id(7, 5);
         }
         else {
-            var starting_cell = system_1.MapSystem.coordinate_to_id(0, 3);
+            var starting_cell = system_1.MapSystem.coordinate_to_id(7, 5);
         }
         user_manager_1.UserManagement.get_new_character(sw.user_id, data.name, model_variation, starting_cell);
         user_manager_1.UserManagement.update_users();
