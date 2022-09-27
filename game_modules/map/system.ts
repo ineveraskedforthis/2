@@ -36,7 +36,7 @@ export namespace MapSystem {
     }
 
     export function id_to_coordinate(id: cell_id): [number, number] {
-        return [Math.floor(id / max_direction), id - Math.floor(id / max_direction)]
+        return [Math.floor(id / max_direction), id - Math.floor(id / max_direction) * max_direction]
     }
 
     export function coordinate_to_cell(p: [number, number]) {

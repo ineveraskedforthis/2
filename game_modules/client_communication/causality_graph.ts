@@ -94,7 +94,8 @@ export namespace Update {
         }
     }
     export function update(current: UI_Part, user: User, force_update: boolean) {
-        if (force_update || (user.updates[current])) {update_function[current]; return}
+
+        if (force_update || (user.updates[current])) {update_function[current](user); return}
         const ch = children[current]
         if (ch == undefined) {
             return

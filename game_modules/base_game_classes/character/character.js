@@ -13,6 +13,7 @@ class Character {
         this.battle_unit_id = battle_unit_id;
         this.user_id = user_id;
         this.cell_id = cell_id;
+        this.next_cell = [0, 0];
         this.name = name;
         this.archetype = archetype;
         this.equip = new equip_1.Equip();
@@ -149,36 +150,6 @@ exports.Character = Character;
 //             }
 //         }
 //         this.faction_id = -1;
-//     }
-//      update(dt: number) {
-//         await this.status_check(pool);
-//         if (this.flags.dead) {
-//             return
-//         }
-//         if (!this.in_battle()) {
-//             this.out_of_battle_update(dt)
-//             this.update_action_progress(dt);
-//             this.update_visited()
-//         } else {
-//             this.battle_update()      
-//         }
-//         let cell = this.get_cell()
-//         if (cell != undefined) {
-//             cell.visit()
-//         }
-//         this.flags_handling_update();        
-//         await this.save_to_db(pool, this.changed || this.stash.changed || this.savings.changed);
-//         this.changed = false;
-//     }
-//     update_action_progress(dt: number) {
-//         if (this.action_started) {
-//             this.action_progress += dt
-//         } else {
-//             return
-//         }
-//         if ((this.current_action != undefined) && (this.action_progress >= this.action_duration)) {
-//             this.world.action_manager.action(this.current_action, this, this.action_target)
-//         }
 //     }
 //     flags_handling_update() {
 //         let sm = this.world.socket_manager;

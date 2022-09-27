@@ -1,5 +1,8 @@
 import { Character } from "../../../base_game_classes/character/character";
+import { UI_Part } from "../../../client_communication/causality_graph";
+import { UserManagement } from "../../../client_communication/user_manager";
 import { WOOD } from "../../../manager_classes/materials_manager";
+import { Convert } from "../../../systems_communication";
 import { map_position } from "../../../types";
 import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
 
@@ -7,7 +10,6 @@ import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
 export const craft_spear:ActionTargeted = {
     duration(char: Character) {
         return 0.5
-        return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork) / 20;
     },
 
     check: function(char:Character, data: map_position): CharacterActionResponce {
@@ -21,14 +23,17 @@ export const craft_spear:ActionTargeted = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result: function(char:Character, data: any) {
+    result: function(char:Character, data: map_position) {
         let tmp = char.stash.get(WOOD)
         if (tmp > 2) { 
             let skill = char.skills.woodwork;
 
             char.stash.inc(WOOD, -3)
-            char.send_stash_update()
-            char.change_fatigue(10)
+            char.change('fatigue', 10)
+
+            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
+            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
+            
             // if (dice < check) {
             let dice = Math.random()
             if (dice < craft_spear_probability(skill)) {

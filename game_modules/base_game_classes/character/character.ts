@@ -3,7 +3,7 @@ import { Archetype, InnateStats, Stats, Status, status_type } from "./character_
 import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
-import { cell_id, char_id, money, TEMP_USER_ID, user_id } from "../../types";
+import { cell_id, char_id, map_position, money, TEMP_USER_ID, user_id } from "../../types";
 import { Action } from "../../battle";
 import { ActionTargeted } from "../../actions/action_manager";
 
@@ -32,9 +32,9 @@ export class Character {
 
     archetype: Archetype
     explored: boolean[];
-    next_cell: cell_id|undefined
+    next_cell: map_position
 
-    action: ActionTargeted|Action|undefined
+    action: ActionTargeted|undefined
     action_progress: number
     action_duration: number
 
@@ -49,6 +49,7 @@ export class Character {
         this.battle_unit_id = battle_unit_id
         this.user_id = user_id
         this.cell_id = cell_id
+        this.next_cell = [0, 0]
 
         this.name = name
 
@@ -222,41 +223,7 @@ export class Character {
 //         this.faction_id = -1;
 //     }
 
-//      update(dt: number) {
-//         await this.status_check(pool);
 
-//         if (this.flags.dead) {
-//             return
-//         }
-        
-//         if (!this.in_battle()) {
-//             this.out_of_battle_update(dt)
-//             this.update_action_progress(dt);
-//             this.update_visited()
-//         } else {
-//             this.battle_update()      
-//         }
-//         let cell = this.get_cell()
-//         if (cell != undefined) {
-//             cell.visit()
-            
-//         }
-
-//         this.flags_handling_update();        
-//         await this.save_to_db(pool, this.changed || this.stash.changed || this.savings.changed);
-//         this.changed = false;
-//     }
-
-//     update_action_progress(dt: number) {
-//         if (this.action_started) {
-//             this.action_progress += dt
-//         } else {
-//             return
-//         }
-//         if ((this.current_action != undefined) && (this.action_progress >= this.action_duration)) {
-//             this.world.action_manager.action(this.current_action, this, this.action_target)
-//         }
-//     }
 
 //     flags_handling_update() {
 //         let sm = this.world.socket_manager;

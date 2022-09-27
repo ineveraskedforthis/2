@@ -9,7 +9,7 @@ exports.craft_bone_spear = {
     duration(char) {
         return 0.5;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(materials_manager_1.WOOD);
             let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
@@ -20,7 +20,7 @@ exports.craft_bone_spear = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         let tmp = char.stash.get(materials_manager_1.WOOD);
         let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
         if ((tmp > 2) && (tmp_2 > 3)) {
@@ -53,7 +53,7 @@ exports.craft_bone_spear = {
             }
         }
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };
 let BONE_ARROW_DIFFICULTY = 20;
@@ -68,7 +68,7 @@ exports.craft_bone_arrow = {
     duration(char) {
         return 0.5;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(materials_manager_1.WOOD);
             let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
@@ -79,7 +79,7 @@ exports.craft_bone_arrow = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         let tmp = char.stash.get(materials_manager_1.WOOD);
         let tmp_2 = char.stash.get(materials_manager_1.RAT_BONE);
         if ((tmp >= 1) && (tmp_2 >= 10)) {
@@ -100,14 +100,14 @@ exports.craft_bone_arrow = {
             }
         }
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };
 exports.craft_wood_bow = {
     duration(char) {
         return 0.5;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(materials_manager_1.WOOD);
             // let tmp_2 = char.stash.get(RAT_BONE)
@@ -118,7 +118,7 @@ exports.craft_wood_bow = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         let tmp = char.stash.get(materials_manager_1.WOOD);
         // let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp >= 3)) {
@@ -150,6 +150,6 @@ exports.craft_wood_bow = {
             }
         }
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };

@@ -1,3 +1,4 @@
+import { ActionManager } from "../../actions/action_manager";
 import { materials, material_index } from "../../manager_classes/materials_manager";
 import { cell_id, char_id, money } from "../../types";
 import { Stash } from "../inventories/stash";
@@ -5,13 +6,13 @@ import { Character } from "./character";
 import { CharacterTemplate } from "./templates";
 
 var last_character_id = 0
-var character_list:Character[]                  = []
+export var character_list:Character[]                  = []
 var characters_dict:{[_ in char_id]: Character} = {}
 
 
 export namespace CharacterSystem {
     export function load() {}
-    
+
     export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
         last_character_id = last_character_id + 1
         if (name == undefined) name = template.name_generator()
@@ -91,4 +92,30 @@ export namespace CharacterSystem {
         }
         return true
     }
+
+    export function update(dt: number) {
+        
+
+        // await this.status_check(pool);
+
+        // if (this.flags.dead) {
+        //     return
+        // }
+        
+        // if (!this.in_battle()) {
+        //     this.out_of_battle_update(dt)
+        //     this.update_action_progress(dt);
+        //     this.update_visited()
+        // } else {
+        //     this.battle_update()      
+        // }
+        // let cell = this.get_cell()
+        // if (cell != undefined) {
+        //     cell.visit()
+            
+        // }
+
+        // this.flags_handling_update();
+    }
+
 }

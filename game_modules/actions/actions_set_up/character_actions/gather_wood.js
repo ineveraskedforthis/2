@@ -6,7 +6,7 @@ exports.gather_wood = {
     duration(char) {
         return 1 + char.get_fatigue() / 50;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -22,7 +22,7 @@ exports.gather_wood = {
         else
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         char.changed = true;
         char.change_fatigue(10);
         char.stash.inc(materials_manager_1.WOOD, 1);
@@ -32,7 +32,7 @@ exports.gather_wood = {
         char.send_stash_update();
         return 1 /* CharacterActionResponce.OK */;
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };
 function can_gather_wood(cell) {

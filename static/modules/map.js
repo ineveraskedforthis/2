@@ -698,6 +698,8 @@ export class Map {
     }
 
     set_curr_pos(i, j, teleport_flag) {
+        console.log('new position')
+        console.log(i, j)
         let tmp0 = this.curr_pos[0]
         let tmp1 = this.curr_pos[1]
         this.curr_pos = [i, j];

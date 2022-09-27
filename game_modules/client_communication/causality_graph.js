@@ -67,7 +67,7 @@ var Update;
     Update.clear = clear;
     function update(current, user, force_update) {
         if (force_update || (user.updates[current])) {
-            update_function[current];
+            update_function[current](user);
             return;
         }
         const ch = children[current];

@@ -10,7 +10,7 @@ function generate_rat_skin_craft(arg, cost) {
             return 0.5;
             return 1 + char.get_fatigue() / 20 + (100 - char.skills.clothier) / 20;
         },
-        check:  function (pool, char, data) {
+        check: function (char, data) {
             if (!char.in_battle()) {
                 let tmp = char.stash.get(materials_manager_1.RAT_SKIN);
                 if (tmp >= cost) {
@@ -20,7 +20,7 @@ function generate_rat_skin_craft(arg, cost) {
             }
             return 2 /* CharacterActionResponce.IN_BATTLE */;
         },
-        result:  function (pool, char, data) {
+        result: function (char, data) {
             let tmp = char.stash.get(materials_manager_1.RAT_SKIN);
             if (tmp >= cost) {
                 char.changed = true;
@@ -51,7 +51,7 @@ function generate_rat_skin_craft(arg, cost) {
                 }
             }
         },
-        start:  function (pool, char, data) {
+        start: function (char, data) {
         },
     };
 }

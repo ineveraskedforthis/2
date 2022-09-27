@@ -179,7 +179,7 @@ var UserManagement;
     }
     UserManagement.add_user_to_update_queue = add_user_to_update_queue;
     function update_users() {
-        console.log('update loop');
+        // console.log('update loop')
         for (let item of users_to_update) {
             console.log('send_update to ' + item.data.login);
             if (item.character_created) {

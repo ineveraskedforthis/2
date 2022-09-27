@@ -21,7 +21,7 @@ export namespace HandleAction {
 
         const destination: [number, number] = [x, y]
 
-        let responce = ActionManager.start_action_targeted(CharacterAction.MOVE, character, destination)
+        let responce = ActionManager.start_action(CharacterAction.MOVE, character, destination)
 
         if (responce == CharacterActionResponce.CANNOT_MOVE_THERE) {
             Alerts.impossible_move(user)

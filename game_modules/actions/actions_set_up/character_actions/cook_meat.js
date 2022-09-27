@@ -7,7 +7,7 @@ exports.cook_meat = {
         // return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking) / 20;
         return 0.5;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(materials_manager_1.MEAT);
             if (tmp > 0) {
@@ -17,7 +17,7 @@ exports.cook_meat = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         let tmp = char.stash.get(materials_manager_1.MEAT);
         if (tmp > 0) {
             char.changed = true;
@@ -46,14 +46,14 @@ exports.cook_meat = {
             }
         }
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };
 exports.cook_elo_to_zaz = {
     duration(char) {
         return Math.max(0.5, 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking - char.skills.magic_mastery) / 20);
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(materials_manager_1.ELODINO_FLESH);
             if (tmp >= 5) {
@@ -63,7 +63,7 @@ exports.cook_elo_to_zaz = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         let tmp = char.stash.get(materials_manager_1.ELODINO_FLESH);
         if (tmp > 0) {
             char.changed = true;
@@ -99,6 +99,6 @@ exports.cook_elo_to_zaz = {
             }
         }
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };

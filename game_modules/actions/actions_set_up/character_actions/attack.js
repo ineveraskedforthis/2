@@ -5,7 +5,7 @@ exports.attack = {
     duration(char) {
         return 0;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -32,11 +32,11 @@ exports.attack = {
         else
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         let target_char = char.world.get_char_from_id(char.action_target);
         await char.world.create_battle(pool, [char], [target_char]);
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
     immediate: true
 };

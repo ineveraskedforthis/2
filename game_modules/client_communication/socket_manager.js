@@ -18,15 +18,15 @@ class SocketManager {
         this.MESSAGE_ID = 0;
         this.active_users = new Set();
         this.sessions = {};
-        this.io.on('connection',  (socket) => {
+        this.io.on('connection', (socket) => {
             let user = new user_1.SocketWrapper(socket);
             this.active_users.add(user);
             this.connection(socket);
             socket.on('disconnect', () => this.disconnect(user));
-            socket.on('login',  (msg) => auth_1.Auth.login(user, msg));
-            socket.on('reg',  (msg) => auth_1.Auth.register(user, msg));
-            socket.on('session',  (msg) => auth_1.Auth.login_with_session(user, msg));
-            socket.on('create_character',  (msg) => this.create_character(user, msg));
+            socket.on('login', (msg) => auth_1.Auth.login(user, msg));
+            socket.on('reg', (msg) => auth_1.Auth.register(user, msg));
+            socket.on('session', (msg) => auth_1.Auth.login_with_session(user, msg));
+            socket.on('create_character', (msg) => this.create_character(user, msg));
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
             // socket.on('attack-character',  (msg: any) => this.attack_character(user, msg));
             // socket.on('buy',  (msg: any) => this.buy(user, msg));
@@ -43,7 +43,7 @@ class SocketManager {
             // socket.on('eat',  () => this.eat(user));
             // socket.on('clean',  () => this.clean(user));
             // socket.on('rest',  () => this.rest(user));
-            socket.on('move',  (msg) => actions_1.HandleAction.move(user, msg));
+            socket.on('move', (msg) => actions_1.HandleAction.move(user, msg));
             // socket.on('hunt',  () => this.hunt(user))
             // socket.on('gather_wood',  () => this.gather_wood(user))            
             // socket.on('clear-orders',  () => this.clear_orders(user));

@@ -676,7 +676,11 @@ function update_skill_data(data) {
         console.log('such skill does not exists????')
         return
     }
-    const amount = div.querySelector('_n')
+    const amount = div.querySelector('.practice_n')
+    if (amount == null) {
+        console.log('null value????')
+        return
+    }
     amount.innerHTML = value
     const span = div.querySelector('.hbar > span')
     span.style.width = value + '%'

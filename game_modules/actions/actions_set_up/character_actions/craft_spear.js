@@ -1,16 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.character_to_craft_spear_probability = exports.craft_spear_probability = exports.craft_spear = void 0;
-const item_tags_1 = require("../../static_data/item_tags");
-const market_items_1 = require("../../market/market_items");
+const user_manager_1 = require("../../../client_communication/user_manager");
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
-const items_set_up_1 = require("../../../base_game_classes/items/items_set_up");
 exports.craft_spear = {
     duration(char) {
         return 0.5;
-        return 1 + char.get_fatigue() / 20 + (100 - char.skills.woodwork) / 20;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(materials_manager_1.WOOD);
             if (tmp > 2) {
@@ -20,18 +17,18 @@ exports.craft_spear = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         let tmp = char.stash.get(materials_manager_1.WOOD);
         if (tmp > 2) {
-            char.changed = true;
             let skill = char.skills.woodwork;
             char.stash.inc(materials_manager_1.WOOD, -3);
-            char.send_stash_update();
-            char.change_fatigue(10);
+            char.change('fatigue', 10);
+            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
+            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
             // if (dice < check) {
             let dice = Math.random();
             if (dice < craft_spear_probability(skill)) {
-                let spear = new item_tags_1.Weapon(items_set_up_1.SPEAR_ARGUMENT);
+                let spear = new Weapon(SPEAR_ARGUMENT);
                 char.equip.add_weapon(spear);
                 char.world.socket_manager.send_to_character_user(char, 'alert', 'spear is made');
                 char.send_stash_update();
@@ -51,11 +48,11 @@ exports.craft_spear = {
             }
         }
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };
 function craft_spear_probability(skill) {
-    if ((0, market_items_1.nodb_mode_check)())
+    if (nodb_mode_check())
         return 1;
     return Math.min(skill / 30 + 0.1, 1);
 }

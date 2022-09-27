@@ -22,7 +22,7 @@ var HandleAction;
             return;
         }
         const destination = [x, y];
-        let responce = action_manager_1.ActionManager.start_action_targeted(action_manager_1.CharacterAction.MOVE, character, destination);
+        let responce = action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.MOVE, character, destination);
         if (responce == 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */) {
             alerts_1.Alerts.impossible_move(user);
         }

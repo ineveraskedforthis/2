@@ -6,7 +6,7 @@ exports.clean = {
     duration(char) {
         return 1 + char.get_fatigue() / 50 + char.get_blood() / 50;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -23,7 +23,7 @@ exports.clean = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         let cell = char.get_cell();
         if (cell == undefined) {
             return 6 /* CharacterActionResponce.INVALID_CELL */;
@@ -42,6 +42,6 @@ exports.clean = {
             char.send_status_update();
         }
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };

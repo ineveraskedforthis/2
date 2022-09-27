@@ -35,7 +35,7 @@ var MapSystem;
     }
     MapSystem.coordinate_to_id = coordinate_to_id;
     function id_to_coordinate(id) {
-        return [Math.floor(id / max_direction), id - Math.floor(id / max_direction)];
+        return [Math.floor(id / max_direction), id - Math.floor(id / max_direction) * max_direction];
     }
     MapSystem.id_to_coordinate = id_to_coordinate;
     function coordinate_to_cell(p) {

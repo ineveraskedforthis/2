@@ -5,7 +5,7 @@ exports.rest = {
     duration(char) {
         return 0.1 + char.get_fatigue() / 20;
     },
-    check:  function (pool, char, data) {
+    check: function (char, data) {
         if (!char.in_battle()) {
             let cell = char.get_cell();
             if (cell == undefined) {
@@ -24,7 +24,7 @@ exports.rest = {
         }
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
-    result:  function (pool, char, data) {
+    result: function (char, data) {
         char.changed = true;
         let cell = char.get_cell();
         if (cell == undefined)
@@ -38,6 +38,6 @@ exports.rest = {
         }
         char.send_status_update();
     },
-    start:  function (pool, char, data) {
+    start: function (char, data) {
     },
 };

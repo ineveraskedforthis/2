@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterSystem = void 0;
+exports.CharacterSystem = exports.character_list = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 const character_1 = require("./character");
 var last_character_id = 0;
-var character_list = [];
+exports.character_list = [];
 var characters_dict = {};
 var CharacterSystem;
 (function (CharacterSystem) {
@@ -17,7 +17,7 @@ var CharacterSystem;
         let character = new character_1.Character(last_character_id, -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
         character.stats.base_resists.add(template.base_resists);
         characters_dict[character.id] = character;
-        character_list.push(character);
+        exports.character_list.push(character);
         character.explored[cell_id] = true;
         return character;
     }
@@ -88,4 +88,23 @@ var CharacterSystem;
         return true;
     }
     CharacterSystem.transaction = transaction;
+    function update(dt) {
+        // await this.status_check(pool);
+        // if (this.flags.dead) {
+        //     return
+        // }
+        // if (!this.in_battle()) {
+        //     this.out_of_battle_update(dt)
+        //     this.update_action_progress(dt);
+        //     this.update_visited()
+        // } else {
+        //     this.battle_update()      
+        // }
+        // let cell = this.get_cell()
+        // if (cell != undefined) {
+        //     cell.visit()
+        // }
+        // this.flags_handling_update();
+    }
+    CharacterSystem.update = update;
 })(CharacterSystem = exports.CharacterSystem || (exports.CharacterSystem = {}));
