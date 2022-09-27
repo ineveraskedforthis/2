@@ -278,23 +278,23 @@ export class CharacterScreen {
 
         item_select_div.innerHTML = ''
 
-        for (let i = 0; i < inv.weapons.length; i++) {
-            if ((inv.weapons[i] != null) && (inv.weapons[i] != undefined)) {
-                let weapon = inv.weapons[i]
+        for (let i = 0; i < inv.items.length; i++) {
+            if ((inv.items[i] != null) && (inv.items[i] != undefined)) {
+                let weapon = inv.items[i]
                 let row = build_item_div(i, weapon, 'weapon', this.socket)
-                this.table_weapon.appendChild(row)
+                this.table_armour.appendChild(row)
                 add_option(weapon.tag, 'weapon', i)
             }
         }
         
-        for (let i = 0; i < inv.armours.length; i++) {
-            if ((inv.armours[i] != null) && (inv.armours[i] != undefined)) {
-                let armour = inv.armours[i]
-                let row = build_item_div(i, armour, 'armour', this.socket)
-                this.table_armour.appendChild(row)
-                add_option(armour.tag, 'armour', i)
-            }
-        }        
+        // for (let i = 0; i < inv.armours.length; i++) {
+        //     if ((inv.armours[i] != null) && (inv.armours[i] != undefined)) {
+        //         let armour = inv.armours[i]
+        //         let row = build_item_div(i, armour, 'armour', this.socket)
+        //         this.table_armour.appendChild(row)
+        //         add_option(armour.tag, 'armour', i)
+        //     }
+        // }        
     }
 
     update_stash(data) {

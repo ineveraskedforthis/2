@@ -672,6 +672,10 @@ function update_skill_data(data) {
     const value = data.value
 
     const div = document.getElementById(tag + '_skill_div')
+    if (div == undefined) {
+        console.log('such skill does not exists????')
+        return
+    }
     const amount = div.querySelector('.practice_n')
     amount.innerHTML = value
     const span = div.querySelector('.hbar > span')
@@ -1063,6 +1067,10 @@ function send_switch_weapon_request() {
 function update_craft_probability(data) {
     console.log(data)
     let div = document.getElementById(data.tag + '_chance')
+    if (div == undefined) {
+        console.log('craft does not exist????')
+        return
+    }
     div.innerHTML = Math.floor(data.value * 100) + '%'
 }
 

@@ -124,7 +124,7 @@ var SendUpdate;
     }
     SendUpdate.hp = hp;
     function cell(cell) {
-        let characters_list = cell.get_characters_set();
+        let characters_list = cell.get_characters_list();
         for (let item of characters_list) {
             let id = item.id;
             let character = system_1.CharacterSystem.id_to_character(id);
