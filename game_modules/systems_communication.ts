@@ -75,8 +75,15 @@ export namespace Link {
 
 export namespace Unlink {
     export function character_and_cell(character: Character, cell: Cell) {
-        character.cell_id = cell.id
-        
+        cell.exit(character.id)
+        const locals = cell.get_characters_list()
+        for (let item of locals) {
+            const id = item.id
+            const local_character = CharacterSystem.id_to_character(id)
+            const local_user = Convert.character_to_user(local_character)
+            if (local_user == undefined) {continue}
+            UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
+        }
     }
 }
 

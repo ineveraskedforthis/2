@@ -9,6 +9,7 @@ import { Auth } from "./network_actions/auth";
 import { ValidatorSM } from "./network_actions/common_validations";
 import { Alerts } from "./network_actions/alerts";
 import { MapSystem } from "../map/system";
+import { HandleAction } from "./network_actions/actions";
 
 
 interface Message {
@@ -69,7 +70,7 @@ export class SocketManager {
             // socket.on('eat', async () => this.eat(user));
             // socket.on('clean', async () => this.clean(user));
             // socket.on('rest', async () => this.rest(user));
-            // socket.on('move', async (msg: any) => this.move(user, msg));
+            socket.on('move', async (msg: any) => HandleAction.move(user, msg));
             // socket.on('hunt', async () => this.hunt(user))
             // socket.on('gather_wood', async () => this.gather_wood(user))            
 
@@ -179,18 +180,7 @@ export class SocketManager {
 
     // // actions
 
-    // async move(user: User, data: {x: number, y: number}) {
-    //     if (!user.logged_in) {
-    //         return 
-    //     }
-    //     let char = user.get_character();
-    //     let res = await this.world.action_manager.start_action(CharacterAction.MOVE, char, data)
-    //     if (res == CharacterActionResponce.CANNOT_MOVE_THERE) {
-    //         user.socket.emit('alert', 'can\'t go there');
-    //     } else if (res == CharacterActionResponce.IN_BATTLE) {
-    //         user.socket.emit('alert', 'you are in battle');
-    //     }
-    // }
+
 
     // // eslint-disable-next-line no-unused-vars
     // async attack(user: User, data: any) {

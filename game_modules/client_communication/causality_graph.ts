@@ -20,6 +20,7 @@ export const enum UI_Part {
             LOCAL_CHARACTERS,
             EXPLORED,
             LOCAL_ACTIONS,
+            // LOCAL_MARKET,
         SKILLS,
             COOKING_SKILL,
         CRAFT,

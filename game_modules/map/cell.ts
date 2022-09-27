@@ -29,8 +29,8 @@ export class Cell {
     characters_set: Set<char_id>
     saved_characters_list: {id: char_id, name:string}[]
 
-    orders_bulk: Set<order_bulk_id>
-    orders_item: Set<order_item_id>
+    // orders_bulk: Set<order_bulk_id>
+    // orders_item: Set<order_item_id>
 
     constructor(id: cell_id, x: number, y:number, name:string, development: Development, res: CellResources, terrain: terrain) {
         this.id = id
@@ -42,8 +42,8 @@ export class Cell {
         this.last_visit = 0;
         this.changed_characters = true
 
-        this.orders_bulk = new Set()
-        this.orders_item = new Set()
+        // this.orders_bulk = new Set()
+        // this.orders_item = new Set()
         this.characters_set = new Set()
         this.saved_characters_list = []
 
@@ -71,6 +71,11 @@ export class Cell {
         this.changed_characters = true
         this.visited_recently = true
         this.last_visit = 0
+    }
+
+    exit(id: char_id) {
+        this.characters_set.delete(id)
+        this.changed_characters = true
     }
 
     get_characters_list(): {id: char_id, name:string}[] {

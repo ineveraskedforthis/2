@@ -1,6 +1,9 @@
 import { Character } from "../character/character";
 import {CharacterActionResponce} from '../../manager_classes/action_manager'
 import { MapSystem } from "../../map/system";
+import { Convert, Link, Unlink } from "../../systems_communication";
+import { UserManagement } from "../../client_communication/user_manager";
+import { UI_Part } from "../../client_communication/causality_graph";
 
 export const move ={
     duration(char: Character) {
@@ -30,32 +33,26 @@ export const move ={
         char.next_cell = data
     },
 
-    result: async function (char: Character) {
-        char.changed = true;
-        let data = char.action_target
-        let old_cell = char.get_cell()
-        if (old_cell != undefined) {
-            old_cell.exit(char)
+    result: async function (character: Character) {
+        if (character.next_cell == undefined) return
+        const new_cell = MapSystem.SAFE_id_to_cell(character.next_cell)
+        const old_cell = Convert.character_to_cell(character)
+        Unlink.character_and_cell(character, old_cell)
+        Link.character_and_cell(character, new_cell)
+
+        // effect on fatigue
+        character.change('fatigue', 2);
+
+        //check if it is user and you need to update status
+        const user = Convert.character_to_user(character)
+        if (user != undefined) {
+            UserManagement.add_user_to_update_queue(user.data.id, UI_Part.STATUS)
         }
-        char.cell_id = char.world.get_cell_id_by_x_y(data.x, data.y);
-        let new_cell = char.get_cell()
-        if (new_cell != undefined) {
-            new_cell.enter(char)
-        }
-        char.change_fatigue(2);
-        if (char.is_player()) {
-            let user = char.get_user()
-            if (user.socket !=  undefined) {
-                data.teleport_flag = false
-                user.socket.emit('map-pos', data);
-                char.update_visited()
-                char.send_status_update()
-            }
-        }
-        char.world.entity_manager.transfer_orders(char, char.cell_id)
-        if (old_cell != undefined) char.world.socket_manager.send_item_market_update(old_cell.id);
-        if (new_cell != undefined) char.world.socket_manager.send_item_market_update(new_cell.id);
-        return await char.on_move_default(pool, data)   
+
+        // char.world.entity_manager.transfer_orders(char, char.cell_id)
+        // if (old_cell != undefined) char.world.socket_manager.send_item_market_update(old_cell.id);
+        // if (new_cell != undefined) char.world.socket_manager.send_item_market_update(new_cell.id);
+        // return await char.on_move_default(pool, data)   
     },
 
     is_move: true

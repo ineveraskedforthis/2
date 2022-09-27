@@ -935,9 +935,6 @@ export class Character {
 //                         let res2 = {x: x, y: y, ter: this.world.constants.terrain[x][y]}
 //                         this.world.socket_manager.send_to_character_user(this, 'map-data-terrain', res2)
 //                     }
-                    
-                    
-                    
 //                 }
 //             }
 //             this.world.socket_manager.send_to_character_user(this, 'cell-visited', visited)
