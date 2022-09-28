@@ -191,7 +191,7 @@ var UserManagement;
                 updates_1.SendUpdate.market(item);
             }
             causality_graph_1.Update.update_root(item);
-            causality_graph_1.Update.clear(item);
+            item.updates = causality_graph_1.Update.construct();
         }
         users_to_update.clear();
     }

@@ -77,9 +77,11 @@ export namespace Update {
         let r = 1
         while (r > l) {
             let current = queue[l]
+
+            // console.log('activate ' + current + ' ' + UI_Part[current])
+
             if (!something[current]) {
                 something[current] = true
-                console.log('activate ' + current)
                 const inf = influence[current]
                 if (inf != undefined) for (let i of inf) {
                     queue.push(i)
@@ -89,14 +91,21 @@ export namespace Update {
             l += 1
         }
     }
-    export function clear(something: update_flags) : void {
-        for (let i in something) {
-            something[Number(i) as UI_Part] = false
-        }
-    }
+    // export function clear(something: update_flags) : void {
+    //     console.log('clear flags')
+    //     for (let i in something) {
+    //         something[Number(UI_Part[i]) as UI_Part] = false
+    //     }
+    // }
     export function update(current: UI_Part, user: User, force_update: boolean) {
 
-        if (force_update || (user.updates[current])) {update_function[current](user); return}
+        // console.log('updating ' + current + ' ' + UI_Part[current])
+        // console.log(force_update)
+        // console.log(user.updates[current])
+
+        if (force_update || (user.updates[current])) {
+            // console.log('!!!'); 
+            update_function[current](user); return}
         const ch = children[current]
         if (ch == undefined) {
             return

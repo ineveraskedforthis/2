@@ -46,9 +46,9 @@ var Update;
         let r = 1;
         while (r > l) {
             let current = queue[l];
+            // console.log('activate ' + current + ' ' + UI_Part[current])
             if (!something[current]) {
                 something[current] = true;
-                console.log('activate ' + current);
                 const inf = influence[current];
                 if (inf != undefined)
                     for (let i of inf) {
@@ -60,14 +60,18 @@ var Update;
         }
     }
     Update.on = on;
-    function clear(something) {
-        for (let i in something) {
-            something[Number(i)] = false;
-        }
-    }
-    Update.clear = clear;
+    // export function clear(something: update_flags) : void {
+    //     console.log('clear flags')
+    //     for (let i in something) {
+    //         something[Number(UI_Part[i]) as UI_Part] = false
+    //     }
+    // }
     function update(current, user, force_update) {
+        // console.log('updating ' + current + ' ' + UI_Part[current])
+        // console.log(force_update)
+        // console.log(user.updates[current])
         if (force_update || (user.updates[current])) {
+            // console.log('!!!'); 
             update_function[current](user);
             return;
         }

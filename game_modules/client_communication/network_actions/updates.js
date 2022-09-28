@@ -137,6 +137,9 @@ var SendUpdate;
     }
     SendUpdate.market = market;
     function explored(user) {
+        console.log('send exploration');
+        var stack = new Error().stack;
+        console.log(stack);
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -194,6 +197,7 @@ var SendUpdate;
     }
     SendUpdate.local_actions = local_actions;
     function map_related(user) {
+        console.log('update map related');
         local_actions(user);
         local_characters(user);
         explored(user);
