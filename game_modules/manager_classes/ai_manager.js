@@ -31,7 +31,7 @@ class AiManager {
     move_toward_colony(char) {
     }
     enemies_in_cell(char) {
-        let cell = char.get_cell();
+        const cell = Convert.character_to_cell(char)
         if (cell == undefined)
             return false;
         let a = cell.get_characters_set();
@@ -47,7 +47,7 @@ class AiManager {
     }
     battles_in_cell(char) {
         let battles = [];
-        let cell = char.get_cell();
+        const cell = Convert.character_to_cell(char)
         if (cell == undefined)
             return battles;
         let a = cell.get_characters_set();
@@ -60,7 +60,7 @@ class AiManager {
         return battles;
     }
     random_steppe_walk(char) {
-        let cell = char.get_cell();
+        const cell = Convert.character_to_cell(char)
         if (cell == undefined) {
             return;
         }
@@ -99,7 +99,7 @@ class AiManager {
         return false;
     }
     random_forest_walk(char) {
-        let cell = char.get_cell();
+        const cell = Convert.character_to_cell(char)
         if (cell == undefined) {
             return;
         }

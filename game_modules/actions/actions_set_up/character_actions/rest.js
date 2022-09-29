@@ -7,7 +7,7 @@ exports.rest = {
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let cell = char.get_cell();
+            const cell = Convert.character_to_cell(char)
             if (cell == undefined) {
                 return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
@@ -26,7 +26,7 @@ exports.rest = {
     },
     result: function (char, data) {
         char.changed = true;
-        let cell = char.get_cell();
+        const cell = Convert.character_to_cell(char)
         if (cell == undefined)
             return;
         if (cell.can_rest() || (char.misc.tag == 'rat')) {

@@ -9,7 +9,7 @@ export const rest = {
 
     check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
         if (!char.in_battle()) {
-            let cell = char.get_cell();
+            const cell = Convert.character_to_cell(char)
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
@@ -32,7 +32,7 @@ export const rest = {
 
     result:  function(char:Character, data: any) {
         char.changed = true
-        let cell = char.get_cell();
+        const cell = Convert.character_to_cell(char)
         if (cell == undefined) return 
         if (cell.can_rest() || (char.misc.tag == 'rat')) {
             char.set_fatigue(0)

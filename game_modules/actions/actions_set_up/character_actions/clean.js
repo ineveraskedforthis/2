@@ -8,7 +8,7 @@ exports.clean = {
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let cell = char.get_cell();
+            const cell = Convert.character_to_cell(char)
             if (cell == undefined) {
                 return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
@@ -24,7 +24,7 @@ exports.clean = {
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        let cell = char.get_cell();
+        const cell = Convert.character_to_cell(char)
         if (cell == undefined) {
             return 6 /* CharacterActionResponce.INVALID_CELL */;
         }

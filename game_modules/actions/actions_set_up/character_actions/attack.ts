@@ -1,24 +1,29 @@
-import { CharacterActionResponce } from "../../action_manager";
-import { PgPool } from "../../../world";
+import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
+
 import type { Character } from "../../../base_game_classes/character/character";
+import { Convert } from "../../../systems_communication";
+import { map_position } from "../../../types";
+import { CharacterSystem } from "../../../base_game_classes/character/system";
 
+import { hostile } from "../../../base_game_classes/character/races/racial_hostility";
 
-export const attack = {
+export const attack:ActionTargeted = {
     duration(char: Character) {
         return 0
     },
 
-    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
-            let cell = char.get_cell();
+            let cell = Convert.character_to_cell(char);
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            let targets = cell.get_characters_set()
+
+            let targets = cell.get_characters_list()
             let target = undefined
             for (let id of targets) {
-                let target_char = char.world.get_char_from_id(id)
-                if ((target_char.get_tag() == 'test') && (char.get_tag() == 'rat') || (target_char.get_tag() == 'rat') && (char.get_tag() == 'test')) {
+                let target_char = CharacterSystem.id_to_character(id)
+                if (hostile(char.archetype.race, target_char.archetype.race)) {
                     if (!target_char.in_battle()) {
                         target = target_char
                     }

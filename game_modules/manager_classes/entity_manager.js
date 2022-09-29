@@ -354,7 +354,7 @@ class EntityManager {
         await char.init(pool, name, cell_id, user_id);
         console.log('his id is ' + char.id);
         this.chars[char.id] = char;
-        let cell = char.get_cell();
+        const cell = Convert.character_to_cell(char)
         cell?.enter(char);
         return char;
     }

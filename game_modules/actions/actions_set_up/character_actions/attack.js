@@ -7,7 +7,7 @@ exports.attack = {
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let cell = char.get_cell();
+            const cell = Convert.character_to_cell(char)
             if (cell == undefined) {
                 return 6 /* CharacterActionResponce.INVALID_CELL */;
             }

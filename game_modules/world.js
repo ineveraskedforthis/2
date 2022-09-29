@@ -372,7 +372,7 @@
 //     //     if (enemies_amount == 0) {
 //     //         return undefined
 //     //     }
-//     //     let cell = char.get_cell();
+//     //     const cell = Convert.character_to_cell(char)
 //     //     if (cell == undefined) {
 //     //         return
 //     //     }
@@ -389,7 +389,7 @@
 //     //     return battle
 //     // }
 //     //  attack_local_outpost(char: Character) {
-//     //     let cell = char.get_cell();
+//     //     const cell = Convert.character_to_cell(char)
 //     //     let tmp = cell.i + '_' + cell.j;
 //     //     if (tmp in this.constants.outposts) {
 //     //         let outpost = this.constants.outposts[tmp];
