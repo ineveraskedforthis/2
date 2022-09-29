@@ -8,7 +8,7 @@ export const eat = {
         return 1 + char.get_fatigue() / 20;
     },
 
-    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
             let tmp = char.stash.get(FOOD);
             if (tmp > 0) {
@@ -19,7 +19,7 @@ export const eat = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
+    result:  function(char:Character, data: map_position) {
         char.changed = true
         char.change_hp(10);
         char.stash.inc(FOOD, -1);
@@ -27,6 +27,6 @@ export const eat = {
         char.send_status_update()
     },
 
-    start:  function(char:Character, data: any) {
+    start:  function(char:Character, data: map_position) {
     },
 }

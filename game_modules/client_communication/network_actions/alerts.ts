@@ -19,6 +19,10 @@ export namespace Alerts {
         generic_user_alert(user, 'alert', 'can\'t go there');
     }
 
+    export function failed(character:Character) {
+        generic_character_alert(character, 'alert', 'failed')
+    }
+
 
     export function log_to_user(user: User, message: string) {
         user.socket.emit('log-message', message);

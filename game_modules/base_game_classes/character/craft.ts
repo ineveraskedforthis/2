@@ -1,9 +1,9 @@
 import { Character } from "./character";
 
-const COOK_ELODINO_DIFFICULTY = 50
-const COOK_RAT_DIFFICULTY  = 20
-const RAT_SKIN_DIFFICULTY = 20
-const BASIC_WOOD_DIFFICULTY = 10
+export const COOK_ELODINO_DIFFICULTY = 50
+export const COOK_RAT_DIFFICULTY  = 20
+export const RAT_SKIN_DIFFICULTY = 20
+export const BASIC_WOOD_DIFFICULTY = 10
 
 export namespace CraftProbability {
     export function from_rat_skin(character: Character) {

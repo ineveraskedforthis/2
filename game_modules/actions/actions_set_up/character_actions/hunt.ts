@@ -9,7 +9,7 @@ export const hunt = {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
     },
 
-    check:  function(char:Character, data: any): CharacterActionResponce {
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
             let cell = Convert.character_to_cell(char);
             if (cell == undefined) {
@@ -23,7 +23,7 @@ export const hunt = {
         } else return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
+    result:  function(char:Character, data: map_position) {
 
         let skill = char.skills.hunt
         let dice = Math.random()
@@ -52,7 +52,7 @@ export const hunt = {
         
     },
 
-    start:  function(char:Character, data: any) {
+    start:  function(char:Character, data: map_position) {
     },
 }
 

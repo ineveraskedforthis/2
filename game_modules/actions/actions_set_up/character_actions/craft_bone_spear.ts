@@ -11,7 +11,7 @@ export const craft_bone_spear = {
         return 0.5;
     },
 
-    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             let tmp_2 = char.stash.get(RAT_BONE)
@@ -23,7 +23,7 @@ export const craft_bone_spear = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
+    result:  function(char:Character, data: map_position) {
         let tmp = char.stash.get(WOOD)
         let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp > 2) && (tmp_2 > 3)) { 
@@ -57,7 +57,7 @@ export const craft_bone_spear = {
         }
     },
 
-    start:  function(char:Character, data: any) {
+    start:  function(char:Character, data: map_position) {
     },
 }
 
@@ -75,7 +75,7 @@ export const craft_bone_arrow = {
         return 0.5;
     },
 
-    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             let tmp_2 = char.stash.get(RAT_BONE)
@@ -87,7 +87,7 @@ export const craft_bone_arrow = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
+    result:  function(char:Character, data: map_position) {
         let tmp = char.stash.get(WOOD)
         let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp >= 1) && (tmp_2 >= 10)) { 
@@ -110,7 +110,7 @@ export const craft_bone_arrow = {
         }
     },
 
-    start:  function(char:Character, data: any) {
+    start:  function(char:Character, data: map_position) {
     },
 }
 
@@ -119,7 +119,7 @@ export const craft_wood_bow = {
         return 0.5;
     },
 
-    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
             let tmp = char.stash.get(WOOD)
             // let tmp_2 = char.stash.get(RAT_BONE)
@@ -131,7 +131,7 @@ export const craft_wood_bow = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
+    result:  function(char:Character, data: map_position) {
         let tmp = char.stash.get(WOOD)
         // let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp >= 3)) { 
@@ -164,6 +164,6 @@ export const craft_wood_bow = {
         }
     },
 
-    start:  function(char:Character, data: any) {
+    start:  function(char:Character, data: map_position) {
     },
 }

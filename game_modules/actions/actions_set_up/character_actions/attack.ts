@@ -38,12 +38,12 @@ export const attack:ActionTargeted = {
         } else return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
+    result:  function(char:Character, data: map_position) {
         let target_char = char.world.get_char_from_id(char.action_target)
         await char.world.create_battle(pool, [char], [target_char])
     },
 
-    start:  function(char:Character, data: any) {
+    start:  function(char:Character, data: map_position) {
     },
 
     immediate: true

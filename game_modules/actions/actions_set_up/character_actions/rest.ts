@@ -7,7 +7,7 @@ export const rest = {
         return 0.1 + char.get_fatigue() / 20;
     },
 
-    check:  function(char:Character, data: any): Promise<CharacterActionResponce> {
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
             const cell = Convert.character_to_cell(char)
             if (cell == undefined) {
@@ -30,7 +30,7 @@ export const rest = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
+    result:  function(char:Character, data: map_position) {
         char.changed = true
         const cell = Convert.character_to_cell(char)
         if (cell == undefined) return 
@@ -44,6 +44,6 @@ export const rest = {
         char.send_status_update()
     },
 
-    start:  function(char:Character, data: any) {
+    start:  function(char:Character, data: map_position) {
     },
 }

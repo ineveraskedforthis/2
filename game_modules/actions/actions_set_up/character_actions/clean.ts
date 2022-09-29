@@ -25,7 +25,7 @@ export const clean:ActionTargeted = {
         return CharacterActionResponce.IN_BATTLE
     },
 
-    result:  function(char:Character, data: any) {
+    result:  function(char:Character, data: map_position) {
         const cell = Convert.character_to_cell(char)
         if (cell == undefined) {
             return CharacterActionResponce.INVALID_CELL
@@ -36,6 +36,6 @@ export const clean:ActionTargeted = {
         }
     },
 
-    start:  function(char:Character, data: any) {
+    start:  function(char:Character, data: map_position) {
     },
 }

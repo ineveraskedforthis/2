@@ -39,7 +39,7 @@ export const gather_wood: ActionTargeted = {
         return CharacterActionResponce.OK
     },
 
-    start: function(char:Character, data: any) {
+    start: function(char:Character, data: map_position) {
     },
 }
 

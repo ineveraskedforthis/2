@@ -63,7 +63,7 @@ export const craft_spear:ActionTargeted = {
         }
     },
 
-    start: function(char:Character, data: any) {
+    start: function(char:Character, data: map_position) {
     },
 }
 
