@@ -1,13 +1,19 @@
-import { Character, PerksTable } from "../../../base_game_classes/character/character";
+import { Character } from "../../../base_game_classes/character/character";
 import { CharacterActionResponce } from "../../action_manager";
-import { Armour, ArmourConstructorArgument, Weapon } from "../../static_data/item_tags";
-import { nodb_mode_check } from "../../market/market_items";
 import { RAT_SKIN } from "../../../manager_classes/materials_manager";
 import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
-import { PgPool } from "../../../world";
+
+import { map_position } from "../../../types";
+import { ItemSystem } from "../../../base_game_classes/items/system";
+import { ItemJson } from "../../../base_game_classes/items/item";
+import { CraftProbability } from "../../../base_game_classes/character/craft";
+import { UserManagement } from "../../../client_communication/user_manager";
+import { UI_Part } from "../../../client_communication/causality_graph";
+import { Alerts } from "../../../client_communication/network_actions/alerts";
 
 
-function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
+
+function generate_rat_skin_craft(arg: ItemJson, cost: number) {
     return {
         duration(char: Character) {
             return 0.5
@@ -28,30 +34,26 @@ function generate_rat_skin_craft(arg: ArmourConstructorArgument, cost: number) {
         result:  function(char:Character, data: map_position) {
             let tmp = char.stash.get(RAT_SKIN)
             if (tmp >= cost) {
-                char.changed = true
                 let skill = char.skills.clothier;
     
                 char.stash.inc(RAT_SKIN, -cost)
-                char.send_stash_update()
                 char.change_fatigue(10)
-                // if (dice < check) {
+                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
+                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
+
                 let dice = Math.random()
-                if (dice < craft_rat_armour_probability(skill, char.skills.perks.skin_armour_master == true)) {
-                    let armour = new Armour(arg)
-                    char.equip.add_armour(armour)
-                    char.world.socket_manager.send_to_character_user(char, 'alert', 'finished')
-                    char.send_stash_update()
-                    char.send_equip_update()
-                    char.send_status_update()
+                if (dice < CraftProbability.from_rat_skin(char)) {
+                    let armour = ItemSystem.create(arg)
+                    char.equip.data.backpack.add(armour)
+                    UserManagement.add_user_to_update_queue(char.user_id, UI_Part.INVENTORY)
                     return CharacterActionResponce.OK
                 } else {
                     char.change_stress(1)
                     if (skill < 20) {
                         char.skills.clothier += 1
-                        char.send_skills_update()
-                        char.changed = true
+                        UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
                     }
-                    char.world.socket_manager.send_to_character_user(char, 'alert', 'failed')
+                    Alerts.failed(char)
                     return CharacterActionResponce.FAILED
                 }
             }
