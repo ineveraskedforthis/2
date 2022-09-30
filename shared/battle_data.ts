@@ -17,3 +17,5 @@ export type BattleData = {[_ in number]: UnitData};
 
 export type battle_id = number & { __brand: "battle"}
 export type action_points = number & { __brand: "action_point"}
+
+export type ms = number & { __brand: "ms" }

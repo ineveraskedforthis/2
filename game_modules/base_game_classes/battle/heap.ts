@@ -1,7 +1,7 @@
 import { UnitData } from "./unit";
 
 
-class UnitsHeap {
+export class UnitsHeap {
     data: UnitData[];
     last: number;
     heap: number[];
