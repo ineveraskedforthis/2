@@ -40,12 +40,13 @@ export class SocketManager {
             this.active_users.add(user);
             this.connection(socket)
 
-            socket.on('disconnect', () => this.disconnect(user));        
+            socket.on('disconnect', () => this.disconnect(user));
             socket.on('login',  (msg: any) => Auth.login(user, msg));
             socket.on('reg',  (msg: any) => Auth.register(user, msg));
             socket.on('session',  (msg: any) => Auth.login_with_session(user, msg));
 
             socket.on('create_character',  (msg:any) => this.create_character(user, msg));
+            socket.on('play',    (msg:any) => this.play(user));
 
 
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
@@ -140,6 +141,17 @@ export class SocketManager {
 
         UserManagement.get_new_character(sw.user_id, data.name, model_variation, starting_cell)
         UserManagement.update_users()
+    }
+
+    play(sw: SocketWrapper) {
+        if (sw.user_id == '#') return
+        let user = UserManagement.get_user(sw.user_id)
+
+        if (user.data.char_id == '@') {
+            Alerts.generic_user_alert(user, 'no-character', '')
+        } else {
+            UserManagement.send_character_to_user(user)
+        }
     }
 
     // send_all(character:Character) {

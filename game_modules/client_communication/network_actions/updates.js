@@ -196,7 +196,7 @@ var SendUpdate;
         const cell = systems_communication_1.Convert.character_to_cell(character);
         alerts_1.Alerts.map_action(user, 'hunt', cell.can_hunt());
         alerts_1.Alerts.map_action(user, 'clean', cell.can_clean());
-        alerts_1.Alerts.map_action(user, 'gather', cell.can_gather_wood());
+        alerts_1.Alerts.map_action(user, 'gather_wood', cell.can_gather_wood());
     }
     SendUpdate.local_actions = local_actions;
     function map_related(user) {

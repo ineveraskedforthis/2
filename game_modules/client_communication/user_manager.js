@@ -186,17 +186,25 @@ var UserManagement;
         for (let item of users_to_update) {
             console.log('send_update to ' + item.data.login);
             if (item.character_created) {
-                alerts_1.Alerts.generic_user_alert(item, 'character_exists', undefined);
-                updates_1.SendUpdate.all(item);
+                send_character_to_user(item);
                 item.character_created = false;
+            }
+            else {
+                causality_graph_1.Update.update_root(item);
+                item.updates = causality_graph_1.Update.construct();
             }
             if (item.market_update) {
                 updates_1.SendUpdate.market(item);
             }
-            causality_graph_1.Update.update_root(item);
-            item.updates = causality_graph_1.Update.construct();
         }
         users_to_update.clear();
     }
     UserManagement.update_users = update_users;
+    function send_character_to_user(user) {
+        alerts_1.Alerts.generic_user_alert(user, 'character_exists', undefined);
+        updates_1.SendUpdate.all(user);
+        causality_graph_1.Update.update_root(user);
+        alerts_1.Alerts.generic_user_alert(user, 'loading_completed', '');
+    }
+    UserManagement.send_character_to_user = send_character_to_user;
 })(UserManagement = exports.UserManagement || (exports.UserManagement = {}));

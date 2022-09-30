@@ -206,7 +206,7 @@ export namespace SendUpdate {
         const cell = Convert.character_to_cell(character)
         Alerts.map_action(user, 'hunt'          , cell.can_hunt())
         Alerts.map_action(user, 'clean'         , cell.can_clean())
-        Alerts.map_action(user, 'gather'        , cell.can_gather_wood())
+        Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
     }
 
     export function map_related(user: User) {

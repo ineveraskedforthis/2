@@ -24,6 +24,10 @@ var Alerts;
         generic_character_alert(character, 'alert', 'failed');
     }
     Alerts.failed = failed;
+    function no_character(user) {
+        generic_user_alert(user, 'no-character', '');
+    }
+    Alerts.no_character = no_character;
     function log_to_user(user, message) {
         user.socket.emit('log-message', message);
     }

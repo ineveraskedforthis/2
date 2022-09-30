@@ -23,6 +23,10 @@ export namespace Alerts {
         generic_character_alert(character, 'alert', 'failed')
     }
 
+    export function no_character(user:User) {
+        generic_user_alert(user, 'no-character', '')
+    }
+
 
     export function log_to_user(user: User, message: string) {
         user.socket.emit('log-message', message);

@@ -268,7 +268,13 @@ document.getElementById('send_message_button').onclick = (event) => {
 //MESSAGES STUFF END
 
 // Main menu:
-document.getElementById('to_character_creation').onclick = show_char_creation
+document.getElementById('to_character_creation').onclick = () => {
+    socket.emit('play');
+} 
+
+socket.on('no-character', show_char_creation)
+
+show_char_creation
 
 
 //CHANGE SCENES STUFF
@@ -913,7 +919,7 @@ document.getElementById("next_2").onclick = (event) => {
     socket.emit('create_character', {name: '123'})
 }
 
-socket.on('character_exists', show_game)
+socket.on('loading_completed', show_game)
 
 for (let i = 0; i<3; i++) {
     document.getElementById("eyes_"+ i).onclick = (event) => {

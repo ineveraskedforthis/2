@@ -194,16 +194,24 @@ export namespace UserManagement {
         for (let item of users_to_update) {
             console.log('send_update to ' + item.data.login)          
             if (item.character_created) {
-                Alerts.generic_user_alert(item, 'character_exists', undefined)
-                SendUpdate.all(item)
+                send_character_to_user(item)
                 item.character_created = false
+            } else {
+                Update.update_root(item)
+                item.updates = Update.construct()
             }
             if (item.market_update) {
                 SendUpdate.market(item)
             }
-            Update.update_root(item)
-            item.updates = Update.construct()
+            
         }
         users_to_update.clear()
+    }
+
+    export function send_character_to_user(user: User) {
+        Alerts.generic_user_alert(user, 'character_exists', undefined)
+        SendUpdate.all(user)
+        Update.update_root(user)
+        Alerts.generic_user_alert(user, 'loading_completed', '')
     }
 }

@@ -28,6 +28,7 @@ class SocketManager {
             socket.on('reg', (msg) => auth_1.Auth.register(user, msg));
             socket.on('session', (msg) => auth_1.Auth.login_with_session(user, msg));
             socket.on('create_character', (msg) => this.create_character(user, msg));
+            socket.on('play', (msg) => this.play(user));
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
             // socket.on('attack-character',  (msg: any) => this.attack_character(user, msg));
             // socket.on('buy',  (msg: any) => this.buy(user, msg));
@@ -104,6 +105,17 @@ class SocketManager {
         }
         user_manager_1.UserManagement.get_new_character(sw.user_id, data.name, model_variation, starting_cell);
         user_manager_1.UserManagement.update_users();
+    }
+    play(sw) {
+        if (sw.user_id == '#')
+            return;
+        let user = user_manager_1.UserManagement.get_user(sw.user_id);
+        if (user.data.char_id == '@') {
+            alerts_1.Alerts.generic_user_alert(user, 'no-character', '');
+        }
+        else {
+            user_manager_1.UserManagement.send_character_to_user(user);
+        }
     }
 }
 exports.SocketManager = SocketManager;
