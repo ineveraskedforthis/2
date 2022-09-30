@@ -2,6 +2,9 @@ import { CharacterActionResponce } from "../../action_manager";
 import { MEAT } from "../../../manager_classes/materials_manager";
 import type { Character } from "../../../base_game_classes/character/character";
 import { Convert } from "../../../systems_communication";
+import { map_position } from "../../../types";
+import { UserManagement } from "../../../client_communication/user_manager";
+import { UI_Part } from "../../../client_communication/causality_graph";
 
 
 export const hunt = {
@@ -32,20 +35,21 @@ export const hunt = {
 
         if (dice * 100 < skill) {
             char.stash.inc(MEAT, 1)
-
             char.change_blood(5)
-            char.send_status_update()
-            char.send_stash_update()
+
+            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
+            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
             return CharacterActionResponce.OK
         } else {
             let dice = Math.random()
             if (dice * 100 > skill) {
                 char.skills.hunt += 1
-                char.send_skills_update()
+                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
             }
             char.change_stress(1)
-            char.send_status_update()
-            char.send_stash_update()
+
+            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
+            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
             return CharacterActionResponce.FAILED
         }
         

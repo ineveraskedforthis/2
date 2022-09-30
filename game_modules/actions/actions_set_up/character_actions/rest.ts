@@ -1,6 +1,9 @@
 import { Character } from "../../../base_game_classes/character/character";
 import {CharacterActionResponce} from '../../action_manager'
-import { PgPool } from "../../../world";
+import { map_position } from "../../../types";
+import { Convert } from "../../../systems_communication";
+import { UserManagement } from "../../../client_communication/user_manager";
+import { UI_Part } from "../../../client_communication/causality_graph";
 
 export const rest = {
     duration(char: Character) {
@@ -13,7 +16,7 @@ export const rest = {
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            if (char.misc.tag == 'rat') {
+            if (char.archetype.race == 'rat') {
                 return CharacterActionResponce.OK
             }
 
@@ -31,17 +34,16 @@ export const rest = {
     },
 
     result:  function(char:Character, data: map_position) {
-        char.changed = true
         const cell = Convert.character_to_cell(char)
         if (cell == undefined) return 
-        if (cell.can_rest() || (char.misc.tag == 'rat')) {
+        if (cell.can_rest() || (char.archetype.race == 'rat')) {
             char.set_fatigue(0)
             char.change_stress(-4)
         } else {
-            char.set_fatigue(40)
+            char.set_fatigue(30)
         }
 
-        char.send_status_update()
+        UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
     },
 
     start:  function(char:Character, data: map_position) {
