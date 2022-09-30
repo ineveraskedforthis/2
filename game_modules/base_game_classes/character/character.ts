@@ -4,7 +4,7 @@ import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { cell_id, char_id, map_position, money, TEMP_USER_ID, user_id } from "../../types";
-import { Action } from "../../battle";
+import { Action } from "../battle/battle";
 import { ActionTargeted } from "../../actions/action_manager";
 
 export class Character {
@@ -291,7 +291,7 @@ export class Character {
 
 //     //some stuff defined per concrete character class
 
-//      status_check(pool: PgPool) {
+//      status_check() {
 //         if (this.status.hp <= 0) {
 //             this.status.hp = 0;
 
@@ -309,7 +309,7 @@ export class Character {
 //         this.change_stress(1)
 //     }
 
-//      on_move(pool: PgPool) {
+//      on_move() {
 //         return undefined
 //     }
 

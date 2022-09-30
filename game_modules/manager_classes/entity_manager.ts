@@ -18,7 +18,7 @@
 
 
 // export class EntityManager {
-//     world: World
+//     
 //     cells: Cell[][]
 //     chars: Character[]
 //     orders: MarketOrder[]
@@ -44,11 +44,11 @@
 //         this.time_since_last_decision_update = 0
 //     }
 
-//      init(pool: PgPool) {
+//      init() {
 //         await this.init_cells(pool);
 //     }
 
-//      load(pool: PgPool) {
+//      load() {
 //         await this.load_cells(pool)
 //         await this.load_characters(pool);
 //         await this.load_orders(pool);
@@ -60,7 +60,7 @@
 //         await this.clear_dead_orders(pool);
 //     }
 
-//      load_characters(pool: PgPool) {
+//      load_characters() {
 //         let res = await common.send_query(pool, constants.load_chars_query);
 //         for (let i of res.rows) {
 //             let char = new Character(this.world);
@@ -74,7 +74,7 @@
 //         console.log('characters loaded')
 //     }
 
-//      load_orders(pool: PgPool) {
+//      load_orders() {
 //         let res = await common.send_query(pool, constants.load_orders_query);
 //         for (let i of res.rows) {
 //             let order = new MarketOrder(this.world);
@@ -98,7 +98,7 @@
         
 //     }
 
-//      load_item_orders(pool: PgPool) {
+//      load_item_orders() {
 //         let res = await common.send_query(pool, constants.load_item_orders_query);
 //         for (let i of res.rows) {
 //             let order = AuctionOrderManagement.json_to_order(i, this)
@@ -107,7 +107,7 @@
 //         console.log('item orders loaded')
 //     }
 
-//      load_battles(pool: PgPool) {
+//      load_battles() {
 //         let res = await common.send_query(pool, constants.load_battles_query);
 //         for (let i of res.rows) {
 //             let battle = new BattleReworked2(this.world);
@@ -117,7 +117,7 @@
 //         console.log('battles loaded')
 //     }
 
-//      load_areas(pool: PgPool) {
+//      load_areas() {
 //         let res = await common.send_query(pool, constants.load_areas_query);
 //         for (let i of res.rows) {
 //             let obj = new Area(this.world);
@@ -127,7 +127,7 @@
 //         console.log('areas loaded')
 //     }
 
-//      load_factions(pool: PgPool) {
+//      load_factions() {
 //         let res = await common.send_query(pool, constants.load_factions_query);
 //         for (let i of res.rows) {
 //             let faction = new Faction(this.world);
@@ -137,7 +137,7 @@
 //         console.log('factions loaded')
 //     }
 
-//      load_quests(pool: PgPool) {
+//      load_quests() {
 //         let res = await common.send_query(pool, constants.load_quests_query);
 //         for (let i of res.rows) {
 //             let quest = new Quest(this.world);
@@ -147,7 +147,7 @@
 //         console.log('quests loaded')
 //     }
 
-//      clear_dead_orders(pool: PgPool) {
+//      clear_dead_orders() {
 //         // this.map.clear_dead_orders(pool);
 //     }
 
@@ -204,7 +204,7 @@
 //         }
 //     }   
 
-//      update_battles(pool: PgPool) {
+//      update_battles() {
 //         for (let i in this.battles) {
 //             var battle = this.battles[i]
 //             if ((battle == null) || (battle == undefined) || battle.ended) {
@@ -221,7 +221,7 @@
 //         }
 //     }
 
-//      update_factions(pool: PgPool) {
+//      update_factions() {
 //     }
 
 //     set_faction_leader(faction: any, leader: Character) {
@@ -229,7 +229,7 @@
 //         leader.set_faction(faction)
 //     }
 
-//      update_areas(pool: PgPool) {
+//      update_areas() {
 //         for (let i in this.areas) {
 //             let area = this.areas[i]
 //             for (let faction_id in area.faction_influence) {

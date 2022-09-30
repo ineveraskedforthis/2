@@ -206,7 +206,7 @@ exports.Character = Character;
 //         }
 //     }
 //     //some stuff defined per concrete character class
-//      status_check(pool: PgPool) {
+//      status_check() {
 //         if (this.status.hp <= 0) {
 //             this.status.hp = 0;
 //             await this.world.entity_manager.remove_orders(pool, this)
@@ -220,7 +220,7 @@ exports.Character = Character;
 //     battle_update() {
 //         this.change_stress(1)
 //     }
-//      on_move(pool: PgPool) {
+//      on_move() {
 //         return undefined
 //     }
 //     get_user():User {

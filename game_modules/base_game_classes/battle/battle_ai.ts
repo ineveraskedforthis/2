@@ -1,8 +1,8 @@
-import type { Character } from "./base_game_classes/character/character";
+import type { Character } from "../character/character";
 import type { BattleReworked2, Action, ActionTag, MoveAction, AttackAction, UnitData, FastAttackAction } from "./battle";
 
-import {geom, point} from './geom'
-import { spells, spell_tags } from "./static_data/spells";
+import {geom, point} from '../../geom'
+import { spells, spell_tags } from "../../static_data/spells";
 
 type trigger_tag = 'hp'|'rage'|'blood'|'stress'
 type sign_tag = '<'|'<='|'=='|'>'|'>='

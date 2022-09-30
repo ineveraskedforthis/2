@@ -75,7 +75,7 @@
 //         this.map_tick = 0;
 //         this.territories = {}
 //     }
-//      init(pool: PgPool) {
+//      init() {
 //         this.socket_manager = new SocketManager(pool, this.io, this, true);
 //         this.action_manager = new ActionManager(this, pool)
 //         this.entity_manager = new EntityManager(this);
@@ -84,7 +84,7 @@
 //         // await this.generate_territories()
 //         await this.add_starting_agents(pool);
 //     }
-//      add_starting_agents(pool: PgPool) {
+//      add_starting_agents() {
 //         let port_chunk = await this.entity_manager.create_area(pool, 'port')
 //         let living_area = await this.entity_manager.create_area(pool, 'living_area')
 //         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony')
@@ -185,14 +185,14 @@
 //         mage.changed = true
 //         mage.faction_id = 3
 //     }
-//      load(pool: PgPool) {
+//      load() {
 //         this.socket_manager = new SocketManager(pool, this.io, this, true);
 //         this.entity_manager = new EntityManager(this);
 //         this.action_manager = new ActionManager(this, pool)
 //         await this.entity_manager.load(pool);
 //         await this.load_size(pool);
 //     }
-//      load_size(pool: PgPool) {
+//      load_size() {
 //         let size = await common.send_query(pool, constants.load_world_size_query);
 //         this.x = size.rows[0].x;
 //         this.y = size.rows[0].y;

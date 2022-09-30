@@ -89,7 +89,6 @@ export function can_dodge(character:Character):boolean {
             return true
         }
     }
-
     return false
 }
 

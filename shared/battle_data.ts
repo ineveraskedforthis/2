@@ -1,11 +1,11 @@
-export interface PositionSocket {
+export interface BattlePosition {
     x: number
     y: number
 }
 
-export interface SocketBattleUnitData {
+export interface UnitData {
     tag: string,
-    position: PositionSocket
+    position: BattlePosition
     range: number
     name: string 
     hp: number
@@ -13,6 +13,7 @@ export interface SocketBattleUnitData {
     id: number
 }
 
-export type SocketBattleData = {[_ in number]: SocketBattleUnitData};
+export type BattleData = {[_ in number]: UnitData};
 
 export type battle_id = number & { __brand: "battle"}
+export type action_points = number & { __brand: "action_point"}

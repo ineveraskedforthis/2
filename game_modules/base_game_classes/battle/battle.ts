@@ -1,18 +1,15 @@
 
-import { Stash } from "./base_game_classes/inventories/stash";
+import { Stash } from "../inventories/stash";
 
 var common = require("./common.js");
 var {constants} = require("./static_data/constants.js");
 
-import {geom} from './geom'
+import {geom} from '../../geom'
 
 import {BattleAI} from './battle_ai'
-import {can_cast_magic_bolt, can_dodge, can_fast_attack, can_push_back, can_shoot, Character} from './base_game_classes/character/character'
-import { PgPool, World } from "./world";
-import { ITEM_MATERIAL } from "./static_data/item_tags";
-import { ARROW_BONE, material_index, ZAZ } from "./manager_classes/materials_manager";
-import { Savings } from "./base_game_classes/savings";
-import { SocketBattleData } from "../shared/battle_data";
+import {Character} from '../character/character'
+import { ARROW_BONE, material_index, ZAZ } from "../../manager_classes/materials_manager";
+import { SocketBattleData } from "../../../shared/battle_data";
 
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
@@ -34,198 +31,13 @@ export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'h
 
 type ActionLog = Action[]
 
-class UnitsHeap {
-    data: UnitData[];
-    last: number;
-    heap: number[];
-    selected: number;
-    changed: boolean;
 
-    constructor() {
-        this.data = []
-        this.heap = []
-        this.last = 0;
-        this.selected = -1
-        this.changed = false
-    }
-
-    get_value(i: number) {
-        return this.data[this.heap[i]].next_turn_after;
-    }
-
-    get_units_amount() {
-        return this.data.length
-    }
-
-    get_unit(i: number): UnitData {
-        return this.data[i]
-    }
-
-    get_selected_unit(): UnitData {
-        return this.data[this.selected]
-    }
-
-    push(obj: number) {
-        this.heap[this.last] = obj;
-        this.last += 1;
-        this.shift_up(this.last - 1)
-        this.changed = true
-    }
-
-    shift_up(i:number) {
-        let tmp = i;
-        while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor((tmp - 1) / 2))) {
-            this.swap(tmp, Math.floor((tmp - 1) / 2))
-            tmp = Math.floor((tmp - 1) / 2)
-        }
-        this.changed = true
-    }
-
-    shift_down(i: number) {
-        let tmp = i;
-        while (tmp * 2 + 1 < this.last) {
-            if (tmp * 2 + 2 < this.last) {
-                if ((this.get_value(tmp * 2 + 2) < this.get_value(tmp * 2 + 1)) && (this.get_value(tmp * 2 + 2) < this.get_value(tmp))) {
-                    this.swap(tmp, tmp * 2 + 2)
-                    tmp = tmp * 2 + 2
-                } else if (this.get_value(tmp * 2 + 1) < this.get_value(tmp)) {
-                    this.swap(tmp, tmp * 2 + 1)
-                    tmp = tmp * 2 + 1
-                } else {
-                    break
-                }
-            } else if (this.get_value(tmp * 2 + 1) < this.get_value(tmp)) {
-                this.swap(tmp, tmp * 2 + 1)
-                tmp = tmp * 2 + 1
-            } else {
-                break
-            }
-        }
-        this.changed = true
-    }
-
-    add_unit(u: UnitData) {
-        this.data.push(u);
-        this.push(this.data.length - 1)
-        this.changed = true
-    }
-
-    swap(a: number, b: number) {
-        let s = this.heap[a];
-        this.heap[a] = this.heap[b]
-        this.heap[b] = s
-        this.changed = true
-    }
-
-    pop():number|undefined {
-        if (this.last == 0) {
-            return undefined
-        }
-        let tmp = this.heap[0]
-        this.selected = tmp;
-        this.last -= 1
-        this.heap[0] = this.heap[this.last]
-        this.heap.length = this.last
-        this.shift_down(0);
-        this.changed = true
-        return tmp
-    }
-
-    update(dt: number) {
-        for (let i in this.data) {
-            this.data[i].update(dt)
-        }
-        this.changed = true
-    }
-
-    get_json() {
-        return {
-            data: this.data,
-            last: this.last,
-            heap: this.heap,
-            selected: this.selected
-        }
-    }
-
-    load_from_json(j: UnitsHeap) {
-        for (let i in j.data) {
-            let unit = new UnitData()
-            unit.load_from_json(j.data[i])
-            this.data.push(unit)
-        }
-        this.last = j.last
-        this.heap = j.heap
-        this.selected = j.selected
-    }
-}
         
-export class UnitData {
-    action_points_left: number;
-    action_points_max: number;
-    next_turn_after: number;
-    dodge_turns: number;
-    initiative: number;
-    speed: number;
-    position: {x: number, y: number};
-    char_id: number
-    team: number
-    dead: boolean
 
-
-    constructor() {
-        this.action_points_left = 0;
-        this.action_points_max = 0;
-        this.initiative = 100
-        this.speed = 0
-        this.next_turn_after = 100
-        this.position = {x: 0, y: 0}
-        this.char_id = -1
-        this.team = -1
-        this.dead = true
-        this.dodge_turns = 0
-    }
-
-    init(char:Character, position: {x: number, y: number}, team: number) {
-        let ap = char.get_action_points()
-        this.action_points_left = ap;
-        this.action_points_max = ap;
-        this.initiative = char.get_initiative()
-        this.speed = char.get_speed()
-        this.next_turn_after = char.get_initiative()
-        this.position = position
-        this.char_id = char.id
-        this.team = team
-        this.dead = false
-        this.dodge_turns = 0
-    }
-
-    load_from_json(data: UnitData) {
-        this.action_points_left = data.action_points_left;
-        this.action_points_max = data.action_points_max;
-        this.initiative = data.initiative
-        this.speed = data.speed
-        this.next_turn_after = data.next_turn_after
-        this.position = data.position
-        this.char_id = data.char_id
-        this.team = data.team
-        this.dead = data.dead
-        this.dodge_turns = data.dodge_turns
-    }
-
-    update(dt: number) {
-        this.next_turn_after = this.next_turn_after - dt
-    }
-
-    end_turn() {
-        this.next_turn_after = this.initiative;
-        this.action_points_left = Math.min((this.action_points_left + this.speed), this.action_points_max);
-        this.dodge_turns = Math.max(0, this.dodge_turns - 1)
-    }
-}
 
 
 export class BattleReworked2 {
-    world: World;
+    ;
     heap: UnitsHeap;
     id: number;
     savings: any;
@@ -237,7 +49,7 @@ export class BattleReworked2 {
     last_turn: number;
 
 
-    constructor(world: World) {
+    constructor() {
         this.heap = new UnitsHeap();
         this.world = world;
         this.id = -1
@@ -250,13 +62,13 @@ export class BattleReworked2 {
         this.last_turn = Date.now() //milliseconds
     }
 
-     init(pool: PgPool) {
-        this.id = await this.load_to_db(pool);
+     init() {
+        this.id =  this.load_to_db();
         this.last_turn = Date.now()
         return this.id;
     }
 
-     load_to_db(pool: PgPool) {
+     load_to_db() {
         // @ts-ignore: Unreachable code error
         if (global.flag_nodb) {
             // @ts-ignore: Unreachable code error
@@ -264,7 +76,7 @@ export class BattleReworked2 {
             // @ts-ignore: Unreachable code error
             return global.last_id
         }
-        let res =  await common.send_query(pool, constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
+        let res =   common.send_query(constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
         return res.rows[0].id
     }
 
@@ -276,14 +88,14 @@ export class BattleReworked2 {
         this.waiting_for_input = data.waiting_for_input
     }
 
-     save_to_db(pool: PgPool) {
-        await common.send_query(pool, constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input])
+     save_to_db() {
+         common.send_query(constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input])
         this.changed = false
         this.heap.changed = false
     }
 
-     delete_from_db(pool: PgPool) {
-        await common.send_query(pool, constants.delete_battle_query, [this.id]);
+     delete_from_db() {
+         common.send_query(constants.delete_battle_query, [this.id]);
     }
 
     // networking
@@ -314,9 +126,9 @@ export class BattleReworked2 {
         this.world.socket_manager.send_stop_battle(this)
     }
 
-     update(pool:any) {
+     update() {
         if (this.changed || this.heap.changed) {
-            this.save_to_db(pool)
+            this.save_to_db()
         }
 
         let current_time = Date.now()
@@ -324,7 +136,7 @@ export class BattleReworked2 {
             let unit = this.heap.get_selected_unit()
             let char = this.get_char(unit)
 
-            let res = await this.process_input(pool, char.get_in_battle_id(), {action: 'end_turn'})
+            let res =  this.process_input(char.get_in_battle_id(), {action: 'end_turn'})
             this.send_action(res)
             this.send_update()
         }
@@ -348,7 +160,7 @@ export class BattleReworked2 {
                 return {responce: 'dead_unit'}
             }
 
-            await char.update(pool, 0)
+             char.update(0)
             let dt = unit.next_turn_after
             this.heap.update(dt)
 
@@ -366,7 +178,7 @@ export class BattleReworked2 {
                 return {responce: 'waiting_for_input'}
             } else {
                 let log_obj: any[] = [];
-                await this.make_turn(pool)
+                 this.make_turn()
                 unit.end_turn()
                 
                 this.heap.push(tmp)
@@ -391,12 +203,12 @@ export class BattleReworked2 {
         return this.world.get_char_from_id(unit.char_id)
     }
 
-     make_turn(pool: PgPool){
+     make_turn(){
         let unit = this.heap.get_selected_unit()
         let char = this.get_char(unit)
         let action:Action = BattleAI.action(this, unit, char);
         while (action.action != 'end_turn') {
-            let logged_action = await this.action(pool, this.heap.selected, action)
+            let logged_action =  this.action(this.heap.selected, action)
             this.send_action(logged_action)
             this.send_update()
             action = BattleAI.action(this, unit, char);
@@ -404,7 +216,7 @@ export class BattleReworked2 {
         this.changed = true
     }
 
-     action(pool:any, unit_index: number, action: Action) {
+     action(, unit_index: number, action: Action) {
         console.log('battle action')
         console.log(action)
 
@@ -452,7 +264,7 @@ export class BattleReworked2 {
 
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let dodge_flag = (unit2.dodge_turns > 0)
-                let result = await character.attack(pool, target_char, 'usual', dodge_flag, dist);
+                let result =  character.attack(target_char, 'usual', dodge_flag, dist);
                 unit.action_points_left -= 3
                 this.changed = true
                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
@@ -479,7 +291,7 @@ export class BattleReworked2 {
 
             character.stash.inc(ARROW_BONE, -1)
 
-            let result = await character.attack(pool, target_char, 'ranged', dodge_flag, dist);
+            let result =  character.attack(target_char, 'ranged', dodge_flag, dist);
             unit.action_points_left -= 3
             this.changed = true
 
@@ -505,7 +317,7 @@ export class BattleReworked2 {
                 character.stash.inc(ZAZ, -1)
             }
 
-            let result = await character.spell_attack(pool, target_char, 'bolt');
+            let result =  character.spell_attack(target_char, 'bolt');
             unit.action_points_left -= 3
             this.changed = true
 
@@ -535,7 +347,7 @@ export class BattleReworked2 {
                 let dodge_flag = (unit2.dodge_turns > 0)
                 
                 
-                let result = await character.attack(pool, target_char, 'heavy', dodge_flag, dist);
+                let result =  character.attack(target_char, 'heavy', dodge_flag, dist);
                 unit.action_points_left -= 5
                 this.changed = true
 
@@ -579,7 +391,7 @@ export class BattleReworked2 {
                 let target_char = this.world.get_char_from_id(unit2.char_id);
                 let dodge_flag = (unit2.dodge_turns > 0)
                 
-                let result = await character.attack(pool, target_char, 'fast', dodge_flag, dist);
+                let result =  character.attack(target_char, 'fast', dodge_flag, dist);
                 unit.action_points_left -= 1
                 this.changed = true
                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
@@ -635,7 +447,7 @@ export class BattleReworked2 {
                 let spell_tag = action.spell_tag;
                 let unit2 = this.heap.get_unit(action.target);
                 let target_char = this.world.get_char_from_id(unit2.char_id);
-                let result = await character.spell_attack(pool, target_char, spell_tag);
+                let result =  character.spell_attack(target_char, spell_tag);
                 if (result.flags.close_distance) {
                     let dist = geom.dist(unit.position, unit2.position)
                     if (dist > 1.9) {
@@ -834,34 +646,34 @@ export class BattleReworked2 {
             let index = this.heap.selected
             let character = this.get_char(this.get_unit(this.heap.selected))
             if (input.action == 'move') {
-                return await this.action(pool, index, {action: 'move', target: input.target})
+                return  this.action(index, {action: 'move', target: input.target})
             } else if (input.action == 'attack') {
-                return await this.action(pool, index, BattleAI.convert_attack_to_action(this, index, input.target, 'usual'))
+                return  this.action(index, BattleAI.convert_attack_to_action(this, index, input.target, 'usual'))
             } else if (input.action == 'fast_attack') {
                 if(!can_fast_attack(character)) {
                     return {action: "not_learnt"}
                 }
-                return await this.action(pool, index, BattleAI.convert_attack_to_action(this, index, input.target, 'fast'))
+                return  this.action(index, BattleAI.convert_attack_to_action(this, index, input.target, 'fast'))
             } else if (input.action == 'dodge') {
                 if(!can_dodge(character)) {
                     return {action: "not_learnt"}
                 }
-                return await this.action(pool, index, {action: 'dodge', who: index})
+                return  this.action(index, {action: 'dodge', who: index})
             } else if (input.action == 'push_back') {
                 if(!can_push_back(character)) {
                     return {action: "not_learnt"}
                 }
-                return await this.action(pool, index, {action: 'push_back', target: input.target})
+                return  this.action(index, {action: 'push_back', target: input.target})
             } else if (input.action == 'magic_bolt') {
-                return await this.action(pool, index, {action: 'magic_bolt', target: input.target})
+                return  this.action(index, {action: 'magic_bolt', target: input.target})
             } else if (input.action == 'shoot') { 
-                return await this.action(pool, index, {action: 'shoot', target: input.target})
+                return  this.action(index, {action: 'shoot', target: input.target})
             } else if (input.action == 'flee') {
-                return await this.action(pool, index, {action: 'flee', who: index})
+                return  this.action(index, {action: 'flee', who: index})
             } else if (input.action == 'switch_weapon') {
-                return await this.action(pool, index, {action: 'switch_weapon', who: index})
+                return  this.action(index, {action: 'switch_weapon', who: index})
             } else {
-                return await this.action(pool, index, input)
+                return  this.action(index, input)
             }
         }        
     }

@@ -30,7 +30,7 @@ let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
 
 export class AiManager {
-    world: World;
+    ;
     constructor(world:World) {
         this.world = world
     }
