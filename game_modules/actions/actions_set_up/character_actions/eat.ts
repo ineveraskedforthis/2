@@ -1,7 +1,9 @@
 import type { Character } from "../../../base_game_classes/character/character";
 import { CharacterActionResponce } from "../../action_manager";
 import { FOOD } from "../../../manager_classes/materials_manager";
-import { PgPool } from "../../../world";
+import { map_position } from "../../../types";
+import { UserManagement } from "../../../client_communication/user_manager";
+import { UI_Part } from "../../../client_communication/causality_graph";
 
 export const eat = {
     duration(char: Character) {
@@ -20,11 +22,10 @@ export const eat = {
     },
 
     result:  function(char:Character, data: map_position) {
-        char.changed = true
         char.change_hp(10);
         char.stash.inc(FOOD, -1);
-        char.send_stash_update()
-        char.send_status_update()
+        UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
+        UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
     },
 
     start:  function(char:Character, data: map_position) {
