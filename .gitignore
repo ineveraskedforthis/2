@@ -2,5 +2,5 @@
 node_modules/
 .eslintrc.js
 .vscode
-.png~
-.txt
+*.png~
+*.txt
