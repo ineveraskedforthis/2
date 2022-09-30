@@ -1,8 +1,8 @@
 import { CharacterSystem } from "./base_game_classes/character/system";
-import { MarketOrderBulk, MarketOrderBulkJson } from "./market/classes";
+import { OrderBulk, OrderBulkJson } from "./market/classes";
 
 namespace JSONficate {
-    export function market_order_bulk(order: MarketOrderBulk):MarketOrderBulkJson {
+    export function market_order_bulk(order: OrderBulk):OrderBulkJson {
         let owner = CharacterSystem.id_to_character(order.owner_id)
 
         return {
@@ -13,7 +13,7 @@ namespace JSONficate {
             amount: order.amount,
             price: order.price,
             id: order.id,
-            cell_id: order.cell_id
+            // cell_id: order.cell_id
         };
     }
 }

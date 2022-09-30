@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.character_to_craft_spear_probability = exports.craft_spear_probability = exports.craft_spear = void 0;
+exports.craft_spear = void 0;
 const items_set_up_1 = require("../../../base_game_classes/items/items_set_up");
 const system_1 = require("../../../base_game_classes/items/system");
-const difficulty_1 = require("../../../calculations/difficulty");
+const craft_1 = require("../../../calculations/craft");
 const user_manager_1 = require("../../../client_communication/user_manager");
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
 exports.craft_spear = {
@@ -29,11 +29,11 @@ exports.craft_spear = {
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
             let dice = Math.random();
-            if (dice < craft_spear_probability(skill)) {
+            if (dice < craft_1.CraftProbability.basic_wood(char)) {
                 let spear = system_1.ItemSystem.create(items_set_up_1.SPEAR_ARGUMENT);
                 char.equip.data.backpack.add(spear);
                 user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 6 /* UI_Part.INVENTORY */);
-                if (difficulty_1.Difficulty.success_to_skill_up(skill, difficulty_1.DIFFICULTY_SPEAR, 0)) {
+                if (skill < 10) {
                     char.skills.woodwork += 1;
                     user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 11 /* UI_Part.SKILLS */);
                 }
@@ -41,7 +41,7 @@ exports.craft_spear = {
             }
             else {
                 char.change('stress', 1);
-                if (difficulty_1.Difficulty.failure_to_skill_up(skill, difficulty_1.DIFFICULTY_SPEAR, 0)) {
+                if (skill < 20) {
                     char.skills.woodwork += 1;
                     user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 11 /* UI_Part.SKILLS */);
                 }
@@ -52,12 +52,3 @@ exports.craft_spear = {
     start: function (char, data) {
     },
 };
-function craft_spear_probability(skill) {
-    return difficulty_1.Difficulty.success_ratio(skill, difficulty_1.DIFFICULTY_SPEAR, difficulty_1.BONUS_SPEAR);
-}
-exports.craft_spear_probability = craft_spear_probability;
-function character_to_craft_spear_probability(character) {
-    let skill = character.skills.woodwork;
-    return craft_spear_probability(skill);
-}
-exports.character_to_craft_spear_probability = character_to_craft_spear_probability;

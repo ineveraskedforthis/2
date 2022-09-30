@@ -135,7 +135,7 @@ export function init_map_control(map, globals) {
 
 
 export class Map {
-    constructor(canvas, container, socket) {
+    constructor(canvas, container, socket, globals) {
 
         this.time = 0
 
@@ -241,6 +241,27 @@ export class Map {
                 desktop_button.appendChild(chance_label)
             }
 
+            if (action_tag == 'hunt' || action_tag == 'gather_wood' ){   
+                let repeat_button = document.createElement('div')
+                repeat_button.innerHTML = 'repeat';
+                repeat_button.classList.add('active');
+                repeat_button.classList.add('bordered');
+                ((button, map_manager, action_tag, global_blob) => 
+                    button.onclick = () => 
+                    {
+                        console.log(global_blob)
+                        if (global_blob.keep_doing == action_tag) {
+                            global_blob.keep_doing = undefined
+                        } else {
+                            global_blob.keep_doing = action_tag
+                            map_manager.send_cell_action(action_tag)
+                        }
+                        console.log(global_blob)
+                    }
+                )(repeat_button, this, action_tag, globals);
+                desktop_button.appendChild(repeat_button)
+            }
+
             ((button, map_manager, action_tag) => 
                     button.onclick = () => map_manager.send_local_cell_action(action_tag)
             )(desktop_button, this, action_tag);
@@ -306,6 +327,11 @@ export class Map {
 
     send_local_cell_action(action) {
         this.socket.emit(action, {x: this.curr_pos[0], y: this.curr_pos[1]})
+        this.last_action = action
+    }
+
+    send_last_action() {
+        this.send_local_cell_action(this.last_action)
     }
 
     mark_visited(data) {
@@ -714,12 +740,15 @@ export class Map {
         }
 
         let tag = i + '_' + j
-        if (this.data[tag].urban >= 2) {
-            return 'colony'
-        } 
-        if (this.data[tag].wild >= 1) {
-            return 'forest'
+        if (this.data[tag] != undefined) {
+            if (this.data[tag].urban >= 2) {
+                return 'colony'
+            } 
+            if (this.data[tag].wild >= 1) {
+                return 'forest'
+            }
         }
+        
         
         // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];

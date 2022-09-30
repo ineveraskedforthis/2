@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.character_to_hunt_probability = exports.hunt_probability = exports.hunt = void 0;
+exports.hunt = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
 const systems_communication_1 = require("../../../systems_communication");
+const user_manager_1 = require("../../../client_communication/user_manager");
 exports.hunt = {
     duration(char) {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
@@ -30,31 +31,22 @@ exports.hunt = {
         if (dice * 100 < skill) {
             char.stash.inc(materials_manager_1.MEAT, 1);
             char.change_blood(5);
-            char.send_status_update();
-            char.send_stash_update();
+            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
+            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
             return 1 /* CharacterActionResponce.OK */;
         }
         else {
             let dice = Math.random();
             if (dice * 100 > skill) {
                 char.skills.hunt += 1;
-                char.send_skills_update();
+                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 11 /* UI_Part.SKILLS */);
             }
             char.change_stress(1);
-            char.send_status_update();
-            char.send_stash_update();
+            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
+            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
             return 4 /* CharacterActionResponce.FAILED */;
         }
     },
     start: function (char, data) {
     },
 };
-function hunt_probability(skill) {
-    return Math.min(skill / 100, 1);
-}
-exports.hunt_probability = hunt_probability;
-function character_to_hunt_probability(character) {
-    let skill = character.skills.hunt;
-    return hunt_probability(skill);
-}
-exports.character_to_hunt_probability = character_to_hunt_probability;

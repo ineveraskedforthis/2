@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Difficulty = exports.BONUS_SPEAR = exports.DIFFICULTY_SPEAR = void 0;
+exports.CellActionProb = exports.hunt_probability = exports.MEAT_DIFFICULTY = exports.BONUS_SPEAR = exports.DIFFICULTY_SPEAR = void 0;
 exports.DIFFICULTY_SPEAR = 5;
 exports.BONUS_SPEAR = 0.1;
+exports.MEAT_DIFFICULTY = 20;
 // export const DIFFICULTY_HUNTING = 10
 var Difficulty;
 (function (Difficulty) {
@@ -28,4 +29,16 @@ var Difficulty;
         return (Math.random() < Math.max(0, Math.min(1, (d - x) / (d) + bonus)));
     }
     Difficulty.success_to_skill_up = success_to_skill_up;
-})(Difficulty = exports.Difficulty || (exports.Difficulty = {}));
+})(Difficulty || (Difficulty = {}));
+function hunt_probability(skill) {
+    return Math.min(skill / 100, 1);
+}
+exports.hunt_probability = hunt_probability;
+var CellActionProb;
+(function (CellActionProb) {
+    function hunt(character) {
+        let skill = character.skills.hunt;
+        return hunt_probability(skill);
+    }
+    CellActionProb.hunt = hunt;
+})(CellActionProb = exports.CellActionProb || (exports.CellActionProb = {}));

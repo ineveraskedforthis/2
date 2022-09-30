@@ -68,11 +68,11 @@ export class SocketManager {
             // socket.on('unequip',  (msg: any) => this.unequip(user, msg));
 
 
-            // socket.on('eat',  () => this.eat(user));
-            // socket.on('clean',  () => this.clean(user));
-            // socket.on('rest',  () => this.rest(user));
+            socket.on('eat',  () =>             HandleAction.act(user, CharacterAction.GATHER_WOOD));
+            socket.on('clean',  () =>           HandleAction.act(user, CharacterAction.CLEAN));
+            socket.on('rest',  () =>            HandleAction.act(user, CharacterAction.REST));
             socket.on('move', (msg: any) =>     HandleAction.move(user, msg));
-            // socket.on('hunt',  () => this.hunt(user))
+            socket.on('hunt',  () =>            HandleAction.act(user, CharacterAction.HUNT))
             socket.on('gather_wood', () =>      HandleAction.act(user, CharacterAction.GATHER_WOOD))            
             
 
@@ -84,17 +84,17 @@ export class SocketManager {
             // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
 
 
-            // socket.on('cfood',  () =>      this.craft(user, CharacterAction.COOK_MEAT));
-            // socket.on('czaz',  () =>       this.craft(user, CharacterAction.COOK_ELODINO));
-            socket.on('mspear', () =>           HandleAction.act(user, CharacterAction.CRAFT.SPEAR))
-            // socket.on('mbspear',  () =>    this.craft(user, CharacterAction.CRAFT_BONE_SPEAR))
-            // socket.on('mbow',  () =>       this.craft(user, CharacterAction.CRAFT_WOOD_BOW))
-            // socket.on('marr',  () =>       this.craft(user, CharacterAction.CRAFT_BONE_ARROW))
-            // socket.on('mrpants',  () =>    this.craft(user, CharacterAction.CRAFT_RAT_PANTS))
-            // socket.on('mrgloves',  () =>   this.craft(user, CharacterAction.CRAFT_RAT_GLOVES))
-            // socket.on('mrboots',  () =>    this.craft(user, CharacterAction.CRAFT_RAT_BOOTS))
-            // socket.on('mrhelmet',  () =>   this.craft(user, CharacterAction.CRAFT_RAT_HELMET))
-            // socket.on('mrarmour',  () =>   this.craft(user, CharacterAction.CRAFT_RAT_ARMOUR))
+            socket.on('cfood',  () =>      HandleAction.act(user, CharacterAction.COOK.MEAT));
+            socket.on('czaz',  () =>       HandleAction.act(user, CharacterAction.COOK.ELODINO));
+            socket.on('mspear', () =>      HandleAction.act(user, CharacterAction.CRAFT.SPEAR))
+            socket.on('mbspear',  () =>    HandleAction.act(user, CharacterAction.CRAFT.BONE_SPEAR))
+            socket.on('mbow',  () =>       HandleAction.act(user, CharacterAction.CRAFT.WOOD_BOW))
+            socket.on('marr',  () =>       HandleAction.act(user, CharacterAction.CRAFT.BONE_ARROW))
+            socket.on('mrpants',  () =>    HandleAction.act(user, CharacterAction.CRAFT.RAT_PANTS))
+            socket.on('mrgloves',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_GLOVES))
+            socket.on('mrboots',  () =>    HandleAction.act(user, CharacterAction.CRAFT.RAT_BOOTS))
+            socket.on('mrhelmet',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_HELMET))
+            socket.on('mrarmour',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_ARMOUR))
 
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
             // socket.on('battle-action',  (msg: any) => this.battle_action(user, msg));

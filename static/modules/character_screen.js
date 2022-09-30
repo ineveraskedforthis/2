@@ -228,7 +228,7 @@ export class CharacterScreen {
 
 
         //craft
-        // this.craft_div = document.getElementById('craft')
+        // HandleAction.act(_div = document.getElementById('craft')
         // {   
         //     {
         //         let button = document.createElement('button');
@@ -236,7 +236,7 @@ export class CharacterScreen {
         //                 button.onclick = () => send_craft_food_request(this.socket)
         //         )();
         //         button.innerHTML = 'craft_food';
-        //         this.craft_div.appendChild(button);
+        //         HandleAction.act(_div.appendChild(button);
         //     }
 
         //     {
@@ -245,7 +245,7 @@ export class CharacterScreen {
         //                 button.onclick = () => send_craft_clothes_request(this.socket)
         //         )();
         //         button.innerHTML = 'craft_clothes';
-        //         this.craft_div.appendChild(button);
+        //         HandleAction.act(_div.appendChild(button);
         //     }
 
         //     {
@@ -254,7 +254,7 @@ export class CharacterScreen {
         //                 button.onclick = () => send_enchant_request(this.socket)
         //         )();
         //         button.innerHTML = 'enchant selected';
-        //         this.craft_div.appendChild(button);
+        //         HandleAction.act(_div.appendChild(button);
         //     }
 
         //     {
@@ -263,7 +263,7 @@ export class CharacterScreen {
         //                 button.onclick = () => send_disenchant_request(this.socket)
         //         )();
         //         button.innerHTML = 'disenchant selected (item will be destroyed)';
-        //         this.craft_div.appendChild(button);
+        //         HandleAction.act(_div.appendChild(button);
         //     }
         // }
 

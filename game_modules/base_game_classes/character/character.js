@@ -42,7 +42,37 @@ class Character {
         let new_status = tmp + x;
         new_status = Math.min(this.stats.max[type], new_status);
         new_status = Math.max(new_status, 0);
-        this.status[type] = new_status;
+        return this.set(type, new_status);
+    }
+    change_hp(x) {
+        return this.change('hp', x);
+    }
+    change_rage(x) {
+        return this.change('rage', x);
+    }
+    change_blood(x) {
+        return this.change('blood', x);
+    }
+    change_fatigue(x) {
+        return this.change('fatigue', x);
+    }
+    change_stress(x) {
+        return this.change('stress', x);
+    }
+    set(type, x) {
+        if (this.status[type] == x)
+            return false;
+        this.status[type] = x;
+        return true;
+    }
+    set_fatigue(x) {
+        return this.set('fatigue', x);
+    }
+    change_status(dstatus) {
+        this.change_hp(dstatus.hp);
+        this.change_rage(dstatus.rage);
+        this.change_stress(dstatus.stress);
+        this.change_blood(dstatus.blood);
     }
     get_hp() {
         return this.status.hp;
@@ -249,60 +279,6 @@ exports.Character = Character;
 //         //     return this.world.get_faction_from_id(this.faction_id)
 //         // }
 //         return undefined
-//     }
-//     change_hp(x: number) {
-//         let tmp = this.status.hp;
-//         this.status.hp = Math.max(0, Math.min(this.get_max_hp(), this.status.hp + x));
-//         if (this.status.hp != tmp) {
-//             this.changed = true;
-//             this.status_changed = true;
-//             this.send_status_update()
-//         }
-//         if (this.get_hp() == 0) {
-//             this.flags.dead = true
-//         }
-//     }
-//     change_rage(x: number) {
-//         let tmp = this.status.rage;
-//         this.status.rage = Math.max(0, Math.min(this.get_max_rage(), this.status.rage + x));
-//         if (tmp != this.status.rage) {
-//             this.changed = true;
-//             this.status_changed = true;
-//             this.send_status_update()
-//         }
-//     }
-//     change_blood(x: number) {
-//         let tmp = this.status.blood;
-//         this.status.blood = Math.max(0, Math.min(this.get_max_blood(), this.status.blood + x));
-//         if (tmp != this.status.blood) {
-//             this.changed = true
-//             this.status_changed = true;
-//             this.send_status_update()
-//         }
-//     }
-//     change_fatigue(x: number) {
-//         let tmp = this.status.fatigue;
-//         this.status.fatigue = Math.max(0, Math.min(this.get_max_fatigue(), this.status.fatigue + x));
-//         if (tmp != this.status.fatigue) {
-//             this.changed = true
-//             this.status_changed = true;
-//             this.send_status_update()
-//         }
-//     }
-//     set_fatigue(x: number) {
-//         let tmp = this.status.fatigue
-//         this.status.fatigue = Math.max(0, x)
-//         if (x != tmp) {
-//             this.changed = true
-//             this.status_changed = true;
-//             this.send_status_update()
-//         } 
-//     }
-//     change_status(dstatus: Status) {
-//         this.change_hp(dstatus.hp)
-//         this.change_rage(dstatus.rage);
-//         this.change_stress(dstatus.stress);
-//         this.change_blood(dstatus.blood);
 //     }
 //     //equip and stash interactions
 //     equip_armour(index:number) {

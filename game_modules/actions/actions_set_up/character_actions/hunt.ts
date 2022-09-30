@@ -59,12 +59,3 @@ export const hunt = {
     start:  function(char:Character, data: map_position) {
     },
 }
-
-export function hunt_probability(skill: number) {
-    return Math.min(skill / 100, 1)
-}
-
-export function character_to_hunt_probability(character:Character) {
-    let skill = character.skills.hunt
-    return hunt_probability(skill)
-}

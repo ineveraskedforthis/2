@@ -2,7 +2,7 @@ import { Character } from "../../../base_game_classes/character/character";
 import { Item } from "../../../base_game_classes/items/item";
 import { SPEAR_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
 import { ItemSystem } from "../../../base_game_classes/items/system";
-import { BONUS_SPEAR, Difficulty, DIFFICULTY_SPEAR } from "../../../calculations/difficulty";
+import { CraftProbability } from "../../../calculations/craft";
 import { UI_Part } from "../../../client_communication/causality_graph";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { WOOD } from "../../../manager_classes/materials_manager";
@@ -38,13 +38,13 @@ export const craft_spear:ActionTargeted = {
             UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
             
             let dice = Math.random()
-            if (dice < craft_spear_probability(skill)) {
+            if (dice < CraftProbability.basic_wood(char)) {
                 let spear = ItemSystem.create(SPEAR_ARGUMENT)
                 char.equip.data.backpack.add(spear)
 
                 UserManagement.add_user_to_update_queue(char.user_id, UI_Part.INVENTORY)
 
-                if (Difficulty.success_to_skill_up(skill, DIFFICULTY_SPEAR, 0)) {
+                if (skill < 10) {
                     char.skills.woodwork += 1
                     UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
                 }
@@ -53,7 +53,7 @@ export const craft_spear:ActionTargeted = {
             } else {
 
                 char.change('stress', 1)
-                if (Difficulty.failure_to_skill_up(skill, DIFFICULTY_SPEAR, 0)) {
+                if (skill < 20) {
                     char.skills.woodwork += 1
                     UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
                 }
@@ -65,13 +65,4 @@ export const craft_spear:ActionTargeted = {
 
     start: function(char:Character, data: map_position) {
     },
-}
-
-export function craft_spear_probability(skill: number) {
-    return Difficulty.success_ratio(skill, DIFFICULTY_SPEAR, BONUS_SPEAR)
-}
-
-export function character_to_craft_spear_probability(character:Character) {
-    let skill = character.skills.woodwork
-    return craft_spear_probability(skill)
 }

@@ -20,6 +20,10 @@ var Alerts;
         generic_user_alert(user, 'alert', 'can\'t go there');
     }
     Alerts.impossible_move = impossible_move;
+    function failed(character) {
+        generic_character_alert(character, 'alert', 'failed');
+    }
+    Alerts.failed = failed;
     function log_to_user(user, message) {
         user.socket.emit('log-message', message);
     }
@@ -65,6 +69,10 @@ var Alerts;
         Alerts.generic_user_alert(user, 'map-action-status', { tag: tag, value: data });
     }
     Alerts.map_action = map_action;
+    function cell_action(user, tag, data) {
+        generic_user_alert(user, 'cell-action-chance', { tag: tag, value: data });
+    }
+    Alerts.cell_action = cell_action;
     function action_ping(character, duration, is_move) {
         generic_character_alert(character, 'action-ping', { tag: 'start', time: duration, is_move: is_move });
     }

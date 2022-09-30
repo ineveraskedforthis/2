@@ -2,11 +2,10 @@ import { CharacterActionResponce } from "../../action_manager";
 import { ARROW_BONE, RAT_BONE, WOOD } from "../../../manager_classes/materials_manager";
 import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
 import { Character } from "../../../base_game_classes/character/character";
-import { craft_spear_probability } from "./craft_spear";
 import { map_position } from "../../../types";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";
-import { CraftProbability } from "../../../base_game_classes/character/craft";
+import { CraftProbability } from "../../../calculations/craft";
 import { ItemSystem } from "../../../base_game_classes/items/system";
 import { Alerts } from "../../../client_communication/network_actions/alerts";
 
@@ -131,7 +130,7 @@ export const craft_wood_bow = {
             char.change_fatigue(10)
 
             let dice = Math.random()
-            if (dice < craft_spear_probability(skill)) {
+            if (dice < CraftProbability.basic_wood(char)) {
                 let bow = ItemSystem.create(BASIC_BOW_ARGUMENT)
                 char.equip.data.backpack.add(bow)
 

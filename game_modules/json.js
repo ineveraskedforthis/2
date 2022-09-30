@@ -13,7 +13,7 @@ var JSONficate;
             amount: order.amount,
             price: order.price,
             id: order.id,
-            cell_id: order.cell_id
+            // cell_id: order.cell_id
         };
     }
     JSONficate.market_order_bulk = market_order_bulk;

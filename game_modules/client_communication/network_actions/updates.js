@@ -2,10 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendUpdate = void 0;
 const battle_calcs_1 = require("../../base_game_classes/battle/battle_calcs");
-const craft_1 = require("../../base_game_classes/character/craft");
+const craft_1 = require("../../calculations/craft");
 const system_1 = require("../../map/system");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
+const difficulty_1 = require("../../calculations/difficulty");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -80,6 +81,7 @@ var SendUpdate;
         for (let i in character.skills) {
             alerts_1.Alerts.skill(user, i, character.skills[i]);
         }
+        cell_probability(user);
     }
     SendUpdate.all_skills = all_skills;
     function all_craft(user) {
@@ -211,7 +213,30 @@ var SendUpdate;
     SendUpdate.belongings = belongings;
     //     // user.socket.emit('map-data-cells', this.world.constants.development)
     //     // user.socket.emit('map-data-terrain', this.world.constants.terrain)
+    function cell_probability(user) {
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.cell_action(user, 'hunt', difficulty_1.CellActionProb.hunt(character));
+    }
+    SendUpdate.cell_probability = cell_probability;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
+// send_skills_info(character: Character) {
+//     
+//     
+//     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
+//     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
+//     this.send_perk_related_skills_update(character)
+// }
+//     send_perk_related_skills_update(character: Character) {
+//     this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance('fast')})
+//     this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance('heavy')})
+//     this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
+//     this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
+//     this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
+//     this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
+//     this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
+// }
 // function prepare_market_orders(market: Cell) {
 //     let data = market.orders;
 //     let orders_array = Array.from(data)
@@ -244,20 +269,4 @@ var SendUpdate;
 // send_item_market_update_to_character(character: Character) {
 //     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, character.cell_id)
 //     this.send_to_character_user(character, 'item-market-data', data)
-// }
-// send_skills_info(character: Character) {
-//     
-//     this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
-//     this.send_perk_related_skills_update(character)
-// }
-//     send_perk_related_skills_update(character: Character) {
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance('fast')})
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance('heavy')})
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
-//     this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
-//     this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
-//     this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
-//     this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
 // }

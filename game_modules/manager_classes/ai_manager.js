@@ -31,7 +31,7 @@ class AiManager {
     move_toward_colony(char) {
     }
     enemies_in_cell(char) {
-        const cell = Convert.character_to_cell(char)
+        let cell = char.get_cell();
         if (cell == undefined)
             return false;
         let a = cell.get_characters_set();
@@ -47,7 +47,7 @@ class AiManager {
     }
     battles_in_cell(char) {
         let battles = [];
-        const cell = Convert.character_to_cell(char)
+        let cell = char.get_cell();
         if (cell == undefined)
             return battles;
         let a = cell.get_characters_set();
@@ -60,7 +60,7 @@ class AiManager {
         return battles;
     }
     random_steppe_walk(char) {
-        const cell = Convert.character_to_cell(char)
+        let cell = char.get_cell();
         if (cell == undefined) {
             return;
         }
@@ -99,7 +99,7 @@ class AiManager {
         return false;
     }
     random_forest_walk(char) {
-        const cell = Convert.character_to_cell(char)
+        let cell = char.get_cell();
         if (cell == undefined) {
             return;
         }
@@ -278,7 +278,7 @@ var AI;
             await character.buy(pool, materials_manager_1.RAT_SKIN, skin_to_buy, base_price_skin);
         }
         if (resource > craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
-            await action_manager.start_action(action_manager_1.CharacterAction.CRAFT_RAT_ARMOUR, character, undefined);
+            await action_manager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR, character, undefined);
         }
         let data = character.equip.data.backpack.armours;
         for (let index in data) {

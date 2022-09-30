@@ -319,7 +319,7 @@ namespace AI {
         }
 
         if (resource > RAT_SKIN_ARMOUR_SKIN_NEEDED) {
-            await action_manager.start_action(CharacterAction.CRAFT_RAT_ARMOUR, character, undefined)
+            await action_manager.start_action(CharacterAction.CRAFT.RAT_ARMOUR, character, undefined)
         }
 
         let data = character.equip.data.backpack.armours

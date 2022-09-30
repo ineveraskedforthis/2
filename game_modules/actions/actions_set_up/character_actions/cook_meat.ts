@@ -2,7 +2,7 @@ import { Character, } from "../../../base_game_classes/character/character";
 import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
 import { ELODINO_FLESH, FOOD, MEAT, ZAZ } from "../../../manager_classes/materials_manager";
 import { map_position } from "../../../types";
-import { COOK_ELODINO_DIFFICULTY, CraftProbability } from "../../../base_game_classes/character/craft";
+import { COOK_ELODINO_DIFFICULTY, CraftProbability } from "../../../calculations/craft";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";
 import { Alerts } from "../../../client_communication/network_actions/alerts";

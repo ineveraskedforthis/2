@@ -2,6 +2,16 @@
 var socket = io();
 
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
+var globals = {
+    prev_mouse_x: null,
+    prev_mouse_y: null,
+    pressed: false,
+    pressed_resize_bottom: false,
+    pressed_resize_top: false,
+    bcp: false,
+    socket: socket
+}
+
 const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'local_characters']
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
@@ -15,21 +25,13 @@ import { init_battle_control } from './modules/battle_image_init.js'
 // import * as BattleImageNext from  './modules/battle_image.js';
 // import * as init_battle_control from './modules/battle_image_init.js'
 
-var globals = {
-    prev_mouse_x: null,
-    prev_mouse_y: null,
-    pressed: false,
-    pressed_resize_bottom: false,
-    pressed_resize_top: false,
-    bcp: false,
-    socket: socket
-}
+
 
 var stash_tag_to_id = {}
 var stash_id_to_tag = {}
 
 const char_info_monster = new CharInfoMonster();
-const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket);
+const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket, globals);
 init_map_control(map, globals);
 var battle_image = new BattleImageNext(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 init_battle_control(battle_image, globals);
@@ -1570,9 +1572,14 @@ function draw(time) {
         globals.action_time += delta
         globals.action_ratio = globals.action_time / globals.action_total_time
         let div = document.getElementById('action_progress_bar')
-        if (globals.action_total_time <= globals.action_time) {
+        if (globals.action_total_time * 1.2 <= globals.action_time ) {
             globals.action_in_progress = false
             div.classList.add('hidden')
+            console.log('keep doing?')
+            console.log(globals.keep_doing)
+            if (globals.keep_doing != undefined) {
+                map.send_local_cell_action(globals.keep_doing)
+            }
             // map.move_flag = false
         } else {
             let bar = div.querySelector('span')

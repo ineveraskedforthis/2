@@ -1,5 +1,5 @@
 import { Accuracy } from "../../base_game_classes/battle/battle_calcs";
-import { CraftProbability } from "../../base_game_classes/character/craft";
+import { CraftProbability } from "../../calculations/craft";
 import { SkillList } from "../../base_game_classes/character/skills";
 import { CharacterSystem } from "../../base_game_classes/character/system";
 import { Cell } from "../../map/cell";
@@ -9,6 +9,7 @@ import { Convert } from "../../systems_communication";
 import { cell_id } from "../../types";
 import { User } from "../user";
 import { Alerts } from "./alerts";
+import { CellActionProb } from "../../calculations/difficulty";
 
 
 
@@ -83,7 +84,8 @@ export namespace SendUpdate {
 
         for (let i in character.skills) {
             Alerts.skill(user, i, character.skills[i as keyof SkillList])
-        }        
+        }
+        cell_probability(user)
     }
 
     export function all_craft(user: User) {
@@ -204,6 +206,7 @@ export namespace SendUpdate {
         const cell = Convert.character_to_cell(character)
         Alerts.map_action(user, 'hunt'          , cell.can_hunt())
         Alerts.map_action(user, 'clean'         , cell.can_clean())
+        Alerts.map_action(user, 'gather'        , cell.can_gather_wood())
     }
 
     export function map_related(user: User) {
@@ -221,7 +224,36 @@ export namespace SendUpdate {
         
     //     // user.socket.emit('map-data-cells', this.world.constants.development)
     //     // user.socket.emit('map-data-terrain', this.world.constants.terrain)
+
+    export function cell_probability(user: User) {
+        const character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.cell_action(user, 'hunt', CellActionProb.hunt(character))
+    }
 }
+
+
+    // send_skills_info(character: Character) {
+    //     
+       
+
+    //     
+    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
+    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
+    //     this.send_perk_related_skills_update(character)
+    // }
+
+    //     send_perk_related_skills_update(character: Character) {
+    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance('fast')})
+    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance('heavy')})
+    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
+
+    //     this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
+    //     this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
+    //     this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
+    //     this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
+    // }
 
 // function prepare_market_orders(market: Cell) {
 //     let data = market.orders;
@@ -263,24 +295,3 @@ export namespace SendUpdate {
 
 
 
-
-    // send_skills_info(character: Character) {
-    //     
-       
-
-    //     this.send_to_character_user(character, 'cell-action-chance', {tag: 'hunt', value: character_to_hunt_probability(character)})
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
-    //     this.send_perk_related_skills_update(character)
-    // }
-
-    //     send_perk_related_skills_update(character: Character) {
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance('fast')})
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance('heavy')})
-    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
-
-    //     this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
-    //     this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
-    //     this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
-    //     this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
-    // }

@@ -66,6 +66,10 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'map-action-status', {tag: tag, value: data})
     }
 
+    export function cell_action(user: User, tag: string, data: number) {
+        generic_user_alert(user, 'cell-action-chance', {tag: tag, value: data})
+    }
+
     export function action_ping(character: Character, duration: number, is_move:boolean) {
         generic_character_alert(character, 'action-ping', {tag: 'start', time: duration, is_move: is_move})
     }

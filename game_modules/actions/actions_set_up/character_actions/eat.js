@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.eat = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
+const user_manager_1 = require("../../../client_communication/user_manager");
 exports.eat = {
     duration(char) {
         return 1 + char.get_fatigue() / 20;
@@ -17,11 +18,10 @@ exports.eat = {
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        char.changed = true;
         char.change_hp(10);
         char.stash.inc(materials_manager_1.FOOD, -1);
-        char.send_stash_update();
-        char.send_status_update();
+        user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
     },
     start: function (char, data) {
     },

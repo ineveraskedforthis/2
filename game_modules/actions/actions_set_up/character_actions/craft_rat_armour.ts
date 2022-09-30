@@ -6,7 +6,7 @@ import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGU
 import { map_position } from "../../../types";
 import { ItemSystem } from "../../../base_game_classes/items/system";
 import { ItemJson } from "../../../base_game_classes/items/item";
-import { CraftProbability } from "../../../base_game_classes/character/craft";
+import { CraftProbability } from "../../../calculations/craft";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";
 import { Alerts } from "../../../client_communication/network_actions/alerts";

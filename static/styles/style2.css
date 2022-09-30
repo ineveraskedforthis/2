@@ -349,3 +349,18 @@ body {
 .main_menu_button:active {
     background-color: aquamarine;
 }
+
+
+.active {
+    background-color: brown;
+}
+.active:hover {
+    background-color: yellow;
+}
+.active:active {
+    background-color: aquamarine;
+}
+
+.border-white {
+    border: white 1px solid;
+}
