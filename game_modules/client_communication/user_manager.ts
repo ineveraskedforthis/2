@@ -32,6 +32,9 @@ export namespace UserManagement {
 
     export function load_users() {
         console.log('loading users')
+        if (!fs.existsSync('users.txt')) {
+            fs.writeFileSync('users.txt', '')
+        }
         let data = fs.readFileSync('users.txt').toString()
         let lines = data.split('\n')
 

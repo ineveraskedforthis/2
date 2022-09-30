@@ -11,6 +11,7 @@ const constants_1 = require("./game_modules/static_data/constants");
 const migrations_1 = require("./migrations");
 const server_1 = require("./server");
 const action_manager_1 = require("./game_modules/actions/action_manager");
+const auth_1 = require("./game_modules/client_communication/network_actions/auth");
 exports.io = require('socket.io')(server_1.http);
 exports.socket_manager = new socket_manager_1.SocketManager(exports.io);
 const gameloop = require('node-gameloop');
@@ -24,6 +25,7 @@ function launch() {
         system_1.CharacterSystem.load();
         system_2.MapSystem.load();
         user_manager_1.UserManagement.load_users();
+        auth_1.Auth.load();
         console.log('systems are ready');
         gameloop.setGameLoop((delta) => update(delta), 500);
     }

@@ -25,6 +25,9 @@ var UserManagement;
 (function (UserManagement) {
     function load_users() {
         console.log('loading users');
+        if (!fs_1.default.existsSync('users.txt')) {
+            fs_1.default.writeFileSync('users.txt', '');
+        }
         let data = fs_1.default.readFileSync('users.txt').toString();
         let lines = data.split('\n');
         for (let line of lines) {

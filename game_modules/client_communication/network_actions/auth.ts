@@ -1,12 +1,42 @@
-import { user_id, user_online_id } from "../../types";
+import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../../types";
 import { SocketWrapper} from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
 import { ValidatorSM } from "./common_validations";
+import fs from "fs"
 
 var current_sessions:{[_: string]: user_id} = {}
 
 export namespace Auth {
+    export function load() {
+        console.log('loading sessions')
+        if (!fs.existsSync('sessions.txt')) {
+            fs.writeFileSync('sessions.txt', '')
+        }
+        let data = fs.readFileSync('sessions.txt').toString()
+        let lines = data.split('\n')
+        for (let line of lines) {
+            if (line == '') {continue}
+            let data = line.split(' ')
+            console.log(data)
+            let id = Number(data[1]) as user_id
+            if (UserManagement.user_exists(id)) {
+                current_sessions[data[0]] = id
+            }
+        }
+        console.log('sessions are loaded')
+    }
+
+    export function save() {
+        console.log('saving sessions')
+        let str:string = ''
+        for (let session in current_sessions) {
+            str = str + session + ' ' + current_sessions[session] + '\n'
+        }
+        fs.writeFileSync('sessions.txt', str)
+        console.log('sessions saved')
+    }
+
     export function login_with_session(sw: SocketWrapper, session: string) {
         console.log('attempt to login with session')
 
@@ -78,6 +108,7 @@ export namespace Auth {
             let session = generate_session(20);
             user.socket.emit('session', session);
             current_sessions[session] = user.data.id;
+            save()
 
             console.log('user ' + data.login + ' logged in')
         } else {
@@ -111,6 +142,7 @@ export namespace Auth {
             let session = generate_session(20);
             user.socket.emit('session', session);
             current_sessions[session] = user.data.id;
+            save()
 
             console.log('user ' + data.login + ' registrated')
         } else {

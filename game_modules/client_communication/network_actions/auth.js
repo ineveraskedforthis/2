@@ -1,12 +1,47 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Auth = void 0;
 const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
 const common_validations_1 = require("./common_validations");
+const fs_1 = __importDefault(require("fs"));
 var current_sessions = {};
 var Auth;
 (function (Auth) {
+    function load() {
+        console.log('loading sessions');
+        if (!fs_1.default.existsSync('sessions.txt')) {
+            fs_1.default.writeFileSync('sessions.txt', '');
+        }
+        let data = fs_1.default.readFileSync('sessions.txt').toString();
+        let lines = data.split('\n');
+        for (let line of lines) {
+            if (line == '') {
+                continue;
+            }
+            let data = line.split(' ');
+            console.log(data);
+            let id = Number(data[1]);
+            if (user_manager_1.UserManagement.user_exists(id)) {
+                current_sessions[data[0]] = id;
+            }
+        }
+        console.log('sessions are loaded');
+    }
+    Auth.load = load;
+    function save() {
+        console.log('saving sessions');
+        let str = '';
+        for (let session in current_sessions) {
+            str = str + session + ' ' + current_sessions[session] + '\n';
+        }
+        fs_1.default.writeFileSync('sessions.txt', str);
+        console.log('sessions saved');
+    }
+    Auth.save = save;
     function login_with_session(sw, session) {
         console.log('attempt to login with session');
         // check if this session is legit
@@ -69,6 +104,7 @@ var Auth;
             let session = generate_session(20);
             user.socket.emit('session', session);
             current_sessions[session] = user.data.id;
+            save();
             console.log('user ' + data.login + ' logged in');
         }
         else {
@@ -99,6 +135,7 @@ var Auth;
             let session = generate_session(20);
             user.socket.emit('session', session);
             current_sessions[session] = user.data.id;
+            save();
             console.log('user ' + data.login + ' registrated');
         }
         else {

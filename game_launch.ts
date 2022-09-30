@@ -11,6 +11,7 @@ import { constants } from "./game_modules/static_data/constants";
 import { migrate } from "./migrations";
 import { http, io_type } from "./server";
 import { ActionManager } from "./game_modules/actions/action_manager";
+import { Auth } from "./game_modules/client_communication/network_actions/auth";
 
 
 export var io:io_type = require('socket.io')(http);
@@ -31,6 +32,7 @@ export function launch() {
         CharacterSystem.load()
         MapSystem.load()
         UserManagement.load_users()
+        Auth.load()
 
         console.log('systems are ready');
         gameloop.setGameLoop( (delta: number) => update(delta), 500 );

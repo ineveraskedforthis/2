@@ -26,14 +26,13 @@ export class SocketManager {
     MESSAGES: Message[]
     MESSAGE_ID: number
     active_users: Set<SocketWrapper>
-    sessions: {[_ in string]: number}
+    // sessions: {[_ in string]: number}
 
     constructor(io: io_type) {
         this.io = io;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
         this.active_users = new Set();
-        this.sessions = {};
 
         this.io.on('connection',  (socket: Socket) => {
             let user = new SocketWrapper(socket)

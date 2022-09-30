@@ -13,12 +13,12 @@ const system_1 = require("../map/system");
 const actions_1 = require("./network_actions/actions");
 const action_manager_1 = require("../actions/action_manager");
 class SocketManager {
+    // sessions: {[_ in string]: number}
     constructor(io) {
         this.io = io;
         this.MESSAGES = [];
         this.MESSAGE_ID = 0;
         this.active_users = new Set();
-        this.sessions = {};
         this.io.on('connection', (socket) => {
             let user = new user_1.SocketWrapper(socket);
             this.active_users.add(user);
