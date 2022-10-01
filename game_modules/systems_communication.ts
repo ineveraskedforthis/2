@@ -1,3 +1,4 @@
+import { UnitData } from "./base_game_classes/battle/unit";
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
@@ -9,6 +10,10 @@ import { user_online_id } from "./types";
 
 
 export namespace Convert {
+    export function  unit_to_character(unit: UnitData): Character {
+        return CharacterSystem.id_to_character(unit.char_id)
+    }
+
     export function user_to_character(user: User):Character|undefined {
         if (user.data.char_id == '@') return undefined;
         return CharacterSystem.id_to_character(user.data.char_id)

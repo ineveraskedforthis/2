@@ -1,3 +1,6 @@
+import { BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../shared/battle_data";
+import { Battle } from "../../base_game_classes/battle/battle";
+import { UnitData } from "../../base_game_classes/battle/unit";
 import { Character } from "../../base_game_classes/character/character";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";
@@ -62,8 +65,23 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'skill', {tag: tag, value: value})
     }
 
-    export function battle_action(user: User, tag: string, value: number) {
+    export function battle_action_chance(user: User, tag: string, value: number) {
         Alerts.generic_user_alert(user, 'b-action-chance', {tag: tag, value: value})
+    }
+
+    export function battle_event(battle: Battle, tag:BattleEventTag, unit_id:unit_id, position: battle_position, target:unit_id) {
+        battle.last_event_index += 1
+        const Event:BattleEventSocket = {
+            tag: tag,
+            creator: unit_id,
+            target_position: position,
+            target_unit: target,
+            index: battle.last_event_index
+        }
+        for (let unit of battle.heap.raw_data) {
+            const character = Convert.unit_to_character(unit)
+            generic_character_alert(character, 'battle-event', Event)
+        }
     }
 
     export function map_action(user: User, tag: string, data: boolean) {

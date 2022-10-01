@@ -1,15 +1,12 @@
 import { BattleImageNext } from "./battle_image.js"
 
-import { SocketBattleUnitData, battle_id } from "../../shared/battle_data"
+import { position, battle_id, battle_position } from "../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 
-interface position {
-    x: number
-    y: number
-}
 
-export type battle_position = position & { __brand: "battle"}
+
+
 export type canvas_position = position & { __brand: "canvas"}
 
 

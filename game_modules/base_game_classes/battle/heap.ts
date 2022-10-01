@@ -1,21 +1,25 @@
+import { action_points, unit_id } from "../../../shared/battle_data";
 import { UnitData } from "./unit";
 
 
 export class UnitsHeap {
-    data: UnitData[];
+    data: {[_ in unit_id]: UnitData};
+    raw_data: UnitData[];
     last: number;
-    heap: number[];
-    selected: number;
+    heap: unit_id[];
+    selected: unit_id|'?';
     changed: boolean;
 
-    constructor(data: UnitData[]) {
-        this.data = []
+    constructor(raw_data: UnitData[]) {
+
+        this.raw_data = []
+        this.data = {}
         this.heap = []
         this.last = 0;
-        this.selected = -1
+        this.selected = '?'
         this.changed = false
 
-        for (let unit of data) {
+        for (let unit of raw_data) {
             this.add_unit(unit)
         } 
     }
@@ -25,18 +29,19 @@ export class UnitsHeap {
     }
 
     get_units_amount() {
-        return this.data.length
+        return this.raw_data.length
     }
 
-    get_unit(i: number): UnitData {
+    get_unit(i: unit_id): UnitData {
         return this.data[i]
     }
 
-    get_selected_unit(): UnitData {
+    get_selected_unit(): UnitData|undefined {
+        if (this.selected == '?') return undefined
         return this.data[this.selected]
     }
 
-    push(obj: number) {
+    push(obj: unit_id) {
         this.heap[this.last] = obj;
         this.last += 1;
         this.shift_up(this.last - 1)
@@ -76,8 +81,9 @@ export class UnitsHeap {
     }
 
     add_unit(u: UnitData) {
-        this.data.push(u);
-        this.push(this.data.length - 1)
+        this.data[u.id] = u
+        this.raw_data.push(u)
+        this.push(u.id)
         this.changed = true
     }
 
@@ -88,7 +94,7 @@ export class UnitsHeap {
         this.changed = true
     }
 
-    pop():number|undefined {
+    pop():unit_id|undefined {
         if (this.last == 0) {
             return undefined
         }
@@ -103,8 +109,8 @@ export class UnitsHeap {
     }
 
     update(dt: number) {
-        for (let i in this.data) {
-            this.data[i].next_turn_after = this.data[i].next_turn_after - dt
+        for (let unit of this.raw_data) {
+            unit.next_turn_after = unit.next_turn_after - dt
         }
         this.changed = true
     }
@@ -117,12 +123,19 @@ export class UnitsHeap {
             selected: this.selected
         }
     }
+
+    end_turn(id: unit_id) {
+        if (this.selected != id) return false;
+        let unit_id = this.pop()
+        if (unit_id == undefined) return false
+        let unit = this.data[unit_id]
+        unit.next_turn_after = unit.slowness;
+        unit.action_points_left = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max) as action_points;
+        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1)
+        this.push(id)
+        return true
+    }
 }
 
 
 
-    // turn_end() {
-    //     this.next_turn_after = this.slowness;
-    //     this.action_points_left = Math.min((this.action_points_left + this.speed), this.action_points_max) as action_points;
-    //     this.dodge_turns = Math.max(0, this.dodge_turns - 1)
-    // }

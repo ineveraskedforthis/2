@@ -1,12 +1,21 @@
 // this module shoul require only characters and battles systems
 
-import { battle_id } from "../../../shared/battle_data"
+import { battle_id, ms } from "../../../shared/battle_data"
+import { Character } from "../character/character"
 import { Battle } from "./battle"
 import { UnitsHeap } from "./heap"
+import { UnitData } from "./unit"
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
 var last_id:battle_id = 0 as battle_id
+
+function time_distance(a: ms, b: ms) {
+    return b - a as ms
+}
+
+
+
 
 export namespace BattleSystem {
     // only creates and initialise battle
@@ -33,12 +42,13 @@ export namespace BattleSystem {
         for (let battle of battles_list) {
             if (battle.ended) continue;
 
-            let current_time = Date.now()
-            if (current_time - this.last_turn > 60 * 1000) {
-                let unit = this.heap.get_selected_unit()
-                let char = this.get_char(unit)
+            let current_date = Date.now() as ms
 
-                let res =  this.process_input(char.get_in_battle_id(), {action: 'end_turn'})
+            // if unit is not moving for 60 seconds, turn ends automatically
+            if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {
+                let unit = battle.heap.get_selected_unit()
+
+                let res = process_input(unit.id, {action: 'end_turn'})
                 this.send_action(res)
                 this.send_update()
             }
@@ -93,8 +103,61 @@ export namespace BattleSystem {
 
         }
     }
+
+    export function flee_chance(){
+        return 0.5
+    }
 }
 
+//      process_input(unit_index: number, input: Action) {
+//         if (!this.waiting_for_input) {
+//             return {action: 'action_in_progress', who: unit_index}
+//         }
+
+//         if (this.heap.selected != unit_index) {
+//             let char1 = this.get_char(this.get_unit(this.heap.selected))
+//             let char2 = this.get_char(this.get_unit(unit_index))
+//             if (char1.id != char2.id) {
+//                 return {action: 'not_your_turn', who: unit_index}
+//             }
+//         }
+
+//         if (input != undefined) {
+//             this.changed = true
+//             let index = this.heap.selected
+//             let character = this.get_char(this.get_unit(this.heap.selected))
+//             if (input.action == 'move') {
+//                 return  this.action(index, {action: 'move', target: input.target})
+//             } else if (input.action == 'attack') {
+//                 return  this.action(index, BattleAI.convert_attack_to_action(this, index, input.target, 'usual'))
+//             } else if (input.action == 'fast_attack') {
+//                 if(!can_fast_attack(character)) {
+//                     return {action: "not_learnt"}
+//                 }
+//                 return  this.action(index, BattleAI.convert_attack_to_action(this, index, input.target, 'fast'))
+//             } else if (input.action == 'dodge') {
+//                 if(!can_dodge(character)) {
+//                     return {action: "not_learnt"}
+//                 }
+//                 return  this.action(index, {action: 'dodge', who: index})
+//             } else if (input.action == 'push_back') {
+//                 if(!can_push_back(character)) {
+//                     return {action: "not_learnt"}
+//                 }
+//                 return  this.action(index, {action: 'push_back', target: input.target})
+//             } else if (input.action == 'magic_bolt') {
+//                 return  this.action(index, {action: 'magic_bolt', target: input.target})
+//             } else if (input.action == 'shoot') { 
+//                 return  this.action(index, {action: 'shoot', target: input.target})
+//             } else if (input.action == 'flee') {
+//                 return  this.action(index, {action: 'flee', who: index})
+//             } else if (input.action == 'switch_weapon') {
+//                 return  this.action(index, {action: 'switch_weapon', who: index})
+//             } else {
+//                 return  this.action(index, input)
+//             }
+//         }        
+//     }
 
 
 //     get_units() {
@@ -122,264 +185,7 @@ export namespace BattleSystem {
 //         this.changed = true
 //     }
 
-//      action(, unit_index: number, action: Action) {
-//         console.log('battle action')
-//         console.log(action)
 
-//         let unit = this.heap.get_unit(unit_index)
-//         var character:Character = this.world.get_char_from_id(unit.char_id);
-
-//         //no action
-//         if (action.action == null) {
-//             return {action: 'pff', who: unit_index};
-//         }
-
-
-//         //move toward enemy
-//         if (action.action == 'move') {
-//             let tmp = geom.minus(action.target, unit.position)
-
-//             let MOVE_COST = 3
-//             if (geom.norm(tmp) * MOVE_COST > unit.action_points_left) {
-//                 tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / MOVE_COST)
-//             }
-//             unit.position.x = tmp.x + unit.position.x;
-//             unit.position.y = tmp.y + unit.position.y;
-//             let points_spent = geom.norm(tmp) * MOVE_COST
-//             unit.action_points_left -= points_spent
-//             this.changed = true
-//             return {action: 'move', who: unit_index, target: unit.position, actor_name: character.name}
-//         }
-
-        
-//         if (action.action == 'attack') {
-//             if (action.target != null) {
-
-//                 let unit2 = this.heap.get_unit(action.target);
-//                 let char:Character = this.world.get_char_from_id(unit.char_id)
-
-//                 if (unit.action_points_left < 3) {
-//                     return { action: 'not_enough_ap', who: unit_index}
-//                 }
-
-//                 let dist = geom.dist(unit.position, unit2.position)
-
-//                 if (dist > char.get_range()) {
-//                     return { action: 'not_enough_range', who: unit_index}
-//                 }
-
-//                 let target_char = this.world.get_char_from_id(unit2.char_id);
-//                 let dodge_flag = (unit2.dodge_turns > 0)
-//                 let result =  character.attack(target_char, 'usual', dodge_flag, dist);
-//                 unit.action_points_left -= 3
-//                 this.changed = true
-//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//             }
-
-//             return { action: 'no_target_selected' };
-//         } 
-
-//         if (action.action == 'shoot') {
-//             if (!can_shoot(character)) {
-//                 return {action: "not_learnt", who: unit_index}
-//             }
-//             if (action.target == null) {
-//                 return { action: 'no_target_selected', who: unit_index}
-//             }
-//             if (unit.action_points_left < 3) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-
-//             let target_unit = this.heap.get_unit(action.target);
-//             let target_char = this.world.get_char_from_id(target_unit.char_id);
-//             let dodge_flag = (target_unit.dodge_turns > 0)
-//             let dist = geom.dist(unit.position, target_unit.position)
-
-//             character.stash.inc(ARROW_BONE, -1)
-
-//             let result =  character.attack(target_char, 'ranged', dodge_flag, dist);
-//             unit.action_points_left -= 3
-//             this.changed = true
-
-//             return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//         }
-
-//         if (action.action == 'magic_bolt') {
-//             if (!can_cast_magic_bolt(character)) {
-//                 // console.log('???')
-//                 return {action: "not_learnt", who: unit_index}
-//             }
-//             if (action.target == null) {
-//                 return { action: 'no_target_selected', who: unit_index}
-//             }
-//             if (unit.action_points_left < 3) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-            
-//             let target_unit = this.heap.get_unit(action.target);
-//             let target_char = this.world.get_char_from_id(target_unit.char_id);
-
-//             if (character.skills.perks.magic_bolt != true) {
-//                 character.stash.inc(ZAZ, -1)
-//             }
-
-//             let result =  character.spell_attack(target_char, 'bolt');
-//             unit.action_points_left -= 3
-//             this.changed = true
-
-//             return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//         }
-
-//         if (action.action == 'push_back') {
-//             if(!can_push_back(character)) {
-//                 return {action: "not_learnt", who: unit_index}
-//             }
-//             if (action.target != null) {
-//                 let unit2 = this.heap.get_unit(action.target);
-//                 let char:Character = this.world.get_char_from_id(unit.char_id)
-
-//                 if (unit.action_points_left < 5) {
-//                     return { action: 'not_enough_ap', who: unit_index}
-//                 }
-
-//                 let range = char.get_range()
-//                 let dist = geom.dist(unit.position, unit2.position)
-
-//                 if (dist > range) {
-//                     return { action: 'not_enough_range', who: unit_index}
-//                 }
-
-//                 let target_char = this.world.get_char_from_id(unit2.char_id);
-//                 let dodge_flag = (unit2.dodge_turns > 0)
-                
-                
-//                 let result =  character.attack(target_char, 'heavy', dodge_flag, dist);
-//                 unit.action_points_left -= 5
-//                 this.changed = true
-
-//                 if (!(result.flags.evade || result.flags.miss)) {
-//                     let a = unit.position
-//                     let b = unit2.position
-//                     let c = {x: b.x - a.x, y: b.y - a.y}
-//                     let norm = Math.sqrt(c.x * c.x + c.y * c.y)
-//                     let power_ratio = character.get_phys_power() / target_char.get_phys_power()
-//                     let scale = range * power_ratio / norm / 2
-
-//                     c = {x: c.x * scale, y: c.y * scale}
-
-//                     unit2.position = {x: b.x + c.x, y: b.y + c.y}
-//                 }
-
-//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//             }
-
-//             return { action: 'no_target_selected' };
-//         }
-
-//         if (action.action == 'fast_attack') {
-//             if(!can_fast_attack(character)) {
-//                 return {action: "not_learnt", who: unit_index}
-//             }
-//             if (action.target != null) {
-//                 let unit2 = this.heap.get_unit(action.target);
-//                 let char:Character = this.world.get_char_from_id(unit.char_id)
-
-//                 if (unit.action_points_left < 1) {
-//                     return { action: 'not_enough_ap', who: unit_index}
-//                 }
-                
-//                 let dist = geom.dist(unit.position, unit2.position)
-
-//                 if (dist > char.get_range()) {
-//                     return { action: 'not_enough_range', who: unit_index}
-//                 }
-
-//                 let target_char = this.world.get_char_from_id(unit2.char_id);
-//                 let dodge_flag = (unit2.dodge_turns > 0)
-                
-//                 let result =  character.attack(target_char, 'fast', dodge_flag, dist);
-//                 unit.action_points_left -= 1
-//                 this.changed = true
-//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//             }
-
-//             return { action: 'no_target_selected' };
-//         }
-
-//         if (action.action == 'dodge') {
-
-//             if (!can_dodge(character)) {
-//                 return { action: "not_learnt", who: unit_index}
-//             }
-
-//             if (unit.action_points_left < 4) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-
-//             unit.dodge_turns = 2
-//             unit.action_points_left -= 4
-//             return {action: 'dodge', who: unit_index}
-//         }
-
-//         if (action.action == 'flee') {
-//             if (unit.action_points_left >= 3) {
-//                 unit.action_points_left -= 3
-//                 let dice = Math.random();
-//                 this.changed = true
-//                 if (dice <= flee_chance(character)) {
-//                     this.draw = true;
-                    
-//                     return {action: 'flee', who: unit_index};
-//                 } else {
-//                     return {action: 'flee-failed', who: unit_index};
-//                 }
-//             }
-//             return {action: 'not_enough_ap', who: unit_index}
-//         } 
-
-//         if (action.action == 'switch_weapon') {
-//             // console.log('????')
-//             if (unit.action_points_left < 3) {
-//                 return {action: 'not_enough_ap', who: unit_index}
-//             }
-//             unit.action_points_left -= 3
-//             character.switch_weapon()
-//             return {action: 'switch_weapon', who: unit_index}
-//         }
-        
-
-//         if (action.action == 'spell_target') {
-//             if (unit.action_points_left > 3) {
-//                 let spell_tag = action.spell_tag;
-//                 let unit2 = this.heap.get_unit(action.target);
-//                 let target_char = this.world.get_char_from_id(unit2.char_id);
-//                 let result =  character.spell_attack(target_char, spell_tag);
-//                 if (result.flags.close_distance) {
-//                     let dist = geom.dist(unit.position, unit2.position)
-//                     if (dist > 1.9) {
-//                         let v = geom.minus(unit2.position, unit.position);
-//                         let u = geom.mult(geom.normalize(v), 0.9);
-//                         v = geom.minus(v, u)
-//                         unit.position.x = v.x
-//                         unit.position.y = v.y
-//                     }
-//                     result.new_pos = {x: unit.position.x, y: unit.position.y};
-//                 }
-//                 unit.action_points_left -= 3
-//                 this.changed = true
-//                 return {action: spell_tag, who: unit_index, result: result, actor_name: character.name};
-//             }
-//         }
-
-//         if (action.action == 'end_turn') {
-//             this.waiting_for_input = false
-//             unit.end_turn()
-//             this.heap.push(unit_index)
-//             this.changed = true
-//             return {action: 'end_turn', who: unit_index}
-//         }
-//         this.changed = true
-//     }
 
 //     get_data():SocketBattleData {
 //         let data:SocketBattleData = {};
@@ -534,55 +340,7 @@ export namespace BattleSystem {
 //     reward() {}    
 //      reward_team(team: number) {}
 
-//      process_input(unit_index: number, input: Action) {
-//         if (!this.waiting_for_input) {
-//             return {action: 'action_in_progress', who: unit_index}
-//         }
 
-//         if (this.heap.selected != unit_index) {
-//             let char1 = this.get_char(this.get_unit(this.heap.selected))
-//             let char2 = this.get_char(this.get_unit(unit_index))
-//             if (char1.id != char2.id) {
-//                 return {action: 'not_your_turn', who: unit_index}
-//             }
-//         }
-
-//         if (input != undefined) {
-//             this.changed = true
-//             let index = this.heap.selected
-//             let character = this.get_char(this.get_unit(this.heap.selected))
-//             if (input.action == 'move') {
-//                 return  this.action(index, {action: 'move', target: input.target})
-//             } else if (input.action == 'attack') {
-//                 return  this.action(index, BattleAI.convert_attack_to_action(this, index, input.target, 'usual'))
-//             } else if (input.action == 'fast_attack') {
-//                 if(!can_fast_attack(character)) {
-//                     return {action: "not_learnt"}
-//                 }
-//                 return  this.action(index, BattleAI.convert_attack_to_action(this, index, input.target, 'fast'))
-//             } else if (input.action == 'dodge') {
-//                 if(!can_dodge(character)) {
-//                     return {action: "not_learnt"}
-//                 }
-//                 return  this.action(index, {action: 'dodge', who: index})
-//             } else if (input.action == 'push_back') {
-//                 if(!can_push_back(character)) {
-//                     return {action: "not_learnt"}
-//                 }
-//                 return  this.action(index, {action: 'push_back', target: input.target})
-//             } else if (input.action == 'magic_bolt') {
-//                 return  this.action(index, {action: 'magic_bolt', target: input.target})
-//             } else if (input.action == 'shoot') { 
-//                 return  this.action(index, {action: 'shoot', target: input.target})
-//             } else if (input.action == 'flee') {
-//                 return  this.action(index, {action: 'flee', who: index})
-//             } else if (input.action == 'switch_weapon') {
-//                 return  this.action(index, {action: 'switch_weapon', who: index})
-//             } else {
-//                 return  this.action(index, input)
-//             }
-//         }        
-//     }
 
 //     units_amount() {
 //         return this.heap.get_units_amount()
