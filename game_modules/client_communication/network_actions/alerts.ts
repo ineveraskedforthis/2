@@ -14,6 +14,10 @@ export namespace Alerts {
         generic_user_alert(user, 'alert', 'you are in battle')
     }
 
+    export function character_removed(user: User) {
+        generic_user_alert(user, 'char-removed', undefined)
+    }
+
     export function ok(user:User) {
         generic_user_alert(user, 'alert', 'ok')
     }

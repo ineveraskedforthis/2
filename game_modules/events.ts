@@ -6,9 +6,8 @@ import { UI_Part } from "./client_communication/causality_graph";
 import { User } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { RAT_SKIN } from "./manager_classes/materials_manager";
-import { damage_type } from "./static_data/type_script_types";
 import { Convert, Unlink } from "./systems_communication";
-import { weapon_attack_tag, weapon_tag } from "./types";
+import { damage_type, weapon_attack_tag, weapon_tag } from "./types";
 //      attack(target: Character, mod:'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean, distance: number) {
 
 export namespace Event {
@@ -103,7 +102,7 @@ export namespace Event {
     }
 
     export function death(character: Character) {
-        UserManagement.add_user_to_update_queue(character.user_id, "death");
+        // UserManagement.add_user_to_update_queue(character.user_id, "death");
         const user_data = Convert.character_to_user_data(character)
         Unlink.user_data_and_character(user_data, character);
     }
@@ -120,7 +119,7 @@ export namespace Event {
 
     export function increase_skinning(character: Character) {
         character.skills.skinning += 1
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKINNING)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKINNING_SKILL)
     }
 
     export function increase_weapon_skill(character: Character, skill: weapon_attack_tag) {

@@ -176,14 +176,15 @@ export namespace UserManagement {
         // CREATE LATER A CHARACTER CREATION SEPARATE FUNCTION!!!
     }
 
-    export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|UI_Part) {
+    export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|UI_Part|'character_removal') {
         console.log('add user to update')
         console.log(id)
         if (id == '#') return
         let user = get_user(id as user_online_id)
         if (user == undefined) return
         console.log('ok')
-        if (reason == 'character_creation') {user.character_created = true} else {
+        if (reason == 'character_creation') {user.character_created = true} else 
+        if (reason == 'character_removal')  {user.character_removed = true} else {
             Update.on(user.updates, reason)
         }
         users_to_update.add(user)
@@ -196,6 +197,8 @@ export namespace UserManagement {
             if (item.character_created) {
                 send_character_to_user(item)
                 item.character_created = false
+            } if(item.character_removed) {
+                Alerts.character_removed(item)
             } else {
                 Update.update_root(item)
                 item.updates = Update.construct()

@@ -1,4 +1,3 @@
-import { WEAPON_TYPE } from "../../../static_data/type_script_types"
 import { weapon_attack_tag } from "../../../types";
 import { Damage } from "../../misc/damage_types";
 import { Status } from "../character_parts";

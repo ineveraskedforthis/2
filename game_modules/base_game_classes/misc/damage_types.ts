@@ -1,4 +1,4 @@
-import { damage_type } from "../../static_data/type_script_types";
+import { damage_type } from "../../types";
 
 export class Damage {
     blunt: number;

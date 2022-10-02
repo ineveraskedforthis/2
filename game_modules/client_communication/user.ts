@@ -32,6 +32,7 @@ export class User {
     updates: update_flags
     logged_in: boolean
     character_created: boolean
+    character_removed: boolean
     market_update: boolean
 
     constructor(socket: Socket, data: UserData) {
@@ -39,6 +40,7 @@ export class User {
         this.data = data
         this.logged_in = false
         this.character_created = false
+        this.character_removed = false
         this.market_update = false
         this.updates = Update.construct()
     }

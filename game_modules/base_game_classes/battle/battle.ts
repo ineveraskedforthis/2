@@ -54,65 +54,6 @@ export class Battle {
 
 
 export class BattleReworked2 {
-    heap: UnitsHeap;
-    id: number;
-    savings: any;
-    stash: Stash;
-    changed: boolean;
-    draw: boolean;
-    waiting_for_input:boolean;
-    ended: boolean;
-    last_turn: number;
-
-
-    constructor() {
-        this.heap = new UnitsHeap();
-        this.world = world;
-        this.id = -1
-        this.savings = new Savings()
-        this.stash = new Stash()
-        this.changed = false
-        this.waiting_for_input = false
-        this.draw = false
-        this.ended = false
-        this.last_turn = Date.now() //milliseconds
-    }
-
-     init() {
-        this.id =  this.load_to_db();
-        this.last_turn = Date.now()
-        return this.id;
-    }
-
-     load_to_db() {
-        // @ts-ignore: Unreachable code error
-        if (global.flag_nodb) {
-            // @ts-ignore: Unreachable code error
-            global.last_id += 1
-            // @ts-ignore: Unreachable code error
-            return global.last_id
-        }
-        let res =   common.send_query(constants.new_battle_query, [this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input]);
-        return res.rows[0].id
-    }
-
-    load_from_json(data: any) {
-        this.id = data.id
-        this.heap.load_from_json(data.heap)
-        this.savings.load_from_json(data.savings)
-        this.stash.load_from_json(data.stash)
-        this.waiting_for_input = data.waiting_for_input
-    }
-
-     save_to_db() {
-         common.send_query(constants.update_battle_query, [this.id, this.heap.get_json(), this.savings.get_json(), this.stash.get_json(), this.waiting_for_input])
-        this.changed = false
-        this.heap.changed = false
-    }
-
-     delete_from_db() {
-         common.send_query(constants.delete_battle_query, [this.id]);
-    }
 
     // networking
     

@@ -6,7 +6,7 @@ import { Cell } from "../../map/cell";
 import { MapSystem } from "../../map/system";
 import { Development } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";
-import { cell_id } from "../../types";
+import { cell_id, weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
 import { Alerts } from "./alerts";
 import { CellActionProb } from "../../calculations/difficulty";
@@ -78,6 +78,30 @@ export namespace SendUpdate {
         Alerts.skill(user, 'woodwork', character.skills.woodwork)
     }
 
+    export function skill_skinning(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.skill(user, 'woodwork', character.skills.woodwork)
+    }
+
+    export function skill_weapon(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        for (const tag of weapon_attack_tags) {
+            Alerts.skill(user, tag, character.skills[tag])
+        }
+    }
+
+    export function skill_defence(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.skill(user, 'evasion', character.skills.evasion)
+        Alerts.skill(user, 'blocking', character.skills.blocking)
+    }
+
     export function all_skills(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
@@ -92,8 +116,6 @@ export namespace SendUpdate {
         cooking_craft(user)
         woodwork_craft(user)
     }
-
-
 
     export function cooking_craft(user: User) {
         let character = Convert.user_to_character(user)
@@ -122,7 +144,7 @@ export namespace SendUpdate {
             return 
         }
 
-        Alerts.battle_action(user, 'shoot', Accuracy.ranged(character, distance))
+        Alerts.battle_action_chance(user, 'shoot', Accuracy.ranged(character, distance))
     }
 
     export function hp(user: User) {

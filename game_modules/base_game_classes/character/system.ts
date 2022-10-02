@@ -1,6 +1,5 @@
 import { materials, material_index } from "../../manager_classes/materials_manager";
-import { damage_type } from "../../static_data/type_script_types";
-import { cell_id, char_id, money, weapon_attack_tag, weapon_tag } from "../../types";
+import { cell_id, char_id, damage_type, money, weapon_attack_tag, weapon_tag } from "../../types";
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";

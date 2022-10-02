@@ -14,13 +14,28 @@ export interface SavingsJson {
     data: money
 }
 
+export type damage_type = 'blunt'|'pierce'|'slice'|'fire'
+export type melee_attack_type = 'blunt'|'pierce'|'slice'
 export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'
 export type weapon_attack_tag = weapon_tag | 'noweapon'
 export type equip_slot = 'body'|'legs'|'arms'|'head'|'foot'|'weapon'
 export type armour_slot = 'body'|'legs'|'arms'|'head'|'foot'
-export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
 
+export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
+export const weapon_attack_tags: weapon_attack_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']
 
 export type world_dimensions = [number, number]
 export type map_position = [number, number]
 export type terrain = 'sea' | 'city' | 'steppe' | 'coast' | 'void'
+
+export const enum WEAPON_TYPE {
+    ONEHAND = 'onehand',
+    POLEARMS = 'polearms',
+    NOWEAPON = 'noweapon',
+    TWOHANDED = 'twohanded',
+    RANGED = 'ranged'
+}
+
+export type StashData = {
+    [index in number]: number
+}

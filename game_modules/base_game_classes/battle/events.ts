@@ -3,6 +3,7 @@ import { Alerts } from "../../client_communication/network_actions/alerts"
 import { Event } from "../../events"
 import { geom } from "../../geom"
 import { Convert } from "../../systems_communication"
+import { melee_attack_type } from "../../types"
 import { Battle } from "./battle"
 import { UnitData } from "./unit"
 
@@ -31,7 +32,7 @@ export namespace BattleEvent {
             Alerts.battle_event(battle, 'move', unit.id, target, unit.id)
     }
 
-    export function Attack(battle: Battle, attacker: UnitData, defender:UnitData) {
+    export function Attack(battle: Battle, attacker: UnitData, defender:UnitData, attack_type: melee_attack_type) {
         if (attacker.action_points_left < 3) {
             return 
         }
@@ -45,10 +46,8 @@ export namespace BattleEvent {
 
         let dodge_flag = (defender.dodge_turns > 0)
         attacker.action_points_left = attacker.action_points_left - 3 as action_points
-        Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag)
-
-        Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender)
-        return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
+        Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type)
+        Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id)
     }
 }
 
