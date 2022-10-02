@@ -4,10 +4,10 @@ import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
 import { Damage, damage_types } from "../misc/damage_types";
-import { AttackObj } from "./attack/class";
 import { Character } from "./character";
 import { Loot } from "./races/generate_loot";
 import { CharacterTemplate } from "./templates";
+import fs from "fs"
 
 var last_character_id = 0
 export var character_list:Character[]                  = []
@@ -15,7 +15,42 @@ var characters_dict:{[_ in char_id]: Character} = {}
 
 
 export namespace CharacterSystem {
-    export function load() {}
+    export function load() {
+
+    }
+
+    export function save() {
+        console.log('saving characters')
+        let str:string = ''
+        for (let item of character_list) {
+            
+
+            str = str + character_to_string(item) + '\n' 
+        }
+        fs.writeFileSync('characters.txt', str)
+        console.log('characteres saved')
+    }
+
+    export function character_to_string(c: Character) {
+        let responce = ''
+        let ids = [c.id, c.battle_id, c.battle_unit_id, c.user_id, c.cell_id].join()
+        let name = c.name
+
+        let archetype = JSON.stringify(c.archetype)
+
+        let equip               = JSON.stringify(c.equip.get_json())
+        let stash               = JSON.stringify(c.stash.get_json())
+        let trade_stash         = JSON.stringify(c.trade_stash.get_json())
+        let savings             = c.savings.get()
+        let trade_savings       = c.savings.get()
+
+
+
+    }
+
+    export function string_to_character(s: string) {
+
+    }
 
     export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
         last_character_id = last_character_id + 1

@@ -5,11 +5,10 @@ import { Loot } from "./base_game_classes/character/races/generate_loot";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
 import { Alerts } from "./client_communication/network_actions/alerts";
-import { User } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { ARROW_BONE, material_index, RAT_SKIN } from "./manager_classes/materials_manager";
 import { Convert, Unlink } from "./systems_communication";
-import { damage_type, weapon_attack_tag, weapon_tag } from "./types";
+import { damage_type, weapon_attack_tag } from "./types";
 
 export namespace Event {
 
