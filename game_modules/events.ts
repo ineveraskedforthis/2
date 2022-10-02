@@ -1,18 +1,48 @@
+import { Accuracy } from "./base_game_classes/battle/battle_calcs";
 import { Attack } from "./base_game_classes/character/attack/system";
 import { Character } from "./base_game_classes/character/character";
 import { Loot } from "./base_game_classes/character/races/generate_loot";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
+import { Alerts } from "./client_communication/network_actions/alerts";
 import { User } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
-import { RAT_SKIN } from "./manager_classes/materials_manager";
+import { ARROW_BONE, material_index, RAT_SKIN } from "./manager_classes/materials_manager";
 import { Convert, Unlink } from "./systems_communication";
 import { damage_type, weapon_attack_tag, weapon_tag } from "./types";
-//      attack(target: Character, mod:'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean, distance: number) {
 
 export namespace Event {
 
+    export function shoot(attacker: Character, defender: Character, distance: number): 'ok'|'no_ammo'|'miss' {
+        // sanity checks
+        if (defender.get_hp() == 0) return 'miss'
+        if (attacker.get_hp() == 0) return 'miss'
+        if (attacker.stash.get(ARROW_BONE) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 1, 0); return 'no_ammo'}
+
+        //remove arrow
+        change_stash(attacker, ARROW_BONE, -1)
+
+        //check missed attack before everything else
+        const acc = Accuracy.ranged(attacker, distance)
+        const dice_accuracy = Math.random()
+        if (dice_accuracy > acc) { 
+            const dice_skill_up = Math.random()
+            if (dice_skill_up > attacker.skills.ranged) {
+                increase_weapon_skill(attacker, 'ranged')
+            }
+            return 'miss' 
+        }
+
+        // create attack
+        const attack = Attack.generate_ranged(attacker)
+        CharacterSystem.damage(defender, attack.damage)
+        UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
+        return 'ok'
+    }
+
     export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: damage_type) {
+        if (defender.get_hp() == 0) return
+        if (attacker.get_hp() == 0) return
         const attack = Attack.generate_melee(attacker, attack_type)
         Attack.defend_against_melee(attack, defender)
         
@@ -125,6 +155,11 @@ export namespace Event {
     export function increase_weapon_skill(character: Character, skill: weapon_attack_tag) {
         character.skills[skill] += 1
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.WEAPON_SKILL)
+    }
+
+    export function change_stash(character: Character, tag: material_index, amount: number) {
+        character.stash.inc(tag, amount)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
     }
 
     //  spell_attack(target: Character, tag: spell_tags) {

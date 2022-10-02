@@ -1,4 +1,4 @@
-import { damage_type } from "../../static_data/type_script_types";
+import { damage_type } from "../../types";
 import { damage_affixes_effects, get_power, protection_affixes_effects } from "../affix";
 import { Damage } from "../misc/damage_types";
 import { Item, ItemJson, Itemlette } from "./item";
@@ -79,9 +79,17 @@ export namespace ItemSystem {
     }
 
     export function ranged_damage(weapon: Item): Damage {
+        // summing up all affixes
+        let affix_damage = new Damage()
+        for (let i = 0; i < weapon.affixes.length; i++) {
+            let affix = weapon.affixes[i];
+            affix_damage = damage_affixes_effects[affix.tag](affix_damage);
+        }
+
         const damage = new Damage()
         if (weapon?.weapon_tag == 'ranged') {
             damage.pierce = 10
+            damage.add(affix_damage)
             return damage
         }
 

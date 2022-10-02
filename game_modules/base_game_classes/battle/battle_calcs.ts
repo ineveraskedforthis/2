@@ -12,11 +12,12 @@ export namespace Accuracy {
         return Math.min(accuracy, 1)
     }
 
-    export function melee(character: Character) {
-        let base_accuracy = 1
-        let accuracy = base_accuracy * (1 - STRESS_HINDER * character.status.stress / 100) * (1 - RAGE_HINDER * character.status.rage)
-        return Math.min(accuracy, 1)
-    }
+    // melee always hit
+    // export function melee(character: Character) {
+    //     let base_accuracy = 1
+    //     let accuracy = base_accuracy * (1 - STRESS_HINDER * character.status.stress / 100) * (1 - RAGE_HINDER * character.status.rage)
+    //     return Math.min(accuracy, 1)
+    // }
 }
 
     

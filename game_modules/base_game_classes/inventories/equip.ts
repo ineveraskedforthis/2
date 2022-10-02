@@ -1,5 +1,4 @@
-import { damage_type } from "../../static_data/type_script_types";
-import { armour_slot, armour_slots, equip_slot } from "../../types";
+import { armour_slot, armour_slots, damage_type, equip_slot } from "../../types";
 import { update_character } from "../affix";
 import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";

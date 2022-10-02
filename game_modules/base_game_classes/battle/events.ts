@@ -49,31 +49,22 @@ export namespace BattleEvent {
         Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type)
         Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id)
     }
+
+    export function Shoot(battle: Battle, attacker: UnitData, defender: UnitData) {
+        if (attacker.action_points_left < 3) {
+            return
+        }
+        let dist = geom.dist(attacker.position, defender.position)
+        const AttackerCharacter = Convert.unit_to_character(attacker)
+        const DefenderCharacter = Convert.unit_to_character(defender)
+
+        attacker.action_points_left = attacker.action_points_left - 3 as action_points
+        Event.shoot(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type)
+        Alerts.battle_event(battle, 'shoot', attacker.id, defender.position, defender.id)
+
+    }
 }
 
-
-//      action(, unit_index: number, action: Action) {
-//         console.log('battle action')
-//         console.log(action)
-
-//         let unit = this.heap.get_unit(unit_index)
-//         var character:Character = this.world.get_char_from_id(unit.char_id);
-
-//         //no action
-//         if (action.action == null) {
-//             return {action: 'pff', who: unit_index};
-//         }
-
-
-//         //move toward enemy
-//         if (action.action == 'move') {
-
-//         }
-
-        
-//         if (action.action == 'attack') {
-//             
-//         } 
 
 //         if (action.action == 'shoot') {
 //             if (!can_shoot(character)) {

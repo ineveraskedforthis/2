@@ -112,6 +112,11 @@ export namespace CharacterSystem {
         if (type == 'pierce')   {damage.pierce  = 0}
         return damage
     }
+    export function ranged_damage_raw(character: Character) {
+        const damage = character.equip.get_ranged_damage()
+        if (damage != undefined) return damage
+        return new Damage()
+    }
 
     export function phys_power(character: Character) {
         return character.stats.stats.phys_power + character.equip.get_phys_power_modifier()

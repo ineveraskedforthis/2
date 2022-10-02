@@ -14,6 +14,15 @@ export namespace Attack {
         return result
     }
 
+    export function generate_ranged(character: Character): AttackObj {
+        const result = new AttackObj('ranged')
+        result.damage.add(CharacterSystem.ranged_damage_raw(character))
+
+        const skill = character.skills.ranged
+        result.damage.mult(1 + skill / 20)
+        return result
+    }
+
     export function defend_against_melee(attack: AttackObj, defender: Character) {
         const skill = Math.floor(CharacterSystem.attack_skill(defender) * (1 - defender.get_rage() / 100))
         attack.defence_skill = skill
