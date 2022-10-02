@@ -1,40 +1,29 @@
-import { ELODINO_FLESH, GRACI_HAIR, MEAT, RAT_BONE, RAT_SKIN } from "../../../manager_classes/materials_manager";
+import { ELODINO_FLESH, GRACI_HAIR, material_index, MEAT, RAT_BONE, RAT_SKIN } from "../../../manager_classes/materials_manager";
 import { Character} from "../character";
 import { tagRACE } from "../character_parts";
 
 const SKIN_RAT_DIFFICULTY = 10
 const SKIN_HUMAN_DIFFICULTY = 40
 
-
-export function generate_loot(killer:Character, dead:tagRACE): boolean {
-    switch(dead) {
-        case 'elo': {killer.stash.inc(ELODINO_FLESH, 1); return true}
-        case 'human': {killer.stash.inc(MEAT, 2); return true}
-        case 'test': {
-                killer.stash.inc(MEAT, 2); 
-                
-                return true
-            }
-        case 'rat': {
-                killer.stash.inc(MEAT, 1); 
-                killer.stash.inc(RAT_BONE, 2);
-                killer.stash.inc(RAT_SKIN, 2)
-                let luck = Math.random()
-                let skill = killer.skills.skinning
-
-                if (luck * (skill) + skill > SKIN_RAT_DIFFICULTY) {
-                    killer.stash.inc(MEAT, 2);
-                    killer.stash.inc(RAT_SKIN, 4);
+export namespace Loot {
+    export function base(dead:tagRACE):{material: material_index, amount: number}[] {
+        switch(dead) {
+            case 'elo': return [{material: ELODINO_FLESH, amount: 1}]
+            case 'human': return [{material: MEAT, amount: 1}]
+            case 'rat': {
+                    return  [  
+                        {material: MEAT,     amount: 1},
+                        {material: RAT_BONE, amount: 3},
+                        {material: RAT_SKIN, amount: 1}
+                    ]
                 }
-
-                // let learning_dice = Math.random() * 20
-                if (skill < SKIN_RAT_DIFFICULTY) {
-                    killer.skills.skinning += 1
-                }
-
-                return true
-            }
-        case 'graci': {killer.stash.inc(GRACI_HAIR, 3); return true}
+            case 'graci': return [{material: GRACI_HAIR, amount: 3}]
+        }
+        return []
     }
-    return false
+
+    export function skinning(dead: tagRACE): number {
+        if (dead == 'rat') return 2
+        return 0
+    }
 }

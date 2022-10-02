@@ -1,3 +1,5 @@
+import { damage_type } from "../../static_data/type_script_types";
+
 export class Damage {
     blunt: number;
     pierce: number;
@@ -18,11 +20,16 @@ export class Damage {
         return this
     }
     subtract(x: Damage):Damage {
-        this.blunt=     this.blunt - x.blunt,
-        this.pierce=    this.pierce - x.pierce,
-        this.slice=     this.slice - x.slice,
-        this.fire=      this.fire - x.fire
+        this.blunt=     Math.max(0, this.blunt - x.blunt),
+        this.pierce=    Math.max(0, this.pierce - x.pierce),
+        this.slice=     Math.max(0, this.slice - x.slice),
+        this.fire=      Math.max(0, this.fire - x.fire)
         return this
+    }
+    mult(m: number) {
+        for (let i of damage_types) {
+            this[i] = Math.max(Math.floor(this[i] * m), 0)
+        }
     }
     copy():Damage {
         return new Damage(
@@ -35,4 +42,3 @@ export class Damage {
 }
 
 export const damage_types: damage_type[] = ['blunt', 'pierce', 'slice', 'fire'];
-export type damage_type = 'blunt'|'pierce'|'slice'|'fire'

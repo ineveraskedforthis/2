@@ -1,7 +1,7 @@
 // import { Armour, IMPACT_TYPE, Weapon } from "../static_data/item_tags";
+import { AttackObj } from "./character/attack/class";
 import { Character } from "./character/character";
 import { Item } from "./items/item";
-import { AttackResult } from "./misc/attack_result";
 import { Damage } from "./misc/damage_types";
 
 export type affix_tag = 'of_heat'|'layered'|'sharp'|'heavy'|'hot'|'precise'|'of_power'|'of_madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'of_elodino_pleasure'|'of_graci_beauty'|'of_elder_beast'|'of_protection'|'of_painful_protection'
@@ -83,11 +83,11 @@ export function roll_affix_armour(enchant_rating:number, item:Item) {
 }
 
 
-type AttackModificationFunction = (result: AttackResult) => AttackResult;
+type AttackModificationFunction = (result: AttackObj) => AttackObj;
 type DamageModificationFunction = (result: Damage) => Damage;
 
 
-function dummy_attack_mod(result: AttackResult) {
+function dummy_attack_mod(result: AttackObj) {
     return result
 }
 function dummy_damage_mod(result: Damage) {
@@ -107,24 +107,24 @@ export const attack_affixes_effects:{[_ in affix_tag]: AttackModificationFunctio
     sharp: dummy_attack_mod,
     heavy: dummy_attack_mod,
     hot: dummy_attack_mod,
-    precise: (result: AttackResult) => {
+    precise: (result: AttackObj) => {
         result.chance_to_hit += 0.02
         return result
     },
-    of_madness: (result: AttackResult) => {
+    of_madness: (result: AttackObj) => {
         result.attacker_status_change.rage +=      2 ;
         return result
     },
-    calm: (result: AttackResult) => {
+    calm: (result: AttackObj) => {
         result.attacker_status_change.rage +=     -1 ;
         return result
     },
-    daemonic: (result: AttackResult) => {
+    daemonic: (result: AttackObj) => {
         result.attacker_status_change.stress+=   90;
         result.attacker_status_change.rage +=    100;
         return result
     },
-    notched: (result: AttackResult) => {
+    notched: (result: AttackObj) => {
         result.attacker_status_change.blood += 2;
         result.defender_status_change.blood += 2
         return result

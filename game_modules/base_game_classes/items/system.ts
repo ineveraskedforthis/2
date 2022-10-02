@@ -1,5 +1,6 @@
+import { damage_type } from "../../static_data/type_script_types";
 import { damage_affixes_effects, get_power, protection_affixes_effects } from "../affix";
-import { Damage, damage_type } from "../misc/damage_types";
+import { Damage } from "../misc/damage_types";
 import { Item, ItemJson, Itemlette } from "./item";
 
 const empty_resists = new Damage()
@@ -57,20 +58,22 @@ export namespace ItemSystem {
     }
 
     export function melee_damage(item: Item, type: damage_type) {
-        // calculating base damage of item
-        let damage = new Damage()
-        switch(type) {
-            case 'blunt': {damage.blunt = ItemSystem.weight(item) * item.damage.blunt; break}
-            case 'pierce': {damage.pierce = ItemSystem.weight(item) * item.damage.pierce; break}
-            case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice; break}
-        }
-        damage.fire = item.damage.fire
-
         // summing up all affixes
+        let affix_damage = new Damage()
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
-            damage = damage_affixes_effects[affix.tag](damage);
+            affix_damage = damage_affixes_effects[affix.tag](affix_damage);
         }
+
+        // calculating base damage of item and adding affix
+        let damage = new Damage()
+        switch(type) {
+            case 'blunt': {damage.blunt = ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt; break}
+            case 'pierce': {damage.pierce = ItemSystem.weight(item) * item.damage.pierce + affix_damage.pierce; break}
+            case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice + affix_damage.slice; break}
+        }
+        // fire damage is alwasys added
+        damage.fire = item.damage.fire        
 
         return damage
     }

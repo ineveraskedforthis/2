@@ -19,7 +19,7 @@ export namespace Convert {
         return CharacterSystem.id_to_character(user.data.char_id)
     }
 
-    function character_to_user_data(character:Character):UserData|undefined {
+    export function character_to_user_data(character:Character):UserData|undefined {
         if (character.user_id == '#') return undefined
         return UserManagement.get_user_data(character.user_id)
     }
@@ -81,6 +81,15 @@ export namespace Link {
 }
 
 export namespace Unlink {
+    export function user_data_and_character(user: UserData| undefined, character: Character|undefined) {
+        if (user == undefined) return
+        if (character == undefined) return
+        console.log('unlinking user and character')
+        user.char_id = '@'
+        character.user_id = '#'
+        UserManagement.add_user_to_update_queue(user.id, 'character_removal')
+    }
+
     export function character_and_cell(character: Character, cell: Cell) {
         cell.exit(character.id)
         const locals = cell.get_characters_list()

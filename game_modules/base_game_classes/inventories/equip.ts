@@ -1,12 +1,10 @@
-import { ARROW_BONE } from "../../manager_classes/materials_manager";
-import { WEAPON_TYPE } from "../../static_data/type_script_types";
+import { damage_type } from "../../static_data/type_script_types";
 import { armour_slot, armour_slots, equip_slot } from "../../types";
-import { damage_affixes_effects, get_power, protection_affixes_effects, update_character } from "../affix";
+import { update_character } from "../affix";
 import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
-// import { AttackResult } from "../misc/attack_result";
-import { Damage, damage_type } from "../misc/damage_types";
+import { Damage } from "../misc/damage_types";
 import { Inventory } from "./inventory";
 
 interface EquipJson {
@@ -89,7 +87,7 @@ export class Equip {
     }
 
     get_melee_damage(type: damage_type): Damage|undefined {
-        let damage = new Damage()
+        // let damage = new Damage()
         const item = this.data.weapon;
         if (item == undefined) return undefined
         return ItemSystem.melee_damage(item, type)

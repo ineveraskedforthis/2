@@ -15,7 +15,7 @@ export interface SavingsJson {
 }
 
 export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'
-export type weapon_attack_tag = weapon_tag | 'unarmed'
+export type weapon_attack_tag = weapon_tag | 'noweapon'
 export type equip_slot = 'body'|'legs'|'arms'|'head'|'foot'|'weapon'
 export type armour_slot = 'body'|'legs'|'arms'|'head'|'foot'
 export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']

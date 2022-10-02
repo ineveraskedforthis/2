@@ -1,4 +1,4 @@
-import { ITEM_MATERIAL } from "./item_tags";
+// import { ITEM_MATERIAL } from "./item_tags";
 
 // export type tag = 'food'|'clothes'|'meat'|'water'|'leather'|'tools'|'zaz';
 // export type weapon_type = 'onehand'|'polearms'|'noweapon'|'twohanded'

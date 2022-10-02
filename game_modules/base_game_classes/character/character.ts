@@ -4,7 +4,6 @@ import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { cell_id, char_id, map_position, money, TEMP_USER_ID, user_id } from "../../types";
-import { Action } from "../battle/battle";
 import { ActionTargeted } from "../../actions/action_manager";
 
 export class Character {
@@ -437,11 +436,7 @@ export class Character {
 //         }
 //     }
 
-//     transfer_all_inv(target: {stash: Stash, savings: any, equip: any}) {
-//         this.transfer_all(target)
-//         this.savings.transfer_all(target.savings)
-//         this.equip.transfer_all(target)
-//     }
+
 
 
 
@@ -478,142 +473,6 @@ export class Character {
 //     }
 
 
-
-//     //rgo
-//     rgo_check(character:Character) {
-//         generate_loot(character, this.get_tag())
-//         character.send_stash_update()
-//         character.send_skills_update()
-//         character.changed = true
-//     }
-
-
-
-//     //attack calculations
-
-
-//     mod_attack_damage_with_stats(result: AttackResult, mod:'fast'|'usual'|'heavy'|'ranged') {
-//         let phys_power = this.get_phys_power() / 10
-        
-//         switch(mod) {
-//             case 'usual': {phys_power = phys_power * 2; break}
-//             case 'heavy': {phys_power = phys_power * 5; break}
-//             case 'ranged': {phys_power = phys_power * 2; break}
-//         }
-        
-//         let magic_power = this.get_magic_power() / 10
-
-//         if (this.skills.perks.claws) {
-//             if (result.weapon_type == 'noweapon') {
-//                 result.damage.pierce += 10
-//             }
-//         }
-
-//         if (this.skills.perks.advanced_unarmed) {
-//             if (result.weapon_type == 'noweapon') {
-//                 result.damage.blunt += 10
-//             }
-//         }
-
-//         if (mod != 'ranged') {
-//             result.attacker_status_change.rage = 5
-//         }
-        
-//         result.attacker_status_change.fatigue = 1
-
-//         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
-//         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * phys_power));
-//         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * phys_power));
-//         result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * magic_power));
-
-//         return result
-//     }
-
-//     mod_spell_damage_with_stats(result: AttackResult, tag:spell_tags) {
-//         let power_mod = this.get_magic_power() / 10
-//         let skill_mod = this.skills.magic_mastery / 10
-//         let damage_mod = power_mod * (skill_mod + 1)
-
-//         if (this.skills.perks.magic_bolt) {
-//             damage_mod = damage_mod * 1.5
-//         }
-
-//         if (this.skills.perks.mage_initiation) {
-//             damage_mod = damage_mod * 1.5
-//         }
-
-//         damage_mod = Math.floor(damage_mod)
-
-//         result.damage['blunt']  = Math.floor(Math.max(1, result.damage['blunt']     * damage_mod));
-//         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce']    * damage_mod));
-//         result.damage['slice']  = Math.floor(Math.max(0, result.damage['slice']     * damage_mod));
-//         result.damage['fire']   = Math.floor(Math.max(0, result.damage['fire']      * damage_mod));
-
-//         return result
-//     }
-
-//     roll_accuracy(result: AttackResult, mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
-//         let dice = Math.random();
-
-//         result.chance_to_hit = this.get_accuracy(result, mod, distance)
-        
-//         if (dice > result.chance_to_hit) {
-//             result.flags.miss = true;
-//         }
-
-//         return result
-//     }
-
-//     roll_crit(result: AttackResult) {
-//         let dice = Math.random()
-
-//         let crit_chance = this.get_crit_chance("attack");
-//         let mult = this.get_crit_mult();
-
-//         if (dice < crit_chance) {
-//             result.damage['blunt'] = result.damage['blunt'] * mult;
-//             result.damage['pierce'] = result.damage['pierce'] * mult;
-//             result.damage['slice'] = result.damage['slice'] * mult;
-//             result.flags.crit = true;
-//         }
-
-//         return result
-//     }
-
-//     roll_dodge(result: AttackResult, mod: 'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean) {
-//         let dice = Math.random()
-
-//         let base_evade_chance = this.get_evasion_chance();
-//         let attack_specific_dodge = 0;
-
-//         if (dodge_flag) switch(mod){
-//             case 'fast': {attack_specific_dodge = 0.2; break}
-//             case 'usual': {attack_specific_dodge = 0.5; break}
-//             case 'heavy': {attack_specific_dodge = 1; break}
-//             case 'ranged': {attack_specific_dodge = 0.2;break}
-//         }
-
-//         let evade_chance = base_evade_chance + attack_specific_dodge
-
-//         if (dice < evade_chance) {
-//             result.flags.evade = true
-//             result.flags.crit = false
-//         }
-
-//         return result
-//     }
-
-//     roll_block(result: AttackResult) {
-//         let dice = Math.random()
-
-//         let block_chance = this.get_block_chance();
-
-//         if (dice < block_chance) {
-//             result.flags.blocked = true;
-//         }
-
-//         return result;
-//     }
 
 //     get_magic_power() {
 //         let power = this.stats.magic_power * this.equip.get_magic_power_modifier();

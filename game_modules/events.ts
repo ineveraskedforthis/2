@@ -1,35 +1,131 @@
+import { Attack } from "./base_game_classes/character/attack/system";
 import { Character } from "./base_game_classes/character/character";
+import { Loot } from "./base_game_classes/character/races/generate_loot";
+import { CharacterSystem } from "./base_game_classes/character/system";
+import { UI_Part } from "./client_communication/causality_graph";
+import { User } from "./client_communication/user";
+import { UserManagement } from "./client_communication/user_manager";
+import { RAT_SKIN } from "./manager_classes/materials_manager";
+import { damage_type } from "./static_data/type_script_types";
+import { Convert, Unlink } from "./systems_communication";
+import { weapon_attack_tag, weapon_tag } from "./types";
 //      attack(target: Character, mod:'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean, distance: number) {
 
 export namespace Event {
 
-    export function attack(attacker: Character, defender: Character, dodge_flag: boolean) {
-
-        let result = new AttackResult()
-
-
-        result = this.equip.get_weapon_damage(result, (mod == 'ranged'));
-        result = this.mod_attack_damage_with_stats(result, mod);
-        result = this.roll_accuracy(result, mod, distance);
-        result = this.roll_crit(result);
-        result = target.roll_dodge(result, mod, dodge_flag);
-        result = target.roll_block(result);
-
-
-        let dice = Math.random()
-        if (dice > this.get_weapon_skill(result.weapon_type) / 50) {
-            this.change_weapon_skill(result.weapon_type, 1)
-        }
-        this.send_skills_update()
+    export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: damage_type) {
+        const attack = Attack.generate_melee(attacker, attack_type)
+        Attack.defend_against_melee(attack, defender)
         
-        result = await target.take_damage(pool, mod, result);
-        this.change_status(result.attacker_status_change)
+        {// evasion
+            const skill = defender.skills.evasion
+            attack.defence_skill += skill
 
-        if (result.flags.killing_strike) {
-            target.transfer_all_inv(this)
-            target.rgo_check(this)
+            //active dodge
+            if (dodge_flag) {
+                attack.flags.miss = true
+                Attack.dodge(attack, 50)
+                // attempts to evade increase your skill
+                if (skill < attack.attack_skill) {
+                    increase_evasion(defender)
+                }
+            }
+
+            //passive evasion
+            if (skill > attack.attack_skill) {
+                attack.flags.miss = true
+                Attack.dodge(attack, skill)
+            } else {
+                //fighting against stronger enemies provides constant growth of this skill up to some level
+                const dice = Math.random()
+                if ((dice < 0.01) && (skill <= 15)) {
+                    increase_evasion(defender)
+                }
+            }
         }
-        return result;
+
+        {//block
+            const skill = defender.skills.blocking
+            attack.defence_skill += skill
+            if ((skill > attack.attack_skill)) {
+                attack.flags.blocked = true
+                increase_evasion(defender)
+            }
+
+            //fighting provides constant growth of this skill up to some level
+            const dice = Math.random()
+            if ((dice < 0.01) && (skill <= 15)) {
+                increase_block(defender)
+            }
+        }
+
+        {//weapon skill update
+            if (attack.attack_skill < attack.defence_skill) {
+                increase_weapon_skill(attacker, attack.weapon_type)
+            }
+
+            //fighting provides constant growth of this skill up to some level
+            const dice = Math.random()
+            if ((dice < 0.01) && (attack.attack_skill <= 30)) {
+                increase_weapon_skill(defender, attack.weapon_type)
+            }
+        }
+
+
+
+        //apply damage after all modifiers
+        CharacterSystem.damage(defender, attack.damage)
+        defender.change_status(attack.defender_status_change)
+        attacker.change_status(attack.attacker_status_change)
+        
+        UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS)
+        UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
+
+        //if target is dead, loot it all
+        if (defender.get_hp() == 0) {
+            const loot = CharacterSystem.rgo_check(defender)
+            CharacterSystem.transfer_all(defender, attacker)
+            for (const item of loot) {
+                attacker.stash.inc(item.material, item.amount)
+            }
+            // skinning check
+            const skin = Loot.skinning(defender.archetype.race)
+            if (skin > 0) {
+                const dice = Math.random()
+                if (dice < attacker.skills.skinning / 100) {
+                    attacker.stash.inc(RAT_SKIN, skin)
+                } else {
+                    increase_skinning(attacker)
+                }
+            }
+            death(defender)
+        }
+    }
+
+    export function death(character: Character) {
+        UserManagement.add_user_to_update_queue(character.user_id, "death");
+        const user_data = Convert.character_to_user_data(character)
+        Unlink.user_data_and_character(user_data, character);
+    }
+
+    export function increase_evasion(character: Character) {
+        character.skills.evasion += 1
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.DEFENCE_SKILL)
+    }
+
+    export function increase_block(character: Character) {
+        character.skills.blocking += 1
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.DEFENCE_SKILL)
+    }
+
+    export function increase_skinning(character: Character) {
+        character.skills.skinning += 1
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKINNING)
+    }
+
+    export function increase_weapon_skill(character: Character, skill: weapon_attack_tag) {
+        character.skills[skill] += 1
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.WEAPON_SKILL)
     }
 
     //  spell_attack(target: Character, tag: spell_tags) {
