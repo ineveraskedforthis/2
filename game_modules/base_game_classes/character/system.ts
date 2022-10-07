@@ -1,5 +1,5 @@
 import { materials, material_index } from "../../manager_classes/materials_manager";
-import { cell_id, char_id, damage_type, money, weapon_attack_tag, weapon_tag } from "../../types";
+import { cell_id, char_id, damage_type, money, user_id, weapon_attack_tag, weapon_tag } from "../../types";
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
@@ -8,6 +8,7 @@ import { Character } from "./character";
 import { Loot } from "./races/generate_loot";
 import { CharacterTemplate } from "./templates";
 import fs from "fs"
+import { Archetype, InnateStats, Stats, Status } from "./character_parts";
 
 var last_character_id = 0
 export var character_list:Character[]                  = []
@@ -16,24 +17,35 @@ var characters_dict:{[_ in char_id]: Character} = {}
 
 export namespace CharacterSystem {
     export function load() {
+        console.log('loading characters')
+        if (!fs.existsSync('characters.txt')) {
+            fs.writeFileSync('characters.txt', '')
+        }
+        let data = fs.readFileSync('characters.txt').toString()
+        let lines = data.split('\n')
 
+        for (let line of lines) {
+            if (line == '') {continue}
+            const character = string_to_character(line)
+            character_list.push(character)
+            characters_dict[character.id] = character
+        }
+
+        console.log('characters loaded')
     }
 
     export function save() {
         console.log('saving characters')
         let str:string = ''
         for (let item of character_list) {
-            
-
             str = str + character_to_string(item) + '\n' 
         }
         fs.writeFileSync('characters.txt', str)
-        console.log('characteres saved')
+        console.log('characters saved')
     }
 
     export function character_to_string(c: Character) {
-        let responce = ''
-        let ids = [c.id, c.battle_id, c.battle_unit_id, c.user_id, c.cell_id].join()
+        let ids = [c.id, c.battle_id, c.battle_unit_id, c.user_id, c.cell_id].join(' ')
         let name = c.name
 
         let archetype = JSON.stringify(c.archetype)
@@ -44,12 +56,49 @@ export namespace CharacterSystem {
         let savings             = c.savings.get()
         let trade_savings       = c.savings.get()
 
+        let status =            JSON.stringify(c.status)
+        let skills =            JSON.stringify(c.skills)
+        let perks  =            JSON.stringify(c.perks)
+        let innate_stats  =            JSON.stringify(c.stats)
+        
+        let explored =          JSON.stringify({data: c.explored})
 
-
+        return [ids, name, archetype, equip, stash, trade_stash, savings, trade_savings, status, skills, perks, innate_stats, explored].join(',')
     }
 
     export function string_to_character(s: string) {
+        const [ids, name, raw_archetype, raw_equip, raw_stash, raw_trade_stash, raw_savings, raw_trade_savings, raw_status, raw_skills, raw_perks, raw_innate_stats, raw_explored] = s.split(',')
+        let [raw_id, raw_battle_id, raw_battle_unit_id, raw_user_id, raw_cell_id] = ids.split(' ')
 
+        if (raw_user_id != '#') {var user_id:user_id|'#' = Number(raw_user_id) as user_id} else {var user_id:user_id|'#' = '#'}
+
+        const innate_stats:InnateStats = JSON.parse(raw_innate_stats)
+        const stats:Stats = innate_stats.stats
+
+        const character = new Character(Number(raw_id), 
+                                        Number(raw_battle_id), Number(raw_battle_unit_id), 
+                                        user_id, Number(raw_cell_id) as cell_id, 
+                                            name, 
+                                            JSON.parse(raw_archetype) as Archetype, 
+                                            stats, innate_stats.max.hp)
+        character.stats = innate_stats
+        character.explored = JSON.parse(raw_explored).data
+
+
+        character.equip.load_from_json(JSON.parse(raw_equip))
+
+        character.stash.load_from_json(JSON.parse(raw_stash))
+        character.trade_stash.load_from_json(JSON.parse(raw_trade_stash))
+
+        character.savings.inc(Number(raw_savings) as money)
+        character.trade_savings.inc(Number(raw_trade_savings) as money)
+
+        character.change_status(JSON.parse(raw_status) as Status)
+
+        character.skills = JSON.parse(raw_skills)
+        character.perks = JSON.parse(raw_perks)
+
+        return character
     }
 
     export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
