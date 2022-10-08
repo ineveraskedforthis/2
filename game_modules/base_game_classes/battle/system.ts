@@ -346,3 +346,29 @@ export namespace BattleSystem {
 //         return this.heap.get_units_amount()
 //     }
 // }
+
+// send_data_start() {
+//         this.world.socket_manager.send_battle_data_start(this)
+//         if (this.waiting_for_input) {
+//             this.send_action({action: 'new_turn', target: this.heap.selected})
+//         }
+//     }
+
+//     send_update() {
+//         this.world.socket_manager.send_battle_update(this)
+//         if (this.waiting_for_input) {
+//             this.send_action({action: 'new_turn', target: this.heap.selected})
+//         }
+//     }
+
+//     send_current_turn() {
+//         this.send_action({action: 'new_turn', target: this.heap.selected})
+//     }
+
+//     send_action(a: any) {
+//         this.world.socket_manager.send_battle_action(this, a)
+//     }
+
+//     send_stop(){
+//         this.world.socket_manager.send_stop_battle(this)
+//     }
