@@ -16,11 +16,16 @@ class Damage {
         return this;
     }
     subtract(x) {
-        this.blunt = this.blunt - x.blunt,
-            this.pierce = this.pierce - x.pierce,
-            this.slice = this.slice - x.slice,
-            this.fire = this.fire - x.fire;
+        this.blunt = Math.max(0, this.blunt - x.blunt),
+            this.pierce = Math.max(0, this.pierce - x.pierce),
+            this.slice = Math.max(0, this.slice - x.slice),
+            this.fire = Math.max(0, this.fire - x.fire);
         return this;
+    }
+    mult(m) {
+        for (let i of exports.damage_types) {
+            this[i] = Math.max(Math.floor(this[i] * m), 0);
+        }
     }
     copy() {
         return new Damage(this.blunt, this.pierce, this.slice, this.fire);

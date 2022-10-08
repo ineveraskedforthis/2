@@ -14,7 +14,6 @@ var last_character_id = 0
 export var character_list:Character[]                  = []
 var characters_dict:{[_ in char_id]: Character} = {}
 
-
 export namespace CharacterSystem {
     export function load() {
         console.log('loading characters')
@@ -30,7 +29,6 @@ export namespace CharacterSystem {
             character_list.push(character)
             characters_dict[character.id] = character
         }
-
         console.log('characters loaded')
     }
 
@@ -45,12 +43,12 @@ export namespace CharacterSystem {
     }
 
     export function character_to_string(c: Character) {
-        let ids = [c.id, c.battle_id, c.battle_unit_id, c.user_id, c.cell_id].join(' ')
+        let ids = [c.id, c.battle_id, c.battle_unit_id, c.user_id, c.cell_id].join('&')
         let name = c.name
 
         let archetype = JSON.stringify(c.archetype)
 
-        let equip               = JSON.stringify(c.equip.get_json())
+        let equip               = c.equip.to_string()
         let stash               = JSON.stringify(c.stash.get_json())
         let trade_stash         = JSON.stringify(c.trade_stash.get_json())
         let savings             = c.savings.get()
@@ -63,12 +61,12 @@ export namespace CharacterSystem {
         
         let explored =          JSON.stringify({data: c.explored})
 
-        return [ids, name, archetype, equip, stash, trade_stash, savings, trade_savings, status, skills, perks, innate_stats, explored].join(',')
+        return [ids, name, archetype, equip, stash, trade_stash, savings, trade_savings, status, skills, perks, innate_stats, explored].join(';')
     }
 
     export function string_to_character(s: string) {
-        const [ids, name, raw_archetype, raw_equip, raw_stash, raw_trade_stash, raw_savings, raw_trade_savings, raw_status, raw_skills, raw_perks, raw_innate_stats, raw_explored] = s.split(',')
-        let [raw_id, raw_battle_id, raw_battle_unit_id, raw_user_id, raw_cell_id] = ids.split(' ')
+        const [ids, name, raw_archetype, raw_equip, raw_stash, raw_trade_stash, raw_savings, raw_trade_savings, raw_status, raw_skills, raw_perks, raw_innate_stats, raw_explored] = s.split(';')
+        let [raw_id, raw_battle_id, raw_battle_unit_id, raw_user_id, raw_cell_id] = ids.split('&')
 
         if (raw_user_id != '#') {var user_id:user_id|'#' = Number(raw_user_id) as user_id} else {var user_id:user_id|'#' = '#'}
 
@@ -85,7 +83,7 @@ export namespace CharacterSystem {
         character.explored = JSON.parse(raw_explored).data
 
 
-        character.equip.load_from_json(JSON.parse(raw_equip))
+        character.equip.from_string(raw_equip)
 
         character.stash.load_from_json(JSON.parse(raw_stash))
         character.trade_stash.load_from_json(JSON.parse(raw_trade_stash))
@@ -93,7 +91,7 @@ export namespace CharacterSystem {
         character.savings.inc(Number(raw_savings) as money)
         character.trade_savings.inc(Number(raw_trade_savings) as money)
 
-        character.change_status(JSON.parse(raw_status) as Status)
+        character.set_status(JSON.parse(raw_status) as Status)
 
         character.skills = JSON.parse(raw_skills)
         character.perks = JSON.parse(raw_perks)

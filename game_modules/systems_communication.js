@@ -6,6 +6,10 @@ const user_manager_1 = require("./client_communication/user_manager");
 const system_2 = require("./map/system");
 var Convert;
 (function (Convert) {
+    function unit_to_character(unit) {
+        return system_1.CharacterSystem.id_to_character(unit.char_id);
+    }
+    Convert.unit_to_character = unit_to_character;
     function user_to_character(user) {
         if (user.data.char_id == '@')
             return undefined;
@@ -17,6 +21,7 @@ var Convert;
             return undefined;
         return user_manager_1.UserManagement.get_user_data(character.user_id);
     }
+    Convert.character_to_user_data = character_to_user_data;
     function character_to_user(character) {
         let data = character_to_user_data(character);
         if (data == undefined)
@@ -77,6 +82,17 @@ var Link;
 })(Link = exports.Link || (exports.Link = {}));
 var Unlink;
 (function (Unlink) {
+    function user_data_and_character(user, character) {
+        if (user == undefined)
+            return;
+        if (character == undefined)
+            return;
+        console.log('unlinking user and character');
+        user.char_id = '@';
+        character.user_id = '#';
+        user_manager_1.UserManagement.add_user_to_update_queue(user.id, 'character_removal');
+    }
+    Unlink.user_data_and_character = user_data_and_character;
     function character_and_cell(character, cell) {
         cell.exit(character.id);
         const locals = cell.get_characters_list();

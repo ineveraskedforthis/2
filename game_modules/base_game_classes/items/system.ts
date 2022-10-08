@@ -6,6 +6,23 @@ import { Item, ItemJson, Itemlette } from "./item";
 const empty_resists = new Damage()
 
 export namespace ItemSystem {
+
+    export function to_string(item: Item|undefined): string {
+        return(JSON.stringify(item))
+    }
+
+    export function from_string(s: string): Item {
+        const item_data:Item = JSON.parse(s)
+
+        const damage = new Damage()
+        damage.add(item_data.damage)
+
+        const resistance = new Damage()
+        resistance.add(item_data.resists)
+
+        return new Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage)
+    }
+
     export function size (item: Itemlette): number {
         if (item.slot == 'weapon') {
             switch(item.weapon_tag) {

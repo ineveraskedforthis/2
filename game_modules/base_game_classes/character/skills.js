@@ -66,13 +66,13 @@ function perk_requirement(tag, character) {
 exports.perk_requirement = perk_requirement;
 function weapon_type(weapon) {
     if (weapon == undefined) {
-        return 'unarmed';
+        return 'noweapon';
     }
     return weapon.weapon_tag;
 }
 function can_dodge(character) {
     if (character.perks.advanced_unarmed == true) {
-        if (weapon_type(character.equip.data.weapon) == 'unarmed') {
+        if (weapon_type(character.equip.data.weapon) == 'noweapon') {
             return true;
         }
     }
@@ -81,7 +81,7 @@ function can_dodge(character) {
 exports.can_dodge = can_dodge;
 function can_fast_attack(character) {
     if (character.perks.advanced_unarmed == true) {
-        if (weapon_type(character.equip.data.weapon) == 'unarmed') {
+        if (weapon_type(character.equip.data.weapon) == 'noweapon') {
             return true;
         }
     }

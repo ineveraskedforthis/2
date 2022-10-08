@@ -175,6 +175,9 @@ var UserManagement;
         if (reason == 'character_creation') {
             user.character_created = true;
         }
+        else if (reason == 'character_removal') {
+            user.character_removed = true;
+        }
         else {
             causality_graph_1.Update.on(user.updates, reason);
         }
@@ -188,6 +191,9 @@ var UserManagement;
             if (item.character_created) {
                 send_character_to_user(item);
                 item.character_created = false;
+            }
+            if (item.character_removed) {
+                alerts_1.Alerts.character_removed(item);
             }
             else {
                 causality_graph_1.Update.update_root(item);

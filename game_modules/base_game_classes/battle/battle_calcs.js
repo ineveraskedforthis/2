@@ -13,12 +13,12 @@ var Accuracy;
         return Math.min(accuracy, 1);
     }
     Accuracy.ranged = ranged;
-    function melee(character) {
-        let base_accuracy = 1;
-        let accuracy = base_accuracy * (1 - STRESS_HINDER * character.status.stress / 100) * (1 - RAGE_HINDER * character.status.rage);
-        return Math.min(accuracy, 1);
-    }
-    Accuracy.melee = melee;
+    // melee always hit
+    // export function melee(character: Character) {
+    //     let base_accuracy = 1
+    //     let accuracy = base_accuracy * (1 - STRESS_HINDER * character.status.stress / 100) * (1 - RAGE_HINDER * character.status.rage)
+    //     return Math.min(accuracy, 1)
+    // }
 })(Accuracy = exports.Accuracy || (exports.Accuracy = {}));
 // get_accuracy(result: {weapon_type: WEAPON_TYPE}, mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
 //     let base_accuracy = character_defines.accuracy + this.get_weapon_skill(result.weapon_type) * character_defines.skill_accuracy_modifier

@@ -23,6 +23,7 @@ const materials_manager_1 = require("./materials_manager");
 // }
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 class AiManager {
+    ;
     constructor(world) {
         this.world = world;
     }

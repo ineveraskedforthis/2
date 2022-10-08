@@ -5,6 +5,7 @@ const battle_calcs_1 = require("../../base_game_classes/battle/battle_calcs");
 const craft_1 = require("../../calculations/craft");
 const system_1 = require("../../map/system");
 const systems_communication_1 = require("../../systems_communication");
+const types_1 = require("../../types");
 const alerts_1 = require("./alerts");
 const difficulty_1 = require("../../calculations/difficulty");
 var SendUpdate;
@@ -74,6 +75,30 @@ var SendUpdate;
         alerts_1.Alerts.skill(user, 'woodwork', character.skills.woodwork);
     }
     SendUpdate.skill_woodwork = skill_woodwork;
+    function skill_skinning(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.skill(user, 'woodwork', character.skills.woodwork);
+    }
+    SendUpdate.skill_skinning = skill_skinning;
+    function skill_weapon(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        for (const tag of types_1.weapon_attack_tags) {
+            alerts_1.Alerts.skill(user, tag, character.skills[tag]);
+        }
+    }
+    SendUpdate.skill_weapon = skill_weapon;
+    function skill_defence(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.skill(user, 'evasion', character.skills.evasion);
+        alerts_1.Alerts.skill(user, 'blocking', character.skills.blocking);
+    }
+    SendUpdate.skill_defence = skill_defence;
     function all_skills(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
@@ -115,7 +140,7 @@ var SendUpdate;
         if (isNaN(distance)) {
             return;
         }
-        alerts_1.Alerts.battle_action(user, 'shoot', battle_calcs_1.Accuracy.ranged(character, distance));
+        alerts_1.Alerts.battle_action_chance(user, 'shoot', battle_calcs_1.Accuracy.ranged(character, distance));
     }
     SendUpdate.ranged = ranged;
     function hp(user) {

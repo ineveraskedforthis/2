@@ -12,6 +12,10 @@ var Alerts;
         generic_user_alert(user, 'alert', 'you are in battle');
     }
     Alerts.in_battle = in_battle;
+    function character_removed(user) {
+        generic_user_alert(user, 'char-removed', undefined);
+    }
+    Alerts.character_removed = character_removed;
     function ok(user) {
         generic_user_alert(user, 'alert', 'ok');
     }
@@ -65,10 +69,25 @@ var Alerts;
         Alerts.generic_user_alert(user, 'skill', { tag: tag, value: value });
     }
     Alerts.skill = skill;
-    function battle_action(user, tag, value) {
+    function battle_action_chance(user, tag, value) {
         Alerts.generic_user_alert(user, 'b-action-chance', { tag: tag, value: value });
     }
-    Alerts.battle_action = battle_action;
+    Alerts.battle_action_chance = battle_action_chance;
+    function battle_event(battle, tag, unit_id, position, target) {
+        battle.last_event_index += 1;
+        const Event = {
+            tag: tag,
+            creator: unit_id,
+            target_position: position,
+            target_unit: target,
+            index: battle.last_event_index
+        };
+        for (let unit of battle.heap.raw_data) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            generic_character_alert(character, 'battle-event', Event);
+        }
+    }
+    Alerts.battle_event = battle_event;
     function map_action(user, tag, data) {
         Alerts.generic_user_alert(user, 'map-action-status', { tag: tag, value: data });
     }

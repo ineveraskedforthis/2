@@ -42,6 +42,24 @@ class Inventory {
         }
         return { items_array: array };
     }
+    to_string() {
+        const array = [];
+        for (let i of this.items) {
+            if (i != undefined) {
+                array.push(system_1.ItemSystem.to_string(i));
+            }
+        }
+        return JSON.stringify({ items_array: array });
+    }
+    from_string(s) {
+        const data = JSON.parse(s);
+        for (let i = 0; i <= 100; i++) {
+            const tmp = data.items_array[i];
+            if (tmp == undefined)
+                return;
+            this.items.push(system_1.ItemSystem.from_string(tmp));
+        }
+    }
     get_data() {
         const array = [];
         for (let i in this.items) {
@@ -53,8 +71,8 @@ class Inventory {
         return { items: array };
     }
     load_from_json(data) {
-        for (let i = 1; i <= 100; i++) {
-            const tmp = data[i];
+        for (let i = 0; i <= 100; i++) {
+            const tmp = data.items_array[i];
             if (tmp == undefined)
                 return;
             this.items.push(system_1.ItemSystem.create(tmp));

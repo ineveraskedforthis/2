@@ -1,6 +1,13 @@
 import { Item, ItemData, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
 
+export interface InventoryJson {
+    items_array: ItemJson[]
+}
+export interface InventoryStrings {
+    items_array: string[]
+}
+
 export class Inventory{
     items: (Item|undefined)[]
     changed: boolean
@@ -37,7 +44,7 @@ export class Inventory{
     }
 
 
-    get_json():{items_array: ItemJson[]}  {
+    get_json():InventoryJson  {
         const array:ItemJson[] = []
         for (let i of this.items) {
             if (i != undefined) {
@@ -45,6 +52,25 @@ export class Inventory{
             }
         }
         return {items_array: array}
+    }
+
+    to_string() {
+        const array:string[] = []
+        for (let i of this.items) {
+            if (i != undefined) {
+                array.push(ItemSystem.to_string(i))
+            }
+        }
+        return JSON.stringify({items_array: array})
+    }
+
+    from_string(s: string) {
+        const data:{items_array: string[]} = JSON.parse(s)
+        for (let i = 0; i <= 100; i++) {
+            const tmp = data.items_array[i]
+            if (tmp == undefined) return
+            this.items.push(ItemSystem.from_string(tmp))
+        }
     }
 
     get_data():{items: ItemData[]} {
@@ -58,9 +84,9 @@ export class Inventory{
         return {items: array}
     }
 
-    load_from_json(data:{[_ in number]?: ItemJson}) {
-        for (let i = 1; i <= 100; i++) {
-            const tmp = data[i]
+    load_from_json(data:InventoryJson) {
+        for (let i = 0; i <= 100; i++) {
+            const tmp = data.items_array[i]
             if (tmp == undefined) return
             this.items.push(ItemSystem.create(tmp))
         }

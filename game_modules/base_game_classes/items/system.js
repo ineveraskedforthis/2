@@ -7,6 +7,19 @@ const item_1 = require("./item");
 const empty_resists = new damage_types_1.Damage();
 var ItemSystem;
 (function (ItemSystem) {
+    function to_string(item) {
+        return (JSON.stringify(item));
+    }
+    ItemSystem.to_string = to_string;
+    function from_string(s) {
+        const item_data = JSON.parse(s);
+        const damage = new damage_types_1.Damage();
+        damage.add(item_data.damage);
+        const resistance = new damage_types_1.Damage();
+        resistance.add(item_data.resists);
+        return new item_1.Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage);
+    }
+    ItemSystem.from_string = from_string;
     function size(item) {
         if (item.slot == 'weapon') {
             switch (item.weapon_tag) {
@@ -57,35 +70,44 @@ var ItemSystem;
     }
     ItemSystem.power = power;
     function melee_damage(item, type) {
-        // calculating base damage of item
+        // summing up all affixes
+        let affix_damage = new damage_types_1.Damage();
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
+            affix_damage = affix_1.damage_affixes_effects[affix.tag](affix_damage);
+        }
+        // calculating base damage of item and adding affix
         let damage = new damage_types_1.Damage();
         switch (type) {
             case 'blunt': {
-                damage.blunt = ItemSystem.weight(item) * item.damage.blunt;
+                damage.blunt = ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt;
                 break;
             }
             case 'pierce': {
-                damage.pierce = ItemSystem.weight(item) * item.damage.pierce;
+                damage.pierce = ItemSystem.weight(item) * item.damage.pierce + affix_damage.pierce;
                 break;
             }
             case 'slice': {
-                damage.slice = ItemSystem.weight(item) * item.damage.slice;
+                damage.slice = ItemSystem.weight(item) * item.damage.slice + affix_damage.slice;
                 break;
             }
         }
+        // fire damage is alwasys added
         damage.fire = item.damage.fire;
-        // summing up all affixes
-        for (let i = 0; i < item.affixes.length; i++) {
-            let affix = item.affixes[i];
-            damage = affix_1.damage_affixes_effects[affix.tag](damage);
-        }
         return damage;
     }
     ItemSystem.melee_damage = melee_damage;
     function ranged_damage(weapon) {
+        // summing up all affixes
+        let affix_damage = new damage_types_1.Damage();
+        for (let i = 0; i < weapon.affixes.length; i++) {
+            let affix = weapon.affixes[i];
+            affix_damage = affix_1.damage_affixes_effects[affix.tag](affix_damage);
+        }
         const damage = new damage_types_1.Damage();
         if (weapon?.weapon_tag == 'ranged') {
             damage.pierce = 10;
+            damage.add(affix_damage);
             return damage;
         }
         damage.blunt = weight(weapon) * weapon.damage.blunt;

@@ -4,13 +4,20 @@ import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
 import { Damage } from "../misc/damage_types";
-import { Inventory } from "./inventory";
+import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
 
 interface EquipJson {
     weapon?: ItemJson;
     secondary?: ItemJson;
     armour: {[_ in string]?: ItemJson};
-    backpack: {[_ in number]?: ItemJson};
+    backpack: InventoryJson;
+}
+
+interface EquipStrings {
+    weapon?: string;
+    secondary?: string;
+    armour: {[_ in string]?: string};
+    backpack: string;
 }
 
 class EquipData {
@@ -32,12 +39,12 @@ class EquipData {
             weapon: this.weapon?.json(),
             secondary: this.secondary?.json(),
             armour: {},
-            backpack: {}
+            backpack: this.backpack.get_json()
         }
         for (let tag of armour_slots) {
             result.armour[tag] = this.armour[tag]?.json()
         }
-        result.backpack = this.backpack.get_json()
+
         return result
     }
 
@@ -56,6 +63,38 @@ class EquipData {
         }
 
         this.backpack.load_from_json(json.backpack)
+    }
+
+    to_string() {
+        let result:EquipStrings = {
+            weapon: ItemSystem.to_string(this.weapon),
+            secondary: ItemSystem.to_string(this.secondary),
+            armour: {},
+            backpack: this.backpack.to_string()
+        }
+        for (let tag of armour_slots) {
+            result.armour[tag] = ItemSystem.to_string(this.armour[tag])
+        }
+
+        return JSON.stringify(result)
+    }
+
+    from_string(s: string) {
+        const json:EquipStrings = JSON.parse(s)
+        if (json.weapon != undefined) {
+                this.weapon                 = ItemSystem.from_string(json.weapon)
+        }
+        if (json.secondary != undefined) {
+                this.secondary              = ItemSystem.from_string(json.secondary)
+        }
+        for (let tag of armour_slots) {
+            const tmp = json.armour[tag] 
+            if (tmp != undefined) {
+                this.armour[tag]            = ItemSystem.from_string(tmp)
+            }            
+        }
+
+        this.backpack.from_string(json.backpack)
     }
 }
 
@@ -149,10 +188,13 @@ export class Equip {
         }
     }
 
-    equip_weapon(index:number) {
+    equip_weapon(index:number|undefined) {
         let backpack = this.data.backpack;
+        if (index == undefined) return
         let item = backpack.items[index]
         if (item != undefined) {
+            if (item.slot != 'weapon') {return}
+
             let tmp = this.data.weapon;
             
             if (tmp == undefined) {
@@ -226,5 +268,14 @@ export class Equip {
 
     load_from_json(json:any) {
         this.data.load_json(json);
-    }    
+    }
+
+    to_string() {
+        return this.data.to_string()
+    }
+
+    from_string(s: string) {
+        this.data.from_string(s)
+    }
+
 }

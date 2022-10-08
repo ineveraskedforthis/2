@@ -4,7 +4,6 @@ exports.Equip = void 0;
 const types_1 = require("../../types");
 const affix_1 = require("../affix");
 const system_1 = require("../items/system");
-// import { AttackResult } from "../misc/attack_result";
 const damage_types_1 = require("../misc/damage_types");
 const inventory_1 = require("./inventory");
 class EquipData {
@@ -20,12 +19,11 @@ class EquipData {
             weapon: this.weapon?.json(),
             secondary: this.secondary?.json(),
             armour: {},
-            backpack: {}
+            backpack: this.backpack.get_json()
         };
         for (let tag of types_1.armour_slots) {
             result.armour[tag] = this.armour[tag]?.json();
         }
-        result.backpack = this.backpack.get_json();
         return result;
     }
     load_json(json) {
@@ -42,6 +40,34 @@ class EquipData {
             }
         }
         this.backpack.load_from_json(json.backpack);
+    }
+    to_string() {
+        let result = {
+            weapon: system_1.ItemSystem.to_string(this.weapon),
+            secondary: system_1.ItemSystem.to_string(this.secondary),
+            armour: {},
+            backpack: this.backpack.to_string()
+        };
+        for (let tag of types_1.armour_slots) {
+            result.armour[tag] = system_1.ItemSystem.to_string(this.armour[tag]);
+        }
+        return JSON.stringify(result);
+    }
+    from_string(s) {
+        const json = JSON.parse(s);
+        if (json.weapon != undefined) {
+            this.weapon = system_1.ItemSystem.from_string(json.weapon);
+        }
+        if (json.secondary != undefined) {
+            this.secondary = system_1.ItemSystem.from_string(json.secondary);
+        }
+        for (let tag of types_1.armour_slots) {
+            const tmp = json.armour[tag];
+            if (tmp != undefined) {
+                this.armour[tag] = system_1.ItemSystem.from_string(tmp);
+            }
+        }
+        this.backpack.from_string(json.backpack);
     }
 }
 class Equip {
@@ -65,7 +91,7 @@ class Equip {
         return right_hand.range;
     }
     get_melee_damage(type) {
-        let damage = new damage_types_1.Damage();
+        // let damage = new Damage()
         const item = this.data.weapon;
         if (item == undefined)
             return undefined;
@@ -124,8 +150,13 @@ class Equip {
     }
     equip_weapon(index) {
         let backpack = this.data.backpack;
+        if (index == undefined)
+            return;
         let item = backpack.items[index];
         if (item != undefined) {
+            if (item.slot != 'weapon') {
+                return;
+            }
             let tmp = this.data.weapon;
             if (tmp == undefined) {
                 this.data.weapon = backpack.items[index];
@@ -190,6 +221,12 @@ class Equip {
     }
     load_from_json(json) {
         this.data.load_json(json);
+    }
+    to_string() {
+        return this.data.to_string();
+    }
+    from_string(s) {
+        this.data.from_string(s);
     }
 }
 exports.Equip = Equip;

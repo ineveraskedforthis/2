@@ -120,11 +120,20 @@ export class Character {
         return this.set('fatigue', x)
     }
 
+    set_status(dstatus: Status) {
+        this.status.blood = dstatus.blood
+        this.status.rage = dstatus.rage
+        this.status.stress = dstatus.stress
+        this.status.hp = dstatus.hp
+        this.status.fatigue = dstatus.fatigue
+    }
+
     change_status(dstatus: Status) {
         this.change_hp(dstatus.hp)
         this.change_rage(dstatus.rage);
         this.change_stress(dstatus.stress);
         this.change_blood(dstatus.blood);
+        this.change_fatigue(dstatus.fatigue)
     }
 
     get_hp() {

@@ -68,11 +68,19 @@ class Character {
     set_fatigue(x) {
         return this.set('fatigue', x);
     }
+    set_status(dstatus) {
+        this.status.blood = dstatus.blood;
+        this.status.rage = dstatus.rage;
+        this.status.stress = dstatus.stress;
+        this.status.hp = dstatus.hp;
+        this.status.fatigue = dstatus.fatigue;
+    }
     change_status(dstatus) {
         this.change_hp(dstatus.hp);
         this.change_rage(dstatus.rage);
         this.change_stress(dstatus.stress);
         this.change_blood(dstatus.blood);
+        this.change_fatigue(dstatus.fatigue);
     }
     get_hp() {
         return this.status.hp;
@@ -91,6 +99,14 @@ class Character {
     }
     in_battle() {
         return (this.battle_id != -1);
+    }
+    range() {
+        const result = this.equip.get_weapon_range();
+        if (result != undefined)
+            return result;
+        if (this.archetype.race == 'graci')
+            return 2;
+        return 0.5;
     }
 }
 exports.Character = Character;
@@ -312,11 +328,6 @@ exports.Character = Character;
 //             this.transfer(target, i_tag, x);
 //         }
 //     }
-//     transfer_all_inv(target: {stash: Stash, savings: any, equip: any}) {
-//         this.transfer_all(target)
-//         this.savings.transfer_all(target.savings)
-//         this.equip.transfer_all(target)
-//     }
 //     //market interactions
 //      buy(tag:material_index, amount: number, price: money) {
 //         if (this.savings.get() >= amount * price) {
@@ -341,165 +352,6 @@ exports.Character = Character;
 //         await this.world.entity_manager.remove_orders(pool, this)
 //         await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
 //     }
-//     //rgo
-//     rgo_check(character:Character) {
-//         generate_loot(character, this.get_tag())
-//         character.send_stash_update()
-//         character.send_skills_update()
-//         character.changed = true
-//     }
-//     //attack calculations
-//      attack(target: Character, mod:'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean, distance: number) {
-//         let result = new AttackResult()
-//         result = this.equip.get_weapon_damage(result, (mod == 'ranged'));
-//         result = this.mod_attack_damage_with_stats(result, mod);
-//         result = this.roll_accuracy(result, mod, distance);
-//         result = this.roll_crit(result);
-//         result = target.roll_dodge(result, mod, dodge_flag);
-//         result = target.roll_block(result);
-//         let dice = Math.random()
-//         if (dice > this.get_weapon_skill(result.weapon_type) / 50) {
-//             this.change_weapon_skill(result.weapon_type, 1)
-//         }
-//         this.send_skills_update()
-//         result = await target.take_damage(pool, mod, result);
-//         this.change_status(result.attacker_status_change)
-//         if (result.flags.killing_strike) {
-//             target.transfer_all_inv(this)
-//             target.rgo_check(this)
-//         }
-//         return result;
-//     }
-//      spell_attack(target: Character, tag: spell_tags) {
-//         let result = new AttackResult()
-//         if (tag == 'bolt') {
-//             let bolt_difficulty = 30
-//             let dice = Math.random() * bolt_difficulty
-//             let skill = this.skills.magic_mastery
-//             if (skill < dice) {
-//                 this.skills.magic_mastery += 1
-//             }
-//         }
-//         result = spells[tag](result);
-//         result = this.mod_spell_damage_with_stats(result, tag);
-//         this.change_status(result.attacker_status_change)
-//         result = await target.take_damage(pool, 'ranged', result);
-//         return result;
-//     }
-//      take_damage(mod:'fast'|'heavy'|'usual'|'ranged', result: AttackResult): Promise<AttackResult> {
-//         let res:any = this.get_resists();
-//         if (!result.flags.evade && !result.flags.miss) {
-//             for (let i of damage_types) {
-//                 if (result.damage[i] > 0) {
-//                     let curr_damage = Math.max(0, result.damage[i] - res[i]);
-//                     if ((curr_damage > 0) && ((i == 'slice') || (i == 'pierce')) && !(mod == 'ranged')) {
-//                         result.attacker_status_change.blood += Math.floor(curr_damage / 10)
-//                         result.defender_status_change.blood += Math.floor(curr_damage / 10)
-//                     }
-//                     result.total_damage += curr_damage;
-//                     this.change_hp(-curr_damage);
-//                     if (this.get_hp() == 0) {
-//                         await this.world.entity_manager.remove_orders(pool, this)
-//                         await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
-//                         result.flags.killing_strike = true
-//                     }
-//                 }
-//             }
-//             this.change_status(result.defender_status_change)
-//         }
-//         await this.save_to_db(pool)
-//         return result;
-//     }    
-//     mod_attack_damage_with_stats(result: AttackResult, mod:'fast'|'usual'|'heavy'|'ranged') {
-//         let phys_power = this.get_phys_power() / 10
-//         switch(mod) {
-//             case 'usual': {phys_power = phys_power * 2; break}
-//             case 'heavy': {phys_power = phys_power * 5; break}
-//             case 'ranged': {phys_power = phys_power * 2; break}
-//         }
-//         let magic_power = this.get_magic_power() / 10
-//         if (this.skills.perks.claws) {
-//             if (result.weapon_type == 'noweapon') {
-//                 result.damage.pierce += 10
-//             }
-//         }
-//         if (this.skills.perks.advanced_unarmed) {
-//             if (result.weapon_type == 'noweapon') {
-//                 result.damage.blunt += 10
-//             }
-//         }
-//         if (mod != 'ranged') {
-//             result.attacker_status_change.rage = 5
-//         }
-//         result.attacker_status_change.fatigue = 1
-//         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
-//         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * phys_power));
-//         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * phys_power));
-//         result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * magic_power));
-//         return result
-//     }
-//     mod_spell_damage_with_stats(result: AttackResult, tag:spell_tags) {
-//         let power_mod = this.get_magic_power() / 10
-//         let skill_mod = this.skills.magic_mastery / 10
-//         let damage_mod = power_mod * (skill_mod + 1)
-//         if (this.skills.perks.magic_bolt) {
-//             damage_mod = damage_mod * 1.5
-//         }
-//         if (this.skills.perks.mage_initiation) {
-//             damage_mod = damage_mod * 1.5
-//         }
-//         damage_mod = Math.floor(damage_mod)
-//         result.damage['blunt']  = Math.floor(Math.max(1, result.damage['blunt']     * damage_mod));
-//         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce']    * damage_mod));
-//         result.damage['slice']  = Math.floor(Math.max(0, result.damage['slice']     * damage_mod));
-//         result.damage['fire']   = Math.floor(Math.max(0, result.damage['fire']      * damage_mod));
-//         return result
-//     }
-//     roll_accuracy(result: AttackResult, mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
-//         let dice = Math.random();
-//         result.chance_to_hit = this.get_accuracy(result, mod, distance)
-//         if (dice > result.chance_to_hit) {
-//             result.flags.miss = true;
-//         }
-//         return result
-//     }
-//     roll_crit(result: AttackResult) {
-//         let dice = Math.random()
-//         let crit_chance = this.get_crit_chance("attack");
-//         let mult = this.get_crit_mult();
-//         if (dice < crit_chance) {
-//             result.damage['blunt'] = result.damage['blunt'] * mult;
-//             result.damage['pierce'] = result.damage['pierce'] * mult;
-//             result.damage['slice'] = result.damage['slice'] * mult;
-//             result.flags.crit = true;
-//         }
-//         return result
-//     }
-//     roll_dodge(result: AttackResult, mod: 'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean) {
-//         let dice = Math.random()
-//         let base_evade_chance = this.get_evasion_chance();
-//         let attack_specific_dodge = 0;
-//         if (dodge_flag) switch(mod){
-//             case 'fast': {attack_specific_dodge = 0.2; break}
-//             case 'usual': {attack_specific_dodge = 0.5; break}
-//             case 'heavy': {attack_specific_dodge = 1; break}
-//             case 'ranged': {attack_specific_dodge = 0.2;break}
-//         }
-//         let evade_chance = base_evade_chance + attack_specific_dodge
-//         if (dice < evade_chance) {
-//             result.flags.evade = true
-//             result.flags.crit = false
-//         }
-//         return result
-//     }
-//     roll_block(result: AttackResult) {
-//         let dice = Math.random()
-//         let block_chance = this.get_block_chance();
-//         if (dice < block_chance) {
-//             result.flags.blocked = true;
-//         }
-//         return result;
-//     }
 //     get_magic_power() {
 //         let power = this.stats.magic_power * this.equip.get_magic_power_modifier();
 //         return power;
@@ -508,77 +360,6 @@ exports.Character = Character;
 //         let power = this.get_magic_power()
 //         let skill = this.skills.magic_mastery
 //         return (power / 10 * skill)
-//     }
-//     get_phys_power() {
-//         let power = this.stats.phys_power * this.equip.get_phys_power_modifier();
-//         return power;
-//     }
-//     get_resists() {
-//         let res = new DamageByTypeObject()
-//         return res.add_object(this.equip.get_resists())
-//     }    
-//     get_evasion_chance() {
-//         return character_defines.evasion + this.skills.evasion * 0.01
-//     }
-//     get_weapon_skill(weapon_type:WEAPON_TYPE):number {
-//         switch(weapon_type) {
-//             case WEAPON_TYPE.NOWEAPON:  return this.skills.noweapon;
-//             case WEAPON_TYPE.ONEHAND:   return this.skills.onehand;
-//             case WEAPON_TYPE.POLEARMS:  return this.skills.polearms;
-//             case WEAPON_TYPE.TWOHANDED: return this.skills.twohanded;
-//             case WEAPON_TYPE.RANGED:    return this.skills.ranged;
-//         }
-//     }
-//     change_weapon_skill(weapon_type:WEAPON_TYPE, x: number) {
-//         switch(weapon_type) {
-//             case WEAPON_TYPE.NOWEAPON:  this.skills.noweapon       += x;break;
-//             case WEAPON_TYPE.ONEHAND:   this.skills.onehand        += x;break;
-//             case WEAPON_TYPE.POLEARMS:  this.skills.polearms       += x;break;
-//             case WEAPON_TYPE.TWOHANDED: this.skills.twohanded      += x;break;
-//             case WEAPON_TYPE.RANGED:    this.skills.ranged         += x;break;
-//         }
-//     }
-//     get_block_chance() {
-//         let tmp = character_defines.block + this.skills.blocking * character_defines.skill_blocking_modifier;
-//         return tmp;
-//     }
-//     get_crit_chance(tag: "attack"|"spell") {
-//         let base_crit_chance = character_defines.crit_chance
-//         if (tag == 'attack') {
-//             return base_crit_chance;
-//         }
-//         if (tag == 'spell') {
-//             return base_crit_chance;
-//         }
-//     }
-//     get_crit_mult(){
-//         return character_defines.crit_mult
-//     }
-//     // some getters
-//     get_actions() {
-//         let tmp:any[] = []
-//         return tmp
-//     }
-//     get_range() {
-//         let base_range = 0.6
-//         if (this.misc.tag == 'graci') base_range = 1.3;
-//         return this.equip.get_weapon_range(base_range);
-//     }
-//     get_model() {
-//         return this.misc.model
-//     }
-//     get_local_market() {
-//         var cell = this.world.get_cell_by_id(this.cell_id);
-//         // return cell.market;
-//     }
-//     get_action_points() {
-//         return 10
-//     }
-//     get_initiative() {
-//         return 10
-//     }
-//     get_speed() {
-//         return 5
 //     }
 //     // craft related
 //     calculate_gained_failed_craft_stress(tag:any) {
