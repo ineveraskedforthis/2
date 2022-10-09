@@ -58,6 +58,9 @@ function character_serialisation_test_advanced() {
     character.skills.cooking = 40
     character.perks.meat_master = true
 
+    character.explored[2] = true
+    character.explored[10] = true
+
     const string = CharacterSystem.character_to_string(character)
     const character2 = CharacterSystem.string_to_character(string)
     const string2 = CharacterSystem.character_to_string(character2)

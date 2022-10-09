@@ -46,6 +46,7 @@ export namespace Link {
             let user_online = UserManagement.get_user(user.id as user_online_id)
             UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation')
         }
+        UserManagement.save_users()
     }
 
     export function character_and_cell(character: Character, cell: Cell) {

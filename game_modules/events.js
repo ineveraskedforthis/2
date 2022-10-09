@@ -8,9 +8,19 @@ const system_2 = require("./base_game_classes/character/system");
 const alerts_1 = require("./client_communication/network_actions/alerts");
 const user_manager_1 = require("./client_communication/user_manager");
 const materials_manager_1 = require("./manager_classes/materials_manager");
+const system_3 = require("./map/system");
 const systems_communication_1 = require("./systems_communication");
 var Event;
 (function (Event) {
+    function new_character(template, name, starting_cell, model) {
+        let character = system_2.CharacterSystem.template_to_character(template, name, starting_cell);
+        character.set_model_variation(model);
+        const cell = system_3.MapSystem.SAFE_id_to_cell(starting_cell);
+        systems_communication_1.Link.character_and_cell(character, cell);
+        system_2.CharacterSystem.save();
+        return character;
+    }
+    Event.new_character = new_character;
     function shoot(attacker, defender, distance) {
         // sanity checks
         if (defender.get_hp() == 0)

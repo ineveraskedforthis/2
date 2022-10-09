@@ -46,6 +46,7 @@ var Link;
             let user_online = user_manager_1.UserManagement.get_user(user.id);
             user_manager_1.UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation');
         }
+        user_manager_1.UserManagement.save_users();
     }
     Link.character_and_user_data = character_and_user_data;
     function character_and_cell(character, cell) {

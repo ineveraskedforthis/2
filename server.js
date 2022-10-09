@@ -7,7 +7,6 @@ var express = require('express');
 var app = express();
 exports.http = require('http').createServer(app);
 ;
-var gameloop = require('node-gameloop');
 var path = require('path');
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'static')));
@@ -18,4 +17,4 @@ exports.http.listen(port, () => {
     console.log('listening on *:3000');
 });
 const game_launch_1 = require("./game_launch");
-(0, game_launch_1.launch)();
+(0, game_launch_1.launch)(exports.http, app);

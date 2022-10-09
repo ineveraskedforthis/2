@@ -8,13 +8,12 @@ const user_1 = require("../client_communication/user");
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 const fs_1 = __importDefault(require("fs"));
-const system_1 = require("../base_game_classes/character/system");
 const human_1 = require("../base_game_classes/character/races/human");
 const systems_communication_1 = require("../systems_communication");
 const updates_1 = require("./network_actions/updates");
 const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
-const system_2 = require("../map/system");
+const events_1 = require("../events");
 exports.users_data_dict = {};
 var users_data_list = [];
 var login_to_user_data = {};
@@ -154,13 +153,10 @@ var UserManagement;
             console.log('attempt to generate character for user who already owns one');
             return;
         }
-        let character = system_1.CharacterSystem.template_to_character(human_1.HumanTemplateNotAligned, name, starting_cell);
-        character.set_model_variation(model_variation);
+        const character = events_1.Event.new_character(human_1.HumanTemplateNotAligned, name, starting_cell, model_variation);
         console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')');
         systems_communication_1.Link.character_and_user_data(character, user);
-        const cell = system_2.MapSystem.SAFE_id_to_cell(starting_cell);
-        systems_communication_1.Link.character_and_cell(character, cell);
-        // CREATE LATER A CHARACTER CREATION SEPARATE FUNCTION!!!
+        // save_users()
     }
     UserManagement.get_new_character = get_new_character;
     function add_user_to_update_queue(id, reason) {

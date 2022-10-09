@@ -3,14 +3,12 @@ var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 
 import fs from "fs"
-import { CharacterSystem } from "../base_game_classes/character/system";
 import { HumanTemplateNotAligned } from "../base_game_classes/character/races/human";
 import { Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
 import { UI_Part, Update } from "./causality_graph";
 import { cell_id, char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
-import { MapSystem } from "../map/system";
 import { Event } from "../events";
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
@@ -168,6 +166,7 @@ export namespace UserManagement {
         const character = Event.new_character(HumanTemplateNotAligned, name, starting_cell, model_variation)
         console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
+        // save_users()
     }
 
     export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|UI_Part|'character_removal') {

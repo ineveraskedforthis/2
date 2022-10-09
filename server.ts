@@ -15,7 +15,6 @@ export interface Socket {
     emit(event: string, data: any):void;
 }
 
-var gameloop = require('node-gameloop');
 var path = require('path');
 
 app.use(express.json());
@@ -29,4 +28,4 @@ http.listen(port, () => {
 
 
 import { launch } from "./game_launch";
-launch()
+launch(http, app)

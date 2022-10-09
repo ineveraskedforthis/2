@@ -19,35 +19,75 @@ export var socket_manager = new SocketManager(io)
 
 
 const gameloop = require('node-gameloop');
+var shutdown = false
 
-
-export function launch() {
+export function launch(http_server: any, express_server: any) {
     try {
+
+        process.on('SIGTERM', () => {
+            console.info('SIGTERM signal received. Preparing for shutdown');
+            shutdown = true
+        });
+        process.on('SIGINT', () => {
+            console.info('SIGINT signal received. Preparing for shutdown');
+            shutdown = true
+        });
+        process.on('SIGHUP', () => {
+            console.info('SIGHUP signal received. Preparing for shutdown');
+            shutdown = true
+        });
+
         console.log('reading save files');
         console.log('connection ready, checking for version update');
         let version = get_version()
         console.log(version)
         migrate(version, constants.version)
 
-        CharacterSystem.load()
-        MapSystem.load()
-        UserManagement.load_users()
-        Auth.load()
+        load()
 
         console.log('systems are ready');
-        gameloop.setGameLoop( (delta: number) => update(delta), 500 );
+        gameloop.setGameLoop( (delta: number) => update(delta, http_server, express_server), 500 );
 
     } catch (e) {
         console.log(e);
     }
 }
 
+function load() {
+    CharacterSystem.load()
+    MapSystem.load()
+    UserManagement.load_users()
+    Auth.load()
+}
 
-function update(delta: number) {
+function save() {
+    CharacterSystem.save()
+    UserManagement.save_users()
+    Auth.save()
+}
+
+var update_timer = 0
+
+function update(delta: number, http_server:any, express_server: any) {
+    if (shutdown) {
+        http_server.close()
+        // express_server.close(() => {
+        //     console.log('express server closed')
+        // })
+        save()
+        process.exit(0);
+    }
+
     CharacterSystem.update(delta)
     MapSystem.update(delta)
     ActionManager.update_characters(delta)
     UserManagement.update_users()
+    
+    update_timer += delta
+    if (update_timer > 50000) {
+        save()
+        update_timer = 0
+    }
 }
 
 

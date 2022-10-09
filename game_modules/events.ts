@@ -19,6 +19,8 @@ export namespace Event {
         character.set_model_variation(model)
         const cell = MapSystem.SAFE_id_to_cell(starting_cell)
         Link.character_and_cell(character, cell)
+
+        CharacterSystem.save()
         return character
     }
 

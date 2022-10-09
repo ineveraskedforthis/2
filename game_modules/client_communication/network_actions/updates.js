@@ -165,8 +165,8 @@ var SendUpdate;
     SendUpdate.market = market;
     function explored(user) {
         console.log('send exploration');
-        var stack = new Error().stack;
-        console.log(stack);
+        // var stack = new Error().stack
+        // console.log( stack )
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;

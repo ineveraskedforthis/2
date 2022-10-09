@@ -170,8 +170,8 @@ export namespace SendUpdate {
 
     export function explored(user: User) {
         console.log('send exploration')
-        var stack = new Error().stack
-        console.log( stack )
+        // var stack = new Error().stack
+        // console.log( stack )
 
         let character = Convert.user_to_character(user)
         if (character == undefined) return
