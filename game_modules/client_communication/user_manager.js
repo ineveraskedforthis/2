@@ -73,6 +73,7 @@ var UserManagement;
     }
     UserManagement.link_socket_wrapper_and_user = link_socket_wrapper_and_user;
     function construct_user(sw, data) {
+        console.log('constructing online user ' + data.id);
         let user = new user_1.User(sw.socket, data);
         sw.user_id = user.data.id;
         exports.users_online_dict[sw.user_id] = user;

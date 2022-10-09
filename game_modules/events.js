@@ -12,6 +12,17 @@ const system_3 = require("./map/system");
 const systems_communication_1 = require("./systems_communication");
 var Event;
 (function (Event) {
+    function move(character, new_cell) {
+        console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y);
+        const old_cell = systems_communication_1.Convert.character_to_cell(character);
+        systems_communication_1.Unlink.character_and_cell(character, old_cell);
+        systems_communication_1.Link.character_and_cell(character, new_cell);
+        // effect on fatigue
+        character.change('fatigue', 2);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+        // UserManagement.add_user_to_update_queue(user.data.id, UI_Part.MAP)
+    }
+    Event.move = move;
     function new_character(template, name, starting_cell, model) {
         let character = system_2.CharacterSystem.template_to_character(template, name, starting_cell);
         character.set_model_variation(model);

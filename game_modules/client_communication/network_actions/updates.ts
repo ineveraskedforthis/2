@@ -179,6 +179,8 @@ export namespace SendUpdate {
         Alerts.generic_user_alert(user, 'explore', character.explored)
         map_position(user, true)
 
+        console.log(character.explored)
+
         for (let i = 0; i < character.explored.length; i++) {
             if (character.explored[i]) {
                 let cell = MapSystem.id_to_cell(i as cell_id)

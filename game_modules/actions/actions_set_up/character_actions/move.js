@@ -2,8 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.move = void 0;
 const system_1 = require("../../../map/system");
-const systems_communication_1 = require("../../../systems_communication");
-const user_manager_1 = require("../../../client_communication/user_manager");
+const events_1 = require("../../../events");
 exports.move = {
     duration(char) {
         return 1 + char.get_fatigue() / 30;
@@ -45,16 +44,7 @@ exports.move = {
             console.log(character.next_cell);
             return;
         }
-        const old_cell = systems_communication_1.Convert.character_to_cell(character);
-        systems_communication_1.Unlink.character_and_cell(character, old_cell);
-        systems_communication_1.Link.character_and_cell(character, new_cell);
-        // effect on fatigue
-        character.change('fatigue', 2);
-        //check if it is user and you need to update status
-        const user = systems_communication_1.Convert.character_to_user(character);
-        if (user != undefined) {
-            user_manager_1.UserManagement.add_user_to_update_queue(user.data.id, 1 /* UI_Part.STATUS */);
-        }
+        events_1.Event.move(character, new_cell);
     },
     is_move: true
 };

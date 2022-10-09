@@ -81,6 +81,7 @@ export namespace UserManagement {
     }
 
     export function construct_user(sw: SocketWrapper, data: UserData) {
+        console.log('constructing online user ' + data.id)
         let user = new User(sw.socket, data)
         sw.user_id = user.data.id as user_online_id
         users_online_dict[sw.user_id] = user;

@@ -4,6 +4,7 @@ import { MapSystem } from "../../../map/system";
 import { Convert, Link, Unlink } from "../../../systems_communication";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";
+import { Event } from "../../../events";
 
 export const move:ActionTargeted ={
     duration(char: Character) {
@@ -48,18 +49,7 @@ export const move:ActionTargeted ={
             console.log(character.next_cell)
             return
         }
-        const old_cell = Convert.character_to_cell(character)
-        Unlink.character_and_cell(character, old_cell)
-        Link.character_and_cell(character, new_cell)
-
-        // effect on fatigue
-        character.change('fatigue', 2);
-
-        //check if it is user and you need to update status
-        const user = Convert.character_to_user(character)
-        if (user != undefined) {
-            UserManagement.add_user_to_update_queue(user.data.id, UI_Part.STATUS)
-        }
+        Event.move(character, new_cell)
     },
 
     is_move: true

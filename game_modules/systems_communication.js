@@ -47,6 +47,7 @@ var Link;
             user_manager_1.UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation');
         }
         user_manager_1.UserManagement.save_users();
+        system_1.CharacterSystem.save();
     }
     Link.character_and_user_data = character_and_user_data;
     function character_and_cell(character, cell) {
@@ -66,18 +67,16 @@ var Link;
             }
             user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 8 /* UI_Part.LOCAL_CHARACTERS */);
         }
-        // check if it is a user and needs updates, otherwise return immediately
-        const user = Convert.character_to_user(character);
-        if (user == undefined) {
-            return;
-        }
         // exploration
         character.explored[cell.id] = true;
         let neighbours = system_2.MapSystem.neighbours_cells(cell.id);
         for (let item of neighbours) {
+            console.log('explore ' + item.x + ' ' + item.y);
             character.explored[item.id] = true;
         }
+        //updates
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 9 /* UI_Part.EXPLORED */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.LOCAL_ACTIONS */);
     }
     Link.character_and_cell = character_and_cell;
 })(Link = exports.Link || (exports.Link = {}));

@@ -47,6 +47,7 @@ export namespace Link {
             UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation')
         }
         UserManagement.save_users()
+        CharacterSystem.save()
     }
 
     export function character_and_cell(character: Character, cell: Cell) {
@@ -65,19 +66,18 @@ export namespace Link {
             UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
         }
 
-        // check if it is a user and needs updates, otherwise return immediately
-        const user = Convert.character_to_user(character)
-        if (user == undefined) {
-            return
-        }
 
         // exploration
         character.explored[cell.id] = true
         let neighbours = MapSystem.neighbours_cells(cell.id)
         for (let item of neighbours) {
+            console.log('explore ' + item.x + ' ' + item.y)
             character.explored[item.id] = true
         }
+
+        //updates
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.EXPLORED)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.LOCAL_ACTIONS)
     }
 }
 
