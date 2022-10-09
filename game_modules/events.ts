@@ -3,14 +3,24 @@ import { Attack } from "./base_game_classes/character/attack/system";
 import { Character } from "./base_game_classes/character/character";
 import { Loot } from "./base_game_classes/character/races/generate_loot";
 import { CharacterSystem } from "./base_game_classes/character/system";
+import { CharacterTemplate } from "./base_game_classes/character/templates";
 import { UI_Part } from "./client_communication/causality_graph";
 import { Alerts } from "./client_communication/network_actions/alerts";
 import { UserManagement } from "./client_communication/user_manager";
 import { ARROW_BONE, material_index, RAT_SKIN } from "./manager_classes/materials_manager";
-import { Convert, Unlink } from "./systems_communication";
-import { damage_type, weapon_attack_tag } from "./types";
+import { MapSystem } from "./map/system";
+import { Convert, Link, Unlink } from "./systems_communication";
+import { cell_id, damage_type, weapon_attack_tag } from "./types";
 
 export namespace Event {
+
+    export function new_character(template:CharacterTemplate, name: string, starting_cell: cell_id, model: any) {
+        let character = CharacterSystem.template_to_character(template, name, starting_cell)
+        character.set_model_variation(model)
+        const cell = MapSystem.SAFE_id_to_cell(starting_cell)
+        Link.character_and_cell(character, cell)
+        return character
+    }
 
     export function shoot(attacker: Character, defender: Character, distance: number): 'ok'|'no_ammo'|'miss' {
         // sanity checks

@@ -11,6 +11,7 @@ import { Alerts } from "./network_actions/alerts";
 import { UI_Part, Update } from "./causality_graph";
 import { cell_id, char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
 import { MapSystem } from "../map/system";
+import { Event } from "../events";
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
@@ -164,16 +165,9 @@ export namespace UserManagement {
             return
         }
 
-        let character = CharacterSystem.template_to_character(HumanTemplateNotAligned, name, starting_cell)
-        character.set_model_variation(model_variation)
-
+        const character = Event.new_character(HumanTemplateNotAligned, name, starting_cell, model_variation)
         console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
-        const cell = MapSystem.SAFE_id_to_cell(starting_cell)
-
-        Link.character_and_cell(character, cell)
-
-        // CREATE LATER A CHARACTER CREATION SEPARATE FUNCTION!!!
     }
 
     export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|UI_Part|'character_removal') {
