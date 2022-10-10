@@ -1,10 +1,6 @@
 import { User } from "./user"
 import { SendUpdate } from "./network_actions/updates";
 
-
-type mask = number & {__brand: 'mask'}
-
-
 // should rewrite later to classes/interfaces?
 // but they will add even more boilerplate......................
 

@@ -1,17 +1,6 @@
 
-import { Stash } from "../inventories/stash";
-
-var common = require("./common.js");
-var {constants} = require("./static_data/constants.js");
-
-import {geom} from '../../geom'
-
-import {BattleAI} from './battle_ai'
-import {Character} from '../character/character'
-import { ARROW_BONE, material_index, ZAZ } from "../../manager_classes/materials_manager";
 import { UnitsHeap } from "./heap";
 import { battle_id, ms } from "../../../shared/battle_data";
-import { Savings } from "../inventories/savings";
 
 export interface MoveAction {action: "move", target: {x: number, y:number}}
 export interface AttackAction {action: "attack", target: number}
