@@ -1,4 +1,4 @@
-import { action_points, battle_position } from "../../../shared/battle_data"
+import { action_points, battle_position, ms } from "../../../shared/battle_data"
 import { Alerts } from "../../client_communication/network_actions/alerts"
 import { Event } from "../../events"
 import { geom } from "../../geom"
@@ -9,36 +9,60 @@ import { UnitData } from "./unit"
 
 
 export namespace BattleEvent {
-    export function EndTurnEvent(battle: Battle, unit: UnitData) {
+    export function EndTurn(battle: Battle, unit: UnitData) {
         battle.waiting_for_input = false
-        battle.heap.end_turn(unit.id)
         
+        battle.heap.end_turn(unit.id)
+        if (this.selected != id) return false;
+        let unit_id = this.pop()
+        if (unit_id == undefined) return false
+        let unit = this.data[unit_id]
+        unit.next_turn_after = unit.slowness;
+        unit.action_points_left = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max) as action_points;
+        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1)
+        this.push(id)
+
         Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id)
     }
 
+    export function NewTurn(battle: Battle) {
+        let current_time = Date.now() as ms
+        battle.date_of_last_turn = current_time
+
+        let tmp = battle.heap.pop()
+        if (tmp == undefined) {
+            return {responce: 'no_units_left'}
+        }
+        let unit = battle.heap.get_unit(tmp)
+        let time_passed = unit.next_turn_after
+        battle.heap.update(time_passed)
+    }
+
     export function MoveEvent(battle: Battle, unit: UnitData, target: battle_position) {
-            let tmp = geom.minus(target, unit.position)
+        let tmp = geom.minus(target, unit.position)
 
-            let MOVE_COST = 3
-            if (geom.norm(tmp) * MOVE_COST > unit.action_points_left) {
-                tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / MOVE_COST)
-            }
-            unit.position.x = tmp.x + unit.position.x;
-            unit.position.y = tmp.y + unit.position.y;
-            let points_spent = geom.norm(tmp) * MOVE_COST
+        let MOVE_COST = 3
+        if (geom.norm(tmp) * MOVE_COST > unit.action_points_left) {
+            tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / MOVE_COST)
+        }
+        unit.position.x = tmp.x + unit.position.x;
+        unit.position.y = tmp.y + unit.position.y;
+        let points_spent = geom.norm(tmp) * MOVE_COST
 
-            unit.action_points_left =  unit.action_points_left - points_spent as action_points
-            
-            Alerts.battle_event(battle, 'move', unit.id, target, unit.id)
+        unit.action_points_left =  unit.action_points_left - points_spent as action_points
+        
+        Alerts.battle_event(battle, 'move', unit.id, target, unit.id)
     }
 
     export function Attack(battle: Battle, attacker: UnitData, defender:UnitData, attack_type: melee_attack_type) {
+        const AttackerCharacter = Convert.unit_to_character(attacker)
         if (attacker.action_points_left < 3) {
+            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
             return 
         }
 
         let dist = geom.dist(attacker.position, defender.position)
-        const AttackerCharacter = Convert.unit_to_character(attacker)
+        
         const DefenderCharacter = Convert.unit_to_character(defender)
         if (dist > AttackerCharacter.range()) {
             return
@@ -51,11 +75,12 @@ export namespace BattleEvent {
     }
 
     export function Shoot(battle: Battle, attacker: UnitData, defender: UnitData) {
+        const AttackerCharacter = Convert.unit_to_character(attacker)
         if (attacker.action_points_left < 3) {
+            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
             return
         }
         let dist = geom.dist(attacker.position, defender.position)
-        const AttackerCharacter = Convert.unit_to_character(attacker)
         const DefenderCharacter = Convert.unit_to_character(defender)
 
         attacker.action_points_left = attacker.action_points_left - 3 as action_points
@@ -66,33 +91,23 @@ export namespace BattleEvent {
             case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id)
         }
     }
+    export function Flee(battle: Battle, unit: UnitData) {
+        const character = Convert.unit_to_character(unit)
+        if (unit.action_points_left >= 3) {
+            unit.action_points_left = unit.action_points_left - 3 as action_points
+            let dice = Math.random();
+
+            if (dice <= flee_chance()) { // success
+                Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id)
+            }
+        }
+        Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left)
+    } 
+
+    function flee_chance(){
+        return 0.5
+    }
 }
-
-
-//         if (action.action == 'shoot') {
-//             if (!can_shoot(character)) {
-//                 return {action: "not_learnt", who: unit_index}
-//             }
-//             if (action.target == null) {
-//                 return { action: 'no_target_selected', who: unit_index}
-//             }
-//             if (unit.action_points_left < 3) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-
-//             let target_unit = this.heap.get_unit(action.target);
-//             let target_char = this.world.get_char_from_id(target_unit.char_id);
-//             let dodge_flag = (target_unit.dodge_turns > 0)
-//             let dist = geom.dist(unit.position, target_unit.position)
-
-//             character.stash.inc(ARROW_BONE, -1)
-
-//             let result =  character.attack(target_char, 'ranged', dodge_flag, dist);
-//             unit.action_points_left -= 3
-//             this.changed = true
-
-//             return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//         }
 
 //         if (action.action == 'magic_bolt') {
 //             if (!can_cast_magic_bolt(character)) {
@@ -211,21 +226,7 @@ export namespace BattleEvent {
 //             return {action: 'dodge', who: unit_index}
 //         }
 
-//         if (action.action == 'flee') {
-//             if (unit.action_points_left >= 3) {
-//                 unit.action_points_left -= 3
-//                 let dice = Math.random();
-//                 this.changed = true
-//                 if (dice <= flee_chance(character)) {
-//                     this.draw = true;
-                    
-//                     return {action: 'flee', who: unit_index};
-//                 } else {
-//                     return {action: 'flee-failed', who: unit_index};
-//                 }
-//             }
-//             return {action: 'not_enough_ap', who: unit_index}
-//         } 
+
 
 //         if (action.action == 'switch_weapon') {
 //             // console.log('????')

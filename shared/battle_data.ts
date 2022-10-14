@@ -19,7 +19,7 @@ export interface UnitData {
 }
 
 
-export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'
+export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'
 export interface BattleEventSocket{
     tag: BattleEventTag
     creator: unit_id

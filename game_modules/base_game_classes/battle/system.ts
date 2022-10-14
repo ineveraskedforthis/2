@@ -3,6 +3,7 @@
 import { battle_id, ms } from "../../../shared/battle_data"
 import { Character } from "../character/character"
 import { Battle } from "./battle"
+import { BattleEvent } from "./events"
 import { UnitsHeap } from "./heap"
 import { UnitData } from "./unit"
 
@@ -47,13 +48,13 @@ export namespace BattleSystem {
             // if unit is not moving for 60 seconds, turn ends automatically
             if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {
                 let unit = battle.heap.get_selected_unit()
-
-                let res = process_input(unit.id, {action: 'end_turn'})
-                this.send_action(res)
-                this.send_update()
+                if (unit != undefined) BattleEvent.EndTurn(battle, unit)
             }
 
-            if ((!this.waiting_for_input)) {
+            // if battle is not waiting for input, then we need to process the turn
+            if ((!battle.waiting_for_input)) {
+
+                
                 this.last_turn = current_time
                 
                 // heap manipulations
@@ -104,9 +105,7 @@ export namespace BattleSystem {
         }
     }
 
-    export function flee_chance(){
-        return 0.5
-    }
+    
 }
 
 //      process_input(unit_index: number, input: Action) {

@@ -123,18 +123,6 @@ export class UnitsHeap {
             selected: this.selected
         }
     }
-
-    end_turn(id: unit_id) {
-        if (this.selected != id) return false;
-        let unit_id = this.pop()
-        if (unit_id == undefined) return false
-        let unit = this.data[unit_id]
-        unit.next_turn_after = unit.slowness;
-        unit.action_points_left = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max) as action_points;
-        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1)
-        this.push(id)
-        return true
-    }
 }
 
 
