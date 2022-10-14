@@ -60,8 +60,11 @@ export namespace BattleEvent {
 
         attacker.action_points_left = attacker.action_points_left - 3 as action_points
         let responce = Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
-            
-        Alerts.battle_event(battle, 'shoot', attacker.id, defender.position, defender.id)
+        switch(responce) {
+            case 'miss': Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id); break;
+            case 'no_ammo': Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 1, 0)
+            case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id)
+        }
     }
 }
 
