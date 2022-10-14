@@ -59,9 +59,9 @@ export namespace BattleEvent {
         const DefenderCharacter = Convert.unit_to_character(defender)
 
         attacker.action_points_left = attacker.action_points_left - 3 as action_points
-        Event.shoot(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type)
+        let responce = Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
+            
         Alerts.battle_event(battle, 'shoot', attacker.id, defender.position, defender.id)
-
     }
 }
 

@@ -38,7 +38,7 @@ export namespace Event {
         return character
     }
 
-    export function shoot(attacker: Character, defender: Character, distance: number): 'ok'|'no_ammo'|'miss' {
+    export function shoot(attacker: Character, defender: Character, distance: number, flag_dodge: boolean): 'ok'|'no_ammo'|'miss' {
         // sanity checks
         if (defender.get_hp() == 0) return 'miss'
         if (attacker.get_hp() == 0) return 'miss'
@@ -47,7 +47,7 @@ export namespace Event {
         //remove arrow
         change_stash(attacker, ARROW_BONE, -1)
 
-        //check missed attack before everything else
+        //check missed attack because of lack of skill
         const acc = Accuracy.ranged(attacker, distance)
         const dice_accuracy = Math.random()
         if (dice_accuracy > acc) { 
@@ -56,6 +56,27 @@ export namespace Event {
                 increase_weapon_skill(attacker, 'ranged')
             }
             return 'miss' 
+        }
+
+        // evasion helps against arrows better than in melee
+        // 100 evasion - 2 * attack skill = 100% of arrows are missing
+        // evaded attack does not rise skill of attacker
+        // dodge is an active evasion
+        // it gives base 20% of arrows missing
+        // and you rise your evasion if you are attacked
+        const attack_skill = 2 * attacker.skills.ranged
+        const evasion = defender.skills.evasion
+        let evasion_chance = evasion - attack_skill
+        if (flag_dodge) evasion_chance = evasion_chance + 0.1
+        if (flag_dodge) {
+            const dice_evasion_skill_up = Math.random()
+            if (dice_evasion_skill_up < attack_skill - evasion) {
+                increase_evasion(defender)
+            }
+        }
+        const evasion_roll = Math.random()
+        if (evasion_roll < evasion_chance) {
+            return 'miss'
         }
 
         // create attack
