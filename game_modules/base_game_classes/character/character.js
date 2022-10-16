@@ -97,9 +97,6 @@ class Character {
     get_stress() {
         return this.status.stress;
     }
-    in_battle() {
-        return (this.battle_id != -1);
-    }
     range() {
         const result = this.equip.get_weapon_range();
         if (result != undefined)
@@ -108,9 +105,9 @@ class Character {
             return 2;
         return 0.5;
     }
-    is_player() {
-        return this.user_id != '#';
-    }
+    is_player() { return this.user_id != '#'; }
+    dead() { return this.get_hp() == 0; }
+    in_battle() { return (this.battle_id != -1); }
 }
 exports.Character = Character;
 // export class CharacterOld {

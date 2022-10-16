@@ -24,7 +24,6 @@ export class UnitsHeap {
         this.last = 0;
         this.selected = '?'
         this.changed = false
-
         for (let unit of raw_data) {
             this.add_unit(unit)
         } 

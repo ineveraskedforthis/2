@@ -1,17 +1,19 @@
 // this module shoul require only characters and battles systems
 
-import { battle_id, ms } from "../../../shared/battle_data"
+import { action_points, battle_id, battle_position, ms, unit_id } from "../../../shared/battle_data"
 import { Convert } from "../../systems_communication"
 import { Character } from "../character/character"
 import { CharacterSystem } from "../character/system"
 import { BattleAI } from "./AI/battle_ai"
 import { Battle } from "./classes/battle"
 import { UnitsHeap } from "./classes/heap"
+import { UnitData } from "./classes/unit"
 import { BattleEvent } from "./events"
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
 var last_id:battle_id = 0 as battle_id
+var last_unit_id = 0 as unit_id
 
 function time_distance(a: ms, b: ms) {
     return b - a as ms
@@ -21,12 +23,13 @@ function time_distance(a: ms, b: ms) {
 
 
 export namespace BattleSystem {
-    // only creates and initialise battle
-    // does not add participants
+    
 
     export function save() {}
     export function load() {}
 
+    // only creates and initialise battle
+    // does not add participants
     export function create_battle(): battle_id{
         last_id = last_id + 1 as battle_id
         let heap = new UnitsHeap([])
@@ -37,8 +40,77 @@ export namespace BattleSystem {
         return last_id
     }
 
-    export function add_figther() {
+    export function create_unit(character: Character, team: number): UnitData {
+        last_unit_id = last_unit_id + 1 as unit_id
+        
+        // deciding position
+        const dx = Math.random() * 2
+        const dy = Math.random() * 2
+        if (team == 1) {
+            var position = {x: 0 + dx, y: 8 + dy} as battle_position
+        } else {
+            var position = {x: 0 + dx, y: 0 + dy} as battle_position
+        }
 
+        const unit = new UnitData(last_unit_id, position, team,
+            10 as action_points, 10 as action_points, 10 as action_points, 3 as action_points, 
+            character.id, character.dead())
+        
+        return unit
+    }
+
+//     add_fighter(agent:Character, team:number, position:{x:number, y: number}|undefined) {
+//         console.log('add fighter')
+        
+//         if (position == undefined) {
+//             
+//             if (team == 1) {
+//                 position = {x: 0 + dx, y: 8 + dy}
+//             } else {
+//                 position = {x: 0 + dx, y: 0 + dy}
+//             }
+//         }
+
+//         let unit = new UnitData();
+//         unit.init(agent, position, team)
+
+//         this.heap.add_unit(unit)
+
+//         agent.set_flag('in_battle', true)
+//         agent.set_in_battle_id(this.heap.data.length - 1)
+//         agent.set_battle_id(this.id)
+
+//         this.changed = true;
+//     }
+
+//     // agent joins battle on a side of team
+//     join(agent: Character, team: number) {
+//         console.log(agent.name + ' joins battle on a side ' + team)
+//         this.add_fighter(agent, team, undefined)
+//         this.send_data_start()
+//     }
+
+//     check_team_to_join(agent:Character):number|'no_interest' {
+//         if (agent.faction_id == -1) return 'no_interest'
+
+//         let data = this.get_units()
+//         for (let item of data) {
+//             let char_id = item.char_id
+//             let char = this.world.entity_manager.chars[char_id]
+//             if (char.faction_id == agent.faction_id) {
+//                 return item.team
+//             }
+//         }
+
+//         return 'no_interest'
+//     }
+
+    export function add_figther(battle_id: battle_id, character: Character, team: number) {
+        const battle = battles_dict[battle_id]
+        if (battle == undefined) return
+        
+        const unit = create_unit(character, team)
+        
     }
 
     export function update() {
@@ -183,52 +255,7 @@ export namespace BattleSystem {
 //         return data
 //     }
 
-//     add_fighter(agent:Character, team:number, position:{x:number, y: number}|undefined) {
-//         console.log('add fighter')
-        
-//         if (position == undefined) {
-//             let dx = Math.random() * 2
-//             let dy = Math.random() * 2
-//             if (team == 1) {
-//                 position = {x: 0 + dx, y: 8 + dy}
-//             } else {
-//                 position = {x: 0 + dx, y: 0 + dy}
-//             }
-//         }
 
-//         let unit = new UnitData();
-//         unit.init(agent, position, team)
-
-//         this.heap.add_unit(unit)
-
-//         agent.set_flag('in_battle', true)
-//         agent.set_in_battle_id(this.heap.data.length - 1)
-//         agent.set_battle_id(this.id)
-
-//         this.changed = true;
-//     }
-
-//     // agent joins battle on a side of team
-//     join(agent: Character, team: number) {
-//         console.log(agent.name + ' joins battle on a side ' + team)
-//         this.add_fighter(agent, team, undefined)
-//         this.send_data_start()
-//     }
-
-//     check_team_to_join(agent:Character):number|'no_interest' {
-//         if (agent.faction_id == -1) return 'no_interest'
-
-//         let data = this.get_units()
-//         for (let item of data) {
-//             let char_id = item.char_id
-//             let char = this.world.entity_manager.chars[char_id]
-//             if (char.faction_id == agent.faction_id) {
-//                 return item.team
-//             }
-//         }
-
-//         return 'no_interest'
-//     }
 
 //      transfer(target:{stash: Stash}, tag:material_index, x:number) {
 //         this.stash.transfer(target.stash, tag, x);

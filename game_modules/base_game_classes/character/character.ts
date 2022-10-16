@@ -152,9 +152,7 @@ export class Character {
         return this.status.stress
     }
 
-    in_battle() {
-        return (this.battle_id != -1)
-    }
+    
 
     range() {
         const result = this.equip.get_weapon_range()
@@ -164,9 +162,9 @@ export class Character {
         return 0.5
     }
 
-    is_player() {
-        return this.user_id != '#';
-    }
+    is_player()     { return this.user_id != '#' }
+    dead()          { return this.get_hp() == 0 }
+    in_battle()     { return (this.battle_id != -1) }
 }
 
 

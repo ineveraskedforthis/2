@@ -7,6 +7,11 @@ const geom_1 = require("../../geom");
 const systems_communication_1 = require("../../systems_communication");
 var BattleEvent;
 (function (BattleEvent) {
+    function NewUnit(battle, unit) {
+        battle.heap.add_unit(unit);
+        alerts_1.Alerts.battle_event(battle, 'new_unit');
+    }
+    BattleEvent.NewUnit = NewUnit;
     function EndTurn(battle, unit) {
         battle.waiting_for_input = false;
         // invalid battle

@@ -1,14 +1,21 @@
-import { action_points, battle_position, ms } from "../../../shared/battle_data"
+import { action_points, battle_position, ms, unit_id } from "../../../shared/battle_data"
 import { Alerts } from "../../client_communication/network_actions/alerts"
 import { Event } from "../../events"
 import { geom } from "../../geom"
 import { Convert } from "../../systems_communication"
 import { melee_attack_type } from "../../types"
+import { Character } from "../character/character"
 import { Battle } from "./classes/battle"
 import { UnitData } from "./classes/unit"
 
 
+
 export namespace BattleEvent {
+    export function NewUnit(battle: Battle, unit: UnitData) {
+        battle.heap.add_unit(unit)
+        Alerts.battle_new_unit(battle, 'new_unit', unit)
+    }
+
     export function EndTurn(battle: Battle, unit: UnitData) {
         battle.waiting_for_input = false
         
