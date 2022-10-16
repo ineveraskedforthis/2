@@ -30,6 +30,13 @@ class Damage {
     copy() {
         return new Damage(this.blunt, this.pierce, this.slice, this.fire);
     }
+    total() {
+        let total = 0;
+        for (let tag of exports.damage_types) {
+            total += this[tag];
+        }
+        return total;
+    }
 }
 exports.Damage = Damage;
 exports.damage_types = ['blunt', 'pierce', 'slice', 'fire'];

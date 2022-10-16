@@ -7,13 +7,44 @@ const geom_1 = require("../../geom");
 const systems_communication_1 = require("../../systems_communication");
 var BattleEvent;
 (function (BattleEvent) {
-    function EndTurnEvent(battle, unit) {
+    function EndTurn(battle, unit) {
         battle.waiting_for_input = false;
-        battle.heap.end_turn(unit.id);
+        // invalid battle
+        if (battle.heap.selected == '?')
+            return false;
+        // not unit's turn
+        if (battle.heap.selected != unit.id)
+            return false;
+        //updating unit and heap
+        battle.heap.pop();
+        unit.next_turn_after = unit.slowness;
+        unit.action_points_left = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max);
+        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1);
+        battle.heap.push(unit.id);
+        // send updates
         alerts_1.Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id);
     }
-    BattleEvent.EndTurnEvent = EndTurnEvent;
-    function MoveEvent(battle, unit, target) {
+    BattleEvent.EndTurn = EndTurn;
+    /**
+     * This events starts a new turn in provided battle
+     * It sets new date_of_last_turn and updates priorities in heap accordingly
+     * @param battle Battle
+     * @returns
+     */
+    function NewTurn(battle) {
+        let current_time = Date.now();
+        battle.date_of_last_turn = current_time;
+        let tmp = battle.heap.selected;
+        if (tmp == '?') {
+            return { responce: 'no_units_left' };
+        }
+        let unit = battle.heap.get_unit(tmp);
+        let time_passed = unit.next_turn_after;
+        battle.heap.update(time_passed);
+        alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id);
+    }
+    BattleEvent.NewTurn = NewTurn;
+    function Move(battle, unit, target) {
         let tmp = geom_1.geom.minus(target, unit.position);
         let MOVE_COST = 3;
         if (geom_1.geom.norm(tmp) * MOVE_COST > unit.action_points_left) {
@@ -25,13 +56,14 @@ var BattleEvent;
         unit.action_points_left = unit.action_points_left - points_spent;
         alerts_1.Alerts.battle_event(battle, 'move', unit.id, target, unit.id);
     }
-    BattleEvent.MoveEvent = MoveEvent;
+    BattleEvent.Move = Move;
     function Attack(battle, attacker, defender, attack_type) {
+        const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         if (attacker.action_points_left < 3) {
+            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left);
             return;
         }
         let dist = geom_1.geom.dist(attacker.position, defender.position);
-        const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
         if (dist > AttackerCharacter.range()) {
             return;
@@ -43,38 +75,40 @@ var BattleEvent;
     }
     BattleEvent.Attack = Attack;
     function Shoot(battle, attacker, defender) {
+        const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         if (attacker.action_points_left < 3) {
+            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left);
             return;
         }
         let dist = geom_1.geom.dist(attacker.position, defender.position);
-        const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
         attacker.action_points_left = attacker.action_points_left - 3;
-        events_1.Event.shoot(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type);
-        alerts_1.Alerts.battle_event(battle, 'shoot', attacker.id, defender.position, defender.id);
+        let responce = events_1.Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0);
+        switch (responce) {
+            case 'miss':
+                alerts_1.Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id);
+                break;
+            case 'no_ammo': alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 1, 0);
+            case 'ok': alerts_1.Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id);
+        }
     }
     BattleEvent.Shoot = Shoot;
+    function Flee(battle, unit) {
+        const character = systems_communication_1.Convert.unit_to_character(unit);
+        if (unit.action_points_left >= 3) {
+            unit.action_points_left = unit.action_points_left - 3;
+            let dice = Math.random();
+            if (dice <= flee_chance()) { // success
+                alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id);
+            }
+        }
+        alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left);
+    }
+    BattleEvent.Flee = Flee;
+    function flee_chance() {
+        return 0.5;
+    }
 })(BattleEvent = exports.BattleEvent || (exports.BattleEvent = {}));
-//         if (action.action == 'shoot') {
-//             if (!can_shoot(character)) {
-//                 return {action: "not_learnt", who: unit_index}
-//             }
-//             if (action.target == null) {
-//                 return { action: 'no_target_selected', who: unit_index}
-//             }
-//             if (unit.action_points_left < 3) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-//             let target_unit = this.heap.get_unit(action.target);
-//             let target_char = this.world.get_char_from_id(target_unit.char_id);
-//             let dodge_flag = (target_unit.dodge_turns > 0)
-//             let dist = geom.dist(unit.position, target_unit.position)
-//             character.stash.inc(ARROW_BONE, -1)
-//             let result =  character.attack(target_char, 'ranged', dodge_flag, dist);
-//             unit.action_points_left -= 3
-//             this.changed = true
-//             return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//         }
 //         if (action.action == 'magic_bolt') {
 //             if (!can_cast_magic_bolt(character)) {
 //                 // console.log('???')
@@ -164,20 +198,6 @@ var BattleEvent;
 //             unit.action_points_left -= 4
 //             return {action: 'dodge', who: unit_index}
 //         }
-//         if (action.action == 'flee') {
-//             if (unit.action_points_left >= 3) {
-//                 unit.action_points_left -= 3
-//                 let dice = Math.random();
-//                 this.changed = true
-//                 if (dice <= flee_chance(character)) {
-//                     this.draw = true;
-//                     return {action: 'flee', who: unit_index};
-//                 } else {
-//                     return {action: 'flee-failed', who: unit_index};
-//                 }
-//             }
-//             return {action: 'not_enough_ap', who: unit_index}
-//         } 
 //         if (action.action == 'switch_weapon') {
 //             // console.log('????')
 //             if (unit.action_points_left < 3) {

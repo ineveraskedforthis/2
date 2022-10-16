@@ -75,31 +75,24 @@ export namespace BattleSystem {
                 battle.waiting_for_input = true
                 return
             } 
+
             // else ask ai to make all needed moves and end turn
             {
-                let log_obj: any[] = [];
-                this.make_turn()
-                unit.end_turn()
-                
-                this.heap.push(tmp)
-                this.changed = true
-                return {responce: 'end_turn', data: log_obj}
+                AI_turn(battle)
+                BattleEvent.EndTurn(battle, unit)
             }
         }
     }
 
+    /**  Makes moves for currently selected character depending on his battle_ai
+    */
     function AI_turn(battle: Battle){
         const unit = battle.heap.get_selected_unit()
         if (unit == undefined) return
         const character = Convert.unit_to_character(unit)
-        let action = BattleAI.action(this, unit, char);
-        while (action.action != 'end_turn') {
-            let logged_action =  this.action(this.heap.selected, action)
-            this.send_action(logged_action)
-            this.send_update()
-            action = BattleAI.action(this, unit, char);
-        }
-        this.changed = true
+        do {
+            var action = BattleAI.action(battle, unit, character);
+        } while (action == true)
     }
 }
 

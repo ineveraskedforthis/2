@@ -1,8 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Battle = void 0;
-var common = require("./common.js");
-var { constants } = require("./static_data/constants.js");
 class Battle {
     constructor(id, heap) {
         this.heap = heap;

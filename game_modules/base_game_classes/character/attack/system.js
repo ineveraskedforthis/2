@@ -15,6 +15,20 @@ var Attack;
         return result;
     }
     Attack.generate_melee = generate_melee;
+    function best_melee_damage_type(character) {
+        const damage_slice = system_1.CharacterSystem.melee_damage_raw(character, 'slice').total();
+        const damage_blunt = system_1.CharacterSystem.melee_damage_raw(character, 'blunt').total();
+        const damage_pierce = system_1.CharacterSystem.melee_damage_raw(character, 'pierce').total();
+        const max = Math.max(damage_blunt, damage_pierce, damage_slice);
+        if (damage_slice == max)
+            return 'slice';
+        if (damage_pierce == max)
+            return 'pierce';
+        if (damage_blunt == max)
+            return 'blunt';
+        return 'blunt';
+    }
+    Attack.best_melee_damage_type = best_melee_damage_type;
     function generate_ranged(character) {
         const result = new class_1.AttackObj('ranged');
         result.damage.add(system_1.CharacterSystem.ranged_damage_raw(character));

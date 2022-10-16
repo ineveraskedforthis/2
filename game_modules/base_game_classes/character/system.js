@@ -304,10 +304,7 @@ var CharacterSystem;
     //         return result;
     //     }
     function update(dt) {
-        // await this.status_check(pool);
-        // if (this.flags.dead) {
-        //     return
-        // }
+        // if 
         // if (!this.in_battle()) {
         //     this.out_of_battle_update(dt)
         //     this.update_action_progress(dt);
@@ -322,4 +319,7 @@ var CharacterSystem;
         // this.flags_handling_update();
     }
     CharacterSystem.update = update;
+    function battle_update(character) {
+    }
+    CharacterSystem.battle_update = battle_update;
 })(CharacterSystem = exports.CharacterSystem || (exports.CharacterSystem = {}));

@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UnitsHeap = void 0;
+/**  Implementation of priority queue to decide priority in battle
+* Current unit is stored in .selected
+* To end turn, use .pop to delete current unit, reset it and then .push it back
+* If current unit is '?', then priority queue is empty and battle should be stopped
+*/
 class UnitsHeap {
     constructor(raw_data) {
         this.raw_data = [];
@@ -105,19 +110,6 @@ class UnitsHeap {
             heap: this.heap,
             selected: this.selected
         };
-    }
-    end_turn(id) {
-        if (this.selected != id)
-            return false;
-        let unit_id = this.pop();
-        if (unit_id == undefined)
-            return false;
-        let unit = this.data[unit_id];
-        unit.next_turn_after = unit.slowness;
-        unit.action_points_left = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max);
-        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1);
-        this.push(id);
-        return true;
     }
 }
 exports.UnitsHeap = UnitsHeap;

@@ -2,8 +2,12 @@
 // this module shoul require only characters and battles systems
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleSystem = void 0;
-const battle_1 = require("./battle");
-const heap_1 = require("./heap");
+const systems_communication_1 = require("../../systems_communication");
+const system_1 = require("../character/system");
+const battle_ai_1 = require("./AI/battle_ai");
+const battle_1 = require("./classes/battle");
+const heap_1 = require("./classes/heap");
+const events_1 = require("./events");
 var battles_list = [];
 var battles_dict = {};
 var last_id = 0;
@@ -34,62 +38,53 @@ var BattleSystem;
         for (let battle of battles_list) {
             if (battle.ended)
                 continue;
-            let current_date = Date.now();
-            // if unit is not moving for 60 seconds, turn ends automatically
-            if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {
-                let unit = battle.heap.get_selected_unit();
-                let res = process_input(unit.id, { action: 'end_turn' });
-                this.send_action(res);
-                this.send_update();
-            }
-            if ((!this.waiting_for_input)) {
-                this.last_turn = current_time;
-                // heap manipulations
-                let tmp = this.heap.pop();
-                if (tmp == undefined) {
-                    return { responce: 'no_units_left' };
-                }
-                let unit = this.heap.get_unit(tmp);
-                let time_passed = unit.next_turn_after;
-                this.heap.update(time_passed);
-                //character stuff
-                let char = this.world.get_char_from_id(unit.char_id);
-                if ((char == undefined) || char.is_dead()) {
-                    return { responce: 'dead_unit' };
-                }
-                char.update(0);
-                let dt = unit.next_turn_after;
-                this.heap.update(dt);
-                if (char.is_dead()) {
-                    unit.dead = true;
-                    return { responce: 'char_is_dead' };
-                }
-                this.send_action({ action: 'new_turn', target: tmp });
-                //actual actions
-                if (char.is_player()) {
-                    this.waiting_for_input = true;
-                    this.changed = true;
-                    return { responce: 'waiting_for_input' };
-                }
-                else {
-                    let log_obj = [];
-                    this.make_turn();
-                    unit.end_turn();
-                    this.heap.push(tmp);
-                    this.changed = true;
-                    return { responce: 'end_turn', data: log_obj };
+            const current_date = Date.now();
+            // if turn lasts longer than 60 seconds, it ends automatically
+            if (battle.waiting_for_input) {
+                if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {
+                    const unit = battle.heap.get_selected_unit();
+                    if (unit != undefined)
+                        events_1.BattleEvent.EndTurn(battle, unit);
                 }
             }
-            else {
-                return { responce: 'waiting_for_input' };
+            // if turn is still running, then do nothing
+            if (battle.waiting_for_input) {
+                return;
+            }
+            // if battle is not waiting for input, then we need to start new turn
+            events_1.BattleEvent.NewTurn(battle);
+            // get information about current unit
+            const unit = battle.heap.get_selected_unit();
+            if (unit == undefined) {
+                return;
+            }
+            let character = systems_communication_1.Convert.unit_to_character(unit);
+            system_1.CharacterSystem.battle_update(character);
+            //processing cases of player and ai separately for a now
+            // if character is player, then wait for input
+            if (character.is_player()) {
+                battle.waiting_for_input = true;
+                return;
+            }
+            // else ask ai to make all needed moves and end turn
+            {
+                AI_turn(battle);
+                events_1.BattleEvent.EndTurn(battle, unit);
             }
         }
     }
     BattleSystem.update = update;
-    function flee_chance() {
-        return 0.5;
+    /**  Makes moves for currently selected character depending on his battle_ai
+    */
+    function AI_turn(battle) {
+        const unit = battle.heap.get_selected_unit();
+        if (unit == undefined)
+            return;
+        const character = systems_communication_1.Convert.unit_to_character(unit);
+        do {
+            var action = battle_ai_1.BattleAI.action(battle, unit, character);
+        } while (action == true);
     }
-    BattleSystem.flee_chance = flee_chance;
 })(BattleSystem = exports.BattleSystem || (exports.BattleSystem = {}));
 //      process_input(unit_index: number, input: Action) {
 //         if (!this.waiting_for_input) {
@@ -146,18 +141,6 @@ var BattleSystem;
 //     }
 //     get_char(unit: UnitData) {
 //         return this.world.get_char_from_id(unit.char_id)
-//     }
-//      make_turn(){
-//         let unit = this.heap.get_selected_unit()
-//         let char = this.get_char(unit)
-//         let action:Action = BattleAI.action(this, unit, char);
-//         while (action.action != 'end_turn') {
-//             let logged_action =  this.action(this.heap.selected, action)
-//             this.send_action(logged_action)
-//             this.send_update()
-//             action = BattleAI.action(this, unit, char);
-//         }
-//         this.changed = true
 //     }
 //     get_data():SocketBattleData {
 //         let data:SocketBattleData = {};
