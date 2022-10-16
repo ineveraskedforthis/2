@@ -4,41 +4,52 @@ import { Event } from "../../events"
 import { geom } from "../../geom"
 import { Convert } from "../../systems_communication"
 import { melee_attack_type } from "../../types"
-import { Battle } from "./battle"
-import { UnitData } from "./unit"
+import { Battle } from "./classes/battle"
+import { UnitData } from "./classes/unit"
 
 
 export namespace BattleEvent {
     export function EndTurn(battle: Battle, unit: UnitData) {
         battle.waiting_for_input = false
         
-        battle.heap.end_turn(unit.id)
-        if (this.selected != id) return false;
-        let unit_id = this.pop()
-        if (unit_id == undefined) return false
-        let unit = this.data[unit_id]
+        // invalid battle
+        if (battle.heap.selected == '?') return false
+        // not unit's turn
+        if (battle.heap.selected != unit.id) return false;
+
+        //updating unit and heap
+        battle.heap.pop()
         unit.next_turn_after = unit.slowness;
         unit.action_points_left = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max) as action_points;
         unit.dodge_turns = Math.max(0, unit.dodge_turns - 1)
-        this.push(id)
+        battle.heap.push(unit.id)
 
+        // send updates
         Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id)
     }
 
+    /**
+     * This events starts a new turn in provided battle  
+     * It sets new date_of_last_turn and updates priorities in heap accordingly
+     * @param battle Battle
+     * @returns 
+     */
     export function NewTurn(battle: Battle) {
         let current_time = Date.now() as ms
         battle.date_of_last_turn = current_time
 
-        let tmp = battle.heap.pop()
-        if (tmp == undefined) {
+        let tmp = battle.heap.selected
+        if (tmp == '?') {
             return {responce: 'no_units_left'}
         }
+
         let unit = battle.heap.get_unit(tmp)
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
+        Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id)
     }
 
-    export function MoveEvent(battle: Battle, unit: UnitData, target: battle_position) {
+    export function Move(battle: Battle, unit: UnitData, target: battle_position) {
         let tmp = geom.minus(target, unit.position)
 
         let MOVE_COST = 3

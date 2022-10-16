@@ -1,4 +1,4 @@
-import { damage_type } from "../../../types";
+import { damage_type, melee_attack_type } from "../../../types";
 import { Character } from "../character";
 import { CharacterSystem } from "../system";
 import { AttackObj } from "./class";
@@ -12,6 +12,20 @@ export namespace Attack {
         result.attack_skill = CharacterSystem.attack_skill(character)
         result.damage.mult(1 + result.attack_skill / 50)
         return result
+    }
+
+    export function best_melee_damage_type(character: Character):melee_attack_type {
+        const damage_slice = CharacterSystem.melee_damage_raw(character, 'slice').total()
+        const damage_blunt = CharacterSystem.melee_damage_raw(character, 'blunt').total()
+        const damage_pierce = CharacterSystem.melee_damage_raw(character, 'pierce').total()
+
+        const max = Math.max(damage_blunt, damage_pierce, damage_slice)
+        
+        if (damage_slice == max) return 'slice'
+        if (damage_pierce == max) return 'pierce'
+        if (damage_blunt == max) return 'blunt'
+
+        return 'blunt'
     }
 
     export function generate_ranged(character: Character): AttackObj {

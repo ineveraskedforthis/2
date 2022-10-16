@@ -329,13 +329,7 @@ export namespace CharacterSystem {
 //     }
 
     export function update(dt: number) {
-        
-
-        // await this.status_check(pool);
-
-        // if (this.flags.dead) {
-        //     return
-        // }
+        // if 
         
         // if (!this.in_battle()) {
         //     this.out_of_battle_update(dt)
@@ -351,6 +345,10 @@ export namespace CharacterSystem {
         // }
 
         // this.flags_handling_update();
+    }
+
+    export function battle_update(character: Character) {
+
     }
 
 }

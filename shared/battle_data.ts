@@ -19,7 +19,7 @@ export interface UnitData {
 }
 
 
-export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'
+export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'|'new_turn';
 export interface BattleEventSocket{
     tag: BattleEventTag
     creator: unit_id
@@ -33,3 +33,23 @@ export type BattleData = {[_ in number]: UnitData};
 
 export type action_points = number & { __brand: "action_point"}
 export type ms = number & { __brand: "ms" }
+
+
+export interface MoveAction {action: "move", target: battle_position}
+export interface AttackAction {action: "attack", target: unit_id}
+export interface HeavyAttackAction {action: "heavy_attack", target: unit_id}
+export interface FastAttackAction {action: "fast_attack", target: unit_id}
+export interface ChargeAction {action: "charge", target: unit_id}
+export interface DodgeAction {action: "dodge", who: unit_id}
+export interface ShootAction {action: "shoot", target: unit_id}
+export interface PushBack {action: "push_back", target: unit_id}
+export interface FleeAction {action: "flee", who: unit_id}
+export interface MagicBoltAction {action: "magic_bolt", target: unit_id}
+export interface SpellTargetAction {action: "spell_target", target: unit_id, spell_tag: "charge"|"bolt"}
+export interface EndTurn {action: 'end_turn'}
+export interface NullAction {action: null}
+export interface SwitchWeaponAction {action: "switch_weapon", who: unit_id}
+export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction|PushBack|MagicBoltAction|SwitchWeaponAction|ShootAction
+export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'|'push_back'|'magic_bolt'|'switch_weapon'|'shoot'
+
+export type ActionLog = Action[]

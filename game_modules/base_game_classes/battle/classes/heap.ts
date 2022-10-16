@@ -1,8 +1,14 @@
-import { action_points, unit_id } from "../../../shared/battle_data";
+
+import { unit_id } from "../../../../shared/battle_data";
 import { UnitData } from "./unit";
 
-
+/**  Implementation of priority queue to decide priority in battle  
+* Current unit is stored in .selected  
+* To end turn, use .pop to delete current unit, reset it and then .push it back
+* If current unit is '?', then priority queue is empty and battle should be stopped
+*/
 export class UnitsHeap {
+    
     data: {[_ in unit_id]: UnitData};
     raw_data: UnitData[];
     last: number;

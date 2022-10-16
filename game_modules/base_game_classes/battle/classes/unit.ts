@@ -1,5 +1,5 @@
-import { action_points, battle_position, unit_id } from "../../../shared/battle_data";
-import { char_id } from "../../types";
+import { action_points, battle_position, unit_id } from "../../../../shared/battle_data";
+import { char_id } from "../../../types";
 
 export class UnitData {
     id: unit_id;

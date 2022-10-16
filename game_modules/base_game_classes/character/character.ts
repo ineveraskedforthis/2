@@ -163,6 +163,10 @@ export class Character {
         if (this.archetype.race == 'graci') return 2;
         return 0.5
     }
+
+    is_player() {
+        return this.user_id != '#';
+    }
 }
 
 
@@ -514,9 +518,7 @@ export class Character {
     
 //     // flag checking functions
 
-//     is_player() {
-//         return this.flags.player;
-//     }
+
 
 //     in_battle() {
 //         return this.flags.in_battle;

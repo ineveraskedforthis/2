@@ -39,6 +39,14 @@ export class Damage {
             this.fire
         )
     }
+
+    total(): number {
+        let total = 0
+        for (let tag of damage_types) {
+            total += this[tag]
+        }
+        return total
+    }
 }
 
 export const damage_types: damage_type[] = ['blunt', 'pierce', 'slice', 'fire'];

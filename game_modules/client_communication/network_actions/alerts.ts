@@ -1,6 +1,6 @@
 import { BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../shared/battle_data";
-import { Battle } from "../../base_game_classes/battle/battle";
-import { UnitData } from "../../base_game_classes/battle/unit";
+import { Battle } from "../../base_game_classes/battle/classes/battle";
+import { UnitData } from "../../base_game_classes/battle/classes/unit";
 import { Character } from "../../base_game_classes/character/character";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";

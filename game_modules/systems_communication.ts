@@ -1,4 +1,4 @@
-import { UnitData } from "./base_game_classes/battle/unit";
+import { UnitData } from "./base_game_classes/battle/classes/unit";
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
