@@ -13,7 +13,7 @@ module.exports = class Faction {
 
      init(pool, tag) {
         this.tag = tag
-        this.id = await this.load_to_db(pool);
+        this.id =  this.load_to_db(pool);
         return this.id;
     }
 
@@ -31,7 +31,7 @@ module.exports = class Faction {
      save_to_db(pool) {
         this.changed = false
         this.savings.changed = false
-        await common.send_query(pool, constants.update_faction_query, [this.id, this.savings.get_json(), this.leader_id]);
+         common.send_query(pool, constants.update_faction_query, [this.id, this.savings.get_json(), this.leader_id]);
     }
 
      load_to_db(pool) {
@@ -42,7 +42,7 @@ module.exports = class Faction {
             // @ts-ignore: Unreachable code error
             return global.last_id
         }
-        let res = await common.send_query(pool, constants.insert_faction_query, [this.tag, this.savings.get_json(), this.leader_id]);
+        let res =  common.send_query(pool, constants.insert_faction_query, [this.tag, this.savings.get_json(), this.leader_id]);
         return res.rows[0].id
     }    
 

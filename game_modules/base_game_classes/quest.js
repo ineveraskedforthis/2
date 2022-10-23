@@ -17,7 +17,7 @@ module.exports = class Quest {
         this.required_item_tag = item
         this.reward_money = reward_money
         this.reward_reputation = reward_reputation
-        this.id = await this.load_to_db(pool);
+        this.id =  this.load_to_db(pool);
         return this.id;
     }
 
@@ -41,14 +41,14 @@ module.exports = class Quest {
             // @ts-ignore: Unreachable code error
             return global.last_id
         }
-        let res = await common.send_query(pool, constants.insert_quest_query, [this.money.get_json(), this.stash.get_json(), this.required_item_tag, this.reward_money, this.reward_reputation]);
+        let res =  common.send_query(pool, constants.insert_quest_query, [this.money.get_json(), this.stash.get_json(), this.required_item_tag, this.reward_money, this.reward_reputation]);
         return res.rows[0].id
     }
 
      save_to_db(pool) {
         this.changed = false
         this.savings.changed = false
-        await common.send_query(pool, constants.update_quest_query, [this.id, this.money.get_json(), this.stash.get_json(), this.required_item_tag, this.reward_money, this.reward_reputation]);
+         common.send_query(pool, constants.update_quest_query, [this.id, this.money.get_json(), this.stash.get_json(), this.required_item_tag, this.reward_money, this.reward_reputation]);
     }
 
     load_from_json(data) {

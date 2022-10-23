@@ -88,7 +88,7 @@ var Auth;
         console.log('attempt to login');
         console.log(data);
         // check that credentials are valid
-        var error_message = common_validations_1.ValidatorSM.validate_creds(data);
+        var error_message = common_validations_1.Validator.validate_creds(data);
         sw.socket.emit('is-login-valid', error_message);
         if (error_message != 'ok') {
             return;
@@ -119,7 +119,7 @@ var Auth;
             return;
         }
         //validate credentials
-        let responce = common_validations_1.ValidatorSM.validate_creds(data);
+        let responce = common_validations_1.Validator.validate_creds(data);
         sw.socket.emit('is-reg-valid', responce);
         if (responce != 'ok') {
             return;

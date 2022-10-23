@@ -1,4 +1,7 @@
 import { Accuracy } from "./base_game_classes/battle/battle_calcs";
+import { Battle } from "./base_game_classes/battle/classes/battle";
+import { BattleEvent } from "./base_game_classes/battle/events";
+import { BattleSystem } from "./base_game_classes/battle/system";
 import { Attack } from "./base_game_classes/character/attack/system";
 import { Character } from "./base_game_classes/character/character";
 import { Loot } from "./base_game_classes/character/races/generate_loot";
@@ -6,6 +9,7 @@ import { CharacterSystem } from "./base_game_classes/character/system";
 import { CharacterTemplate } from "./base_game_classes/character/templates";
 import { UI_Part } from "./client_communication/causality_graph";
 import { Alerts } from "./client_communication/network_actions/alerts";
+import { User } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { ARROW_BONE, material_index, RAT_SKIN } from "./manager_classes/materials_manager";
 import { Cell } from "./map/cell";
@@ -208,6 +212,34 @@ export namespace Event {
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
     }
 
+    export function start_battle(attacker: Character, defender: Character) {
+        if (attacker.id == defender.id) {
+            return undefined
+        }
+
+        if (attacker.cell_id != defender.cell_id) {return undefined}
+
+        // two cases
+        // if defender is in battle, attempt to join it against him as a new team
+        // else create new battle
+        if (defender.in_battle()) {
+            
+        } else {
+            const battle_id = BattleSystem.create_battle()
+            const battle = BattleSystem.id_to_battle(battle_id)
+            const attacker_unit = BattleSystem.create_unit(attacker, 1)
+            const defender_unit = BattleSystem.create_unit(defender, 2)
+            BattleEvent.NewUnit(battle, attacker_unit)
+            BattleEvent.NewUnit(battle, defender_unit)
+
+            attacker.battle_unit_id = attacker_unit.id
+            defender.battle_unit_id = defender_unit.id
+
+            UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
+            UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)
+        }
+    }
+
     //  spell_attack(target: Character, tag: spell_tags) {
     //     let result = new AttackResult()
 
@@ -225,7 +257,7 @@ export namespace Event {
 
     //     this.change_status(result.attacker_status_change)
 
-    //     result = await target.take_damage(pool, 'ranged', result);
+    //     result =  target.take_damage(pool, 'ranged', result);
     //     return result;
     // }
 
@@ -243,15 +275,15 @@ export namespace Event {
     //                 result.total_damage += curr_damage;
     //                 this.change_hp(-curr_damage);
     //                 if (this.get_hp() == 0) {
-    //                     await this.world.entity_manager.remove_orders(pool, this)
-    //                     await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
+    //                      this.world.entity_manager.remove_orders(pool, this)
+    //                      AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
     //                     result.flags.killing_strike = true
     //                 }
     //             }
     //         }
     //         this.change_status(result.defender_status_change)
     //     }
-    //     await this.save_to_db(pool)
+    //      this.save_to_db(pool)
     //     return result;
     // }
 }

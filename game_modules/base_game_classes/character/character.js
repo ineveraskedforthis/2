@@ -172,8 +172,8 @@ exports.Character = Character;
 //     }
 //      init(name: string, cell_id: number, user_id = -1) {
 //         this.init_base_values(name, cell_id, user_id);
-//         this.id = await this.load_to_db(pool);
-//         await this.save_to_db(pool);
+//         this.id =  this.load_to_db(pool);
+//          this.save_to_db(pool);
 //         return this.id;
 //     } 
 //     init_base_values(name: string, cell_id: number, user_id = -1) {
@@ -225,9 +225,9 @@ exports.Character = Character;
 //      status_check() {
 //         if (this.status.hp <= 0) {
 //             this.status.hp = 0;
-//             await this.world.entity_manager.remove_orders(pool, this)
-//             await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
-//             await this.world.kill(pool, this.id);
+//              this.world.entity_manager.remove_orders(pool, this)
+//              AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
+//              this.world.kill(pool, this.id);
 //         }
 //     }
 //     out_of_battle_update(dt: number) {
@@ -333,7 +333,7 @@ exports.Character = Character;
 //         if (this.savings.get() >= amount * price) {
 //             console.log('buy ' + tag + ' ' + amount + ' ' + price)
 //             this.savings.transfer(this.trade_savings, amount * price as money)
-//             let order = await this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id)
+//             let order =  this.world.entity_manager.generate_order(pool, 'buy', tag, this, amount, price, this.cell_id)
 //             return 'ok'
 //         }
 //         return 'not_enough_money'        
@@ -345,12 +345,12 @@ exports.Character = Character;
 //         }
 //         console.log('sell ' + tag + ' ' + amount + ' ' + price)
 //         this.stash.transfer(this.trade_stash, tag, amount)
-//         let order = await this.world.entity_manager.generate_order(pool, 'sell', tag, this, amount, price, this.cell_id)
+//         let order =  this.world.entity_manager.generate_order(pool, 'sell', tag, this, amount, price, this.cell_id)
 //         return 'ok'
 //     }
 //      clear_orders(pool:any) {
-//         await this.world.entity_manager.remove_orders(pool, this)
-//         await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
+//          this.world.entity_manager.remove_orders(pool, this)
+//          AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
 //     }
 //     get_magic_power() {
 //         let power = this.stats.magic_power * this.equip.get_magic_power_modifier();
@@ -424,7 +424,7 @@ exports.Character = Character;
 //         this.add_explored(this.world.get_id_from_territory(tmp));
 //         this.world.socket_manager.send_explored(this);
 //         this.update_visited()
-//         let res = await this.on_move(pool)
+//         let res =  this.on_move(pool)
 //         if (res != undefined) {
 //             return 2
 //         } 
@@ -461,7 +461,7 @@ exports.Character = Character;
 //     //db interactions
 //      save_status_to_db(pool:any, save = true) {
 //         if (save) {
-//             // await common.send_query(pool, constants.set_status_query, [this.status, this.id]);
+//             //  common.send_query(pool, constants.set_status_query, [this.status, this.id]);
 //         }
 //     }
 //      load_from_json(data:any) {
@@ -507,7 +507,7 @@ exports.Character = Character;
 //             // @ts-ignore: Unreachable code error
 //             return global.last_id
 //         }
-//         let result = await common.send_query(pool, constants.new_char_query, [
+//         let result =  common.send_query(pool, constants.new_char_query, [
 //             this.user_id,
 //             this.cell_id, 
 //             this.faction_id,
@@ -526,7 +526,7 @@ exports.Character = Character;
 //     }
 //      save_to_db(pool:any, save = true) {
 //         if (save) {
-//             await common.send_query(pool, constants.update_char_query, [
+//              common.send_query(pool, constants.update_char_query, [
 //                 this.id,
 //                 this.cell_id,
 //                 this.faction_id,
@@ -544,6 +544,6 @@ exports.Character = Character;
 //         }
 //     }
 //      delete_from_db(pool:any) {
-//         await common.send_query(pool, constants.delete_char_query, [this.id]);
+//          common.send_query(pool, constants.delete_char_query, [this.id]);
 //     }
 // }

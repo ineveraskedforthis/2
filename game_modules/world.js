@@ -79,30 +79,30 @@
 //         this.socket_manager = new SocketManager(pool, this.io, this, true);
 //         this.action_manager = new ActionManager(this, pool)
 //         this.entity_manager = new EntityManager(this);
-//         await this.entity_manager.init(pool);
-//         await common.send_query(pool, constants.save_world_size_query, [this.x, this.y])
-//         // await this.generate_territories()
-//         await this.add_starting_agents(pool);
+//          this.entity_manager.init(pool);
+//          common.send_query(pool, constants.save_world_size_query, [this.x, this.y])
+//         //  this.generate_territories()
+//          this.add_starting_agents(pool);
 //     }
 //      add_starting_agents() {
-//         let port_chunk = await this.entity_manager.create_area(pool, 'port')
-//         let living_area = await this.entity_manager.create_area(pool, 'living_area')
-//         let ith_colony = await this.entity_manager.create_faction(pool, 'ith_colony')
-//         let steppe_rats = await this.entity_manager.create_faction(pool, 'steppe_rats')
+//         let port_chunk =  this.entity_manager.create_area(pool, 'port')
+//         let living_area =  this.entity_manager.create_area(pool, 'living_area')
+//         let ith_colony =  this.entity_manager.create_faction(pool, 'ith_colony')
+//         let steppe_rats =  this.entity_manager.create_faction(pool, 'steppe_rats')
 //         for (let i = 1; i < 60; i++) {
-//             let test_rat = await this.entity_manager.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(6, 5), -1)
-//             await rat(pool, test_rat)
+//             let test_rat =  this.entity_manager.create_new_character(pool, 'Mr. Rat ' + i, this.get_cell_id_by_x_y(6, 5), -1)
+//              rat(pool, test_rat)
 //         }
 //         for (let i = 1; i < 20; i++) {
-//             let test_graci = await this.entity_manager.create_new_character(pool, 'Her Majesty Graci ' + i, this.get_cell_id_by_x_y(13, 9), -1)
-//             await graci(pool, test_graci)
+//             let test_graci =  this.entity_manager.create_new_character(pool, 'Her Majesty Graci ' + i, this.get_cell_id_by_x_y(13, 9), -1)
+//              graci(pool, test_graci)
 //         }
 //         for (let i = 1; i < 30; i++) {
-//             let test_elo = await this.entity_manager.create_new_character(pool, 'Sir Elodino ' + i, this.get_cell_id_by_x_y(18, 10), -1)
-//             await elo(pool, test_elo)
+//             let test_elo =  this.entity_manager.create_new_character(pool, 'Sir Elodino ' + i, this.get_cell_id_by_x_y(18, 10), -1)
+//              elo(pool, test_elo)
 //         }
-//         // let ith_mages = await this.entity_manager.create_faction(pool, 'Mages of Ith')
-//         // let mayor = await this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
+//         // let ith_mages =  this.entity_manager.create_faction(pool, 'Mages of Ith')
+//         // let mayor =  this.entity_manager.create_new_character(pool, 'G\'Ith\'Ub', this.get_cell_id_by_x_y(0, 3), -1)
 //         // mayor.savings.inc(10000);
 //         // this.entity_manager.set_faction_leader(ith_colony, mayor)
 //         port_chunk.set_influence(ith_colony, 100)
@@ -111,7 +111,7 @@
 //         /// test person
 //         let starting_cell_id = this.get_cell_id_by_x_y(0, 3)
 //         {
-//             let test_person = await this.create_new_character(pool, 'Trader', starting_cell_id, -1)
+//             let test_person =  this.create_new_character(pool, 'Trader', starting_cell_id, -1)
 //             if (nodb_mode_check()) {test_person.change_hp(-90)}
 //             test_person.stash.inc(MEAT, 10)
 //             test_person.stash.inc(WOOD, 100)
@@ -123,65 +123,65 @@
 //             test_person.stash.inc(ELODINO_FLESH, 100)
 //             test_person.savings.set(5000 as money)
 //             test_person.faction_id = 3
-//             await test_person.buy(pool, MEAT, 100, 5 as money)
-//             await test_person.sell(pool, FOOD, 200, 15 as money)
-//             await test_person.sell(pool, ZAZ, 100, 200 as money)
+//              test_person.buy(pool, MEAT, 100, 5 as money)
+//              test_person.sell(pool, FOOD, 200, 15 as money)
+//              test_person.sell(pool, ZAZ, 100, 200 as money)
 //             let spear = new Weapon(BONE_SPEAR_ARGUMENT)
 //             spear.affixes.push(new affix('daemonic', 1))
 //             let id  = test_person.equip.add_weapon(spear)
-//             await AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", id, 10 as money, 10 as money)
+//              AuctionManagement.sell(pool, this.entity_manager, this.socket_manager, test_person, "weapon", id, 10 as money, 10 as money)
 //         }
-//         let armour_master = await this.create_new_character(pool, 'Armour master', starting_cell_id, -1)
+//         let armour_master =  this.create_new_character(pool, 'Armour master', starting_cell_id, -1)
 //         armour_master.skills.clothier = 100
 //         armour_master.skills.perks.skin_armour_master = true
 //         armour_master.stash.inc(RAT_SKIN, 40)
 //         armour_master.savings.inc(1000 as money)
 //         armour_master.faction_id = 3
-//         let cook = await this.create_new_character(pool, 'Cook', starting_cell_id, -1)
+//         let cook =  this.create_new_character(pool, 'Cook', starting_cell_id, -1)
 //         cook.learn_perk("meat_master")
 //         cook.skills.cooking = 100
 //         cook.stash.inc(FOOD, 10)
 //         cook.savings.inc(500 as money)
 //         cook.faction_id = 3
-//         // await cook.sell(pool, FOOD, 500, 10 as money)
-//         let monk = await this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1)
+//         //  cook.sell(pool, FOOD, 500, 10 as money)
+//         let monk =  this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1)
 //         monk.skills.noweapon = 100
 //         monk.learn_perk("advanced_unarmed")
 //         monk.faction_id = 3
 //         monk.changed = true
-//         let forest_cook = await this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
+//         let forest_cook =  this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
 //         forest_cook.stash.inc(FOOD, 10)
 //         forest_cook.savings.inc(500 as money)
 //         forest_cook.skills.cooking = 100
 //         forest_cook.learn_perk("meat_master")
 //         forest_cook.faction_id = 3
-//         let fletcher = await this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1)
+//         let fletcher =  this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1)
 //         fletcher.stash.inc(ARROW_BONE, 20)
 //         fletcher.savings.inc(1000 as money)
 //         fletcher.learn_perk('fletcher')
 //         fletcher.changed = true
 //         fletcher.faction_id = 3
-//         let spearman = await this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
+//         let spearman =  this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
 //         spearman.skills.polearms = 100
 //         spearman.learn_perk("advanced_polearm")
 //         let spear = new Weapon(BONE_SPEAR_ARGUMENT)
 //         spearman.equip.data.weapon = spear
 //         spearman.changed = true
 //         spearman.faction_id = 3
-//         let meat_bag = await this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
+//         let meat_bag =  this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
 //         meat_bag.stash.inc(MEAT, 200)
-//         await meat_bag.sell(pool, MEAT, 10, 10 as money)
+//          meat_bag.sell(pool, MEAT, 10, 10 as money)
 //         if (nodb_mode_check()) {meat_bag.change_hp(-99)}
 //         meat_bag.faction_id = 3
-//         let mage = await this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1)
+//         let mage =  this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1)
 //         mage.skills.magic_mastery = 100
 //         mage.learn_perk('mage_initiation')
 //         mage.learn_perk('magic_bolt')
 //         mage.stash.inc(ZAZ, 300)
 //         mage.savings.inc(30000 as money)
-//         await mage.sell(pool, ZAZ, 200, 50 as money)
-//         await mage.buy(pool, ELODINO_FLESH, 200, 50 as money)
-//         await mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
+//          mage.sell(pool, ZAZ, 200, 50 as money)
+//          mage.buy(pool, ELODINO_FLESH, 200, 50 as money)
+//          mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
 //         mage.changed = true
 //         mage.faction_id = 3
 //     }
@@ -189,20 +189,20 @@
 //         this.socket_manager = new SocketManager(pool, this.io, this, true);
 //         this.entity_manager = new EntityManager(this);
 //         this.action_manager = new ActionManager(this, pool)
-//         await this.entity_manager.load(pool);
-//         await this.load_size(pool);
+//          this.entity_manager.load(pool);
+//          this.load_size(pool);
 //     }
 //      load_size() {
-//         let size = await common.send_query(pool, constants.load_world_size_query);
+//         let size =  common.send_query(pool, constants.load_world_size_query);
 //         this.x = size.rows[0].x;
 //         this.y = size.rows[0].y;
 //     }
 //      update(dt: number) {
-//         await this.entity_manager.update_battles(pool)
-//         await this.entity_manager.update_cells(pool, dt)
-//         await this.entity_manager.update_factions(pool)
-//         await this.entity_manager.update_areas(pool)
-//         await this.entity_manager.update_chars(pool, dt)
+//          this.entity_manager.update_battles(pool)
+//          this.entity_manager.update_cells(pool, dt)
+//          this.entity_manager.update_factions(pool)
+//          this.entity_manager.update_areas(pool)
+//          this.entity_manager.update_chars(pool, dt)
 //         this.socket_manager.update_user_list();
 //     }
 //     get_cell_teacher(x: number, y: number) {
@@ -238,12 +238,12 @@
 //             return global.last_id
 //         }
 //         // console.log(str);
-//         var x = await common.send_query(pool, constants.get_id_query, [str]);
+//         var x =  common.send_query(pool, constants.get_id_query, [str]);
 //         x = x.rows[0];
 //         // console.log(x);
 //         x = x.last_id;
 //         x += 1;
-//         await common.send_query(pool, constants.set_id_query, [str, x]);
+//          common.send_query(pool, constants.set_id_query, [str, x]);
 //         return x;
 //     }
 //     add_item_order(order: OrderItem) {
@@ -259,19 +259,19 @@
 //         return this.entity_manager.get_from_id_tag(id, tag)
 //     }
 //      kill(char_id: number) {
-//         await this.entity_manager.kill(pool, char_id)
+//          this.entity_manager.kill(pool, char_id)
 //     }
 //      create_battle(attackers: Character[], defenders: Character[]) {
-//         return await this.entity_manager.create_battle(pool, attackers, defenders)
+//         return  this.entity_manager.create_battle(pool, attackers, defenders)
 //     }
 //      load_character_data_from_db(char_id: number) {
-//         return await this.entity_manager.load_character_data_from_db(pool, char_id)
+//         return  this.entity_manager.load_character_data_from_db(pool, char_id)
 //     }
 //      load_character_data_to_memory(data: number) {
-//         return await this.entity_manager.load_character_data_to_memory(pool, data)
+//         return  this.entity_manager.load_character_data_to_memory(pool, data)
 //     }
 //      create_new_character(name: string, cell_id: number, user_id: number): Promise<Character> {
-//         return await this.entity_manager.create_new_character(pool, name, cell_id, user_id)
+//         return  this.entity_manager.create_new_character(pool, name, cell_id, user_id)
 //     }
 //     // get_loot_tag(dice, dead_tag) {
 //     //     let tmp = 0
@@ -383,9 +383,9 @@
 //     //     }
 //     //     let enemies = []
 //     //     for (let i = 0; i < enemies_amount; i++) {
-//     //         enemies.push(await this.create_monster(pool, basic_characters[enemy_tag], char.cell_id))
+//     //         enemies.push( this.create_monster(pool, basic_characters[enemy_tag], char.cell_id))
 //     //     }
-//     //     let battle = await this.create_battle(pool, [char], enemies);
+//     //     let battle =  this.create_battle(pool, [char], enemies);
 //     //     return battle
 //     // }
 //     //  attack_local_outpost(char: Character) {
@@ -395,9 +395,9 @@
 //     //         let outpost = this.constants.outposts[tmp];
 //     //         let enemies = [];
 //     //         for (let i = 0; i < outpost.enemy_amount; i++) {
-//     //             enemies.push(await this.create_monster(pool, basic_characters[outpost.enemy], char.cell_id))
+//     //             enemies.push( this.create_monster(pool, basic_characters[outpost.enemy], char.cell_id))
 //     //         }
-//     //         let battle = await this.create_battle(pool, [char], enemies);
+//     //         let battle =  this.create_battle(pool, [char], enemies);
 //     //         battle.stash.inc(outpost.res, outpost.res_amount)
 //     //         return battle
 //     //     }

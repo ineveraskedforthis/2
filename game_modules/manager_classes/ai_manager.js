@@ -78,7 +78,7 @@ class AiManager {
         }
         if (possible_moves.length > 0) {
             let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
-            await this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, { x: move_direction[0], y: move_direction[1] });
+             this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, { x: move_direction[0], y: move_direction[1] });
         }
     }
     check_battles_to_join(agent) {
@@ -117,7 +117,7 @@ class AiManager {
         }
         if (possible_moves.length > 0) {
             let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
-            await this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, { x: move_direction[0], y: move_direction[1] });
+             this.world.action_manager.start_action(action_manager_1.CharacterAction.MOVE, char, { x: move_direction[0], y: move_direction[1] });
         }
     }
     decision(char) {
@@ -137,50 +137,50 @@ class AiManager {
         switch (char.misc.ai_tag) {
             case 'steppe_walker_agressive': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
-                    await this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
+                     this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
                 }
                 else {
                     let target = this.enemies_in_cell(char);
                     if (target != -1) {
-                        await this.world.action_manager.start_action(action_manager_1.CharacterAction.ATTACK, char, target);
+                         this.world.action_manager.start_action(action_manager_1.CharacterAction.ATTACK, char, target);
                     }
                     else {
-                        await this.random_steppe_walk(char);
+                         this.random_steppe_walk(char);
                     }
                 }
                 break;
             }
             case 'steppe_walker_passive': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
-                    await this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
+                     this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
                 }
                 else {
-                    await this.random_steppe_walk(char);
+                     this.random_steppe_walk(char);
                 }
                 break;
             }
             case 'forest_walker': {
                 if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
-                    await this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
+                     this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
                 }
                 else {
-                    await this.random_forest_walk(char);
+                     this.random_forest_walk(char);
                 }
                 break;
             }
         }
         if ((char.get_fatigue() > 90) || (char.get_stress() > 40)) {
-            await this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
+             this.world.action_manager.start_action(action_manager_1.CharacterAction.REST, char, undefined);
             return;
         }
         if ((char.skills.cooking > 40) || (char.skills.perks.meat_master == true)) {
-            await AI.cook_food(pool, this.world.action_manager, char);
+             AI.cook_food(pool, this.world.action_manager, char);
         }
         if ((char.skills.woodwork > 40) || (char.skills.perks.fletcher == true)) {
-            await AI.make_arrow(pool, this.world.action_manager, char);
+             AI.make_arrow(pool, this.world.action_manager, char);
         }
         if ((char.skills.clothier > 40) || (char.skills.perks.skin_armour_master == true)) {
-            await AI.make_armour(pool, this.world.action_manager, char);
+             AI.make_armour(pool, this.world.action_manager, char);
         }
     }
 }
@@ -196,24 +196,24 @@ var AI;
         let savings = character.savings.get();
         // console.log("AI tick")
         // console.log(prepared_meat, resource, food_in_stash, savings)
-        // await character.world.entity_manager.remove_orders(pool, character)
+        //  character.world.entity_manager.remove_orders(pool, character)
         if ((resource < 5) && (savings > base_buy_price)) {
-            await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.MEAT);
+             character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.MEAT);
             // console.log(Math.floor(savings / base_buy_price), base_buy_price)
-            await character.buy(pool, materials_manager_1.MEAT, Math.floor(savings / base_buy_price), base_buy_price);
+             character.buy(pool, materials_manager_1.MEAT, Math.floor(savings / base_buy_price), base_buy_price);
         }
         if (prepared_meat < 10) {
-            await action_manager.start_action(action_manager_1.CharacterAction.COOK_MEAT, character, undefined);
+             action_manager.start_action(action_manager_1.CharacterAction.COOK_MEAT, character, undefined);
         }
         if (food_in_stash > 0) {
-            await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.FOOD);
-            await character.sell(pool, materials_manager_1.FOOD, food_in_stash, base_sell_price);
+             character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.FOOD);
+             character.sell(pool, materials_manager_1.FOOD, food_in_stash, base_sell_price);
         }
     }
     AI.cook_food = cook_food;
     function make_arrow(pool, action_manager, character) {
-        await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.WOOD);
-        await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.RAT_BONE);
+         character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.WOOD);
+         character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.RAT_BONE);
         let arrows = character.trade_stash.get(materials_manager_1.ARROW_BONE) + character.stash.get(materials_manager_1.ARROW_BONE);
         let wood = character.stash.get(materials_manager_1.WOOD);
         let bones = character.stash.get(materials_manager_1.RAT_BONE);
@@ -247,23 +247,23 @@ var AI;
             // console.log(savings, bones, wood)
             // console.log(wood_to_buy, bones_to_buy)
             if ((wood_to_buy >= 1) && (bones_to_buy >= 1)) {
-                await character.buy(pool, materials_manager_1.WOOD, Math.floor(wood_to_buy), base_price_wood);
-                await character.buy(pool, materials_manager_1.RAT_BONE, Math.floor(bones_to_buy), base_price_bones);
+                 character.buy(pool, materials_manager_1.WOOD, Math.floor(wood_to_buy), base_price_wood);
+                 character.buy(pool, materials_manager_1.RAT_BONE, Math.floor(bones_to_buy), base_price_bones);
             }
             else if ((wood_to_buy >= 1) && (bones_to_buy < 1)) {
-                await character.buy(pool, materials_manager_1.WOOD, Math.floor(savings / base_price_wood), base_price_wood);
+                 character.buy(pool, materials_manager_1.WOOD, Math.floor(savings / base_price_wood), base_price_wood);
             }
             else if ((wood_to_buy < 1) && (bones_to_buy >= 1)) {
-                await character.buy(pool, materials_manager_1.RAT_BONE, Math.floor(savings / materials_manager_1.RAT_BONE), base_price_bones);
+                 character.buy(pool, materials_manager_1.RAT_BONE, Math.floor(savings / materials_manager_1.RAT_BONE), base_price_bones);
             }
         }
         if (arrows < 100) {
-            await action_manager.start_action(action_manager_1.CharacterAction.CRAFT_BONE_ARROW, character, undefined);
+             action_manager.start_action(action_manager_1.CharacterAction.CRAFT_BONE_ARROW, character, undefined);
         }
         if (arrows_in_stash > 0) {
-            await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.ARROW_BONE);
+             character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.ARROW_BONE);
             arrows_in_stash = character.stash.get(materials_manager_1.ARROW_BONE);
-            await character.sell(pool, materials_manager_1.ARROW_BONE, arrows_in_stash, sell_price);
+             character.sell(pool, materials_manager_1.ARROW_BONE, arrows_in_stash, sell_price);
         }
     }
     AI.make_arrow = make_arrow;
@@ -275,18 +275,18 @@ var AI;
         // console.log('armour')
         // console.log(resource, savings, skin_to_buy)
         if (skin_to_buy > 5) {
-            await character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.RAT_SKIN);
-            await character.buy(pool, materials_manager_1.RAT_SKIN, skin_to_buy, base_price_skin);
+             character.world.entity_manager.remove_orders_by_tag(pool, character, materials_manager_1.RAT_SKIN);
+             character.buy(pool, materials_manager_1.RAT_SKIN, skin_to_buy, base_price_skin);
         }
         if (resource > craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
-            await action_manager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR, character, undefined);
+             action_manager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR, character, undefined);
         }
         let data = character.equip.data.backpack.armours;
         for (let index in data) {
             index = index;
             if (data[index]?.type == item_tags_1.ARMOUR_TYPE.BODY) {
                 let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 1.5);
-                await market_items_1.AuctionManagement.sell(pool, character.world.entity_manager, character.world.socket_manager, character, "armour", index, price, price);
+                 market_items_1.AuctionManagement.sell(pool, character.world.entity_manager, character.world.socket_manager, character, "armour", index, price, price);
             }
         }
     }

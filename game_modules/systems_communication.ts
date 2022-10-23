@@ -3,7 +3,7 @@ import { Unit } from "./base_game_classes/battle/classes/unit";
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
-import { User, UserData } from "./client_communication/user";
+import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { Cell } from "./map/cell";
 import { MapSystem } from "./map/system";
@@ -37,6 +37,15 @@ export namespace Convert {
             id: unit.id,
             next_turn: unit.next_turn_after
         }
+    }
+
+    export function socket_wrapper_to_user_character(socket: SocketWrapper): [User, Character]|[undefined, undefined] {
+        if (socket.user_id == '#') {return [undefined, undefined]}
+        const user = UserManagement.get_user(socket.user_id)
+        const character = Convert.user_to_character(user)
+        if (character == undefined) {return [undefined, undefined]}
+
+        return [user, character]
     }
 
     export function character_to_user(character:Character):User|undefined {

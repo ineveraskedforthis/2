@@ -209,7 +209,7 @@ var Event;
     //     result = spells[tag](result);
     //     result = this.mod_spell_damage_with_stats(result, tag);
     //     this.change_status(result.attacker_status_change)
-    //     result = await target.take_damage(pool, 'ranged', result);
+    //     result =  target.take_damage(pool, 'ranged', result);
     //     return result;
     // }
     //  take_damage(mod:'fast'|'heavy'|'usual'|'ranged', result: AttackResult): Promise<AttackResult> {
@@ -225,15 +225,15 @@ var Event;
     //                 result.total_damage += curr_damage;
     //                 this.change_hp(-curr_damage);
     //                 if (this.get_hp() == 0) {
-    //                     await this.world.entity_manager.remove_orders(pool, this)
-    //                     await AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
+    //                      this.world.entity_manager.remove_orders(pool, this)
+    //                      AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
     //                     result.flags.killing_strike = true
     //                 }
     //             }
     //         }
     //         this.change_status(result.defender_status_change)
     //     }
-    //     await this.save_to_db(pool)
+    //      this.save_to_db(pool)
     //     return result;
     // }
 })(Event = exports.Event || (exports.Event = {}));

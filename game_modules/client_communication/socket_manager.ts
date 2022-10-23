@@ -6,11 +6,13 @@ import { UserManagement} from "./user_manager";
 import { SKILLS } from "../static_data/skills";
 import { SECTIONS } from "../static_data/map_definitions";
 import { Auth } from "./network_actions/auth";
-import { ValidatorSM } from "./network_actions/common_validations";
+import { Validator } from "./network_actions/common_validations";
 import { Alerts } from "./network_actions/alerts";
 import { MapSystem } from "../map/system";
 import { HandleAction } from "./network_actions/actions";
 import { CharacterAction } from "../actions/action_manager";
+import { SocketCommand } from "./network_actions/run_event";
+import { Convert } from "../systems_communication";
 
 
 interface Message {
@@ -50,7 +52,7 @@ export class SocketManager {
 
 
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
-            // socket.on('attack-character',  (msg: any) => this.attack_character(user, msg));
+            socket.on('attack-character',  (msg: any) => SocketCommand.attack_character(user, msg));
 
             // socket.on('buy',  (msg: any) => this.buy(user, msg));
             // socket.on('sell',  (msg: any) => this.sell(user, msg));
@@ -129,7 +131,7 @@ export class SocketManager {
         if (sw.user_id == '#') return
         let user = UserManagement.get_user(sw.user_id)
 
-        if (!ValidatorSM.isAlphaNum(data.name)) Alerts.generic_user_alert(user, 'alert', 'character is not allowed')
+        if (!Validator.isAlphaNum(data.name)) Alerts.generic_user_alert(user, 'alert', 'character is not allowed')
         let model_variation:any = {
             eyes: data.eyes,
             chin: data.chin,
@@ -199,7 +201,7 @@ export class SocketManager {
     //     console.log('attack random enemy')
     //     if (user.logged_in && !user.get_character().in_battle()) {
     //         let char = user.get_character();
-    //         let res = await this.world.action_manager.start_action(CharacterAction.ATTACK, char, undefined)
+    //         let res =  this.world.action_manager.start_action(CharacterAction.ATTACK, char, undefined)
     //         if (res == CharacterActionResponce.OK) {
     //             let battle_id = char.get_battle_id()
     //             let battle = this.world.get_battle_from_id(battle_id)
@@ -213,46 +215,12 @@ export class SocketManager {
     //     }
     // }
 
-    // //data is a raw id of character
-    //  attack_character(user: User, data: any) {
-    //     console.log('attack_character')
-        
-    //     if (user.logged_in && !user.get_character().in_battle()) {
-            
-    //         data = Number(data)
-
-    //         if (!(data as number in this.world.entity_manager.chars)) {
-    //             return
-    //         }
-
-    //         let target_character = this.world.get_char_from_id(data as number)
-    //         let char = user.get_character();
-
-    //         if (target_character.id == char.id) {
-    //             return
-    //         }
-
-    //         if (target_character.in_battle()) {
-    //             return
-    //         }
-
-    //         if (target_character.cell_id != char.cell_id) {
-    //             return
-    //         }
-
-    //         let battle = await this.world.create_battle(this.pool, [char], [target_character])
-
-    //         if (battle != undefined) {
-    //             console.log('battle had started')
-    //             battle.send_data_start()
-    //         }
-    //     }
-    // }
+    // 
 
     // //  attack_local_outpost(socket, user_data, data) {
     // //     if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
     // //         let char = user_data.current_user.character;
-    // //         let battle = await char.attack_local_outpost(this.pool);
+    // //         let battle =  char.attack_local_outpost(this.pool);
     // //         if (battle != undefined) {
     // //             battle.send_data_start()
     // //         }
@@ -262,7 +230,7 @@ export class SocketManager {
     //  clear_orders(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         await this.world.entity_manager.remove_orders(this.pool, char)
+    //          this.world.entity_manager.remove_orders(this.pool, char)
     //         this.send_savings_update(char);
     //         this.send_stash_update(user);
     //         this.send_char_info(user);
@@ -272,7 +240,7 @@ export class SocketManager {
     //  clear_item_orders(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         await AuctionManagement.cancel_all_orders(this.pool, this.world.entity_manager, this, char)
+    //          AuctionManagement.cancel_all_orders(this.pool, this.world.entity_manager, this, char)
     //         this.send_stash_update(user);
     //         this.send_char_info(user);
     //     }
@@ -286,7 +254,7 @@ export class SocketManager {
     //             user.socket.emit('alert', 'not your order')
     //             return
     //         }
-    //         await this.world.entity_manager.remove_order(this.pool, data as market_order_index)
+    //          this.world.entity_manager.remove_order(this.pool, data as market_order_index)
     //         this.send_savings_update(char);
     //         this.send_stash_update(user);
     //         this.send_char_info(user);
@@ -304,7 +272,7 @@ export class SocketManager {
     //             let order = this.world.get_order(order_id)
     //             let responce = 'ok'
     //             if (order.typ == 'buy') {
-    //                 responce = await cell.execute_buy_order(this.pool, order_id, amount, character)
+    //                 responce =  cell.execute_buy_order(this.pool, order_id, amount, character)
     //                 this.send_savings_update(character)
     //                 let own = order.owner
     //                 if (own != undefined) {
@@ -312,7 +280,7 @@ export class SocketManager {
     //                 }
     //             }
     //             if (order.typ == 'sell') {
-    //                 responce = await cell.execute_sell_order(this.pool, order_id, amount, character)
+    //                 responce =  cell.execute_sell_order(this.pool, order_id, amount, character)
     //                 this.send_stash_update_to_character(character)
     //                 let own = order.owner
     //                 if (own != undefined) {
@@ -366,7 +334,7 @@ export class SocketManager {
 
     //     if ((user.logged_in)) {
     //         let char = user.get_character();
-    //         let responce = await char.buy(this.pool, msg.material as material_index, msg.amount, msg.price)
+    //         let responce =  char.buy(this.pool, msg.material as material_index, msg.amount, msg.price)
     //         if (responce != 'ok') {
     //             user.socket.emit('alert', responce)
     //             return
@@ -418,7 +386,7 @@ export class SocketManager {
 
     //     if ((user.logged_in)) {
     //         let char = user.get_character();
-    //         let responce = await char.sell(this.pool, msg.material as material_index, msg.amount, msg.price)
+    //         let responce =  char.sell(this.pool, msg.material as material_index, msg.amount, msg.price)
     //         if (responce != 'ok') {
     //             user.socket.emit('alert', responce)
     //             return
@@ -437,7 +405,7 @@ export class SocketManager {
     // //  up_skill(user, msg) {
     // //     if (msg in this.world.constants.SKILLS && user_data.current_user != null) {
     // //         let char = user_data.current_user.character;
-    // //         let result = await char.add_skill(this.pool, msg + '');
+    // //         let result =  char.add_skill(this.pool, msg + '');
     // //         if (result != undefined) {
     // //             this.send_new_tactic_action(char, result);
     // //         }
@@ -450,7 +418,7 @@ export class SocketManager {
     //  eat(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         let res = await this.world.action_manager.start_action(CharacterAction.EAT, char, undefined)
+    //         let res =  this.world.action_manager.start_action(CharacterAction.EAT, char, undefined)
     //         if (res == CharacterActionResponce.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'not enough food')
     //         } else if (res == CharacterActionResponce.IN_BATTLE) {
@@ -462,7 +430,7 @@ export class SocketManager {
     //  clean(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         let res = await this.world.action_manager.start_action(CharacterAction.CLEAN, char, undefined)
+    //         let res =  this.world.action_manager.start_action(CharacterAction.CLEAN, char, undefined)
     //         if (res == CharacterActionResponce.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'no water available')
     //         } else if (res == CharacterActionResponce.IN_BATTLE) {
@@ -474,7 +442,7 @@ export class SocketManager {
     //  hunt(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         let res = await this.world.action_manager.start_action(CharacterAction.HUNT, char, undefined)
+    //         let res =  this.world.action_manager.start_action(CharacterAction.HUNT, char, undefined)
     //         if (res == CharacterActionResponce.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'no prey here')
     //         } else if (res == CharacterActionResponce.IN_BATTLE) {
@@ -486,7 +454,7 @@ export class SocketManager {
     //  gather_wood(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         let res = await this.world.action_manager.start_action(CharacterAction.GATHER_WOOD, char, undefined)
+    //         let res =  this.world.action_manager.start_action(CharacterAction.GATHER_WOOD, char, undefined)
     //         if (res == CharacterActionResponce.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'no wood here')
     //         } else if (res == CharacterActionResponce.IN_BATTLE) {
@@ -498,7 +466,7 @@ export class SocketManager {
     //  rest(user: User) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         let res = await this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
+    //         let res =  this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
     //         if (res == CharacterActionResponce.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'no place to rest here')
     //         } else if (res == CharacterActionResponce.IN_BATTLE) {
@@ -511,7 +479,7 @@ export class SocketManager {
     //  craft(user: User, craft_action: CharacterAction) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         let res = await this.world.action_manager.start_action(craft_action, char, undefined)
+    //         let res =  this.world.action_manager.start_action(craft_action, char, undefined)
     //         if (res == CharacterActionResponce.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'not enough resources')
     //         } else if (res == CharacterActionResponce.IN_BATTLE) {
@@ -525,7 +493,7 @@ export class SocketManager {
     // //  craft_clothes(user: User) {
     // //     if (user.logged_in) {
     // //         let char = user.get_character();
-    // //         let res = await char.craft_clothes(this.pool);
+    // //         let res =  char.craft_clothes(this.pool);
     // //         if (res != 'ok') {
     // //             user.socket.emit('alert', res);
     // //         }
@@ -535,7 +503,7 @@ export class SocketManager {
     //  enchant(user: User, msg: number) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         // let res = await char.enchant(this.pool, msg);
+    //         // let res =  char.enchant(this.pool, msg);
     //         // if (res != 'ok') {
     //         //     socket.emit('alert', res);
     //         // }
@@ -545,7 +513,7 @@ export class SocketManager {
     //  disenchant(user: User, msg: number) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
-    //         // let res = await char.disenchant(this.pool, msg);
+    //         // let res =  char.disenchant(this.pool, msg);
     //         // if (res != 'ok') {
     //         //     socket.emit('alert', res);
     //         // }
@@ -555,7 +523,7 @@ export class SocketManager {
     // //  set_tactic(user: User, msg: any) {
     // //     if (user.logged_in) {
     // //         let char = user.get_character();
-    // //         // await char.set_tactic(this.pool, msg);
+    // //         //  char.set_tactic(this.pool, msg);
     // //         this.send_tactics_info(char);
     // //     }
     // // }
@@ -789,12 +757,12 @@ export class SocketManager {
     //         return
     //     }
     //     // msg = validator.escape(msg)
-    //     var id = await this.world.get_new_id(this.pool, 'messages')
+    //     var id =  this.world.get_new_id(this.pool, 'messages')
     //     var message = {id: id, msg: msg, user: 'аноньчик'};
     //     if (user != null) {
     //         message.user = user.login;
     //     }
-    //     await this.load_message_to_database(message);
+    //      this.load_message_to_database(message);
     //     this.io.emit('new-message', message);
     // }
 
@@ -803,8 +771,8 @@ export class SocketManager {
     //     if (global.flag_nodb) {
     //         return
     //     }
-    //     let res = await common.send_query(this.pool, constants.new_message_query, [message.msg, message.user]);
-    //     await common.send_query(this.pool, constants.clear_old_messages_query, [res.rows[0].id - 50]);
+    //     let res =  common.send_query(this.pool, constants.new_message_query, [message.msg, message.user]);
+    //      common.send_query(this.pool, constants.clear_old_messages_query, [res.rows[0].id - 50]);
     // }
 
     //  load_messages_from_database() {
@@ -812,7 +780,7 @@ export class SocketManager {
     //     if (global.flag_nodb) {
     //         return {rows: []}
     //     }
-    //     var rows = await common.send_query(this.pool, constants.get_messages_query);
+    //     var rows =  common.send_query(this.pool, constants.get_messages_query);
     //     return rows
     // }
 
@@ -821,7 +789,7 @@ export class SocketManager {
     //         let char = user.get_character();
     //         let battle = this.world.get_battle_from_id(char.get_battle_id());
     //         if (battle != undefined) {
-    //             let res = await battle.process_input(this.pool, char.get_in_battle_id(), action)
+    //             let res =  battle.process_input(this.pool, char.get_in_battle_id(), action)
     //             battle.send_action(res)
     //             battle.send_update()
     //             this.send_skills_info(char)

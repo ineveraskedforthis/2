@@ -12,9 +12,8 @@ export class Unit {
     position: battle_position;
     char_id: char_id
     team: number
-    dead: boolean
 
-    constructor(id: unit_id, position: battle_position, team: number, ap_left: action_points, ap_max: action_points, slowness: number, action_units_per_turn: action_points, char_id: char_id, dead: boolean) {
+    constructor(id: unit_id, position: battle_position, team: number, ap_left: action_points, ap_max: action_points, slowness: number, action_units_per_turn: action_points, char_id: char_id) {
         this.id = id
         this.action_points_left = ap_left
         this.action_points_max = ap_max
@@ -24,7 +23,6 @@ export class Unit {
         this.position = position
         this.char_id = char_id
         this.team = team
-        this.dead = dead
         this.dodge_turns = 0
     }
 }

@@ -2,7 +2,7 @@ import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "..
 import { SocketWrapper} from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
-import { ValidatorSM } from "./common_validations";
+import { Validator } from "./common_validations";
 import fs from "fs"
 
 var current_sessions:{[_: string]: user_id} = {}
@@ -89,7 +89,7 @@ export namespace Auth {
         console.log(data)
 
         // check that credentials are valid
-        var error_message = ValidatorSM.validate_creds(data);
+        var error_message = Validator.validate_creds(data);
         sw.socket.emit('is-login-valid', error_message);
         if (error_message != 'ok') {
             return
@@ -124,7 +124,7 @@ export namespace Auth {
         }
 
         //validate credentials
-        let responce = ValidatorSM.validate_creds(data)
+        let responce = Validator.validate_creds(data)
         sw.socket.emit('is-reg-valid', responce);
         if (responce != 'ok') {
             return

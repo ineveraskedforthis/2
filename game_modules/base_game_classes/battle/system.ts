@@ -57,7 +57,7 @@ export namespace BattleSystem {
 
         const unit = new Unit(last_unit_id, position, team,
             10 as action_points, 10 as action_points, 10 as action_points, 3 as action_points, 
-            character.id, character.dead())
+            character.id)
         
         return unit
     }
@@ -174,17 +174,7 @@ export namespace BattleSystem {
         let data:BattleData = {};
         for (var i = 0; i < battle.heap.raw_data.length; i++) {
             let unit = battle.heap.raw_data[i];
-            var character:Character = Convert.unit_to_character(unit)
-            data[i] = {
-                id: unit.char_id,
-                position: {x: unit.position.x, y: unit.position.y} as battle_position,
-                tag: character.model(),
-                range: character.range(),
-                hp: character.get_hp(),
-                name: character.name,
-                ap: unit.action_points_left
-                next_turn: unit.next_turn_after
-            }
+            data[i] = Convert.unit_to_unit_socket(unit)
         }
         return data
     }

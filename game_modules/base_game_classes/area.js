@@ -20,7 +20,7 @@ module.exports = class Area {
         this.tag = tag
         this.factions_influence = factions_influence
         this.local_resources = local_resources
-        this.id = await this.load_to_db(pool);
+        this.id =  this.load_to_db(pool);
         return this.id;
     }
 
@@ -56,14 +56,14 @@ module.exports = class Area {
             global.last_id += 1
             return global.last_id
         }
-        let res = await common.send_query(pool, constants.insert_area_query, [this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
+        let res =  common.send_query(pool, constants.insert_area_query, [this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
         return res.rows[0].id
     }   
 
      save_to_db(pool) {
         this.changed = false
         this.savings.changed = false
-        await common.send_query(pool, constants.update_area_query, [this.id, this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
+         common.send_query(pool, constants.update_area_query, [this.id, this.tag, this.savings.get_json(), this.stash.get_json(), this.factions_influence, this.local_resources]);
     }
 
     load_from_json(data) {

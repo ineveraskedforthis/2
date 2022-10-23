@@ -40,7 +40,7 @@ export const attack:ActionTargeted = {
 
     result:  function(char:Character, data: map_position) {
         let target_char = char.world.get_char_from_id(char.action_target)
-        await char.world.create_battle(pool, [char], [target_char])
+         char.world.create_battle(pool, [char], [target_char])
     },
 
     start:  function(char:Character, data: map_position) {

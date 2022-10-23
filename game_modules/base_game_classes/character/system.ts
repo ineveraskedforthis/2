@@ -114,6 +114,10 @@ export namespace CharacterSystem {
         return characters_dict[id]
     }
 
+    export function number_to_character(id: number): Character|undefined {
+        return characters_dict[id as char_id]
+    }
+
     export function transfer_savings(A: Character, B: Character, x: money) {
         A.savings.transfer(B.savings, x)
     }

@@ -1,3 +1,4 @@
+import { Character } from "../../base_game_classes/character/character";
 import { User } from "../user";
 
 const a     = 'a'.charCodeAt(0)
@@ -8,7 +9,7 @@ const zero  = '0'.charCodeAt(0)
 const ku    = '9'.charCodeAt(0)
 
 
-export namespace ValidatorSM {
+export namespace Validator {
     export function valid_user(user: User) {
         if (!user.logged_in) return false
         if (user.data.char_id == -1) return false
@@ -42,5 +43,13 @@ export namespace ValidatorSM {
             return 'login-not-allowed-symbols';
         }
         return 'ok';
+    }
+
+    export function can_act(user: User, character: Character) {
+        if (!user.logged_in) return false
+        if (!character.in_battle) return false
+        if (character.dead()) return false
+
+        return true
     }
 }

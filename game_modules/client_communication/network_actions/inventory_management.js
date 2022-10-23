@@ -12,21 +12,21 @@ const common_validations_1 = require("./common_validations");
 var InventoryCommands;
 (function (InventoryCommands) {
     function equip_armour(user, msg) {
-        if (!common_validations_1.ValidatorSM.valid_user(user))
+        if (!common_validations_1.Validator.valid_user(user))
             return false;
         let character = user_manager_1.UserManagement.user_to_character(user);
         character.equip_armour(msg);
     }
     InventoryCommands.equip_armour = equip_armour;
     function equip_weapon(user, msg) {
-        if (!common_validations_1.ValidatorSM.valid_user(user))
+        if (!common_validations_1.Validator.valid_user(user))
             return false;
         let character = user_manager_1.UserManagement.user_to_character(user);
         character.equip_weapon(msg);
     }
     InventoryCommands.equip_weapon = equip_weapon;
     function enchant_weapon(user, msg) {
-        if (!common_validations_1.ValidatorSM.valid_user(user))
+        if (!common_validations_1.Validator.valid_user(user))
             return false;
         let character = user_manager_1.UserManagement.user_to_character(user);
         let item = character.equip.data.backpack.weapons[msg];
@@ -44,7 +44,7 @@ var InventoryCommands;
     }
     InventoryCommands.enchant_weapon = enchant_weapon;
     function enchant_armour(user, msg) {
-        if (!common_validations_1.ValidatorSM.valid_user(user))
+        if (!common_validations_1.Validator.valid_user(user))
             return false;
         let character = user_manager_1.UserManagement.user_to_character(user);
         let item = character.equip.data.backpack.armours[msg];
@@ -62,7 +62,7 @@ var InventoryCommands;
     }
     InventoryCommands.enchant_armour = enchant_armour;
     function switch_weapon(user) {
-        if (!common_validations_1.ValidatorSM.valid_user(user))
+        if (!common_validations_1.Validator.valid_user(user))
             return false;
         let character = user_manager_1.UserManagement.user_to_character(user);
         if (character.in_battle()) {
@@ -74,7 +74,7 @@ var InventoryCommands;
     InventoryCommands.switch_weapon = switch_weapon;
     // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
     function unequip(user, msg) {
-        if (!common_validations_1.ValidatorSM.valid_user(user))
+        if (!common_validations_1.Validator.valid_user(user))
             return false;
         let character = user_manager_1.UserManagement.user_to_character(user);
         if (msg == "right_hand") {
@@ -111,7 +111,7 @@ var InventoryCommands;
     }
     InventoryCommands.unequip = unequip;
     function sell_item(user, msg) {
-        if (!common_validations_1.ValidatorSM.valid_user(user))
+        if (!common_validations_1.Validator.valid_user(user))
             return false;
         let character = user_manager_1.UserManagement.user_to_character(user);
         let index = parseInt(msg.index);
@@ -125,7 +125,7 @@ var InventoryCommands;
     }
     InventoryCommands.sell_item = sell_item;
     function buyout(user, msg) {
-        if (!common_validations_1.ValidatorSM.valid_user(user))
+        if (!common_validations_1.Validator.valid_user(user))
             return false;
         let character = user_manager_1.UserManagement.user_to_character(user);
         // validate that user input is safe

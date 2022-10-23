@@ -1,4 +1,4 @@
 module.exports =  function attack_local_outpost(pool) {
-    let battle = await this.world.attack_local_outpost(pool, this);
+    let battle =  this.world.attack_local_outpost(pool, this);
     return battle
 }
