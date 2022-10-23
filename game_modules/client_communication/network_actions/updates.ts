@@ -12,8 +12,7 @@ import { Alerts } from "./alerts";
 import { CellActionProb } from "../../calculations/difficulty";
 import { Battle } from "../../base_game_classes/battle/classes/battle";
 import { BattleSystem } from "../../base_game_classes/battle/system";
-import { BATTLE_CURRENT_UNIT, BATTLE_DATA_MESSAGE, UNIT_ID_MESSAGE } from "../../../shared/battle_data";
-
+import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
 
 
 export namespace SendUpdate {

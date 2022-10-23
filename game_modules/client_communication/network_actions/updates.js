@@ -9,7 +9,7 @@ const types_1 = require("../../types");
 const alerts_1 = require("./alerts");
 const difficulty_1 = require("../../calculations/difficulty");
 const system_2 = require("../../base_game_classes/battle/system");
-const battle_data_1 = require("../../../shared/battle_data");
+const constants_1 = require("../../static_data/constants");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -28,10 +28,10 @@ var SendUpdate;
         if (character.in_battle()) {
             const battle = system_2.BattleSystem.id_to_battle(character.battle_id);
             let unit_id = character.battle_unit_id;
-            alerts_1.Alerts.generic_user_alert(user, battle_data_1.UNIT_ID_MESSAGE, unit_id);
+            alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
             alerts_1.Alerts.generic_user_alert(user, 'battle-in-process', true);
-            alerts_1.Alerts.generic_user_alert(user, battle_data_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
-            alerts_1.Alerts.generic_user_alert(user, battle_data_1.BATTLE_CURRENT_UNIT, { action: 'new_turn', target: battle.heap.selected });
+            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
+            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, { action: 'new_turn', target: battle.heap.selected });
         }
         else {
             alerts_1.Alerts.generic_user_alert(user, 'battle-in-process', false);
