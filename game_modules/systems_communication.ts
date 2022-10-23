@@ -1,4 +1,5 @@
-import { UnitData } from "./base_game_classes/battle/classes/unit";
+import { UnitSocket } from "../shared/battle_data";
+import { Unit } from "./base_game_classes/battle/classes/unit";
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
@@ -10,7 +11,7 @@ import { user_online_id } from "./types";
 
 
 export namespace Convert {
-    export function  unit_to_character(unit: UnitData): Character {
+    export function  unit_to_character(unit: Unit): Character {
         return CharacterSystem.id_to_character(unit.char_id)
     }
 
@@ -22,6 +23,20 @@ export namespace Convert {
     export function character_to_user_data(character:Character):UserData|undefined {
         if (character.user_id == '#') return undefined
         return UserManagement.get_user_data(character.user_id)
+    }
+
+    export function unit_to_unit_socket(unit: Unit): UnitSocket {
+        const character = unit_to_character(unit)
+        return {
+            tag: character.model(),
+            position: unit.position,
+            range: character.range(),
+            name: character.name,
+            hp: character.get_hp(),
+            ap: unit.action_points_left,
+            id: unit.id,
+            next_turn: unit.next_turn_after
+        }
     }
 
     export function character_to_user(character:Character):User|undefined {

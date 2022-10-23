@@ -1,13 +1,13 @@
 // this module shoul require only characters and battles systems
 
-import { action_points, battle_id, battle_position, ms, unit_id } from "../../../shared/battle_data"
+import { action_points, BattleData, battle_id, battle_position, ms, unit_id } from "../../../shared/battle_data"
 import { Convert } from "../../systems_communication"
 import { Character } from "../character/character"
 import { CharacterSystem } from "../character/system"
 import { BattleAI } from "./AI/battle_ai"
 import { Battle } from "./classes/battle"
 import { UnitsHeap } from "./classes/heap"
-import { UnitData } from "./classes/unit"
+import { Unit } from "./classes/unit"
 import { BattleEvent } from "./events"
 
 var battles_list:Battle[] = []
@@ -24,6 +24,9 @@ function time_distance(a: ms, b: ms) {
 
 export namespace BattleSystem {
     
+    export function id_to_battle(id: battle_id) {
+        return battles_dict[id]
+    }
 
     export function save() {}
     export function load() {}
@@ -40,7 +43,7 @@ export namespace BattleSystem {
         return last_id
     }
 
-    export function create_unit(character: Character, team: number): UnitData {
+    export function create_unit(character: Character, team: number): Unit {
         last_unit_id = last_unit_id + 1 as unit_id
         
         // deciding position
@@ -52,7 +55,7 @@ export namespace BattleSystem {
             var position = {x: 0 + dx, y: 0 + dy} as battle_position
         }
 
-        const unit = new UnitData(last_unit_id, position, team,
+        const unit = new Unit(last_unit_id, position, team,
             10 as action_points, 10 as action_points, 10 as action_points, 3 as action_points, 
             character.id, character.dead())
         
@@ -71,7 +74,7 @@ export namespace BattleSystem {
 //             }
 //         }
 
-//         let unit = new UnitData();
+//         let unit = new Unit();
 //         unit.init(agent, position, team)
 
 //         this.heap.add_unit(unit)
@@ -110,7 +113,7 @@ export namespace BattleSystem {
         if (battle == undefined) return
         
         const unit = create_unit(character, team)
-        
+        BattleEvent.NewUnit(battle, unit)
     }
 
     export function update() {
@@ -166,6 +169,37 @@ export namespace BattleSystem {
             var action = BattleAI.action(battle, unit, character);
         } while (action == true)
     }
+
+    export function data(battle: Battle):BattleData {
+        let data:BattleData = {};
+        for (var i = 0; i < battle.heap.raw_data.length; i++) {
+            let unit = battle.heap.raw_data[i];
+            var character:Character = Convert.unit_to_character(unit)
+            data[i] = {
+                id: unit.char_id,
+                position: {x: unit.position.x, y: unit.position.y} as battle_position,
+                tag: character.model(),
+                range: character.range(),
+                hp: character.get_hp(),
+                name: character.name,
+                ap: unit.action_points_left
+                next_turn: unit.next_turn_after
+            }
+        }
+        return data
+    }
+
+//     get_status() {
+//         let tmp:{name: string, hp: number, next_turn: number, ap: number}[] = []
+//         for (let i in this.heap.data) {
+//             let unit = this.heap.data[i]
+//             let char:Character = this.world.get_char_from_id(unit.char_id)
+//             if (char != undefined) {
+//                 tmp.push({name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left})
+//             }
+//         }
+//         return tmp
+//     }
 }
 
 //      process_input(unit_index: number, input: Action) {
@@ -227,7 +261,7 @@ export namespace BattleSystem {
 //         return this.heap.get_unit(i)
 //     }
 
-//     get_char(unit: UnitData) {
+//     get_char(unit: Unit) {
 //         return this.world.get_char_from_id(unit.char_id)
 //     }
 
@@ -235,32 +269,8 @@ export namespace BattleSystem {
 
 
 
-//     get_data():SocketBattleData {
-//         let data:SocketBattleData = {};
-//         for (var i = 0; i < this.heap.data.length; i++) {
-//             let unit = this.heap.data[i];
-//             var character:Character = this.world.get_char_from_id(unit.char_id)
-//             if (character != undefined) {
-//                 data[i] = {
-//                     id: unit.char_id,
-//                     position: {x: unit.position.x, y: unit.position.y},
-//                     tag: character.get_model(),
-//                     range: character.get_range(),
-//                     hp: character.get_hp(),
-//                     name: character.name,
-//                     ap: unit.action_points_left
-//                 }
-//             }
-//         }
-//         return data
-//     }
 
 
-
-//      transfer(target:{stash: Stash}, tag:material_index, x:number) {
-//         this.stash.transfer(target.stash, tag, x);
-//         this.changed = true
-//     }
 
 //     get_team_status(team: number) {
 //         let tmp:{name: string, hp: number, next_turn: number, ap: number}[] = []
@@ -276,17 +286,7 @@ export namespace BattleSystem {
 //         return tmp
 //     }
 
-//     get_status() {
-//         let tmp:{name: string, hp: number, next_turn: number, ap: number}[] = []
-//         for (let i in this.heap.data) {
-//             let unit = this.heap.data[i]
-//             let char:Character = this.world.get_char_from_id(unit.char_id)
-//             if (char != undefined) {
-//                 tmp.push({name: char.name, hp: char.get_hp(), next_turn: unit.next_turn_after, ap: unit.action_points_left})
-//             }
-//         }
-//         return tmp
-//     }
+
 
 //     is_over() {
 //         var team_lost: boolean[] = [];
@@ -349,24 +349,6 @@ export namespace BattleSystem {
 //         return this.heap.get_units_amount()
 //     }
 // }
-
-// send_data_start() {
-//         this.world.socket_manager.send_battle_data_start(this)
-//         if (this.waiting_for_input) {
-//             this.send_action({action: 'new_turn', target: this.heap.selected})
-//         }
-//     }
-
-//     send_update() {
-//         this.world.socket_manager.send_battle_update(this)
-//         if (this.waiting_for_input) {
-//             this.send_action({action: 'new_turn', target: this.heap.selected})
-//         }
-//     }
-
-//     send_current_turn() {
-//         this.send_action({action: 'new_turn', target: this.heap.selected})
-//     }
 
 //     send_action(a: any) {
 //         this.world.socket_manager.send_battle_action(this, a)

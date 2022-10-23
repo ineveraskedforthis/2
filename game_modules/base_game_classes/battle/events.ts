@@ -6,17 +6,17 @@ import { Convert } from "../../systems_communication"
 import { melee_attack_type } from "../../types"
 import { Character } from "../character/character"
 import { Battle } from "./classes/battle"
-import { UnitData } from "./classes/unit"
+import { Unit } from "./classes/unit"
 
 
 
 export namespace BattleEvent {
-    export function NewUnit(battle: Battle, unit: UnitData) {
+    export function NewUnit(battle: Battle, unit: Unit) {
         battle.heap.add_unit(unit)
-        Alerts.battle_new_unit(battle, 'new_unit', unit)
+        Alerts.battle_new_unit(battle, unit)
     }
 
-    export function EndTurn(battle: Battle, unit: UnitData) {
+    export function EndTurn(battle: Battle, unit: Unit) {
         battle.waiting_for_input = false
         
         // invalid battle
@@ -56,7 +56,7 @@ export namespace BattleEvent {
         Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id)
     }
 
-    export function Move(battle: Battle, unit: UnitData, target: battle_position) {
+    export function Move(battle: Battle, unit: Unit, target: battle_position) {
         let tmp = geom.minus(target, unit.position)
 
         let MOVE_COST = 3
@@ -72,7 +72,7 @@ export namespace BattleEvent {
         Alerts.battle_event(battle, 'move', unit.id, target, unit.id)
     }
 
-    export function Attack(battle: Battle, attacker: UnitData, defender:UnitData, attack_type: melee_attack_type) {
+    export function Attack(battle: Battle, attacker: Unit, defender:Unit, attack_type: melee_attack_type) {
         const AttackerCharacter = Convert.unit_to_character(attacker)
         if (attacker.action_points_left < 3) {
             Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
@@ -92,7 +92,7 @@ export namespace BattleEvent {
         Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id)
     }
 
-    export function Shoot(battle: Battle, attacker: UnitData, defender: UnitData) {
+    export function Shoot(battle: Battle, attacker: Unit, defender: Unit) {
         const AttackerCharacter = Convert.unit_to_character(attacker)
         if (attacker.action_points_left < 3) {
             Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
@@ -109,7 +109,7 @@ export namespace BattleEvent {
             case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id)
         }
     }
-    export function Flee(battle: Battle, unit: UnitData) {
+    export function Flee(battle: Battle, unit: Unit) {
         const character = Convert.unit_to_character(unit)
         if (unit.action_points_left >= 3) {
             unit.action_points_left = unit.action_points_left - 3 as action_points

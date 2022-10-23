@@ -5,11 +5,12 @@ import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { cell_id, char_id, map_position, money, TEMP_USER_ID, user_id } from "../../types";
 import { ActionTargeted } from "../../actions/action_manager";
+import { battle_id, unit_id } from "../../../shared/battle_data";
 
 export class Character {
     id: char_id;
-    battle_id: number;
-    battle_unit_id: number;
+    battle_id: battle_id;
+    battle_unit_id: unit_id;
     user_id: user_id|TEMP_USER_ID;
     cell_id: cell_id;
 
@@ -44,8 +45,8 @@ export class Character {
                  stats: Stats, max_hp: number) {
         
         this.id = id as char_id
-        this.battle_id = battle_id
-        this.battle_unit_id = battle_unit_id
+        this.battle_id = battle_id as battle_id
+        this.battle_unit_id = battle_unit_id as unit_id
         this.user_id = user_id
         this.cell_id = cell_id
         this.next_cell = [0, 0]
@@ -161,6 +162,7 @@ export class Character {
         if (this.archetype.race == 'graci') return 2;
         return 0.5
     }
+    model()         { return this.archetype.model }
 
     is_player()     { return this.user_id != '#' }
     dead()          { return this.get_hp() == 0 }

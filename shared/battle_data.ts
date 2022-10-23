@@ -1,3 +1,8 @@
+export const UNIT_ID_MESSAGE = 'unit_id'
+export const BATTLE_DATA_MESSAGE = 'battle_data'
+export const BATTLE_CURRENT_UNIT = 'current_unit_turn'
+
+
 export type unit_id = number & { __brand: "unit"}
 export type battle_id = number & { __brand: "battle"}
 
@@ -8,14 +13,15 @@ export interface position {
 
 export type battle_position = position & { __brand: "battle"}
 
-export interface UnitData {
-    tag: string,
+export interface UnitSocket {
+    tag: string,//model
     position: battle_position
     range: number
     name: string 
     hp: number
     ap: number
     id: number
+    next_turn: number
 }
 
 
@@ -29,7 +35,7 @@ export interface BattleEventSocket{
 }
 
 
-export type BattleData = {[_ in number]: UnitData};
+export type BattleData = {[_ in number]: UnitSocket};
 
 export type action_points = number & { __brand: "action_point"}
 export type ms = number & { __brand: "ms" }

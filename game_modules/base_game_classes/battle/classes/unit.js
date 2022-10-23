@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UnitData = void 0;
-class UnitData {
+exports.Unit = void 0;
+class Unit {
     constructor(id, position, team, ap_left, ap_max, slowness, action_units_per_turn, char_id, dead) {
         this.id = id;
         this.action_points_left = ap_left;
@@ -16,4 +16,4 @@ class UnitData {
         this.dodge_turns = 0;
     }
 }
-exports.UnitData = UnitData;
+exports.Unit = Unit;

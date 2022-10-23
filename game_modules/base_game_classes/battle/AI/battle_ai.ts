@@ -1,7 +1,7 @@
 import type { Character } from "../../character/character";
 
 import {geom, point} from '../../../geom'
-import { UnitData } from "../classes/unit";
+import { Unit } from "../classes/unit";
 import { ActionTag, AttackAction, battle_position, FastAttackAction, MoveAction, unit_id } from "../../../../shared/battle_data";
 import { Battle } from "../classes/battle";
 import { Convert } from "../../../systems_communication";
@@ -61,7 +61,7 @@ export namespace BattleAI {
      * Returns false when action is not possible  
      * Returns true when action was made
      */
-    export function action(battle: Battle, agent_unit: UnitData, agent_character: Character): boolean {
+    export function action(battle: Battle, agent_unit: Unit, agent_character: Character): boolean {
         let tactic = agent_character.archetype.ai_battle
         if (tactic == 'basic') {
             const target_id  = calculate_closest_enemy(battle, agent_unit.id)

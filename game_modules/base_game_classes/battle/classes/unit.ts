@@ -1,7 +1,7 @@
 import { action_points, battle_position, unit_id } from "../../../../shared/battle_data";
 import { char_id } from "../../../types";
 
-export class UnitData {
+export class Unit {
     id: unit_id;
     action_points_left: action_points;
     action_points_max: action_points;

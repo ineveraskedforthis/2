@@ -1,6 +1,6 @@
 import { BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../shared/battle_data";
 import { Battle } from "../../base_game_classes/battle/classes/battle";
-import { UnitData } from "../../base_game_classes/battle/classes/unit";
+import { Unit } from "../../base_game_classes/battle/classes/unit";
 import { Character } from "../../base_game_classes/character/character";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";
@@ -88,6 +88,13 @@ export namespace Alerts {
         }
     }
 
+    export function new_unit(battle: Battle, unit: Unit) {
+        for (let unit of battle.heap.raw_data) {
+            const character = Convert.unit_to_character(unit)
+            generic_character_alert(character, 'battle-new-character', Convert.unit_to_unit_socket(unit))
+        }
+    }
+    
     export function map_action(user: User, tag: string, data: boolean) {
         Alerts.generic_user_alert(user, 'map-action-status', {tag: tag, value: data})
     }
@@ -98,5 +105,5 @@ export namespace Alerts {
 
     export function action_ping(character: Character, duration: number, is_move:boolean) {
         generic_character_alert(character, 'action-ping', {tag: 'start', time: duration, is_move: is_move})
-    }
+    }    
 }

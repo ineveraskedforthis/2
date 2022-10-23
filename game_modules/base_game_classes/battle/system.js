@@ -44,7 +44,7 @@ var BattleSystem;
         else {
             var position = { x: 0 + dx, y: 0 + dy };
         }
-        const unit = new unit_1.UnitData(last_unit_id, position, team, 10, 10, 10, 3, character.id, character.dead());
+        const unit = new unit_1.Unit(last_unit_id, position, team, 10, 10, 10, 3, character.id, character.dead());
         return unit;
     }
     BattleSystem.create_unit = create_unit;
@@ -58,7 +58,7 @@ var BattleSystem;
     //                 position = {x: 0 + dx, y: 0 + dy}
     //             }
     //         }
-    //         let unit = new UnitData();
+    //         let unit = new Unit();
     //         unit.init(agent, position, team)
     //         this.heap.add_unit(unit)
     //         agent.set_flag('in_battle', true)
@@ -196,7 +196,7 @@ var BattleSystem;
 //     get_unit(i: number) {
 //         return this.heap.get_unit(i)
 //     }
-//     get_char(unit: UnitData) {
+//     get_char(unit: Unit) {
 //         return this.world.get_char_from_id(unit.char_id)
 //     }
 //     get_data():SocketBattleData {

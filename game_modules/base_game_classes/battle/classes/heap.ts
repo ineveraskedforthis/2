@@ -1,6 +1,6 @@
 
 import { unit_id } from "../../../../shared/battle_data";
-import { UnitData } from "./unit";
+import { Unit } from "./unit";
 
 /**  Implementation of priority queue to decide priority in battle  
 * Current unit is stored in .selected  
@@ -9,14 +9,14 @@ import { UnitData } from "./unit";
 */
 export class UnitsHeap {
     
-    data: {[_ in unit_id]: UnitData};
-    raw_data: UnitData[];
+    data: {[_ in unit_id]: Unit};
+    raw_data: Unit[];
     last: number;
     heap: unit_id[];
     selected: unit_id|'?';
     changed: boolean;
 
-    constructor(raw_data: UnitData[]) {
+    constructor(raw_data: Unit[]) {
 
         this.raw_data = []
         this.data = {}
@@ -37,11 +37,11 @@ export class UnitsHeap {
         return this.raw_data.length
     }
 
-    get_unit(i: unit_id): UnitData {
+    get_unit(i: unit_id): Unit {
         return this.data[i]
     }
 
-    get_selected_unit(): UnitData|undefined {
+    get_selected_unit(): Unit|undefined {
         if (this.selected == '?') return undefined
         return this.data[this.selected]
     }
@@ -85,7 +85,7 @@ export class UnitsHeap {
         this.changed = true
     }
 
-    add_unit(u: UnitData) {
+    add_unit(u: Unit) {
         this.data[u.id] = u
         this.raw_data.push(u)
         this.push(u.id)

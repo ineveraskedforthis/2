@@ -24,10 +24,11 @@ export const enum UI_Part {
             SKINNING_SKILL,
         CRAFT,
             COOKING_CRAFT, 
+        BATTLE
 }
 
 const children:{[_ in UI_Part]?: UI_Part[]} = {
-    [UI_Part.ROOT]                      : [UI_Part.STATUS, UI_Part.BELONGINGS, UI_Part.MAP, UI_Part.SKILLS, UI_Part.CRAFT],
+    [UI_Part.ROOT]                      : [UI_Part.STATUS, UI_Part.BELONGINGS, UI_Part.MAP, UI_Part.SKILLS, UI_Part.CRAFT, UI_Part.BATTLE],
         [UI_Part.STATUS]                : [UI_Part.HP],
         [UI_Part.BELONGINGS]            : [UI_Part.STASH, UI_Part.SAVINGS, UI_Part.INVENTORY],
         [UI_Part.MAP]                   : [UI_Part.LOCAL_ACTIONS, UI_Part.EXPLORED, UI_Part.LOCAL_ACTIONS],
@@ -56,6 +57,7 @@ const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
             [UI_Part.WEAPON_SKILL]      : SendUpdate.skill_weapon,
         [UI_Part.CRAFT]                 : SendUpdate.all_craft,        
             [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
+        [UI_Part.BATTLE]                : SendUpdate.battle,
 }
 
 const influence:{[_ in UI_Part]?: UI_Part[]} = {

@@ -158,9 +158,9 @@ export class MovementBattleEvent {
 export class UpdateDataEvent {
     type: 'update'
     unit: battle_id
-    data: SocketBattleUnitData
+    data: SocketBattleUnit
 
-    constructor(unit_id: battle_id, data: SocketBattleUnitData) {
+    constructor(unit_id: battle_id, data: SocketBattleUnit) {
         this.unit = unit_id
         this.data = data
         this.type = 'update'
