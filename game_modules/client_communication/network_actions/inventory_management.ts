@@ -1,30 +1,28 @@
-import { entity_manager } from "../../../game_launch";
 import { roll_affix_armour, roll_affix_weapon } from "../../base_game_classes/affix";
-import { money } from "../../base_game_classes/savings";
-import { AuctionManagement, auction_order_id_raw } from "../../market/market_items";
-import { ARMOUR_TYPE } from "../../static_data/item_tags";
 import { User } from "../user";
 import { ZAZ } from "../../manager_classes/materials_manager";
-import { UserManagement } from "../../manager_classes/user_manager";
 import { Alerts } from "./alerts";
 import { ValidatorSM } from "./common_validations";
+import { Convert } from "../../systems_communication";
+import { CharacterSystem } from "../../base_game_classes/character/system";
+import { Event } from "../../events";
 
 export namespace InventoryCommands {
     export function equip_armour(user: User, msg: number) {
         if (!ValidatorSM.valid_user(user)) return false
-        let character = UserManagement.user_to_character(user)
+        let character = Convert.user_to_character(user)
         character.equip_armour(msg);
     }
 
     export function equip_weapon(user: User, msg: number) {
         if (!ValidatorSM.valid_user(user)) return false
-        let character = UserManagement.user_to_character(user)
+        let character = Convert.user_to_character(user)
         character.equip_weapon(msg);
     }
 
     export function enchant_weapon(user: User, msg: number) {
         if (!ValidatorSM.valid_user(user)) return false
-        let character = UserManagement.user_to_character(user)
+        let character = Convert.user_to_character(user)
         let item = character.equip.data.backpack.weapons[msg];
         
 
@@ -43,7 +41,7 @@ export namespace InventoryCommands {
 
     export function enchant_armour(user: User, msg: number) {
         if (!ValidatorSM.valid_user(user)) return false
-        let character = UserManagement.user_to_character(user)
+        let character = Convert.user_to_character(user)
 
         let item = character.equip.data.backpack.armours[msg]
         if (item != undefined) {
@@ -61,7 +59,7 @@ export namespace InventoryCommands {
 
     export function switch_weapon(user:User) {
         if (!ValidatorSM.valid_user(user)) return false
-        let character = UserManagement.user_to_character(user)
+        let character = Convert.user_to_character(user)
 
         if (character.in_battle()) {
             user.socket.emit('alert', 'in_battle')
@@ -74,7 +72,7 @@ export namespace InventoryCommands {
     // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
     export function unequip(user:User, msg: string) {
         if (!ValidatorSM.valid_user(user)) return false
-        let character = UserManagement.user_to_character(user)
+        let character = Convert.user_to_character(user)
 
         if (msg == "right_hand") {
             character.unequip_weapon()
@@ -91,7 +89,7 @@ export namespace InventoryCommands {
     }
     export function sell_item(user: User, msg: any) {
         if (!ValidatorSM.valid_user(user)) return false
-        let character = UserManagement.user_to_character(user)
+        let character = Convert.user_to_character(user)
         let index = parseInt(msg.index);
 
         let type = msg.item_type
@@ -103,7 +101,7 @@ export namespace InventoryCommands {
 
     export function buyout(user: User, msg: string) {
         if (!ValidatorSM.valid_user(user)) return false
-        let character = UserManagement.user_to_character(user)
+        let character = Convert.user_to_character(user)
 
         // validate that user input is safe
         let id = parseInt(msg);

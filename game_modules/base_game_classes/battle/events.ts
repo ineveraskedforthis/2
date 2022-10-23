@@ -13,7 +13,7 @@ import { Unit } from "./classes/unit"
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
         battle.heap.add_unit(unit)
-        Alerts.battle_new_unit(battle, unit)
+        Alerts.new_unit(battle, unit)
     }
 
     export function EndTurn(battle: Battle, unit: Unit) {
