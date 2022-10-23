@@ -88,6 +88,13 @@ var Alerts;
         }
     }
     Alerts.battle_event = battle_event;
+    function new_unit(battle, unit) {
+        for (let unit of battle.heap.raw_data) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            generic_character_alert(character, 'battle-new-character', systems_communication_1.Convert.unit_to_unit_socket(unit));
+        }
+    }
+    Alerts.new_unit = new_unit;
     function map_action(user, tag, data) {
         Alerts.generic_user_alert(user, 'map-action-status', { tag: tag, value: data });
     }

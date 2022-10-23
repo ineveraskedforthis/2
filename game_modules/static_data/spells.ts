@@ -1,17 +1,17 @@
-import { AttackResult } from "../base_game_classes/misc/attack_result";
-import { DamageByTypeObject } from "../base_game_classes/misc/damage_types";
+import { AttackObj } from "../base_game_classes/character/attack/class";
+import { Damage } from "../base_game_classes/misc/damage_types";
 
 export type spell_tags = 'bolt'|'charge'
 
 export const spells = {
-    'bolt': (result:AttackResult) => {
-        let damage:DamageByTypeObject = new DamageByTypeObject(5, 0, 0, 0)
+    'bolt': (result:AttackObj) => {
+        let damage:Damage = new Damage(5, 0, 0, 0)
         result.damage = damage;
         return result;
     },
-    'charge': (result:AttackResult) => {
+    'charge': (result:AttackObj) => {
         let damage = {};
-        result.damage = new DamageByTypeObject(10, 0, 0, 0);
+        result.damage = new Damage(10, 0, 0, 0);
         result.flags.close_distance = true;
         result.attacker_status_change.rage = 20;
         return result;

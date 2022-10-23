@@ -105,6 +105,7 @@ class Character {
             return 2;
         return 0.5;
     }
+    model() { return this.archetype.model; }
     is_player() { return this.user_id != '#'; }
     dead() { return this.get_hp() == 0; }
     in_battle() { return (this.battle_id != -1); }

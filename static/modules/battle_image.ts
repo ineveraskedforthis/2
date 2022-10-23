@@ -1,6 +1,6 @@
-import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, battle_position, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent} from './battle_image_helper.js'
+import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent} from './battle_image_helper.js'
 
-import { SocketBattleData, battle_id } from "../../shared/battle_data"
+import { BattleData, battle_id, battle_position } from "../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 
@@ -115,7 +115,7 @@ export class BattleImageNext {
         }
     }
 
-    load(data: SocketBattleData) {
+    load(data: BattleData) {
         console.log('load battle')
         this.reset_data()
         for (var i in data) {
@@ -147,7 +147,7 @@ export class BattleImageNext {
         this.background_flag = true;
     }
 
-    update(data: SocketBattleData) {
+    update(data: BattleData) {
         for (let i in data) {
             let index = Number(i) as battle_id
 

@@ -1,6 +1,6 @@
 import { action_points, battle_position, ms, unit_id } from "../../../shared/battle_data"
 import { Alerts } from "../../client_communication/network_actions/alerts"
-import { Event } from "../../events"
+import { Event } from "../../events/events"
 import { geom } from "../../geom"
 import { Convert } from "../../systems_communication"
 import { melee_attack_type } from "../../types"

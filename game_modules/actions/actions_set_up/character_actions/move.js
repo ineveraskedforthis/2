@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.move = void 0;
 const system_1 = require("../../../map/system");
-const events_1 = require("../../../events");
+const events_1 = require("../../../events/events");
 exports.move = {
     duration(char) {
         return 1 + char.get_fatigue() / 30;

@@ -50,4 +50,14 @@ var Validator;
         return 'ok';
     }
     Validator.validate_creds = validate_creds;
+    function can_act(user, character) {
+        if (!user.logged_in)
+            return false;
+        if (!character.in_battle)
+            return false;
+        if (character.dead())
+            return false;
+        return true;
+    }
+    Validator.can_act = can_act;
 })(Validator = exports.Validator || (exports.Validator = {}));

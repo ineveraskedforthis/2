@@ -2,14 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleEvent = void 0;
 const alerts_1 = require("../../client_communication/network_actions/alerts");
-const events_1 = require("../../events");
+const events_1 = require("../../events/events");
 const geom_1 = require("../../geom");
 const systems_communication_1 = require("../../systems_communication");
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
         battle.heap.add_unit(unit);
-        alerts_1.Alerts.battle_event(battle, 'new_unit');
+        alerts_1.Alerts.new_unit(battle, unit);
     }
     BattleEvent.NewUnit = NewUnit;
     function EndTurn(battle, unit) {

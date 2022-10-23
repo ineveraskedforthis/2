@@ -8,6 +8,8 @@ const systems_communication_1 = require("../../systems_communication");
 const types_1 = require("../../types");
 const alerts_1 = require("./alerts");
 const difficulty_1 = require("../../calculations/difficulty");
+const system_2 = require("../../base_game_classes/battle/system");
+const battle_data_1 = require("../../../shared/battle_data");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -16,8 +18,93 @@ var SendUpdate;
         all_skills(user);
         all_craft(user);
         map_related(user);
+        battle(user);
     }
     SendUpdate.all = all;
+    function battle(user) {
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        if (character.in_battle()) {
+            const battle = system_2.BattleSystem.id_to_battle(character.battle_id);
+            let unit_id = character.battle_unit_id;
+            alerts_1.Alerts.generic_user_alert(user, battle_data_1.UNIT_ID_MESSAGE, unit_id);
+            alerts_1.Alerts.generic_user_alert(user, 'battle-in-process', true);
+            alerts_1.Alerts.generic_user_alert(user, battle_data_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
+            alerts_1.Alerts.generic_user_alert(user, battle_data_1.BATTLE_CURRENT_UNIT, { action: 'new_turn', target: battle.heap.selected });
+        }
+        else {
+            alerts_1.Alerts.generic_user_alert(user, 'battle-in-process', false);
+        }
+    }
+    SendUpdate.battle = battle;
+    // send_data_start() {
+    //         this.world.socket_manager.send_battle_data_start(this)
+    //         if (this.waiting_for_input) {
+    //             this.send_action({action: 'new_turn', target: this.heap.selected})
+    //         }
+    //     }
+    //     send_update() {
+    //         this.world.socket_manager.send_battle_update(this)
+    //         if (this.waiting_for_input) {
+    //             this.send_action({action: 'new_turn', target: this.heap.selected})
+    //         }
+    //     }
+    //     send_current_turn() {
+    //         this.send_action({action: 'new_turn', target: this.heap.selected})
+    //     }
+    // send_battle_data_to_user(user: User) {
+    // }
+    // send_battle_data_start(battle: BattleReworked2) {
+    //     console.log('sending battle info')
+    //     let units = battle.get_units()
+    //     let data = battle.get_data()
+    //     let status = battle.get_status()
+    //     for (let i in units) {
+    //         let char = this.world.get_character_by_id(units[i].char_id)
+    //         if ((char != undefined) && char.is_player()) {
+    //             let position = char.get_in_battle_id()
+    //             this.send_to_character_user(char, 'battle-has-started', data);
+    //             this.send_to_character_user(char, 'enemy-update', status)
+    //             this.send_to_character_user(char, 'player-position', position)
+    //         }
+    //     } 
+    // }
+    // send_battle_update(battle: BattleReworked2) {
+    //     let units = battle.get_units()
+    //     let status = battle.get_status()
+    //     let data = battle.get_data()
+    //     for (let i in units) {
+    //         let char = this.world.get_character_by_id(units[i].char_id)
+    //         if ((char != undefined) && char.is_player()) {
+    //             this.send_to_character_user(char, 'enemy-update', status)
+    //             this.send_to_character_user(char, 'battle-update', data)
+    //             // this.send_to_character_user(char, 'player-position', position)
+    //         }
+    //     } 
+    // }
+    // send_battle_action(battle: BattleReworked2, a: any) {
+    //     let units = battle.get_units()
+    //     for (let i = 0; i < units.length; i++) {
+    //         let char = this.world.get_character_by_id(units[i].char_id);
+    //         if ((char != undefined) && char.is_player()) {
+    //             this.send_to_character_user(char, 'battle-action', a)
+    //         }
+    //     }
+    // }
+    // send_stop_battle(battle: BattleReworked2) {
+    //     let units = battle.get_units()
+    //     for (let i = 0; i < units.length; i++) {
+    //         let character = this.world.get_character_by_id(units[i].char_id);
+    //         if (character != undefined) {
+    //             if (character.is_player()) {
+    //                 this.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
+    //                 this.send_to_character_user(character, 'battle-has-ended', '')
+    //                 this.send_updates_to_char(character)
+    //             }
+    //         }
+    //     }
+    // }
     function savings(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)

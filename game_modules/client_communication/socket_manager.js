@@ -12,6 +12,7 @@ const alerts_1 = require("./network_actions/alerts");
 const system_1 = require("../map/system");
 const actions_1 = require("./network_actions/actions");
 const action_manager_1 = require("../actions/action_manager");
+const run_event_1 = require("./network_actions/run_event");
 class SocketManager {
     // sessions: {[_ in string]: number}
     constructor(io) {
@@ -30,7 +31,7 @@ class SocketManager {
             socket.on('create_character', (msg) => this.create_character(user, msg));
             socket.on('play', (msg) => this.play(user));
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
-            // socket.on('attack-character',  (msg: any) => this.attack_character(user, msg));
+            socket.on('attack-character', (msg) => run_event_1.SocketCommand.attack_character(user, msg));
             // socket.on('buy',  (msg: any) => this.buy(user, msg));
             // socket.on('sell',  (msg: any) => this.sell(user, msg));
             // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));

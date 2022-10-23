@@ -100,6 +100,10 @@ var CharacterSystem;
         return characters_dict[id];
     }
     CharacterSystem.id_to_character = id_to_character;
+    function number_to_character(id) {
+        return characters_dict[id];
+    }
+    CharacterSystem.number_to_character = number_to_character;
     function transfer_savings(A, B, x) {
         A.savings.transfer(B.savings, x);
     }

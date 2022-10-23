@@ -1,21 +1,21 @@
-import { Accuracy } from "./base_game_classes/battle/battle_calcs";
-import { Battle } from "./base_game_classes/battle/classes/battle";
-import { BattleEvent } from "./base_game_classes/battle/events";
-import { BattleSystem } from "./base_game_classes/battle/system";
-import { Attack } from "./base_game_classes/character/attack/system";
-import { Character } from "./base_game_classes/character/character";
-import { Loot } from "./base_game_classes/character/races/generate_loot";
-import { CharacterSystem } from "./base_game_classes/character/system";
-import { CharacterTemplate } from "./base_game_classes/character/templates";
-import { UI_Part } from "./client_communication/causality_graph";
-import { Alerts } from "./client_communication/network_actions/alerts";
-import { User } from "./client_communication/user";
-import { UserManagement } from "./client_communication/user_manager";
-import { ARROW_BONE, material_index, RAT_SKIN } from "./manager_classes/materials_manager";
-import { Cell } from "./map/cell";
-import { MapSystem } from "./map/system";
-import { Convert, Link, Unlink } from "./systems_communication";
-import { cell_id, damage_type, weapon_attack_tag } from "./types";
+import { Accuracy } from "../base_game_classes/battle/battle_calcs";
+import { Battle } from "../base_game_classes/battle/classes/battle";
+import { BattleEvent } from "../base_game_classes/battle/events";
+import { BattleSystem } from "../base_game_classes/battle/system";
+import { Attack } from "../base_game_classes/character/attack/system";
+import { Character } from "../base_game_classes/character/character";
+import { Loot } from "../base_game_classes/character/races/generate_loot";
+import { CharacterSystem } from "../base_game_classes/character/system";
+import { CharacterTemplate } from "../base_game_classes/character/templates";
+import { UI_Part } from "../client_communication/causality_graph";
+import { Alerts } from "../client_communication/network_actions/alerts";
+import { User } from "../client_communication/user";
+import { UserManagement } from "../client_communication/user_manager";
+import { ARROW_BONE, material_index, RAT_SKIN } from "../manager_classes/materials_manager";
+import { Cell } from "../map/cell";
+import { MapSystem } from "../map/system";
+import { Convert, Link, Unlink } from "../systems_communication";
+import { cell_id, damage_type, weapon_attack_tag } from "../types";
 
 export namespace Event {
 

@@ -174,6 +174,15 @@ export class Equip {
         }
     }
 
+    equip_from_backpack(index: number) {
+        let backpack = this.data.backpack;
+        let item = backpack.items[index]
+        if (item == undefined) return
+
+        if (item.slot == 'weapon') {this.equip_weapon(index)}
+        else {this.equip_armour(index)}
+    }
+
     equip_armour(index:number) {
         let backpack = this.data.backpack;
         let item = backpack.items[index]

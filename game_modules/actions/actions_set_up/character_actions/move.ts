@@ -4,7 +4,7 @@ import { MapSystem } from "../../../map/system";
 import { Convert, Link, Unlink } from "../../../systems_communication";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";
-import { Event } from "../../../events";
+import { Event } from "../../../events/events";
 
 export const move:ActionTargeted ={
     duration(char: Character) {

@@ -22,6 +22,32 @@ var Convert;
         return user_manager_1.UserManagement.get_user_data(character.user_id);
     }
     Convert.character_to_user_data = character_to_user_data;
+    function unit_to_unit_socket(unit) {
+        const character = unit_to_character(unit);
+        return {
+            tag: character.model(),
+            position: unit.position,
+            range: character.range(),
+            name: character.name,
+            hp: character.get_hp(),
+            ap: unit.action_points_left,
+            id: unit.id,
+            next_turn: unit.next_turn_after
+        };
+    }
+    Convert.unit_to_unit_socket = unit_to_unit_socket;
+    function socket_wrapper_to_user_character(socket) {
+        if (socket.user_id == '#') {
+            return [undefined, undefined];
+        }
+        const user = user_manager_1.UserManagement.get_user(socket.user_id);
+        const character = Convert.user_to_character(user);
+        if (character == undefined) {
+            return [undefined, undefined];
+        }
+        return [user, character];
+    }
+    Convert.socket_wrapper_to_user_character = socket_wrapper_to_user_character;
     function character_to_user(character) {
         let data = character_to_user_data(character);
         if (data == undefined)

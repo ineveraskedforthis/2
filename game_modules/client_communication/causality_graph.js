@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Update = void 0;
 const updates_1 = require("./network_actions/updates");
 const children = {
-    [0 /* UI_Part.ROOT */]: [1 /* UI_Part.STATUS */, 3 /* UI_Part.BELONGINGS */, 7 /* UI_Part.MAP */, 11 /* UI_Part.SKILLS */, 16 /* UI_Part.CRAFT */],
+    [0 /* UI_Part.ROOT */]: [1 /* UI_Part.STATUS */, 3 /* UI_Part.BELONGINGS */, 7 /* UI_Part.MAP */, 11 /* UI_Part.SKILLS */, 16 /* UI_Part.CRAFT */, 18 /* UI_Part.BATTLE */],
     [1 /* UI_Part.STATUS */]: [2 /* UI_Part.HP */],
     [3 /* UI_Part.BELONGINGS */]: [4 /* UI_Part.STASH */, 5 /* UI_Part.SAVINGS */, 6 /* UI_Part.INVENTORY */],
     [7 /* UI_Part.MAP */]: [10 /* UI_Part.LOCAL_ACTIONS */, 9 /* UI_Part.EXPLORED */, 10 /* UI_Part.LOCAL_ACTIONS */],
@@ -30,6 +30,7 @@ const update_function = {
     [14 /* UI_Part.WEAPON_SKILL */]: updates_1.SendUpdate.skill_weapon,
     [16 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
     [17 /* UI_Part.COOKING_CRAFT */]: updates_1.SendUpdate.cooking_craft,
+    [18 /* UI_Part.BATTLE */]: updates_1.SendUpdate.battle,
 };
 const influence = {
     [11 /* UI_Part.SKILLS */]: [16 /* UI_Part.CRAFT */],

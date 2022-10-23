@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unit = void 0;
 class Unit {
-    constructor(id, position, team, ap_left, ap_max, slowness, action_units_per_turn, char_id, dead) {
+    constructor(id, position, team, ap_left, ap_max, slowness, action_units_per_turn, char_id) {
         this.id = id;
         this.action_points_left = ap_left;
         this.action_points_max = ap_max;
@@ -12,7 +12,6 @@ class Unit {
         this.position = position;
         this.char_id = char_id;
         this.team = team;
-        this.dead = dead;
         this.dodge_turns = 0;
     }
 }

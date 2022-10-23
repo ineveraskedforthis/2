@@ -1,15 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
-const battle_calcs_1 = require("./base_game_classes/battle/battle_calcs");
-const system_1 = require("./base_game_classes/character/attack/system");
-const generate_loot_1 = require("./base_game_classes/character/races/generate_loot");
-const system_2 = require("./base_game_classes/character/system");
-const alerts_1 = require("./client_communication/network_actions/alerts");
-const user_manager_1 = require("./client_communication/user_manager");
-const materials_manager_1 = require("./manager_classes/materials_manager");
-const system_3 = require("./map/system");
-const systems_communication_1 = require("./systems_communication");
+const battle_calcs_1 = require("../base_game_classes/battle/battle_calcs");
+const events_1 = require("../base_game_classes/battle/events");
+const system_1 = require("../base_game_classes/battle/system");
+const system_2 = require("../base_game_classes/character/attack/system");
+const generate_loot_1 = require("../base_game_classes/character/races/generate_loot");
+const system_3 = require("../base_game_classes/character/system");
+const alerts_1 = require("../client_communication/network_actions/alerts");
+const user_manager_1 = require("../client_communication/user_manager");
+const materials_manager_1 = require("../manager_classes/materials_manager");
+const system_4 = require("../map/system");
+const systems_communication_1 = require("../systems_communication");
 var Event;
 (function (Event) {
     function move(character, new_cell) {
@@ -24,11 +26,11 @@ var Event;
     }
     Event.move = move;
     function new_character(template, name, starting_cell, model) {
-        let character = system_2.CharacterSystem.template_to_character(template, name, starting_cell);
+        let character = system_3.CharacterSystem.template_to_character(template, name, starting_cell);
         character.set_model_variation(model);
-        const cell = system_3.MapSystem.SAFE_id_to_cell(starting_cell);
+        const cell = system_4.MapSystem.SAFE_id_to_cell(starting_cell);
         systems_communication_1.Link.character_and_cell(character, cell);
-        system_2.CharacterSystem.save();
+        system_3.CharacterSystem.save();
         return character;
     }
     Event.new_character = new_character;
@@ -76,8 +78,8 @@ var Event;
             return 'miss';
         }
         // create attack
-        const attack = system_1.Attack.generate_ranged(attacker);
-        system_2.CharacterSystem.damage(defender, attack.damage);
+        const attack = system_2.Attack.generate_ranged(attacker);
+        system_3.CharacterSystem.damage(defender, attack.damage);
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
         return 'ok';
     }
@@ -87,15 +89,15 @@ var Event;
             return;
         if (attacker.get_hp() == 0)
             return;
-        const attack = system_1.Attack.generate_melee(attacker, attack_type);
-        system_1.Attack.defend_against_melee(attack, defender);
+        const attack = system_2.Attack.generate_melee(attacker, attack_type);
+        system_2.Attack.defend_against_melee(attack, defender);
         { // evasion
             const skill = defender.skills.evasion;
             attack.defence_skill += skill;
             //active dodge
             if (dodge_flag) {
                 attack.flags.miss = true;
-                system_1.Attack.dodge(attack, 50);
+                system_2.Attack.dodge(attack, 50);
                 // attempts to evade increase your skill
                 if (skill < attack.attack_skill) {
                     increase_evasion(defender);
@@ -104,7 +106,7 @@ var Event;
             //passive evasion
             if (skill > attack.attack_skill) {
                 attack.flags.miss = true;
-                system_1.Attack.dodge(attack, skill);
+                system_2.Attack.dodge(attack, skill);
             }
             else {
                 //fighting against stronger enemies provides constant growth of this skill up to some level
@@ -138,15 +140,15 @@ var Event;
             }
         }
         //apply damage after all modifiers
-        system_2.CharacterSystem.damage(defender, attack.damage);
+        system_3.CharacterSystem.damage(defender, attack.damage);
         defender.change_status(attack.defender_status_change);
         attacker.change_status(attack.attacker_status_change);
         user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
         //if target is dead, loot it all
         if (defender.get_hp() == 0) {
-            const loot = system_2.CharacterSystem.rgo_check(defender);
-            system_2.CharacterSystem.transfer_all(defender, attacker);
+            const loot = system_3.CharacterSystem.rgo_check(defender);
+            system_3.CharacterSystem.transfer_all(defender, attacker);
             for (const item of loot) {
                 attacker.stash.inc(item.material, item.amount);
             }
@@ -196,6 +198,32 @@ var Event;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
     }
     Event.change_stash = change_stash;
+    function start_battle(attacker, defender) {
+        if (attacker.id == defender.id) {
+            return undefined;
+        }
+        if (attacker.cell_id != defender.cell_id) {
+            return undefined;
+        }
+        // two cases
+        // if defender is in battle, attempt to join it against him as a new team
+        // else create new battle
+        if (defender.in_battle()) {
+        }
+        else {
+            const battle_id = system_1.BattleSystem.create_battle();
+            const battle = system_1.BattleSystem.id_to_battle(battle_id);
+            const attacker_unit = system_1.BattleSystem.create_unit(attacker, 1);
+            const defender_unit = system_1.BattleSystem.create_unit(defender, 2);
+            events_1.BattleEvent.NewUnit(battle, attacker_unit);
+            events_1.BattleEvent.NewUnit(battle, defender_unit);
+            attacker.battle_unit_id = attacker_unit.id;
+            defender.battle_unit_id = defender_unit.id;
+            user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 18 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 18 /* UI_Part.BATTLE */);
+        }
+    }
+    Event.start_battle = start_battle;
     //  spell_attack(target: Character, tag: spell_tags) {
     //     let result = new AttackResult()
     //     if (tag == 'bolt') {

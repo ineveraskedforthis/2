@@ -1,6 +1,6 @@
 import { BattleImageNext } from "./battle_image.js"
 
-import { position, battle_id, battle_position } from "../../shared/battle_data"
+import { position, battle_id, battle_position, UnitSocket } from "../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 
@@ -158,9 +158,9 @@ export class MovementBattleEvent {
 export class UpdateDataEvent {
     type: 'update'
     unit: battle_id
-    data: SocketBattleUnit
+    data: UnitSocket
 
-    constructor(unit_id: battle_id, data: SocketBattleUnit) {
+    constructor(unit_id: battle_id, data: UnitSocket) {
         this.unit = unit_id
         this.data = data
         this.type = 'update'
