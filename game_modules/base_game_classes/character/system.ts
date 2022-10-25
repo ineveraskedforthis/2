@@ -28,7 +28,9 @@ export namespace CharacterSystem {
             const character = string_to_character(line)
             character_list.push(character)
             characters_dict[character.id] = character
+            last_character_id = Math.max(character.id, last_character_id)
         }
+
         console.log('characters loaded')
     }
 

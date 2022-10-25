@@ -39,7 +39,7 @@ exports.hunt = {
             let dice = Math.random();
             if (dice * 100 > skill) {
                 char.skills.hunt += 1;
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 11 /* UI_Part.SKILLS */);
+                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 12 /* UI_Part.SKILLS */);
             }
             char.change_stress(1);
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);

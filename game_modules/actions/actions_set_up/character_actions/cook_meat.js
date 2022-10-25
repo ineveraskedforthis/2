@@ -38,7 +38,7 @@ exports.cook_meat = {
             else {
                 if (skill < 19) {
                     char.skills.cooking += 1;
-                    user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 12 /* UI_Part.COOKING_SKILL */);
+                    user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 13 /* UI_Part.COOKING_SKILL */);
                 }
                 char.change_stress(5);
                 user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);

@@ -22,7 +22,7 @@ var Event;
         // effect on fatigue
         character.change('fatigue', 2);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
-        // UserManagement.add_user_to_update_queue(user.data.id, UI_Part.MAP)
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.MAP */);
     }
     Event.move = move;
     function new_character(template, name, starting_cell, model) {
@@ -175,22 +175,22 @@ var Event;
     Event.death = death;
     function increase_evasion(character) {
         character.skills.evasion += 1;
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 13 /* UI_Part.DEFENCE_SKILL */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 14 /* UI_Part.DEFENCE_SKILL */);
     }
     Event.increase_evasion = increase_evasion;
     function increase_block(character) {
         character.skills.blocking += 1;
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 13 /* UI_Part.DEFENCE_SKILL */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 14 /* UI_Part.DEFENCE_SKILL */);
     }
     Event.increase_block = increase_block;
     function increase_skinning(character) {
         character.skills.skinning += 1;
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 15 /* UI_Part.SKINNING_SKILL */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 16 /* UI_Part.SKINNING_SKILL */);
     }
     Event.increase_skinning = increase_skinning;
     function increase_weapon_skill(character, skill) {
         character.skills[skill] += 1;
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 14 /* UI_Part.WEAPON_SKILL */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 15 /* UI_Part.WEAPON_SKILL */);
     }
     Event.increase_weapon_skill = increase_weapon_skill;
     function change_stash(character, tag, amount) {
@@ -219,8 +219,8 @@ var Event;
             events_1.BattleEvent.NewUnit(battle, defender_unit);
             attacker.battle_unit_id = attacker_unit.id;
             defender.battle_unit_id = defender_unit.id;
-            user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 18 /* UI_Part.BATTLE */);
-            user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 18 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 19 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 19 /* UI_Part.BATTLE */);
         }
     }
     Event.start_battle = start_battle;

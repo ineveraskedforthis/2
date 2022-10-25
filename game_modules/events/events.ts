@@ -30,7 +30,7 @@ export namespace Event {
         character.change('fatigue', 2);
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
-        // UserManagement.add_user_to_update_queue(user.data.id, UI_Part.MAP)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MAP)
     }
 
     export function new_character(template:CharacterTemplate, name: string, starting_cell: cell_id, model: ModelVariant) {

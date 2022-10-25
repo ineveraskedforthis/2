@@ -16,6 +16,7 @@ export const enum UI_Part {
             LOCAL_CHARACTERS,
             EXPLORED,
             LOCAL_ACTIONS,
+            MAP_POSITION,
             // LOCAL_MARKET,
         SKILLS,
             COOKING_SKILL,
@@ -28,12 +29,25 @@ export const enum UI_Part {
 }
 
 const children:{[_ in UI_Part]?: UI_Part[]} = {
-    [UI_Part.ROOT]                      : [UI_Part.STATUS, UI_Part.BELONGINGS, UI_Part.MAP, UI_Part.SKILLS, UI_Part.CRAFT, UI_Part.BATTLE],
-        [UI_Part.STATUS]                : [UI_Part.HP],
-        [UI_Part.BELONGINGS]            : [UI_Part.STASH, UI_Part.SAVINGS, UI_Part.INVENTORY],
-        [UI_Part.MAP]                   : [UI_Part.LOCAL_ACTIONS, UI_Part.EXPLORED, UI_Part.LOCAL_ACTIONS],
-        [UI_Part.SKILLS]                : [UI_Part.COOKING_SKILL, UI_Part.SKINNING_SKILL, UI_Part.WEAPON_SKILL, UI_Part.DEFENCE_SKILL],
-        [UI_Part.CRAFT]                 : [UI_Part.COOKING_CRAFT],
+    [UI_Part.ROOT]                      : [ UI_Part.STATUS,
+                                            UI_Part.BELONGINGS, 
+                                            UI_Part.MAP, 
+                                            UI_Part.SKILLS, 
+                                            UI_Part.CRAFT, 
+                                            UI_Part.BATTLE],
+        [UI_Part.STATUS]                : [ UI_Part.HP],
+        [UI_Part.BELONGINGS]            : [ UI_Part.STASH, 
+                                            UI_Part.SAVINGS, 
+                                            UI_Part.INVENTORY],
+        [UI_Part.MAP]                   : [ UI_Part.LOCAL_ACTIONS, 
+                                            UI_Part.EXPLORED, 
+                                            UI_Part.LOCAL_ACTIONS, 
+                                            UI_Part.MAP_POSITION],
+        [UI_Part.SKILLS]                : [ UI_Part.COOKING_SKILL, 
+                                            UI_Part.SKINNING_SKILL, 
+                                            UI_Part.WEAPON_SKILL, 
+                                            UI_Part.DEFENCE_SKILL],
+        [UI_Part.CRAFT]                 : [ UI_Part.COOKING_CRAFT],
 }
 
 function empty_function(user: User) {}
@@ -50,6 +64,7 @@ const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
             [UI_Part.LOCAL_ACTIONS]     : SendUpdate.local_actions,
             [UI_Part.EXPLORED]          : SendUpdate.explored,
             [UI_Part.LOCAL_CHARACTERS]  : SendUpdate.local_characters,
+            [UI_Part.MAP_POSITION]      : SendUpdate.map_position_move,
         [UI_Part.SKILLS]                : SendUpdate.all_skills,
             [UI_Part.COOKING_SKILL]     : SendUpdate.skill_cooking,
             [UI_Part.SKINNING_SKILL]    : SendUpdate.skill_skinning,

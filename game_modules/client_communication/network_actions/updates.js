@@ -280,6 +280,7 @@ var SendUpdate;
     }
     SendUpdate.explored = explored;
     function map_position(user, teleport_flag) {
+        console.log('send map position');
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -292,6 +293,11 @@ var SendUpdate;
         alerts_1.Alerts.generic_user_alert(user, 'map-pos', data);
     }
     SendUpdate.map_position = map_position;
+    function map_position_move(user) {
+        console.log('send map position');
+        map_position(user, false);
+    }
+    SendUpdate.map_position_move = map_position_move;
     function local_characters(user) {
         // prepare data
         const character = systems_communication_1.Convert.user_to_character(user);

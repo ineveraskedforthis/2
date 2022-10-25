@@ -42,7 +42,7 @@ function generate_rat_skin_craft(arg, cost) {
                     char.change_stress(1);
                     if (skill < 20) {
                         char.skills.clothier += 1;
-                        user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 11 /* UI_Part.SKILLS */);
+                        user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 12 /* UI_Part.SKILLS */);
                     }
                     alerts_1.Alerts.failed(char);
                     return 4 /* CharacterActionResponce.FAILED */;

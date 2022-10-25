@@ -302,6 +302,7 @@ export namespace SendUpdate {
     }
 
     export function map_position(user: User, teleport_flag:boolean) {
+        console.log('send map position')
         let character = Convert.user_to_character(user)
         if (character == undefined) return
         let cell = Convert.character_to_cell(character)
@@ -311,6 +312,11 @@ export namespace SendUpdate {
             teleport_flag:teleport_flag
         }
         Alerts.generic_user_alert(user, 'map-pos', data)
+    }
+
+    export function map_position_move(user: User) {
+        console.log('send map position')
+        map_position(user, false)
     }
 
     export function local_characters(user: User) {

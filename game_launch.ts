@@ -14,6 +14,7 @@ import { ActionManager } from "./game_modules/actions/action_manager";
 import { Auth } from "./game_modules/client_communication/network_actions/auth";
 import { Event } from "./game_modules/events/events";
 import { EloTemplate } from "./game_modules/base_game_classes/character/races/elo";
+import { HumanTemplateNotAligned } from "./game_modules/base_game_classes/character/races/human";
 
 
 export var io:io_type = require('socket.io')(http);
@@ -61,7 +62,7 @@ function load() {
     UserManagement.load_users()
     Auth.load()
 
-    Event.new_character(EloTemplate, 'test', MapSystem.coordinate_to_id(7, 5), )
+    Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }
 
 function save() {
