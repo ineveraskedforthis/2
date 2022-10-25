@@ -50,3 +50,9 @@ export interface Archetype {
     ai_battle: tagTactic;
     race: tagRACE;
 }
+
+export interface ModelVariant {
+    chin: number
+    mouth: number
+    eyes: number
+}

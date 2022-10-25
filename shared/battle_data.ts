@@ -1,8 +1,3 @@
-export const UNIT_ID_MESSAGE = 'unit_id'
-export const BATTLE_DATA_MESSAGE = 'battle_data'
-export const BATTLE_CURRENT_UNIT = 'current_unit_turn'
-
-
 export type unit_id = number & { __brand: "unit"}
 export type battle_id = number & { __brand: "battle"}
 

@@ -1,5 +1,5 @@
 import {Stash} from "../inventories/stash"
-import { Archetype, InnateStats, Stats, Status, status_type } from "./character_parts";
+import { Archetype, InnateStats, ModelVariant, Stats, Status, status_type } from "./character_parts";
 import { PerksTable, SkillList } from "./skills";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
@@ -78,7 +78,7 @@ export class Character {
         this.explored = []
     }
 
-    set_model_variation(data:any) {
+    set_model_variation(data:ModelVariant) {
         this.model_variation = data
     }
 

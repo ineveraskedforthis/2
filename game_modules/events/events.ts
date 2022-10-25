@@ -4,6 +4,7 @@ import { BattleEvent } from "../base_game_classes/battle/events";
 import { BattleSystem } from "../base_game_classes/battle/system";
 import { Attack } from "../base_game_classes/character/attack/system";
 import { Character } from "../base_game_classes/character/character";
+import { ModelVariant } from "../base_game_classes/character/character_parts";
 import { Loot } from "../base_game_classes/character/races/generate_loot";
 import { CharacterSystem } from "../base_game_classes/character/system";
 import { CharacterTemplate } from "../base_game_classes/character/templates";
@@ -32,7 +33,7 @@ export namespace Event {
         // UserManagement.add_user_to_update_queue(user.data.id, UI_Part.MAP)
     }
 
-    export function new_character(template:CharacterTemplate, name: string, starting_cell: cell_id, model: any) {
+    export function new_character(template:CharacterTemplate, name: string, starting_cell: cell_id, model: ModelVariant) {
         let character = CharacterSystem.template_to_character(template, name, starting_cell)
         character.set_model_variation(model)
         const cell = MapSystem.SAFE_id_to_cell(starting_cell)

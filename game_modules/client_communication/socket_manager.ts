@@ -13,6 +13,7 @@ import { HandleAction } from "./network_actions/actions";
 import { CharacterAction } from "../actions/action_manager";
 import { SocketCommand } from "./network_actions/run_event";
 import { Convert } from "../systems_communication";
+import { ModelVariant } from "../base_game_classes/character/character_parts";
 
 
 interface Message {
@@ -132,7 +133,7 @@ export class SocketManager {
         let user = UserManagement.get_user(sw.user_id)
 
         if (!Validator.isAlphaNum(data.name)) Alerts.generic_user_alert(user, 'alert', 'character is not allowed')
-        let model_variation:any = {
+        let model_variation:ModelVariant = {
             eyes: data.eyes,
             chin: data.chin,
             mouth: data.mouth

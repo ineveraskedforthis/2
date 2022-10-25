@@ -12,6 +12,8 @@ import { migrate } from "./migrations";
 import { http, io_type } from "./server";
 import { ActionManager } from "./game_modules/actions/action_manager";
 import { Auth } from "./game_modules/client_communication/network_actions/auth";
+import { Event } from "./game_modules/events/events";
+import { EloTemplate } from "./game_modules/base_game_classes/character/races/elo";
 
 
 export var io:io_type = require('socket.io')(http);
@@ -58,6 +60,8 @@ function load() {
     MapSystem.load()
     UserManagement.load_users()
     Auth.load()
+
+    Event.new_character(EloTemplate, 'test', MapSystem.coordinate_to_id(7, 5), )
 }
 
 function save() {
