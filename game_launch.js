@@ -14,6 +14,7 @@ const action_manager_1 = require("./game_modules/actions/action_manager");
 const auth_1 = require("./game_modules/client_communication/network_actions/auth");
 const events_1 = require("./game_modules/events/events");
 const human_1 = require("./game_modules/base_game_classes/character/races/human");
+const systems_communication_1 = require("./game_modules/systems_communication");
 exports.io = require('socket.io')(server_1.http);
 exports.socket_manager = new socket_manager_1.SocketManager(exports.io);
 const gameloop = require('node-gameloop');
@@ -51,6 +52,10 @@ function load() {
     system_2.MapSystem.load();
     user_manager_1.UserManagement.load_users();
     auth_1.Auth.load();
+    const characters = system_1.CharacterSystem.all_characters();
+    for (const character of characters) {
+        systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
+    }
     events_1.Event.new_character(human_1.HumanTemplateNotAligned, 'test', system_2.MapSystem.coordinate_to_id(7, 5), { mouth: 1, eyes: 1, chin: 1 });
 }
 function save() {

@@ -304,9 +304,7 @@ var SendUpdate;
         if (character == undefined)
             return;
         const cell = systems_communication_1.Convert.character_to_cell(character);
-        console.log(cell);
         let characters_list = cell.get_characters_list();
-        console.log(characters_list);
         alerts_1.Alerts.generic_user_alert(user, 'cell-characters', characters_list);
     }
     SendUpdate.local_characters = local_characters;

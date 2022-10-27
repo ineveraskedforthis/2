@@ -323,9 +323,7 @@ export namespace SendUpdate {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
         const cell = Convert.character_to_cell(character)
-        console.log(cell)
         let characters_list = cell.get_characters_list()
-        console.log(characters_list)
         Alerts.generic_user_alert(user, 'cell-characters', characters_list)
     }
 
