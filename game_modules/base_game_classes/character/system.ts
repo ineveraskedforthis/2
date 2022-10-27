@@ -15,6 +15,10 @@ export var character_list:Character[]                  = []
 var characters_dict:{[_ in char_id]: Character} = {}
 
 export namespace CharacterSystem {
+    export function all_characters() {
+        return character_list
+    }
+
     export function load() {
         console.log('loading characters')
         if (!fs.existsSync('characters.txt')) {

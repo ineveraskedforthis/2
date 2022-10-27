@@ -62,6 +62,8 @@ function load() {
     UserManagement.load_users()
     Auth.load()
 
+    
+
     Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }
 

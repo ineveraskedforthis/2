@@ -278,8 +278,6 @@ export namespace SendUpdate {
         Alerts.generic_user_alert(user, 'explore', character.explored)
         map_position(user, true)
 
-        console.log(character.explored)
-
         for (let i = 0; i < character.explored.length; i++) {
             if (character.explored[i]) {
                 let cell = MapSystem.id_to_cell(i as cell_id)
@@ -321,11 +319,13 @@ export namespace SendUpdate {
 
     export function local_characters(user: User) {
         // prepare data
+        console.log('send local characters')
         const character = Convert.user_to_character(user)
         if (character == undefined) return
         const cell = Convert.character_to_cell(character)
+        console.log(cell)
         let characters_list = cell.get_characters_list()
-
+        console.log(characters_list)
         Alerts.generic_user_alert(user, 'cell-characters', characters_list)
     }
 

@@ -84,20 +84,18 @@ var Link;
         cell.enter(character.id);
         character.cell_id = cell.id;
         const locals = cell.get_characters_list();
+        console.log('local characters in cell now:');
+        console.log(locals);
         for (let item of locals) {
             const id = item.id;
             const local_character = system_1.CharacterSystem.id_to_character(id);
-            const local_user = Convert.character_to_user(local_character);
-            if (local_user == undefined) {
-                continue;
-            }
-            user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 8 /* UI_Part.LOCAL_CHARACTERS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
         }
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
         // exploration
         character.explored[cell.id] = true;
         let neighbours = system_2.MapSystem.neighbours_cells(cell.id);
         for (let item of neighbours) {
-            console.log('explore ' + item.x + ' ' + item.y);
             character.explored[item.id] = true;
         }
         //updates

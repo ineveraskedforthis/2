@@ -101,8 +101,8 @@ var tabs_position = {}
 let tabs_properties = JSON.parse(localStorage.getItem('tabs_properties'))
 
 function save_tab(tag) {
-    console.log(tag)
     let tab = document.getElementById(tag + '_tab')
+    if (tab == undefined) {return}
     tabs_properties[tag] = {
         top: tab.style.top,
         left: tab.style.left,

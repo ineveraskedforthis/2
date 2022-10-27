@@ -55,6 +55,7 @@ class Cell {
                 let return_item = { id: item, name: character.name };
                 result.push(return_item);
             }
+            this.saved_characters_list = result;
             return result;
         }
         return this.saved_characters_list;

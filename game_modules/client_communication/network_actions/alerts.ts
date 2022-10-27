@@ -51,7 +51,7 @@ export namespace Alerts {
 
     export function generic_user_alert(user: User, tag:string, msg:any) {
         if (!user.logged_in) return
-        console.log('emit ' + tag + ' ' + JSON.stringify(msg))
+        // console.log('emit ' + tag + ' ' + JSON.stringify(msg))
         user.socket.emit(tag, msg)
     }
 

@@ -14,6 +14,10 @@ exports.character_list = [];
 var characters_dict = {};
 var CharacterSystem;
 (function (CharacterSystem) {
+    function all_characters() {
+        return exports.character_list;
+    }
+    CharacterSystem.all_characters = all_characters;
     function load() {
         console.log('loading characters');
         if (!fs_1.default.existsSync('characters.txt')) {

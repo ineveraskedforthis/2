@@ -82,20 +82,21 @@ export namespace Link {
         cell.enter(character.id)
         character.cell_id = cell.id
         const locals = cell.get_characters_list()
+        console.log('local characters in cell now:')
+        console.log(locals)
         for (let item of locals) {
             const id = item.id
             const local_character = CharacterSystem.id_to_character(id)
-            const local_user = Convert.character_to_user(local_character)
-            if (local_user == undefined) {continue}
-            UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
+            UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.LOCAL_CHARACTERS)
         }
+
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.LOCAL_CHARACTERS)
 
 
         // exploration
         character.explored[cell.id] = true
         let neighbours = MapSystem.neighbours_cells(cell.id)
         for (let item of neighbours) {
-            console.log('explore ' + item.x + ' ' + item.y)
             character.explored[item.id] = true
         }
 

@@ -259,7 +259,6 @@ var SendUpdate;
             return;
         alerts_1.Alerts.generic_user_alert(user, 'explore', character.explored);
         map_position(user, true);
-        console.log(character.explored);
         for (let i = 0; i < character.explored.length; i++) {
             if (character.explored[i]) {
                 let cell = system_1.MapSystem.id_to_cell(i);
@@ -300,11 +299,14 @@ var SendUpdate;
     SendUpdate.map_position_move = map_position_move;
     function local_characters(user) {
         // prepare data
+        console.log('send local characters');
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
         const cell = systems_communication_1.Convert.character_to_cell(character);
+        console.log(cell);
         let characters_list = cell.get_characters_list();
+        console.log(characters_list);
         alerts_1.Alerts.generic_user_alert(user, 'cell-characters', characters_list);
     }
     SendUpdate.local_characters = local_characters;
