@@ -19,20 +19,8 @@ function send_equip_weapon_message(socket, index) {
     if (value) {
         socket.emit('enchant-weapon', index);
     } else {
-        socket.emit('equip-weapon', index);
-    }    
-    socket.emit('char-info-detailed');
-}
-
-
-function send_equip_armour_message(socket, index) {
-    let value = document.getElementById('enchant').checked
-    if (value) {
-        socket.emit('enchant-armour', index);
-    } else {
-        socket.emit('equip-armour', index);
+        socket.emit('equip', index);
     }
-    socket.emit('char-info-detailed');
 }
 
 function send_eat_request(socket) {
@@ -122,19 +110,12 @@ function build_item_div(index, item, type, socket) {
     let label = item_to_text_div(item)
     // let label_damage = item.base_damage.
 
-    row.appendChild(label)
-    row.classList.add('item_row')
+    row.appendChild(label);
+    row.classList.add('item_row');
 
-    if (type == 'weapon') {
-        ((index) => 
-            row.onclick = () => send_equip_weapon_message(socket, index)
-        )(index)
-    } else {
-        ((index) => 
-            row.onclick = () => send_equip_armour_message(socket, index)
-        )(index)
-    }
-    
+    ((index) => 
+        row.onclick = () => send_equip_weapon_message(socket, index)
+    )(index)   
 
     return row    
 }
@@ -282,7 +263,7 @@ export class CharacterScreen {
             if ((inv.items[i] != null) && (inv.items[i] != undefined)) {
                 let weapon = inv.items[i]
                 let row = build_item_div(i, weapon, 'weapon', this.socket)
-                this.table_armour.appendChild(row)
+                this.table_weapon.appendChild(row)
                 add_option(weapon.tag, 'weapon', i)
             }
         }

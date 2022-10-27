@@ -1,5 +1,5 @@
 import { roll_affix_armour, roll_affix_weapon } from "../../base_game_classes/affix";
-import { User } from "../user";
+import { SocketWrapper, User } from "../user";
 import { ZAZ } from "../../manager_classes/materials_manager";
 import { Alerts } from "./alerts";
 import { Validator } from "./common_validations";
@@ -9,15 +9,41 @@ import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
 
 export namespace InventoryCommands {
-    export function equip(user: User, msg: number) {
-        if (!Validator.valid_user(user)) return false
-        let character = Convert.user_to_character(user)
+    export function equip(sw: SocketWrapper, msg: number) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
-
+        
         EventInventory.equip_from_backpack(character, msg)
     }
 
-    // export function enchant_weapon(user: User, msg: number) {
+    export function switch_weapon(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        if (character.in_battle()) { return }
+
+        EventInventory.switch_weapon(character)
+        
+    }
+
+    // expected inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
+    export function unequip(sw: SocketWrapper, msg: string) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        if (msg == "right_hand")    {EventInventory.unequip(character, 'weapon')}
+        else if (msg == 'secondary'){EventInventory.unequip_secondary(character)}
+        else {
+            switch(msg) {
+                case 'body':        {EventInventory.unequip(character, 'body');break;}
+                case 'legs':        {EventInventory.unequip(character, 'legs');break;}
+                case 'foot':        {EventInventory.unequip(character, 'foot');break;}
+                case 'head':        {EventInventory.unequip(character, 'head');break;}
+                case 'arms':        {EventInventory.unequip(character, 'arms');break;}
+            }
+        }
+    }
+
+    // export function enchant_weapon(sw: SocketWrapper, msg: number) {
     //     if (!Validator.valid_user(user)) return false
     //     let character = Convert.user_to_character(user)
     //     let item = character.equip.data.backpack.weapons[msg];
@@ -36,7 +62,7 @@ export namespace InventoryCommands {
     //     }
     // }
 
-    // export function enchant_armour(user: User, msg: number) {
+    // export function enchant_armour(sw: SocketWrapper, msg: number) {
     //     if (!Validator.valid_user(user)) return false
     //     let character = Convert.user_to_character(user)
 
@@ -54,37 +80,10 @@ export namespace InventoryCommands {
     //     }            
     // }
 
-    // export function switch_weapon(user:User) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
 
-    //     if (character.in_battle()) {
-    //         user.socket.emit('alert', 'in_battle')
-    //         return
-    //     }
-    //     character.switch_weapon();
 
-    // }
 
-    // // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
-    // export function unequip(user:User, msg: string) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-
-    //     if (msg == "right_hand") {
-    //         character.unequip_weapon()
-    //     } else {
-    //         switch(msg) {
-    //             case 'secondary': {character.unequip_secondary();break;}
-    //             case 'body': {character.unequip_armour(ARMOUR_TYPE.BODY);break;}
-    //             case 'legs': {character.unequip_armour(ARMOUR_TYPE.LEGS);break;}
-    //             case 'foot': {character.unequip_armour(ARMOUR_TYPE.FOOT);break;}
-    //             case 'head': {character.unequip_armour(ARMOUR_TYPE.HEAD);break;}
-    //             case 'arms': {character.unequip_armour(ARMOUR_TYPE.ARMS);break;}
-    //         }
-    //     }
-    // }
-    // export function sell_item(user: User, msg: any) {
+    // export function sell_item(sw: SocketWrapper, msg: any) {
     //     if (!Validator.valid_user(user)) return false
     //     let character = Convert.user_to_character(user)
     //     let index = parseInt(msg.index);
@@ -96,7 +95,7 @@ export namespace InventoryCommands {
     //     AuctionManagement.sell(entity_manager, character, type, index, price as money, price as money)
     // }
 
-    // export function buyout(user: User, msg: string) {
+    // export function buyout(sw: SocketWrapper, msg: string) {
     //     if (!Validator.valid_user(user)) return false
     //     let character = Convert.user_to_character(user)
 

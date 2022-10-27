@@ -129,6 +129,7 @@ var SendUpdate;
     }
     SendUpdate.stash = stash;
     function equip(user) {
+        console.log('update equip');
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -326,6 +327,7 @@ var SendUpdate;
     }
     SendUpdate.map_related = map_related;
     function belongings(user) {
+        console.log('update belongings');
         stash(user);
         savings(user);
         equip(user);

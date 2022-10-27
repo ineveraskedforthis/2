@@ -1,21 +1,65 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryCommands = void 0;
-const common_validations_1 = require("./common_validations");
 const systems_communication_1 = require("../../systems_communication");
 const inventory_events_1 = require("../../events/inventory_events");
 var InventoryCommands;
 (function (InventoryCommands) {
-    function equip(user, msg) {
-        if (!common_validations_1.Validator.valid_user(user))
-            return false;
-        let character = systems_communication_1.Convert.user_to_character(user);
+    function equip(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;
         inventory_events_1.EventInventory.equip_from_backpack(character, msg);
     }
     InventoryCommands.equip = equip;
-    // export function enchant_weapon(user: User, msg: number) {
+    function switch_weapon(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        if (character.in_battle()) {
+            return;
+        }
+        inventory_events_1.EventInventory.switch_weapon(character);
+    }
+    InventoryCommands.switch_weapon = switch_weapon;
+    // expected inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
+    function unequip(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        if (msg == "right_hand") {
+            inventory_events_1.EventInventory.unequip(character, 'weapon');
+        }
+        else if (msg == 'secondary') {
+            inventory_events_1.EventInventory.unequip_secondary(character);
+        }
+        else {
+            switch (msg) {
+                case 'body': {
+                    inventory_events_1.EventInventory.unequip(character, 'body');
+                    break;
+                }
+                case 'legs': {
+                    inventory_events_1.EventInventory.unequip(character, 'legs');
+                    break;
+                }
+                case 'foot': {
+                    inventory_events_1.EventInventory.unequip(character, 'foot');
+                    break;
+                }
+                case 'head': {
+                    inventory_events_1.EventInventory.unequip(character, 'head');
+                    break;
+                }
+                case 'arms': {
+                    inventory_events_1.EventInventory.unequip(character, 'arms');
+                    break;
+                }
+            }
+        }
+    }
+    InventoryCommands.unequip = unequip;
+    // export function enchant_weapon(sw: SocketWrapper, msg: number) {
     //     if (!Validator.valid_user(user)) return false
     //     let character = Convert.user_to_character(user)
     //     let item = character.equip.data.backpack.weapons[msg];
@@ -30,7 +74,7 @@ var InventoryCommands;
     //         }                
     //     }
     // }
-    // export function enchant_armour(user: User, msg: number) {
+    // export function enchant_armour(sw: SocketWrapper, msg: number) {
     //     if (!Validator.valid_user(user)) return false
     //     let character = Convert.user_to_character(user)
     //     let item = character.equip.data.backpack.armours[msg]
@@ -45,33 +89,7 @@ var InventoryCommands;
     //         }                
     //     }            
     // }
-    // export function switch_weapon(user:User) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-    //     if (character.in_battle()) {
-    //         user.socket.emit('alert', 'in_battle')
-    //         return
-    //     }
-    //     character.switch_weapon();
-    // }
-    // // potential inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
-    // export function unequip(user:User, msg: string) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-    //     if (msg == "right_hand") {
-    //         character.unequip_weapon()
-    //     } else {
-    //         switch(msg) {
-    //             case 'secondary': {character.unequip_secondary();break;}
-    //             case 'body': {character.unequip_armour(ARMOUR_TYPE.BODY);break;}
-    //             case 'legs': {character.unequip_armour(ARMOUR_TYPE.LEGS);break;}
-    //             case 'foot': {character.unequip_armour(ARMOUR_TYPE.FOOT);break;}
-    //             case 'head': {character.unequip_armour(ARMOUR_TYPE.HEAD);break;}
-    //             case 'arms': {character.unequip_armour(ARMOUR_TYPE.ARMS);break;}
-    //         }
-    //     }
-    // }
-    // export function sell_item(user: User, msg: any) {
+    // export function sell_item(sw: SocketWrapper, msg: any) {
     //     if (!Validator.valid_user(user)) return false
     //     let character = Convert.user_to_character(user)
     //     let index = parseInt(msg.index);
@@ -81,7 +99,7 @@ var InventoryCommands;
     //     if (isNaN(index) || isNaN(price)) return;
     //     AuctionManagement.sell(entity_manager, character, type, index, price as money, price as money)
     // }
-    // export function buyout(user: User, msg: string) {
+    // export function buyout(sw: SocketWrapper, msg: string) {
     //     if (!Validator.valid_user(user)) return false
     //     let character = Convert.user_to_character(user)
     //     // validate that user input is safe

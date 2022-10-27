@@ -144,6 +144,7 @@ export namespace SendUpdate {
     }
 
     export function equip(user: User) {
+        console.log('update equip')
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
@@ -344,6 +345,7 @@ export namespace SendUpdate {
     }
 
     export function belongings(user: User) {
+        console.log('update belongings')
         stash(user)
         savings(user)
         equip(user)

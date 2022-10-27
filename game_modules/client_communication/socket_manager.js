@@ -13,6 +13,7 @@ const system_1 = require("../map/system");
 const actions_1 = require("./network_actions/actions");
 const action_manager_1 = require("../actions/action_manager");
 const run_event_1 = require("./network_actions/run_event");
+const inventory_management_1 = require("./network_actions/inventory_management");
 class SocketManager {
     // sessions: {[_ in string]: number}
     constructor(io) {
@@ -37,12 +38,11 @@ class SocketManager {
             // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
             // socket.on('char-info-detailed', () => this.send_char_info(user));
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
-            // socket.on('equip-armour',  (msg: any) => this.equip_armour(user, msg));
-            // socket.on('equip-weapon',  (msg: any) => this.equip_weapon(user, msg));
+            socket.on('equip', (msg) => inventory_management_1.InventoryCommands.equip(user, msg));
             // socket.on('enchant-armour',  (msg: any) => this.enchant_armour(user, msg));
             // socket.on('enchant-weapon',  (msg: any) => this.enchant_weapon(user, msg));
             // socket.on('switch-weapon',  (msg: any) => this.switch_weapon(user))
-            // socket.on('unequip',  (msg: any) => this.unequip(user, msg));
+            socket.on('unequip', (msg) => inventory_management_1.InventoryCommands.unequip(user, msg));
             socket.on('eat', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_WOOD));
             socket.on('clean', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CLEAN));
             socket.on('rest', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.REST));

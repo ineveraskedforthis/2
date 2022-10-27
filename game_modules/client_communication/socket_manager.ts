@@ -14,6 +14,7 @@ import { CharacterAction } from "../actions/action_manager";
 import { SocketCommand } from "./network_actions/run_event";
 import { Convert } from "../systems_communication";
 import { ModelVariant } from "../base_game_classes/character/character_parts";
+import { InventoryCommands } from "./network_actions/inventory_management";
 
 
 interface Message {
@@ -63,13 +64,13 @@ export class SocketManager {
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
 
 
-            // socket.on('equip-armour',  (msg: any) => this.equip_armour(user, msg));
-            // socket.on('equip-weapon',  (msg: any) => this.equip_weapon(user, msg));
+            socket.on('equip',  (msg: any) =>           InventoryCommands.equip(user, msg));
             // socket.on('enchant-armour',  (msg: any) => this.enchant_armour(user, msg));
             // socket.on('enchant-weapon',  (msg: any) => this.enchant_weapon(user, msg));
-            // socket.on('switch-weapon',  (msg: any) => this.switch_weapon(user))
-            // socket.on('unequip',  (msg: any) => this.unequip(user, msg));
+            socket.on('switch-weapon',  (msg: any) =>   InventoryCommands.switch_weapon(user))
+            socket.on('unequip',  (msg: any) =>         InventoryCommands.unequip(user, msg));
 
+            
 
             socket.on('eat',  () =>             HandleAction.act(user, CharacterAction.GATHER_WOOD));
             socket.on('clean',  () =>           HandleAction.act(user, CharacterAction.CLEAN));
