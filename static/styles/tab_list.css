@@ -90,6 +90,18 @@
         background-image: url(/static/img/tab_buttons/craft_button_pressed.png);
     }
 
+#stash_button {
+    background-image: url(/static/img/tab_buttons/Stash_button.png);
+}
+    #stash_button:hover {
+        background-image: url(/static/img/tab_buttons/Stash_button_hovered.png);
+    }
+    #stash_button:active {
+        background-image: url(/static/img/tab_buttons/Stash_button_pressed.png);
+    }
+    #stash_button.active {
+        background-image: url(/static/img/tab_buttons/Stash_button_pressed.png);
+    }
 
 #skilltree_button {
     background-image: url(/static/img/tab_buttons/skills_button.png);
