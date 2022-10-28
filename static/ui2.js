@@ -12,15 +12,15 @@ var globals = {
     socket: socket
 }
 
-const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'local_characters']
+
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 // import {init_battle_control} from './modules/battle_image.js';
 import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
 
-import { BattleImageNext } from './modules/battle_image.js';
-import { init_battle_control } from './modules/battle_image_init.js'
+import { BattleImageNext } from './modules/Battle/battle_image.js';
+import { init_battle_control } from './modules/Battle/battle_image_init.js'
 
 // import * as BattleImageNext from  './modules/battle_image.js';
 // import * as init_battle_control from './modules/battle_image_init.js'
@@ -36,6 +36,9 @@ init_map_control(map, globals);
 var battle_image = new BattleImageNext(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 init_battle_control(battle_image, globals);
 window.battle_image = battle_image
+
+
+
 const character_screen = new CharacterScreen(socket);
 
 
@@ -88,135 +91,6 @@ socket.on('connect', () => {
         socket.emit('session', tmp);
     }
 })
-
-
-// MOVABLE STUFF 
-
-
-var tabs_queue = []
-
-var tabs_position = {}
-
-
-let tabs_properties = JSON.parse(localStorage.getItem('tabs_properties'))
-
-function save_tab(tag) {
-    let tab = document.getElementById(tag + '_tab')
-    if (tab == undefined) {return}
-    tabs_properties[tag] = {
-        top: tab.style.top,
-        left: tab.style.left,
-        width: tab.style.width,
-        height: tab.style.height,
-        zIndex: tab.style.zIndex,
-        active: !tab.classList.contains('hidden')
-    }
-    localStorage.setItem('tabs_properties', JSON.stringify(tabs_properties))
-}
-
-function load_tab(tag) {
-    console.log(tag)
-    let tab = document.getElementById(tag + '_tab')
-    tab.style.top = tabs_properties[tag].top
-    tab.style.left = tabs_properties[tag].left
-    tab.style.width = tabs_properties[tag].width
-    tab.style.height = tabs_properties[tag].height
-    tab.style.zIndex = tabs_properties[tag].zIndex
-
-    if (tabs_properties[tag].active) {
-        toogle_tab(tag)
-    }
-}
-
-if (tabs_properties == null) {
-    tabs_properties = {}
-}
-
-for (let tag of game_tabs) {
-    console.log(tabs_properties)
-    if (tag in tabs_properties) {
-        load_tab(tag)
-    } else {
-        save_tab(tag)
-    }
-} 
-
-let bottom_corners = document.querySelectorAll('.movable > .bottom')
-for (let corner of bottom_corners) {
-    (corner => {corner.onmousedown = (event) =>{
-        if (!globals.pressed_resize_bottom)
-        {
-            globals.pressed_resize_bottom = true
-            globals.current_resize = corner.parentElement
-
-            let tag = corner.parentElement.id.split('_')[0]
-            pop_tab(tag)
-            push_tab(tag)
-        } else {
-            globals.pressed_resize_bottom = false
-            let tag = corner.parentElement.id.split('_')[0]
-            save_tab(tag)
-        }
-    }})(corner)
-}
-
-let top_corners = document.querySelectorAll('.movable > .top')
-for (let corner of top_corners) {
-    (corner => {corner.onmousedown = (event) =>{
-        if (!globals.pressed_resize_top)
-        {
-            globals.pressed_resize_top = true
-            globals.current_resize = corner.parentElement
-
-            let tag = corner.parentElement.id.split('_')[0]
-            pop_tab(tag)
-            push_tab(tag)
-        } else {
-            globals.pressed_resize_top = false
-            let tag = corner.parentElement.id.split('_')[0]
-            save_tab(tag)    
-        }
-    }})(corner)
-}
-
-let game_scene = document.getElementById('actual_game_scene')
-game_scene.onmousemove = event => {
-        if (globals.pressed_resize_bottom)
-        {
-            let x = event.pageX;
-            let y = event.pageY;
-            let rect_1 = globals.current_resize.getBoundingClientRect();
-            let rect_2 = game_scene.getBoundingClientRect();
-            let new_width = x - rect_1.left + 2;
-            let new_height = y - rect_1.top + 2;
-            globals.current_resize.style.width = new_width + 'px'
-            globals.current_resize.style.height = new_height + 'px'
-        }
-        if (globals.pressed_resize_top)
-        {
-            let x = event.pageX;
-            let y = event.pageY;
-            let rect_1 = globals.current_resize.getBoundingClientRect();
-            let rect_2 = game_scene.getBoundingClientRect();
-
-            let width = rect_1.right - rect_1.left;
-            let height = rect_1.bottom - rect_1.top;
-            let new_left = Math.min(rect_1.right - 1, Math.min(rect_2.right - rect_2.left - width, Math.max(1, x - rect_2.left - 1)));
-            let new_top = Math.min(rect_1.bottom - 1, Math.min(rect_2.bottom - rect_2.top - height, Math.max(1, y - rect_2.top - 1)));
-            // let new_width = rect_1.right - rect_1.left - (new_left - old_left);
-            // let new_height = rect_1.bottom - rect_1.top - (new_top - old_top);
-
-            globals.current_resize.style.top = new_top + 'px';
-            globals.current_resize.style.left = new_left + 'px';
-            // globals.current_resize.style.width = new_width + 'px'
-            // globals.current_resize.style.height = new_height + 'px'
-        }
-};
-
-// MOVABLE STUFF END
-
-
-
 
 
 // MESSAGES STUFF
@@ -274,160 +148,6 @@ document.getElementById('to_character_creation').onclick = () => {
 } 
 
 socket.on('no-character', show_char_creation)
-
-show_char_creation
-
-
-//CHANGE SCENES STUFF
-function show_char_creation() {
-    show_scene("character_creation")
-    document.getElementById('page_1').style.visibility = 'inherit';
-}
-
-function show_main_menu() {
-    show_scene("main_menu")
-}
-
-function show_game() {
-    console.log('show game')
-    show_scene("actual_game_scene")
-}
-
-function show_scene(scene_id) {
-    let parent_elem = document.getElementById(scene_id).parentElement;
-    for (var i = 0; i < parent_elem.childNodes.length; i++) {
-        if (parent_elem.childNodes[i].id != undefined && parent_elem.childNodes[i].id != null && parent_elem.childNodes[i].id != ''){
-            document.getElementById(parent_elem.childNodes[i].id).style.visibility = 'hidden';
-        }
-    }
-    document.getElementById(scene_id).style.visibility = 'visible';    
-}
-
-{
-    let tab = document.getElementById('battle_tab');
-    tab.classList.add('hidden');
-}
-
-
-function toogle_tab(tag) {
-    // console.log('toogle tab ' + tag)
-    let tab = document.getElementById(tag + '_tab');
-    let button = document.getElementById(tag + '_button')
-
-    button.classList.toggle('active')
-
-    // console.log(tab.classList.contains('hidden'))
-    // console.log(tab.classList)
-    if (tab.classList.contains('hidden')) {
-        tab.classList.remove('hidden');
-        push_tab(tag)
-        return 'on'
-    } else {
-        
-        tab.classList.add('hidden');
-        pop_tab(tag)
-        
-        return 'off'
-    }
-
-    
-}
-
-function push_tab(tag) {
-    let tab = document.getElementById(tag + '_tab');
-    tabs_queue.push(tag)
-    tabs_position[tag] = tabs_queue.length - 1
-    tab.style.zIndex = +tabs_queue.length + 1
-
-    save_tab(tag)
-}
-
-function pop_tab(tag) {
-    tabs_queue.splice(tabs_position[tag], 1)
-    update_z_levels_tabs()
-    save_tab(tag)
-}
-
-window.addEventListener('keydown', function(event) {
-    if (event.defaultPrevented) {
-        return
-    }
-
-    // console.log(event.code)
-
-    if (event.code == "Escape") {
-        // console.log('!!!')
-        let length = tabs_queue.length
-        // console.log(length)
-        if (length > 0) {
-            toogle_tab(tabs_queue[length - 1])
-        }
-    }
-})
-
-function update_z_levels_tabs() {
-    for (let i in tabs_queue) {
-        let tab_tag = tabs_queue[i]
-        tabs_position[tab_tag] = i
-        let tab = document.getElementById(tab_tag + '_tab');
-        tab.style.zIndex = tabs_position[tab_tag]
-
-        save_tab(tab_tag)
-    } 
-}
-
-function turn_tab_on(tag) {
-    let tab = document.getElementById(tag + '_tab');
-    tab.classList.remove('hidden');
-    if (tag != 'battle') {
-        let button = document.getElementById(tag + '_button')
-        button.classList.toggle('active')
-    }    
-
-    push_tab(tag)
-}
-
-function turn_tab_off(tag) {
-    let tab = document.getElementById(tag + '_tab');
-    tab.classList.add('hidden');
-
-    if (tag != 'battle') {
-        let button = document.getElementById(tag + '_button')
-        button.classList.toggle('active')
-    }   
-
-    pop_tab(tag)
-}
-
-function tag_to_turn_off_f(tag) {
-    return () => turn_tab_off(tag)
-}
-
-for (let tag of game_tabs) {
-    if (tag == 'battle') {
-        continue
-    }
-    let button = document.getElementById(tag + '_button');
-    button.onclick = () => {
-        let res = toogle_tab(tag);
-        
-        console.log(tag, res)
-        if ((tag == 'market') & (res == 'on')) {
-            socket.emit('send-market-data', true)
-        } else {
-            socket.emit('send-market-data', false)
-        }
-    }
-
-    {
-        let tab = document.getElementById(tag + '_tab')
-        let div = document.createElement('div')
-        div.classList.add('close_tab')
-        div.onclick = tag_to_turn_off_f(tag)
-        tab.appendChild(div)
-    }    
-}
-//CHANGE SCENES STUFF
 
 
 // QUESTS
@@ -968,17 +688,7 @@ function update_equip(data) {
 
 //EQUIP DISPLAY END
 
-function start_battle(data) {
-    console.log('start battle')
-    turn_tab_on('battle')
-    battle_image.clear()
-    battle_image.load(data)
-}
 
-function end_battle() {
-    turn_tab_off('battle')
-    battle_image.clear()
-}
 
 
 //stash update
@@ -1127,17 +837,6 @@ socket.on('map-pos', msg => {
 });
 socket.on('explore', msg => {map.explore(msg)});
 
-socket.on('new-action', msg => battle_image.add_action({name: msg, tag:msg}));
-socket.on('b-action-chance', msg => battle_image.update_action_probability(msg.tag, msg.value))
-
-socket.on('battle-has-started', data => start_battle(data))
-socket.on('battle-has-ended', data => end_battle(data))
-socket.on('battle-update', data => battle_image.update(data))
-socket.on('battle-action', data => {
-    battle_image.handle_socket_data(data);
-})
-socket.on('enemy-update', data => battle_image.update(data))
-socket.on('player-position', data => {((bi, data) => (bi.set_player(data)))(battle_image, data)})
 
 socket.on('skill-tags', data => load_skill_tags(data));
 socket.on('skill', msg => update_skill_data(msg));

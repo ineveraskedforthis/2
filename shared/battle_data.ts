@@ -6,6 +6,11 @@ export interface position {
     y: number
 }
 
+export interface Socket {
+    on(event: string, callback: (data: any) => void ):void;
+    emit(event: string, data: any):void;
+}
+
 export type battle_position = position & { __brand: "battle"}
 
 export interface UnitSocket {
@@ -17,6 +22,11 @@ export interface UnitSocket {
     ap: number
     id: number
     next_turn: number
+}
+
+export interface BattleActionChance {
+    tag: string,
+    value: number
 }
 
 

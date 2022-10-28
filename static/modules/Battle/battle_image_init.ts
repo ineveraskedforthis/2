@@ -1,8 +1,10 @@
 import { BattleImageNext } from "./battle_image.js";
 import { get_mouse_pos_in_canvas } from "./battle_image_helper.js";
+import { BattleActionChance, Socket } from "../../../shared/battle_data"
+import { tab } from "../ViewManagement/tab.js";
 
 export function init_battle_control(battle_image:BattleImageNext, globals:any) {
-    let socket = globals.socket;
+    let socket:Socket = globals.socket;
     battle_image.canvas.onmousedown = (event: any) => {
         event.preventDefault();
         globals.bcp = true
@@ -33,4 +35,46 @@ export function init_battle_control(battle_image:BattleImageNext, globals:any) {
     battle_image.add_action({name: 'retreat', tag: 'flee', cost: 3})
     battle_image.add_action({name: 'switch weapon', tag: 'switch_weapon', cost: 3})
     battle_image.add_action({name: 'end turn', tag: 'end_turn', cost: 0})
+
+    socket.on('new-action',      msg => battle_image.add_action({name: msg, tag:msg}));
+    socket.on('b-action-chance', msg => battle_image.update_action_probability(msg.tag, msg.value))
+
+    //              BATTLES 
+    const UNIT_ID_MESSAGE = 'unit_id'
+    const BATTLE_DATA_MESSAGE = 'battle_data'
+    const BATTLE_CURRENT_UNIT = 'current_unit_turn'
+
+    socket.on('battle-in-process', data => {
+        if (data) start_battle()
+        else end_battle()
+    })
+
+    socket.on(BATTLE_DATA_MESSAGE, data => {
+        load_battle(data)
+    })
+
+
+    socket.on('battle-update', data => battle_image.update(data))
+    socket.on('battle-action', data => {
+        battle_image.handle_socket_data(data);
+    })
+    socket.on('enemy-update', data => battle_image.update(data))
+    socket.on('player-position', data => {((bi, data) => (bi.set_player(data)))(battle_image, data)})
+
+}
+
+function start_battle(data) {
+    console.log('start battle')
+    tab.turn_on('battle')
+    battle_image.clear()
+}
+
+function load_battle(data) {
+    console.log('loading battle')
+    battle_image.load(data)
+}
+
+function end_battle() {
+    tab.turn_off('battle')
+    battle_image.clear()
 }

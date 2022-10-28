@@ -1,6 +1,6 @@
 import { BattleImageNext } from "./battle_image.js"
 
-import { position, battle_id, battle_position, UnitSocket } from "../../shared/battle_data"
+import { position, battle_id, battle_position, UnitSocket } from "../../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 

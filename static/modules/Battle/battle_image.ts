@@ -1,6 +1,6 @@
 import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent} from './battle_image_helper.js'
 
-import { BattleData, battle_id, battle_position } from "../../shared/battle_data"
+import { BattleData, battle_id, battle_position } from "../../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 
