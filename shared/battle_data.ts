@@ -8,7 +8,7 @@ export interface position {
 
 export interface Socket {
     on(event: string, callback: (data: any) => void ):void;
-    emit(event: string, data: any):void;
+    emit(event: string, data?: any):void;
 }
 
 export type battle_position = position & { __brand: "battle"}

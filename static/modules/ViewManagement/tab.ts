@@ -22,6 +22,38 @@ let RESIZE_ELEMENT:null|HTMLElement = null
 
 
 export namespace tab {
+
+     export function save(tag: string) {
+        let tab = document.getElementById(tag + '_tab')
+        if (tab == undefined) {return}
+        tabs_properties[tag] = {
+            top: tab.style.top,
+            left: tab.style.left,
+            width: tab.style.width,
+            height: tab.style.height,
+            zIndex: tab.style.zIndex,
+            active: !tab.classList.contains('hidden')
+        }
+        localStorage.setItem('tabs_properties', JSON.stringify(tabs_properties))
+    }
+
+    export function load(tag: string) {
+        console.log(tag)
+        let tab = document.getElementById(tag + '_tab')!
+        if (tabs_properties[tag] == undefined) {
+            save(tag)
+        }
+        tab.style.top = tabs_properties[tag].top
+        tab.style.left = tabs_properties[tag].left
+        tab.style.width = tabs_properties[tag].width
+        tab.style.height = tabs_properties[tag].height
+        tab.style.zIndex = tabs_properties[tag].zIndex
+
+        if (tabs_properties[tag].active) {
+            toogle(tag)
+        }
+    }
+    
     export function load_all(socket: Socket) {
         let tabs_properties = JSON.parse(localStorage.getItem('tabs_properties')!)
 
@@ -31,11 +63,7 @@ export namespace tab {
 
         for (let tag of game_tabs) {
             console.log(tabs_properties)
-            if (tag in tabs_properties) {
-                load(tag)
-            } else {
-                save(tag)
-            }
+            load(tag)
         }
 
         window.addEventListener('keydown', function(event) {
@@ -168,34 +196,6 @@ export namespace tab {
                     // RESIZE_ELEMENT.style.height = new_height + 'px'
                 }
         };
-    }
-
-    export function save(tag: string) {
-        let tab = document.getElementById(tag + '_tab')
-        if (tab == undefined) {return}
-        tabs_properties[tag] = {
-            top: tab.style.top,
-            left: tab.style.left,
-            width: tab.style.width,
-            height: tab.style.height,
-            zIndex: tab.style.zIndex,
-            active: !tab.classList.contains('hidden')
-        }
-        localStorage.setItem('tabs_properties', JSON.stringify(tabs_properties))
-    }
-
-    export function load(tag: string) {
-        console.log(tag)
-        let tab = document.getElementById(tag + '_tab')!
-        tab.style.top = tabs_properties[tag].top
-        tab.style.left = tabs_properties[tag].left
-        tab.style.width = tabs_properties[tag].width
-        tab.style.height = tabs_properties[tag].height
-        tab.style.zIndex = tabs_properties[tag].zIndex
-
-        if (tabs_properties[tag].active) {
-            toogle(tag)
-        }
     }
 
     export function push(tag: string) {

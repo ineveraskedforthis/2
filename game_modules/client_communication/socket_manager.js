@@ -41,7 +41,7 @@ class SocketManager {
             socket.on('equip', (msg) => inventory_management_1.InventoryCommands.equip(user, msg));
             // socket.on('enchant-armour',  (msg: any) => this.enchant_armour(user, msg));
             // socket.on('enchant-weapon',  (msg: any) => this.enchant_weapon(user, msg));
-            // socket.on('switch-weapon',  (msg: any) => this.switch_weapon(user))
+            socket.on('switch-weapon', (msg) => inventory_management_1.InventoryCommands.switch_weapon(user));
             socket.on('unequip', (msg) => inventory_management_1.InventoryCommands.unequip(user, msg));
             socket.on('eat', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_WOOD));
             socket.on('clean', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CLEAN));

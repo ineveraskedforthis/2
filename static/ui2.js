@@ -1,31 +1,16 @@
-// eslint-disable-next-line no-undef
-var socket = io();
+
+
 
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-var globals = {
-    prev_mouse_x: null,
-    prev_mouse_y: null,
-    pressed: false,
-    pressed_resize_bottom: false,
-    pressed_resize_top: false,
-    bcp: false,
-    socket: socket
-}
+
 
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
-// import {init_battle_control} from './modules/battle_image.js';
 import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
-
-import { BattleImageNext } from './modules/Battle/battle_image.js';
-import { init_battle_control } from './modules/Battle/battle_image_init.js'
-
-// import * as BattleImageNext from  './modules/battle_image.js';
-// import * as init_battle_control from './modules/battle_image_init.js'
-
-
+import { socket, globals } from './modules/globals.js';
+import { reg, login } from './modules/ViewManagement/scene.js'
 
 var stash_tag_to_id = {}
 var stash_id_to_tag = {}
@@ -33,14 +18,8 @@ var stash_id_to_tag = {}
 const char_info_monster = new CharInfoMonster();
 const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket, globals);
 init_map_control(map, globals);
-var battle_image = new BattleImageNext(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
-init_battle_control(battle_image, globals);
-window.battle_image = battle_image
-
-
 
 const character_screen = new CharacterScreen(socket);
-
 
 
 // noselect tabs 
@@ -142,12 +121,6 @@ document.getElementById('send_message_button').onclick = (event) => {
 
 //MESSAGES STUFF END
 
-// Main menu:
-document.getElementById('to_character_creation').onclick = () => {
-    socket.emit('play');
-} 
-
-socket.on('no-character', show_char_creation)
 
 
 // QUESTS
@@ -640,7 +613,7 @@ document.getElementById("next_2").onclick = (event) => {
     socket.emit('create_character', {name: '123'})
 }
 
-socket.on('loading_completed', show_game)
+
 
 for (let i = 0; i<3; i++) {
     document.getElementById("eyes_"+ i).onclick = (event) => {
@@ -809,8 +782,9 @@ socket.on('alert', msg => {my_alert(msg); new_log_message(msg)});
 socket.on('sections', msg => map.load_sections(msg));
 
 socket.on('is-reg-valid', msg => my_alert(msg));
-socket.on('is-reg-completed', msg => reg(msg));
 socket.on('is-login-valid', msg => my_alert(msg));
+
+socket.on('is-reg-completed', msg => reg(msg));
 socket.on('is-login-completed', msg => login(msg));
 
 socket.on('session', msg => {localStorage.setItem('session', msg)})
@@ -849,7 +823,6 @@ socket.on('market-data', data => update_market(data));
 socket.on('item-market-data', data => {item_market_table.update(data)});
 
 
-socket.on('action-display', data => {battle_image.update_action_display(data.tag, data.value)})
 
 
 socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
@@ -1221,32 +1194,6 @@ function my_alert(msg) {
         alert(msg);
     }
 }
-
-function login(msg) {
-    if (msg != 'ok') {
-        alert(msg);
-    } else if (msg == 'ok') {
-        console.log('login success')
-        // tactic_screen.reset_tactic()
-        show_main_menu();
-    }
-    let tutorial_stage = localStorage.getItem('tutorial');
-    if (tutorial_stage == null) {
-        // show_tutorial(0);
-    }
-}
-
-function reg(msg) {
-    if (msg != 'ok') {
-        alert(msg);
-    } else if (msg == 'ok') {
-        // tactic_screen.reset_tactic()
-        // show_char_creation();
-        console.log('registration success')
-        show_main_menu();
-    }
-}
-
 
 function restart_action_bar(time, is_move) {
     // console.log('???')

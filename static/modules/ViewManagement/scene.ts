@@ -1,19 +1,22 @@
+import { socket } from "../globals.js";
+import { tab } from "./tab.js";
+
 //CHANGE SCENES STUFF
-export function show_char_creation() {
+function show_char_creation() {
     show_scene("character_creation")
     document.getElementById('page_1')!.style.visibility = 'inherit';
 }
 
-export function show_main_menu() {
+function show_main_menu() {
     show_scene("main_menu")
 }
 
-export function show_game() {
+function show_game() {
     console.log('show game')
     show_scene("actual_game_scene")
 }
 
-export function show_scene(scene_id: string) {
+function show_scene(scene_id: string) {
     let parent_elem = document.getElementById(scene_id)!.parentElement!;
     for (var i = 0; i < parent_elem.children.length; i++) {
         if (parent_elem.children[i].id != undefined && parent_elem.children[i].id != null && parent_elem.children[i].id != ''){
@@ -22,3 +25,39 @@ export function show_scene(scene_id: string) {
     }
     document.getElementById(scene_id)!.style.visibility = 'visible';    
 }
+
+export function login(msg: string) {
+    if (msg != 'ok') {
+        alert(msg);
+    } else if (msg == 'ok') {
+        console.log('login success')
+        // tactic_screen.reset_tactic()
+        show_main_menu();
+    }
+    let tutorial_stage = localStorage.getItem('tutorial');
+    if (tutorial_stage == null) {
+        // show_tutorial(0);
+    }
+}
+
+export function reg(msg: string) {
+    if (msg != 'ok') {
+        alert(msg);
+    } else if (msg == 'ok') {
+        // tactic_screen.reset_tactic()
+        // show_char_creation();
+        console.log('registration success')
+        show_main_menu();
+    }
+}
+
+// Main menu:
+document.getElementById('to_character_creation')!.onclick = () => {
+    socket.emit('play');
+} 
+
+
+socket.on('no-character', show_char_creation)
+socket.on('loading_completed', show_game)
+
+tab.load_all(socket)

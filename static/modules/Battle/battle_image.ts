@@ -9,7 +9,7 @@ function new_log_message(msg: string) {
         return
     }
     if (msg == 'ok') return;
-    var log = document.getElementById('log');
+    var log = document.getElementById('log')!;
     var new_line = document.createElement('p');
     var text = document.createTextNode(msg);
     new_line.append(text);
@@ -36,8 +36,8 @@ function build_character_div(unit_data: BattleUnit, battle_data:BattleImageNext)
 }
 
 
-declare var document: any;
 declare var images: {[_ in string]: Image};
+
 
 
 
@@ -160,7 +160,7 @@ export class BattleImageNext {
 
         if (this.selected != undefined) {
             if (this.player_id != undefined) {
-                let move_ap_div = document.getElementById('move'+'_ap_cost')
+                let move_ap_div = document.getElementById('move'+'_ap_cost')!
                 let a = this.units_data[this.player_id].position
                 let b = this.units_data[this.selected].position
                 let dist = Math.floor(position_c.dist(a, b) * 100) / 100
@@ -180,7 +180,7 @@ export class BattleImageNext {
     update_action_display(tag: string, flag: boolean) {
         console.log(tag)
         console.log(flag)
-        let div = document.getElementById('battle_action_' + tag)
+        let div = document.getElementById('battle_action_' + tag)!
         if (flag) {
             div.classList.remove('display_none')
         } else {
@@ -328,7 +328,7 @@ export class BattleImageNext {
         this.anchor = undefined
 
         if (this.player_id != undefined) {
-            let move_ap_div = document.getElementById('move'+'_ap_cost')
+            let move_ap_div = document.getElementById('move'+'_ap_cost')!
             let a = this.units_data[this.player_id].position
             let b = this.units_data[this.selected].position
             let dist = Math.floor(position_c.dist(a, b) * 100) / 100
@@ -369,7 +369,7 @@ export class BattleImageNext {
             this.anchor = pos;
 
             if (this.player_id != undefined) {
-                let move_ap_div = document.getElementById('move'+'_ap_cost')
+                let move_ap_div = document.getElementById('move'+'_ap_cost')!
                 let a = this.units_data[this.player_id].position
                 let b = position_c.canvas_to_battle(this.anchor, this.h, this.w)
                 let dist = Math.floor(position_c.dist(a, b) * 100) / 100
@@ -461,7 +461,7 @@ export class BattleImageNext {
 
     update_action_probability(tag:string, value:number) {
         console.log(tag, value)
-        let label = document.getElementById(tag + '_chance_b')
+        let label = document.getElementById(tag + '_chance_b')!
         label.innerHTML = Math.floor(value * 100) + '%'
     }
 
