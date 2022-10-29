@@ -123,6 +123,9 @@ export class UpdateDataEvent {
         this.type = 'update';
     }
     effect(battle) {
+        if (battle.units_data[this.unit] == undefined) {
+            battle.add_fighter(this.unit, this.data.tag, this.data.position, this.data.range, this.data.name, this.data.hp, this.data.ap);
+        }
         battle.units_data[this.unit].update(this.data.hp, this.data.ap, this.data.position, this.data.range);
         battle.units_views[this.unit].animation_sequence.push({ type: 'update', data: '' });
     }
@@ -137,6 +140,7 @@ export class ClearBattleEvent {
     effect(battle) {
         console.log('clear battle');
         battle.reset_data();
+        battle.in_progress = false;
     }
     generate_log_message() {
         return "battle is finished";

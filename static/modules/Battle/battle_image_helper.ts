@@ -1,6 +1,6 @@
 import { BattleImageNext } from "./battle_image.js"
 
-import { position, battle_id, battle_position, UnitSocket } from "../../../shared/battle_data"
+import { position, unit_id, battle_position, UnitSocket } from "../../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 
@@ -136,9 +136,9 @@ export class AnimatedImage {
 export class MovementBattleEvent {
     type: 'movement'
     target: battle_position
-    unit_id: battle_id
+    unit_id: unit_id
 
-    constructor(unit_id: battle_id, target: battle_position) {
+    constructor(unit_id: unit_id, target: battle_position) {
         this.type = 'movement'   
         this.target = target    
         this.unit_id = unit_id 
@@ -157,16 +157,19 @@ export class MovementBattleEvent {
 
 export class UpdateDataEvent {
     type: 'update'
-    unit: battle_id
+    unit: unit_id
     data: UnitSocket
 
-    constructor(unit_id: battle_id, data: UnitSocket) {
+    constructor(unit_id: unit_id, data: UnitSocket) {
         this.unit = unit_id
         this.data = data
         this.type = 'update'
     }
 
     effect(battle: BattleImageNext) {
+        if (battle.units_data[this.unit] == undefined) {
+            battle.add_fighter(this.unit, this.data.tag, this.data.position as battle_position, this.data.range, this.data.name, this.data.hp, this.data.ap)
+        }
         battle.units_data[this.unit].update(this.data.hp, this.data.ap, this.data.position as battle_position, this.data.range)
         battle.units_views[this.unit].animation_sequence.push({type: 'update', data: ''})
     }
@@ -186,6 +189,7 @@ export class ClearBattleEvent {
     effect(battle: BattleImageNext) {
         console.log('clear battle')
         battle.reset_data()
+        battle.in_progress = false
     }
 
     generate_log_message():string {
@@ -209,15 +213,13 @@ function get_attack_direction(a: BattleUnitView, d: BattleUnitView) {
 
 export class AttackEvent {
     type: 'attack'
-    unit_id: battle_id
-    target_id: battle_id
-    data: any
+    unit_id: unit_id
+    target_id: unit_id
 
-    constructor(unit: battle_id, target: battle_id, data: any) {
+    constructor(unit: unit_id, target: unit_id) {
         this.type = 'attack'
         this.unit_id = unit
-        this.target_id = target 
-        this.data = data
+        this.target_id = target
     }
 
     effect(battle: BattleImageNext) {
@@ -227,11 +229,7 @@ export class AttackEvent {
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
 
-        if (this.data.flags.evade || this.data.flags.miss) {
-            unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
-        } else {
-            unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: false}})
-        }
+        unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: false}})
         unit_view_attacker.animation_sequence.push({type: 'attack', data: direction_vec})
         
         // unit_view_defender.animation_sequence.push('attack')
@@ -241,25 +239,44 @@ export class AttackEvent {
         let unit = battle.units_data[this.unit_id]
         let target = battle.units_data[this.target_id]
         let result = unit.name + ' attacks ' + target.name + ': '
+        return result + ' HIT!'
+    }
+}
 
-        if (this.data.flags.miss) {
-            return result + ' MISS!';
-        }
-        if (this.data.flags.evade) {
-            return result + ' DODGE!'
-        }
-        if (this.data.flags.crit) {
-            return result + this.data.total_damage + ' damage (CRITICAL)'
-        }        
-        return result + this.data.total_damage + ' damage'
+export class MissEvent {
+    type: 'miss'
+    unit_id: unit_id
+    target_id: unit_id
+
+    constructor(unit: unit_id, target: unit_id) {
+        this.type = 'miss'
+        this.unit_id = unit
+        this.target_id = target 
+    }
+
+    effect(battle: BattleImageNext) {
+        let unit_view_attacker = battle.units_views[this.unit_id]
+        let unit_view_defender = battle.units_views[this.target_id]
+
+        let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
+        direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+
+        unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
+    }
+
+    generate_log_message(battle: BattleImageNext):string {
+        let unit = battle.units_data[this.unit_id]
+        let target = battle.units_data[this.target_id]
+        let result = unit.name + ' attacks ' + target.name + ': '
+        return result + ' MISS!';
     }
 }
 
 export class RetreatEvent {
     type: 'retreat'
-    unit_id: battle_id
+    unit_id: unit_id
     
-    constructor(unit_id: battle_id) {
+    constructor(unit_id: unit_id) {
         this.unit_id = unit_id
         this.type = 'retreat'
     }
@@ -284,9 +301,9 @@ export class RetreatEvent {
 
 export class NewTurnEvent {
     type: 'new_turn'
-    unit:battle_id
+    unit:unit_id
 
-    constructor(unit: battle_id) {
+    constructor(unit: unit_id) {
         this.type = 'new_turn'
         this.unit = unit
     }
@@ -301,11 +318,11 @@ export class NewTurnEvent {
 }
 
 
-export type BattleEvent = MovementBattleEvent|UpdateDataEvent|ClearBattleEvent|AttackEvent|NewTurnEvent|RetreatEvent
+export type BattleEvent = MovementBattleEvent|UpdateDataEvent|ClearBattleEvent|AttackEvent|NewTurnEvent|RetreatEvent|MissEvent
 
 
 export class BattleUnit {
-    id: battle_id
+    id: unit_id
     name: string
     hp: number
     ap: number
@@ -314,7 +331,7 @@ export class BattleUnit {
     killed: boolean
     tag: string
 
-    constructor(id: battle_id, name: string, hp: number, ap: number, range: number, position: battle_position, tag: string) {
+    constructor(id: unit_id, name: string, hp: number, ap: number, range: number, position: battle_position, tag: string) {
         this.id = id
         this.name = name
         this.hp = hp

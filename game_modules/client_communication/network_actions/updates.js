@@ -31,7 +31,7 @@ var SendUpdate;
             alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
             alerts_1.Alerts.generic_user_alert(user, 'battle-in-process', true);
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
-            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, { action: 'new_turn', target: battle.heap.selected });
+            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, battle.heap.selected);
         }
         else {
             alerts_1.Alerts.generic_user_alert(user, 'battle-in-process', false);

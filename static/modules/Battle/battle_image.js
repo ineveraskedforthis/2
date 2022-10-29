@@ -40,6 +40,7 @@ export class BattleImageNext {
         this.battle_ids = new Set();
         this.images = {};
         this.actions = [];
+        this.in_progress = false;
         this.reset_data();
     }
     reset_data() {
@@ -57,13 +58,14 @@ export class BattleImageNext {
             div.innerHTML = '';
         }
     }
-    load(data) {
-        console.log('load battle');
-        this.reset_data();
-        for (var i in data) {
-            this.add_fighter(Number(i), data[i].tag, data[i].position, data[i].range, data[i].name, data[i].hp, data[i].ap);
-        }
-    }
+    // load(data: BattleData) {
+    //     console.log('load battle')
+    //     this.in_progress = true
+    //     this.reset_data()
+    //     for (var i in data) {
+    //         this.add_fighter(Number(i) as battle_id, data[i].tag, data[i].position as battle_position, data[i].range, data[i].name, data[i].hp, data[i].ap)
+    //     }
+    // }
     add_fighter(battle_id, tag, pos, range, name, hp, ap) {
         console.log("add fighter");
         console.log(battle_id, tag, pos, range);

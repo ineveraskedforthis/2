@@ -1,11 +1,11 @@
 import { BattleImageNext } from "./battle_image.js";
-import { get_mouse_pos_in_canvas } from "./battle_image_helper.js";
-import { BattleActionChance, BattleData, Socket } from "../../../shared/battle_data"
+import { AttackEvent, get_mouse_pos_in_canvas, MissEvent, MovementBattleEvent, NewTurnEvent, RetreatEvent } from "./battle_image_helper.js";
+import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket } from "../../../shared/battle_data"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js"
 
 export const battle_image = new BattleImageNext(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
-// window.battle_image = battle_image
+const events_queue: BattleEventSocket[] = []
 
 var bcp = false
 
@@ -32,40 +32,95 @@ battle_image.canvas.onmouseup = (event: any) => {
 battle_image.socket = socket;
 
 battle_image.add_action({name: 'move', tag: 'move'})
-battle_image.add_action({name: 'attack', tag: 'attack', cost: 3})
-battle_image.add_action({name: 'magic_bolt', tag: 'magic_bolt', cost: 3})
-battle_image.add_action({name: 'fast attack', tag: 'fast_attack', cost: 1})
-battle_image.add_action({name: 'shoot', tag: 'shoot', cost: 3})
-battle_image.add_action({name: 'dodge', tag: 'dodge', cost: 4})
-battle_image.add_action({name: 'push back', tag: 'push_back', cost: 5})
+battle_image.add_action({name: 'Slash', tag: 'attack_slice', cost: 3})
+battle_image.add_action({name: 'Pierce', tag: 'attack_pierce', cost: 3})
+battle_image.add_action({name: 'Knock',  tag: 'attack_blunt', cost: 3})
+
+// battle_image.add_action({name: 'magic_bolt', tag: 'magic_bolt', cost: 3})
+// battle_image.add_action({name: 'fast attack', tag: 'fast_attack', cost: 1})
+// battle_image.add_action({name: 'shoot', tag: 'shoot', cost: 3})
+// battle_image.add_action({name: 'dodge', tag: 'dodge', cost: 4})
+// battle_image.add_action({name: 'push back', tag: 'push_back', cost: 5})
+
 battle_image.add_action({name: 'retreat', tag: 'flee', cost: 3})
 battle_image.add_action({name: 'switch weapon', tag: 'switch_weapon', cost: 3})
 battle_image.add_action({name: 'end turn', tag: 'end_turn', cost: 0})
 
-socket.on('new-action',      msg => battle_image.add_action({name: msg, tag:msg}));
-socket.on('b-action-chance', msg => battle_image.update_action_probability(msg.tag, msg.value))
+
 
 //              BATTLES 
 const UNIT_ID_MESSAGE = 'unit_id'
 const BATTLE_DATA_MESSAGE = 'battle_data'
 const BATTLE_CURRENT_UNIT = 'current_unit_turn'
 
-socket.on('battle-in-process', data => {
-    if (data) start_battle()
-    else end_battle()
-})
 
-socket.on(BATTLE_DATA_MESSAGE, data => {
-    load_battle(data)
-})
+socket.on('new-action',                 msg => battle_image.add_action({name: msg, tag:msg}));
+socket.on('b-action-chance',            msg => battle_image.update_action_probability(msg.tag, msg.value))
+socket.on('battle-in-process',          bCallback.update_battle_process)
+socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
+socket.on('enemy-update',               data => battle_image.update(data))
+socket.on(UNIT_ID_MESSAGE,              bCallback.link_player_to_unit)
+socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
+socket.on('battle-event',               bCallback.event)
 
+namespace bCallback {
+    export function set_current_active_unit(data: unit_id) {
+        battle_image.set_current_turn(data)
+    }
+    
+    export function link_player_to_unit(data: unit_id) {
+        battle_image.set_player(data)
+    }
 
-socket.on('battle-update', data => battle_image.update(data))
-socket.on('battle-action', data => {
-    battle_image.handle_socket_data(data);
-})
-socket.on('enemy-update', data => battle_image.update(data))
-socket.on('player-position', data => {((bi, data) => (bi.set_player(data)))(battle_image, data)})
+    export function update_battle_state(data: BattleData) {
+        battle_image.update(data) 
+    }
+
+    export function update_battle_process(flag: boolean) {
+        if (flag) {
+            if (battle_image.in_progress) {
+                socket.emit('request-battle-data')
+            }
+            start_battle()
+        } else {
+            end_battle()
+        }
+    }
+
+    export function event(action: BattleEventSocket) {
+
+                // handle real actions
+        if (action.tag == 'move') {
+            let event = new MovementBattleEvent(action.creator, action.target_position)
+            console.log('move')
+            battle_image.events_list.push(event)        
+        }
+        else if (action.tag == 'attack') {
+            let event = new AttackEvent(action.creator, action.target_unit)
+            battle_image.events_list.push(event)
+        // }
+        // else if (action.tag == '') {
+        //     let event = new ClearBattleEvent()
+        //     battle_image.events_list.push(event)
+        } else if (action.tag == 'new_turn') {
+            let event = new NewTurnEvent(action.creator)
+            battle_image.events_list.push(event)
+        } else if (action.tag == 'flee'){
+            battle_image.events_list.push(new RetreatEvent(action.creator))
+        } else if (action.tag == 'end_turn') {
+            // battle_image.events_list.push()
+        } else if (action.tag == 'miss') {
+            battle_image.events_list.push(new MissEvent(action.creator, action.target_unit))
+        } else if (action.tag == 'ranged_attack') {
+            let event = new AttackEvent(action.creator, action.target_unit)
+            battle_image.events_list.push(event)
+        }     
+        else {
+            console.log('unhandled input')
+            console.log(action)
+        }
+    }
+}
 
 function start_battle() {
     console.log('start battle')
@@ -73,12 +128,9 @@ function start_battle() {
     battle_image.clear()
 }
 
-function load_battle(data: BattleData) {
-    console.log('loading battle')
-    battle_image.load(data)
-}
-
 function end_battle() {
     tab.turn_off('battle')
     battle_image.clear()
 }
+
+

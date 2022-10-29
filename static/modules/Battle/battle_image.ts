@@ -1,6 +1,6 @@
 import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent} from './battle_image_helper.js'
 
-import { BattleData, battle_id, battle_position } from "../../../shared/battle_data"
+import { BattleData, unit_id, battle_position, Socket } from "../../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 
@@ -51,10 +51,12 @@ export class BattleImageNext {
 
     background: string
     background_flag:boolean
-    hovered: battle_id|undefined
-    selected: battle_id|undefined
-    current_turn: battle_id|undefined
+    hovered: unit_id|undefined
+    selected: unit_id|undefined
+    current_turn: unit_id|undefined
     anchor: canvas_position|undefined
+
+    in_progress: boolean
 
     w:number
     h:number
@@ -63,12 +65,12 @@ export class BattleImageNext {
     actions: battle_action[]
 
     events_list: BattleEvent[]
-    units_data: {[_ in battle_id]: BattleUnit}
-    units_views: {[_ in battle_id]: BattleUnitView}
-    battle_ids: Set<battle_id>;
-    images: {[_ in battle_id]: AnimatedImage}
+    units_data: {[_ in unit_id]: BattleUnit}
+    units_views: {[_ in unit_id]: BattleUnitView}
+    unit_ids: Set<unit_id>;
+    images: {[_ in unit_id]: AnimatedImage}
 
-    player_id: undefined|battle_id
+    player_id: undefined|unit_id
 
     constructor(canvas:Canvas, canvas_background:Canvas) {
         this.canvas = canvas 
@@ -87,10 +89,12 @@ export class BattleImageNext {
         this.events_list = []
         this.units_data = {}
         this.units_views = {}
-        this.battle_ids = new Set()
+        this.unit_ids = new Set()
         this.images = {}
 
         this.actions = []
+
+        this.in_progress = false
 
         this.reset_data()
     }
@@ -107,7 +111,7 @@ export class BattleImageNext {
         this.anchor = undefined
         this.current_turn = undefined
 
-        this.battle_ids = new Set()
+        this.unit_ids = new Set()
 
         {
             let div = this.container.querySelector('.enemy_list')
@@ -115,26 +119,27 @@ export class BattleImageNext {
         }
     }
 
-    load(data: BattleData) {
-        console.log('load battle')
-        this.reset_data()
-        for (var i in data) {
-            this.add_fighter(Number(i) as battle_id, data[i].tag, data[i].position as battle_position, data[i].range, data[i].name, data[i].hp, data[i].ap)
-        }
-    }
+    // load(data: BattleData) {
+    //     console.log('load battle')
+    //     this.in_progress = true
+    //     this.reset_data()
+    //     for (var i in data) {
+    //         this.add_fighter(Number(i) as unit_id, data[i].tag, data[i].position as battle_position, data[i].range, data[i].name, data[i].hp, data[i].ap)
+    //     }
+    // }
 
-    add_fighter(battle_id:battle_id, tag:string, pos:battle_position, range:number, name:string, hp:number, ap: number) {
+    add_fighter(unit_id:unit_id, tag:string, pos:battle_position, range:number, name:string, hp:number, ap: number) {
         console.log("add fighter")
-        console.log(battle_id, tag, pos, range)
+        console.log(unit_id, tag, pos, range)
 
-        let unit = new BattleUnit(battle_id, name, hp, ap, range, pos, tag)
+        let unit = new BattleUnit(unit_id, name, hp, ap, range, pos, tag)
         let unit_view = new BattleUnitView(unit)
 
-        this.battle_ids.add(battle_id)
-        this.units_data[battle_id] = unit
-        this.units_views[battle_id] = unit_view
+        this.unit_ids.add(unit_id)
+        this.units_data[unit_id] = unit
+        this.units_views[unit_id] = unit_view
 
-        this.images[battle_id] = new AnimatedImage(tag)
+        this.images[unit_id] = new AnimatedImage(tag)
 
         let div = build_character_div(unit, this)
         this.container.querySelector(".enemy_list").appendChild(div)
@@ -149,7 +154,7 @@ export class BattleImageNext {
 
     update(data: BattleData) {
         for (let i in data) {
-            let index = Number(i) as battle_id
+            let index = Number(i) as unit_id
 
             console.log('update')
             console.log(data[i])
@@ -170,10 +175,10 @@ export class BattleImageNext {
         }
     }
 
-    set_player(battle_id: battle_id) {
+    set_player(unit_id: unit_id) {
         console.log('set_player_position')
-        console.log(battle_id)
-        this.player_id = battle_id
+        console.log(unit_id)
+        this.player_id = unit_id
         this.update_player_actions_availability()
     }
 
@@ -212,7 +217,7 @@ export class BattleImageNext {
 
     hover(pos: canvas_position) {
         let hovered = false;
-        for (let unit_id of this.battle_ids) {
+        for (let unit_id of this.unit_ids) {
             let unit_view = this.units_views[unit_id]
             let centre = position_c.battle_to_canvas(unit_view.position, this.h, this.w)
             let dx = centre.x - pos.x;
@@ -221,7 +226,7 @@ export class BattleImageNext {
             dy = dy * dy;
             if (dx + dy < 400) {
                 hovered = true;
-                this.set_hover(Number(unit_id) as battle_id)
+                this.set_hover(Number(unit_id) as unit_id)
             }
         } 
         if (!hovered) {
@@ -229,7 +234,7 @@ export class BattleImageNext {
         }
     }
 
-    set_hover(i: battle_id) {
+    set_hover(i: unit_id) {
         if (this.hovered != undefined) {
             let div = this.container.querySelector('.enemy_list > .fighter_' + this.hovered)
             div.classList.remove('hovered_unit')
@@ -271,12 +276,12 @@ export class BattleImageNext {
         } 
 
         //sort views by y coordinate
-        var draw_order = Array.from(this.battle_ids)
+        var draw_order = Array.from(this.unit_ids)
         draw_order.sort((a, b) => -this.units_views[a].position.y + this.units_views[b].position.y)
 
         //draw views
-        for (let battle_id of draw_order) {
-            let view = this.units_views[Number(battle_id) as battle_id]
+        for (let unit_id of draw_order) {
+            let view = this.units_views[Number(unit_id) as unit_id]
             view.draw(dt, this, images)    
         }
 
@@ -319,7 +324,7 @@ export class BattleImageNext {
         }
     }
 
-    set_selection(index: battle_id) {
+    set_selection(index: unit_id) {
         if (this.selected != undefined) {
             let div = this.container.querySelector('.enemy_list > .fighter_' + this.selected)
             div.classList.remove('selected_unit')
@@ -352,7 +357,7 @@ export class BattleImageNext {
 
     press(pos: canvas_position) {
         let selected = false;
-        for (let i of this.battle_ids) {
+        for (let i of this.unit_ids) {
             let unit = this.units_views[i]
             let centre = position_c.battle_to_canvas(unit.position, this.h, this.w)
             let dx = centre.x - pos.x;
@@ -465,7 +470,7 @@ export class BattleImageNext {
         label.innerHTML = Math.floor(value * 100) + '%'
     }
 
-    set_current_turn(index: battle_id) {
+    set_current_turn(index: unit_id) {
         console.log('new turn ' + index)
         if (this.current_turn != undefined) {
             let div = this.container.querySelector('.enemy_list > .fighter_' + this.current_turn)
@@ -501,30 +506,6 @@ export class BattleImageNext {
         }
         if (action.action.startsWith('stop_battle')) {
             return 'battle has ended'
-        }
-
-
-        // handle real actions
-        if (action.action == 'move') {
-            let event = new MovementBattleEvent(action.who, action.target)
-            console.log('move', action.who)
-            this.events_list.push(event)        
-        }
-        else if (action.action == 'attack') {
-            let event = new AttackEvent(action.attacker, action.target, action.result)
-            this.events_list.push(event)
-        }
-        else if (action.action == 'stop_battle') {
-            let event = new ClearBattleEvent()
-            this.events_list.push(event)
-        } else if (action.action == 'new_turn') {
-            let event = new NewTurnEvent(action.target)
-            this.events_list.push(event)
-        } else if (action.action == 'flee'){
-            this.events_list.push(new RetreatEvent(action.who))
-        } else {
-            console.log('unhandled input')
-            console.log(action)
         }
     }
 }

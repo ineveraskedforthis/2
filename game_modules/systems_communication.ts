@@ -1,5 +1,8 @@
+import { endianness } from "os";
 import { UnitSocket } from "../shared/battle_data";
+import { Battle } from "./base_game_classes/battle/classes/battle";
 import { Unit } from "./base_game_classes/battle/classes/unit";
+import { BattleSystem } from "./base_game_classes/battle/system";
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
@@ -18,6 +21,18 @@ export namespace Convert {
     export function user_to_character(user: User):Character|undefined {
         if (user.data.char_id == '@') return undefined;
         return CharacterSystem.id_to_character(user.data.char_id)
+    }
+
+    export function character_to_battle(character: Character): Battle|undefined {
+        if (character.battle_id == -1) return undefined
+
+        return BattleSystem.id_to_battle(character.battle_id)
+    }
+
+    export function character_to_unit(character: Character): Unit|undefined {
+        const battle = character_to_battle(character)
+        if (battle == undefined)    return
+        return battle.heap.get_unit(character.battle_unit_id)
     }
 
     export function character_to_user_data(character:Character):UserData|undefined {

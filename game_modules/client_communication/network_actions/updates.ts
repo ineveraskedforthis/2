@@ -36,7 +36,7 @@ export namespace SendUpdate {
             Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)
             Alerts.generic_user_alert(user, 'battle-in-process', true)
             Alerts.generic_user_alert(user, BATTLE_DATA_MESSAGE, BattleSystem.data(battle));
-            Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, {action: 'new_turn', target: battle.heap.selected});      
+            Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, battle.heap.selected);      
         } else {
             Alerts.generic_user_alert(user, 'battle-in-process', false)
         }

@@ -101,8 +101,7 @@ export class SocketManager {
             socket.on('mrarmour',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_ARMOUR))
 
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
-            // socket.on('battle-action',  (msg: any) => this.battle_action(user, msg));
-            // socket.on('req-ranged-accuracy',  (msg: any) => this.send_ranged_accuracy(user, msg))
+            socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
 
             // socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
             // socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
@@ -786,18 +785,7 @@ export class SocketManager {
     //     return rows
     // }
 
-    //  battle_action(user:User, action: any) {
-    //     if (user.logged_in && user.get_character().in_battle()) {
-    //         let char = user.get_character();
-    //         let battle = this.world.get_battle_from_id(char.get_battle_id());
-    //         if (battle != undefined) {
-    //             let res =  battle.process_input(this.pool, char.get_in_battle_id(), action)
-    //             battle.send_action(res)
-    //             battle.send_update()
-    //             this.send_skills_info(char)
-    //         }
-    //     }
-    // }
+
 
 
 }
