@@ -70,7 +70,7 @@ var HandleAction;
         if (!battle.waiting_for_input) {
             return;
         }
-        if (battle.heap.selected != unit.id) {
+        if (battle.heap.get_selected_unit()?.id != unit.id) {
             return;
         }
         if (input == undefined)

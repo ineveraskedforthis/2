@@ -3,7 +3,7 @@ import { unit_id } from "../../../../shared/battle_data";
 import { Unit } from "./unit";
 
 /**  Implementation of priority queue to decide priority in battle  
-* Current unit is stored in .selected  
+* Current unit is stored in heap[0]
 * To end turn, use .pop to delete current unit, reset it and then .push it back
 * If current unit is '?', then priority queue is empty and battle should be stopped
 */
@@ -13,14 +13,12 @@ export class UnitsHeap {
     raw_data: Unit[];
     last: number;
     heap: unit_id[];
-    selected: unit_id|'?';
 
     constructor(raw_data: Unit[]) {
         this.raw_data = []
         this.data = {}
         this.heap = []
         this.last = 0;
-        this.selected = '?'
         for (let unit of raw_data) {
             this.add_unit(unit)
         } 
@@ -39,8 +37,9 @@ export class UnitsHeap {
     }
 
     get_selected_unit(): Unit|undefined {
-        if (this.selected == '?') return undefined
-        return this.data[this.selected]
+        const current = this.heap[0]
+        if (current == undefined) return undefined
+        return this.get_unit(current)
     }
 
     push(obj: unit_id) {
@@ -96,7 +95,6 @@ export class UnitsHeap {
             return undefined
         }
         let tmp = this.heap[0]
-        this.selected = tmp;
         this.last -= 1
         this.heap[0] = this.heap[this.last]
         this.heap.length = this.last
@@ -115,7 +113,6 @@ export class UnitsHeap {
             data: this.data,
             last: this.last,
             heap: this.heap,
-            selected: this.selected
         }
     }
 }

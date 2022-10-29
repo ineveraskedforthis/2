@@ -224,7 +224,7 @@ class Equip {
     resists() {
         let resists = new damage_types_1.Damage;
         for (let i of types_1.armour_slots) {
-            resists.add(system_1.ItemSystem.resists(this.data.armour[i]));
+            damage_types_1.DmgOps.add_ip(resists, system_1.ItemSystem.resists(this.data.armour[i]));
         }
         return resists;
     }

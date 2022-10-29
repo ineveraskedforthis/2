@@ -10,7 +10,7 @@ var BattleAI;
     function calculate_closest_enemy(battle, index) {
         let closest_enemy = undefined;
         const units = battle.heap.raw_data;
-        const unit = units[index];
+        const unit = battle.heap.get_unit(index);
         let min_distance = 100;
         for (let i = 0; i < units.length; i++) {
             const target_unit = units[i];
@@ -22,7 +22,7 @@ var BattleAI;
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
                 && (unit.team != target_unit.team)
                 && (target_character.get_hp() > 0)) {
-                closest_enemy = i;
+                closest_enemy = target_unit.id;
                 min_distance = d;
             }
         }

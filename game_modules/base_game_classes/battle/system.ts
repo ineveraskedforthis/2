@@ -82,7 +82,6 @@ export namespace BattleSystem {
         h.heap = s.heap
         h.last = s.last
         h.raw_data = s.raw_data
-        h.selected = s.selected
         return h
     }
 
@@ -172,10 +171,10 @@ export namespace BattleSystem {
     }
 
     export function update() {
+        const current_date = Date.now() as ms
+
         for (let battle of battles_list) {
             if (battle.ended) continue;
-
-            const current_date = Date.now() as ms
 
             // if turn lasts longer than 60 seconds, it ends automatically
             if (battle.waiting_for_input) {

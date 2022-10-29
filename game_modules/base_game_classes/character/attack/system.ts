@@ -1,4 +1,5 @@
 import { damage_type, melee_attack_type } from "../../../types";
+import { DmgOps } from "../../misc/damage_types";
 import { Character } from "../character";
 import { CharacterSystem } from "../system";
 import { AttackObj } from "./class";
@@ -6,18 +7,18 @@ import { AttackObj } from "./class";
 export namespace Attack {
     export function generate_melee(character: Character, type: damage_type): AttackObj {
         const result = new AttackObj(CharacterSystem.weapon_type(character))
-        result.damage.add(CharacterSystem.melee_damage_raw(character, type))
+        DmgOps.add_ip(result.damage, CharacterSystem.melee_damage_raw(character, type))
         const physical_modifier = CharacterSystem.phys_power(character)
-        result.damage.mult(1 + physical_modifier / 10)
+        DmgOps.mult_ip(result.damage, 1 + physical_modifier / 10)
         result.attack_skill = CharacterSystem.attack_skill(character)
-        result.damage.mult(1 + result.attack_skill / 50)
+        DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 50)
         return result
     }
 
     export function best_melee_damage_type(character: Character):melee_attack_type {
-        const damage_slice = CharacterSystem.melee_damage_raw(character, 'slice').total()
-        const damage_blunt = CharacterSystem.melee_damage_raw(character, 'blunt').total()
-        const damage_pierce = CharacterSystem.melee_damage_raw(character, 'pierce').total()
+        const damage_slice = DmgOps.total(CharacterSystem.melee_damage_raw(character, 'slice'))
+        const damage_blunt = DmgOps.total(CharacterSystem.melee_damage_raw(character, 'blunt'))
+        const damage_pierce = DmgOps.total(CharacterSystem.melee_damage_raw(character, 'pierce'))
 
         const max = Math.max(damage_blunt, damage_pierce, damage_slice)
         
@@ -30,10 +31,9 @@ export namespace Attack {
 
     export function generate_ranged(character: Character): AttackObj {
         const result = new AttackObj('ranged')
-        result.damage.add(CharacterSystem.ranged_damage_raw(character))
-
+        DmgOps.add_ip(result.damage, CharacterSystem.ranged_damage_raw(character))
         const skill = character.skills.ranged
-        result.damage.mult(1 + skill / 20)
+        DmgOps.mult_ip(result.damage, 1 + skill / 20)
         return result
     }
 
@@ -46,20 +46,20 @@ export namespace Attack {
         if (dice < crit_chance) attack.flags.crit = true
 
         const res = CharacterSystem.resistance(defender)
-        attack.damage.subtract(res)
+        DmgOps.subtract_ip(attack.damage, res)
     }
 
     export function dodge(attack: AttackObj, skill: number) {
         const skill_diff = skill - attack.attack_skill
         if (skill_diff <= 0) return
-        attack.damage.mult(1 - skill_diff / 100)
+        DmgOps.mult_ip(attack.damage, 1 - skill_diff / 100)
     }
 
     export function block(attack: AttackObj, skill: number) {
         // blocking is easier but harms weapon
         const skill_diff = (skill * 2 - attack.attack_skill)
         if (skill_diff <= 0) return
-        attack.damage.mult(1 - skill_diff / 100)
+        DmgOps.mult_ip(attack.damage, 1 - skill_diff / 100)
     }
 }
 

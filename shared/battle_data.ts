@@ -20,7 +20,7 @@ export interface UnitSocket {
     name: string 
     hp: number
     ap: number
-    id: number
+    id: unit_id
     next_turn: number
 }
 

@@ -15,6 +15,7 @@ import { SocketCommand } from "./network_actions/run_event";
 import { Convert } from "../systems_communication";
 import { ModelVariant } from "../base_game_classes/character/character_parts";
 import { InventoryCommands } from "./network_actions/inventory_management";
+import { Request } from "./network_actions/request";
 
 
 interface Message {
@@ -102,7 +103,7 @@ export class SocketManager {
 
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
             socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
-
+            socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))
             // socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
             // socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
         });

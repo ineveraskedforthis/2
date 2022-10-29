@@ -68,7 +68,7 @@ export class BattleImageNext {
     // }
     add_fighter(unit_id, tag, pos, range, name, hp, ap) {
         console.log("add fighter");
-        console.log(unit_id, tag, pos, range);
+        console.log(unit_id, tag, pos, range, name);
         let unit = new BattleUnit(unit_id, name, hp, ap, range, pos, tag);
         let unit_view = new BattleUnitView(unit);
         this.unit_ids.add(unit_id);
@@ -85,11 +85,10 @@ export class BattleImageNext {
         this.background_flag = true;
     }
     update(data) {
-        for (let i in data) {
-            let index = Number(i);
+        for (let unit of Object.values(data)) {
             console.log('update');
-            console.log(data[i]);
-            let event = new UpdateDataEvent(index, data[i]);
+            console.log(unit.id + ' ' + unit.name);
+            let event = new UpdateDataEvent(unit.id, unit);
             this.events_list.push(event);
         }
         if (this.selected != undefined) {
@@ -368,13 +367,14 @@ export class BattleImageNext {
         label.innerHTML = Math.floor(value * 100) + '%';
     }
     set_current_turn(index) {
-        console.log('new turn ' + index);
+        console.log('new turn ' + index + ' ' + this.current_turn);
         if (this.current_turn != undefined) {
             let div = this.container.querySelector('.enemy_list > .fighter_' + this.current_turn);
             div.classList.remove('current_turn');
         }
         let div = this.container.querySelector('.enemy_list > .fighter_' + index);
-        div.classList.add('current_turn');
+        if (div != null)
+            div.classList.add('current_turn');
         this.current_turn = index;
     }
     handle_socket_data(action) {

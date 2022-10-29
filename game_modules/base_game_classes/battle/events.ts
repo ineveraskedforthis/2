@@ -20,9 +20,9 @@ export namespace BattleEvent {
         battle.waiting_for_input = false
         
         // invalid battle
-        if (battle.heap.selected == '?') return false
+        if (battle.heap.get_selected_unit() == undefined) return false
         // not unit's turn
-        if (battle.heap.selected != unit.id) return false;
+        if (battle.heap.get_selected_unit()?.id != unit.id) return false;
 
         //updating unit and heap
         battle.heap.pop()
@@ -45,18 +45,18 @@ export namespace BattleEvent {
         let current_time = Date.now() as ms
         battle.date_of_last_turn = current_time
 
-        let tmp = battle.heap.selected
-        if (tmp == '?') {
+        let unit = battle.heap.get_selected_unit()
+        if (unit == undefined) {
             return {responce: 'no_units_left'}
         }
 
-        let unit = battle.heap.get_unit(tmp)
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
         Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id)
     }
 
     export function Move(battle: Battle, unit: Unit, target: battle_position) {
+        
         let tmp = geom.minus(target, unit.position)
 
         let MOVE_COST = 3

@@ -11,39 +11,54 @@ export class Damage {
         this.slice = slice
         this.fire = fire
     }
+}
 
-    add(x: Damage):Damage {
-        this.blunt = this.blunt + x.blunt
-        this.pierce = this.pierce + x.pierce
-        this.slice = this.slice + x.slice
-        this.fire = this.fire + x.fire
-        return this
-    }
-    subtract(x: Damage):Damage {
-        this.blunt=     Math.max(0, this.blunt - x.blunt),
-        this.pierce=    Math.max(0, this.pierce - x.pierce),
-        this.slice=     Math.max(0, this.slice - x.slice),
-        this.fire=      Math.max(0, this.fire - x.fire)
-        return this
-    }
-    mult(m: number) {
-        for (let i of damage_types) {
-            this[i] = Math.max(Math.floor(this[i] * m), 0)
+export namespace DmgOps {
+    export function add(y:Damage, x: Damage):Damage {
+        let responce = new Damage()
+        for (let t of damage_types) {
+            responce[t] = x[t] + y[t]
         }
+        return responce
     }
-    copy():Damage {
+    export function add_ip(x: Damage, y: Damage) {
+        for (let t of damage_types) {
+            x[t] = x[t] + y[t]
+        }
+        return x
+    }
+    export function subtract(x: Damage ,y:Damage):Damage {
+        let responce = new Damage()
+        for (let t of damage_types) {
+            responce[t] = Math.max(x[t] - y[t], 0)
+        }
+        return responce
+    }
+    export function subtract_ip(x: Damage ,y:Damage):Damage {
+        for (let t of damage_types) {
+            x[t] = Math.max(x[t] - y[t], 0)
+        }
+        return x
+    }
+    export function mult_ip(x: Damage, m: number) {
+        for (let i of damage_types) {
+            x[i] = Math.max(Math.floor(x[i] * m), 0)
+        }
+        return x
+    }
+    export function copy(x: Damage):Damage {
         return new Damage(
-            this.blunt,
-            this.pierce,
-            this.slice,
-            this.fire
+            x.blunt,
+            x.pierce,
+            x.slice,
+            x.fire
         )
     }
 
-    total(): number {
+    export function total(x: Damage): number {
         let total = 0
         for (let tag of damage_types) {
-            total += this[tag]
+            total += x[tag]
         }
         return total
     }

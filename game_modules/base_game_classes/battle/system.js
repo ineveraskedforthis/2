@@ -76,7 +76,6 @@ var BattleSystem;
         h.heap = s.heap;
         h.last = s.last;
         h.raw_data = s.raw_data;
-        h.selected = s.selected;
         return h;
     }
     // only creates and initialise battle
@@ -150,10 +149,10 @@ var BattleSystem;
     }
     BattleSystem.add_figther = add_figther;
     function update() {
+        const current_date = Date.now();
         for (let battle of battles_list) {
             if (battle.ended)
                 continue;
-            const current_date = Date.now();
             // if turn lasts longer than 60 seconds, it ends automatically
             if (battle.waiting_for_input) {
                 if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {

@@ -94,7 +94,7 @@ var CharacterSystem;
         if (name == undefined)
             name = template.name_generator();
         let character = new character_1.Character(last_character_id, -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
-        character.stats.base_resists.add(template.base_resists);
+        character.stats.base_resists = damage_types_1.DmgOps.add(character.stats.base_resists, template.base_resists);
         characters_dict[character.id] = character;
         exports.character_list.push(character);
         character.explored[cell_id] = true;
@@ -218,8 +218,8 @@ var CharacterSystem;
     }
     CharacterSystem.attack_skill = attack_skill;
     function resistance(character) {
-        const result = character.stats.base_resists;
-        result.add(character.equip.resists());
+        let result = character.stats.base_resists;
+        result = damage_types_1.DmgOps.add(result, character.equip.resists());
         return result;
     }
     CharacterSystem.resistance = resistance;

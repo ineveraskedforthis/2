@@ -44,13 +44,13 @@ function load(tag, idle, move, attack) {
 
 for (let i = 0; i < 12; i++) {
     let num = ("0000" + i).slice(-4);
-    add_image_to_load('test_move_' + num, 'test_move_' + num);
+    add_image_to_load('human_move_' + num, 'human_move_' + num);
 }
 for (let i = 0; i < 4; i++) {
     let num = ("0000" + i).slice(-4);
-    add_image_to_load('test_attack_' + num, 'test_attack_' + num);
+    add_image_to_load('human_attack_' + num, 'human_attack_' + num);
 }
-add_image_to_load('test_idle_0000', 'test_idle_0000')
+add_image_to_load('human_idle_0000', 'human_idle_0000')
 
 add_image_to_load('attack_0', './battle/attack_0')
 add_image_to_load('attack_1', './battle/attack_1')

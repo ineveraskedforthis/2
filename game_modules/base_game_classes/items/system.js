@@ -13,10 +13,8 @@ var ItemSystem;
     ItemSystem.to_string = to_string;
     function from_string(s) {
         const item_data = JSON.parse(s);
-        const damage = new damage_types_1.Damage();
-        damage.add(item_data.damage);
-        const resistance = new damage_types_1.Damage();
-        resistance.add(item_data.resists);
+        let damage = damage_types_1.DmgOps.copy(item_data.damage);
+        let resistance = damage_types_1.DmgOps.copy(item_data.resists);
         return new item_1.Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage);
     }
     ItemSystem.from_string = from_string;
@@ -104,10 +102,10 @@ var ItemSystem;
             let affix = weapon.affixes[i];
             affix_damage = affix_1.damage_affixes_effects[affix.tag](affix_damage);
         }
-        const damage = new damage_types_1.Damage();
+        let damage = new damage_types_1.Damage();
         if (weapon?.weapon_tag == 'ranged') {
             damage.pierce = 10;
-            damage.add(affix_damage);
+            damage = damage_types_1.DmgOps.add(damage, affix_damage);
             return damage;
         }
         damage.blunt = weight(weapon) * weapon.damage.blunt;

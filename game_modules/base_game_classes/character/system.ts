@@ -3,7 +3,7 @@ import { cell_id, char_id, damage_type, money, user_id, weapon_attack_tag, weapo
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
-import { Damage, damage_types } from "../misc/damage_types";
+import { Damage, damage_types, DmgOps } from "../misc/damage_types";
 import { Character } from "./character";
 import { Loot } from "./races/generate_loot";
 import { CharacterTemplate } from "./templates";
@@ -109,7 +109,7 @@ export namespace CharacterSystem {
         last_character_id = last_character_id + 1
         if (name == undefined) name = template.name_generator()
         let character = new Character(last_character_id, -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp)
-        character.stats.base_resists.add(template.base_resists)
+        character.stats.base_resists = DmgOps.add(character.stats.base_resists, template.base_resists);
         characters_dict[character.id] = character
         character_list.push(character)
         character.explored[cell_id] = true
@@ -221,8 +221,8 @@ export namespace CharacterSystem {
     }
 
     export function resistance(character: Character) {
-        const result = character.stats.base_resists
-        result.add(character.equip.resists())
+        let result = character.stats.base_resists
+        result = DmgOps.add(result, character.equip.resists())
         return result
     }
 

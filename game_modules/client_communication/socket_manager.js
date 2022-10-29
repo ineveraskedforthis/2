@@ -14,6 +14,7 @@ const actions_1 = require("./network_actions/actions");
 const action_manager_1 = require("../actions/action_manager");
 const run_event_1 = require("./network_actions/run_event");
 const inventory_management_1 = require("./network_actions/inventory_management");
+const request_1 = require("./network_actions/request");
 class SocketManager {
     // sessions: {[_ in string]: number}
     constructor(io) {
@@ -68,6 +69,7 @@ class SocketManager {
             socket.on('mrarmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR));
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
             socket.on('battle-action', (msg) => actions_1.HandleAction.battle(user, msg));
+            socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
             // socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
             // socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
         });

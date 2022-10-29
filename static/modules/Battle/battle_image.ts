@@ -130,7 +130,7 @@ export class BattleImageNext {
 
     add_fighter(unit_id:unit_id, tag:string, pos:battle_position, range:number, name:string, hp:number, ap: number) {
         console.log("add fighter")
-        console.log(unit_id, tag, pos, range)
+        console.log(unit_id, tag, pos, range, name)
 
         let unit = new BattleUnit(unit_id, name, hp, ap, range, pos, tag)
         let unit_view = new BattleUnitView(unit)
@@ -153,13 +153,12 @@ export class BattleImageNext {
     }
 
     update(data: BattleData) {
-        for (let i in data) {
-            let index = Number(i) as unit_id
+        for (let unit of Object.values(data)) {
 
             console.log('update')
-            console.log(data[i])
+            console.log(unit.id + ' ' + unit.name)
 
-            let event = new UpdateDataEvent(index, data[i])
+            let event = new UpdateDataEvent(unit.id, unit)
             this.events_list.push(event)
         }
 
@@ -471,13 +470,13 @@ export class BattleImageNext {
     }
 
     set_current_turn(index: unit_id) {
-        console.log('new turn ' + index)
+        console.log('new turn ' + index + ' ' + this.current_turn)
         if (this.current_turn != undefined) {
             let div = this.container.querySelector('.enemy_list > .fighter_' + this.current_turn)
             div.classList.remove('current_turn')    
         }
         let div = this.container.querySelector('.enemy_list > .fighter_' + index)
-        div.classList.add('current_turn')
+        if (div != null) div.classList.add('current_turn');
         this.current_turn = index
     }
 

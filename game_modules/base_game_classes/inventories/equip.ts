@@ -3,7 +3,7 @@ import { update_character } from "../affix";
 import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
-import { Damage } from "../misc/damage_types";
+import { Damage, DmgOps } from "../misc/damage_types";
 import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
 
 interface EquipJson {
@@ -266,7 +266,7 @@ export class Equip {
     resists() {
         let resists = new Damage;
         for (let i of armour_slots) {
-            resists.add(ItemSystem.resists(this.data.armour[i]))
+            DmgOps.add_ip(resists, ItemSystem.resists(this.data.armour[i]))
         }
         return resists
     }
