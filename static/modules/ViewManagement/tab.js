@@ -27,6 +27,7 @@ export var tab;
     function load(tag) {
         console.log(tag);
         let tab = document.getElementById(tag + '_tab');
+        console.log(tabs_properties[tag]);
         if (tabs_properties[tag] == undefined) {
             save(tag);
         }
@@ -41,7 +42,7 @@ export var tab;
     }
     tab_1.load = load;
     function load_all(socket) {
-        let tabs_properties = JSON.parse(localStorage.getItem('tabs_properties'));
+        tabs_properties = JSON.parse(localStorage.getItem('tabs_properties'));
         if (tabs_properties == null) {
             tabs_properties = {};
         }

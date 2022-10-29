@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HandleAction = void 0;
 const action_manager_1 = require("../../actions/action_manager");
+const events_1 = require("../../base_game_classes/battle/events");
+const system_1 = require("../../base_game_classes/battle/system");
+const inventory_events_1 = require("../../events/inventory_events");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
@@ -52,6 +55,99 @@ var HandleAction;
         }
     }
     HandleAction.act = act;
+    function battle(sw, input) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        if (!character.in_battle())
+            return;
+        const battle = systems_communication_1.Convert.character_to_battle(character);
+        if (battle == undefined)
+            return;
+        const unit = systems_communication_1.Convert.character_to_unit(character);
+        if (unit == undefined)
+            return;
+        if (!battle.waiting_for_input) {
+            return;
+        }
+        if (battle.heap.selected != unit.id) {
+            return;
+        }
+        if (input == undefined)
+            return;
+        if (input.action == undefined)
+            return;
+        if (input.action == 'move') {
+            if (input.target == undefined)
+                return;
+            const target = input.target;
+            if (target.x == undefined)
+                return;
+            if (isNaN(target.x))
+                return;
+            if (target.y == undefined)
+                return;
+            if (isNaN(target.y))
+                return;
+            events_1.BattleEvent.Move(battle, unit, target);
+        }
+        else if (input.action == 'attack_slice') {
+            if (input.target == undefined)
+                return;
+            const defender_id = input.target;
+            const defender = system_1.BattleSystem.id_to_unit(defender_id, battle);
+            if (defender == undefined)
+                return undefined;
+            events_1.BattleEvent.Attack(battle, unit, defender, 'slice');
+        }
+        else if (input.action == 'attack_blunt') {
+            if (input.target == undefined)
+                return;
+            const defender_id = input.target;
+            const defender = system_1.BattleSystem.id_to_unit(defender_id, battle);
+            if (defender == undefined)
+                return undefined;
+            events_1.BattleEvent.Attack(battle, unit, defender, 'blunt');
+        }
+        else if (input.action == 'attack_pierce') {
+            if (input.target == undefined)
+                return;
+            const defender_id = input.target;
+            const defender = system_1.BattleSystem.id_to_unit(defender_id, battle);
+            if (defender == undefined)
+                return undefined;
+            events_1.BattleEvent.Attack(battle, unit, defender, 'pierce');
+        }
+        // else if (input.action == 'fast_attack') {
+        //     if(!can_fast_attack(character)) {
+        //         return {action: "not_learnt"}
+        //     }
+        //     return  battle.action(index, BattleAI.convert_attack_to_action(battle, index, input.target, 'fast'))
+        // } else if (input.action == 'dodge') {
+        //     if(!can_dodge(character)) {
+        //         return {action: "not_learnt"}
+        //     }
+        //     return  battle.action(index, {action: 'dodge', who: index})
+        // } else if (input.action == 'push_back') {
+        //     if(!can_push_back(character)) {
+        //         return {action: "not_learnt"}
+        //     }
+        //     return  battle.action(index, {action: 'push_back', target: input.target})
+        // } else if (input.action == 'magic_bolt') {
+        //     return  battle.action(index, {action: 'magic_bolt', target: input.target})
+        // } else if (input.action == 'shoot') { 
+        //     return  battle.action(index, {action: 'shoot', target: input.target})
+        else if (input.action == 'flee') {
+            events_1.BattleEvent.Flee(battle, unit);
+        }
+        else if (input.action == 'switch_weapon') {
+            inventory_events_1.EventInventory.switch_weapon(character);
+        }
+        else {
+            return;
+        }
+    }
+    HandleAction.battle = battle;
 })(HandleAction = exports.HandleAction || (exports.HandleAction = {}));
 //  move(user: User, data: {x: number, y: number}) {
 //     if (!user.logged_in) {

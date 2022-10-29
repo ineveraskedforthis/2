@@ -22,6 +22,10 @@ var BattleSystem;
         return battles_dict[id];
     }
     BattleSystem.id_to_battle = id_to_battle;
+    function id_to_unit(id, battle) {
+        return battle.heap.get_unit(id);
+    }
+    BattleSystem.id_to_unit = id_to_unit;
     function save() { }
     BattleSystem.save = save;
     function load() { }
@@ -168,53 +172,6 @@ var BattleSystem;
     //         return tmp
     //     }
 })(BattleSystem = exports.BattleSystem || (exports.BattleSystem = {}));
-//      process_input(unit_index: number, input: Action) {
-//         if (!this.waiting_for_input) {
-//             return {action: 'action_in_progress', who: unit_index}
-//         }
-//         if (this.heap.selected != unit_index) {
-//             let char1 = this.get_char(this.get_unit(this.heap.selected))
-//             let char2 = this.get_char(this.get_unit(unit_index))
-//             if (char1.id != char2.id) {
-//                 return {action: 'not_your_turn', who: unit_index}
-//             }
-//         }
-//         if (input != undefined) {
-//             this.changed = true
-//             let index = this.heap.selected
-//             let character = this.get_char(this.get_unit(this.heap.selected))
-//             if (input.action == 'move') {
-//                 return  this.action(index, {action: 'move', target: input.target})
-//             } else if (input.action == 'attack') {
-//                 return  this.action(index, BattleAI.convert_attack_to_action(this, index, input.target, 'usual'))
-//             } else if (input.action == 'fast_attack') {
-//                 if(!can_fast_attack(character)) {
-//                     return {action: "not_learnt"}
-//                 }
-//                 return  this.action(index, BattleAI.convert_attack_to_action(this, index, input.target, 'fast'))
-//             } else if (input.action == 'dodge') {
-//                 if(!can_dodge(character)) {
-//                     return {action: "not_learnt"}
-//                 }
-//                 return  this.action(index, {action: 'dodge', who: index})
-//             } else if (input.action == 'push_back') {
-//                 if(!can_push_back(character)) {
-//                     return {action: "not_learnt"}
-//                 }
-//                 return  this.action(index, {action: 'push_back', target: input.target})
-//             } else if (input.action == 'magic_bolt') {
-//                 return  this.action(index, {action: 'magic_bolt', target: input.target})
-//             } else if (input.action == 'shoot') { 
-//                 return  this.action(index, {action: 'shoot', target: input.target})
-//             } else if (input.action == 'flee') {
-//                 return  this.action(index, {action: 'flee', who: index})
-//             } else if (input.action == 'switch_weapon') {
-//                 return  this.action(index, {action: 'switch_weapon', who: index})
-//             } else {
-//                 return  this.action(index, input)
-//             }
-//         }        
-//     }
 //     get_units() {
 //         return this.heap.data
 //     }

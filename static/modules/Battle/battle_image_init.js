@@ -1,9 +1,9 @@
 import { BattleImageNext } from "./battle_image.js";
-import { get_mouse_pos_in_canvas } from "./battle_image_helper.js";
+import { AttackEvent, get_mouse_pos_in_canvas, MissEvent, MovementBattleEvent, NewTurnEvent, RetreatEvent } from "./battle_image_helper.js";
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js";
 export const battle_image = new BattleImageNext(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
-// window.battle_image = battle_image
+const events_queue = [];
 var bcp = false;
 socket.on('action-display', data => { battle_image.update_action_display(data.tag, data.value); });
 battle_image.canvas.onmousedown = (event) => {
@@ -45,7 +45,7 @@ socket.on(BATTLE_DATA_MESSAGE, bCallback.update_battle_state);
 socket.on('enemy-update', data => battle_image.update(data));
 socket.on(UNIT_ID_MESSAGE, bCallback.link_player_to_unit);
 socket.on(BATTLE_CURRENT_UNIT, bCallback.set_current_active_unit);
-socket.on('battle-event', bCallback.event('battle-event'));
+socket.on('battle-event', bCallback.event);
 var bCallback;
 (function (bCallback) {
     function set_current_active_unit(data) {
@@ -72,8 +72,42 @@ var bCallback;
         }
     }
     bCallback.update_battle_process = update_battle_process;
-    function event(data) {
-        data.tag;
+    function event(action) {
+        // handle real actions
+        if (action.tag == 'move') {
+            let event = new MovementBattleEvent(action.creator, action.target_position);
+            console.log('move');
+            battle_image.events_list.push(event);
+        }
+        else if (action.tag == 'attack') {
+            let event = new AttackEvent(action.creator, action.target_unit);
+            battle_image.events_list.push(event);
+            // }
+            // else if (action.tag == '') {
+            //     let event = new ClearBattleEvent()
+            //     battle_image.events_list.push(event)
+        }
+        else if (action.tag == 'new_turn') {
+            let event = new NewTurnEvent(action.creator);
+            battle_image.events_list.push(event);
+        }
+        else if (action.tag == 'flee') {
+            battle_image.events_list.push(new RetreatEvent(action.creator));
+        }
+        else if (action.tag == 'end_turn') {
+            // battle_image.events_list.push()
+        }
+        else if (action.tag == 'miss') {
+            battle_image.events_list.push(new MissEvent(action.creator, action.target_unit));
+        }
+        else if (action.tag == 'ranged_attack') {
+            let event = new AttackEvent(action.creator, action.target_unit);
+            battle_image.events_list.push(event);
+        }
+        else {
+            console.log('unhandled input');
+            console.log(action);
+        }
     }
     bCallback.event = event;
 })(bCallback || (bCallback = {}));

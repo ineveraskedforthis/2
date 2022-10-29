@@ -67,8 +67,7 @@ class SocketManager {
             socket.on('mrhelmet', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_HELMET));
             socket.on('mrarmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR));
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
-            // socket.on('battle-action',  (msg: any) => this.battle_action(user, msg));
-            // socket.on('req-ranged-accuracy',  (msg: any) => this.send_ranged_accuracy(user, msg))
+            socket.on('battle-action', (msg) => actions_1.HandleAction.battle(user, msg));
             // socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
             // socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
         });

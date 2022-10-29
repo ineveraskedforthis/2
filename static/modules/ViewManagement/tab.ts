@@ -40,6 +40,7 @@ export namespace tab {
     export function load(tag: string) {
         console.log(tag)
         let tab = document.getElementById(tag + '_tab')!
+        console.log(tabs_properties[tag])
         if (tabs_properties[tag] == undefined) {
             save(tag)
         }
@@ -48,14 +49,13 @@ export namespace tab {
         tab.style.width = tabs_properties[tag].width
         tab.style.height = tabs_properties[tag].height
         tab.style.zIndex = tabs_properties[tag].zIndex
-
         if (tabs_properties[tag].active) {
             toogle(tag)
         }
     }
     
     export function load_all(socket: Socket) {
-        let tabs_properties = JSON.parse(localStorage.getItem('tabs_properties')!)
+        tabs_properties = JSON.parse(localStorage.getItem('tabs_properties')!)
 
         if (tabs_properties == null) {
             tabs_properties = {}

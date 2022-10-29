@@ -1,4 +1,4 @@
-import { AnimatedImage, AttackEvent, BattleUnit, BattleUnitView, BATTLE_SCALE, ClearBattleEvent, draw_image, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent } from './battle_image_helper.js';
+import { AnimatedImage, BattleUnit, BattleUnitView, BATTLE_SCALE, ClearBattleEvent, draw_image, position_c, UpdateDataEvent } from './battle_image_helper.js';
 function new_log_message(msg) {
     if (msg == null) {
         return;
@@ -37,7 +37,7 @@ export class BattleImageNext {
         this.events_list = [];
         this.units_data = {};
         this.units_views = {};
-        this.battle_ids = new Set();
+        this.unit_ids = new Set();
         this.images = {};
         this.actions = [];
         this.in_progress = false;
@@ -52,7 +52,7 @@ export class BattleImageNext {
         this.hovered = undefined;
         this.anchor = undefined;
         this.current_turn = undefined;
-        this.battle_ids = new Set();
+        this.unit_ids = new Set();
         {
             let div = this.container.querySelector('.enemy_list');
             div.innerHTML = '';
@@ -63,18 +63,18 @@ export class BattleImageNext {
     //     this.in_progress = true
     //     this.reset_data()
     //     for (var i in data) {
-    //         this.add_fighter(Number(i) as battle_id, data[i].tag, data[i].position as battle_position, data[i].range, data[i].name, data[i].hp, data[i].ap)
+    //         this.add_fighter(Number(i) as unit_id, data[i].tag, data[i].position as battle_position, data[i].range, data[i].name, data[i].hp, data[i].ap)
     //     }
     // }
-    add_fighter(battle_id, tag, pos, range, name, hp, ap) {
+    add_fighter(unit_id, tag, pos, range, name, hp, ap) {
         console.log("add fighter");
-        console.log(battle_id, tag, pos, range);
-        let unit = new BattleUnit(battle_id, name, hp, ap, range, pos, tag);
+        console.log(unit_id, tag, pos, range);
+        let unit = new BattleUnit(unit_id, name, hp, ap, range, pos, tag);
         let unit_view = new BattleUnitView(unit);
-        this.battle_ids.add(battle_id);
-        this.units_data[battle_id] = unit;
-        this.units_views[battle_id] = unit_view;
-        this.images[battle_id] = new AnimatedImage(tag);
+        this.unit_ids.add(unit_id);
+        this.units_data[unit_id] = unit;
+        this.units_views[unit_id] = unit_view;
+        this.images[unit_id] = new AnimatedImage(tag);
         let div = build_character_div(unit, this);
         this.container.querySelector(".enemy_list").appendChild(div);
     }
@@ -103,10 +103,10 @@ export class BattleImageNext {
             }
         }
     }
-    set_player(battle_id) {
+    set_player(unit_id) {
         console.log('set_player_position');
-        console.log(battle_id);
-        this.player_id = battle_id;
+        console.log(unit_id);
+        this.player_id = unit_id;
         this.update_player_actions_availability();
     }
     update_action_display(tag, flag) {
@@ -140,7 +140,7 @@ export class BattleImageNext {
     }
     hover(pos) {
         let hovered = false;
-        for (let unit_id of this.battle_ids) {
+        for (let unit_id of this.unit_ids) {
             let unit_view = this.units_views[unit_id];
             let centre = position_c.battle_to_canvas(unit_view.position, this.h, this.w);
             let dx = centre.x - pos.x;
@@ -192,11 +192,11 @@ export class BattleImageNext {
             this.background_flag = true;
         }
         //sort views by y coordinate
-        var draw_order = Array.from(this.battle_ids);
+        var draw_order = Array.from(this.unit_ids);
         draw_order.sort((a, b) => -this.units_views[a].position.y + this.units_views[b].position.y);
         //draw views
-        for (let battle_id of draw_order) {
-            let view = this.units_views[Number(battle_id)];
+        for (let unit_id of draw_order) {
+            let view = this.units_views[Number(unit_id)];
             view.draw(dt, this, images);
         }
         this.draw_anchor();
@@ -258,7 +258,7 @@ export class BattleImageNext {
     }
     press(pos) {
         let selected = false;
-        for (let i of this.battle_ids) {
+        for (let i of this.unit_ids) {
             let unit = this.units_views[i];
             let centre = position_c.battle_to_canvas(unit.position, this.h, this.w);
             let dx = centre.x - pos.x;
@@ -402,31 +402,6 @@ export class BattleImageNext {
         }
         if (action.action.startsWith('stop_battle')) {
             return 'battle has ended';
-        }
-        // handle real actions
-        if (action.action == 'move') {
-            let event = new MovementBattleEvent(action.who, action.target);
-            console.log('move', action.who);
-            this.events_list.push(event);
-        }
-        else if (action.action == 'attack') {
-            let event = new AttackEvent(action.attacker, action.target, action.result);
-            this.events_list.push(event);
-        }
-        else if (action.action == 'stop_battle') {
-            let event = new ClearBattleEvent();
-            this.events_list.push(event);
-        }
-        else if (action.action == 'new_turn') {
-            let event = new NewTurnEvent(action.target);
-            this.events_list.push(event);
-        }
-        else if (action.action == 'flee') {
-            this.events_list.push(new RetreatEvent(action.who));
-        }
-        else {
-            console.log('unhandled input');
-            console.log(action);
         }
     }
 }

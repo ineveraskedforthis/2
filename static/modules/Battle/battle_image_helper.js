@@ -158,23 +158,17 @@ function get_attack_direction(a, d) {
     return hor + '_' + ver;
 }
 export class AttackEvent {
-    constructor(unit, target, data) {
+    constructor(unit, target) {
         this.type = 'attack';
         this.unit_id = unit;
         this.target_id = target;
-        this.data = data;
     }
     effect(battle) {
         let unit_view_attacker = battle.units_views[this.unit_id];
         let unit_view_defender = battle.units_views[this.target_id];
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position);
         direction_vec = position_c.scalar_mult(1 / position_c.norm(direction_vec), direction_vec);
-        if (this.data.flags.evade || this.data.flags.miss) {
-            unit_view_defender.animation_sequence.push({ type: 'attacked', data: { direction: direction_vec, dodge: true } });
-        }
-        else {
-            unit_view_defender.animation_sequence.push({ type: 'attacked', data: { direction: direction_vec, dodge: false } });
-        }
+        unit_view_defender.animation_sequence.push({ type: 'attacked', data: { direction: direction_vec, dodge: false } });
         unit_view_attacker.animation_sequence.push({ type: 'attack', data: direction_vec });
         // unit_view_defender.animation_sequence.push('attack')
     }
@@ -182,16 +176,27 @@ export class AttackEvent {
         let unit = battle.units_data[this.unit_id];
         let target = battle.units_data[this.target_id];
         let result = unit.name + ' attacks ' + target.name + ': ';
-        if (this.data.flags.miss) {
-            return result + ' MISS!';
-        }
-        if (this.data.flags.evade) {
-            return result + ' DODGE!';
-        }
-        if (this.data.flags.crit) {
-            return result + this.data.total_damage + ' damage (CRITICAL)';
-        }
-        return result + this.data.total_damage + ' damage';
+        return result + ' HIT!';
+    }
+}
+export class MissEvent {
+    constructor(unit, target) {
+        this.type = 'miss';
+        this.unit_id = unit;
+        this.target_id = target;
+    }
+    effect(battle) {
+        let unit_view_attacker = battle.units_views[this.unit_id];
+        let unit_view_defender = battle.units_views[this.target_id];
+        let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position);
+        direction_vec = position_c.scalar_mult(1 / position_c.norm(direction_vec), direction_vec);
+        unit_view_defender.animation_sequence.push({ type: 'attacked', data: { direction: direction_vec, dodge: true } });
+    }
+    generate_log_message(battle) {
+        let unit = battle.units_data[this.unit_id];
+        let target = battle.units_data[this.target_id];
+        let result = unit.name + ' attacks ' + target.name + ': ';
+        return result + ' MISS!';
     }
 }
 export class RetreatEvent {
