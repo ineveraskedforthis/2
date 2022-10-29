@@ -118,12 +118,12 @@ export namespace Update {
     // }
     export function update(current: UI_Part, user: User, force_update: boolean) {
 
-        // console.log('updating ' + current + ' ' + UI_Part[current])
+        
         // console.log(force_update)
         // console.log(user.updates[current])
 
         if (force_update || (user.updates[current])) {
-            // console.log('!!!'); 
+            console.log('updating ' + current + ' ' + current)
             update_function[current](user); return}
         const ch = children[current]
         if (ch == undefined) {

@@ -14,16 +14,13 @@ export class UnitsHeap {
     last: number;
     heap: unit_id[];
     selected: unit_id|'?';
-    changed: boolean;
 
     constructor(raw_data: Unit[]) {
-
         this.raw_data = []
         this.data = {}
         this.heap = []
         this.last = 0;
         this.selected = '?'
-        this.changed = false
         for (let unit of raw_data) {
             this.add_unit(unit)
         } 
@@ -50,7 +47,6 @@ export class UnitsHeap {
         this.heap[this.last] = obj;
         this.last += 1;
         this.shift_up(this.last - 1)
-        this.changed = true
     }
 
     shift_up(i:number) {
@@ -59,7 +55,6 @@ export class UnitsHeap {
             this.swap(tmp, Math.floor((tmp - 1) / 2))
             tmp = Math.floor((tmp - 1) / 2)
         }
-        this.changed = true
     }
 
     shift_down(i: number) {
@@ -82,21 +77,18 @@ export class UnitsHeap {
                 break
             }
         }
-        this.changed = true
     }
 
     add_unit(u: Unit) {
         this.data[u.id] = u
         this.raw_data.push(u)
         this.push(u.id)
-        this.changed = true
     }
 
     swap(a: number, b: number) {
         let s = this.heap[a];
         this.heap[a] = this.heap[b]
         this.heap[b] = s
-        this.changed = true
     }
 
     pop():unit_id|undefined {
@@ -109,7 +101,6 @@ export class UnitsHeap {
         this.heap[0] = this.heap[this.last]
         this.heap.length = this.last
         this.shift_down(0);
-        this.changed = true
         return tmp
     }
 
@@ -117,7 +108,6 @@ export class UnitsHeap {
         for (let unit of this.raw_data) {
             unit.next_turn_after = unit.next_turn_after - dt
         }
-        this.changed = true
     }
 
     get_json() {

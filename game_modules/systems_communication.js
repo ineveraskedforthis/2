@@ -98,8 +98,6 @@ var Link;
         cell.enter(character.id);
         character.cell_id = cell.id;
         const locals = cell.get_characters_list();
-        console.log('local characters in cell now:');
-        console.log(locals);
         for (let item of locals) {
             const id = item.id;
             const local_character = system_2.CharacterSystem.id_to_character(id);

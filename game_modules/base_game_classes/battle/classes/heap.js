@@ -13,7 +13,6 @@ class UnitsHeap {
         this.heap = [];
         this.last = 0;
         this.selected = '?';
-        this.changed = false;
         for (let unit of raw_data) {
             this.add_unit(unit);
         }
@@ -36,7 +35,6 @@ class UnitsHeap {
         this.heap[this.last] = obj;
         this.last += 1;
         this.shift_up(this.last - 1);
-        this.changed = true;
     }
     shift_up(i) {
         let tmp = i;
@@ -44,7 +42,6 @@ class UnitsHeap {
             this.swap(tmp, Math.floor((tmp - 1) / 2));
             tmp = Math.floor((tmp - 1) / 2);
         }
-        this.changed = true;
     }
     shift_down(i) {
         let tmp = i;
@@ -70,19 +67,16 @@ class UnitsHeap {
                 break;
             }
         }
-        this.changed = true;
     }
     add_unit(u) {
         this.data[u.id] = u;
         this.raw_data.push(u);
         this.push(u.id);
-        this.changed = true;
     }
     swap(a, b) {
         let s = this.heap[a];
         this.heap[a] = this.heap[b];
         this.heap[b] = s;
-        this.changed = true;
     }
     pop() {
         if (this.last == 0) {
@@ -94,14 +88,12 @@ class UnitsHeap {
         this.heap[0] = this.heap[this.last];
         this.heap.length = this.last;
         this.shift_down(0);
-        this.changed = true;
         return tmp;
     }
     update(dt) {
         for (let unit of this.raw_data) {
             unit.next_turn_after = unit.next_turn_after - dt;
         }
-        this.changed = true;
     }
     get_json() {
         return {

@@ -16,6 +16,7 @@ import { Event } from "./game_modules/events/events";
 import { EloTemplate } from "./game_modules/base_game_classes/character/races/elo";
 import { HumanTemplateNotAligned } from "./game_modules/base_game_classes/character/races/human";
 import { Convert, Link } from "./game_modules/systems_communication";
+import { BattleSystem } from "./game_modules/base_game_classes/battle/system";
 
 
 export var io:io_type = require('socket.io')(http);
@@ -62,6 +63,7 @@ function load() {
     MapSystem.load()
     UserManagement.load_users()
     Auth.load()
+    BattleSystem.load()
 
     const characters = CharacterSystem.all_characters()
 
@@ -76,6 +78,7 @@ function save() {
     CharacterSystem.save()
     UserManagement.save_users()
     Auth.save()
+    BattleSystem.save()
 }
 
 var update_timer = 0
@@ -94,6 +97,7 @@ function update(delta: number, http_server:any, express_server: any) {
     MapSystem.update(delta)
     ActionManager.update_characters(delta)
     UserManagement.update_users()
+    BattleSystem.update()
     
     update_timer += delta
     if (update_timer > 50000) {

@@ -11,6 +11,7 @@ import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
 import { socket, globals } from './modules/globals.js';
 import { reg, login } from './modules/ViewManagement/scene.js'
+import { battle_image } from './modules/Battle/battle_image_init.js'
 
 var stash_tag_to_id = {}
 var stash_id_to_tag = {}
@@ -368,19 +369,15 @@ function build_skill_div(tag){
 }
 
 function update_skill_data(data) {
-    console.log('update skill data')
-    console.log(data)
     const tag = data.tag
     const value = data.value
 
     const div = document.getElementById(tag + '_skill_div')
     if (div == undefined) {
-        console.log('such skill does not exists????')
         return
     }
     const amount = div.querySelector('.practice_n')
     if (amount == null) {
-        console.log('null value????')
         return
     }
     amount.innerHTML = value

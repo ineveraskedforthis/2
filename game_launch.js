@@ -15,6 +15,7 @@ const auth_1 = require("./game_modules/client_communication/network_actions/auth
 const events_1 = require("./game_modules/events/events");
 const human_1 = require("./game_modules/base_game_classes/character/races/human");
 const systems_communication_1 = require("./game_modules/systems_communication");
+const system_3 = require("./game_modules/base_game_classes/battle/system");
 exports.io = require('socket.io')(server_1.http);
 exports.socket_manager = new socket_manager_1.SocketManager(exports.io);
 const gameloop = require('node-gameloop');
@@ -52,6 +53,7 @@ function load() {
     system_2.MapSystem.load();
     user_manager_1.UserManagement.load_users();
     auth_1.Auth.load();
+    system_3.BattleSystem.load();
     const characters = system_1.CharacterSystem.all_characters();
     for (const character of characters) {
         systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
@@ -62,6 +64,7 @@ function save() {
     system_1.CharacterSystem.save();
     user_manager_1.UserManagement.save_users();
     auth_1.Auth.save();
+    system_3.BattleSystem.save();
 }
 var update_timer = 0;
 function update(delta, http_server, express_server) {
@@ -77,6 +80,7 @@ function update(delta, http_server, express_server) {
     system_2.MapSystem.update(delta);
     action_manager_1.ActionManager.update_characters(delta);
     user_manager_1.UserManagement.update_users();
+    system_3.BattleSystem.update();
     update_timer += delta;
     if (update_timer > 50000) {
         save();

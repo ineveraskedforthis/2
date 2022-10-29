@@ -13,10 +13,12 @@ export namespace SocketCommand {
         const [user, character] = Convert.socket_wrapper_to_user_character(socket_wrapper)
         if (user == undefined) return
         if (!Validator.can_act(user, character)) {return}
+        console.log('user is valid')
             
         const data = Number(raw_data)
         const target_character = CharacterSystem.number_to_character(data)
         if (target_character == undefined) return
+        console.log('target ccharacter is vaalid')
 
         Event.start_battle(character, target_character)
     }

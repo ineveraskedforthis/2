@@ -29,16 +29,20 @@ export namespace SendUpdate {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
         
+        console.log('update battle')
+        console.log('in battle?  ' + character.in_battle())
+
         if (character.in_battle()) {
             const battle = BattleSystem.id_to_battle(character.battle_id);
             let unit_id = character.battle_unit_id
 
+            
+            Alerts.battle_progress(user, true)
             Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)
-            Alerts.generic_user_alert(user, 'battle-in-process', true)
             Alerts.generic_user_alert(user, BATTLE_DATA_MESSAGE, BattleSystem.data(battle));
             Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, battle.heap.selected);      
         } else {
-            Alerts.generic_user_alert(user, 'battle-in-process', false)
+            Alerts.battle_progress(user, false)
         }
     }
     

@@ -50,10 +50,16 @@ var Alerts;
     function generic_user_alert(user, tag, msg) {
         if (!user.logged_in)
             return;
-        // console.log('emit ' + tag + ' ' + JSON.stringify(msg))
+        console.log('emit ' + tag + ' ' + JSON.stringify(msg));
         user.socket.emit(tag, msg);
     }
     Alerts.generic_user_alert = generic_user_alert;
+    function battle_progress(user, flag) {
+        if (!user.logged_in)
+            return;
+        user.socket.emit('battle-in-process', flag);
+    }
+    Alerts.battle_progress = battle_progress;
     function generic_character_alert(character, tag, msg) {
         let user = systems_communication_1.Convert.character_to_user(character);
         if (user == undefined)

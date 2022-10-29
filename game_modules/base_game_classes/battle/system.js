@@ -1,5 +1,8 @@
 "use strict";
 // this module shoul require only characters and battles systems
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleSystem = void 0;
 const systems_communication_1 = require("../../systems_communication");
@@ -9,6 +12,7 @@ const battle_1 = require("./classes/battle");
 const heap_1 = require("./classes/heap");
 const unit_1 = require("./classes/unit");
 const events_1 = require("./events");
+const fs_1 = __importDefault(require("fs"));
 var battles_list = [];
 var battles_dict = {};
 var last_id = 0;
@@ -26,10 +30,55 @@ var BattleSystem;
         return battle.heap.get_unit(id);
     }
     BattleSystem.id_to_unit = id_to_unit;
-    function save() { }
-    BattleSystem.save = save;
-    function load() { }
+    function load() {
+        console.log('loading battles');
+        if (!fs_1.default.existsSync('battles.txt')) {
+            fs_1.default.writeFileSync('battles.txt', '');
+        }
+        let data = fs_1.default.readFileSync('battles.txt').toString();
+        let lines = data.split('\n');
+        for (let line of lines) {
+            if (line == '') {
+                continue;
+            }
+            const battle = string_to_battle(line);
+            battles_list.push(battle);
+            battles_dict[battle.id] = battle;
+            last_id = Math.max(battle.id, last_id);
+        }
+        console.log('battles loaded');
+    }
     BattleSystem.load = load;
+    function save() {
+        console.log('saving battles');
+        let str = '';
+        for (let item of battles_list) {
+            str = str + battle_to_string(item) + '\n';
+        }
+        fs_1.default.writeFileSync('battles.txt', str);
+        console.log('battles saved');
+    }
+    BattleSystem.save = save;
+    function battle_to_string(battle) {
+        return JSON.stringify(battle);
+    }
+    function string_to_battle(s) {
+        const json = JSON.parse(s);
+        const battle = new battle_1.Battle(json.id, json_to_heap(json.heap));
+        battle.waiting_for_input = json.waiting_for_input;
+        battle.ended = json.ended;
+        battle.last_event_index = json.last_event_index;
+        return battle;
+    }
+    function json_to_heap(s) {
+        const h = new heap_1.UnitsHeap([]);
+        h.data = s.data;
+        h.heap = s.heap;
+        h.last = s.last;
+        h.raw_data = s.raw_data;
+        h.selected = s.selected;
+        return h;
+    }
     // only creates and initialise battle
     // does not add participants
     function create_battle() {

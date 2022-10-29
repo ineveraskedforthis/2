@@ -85,11 +85,10 @@ var Update;
     //     }
     // }
     function update(current, user, force_update) {
-        // console.log('updating ' + current + ' ' + UI_Part[current])
         // console.log(force_update)
         // console.log(user.updates[current])
         if (force_update || (user.updates[current])) {
-            // console.log('!!!'); 
+            console.log('updating ' + current + ' ' + current);
             update_function[current](user);
             return;
         }

@@ -199,19 +199,23 @@ var Event;
     }
     Event.change_stash = change_stash;
     function start_battle(attacker, defender) {
+        console.log('attempt to start battle');
         if (attacker.id == defender.id) {
             return undefined;
         }
         if (attacker.cell_id != defender.cell_id) {
             return undefined;
         }
+        console.log('valid participants');
         // two cases
         // if defender is in battle, attempt to join it against him as a new team
         // else create new battle
         if (defender.in_battle()) {
+            console.log('defender in battle NOT IMPLEMENTED');
         }
         else {
             const battle_id = system_1.BattleSystem.create_battle();
+            console.log('new battle: ' + battle_id);
             const battle = system_1.BattleSystem.id_to_battle(battle_id);
             const attacker_unit = system_1.BattleSystem.create_unit(attacker, 1);
             const defender_unit = system_1.BattleSystem.create_unit(defender, 2);
@@ -219,6 +223,8 @@ var Event;
             events_1.BattleEvent.NewUnit(battle, defender_unit);
             attacker.battle_unit_id = attacker_unit.id;
             defender.battle_unit_id = defender_unit.id;
+            attacker.battle_id = battle.id;
+            defender.battle_id = battle.id;
             user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 19 /* UI_Part.BATTLE */);
             user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 19 /* UI_Part.BATTLE */);
         }

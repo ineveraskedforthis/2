@@ -214,19 +214,22 @@ export namespace Event {
     }
 
     export function start_battle(attacker: Character, defender: Character) {
+        console.log('attempt to start battle')
         if (attacker.id == defender.id) {
             return undefined
         }
 
         if (attacker.cell_id != defender.cell_id) {return undefined}
+        console.log('valid participants')
 
         // two cases
         // if defender is in battle, attempt to join it against him as a new team
         // else create new battle
         if (defender.in_battle()) {
-            
+            console.log('defender in battle NOT IMPLEMENTED')
         } else {
             const battle_id = BattleSystem.create_battle()
+            console.log('new battle: ' + battle_id)
             const battle = BattleSystem.id_to_battle(battle_id)
             const attacker_unit = BattleSystem.create_unit(attacker, 1)
             const defender_unit = BattleSystem.create_unit(defender, 2)
@@ -235,6 +238,9 @@ export namespace Event {
 
             attacker.battle_unit_id = attacker_unit.id
             defender.battle_unit_id = defender_unit.id
+
+            attacker.battle_id = battle.id
+            defender.battle_id = battle.id
 
             UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
             UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)

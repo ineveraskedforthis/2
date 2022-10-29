@@ -25,16 +25,18 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
+        console.log('update battle');
+        console.log('in battle?  ' + character.in_battle());
         if (character.in_battle()) {
             const battle = system_2.BattleSystem.id_to_battle(character.battle_id);
             let unit_id = character.battle_unit_id;
+            alerts_1.Alerts.battle_progress(user, true);
             alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
-            alerts_1.Alerts.generic_user_alert(user, 'battle-in-process', true);
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, battle.heap.selected);
         }
         else {
-            alerts_1.Alerts.generic_user_alert(user, 'battle-in-process', false);
+            alerts_1.Alerts.battle_progress(user, false);
         }
     }
     SendUpdate.battle = battle;

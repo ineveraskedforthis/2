@@ -7,9 +7,11 @@ import { socket } from "../globals.js"
 export const battle_image = new BattleImageNext(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
 const events_queue: BattleEventSocket[] = []
 
+
+
 var bcp = false
 
-socket.on('action-display', data => {battle_image.update_action_display(data.tag, data.value)})
+
 
 battle_image.canvas.onmousedown = (event: any) => {
     event.preventDefault();
@@ -54,14 +56,6 @@ const BATTLE_DATA_MESSAGE = 'battle_data'
 const BATTLE_CURRENT_UNIT = 'current_unit_turn'
 
 
-socket.on('new-action',                 msg => battle_image.add_action({name: msg, tag:msg}));
-socket.on('b-action-chance',            msg => battle_image.update_action_probability(msg.tag, msg.value))
-socket.on('battle-in-process',          bCallback.update_battle_process)
-socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
-socket.on('enemy-update',               data => battle_image.update(data))
-socket.on(UNIT_ID_MESSAGE,              bCallback.link_player_to_unit)
-socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
-socket.on('battle-event',               bCallback.event)
 
 namespace bCallback {
     export function set_current_active_unit(data: unit_id) {
@@ -77,6 +71,7 @@ namespace bCallback {
     }
 
     export function update_battle_process(flag: boolean) {
+        console.log('battle-in-process ' + flag)
         if (flag) {
             if (battle_image.in_progress) {
                 socket.emit('request-battle-data')
@@ -134,3 +129,14 @@ function end_battle() {
 }
 
 
+socket.on('action-display', data =>     {battle_image.update_action_display(data.tag, data.value)})
+socket.on('new-action',                 msg => battle_image.add_action({name: msg, tag:msg}));
+socket.on('b-action-chance',            msg => battle_image.update_action_probability(msg.tag, msg.value))
+socket.on('battle-in-process',          bCallback.update_battle_process)
+socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
+socket.on('enemy-update',               data => battle_image.update(data))
+socket.on(UNIT_ID_MESSAGE,              bCallback.link_player_to_unit)
+socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
+socket.on('battle-event',               bCallback.event)
+
+console.log('battle callbacks are loaded')

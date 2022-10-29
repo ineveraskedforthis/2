@@ -9,6 +9,8 @@ import { Battle } from "./classes/battle"
 import { UnitsHeap } from "./classes/heap"
 import { Unit } from "./classes/unit"
 import { BattleEvent } from "./events"
+import fs from "fs"
+
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
@@ -32,8 +34,57 @@ export namespace BattleSystem {
         return battle.heap.get_unit(id)
     }
 
-    export function save() {}
-    export function load() {}
+    export function load() {
+        console.log('loading battles')
+        if (!fs.existsSync('battles.txt')) {
+            fs.writeFileSync('battles.txt', '')
+        }
+        let data = fs.readFileSync('battles.txt').toString()
+        let lines = data.split('\n')
+
+        for (let line of lines) {
+            if (line == '') {continue}
+            const battle = string_to_battle(line)
+            battles_list.push(battle)
+            battles_dict[battle.id] = battle
+            last_id = Math.max(battle.id, last_id) as battle_id
+        }
+
+        console.log('battles loaded')
+    }
+
+    export function save() {
+        console.log('saving battles')
+        let str:string = ''
+        for (let item of battles_list) {
+            str = str + battle_to_string(item) + '\n' 
+        }
+        fs.writeFileSync('battles.txt', str)
+        console.log('battles saved')
+    }
+
+    function battle_to_string(battle: Battle) {
+        return JSON.stringify(battle)
+    }
+
+    function string_to_battle(s: string) {
+        const json:Battle = JSON.parse(s)
+        const battle = new Battle(json.id, json_to_heap(json.heap))
+        battle.waiting_for_input = json.waiting_for_input
+        battle.ended = json.ended
+        battle.last_event_index = json.last_event_index
+        return battle
+    }
+
+    function json_to_heap(s: UnitsHeap) {
+        const h = new UnitsHeap([])
+        h.data = s.data
+        h.heap = s.heap
+        h.last = s.last
+        h.raw_data = s.raw_data
+        h.selected = s.selected
+        return h
+    }
 
     // only creates and initialise battle
     // does not add participants

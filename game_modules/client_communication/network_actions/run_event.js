@@ -16,10 +16,12 @@ var SocketCommand;
         if (!common_validations_1.Validator.can_act(user, character)) {
             return;
         }
+        console.log('user is valid');
         const data = Number(raw_data);
         const target_character = system_1.CharacterSystem.number_to_character(data);
         if (target_character == undefined)
             return;
+        console.log('target ccharacter is vaalid');
         events_1.Event.start_battle(character, target_character);
     }
     SocketCommand.attack_character = attack_character;
