@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Alerts = void 0;
+const system_1 = require("../../base_game_classes/battle/system");
 const systems_communication_1 = require("../../systems_communication");
 var Alerts;
 (function (Alerts) {
@@ -94,6 +95,22 @@ var Alerts;
         }
     }
     Alerts.battle_event = battle_event;
+    function battle_update_data(battle) {
+        const data = system_1.BattleSystem.data(battle);
+        for (let unit of battle.heap.raw_data) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            generic_character_alert(character, 'battle-update-units', data);
+        }
+    }
+    Alerts.battle_update_data = battle_update_data;
+    function battle_update_unit(battle, unit) {
+        const data = systems_communication_1.Convert.unit_to_unit_socket(unit);
+        for (let unit of battle.heap.raw_data) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            generic_character_alert(character, 'battle-update-unit', data);
+        }
+    }
+    Alerts.battle_update_unit = battle_update_unit;
     function new_unit(battle, unit) {
         for (let unit of battle.heap.raw_data) {
             const character = systems_communication_1.Convert.unit_to_character(unit);

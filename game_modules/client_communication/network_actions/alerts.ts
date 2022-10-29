@@ -1,6 +1,7 @@
 import { BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../shared/battle_data";
 import { Battle } from "../../base_game_classes/battle/classes/battle";
 import { Unit } from "../../base_game_classes/battle/classes/unit";
+import { BattleSystem } from "../../base_game_classes/battle/system";
 import { Character } from "../../base_game_classes/character/character";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";
@@ -90,6 +91,22 @@ export namespace Alerts {
         for (let unit of battle.heap.raw_data) {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-event', Event)
+        }
+    }
+
+    export function battle_update_data(battle: Battle) {
+        const data = BattleSystem.data(battle)
+        for (let unit of battle.heap.raw_data) {
+            const character = Convert.unit_to_character(unit)
+            generic_character_alert(character, 'battle-update-units', data)
+        }
+    }
+
+    export function battle_update_unit(battle: Battle, unit: Unit) {
+        const data = Convert.unit_to_unit_socket(unit)
+        for (let unit of battle.heap.raw_data) {
+            const character = Convert.unit_to_character(unit)
+            generic_character_alert(character, 'battle-update-unit', data)
         }
     }
 

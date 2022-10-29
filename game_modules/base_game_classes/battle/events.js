@@ -28,6 +28,7 @@ var BattleEvent;
         battle.heap.push(unit.id);
         // send updates
         alerts_1.Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id);
+        alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.EndTurn = EndTurn;
     /**
@@ -59,6 +60,7 @@ var BattleEvent;
         let points_spent = geom_1.geom.norm(tmp) * MOVE_COST;
         unit.action_points_left = unit.action_points_left - points_spent;
         alerts_1.Alerts.battle_event(battle, 'move', unit.id, target, unit.id);
+        alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.Move = Move;
     function Attack(battle, attacker, defender, attack_type) {
@@ -76,6 +78,8 @@ var BattleEvent;
         attacker.action_points_left = attacker.action_points_left - 3;
         events_1.Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type);
         alerts_1.Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id);
+        alerts_1.Alerts.battle_update_unit(battle, attacker);
+        alerts_1.Alerts.battle_update_unit(battle, defender);
     }
     BattleEvent.Attack = Attack;
     function Shoot(battle, attacker, defender) {
@@ -95,6 +99,8 @@ var BattleEvent;
             case 'no_ammo': alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 1, 0);
             case 'ok': alerts_1.Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id);
         }
+        alerts_1.Alerts.battle_update_unit(battle, attacker);
+        alerts_1.Alerts.battle_update_unit(battle, defender);
     }
     BattleEvent.Shoot = Shoot;
     function Flee(battle, unit) {

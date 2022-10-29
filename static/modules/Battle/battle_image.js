@@ -84,12 +84,15 @@ export class BattleImageNext {
         draw_image(ctx, images['battle_bg_' + this.background], 0, 0, this.w, this.h);
         this.background_flag = true;
     }
+    update_unit(unit) {
+        console.log('update');
+        console.log(unit.id + ' ' + unit.name + 'ap: ' + unit.ap);
+        let event = new UpdateDataEvent(unit.id, unit);
+        this.events_list.push(event);
+    }
     update(data) {
         for (let unit of Object.values(data)) {
-            console.log('update');
-            console.log(unit.id + ' ' + unit.name);
-            let event = new UpdateDataEvent(unit.id, unit);
-            this.events_list.push(event);
+            this.update_unit(unit);
         }
         if (this.selected != undefined) {
             if (this.player_id != undefined) {
@@ -282,6 +285,7 @@ export class BattleImageNext {
         }
     }
     send_action(tag) {
+        console.log('send action ' + tag);
         if (tag.startsWith('spell')) {
             if (this.selected != undefined) {
                 this.socket.emit('battle-action', { action: tag, target: this.selected });
@@ -292,9 +296,9 @@ export class BattleImageNext {
                 this.socket.emit('battle-action', { action: 'move', target: position_c.canvas_to_battle(this.anchor, this.h, this.w) });
             }
         }
-        else if (tag == 'attack') {
+        else if (tag.startsWith('attack')) {
             if (this.selected != undefined) {
-                this.socket.emit('battle-action', { action: 'attack', target: this.selected });
+                this.socket.emit('battle-action', { action: tag, target: this.selected });
             }
         }
         else if (tag == 'fast_attack') {

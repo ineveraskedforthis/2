@@ -2,7 +2,7 @@ import type { Character } from "../../character/character";
 
 import {geom, point} from '../../../geom'
 import { Unit } from "../classes/unit";
-import { ActionTag, AttackAction, battle_position, FastAttackAction, MoveAction, unit_id } from "../../../../shared/battle_data";
+import { ActionTag, AttackAction, battle_position, EndTurn, FastAttackAction, MoveAction, unit_id } from "../../../../shared/battle_data";
 import { Battle } from "../classes/battle";
 import { Convert } from "../../../systems_communication";
 import { BattleEvent } from "../events";
@@ -29,10 +29,11 @@ export namespace BattleAI {
                     min_distance = d;
                 }
         }
+        console.log('closest enemy is found ' + closest_enemy)
         return closest_enemy
     }
 
-    function convert_attack_to_action(battle: Battle, ind1: unit_id, ind2: unit_id, tag:"usual"|'fast'): AttackAction|MoveAction|FastAttackAction {
+    function convert_attack_to_action(battle: Battle, ind1: unit_id, ind2: unit_id, tag:"usual"|'fast'): AttackAction|MoveAction|FastAttackAction|EndTurn {
         const unit_1 = battle.heap.get_unit(ind1)
         const unit_2 = battle.heap.get_unit(ind2)
 
@@ -48,6 +49,7 @@ export namespace BattleAI {
             target.y += geom.normalize(delta).y * (Math.max(dist - range + 0.1, 0));
             return {action: action_tag, target: target as battle_position}
         } else {
+            if (unit_1.action_points_left < 3) return {action: 'end_turn'}
             switch(tag) {
                 case 'fast': return {action: 'fast_attack', target: ind2}
             }
@@ -72,6 +74,8 @@ export namespace BattleAI {
             
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual')
 
+            if (attack_move.action == 'end_turn') return false
+
             const defender_unit = battle.heap.get_unit(target_id)
 
 
@@ -88,6 +92,8 @@ export namespace BattleAI {
 
             if (attack_move.action == 'move') {
                 BattleEvent.Move(battle, agent_unit, attack_move.target)
+                if (agent_unit.action_points_left < 1) return false
+                return true
             }
         }
         return false

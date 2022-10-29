@@ -40,7 +40,7 @@ battle_image.add_action({name: 'Knock',  tag: 'attack_blunt', cost: 3})
 
 // battle_image.add_action({name: 'magic_bolt', tag: 'magic_bolt', cost: 3})
 // battle_image.add_action({name: 'fast attack', tag: 'fast_attack', cost: 1})
-// battle_image.add_action({name: 'shoot', tag: 'shoot', cost: 3})
+battle_image.add_action({name: 'shoot', tag: 'shoot', cost: 3})
 // battle_image.add_action({name: 'dodge', tag: 'dodge', cost: 4})
 // battle_image.add_action({name: 'push back', tag: 'push_back', cost: 5})
 
@@ -83,11 +83,10 @@ namespace bCallback {
     }
 
     export function event(action: BattleEventSocket) {
-
-                // handle real actions
+        // handle real actions
         if (action.tag == 'move') {
             let event = new MovementBattleEvent(action.creator, action.target_position)
-            console.log('move')
+            console.log('move', action.target_position)
             battle_image.events_list.push(event)        
         }
         else if (action.tag == 'attack') {
@@ -134,7 +133,8 @@ socket.on('new-action',                 msg => battle_image.add_action({name: ms
 socket.on('b-action-chance',            msg => battle_image.update_action_probability(msg.tag, msg.value))
 socket.on('battle-in-process',          bCallback.update_battle_process)
 socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
-socket.on('enemy-update',               data => battle_image.update(data))
+socket.on('battle-update-units',        data => battle_image.update(data))
+socket.on('battle-update-unit',         data => battle_image.update_unit(data))
 socket.on(UNIT_ID_MESSAGE,              bCallback.link_player_to_unit)
 socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
 socket.on('battle-event',               bCallback.event)

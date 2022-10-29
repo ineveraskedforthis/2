@@ -118,6 +118,9 @@ var HandleAction;
                 return undefined;
             events_1.BattleEvent.Attack(battle, unit, defender, 'pierce');
         }
+        else if (input.action == 'end_turn') {
+            events_1.BattleEvent.EndTurn(battle, unit);
+        }
         // else if (input.action == 'fast_attack') {
         //     if(!can_fast_attack(character)) {
         //         return {action: "not_learnt"}

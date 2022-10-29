@@ -363,10 +363,9 @@ export namespace SendUpdate {
 
         Alerts.cell_action(user, 'hunt', CellActionProb.hunt(character))
     }
-}
 
-
-    // send_skills_info(character: Character) {
+    export function update_player_actions_availability() {
+            // send_skills_info(character: Character) {
     //     
        
 
@@ -386,6 +385,11 @@ export namespace SendUpdate {
     //     this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
     //     this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
     // }
+    }
+}
+
+
+
 
 // function prepare_market_orders(market: Cell) {
 //     let data = market.orders;

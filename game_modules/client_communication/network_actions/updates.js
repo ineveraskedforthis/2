@@ -345,23 +345,26 @@ var SendUpdate;
         alerts_1.Alerts.cell_action(user, 'hunt', difficulty_1.CellActionProb.hunt(character));
     }
     SendUpdate.cell_probability = cell_probability;
+    function update_player_actions_availability() {
+        // send_skills_info(character: Character) {
+        //     
+        //     
+        //     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
+        //     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
+        //     this.send_perk_related_skills_update(character)
+        // }
+        //     send_perk_related_skills_update(character: Character) {
+        //     this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance('fast')})
+        //     this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance('heavy')})
+        //     this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
+        //     this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
+        //     this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
+        //     this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
+        //     this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
+        // }
+    }
+    SendUpdate.update_player_actions_availability = update_player_actions_availability;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
-// send_skills_info(character: Character) {
-//     
-//     
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
-//     this.send_perk_related_skills_update(character)
-// }
-//     send_perk_related_skills_update(character: Character) {
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'fast_attack', value: character.get_attack_chance('fast')})
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'push_back', value: character.get_attack_chance('heavy')})
-//     this.send_to_character_user(character, 'b-action-chance', {tag: 'magic_bolt', value: 1})
-//     this.send_to_character_user(character, 'action-display', {tag: 'dodge', value: can_dodge(character)})
-//     this.send_to_character_user(character, 'action-display', {tag: 'fast_attack', value: can_fast_attack(character)})
-//     this.send_to_character_user(character, 'action-display', {tag: 'push_back', value: can_push_back(character)})
-//     this.send_to_character_user(character, 'action-display', {tag: 'magic_bolt', value: can_cast_magic_bolt(character)})
-// }
 // function prepare_market_orders(market: Cell) {
 //     let data = market.orders;
 //     let orders_array = Array.from(data)

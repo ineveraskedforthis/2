@@ -33,6 +33,7 @@ export namespace BattleEvent {
 
         // send updates
         Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id)
+        Alerts.battle_update_unit(battle, unit)
     }
 
     /**
@@ -56,7 +57,7 @@ export namespace BattleEvent {
     }
 
     export function Move(battle: Battle, unit: Unit, target: battle_position) {
-        
+
         let tmp = geom.minus(target, unit.position)
 
         let MOVE_COST = 3
@@ -70,6 +71,7 @@ export namespace BattleEvent {
         unit.action_points_left =  unit.action_points_left - points_spent as action_points
         
         Alerts.battle_event(battle, 'move', unit.id, target, unit.id)
+        Alerts.battle_update_unit(battle, unit)
     }
 
     export function Attack(battle: Battle, attacker: Unit, defender:Unit, attack_type: melee_attack_type) {
@@ -90,6 +92,8 @@ export namespace BattleEvent {
         attacker.action_points_left = attacker.action_points_left - 3 as action_points
         Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type)
         Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id)
+        Alerts.battle_update_unit(battle, attacker)
+        Alerts.battle_update_unit(battle, defender)
     }
 
     export function Shoot(battle: Battle, attacker: Unit, defender: Unit) {
@@ -108,6 +112,8 @@ export namespace BattleEvent {
             case 'no_ammo': Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 1, 0)
             case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id)
         }
+        Alerts.battle_update_unit(battle, attacker)
+        Alerts.battle_update_unit(battle, defender)
     }
     export function Flee(battle: Battle, unit: Unit) {
         const character = Convert.unit_to_character(unit)

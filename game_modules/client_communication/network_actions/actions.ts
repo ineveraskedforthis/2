@@ -106,7 +106,9 @@ export namespace HandleAction {
             if (defender == undefined) return undefined
             
             BattleEvent.Attack(battle, unit, defender, 'pierce')
-        } 
+        } else if (input.action == 'end_turn') {
+            BattleEvent.EndTurn(battle, unit)
+        }
         // else if (input.action == 'fast_attack') {
         //     if(!can_fast_attack(character)) {
         //         return {action: "not_learnt"}

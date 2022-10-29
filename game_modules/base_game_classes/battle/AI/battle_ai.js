@@ -26,6 +26,7 @@ var BattleAI;
                 min_distance = d;
             }
         }
+        console.log('closest enemy is found ' + closest_enemy);
         return closest_enemy;
     }
     function convert_attack_to_action(battle, ind1, ind2, tag) {
@@ -43,6 +44,8 @@ var BattleAI;
             return { action: action_tag, target: target };
         }
         else {
+            if (unit_1.action_points_left < 3)
+                return { action: 'end_turn' };
             switch (tag) {
                 case 'fast': return { action: 'fast_attack', target: ind2 };
             }
@@ -63,6 +66,8 @@ var BattleAI;
                 return false;
             }
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual');
+            if (attack_move.action == 'end_turn')
+                return false;
             const defender_unit = battle.heap.get_unit(target_id);
             if (attack_move.action == 'attack') {
                 //decide on attack type
@@ -75,6 +80,9 @@ var BattleAI;
             }
             if (attack_move.action == 'move') {
                 events_1.BattleEvent.Move(battle, agent_unit, attack_move.target);
+                if (agent_unit.action_points_left < 1)
+                    return false;
+                return true;
             }
         }
         return false;

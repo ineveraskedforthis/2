@@ -1,6 +1,6 @@
 import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent} from './battle_image_helper.js'
 
-import { BattleData, unit_id, battle_position, Socket } from "../../../shared/battle_data"
+import { BattleData, unit_id, battle_position, Socket, UnitSocket } from "../../../shared/battle_data"
 
 declare var alert: (data: string) => {}
 
@@ -152,14 +152,17 @@ export class BattleImageNext {
         this.background_flag = true;
     }
 
+    update_unit(unit: UnitSocket) {
+        console.log('update')
+        console.log(unit.id + ' ' + unit.name+ 'ap: ' + unit.ap)
+
+        let event = new UpdateDataEvent(unit.id, unit)
+        this.events_list.push(event)
+    }
+
     update(data: BattleData) {
         for (let unit of Object.values(data)) {
-
-            console.log('update')
-            console.log(unit.id + ' ' + unit.name)
-
-            let event = new UpdateDataEvent(unit.id, unit)
-            this.events_list.push(event)
+            this.update_unit(unit)            
         }
 
         if (this.selected != undefined) {
@@ -383,6 +386,7 @@ export class BattleImageNext {
     }
 
     send_action(tag:string) {
+        console.log('send action ' + tag)
         if (tag.startsWith('spell')) {
             if (this.selected != undefined) {
                 this.socket.emit('battle-action', {action: tag, target: this.selected})
@@ -391,9 +395,9 @@ export class BattleImageNext {
             if (this.anchor != undefined) {
                 this.socket.emit('battle-action', {action: 'move', target: position_c.canvas_to_battle(this.anchor, this.h, this.w)})
             }
-        } else if (tag == 'attack') {
+        } else if (tag.startsWith('attack')) {
             if (this.selected != undefined) {
-                this.socket.emit('battle-action', {action: 'attack', target: this.selected})
+                this.socket.emit('battle-action', {action: tag, target: this.selected})
             }
         } else if (tag == 'fast_attack') {
             if (this.selected != undefined) {
