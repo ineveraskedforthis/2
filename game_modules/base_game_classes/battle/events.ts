@@ -5,8 +5,10 @@ import { geom } from "../../geom"
 import { Convert } from "../../systems_communication"
 import { melee_attack_type } from "../../types"
 import { Character } from "../character/character"
+import { BattleAI } from "./AI/battle_ai"
 import { Battle } from "./classes/battle"
 import { Unit } from "./classes/unit"
+import { BattleSystem } from "./system"
 
 
 
@@ -76,16 +78,19 @@ export namespace BattleEvent {
 
     export function Attack(battle: Battle, attacker: Unit, defender:Unit, attack_type: melee_attack_type) {
         const AttackerCharacter = Convert.unit_to_character(attacker)
-        if (attacker.action_points_left < 3) {
-            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
-            return 
-        }
+        
 
         let dist = geom.dist(attacker.position, defender.position)
         
         const DefenderCharacter = Convert.unit_to_character(defender)
         if (dist > AttackerCharacter.range()) {
-            return
+            const res = BattleAI.convert_attack_to_action(battle, attacker.id, defender.id, 'usual')
+            if (res.action == 'move') Move(battle, attacker, res.target)
+        }
+
+        if (attacker.action_points_left < 3) {
+            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
+            return 
         }
 
         let dodge_flag = (defender.dodge_turns > 0)
@@ -120,6 +125,10 @@ export namespace BattleEvent {
         if (unit.action_points_left >= 3) {
             unit.action_points_left = unit.action_points_left - 3 as action_points
             let dice = Math.random();
+
+            if (BattleSystem.safe(battle)) {
+                Event.stop_battle(battle)
+            }
 
             if (dice <= flee_chance()) { // success
                 Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id)

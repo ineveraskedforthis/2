@@ -13,6 +13,7 @@ const heap_1 = require("./classes/heap");
 const unit_1 = require("./classes/unit");
 const events_1 = require("./events");
 const fs_1 = __importDefault(require("fs"));
+const events_2 = require("../../events/events");
 var battles_list = [];
 var battles_dict = {};
 var last_id = 0;
@@ -53,6 +54,8 @@ var BattleSystem;
         console.log('saving battles');
         let str = '';
         for (let item of battles_list) {
+            if (item.ended)
+                continue;
             str = str + battle_to_string(item) + '\n';
         }
         fs_1.default.writeFileSync('battles.txt', str);
@@ -182,12 +185,33 @@ var BattleSystem;
             }
             // else ask ai to make all needed moves and end turn
             {
-                AI_turn(battle);
-                events_1.BattleEvent.EndTurn(battle, unit);
+                const responce = AI_turn(battle);
+                if (responce == 'end')
+                    events_1.BattleEvent.EndTurn(battle, unit);
+                if (responce == 'leave')
+                    events_2.Event.stop_battle(battle);
             }
         }
     }
     BattleSystem.update = update;
+    /** Checks if there is only one team left */
+    function safe(battle) {
+        const teams = {};
+        for (const unit of battle.heap.raw_data) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            if (character.dead())
+                continue;
+            if (teams[unit.team] == undefined)
+                teams[unit.team] = 1;
+            else
+                teams[unit.team] += 1;
+        }
+        const total = Object.values(teams);
+        if (total.length > 1)
+            return false;
+        return true;
+    }
+    BattleSystem.safe = safe;
     /**  Makes moves for currently selected character depending on his battle_ai
     */
     function AI_turn(battle) {
@@ -195,9 +219,12 @@ var BattleSystem;
         if (unit == undefined)
             return;
         const character = systems_communication_1.Convert.unit_to_character(unit);
+        if (character.dead())
+            return 'end';
         do {
             var action = battle_ai_1.BattleAI.action(battle, unit, character);
-        } while (action == true);
+        } while (action == 'again');
+        return action;
     }
     function data(battle) {
         let data = {};

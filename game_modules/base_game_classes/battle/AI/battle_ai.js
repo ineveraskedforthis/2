@@ -52,6 +52,7 @@ var BattleAI;
             return { action: 'attack', target: ind2 };
         }
     }
+    BattleAI.convert_attack_to_action = convert_attack_to_action;
     /**
      * Decides on actions of unit
      * Returns false when action is not possible
@@ -63,29 +64,30 @@ var BattleAI;
             const target_id = calculate_closest_enemy(battle, agent_unit.id);
             // no target was found
             if (target_id == undefined) {
-                return false;
+                return 'leave';
             }
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual');
             if (attack_move.action == 'end_turn')
-                return false;
+                return 'end';
             const defender_unit = battle.heap.get_unit(target_id);
             if (attack_move.action == 'attack') {
                 //decide on attack type
                 const attack_type = system_1.Attack.best_melee_damage_type(agent_character);
                 events_1.BattleEvent.Attack(battle, agent_unit, defender_unit, attack_type);
-                return true;
+                return 'again';
             }
             if (attack_move.action == 'fast_attack') {
-                return true;
+                return 'again';
             }
             if (attack_move.action == 'move') {
                 events_1.BattleEvent.Move(battle, agent_unit, attack_move.target);
                 if (agent_unit.action_points_left < 1)
-                    return false;
-                return true;
+                    return 'end';
+                return 'again';
             }
         }
-        return false;
+        events_1.BattleEvent.Flee(battle, agent_unit);
+        return 'end';
     }
     BattleAI.action = action;
 })(BattleAI = exports.BattleAI || (exports.BattleAI = {}));

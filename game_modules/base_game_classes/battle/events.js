@@ -5,6 +5,8 @@ const alerts_1 = require("../../client_communication/network_actions/alerts");
 const events_1 = require("../../events/events");
 const geom_1 = require("../../geom");
 const systems_communication_1 = require("../../systems_communication");
+const battle_ai_1 = require("./AI/battle_ai");
+const system_1 = require("./system");
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
@@ -65,13 +67,15 @@ var BattleEvent;
     BattleEvent.Move = Move;
     function Attack(battle, attacker, defender, attack_type) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
-        if (attacker.action_points_left < 3) {
-            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left);
-            return;
-        }
         let dist = geom_1.geom.dist(attacker.position, defender.position);
         const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
         if (dist > AttackerCharacter.range()) {
+            const res = battle_ai_1.BattleAI.convert_attack_to_action(battle, attacker.id, defender.id, 'usual');
+            if (res.action == 'move')
+                Move(battle, attacker, res.target);
+        }
+        if (attacker.action_points_left < 3) {
+            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left);
             return;
         }
         let dodge_flag = (defender.dodge_turns > 0);
@@ -108,6 +112,9 @@ var BattleEvent;
         if (unit.action_points_left >= 3) {
             unit.action_points_left = unit.action_points_left - 3;
             let dice = Math.random();
+            if (system_1.BattleSystem.safe(battle)) {
+                events_1.Event.stop_battle(battle);
+            }
             if (dice <= flee_chance()) { // success
                 alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id);
             }

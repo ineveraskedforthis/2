@@ -1,3 +1,4 @@
+import { battle_id, unit_id } from "../../shared/battle_data";
 import { Accuracy } from "../base_game_classes/battle/battle_calcs";
 import { Battle } from "../base_game_classes/battle/classes/battle";
 import { BattleEvent } from "../base_game_classes/battle/events";
@@ -215,9 +216,8 @@ export namespace Event {
 
     export function start_battle(attacker: Character, defender: Character) {
         console.log('attempt to start battle')
-        if (attacker.id == defender.id) {
-            return undefined
-        }
+        if (attacker.id == defender.id) return undefined
+        if (attacker.in_battle()) return undefined
 
         if (attacker.cell_id != defender.cell_id) {return undefined}
         console.log('valid participants')
@@ -244,6 +244,20 @@ export namespace Event {
 
             UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
             UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)
+        }
+    }
+
+    export function stop_battle(battle: Battle) {
+        battle.ended = true
+        for (let unit of battle.heap.raw_data) {
+            const character = Convert.unit_to_character(unit)
+            
+            if (character != undefined) {
+                character.battle_id = -1 as battle_id
+                character.battle_unit_id = -1 as unit_id
+            }
+
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         }
     }
 

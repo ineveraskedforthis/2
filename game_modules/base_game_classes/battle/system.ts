@@ -10,6 +10,7 @@ import { UnitsHeap } from "./classes/heap"
 import { Unit } from "./classes/unit"
 import { BattleEvent } from "./events"
 import fs from "fs"
+import { Event } from "../../events/events"
 
 
 var battles_list:Battle[] = []
@@ -57,6 +58,7 @@ export namespace BattleSystem {
         console.log('saving battles')
         let str:string = ''
         for (let item of battles_list) {
+            if (item.ended) continue;
             str = str + battle_to_string(item) + '\n' 
         }
         fs.writeFileSync('battles.txt', str)
@@ -207,10 +209,25 @@ export namespace BattleSystem {
 
             // else ask ai to make all needed moves and end turn
             {
-                AI_turn(battle)
-                BattleEvent.EndTurn(battle, unit)
+                const responce = AI_turn(battle)
+                if (responce == 'end') BattleEvent.EndTurn(battle, unit)
+                if (responce == 'leave') Event.stop_battle(battle)
             }
         }
+    }
+
+    /** Checks if there is only one team left */
+    export function safe(battle: Battle) {
+        const teams:{[_ in number]:number} = {}
+        for (const unit of battle.heap.raw_data) {
+            const character = Convert.unit_to_character(unit)
+            if (character.dead()) continue
+            if (teams[unit.team] == undefined) teams[unit.team] = 1
+            else teams[unit.team] += 1
+        }
+        const total = Object.values(teams)
+        if (total.length > 1) return false
+        return true 
     }
 
     /**  Makes moves for currently selected character depending on his battle_ai
@@ -219,9 +236,11 @@ export namespace BattleSystem {
         const unit = battle.heap.get_selected_unit()
         if (unit == undefined) return
         const character = Convert.unit_to_character(unit)
+        if (character.dead()) return 'end'
         do {
             var action = BattleAI.action(battle, unit, character);
-        } while (action == true)
+        } while (action == 'again')
+        return action
     }
 
     export function data(battle: Battle):BattleData {

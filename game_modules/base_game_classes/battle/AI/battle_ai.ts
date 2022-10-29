@@ -33,7 +33,7 @@ export namespace BattleAI {
         return closest_enemy
     }
 
-    function convert_attack_to_action(battle: Battle, ind1: unit_id, ind2: unit_id, tag:"usual"|'fast'): AttackAction|MoveAction|FastAttackAction|EndTurn {
+    export function convert_attack_to_action(battle: Battle, ind1: unit_id, ind2: unit_id, tag:"usual"|'fast'): AttackAction|MoveAction|FastAttackAction|EndTurn {
         const unit_1 = battle.heap.get_unit(ind1)
         const unit_2 = battle.heap.get_unit(ind2)
 
@@ -63,18 +63,18 @@ export namespace BattleAI {
      * Returns false when action is not possible  
      * Returns true when action was made
      */
-    export function action(battle: Battle, agent_unit: Unit, agent_character: Character): boolean {
+    export function action(battle: Battle, agent_unit: Unit, agent_character: Character): 'end'|'again'|'leave' {
         let tactic = agent_character.archetype.ai_battle
         if (tactic == 'basic') {
             const target_id  = calculate_closest_enemy(battle, agent_unit.id)
             // no target was found
             if (target_id == undefined) {
-                return false
+                return 'leave'
             }
             
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual')
 
-            if (attack_move.action == 'end_turn') return false
+            if (attack_move.action == 'end_turn') return 'end'
 
             const defender_unit = battle.heap.get_unit(target_id)
 
@@ -83,19 +83,20 @@ export namespace BattleAI {
                 //decide on attack type
                 const attack_type = Attack.best_melee_damage_type(agent_character)
                 BattleEvent.Attack(battle, agent_unit, defender_unit, attack_type)
-                return true
+                return 'again'
             } 
 
             if (attack_move.action == 'fast_attack') {
-                return true
+                return 'again'
             }
 
             if (attack_move.action == 'move') {
                 BattleEvent.Move(battle, agent_unit, attack_move.target)
-                if (agent_unit.action_points_left < 1) return false
-                return true
+                if (agent_unit.action_points_left < 1) return 'end'
+                return 'again'
             }
         }
-        return false
+        BattleEvent.Flee(battle, agent_unit)
+        return 'end'
     }
 }

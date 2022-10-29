@@ -200,9 +200,10 @@ var Event;
     Event.change_stash = change_stash;
     function start_battle(attacker, defender) {
         console.log('attempt to start battle');
-        if (attacker.id == defender.id) {
+        if (attacker.id == defender.id)
             return undefined;
-        }
+        if (attacker.in_battle())
+            return undefined;
         if (attacker.cell_id != defender.cell_id) {
             return undefined;
         }
@@ -230,6 +231,18 @@ var Event;
         }
     }
     Event.start_battle = start_battle;
+    function stop_battle(battle) {
+        battle.ended = true;
+        for (let unit of battle.heap.raw_data) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            if (character != undefined) {
+                character.battle_id = -1;
+                character.battle_unit_id = -1;
+            }
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 19 /* UI_Part.BATTLE */);
+        }
+    }
+    Event.stop_battle = stop_battle;
     //  spell_attack(target: Character, tag: spell_tags) {
     //     let result = new AttackResult()
     //     if (tag == 'bolt') {
