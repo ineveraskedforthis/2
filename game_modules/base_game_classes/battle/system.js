@@ -75,10 +75,11 @@ var BattleSystem;
     }
     function json_to_heap(s) {
         const h = new heap_1.UnitsHeap([]);
-        h.data = s.data;
-        h.heap = s.heap;
-        h.last = s.last;
-        h.raw_data = s.raw_data;
+        for (let unit of s.raw_data) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            if (character != undefined)
+                h.add_unit(unit);
+        }
         return h;
     }
     // only creates and initialise battle
@@ -199,6 +200,8 @@ var BattleSystem;
         const teams = {};
         for (const unit of battle.heap.raw_data) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
+            if (character == undefined)
+                continue;
             if (character.dead())
                 continue;
             if (teams[unit.team] == undefined)

@@ -273,8 +273,6 @@ export class BattleUnitView {
                 ctx.fillStyle = "yellow"
                 ctx.fillRect(ap_left + width_ap, ap_top, width_damage, height_ap)
             }
-
-            
         }
 
 

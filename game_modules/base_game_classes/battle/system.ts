@@ -80,10 +80,10 @@ export namespace BattleSystem {
 
     function json_to_heap(s: UnitsHeap) {
         const h = new UnitsHeap([])
-        h.data = s.data
-        h.heap = s.heap
-        h.last = s.last
-        h.raw_data = s.raw_data
+        for (let unit of s.raw_data) {
+            const character = Convert.unit_to_character(unit)
+            if (character != undefined) h.add_unit(unit)
+        }
         return h
     }
 
@@ -221,6 +221,7 @@ export namespace BattleSystem {
         const teams:{[_ in number]:number} = {}
         for (const unit of battle.heap.raw_data) {
             const character = Convert.unit_to_character(unit)
+            if (character == undefined) continue
             if (character.dead()) continue
             if (teams[unit.team] == undefined) teams[unit.team] = 1
             else teams[unit.team] += 1

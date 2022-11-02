@@ -210,7 +210,6 @@ export class BattleUnitView {
             ctx.fillRect(ap_left, ap_top, width_ap + width_damage, height_ap);
             if (width_damage < 0) { //ap is increasing
                 ctx.fillStyle = "rgb(165,200,230)";
-                console.log(ap_left, width_ap, width_damage);
                 ctx.fillRect(ap_left + width_ap + width_damage, ap_top, -width_damage, height_ap);
             }
             else { // ap is decreasing --- new ap is already here

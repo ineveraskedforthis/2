@@ -804,6 +804,7 @@ socket.on('new-message', msg => new_message(msg));
 socket.on('map-pos', msg => {
     console.log('map-pos')
     let location = map.set_curr_pos(msg.x, msg.y, msg.teleport_flag);
+    console.log(location)
     change_bg(location);
 });
 socket.on('explore', msg => {map.explore(msg)});
