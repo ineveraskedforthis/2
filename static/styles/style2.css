@@ -309,7 +309,10 @@ body {
 
 
 #characters_list {
-    margin-top: 20px;
+    overflow-y: scroll;
+    height: 80%;
+    border: white 1px solid;
+    width: 100%;
 }
 
 #characters_list > div {
