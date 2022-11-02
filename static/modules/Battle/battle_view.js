@@ -129,13 +129,23 @@ export class BattleUnitView {
             ctx.fillStyle = "rgba(200, 200, 0, 0.5)"; // yellow otherwise
         }
         ctx.fill();
+        // draw movement radius
+        const MOVE_COST = 3;
+        ctx.beginPath();
+        ctx.setLineDash([20, 20]);
+        ctx.arc(pos.x, pos.y, BATTLE_SCALE * (this.ap + this.ap_change) / MOVE_COST, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.setLineDash([]);
         //draw a border of circle above
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, BATTLE_SCALE * unit.range, 0, 2 * Math.PI);
+        ctx.closePath();
         ctx.stroke();
         //draw small circle at unit's base
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, BATTLE_SCALE / 10, 0, 2 * Math.PI);
+        ctx.closePath();
         ctx.stroke();
         //draw nameplates
         ctx.font = '15px serif';

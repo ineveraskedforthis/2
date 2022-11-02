@@ -61,12 +61,13 @@ var BattleEvent;
     function Move(battle, unit, target) {
         let tmp = geom_1.geom.minus(target, unit.position);
         let MOVE_COST = 3;
-        if (geom_1.geom.norm(tmp) * MOVE_COST > unit.action_points_left) {
+        var points_spent = geom_1.geom.norm(tmp) * MOVE_COST;
+        if (points_spent > unit.action_points_left) {
             tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / MOVE_COST);
+            points_spent = unit.action_points_left;
         }
         unit.position.x = tmp.x + unit.position.x;
         unit.position.y = tmp.y + unit.position.y;
-        let points_spent = geom_1.geom.norm(tmp) * MOVE_COST;
         unit.action_points_left = unit.action_points_left - points_spent;
         alerts_1.Alerts.battle_event(battle, 'move', unit.id, target, unit.id);
         alerts_1.Alerts.battle_update_unit(battle, unit);
