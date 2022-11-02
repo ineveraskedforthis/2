@@ -98,6 +98,12 @@ function update(delta: number, http_server:any, express_server: any) {
     ActionManager.update_characters(delta)
     UserManagement.update_users()
     BattleSystem.update()
+
+    for (let character of CharacterSystem.all_characters()) {
+        if (character.dead()) {
+            Event.death(character)
+        }
+    }
     
     update_timer += delta
     if (update_timer > 50000) {

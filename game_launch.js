@@ -81,6 +81,11 @@ function update(delta, http_server, express_server) {
     action_manager_1.ActionManager.update_characters(delta);
     user_manager_1.UserManagement.update_users();
     system_3.BattleSystem.update();
+    for (let character of system_1.CharacterSystem.all_characters()) {
+        if (character.dead()) {
+            events_1.Event.death(character);
+        }
+    }
     update_timer += delta;
     if (update_timer > 50000) {
         save();

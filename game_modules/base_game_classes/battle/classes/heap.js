@@ -31,6 +31,18 @@ class UnitsHeap {
             return undefined;
         return this.get_unit(current);
     }
+    delete(x) {
+        var position = undefined;
+        for (let i = 0; i < this.heap.length; i++) {
+            if (this.heap[i] == x.id)
+                position = i;
+        }
+        if (position == undefined)
+            return;
+        this.last -= 1;
+        this.heap[position] = this.heap[this.last];
+        this.shift_down(position);
+    }
     push(obj) {
         this.heap[this.last] = obj;
         this.last += 1;

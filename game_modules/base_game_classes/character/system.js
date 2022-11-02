@@ -41,6 +41,8 @@ var CharacterSystem;
         console.log('saving characters');
         let str = '';
         for (let item of exports.character_list) {
+            if (item.dead())
+                continue;
             str = str + character_to_string(item) + '\n';
         }
         fs_1.default.writeFileSync('characters.txt', str);

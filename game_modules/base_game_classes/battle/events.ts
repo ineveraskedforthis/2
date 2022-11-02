@@ -18,6 +18,12 @@ export namespace BattleEvent {
         Alerts.new_unit(battle, unit)
     }
 
+    export function Leave(battle: Battle, unit: Unit|undefined) {
+        if (unit == undefined) return
+        battle.heap.delete(unit)
+        Alerts.remove_unit(battle, unit)
+    }
+
     export function EndTurn(battle: Battle, unit: Unit) {
         battle.waiting_for_input = false
         

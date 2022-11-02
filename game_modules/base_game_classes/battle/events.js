@@ -14,6 +14,13 @@ var BattleEvent;
         alerts_1.Alerts.new_unit(battle, unit);
     }
     BattleEvent.NewUnit = NewUnit;
+    function Leave(battle, unit) {
+        if (unit == undefined)
+            return;
+        battle.heap.delete(unit);
+        alerts_1.Alerts.remove_unit(battle, unit);
+    }
+    BattleEvent.Leave = Leave;
     function EndTurn(battle, unit) {
         battle.waiting_for_input = false;
         // invalid battle

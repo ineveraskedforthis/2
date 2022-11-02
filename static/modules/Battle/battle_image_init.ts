@@ -1,6 +1,6 @@
 import { BattleImageNext } from "./battle_image.js";
 import { AttackEvent, get_mouse_pos_in_canvas, MissEvent, MovementBattleEvent, NewTurnEvent, RetreatEvent } from "./battle_image_helper.js";
-import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket } from "../../../shared/battle_data"
+import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, UnitSocket } from "../../../shared/battle_data"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js"
 
@@ -58,6 +58,14 @@ const BATTLE_CURRENT_UNIT = 'current_unit_turn'
 
 
 namespace bCallback {
+    export function new_unit(data: UnitSocket) {
+        battle_image.add_fighter(data.id, data.tag, data.position, data.range, data.name, data.hp, data.ap)
+    }
+
+    export function remove_unit(data: UnitSocket) {
+        battle_image.remove_fighter(data.id)
+    }
+
     export function set_current_active_unit(data: unit_id) {
         battle_image.set_current_turn(data)
     }
@@ -135,6 +143,10 @@ socket.on('battle-in-process',          bCallback.update_battle_process)
 socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
 socket.on('battle-update-units',        data => battle_image.update(data))
 socket.on('battle-update-unit',         data => battle_image.update_unit(data))
+
+socket.on('battle-new-unit',                bCallback.new_unit)
+socket.on('battle-remove-unit',             bCallback.remove_unit)
+
 socket.on(UNIT_ID_MESSAGE,              bCallback.link_player_to_unit)
 socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
 socket.on('battle-event',               bCallback.event)

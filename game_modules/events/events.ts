@@ -187,7 +187,11 @@ export namespace Event {
         // UserManagement.add_user_to_update_queue(character.user_id, "death");
         const user_data = Convert.character_to_user_data(character)
         Unlink.user_data_and_character(user_data, character);
+
+        const battle = Convert.character_to_battle(character)
+        Unlink.character_and_battle(character, battle)
     }
+
 
     export function increase_evasion(character: Character) {
         character.skills.evasion += 1

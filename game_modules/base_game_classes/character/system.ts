@@ -42,6 +42,7 @@ export namespace CharacterSystem {
         console.log('saving characters')
         let str:string = ''
         for (let item of character_list) {
+            if (item.dead()) continue
             str = str + character_to_string(item) + '\n' 
         }
         fs.writeFileSync('characters.txt', str)

@@ -1,7 +1,8 @@
 import { endianness } from "os";
-import { UnitSocket } from "../shared/battle_data";
+import { battle_id, UnitSocket, unit_id } from "../shared/battle_data";
 import { Battle } from "./base_game_classes/battle/classes/battle";
 import { Unit } from "./base_game_classes/battle/classes/unit";
+import { BattleEvent } from "./base_game_classes/battle/events";
 import { BattleSystem } from "./base_game_classes/battle/system";
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
@@ -139,6 +140,14 @@ export namespace Unlink {
             if (local_user == undefined) {continue}
             UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
         }
+    }
+
+    export function character_and_battle(character: Character, battle: Battle|undefined) {
+        if (battle == undefined) return
+        const unit = Convert.character_to_unit(character)
+        BattleEvent.Leave(battle, unit)
+        character.battle_id = -1 as battle_id
+        character.battle_unit_id = -1 as unit_id
     }
 }
 

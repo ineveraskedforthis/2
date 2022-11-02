@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
+const events_1 = require("./base_game_classes/battle/events");
 const system_1 = require("./base_game_classes/battle/system");
 const system_2 = require("./base_game_classes/character/system");
 const user_manager_1 = require("./client_communication/user_manager");
@@ -143,6 +144,15 @@ var Unlink;
         }
     }
     Unlink.character_and_cell = character_and_cell;
+    function character_and_battle(character, battle) {
+        if (battle == undefined)
+            return;
+        const unit = Convert.character_to_unit(character);
+        events_1.BattleEvent.Leave(battle, unit);
+        character.battle_id = -1;
+        character.battle_unit_id = -1;
+    }
+    Unlink.character_and_battle = character_and_battle;
 })(Unlink = exports.Unlink || (exports.Unlink = {}));
 // enter(char: Character) {
 //     this.characters_set.add(char.id)

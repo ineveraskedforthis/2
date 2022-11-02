@@ -39,6 +39,14 @@ const BATTLE_DATA_MESSAGE = 'battle_data';
 const BATTLE_CURRENT_UNIT = 'current_unit_turn';
 var bCallback;
 (function (bCallback) {
+    function new_unit(data) {
+        battle_image.add_fighter(data.id, data.tag, data.position, data.range, data.name, data.hp, data.ap);
+    }
+    bCallback.new_unit = new_unit;
+    function remove_unit(data) {
+        battle_image.remove_fighter(data.id);
+    }
+    bCallback.remove_unit = remove_unit;
     function set_current_active_unit(data) {
         battle_image.set_current_turn(data);
     }
@@ -119,6 +127,8 @@ socket.on('battle-in-process', bCallback.update_battle_process);
 socket.on(BATTLE_DATA_MESSAGE, bCallback.update_battle_state);
 socket.on('battle-update-units', data => battle_image.update(data));
 socket.on('battle-update-unit', data => battle_image.update_unit(data));
+socket.on('battle-new-unit', bCallback.new_unit);
+socket.on('battle-remove-unit', bCallback.remove_unit);
 socket.on(UNIT_ID_MESSAGE, bCallback.link_player_to_unit);
 socket.on(BATTLE_CURRENT_UNIT, bCallback.set_current_active_unit);
 socket.on('battle-event', bCallback.event);

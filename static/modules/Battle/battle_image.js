@@ -39,6 +39,7 @@ export class BattleImageNext {
         this.units_views = {};
         this.unit_ids = new Set();
         this.images = {};
+        this.had_left = {};
         this.actions = [];
         this.in_progress = false;
         this.reset_data();
@@ -78,6 +79,15 @@ export class BattleImageNext {
         let div = build_character_div(unit, this);
         this.container.querySelector(".enemy_list").appendChild(div);
     }
+    remove_fighter(unit_id) {
+        console.log("remove fighter");
+        console.log(unit_id);
+        const div = document.querySelectorAll('.fighter_' + unit_id)[0];
+        if (div != undefined) {
+            div.parentElement?.removeChild(div);
+        }
+        this.had_left[unit_id] = true;
+    }
     change_bg(bg) {
         this.background = bg;
         let ctx = this.canvas_background.getContext('2d');
@@ -92,18 +102,26 @@ export class BattleImageNext {
     }
     update(data) {
         for (let unit of Object.values(data)) {
+            if (this.had_left[unit.id])
+                continue;
             this.update_unit(unit);
         }
-        if (this.selected != undefined) {
-            if (this.player_id != undefined) {
-                let move_ap_div = document.getElementById('move' + '_ap_cost');
-                let a = this.units_data[this.player_id].position;
-                let b = this.units_data[this.selected].position;
-                let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
-                move_ap_div.innerHTML = 'ap: ' + dist * 3;
-                this.socket.emit('req-ranged-accuracy', dist);
-            }
-        }
+        if (this.selected == undefined)
+            return;
+        if (this.player_id == undefined)
+            return;
+        let move_ap_div = document.getElementById('move' + '_ap_cost');
+        const player_data = this.units_data[this.player_id];
+        const target_data = this.units_data[this.selected];
+        if (player_data == undefined)
+            return;
+        if (target_data == undefined)
+            return;
+        let a = player_data.position;
+        let b = target_data.position;
+        let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
+        move_ap_div.innerHTML = 'ap: ' + dist * 3;
+        this.socket.emit('req-ranged-accuracy', dist);
     }
     set_player(unit_id) {
         console.log('set_player_position');
@@ -130,6 +148,8 @@ export class BattleImageNext {
             return;
         }
         let player = this.units_data[this.player_id];
+        if (player == undefined)
+            return;
         for (let i of this.actions) {
             let div = this.container.querySelector('.battle_control>.' + i.tag);
             if ((i.cost != undefined) && (player.ap < i.cost)) {
@@ -143,7 +163,11 @@ export class BattleImageNext {
     hover(pos) {
         let hovered = false;
         for (let unit_id of this.unit_ids) {
+            if (this.had_left[unit_id])
+                continue;
             let unit_view = this.units_views[unit_id];
+            if (unit_view == undefined)
+                continue;
             let centre = position_c.battle_to_canvas(unit_view.position, this.h, this.w);
             let dx = centre.x - pos.x;
             let dy = centre.y - pos.y;
@@ -195,10 +219,22 @@ export class BattleImageNext {
         }
         //sort views by y coordinate
         var draw_order = Array.from(this.unit_ids);
-        draw_order.sort((a, b) => -this.units_views[a].position.y + this.units_views[b].position.y);
+        draw_order.sort((a, b) => {
+            const A = this.units_views[a];
+            const B = this.units_views[b];
+            if (A == undefined)
+                return 0;
+            if (B == undefined)
+                return 0;
+            return (-A.position.y + B.position.y);
+        });
         //draw views
         for (let unit_id of draw_order) {
+            if (this.had_left[unit_id])
+                continue;
             let view = this.units_views[Number(unit_id)];
+            if (view == undefined)
+                continue;
             view.draw(dt, this, images);
         }
         this.draw_anchor();
@@ -215,6 +251,8 @@ export class BattleImageNext {
             ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
             if (this.player_id != undefined) {
                 let player = this.units_views[this.player_id];
+                if (player == undefined)
+                    return;
                 let centre = position_c.battle_to_canvas(player.position, this.h, this.w);
                 ctx.beginPath();
                 ctx.moveTo(centre.x, centre.y);
@@ -225,6 +263,10 @@ export class BattleImageNext {
         if ((this.selected != undefined) && (this.player_id != undefined)) {
             let player = this.units_views[this.player_id];
             let target = this.units_views[this.selected];
+            if (player == undefined)
+                return;
+            if (target == undefined)
+                return;
             let centre1 = position_c.battle_to_canvas(player.position, this.h, this.w);
             let centre2 = position_c.battle_to_canvas(target.position, this.h, this.w);
             this.canvas_context.beginPath();
@@ -242,8 +284,14 @@ export class BattleImageNext {
         this.anchor = undefined;
         if (this.player_id != undefined) {
             let move_ap_div = document.getElementById('move' + '_ap_cost');
-            let a = this.units_data[this.player_id].position;
-            let b = this.units_data[this.selected].position;
+            const player_data = this.units_data[this.player_id];
+            const target_data = this.units_data[this.selected];
+            if (player_data == undefined)
+                return;
+            if (target_data == undefined)
+                return;
+            let a = player_data.position;
+            let b = target_data.position;
             let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
             move_ap_div.innerHTML = 'ap: ' + dist * 3;
             this.socket.emit('req-ranged-accuracy', dist);
@@ -261,7 +309,11 @@ export class BattleImageNext {
     press(pos) {
         let selected = false;
         for (let i of this.unit_ids) {
+            if (this.had_left[i])
+                continue;
             let unit = this.units_views[i];
+            if (unit == undefined)
+                continue;
             let centre = position_c.battle_to_canvas(unit.position, this.h, this.w);
             let dx = centre.x - pos.x;
             let dy = centre.y - pos.y;
@@ -277,7 +329,10 @@ export class BattleImageNext {
             this.anchor = pos;
             if (this.player_id != undefined) {
                 let move_ap_div = document.getElementById('move' + '_ap_cost');
-                let a = this.units_data[this.player_id].position;
+                const player_data = this.units_data[this.player_id];
+                if (player_data == undefined)
+                    return;
+                let a = player_data.position;
                 let b = position_c.canvas_to_battle(this.anchor, this.h, this.w);
                 let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
                 move_ap_div.innerHTML = 'ap: ' + dist * 3;

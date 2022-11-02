@@ -171,6 +171,8 @@ var Event;
         // UserManagement.add_user_to_update_queue(character.user_id, "death");
         const user_data = systems_communication_1.Convert.character_to_user_data(character);
         systems_communication_1.Unlink.user_data_and_character(user_data, character);
+        const battle = systems_communication_1.Convert.character_to_battle(character);
+        systems_communication_1.Unlink.character_and_battle(character, battle);
     }
     Event.death = death;
     function increase_evasion(character) {
