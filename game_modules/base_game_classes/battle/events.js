@@ -22,13 +22,15 @@ var BattleEvent;
     }
     BattleEvent.Leave = Leave;
     function EndTurn(battle, unit) {
-        battle.waiting_for_input = false;
+        console.log(battle.id + ' end turn');
+        console.log(unit.id + 'unit id');
         // invalid battle
         if (battle.heap.get_selected_unit() == undefined)
             return false;
         // not unit's turn
         if (battle.heap.get_selected_unit()?.id != unit.id)
             return false;
+        battle.waiting_for_input = false;
         //updating unit and heap
         battle.heap.pop();
         unit.next_turn_after = unit.slowness;
@@ -47,12 +49,14 @@ var BattleEvent;
      * @returns
      */
     function NewTurn(battle) {
+        console.log(battle.id + ' new turn');
         let current_time = Date.now();
         battle.date_of_last_turn = current_time;
         let unit = battle.heap.get_selected_unit();
         if (unit == undefined) {
             return { responce: 'no_units_left' };
         }
+        console.log(unit.id + ' current unit');
         let time_passed = unit.next_turn_after;
         battle.heap.update(time_passed);
         alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id);
@@ -125,6 +129,7 @@ var BattleEvent;
             }
             if (dice <= flee_chance()) { // success
                 alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id);
+                events_1.Event.stop_battle(battle);
             }
         }
         alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left);

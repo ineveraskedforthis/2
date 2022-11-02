@@ -25,12 +25,15 @@ export namespace BattleEvent {
     }
 
     export function EndTurn(battle: Battle, unit: Unit) {
-        battle.waiting_for_input = false
-        
+        console.log(battle.id + ' end turn')
+        console.log(unit.id + 'unit id')
+
         // invalid battle
         if (battle.heap.get_selected_unit() == undefined) return false
         // not unit's turn
         if (battle.heap.get_selected_unit()?.id != unit.id) return false;
+
+        battle.waiting_for_input = false
 
         //updating unit and heap
         battle.heap.pop()
@@ -51,6 +54,7 @@ export namespace BattleEvent {
      * @returns 
      */
     export function NewTurn(battle: Battle) {
+        console.log(battle.id + ' new turn')
         let current_time = Date.now() as ms
         battle.date_of_last_turn = current_time
 
@@ -58,6 +62,8 @@ export namespace BattleEvent {
         if (unit == undefined) {
             return {responce: 'no_units_left'}
         }
+
+        console.log(unit.id + ' current unit')
 
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
@@ -140,6 +146,7 @@ export namespace BattleEvent {
 
             if (dice <= flee_chance()) { // success
                 Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id)
+                Event.stop_battle(battle)
             }
         }
         Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left)

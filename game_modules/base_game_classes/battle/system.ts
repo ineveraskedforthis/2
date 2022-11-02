@@ -49,6 +49,10 @@ export namespace BattleSystem {
             battles_list.push(battle)
             battles_dict[battle.id] = battle
             last_id = Math.max(battle.id, last_id) as battle_id
+
+            if (battle.date_of_last_turn == '%') {
+                battle.date_of_last_turn = Date.now() as ms
+            }
         }
 
         console.log('battles loaded')
@@ -72,7 +76,18 @@ export namespace BattleSystem {
     function string_to_battle(s: string) {
         const json:Battle = JSON.parse(s)
         const battle = new Battle(json.id, json_to_heap(json.heap))
-        battle.waiting_for_input = json.waiting_for_input
+        
+        const unit = battle.heap.get_selected_unit()
+        if (unit != undefined) {
+            const character = Convert.unit_to_character(unit)
+            if (character.is_player()) {
+                battle.waiting_for_input = true
+            } else {
+                battle.waiting_for_input = false
+            }
+        } else {
+            battle.waiting_for_input = false
+        }
         battle.ended = json.ended
         battle.last_event_index = json.last_event_index
         return battle
@@ -185,6 +200,7 @@ export namespace BattleSystem {
                     if (unit != undefined) BattleEvent.EndTurn(battle, unit)
                 }
             }
+
             // if turn is still running, then do nothing
             if (battle.waiting_for_input) {
                 return

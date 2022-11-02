@@ -46,6 +46,9 @@ var BattleSystem;
             battles_list.push(battle);
             battles_dict[battle.id] = battle;
             last_id = Math.max(battle.id, last_id);
+            if (battle.date_of_last_turn == '%') {
+                battle.date_of_last_turn = Date.now();
+            }
         }
         console.log('battles loaded');
     }
@@ -68,7 +71,19 @@ var BattleSystem;
     function string_to_battle(s) {
         const json = JSON.parse(s);
         const battle = new battle_1.Battle(json.id, json_to_heap(json.heap));
-        battle.waiting_for_input = json.waiting_for_input;
+        const unit = battle.heap.get_selected_unit();
+        if (unit != undefined) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            if (character.is_player()) {
+                battle.waiting_for_input = true;
+            }
+            else {
+                battle.waiting_for_input = false;
+            }
+        }
+        else {
+            battle.waiting_for_input = false;
+        }
         battle.ended = json.ended;
         battle.last_event_index = json.last_event_index;
         return battle;
