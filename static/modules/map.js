@@ -354,6 +354,8 @@ export class Map {
         for (let i in data) {
             this.data[i] = data[i]
         }
+
+
     } 
     
     load_terrain(data) {
@@ -749,6 +751,24 @@ export class Map {
             }
         }
         
+        
+        // this.visit_spotted = []
+        return BACKGROUNDS[this.curr_territory];
+    }
+
+    re_set_cur_pos() {
+        let [i, j] = this.curr_pos
+        this.curr_territory = get_territory_tag(i, j);
+
+        let tag = i + '_' + j
+        if (this.data[tag] != undefined) {
+            if (this.data[tag].urban >= 2) {
+                return 'colony'
+            } 
+            if (this.data[tag].wild >= 1) {
+                return 'forest'
+            }
+        }      
         
         // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];
