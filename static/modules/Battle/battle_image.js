@@ -32,8 +32,8 @@ export class BattleImageNext {
         this.background = "colony";
         this.background_flag = false;
         this.hovered = undefined;
-        this.w = 700;
-        this.h = 450;
+        this.w = canvas.width;
+        this.h = canvas.height;
         this.scale = 1;
         this.events_list = [];
         this.units_data = {};

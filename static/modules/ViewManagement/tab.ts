@@ -44,11 +44,13 @@ export namespace tab {
         if (tabs_properties[tag] == undefined) {
             save(tag)
         }
-        tab.style.top = tabs_properties[tag].top
-        tab.style.left = tabs_properties[tag].left
-        tab.style.width = tabs_properties[tag].width
-        tab.style.height = tabs_properties[tag].height
-        tab.style.zIndex = tabs_properties[tag].zIndex
+        if (tag != 'battle') {            
+            tab.style.top = tabs_properties[tag].top
+            tab.style.left = tabs_properties[tag].left
+            tab.style.width = tabs_properties[tag].width
+            tab.style.height = tabs_properties[tag].height
+            tab.style.zIndex = tabs_properties[tag].zIndex 
+        }
         if (tabs_properties[tag].active) {
             toogle(tag)
         }
