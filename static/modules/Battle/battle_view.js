@@ -5,6 +5,7 @@ export class BattleUnitView {
         this.killed = unit.killed;
         this.position = unit.position;
         this.ap = unit.ap;
+        this.ap_change = 0;
         this.hp = unit.hp;
         this.max_hp = unit.max_hp;
         this.hp_damaged = 0;
@@ -18,6 +19,7 @@ export class BattleUnitView {
             battle.update_player_actions_availability();
         }
         this.hp_damaged = this.hp_damaged + this.hp - this.unit.hp;
+        this.ap_change = this.ap_change + this.ap - this.unit.ap;
         this.hp = this.unit.hp;
         this.ap = this.unit.ap;
         this.killed = this.unit.killed;
@@ -107,6 +109,12 @@ export class BattleUnitView {
         if (this.hp_damaged > 0) {
             this.hp_damaged = Math.max(this.hp_damaged - dt * 20, 0);
         }
+        if (this.ap_change > 0) {
+            this.ap_change = Math.max(this.ap_change - dt * 20, 0);
+        }
+        if (this.ap_change < 0) {
+            this.ap_change = Math.min(this.ap_change + dt * 20, 0);
+        }
         //draw character attack radius circle and color it depending on it's status in ui
         ctx.strokeStyle = "rgba(0, 0, 0, 1)";
         ctx.beginPath();
@@ -133,11 +141,11 @@ export class BattleUnitView {
         ctx.font = '15px serif';
         // select style depending on hover/selection status
         if (battle.selected == unit.id) {
-            ctx.fillStyle = "rgba(1, 1, 1, 1)";
+            ctx.fillStyle = "rgba(255, 255, 255, 1)";
             ctx.strokeStyle = "rgba(0, 0, 0, 1)";
         }
         else if (battle.hovered == unit.id) {
-            ctx.fillStyle = "rgba(1, 1, 1, 1)";
+            ctx.fillStyle = "rgba(255, 255, 255, 1)";
             ctx.strokeStyle = "rgba(0, 0, 0, 1)";
         }
         else {
@@ -170,7 +178,7 @@ export class BattleUnitView {
         // draw hp bar:
         {
             ctx.fillStyle = "green";
-            ctx.strokeStyle = "rgba(1, 0, 0, 0.8)";
+            ctx.strokeStyle = "rgba(255, 0, 0, 0.8)";
             const width_hp_1 = 0.5;
             const width_max_hp = this.max_hp * width_hp_1;
             const width_hp = this.hp * width_hp_1;
@@ -183,6 +191,32 @@ export class BattleUnitView {
             ctx.fillRect(hp_left, hp_top, width_hp, height_hp);
             ctx.fillStyle = "yellow";
             ctx.fillRect(hp_left + width_hp, hp_top, width_damage, height_hp);
+        }
+        // draw ap bar:
+        {
+            ctx.fillStyle = "rgb(0,0,255)";
+            ctx.strokeStyle = "rgba(255, 0, 0, 0.8)";
+            const width_ap_1 = 10;
+            const width_max_ap = 10 * width_ap_1;
+            const width_ap = this.ap * width_ap_1;
+            const width_damage = this.ap_change * width_ap_1;
+            const height_ap = 4;
+            const ap_bar_margin_down = 73;
+            const ap_left = pos.x - width_max_ap / 2;
+            const ap_top = pos.y - height_ap - ap_bar_margin_down;
+            ctx.fillStyle = "rgb(0,0,255)";
+            ctx.strokeStyle = "rgba(255, 0, 0, 0.8)";
+            ctx.strokeRect(ap_left, ap_top, width_max_ap, height_ap);
+            ctx.fillRect(ap_left, ap_top, width_ap + width_damage, height_ap);
+            if (width_damage < 0) { //ap is increasing
+                ctx.fillStyle = "rgb(165,200,230)";
+                console.log(ap_left, width_ap, width_damage);
+                ctx.fillRect(ap_left + width_ap + width_damage, ap_top, -width_damage, height_ap);
+            }
+            else { // ap is decreasing --- new ap is already here
+                ctx.fillStyle = "yellow";
+                ctx.fillRect(ap_left + width_ap, ap_top, width_damage, height_ap);
+            }
         }
         this.handle_events(dt, battle, images);
     }
