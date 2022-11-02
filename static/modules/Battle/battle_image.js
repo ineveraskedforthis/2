@@ -1,4 +1,5 @@
-import { AnimatedImage, BattleUnit, BattleUnitView, BATTLE_SCALE, ClearBattleEvent, draw_image, position_c, UpdateDataEvent } from './battle_image_helper.js';
+import { AnimatedImage, BattleUnit, BATTLE_SCALE, ClearBattleEvent, draw_image, position_c, UpdateDataEvent } from './battle_image_helper.js';
+import { BattleUnitView } from './battle_view.js';
 function new_log_message(msg) {
     if (msg == null) {
         return;
@@ -67,10 +68,10 @@ export class BattleImageNext {
     //         this.add_fighter(Number(i) as unit_id, data[i].tag, data[i].position as battle_position, data[i].range, data[i].name, data[i].hp, data[i].ap)
     //     }
     // }
-    add_fighter(unit_id, tag, pos, range, name, hp, ap) {
+    add_fighter(unit_id, tag, pos, range, name, hp, max_hp, ap) {
         console.log("add fighter");
         console.log(unit_id, tag, pos, range, name);
-        let unit = new BattleUnit(unit_id, name, hp, ap, range, pos, tag);
+        let unit = new BattleUnit(unit_id, name, hp, max_hp, ap, range, pos, tag);
         let unit_view = new BattleUnitView(unit);
         this.unit_ids.add(unit_id);
         this.units_data[unit_id] = unit;

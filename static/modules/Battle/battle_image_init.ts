@@ -59,7 +59,7 @@ const BATTLE_CURRENT_UNIT = 'current_unit_turn'
 
 namespace bCallback {
     export function new_unit(data: UnitSocket) {
-        battle_image.add_fighter(data.id, data.tag, data.position, data.range, data.name, data.hp, data.ap)
+        battle_image.add_fighter(data.id, data.tag, data.position, data.range, data.name, data.hp, data.max_hp, data.ap)
     }
 
     export function remove_unit(data: UnitSocket) {

@@ -40,7 +40,7 @@ const BATTLE_CURRENT_UNIT = 'current_unit_turn';
 var bCallback;
 (function (bCallback) {
     function new_unit(data) {
-        battle_image.add_fighter(data.id, data.tag, data.position, data.range, data.name, data.hp, data.ap);
+        battle_image.add_fighter(data.id, data.tag, data.position, data.range, data.name, data.hp, data.max_hp, data.ap);
     }
     bCallback.new_unit = new_unit;
     function remove_unit(data) {

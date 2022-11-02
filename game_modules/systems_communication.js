@@ -45,6 +45,7 @@ var Convert;
             range: character.range(),
             name: character.name,
             hp: character.get_hp(),
+            max_hp: character.stats.max.hp,
             ap: unit.action_points_left,
             id: unit.id,
             next_turn: unit.next_turn_after

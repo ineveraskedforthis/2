@@ -19,6 +19,7 @@ export interface UnitSocket {
     range: number
     name: string 
     hp: number
+    max_hp: number
     ap: number
     id: unit_id
     next_turn: number

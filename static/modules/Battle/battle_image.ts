@@ -1,6 +1,7 @@
-import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BattleUnitView, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent} from './battle_image_helper.js'
+import {AnimatedImage, AttackEvent, BattleEvent, BattleUnit, BATTLE_SCALE, Canvas, CanvasContext, canvas_position, ClearBattleEvent, draw_image, get_mouse_pos_in_canvas, Image, ImagesDict, MovementBattleEvent, NewTurnEvent, position_c, RetreatEvent, UpdateDataEvent} from './battle_image_helper.js'
 
 import { BattleData, unit_id, battle_position, Socket, UnitSocket } from "../../../shared/battle_data"
+import { BattleUnitView } from './battle_view.js';
 
 declare var alert: (data: string) => {}
 
@@ -132,11 +133,11 @@ export class BattleImageNext {
     //     }
     // }
 
-    add_fighter(unit_id:unit_id, tag:string, pos:battle_position, range:number, name:string, hp:number, ap: number) {
+    add_fighter(unit_id:unit_id, tag:string, pos:battle_position, range:number, name:string, hp:number, max_hp: number, ap: number) {
         console.log("add fighter")
         console.log(unit_id, tag, pos, range, name)
 
-        let unit = new BattleUnit(unit_id, name, hp, ap, range, pos, tag)
+        let unit = new BattleUnit(unit_id, name, hp, max_hp, ap, range, pos, tag)
         let unit_view = new BattleUnitView(unit)
 
         this.unit_ids.add(unit_id)
