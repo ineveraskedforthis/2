@@ -69,12 +69,14 @@ export namespace BattleEvent {
         let tmp = geom.minus(target, unit.position)
 
         let MOVE_COST = 3
-        if (geom.norm(tmp) * MOVE_COST > unit.action_points_left) {
+        var points_spent = geom.norm(tmp) * MOVE_COST
+
+        if (points_spent > unit.action_points_left) {
             tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / MOVE_COST)
+            points_spent = unit.action_points_left
         }
         unit.position.x = tmp.x + unit.position.x;
         unit.position.y = tmp.y + unit.position.y;
-        let points_spent = geom.norm(tmp) * MOVE_COST
 
         unit.action_points_left =  unit.action_points_left - points_spent as action_points
         
