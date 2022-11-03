@@ -14,19 +14,13 @@ const unit_1 = require("./classes/unit");
 const events_1 = require("./events");
 const fs_1 = __importDefault(require("fs"));
 const events_2 = require("../../events/events");
-var battles_list = [];
-var battles_dict = {};
-var last_id = 0;
+const data_1 = require("../../data");
 var last_unit_id = 0;
 function time_distance(a, b) {
     return b - a;
 }
 var BattleSystem;
 (function (BattleSystem) {
-    function id_to_battle(id) {
-        return battles_dict[id];
-    }
-    BattleSystem.id_to_battle = id_to_battle;
     function id_to_unit(id, battle) {
         return battle.heap.get_unit(id);
     }
@@ -43,12 +37,12 @@ var BattleSystem;
                 continue;
             }
             const battle = string_to_battle(line);
-            battles_list.push(battle);
-            battles_dict[battle.id] = battle;
-            last_id = Math.max(battle.id, last_id);
             if (battle.date_of_last_turn == '%') {
                 battle.date_of_last_turn = Date.now();
             }
+            data_1.Data.Battle.set(battle.id, battle);
+            const last_id = data_1.Data.Battle.id();
+            data_1.Data.Battle.set_id(Math.max(battle.id, last_id));
         }
         console.log('battles loaded');
     }
@@ -56,7 +50,7 @@ var BattleSystem;
     function save() {
         console.log('saving battles');
         let str = '';
-        for (let item of battles_list) {
+        for (let item of data_1.Data.Battle.list()) {
             if (item.ended)
                 continue;
             str = str + battle_to_string(item) + '\n';
@@ -100,11 +94,11 @@ var BattleSystem;
     // only creates and initialise battle
     // does not add participants
     function create_battle() {
-        last_id = last_id + 1;
+        data_1.Data.Battle.increase_id();
+        const last_id = data_1.Data.Battle.id();
         let heap = new heap_1.UnitsHeap([]);
         let battle = new battle_1.Battle(last_id, heap);
-        battles_list.push(battle);
-        battles_dict[last_id] = battle;
+        data_1.Data.Battle.set(last_id, battle);
         return last_id;
     }
     BattleSystem.create_battle = create_battle;
@@ -160,7 +154,7 @@ var BattleSystem;
     //         return 'no_interest'
     //     }
     function add_figther(battle_id, character, team) {
-        const battle = battles_dict[battle_id];
+        const battle = systems_communication_1.Convert.id_to_battle(battle_id);
         if (battle == undefined)
             return;
         const unit = create_unit(character, team);
@@ -169,7 +163,7 @@ var BattleSystem;
     BattleSystem.add_figther = add_figther;
     function update() {
         const current_date = Date.now();
-        for (let battle of battles_list) {
+        for (let battle of data_1.Data.Battle.list()) {
             if (battle.ended)
                 continue;
             // if turn lasts longer than 60 seconds, it ends automatically

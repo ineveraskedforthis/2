@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.launch = exports.socket_manager = exports.io = void 0;
+exports.set_version = exports.launch = exports.socket_manager = exports.io = void 0;
 const fs_1 = require("fs");
 //importing order is important because of global lists of entities
 const system_1 = require("./game_modules/base_game_classes/character/system");
@@ -13,7 +13,6 @@ const server_1 = require("./server");
 const action_manager_1 = require("./game_modules/actions/action_manager");
 const auth_1 = require("./game_modules/client_communication/network_actions/auth");
 const events_1 = require("./game_modules/events/events");
-const human_1 = require("./game_modules/base_game_classes/character/races/human");
 const systems_communication_1 = require("./game_modules/systems_communication");
 const system_3 = require("./game_modules/base_game_classes/battle/system");
 exports.io = require('socket.io')(server_1.http);
@@ -58,7 +57,7 @@ function load() {
     for (const character of characters) {
         systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
     }
-    events_1.Event.new_character(human_1.HumanTemplateNotAligned, 'test', system_2.MapSystem.coordinate_to_id(7, 5), { mouth: 1, eyes: 1, chin: 1 });
+    // Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }
 function save() {
     system_1.CharacterSystem.save();
@@ -93,14 +92,15 @@ function update(delta, http_server, express_server) {
     }
 }
 function get_version_raw() {
-    (0, fs_1.readFile)('/data/misc/version', 'utf-8', (err, data) => {
-        if (err) {
-            return '0';
-        }
-        return data;
-    });
-    return '0';
+    if (!(0, fs_1.existsSync)('version.txt')) {
+        (0, fs_1.writeFileSync)('version.txt', '');
+    }
+    return (0, fs_1.readFileSync)('version.txt').toString();
 }
+function set_version(n) {
+    (0, fs_1.writeFileSync)('version.txt', '' + n);
+}
+exports.set_version = set_version;
 function get_version() {
     let data = Number(get_version_raw());
     return data;

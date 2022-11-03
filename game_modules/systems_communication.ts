@@ -9,12 +9,17 @@ import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
+import { Data } from "./data";
 import { Cell } from "./map/cell";
 import { MapSystem } from "./map/system";
 import { user_online_id } from "./types";
 
 
 export namespace Convert {
+    export function id_to_battle(id: battle_id) {
+        return Data.Battle.from_id(id)
+    }
+
     export function  unit_to_character(unit: Unit): Character {
         return CharacterSystem.id_to_character(unit.char_id)
     }
@@ -27,7 +32,7 @@ export namespace Convert {
     export function character_to_battle(character: Character): Battle|undefined {
         if (character.battle_id == -1) return undefined
 
-        return BattleSystem.id_to_battle(character.battle_id)
+        return Convert.id_to_battle(character.battle_id)
     }
 
     export function character_to_unit(character: Character): Unit|undefined {

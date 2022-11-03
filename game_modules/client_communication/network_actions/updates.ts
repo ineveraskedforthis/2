@@ -13,6 +13,7 @@ import { CellActionProb } from "../../calculations/difficulty";
 import { Battle } from "../../base_game_classes/battle/classes/battle";
 import { BattleSystem } from "../../base_game_classes/battle/system";
 import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
+import { prepare_market_orders } from "../helper_functions";
 
 
 export namespace SendUpdate {
@@ -33,7 +34,7 @@ export namespace SendUpdate {
         console.log('in battle?  ' + character.in_battle())
 
         if (character.in_battle()) {
-            const battle = BattleSystem.id_to_battle(character.battle_id);
+            const battle = Convert.id_to_battle(character.battle_id);
             let unit_id = character.battle_unit_id
             console.log('unit id is ' + unit_id)            
             Alerts.battle_progress(user, true)
@@ -260,15 +261,8 @@ export namespace SendUpdate {
     export function market(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
-
-        // let data = 
-
-    //     let user = this.world.user_manager.get_user_from_character(character);
-    //     if (user != undefined) {
-    //         let data = this.prepare_market_orders(market)
-    //     this.send_to_character_user(character, 'market-data', data)
-    //     }
-    // }
+        let data = prepare_market_orders(character.cell_id)
+        Alerts.market_data(user, data)
     }
 
     export function explored(user: User) {
@@ -391,19 +385,7 @@ export namespace SendUpdate {
 
 
 
-// function prepare_market_orders(market: Cell) {
-//     let data = market.orders;
-//     let orders_array = Array.from(data)
-//     let responce: MarketOrderBulkJson[] = []
-//     for (let order_id of orders_array) {
 
-//         let order = this.world.get_order(order_id)
-//         if (order.amount > 0) {
-//             responce.push(order.get_json())
-//         }
-//     }
-//     return responce
-// }
 
     // update_market_info(market: Cell) {
     //     // console.log('sending market orders to client');

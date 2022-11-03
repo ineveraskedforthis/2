@@ -11,25 +11,15 @@ import { Unit } from "./classes/unit"
 import { BattleEvent } from "./events"
 import fs from "fs"
 import { Event } from "../../events/events"
+import { Data } from "../../data"
 
-
-var battles_list:Battle[] = []
-var battles_dict:{[_ in battle_id]: Battle} = {}
-var last_id:battle_id = 0 as battle_id
 var last_unit_id = 0 as unit_id
 
 function time_distance(a: ms, b: ms) {
     return b - a as ms
 }
 
-
-
-
 export namespace BattleSystem {
-    
-    export function id_to_battle(id: battle_id) {
-        return battles_dict[id]
-    }
 
     export function id_to_unit(id: unit_id, battle: Battle) {
         return battle.heap.get_unit(id)
@@ -46,13 +36,13 @@ export namespace BattleSystem {
         for (let line of lines) {
             if (line == '') {continue}
             const battle = string_to_battle(line)
-            battles_list.push(battle)
-            battles_dict[battle.id] = battle
-            last_id = Math.max(battle.id, last_id) as battle_id
-
             if (battle.date_of_last_turn == '%') {
                 battle.date_of_last_turn = Date.now() as ms
             }
+
+            Data.Battle.set(battle.id, battle)
+            const last_id = Data.Battle.id()
+            Data.Battle.set_id(Math.max(battle.id, last_id) as battle_id)            
         }
 
         console.log('battles loaded')
@@ -61,7 +51,7 @@ export namespace BattleSystem {
     export function save() {
         console.log('saving battles')
         let str:string = ''
-        for (let item of battles_list) {
+        for (let item of Data.Battle.list()) {
             if (item.ended) continue;
             str = str + battle_to_string(item) + '\n' 
         }
@@ -105,12 +95,11 @@ export namespace BattleSystem {
     // only creates and initialise battle
     // does not add participants
     export function create_battle(): battle_id{
-        last_id = last_id + 1 as battle_id
+        Data.Battle.increase_id()
+        const last_id = Data.Battle.id()
         let heap = new UnitsHeap([])
         let battle = new Battle(last_id, heap)
-
-        battles_list.push(battle)
-        battles_dict[last_id] = battle
+        Data.Battle.set(last_id, battle)
         return last_id
     }
 
@@ -180,7 +169,7 @@ export namespace BattleSystem {
 //     }
 
     export function add_figther(battle_id: battle_id, character: Character, team: number) {
-        const battle = battles_dict[battle_id]
+        const battle = Convert.id_to_battle(battle_id)
         if (battle == undefined) return
         
         const unit = create_unit(character, team)
@@ -190,7 +179,7 @@ export namespace BattleSystem {
     export function update() {
         const current_date = Date.now() as ms
 
-        for (let battle of battles_list) {
+        for (let battle of Data.Battle.list()) {
             if (battle.ended) continue;
 
             // if turn lasts longer than 60 seconds, it ends automatically

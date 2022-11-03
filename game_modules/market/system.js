@@ -4,9 +4,12 @@ exports.ItemOrders = exports.BulkOrders = void 0;
 const system_1 = require("../base_game_classes/character/system");
 const stash_1 = require("../base_game_classes/inventories/stash");
 const system_2 = require("../base_game_classes/items/system");
+const system_3 = require("../map/system");
 const classes_1 = require("./classes");
 var orders_bulk = [];
 var orders_item = [];
+var char_id_to_orders_bulk;
+var char_id_to_orders_item;
 var last_id_bulk = 0;
 var last_id_item = 0;
 var AuctionResponce;
@@ -33,6 +36,7 @@ var BulkOrders;
         last_id_bulk = last_id_bulk + 1;
         let order = new classes_1.OrderBulk(last_id_bulk, amount, price, typ, tag, owner.id);
         orders_bulk[last_id_bulk] = order;
+        char_id_to_orders_bulk[owner.id].add(order.id);
         return order;
     }
     BulkOrders.create = create;
@@ -40,6 +44,25 @@ var BulkOrders;
         return orders_bulk[id];
     }
     BulkOrders.id_to_order = id_to_order;
+    function from_char_id(id) {
+        return char_id_to_orders_bulk[id];
+    }
+    BulkOrders.from_char_id = from_char_id;
+    function from_cell_id(id) {
+        const cell = system_3.MapSystem.id_to_cell(id);
+        if (cell == undefined)
+            return new Set();
+        const chars = cell.get_characters_id_set();
+        const result = new Set();
+        for (let char_id of chars) {
+            const char_orders = from_char_id(char_id);
+            for (let order of char_orders) {
+                result.add(order);
+            }
+        }
+        return result;
+    }
+    BulkOrders.from_cell_id = from_cell_id;
     function execute_sell_order(id, amount, buyer) {
         const order = id_to_order(id);
         const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
@@ -104,6 +127,18 @@ var BulkOrders;
         return order;
     }
     BulkOrders.new_sell_order = new_sell_order;
+    function json(order) {
+        return {
+            typ: order.typ,
+            tag: order.tag,
+            owner_id: order.owner_id,
+            owner_name: system_1.CharacterSystem.id_to_character(order.owner_id).name,
+            amount: order.amount,
+            price: order.price,
+            id: order.id
+        };
+    }
+    BulkOrders.json = json;
 })(BulkOrders = exports.BulkOrders || (exports.BulkOrders = {}));
 var ItemOrders;
 (function (ItemOrders) {

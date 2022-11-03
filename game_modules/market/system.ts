@@ -5,11 +5,16 @@ import { Stash } from "../base_game_classes/inventories/stash";
 import { Item } from "../base_game_classes/items/item";
 import { ItemSystem } from "../base_game_classes/items/system"
 import { material_index } from "../manager_classes/materials_manager";
-import { money, order_bulk_id, order_item_id } from "../types";
-import { OrderBulk, OrderItem, OrderItemJson } from "./classes";
+import { MapSystem } from "../map/system";
+import { cell_id, char_id, money, order_bulk_id, order_item_id } from "../types";
+import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
 
 var orders_bulk:OrderBulk[] = []
 var orders_item:OrderItem[] = []
+
+var char_id_to_orders_bulk: {[_ in char_id]: Set<order_bulk_id>}
+var char_id_to_orders_item: {[_ in char_id]: Set<order_item_id>}
+
 var last_id_bulk = 0
 var last_id_item = 0
 
@@ -41,12 +46,31 @@ export namespace BulkOrders {
     export function create(amount: number, price: money, typ:'sell'|'buy', tag: material_index, owner: Character) {
         last_id_bulk = last_id_bulk + 1
         let order = new OrderBulk(last_id_bulk as order_bulk_id, amount, price, typ, tag, owner.id)
-        orders_bulk[last_id_bulk] = order        
+        orders_bulk[last_id_bulk] = order
+        char_id_to_orders_bulk[owner.id].add(order.id)
         return order
     }
 
     export function id_to_order(id: order_bulk_id): OrderBulk {
         return orders_bulk[id]
+    }
+
+    export function from_char_id(id: char_id): Set<order_bulk_id> {
+        return char_id_to_orders_bulk[id]
+    }
+
+    export function from_cell_id(id: cell_id): Set<order_bulk_id> {
+        const cell = MapSystem.id_to_cell(id)
+        if (cell == undefined) return new Set();
+        const chars = cell.get_characters_id_set()
+        const result:Set<order_bulk_id> = new Set()
+        for (let char_id of chars) {
+            const char_orders = from_char_id(char_id)
+            for (let order of char_orders) {
+                result.add(order)
+            }
+        }
+        return result
     }
 
     export function execute_sell_order(id: order_bulk_id, amount: number, buyer: Character) {
@@ -115,6 +139,18 @@ export namespace BulkOrders {
         CharacterSystem.to_trade_stash(owner, material, amount)
         const order = create(amount, price, 'sell', material, owner)
         return order
+    }
+
+    export function json(order: OrderBulk):OrderBulkJson {
+        return {
+            typ: order.typ,
+            tag: order.tag,
+            owner_id: order.owner_id,
+            owner_name: CharacterSystem.id_to_character(order.owner_id).name,
+            amount: order.amount,
+            price: order.price,
+            id: order.id
+        }
     }
 }
 

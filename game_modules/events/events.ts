@@ -234,7 +234,7 @@ export namespace Event {
         } else {
             const battle_id = BattleSystem.create_battle()
             console.log('new battle: ' + battle_id)
-            const battle = BattleSystem.id_to_battle(battle_id)
+            const battle = Convert.id_to_battle(battle_id)
             const attacker_unit = BattleSystem.create_unit(attacker, 1)
             const defender_unit = BattleSystem.create_unit(defender, 2)
             BattleEvent.NewUnit(battle, attacker_unit)

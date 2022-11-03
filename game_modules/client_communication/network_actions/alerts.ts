@@ -3,12 +3,17 @@ import { Battle } from "../../base_game_classes/battle/classes/battle";
 import { Unit } from "../../base_game_classes/battle/classes/unit";
 import { BattleSystem } from "../../base_game_classes/battle/system";
 import { Character } from "../../base_game_classes/character/character";
+import { OrderBulkJson } from "../../market/classes";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";
 
 export namespace Alerts {
     export function not_enough_to_user(user: User, tag: string, required: number, current: number) {
         generic_user_alert(user, 'not_enough', {tag: tag, req: required, cur: current})
+    }
+
+    export function market_data(user: User, data: OrderBulkJson[]) {
+        generic_user_alert(user, 'market-data', data)
     }
 
     export function in_battle(user: User) {

@@ -9,6 +9,10 @@ var Alerts;
         generic_user_alert(user, 'not_enough', { tag: tag, req: required, cur: current });
     }
     Alerts.not_enough_to_user = not_enough_to_user;
+    function market_data(user, data) {
+        generic_user_alert(user, 'market-data', data);
+    }
+    Alerts.market_data = market_data;
     function in_battle(user) {
         generic_user_alert(user, 'alert', 'you are in battle');
     }

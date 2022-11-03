@@ -1,4 +1,4 @@
-import { readFile } from "fs";
+import { readFileSync, writeFileSync, existsSync } from "fs";
 
 //importing order is important because of global lists of entities
 import { CharacterSystem } from "./game_modules/base_game_classes/character/system";
@@ -71,7 +71,7 @@ function load() {
         Link.character_and_cell(character, Convert.character_to_cell(character))
     }
 
-    Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
+    // Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }
 
 function save() {
@@ -114,13 +114,14 @@ function update(delta: number, http_server:any, express_server: any) {
 
 
 function get_version_raw():string {
-    readFile('/data/misc/version', 'utf-8', (err, data) => {
-        if (err) {
-            return '0'
-        }
-        return data
-    })
-    return '0'
+    if (!existsSync('version.txt')) {
+        writeFileSync('version.txt', '')
+    }
+    return readFileSync('version.txt').toString()
+}
+
+export function set_version(n: number) {
+    writeFileSync('version.txt', '' + n)
 }
 
 function get_version():number {

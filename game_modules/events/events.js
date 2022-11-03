@@ -219,7 +219,7 @@ var Event;
         else {
             const battle_id = system_1.BattleSystem.create_battle();
             console.log('new battle: ' + battle_id);
-            const battle = system_1.BattleSystem.id_to_battle(battle_id);
+            const battle = systems_communication_1.Convert.id_to_battle(battle_id);
             const attacker_unit = system_1.BattleSystem.create_unit(attacker, 1);
             const defender_unit = system_1.BattleSystem.create_unit(defender, 2);
             events_1.BattleEvent.NewUnit(battle, attacker_unit);

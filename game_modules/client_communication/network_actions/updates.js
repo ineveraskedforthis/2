@@ -10,6 +10,7 @@ const alerts_1 = require("./alerts");
 const difficulty_1 = require("../../calculations/difficulty");
 const system_2 = require("../../base_game_classes/battle/system");
 const constants_1 = require("../../static_data/constants");
+const helper_functions_1 = require("../helper_functions");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -28,7 +29,7 @@ var SendUpdate;
         console.log('update battle');
         console.log('in battle?  ' + character.in_battle());
         if (character.in_battle()) {
-            const battle = system_2.BattleSystem.id_to_battle(character.battle_id);
+            const battle = systems_communication_1.Convert.id_to_battle(character.battle_id);
             let unit_id = character.battle_unit_id;
             console.log('unit id is ' + unit_id);
             alerts_1.Alerts.battle_progress(user, true);
@@ -245,13 +246,8 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        // let data = 
-        //     let user = this.world.user_manager.get_user_from_character(character);
-        //     if (user != undefined) {
-        //         let data = this.prepare_market_orders(market)
-        //     this.send_to_character_user(character, 'market-data', data)
-        //     }
-        // }
+        let data = (0, helper_functions_1.prepare_market_orders)(character.cell_id);
+        alerts_1.Alerts.market_data(user, data);
     }
     SendUpdate.market = market;
     function explored(user) {
@@ -365,18 +361,6 @@ var SendUpdate;
     }
     SendUpdate.update_player_actions_availability = update_player_actions_availability;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
-// function prepare_market_orders(market: Cell) {
-//     let data = market.orders;
-//     let orders_array = Array.from(data)
-//     let responce: MarketOrderBulkJson[] = []
-//     for (let order_id of orders_array) {
-//         let order = this.world.get_order(order_id)
-//         if (order.amount > 0) {
-//             responce.push(order.get_json())
-//         }
-//     }
-//     return responce
-// }
 // update_market_info(market: Cell) {
 //     // console.log('sending market orders to client');
 //     let responce = this.prepare_market_orders(market)     

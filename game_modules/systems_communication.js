@@ -2,26 +2,30 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
 const events_1 = require("./base_game_classes/battle/events");
-const system_1 = require("./base_game_classes/battle/system");
-const system_2 = require("./base_game_classes/character/system");
+const system_1 = require("./base_game_classes/character/system");
 const user_manager_1 = require("./client_communication/user_manager");
-const system_3 = require("./map/system");
+const data_1 = require("./data");
+const system_2 = require("./map/system");
 var Convert;
 (function (Convert) {
+    function id_to_battle(id) {
+        return data_1.Data.Battle.from_id(id);
+    }
+    Convert.id_to_battle = id_to_battle;
     function unit_to_character(unit) {
-        return system_2.CharacterSystem.id_to_character(unit.char_id);
+        return system_1.CharacterSystem.id_to_character(unit.char_id);
     }
     Convert.unit_to_character = unit_to_character;
     function user_to_character(user) {
         if (user.data.char_id == '@')
             return undefined;
-        return system_2.CharacterSystem.id_to_character(user.data.char_id);
+        return system_1.CharacterSystem.id_to_character(user.data.char_id);
     }
     Convert.user_to_character = user_to_character;
     function character_to_battle(character) {
         if (character.battle_id == -1)
             return undefined;
-        return system_1.BattleSystem.id_to_battle(character.battle_id);
+        return Convert.id_to_battle(character.battle_id);
     }
     Convert.character_to_battle = character_to_battle;
     function character_to_unit(character) {
@@ -72,7 +76,7 @@ var Convert;
     }
     Convert.character_to_user = character_to_user;
     function character_to_cell(character) {
-        let cell = system_3.MapSystem.SAFE_id_to_cell(character.cell_id);
+        let cell = system_2.MapSystem.SAFE_id_to_cell(character.cell_id);
         return cell;
     }
     Convert.character_to_cell = character_to_cell;
@@ -89,7 +93,7 @@ var Link;
             user_manager_1.UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation');
         }
         user_manager_1.UserManagement.save_users();
-        system_2.CharacterSystem.save();
+        system_1.CharacterSystem.save();
     }
     Link.character_and_user_data = character_and_user_data;
     function character_and_cell(character, cell) {
@@ -102,13 +106,13 @@ var Link;
         const locals = cell.get_characters_list();
         for (let item of locals) {
             const id = item.id;
-            const local_character = system_2.CharacterSystem.id_to_character(id);
+            const local_character = system_1.CharacterSystem.id_to_character(id);
             user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
         // exploration
         character.explored[cell.id] = true;
-        let neighbours = system_3.MapSystem.neighbours_cells(cell.id);
+        let neighbours = system_2.MapSystem.neighbours_cells(cell.id);
         for (let item of neighbours) {
             character.explored[item.id] = true;
         }
@@ -136,7 +140,7 @@ var Unlink;
         const locals = cell.get_characters_list();
         for (let item of locals) {
             const id = item.id;
-            const local_character = system_2.CharacterSystem.id_to_character(id);
+            const local_character = system_1.CharacterSystem.id_to_character(id);
             const local_user = Convert.character_to_user(local_character);
             if (local_user == undefined) {
                 continue;
