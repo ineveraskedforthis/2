@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.set_version = exports.launch = exports.socket_manager = exports.io = void 0;
 const fs_1 = require("fs");
+// Always the first.
+const data_1 = require("./game_modules/data");
 //importing order is important because of global lists of entities
 const system_1 = require("./game_modules/base_game_classes/character/system");
 const system_2 = require("./game_modules/map/system");
@@ -53,7 +55,7 @@ function load() {
     user_manager_1.UserManagement.load_users();
     auth_1.Auth.load();
     system_3.BattleSystem.load();
-    const characters = system_1.CharacterSystem.all_characters();
+    const characters = data_1.Data.Character.list();
     for (const character of characters) {
         systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
     }
@@ -80,7 +82,7 @@ function update(delta, http_server, express_server) {
     action_manager_1.ActionManager.update_characters(delta);
     user_manager_1.UserManagement.update_users();
     system_3.BattleSystem.update();
-    for (let character of system_1.CharacterSystem.all_characters()) {
+    for (let character of data_1.Data.Character.list()) {
         if (character.dead()) {
             events_1.Event.death(character);
         }

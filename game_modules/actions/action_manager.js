@@ -13,7 +13,7 @@ const gather_wood_1 = require("./actions_set_up/character_actions/gather_wood");
 const craft_bone_spear_1 = require("./actions_set_up/character_actions/craft_bone_spear");
 const craft_rat_armour_1 = require("./actions_set_up/character_actions/craft_rat_armour");
 const alerts_1 = require("../client_communication/network_actions/alerts");
-const system_1 = require("../base_game_classes/character/system");
+const data_1 = require("../data");
 var CharacterAction;
 (function (CharacterAction) {
     CharacterAction.MOVE = move_1.move;
@@ -76,7 +76,7 @@ var ActionManager;
     }
     ActionManager.call_action = call_action;
     function update_characters(dt) {
-        for (let character of system_1.character_list) {
+        for (let character of data_1.Data.Character.list()) {
             if (character == undefined)
                 continue;
             if (character.action != undefined) {

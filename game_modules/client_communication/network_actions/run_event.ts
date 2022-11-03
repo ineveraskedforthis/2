@@ -16,7 +16,7 @@ export namespace SocketCommand {
         console.log('user is valid')
             
         const data = Number(raw_data)
-        const target_character = CharacterSystem.number_to_character(data)
+        const target_character = Convert.number_to_character(data)
         if (target_character == undefined) return
         console.log('target ccharacter is vaalid')
 

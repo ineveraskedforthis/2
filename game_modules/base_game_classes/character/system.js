@@ -3,21 +3,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CharacterSystem = exports.character_list = void 0;
+exports.CharacterSystem = void 0;
 const materials_manager_1 = require("../../manager_classes/materials_manager");
 const damage_types_1 = require("../misc/damage_types");
 const character_1 = require("./character");
 const generate_loot_1 = require("./races/generate_loot");
 const fs_1 = __importDefault(require("fs"));
-var last_character_id = 0;
-exports.character_list = [];
-var characters_dict = {};
+const data_1 = require("../../data");
 var CharacterSystem;
 (function (CharacterSystem) {
-    function all_characters() {
-        return exports.character_list;
-    }
-    CharacterSystem.all_characters = all_characters;
     function load() {
         console.log('loading characters');
         if (!fs_1.default.existsSync('characters.txt')) {
@@ -30,9 +24,8 @@ var CharacterSystem;
                 continue;
             }
             const character = string_to_character(line);
-            exports.character_list.push(character);
-            characters_dict[character.id] = character;
-            last_character_id = Math.max(character.id, last_character_id);
+            data_1.Data.Character.set(character.id, character);
+            data_1.Data.Character.set_id(Math.max(character.id, data_1.Data.Character.id()));
         }
         console.log('characters loaded');
     }
@@ -40,7 +33,7 @@ var CharacterSystem;
     function save() {
         console.log('saving characters');
         let str = '';
-        for (let item of exports.character_list) {
+        for (let item of data_1.Data.Character.list()) {
             if (item.dead())
                 continue;
             str = str + character_to_string(item) + '\n';
@@ -92,25 +85,16 @@ var CharacterSystem;
     }
     CharacterSystem.string_to_character = string_to_character;
     function template_to_character(template, name, cell_id) {
-        last_character_id = last_character_id + 1;
+        data_1.Data.Character.increase_id();
         if (name == undefined)
             name = template.name_generator();
-        let character = new character_1.Character(last_character_id, -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
+        let character = new character_1.Character(data_1.Data.Character.id(), -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
         character.stats.base_resists = damage_types_1.DmgOps.add(character.stats.base_resists, template.base_resists);
-        characters_dict[character.id] = character;
-        exports.character_list.push(character);
+        data_1.Data.Character.set(data_1.Data.Character.id(), character);
         character.explored[cell_id] = true;
         return character;
     }
     CharacterSystem.template_to_character = template_to_character;
-    function id_to_character(id) {
-        return characters_dict[id];
-    }
-    Convert.id_to_character = id_to_character;
-    function number_to_character(id) {
-        return characters_dict[id];
-    }
-    CharacterSystem.number_to_character = number_to_character;
     function transfer_savings(A, B, x) {
         A.savings.transfer(B.savings, x);
     }

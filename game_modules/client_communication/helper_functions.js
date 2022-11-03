@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.prepare_market_orders = void 0;
+const json_1 = require("../json");
 const system_1 = require("../market/system");
 function prepare_market_orders(cell_id) {
     let data = system_1.BulkOrders.from_cell_id(cell_id);
@@ -9,7 +10,7 @@ function prepare_market_orders(cell_id) {
     for (let order_id of orders_array) {
         const order = system_1.BulkOrders.id_to_order(order_id);
         if (order.amount > 0) {
-            responce.push(system_1.BulkOrders.json(order));
+            responce.push(json_1.JSONficate.market_order_bulk(order));
         }
     }
     return responce;

@@ -11,7 +11,7 @@ import { gather_wood } from "./actions_set_up/character_actions/gather_wood"
 import { craft_bone_arrow, craft_bone_spear, craft_wood_bow } from "./actions_set_up/character_actions/craft_bone_spear"
 import { craft_rat_armour, craft_rat_boots, craft_rat_gloves, craft_rat_helmet, craft_rat_pants } from "./actions_set_up/character_actions/craft_rat_armour"
 import { Alerts } from "../client_communication/network_actions/alerts"
-import { character_list } from "../base_game_classes/character/system"
+import { Data } from "../data"
 
 
 export const enum CharacterActionResponce {
@@ -115,7 +115,7 @@ export namespace ActionManager {
     }
 
     export function update_characters(dt: number) {
-        for (let character of character_list) {
+        for (let character of Data.Character.list()) {
             if (character == undefined) continue
 
             if (character.action != undefined) {

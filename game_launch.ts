@@ -15,8 +15,6 @@ import { http, io_type } from "./server";
 import { ActionManager } from "./game_modules/actions/action_manager";
 import { Auth } from "./game_modules/client_communication/network_actions/auth";
 import { Event } from "./game_modules/events/events";
-import { EloTemplate } from "./game_modules/base_game_classes/character/races/elo";
-import { HumanTemplateNotAligned } from "./game_modules/base_game_classes/character/races/human";
 import { Convert, Link } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/base_game_classes/battle/system";
 

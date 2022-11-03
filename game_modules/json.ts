@@ -1,7 +1,7 @@
-import { CharacterSystem } from "./base_game_classes/character/system";
 import { OrderBulk, OrderBulkJson } from "./market/classes";
+import { Convert } from "./systems_communication";
 
-namespace JSONficate {
+export namespace JSONficate {
     export function market_order_bulk(order: OrderBulk):OrderBulkJson {
         let owner = Convert.id_to_character(order.owner_id)
 

@@ -5,6 +5,7 @@ const system_1 = require("../base_game_classes/character/system");
 const stash_1 = require("../base_game_classes/inventories/stash");
 const system_2 = require("../base_game_classes/items/system");
 const system_3 = require("../map/system");
+const systems_communication_1 = require("../systems_communication");
 const classes_1 = require("./classes");
 var orders_bulk = [];
 var orders_item = [];
@@ -65,7 +66,7 @@ var BulkOrders;
     BulkOrders.from_cell_id = from_cell_id;
     function execute_sell_order(id, amount, buyer) {
         const order = id_to_order(id);
-        const owner = system_1.Convert.id_to_character(order.owner_id);
+        const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         const pay = amount * order.price;
         if (order.amount < amount)
             return 'invalid_order';
@@ -84,7 +85,7 @@ var BulkOrders;
     BulkOrders.execute_sell_order = execute_sell_order;
     function execute_buy_order(id, amount, seller) {
         const order = id_to_order(id);
-        const owner = system_1.Convert.id_to_character(order.owner_id);
+        const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         if (order.amount < amount)
             return 'invalid_order';
         if (seller.stash.get(order.tag) < amount)
@@ -127,18 +128,6 @@ var BulkOrders;
         return order;
     }
     BulkOrders.new_sell_order = new_sell_order;
-    function json(order) {
-        return {
-            typ: order.typ,
-            tag: order.tag,
-            owner_id: order.owner_id,
-            owner_name: system_1.Convert.id_to_character(order.owner_id).name,
-            amount: order.amount,
-            price: order.price,
-            id: order.id
-        };
-    }
-    BulkOrders.json = json;
 })(BulkOrders = exports.BulkOrders || (exports.BulkOrders = {}));
 var ItemOrders;
 (function (ItemOrders) {
@@ -170,7 +159,7 @@ var ItemOrders;
         if (order.owner_id != who.id) {
             return AuctionResponce.INVALID_ORDER;
         }
-        const owner = system_1.Convert.id_to_character(order.owner_id);
+        const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         order.finished = true;
         owner.equip.data.backpack.add(order.item);
         return AuctionResponce.OK;
@@ -207,7 +196,7 @@ var ItemOrders;
     //     return responce
     // }
     function order_to_socket_data(order) {
-        let owner = system_1.Convert.id_to_character(order.owner_id);
+        let owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         return {
             seller_name: owner.name,
             price: order.price,
@@ -234,7 +223,7 @@ var ItemOrders;
     ItemOrders.sell = sell;
     function buy(id, buyer) {
         const order = id_to_order(id);
-        const owner = system_1.Convert.id_to_character(order.owner_id);
+        const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         // make sure that they are in the same cell
         if (owner.cell_id != buyer.cell_id) {
             return AuctionResponce.NOT_IN_THE_SAME_CELL;

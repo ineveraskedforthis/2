@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Cell = void 0;
-const system_js_1 = require("../base_game_classes/character/system.js");
+const systems_communication_js_1 = require("../systems_communication.js");
 class Cell {
     // orders_bulk: Set<order_bulk_id>
     // orders_item: Set<order_item_id>
@@ -51,7 +51,7 @@ class Cell {
             this.changed_characters = false;
             let result = [];
             for (let item of this.characters_set.values()) {
-                let character = system_js_1.Convert.id_to_character(item);
+                let character = systems_communication_js_1.Convert.id_to_character(item);
                 let return_item = { id: item, name: character.name };
                 result.push(return_item);
             }

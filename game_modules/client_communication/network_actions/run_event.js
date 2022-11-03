@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketCommand = void 0;
-const system_1 = require("../../base_game_classes/character/system");
 const events_1 = require("../../events/events");
 const systems_communication_1 = require("../../systems_communication");
 const common_validations_1 = require("./common_validations");
@@ -18,7 +17,7 @@ var SocketCommand;
         }
         console.log('user is valid');
         const data = Number(raw_data);
-        const target_character = system_1.CharacterSystem.number_to_character(data);
+        const target_character = systems_communication_1.Convert.number_to_character(data);
         if (target_character == undefined)
             return;
         console.log('target ccharacter is vaalid');

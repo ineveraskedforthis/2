@@ -6,6 +6,7 @@ import { Item } from "../base_game_classes/items/item";
 import { ItemSystem } from "../base_game_classes/items/system"
 import { material_index } from "../manager_classes/materials_manager";
 import { MapSystem } from "../map/system";
+import { Convert } from "../systems_communication";
 import { cell_id, char_id, money, order_bulk_id, order_item_id } from "../types";
 import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
 
@@ -139,18 +140,6 @@ export namespace BulkOrders {
         CharacterSystem.to_trade_stash(owner, material, amount)
         const order = create(amount, price, 'sell', material, owner)
         return order
-    }
-
-    export function json(order: OrderBulk):OrderBulkJson {
-        return {
-            typ: order.typ,
-            tag: order.tag,
-            owner_id: order.owner_id,
-            owner_name: Convert.id_to_character(order.owner_id).name,
-            amount: order.amount,
-            price: order.price,
-            id: order.id
-        }
     }
 }
 

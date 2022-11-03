@@ -1,10 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const system_1 = require("./base_game_classes/character/system");
+exports.JSONficate = void 0;
+const systems_communication_1 = require("./systems_communication");
 var JSONficate;
 (function (JSONficate) {
     function market_order_bulk(order) {
-        let owner = system_1.Convert.id_to_character(order.owner_id);
+        let owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         return {
             typ: order.typ,
             tag: order.tag,
@@ -17,4 +18,4 @@ var JSONficate;
         };
     }
     JSONficate.market_order_bulk = market_order_bulk;
-})(JSONficate || (JSONficate = {}));
+})(JSONficate = exports.JSONficate || (exports.JSONficate = {}));
