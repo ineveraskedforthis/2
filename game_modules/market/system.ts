@@ -75,7 +75,7 @@ export namespace BulkOrders {
 
     export function execute_sell_order(id: order_bulk_id, amount: number, buyer: Character) {
         const order = id_to_order(id)
-        const owner = CharacterSystem.id_to_character(order.owner_id)
+        const owner = Convert.id_to_character(order.owner_id)
         const pay = amount * order.price as money
 
         if (order.amount < amount)      return 'invalid_order' 
@@ -98,7 +98,7 @@ export namespace BulkOrders {
 
     export function execute_buy_order(id:order_bulk_id, amount: number, seller: Character) {
         const order = id_to_order(id)
-        const owner = CharacterSystem.id_to_character(order.owner_id)
+        const owner = Convert.id_to_character(order.owner_id)
         
         if (order.amount < amount) return 'invalid_order'       
         if (seller.stash.get(order.tag) < amount) return 'not_enough_items_in_stash'
@@ -146,7 +146,7 @@ export namespace BulkOrders {
             typ: order.typ,
             tag: order.tag,
             owner_id: order.owner_id,
-            owner_name: CharacterSystem.id_to_character(order.owner_id).name,
+            owner_name: Convert.id_to_character(order.owner_id).name,
             amount: order.amount,
             price: order.price,
             id: order.id
@@ -186,7 +186,7 @@ export namespace ItemOrders {
             return AuctionResponce.INVALID_ORDER
         }
 
-        const owner = CharacterSystem.id_to_character(order.owner_id)
+        const owner = Convert.id_to_character(order.owner_id)
 
         order.finished = true
         owner.equip.data.backpack.add(order.item)
@@ -209,7 +209,7 @@ export namespace ItemOrders {
     }
     
     // export function order_to_json(order: OrderItem) {
-    //     let owner = CharacterSystem.id_to_character(order.owner_id)
+    //     let owner = Convert.id_to_character(order.owner_id)
     //     let responce:OrderItemJson = {
     //         id: order.id,
     //         item: order.item.get_json(),
@@ -222,7 +222,7 @@ export namespace ItemOrders {
     // }
 
     export function order_to_socket_data(order: OrderItem):OrderItemSocketData {
-        let owner = CharacterSystem.id_to_character(order.owner_id)
+        let owner = Convert.id_to_character(order.owner_id)
         return {
             seller_name: owner.name,
             price: order.price,
@@ -249,7 +249,7 @@ export namespace ItemOrders {
 
     export function buy(id: order_item_id, buyer: Character) {
         const order = id_to_order(id) 
-        const owner = CharacterSystem.id_to_character(order.owner_id)
+        const owner = Convert.id_to_character(order.owner_id)
 
         // make sure that they are in the same cell
         if (owner.cell_id != buyer.cell_id) {return AuctionResponce.NOT_IN_THE_SAME_CELL}

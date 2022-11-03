@@ -106,7 +106,7 @@ var CharacterSystem;
     function id_to_character(id) {
         return characters_dict[id];
     }
-    CharacterSystem.id_to_character = id_to_character;
+    Convert.id_to_character = id_to_character;
     function number_to_character(id) {
         return characters_dict[id];
     }

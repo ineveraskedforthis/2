@@ -4,7 +4,7 @@ const system_1 = require("./base_game_classes/character/system");
 var JSONficate;
 (function (JSONficate) {
     function market_order_bulk(order) {
-        let owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        let owner = system_1.Convert.id_to_character(order.owner_id);
         return {
             typ: order.typ,
             tag: order.tag,

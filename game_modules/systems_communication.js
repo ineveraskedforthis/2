@@ -13,13 +13,13 @@ var Convert;
     }
     Convert.id_to_battle = id_to_battle;
     function unit_to_character(unit) {
-        return system_1.CharacterSystem.id_to_character(unit.char_id);
+        return system_1.Convert.id_to_character(unit.char_id);
     }
     Convert.unit_to_character = unit_to_character;
     function user_to_character(user) {
         if (user.data.char_id == '@')
             return undefined;
-        return system_1.CharacterSystem.id_to_character(user.data.char_id);
+        return system_1.Convert.id_to_character(user.data.char_id);
     }
     Convert.user_to_character = user_to_character;
     function character_to_battle(character) {
@@ -106,7 +106,7 @@ var Link;
         const locals = cell.get_characters_list();
         for (let item of locals) {
             const id = item.id;
-            const local_character = system_1.CharacterSystem.id_to_character(id);
+            const local_character = system_1.Convert.id_to_character(id);
             user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
@@ -140,7 +140,7 @@ var Unlink;
         const locals = cell.get_characters_list();
         for (let item of locals) {
             const id = item.id;
-            const local_character = system_1.CharacterSystem.id_to_character(id);
+            const local_character = system_1.Convert.id_to_character(id);
             const local_user = Convert.character_to_user(local_character);
             if (local_user == undefined) {
                 continue;

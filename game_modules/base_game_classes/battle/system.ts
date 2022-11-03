@@ -1,5 +1,3 @@
-// this module shoul require only characters and battles systems
-
 import { action_points, BattleData, battle_id, battle_position, ms, unit_id } from "../../../shared/battle_data"
 import { Convert } from "../../systems_communication"
 import { Character } from "../character/character"

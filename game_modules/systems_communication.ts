@@ -1,9 +1,7 @@
-import { endianness } from "os";
 import { battle_id, UnitSocket, unit_id } from "../shared/battle_data";
 import { Battle } from "./base_game_classes/battle/classes/battle";
 import { Unit } from "./base_game_classes/battle/classes/unit";
 import { BattleEvent } from "./base_game_classes/battle/events";
-import { BattleSystem } from "./base_game_classes/battle/system";
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
 import { UI_Part } from "./client_communication/causality_graph";
@@ -12,7 +10,7 @@ import { UserManagement } from "./client_communication/user_manager";
 import { Data } from "./data";
 import { Cell } from "./map/cell";
 import { MapSystem } from "./map/system";
-import { user_online_id } from "./types";
+import { char_id, user_online_id } from "./types";
 
 
 export namespace Convert {
@@ -20,13 +18,21 @@ export namespace Convert {
         return Data.Battle.from_id(id)
     }
 
+    export function id_to_character(id: char_id): Character {
+        return Data.Character.from_id(id)
+    }
+
+    export function number_to_character(id: number): Character|undefined {
+        return Data.Character.from_id(id as char_id)
+    }
+
     export function  unit_to_character(unit: Unit): Character {
-        return CharacterSystem.id_to_character(unit.char_id)
+        return id_to_character(unit.char_id)
     }
 
     export function user_to_character(user: User):Character|undefined {
         if (user.data.char_id == '@') return undefined;
-        return CharacterSystem.id_to_character(user.data.char_id)
+        return id_to_character(user.data.char_id)
     }
 
     export function character_to_battle(character: Character): Battle|undefined {
@@ -106,7 +112,7 @@ export namespace Link {
         const locals = cell.get_characters_list()
         for (let item of locals) {
             const id = item.id
-            const local_character = CharacterSystem.id_to_character(id)
+            const local_character = Convert.id_to_character(id)
             UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.LOCAL_CHARACTERS)
         }
 
@@ -141,7 +147,7 @@ export namespace Unlink {
         const locals = cell.get_characters_list()
         for (let item of locals) {
             const id = item.id
-            const local_character = CharacterSystem.id_to_character(id)
+            const local_character = Convert.id_to_character(id)
             const local_user = Convert.character_to_user(local_character)
             if (local_user == undefined) {continue}
             UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)

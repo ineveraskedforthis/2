@@ -1,5 +1,7 @@
 import { readFileSync, writeFileSync, existsSync } from "fs";
 
+// Always the first.
+import { Data } from "./game_modules/data";
 //importing order is important because of global lists of entities
 import { CharacterSystem } from "./game_modules/base_game_classes/character/system";
 import { MapSystem } from "./game_modules/map/system";
@@ -17,6 +19,7 @@ import { EloTemplate } from "./game_modules/base_game_classes/character/races/el
 import { HumanTemplateNotAligned } from "./game_modules/base_game_classes/character/races/human";
 import { Convert, Link } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/base_game_classes/battle/system";
+
 
 
 export var io:io_type = require('socket.io')(http);
@@ -65,7 +68,7 @@ function load() {
     Auth.load()
     BattleSystem.load()
 
-    const characters = CharacterSystem.all_characters()
+    const characters = Data.Character.list()
 
     for (const character of characters) {
         Link.character_and_cell(character, Convert.character_to_cell(character))
@@ -99,7 +102,7 @@ function update(delta: number, http_server:any, express_server: any) {
     UserManagement.update_users()
     BattleSystem.update()
 
-    for (let character of CharacterSystem.all_characters()) {
+    for (let character of Data.Character.list()) {
         if (character.dead()) {
             Event.death(character)
         }

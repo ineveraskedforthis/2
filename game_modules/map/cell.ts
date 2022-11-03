@@ -83,7 +83,7 @@ export class Cell {
             this.changed_characters = false
             let result = []
             for (let item of this.characters_set.values()) {
-                let character = CharacterSystem.id_to_character(item)
+                let character = Convert.id_to_character(item)
                 let return_item = {id: item, name: character.name}
                 result.push(return_item)
             }

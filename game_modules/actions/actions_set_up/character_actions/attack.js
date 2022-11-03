@@ -13,7 +13,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //             let targets = cell.get_characters_list()
 //             let target = undefined
 //             for (let id of targets) {
-//                 let target_char = CharacterSystem.id_to_character(id)
+//                 let target_char = Convert.id_to_character(id)
 //                 if (hostile(char.archetype.race, target_char.archetype.race)) {
 //                     if (!target_char.in_battle()) {
 //                         target = target_char

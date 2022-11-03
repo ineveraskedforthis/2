@@ -9,16 +9,11 @@ import { Loot } from "./races/generate_loot";
 import { CharacterTemplate } from "./templates";
 import fs from "fs"
 import { Archetype, InnateStats, Stats, Status } from "./character_parts";
+import { Data } from "../../data";
 
-var last_character_id = 0
-export var character_list:Character[]                  = []
-var characters_dict:{[_ in char_id]: Character} = {}
+
 
 export namespace CharacterSystem {
-    export function all_characters() {
-        return character_list
-    }
-
     export function load() {
         console.log('loading characters')
         if (!fs.existsSync('characters.txt')) {
@@ -30,9 +25,8 @@ export namespace CharacterSystem {
         for (let line of lines) {
             if (line == '') {continue}
             const character = string_to_character(line)
-            character_list.push(character)
-            characters_dict[character.id] = character
-            last_character_id = Math.max(character.id, last_character_id)
+            Data.Character.set(character.id, character)
+            Data.Character.set_id(Math.max(character.id, Data.Character.id()) as char_id)
         }
 
         console.log('characters loaded')
@@ -41,7 +35,7 @@ export namespace CharacterSystem {
     export function save() {
         console.log('saving characters')
         let str:string = ''
-        for (let item of character_list) {
+        for (let item of Data.Character.list()) {
             if (item.dead()) continue
             str = str + character_to_string(item) + '\n' 
         }
@@ -107,22 +101,13 @@ export namespace CharacterSystem {
     }
 
     export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
-        last_character_id = last_character_id + 1
+        Data.Character.increase_id()
         if (name == undefined) name = template.name_generator()
-        let character = new Character(last_character_id, -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp)
+        let character = new Character(Data.Character.id(), -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp)
         character.stats.base_resists = DmgOps.add(character.stats.base_resists, template.base_resists);
-        characters_dict[character.id] = character
-        character_list.push(character)
+        Data.Character.set(Data.Character.id(), character)
         character.explored[cell_id] = true
         return character
-    }
-
-    export function id_to_character(id: char_id): Character {
-        return characters_dict[id]
-    }
-
-    export function number_to_character(id: number): Character|undefined {
-        return characters_dict[id as char_id]
     }
 
     export function transfer_savings(A: Character, B: Character, x: money) {

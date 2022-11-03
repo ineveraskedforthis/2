@@ -65,7 +65,7 @@ var BulkOrders;
     BulkOrders.from_cell_id = from_cell_id;
     function execute_sell_order(id, amount, buyer) {
         const order = id_to_order(id);
-        const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        const owner = system_1.Convert.id_to_character(order.owner_id);
         const pay = amount * order.price;
         if (order.amount < amount)
             return 'invalid_order';
@@ -84,7 +84,7 @@ var BulkOrders;
     BulkOrders.execute_sell_order = execute_sell_order;
     function execute_buy_order(id, amount, seller) {
         const order = id_to_order(id);
-        const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        const owner = system_1.Convert.id_to_character(order.owner_id);
         if (order.amount < amount)
             return 'invalid_order';
         if (seller.stash.get(order.tag) < amount)
@@ -132,7 +132,7 @@ var BulkOrders;
             typ: order.typ,
             tag: order.tag,
             owner_id: order.owner_id,
-            owner_name: system_1.CharacterSystem.id_to_character(order.owner_id).name,
+            owner_name: system_1.Convert.id_to_character(order.owner_id).name,
             amount: order.amount,
             price: order.price,
             id: order.id
@@ -170,7 +170,7 @@ var ItemOrders;
         if (order.owner_id != who.id) {
             return AuctionResponce.INVALID_ORDER;
         }
-        const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        const owner = system_1.Convert.id_to_character(order.owner_id);
         order.finished = true;
         owner.equip.data.backpack.add(order.item);
         return AuctionResponce.OK;
@@ -195,7 +195,7 @@ var ItemOrders;
     }
     ItemOrders.remove_all_character = remove_all_character;
     // export function order_to_json(order: OrderItem) {
-    //     let owner = CharacterSystem.id_to_character(order.owner_id)
+    //     let owner = Convert.id_to_character(order.owner_id)
     //     let responce:OrderItemJson = {
     //         id: order.id,
     //         item: order.item.get_json(),
@@ -207,7 +207,7 @@ var ItemOrders;
     //     return responce
     // }
     function order_to_socket_data(order) {
-        let owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        let owner = system_1.Convert.id_to_character(order.owner_id);
         return {
             seller_name: owner.name,
             price: order.price,
@@ -234,7 +234,7 @@ var ItemOrders;
     ItemOrders.sell = sell;
     function buy(id, buyer) {
         const order = id_to_order(id);
-        const owner = system_1.CharacterSystem.id_to_character(order.owner_id);
+        const owner = system_1.Convert.id_to_character(order.owner_id);
         // make sure that they are in the same cell
         if (owner.cell_id != buyer.cell_id) {
             return AuctionResponce.NOT_IN_THE_SAME_CELL;

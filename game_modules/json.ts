@@ -3,7 +3,7 @@ import { OrderBulk, OrderBulkJson } from "./market/classes";
 
 namespace JSONficate {
     export function market_order_bulk(order: OrderBulk):OrderBulkJson {
-        let owner = CharacterSystem.id_to_character(order.owner_id)
+        let owner = Convert.id_to_character(order.owner_id)
 
         return {
             typ: order.typ,

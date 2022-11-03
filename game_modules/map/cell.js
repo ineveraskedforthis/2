@@ -51,7 +51,7 @@ class Cell {
             this.changed_characters = false;
             let result = [];
             for (let item of this.characters_set.values()) {
-                let character = system_js_1.CharacterSystem.id_to_character(item);
+                let character = system_js_1.Convert.id_to_character(item);
                 let return_item = { id: item, name: character.name };
                 result.push(return_item);
             }
