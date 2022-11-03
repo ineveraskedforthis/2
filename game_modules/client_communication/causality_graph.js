@@ -8,7 +8,8 @@ const children = {
         7 /* UI_Part.MAP */,
         12 /* UI_Part.SKILLS */,
         17 /* UI_Part.CRAFT */,
-        19 /* UI_Part.BATTLE */],
+        19 /* UI_Part.BATTLE */,
+        20 /* UI_Part.MARKET */],
     [1 /* UI_Part.STATUS */]: [2 /* UI_Part.HP */],
     [3 /* UI_Part.BELONGINGS */]: [4 /* UI_Part.STASH */,
         5 /* UI_Part.SAVINGS */,
@@ -21,7 +22,7 @@ const children = {
         16 /* UI_Part.SKINNING_SKILL */,
         15 /* UI_Part.WEAPON_SKILL */,
         14 /* UI_Part.DEFENCE_SKILL */],
-    [17 /* UI_Part.CRAFT */]: [18 /* UI_Part.COOKING_CRAFT */],
+    [17 /* UI_Part.CRAFT */]: [18 /* UI_Part.COOKING_CRAFT */]
 };
 function empty_function(user) { }
 const update_function = {
@@ -45,6 +46,7 @@ const update_function = {
     [17 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
     [18 /* UI_Part.COOKING_CRAFT */]: updates_1.SendUpdate.cooking_craft,
     [19 /* UI_Part.BATTLE */]: updates_1.SendUpdate.battle,
+    [20 /* UI_Part.MARKET */]: updates_1.SendUpdate.market
 };
 const influence = {
     [12 /* UI_Part.SKILLS */]: [17 /* UI_Part.CRAFT */],

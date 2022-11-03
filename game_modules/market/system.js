@@ -1,18 +1,15 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemOrders = exports.BulkOrders = void 0;
 const system_1 = require("../base_game_classes/character/system");
 const stash_1 = require("../base_game_classes/inventories/stash");
-const system_2 = require("../base_game_classes/items/system");
-const system_3 = require("../map/system");
+const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 const classes_1 = require("./classes");
-var orders_bulk = [];
-var orders_item = [];
-var char_id_to_orders_bulk;
-var char_id_to_orders_item;
-var last_id_bulk = 0;
-var last_id_item = 0;
+const fs_1 = __importDefault(require("fs"));
 var AuctionResponce;
 (function (AuctionResponce) {
     AuctionResponce["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";
@@ -27,45 +24,47 @@ const empty_stash = new stash_1.Stash();
 var BulkOrders;
 (function (BulkOrders) {
     function save() {
+        console.log('saving bulk market orders');
+        let str = '';
+        for (let item of data_1.Data.BulkOrders.list()) {
+            if (item.amount == 0)
+                continue;
+            str = str + JSON.stringify(item) + '\n';
+        }
+        fs_1.default.writeFileSync('bulk_market.txt', str);
+        console.log('bulk market orders saved');
     }
     BulkOrders.save = save;
     function load() {
+        console.log('loading bulk market orders');
+        if (!fs_1.default.existsSync('bulk_market.txt')) {
+            fs_1.default.writeFileSync('bulk_market.txt', '');
+        }
+        let data = fs_1.default.readFileSync('bulk_market.txt').toString();
+        let lines = data.split('\n');
+        for (let line of lines) {
+            if (line == '') {
+                continue;
+            }
+            const order = JSON.parse(line);
+            console.log(order);
+            data_1.Data.BulkOrders.set(order.id, order.owner_id, order);
+            const last_id = data_1.Data.BulkOrders.id();
+            data_1.Data.BulkOrders.set_id(Math.max(order.id, last_id));
+        }
+        console.log('bulk market orders loaded');
     }
     BulkOrders.load = load;
     // does not shadow resources, shadowing happens in create_type_order functions
+    // private
     function create(amount, price, typ, tag, owner) {
-        last_id_bulk = last_id_bulk + 1;
-        let order = new classes_1.OrderBulk(last_id_bulk, amount, price, typ, tag, owner.id);
-        orders_bulk[last_id_bulk] = order;
-        char_id_to_orders_bulk[owner.id].add(order.id);
+        data_1.Data.BulkOrders.increase_id();
+        let order = new classes_1.OrderBulk(data_1.Data.BulkOrders.id(), amount, price, typ, tag, owner.id);
+        data_1.Data.BulkOrders.set(data_1.Data.BulkOrders.id(), owner.id, order);
         return order;
     }
-    BulkOrders.create = create;
-    function id_to_order(id) {
-        return orders_bulk[id];
-    }
-    BulkOrders.id_to_order = id_to_order;
-    function from_char_id(id) {
-        return char_id_to_orders_bulk[id];
-    }
-    BulkOrders.from_char_id = from_char_id;
-    function from_cell_id(id) {
-        const cell = system_3.MapSystem.id_to_cell(id);
-        if (cell == undefined)
-            return new Set();
-        const chars = cell.get_characters_id_set();
-        const result = new Set();
-        for (let char_id of chars) {
-            const char_orders = from_char_id(char_id);
-            for (let order of char_orders) {
-                result.add(order);
-            }
-        }
-        return result;
-    }
-    BulkOrders.from_cell_id = from_cell_id;
     function execute_sell_order(id, amount, buyer) {
-        const order = id_to_order(id);
+        const order = data_1.Data.BulkOrders.from_id(id);
         const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         const pay = amount * order.price;
         if (order.amount < amount)
@@ -84,7 +83,7 @@ var BulkOrders;
     }
     BulkOrders.execute_sell_order = execute_sell_order;
     function execute_buy_order(id, amount, seller) {
-        const order = id_to_order(id);
+        const order = data_1.Data.BulkOrders.from_id(id);
         const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         if (order.amount < amount)
             return 'invalid_order';
@@ -112,7 +111,7 @@ var BulkOrders;
             return 'not_enough_savings';
         system_1.CharacterSystem.to_trade_savings(owner, amount * price);
         const order = create(amount, price, 'buy', material, owner);
-        return order;
+        return 'ok';
     }
     BulkOrders.new_buy_order = new_buy_order;
     function new_sell_order(material, amount, price, owner) {
@@ -125,7 +124,7 @@ var BulkOrders;
             return 'not_enough_material';
         system_1.CharacterSystem.to_trade_stash(owner, material, amount);
         const order = create(amount, price, 'sell', material, owner);
-        return order;
+        return 'ok';
     }
     BulkOrders.new_sell_order = new_sell_order;
 })(BulkOrders = exports.BulkOrders || (exports.BulkOrders = {}));
@@ -137,25 +136,15 @@ var ItemOrders;
     function load() {
     }
     ItemOrders.load = load;
-    function number_to_id(id) {
-        if (orders_item[id] == undefined)
-            return undefined;
-        return id;
-    }
-    ItemOrders.number_to_id = number_to_id;
-    function id_to_order(id) {
-        return orders_item[id];
-    }
-    ItemOrders.id_to_order = id_to_order;
     function create(owner, item, price, finished) {
-        last_id_item = last_id_item + 1;
-        let order = new classes_1.OrderItem(last_id_item, item, price, owner.id, finished);
-        orders_item[last_id_item] = order;
+        data_1.Data.ItemOrders.increase_id();
+        let order = new classes_1.OrderItem(data_1.Data.ItemOrders.id(), item, price, owner.id, finished);
+        data_1.Data.ItemOrders.set(data_1.Data.ItemOrders.id(), owner.id, order);
         return order;
     }
     ItemOrders.create = create;
     function remove(id, who) {
-        const order = id_to_order(id);
+        const order = data_1.Data.ItemOrders.from_id(id);
         if (order.owner_id != who.id) {
             return AuctionResponce.INVALID_ORDER;
         }
@@ -166,14 +155,14 @@ var ItemOrders;
     }
     ItemOrders.remove = remove;
     function remove_unsafe(id, who) {
-        const true_id = number_to_id(id);
+        const true_id = systems_communication_1.Convert.number_to_order_item_id(id);
         if (true_id == undefined)
             return AuctionResponce.NO_SUCH_ORDER;
         return remove(true_id, who);
     }
     ItemOrders.remove_unsafe = remove_unsafe;
     function remove_all_character(who) {
-        for (let order of orders_item) {
+        for (let order of data_1.Data.ItemOrders.list()) {
             if (order == undefined)
                 continue;
             if (order.finished)
@@ -195,23 +184,6 @@ var ItemOrders;
     //     }
     //     return responce
     // }
-    function order_to_socket_data(order) {
-        let owner = systems_communication_1.Convert.id_to_character(order.owner_id);
-        return {
-            seller_name: owner.name,
-            price: order.price,
-            item_name: order.item.tag(),
-            affixes: [],
-            id: order.id
-        };
-    }
-    ItemOrders.order_to_socket_data = order_to_socket_data;
-    function json_to_order(data) {
-        let item = system_2.ItemSystem.create(data.item);
-        let order = new classes_1.OrderItem(data.id, item, data.price, data.owner_id, data.finished);
-        return order;
-    }
-    ItemOrders.json_to_order = json_to_order;
     function sell(seller, backpack_id, price) {
         const item = seller.equip.data.backpack.items[backpack_id];
         if (item == undefined) {
@@ -222,7 +194,7 @@ var ItemOrders;
     }
     ItemOrders.sell = sell;
     function buy(id, buyer) {
-        const order = id_to_order(id);
+        const order = data_1.Data.ItemOrders.from_id(id);
         const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         // make sure that they are in the same cell
         if (owner.cell_id != buyer.cell_id) {
@@ -244,7 +216,7 @@ var ItemOrders;
     }
     ItemOrders.buy = buy;
     function buy_unsafe(id, buyer) {
-        let true_id = number_to_id(id);
+        let true_id = systems_communication_1.Convert.number_to_order_item_id(id);
         if (true_id == undefined)
             return AuctionResponce.NO_SUCH_ORDER;
         return buy(true_id, buyer);

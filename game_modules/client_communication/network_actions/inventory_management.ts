@@ -1,12 +1,15 @@
 import { roll_affix_armour, roll_affix_weapon } from "../../base_game_classes/affix";
 import { SocketWrapper, User } from "../user";
-import { ZAZ } from "../../manager_classes/materials_manager";
+import { materials, material_index, ZAZ } from "../../manager_classes/materials_manager";
 import { Alerts } from "./alerts";
 import { Validator } from "./common_validations";
 import { Convert } from "../../systems_communication";
 import { CharacterSystem } from "../../base_game_classes/character/system";
 import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
+import { OrderBulk } from "../../market/classes";
+import { EventMarket } from "../../events/market";
+import { Data } from "../../data";
 
 export namespace InventoryCommands {
     export function equip(sw: SocketWrapper, msg: number) {
@@ -106,5 +109,117 @@ export namespace InventoryCommands {
     //     }
 
     //     let responce = AuctionManagement.buyout(entity_manager, character, id as auction_order_id_raw)
+    // }
+
+    
+    export function buy(sw: SocketWrapper, msg: any) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        console.log('buy')
+        console.log(msg)
+        if (isNaN(msg.price)) {
+            user.socket.emit('alert', 'invalid_price')
+            return
+        }
+        msg.price = Math.floor(msg.price)
+        if (msg.price < 0) {
+            user.socket.emit('alert', 'invalid_price')
+        }
+        
+
+        if (isNaN(msg.amount)) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+        msg.amount = Math.floor(msg.amount)
+        if (msg.amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+
+
+        if (isNaN(msg.material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+        msg.material = Math.floor(msg.material)
+        if (!materials.validate_material(msg.material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+
+        let responce = EventMarket.buy(
+            character, 
+            msg.material as material_index, 
+            msg.amount, 
+            msg.price)
+        if (responce != 'ok') {
+            Alerts.generic_user_alert(user, 'alert', responce)
+            return
+        }
+    }
+
+    export function sell(sw: SocketWrapper, msg: any) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        console.log('sell')
+        console.log(msg)
+        if (isNaN(msg.price)) {
+            user.socket.emit('alert', 'invalid_price')
+            return
+        }
+        msg.price = Math.floor(msg.price)
+        if (msg.price < 0) {
+            user.socket.emit('alert', 'invalid_price')
+            return
+        }
+        
+
+        if (isNaN(msg.amount)) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+        msg.amount = Math.floor(msg.amount)
+        if (msg.amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+
+
+        if (isNaN(msg.material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+        msg.material = Math.floor(msg.material)
+        if (!materials.validate_material(msg.material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+
+        let responce = EventMarket.sell(
+            character, 
+            msg.material as material_index, 
+            msg.amount, 
+            msg.price)
+            
+        if (responce != 'ok') {
+            Alerts.generic_user_alert(user, 'alert', responce)
+        }
+    }
+
+    // export function clear_bulk_order(sw: SocketWrapper, data: number) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) return
+
+    //     let order = Data. this.world.entity_manager.orders[data]
+    //     if (order.owner_id != character.id) {
+    //         user.socket.emit('alert', 'not your order')
+    //         return
+    //     }
+
+    //     this.world.entity_manager.remove_order(this.pool, data as market_order_index)
+
     // }
 }

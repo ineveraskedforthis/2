@@ -17,6 +17,7 @@ import { Auth } from "./game_modules/client_communication/network_actions/auth";
 import { Event } from "./game_modules/events/events";
 import { Convert, Link } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/base_game_classes/battle/system";
+import { BulkOrders } from "./game_modules/market/system";
 
 
 
@@ -65,6 +66,7 @@ function load() {
     UserManagement.load_users()
     Auth.load()
     BattleSystem.load()
+    BulkOrders.load()
 
     const characters = Data.Character.list()
 
@@ -80,6 +82,7 @@ function save() {
     UserManagement.save_users()
     Auth.save()
     BattleSystem.save()
+    BulkOrders.save()
 }
 
 var update_timer = 0

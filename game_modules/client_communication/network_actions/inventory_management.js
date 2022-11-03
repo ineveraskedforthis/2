@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryCommands = void 0;
+const materials_manager_1 = require("../../manager_classes/materials_manager");
+const alerts_1 = require("./alerts");
 const systems_communication_1 = require("../../systems_communication");
 const inventory_events_1 = require("../../events/inventory_events");
+const market_1 = require("../../events/market");
 var InventoryCommands;
 (function (InventoryCommands) {
     function equip(sw, msg) {
@@ -108,5 +111,93 @@ var InventoryCommands;
     //         return
     //     }
     //     let responce = AuctionManagement.buyout(entity_manager, character, id as auction_order_id_raw)
+    // }
+    function buy(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        console.log('buy');
+        console.log(msg);
+        if (isNaN(msg.price)) {
+            user.socket.emit('alert', 'invalid_price');
+            return;
+        }
+        msg.price = Math.floor(msg.price);
+        if (msg.price < 0) {
+            user.socket.emit('alert', 'invalid_price');
+        }
+        if (isNaN(msg.amount)) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        msg.amount = Math.floor(msg.amount);
+        if (msg.amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        if (isNaN(msg.material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        msg.material = Math.floor(msg.material);
+        if (!materials_manager_1.materials.validate_material(msg.material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        let responce = market_1.EventMarket.buy(character, msg.material, msg.amount, msg.price);
+        if (responce != 'ok') {
+            alerts_1.Alerts.generic_user_alert(user, 'alert', responce);
+            return;
+        }
+    }
+    InventoryCommands.buy = buy;
+    function sell(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        console.log('sell');
+        console.log(msg);
+        if (isNaN(msg.price)) {
+            user.socket.emit('alert', 'invalid_price');
+            return;
+        }
+        msg.price = Math.floor(msg.price);
+        if (msg.price < 0) {
+            user.socket.emit('alert', 'invalid_price');
+            return;
+        }
+        if (isNaN(msg.amount)) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        msg.amount = Math.floor(msg.amount);
+        if (msg.amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        if (isNaN(msg.material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        msg.material = Math.floor(msg.material);
+        if (!materials_manager_1.materials.validate_material(msg.material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        let responce = market_1.EventMarket.sell(character, msg.material, msg.amount, msg.price);
+        if (responce != 'ok') {
+            alerts_1.Alerts.generic_user_alert(user, 'alert', responce);
+        }
+    }
+    InventoryCommands.sell = sell;
+    // export function clear_bulk_order(sw: SocketWrapper, data: number) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) return
+    //     let order = Data. this.world.entity_manager.orders[data]
+    //     if (order.owner_id != character.id) {
+    //         user.socket.emit('alert', 'not your order')
+    //         return
+    //     }
+    //     this.world.entity_manager.remove_order(this.pool, data as market_order_index)
     // }
 })(InventoryCommands = exports.InventoryCommands || (exports.InventoryCommands = {}));

@@ -1,23 +1,15 @@
-import { OrderItemSocketData } from "../../shared/market_order_data";
 import { Character } from "../base_game_classes/character/character";
 import { CharacterSystem } from "../base_game_classes/character/system";
 import { Stash } from "../base_game_classes/inventories/stash";
 import { Item } from "../base_game_classes/items/item";
 import { ItemSystem } from "../base_game_classes/items/system"
+import { Data } from "../data";
 import { material_index } from "../manager_classes/materials_manager";
-import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
 import { cell_id, char_id, money, order_bulk_id, order_item_id } from "../types";
 import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
 
-var orders_bulk:OrderBulk[] = []
-var orders_item:OrderItem[] = []
-
-var char_id_to_orders_bulk: {[_ in char_id]: Set<order_bulk_id>}
-var char_id_to_orders_item: {[_ in char_id]: Set<order_item_id>}
-
-var last_id_bulk = 0
-var last_id_item = 0
+import fs from "fs"
 
 enum AuctionResponce {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
@@ -33,49 +25,51 @@ const empty_stash = new Stash()
 
 // this file does not handle networking
 
-
 export namespace BulkOrders {
     export function save() {
-
+        console.log('saving bulk market orders')
+        let str:string = ''
+        for (let item of Data.BulkOrders.list()) {
+            if (item.amount == 0) continue;
+            str = str + JSON.stringify(item) + '\n' 
+            
+        }
+        fs.writeFileSync('bulk_market.txt', str)
+        console.log('bulk market orders saved')
+        
     }
 
     export function load() {
-
+        console.log('loading bulk market orders')
+        if (!fs.existsSync('bulk_market.txt')) {
+            fs.writeFileSync('bulk_market.txt', '')
+        }
+        let data = fs.readFileSync('bulk_market.txt').toString()
+        let lines = data.split('\n')
+        for (let line of lines) {
+            if (line == '') {continue}
+            const order: OrderBulk = JSON.parse(line)
+            console.log(order)
+            Data.BulkOrders.set(order.id, order.owner_id, order)
+            const last_id = Data.BulkOrders.id()
+            Data.BulkOrders.set_id(Math.max(order.id, last_id) as order_bulk_id)            
+        }
+        console.log('bulk market orders loaded')
     }
 
     // does not shadow resources, shadowing happens in create_type_order functions
-    export function create(amount: number, price: money, typ:'sell'|'buy', tag: material_index, owner: Character) {
-        last_id_bulk = last_id_bulk + 1
-        let order = new OrderBulk(last_id_bulk as order_bulk_id, amount, price, typ, tag, owner.id)
-        orders_bulk[last_id_bulk] = order
-        char_id_to_orders_bulk[owner.id].add(order.id)
+    // private
+    function create(amount: number, price: money, typ:'sell'|'buy', tag: material_index, owner: Character) {
+        Data.BulkOrders.increase_id()
+        let order = new OrderBulk(Data.BulkOrders.id(), amount, price, typ, tag, owner.id)
+        Data.BulkOrders.set(Data.BulkOrders.id(), owner.id, order)
         return order
     }
 
-    export function id_to_order(id: order_bulk_id): OrderBulk {
-        return orders_bulk[id]
-    }
-
-    export function from_char_id(id: char_id): Set<order_bulk_id> {
-        return char_id_to_orders_bulk[id]
-    }
-
-    export function from_cell_id(id: cell_id): Set<order_bulk_id> {
-        const cell = MapSystem.id_to_cell(id)
-        if (cell == undefined) return new Set();
-        const chars = cell.get_characters_id_set()
-        const result:Set<order_bulk_id> = new Set()
-        for (let char_id of chars) {
-            const char_orders = from_char_id(char_id)
-            for (let order of char_orders) {
-                result.add(order)
-            }
-        }
-        return result
-    }
+    
 
     export function execute_sell_order(id: order_bulk_id, amount: number, buyer: Character) {
-        const order = id_to_order(id)
+        const order = Data.BulkOrders.from_id(id)
         const owner = Convert.id_to_character(order.owner_id)
         const pay = amount * order.price as money
 
@@ -98,7 +92,7 @@ export namespace BulkOrders {
     }
 
     export function execute_buy_order(id:order_bulk_id, amount: number, seller: Character) {
-        const order = id_to_order(id)
+        const order = Data.BulkOrders.from_id(id)
         const owner = Convert.id_to_character(order.owner_id)
         
         if (order.amount < amount) return 'invalid_order'       
@@ -128,7 +122,7 @@ export namespace BulkOrders {
 
         CharacterSystem.to_trade_savings(owner, amount * price as money)
         const order = create(amount, price, 'buy', material, owner)
-        return order
+        return 'ok'
     }
 
     export function new_sell_order(material: material_index, amount: number, price: money, owner: Character) {
@@ -139,7 +133,7 @@ export namespace BulkOrders {
 
         CharacterSystem.to_trade_stash(owner, material, amount)
         const order = create(amount, price, 'sell', material, owner)
-        return order
+        return 'ok'
     }
 }
 
@@ -152,24 +146,15 @@ export namespace ItemOrders {
 
     }
 
-    export function number_to_id(id: number): order_item_id|undefined {
-        if (orders_item[id] == undefined) return undefined
-        return id as order_item_id
-    }
-
-    export function id_to_order(id: order_item_id) {
-        return orders_item[id]
-    }
-
     export function create(owner: Character, item: Item, price: money, finished: boolean) {
-        last_id_item = last_id_item + 1
-        let order = new OrderItem(last_id_item as order_item_id, item, price as money, owner.id, finished)
-        orders_item[last_id_item] = order
+        Data.ItemOrders.increase_id()
+        let order = new OrderItem(Data.ItemOrders.id() as order_item_id, item, price as money, owner.id, finished)
+        Data.ItemOrders.set(Data.ItemOrders.id(), owner.id, order)
         return order
     }
 
     export function remove(id: order_item_id, who: Character) {
-        const order = id_to_order(id)
+        const order = Data.ItemOrders.from_id(id)
 
         if (order.owner_id != who.id) {
             return AuctionResponce.INVALID_ORDER
@@ -183,13 +168,13 @@ export namespace ItemOrders {
     }
 
     export function remove_unsafe(id: number, who: Character) {
-        const true_id = number_to_id(id)
+        const true_id = Convert.number_to_order_item_id(id)
         if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER    
         return remove(true_id, who)
     }
 
     export function remove_all_character(who:Character) {
-        for (let order of orders_item) {
+        for (let order of Data.ItemOrders.list()) {
             if (order == undefined) continue;
             if (order.finished) continue;
             console.log(order.owner_id, who.id)
@@ -210,22 +195,7 @@ export namespace ItemOrders {
     //     return responce
     // }
 
-    export function order_to_socket_data(order: OrderItem):OrderItemSocketData {
-        let owner = Convert.id_to_character(order.owner_id)
-        return {
-            seller_name: owner.name,
-            price: order.price,
-            item_name: order.item.tag(),
-            affixes: [],
-            id: order.id
-        }
-    }
-
-    export function json_to_order(data: OrderItemJson) {
-        let item = ItemSystem.create(data.item)
-        let order = new OrderItem(data.id, item, data.price, data.owner_id, data.finished)
-        return order
-    }
+    
 
     export function sell(seller: Character, backpack_id: number, price: money){
         const item = seller.equip.data.backpack.items[backpack_id]
@@ -237,7 +207,7 @@ export namespace ItemOrders {
     }
 
     export function buy(id: order_item_id, buyer: Character) {
-        const order = id_to_order(id) 
+        const order = Data.ItemOrders.from_id(id) 
         const owner = Convert.id_to_character(order.owner_id)
 
         // make sure that they are in the same cell
@@ -259,7 +229,7 @@ export namespace ItemOrders {
     }
 
     export function buy_unsafe(id: number, buyer: Character) {
-        let true_id = number_to_id(id)
+        let true_id = Convert.number_to_order_item_id(id)
         if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER
         return buy(true_id, buyer)
     }

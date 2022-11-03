@@ -24,6 +24,7 @@ export namespace SendUpdate {
         all_craft(user)
         map_related(user)
         battle(user)
+        market(user)
     }
 
     export function battle(user: User) {

@@ -25,7 +25,8 @@ export const enum UI_Part {
             SKINNING_SKILL,
         CRAFT,
             COOKING_CRAFT, 
-        BATTLE
+        BATTLE,
+        MARKET
 }
 
 const children:{[_ in UI_Part]?: UI_Part[]} = {
@@ -34,7 +35,8 @@ const children:{[_ in UI_Part]?: UI_Part[]} = {
                                             UI_Part.MAP, 
                                             UI_Part.SKILLS, 
                                             UI_Part.CRAFT, 
-                                            UI_Part.BATTLE],
+                                            UI_Part.BATTLE,
+                                            UI_Part.MARKET],
         [UI_Part.STATUS]                : [ UI_Part.HP],
         [UI_Part.BELONGINGS]            : [ UI_Part.STASH, 
                                             UI_Part.SAVINGS, 
@@ -47,7 +49,7 @@ const children:{[_ in UI_Part]?: UI_Part[]} = {
                                             UI_Part.SKINNING_SKILL, 
                                             UI_Part.WEAPON_SKILL, 
                                             UI_Part.DEFENCE_SKILL],
-        [UI_Part.CRAFT]                 : [ UI_Part.COOKING_CRAFT],
+        [UI_Part.CRAFT]                 : [ UI_Part.COOKING_CRAFT]
 }
 
 function empty_function(user: User) {}
@@ -73,6 +75,7 @@ const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
         [UI_Part.CRAFT]                 : SendUpdate.all_craft,        
             [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
         [UI_Part.BATTLE]                : SendUpdate.battle,
+        [UI_Part.MARKET]                : SendUpdate.market
 }
 
 const influence:{[_ in UI_Part]?: UI_Part[]} = {

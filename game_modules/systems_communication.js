@@ -3,11 +3,64 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
 const events_1 = require("./base_game_classes/battle/events");
 const system_1 = require("./base_game_classes/character/system");
+const system_2 = require("./base_game_classes/items/system");
 const user_manager_1 = require("./client_communication/user_manager");
 const data_1 = require("./data");
-const system_2 = require("./map/system");
+const system_3 = require("./map/system");
+const classes_1 = require("./market/classes");
 var Convert;
 (function (Convert) {
+    function number_to_order_item_id(id) {
+        const temp = data_1.Data.ItemOrders.from_id(id);
+        if (temp == undefined)
+            return undefined;
+        return temp.id;
+    }
+    Convert.number_to_order_item_id = number_to_order_item_id;
+    function id_to_order_item(id) {
+        return data_1.Data.ItemOrders.from_id(id);
+    }
+    Convert.id_to_order_item = id_to_order_item;
+    function order_to_socket_data(order) {
+        let owner = Convert.id_to_character(order.owner_id);
+        return {
+            seller_name: owner.name,
+            price: order.price,
+            item_name: order.item.tag(),
+            affixes: [],
+            id: order.id
+        };
+    }
+    Convert.order_to_socket_data = order_to_socket_data;
+    function json_to_order(data) {
+        let item = system_2.ItemSystem.create(data.item);
+        let order = new classes_1.OrderItem(data.id, item, data.price, data.owner_id, data.finished);
+        return order;
+    }
+    Convert.json_to_order = json_to_order;
+    function id_to_bulk_order(id) {
+        return data_1.Data.BulkOrders.from_id(id);
+    }
+    Convert.id_to_bulk_order = id_to_bulk_order;
+    function char_id_to_bulk_orders(id) {
+        return data_1.Data.CharacterBulkOrders(id);
+    }
+    Convert.char_id_to_bulk_orders = char_id_to_bulk_orders;
+    function cell_id_to_bulk_orders(id) {
+        const cell = system_3.MapSystem.id_to_cell(id);
+        if (cell == undefined)
+            return new Set();
+        const chars = cell.get_characters_id_set();
+        const result = new Set();
+        for (let char_id of chars) {
+            const char_orders = char_id_to_bulk_orders(char_id);
+            for (let [_, order] of char_orders.entries()) {
+                result.add(order);
+            }
+        }
+        return result;
+    }
+    Convert.cell_id_to_bulk_orders = cell_id_to_bulk_orders;
     function id_to_battle(id) {
         return data_1.Data.Battle.from_id(id);
     }
@@ -84,7 +137,7 @@ var Convert;
     }
     Convert.character_to_user = character_to_user;
     function character_to_cell(character) {
-        let cell = system_2.MapSystem.SAFE_id_to_cell(character.cell_id);
+        let cell = system_3.MapSystem.SAFE_id_to_cell(character.cell_id);
         return cell;
     }
     Convert.character_to_cell = character_to_cell;
@@ -116,11 +169,13 @@ var Link;
             const id = item.id;
             const local_character = Convert.id_to_character(id);
             user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 20 /* UI_Part.MARKET */);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 20 /* UI_Part.MARKET */);
         // exploration
         character.explored[cell.id] = true;
-        let neighbours = system_2.MapSystem.neighbours_cells(cell.id);
+        let neighbours = system_3.MapSystem.neighbours_cells(cell.id);
         for (let item of neighbours) {
             character.explored[item.id] = true;
         }

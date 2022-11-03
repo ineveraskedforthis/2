@@ -1,19 +1,72 @@
 import { battle_id, UnitSocket, unit_id } from "../shared/battle_data";
+import { OrderItemSocketData } from "../shared/market_order_data";
 import { Battle } from "./base_game_classes/battle/classes/battle";
 import { Unit } from "./base_game_classes/battle/classes/unit";
 import { BattleEvent } from "./base_game_classes/battle/events";
 import { Character } from "./base_game_classes/character/character";
 import { CharacterSystem } from "./base_game_classes/character/system";
+import { ItemSystem } from "./base_game_classes/items/system";
 import { UI_Part } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { Data } from "./data";
 import { Cell } from "./map/cell";
 import { MapSystem } from "./map/system";
-import { char_id, user_online_id } from "./types";
+import { OrderBulk, OrderItem, OrderItemJson } from "./market/classes";
+import { cell_id, char_id, order_bulk_id, order_item_id, user_online_id } from "./types";
 
 
 export namespace Convert {
+
+    export function number_to_order_item_id(id: number): order_item_id|undefined {
+        const temp = Data.ItemOrders.from_id(id as order_item_id)
+        if (temp == undefined) return undefined
+        return temp.id
+    }
+
+    export function id_to_order_item(id: order_item_id) {
+        return Data.ItemOrders.from_id(id)
+    }
+
+    export function order_to_socket_data(order: OrderItem):OrderItemSocketData {
+        let owner = Convert.id_to_character(order.owner_id)
+        return {
+            seller_name: owner.name,
+            price: order.price,
+            item_name: order.item.tag(),
+            affixes: [],
+            id: order.id
+        }
+    }
+
+    export function json_to_order(data: OrderItemJson) {
+        let item = ItemSystem.create(data.item)
+        let order = new OrderItem(data.id, item, data.price, data.owner_id, data.finished)
+        return order
+    }
+
+    export function id_to_bulk_order(id: order_bulk_id): OrderBulk {
+        return Data.BulkOrders.from_id(id)
+    }
+
+    export function char_id_to_bulk_orders(id: char_id): Set<order_bulk_id> {
+        return Data.CharacterBulkOrders(id)
+    }
+
+    export function cell_id_to_bulk_orders(id: cell_id): Set<order_bulk_id> {
+        const cell = MapSystem.id_to_cell(id)
+        if (cell == undefined) return new Set();
+        const chars = cell.get_characters_id_set()
+        const result:Set<order_bulk_id> = new Set()
+        for (let char_id of chars) {
+            const char_orders = char_id_to_bulk_orders(char_id)
+            for (let [_, order] of char_orders.entries()) {
+                result.add(order)
+            }
+        }
+        return result
+    }
+
     export function id_to_battle(id: battle_id) {
         return Data.Battle.from_id(id)
     }
@@ -114,10 +167,11 @@ export namespace Link {
             const id = item.id
             const local_character = Convert.id_to_character(id)
             UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.LOCAL_CHARACTERS)
+            UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.MARKET)
         }
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.LOCAL_CHARACTERS)
-
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MARKET)
 
         // exploration
         character.explored[cell.id] = true

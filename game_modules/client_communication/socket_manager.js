@@ -34,8 +34,14 @@ class SocketManager {
             socket.on('play', (msg) => this.play(user));
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
             socket.on('attack-character', (msg) => run_event_1.SocketCommand.attack_character(user, msg));
-            // socket.on('buy',  (msg: any) => this.buy(user, msg));
-            // socket.on('sell',  (msg: any) => this.sell(user, msg));
+            socket.on('buy', (msg) => inventory_management_1.InventoryCommands.buy(user, msg));
+            socket.on('sell', (msg) => inventory_management_1.InventoryCommands.sell(user, msg));
+            // socket.on('clear-orders',  () => this.clear_orders(user));
+            // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
+            // socket.on('clear-order',  (msg: any) => this.clear_order(user, msg));
+            // socket.on('sell-item',  (msg: any) => this.sell_item(user, msg));
+            // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
+            // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
             // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
             // socket.on('char-info-detailed', () => this.send_char_info(user));
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
@@ -50,12 +56,6 @@ class SocketManager {
             socket.on('move', (msg) => actions_1.HandleAction.move(user, msg));
             socket.on('hunt', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.HUNT));
             socket.on('gather_wood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_WOOD));
-            // socket.on('clear-orders',  () => this.clear_orders(user));
-            // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
-            // socket.on('clear-order',  (msg: any) => this.clear_order(user, msg));
-            // socket.on('sell-item',  (msg: any) => this.sell_item(user, msg));
-            // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
-            // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
             socket.on('cfood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.MEAT));
             socket.on('czaz', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.ELODINO));
             socket.on('mspear', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.SPEAR));

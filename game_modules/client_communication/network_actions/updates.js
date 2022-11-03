@@ -20,6 +20,7 @@ var SendUpdate;
         all_craft(user);
         map_related(user);
         battle(user);
+        market(user);
     }
     SendUpdate.all = all;
     function battle(user) {

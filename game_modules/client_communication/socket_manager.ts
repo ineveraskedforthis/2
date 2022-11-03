@@ -57,8 +57,15 @@ export class SocketManager {
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
             socket.on('attack-character',  (msg: any) => SocketCommand.attack_character(user, msg));
 
-            // socket.on('buy',  (msg: any) => this.buy(user, msg));
-            // socket.on('sell',  (msg: any) => this.sell(user, msg));
+            socket.on('buy',  (msg: any)    => InventoryCommands.buy(user, msg));
+            socket.on('sell',  (msg: any)   => InventoryCommands.sell(user, msg));
+            // socket.on('clear-orders',  () => this.clear_orders(user));
+            // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
+            // socket.on('clear-order',  (msg: any) => this.clear_order(user, msg));
+            // socket.on('sell-item',  (msg: any) => this.sell_item(user, msg));
+            // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
+            // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
+
 
             // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
             // socket.on('char-info-detailed', () => this.send_char_info(user));
@@ -81,12 +88,7 @@ export class SocketManager {
             socket.on('gather_wood', () =>      HandleAction.act(user, CharacterAction.GATHER_WOOD))            
             
 
-            // socket.on('clear-orders',  () => this.clear_orders(user));
-            // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
-            // socket.on('clear-order',  (msg: any) => this.clear_order(user, msg));
-            // socket.on('sell-item',  (msg: any) => this.sell_item(user, msg));
-            // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
-            // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
+            
 
 
             socket.on('cfood',  () =>      HandleAction.act(user, CharacterAction.COOK.MEAT));
@@ -248,20 +250,7 @@ export class SocketManager {
     //     }
     // }
 
-    //  clear_order(user: User, data: number) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //         let order = this.world.entity_manager.orders[data]
-    //         if (order.owner_id != char.id) {
-    //             user.socket.emit('alert', 'not your order')
-    //             return
-    //         }
-    //          this.world.entity_manager.remove_order(this.pool, data as market_order_index)
-    //         this.send_savings_update(char);
-    //         this.send_stash_update(user);
-    //         this.send_char_info(user);
-    //     }
-    // }
+
 
     //  execute_order(user: User, amount: number, order_id: market_order_index) {
     //     if (user.logged_in) {
@@ -298,112 +287,6 @@ export class SocketManager {
     //         }
     //     }
     // }
-
-    //  buy(user: User, msg: any) {
-    //     console.log('buy')
-    //     console.log(msg)
-    //     if (isNaN(msg.price)) {
-    //         user.socket.emit('alert', 'invalid_price')
-    //         return
-    //     }
-    //     msg.price = Math.floor(msg.price)
-    //     if (msg.price < 0) {
-    //         user.socket.emit('alert', 'invalid_price')
-    //     }
-        
-
-    //     if (isNaN(msg.amount)) {
-    //         user.socket.emit('alert', 'invalid_amount')
-    //         return
-    //     }
-    //     msg.amount = Math.floor(msg.amount)
-    //     if (msg.amount <= 0) {
-    //         user.socket.emit('alert', 'invalid_amount')
-    //         return
-    //     }
-
-
-    //     if (isNaN(msg.material)) {
-    //         user.socket.emit('alert', 'invalid_material')
-    //         return
-    //     }
-    //     msg.material = Math.floor(msg.material)
-    //     if (!materials.validate_material(msg.material)) {
-    //         user.socket.emit('alert', 'invalid_material')
-    //         return
-    //     }
-
-
-    //     if ((user.logged_in)) {
-    //         let char = user.get_character();
-    //         let responce =  char.buy(this.pool, msg.material as material_index, msg.amount, msg.price)
-    //         if (responce != 'ok') {
-    //             user.socket.emit('alert', responce)
-    //             return
-    //         }
-    //         this.send_savings_update(char);
-    //         this.send_stash_update_to_character(char);
-    //         let cell = char.get_cell()
-    //         if (cell != undefined) {
-    //             this.send_market_info(cell)
-    //         }
-    //     }
-    // }
-
-    //  sell(user: User, msg: any) {
-    //     console.log('sell')
-    //     console.log(msg)
-    //     if (isNaN(msg.price)) {
-    //         user.socket.emit('alert', 'invalid_price')
-    //         return
-    //     }
-    //     msg.price = Math.floor(msg.price)
-    //     if (msg.price < 0) {
-    //         user.socket.emit('alert', 'invalid_price')
-    //         return
-    //     }
-        
-
-    //     if (isNaN(msg.amount)) {
-    //         user.socket.emit('alert', 'invalid_amount')
-    //         return
-    //     }
-    //     msg.amount = Math.floor(msg.amount)
-    //     if (msg.amount <= 0) {
-    //         user.socket.emit('alert', 'invalid_amount')
-    //         return
-    //     }
-
-
-    //     if (isNaN(msg.material)) {
-    //         user.socket.emit('alert', 'invalid_material')
-    //         return
-    //     }
-    //     msg.material = Math.floor(msg.material)
-    //     if (!materials.validate_material(msg.material)) {
-    //         user.socket.emit('alert', 'invalid_material')
-    //         return
-    //     }
-
-
-    //     if ((user.logged_in)) {
-    //         let char = user.get_character();
-    //         let responce =  char.sell(this.pool, msg.material as material_index, msg.amount, msg.price)
-    //         if (responce != 'ok') {
-    //             user.socket.emit('alert', responce)
-    //             return
-    //         }
-
-    //         this.send_savings_update(char);
-    //         this.send_stash_update_to_character(char);
-    //         let cell = char.get_cell()
-    //         if (cell != undefined) {
-    //             this.send_market_info(cell)
-    //         }
-    //         user.socket.emit('alert', responce)
-    //     }
-    // }
-
     // //  up_skill(user, msg) {
     // //     if (msg in this.world.constants.SKILLS && user_data.current_user != null) {
     // //         let char = user_data.current_user.character;
