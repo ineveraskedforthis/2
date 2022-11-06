@@ -83,6 +83,8 @@ var Convert;
             const char_orders = data_1.Data.CharacterItemOrders(char_id);
             for (let order_id of char_orders) {
                 const order = data_1.Data.ItemOrders.from_id(order_id);
+                if (order.finished)
+                    continue;
                 result.push(item_order_to_socket(order));
             }
         }

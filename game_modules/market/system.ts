@@ -66,7 +66,17 @@ export namespace BulkOrders {
         return order
     }
 
-    
+    export function remove(id: order_bulk_id) {
+        const order = Data.BulkOrders.from_id(id)
+        const character = Data.Character.from_id(order.owner_id)
+        if (order.typ == 'buy') {
+            character.trade_savings.transfer(character.savings, order.amount * order.price as money)
+        }
+        if (order.typ == 'sell') {
+            character.trade_stash.transfer(character.stash, order.tag, order.amount)
+        }
+        order.amount = 0
+    }
 
     export function execute_sell_order(id: order_bulk_id, amount: number, buyer: Character) {
         const order = Data.BulkOrders.from_id(id)
@@ -201,6 +211,7 @@ export namespace ItemOrders {
     }
 
     export function remove_all_character(who:Character) {
+        console.log('attempt to remove item orders')
         for (let order of Data.ItemOrders.list()) {
             if (order == undefined) continue;
             if (order.finished) continue;
@@ -230,6 +241,7 @@ export namespace ItemOrders {
             return {responce: AuctionResponce.EMPTY_BACKPACK_SLOT}
         }
         const order = create(seller, item, price, false)
+        seller.equip.data.backpack.remove(backpack_id)
         return {responce: AuctionResponce.OK}
     }
 

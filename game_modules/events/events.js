@@ -12,6 +12,7 @@ const user_manager_1 = require("../client_communication/user_manager");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_4 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
+const market_1 = require("./market");
 var Event;
 (function (Event) {
     function move(character, new_cell) {
@@ -169,6 +170,7 @@ var Event;
     Event.attack = attack;
     function death(character) {
         // UserManagement.add_user_to_update_queue(character.user_id, "death");
+        market_1.EventMarket.clear_orders(character);
         const user_data = systems_communication_1.Convert.character_to_user_data(character);
         systems_communication_1.Unlink.user_data_and_character(user_data, character);
         const battle = systems_communication_1.Convert.character_to_battle(character);

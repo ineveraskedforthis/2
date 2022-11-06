@@ -263,12 +263,7 @@
 //         this.get_cell_by_id(order.cell_id)?.add_order(order.id)
 //     }
 
-//      remove_orders_list(cell:Cell, list: market_order_index[]) {
-//         for (let id of list) {
-//              this.remove_order(pool, id)
-//         }
-//         this.world.socket_manager.update_market_info(cell)
-//     }
+
 
 //      remove_orders(character: Character) {
 //         let temporary_list:market_order_index[] = []

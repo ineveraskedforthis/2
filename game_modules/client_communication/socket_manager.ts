@@ -61,9 +61,9 @@ export class SocketManager {
             socket.on('sell',  (msg: any)   =>      InventoryCommands.sell(user, msg));
             socket.on('sell-item',  (msg: any) =>   InventoryCommands.sell_item(user, msg));
 
-            // socket.on('clear-orders',  () => this.clear_orders(user));
-            // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
-            // socket.on('clear-order',  (msg: any) => this.clear_order(user, msg));
+            socket.on('clear-orders',  () =>        InventoryCommands.clear_bulk_orders(user));
+            socket.on('clear-item-orders',  () =>   InventoryCommands.clear_item_orders(user))
+            socket.on('clear-order',  (msg: any) => InventoryCommands.clear_bulk_order(user, msg));
             // 
             // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
             // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
@@ -233,24 +233,7 @@ export class SocketManager {
     // //     }
     // // }
 
-    //  clear_orders(user: User) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //          this.world.entity_manager.remove_orders(this.pool, char)
-    //         this.send_savings_update(char);
-    //         this.send_stash_update(user);
-    //         this.send_char_info(user);
-    //     }
-    // }
 
-    //  clear_item_orders(user: User) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //          AuctionManagement.cancel_all_orders(this.pool, this.world.entity_manager, this, char)
-    //         this.send_stash_update(user);
-    //         this.send_char_info(user);
-    //     }
-    // }
 
 
 

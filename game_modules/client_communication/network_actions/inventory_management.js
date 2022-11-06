@@ -6,13 +6,25 @@ const alerts_1 = require("./alerts");
 const systems_communication_1 = require("../../systems_communication");
 const inventory_events_1 = require("../../events/inventory_events");
 const market_1 = require("../../events/market");
+const data_1 = require("../../data");
 const system_1 = require("../../market/system");
+function r(f) {
+    return (sw) => {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        f(user, character);
+    };
+}
 var InventoryCommands;
 (function (InventoryCommands) {
     function equip(sw, msg) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;
+        if (character.in_battle()) {
+            return;
+        }
         inventory_events_1.EventInventory.equip_from_backpack(character, msg);
     }
     InventoryCommands.equip = equip;
@@ -31,6 +43,9 @@ var InventoryCommands;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;
+        if (character.in_battle()) {
+            return;
+        }
         if (msg == "right_hand") {
             inventory_events_1.EventInventory.unequip(character, 'weapon');
         }
@@ -182,7 +197,7 @@ var InventoryCommands;
     }
     InventoryCommands.sell = sell;
     function sell_item(sw, msg) {
-        console.log('attempt to sell item ' + msg);
+        console.log('attempt to sell item ' + JSON.stringify(msg));
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;
@@ -196,18 +211,38 @@ var InventoryCommands;
         console.log('validated');
         const responce = market_1.EventMarket.sell_item(character, index, price);
         if (responce.responce != system_1.AuctionResponce.OK) {
-            alerts_1.Alerts.generic_user_alert(user, 'alert', responce);
+            alerts_1.Alerts.generic_user_alert(user, 'alert', responce.responce);
         }
     }
     InventoryCommands.sell_item = sell_item;
-    // export function clear_bulk_order(sw: SocketWrapper, data: number) {
-    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-    //     if (character == undefined) return
-    //     let order = Data. this.world.entity_manager.orders[data]
-    //     if (order.owner_id != character.id) {
-    //         user.socket.emit('alert', 'not your order')
-    //         return
-    //     }
-    //     this.world.entity_manager.remove_order(this.pool, data as market_order_index)
-    // }
+    function clear_bulk_order(sw, data) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        if (isNaN(data))
+            return;
+        let order = data_1.Data.BulkOrders.from_id(data);
+        if (order == undefined)
+            return;
+        if (order.owner_id != character.id) {
+            user.socket.emit('alert', 'not your order');
+            return;
+        }
+        market_1.EventMarket.remove_bulk_order(order.id);
+    }
+    InventoryCommands.clear_bulk_order = clear_bulk_order;
+    function clear_bulk_orders(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        market_1.EventMarket.remove_bulk_orders(character);
+    }
+    InventoryCommands.clear_bulk_orders = clear_bulk_orders;
+    function clear_item_orders(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        market_1.EventMarket.remove_item_orders(character);
+    }
+    InventoryCommands.clear_item_orders = clear_item_orders;
 })(InventoryCommands = exports.InventoryCommands || (exports.InventoryCommands = {}));

@@ -64,6 +64,18 @@ var BulkOrders;
         data_1.Data.BulkOrders.set(data_1.Data.BulkOrders.id(), owner.id, order);
         return order;
     }
+    function remove(id) {
+        const order = data_1.Data.BulkOrders.from_id(id);
+        const character = data_1.Data.Character.from_id(order.owner_id);
+        if (order.typ == 'buy') {
+            character.trade_savings.transfer(character.savings, order.amount * order.price);
+        }
+        if (order.typ == 'sell') {
+            character.trade_stash.transfer(character.stash, order.tag, order.amount);
+        }
+        order.amount = 0;
+    }
+    BulkOrders.remove = remove;
     function execute_sell_order(id, amount, buyer) {
         const order = data_1.Data.BulkOrders.from_id(id);
         const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
@@ -191,6 +203,7 @@ var ItemOrders;
     }
     ItemOrders.remove_unsafe = remove_unsafe;
     function remove_all_character(who) {
+        console.log('attempt to remove item orders');
         for (let order of data_1.Data.ItemOrders.list()) {
             if (order == undefined)
                 continue;
@@ -219,6 +232,7 @@ var ItemOrders;
             return { responce: AuctionResponce.EMPTY_BACKPACK_SLOT };
         }
         const order = create(seller, item, price, false);
+        seller.equip.data.backpack.remove(backpack_id);
         return { responce: AuctionResponce.OK };
     }
     ItemOrders.sell = sell;

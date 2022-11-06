@@ -11,13 +11,23 @@ import { OrderBulk } from "../../market/classes";
 import { EventMarket } from "../../events/market";
 import { Data } from "../../data";
 import { AuctionResponce, ItemOrders } from "../../market/system";
-import { money } from "../../types";
+import { money, order_bulk_id } from "../../types";
+import { Character } from "../../base_game_classes/character/character";
+
+function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
+    return (sw: SocketWrapper) => {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        f(user, character)
+    }
+}
 
 export namespace InventoryCommands {
     export function equip(sw: SocketWrapper, msg: number) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
-        
+        if (character.in_battle()) { return }
+
         EventInventory.equip_from_backpack(character, msg)
     }
 
@@ -34,6 +44,7 @@ export namespace InventoryCommands {
     export function unequip(sw: SocketWrapper, msg: string) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
+        if (character.in_battle()) { return }
 
         if (msg == "right_hand")    {EventInventory.unequip(character, 'weapon')}
         else if (msg == 'secondary'){EventInventory.unequip_secondary(character)}
@@ -202,7 +213,7 @@ export namespace InventoryCommands {
     }
 
     export function sell_item(sw: SocketWrapper, msg: any) {
-        console.log('attempt to sell item ' + msg)
+        console.log('attempt to sell item ' + JSON.stringify(msg))
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
 
@@ -216,21 +227,38 @@ export namespace InventoryCommands {
         const responce = EventMarket.sell_item(character, index, price as money)
 
         if (responce.responce != AuctionResponce.OK) {
-            Alerts.generic_user_alert(user, 'alert', responce)
+            Alerts.generic_user_alert(user, 'alert', responce.responce)
         }
     }
 
-    // export function clear_bulk_order(sw: SocketWrapper, data: number) {
-    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-    //     if (character == undefined) return
+    export function clear_bulk_order(sw: SocketWrapper, data: number) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
 
-    //     let order = Data. this.world.entity_manager.orders[data]
-    //     if (order.owner_id != character.id) {
-    //         user.socket.emit('alert', 'not your order')
-    //         return
-    //     }
+        if (isNaN(data)) return
 
-    //     this.world.entity_manager.remove_order(this.pool, data as market_order_index)
+        let order = Data.BulkOrders.from_id(data as order_bulk_id)
+        if (order == undefined) return
 
-    // }
+        if (order.owner_id != character.id) {
+            user.socket.emit('alert', 'not your order')
+            return
+        }
+
+        EventMarket.remove_bulk_order(order.id)
+    }
+
+    export function clear_bulk_orders(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        EventMarket.remove_bulk_orders(character)
+    }
+
+    export function clear_item_orders(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        EventMarket.remove_item_orders(character)
+    }
 }
