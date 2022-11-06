@@ -57,12 +57,14 @@ export class SocketManager {
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
             socket.on('attack-character',  (msg: any) => SocketCommand.attack_character(user, msg));
 
-            socket.on('buy',  (msg: any)    => InventoryCommands.buy(user, msg));
-            socket.on('sell',  (msg: any)   => InventoryCommands.sell(user, msg));
+            socket.on('buy',  (msg: any)    =>      InventoryCommands.buy(user, msg));
+            socket.on('sell',  (msg: any)   =>      InventoryCommands.sell(user, msg));
+            socket.on('sell-item',  (msg: any) =>   InventoryCommands.sell_item(user, msg));
+
             // socket.on('clear-orders',  () => this.clear_orders(user));
             // socket.on('clear-item-orders',  () => this.clear_item_orders(user))
             // socket.on('clear-order',  (msg: any) => this.clear_order(user, msg));
-            // socket.on('sell-item',  (msg: any) => this.sell_item(user, msg));
+            // 
             // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
             // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
 

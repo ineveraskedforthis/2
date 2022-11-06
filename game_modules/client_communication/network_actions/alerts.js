@@ -13,6 +13,10 @@ var Alerts;
         generic_user_alert(user, 'market-data', data);
     }
     Alerts.market_data = market_data;
+    function item_market_data(user, data) {
+        generic_user_alert(user, 'item-market-data', data);
+    }
+    Alerts.item_market_data = item_market_data;
     function in_battle(user) {
         generic_user_alert(user, 'alert', 'you are in battle');
     }

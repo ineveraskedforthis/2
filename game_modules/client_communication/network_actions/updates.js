@@ -247,8 +247,10 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        let data = (0, helper_functions_1.prepare_market_orders)(character.cell_id);
-        alerts_1.Alerts.market_data(user, data);
+        const bulk_data = (0, helper_functions_1.prepare_market_orders)(character.cell_id);
+        const items_data = systems_communication_1.Convert.cell_id_to_item_orders_socket(character.cell_id);
+        alerts_1.Alerts.item_market_data(user, items_data);
+        alerts_1.Alerts.market_data(user, bulk_data);
     }
     SendUpdate.market = market;
     function explored(user) {
@@ -378,8 +380,4 @@ var SendUpdate;
 //             }
 //         }
 //     }
-// }
-// send_item_market_update_to_character(character: Character) {
-//     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, character.cell_id)
-//     this.send_to_character_user(character, 'item-market-data', data)
 // }

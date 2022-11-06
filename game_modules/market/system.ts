@@ -11,7 +11,7 @@ import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
 
 import fs from "fs"
 
-enum AuctionResponce {
+export enum AuctionResponce {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
     EMPTY_BACKPACK_SLOT = 'empty_backpack_slot',
     NO_SUCH_ORDER = 'no_such_order',
@@ -139,11 +139,38 @@ export namespace BulkOrders {
 
 export namespace ItemOrders {
     export function save() {
-
+        console.log('saving item market orders')
+        let str:string = ''
+        for (let item of Data.ItemOrders.list()) {
+            if (item.finished) continue;
+            str = str + JSON.stringify(item) + '\n' 
+            
+        }
+        fs.writeFileSync('item_market.txt', str)
+        console.log('item market orders saved')
+        
     }
 
     export function load() {
-
+        console.log('loading item market orders')
+        if (!fs.existsSync('item_market.txt')) {
+            fs.writeFileSync('item_market.txt', '')
+        }
+        let data = fs.readFileSync('item_market.txt').toString()
+        let lines = data.split('\n')
+        for (let line of lines) {
+            if (line == '') {continue}
+            const order_raw: OrderItem = JSON.parse(line)
+            const item = ItemSystem.from_string(JSON.stringify(order_raw.item))
+            const order = new OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished)
+            
+            console.log(order)
+            
+            Data.ItemOrders.set(order.id, order.owner_id, order)
+            const last_id = Data.ItemOrders.id()
+            Data.ItemOrders.set_id(Math.max(order.id, last_id) as order_item_id)            
+        }
+        console.log('item market orders loaded')
     }
 
     export function create(owner: Character, item: Item, price: money, finished: boolean) {
@@ -248,17 +275,7 @@ export namespace ItemOrders {
 //     return tmp
 // }
 
-// export function cell_id_to_orders_socket_data_list(manager: EntityManager, cell_id: number): OrderItemSocketData[] {
-//     let tmp = []
-//     for (let order of manager.item_orders) {
-//         if (order == undefined) continue;
-//         if (order.flags.finished) continue;
-//         if (order.owner.cell_id == cell_id) {
-//             tmp.push(AuctionOrderManagement.order_to_socket_data(order))
-//         }
-//     }
-//     return tmp
-// }
+
 
 // export function cell_id_to_orders_json_list(manager: EntityManager, cell_id: number): OrderItemJson[] {
 //     let tmp = []

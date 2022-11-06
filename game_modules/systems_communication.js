@@ -61,6 +61,34 @@ var Convert;
         return result;
     }
     Convert.cell_id_to_bulk_orders = cell_id_to_bulk_orders;
+    function item_order_to_socket(order) {
+        const owner_id = order.owner_id;
+        const owner = data_1.Data.Character.from_id(owner_id);
+        return {
+            item_name: order.item.tag(),
+            affixes: order.item.affixes,
+            price: order.price,
+            seller_name: owner.name,
+            id: order.id
+        };
+    }
+    Convert.item_order_to_socket = item_order_to_socket;
+    function cell_id_to_item_orders_socket(cell_id) {
+        const cell = system_3.MapSystem.id_to_cell(cell_id);
+        if (cell == undefined)
+            return [];
+        const chars = cell.get_characters_id_set();
+        const result = [];
+        for (let char_id of chars) {
+            const char_orders = data_1.Data.CharacterItemOrders(char_id);
+            for (let order_id of char_orders) {
+                const order = data_1.Data.ItemOrders.from_id(order_id);
+                result.push(item_order_to_socket(order));
+            }
+        }
+        return result;
+    }
+    Convert.cell_id_to_item_orders_socket = cell_id_to_item_orders_socket;
     function id_to_battle(id) {
         return data_1.Data.Battle.from_id(id);
     }

@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ItemOrders = exports.BulkOrders = void 0;
+exports.ItemOrders = exports.BulkOrders = exports.AuctionResponce = void 0;
 const system_1 = require("../base_game_classes/character/system");
 const stash_1 = require("../base_game_classes/inventories/stash");
+const system_2 = require("../base_game_classes/items/system");
 const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 const classes_1 = require("./classes");
@@ -18,7 +19,7 @@ var AuctionResponce;
     AuctionResponce["OK"] = "ok";
     AuctionResponce["NOT_ENOUGH_MONEY"] = "not_enough_money";
     AuctionResponce["INVALID_ORDER"] = "invalid_order";
-})(AuctionResponce || (AuctionResponce = {}));
+})(AuctionResponce = exports.AuctionResponce || (exports.AuctionResponce = {}));
 const empty_stash = new stash_1.Stash();
 // this file does not handle networking
 var BulkOrders;
@@ -131,9 +132,37 @@ var BulkOrders;
 var ItemOrders;
 (function (ItemOrders) {
     function save() {
+        console.log('saving item market orders');
+        let str = '';
+        for (let item of data_1.Data.ItemOrders.list()) {
+            if (item.finished)
+                continue;
+            str = str + JSON.stringify(item) + '\n';
+        }
+        fs_1.default.writeFileSync('item_market.txt', str);
+        console.log('item market orders saved');
     }
     ItemOrders.save = save;
     function load() {
+        console.log('loading item market orders');
+        if (!fs_1.default.existsSync('item_market.txt')) {
+            fs_1.default.writeFileSync('item_market.txt', '');
+        }
+        let data = fs_1.default.readFileSync('item_market.txt').toString();
+        let lines = data.split('\n');
+        for (let line of lines) {
+            if (line == '') {
+                continue;
+            }
+            const order_raw = JSON.parse(line);
+            const item = system_2.ItemSystem.from_string(JSON.stringify(order_raw.item));
+            const order = new classes_1.OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished);
+            console.log(order);
+            data_1.Data.ItemOrders.set(order.id, order.owner_id, order);
+            const last_id = data_1.Data.ItemOrders.id();
+            data_1.Data.ItemOrders.set_id(Math.max(order.id, last_id));
+        }
+        console.log('item market orders loaded');
     }
     ItemOrders.load = load;
     function create(owner, item, price, finished) {
@@ -230,17 +259,6 @@ var ItemOrders;
 //         if (order.flags.finished) continue;
 //         if (order.owner.cell_id == cell_id) {
 //             tmp.push(order)
-//         }
-//     }
-//     return tmp
-// }
-// export function cell_id_to_orders_socket_data_list(manager: EntityManager, cell_id: number): OrderItemSocketData[] {
-//     let tmp = []
-//     for (let order of manager.item_orders) {
-//         if (order == undefined) continue;
-//         if (order.flags.finished) continue;
-//         if (order.owner.cell_id == cell_id) {
-//             tmp.push(AuctionOrderManagement.order_to_socket_data(order))
 //         }
 //     }
 //     return tmp

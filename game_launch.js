@@ -57,6 +57,7 @@ function load() {
     auth_1.Auth.load();
     system_3.BattleSystem.load();
     system_4.BulkOrders.load();
+    system_4.ItemOrders.load();
     const characters = data_1.Data.Character.list();
     for (const character of characters) {
         systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
@@ -69,6 +70,7 @@ function save() {
     auth_1.Auth.save();
     system_3.BattleSystem.save();
     system_4.BulkOrders.save();
+    system_4.ItemOrders.save();
 }
 var update_timer = 0;
 function update(delta, http_server, express_server) {

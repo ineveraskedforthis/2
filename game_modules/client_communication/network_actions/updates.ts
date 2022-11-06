@@ -262,8 +262,10 @@ export namespace SendUpdate {
     export function market(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
-        let data = prepare_market_orders(character.cell_id)
-        Alerts.market_data(user, data)
+        const bulk_data = prepare_market_orders(character.cell_id)
+        const items_data = Convert.cell_id_to_item_orders_socket(character.cell_id)    
+        Alerts.item_market_data(user, items_data)
+        Alerts.market_data(user, bulk_data)
     }
 
     export function explored(user: User) {
@@ -407,10 +409,7 @@ export namespace SendUpdate {
     //     }
     // }
 
-    // send_item_market_update_to_character(character: Character) {
-    //     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, character.cell_id)
-    //     this.send_to_character_user(character, 'item-market-data', data)
-    // }
+
 
 
 

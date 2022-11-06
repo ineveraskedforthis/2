@@ -1,4 +1,5 @@
 import { BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../shared/battle_data";
+import { OrderItemSocketData } from "../../../shared/market_order_data";
 import { Battle } from "../../base_game_classes/battle/classes/battle";
 import { Unit } from "../../base_game_classes/battle/classes/unit";
 import { BattleSystem } from "../../base_game_classes/battle/system";
@@ -14,6 +15,9 @@ export namespace Alerts {
 
     export function market_data(user: User, data: OrderBulkJson[]) {
         generic_user_alert(user, 'market-data', data)
+    }
+    export function item_market_data(user: User, data: OrderItemSocketData[]) {
+        generic_user_alert(user, 'item-market-data', data)
     }
 
     export function in_battle(user: User) {

@@ -6,6 +6,7 @@ const alerts_1 = require("./alerts");
 const systems_communication_1 = require("../../systems_communication");
 const inventory_events_1 = require("../../events/inventory_events");
 const market_1 = require("../../events/market");
+const system_1 = require("../../market/system");
 var InventoryCommands;
 (function (InventoryCommands) {
     function equip(sw, msg) {
@@ -91,16 +92,6 @@ var InventoryCommands;
     //             Alerts.not_enough_to_user(user, 'zaz', REQUIRED_AMOUNT, AMOUNT)
     //         }                
     //     }            
-    // }
-    // export function sell_item(sw: SocketWrapper, msg: any) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-    //     let index = parseInt(msg.index);
-    //     let type = msg.item_type
-    //     let price = parseInt(msg.price);
-    //     if ((type != 'armour') && (type != 'weapon')) return;
-    //     if (isNaN(index) || isNaN(price)) return;
-    //     AuctionManagement.sell(entity_manager, character, type, index, price as money, price as money)
     // }
     // export function buyout(sw: SocketWrapper, msg: string) {
     //     if (!Validator.valid_user(user)) return false
@@ -190,6 +181,25 @@ var InventoryCommands;
         }
     }
     InventoryCommands.sell = sell;
+    function sell_item(sw, msg) {
+        console.log('attempt to sell item ' + msg);
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        let index = parseInt(msg.index);
+        let type = msg.item_type;
+        let price = parseInt(msg.price);
+        if ((type != 'armour') && (type != 'weapon'))
+            return;
+        if (isNaN(index) || isNaN(price))
+            return;
+        console.log('validated');
+        const responce = market_1.EventMarket.sell_item(character, index, price);
+        if (responce.responce != system_1.AuctionResponce.OK) {
+            alerts_1.Alerts.generic_user_alert(user, 'alert', responce);
+        }
+    }
+    InventoryCommands.sell_item = sell_item;
     // export function clear_bulk_order(sw: SocketWrapper, data: number) {
     //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
     //     if (character == undefined) return

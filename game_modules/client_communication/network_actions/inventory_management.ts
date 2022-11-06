@@ -10,6 +10,8 @@ import { EventInventory } from "../../events/inventory_events";
 import { OrderBulk } from "../../market/classes";
 import { EventMarket } from "../../events/market";
 import { Data } from "../../data";
+import { AuctionResponce, ItemOrders } from "../../market/system";
+import { money } from "../../types";
 
 export namespace InventoryCommands {
     export function equip(sw: SocketWrapper, msg: number) {
@@ -86,17 +88,7 @@ export namespace InventoryCommands {
 
 
 
-    // export function sell_item(sw: SocketWrapper, msg: any) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-    //     let index = parseInt(msg.index);
 
-    //     let type = msg.item_type
-    //     let price = parseInt(msg.price);
-    //     if ((type != 'armour') && (type != 'weapon')) return;
-    //     if (isNaN(index) || isNaN(price)) return;
-    //     AuctionManagement.sell(entity_manager, character, type, index, price as money, price as money)
-    // }
 
     // export function buyout(sw: SocketWrapper, msg: string) {
     //     if (!Validator.valid_user(user)) return false
@@ -205,6 +197,25 @@ export namespace InventoryCommands {
             msg.price)
             
         if (responce != 'ok') {
+            Alerts.generic_user_alert(user, 'alert', responce)
+        }
+    }
+
+    export function sell_item(sw: SocketWrapper, msg: any) {
+        console.log('attempt to sell item ' + msg)
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        let index = parseInt(msg.index);
+        let type = msg.item_type
+        let price = parseInt(msg.price);
+        if ((type != 'armour') && (type != 'weapon')) return;
+        if (isNaN(index) || isNaN(price)) return;
+        console.log('validated')
+
+        const responce = EventMarket.sell_item(character, index, price as money)
+
+        if (responce.responce != AuctionResponce.OK) {
             Alerts.generic_user_alert(user, 'alert', responce)
         }
     }
