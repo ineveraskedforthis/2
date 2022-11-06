@@ -607,7 +607,7 @@ document.getElementById("next_2").onclick = (event) => {
         eyes: character_display.eyes
     }
     console.log(data)
-    socket.emit('create_character', {name: '123'})
+    socket.emit('create_character', data)
 }
 
 

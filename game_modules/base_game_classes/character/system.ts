@@ -102,7 +102,7 @@ export namespace CharacterSystem {
 
     export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
         Data.Character.increase_id()
-        if (name == undefined) name = template.name_generator()
+        if (name == undefined) name = template.name_generator();
         let character = new Character(Data.Character.id(), -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp)
         character.stats.base_resists = DmgOps.add(character.stats.base_resists, template.base_resists);
         Data.Character.set(Data.Character.id(), character)

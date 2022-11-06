@@ -166,7 +166,7 @@ export namespace UserManagement {
         }
 
         const character = Event.new_character(HumanTemplateNotAligned, name, starting_cell, model_variation)
-        console.log('user ' + user.login + ' gets new character: ' + name + '(id:' + character.id + ')')
+        console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
         // save_users()
     }
