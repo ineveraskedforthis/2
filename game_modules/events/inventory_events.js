@@ -15,7 +15,7 @@ var EventInventory;
     }
     EventInventory.unequip = unequip;
     function unequip_secondary(character) {
-        character.equip.unequip('weapon');
+        character.equip.unequip_secondary();
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
     }
     EventInventory.unequip_secondary = unequip_secondary;

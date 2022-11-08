@@ -13,7 +13,7 @@ import { Data } from "../../data";
 import { AuctionResponce, ItemOrders } from "../../market/system";
 import { money, order_bulk_id } from "../../types";
 import { Character } from "../../base_game_classes/character/character";
-import { equip_slot, secondary_slot } from "../../../shared/inventory";
+import { equip_slot, secondary_slot, slot } from "../../../shared/inventory";
 
 function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
     return (sw: SocketWrapper) => {
@@ -42,10 +42,12 @@ export namespace InventoryCommands {
     }
 
     // expected inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
-    export function unequip(sw: SocketWrapper, msg: secondary_slot|equip_slot) {
+    export function unequip(sw: SocketWrapper, msg: slot) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
         if (character.in_battle()) { return }
+
+        console.log('unequip ' + msg)
 
         if (msg == "weapon")    {EventInventory.unequip(character, 'weapon')}
         else if (msg == 'secondary'){EventInventory.unequip_secondary(character)}

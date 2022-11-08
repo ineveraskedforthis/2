@@ -16,7 +16,7 @@ export namespace EventInventory {
     }
 
     export function unequip_secondary(character: Character) {
-        character.equip.unequip('weapon')
+        character.equip.unequip_secondary()
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
     } 
 

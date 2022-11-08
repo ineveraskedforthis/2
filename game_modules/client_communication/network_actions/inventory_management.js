@@ -46,6 +46,7 @@ var InventoryCommands;
         if (character.in_battle()) {
             return;
         }
+        console.log('unequip ' + msg);
         if (msg == "weapon") {
             inventory_events_1.EventInventory.unequip(character, 'weapon');
         }
