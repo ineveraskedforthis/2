@@ -43,6 +43,9 @@
 .item:active {
     background: linear-gradient(0.25turn, transparent, yellow, yellow);
 }
+.item.selected {
+    background: linear-gradient(0.25turn, transparent, blue, blue);
+}
 
 .item_tier_0 {
     color: white;

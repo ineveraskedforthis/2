@@ -89,12 +89,35 @@ export function generate_item_market_div(item) {
     if (item.seller != undefined) {
         const seller = document.createElement('div');
         seller.innerHTML = item.seller;
+        seller.classList.add('width-100');
         div.appendChild(seller);
     }
     if (item.price != undefined) {
         const price = document.createElement('div');
         price.innerHTML = item.price.toString();
+        price.classList.add('width-100');
         div.appendChild(price);
     }
     div.appendChild(generate_item_backpack_div(item));
+    div.classList.add('row');
+    div.classList.add('item');
+    return div;
+}
+export function generate_market_header() {
+    const div = document.createElement('div');
+    {
+        const seller = document.createElement('div');
+        seller.innerHTML = 'Seller';
+        seller.classList.add('width-100');
+        div.appendChild(seller);
+    }
+    {
+        const price = document.createElement('div');
+        price.innerHTML = 'Price';
+        price.classList.add('width-100');
+        div.appendChild(price);
+    }
+    div.appendChild(generate_dummy_item_backpack_div());
+    div.classList.add('row');
+    return div;
 }

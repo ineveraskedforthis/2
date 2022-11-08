@@ -13,6 +13,8 @@ import { socket, globals } from './modules/globals.js';
 import { reg, login } from './modules/ViewManagement/scene.js'
 import { battle_image } from './modules/Battle/battle_image_init.js'
 
+import './modules/Market/items_market.js'
+
 var stash_tag_to_id = {}
 var stash_id_to_tag = {}
 
