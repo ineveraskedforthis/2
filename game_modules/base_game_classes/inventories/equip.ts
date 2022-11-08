@@ -1,4 +1,5 @@
-import { armour_slot, armour_slots, damage_type, equip_slot } from "../../types";
+import { armour_slot, EquipSocket, equip_slot } from "../../../shared/inventory";
+import { armour_slots, damage_type } from "../../types";
 import { update_character } from "../affix";
 import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
@@ -250,15 +251,17 @@ export class Equip {
         this.data.armour[tag] = undefined
     }
 
-    get_data() {
+    get_data():EquipSocket {
         return {
-            right_hand: this.data.weapon?.data(),
-            secondary: this.data.secondary?.data(),
-            body: this.data.armour['body']?.data(),
-            legs: this.data.armour['legs']?.data(),
-            foot: this.data.armour['foot']?.data(),
-            head: this.data.armour['head']?.data(),
-            arms: this.data.armour['arms']?.data(),
+            equip: {
+                weapon: ItemSystem.item_data(this.data.weapon),
+                secondary: ItemSystem.item_data(this.data.secondary),
+                body: ItemSystem.item_data(this.data.armour['body']),
+                legs: ItemSystem.item_data(this.data.armour['legs']),
+                foot: ItemSystem.item_data(this.data.armour['foot']),
+                head: ItemSystem.item_data(this.data.armour['head']),
+                arms: ItemSystem.item_data(this.data.armour['arms']),
+            },            
             backpack: this.data.backpack.get_data()
         }
     }

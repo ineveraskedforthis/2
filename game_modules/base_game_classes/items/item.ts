@@ -1,5 +1,5 @@
-import { equip_slot, weapon_tag } from "../../types"
-import { affix } from "../affix"
+import { affix, equip_slot, ItemData } from "../../../shared/inventory"
+import { weapon_tag } from "../../types"
 import { Damage } from "../misc/damage_types"
 
 export class ITEM_MATERIAL {
@@ -54,8 +54,8 @@ export class Item {
         }
     }
 
-    data():ItemData {
-        return {tag: this.tag(), affixes: this.affixes.length, affixes_list: this.affixes, item_type: this.slot}
+    is_weapon() {
+        return this.slot == 'weapon'
     }
 }
 
@@ -78,9 +78,3 @@ export interface ItemJson {
     range: number
 }
 
-export interface ItemData {
-    tag: string,
-    affixes: number
-    affixes_list: affix[]
-    item_type: equip_slot
-}

@@ -62,10 +62,13 @@ class Inventory {
     }
     get_data() {
         const array = [];
-        for (let i in this.items) {
-            let item = this.items[i];
-            if (item != undefined) {
-                array.push(item.data());
+        for (let [key, value] of Object.entries(this.items)) {
+            if (value != undefined) {
+                let data = system_1.ItemSystem.item_data(value);
+                if (data == undefined)
+                    continue;
+                data.backpack_index = Number(key);
+                array.push(data);
             }
         }
         return { items: array };

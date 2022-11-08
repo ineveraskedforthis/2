@@ -1,4 +1,5 @@
-import { Item, ItemData, ItemJson } from "../items/item";
+import { ItemData } from "../../../shared/inventory";
+import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
 
 export interface InventoryJson {
@@ -75,10 +76,12 @@ export class Inventory{
 
     get_data():{items: ItemData[]} {
         const array:ItemData[] = []
-        for (let i in this.items) {
-            let item = this.items[i]
-            if (item != undefined) {
-                array.push(item.data())
+        for (let [key, value] of Object.entries(this.items)) {
+            if (value != undefined) {
+                let data = ItemSystem.item_data(value)
+                if (data == undefined) continue
+                data.backpack_index = Number(key)
+                array.push(data)
             }
         } 
         return {items: array}

@@ -211,13 +211,15 @@ class Equip {
     }
     get_data() {
         return {
-            right_hand: this.data.weapon?.data(),
-            secondary: this.data.secondary?.data(),
-            body: this.data.armour['body']?.data(),
-            legs: this.data.armour['legs']?.data(),
-            foot: this.data.armour['foot']?.data(),
-            head: this.data.armour['head']?.data(),
-            arms: this.data.armour['arms']?.data(),
+            equip: {
+                weapon: system_1.ItemSystem.item_data(this.data.weapon),
+                secondary: system_1.ItemSystem.item_data(this.data.secondary),
+                body: system_1.ItemSystem.item_data(this.data.armour['body']),
+                legs: system_1.ItemSystem.item_data(this.data.armour['legs']),
+                foot: system_1.ItemSystem.item_data(this.data.armour['foot']),
+                head: system_1.ItemSystem.item_data(this.data.armour['head']),
+                arms: system_1.ItemSystem.item_data(this.data.armour['arms']),
+            },
             backpack: this.data.backpack.get_data()
         };
     }

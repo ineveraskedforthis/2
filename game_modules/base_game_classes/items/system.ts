@@ -1,3 +1,4 @@
+import { ItemData } from "../../../shared/inventory";
 import { damage_type } from "../../types";
 import { damage_affixes_effects, get_power, protection_affixes_effects } from "../affix";
 import { Damage, DmgOps } from "../misc/damage_types";
@@ -111,6 +112,17 @@ export namespace ItemSystem {
         return damage
     }
 
+    export function damage_breakdown(item: Item): Damage {
+        let damage = DmgOps.copy(item.damage)
+        DmgOps.mult_ip(damage, ItemSystem.weight(item))
+        damage.fire = item.damage.fire
+
+        for (let aff of item.affixes) {
+            damage = damage_affixes_effects[aff.tag](damage)
+        }
+        return damage
+    }
+
     export function resists(item:Item|undefined) {
         if (item == undefined) {return empty_resists}
 
@@ -123,5 +135,23 @@ export namespace ItemSystem {
             }
         }
         return result;
+    }
+
+    export function item_data(item: Item):ItemData 
+    export function item_data(item: undefined):undefined 
+    export function item_data(item: Item|undefined):ItemData|undefined 
+    export function item_data(item: Item|undefined):ItemData|undefined 
+    {
+        if (item == undefined) return undefined
+        return {
+            name: item.tag(),
+            affixes: item.affixes.length, 
+            affixes_list: item.affixes, 
+            item_type: item.slot,
+            damage: damage_breakdown(item),
+            resists: resists(item),
+            // ranged_damage: ranged_damage(item)
+            is_weapon: item.is_weapon()
+        }
     }
 }

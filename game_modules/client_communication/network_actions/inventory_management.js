@@ -46,7 +46,7 @@ var InventoryCommands;
         if (character.in_battle()) {
             return;
         }
-        if (msg == "right_hand") {
+        if (msg == "weapon") {
             inventory_events_1.EventInventory.unequip(character, 'weapon');
         }
         else if (msg == 'secondary') {

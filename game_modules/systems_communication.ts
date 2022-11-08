@@ -1,6 +1,5 @@
 import { battle_id, UnitSocket, unit_id } from "../shared/battle_data";
-import { OrderItemSocketData } from "../shared/market_order_data";
-import { affix } from "./base_game_classes/affix";
+import { ItemData } from "../shared/inventory";
 import { Battle } from "./base_game_classes/battle/classes/battle";
 import { Unit } from "./base_game_classes/battle/classes/unit";
 import { BattleEvent } from "./base_game_classes/battle/events";
@@ -29,15 +28,14 @@ export namespace Convert {
         return Data.ItemOrders.from_id(id)
     }
 
-    export function order_to_socket_data(order: OrderItem):OrderItemSocketData {
+    export function order_to_socket_data(order: OrderItem):ItemData {
         let owner = Convert.id_to_character(order.owner_id)
-        return {
-            seller_name: owner.name,
-            price: order.price,
-            item_name: order.item.tag(),
-            affixes: [],
-            id: order.id
-        }
+        let responce = ItemSystem.item_data(order.item)
+
+        responce.price = order.price
+        responce.id = order.id
+        responce.seller = owner.name
+        return responce
     }
     
 
@@ -69,29 +67,17 @@ export namespace Convert {
         return result
     }
 
-    export function item_order_to_socket(order: OrderItem): OrderItemSocketData {
-        const owner_id = order.owner_id
-        const owner = Data.Character.from_id(owner_id)
-        return {
-            item_name: order.item.tag(),
-            affixes: order.item.affixes,
-            price: order.price,
-            seller_name: owner.name,
-            id: order.id
-        }
-    }
-
-    export function cell_id_to_item_orders_socket(cell_id: cell_id): OrderItemSocketData[] {
+    export function cell_id_to_item_orders_socket(cell_id: cell_id): ItemData[] {
         const cell = MapSystem.id_to_cell(cell_id)
         if (cell == undefined) return [];
         const chars = cell.get_characters_id_set()
-        const result:OrderItemSocketData[] = []
+        const result:ItemData[] = []
         for (let char_id of chars) {
             const char_orders = Data.CharacterItemOrders(char_id)
             for (let order_id of char_orders) {
                 const order = Data.ItemOrders.from_id(order_id)
                 if (order.finished) continue;
-                result.push(item_order_to_socket(order))
+                result.push(order_to_socket_data(order))
             }
         }
         return result

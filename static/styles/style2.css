@@ -277,6 +277,31 @@ body {
     height: auto;
 }
 
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.width-200 {
+    width: 200px;
+}
+
+.width-100 {
+    width: 100px;
+}
+
+.width-25 {
+    width: 25px;
+}
+
+.height-25 {
+    height: 25px;
+}
+
+.align-right {
+    text-align: right;
+}
+
 .craft_option > div {
     flex-grow: 1;
 }

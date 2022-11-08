@@ -1,14 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.attack_affixes_effects = exports.roll_affix_armour = exports.roll_affix_weapon = exports.enchant_item = exports.get_potential_affix_armour = exports.get_potential_affix_weapon = exports.affix = void 0;
-class affix {
-    // tier: number;
-    constructor(tag) {
-        this.tag = tag;
-        // this.tier = tier;
-    }
-}
-exports.affix = affix;
+exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.attack_affixes_effects = exports.roll_affix_armour = exports.roll_affix_weapon = exports.enchant_item = exports.get_potential_affix_armour = exports.get_potential_affix_weapon = void 0;
 function get_potential_affix_weapon(enchant_rating, item) {
     let potential_affix = [];
     // checking for phys damage mods
@@ -53,7 +45,7 @@ function enchant_item(enchant_rating, item, potential_affix) {
     for (let aff of potential_affix) {
         current_weight = current_weight + aff.weight;
         if (current_weight >= rolled_position) {
-            item.affixes.push(new affix(aff.tag));
+            item.affixes.push({ tag: aff.tag });
             return 'ok';
         }
     }

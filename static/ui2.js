@@ -7,8 +7,8 @@
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
-import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
-import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
+import { GoodsMarket } from './modules/Market/market_table.js';
+import {CharacterScreen, EQUIPMENT_TAGS} from './modules/CharacterScreen/character_screen.js'
 import { socket, globals } from './modules/globals.js';
 import { reg, login } from './modules/ViewManagement/scene.js'
 import { battle_image } from './modules/Battle/battle_image_init.js'
@@ -33,7 +33,6 @@ const character_screen = new CharacterScreen(socket);
 
 // market
 const goods_market = new GoodsMarket(document.querySelector('.goods_market'), socket);
-const item_market_table = new ItemMarketTable(document.getElementById('auction_house_tab'), socket);
 
 {
     let market_button = document.getElementById('open_market')
@@ -296,27 +295,27 @@ document.getElementById('perks_header').onclick = () => {
     hide_skill_tab('skills')
 }
 
-document.getElementById('open_armour_header').onclick = () => {
-    skill_tab_select('open_armour')
-    show_skill_tab('backpack_armour')
-    skill_tab_deselect('open_weapon')
-    skill_tab_deselect('open_all')
-    hide_skill_tab('backpack_weapon')
-}
-document.getElementById('open_weapon_header').onclick = () => {
-    skill_tab_select('open_weapon')
-    show_skill_tab('backpack_weapon')
-    skill_tab_deselect('open_armour')
-    skill_tab_deselect('open_all')
-    hide_skill_tab('backpack_armour')
-}
-document.getElementById('open_all_header').onclick = () => {
-    skill_tab_select('open_all')
-    show_skill_tab('backpack_weapon')
-    show_skill_tab('backpack_armour')
-    skill_tab_deselect('open_armour')
-    skill_tab_deselect('open_weapon')
-}
+// document.getElementById('open_armour_header').onclick = () => {
+//     skill_tab_select('open_armour')
+//     show_skill_tab('backpack_armour')
+//     skill_tab_deselect('open_weapon')
+//     skill_tab_deselect('open_all')
+//     hide_skill_tab('backpack_weapon')
+// }
+// document.getElementById('open_weapon_header').onclick = () => {
+//     skill_tab_select('open_weapon')
+//     show_skill_tab('backpack_weapon')
+//     skill_tab_deselect('open_armour')
+//     skill_tab_deselect('open_all')
+//     hide_skill_tab('backpack_armour')
+// }
+// document.getElementById('open_all_header').onclick = () => {
+//     skill_tab_select('open_all')
+//     show_skill_tab('backpack_weapon')
+//     show_skill_tab('backpack_armour')
+//     skill_tab_deselect('open_armour')
+//     skill_tab_deselect('open_weapon')
+// }
 
 function set_skill_description(tag) {
     if (CURR_SKILL_DESC != tag) {
@@ -826,10 +825,6 @@ socket.on('skill', msg => update_skill_data(msg));
 // socket.on('market-data', data => goods_market.update_data(data));
 
 socket.on('market-data', data => update_market(data));
-
-socket.on('item-market-data', data => {item_market_table.update(data)});
-
-
 
 
 socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))

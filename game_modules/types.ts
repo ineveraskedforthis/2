@@ -1,3 +1,5 @@
+import { armour_slot } from "../shared/inventory"
+
 export type char_id = number                & {__brand:  "character_id"}
 export type TEMP_CHAR_ID = '@' 
 export type user_id = number                & {__brand:  "user_id"}
@@ -18,8 +20,7 @@ export type damage_type = 'blunt'|'pierce'|'slice'|'fire'
 export type melee_attack_type = 'blunt'|'pierce'|'slice'
 export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'
 export type weapon_attack_tag = weapon_tag | 'noweapon'
-export type equip_slot = 'body'|'legs'|'arms'|'head'|'foot'|'weapon'
-export type armour_slot = 'body'|'legs'|'arms'|'head'|'foot'
+
 
 export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
 export const weapon_attack_tags: weapon_attack_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']

@@ -1,19 +1,9 @@
 // import { Armour, IMPACT_TYPE, Weapon } from "../static_data/item_tags";
+import { affix_tag } from "../../shared/inventory";
 import { AttackObj } from "./character/attack/class";
 import { Character } from "./character/character";
 import { Item } from "./items/item";
 import { Damage } from "./misc/damage_types";
-
-export type affix_tag = 'of_heat'|'layered'|'sharp'|'heavy'|'hot'|'precise'|'of_power'|'of_madness'|'calm'|'daemonic'|'notched'|'thick'|'hard'|'of_elodino_pleasure'|'of_graci_beauty'|'of_elder_beast'|'of_protection'|'of_painful_protection'
-
-export class affix{
-    tag: affix_tag;
-    // tier: number;
-    constructor(tag: affix_tag) {
-        this.tag = tag;
-        // this.tier = tier;
-    }
-}
 
 export function get_potential_affix_weapon(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []
@@ -65,7 +55,7 @@ export function enchant_item(enchant_rating: number, item: Item, potential_affix
     for (let aff of potential_affix) {
         current_weight = current_weight + aff.weight
         if (current_weight >= rolled_position) {
-            item.affixes.push(new affix(aff.tag))
+            item.affixes.push({tag: aff.tag})
             return 'ok'
         }
     }

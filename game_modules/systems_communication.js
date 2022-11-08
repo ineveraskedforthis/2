@@ -23,13 +23,11 @@ var Convert;
     Convert.id_to_order_item = id_to_order_item;
     function order_to_socket_data(order) {
         let owner = Convert.id_to_character(order.owner_id);
-        return {
-            seller_name: owner.name,
-            price: order.price,
-            item_name: order.item.tag(),
-            affixes: [],
-            id: order.id
-        };
+        let responce = system_2.ItemSystem.item_data(order.item);
+        responce.price = order.price;
+        responce.id = order.id;
+        responce.seller = owner.name;
+        return responce;
     }
     Convert.order_to_socket_data = order_to_socket_data;
     function json_to_order(data) {
@@ -61,18 +59,6 @@ var Convert;
         return result;
     }
     Convert.cell_id_to_bulk_orders = cell_id_to_bulk_orders;
-    function item_order_to_socket(order) {
-        const owner_id = order.owner_id;
-        const owner = data_1.Data.Character.from_id(owner_id);
-        return {
-            item_name: order.item.tag(),
-            affixes: order.item.affixes,
-            price: order.price,
-            seller_name: owner.name,
-            id: order.id
-        };
-    }
-    Convert.item_order_to_socket = item_order_to_socket;
     function cell_id_to_item_orders_socket(cell_id) {
         const cell = system_3.MapSystem.id_to_cell(cell_id);
         if (cell == undefined)
@@ -85,7 +71,7 @@ var Convert;
                 const order = data_1.Data.ItemOrders.from_id(order_id);
                 if (order.finished)
                     continue;
-                result.push(item_order_to_socket(order));
+                result.push(order_to_socket_data(order));
             }
         }
         return result;

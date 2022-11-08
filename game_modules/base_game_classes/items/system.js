@@ -114,6 +114,16 @@ var ItemSystem;
         return damage;
     }
     ItemSystem.ranged_damage = ranged_damage;
+    function damage_breakdown(item) {
+        let damage = damage_types_1.DmgOps.copy(item.damage);
+        damage_types_1.DmgOps.mult_ip(damage, ItemSystem.weight(item));
+        damage.fire = item.damage.fire;
+        for (let aff of item.affixes) {
+            damage = affix_1.damage_affixes_effects[aff.tag](damage);
+        }
+        return damage;
+    }
+    ItemSystem.damage_breakdown = damage_breakdown;
     function resists(item) {
         if (item == undefined) {
             return empty_resists;
@@ -129,4 +139,19 @@ var ItemSystem;
         return result;
     }
     ItemSystem.resists = resists;
+    function item_data(item) {
+        if (item == undefined)
+            return undefined;
+        return {
+            name: item.tag(),
+            affixes: item.affixes.length,
+            affixes_list: item.affixes,
+            item_type: item.slot,
+            damage: damage_breakdown(item),
+            resists: resists(item),
+            // ranged_damage: ranged_damage(item)
+            is_weapon: item.is_weapon()
+        };
+    }
+    ItemSystem.item_data = item_data;
 })(ItemSystem = exports.ItemSystem || (exports.ItemSystem = {}));

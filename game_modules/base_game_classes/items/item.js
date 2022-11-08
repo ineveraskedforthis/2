@@ -37,8 +37,8 @@ class Item {
             damage: this.damage
         };
     }
-    data() {
-        return { tag: this.tag(), affixes: this.affixes.length, affixes_list: this.affixes, item_type: this.slot };
+    is_weapon() {
+        return this.slot == 'weapon';
     }
 }
 exports.Item = Item;
