@@ -24,8 +24,11 @@ export namespace Convert {
         return temp.id
     }
 
-    export function id_to_order_item(id: order_item_id) {
-        return Data.ItemOrders.from_id(id)
+    
+    export function id_to_order_item(id: order_item_id):OrderItem
+    export function id_to_order_item(id: number):OrderItem|undefined
+    export function id_to_order_item(id: order_item_id|number):OrderItem|undefined {
+        return Data.ItemOrders.from_id(id as order_item_id)
     }
 
     export function order_to_socket_data(order: OrderItem):ItemData {
@@ -45,7 +48,9 @@ export namespace Convert {
         return order
     }
 
-    export function id_to_bulk_order(id: order_bulk_id): OrderBulk {
+    export function id_to_bulk_order(id: order_bulk_id): OrderBulk;
+    export function id_to_bulk_order(id: number): OrderBulk|undefined;
+    export function id_to_bulk_order(id: order_bulk_id|number): OrderBulk|undefined {
         return Data.BulkOrders.from_id(id)
     }
 

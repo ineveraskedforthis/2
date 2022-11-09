@@ -109,16 +109,6 @@ var InventoryCommands;
     //         }                
     //     }            
     // }
-    // export function buyout(sw: SocketWrapper, msg: string) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-    //     // validate that user input is safe
-    //     let id = parseInt(msg);
-    //     if (isNaN(id)) {
-    //         return
-    //     }
-    //     let responce = AuctionManagement.buyout(entity_manager, character, id as auction_order_id_raw)
-    // }
     function buy(sw, msg) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
@@ -216,6 +206,40 @@ var InventoryCommands;
         }
     }
     InventoryCommands.sell_item = sell_item;
+    function execute_bulk_order(sw, amount, order_id) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        const order = systems_communication_1.Convert.id_to_bulk_order(order_id);
+        if (order == undefined)
+            return;
+        const seller = systems_communication_1.Convert.id_to_character(order.owner_id);
+        if (seller.cell_id != character.cell_id)
+            return;
+        if (isNaN(amount))
+            return;
+        let responce = 'ok';
+        if (order.typ == 'buy') {
+            market_1.EventMarket.execute_buy_order(character, order.id, amount);
+        }
+        if (order.typ == 'sell') {
+            market_1.EventMarket.execute_sell_order(character, order.id, amount);
+        }
+        user.socket.emit('alert', responce);
+    }
+    InventoryCommands.execute_bulk_order = execute_bulk_order;
+    function buyout(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        // validate that user input is safe
+        let id = parseInt(msg);
+        if (isNaN(id)) {
+            return;
+        }
+        market_1.EventMarket.buyout_item(character, Number(msg));
+    }
+    InventoryCommands.buyout = buyout;
     function clear_bulk_order(sw, data) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)

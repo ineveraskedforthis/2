@@ -1,5 +1,6 @@
 import { Character } from "../character/character"
 import { UI_Part } from "../client_communication/causality_graph"
+import { Alerts } from "../client_communication/network_actions/alerts"
 import { UserManagement } from "../client_communication/user_manager"
 import { Data } from "../data"
 import { material_index } from "../manager_classes/materials_manager"
@@ -41,6 +42,48 @@ export namespace EventMarket {
         const cell = Convert.character_to_cell(character)
         Effect.Update.cell_market(cell)
         return responce
+    }
+
+    export function execute_sell_order(buyer: Character, order_id: order_bulk_id, amount: number) {
+        BulkOrders.execute_sell_order(order_id, amount, buyer)
+        const order = Convert.id_to_bulk_order(order_id)
+        const seller = Convert.id_to_character(order.owner_id)
+
+        UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
+        UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)
+        UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
+
+        const cell = Convert.character_to_cell(seller)
+        Effect.Update.cell_market(cell)
+    }
+
+    export function execute_buy_order(seller:Character, order_id: order_bulk_id, amount: number) {
+        BulkOrders.execute_buy_order(order_id, amount, seller)
+        const order = Convert.id_to_bulk_order(order_id)
+        const buyer = Convert.id_to_character(order.owner_id)
+
+        UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
+        UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)
+        UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
+        
+        const cell = Convert.character_to_cell(seller)
+        Effect.Update.cell_market(cell)
+    }
+
+    export function buyout_item(buyer: Character, order_id: number) {
+        
+
+        const order = Convert.id_to_order_item(order_id)
+        if (order == undefined) return 
+
+        const seller = Convert.id_to_character(order.owner_id)
+        ItemOrders.buy_unsafe(order_id, buyer)
+
+        UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.BELONGINGS)
+        UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
+
+        const cell = Convert.character_to_cell(buyer)
+        Effect.Update.cell_market(cell)
     }
 
     export function clear_orders(character: Character) {

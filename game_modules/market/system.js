@@ -76,6 +76,18 @@ var BulkOrders;
         order.amount = 0;
     }
     BulkOrders.remove = remove;
+    function remove_by_condition(character, tag) {
+        const set = data_1.Data.BulkOrders.from_char_id(character.id);
+        if (set == undefined)
+            return;
+        for (let [_, id] of set.entries()) {
+            const order = data_1.Data.BulkOrders.from_id(id);
+            if (order.tag == tag) {
+                remove(id);
+            }
+        }
+    }
+    BulkOrders.remove_by_condition = remove_by_condition;
     function execute_sell_order(id, amount, buyer) {
         const order = data_1.Data.BulkOrders.from_id(id);
         const owner = systems_communication_1.Convert.id_to_character(order.owner_id);

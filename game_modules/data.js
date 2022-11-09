@@ -117,6 +117,10 @@ var Data;
             return orders_bulk;
         }
         BulkOrders.list = list;
+        function from_char_id(id) {
+            return char_id_to_orders_bulk[id];
+        }
+        BulkOrders.from_char_id = from_char_id;
     })(BulkOrders = Data.BulkOrders || (Data.BulkOrders = {}));
     let ItemOrders;
     (function (ItemOrders) {

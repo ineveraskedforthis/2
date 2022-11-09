@@ -140,18 +140,6 @@ var BattleSystem;
     //         this.add_fighter(agent, team, undefined)
     //         this.send_data_start()
     //     }
-    //     check_team_to_join(agent:Character):number|'no_interest' {
-    //         if (agent.faction_id == -1) return 'no_interest'
-    //         let data = this.get_units()
-    //         for (let item of data) {
-    //             let char_id = item.char_id
-    //             let char = this.world.entity_manager.chars[char_id]
-    //             if (char.faction_id == agent.faction_id) {
-    //                 return item.team
-    //             }
-    //         }
-    //         return 'no_interest'
-    //     }
     function add_figther(battle_id, character, team) {
         const battle = systems_communication_1.Convert.id_to_battle(battle_id);
         if (battle == undefined)

@@ -118,8 +118,10 @@ export namespace Data {
             else set.add(id)
         }
 
-        export function from_id(id: order_bulk_id) {
-            return bulk_dict[id]
+        export function from_id(id: order_bulk_id): OrderBulk
+        export function from_id(id: number): OrderBulk|undefined
+        export function from_id(id: order_bulk_id|number): OrderBulk|undefined {
+            return bulk_dict[id as order_bulk_id]
         }
 
         export function list() {

@@ -35,6 +35,40 @@ var EventMarket;
         return responce;
     }
     EventMarket.sell_item = sell_item;
+    function execute_sell_order(buyer, order_id, amount) {
+        system_1.BulkOrders.execute_sell_order(order_id, amount, buyer);
+        const order = systems_communication_1.Convert.id_to_bulk_order(order_id);
+        const seller = systems_communication_1.Convert.id_to_character(order.owner_id);
+        user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 4 /* UI_Part.STASH */);
+        user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 5 /* UI_Part.SAVINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 5 /* UI_Part.SAVINGS */);
+        const cell = systems_communication_1.Convert.character_to_cell(seller);
+        effects_1.Effect.Update.cell_market(cell);
+    }
+    EventMarket.execute_sell_order = execute_sell_order;
+    function execute_buy_order(seller, order_id, amount) {
+        system_1.BulkOrders.execute_buy_order(order_id, amount, seller);
+        const order = systems_communication_1.Convert.id_to_bulk_order(order_id);
+        const buyer = systems_communication_1.Convert.id_to_character(order.owner_id);
+        user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 4 /* UI_Part.STASH */);
+        user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 5 /* UI_Part.SAVINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 5 /* UI_Part.SAVINGS */);
+        const cell = systems_communication_1.Convert.character_to_cell(seller);
+        effects_1.Effect.Update.cell_market(cell);
+    }
+    EventMarket.execute_buy_order = execute_buy_order;
+    function buyout_item(buyer, order_id) {
+        const order = systems_communication_1.Convert.id_to_order_item(order_id);
+        if (order == undefined)
+            return;
+        const seller = systems_communication_1.Convert.id_to_character(order.owner_id);
+        system_1.ItemOrders.buy_unsafe(order_id, buyer);
+        user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 3 /* UI_Part.BELONGINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 5 /* UI_Part.SAVINGS */);
+        const cell = systems_communication_1.Convert.character_to_cell(buyer);
+        effects_1.Effect.Update.cell_market(cell);
+    }
+    EventMarket.buyout_item = buyout_item;
     function clear_orders(character) {
         remove_bulk_orders(character);
         remove_item_orders(character);

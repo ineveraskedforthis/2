@@ -82,6 +82,10 @@ var Convert;
     }
     Convert.id_to_battle = id_to_battle;
     function id_to_character(id) {
+        if (id == undefined)
+            return undefined;
+        if (id == -1)
+            return undefined;
         return data_1.Data.Character.from_id(id);
     }
     Convert.id_to_character = id_to_character;
@@ -160,6 +164,11 @@ var Convert;
 })(Convert = exports.Convert || (exports.Convert = {}));
 var Link;
 (function (Link) {
+    function character_battle_unit(character, battle, unit) {
+        character.battle_id = battle.id;
+        character.battle_unit_id = unit.id;
+    }
+    Link.character_battle_unit = character_battle_unit;
     function character_and_user_data(character, user) {
         console.log('linking user and character');
         character.user_id = user.id;

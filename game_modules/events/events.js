@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
+const helpers_1 = require("../AI/helpers");
 const battle_calcs_1 = require("../battle/battle_calcs");
 const events_1 = require("../battle/events");
 const system_1 = require("../battle/system");
@@ -215,8 +216,13 @@ var Event;
         // two cases
         // if defender is in battle, attempt to join it against him as a new team
         // else create new battle
-        if (defender.in_battle()) {
-            console.log('defender in battle NOT IMPLEMENTED');
+        const battle = systems_communication_1.Convert.character_to_battle(defender);
+        const unit_def = systems_communication_1.Convert.character_to_unit(defender);
+        if ((battle != undefined) && (unit_def != undefined)) {
+            let team = helpers_1.AIhelper.check_team_to_join(attacker, battle, unit_def.team);
+            if (team == 'no_interest')
+                team = Math.random();
+            join_battle(attacker, battle, team);
         }
         else {
             const battle_id = system_1.BattleSystem.create_battle();
@@ -226,15 +232,23 @@ var Event;
             const defender_unit = system_1.BattleSystem.create_unit(defender, 2);
             events_1.BattleEvent.NewUnit(battle, attacker_unit);
             events_1.BattleEvent.NewUnit(battle, defender_unit);
-            attacker.battle_unit_id = attacker_unit.id;
-            defender.battle_unit_id = defender_unit.id;
-            attacker.battle_id = battle.id;
-            defender.battle_id = battle.id;
+            systems_communication_1.Link.character_battle_unit(attacker, battle, attacker_unit);
+            systems_communication_1.Link.character_battle_unit(defender, battle, defender_unit);
             user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 19 /* UI_Part.BATTLE */);
             user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 19 /* UI_Part.BATTLE */);
         }
     }
     Event.start_battle = start_battle;
+    function join_battle(agent, battle, team) {
+        if (agent.in_battle()) {
+            return;
+        }
+        const unit = system_1.BattleSystem.create_unit(agent, team);
+        events_1.BattleEvent.NewUnit(battle, unit);
+        systems_communication_1.Link.character_battle_unit(agent, battle, unit);
+        user_manager_1.UserManagement.add_user_to_update_queue(agent.user_id, 19 /* UI_Part.BATTLE */);
+    }
+    Event.join_battle = join_battle;
     function stop_battle(battle) {
         battle.ended = true;
         for (let unit of battle.heap.raw_data) {

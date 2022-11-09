@@ -41,8 +41,8 @@ class SocketManager {
             socket.on('clear-item-orders', () => inventory_management_1.InventoryCommands.clear_item_orders(user));
             socket.on('clear-order', (msg) => inventory_management_1.InventoryCommands.clear_bulk_order(user, msg));
             // 
-            // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
-            // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
+            socket.on('buyout', (msg) => inventory_management_1.InventoryCommands.buyout(user, msg));
+            socket.on('execute-order', (msg) => inventory_management_1.InventoryCommands.execute_bulk_order(user, msg.amount, msg.order));
             // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
             // socket.on('char-info-detailed', () => this.send_char_info(user));
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});

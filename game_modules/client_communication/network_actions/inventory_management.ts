@@ -99,18 +99,6 @@ export namespace InventoryCommands {
 
 
 
-    // export function buyout(sw: SocketWrapper, msg: string) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-
-    //     // validate that user input is safe
-    //     let id = parseInt(msg);
-    //     if (isNaN(id)) {
-    //         return
-    //     }
-
-    //     let responce = AuctionManagement.buyout(entity_manager, character, id as auction_order_id_raw)
-    // }
 
     
     export function buy(sw: SocketWrapper, msg: any) {
@@ -227,6 +215,41 @@ export namespace InventoryCommands {
         if (responce.responce != AuctionResponce.OK) {
             Alerts.generic_user_alert(user, 'alert', responce.responce)
         }
+    }
+
+    export function execute_bulk_order(sw: SocketWrapper, amount: number, order_id: number) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        
+        const order = Convert.id_to_bulk_order(order_id)
+        if (order == undefined) return
+        const seller = Convert.id_to_character(order.owner_id)
+
+        if (seller.cell_id != character.cell_id) return;
+        if (isNaN(amount)) return
+
+        let responce = 'ok'
+        if (order.typ == 'buy') {
+            EventMarket.execute_buy_order(character, order.id, amount)
+        }
+        if (order.typ == 'sell') {
+            EventMarket.execute_sell_order(character, order.id, amount)
+        }
+
+        user.socket.emit('alert', responce)
+    }
+
+    export function buyout(sw: SocketWrapper, msg: string) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        // validate that user input is safe
+        let id = parseInt(msg);
+        if (isNaN(id)) {
+            return
+        }
+
+        EventMarket.buyout_item(character, Number(msg))
     }
 
     export function clear_bulk_order(sw: SocketWrapper, data: number) {

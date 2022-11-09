@@ -65,8 +65,8 @@ export class SocketManager {
             socket.on('clear-item-orders',  () =>   InventoryCommands.clear_item_orders(user))
             socket.on('clear-order',  (msg: any) => InventoryCommands.clear_bulk_order(user, msg));
             // 
-            // socket.on('buyout',  (msg: any) => this.buyout(user, msg));
-            // socket.on('execute-order',  (msg: any) => this.execute_order(user, msg.amount, msg.order))
+            socket.on('buyout',  (msg: any) =>        InventoryCommands.buyout(user, msg));
+            socket.on('execute-order',  (msg: any) => InventoryCommands.execute_bulk_order(user, msg.amount, msg.order))
 
 
             // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
@@ -237,41 +237,7 @@ export class SocketManager {
 
 
 
-    //  execute_order(user: User, amount: number, order_id: market_order_index) {
-    //     if (user.logged_in) {
-    //         let character = user.get_character()
-    //         let cell = character.get_cell()
-    //         if (cell == undefined) {
-    //             return
-    //         }
-    //         if (cell.orders.has(order_id)) {
-    //             let order = this.world.get_order(order_id)
-    //             let responce = 'ok'
-    //             if (order.typ == 'buy') {
-    //                 responce =  cell.execute_buy_order(this.pool, order_id, amount, character)
-    //                 this.send_savings_update(character)
-    //                 let own = order.owner
-    //                 if (own != undefined) {
-    //                     this.send_stash_update_to_character(own)
-    //                 }
-    //             }
-    //             if (order.typ == 'sell') {
-    //                 responce =  cell.execute_sell_order(this.pool, order_id, amount, character)
-    //                 this.send_stash_update_to_character(character)
-    //                 let own = order.owner
-    //                 if (own != undefined) {
-    //                     this.send_savings_update(own)                        
-    //                 }
-    //             }
 
-    //             this.send_market_info(cell)
-
-    //             user.socket.emit('alert', responce)
-    //         } else {
-    //             user.socket.emit('alert', 'Selected order does not exists')
-    //         }
-    //     }
-    // }
     // //  up_skill(user, msg) {
     // //     if (msg in this.world.constants.SKILLS && user_data.current_user != null) {
     // //         let char = user_data.current_user.character;
