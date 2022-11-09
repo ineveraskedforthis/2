@@ -1,4 +1,4 @@
-import { Character } from "../base_game_classes/character/character"
+import { Character } from "../character/character"
 
 export const COOK_ELODINO_DIFFICULTY = 50
 export const COOK_RAT_DIFFICULTY  = 20

@@ -1,4 +1,4 @@
-import { ITEM_MATERIAL } from "../base_game_classes/items/item"
+import { ITEM_MATERIAL } from "../items/item"
 
 
 export type material_index = number & { __brand: "index of the material"}

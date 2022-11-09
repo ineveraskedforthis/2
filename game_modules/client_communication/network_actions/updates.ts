@@ -1,7 +1,7 @@
-import { Accuracy } from "../../base_game_classes/battle/battle_calcs";
+import { Accuracy } from "../../battle/battle_calcs";
 import { CraftProbability } from "../../calculations/craft";
-import { SkillList } from "../../base_game_classes/character/skills";
-import { CharacterSystem } from "../../base_game_classes/character/system";
+import { SkillList } from "../../character/skills";
+import { CharacterSystem } from "../../character/system";
 import { Cell } from "../../map/cell";
 import { MapSystem } from "../../map/system";
 import { Development } from "../../static_data/map_definitions";
@@ -10,8 +10,8 @@ import { cell_id, weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
 import { Alerts } from "./alerts";
 import { CellActionProb } from "../../calculations/difficulty";
-import { Battle } from "../../base_game_classes/battle/classes/battle";
-import { BattleSystem } from "../../base_game_classes/battle/system";
+import { Battle } from "../../battle/classes/battle";
+import { BattleSystem } from "../../battle/system";
 import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
 import { prepare_market_orders } from "../helper_functions";
 

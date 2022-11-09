@@ -1,11 +1,11 @@
-import { Character } from "../../../base_game_classes/character/character";
+import { Character } from "../../../character/character";
 import { CharacterActionResponce } from "../../action_manager";
 import { RAT_SKIN } from "../../../manager_classes/materials_manager";
-import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
+import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../../items/items_set_up";
 
 import { map_position } from "../../../types";
-import { ItemSystem } from "../../../base_game_classes/items/system";
-import { ItemJson } from "../../../base_game_classes/items/item";
+import { ItemSystem } from "../../../items/system";
+import { ItemJson } from "../../../items/item";
 import { CraftProbability } from "../../../calculations/craft";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";

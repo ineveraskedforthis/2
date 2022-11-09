@@ -1,4 +1,4 @@
-import { Character, } from "../../../base_game_classes/character/character";
+import { Character, } from "../../../character/character";
 import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
 import { ELODINO_FLESH, FOOD, MEAT, ZAZ } from "../../../manager_classes/materials_manager";
 import { map_position } from "../../../types";

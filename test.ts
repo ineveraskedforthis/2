@@ -1,11 +1,11 @@
-import { CharacterSystem } from "./game_modules/base_game_classes/character/system";
-import { HumanTemplateColony } from "./game_modules/base_game_classes/character/races/human";
 import { cell_id, money } from "./game_modules/types";
-import { MEAT, WOOD } from "./game_modules/manager_classes/materials_manager";
-import { ItemSystem } from "./game_modules/base_game_classes/items/system";
-import { RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/base_game_classes/items/items_set_up";
-import { Equip } from "./game_modules/base_game_classes/inventories/equip";
-import { Inventory } from "./game_modules/base_game_classes/inventories/inventory";
+import { MEAT, RAT_SKIN, WOOD } from "./game_modules/manager_classes/materials_manager";
+import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
+import { ItemSystem } from "./game_modules/items/system";
+import { Equip } from "./game_modules/inventories/equip";
+import { CharacterSystem } from "./game_modules/character/system";
+import { HumanTemplateColony } from "./game_modules/character/races/human";
+import { Inventory } from "./game_modules/inventories/inventory";
 
 function string_difference([a, b]: [string, string]): [string, string] {
     let resulta = ''
@@ -24,7 +24,7 @@ function string_difference([a, b]: [string, string]): [string, string] {
 
 function add_testing_items_to_equip(equip: Equip) {
     const item = ItemSystem.create(SPEAR_ARGUMENT)
-    const item2 = ItemSystem.create(RAT_SKIN_BOOTS_ARGUMENT)
+    const item2 = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
     const id1 = equip.data.backpack.add(item)
     const id2 = equip.data.backpack.add(item2)
     equip.equip_weapon(id1)

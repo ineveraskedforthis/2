@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendUpdate = void 0;
-const battle_calcs_1 = require("../../base_game_classes/battle/battle_calcs");
+const battle_calcs_1 = require("../../battle/battle_calcs");
 const craft_1 = require("../../calculations/craft");
 const system_1 = require("../../map/system");
 const systems_communication_1 = require("../../systems_communication");
 const types_1 = require("../../types");
 const alerts_1 = require("./alerts");
 const difficulty_1 = require("../../calculations/difficulty");
-const system_2 = require("../../base_game_classes/battle/system");
+const system_2 = require("../../battle/system");
 const constants_1 = require("../../static_data/constants");
 const helper_functions_1 = require("../helper_functions");
 var SendUpdate;

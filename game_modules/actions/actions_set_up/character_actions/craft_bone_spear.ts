@@ -1,12 +1,12 @@
 import { CharacterActionResponce } from "../../action_manager";
 import { ARROW_BONE, RAT_BONE, WOOD } from "../../../manager_classes/materials_manager";
-import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
-import { Character } from "../../../base_game_classes/character/character";
+import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT } from "../../../items/items_set_up";
+import { Character } from "../../../character/character";
 import { map_position } from "../../../types";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";
 import { CraftProbability } from "../../../calculations/craft";
-import { ItemSystem } from "../../../base_game_classes/items/system";
+import { ItemSystem } from "../../../items/system";
 import { Alerts } from "../../../client_communication/network_actions/alerts";
 
 export const craft_bone_spear = {

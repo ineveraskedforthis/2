@@ -1,4 +1,4 @@
-import { Character } from "../base_game_classes/character/character"
+import { Character } from "../character/character"
 import { move } from './actions_set_up/character_actions/move'
 import { eat } from "./actions_set_up/character_actions/eat"
 import { cook_elo_to_zaz, cook_meat } from "./actions_set_up/character_actions/cook_meat"

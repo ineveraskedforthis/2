@@ -1,8 +1,8 @@
-import { Character } from "../base_game_classes/character/character";
-import { CharacterSystem } from "../base_game_classes/character/system";
-import { Stash } from "../base_game_classes/inventories/stash";
-import { Item } from "../base_game_classes/items/item";
-import { ItemSystem } from "../base_game_classes/items/system"
+import { Character } from "../character/character";
+import { CharacterSystem } from "../character/system";
+import { Stash } from "../inventories/stash";
+import { Item } from "../items/item";
+import { ItemSystem } from "../items/system"
 import { Data } from "../data";
 import { material_index } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";

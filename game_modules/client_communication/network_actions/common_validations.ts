@@ -1,4 +1,4 @@
-import { Character } from "../../base_game_classes/character/character";
+import { Character } from "../../character/character";
 import { User } from "../user";
 
 const a     = 'a'.charCodeAt(0)

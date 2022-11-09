@@ -1,4 +1,4 @@
-import { Accuracy } from "../../base_game_classes/battle/battle_calcs";
+import { Accuracy } from "../../battle/battle_calcs";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper } from "../user";
 import { Alerts } from "./alerts";

@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync, existsSync } from "fs";
 // Always the first.
 import { Data } from "./game_modules/data";
 //importing order is important because of global lists of entities
-import { CharacterSystem } from "./game_modules/base_game_classes/character/system";
+import { CharacterSystem } from "./game_modules/character/system";
 import { MapSystem } from "./game_modules/map/system";
 import { SocketManager } from "./game_modules/client_communication/socket_manager";
 import { UserManagement } from "./game_modules/client_communication/user_manager";
@@ -16,7 +16,7 @@ import { ActionManager } from "./game_modules/actions/action_manager";
 import { Auth } from "./game_modules/client_communication/network_actions/auth";
 import { Event } from "./game_modules/events/events";
 import { Convert, Link } from "./game_modules/systems_communication";
-import { BattleSystem } from "./game_modules/base_game_classes/battle/system";
+import { BattleSystem } from "./game_modules/battle/system";
 import { BulkOrders, ItemOrders } from "./game_modules/market/system";
 
 

@@ -2,8 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HandleAction = void 0;
 const action_manager_1 = require("../../actions/action_manager");
-const events_1 = require("../../base_game_classes/battle/events");
-const system_1 = require("../../base_game_classes/battle/system");
+const events_1 = require("../../battle/events");
+const system_1 = require("../../battle/system");
 const inventory_events_1 = require("../../events/inventory_events");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");

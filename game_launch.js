@@ -5,7 +5,7 @@ const fs_1 = require("fs");
 // Always the first.
 const data_1 = require("./game_modules/data");
 //importing order is important because of global lists of entities
-const system_1 = require("./game_modules/base_game_classes/character/system");
+const system_1 = require("./game_modules/character/system");
 const system_2 = require("./game_modules/map/system");
 const socket_manager_1 = require("./game_modules/client_communication/socket_manager");
 const user_manager_1 = require("./game_modules/client_communication/user_manager");
@@ -16,7 +16,7 @@ const action_manager_1 = require("./game_modules/actions/action_manager");
 const auth_1 = require("./game_modules/client_communication/network_actions/auth");
 const events_1 = require("./game_modules/events/events");
 const systems_communication_1 = require("./game_modules/systems_communication");
-const system_3 = require("./game_modules/base_game_classes/battle/system");
+const system_3 = require("./game_modules/battle/system");
 const system_4 = require("./game_modules/market/system");
 exports.io = require('socket.io')(server_1.http);
 exports.socket_manager = new socket_manager_1.SocketManager(exports.io);

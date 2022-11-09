@@ -1,4 +1,4 @@
-import { Item, ItemJson } from "../base_game_classes/items/item.js";
+import { Item, ItemJson } from "../items/item.js";
 import { material_index } from "../manager_classes/materials_manager.js";
 import { cell_id, char_id, money, order_bulk_id, order_item_id } from "../types.js";
 

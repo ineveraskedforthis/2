@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.craft_wood_bow = exports.craft_bone_arrow = exports.craft_bone_spear = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
-const items_set_up_1 = require("../../../base_game_classes/items/items_set_up");
+const items_set_up_1 = require("../../../items/items_set_up");
 const user_manager_1 = require("../../../client_communication/user_manager");
 const craft_1 = require("../../../calculations/craft");
-const system_1 = require("../../../base_game_classes/items/system");
+const system_1 = require("../../../items/system");
 const alerts_1 = require("../../../client_communication/network_actions/alerts");
 exports.craft_bone_spear = {
     duration(char) {

@@ -1,7 +1,7 @@
-import { Character } from "../../../base_game_classes/character/character";
-import { Item } from "../../../base_game_classes/items/item";
-import { SPEAR_ARGUMENT } from "../../../base_game_classes/items/items_set_up";
-import { ItemSystem } from "../../../base_game_classes/items/system";
+import { Character } from "../../../character/character";
+import { Item } from "../../../items/item";
+import { SPEAR_ARGUMENT } from "../../../items/items_set_up";
+import { ItemSystem } from "../../../items/system";
 import { CraftProbability } from "../../../calculations/craft";
 import { UI_Part } from "../../../client_communication/causality_graph";
 import { UserManagement } from "../../../client_communication/user_manager";

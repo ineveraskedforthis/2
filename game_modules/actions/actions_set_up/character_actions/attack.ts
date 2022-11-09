@@ -1,11 +1,11 @@
 import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
 
-import type { Character } from "../../../base_game_classes/character/character";
+import type { Character } from "../../../character/character";
 import { Convert } from "../../../systems_communication";
 import { map_position } from "../../../types";
-import { CharacterSystem } from "../../../base_game_classes/character/system";
+import { CharacterSystem } from "../../../character/system";
 
-import { hostile } from "../../../base_game_classes/character/races/racial_hostility";
+import { hostile } from "../../../character/races/racial_hostility";
 
 // export const attack:ActionTargeted = {
 //     duration(char: Character) {

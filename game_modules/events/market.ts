@@ -1,4 +1,4 @@
-import { Character } from "../base_game_classes/character/character"
+import { Character } from "../character/character"
 import { UI_Part } from "../client_communication/causality_graph"
 import { UserManagement } from "../client_communication/user_manager"
 import { Data } from "../data"

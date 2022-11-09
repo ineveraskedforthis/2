@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
-const events_1 = require("./base_game_classes/battle/events");
-const system_1 = require("./base_game_classes/character/system");
-const system_2 = require("./base_game_classes/items/system");
+const events_1 = require("./battle/events");
+const system_1 = require("./character/system");
+const system_2 = require("./items/system");
 const user_manager_1 = require("./client_communication/user_manager");
 const data_1 = require("./data");
 const system_3 = require("./map/system");

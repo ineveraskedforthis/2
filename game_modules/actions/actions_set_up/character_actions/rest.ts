@@ -1,4 +1,4 @@
-import { Character } from "../../../base_game_classes/character/character";
+import { Character } from "../../../character/character";
 import {CharacterActionResponce} from '../../action_manager'
 import { map_position } from "../../../types";
 import { Convert } from "../../../systems_communication";

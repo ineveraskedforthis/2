@@ -1,5 +1,5 @@
-import { AttackObj } from "../base_game_classes/character/attack/class";
-import { Damage } from "../base_game_classes/misc/damage_types";
+import { AttackObj } from "../character/attack/class";
+import { Damage } from "../misc/damage_types";
 
 export type spell_tags = 'bolt'|'charge'
 

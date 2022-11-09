@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.spells = void 0;
-const damage_types_1 = require("../base_game_classes/misc/damage_types");
+const damage_types_1 = require("../misc/damage_types");
 exports.spells = {
     'bolt': (result) => {
         let damage = new damage_types_1.Damage(5, 0, 0, 0);

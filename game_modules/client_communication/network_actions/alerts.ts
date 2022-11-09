@@ -1,9 +1,9 @@
 import { BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../shared/battle_data";
 import { ItemData } from "../../../shared/inventory";
-import { Battle } from "../../base_game_classes/battle/classes/battle";
-import { Unit } from "../../base_game_classes/battle/classes/unit";
-import { BattleSystem } from "../../base_game_classes/battle/system";
-import { Character } from "../../base_game_classes/character/character";
+import { Battle } from "../../battle/classes/battle";
+import { Unit } from "../../battle/classes/unit";
+import { BattleSystem } from "../../battle/system";
+import { Character } from "../../character/character";
 import { OrderBulkJson } from "../../market/classes";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";

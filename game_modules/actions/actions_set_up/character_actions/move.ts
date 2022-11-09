@@ -1,4 +1,4 @@
-import { Character } from "../../../base_game_classes/character/character";
+import { Character } from "../../../character/character";
 import {ActionTargeted, CharacterActionResponce} from '../../action_manager'
 import { MapSystem } from "../../../map/system";
 import { Convert, Link, Unlink } from "../../../systems_communication";

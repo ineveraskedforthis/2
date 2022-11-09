@@ -1,4 +1,4 @@
-import { Character } from "../../../base_game_classes/character/character"
+import { Character } from "../../../character/character"
 
 export function add_quest(char:Character) {
     // let quest = char.action_target.quest

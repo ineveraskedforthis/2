@@ -1,20 +1,20 @@
 // import {constants} from '../static_data/constants'
 // var common = require("../common.js");
-// const Area = require('../base_game_classes/area.js')
-// const Faction = require('../base_game_classes/faction.js')
-// const Quest = require('../base_game_classes/quest.js')
+// const Area = require('../area.js')
+// const Faction = require('../faction.js')
+// const Quest = require('../quest.js')
 
 // import { PgPool, World } from "../world";
 // import {Cell} from '../map/cell'
-// import { Character } from "../base_game_classes/character/character";
+// import { Character } from "../character/character";
 // import { MarketOrder, market_order_index } from "../market/classes";
 // import { BattleReworked2 } from "../battle";
 // import { ITEM_MATERIAL } from '../static_data/item_tags';
 // import { material_index } from './materials_manager';
-// import { money } from '../base_game_classes/savings';
+// import { money } from '../savings';
 // import { AuctionOrderManagement, auction_order_id, auction_order_id_raw, OrderItem } from '../market/market_items';
-// import { rat } from '../base_game_classes/character/races/rat';
-// import { elo } from '../base_game_classes/character/races/elo';
+// import { rat } from '../character/races/rat';
+// import { elo } from '../character/races/elo';
 
 
 // export class EntityManager {

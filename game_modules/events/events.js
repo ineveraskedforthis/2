@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
-const battle_calcs_1 = require("../base_game_classes/battle/battle_calcs");
-const events_1 = require("../base_game_classes/battle/events");
-const system_1 = require("../base_game_classes/battle/system");
-const system_2 = require("../base_game_classes/character/attack/system");
-const generate_loot_1 = require("../base_game_classes/character/races/generate_loot");
-const system_3 = require("../base_game_classes/character/system");
+const battle_calcs_1 = require("../battle/battle_calcs");
+const events_1 = require("../battle/events");
+const system_1 = require("../battle/system");
+const system_2 = require("../character/attack/system");
+const generate_loot_1 = require("../character/races/generate_loot");
+const system_3 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
 const materials_manager_1 = require("../manager_classes/materials_manager");

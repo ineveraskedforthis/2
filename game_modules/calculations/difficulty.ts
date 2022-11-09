@@ -1,4 +1,4 @@
-import { Character } from "../base_game_classes/character/character"
+import { Character } from "../character/character"
 
 export const DIFFICULTY_SPEAR = 5
 export const BONUS_SPEAR = 0.1

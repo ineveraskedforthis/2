@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemOrders = exports.BulkOrders = exports.AuctionResponce = void 0;
-const system_1 = require("../base_game_classes/character/system");
-const stash_1 = require("../base_game_classes/inventories/stash");
-const system_2 = require("../base_game_classes/items/system");
+const system_1 = require("../character/system");
+const stash_1 = require("../inventories/stash");
+const system_2 = require("../items/system");
 const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 const classes_1 = require("./classes");

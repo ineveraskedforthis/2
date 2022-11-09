@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Request = void 0;
-const battle_calcs_1 = require("../../base_game_classes/battle/battle_calcs");
+const battle_calcs_1 = require("../../battle/battle_calcs");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 var Request;

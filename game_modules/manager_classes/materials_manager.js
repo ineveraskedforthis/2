@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ARROW_BONE = exports.WATER = exports.MEAT = exports.ZAZ = exports.FOOD = exports.STEEL = exports.WOOD = exports.GRACI_HAIR = exports.ELODINO_FLESH = exports.RAT_BONE = exports.RAT_SKIN = exports.materials = exports.MaterialsManager = void 0;
-const item_1 = require("../base_game_classes/items/item");
+const item_1 = require("../items/item");
 class MaterialsManager {
     constructor() {
         this.materials = [];

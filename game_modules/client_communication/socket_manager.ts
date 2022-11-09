@@ -13,7 +13,7 @@ import { HandleAction } from "./network_actions/actions";
 import { CharacterAction } from "../actions/action_manager";
 import { SocketCommand } from "./network_actions/run_event";
 import { Convert } from "../systems_communication";
-import { ModelVariant } from "../base_game_classes/character/character_parts";
+import { ModelVariant } from "../character/character_parts";
 import { InventoryCommands } from "./network_actions/inventory_management";
 import { Request } from "./network_actions/request";
 

@@ -1,6 +1,6 @@
 import { equip_slot } from "../../shared/inventory";
-import { Character } from "../base_game_classes/character/character";
-import { Equip } from "../base_game_classes/inventories/equip";
+import { Character } from "../character/character";
+import { Equip } from "../inventories/equip";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 

@@ -6,22 +6,22 @@
 // import {EntityManager} from './manager_classes/entity_manager'
 // import {CONSTS} from './static_data/world_constants_1';
 // import {MarketOrder, market_order_index} from './market/market_order'
-// import { Character } from "./base_game_classes/character/character";
+// import { Character } from "./character/character";
 // import { BattleReworked2 } from "./battle";
 // import { ActionManager } from "./manager_classes/action_manager";
 // import {SocketManager} from './client_communication/socket_manager'
 // import {UserManager} from './manager_classes/user_manager'
 // import { Cell } from "./map/cell";
-// import { rat } from "./base_game_classes/character/races/rat";
+// import { rat } from "./character/races/rat";
 // import { AiManager } from "./manager_classes/ai_manager";
 // import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, materials, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager";
-// import { money } from "./base_game_classes/savings";
+// import { money } from "./savings";
 // import { AuctionManagement, auction_order_id, nodb_mode_check, OrderItem } from "./market/market_items";
-// import { graci } from "./base_game_classes/character/races/graci";
-// import { elo } from "./base_game_classes/character/races/elo";
+// import { graci } from "./character/races/graci";
+// import { elo } from "./character/races/elo";
 // import { Weapon } from './static_data/item_tags';
-// import { BONE_SPEAR_ARGUMENT } from './base_game_classes/items/items_set_up';
-// import { affix } from './base_game_classes/affix';
+// import { BONE_SPEAR_ARGUMENT } from './items/items_set_up';
+// import { affix } from './affix';
 // import { init_battle_control } from '../static/modules/battle_image_init';
 // // const total_loot_chance_weight: {[index: tmp]: number} = {}
 // // for (let i in loot_chance_weight) {

@@ -1,8 +1,8 @@
 // THIS MODULE MUST BE IMPORTED FIRST
 
 import { battle_id, unit_id } from "../shared/battle_data"
-import { Battle } from "./base_game_classes/battle/classes/battle"
-import { Character } from "./base_game_classes/character/character"
+import { Battle } from "./battle/classes/battle"
+import { Character } from "./character/character"
 import { OrderBulk, OrderItem } from "./market/classes"
 import { char_id, order_bulk_id, order_item_id } from "./types"
 

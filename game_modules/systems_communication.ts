@@ -1,11 +1,11 @@
 import { battle_id, UnitSocket, unit_id } from "../shared/battle_data";
 import { ItemData } from "../shared/inventory";
-import { Battle } from "./base_game_classes/battle/classes/battle";
-import { Unit } from "./base_game_classes/battle/classes/unit";
-import { BattleEvent } from "./base_game_classes/battle/events";
-import { Character } from "./base_game_classes/character/character";
-import { CharacterSystem } from "./base_game_classes/character/system";
-import { ItemSystem } from "./base_game_classes/items/system";
+import { Battle } from "./battle/classes/battle";
+import { Unit } from "./battle/classes/unit";
+import { BattleEvent } from "./battle/events";
+import { Character } from "./character/character";
+import { CharacterSystem } from "./character/system";
+import { ItemSystem } from "./items/system";
 import { UI_Part } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";

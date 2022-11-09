@@ -1,19 +1,14 @@
-import { roll_affix_armour, roll_affix_weapon } from "../../base_game_classes/affix";
 import { SocketWrapper, User } from "../user";
-import { materials, material_index, ZAZ } from "../../manager_classes/materials_manager";
+import { materials, material_index } from "../../manager_classes/materials_manager";
 import { Alerts } from "./alerts";
-import { Validator } from "./common_validations";
 import { Convert } from "../../systems_communication";
-import { CharacterSystem } from "../../base_game_classes/character/system";
-import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
-import { OrderBulk } from "../../market/classes";
 import { EventMarket } from "../../events/market";
 import { Data } from "../../data";
-import { AuctionResponce, ItemOrders } from "../../market/system";
+import { AuctionResponce, } from "../../market/system";
 import { money, order_bulk_id } from "../../types";
-import { Character } from "../../base_game_classes/character/character";
-import { equip_slot, secondary_slot, slot } from "../../../shared/inventory";
+import { Character } from "../../character/character";
+import { slot } from "../../../shared/inventory";
 
 function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
     return (sw: SocketWrapper) => {

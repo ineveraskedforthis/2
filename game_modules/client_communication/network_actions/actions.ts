@@ -1,8 +1,8 @@
 import { battle_position, unit_id } from "../../../shared/battle_data";
 import { ActionManager, ActionTargeted, CharacterAction, CharacterActionResponce } from "../../actions/action_manager";
-import { Battle } from "../../base_game_classes/battle/classes/battle";
-import { BattleEvent } from "../../base_game_classes/battle/events";
-import { BattleSystem } from "../../base_game_classes/battle/system";
+import { Battle } from "../../battle/classes/battle";
+import { BattleEvent } from "../../battle/events";
+import { BattleSystem } from "../../battle/system";
 import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
 import { Convert } from "../../systems_communication";

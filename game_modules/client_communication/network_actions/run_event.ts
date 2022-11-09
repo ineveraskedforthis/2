@@ -1,8 +1,6 @@
-import { CharacterSystem } from "../../base_game_classes/character/system";
 import { Event } from "../../events/events";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper, User } from "../user";
-import { UserManagement } from "../user_manager";
 import { Validator } from "./common_validations";
 
 export namespace SocketCommand {
