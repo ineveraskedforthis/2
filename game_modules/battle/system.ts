@@ -151,20 +151,7 @@ export namespace BattleSystem {
 //         this.send_data_start()
 //     }
 
-//     check_team_to_join(agent:Character):number|'no_interest' {
-//         if (agent.faction_id == -1) return 'no_interest'
 
-//         let data = this.get_units()
-//         for (let item of data) {
-//             let char_id = item.char_id
-//             let char = this.world.entity_manager.chars[char_id]
-//             if (char.faction_id == agent.faction_id) {
-//                 return item.team
-//             }
-//         }
-
-//         return 'no_interest'
-//     }
 
     export function add_figther(battle_id: battle_id, character: Character, team: number) {
         const battle = Convert.id_to_battle(battle_id)

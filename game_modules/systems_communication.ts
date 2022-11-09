@@ -87,8 +87,15 @@ export namespace Convert {
         return Data.Battle.from_id(id)
     }
 
-    export function id_to_character(id: char_id): Character {
-        return Data.Character.from_id(id)
+
+    export function id_to_character(id: undefined): undefined
+    export function id_to_character(id: char_id): Character
+    export function id_to_character(id: char_id|undefined): Character|undefined
+    export function id_to_character(id: char_id|number): Character|undefined
+    export function id_to_character(id: char_id|undefined|number): Character|undefined {
+        if (id == undefined) return undefined
+        if (id == -1) return undefined
+        return Data.Character.from_id(id as char_id)
     }
 
     export function number_to_character(id: number): Character|undefined {
@@ -158,6 +165,11 @@ export namespace Convert {
 }
 
 export namespace Link {
+    export function character_battle_unit(character: Character, battle: Battle, unit: Unit) {
+        character.battle_id = battle.id
+        character.battle_unit_id = unit.id
+    }
+
     export function character_and_user_data(character: Character, user: UserData) {
         console.log('linking user and character')
         character.user_id = user.id

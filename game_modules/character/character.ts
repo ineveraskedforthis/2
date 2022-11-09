@@ -163,6 +163,8 @@ export class Character {
         return 0.5
     }
     model()         { return this.archetype.model }
+    race()          { return this.archetype.race }
+    ai_map()            { return this.archetype.ai_map }
 
     is_player()     { return this.user_id != '#' }
     dead()          { return this.get_hp() == 0 }
@@ -341,9 +343,7 @@ export class Character {
 //         return 1;
 //     }
 
-//     get_tag() {
-//         return this.misc.tag
-//     }
+
 
 
 //     get_hp_change() {

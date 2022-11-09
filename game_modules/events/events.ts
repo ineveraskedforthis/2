@@ -1,4 +1,5 @@
 import { battle_id, unit_id } from "../../shared/battle_data";
+import { AIhelper } from "../AI/helpers";
 import { Accuracy } from "../battle/battle_calcs";
 import { Battle } from "../battle/classes/battle";
 import { BattleEvent } from "../battle/events";
@@ -233,8 +234,12 @@ export namespace Event {
         // two cases
         // if defender is in battle, attempt to join it against him as a new team
         // else create new battle
-        if (defender.in_battle()) {
-            console.log('defender in battle NOT IMPLEMENTED')
+        const battle = Convert.character_to_battle(defender)
+        const unit_def = Convert.character_to_unit(defender)
+        if ((battle != undefined) && (unit_def != undefined)) {
+            let team = AIhelper.check_team_to_join(attacker, battle, unit_def.team)
+            if (team == 'no_interest') team = Math.random()
+            join_battle(attacker, battle, team)
         } else {
             const battle_id = BattleSystem.create_battle()
             console.log('new battle: ' + battle_id)
@@ -243,16 +248,19 @@ export namespace Event {
             const defender_unit = BattleSystem.create_unit(defender, 2)
             BattleEvent.NewUnit(battle, attacker_unit)
             BattleEvent.NewUnit(battle, defender_unit)
-
-            attacker.battle_unit_id = attacker_unit.id
-            defender.battle_unit_id = defender_unit.id
-
-            attacker.battle_id = battle.id
-            defender.battle_id = battle.id
-
+            Link.character_battle_unit(attacker, battle, attacker_unit)
+            Link.character_battle_unit(defender, battle, defender_unit)
             UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
             UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)
         }
+    }
+
+    export function join_battle(agent: Character, battle: Battle, team: number) {
+        if (agent.in_battle()) {return}
+        const unit = BattleSystem.create_unit(agent, team)
+        BattleEvent.NewUnit(battle, unit)
+        Link.character_battle_unit(agent, battle, unit)
+        UserManagement.add_user_to_update_queue(agent.user_id, UI_Part.BATTLE)
     }
 
     export function stop_battle(battle: Battle) {
