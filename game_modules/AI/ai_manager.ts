@@ -9,6 +9,9 @@ import { Cell } from "../map/cell";
 import { AIhelper } from "./helpers";
 import { Event } from "../events/events";
 import { money } from "../types";
+import { BulkOrders, ItemOrders } from "../market/system";
+import { EventMarket } from "../events/market";
+import { CraftProbability } from "../calculations/craft";
 
 
 // function MAYOR_AI(mayor: Character) {
@@ -153,24 +156,24 @@ namespace AI {
         //  character.world.entity_manager.remove_orders(character)
 
         if ((resource < 5) && (savings > base_buy_price)) {
-             character.world.entity_manager.remove_orders_by_tag(character, MEAT)
+            BulkOrders.remove_by_condition(character, MEAT)
             // console.log(Math.floor(savings / base_buy_price), base_buy_price)
-             character.buy(MEAT, Math.floor(savings / base_buy_price), base_buy_price)
+            EventMarket.buy(character, MEAT, Math.floor(savings / base_buy_price), base_buy_price)
         }
 
         if (prepared_meat < 10) {
-             action_manager.start_action(CharacterAction.COOK_MEAT, character, undefined)
+            ActionManager.start_action(CharacterAction.COOK.MEAT, character, [0, 0])
         }
 
         if (food_in_stash > 0) {
-             character.world.entity_manager.remove_orders_by_tag(character, FOOD)
-             character.sell(FOOD, food_in_stash, base_sell_price)
+            BulkOrders.remove_by_condition(character, FOOD)
+            EventMarket.sell(character, FOOD, food_in_stash, base_sell_price)
         }
     }
 
     export  function make_arrow(character:Character) {
-         character.world.entity_manager.remove_orders_by_tag(character, WOOD)
-         character.world.entity_manager.remove_orders_by_tag(character, RAT_BONE)
+        BulkOrders.remove_by_condition(character, WOOD)
+        BulkOrders.remove_by_condition(character, RAT_BONE)
 
         let arrows = character.trade_stash.get(ARROW_BONE) + character.stash.get(ARROW_BONE)
         let wood = character.stash.get(WOOD)
@@ -186,7 +189,7 @@ namespace AI {
         let input_price = (base_price_wood + 10 * base_price_bones)
         let profit = 0.5
 
-        let sell_price = Math.floor(input_price * (1 + profit) / craft_bone_arrow_probability(character) / 10) + 1 as money
+        let sell_price = Math.floor(input_price * (1 + profit) / CraftProbability.arrow(character) / 10) + 1 as money
 
         // bones_to_buy * b_p + wood_to_buy * w_p = savings
         // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0
@@ -218,23 +221,23 @@ namespace AI {
             // console.log(wood_to_buy, bones_to_buy)
 
             if ((wood_to_buy >= 1) && (bones_to_buy >= 1)) {
-                 character.buy(WOOD, Math.floor(wood_to_buy), base_price_wood)
-                 character.buy(RAT_BONE, Math.floor(bones_to_buy), base_price_bones)
+                EventMarket.buy(character, WOOD, Math.floor(wood_to_buy), base_price_wood)
+                EventMarket.buy(character, RAT_BONE, Math.floor(bones_to_buy), base_price_bones)
             } else if ((wood_to_buy >= 1) && (bones_to_buy < 1)) {
-                 character.buy(WOOD, Math.floor(savings / base_price_wood), base_price_wood)
+                EventMarket.buy(character, WOOD, Math.floor(savings / base_price_wood), base_price_wood)
             } else if ((wood_to_buy < 1) && (bones_to_buy >= 1)) {
-                 character.buy(RAT_BONE, Math.floor(savings / RAT_BONE), base_price_bones)
+                EventMarket.buy(character, RAT_BONE, Math.floor(savings / base_price_bones), base_price_bones)
             } 
         }
 
         if (arrows < 100) {
-             action_manager.start_action(CharacterAction.CRAFT_BONE_ARROW, character, undefined)
+             ActionManager.start_action(CharacterAction.CRAFT.BONE_ARROW, character, [0, 0])
         }
         
         if (arrows_in_stash > 0) {
-             character.world.entity_manager.remove_orders_by_tag(character, ARROW_BONE)
+            BulkOrders.remove_by_condition(character, ARROW_BONE)
             arrows_in_stash = character.stash.get(ARROW_BONE)
-             character.sell(ARROW_BONE, arrows_in_stash, sell_price)
+            EventMarket.sell(character, ARROW_BONE, arrows_in_stash, sell_price)
         }
     }
 
@@ -250,21 +253,19 @@ namespace AI {
         // console.log('armour')
         // console.log(resource, savings, skin_to_buy)
         if (skin_to_buy > 5) {
-             character.world.entity_manager.remove_orders_by_tag(character, RAT_SKIN)
-
-             character.buy(RAT_SKIN, skin_to_buy, base_price_skin)
+            BulkOrders.remove_by_condition(character, RAT_SKIN)
+            EventMarket.sell(character, RAT_SKIN, skin_to_buy, base_price_skin)
         }
 
         if (resource > RAT_SKIN_ARMOUR_SKIN_NEEDED) {
-             action_manager.start_action(CharacterAction.CRAFT.RAT_ARMOUR, character, undefined)
+             ActionManager.start_action(CharacterAction.CRAFT.RAT_ARMOUR, character, [0, 0])
         }
 
-        let data = character.equip.data.backpack.armours
-        for (let index in data ) {
-            index = index as any
-            if (data[index]?.type == ARMOUR_TYPE.BODY) {
+        let data = character.equip.data.backpack.items
+        for (let [index, item] of Object.entries(data) ) {
+            if (item?.slot == 'body') {
                 let price = Math.floor(base_price_skin * RAT_SKIN_ARMOUR_SKIN_NEEDED * 1.5) as money
-                 AuctionManagement.sell(character.world.entity_manager, character.world.socket_manager, character, "armour", index as any, price, price)
+                EventMarket.sell_item(character, Number(index), price)
             }
         }
     }

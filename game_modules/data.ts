@@ -125,6 +125,10 @@ export namespace Data {
         export function list() {
             return orders_bulk
         }
+
+        export function from_char_id(id: char_id) {
+            return char_id_to_orders_bulk[id]
+        }
     }
     export namespace ItemOrders {
         export function increase_id() {

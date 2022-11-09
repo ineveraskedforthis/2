@@ -77,6 +77,17 @@ export namespace BulkOrders {
         }
         order.amount = 0
     }
+    
+    export function remove_by_condition(character: Character, tag: material_index) {
+        const set = Data.BulkOrders.from_char_id(character.id)
+        if (set == undefined) return
+        for (let [_, id] of set.entries()) {
+            const order = Data.BulkOrders.from_id(id)
+            if (order.tag == tag) {
+                remove(id)
+            }
+        }
+    }
 
     export function execute_sell_order(id: order_bulk_id, amount: number, buyer: Character) {
         const order = Data.BulkOrders.from_id(id)
