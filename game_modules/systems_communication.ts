@@ -144,7 +144,8 @@ export namespace Convert {
             max_hp: character.stats.max.hp,
             ap: unit.action_points_left,
             id: unit.id,
-            next_turn: unit.next_turn_after
+            next_turn: unit.next_turn_after,
+            dead: character.dead()
         }
     }
 

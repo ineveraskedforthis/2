@@ -192,6 +192,11 @@ export namespace BattleSystem {
             if (unit == undefined) {return}
             let character:Character = Convert.unit_to_character(unit)
 
+            if (character.dead()) {
+                BattleEvent.EndTurn(battle, unit)
+                return
+            }
+
             CharacterSystem.battle_update(character)
 
             //processing cases of player and ai separately for a now
@@ -242,7 +247,9 @@ export namespace BattleSystem {
         let data:BattleData = {};
         for (var i = 0; i < battle.heap.raw_data.length; i++) {
             let unit = battle.heap.raw_data[i];
-            data[i] = Convert.unit_to_unit_socket(unit)
+            let character:Character = Convert.unit_to_character(unit)
+            if (character.dead())
+            data[i] = (Convert.unit_to_unit_socket(unit))
         }
         return data
     }

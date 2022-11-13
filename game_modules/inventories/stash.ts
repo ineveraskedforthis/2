@@ -29,7 +29,6 @@ export class Stash {
     }
 
     inc(tag: material_index, x: number) {
-        console.log('inc', tag, x)
         let tag_stash = this.get(tag);
         var tmp:number = 0
         if (tag_stash == undefined) {

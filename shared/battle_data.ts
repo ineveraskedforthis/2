@@ -23,6 +23,7 @@ export interface UnitSocket {
     ap: number
     id: unit_id
     next_turn: number
+    dead: boolean
 }
 
 export interface BattleActionChance {
