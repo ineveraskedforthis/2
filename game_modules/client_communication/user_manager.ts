@@ -11,6 +11,8 @@ import { UI_Part, Update } from "./causality_graph";
 import { cell_id, char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
 import { Event } from "../events/events";
 import { ModelVariant } from "../character/character_parts";
+import { SAVE_GAME_PATH } from "../../game_launch";
+var path = require('path')
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
 type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
@@ -27,15 +29,16 @@ var users_to_update: Set<User>                                  = new Set()
 
 var last_id = 0
 
+const save_path = path.join(SAVE_GAME_PATH, 'users.txt')
 
 export namespace UserManagement {
 
     export function load_users() {
         console.log('loading users')
-        if (!fs.existsSync('users.txt')) {
-            fs.writeFileSync('users.txt', '')
+        if (!fs.existsSync(save_path)) {
+            fs.writeFileSync(save_path, '')
         }
-        let data = fs.readFileSync('users.txt').toString()
+        let data = fs.readFileSync(save_path).toString()
         let lines = data.split('\n')
 
         for (let line of lines) {
@@ -66,7 +69,7 @@ export namespace UserManagement {
         for (let item of users_data_list) {
             str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + '\n'
         }
-        fs.writeFileSync('users.txt', str)
+        fs.writeFileSync(save_path, str)
         console.log('users saved')
     }
 
@@ -172,12 +175,9 @@ export namespace UserManagement {
     }
 
     export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|UI_Part|'character_removal') {
-        console.log('add user to update')
-        console.log(id)
         if (id == '#') return
         let user = get_user(id as user_online_id)
         if (user == undefined) return
-        console.log('ok')
         if (reason == 'character_creation') {user.character_created = true} else 
         if (reason == 'character_removal')  {user.character_removed = true} else {
             Update.on(user.updates, reason)

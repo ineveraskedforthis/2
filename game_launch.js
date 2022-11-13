@@ -1,7 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.set_version = exports.launch = exports.socket_manager = exports.io = void 0;
+exports.set_version = exports.launch = exports.socket_manager = exports.io = exports.SAVE_GAME_PATH = void 0;
+const path = __importStar(require("path"));
 const fs_1 = require("fs");
+const fs = __importStar(require("fs"));
+exports.SAVE_GAME_PATH = path.join('save_1');
+if (!fs.existsSync(exports.SAVE_GAME_PATH)) {
+    fs.mkdirSync(exports.SAVE_GAME_PATH);
+}
+console.log(exports.SAVE_GAME_PATH);
 // Always the first.
 const data_1 = require("./game_modules/data");
 //importing order is important because of global lists of entities
@@ -43,7 +73,7 @@ function launch(http_server, express_server) {
         (0, migrations_1.migrate)(version, constants_1.constants.version);
         load();
         console.log('systems are ready');
-        gameloop.setGameLoop((delta) => update(delta, http_server, express_server), 500);
+        gameloop.setGameLoop((delta) => update(delta, http_server, express_server), 100);
     }
     catch (e) {
         console.log(e);
@@ -58,6 +88,7 @@ function load() {
     system_3.BattleSystem.load();
     system_4.BulkOrders.load();
     system_4.ItemOrders.load();
+    data_1.Data.load();
     const characters = data_1.Data.Character.list();
     for (const character of characters) {
         systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
@@ -71,6 +102,7 @@ function save() {
     system_3.BattleSystem.save();
     system_4.BulkOrders.save();
     system_4.ItemOrders.save();
+    data_1.Data.save();
 }
 var update_timer = 0;
 function update(delta, http_server, express_server) {
@@ -98,14 +130,15 @@ function update(delta, http_server, express_server) {
         update_timer = 0;
     }
 }
+const version_path = path.join(exports.SAVE_GAME_PATH, 'version.txt');
 function get_version_raw() {
-    if (!(0, fs_1.existsSync)('version.txt')) {
-        (0, fs_1.writeFileSync)('version.txt', '');
+    if (!(0, fs_1.existsSync)(version_path)) {
+        (0, fs_1.writeFileSync)(version_path, '');
     }
-    return (0, fs_1.readFileSync)('version.txt').toString();
+    return (0, fs_1.readFileSync)(version_path).toString();
 }
 function set_version(n) {
-    (0, fs_1.writeFileSync)('version.txt', '' + n);
+    (0, fs_1.writeFileSync)(version_path, '' + n);
 }
 exports.set_version = set_version;
 function get_version() {

@@ -3,7 +3,7 @@ import { cell_id, world_dimensions } from "../types";
 import { Cell} from "./cell";
 
 var size:world_dimensions = [0, 0]
-var max_direction:number = 0
+var max_direction:number = 30
 var cells:(Cell|undefined)[] = []
 
 const dp = [[0, 1], [0 ,-1],[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]

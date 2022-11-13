@@ -10,16 +10,26 @@ import { CharacterTemplate } from "./templates";
 import fs from "fs"
 import { Archetype, InnateStats, Stats, Status } from "./character_parts";
 import { Data } from "../data";
+var path = require('path')
+import { SAVE_GAME_PATH } from "../../game_launch";
+import { CampaignAI } from "../AI/ai_manager";
 
+var loaded_flag_characters = false
 
+const save_path = path.join(SAVE_GAME_PATH, 'characters.txt')
+
+var ai_campaign_decision_timer = 0
 
 export namespace CharacterSystem {
     export function load() {
-        console.log('loading characters')
-        if (!fs.existsSync('characters.txt')) {
-            fs.writeFileSync('characters.txt', '')
+        if (loaded_flag_characters) {
+            return
         }
-        let data = fs.readFileSync('characters.txt').toString()
+        console.log('loading characters')
+        if (!fs.existsSync(save_path)) {
+            fs.writeFileSync(save_path, '')
+        }
+        let data = fs.readFileSync(save_path).toString()
         let lines = data.split('\n')
 
         for (let line of lines) {
@@ -28,7 +38,7 @@ export namespace CharacterSystem {
             Data.Character.set(character.id, character)
             Data.Character.set_id(Math.max(character.id, Data.Character.id()) as char_id)
         }
-
+        loaded_flag_characters = true
         console.log('characters loaded')
     }
 
@@ -39,7 +49,7 @@ export namespace CharacterSystem {
             if (item.dead()) continue
             str = str + character_to_string(item) + '\n' 
         }
-        fs.writeFileSync('characters.txt', str)
+        fs.writeFileSync(save_path, str)
         console.log('characters saved')
     }
 
@@ -325,22 +335,17 @@ export namespace CharacterSystem {
 //     }
 
     export function update(dt: number) {
-        // if 
-        
-        // if (!this.in_battle()) {
-        //     this.out_of_battle_update(dt)
-        //     this.update_action_progress(dt);
-        //     this.update_visited()
-        // } else {
-        //     this.battle_update()      
-        // }
-        // let cell = this.get_cell()
-        // if (cell != undefined) {
-        //     cell.visit()
-            
-        // }
+        ai_campaign_decision_timer += dt
 
-        // this.flags_handling_update();
+        if (ai_campaign_decision_timer > 4) {
+            for (let char of Data.Character.list()) {
+                if (Math.random() > 0.6) {
+                    CampaignAI.decision(char)
+                }                
+            }
+            ai_campaign_decision_timer = 0
+        }
+        
     }
 
     export function battle_update(character: Character) {

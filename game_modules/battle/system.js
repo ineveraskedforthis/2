@@ -14,10 +14,13 @@ const events_1 = require("./events");
 const fs_1 = __importDefault(require("fs"));
 const events_2 = require("../events/events");
 const data_1 = require("../data");
+const path_1 = __importDefault(require("path"));
+const game_launch_1 = require("../../game_launch");
 var last_unit_id = 0;
 function time_distance(a, b) {
     return b - a;
 }
+const save_path = path_1.default.join(game_launch_1.SAVE_GAME_PATH, 'battles.txt');
 var BattleSystem;
 (function (BattleSystem) {
     function id_to_unit(id, battle) {
@@ -26,10 +29,10 @@ var BattleSystem;
     BattleSystem.id_to_unit = id_to_unit;
     function load() {
         console.log('loading battles');
-        if (!fs_1.default.existsSync('battles.txt')) {
-            fs_1.default.writeFileSync('battles.txt', '');
+        if (!fs_1.default.existsSync(save_path)) {
+            fs_1.default.writeFileSync(save_path, '');
         }
-        let data = fs_1.default.readFileSync('battles.txt').toString();
+        let data = fs_1.default.readFileSync(save_path).toString();
         let lines = data.split('\n');
         for (let line of lines) {
             if (line == '') {
@@ -54,7 +57,7 @@ var BattleSystem;
                 continue;
             str = str + battle_to_string(item) + '\n';
         }
-        fs_1.default.writeFileSync('battles.txt', str);
+        fs_1.default.writeFileSync(save_path, str);
         console.log('battles saved');
     }
     BattleSystem.save = save;

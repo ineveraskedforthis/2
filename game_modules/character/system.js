@@ -10,14 +10,23 @@ const character_1 = require("./character");
 const generate_loot_1 = require("./races/generate_loot");
 const fs_1 = __importDefault(require("fs"));
 const data_1 = require("../data");
+var path = require('path');
+const game_launch_1 = require("../../game_launch");
+const ai_manager_1 = require("../AI/ai_manager");
+var loaded_flag_characters = false;
+const save_path = path.join(game_launch_1.SAVE_GAME_PATH, 'characters.txt');
+var ai_campaign_decision_timer = 0;
 var CharacterSystem;
 (function (CharacterSystem) {
     function load() {
-        console.log('loading characters');
-        if (!fs_1.default.existsSync('characters.txt')) {
-            fs_1.default.writeFileSync('characters.txt', '');
+        if (loaded_flag_characters) {
+            return;
         }
-        let data = fs_1.default.readFileSync('characters.txt').toString();
+        console.log('loading characters');
+        if (!fs_1.default.existsSync(save_path)) {
+            fs_1.default.writeFileSync(save_path, '');
+        }
+        let data = fs_1.default.readFileSync(save_path).toString();
         let lines = data.split('\n');
         for (let line of lines) {
             if (line == '') {
@@ -27,6 +36,7 @@ var CharacterSystem;
             data_1.Data.Character.set(character.id, character);
             data_1.Data.Character.set_id(Math.max(character.id, data_1.Data.Character.id()));
         }
+        loaded_flag_characters = true;
         console.log('characters loaded');
     }
     CharacterSystem.load = load;
@@ -38,7 +48,7 @@ var CharacterSystem;
                 continue;
             str = str + character_to_string(item) + '\n';
         }
-        fs_1.default.writeFileSync('characters.txt', str);
+        fs_1.default.writeFileSync(save_path, str);
         console.log('characters saved');
     }
     CharacterSystem.save = save;
@@ -299,19 +309,15 @@ var CharacterSystem;
     //         return result;
     //     }
     function update(dt) {
-        // if 
-        // if (!this.in_battle()) {
-        //     this.out_of_battle_update(dt)
-        //     this.update_action_progress(dt);
-        //     this.update_visited()
-        // } else {
-        //     this.battle_update()      
-        // }
-        // let cell = this.get_cell()
-        // if (cell != undefined) {
-        //     cell.visit()
-        // }
-        // this.flags_handling_update();
+        ai_campaign_decision_timer += dt;
+        if (ai_campaign_decision_timer > 4) {
+            for (let char of data_1.Data.Character.list()) {
+                if (Math.random() > 0.6) {
+                    ai_manager_1.CampaignAI.decision(char);
+                }
+            }
+            ai_campaign_decision_timer = 0;
+        }
     }
     CharacterSystem.update = update;
     function battle_update(character) {

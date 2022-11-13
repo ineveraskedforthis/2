@@ -17,7 +17,7 @@ const market_1 = require("./market");
 var Event;
 (function (Event) {
     function move(character, new_cell) {
-        console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y);
+        // console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y)
         const old_cell = systems_communication_1.Convert.character_to_cell(character);
         systems_communication_1.Unlink.character_and_cell(character, old_cell);
         systems_communication_1.Link.character_and_cell(character, new_cell);
@@ -87,9 +87,9 @@ var Event;
     }
     Event.shoot = shoot;
     function attack(attacker, defender, dodge_flag, attack_type) {
-        if (defender.get_hp() == 0)
+        if (attacker.dead())
             return;
-        if (attacker.get_hp() == 0)
+        if (attacker.dead())
             return;
         const attack = system_2.Attack.generate_melee(attacker, attack_type);
         system_2.Attack.defend_against_melee(attack, defender);
@@ -148,34 +148,59 @@ var Event;
         user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
         //if target is dead, loot it all
-        if (defender.get_hp() == 0) {
-            const loot = system_3.CharacterSystem.rgo_check(defender);
-            system_3.CharacterSystem.transfer_all(defender, attacker);
-            for (const item of loot) {
-                attacker.stash.inc(item.material, item.amount);
-            }
-            // skinning check
-            const skin = generate_loot_1.Loot.skinning(defender.archetype.race);
-            if (skin > 0) {
-                const dice = Math.random();
-                if (dice < attacker.skills.skinning / 100) {
-                    attacker.stash.inc(materials_manager_1.RAT_SKIN, skin);
-                }
-                else {
-                    increase_skinning(attacker);
-                }
-            }
-            death(defender);
+        if (defender.dead()) {
+            kill(attacker, defender);
         }
     }
     Event.attack = attack;
+    function kill(killer, victim) {
+        console.log(killer.name + ' kills ' + victim.name);
+        death(victim);
+        console.log('killer stash');
+        console.log(killer.stash.data);
+        console.log('victim stash');
+        console.log(victim.stash.data);
+        const loot = system_3.CharacterSystem.rgo_check(victim);
+        system_3.CharacterSystem.transfer_all(victim, killer);
+        console.log('killer stash');
+        console.log(killer.stash.data);
+        console.log('victim stash');
+        console.log(victim.stash.data);
+        console.log('loot');
+        console.log(loot);
+        for (const item of loot) {
+            console.log(item);
+            killer.stash.inc(item.material, item.amount);
+            console.log(killer.stash.data);
+        }
+        console.log(killer.stash.data);
+        // skinning check
+        const skin = generate_loot_1.Loot.skinning(victim.archetype.race);
+        if (skin > 0) {
+            const dice = Math.random();
+            if (dice < killer.skills.skinning / 100) {
+                killer.stash.inc(materials_manager_1.RAT_SKIN, skin);
+            }
+            else {
+                increase_skinning(killer);
+            }
+        }
+        user_manager_1.UserManagement.add_user_to_update_queue(killer.user_id, 4 /* UI_Part.STASH */);
+    }
+    Event.kill = kill;
     function death(character) {
         // UserManagement.add_user_to_update_queue(character.user_id, "death");
+        if (character.cleared)
+            return;
+        console.log('death of ' + character.name);
+        console.log(character.stash.data);
         market_1.EventMarket.clear_orders(character);
         const user_data = systems_communication_1.Convert.character_to_user_data(character);
         systems_communication_1.Unlink.user_data_and_character(user_data, character);
         const battle = systems_communication_1.Convert.character_to_battle(character);
         systems_communication_1.Unlink.character_and_battle(character, battle);
+        character.cleared = true;
+        console.log(character.stash.data);
     }
     Event.death = death;
     function increase_evasion(character) {

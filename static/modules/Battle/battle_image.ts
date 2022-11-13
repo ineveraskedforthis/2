@@ -398,7 +398,7 @@ export class BattleImageNext {
     remove_selection() {
         if (this.selected != undefined) {
             let div = this.container.querySelector('.enemy_list > .fighter_' + this.selected)
-            div.classList.remove('selected_unit')
+            div?.classList.remove('selected_unit')
         }
         this.selected = undefined;
     }

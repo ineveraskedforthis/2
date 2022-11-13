@@ -189,7 +189,7 @@ export namespace Link {
     }
 
     export function character_and_cell(character: Character, cell: Cell) {
-        console.log('linking character with cell ' + cell.x + ' ' + cell.y)
+        // console.log('linking character with cell ' + cell.x + ' ' + cell.y)
         // add to the list and notify locals
         // note: rewrite later to lazy sending: send local characters to local characters once in X seconds if there are changes
         //       and send list immediately only to entering user

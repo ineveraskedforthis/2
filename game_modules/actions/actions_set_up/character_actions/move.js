@@ -11,17 +11,10 @@ exports.move = {
         if (char.in_battle()) {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
         }
-        console.log('attempt to move');
-        console.log(data);
-        console.log(system_1.MapSystem.can_move(data));
         if (system_1.MapSystem.can_move(data)) {
             let [x, y] = system_1.MapSystem.id_to_coordinate(char.cell_id);
             let dx = data[0] - x;
             let dy = data[1] - y;
-            console.log(dx, dy);
-            console.log(x, y);
-            console.log(char.cell_id);
-            console.log(system_1.MapSystem.is_valid_move(dx, dy));
             if (system_1.MapSystem.is_valid_move(dx, dy)) {
                 return 1 /* CharacterActionResponce.OK */;
             }

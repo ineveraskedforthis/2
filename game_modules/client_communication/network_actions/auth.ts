@@ -4,16 +4,20 @@ import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
 import { Validator } from "./common_validations";
 import fs from "fs"
+var path = require('path')
+import { SAVE_GAME_PATH } from "../../../game_launch";
 
 var current_sessions:{[_: string]: user_id} = {}
+
+const save_path = path.join(SAVE_GAME_PATH, 'sessions.txt')
 
 export namespace Auth {
     export function load() {
         console.log('loading sessions')
-        if (!fs.existsSync('sessions.txt')) {
-            fs.writeFileSync('sessions.txt', '')
+        if (!fs.existsSync(save_path)) {
+            fs.writeFileSync(save_path, '')
         }
-        let data = fs.readFileSync('sessions.txt').toString()
+        let data = fs.readFileSync(save_path).toString()
         let lines = data.split('\n')
         for (let line of lines) {
             if (line == '') {continue}
@@ -33,7 +37,7 @@ export namespace Auth {
         for (let session in current_sessions) {
             str = str + session + ' ' + current_sessions[session] + '\n'
         }
-        fs.writeFileSync('sessions.txt', str)
+        fs.writeFileSync(save_path, str)
         console.log('sessions saved')
     }
 

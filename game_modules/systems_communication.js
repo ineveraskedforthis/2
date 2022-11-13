@@ -183,7 +183,7 @@ var Link;
     }
     Link.character_and_user_data = character_and_user_data;
     function character_and_cell(character, cell) {
-        console.log('linking character with cell ' + cell.x + ' ' + cell.y);
+        // console.log('linking character with cell ' + cell.x + ' ' + cell.y)
         // add to the list and notify locals
         // note: rewrite later to lazy sending: send local characters to local characters once in X seconds if there are changes
         //       and send list immediately only to entering user

@@ -9,7 +9,7 @@ class Inventory {
     }
     add(item) {
         if (item == undefined)
-            return;
+            return undefined;
         let responce = -1;
         if (item != undefined) {
             responce = this.items.push(item) - 1;

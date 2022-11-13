@@ -1,7 +1,13 @@
 "use strict";
 // THIS MODULE MUST BE IMPORTED FIRST
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Data = exports.character_list = void 0;
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
+const game_launch_1 = require("../game_launch");
 var battles_list = [];
 var battles_dict = {};
 var last_id = 0;
@@ -18,6 +24,7 @@ const empty_set_orders_bulk = new Set();
 const empty_set_orders_item = new Set();
 var last_id_bulk = 0;
 var last_id_item = 0;
+var reputation = {};
 // class EntityData<type, id_type extends number & {__brand: string}> {
 //     list: type[]
 //     dict: {[_ in id_type]: type}
@@ -27,8 +34,66 @@ var last_id_item = 0;
 //     }
 // }
 // const X = EntityData<Character, char_id>
+const save_path = path_1.default.join(game_launch_1.SAVE_GAME_PATH, 'reputation.txt');
 var Data;
 (function (Data) {
+    function load() {
+        Reputation.load();
+    }
+    Data.load = load;
+    function save() {
+        Reputation.save();
+    }
+    Data.save = save;
+    let Reputation;
+    (function (Reputation) {
+        function load() {
+            console.log('loading reputation');
+            if (!fs_1.default.existsSync(save_path)) {
+                fs_1.default.writeFileSync(save_path, '');
+            }
+            let data = fs_1.default.readFileSync(save_path).toString();
+            let lines = data.split('\n');
+            for (let line of lines) {
+                if (line == '') {
+                    continue;
+                }
+                let reputation_line = JSON.parse(line);
+                reputation[reputation_line.char] = reputation_line.item;
+            }
+            console.log('battles loaded');
+        }
+        Reputation.load = load;
+        function save() {
+            console.log('saving reputation');
+            let str = '';
+            for (let [char_id, item] of Object.entries(reputation)) {
+                str = str + JSON.stringify({ char: char_id, item: item }) + '\n';
+            }
+            fs_1.default.writeFileSync(save_path, str);
+            console.log('reputation saved');
+        }
+        Reputation.save = save;
+        function from_id(faction, char_id) {
+            if (reputation[char_id] == undefined)
+                return 'neutral';
+            let responce = reputation[char_id][faction];
+            if (responce == undefined) {
+                return 'neutral';
+            }
+            return responce.level;
+        }
+        Reputation.from_id = from_id;
+        function set(faction, char_id, level) {
+            if (reputation[char_id] == undefined)
+                reputation[char_id] = {};
+            if (reputation[char_id][faction] == undefined)
+                reputation[char_id][faction] = { faction: faction, level: level };
+            else
+                reputation[char_id][faction].level = level;
+        }
+        Reputation.set = set;
+    })(Reputation = Data.Reputation || (Data.Reputation = {}));
     let Battle;
     (function (Battle) {
         function increase_id() {

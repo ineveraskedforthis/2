@@ -10,12 +10,16 @@ import { BattleEvent } from "./events"
 import fs from "fs"
 import { Event } from "../events/events"
 import { Data } from "../data"
+import path from "path"
+import { SAVE_GAME_PATH } from "../../game_launch"
 
 var last_unit_id = 0 as unit_id
 
 function time_distance(a: ms, b: ms) {
     return b - a as ms
 }
+
+const save_path = path.join(SAVE_GAME_PATH, 'battles.txt')
 
 export namespace BattleSystem {
 
@@ -25,10 +29,10 @@ export namespace BattleSystem {
 
     export function load() {
         console.log('loading battles')
-        if (!fs.existsSync('battles.txt')) {
-            fs.writeFileSync('battles.txt', '')
+        if (!fs.existsSync(save_path)) {
+            fs.writeFileSync(save_path, '')
         }
-        let data = fs.readFileSync('battles.txt').toString()
+        let data = fs.readFileSync(save_path).toString()
         let lines = data.split('\n')
 
         for (let line of lines) {
@@ -53,7 +57,7 @@ export namespace BattleSystem {
             if (item.ended) continue;
             str = str + battle_to_string(item) + '\n' 
         }
-        fs.writeFileSync('battles.txt', str)
+        fs.writeFileSync(save_path, str)
         console.log('battles saved')
     }
 

@@ -1,4 +1,15 @@
+import * as path from "path";
 import { readFileSync, writeFileSync, existsSync } from "fs";
+import * as fs from 'fs'
+
+export var SAVE_GAME_PATH = path.join('save_1')
+if (!fs.existsSync(SAVE_GAME_PATH)){
+    fs.mkdirSync(SAVE_GAME_PATH);
+}
+console.log(SAVE_GAME_PATH)
+
+
+
 
 // Always the first.
 import { Data } from "./game_modules/data";
@@ -21,8 +32,13 @@ import { BulkOrders, ItemOrders } from "./game_modules/market/system";
 
 
 
+
+
+
 export var io:io_type = require('socket.io')(http);
 export var socket_manager = new SocketManager(io)
+
+
 
 
 const gameloop = require('node-gameloop');
@@ -48,12 +64,14 @@ export function launch(http_server: any, express_server: any) {
         console.log('connection ready, checking for version update');
         let version = get_version()
         console.log(version)
-        migrate(version, constants.version)
 
+        migrate(version, constants.version)
         load()
+        
+
 
         console.log('systems are ready');
-        gameloop.setGameLoop( (delta: number) => update(delta, http_server, express_server), 500 );
+        gameloop.setGameLoop( (delta: number) => update(delta, http_server, express_server), 100 );
 
     } catch (e) {
         console.log(e);
@@ -68,6 +86,7 @@ function load() {
     BattleSystem.load()
     BulkOrders.load()
     ItemOrders.load()
+    Data.load()
 
     const characters = Data.Character.list()
 
@@ -85,6 +104,7 @@ function save() {
     BattleSystem.save()
     BulkOrders.save()
     ItemOrders.save()
+    Data.save()
 }
 
 var update_timer = 0
@@ -118,16 +138,17 @@ function update(delta: number, http_server:any, express_server: any) {
     }
 }
 
+const version_path = path.join(SAVE_GAME_PATH, 'version.txt')
 
 function get_version_raw():string {
-    if (!existsSync('version.txt')) {
-        writeFileSync('version.txt', '')
+    if (!existsSync(version_path)) {
+        writeFileSync(version_path, '')
     }
-    return readFileSync('version.txt').toString()
+    return readFileSync(version_path).toString()
 }
 
 export function set_version(n: number) {
-    writeFileSync('version.txt', '' + n)
+    writeFileSync(version_path, '' + n)
 }
 
 function get_version():number {

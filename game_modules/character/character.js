@@ -27,6 +27,7 @@ class Character {
         this.status.rage = 0;
         this.status.hp = max_hp;
         this.status.stress = 0;
+        this.cleared = false;
         this.action_progress = 0;
         this.action_duration = 0;
         this.skills = new skills_1.SkillList();

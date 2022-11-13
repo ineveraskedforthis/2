@@ -15,15 +15,23 @@ class Stash {
         return data;
     }
     load_from_json(data) {
-        for (let i in data) {
-            this.data[i] = data[i];
+        console.log(data);
+        for (let [i, amount] of Object.entries(data)) {
+            if (amount == null)
+                amount = 0;
+            this.data[Number(i)] = amount;
         }
+        console.log(this.data);
     }
     inc(tag, x) {
+        console.log('inc', tag, x);
         let tag_stash = this.get(tag);
         var tmp = 0;
         if (tag_stash == undefined) {
             tag_stash = 0;
+        }
+        if ((x == undefined) || (x == NaN)) {
+            x = 0;
         }
         if (tag_stash + x < 0) {
             tmp = -tag_stash;
@@ -37,7 +45,7 @@ class Stash {
         return tmp;
     }
     set(tag, x) {
-        if (x < 0) {
+        if ((x < 0) || (x == undefined) || (x == NaN)) {
             this.data[tag] = 0;
         }
         else {
@@ -47,18 +55,20 @@ class Stash {
     }
     get(tag) {
         let tmp = this.data[tag];
-        if (tmp == undefined)
+        if ((tmp == undefined) || (tmp == NaN))
             return 0;
         return tmp;
     }
     transfer(target, tag, amount) {
+        if ((amount == undefined) || (amount == null) || (amount == NaN))
+            amount = 0;
         var tmp = this.inc(tag, -amount);
         target.inc(tag, -tmp);
         return -tmp;
     }
     transfer_all(target) {
         for (let tag of materials_manager_1.materials.get_materials_list()) {
-            this.transfer(target, tag, this.data[tag]);
+            this.transfer(target, tag, this.get(tag));
         }
     }
 }

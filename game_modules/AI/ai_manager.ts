@@ -71,7 +71,7 @@ export namespace CampaignAI {
         }   
     }
 
-    function decision(char: Character) {
+    export function decision(char: Character) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
             return
@@ -142,7 +142,7 @@ export namespace CampaignAI {
     }
 }
 
-namespace AI {
+export namespace AI {
     export  function cook_food(character:Character) {
         let prepared_meat = character.trade_stash.get(FOOD) + character.stash.get(FOOD)
         let resource = character.stash.get(MEAT)

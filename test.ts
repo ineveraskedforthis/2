@@ -6,6 +6,7 @@ import { Equip } from "./game_modules/inventories/equip";
 import { CharacterSystem } from "./game_modules/character/system";
 import { HumanTemplateColony } from "./game_modules/character/races/human";
 import { Inventory } from "./game_modules/inventories/inventory";
+import { MapSystem } from "./game_modules/map/system";
 
 function string_difference([a, b]: [string, string]): [string, string] {
     let resulta = ''
@@ -97,8 +98,37 @@ function backpack_string_test() {
     console.log(j1 == j2)
 }
 
+function map_coords_test() {
+    console.log('coord transformation test')
+    let flag = true
+    
+    console.log('coord -> id -> coord')
+    for (let i = 0; i <= 10; i++) {
+        for (let j = 0; j <= 10; j++) {
+            let [x, y] = MapSystem.id_to_coordinate(MapSystem.coordinate_to_id(i, j))
+            if ((x != i) || (y != j)) {
+                console.log(i, j, x, y)
+                flag = false
+            }
+        }
+    }
+
+    console.log('id -> coord -> id')
+    for (let i = 0; i <= 500; i++) {
+        let tmp = MapSystem.id_to_coordinate(i as cell_id)
+        let x = MapSystem.coordinate_to_id(tmp[0], tmp[1])
+        if (i != x) {
+            console.log(i, x)
+            flag = false
+        }
+    }
+
+    console.log(flag)
+}
+
 
 character_serialization_test_simple()
 character_serialisation_test_advanced()
 equip_string_test()
 backpack_string_test()
+map_coords_test()

@@ -24,6 +24,12 @@ var EventInventory;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
     }
     EventInventory.switch_weapon = switch_weapon;
+    function add_item(character, item) {
+        const responce = character.equip.data.backpack.add(item);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
+        return responce;
+    }
+    EventInventory.add_item = add_item;
     function test(character) {
     }
 })(EventInventory = exports.EventInventory || (exports.EventInventory = {}));

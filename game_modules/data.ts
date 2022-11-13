@@ -1,5 +1,8 @@
 // THIS MODULE MUST BE IMPORTED FIRST
 
+import fs from "fs"
+import path from "path"
+import { SAVE_GAME_PATH } from "../game_launch"
 import { battle_id, unit_id } from "../shared/battle_data"
 import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
@@ -29,6 +32,16 @@ const empty_set_orders_item: Set<order_item_id> = new Set()
 var last_id_bulk = 0 as order_bulk_id
 var last_id_item = 0 as order_item_id
 
+type reputation_level = 'enemy'|'neutral'|'friend'|'member'
+
+interface reputation {
+    faction: number
+    level: reputation_level
+}
+
+
+var reputation: {[_ in char_id]: {[_ in number]: reputation}} = {}
+
 
 // class EntityData<type, id_type extends number & {__brand: string}> {
 //     list: type[]
@@ -41,9 +54,58 @@ var last_id_item = 0 as order_item_id
 // }
 
 // const X = EntityData<Character, char_id>
-
+const save_path = path.join(SAVE_GAME_PATH, 'reputation.txt')
 
 export namespace Data {
+    export function load() {
+        Reputation.load()
+    }
+    export function save() {
+        Reputation.save()
+    }
+
+    export namespace Reputation {
+        export function load() {
+            console.log('loading reputation')
+            if (!fs.existsSync(save_path)) {
+                fs.writeFileSync(save_path, '')
+            }
+            let data = fs.readFileSync(save_path).toString()
+            let lines = data.split('\n')
+
+            for (let line of lines) {
+                if (line == '') {continue}
+                let reputation_line:{char: char_id, item: {[_ in number]: reputation}} = JSON.parse(line)
+                reputation[reputation_line.char] = reputation_line.item
+            }
+
+            console.log('battles loaded')
+        }
+
+        export function save() {
+            console.log('saving reputation')
+            let str:string = ''
+            for (let [char_id, item] of Object.entries(reputation)) {
+                str = str + JSON.stringify({char: char_id, item: item}) + '\n' 
+            }
+            fs.writeFileSync(save_path, str)
+            console.log('reputation saved')
+        }
+
+        export function from_id(faction: number, char_id: char_id):reputation_level {
+            if (reputation[char_id] == undefined) return 'neutral';
+            let responce = reputation[char_id][faction]
+            if (responce == undefined) { return 'neutral' }
+            return responce.level
+        }
+
+        export function set(faction: number, char_id: char_id, level: reputation_level) {
+            if (reputation[char_id] == undefined) reputation[char_id] = {}
+            if (reputation[char_id][faction] == undefined) reputation[char_id][faction] = {faction: faction, level: level}
+            else reputation[char_id][faction].level = level
+        }
+    }
+
     export namespace Battle {
         export function increase_id() {
             last_id = last_id + 1 as battle_id

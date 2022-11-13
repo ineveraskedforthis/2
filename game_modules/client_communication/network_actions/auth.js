@@ -8,15 +8,18 @@ const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
 const common_validations_1 = require("./common_validations");
 const fs_1 = __importDefault(require("fs"));
+var path = require('path');
+const game_launch_1 = require("../../../game_launch");
 var current_sessions = {};
+const save_path = path.join(game_launch_1.SAVE_GAME_PATH, 'sessions.txt');
 var Auth;
 (function (Auth) {
     function load() {
         console.log('loading sessions');
-        if (!fs_1.default.existsSync('sessions.txt')) {
-            fs_1.default.writeFileSync('sessions.txt', '');
+        if (!fs_1.default.existsSync(save_path)) {
+            fs_1.default.writeFileSync(save_path, '');
         }
-        let data = fs_1.default.readFileSync('sessions.txt').toString();
+        let data = fs_1.default.readFileSync(save_path).toString();
         let lines = data.split('\n');
         for (let line of lines) {
             if (line == '') {
@@ -38,7 +41,7 @@ var Auth;
         for (let session in current_sessions) {
             str = str + session + ' ' + current_sessions[session] + '\n';
         }
-        fs_1.default.writeFileSync('sessions.txt', str);
+        fs_1.default.writeFileSync(save_path, str);
         console.log('sessions saved');
     }
     Auth.save = save;

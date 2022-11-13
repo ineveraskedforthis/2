@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CampaignAI = void 0;
+exports.AI = exports.CampaignAI = void 0;
 const craft_rat_armour_1 = require("../actions/actions_set_up/character_actions/craft_rat_armour");
 const action_manager_1 = require("../actions/action_manager");
 const materials_manager_1 = require("../manager_classes/materials_manager");
@@ -123,6 +123,7 @@ var CampaignAI;
             AI.make_armour(char);
         }
     }
+    CampaignAI.decision = decision;
 })(CampaignAI = exports.CampaignAI || (exports.CampaignAI = {}));
 var AI;
 (function (AI) {
@@ -229,4 +230,4 @@ var AI;
         }
     }
     AI.make_armour = make_armour;
-})(AI || (AI = {}));
+})(AI = exports.AI || (exports.AI = {}));

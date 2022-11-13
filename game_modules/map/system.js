@@ -4,7 +4,7 @@ exports.MapSystem = void 0;
 const map_definitions_1 = require("../static_data/map_definitions");
 const cell_1 = require("./cell");
 var size = [0, 0];
-var max_direction = 0;
+var max_direction = 30;
 var cells = [];
 const dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 var MapSystem;

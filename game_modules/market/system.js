@@ -11,6 +11,8 @@ const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 const classes_1 = require("./classes");
 const fs_1 = __importDefault(require("fs"));
+const game_launch_1 = require("../../game_launch");
+var path = require('path');
 var AuctionResponce;
 (function (AuctionResponce) {
     AuctionResponce["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";
@@ -22,6 +24,7 @@ var AuctionResponce;
 })(AuctionResponce = exports.AuctionResponce || (exports.AuctionResponce = {}));
 const empty_stash = new stash_1.Stash();
 // this file does not handle networking
+const save_path_bulk = path.join(game_launch_1.SAVE_GAME_PATH, 'bulk_market.txt');
 var BulkOrders;
 (function (BulkOrders) {
     function save() {
@@ -32,16 +35,16 @@ var BulkOrders;
                 continue;
             str = str + JSON.stringify(item) + '\n';
         }
-        fs_1.default.writeFileSync('bulk_market.txt', str);
+        fs_1.default.writeFileSync(save_path_bulk, str);
         console.log('bulk market orders saved');
     }
     BulkOrders.save = save;
     function load() {
         console.log('loading bulk market orders');
-        if (!fs_1.default.existsSync('bulk_market.txt')) {
-            fs_1.default.writeFileSync('bulk_market.txt', '');
+        if (!fs_1.default.existsSync(save_path_bulk)) {
+            fs_1.default.writeFileSync(save_path_bulk, '');
         }
-        let data = fs_1.default.readFileSync('bulk_market.txt').toString();
+        let data = fs_1.default.readFileSync(save_path_bulk).toString();
         let lines = data.split('\n');
         for (let line of lines) {
             if (line == '') {
@@ -153,6 +156,7 @@ var BulkOrders;
     }
     BulkOrders.new_sell_order = new_sell_order;
 })(BulkOrders = exports.BulkOrders || (exports.BulkOrders = {}));
+const save_path_item = path.join(game_launch_1.SAVE_GAME_PATH, 'item_market.txt');
 var ItemOrders;
 (function (ItemOrders) {
     function save() {
@@ -163,16 +167,16 @@ var ItemOrders;
                 continue;
             str = str + JSON.stringify(item) + '\n';
         }
-        fs_1.default.writeFileSync('item_market.txt', str);
+        fs_1.default.writeFileSync(save_path_item, str);
         console.log('item market orders saved');
     }
     ItemOrders.save = save;
     function load() {
         console.log('loading item market orders');
-        if (!fs_1.default.existsSync('item_market.txt')) {
-            fs_1.default.writeFileSync('item_market.txt', '');
+        if (!fs_1.default.existsSync(save_path_item)) {
+            fs_1.default.writeFileSync(save_path_item, '');
         }
-        let data = fs_1.default.readFileSync('item_market.txt').toString();
+        let data = fs_1.default.readFileSync(save_path_item).toString();
         let lines = data.split('\n');
         for (let line of lines) {
             if (line == '') {

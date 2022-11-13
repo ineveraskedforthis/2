@@ -20,16 +20,23 @@ export class Stash {
     }
 
     load_from_json(data:StashData) {
-        for (let i in data) {
-            this.data[i] = data[i]
+        console.log(data)
+        for (let [i, amount] of Object.entries(data)) {
+            if (amount == null) amount = 0
+            this.data[Number(i) as material_index] = amount
         }
+        console.log(this.data)
     }
 
     inc(tag: material_index, x: number) {
+        console.log('inc', tag, x)
         let tag_stash = this.get(tag);
         var tmp:number = 0
         if (tag_stash == undefined) {
             tag_stash = 0
+        }
+        if ((x == undefined)||(x == NaN)) {
+            x = 0
         }
         if (tag_stash + x < 0) {
             tmp = -tag_stash;
@@ -43,7 +50,7 @@ export class Stash {
     }
 
     set(tag: material_index, x: number) {
-        if (x < 0) {
+        if ((x < 0)||(x == undefined)||(x == NaN)) {
             this.data[tag] = 0
         } else {
             this.data[tag] = x;
@@ -53,20 +60,20 @@ export class Stash {
 
     get(tag: material_index):number {
         let tmp = this.data[tag]
-        if (tmp == undefined) return 0
+        if ((tmp == undefined)||(tmp == NaN)) return 0
         return tmp;
     }
 
     transfer(target: Stash, tag: material_index, amount: number) {
+        if ((amount == undefined) || (amount == null) || (amount == NaN)) amount = 0
         var tmp = this.inc(tag, -amount);
         target.inc(tag, -tmp);
         return -tmp;
     }
 
     transfer_all(target: Stash) {
-
         for (let tag of materials.get_materials_list()) {
-            this.transfer(target, tag, this.data[tag])
+            this.transfer(target, tag, this.get(tag))
         }
     }
 }

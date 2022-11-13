@@ -24,7 +24,7 @@ import { EventMarket } from "./market";
 export namespace Event {
 
     export function move(character: Character, new_cell: Cell) {
-        console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y)
+        // console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y)
         const old_cell = Convert.character_to_cell(character)
         Unlink.character_and_cell(character, old_cell)
         Link.character_and_cell(character, new_cell)
@@ -36,7 +36,7 @@ export namespace Event {
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MAP)
     }
 
-    export function new_character(template:CharacterTemplate, name: string, starting_cell: cell_id, model: ModelVariant) {
+    export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant) {
         let character = CharacterSystem.template_to_character(template, name, starting_cell)
         character.set_model_variation(model)
         const cell = MapSystem.SAFE_id_to_cell(starting_cell)
@@ -95,8 +95,8 @@ export namespace Event {
     }
 
     export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: damage_type) {
-        if (defender.get_hp() == 0) return
-        if (attacker.get_hp() == 0) return
+        if (attacker.dead()) return
+        if (attacker.dead()) return
         const attack = Attack.generate_melee(attacker, attack_type)
         Attack.defend_against_melee(attack, defender)
         
@@ -165,28 +165,57 @@ export namespace Event {
         UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
 
         //if target is dead, loot it all
-        if (defender.get_hp() == 0) {
-            const loot = CharacterSystem.rgo_check(defender)
-            CharacterSystem.transfer_all(defender, attacker)
-            for (const item of loot) {
-                attacker.stash.inc(item.material, item.amount)
-            }
-            // skinning check
-            const skin = Loot.skinning(defender.archetype.race)
-            if (skin > 0) {
-                const dice = Math.random()
-                if (dice < attacker.skills.skinning / 100) {
-                    attacker.stash.inc(RAT_SKIN, skin)
-                } else {
-                    increase_skinning(attacker)
-                }
-            }
-            death(defender)
+        if (defender.dead()) {
+            kill(attacker, defender)
         }
+    }
+
+    export function kill(killer: Character, victim: Character) {
+        console.log(killer.name + ' kills ' + victim.name)
+        death(victim)
+
+        console.log('killer stash')
+        console.log(killer.stash.data)
+        console.log('victim stash')
+        console.log(victim.stash.data)
+        
+        const loot = CharacterSystem.rgo_check(victim)
+        CharacterSystem.transfer_all(victim, killer)
+
+        console.log('killer stash')
+        console.log(killer.stash.data)
+        console.log('victim stash')
+        console.log(victim.stash.data)
+
+        console.log('loot')
+        console.log(loot)
+        for (const item of loot) {
+            console.log(item)
+            killer.stash.inc(item.material, item.amount)
+            console.log(killer.stash.data)
+        }
+        console.log(killer.stash.data)
+        // skinning check
+        const skin = Loot.skinning(victim.archetype.race)
+        if (skin > 0) {
+            const dice = Math.random()
+            if (dice < killer.skills.skinning / 100) {
+                killer.stash.inc(RAT_SKIN, skin)
+            } else {
+                increase_skinning(killer)
+            }
+        }
+        UserManagement.add_user_to_update_queue(killer.user_id, UI_Part.STASH)
     }
 
     export function death(character: Character) {
         // UserManagement.add_user_to_update_queue(character.user_id, "death");
+
+        if (character.cleared) return
+
+        console.log('death of ' + character.name)
+
+        console.log(character.stash.data)
 
         EventMarket.clear_orders(character)
 
@@ -194,7 +223,10 @@ export namespace Event {
         Unlink.user_data_and_character(user_data, character);
 
         const battle = Convert.character_to_battle(character)
-        Unlink.character_and_battle(character, battle)        
+        Unlink.character_and_battle(character, battle)
+        character.cleared = true
+
+        console.log(character.stash.data)
     }
 
 

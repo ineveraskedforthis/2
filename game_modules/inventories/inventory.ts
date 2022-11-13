@@ -18,8 +18,11 @@ export class Inventory{
         this.changed = false
     }
 
-    add(item:Item|undefined) {
-        if (item == undefined) return
+    add(item:Item):number
+    add(item:undefined):undefined
+    add(item:Item|undefined):number|undefined
+    add(item:Item|undefined):number|undefined {
+        if (item == undefined) return undefined
         let responce = -1
         if (item != undefined) {
             responce = this.items.push(item) - 1;

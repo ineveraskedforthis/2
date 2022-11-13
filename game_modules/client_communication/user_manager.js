@@ -14,20 +14,23 @@ const updates_1 = require("./network_actions/updates");
 const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
 const events_1 = require("../events/events");
+const game_launch_1 = require("../../game_launch");
+var path = require('path');
 exports.users_data_dict = {};
 var users_data_list = [];
 var login_to_user_data = {};
 exports.users_online_dict = {};
 var users_to_update = new Set();
 var last_id = 0;
+const save_path = path.join(game_launch_1.SAVE_GAME_PATH, 'users.txt');
 var UserManagement;
 (function (UserManagement) {
     function load_users() {
         console.log('loading users');
-        if (!fs_1.default.existsSync('users.txt')) {
-            fs_1.default.writeFileSync('users.txt', '');
+        if (!fs_1.default.existsSync(save_path)) {
+            fs_1.default.writeFileSync(save_path, '');
         }
-        let data = fs_1.default.readFileSync('users.txt').toString();
+        let data = fs_1.default.readFileSync(save_path).toString();
         let lines = data.split('\n');
         for (let line of lines) {
             if (line == '') {
@@ -56,7 +59,7 @@ var UserManagement;
         for (let item of users_data_list) {
             str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + '\n';
         }
-        fs_1.default.writeFileSync('users.txt', str);
+        fs_1.default.writeFileSync(save_path, str);
         console.log('users saved');
     }
     UserManagement.save_users = save_users;
@@ -161,14 +164,11 @@ var UserManagement;
     }
     UserManagement.get_new_character = get_new_character;
     function add_user_to_update_queue(id, reason) {
-        console.log('add user to update');
-        console.log(id);
         if (id == '#')
             return;
         let user = get_user(id);
         if (user == undefined)
             return;
-        console.log('ok');
         if (reason == 'character_creation') {
             user.character_created = true;
         }

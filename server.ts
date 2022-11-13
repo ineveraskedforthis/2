@@ -15,7 +15,8 @@ export interface Socket {
     emit(event: string, data: any):void;
 }
 
-var path = require('path');
+console.log('Welcome')
+import * as path from "path";
 
 app.use(express.json());
 app.use('/static', express.static(path.join(__dirname, 'static')));
@@ -27,5 +28,5 @@ http.listen(port, () => {
 });
 
 
-import { launch } from "./game_launch";
+import { launch } from "./game_launch.js";
 launch(http, app)

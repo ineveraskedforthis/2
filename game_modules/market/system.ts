@@ -10,6 +10,8 @@ import { cell_id, char_id, money, order_bulk_id, order_item_id } from "../types"
 import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
 
 import fs from "fs"
+import { SAVE_GAME_PATH } from "../../game_launch";
+var path = require('path')
 
 export enum AuctionResponce {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
@@ -25,6 +27,8 @@ const empty_stash = new Stash()
 
 // this file does not handle networking
 
+const save_path_bulk = path.join(SAVE_GAME_PATH, 'bulk_market.txt')
+
 export namespace BulkOrders {
     export function save() {
         console.log('saving bulk market orders')
@@ -34,17 +38,17 @@ export namespace BulkOrders {
             str = str + JSON.stringify(item) + '\n' 
             
         }
-        fs.writeFileSync('bulk_market.txt', str)
+        fs.writeFileSync(save_path_bulk, str)
         console.log('bulk market orders saved')
         
     }
 
     export function load() {
         console.log('loading bulk market orders')
-        if (!fs.existsSync('bulk_market.txt')) {
-            fs.writeFileSync('bulk_market.txt', '')
+        if (!fs.existsSync(save_path_bulk)) {
+            fs.writeFileSync(save_path_bulk, '')
         }
-        let data = fs.readFileSync('bulk_market.txt').toString()
+        let data = fs.readFileSync(save_path_bulk).toString()
         let lines = data.split('\n')
         for (let line of lines) {
             if (line == '') {continue}
@@ -158,6 +162,8 @@ export namespace BulkOrders {
     }
 }
 
+const save_path_item = path.join(SAVE_GAME_PATH, 'item_market.txt')
+
 export namespace ItemOrders {
     export function save() {
         console.log('saving item market orders')
@@ -167,17 +173,17 @@ export namespace ItemOrders {
             str = str + JSON.stringify(item) + '\n' 
             
         }
-        fs.writeFileSync('item_market.txt', str)
+        fs.writeFileSync(save_path_item, str)
         console.log('item market orders saved')
         
     }
 
     export function load() {
         console.log('loading item market orders')
-        if (!fs.existsSync('item_market.txt')) {
-            fs.writeFileSync('item_market.txt', '')
+        if (!fs.existsSync(save_path_item)) {
+            fs.writeFileSync(save_path_item, '')
         }
-        let data = fs.readFileSync('item_market.txt').toString()
+        let data = fs.readFileSync(save_path_item).toString()
         let lines = data.split('\n')
         for (let line of lines) {
             if (line == '') {continue}

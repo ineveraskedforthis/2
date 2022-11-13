@@ -39,10 +39,8 @@ var AIhelper;
         let battles = battles_in_cell(agent);
         for (let item of battles) {
             let battle = systems_communication_1.Convert.id_to_battle(item);
-            console.log('check_battle');
             if (!(battle.ended)) {
                 let team = check_team_to_join(agent, battle);
-                console.log(team);
                 if (team == 'no_interest')
                     continue;
                 else {

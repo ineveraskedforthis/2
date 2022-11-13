@@ -1,9 +1,6 @@
 import { Character } from "../../../character/character";
 import {ActionTargeted, CharacterActionResponce} from '../../action_manager'
 import { MapSystem } from "../../../map/system";
-import { Convert, Link, Unlink } from "../../../systems_communication";
-import { UserManagement } from "../../../client_communication/user_manager";
-import { UI_Part } from "../../../client_communication/causality_graph";
 import { Event } from "../../../events/events";
 
 export const move:ActionTargeted ={
@@ -15,17 +12,10 @@ export const move:ActionTargeted ={
         if (char.in_battle()) {
             return CharacterActionResponce.IN_BATTLE
         }
-        console.log('attempt to move')
-        console.log(data)
-        console.log(MapSystem.can_move(data))
         if (MapSystem.can_move(data)) {
             let [x, y] = MapSystem.id_to_coordinate(char.cell_id)
             let dx = data[0] - x;
             let dy = data[1] - y;
-            console.log(dx, dy)
-            console.log(x, y)
-            console.log(char.cell_id)
-            console.log(MapSystem.is_valid_move(dx, dy))
             if (MapSystem.is_valid_move(dx, dy)) {
                 return CharacterActionResponce.OK
             }
