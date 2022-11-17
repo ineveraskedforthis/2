@@ -1,6 +1,7 @@
 import { battle_position, UnitSocket, unit_id } from "../../../shared/battle_data"
 import { BattleImage, units_views } from "./battle_image";
 import { position_c } from "./battle_image_helper";
+import { BattleUnitView } from "./battle_view";
 import { BATTLE_MOVEMENT_SPEED } from "./constants";
 
 function new_log_message(msg: string) {
@@ -163,17 +164,11 @@ export class UpdateDataEvent extends BattleImageEvent {
     }
 }
 
-export class ClearBattleEvent {
-    type: 'clear' 
-
-    constructor() {
-        this.type = 'clear'
-    }
-
-    effect(battle: BattleImageNext) {
+export class ClearBattleEvent extends BattleImageEvent {
+    effect(dt: number) {
         console.log('clear battle')
-        battle.reset_data()
-        battle.in_progress = false
+        BattleImage.stop()
+        return true
     }
 
     generate_log_message():string {
@@ -195,20 +190,21 @@ function get_attack_direction(a: BattleUnitView, d: BattleUnitView) {
     return hor + '_' + ver
 }
 
-export class AttackEvent {
-    type: 'attack'
-    unit_id: unit_id
-    target_id: unit_id
+// write attack stages
 
-    constructor(unit: unit_id, target: unit_id) {
-        this.type = 'attack'
-        this.unit_id = unit
-        this.target_id = target
+export class AttackEvent extends BattleImageEvent {
+    target: unit_id
+
+    current_duration: number
+
+    constructor(unit_id: unit_id, ap_change: number, hp_change: number, attack_data) {
+        super(unit_id, ap_change, hp_change)
+        this.target = attack_data.target
     }
 
-    effect(battle: BattleImageNext) {
-        let unit_view_attacker = battle.units_views[this.unit_id]
-        let unit_view_defender = battle.units_views[this.target_id]
+    effect(dt: number) {
+        let unit_view_attacker = units_views[this.unit]
+        let unit_view_defender = units_views[this.target]
 
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
@@ -219,9 +215,9 @@ export class AttackEvent {
         // unit_view_defender.animation_sequence.push('attack')
     }
 
-    generate_log_message(battle: BattleImageNext):string {
-        let unit = battle.units_data[this.unit_id]
-        let target = battle.units_data[this.target_id]
+    generate_log_message():string {
+        let unit = units_data[this.unit_id]
+        let target = units_data[this.target_id]
         let result = unit.name + ' attacks ' + target.name + ': '
         return result + ' HIT!'
     }
@@ -238,9 +234,9 @@ export class MissEvent {
         this.target_id = target 
     }
 
-    effect(battle: BattleImageNext) {
-        let unit_view_attacker = battle.units_views[this.unit_id]
-        let unit_view_defender = battle.units_views[this.target_id]
+    effect() {
+        let unit_view_attacker = units_views[this.unit_id]
+        let unit_view_defender = units_views[this.target_id]
 
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
@@ -248,9 +244,9 @@ export class MissEvent {
         unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
     }
 
-    generate_log_message(battle: BattleImageNext):string {
-        let unit = battle.units_data[this.unit_id]
-        let target = battle.units_data[this.target_id]
+    generate_log_message():string {
+        let unit = units_data[this.unit_id]
+        let target = units_data[this.target_id]
         let result = unit.name + ' attacks ' + target.name + ': '
         return result + ' MISS!';
     }
@@ -265,16 +261,16 @@ export class RetreatEvent {
         this.type = 'retreat'
     }
 
-    effect(battle: BattleImageNext) {
-        if (this.unit_id == battle.player_id) {
+    effect() {
+        if (this.unit_id == player_id) {
             alert('You had retreated from the battle')
         } else {
             alert('Someone had retreated from the battle')
         }
     }
 
-    generate_log_message(battle: BattleImageNext):string {
-        let unit = battle.units_data[this.unit_id]
+    generate_log_message():string {
+        let unit = units_data[this.unit_id]
         return unit.name + ' retreats'
     }
 }
@@ -292,8 +288,8 @@ export class NewTurnEvent {
         this.unit = unit
     }
 
-    effect(battle: BattleImageNext) {
-        battle.set_current_turn(this.unit)
+    effect() {
+        set_current_turn(this.unit)
     }
 
     generate_log_message():string {
