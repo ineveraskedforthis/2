@@ -14,6 +14,7 @@ import { Cell } from "./map/cell";
 import { MapSystem } from "./map/system";
 import { OrderBulk, OrderItem, OrderItemJson } from "./market/classes";
 import { cell_id, char_id, order_bulk_id, order_item_id, user_online_id } from "./types";
+import { Alerts } from "./client_communication/network_actions/alerts";
 
 
 export namespace Convert {
@@ -232,14 +233,7 @@ export namespace Unlink {
 
     export function character_and_cell(character: Character, cell: Cell) {
         cell.exit(character.id)
-        const locals = cell.get_characters_list()
-        for (let item of locals) {
-            const id = item.id
-            const local_character = Convert.id_to_character(id)
-            const local_user = Convert.character_to_user(local_character)
-            if (local_user == undefined) {continue}
-            UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
-        }
+        Alerts.cell_locals(cell)
     }
 
     export function character_and_battle(character: Character, battle: Battle|undefined) {

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MapSystem = void 0;
+const rat_1 = require("../character/races/rat");
+const events_1 = require("../events/events");
 const map_definitions_1 = require("../static_data/map_definitions");
 const cell_1 = require("./cell");
 var size = [0, 0];
@@ -81,11 +83,14 @@ var MapSystem;
         return (y >= 0) && (x >= 0) && (x < size[0]) && (y < size[1]);
     }
     MapSystem.validate_coordinates = validate_coordinates;
-    function update(dt) {
+    function update(dt, rats_number) {
         for (const cell of cells) {
             if (cell == undefined)
                 continue;
             cell.update(dt);
+            if ((rats_number < 60) && (cell.development.rats == 1)) {
+                events_1.Event.new_character(rat_1.RatTemplate, undefined, cell.id, undefined);
+            }
         }
     }
     MapSystem.update = update;

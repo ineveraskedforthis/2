@@ -4,9 +4,12 @@ import { Battle } from "../../battle/classes/battle";
 import { Unit } from "../../battle/classes/unit";
 import { BattleSystem } from "../../battle/system";
 import { Character } from "../../character/character";
+import { Cell } from "../../map/cell";
 import { OrderBulkJson } from "../../market/classes";
 import { Convert } from "../../systems_communication";
+import { UI_Part } from "../causality_graph";
 import { User } from "../user";
+import { UserManagement } from "../user_manager";
 
 export namespace Alerts {
     export function not_enough_to_user(user: User, tag: string, required: number, current: number) {
@@ -88,14 +91,15 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'b-action-chance', {tag: tag, value: value})
     }
 
-    export function battle_event(battle: Battle, tag:BattleEventTag, unit_id:unit_id, position: battle_position, target:unit_id) {
+    export function battle_event(battle: Battle, tag:BattleEventTag, unit_id:unit_id, position: battle_position, target:unit_id, cost: number) {
         battle.last_event_index += 1
         const Event:BattleEventSocket = {
             tag: tag,
             creator: unit_id,
             target_position: position,
             target_unit: target,
-            index: battle.last_event_index
+            index: battle.last_event_index,
+            cost: cost,
         }
         for (let unit of battle.heap.raw_data) {
             const character = Convert.unit_to_character(unit)
@@ -130,6 +134,17 @@ export namespace Alerts {
         for (let unit of battle.heap.raw_data) {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-remove-unit', Convert.unit_to_unit_socket(removed_unit))
+        }
+    }
+
+    export function cell_locals(cell: Cell) {
+        const locals = cell.get_characters_list()
+        for (let item of locals) {
+            const id = item.id
+            const local_character = Convert.id_to_character(id)
+            const local_user = Convert.character_to_user(local_character)
+            if (local_user == undefined) {continue}
+            UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
         }
     }
     

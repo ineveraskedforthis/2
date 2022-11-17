@@ -115,15 +115,21 @@ function update(delta, http_server, express_server) {
         process.exit(0);
     }
     system_1.CharacterSystem.update(delta);
-    system_2.MapSystem.update(delta);
     action_manager_1.ActionManager.update_characters(delta);
     user_manager_1.UserManagement.update_users();
     system_3.BattleSystem.update();
+    let rats = 0;
     for (let character of data_1.Data.Character.list()) {
         if (character.dead()) {
             events_1.Event.death(character);
         }
+        else {
+            if (character.archetype.race == 'rat') {
+                rats += 1;
+            }
+        }
     }
+    system_2.MapSystem.update(delta, rats);
     update_timer += delta;
     if (update_timer > 50000) {
         save();

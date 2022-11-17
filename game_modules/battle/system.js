@@ -12,7 +12,6 @@ const heap_1 = require("./classes/heap");
 const unit_1 = require("./classes/unit");
 const events_1 = require("./events");
 const fs_1 = __importDefault(require("fs"));
-const events_2 = require("../events/events");
 const data_1 = require("../data");
 const path_1 = __importDefault(require("path"));
 const game_launch_1 = require("../../game_launch");
@@ -176,6 +175,10 @@ var BattleSystem;
                 return;
             }
             let character = systems_communication_1.Convert.unit_to_character(unit);
+            if (character.dead()) {
+                events_1.BattleEvent.Leave(battle, unit);
+                return;
+            }
             system_1.CharacterSystem.battle_update(character);
             //processing cases of player and ai separately for a now
             // if character is player, then wait for input
@@ -189,7 +192,7 @@ var BattleSystem;
                 if (responce == 'end')
                     events_1.BattleEvent.EndTurn(battle, unit);
                 if (responce == 'leave')
-                    events_2.Event.stop_battle(battle);
+                    events_1.BattleEvent.Leave(battle, unit);
             }
         }
     }
@@ -222,7 +225,7 @@ var BattleSystem;
             return;
         const character = systems_communication_1.Convert.unit_to_character(unit);
         if (character.dead())
-            return 'end';
+            return 'leave';
         do {
             var action = battle_ai_1.BattleAI.action(battle, unit, character);
         } while (action == 'again');
@@ -232,7 +235,9 @@ var BattleSystem;
         let data = {};
         for (var i = 0; i < battle.heap.raw_data.length; i++) {
             let unit = battle.heap.raw_data[i];
-            data[i] = systems_communication_1.Convert.unit_to_unit_socket(unit);
+            let character = systems_communication_1.Convert.unit_to_character(unit);
+            if (!character.dead())
+                data[i] = (systems_communication_1.Convert.unit_to_unit_socket(unit));
         }
         return data;
     }

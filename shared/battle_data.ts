@@ -38,6 +38,7 @@ export interface BattleEventSocket{
     creator: unit_id
     target_position: battle_position
     target_unit: unit_id
+    cost: number
     index: number // events are numbered, they should be treated in succession
 }
 

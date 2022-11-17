@@ -1,3 +1,5 @@
+import { RatTemplate } from "../character/races/rat";
+import { Event } from "../events/events";
 import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
 import { cell_id, world_dimensions } from "../types";
 import { Cell} from "./cell";
@@ -81,10 +83,13 @@ export namespace MapSystem {
         return (y >= 0) && (x >= 0) && (x < size[0]) && (y < size[1]) 
     }
 
-    export function update(dt: number) {
+    export function update(dt: number, rats_number: number) {
         for (const cell of cells) {
             if (cell == undefined) continue
             cell.update(dt)
+            if ((rats_number < 60) && (cell.development.rats == 1)) {
+                Event.new_character(RatTemplate, undefined, cell.id, undefined)
+            }
         }
     }
 

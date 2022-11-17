@@ -18,6 +18,8 @@ var BattleAI;
                 continue;
             }
             const target_character = systems_communication_1.Convert.unit_to_character(target_unit);
+            if (target_character.dead())
+                continue;
             const d = geom_1.geom.dist(unit.position, target_unit.position);
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
                 && (unit.team != target_unit.team)
@@ -64,6 +66,7 @@ var BattleAI;
             const target_id = calculate_closest_enemy(battle, agent_unit.id);
             // no target was found
             if (target_id == undefined) {
+                events_1.BattleEvent.Flee(battle, agent_unit);
                 return 'leave';
             }
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual');

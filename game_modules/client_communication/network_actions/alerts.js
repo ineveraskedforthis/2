@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Alerts = void 0;
 const system_1 = require("../../battle/system");
 const systems_communication_1 = require("../../systems_communication");
+const user_manager_1 = require("../user_manager");
 var Alerts;
 (function (Alerts) {
     function not_enough_to_user(user, tag, required, current) {
@@ -133,6 +134,19 @@ var Alerts;
         }
     }
     Alerts.remove_unit = remove_unit;
+    function cell_locals(cell) {
+        const locals = cell.get_characters_list();
+        for (let item of locals) {
+            const id = item.id;
+            const local_character = systems_communication_1.Convert.id_to_character(id);
+            const local_user = systems_communication_1.Convert.character_to_user(local_character);
+            if (local_user == undefined) {
+                continue;
+            }
+            user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 8 /* UI_Part.LOCAL_CHARACTERS */);
+        }
+    }
+    Alerts.cell_locals = cell_locals;
     function map_action(user, tag, data) {
         Alerts.generic_user_alert(user, 'map-action-status', { tag: tag, value: data });
     }

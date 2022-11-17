@@ -193,7 +193,7 @@ export namespace BattleSystem {
             let character:Character = Convert.unit_to_character(unit)
 
             if (character.dead()) {
-                BattleEvent.EndTurn(battle, unit)
+                BattleEvent.Leave(battle, unit)
                 return
             }
 
@@ -210,7 +210,7 @@ export namespace BattleSystem {
             {
                 const responce = AI_turn(battle)
                 if (responce == 'end') BattleEvent.EndTurn(battle, unit)
-                if (responce == 'leave') Event.stop_battle(battle)
+                if (responce == 'leave') BattleEvent.Leave(battle, unit);
             }
         }
     }
@@ -236,7 +236,7 @@ export namespace BattleSystem {
         const unit = battle.heap.get_selected_unit()
         if (unit == undefined) return
         const character = Convert.unit_to_character(unit)
-        if (character.dead()) return 'end'
+        if (character.dead()) return 'leave'
         do {
             var action = BattleAI.action(battle, unit, character);
         } while (action == 'again')
@@ -248,8 +248,7 @@ export namespace BattleSystem {
         for (var i = 0; i < battle.heap.raw_data.length; i++) {
             let unit = battle.heap.raw_data[i];
             let character:Character = Convert.unit_to_character(unit)
-            if (character.dead())
-            data[i] = (Convert.unit_to_unit_socket(unit))
+            if (!character.dead()) data[i] = (Convert.unit_to_unit_socket(unit))
         }
         return data
     }

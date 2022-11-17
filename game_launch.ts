@@ -120,16 +120,24 @@ function update(delta: number, http_server:any, express_server: any) {
     }
 
     CharacterSystem.update(delta)
-    MapSystem.update(delta)
+    
     ActionManager.update_characters(delta)
     UserManagement.update_users()
     BattleSystem.update()
 
+    let rats = 0
+
     for (let character of Data.Character.list()) {
         if (character.dead()) {
             Event.death(character)
+        } else {
+            if (character.archetype.race == 'rat') {
+                rats += 1
+            }
         }
     }
+
+    MapSystem.update(delta, rats)
     
     update_timer += delta
     if (update_timer > 50000) {

@@ -36,8 +36,9 @@ export namespace Event {
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MAP)
     }
 
-    export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant) {
+    export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant|undefined) {
         let character = CharacterSystem.template_to_character(template, name, starting_cell)
+        if (model == undefined) model = {chin: 0, mouth: 0, eyes: 0}
         character.set_model_variation(model)
         const cell = MapSystem.SAFE_id_to_cell(starting_cell)
         Link.character_and_cell(character, cell)
@@ -174,25 +175,11 @@ export namespace Event {
         console.log(killer.name + ' kills ' + victim.name)
         death(victim)
 
-        console.log('killer stash')
-        console.log(killer.stash.data)
-        console.log('victim stash')
-        console.log(victim.stash.data)
-        
         const loot = CharacterSystem.rgo_check(victim)
         CharacterSystem.transfer_all(victim, killer)
 
-        console.log('killer stash')
-        console.log(killer.stash.data)
-        console.log('victim stash')
-        console.log(victim.stash.data)
-
-        console.log('loot')
-        console.log(loot)
         for (const item of loot) {
-            console.log(item)
             killer.stash.inc(item.material, item.amount)
-            console.log(killer.stash.data)
         }
         console.log(killer.stash.data)
         // skinning check
@@ -215,8 +202,6 @@ export namespace Event {
 
         console.log('death of ' + character.name)
 
-        console.log(character.stash.data)
-
         EventMarket.clear_orders(character)
 
         const user_data = Convert.character_to_user_data(character)
@@ -224,9 +209,11 @@ export namespace Event {
 
         const battle = Convert.character_to_battle(character)
         Unlink.character_and_battle(character, battle)
+
+        const cell = Convert.character_to_cell(character)
+        Unlink.character_and_cell(character, cell)
         character.cleared = true
 
-        console.log(character.stash.data)
     }
 
 

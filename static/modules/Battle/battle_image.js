@@ -97,11 +97,13 @@ export class BattleImageNext {
     }
     update_unit(unit) {
         console.log('update');
-        console.log(unit.id + ' ' + unit.name + 'ap: ' + unit.ap);
+        console.log(unit);
         let event = new UpdateDataEvent(unit.id, unit);
         this.events_list.push(event);
     }
     update(data) {
+        console.log('battle update');
+        console.log(data);
         for (let unit of Object.values(data)) {
             if (this.had_left[unit.id])
                 continue;
@@ -207,8 +209,6 @@ export class BattleImageNext {
         //handle_events
         for (let event of this.events_list) {
             event.effect(this);
-            let log_entry = event.generate_log_message(this);
-            new_log_message(log_entry);
         }
         this.events_list = [];
         this.canvas_context.clearRect(0, 0, this.w, this.h);
@@ -279,7 +279,8 @@ export class BattleImageNext {
     set_selection(index) {
         if (this.selected != undefined) {
             let div = this.container.querySelector('.enemy_list > .fighter_' + this.selected);
-            div.classList.remove('selected_unit');
+            if (div != undefined)
+                div.classList.remove('selected_unit');
         }
         this.selected = index;
         this.anchor = undefined;

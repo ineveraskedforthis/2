@@ -1,5 +1,5 @@
 import { battle_position } from "../../../shared/battle_data.js"
-import { BattleImageNext } from "./battle_image.js"
+
 import { 
     AnimatedImage, BattleUnit, 
     animation_event, ImagesDict, 
@@ -8,6 +8,7 @@ import {
 } from "./battle_image_helper.js"
 
 export class BattleUnitView {
+    name: string
     side_bar_div: any
     position: battle_position
     killed: boolean
@@ -24,6 +25,7 @@ export class BattleUnitView {
     animation_sequence: animation_event[]
     
     constructor(unit: BattleUnit) {
+        this.name = unit.name
         this.unit = unit
         this.killed = unit.killed
         this.position = unit.position
@@ -39,8 +41,8 @@ export class BattleUnitView {
         this.a_image = new AnimatedImage(unit.tag)
     }
     
-    update(battle: BattleImageNext) {
-        if (battle.player_id == this.unit.id) {
+    update() {
+        if (player_id == this.unit.id) {
             battle.update_player_actions_availability()
         }
         this.hp_damaged = this.hp_damaged + this.hp - this.unit.hp
@@ -53,7 +55,7 @@ export class BattleUnitView {
         div.innerHTML = this.unit.name + '<br> hp: ' + this.unit.hp + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10
     }
 
-    handle_events(dt: number, battle: BattleImageNext, images:ImagesDict) {
+    handle_events(dt: number, images:ImagesDict) {
 
         let unit = this.unit
 

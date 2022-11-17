@@ -20,6 +20,7 @@ export namespace BattleAI {
             const target_unit = units[i]
             if (target_unit == undefined) {continue}
             const target_character = Convert.unit_to_character(target_unit)
+            if (target_character.dead()) continue
             const d = geom.dist(unit.position, target_unit.position);
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
                 && (unit.team != target_unit.team) 
@@ -69,6 +70,7 @@ export namespace BattleAI {
             const target_id  = calculate_closest_enemy(battle, agent_unit.id)
             // no target was found
             if (target_id == undefined) {
+                BattleEvent.Flee(battle, agent_unit)
                 return 'leave'
             }
             

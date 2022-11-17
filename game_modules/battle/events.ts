@@ -43,7 +43,7 @@ export namespace BattleEvent {
         battle.heap.push(unit.id)
 
         // send updates
-        Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id)
+        Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, 0)
         Alerts.battle_update_unit(battle, unit)
     }
 
@@ -67,7 +67,7 @@ export namespace BattleEvent {
 
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
-        Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id)
+        Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0)
     }
 
     export function Move(battle: Battle, unit: Unit, target: battle_position) {
@@ -86,13 +86,13 @@ export namespace BattleEvent {
 
         unit.action_points_left =  unit.action_points_left - points_spent as action_points
         
-        Alerts.battle_event(battle, 'move', unit.id, target, unit.id)
+        Alerts.battle_event(battle, 'move', unit.id, target, unit.id, points_spent)
         Alerts.battle_update_unit(battle, unit)
     }
 
     export function Attack(battle: Battle, attacker: Unit, defender:Unit, attack_type: melee_attack_type) {
         const AttackerCharacter = Convert.unit_to_character(attacker)
-        
+        const COST = 3
 
         let dist = geom.dist(attacker.position, defender.position)
         
@@ -102,34 +102,37 @@ export namespace BattleEvent {
             if (res.action == 'move') Move(battle, attacker, res.target)
         }
 
-        if (attacker.action_points_left < 3) {
+        if (attacker.action_points_left < COST) {
             Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
             return 
         }
 
         let dodge_flag = (defender.dodge_turns > 0)
-        attacker.action_points_left = attacker.action_points_left - 3 as action_points
+        attacker.action_points_left = attacker.action_points_left - COST as action_points
         Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type)
-        Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id)
+        Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id, COST)
         Alerts.battle_update_unit(battle, attacker)
         Alerts.battle_update_unit(battle, defender)
     }
 
     export function Shoot(battle: Battle, attacker: Unit, defender: Unit) {
         const AttackerCharacter = Convert.unit_to_character(attacker)
-        if (attacker.action_points_left < 3) {
-            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
+
+        const COST = 3
+
+        if (attacker.action_points_left < COST) {
+            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', COST, attacker.action_points_left)
             return
         }
         let dist = geom.dist(attacker.position, defender.position)
         const DefenderCharacter = Convert.unit_to_character(defender)
 
-        attacker.action_points_left = attacker.action_points_left - 3 as action_points
+        attacker.action_points_left = attacker.action_points_left - COST as action_points
         let responce = Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
         switch(responce) {
-            case 'miss': Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id); break;
+            case 'miss': Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST); break;
             case 'no_ammo': Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 1, 0)
-            case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id)
+            case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST)
         }
         Alerts.battle_update_unit(battle, attacker)
         Alerts.battle_update_unit(battle, defender)
@@ -145,7 +148,7 @@ export namespace BattleEvent {
             }
 
             if (dice <= flee_chance()) { // success
-                Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id)
+                Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3)
                 Event.stop_battle(battle)
             }
         }

@@ -29,6 +29,8 @@ var Event;
     Event.move = move;
     function new_character(template, name, starting_cell, model) {
         let character = system_3.CharacterSystem.template_to_character(template, name, starting_cell);
+        if (model == undefined)
+            model = { chin: 0, mouth: 0, eyes: 0 };
         character.set_model_variation(model);
         const cell = system_4.MapSystem.SAFE_id_to_cell(starting_cell);
         systems_communication_1.Link.character_and_cell(character, cell);
@@ -156,22 +158,10 @@ var Event;
     function kill(killer, victim) {
         console.log(killer.name + ' kills ' + victim.name);
         death(victim);
-        console.log('killer stash');
-        console.log(killer.stash.data);
-        console.log('victim stash');
-        console.log(victim.stash.data);
         const loot = system_3.CharacterSystem.rgo_check(victim);
         system_3.CharacterSystem.transfer_all(victim, killer);
-        console.log('killer stash');
-        console.log(killer.stash.data);
-        console.log('victim stash');
-        console.log(victim.stash.data);
-        console.log('loot');
-        console.log(loot);
         for (const item of loot) {
-            console.log(item);
             killer.stash.inc(item.material, item.amount);
-            console.log(killer.stash.data);
         }
         console.log(killer.stash.data);
         // skinning check
@@ -193,14 +183,14 @@ var Event;
         if (character.cleared)
             return;
         console.log('death of ' + character.name);
-        console.log(character.stash.data);
         market_1.EventMarket.clear_orders(character);
         const user_data = systems_communication_1.Convert.character_to_user_data(character);
         systems_communication_1.Unlink.user_data_and_character(user_data, character);
         const battle = systems_communication_1.Convert.character_to_battle(character);
         systems_communication_1.Unlink.character_and_battle(character, battle);
+        const cell = systems_communication_1.Convert.character_to_cell(character);
+        systems_communication_1.Unlink.character_and_cell(character, cell);
         character.cleared = true;
-        console.log(character.stash.data);
     }
     Event.death = death;
     function increase_evasion(character) {

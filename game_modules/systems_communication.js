@@ -8,6 +8,7 @@ const user_manager_1 = require("./client_communication/user_manager");
 const data_1 = require("./data");
 const system_3 = require("./map/system");
 const classes_1 = require("./market/classes");
+const alerts_1 = require("./client_communication/network_actions/alerts");
 var Convert;
 (function (Convert) {
     function number_to_order_item_id(id) {
@@ -133,7 +134,8 @@ var Convert;
             max_hp: character.stats.max.hp,
             ap: unit.action_points_left,
             id: unit.id,
-            next_turn: unit.next_turn_after
+            next_turn: unit.next_turn_after,
+            dead: character.dead()
         };
     }
     Convert.unit_to_unit_socket = unit_to_unit_socket;
@@ -225,16 +227,7 @@ var Unlink;
     Unlink.user_data_and_character = user_data_and_character;
     function character_and_cell(character, cell) {
         cell.exit(character.id);
-        const locals = cell.get_characters_list();
-        for (let item of locals) {
-            const id = item.id;
-            const local_character = Convert.id_to_character(id);
-            const local_user = Convert.character_to_user(local_character);
-            if (local_user == undefined) {
-                continue;
-            }
-            user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 8 /* UI_Part.LOCAL_CHARACTERS */);
-        }
+        alerts_1.Alerts.cell_locals(cell);
     }
     Unlink.character_and_cell = character_and_cell;
     function character_and_battle(character, battle) {

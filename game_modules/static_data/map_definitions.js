@@ -42,6 +42,10 @@ exports.STARTING_DEVELOPMENT = {
     '7_5': { rural: 0, urban: 1, wild: 1, ruins: 0, wastelands: 0 },
     '7_6': { rural: 1, urban: 0, wild: 0, ruins: 0, wastelands: 0 },
     '6_5': { rural: 1, urban: 0, wild: 0, ruins: 0, wastelands: 0 },
+    //rat outposts
+    '6_7': { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0, rats: 1 },
+    '10_4': { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0, rats: 1 },
+    '12_9': { rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0, rats: 1 },
     //small forest in the middle of the steppe
     '10_8': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
     '9_8': { rural: 0, urban: 0, wild: 1, ruins: 0, wastelands: 0 },
