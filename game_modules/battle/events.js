@@ -38,7 +38,7 @@ var BattleEvent;
         unit.dodge_turns = Math.max(0, unit.dodge_turns - 1);
         battle.heap.push(unit.id);
         // send updates
-        alerts_1.Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id);
+        alerts_1.Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, 0);
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.EndTurn = EndTurn;
@@ -59,7 +59,7 @@ var BattleEvent;
         console.log(unit.id + ' current unit');
         let time_passed = unit.next_turn_after;
         battle.heap.update(time_passed);
-        alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id);
+        alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0);
     }
     BattleEvent.NewTurn = NewTurn;
     function Move(battle, unit, target) {
@@ -73,12 +73,13 @@ var BattleEvent;
         unit.position.x = tmp.x + unit.position.x;
         unit.position.y = tmp.y + unit.position.y;
         unit.action_points_left = unit.action_points_left - points_spent;
-        alerts_1.Alerts.battle_event(battle, 'move', unit.id, target, unit.id);
+        alerts_1.Alerts.battle_event(battle, 'move', unit.id, target, unit.id, points_spent);
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.Move = Move;
     function Attack(battle, attacker, defender, attack_type) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
+        const COST = 3;
         let dist = geom_1.geom.dist(attacker.position, defender.position);
         const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
         if (dist > AttackerCharacter.range()) {
@@ -86,34 +87,35 @@ var BattleEvent;
             if (res.action == 'move')
                 Move(battle, attacker, res.target);
         }
-        if (attacker.action_points_left < 3) {
+        if (attacker.action_points_left < COST) {
             alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left);
             return;
         }
         let dodge_flag = (defender.dodge_turns > 0);
-        attacker.action_points_left = attacker.action_points_left - 3;
+        attacker.action_points_left = attacker.action_points_left - COST;
         events_1.Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type);
-        alerts_1.Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id);
+        alerts_1.Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id, COST);
         alerts_1.Alerts.battle_update_unit(battle, attacker);
         alerts_1.Alerts.battle_update_unit(battle, defender);
     }
     BattleEvent.Attack = Attack;
     function Shoot(battle, attacker, defender) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
-        if (attacker.action_points_left < 3) {
-            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left);
+        const COST = 3;
+        if (attacker.action_points_left < COST) {
+            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', COST, attacker.action_points_left);
             return;
         }
         let dist = geom_1.geom.dist(attacker.position, defender.position);
         const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
-        attacker.action_points_left = attacker.action_points_left - 3;
+        attacker.action_points_left = attacker.action_points_left - COST;
         let responce = events_1.Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0);
         switch (responce) {
             case 'miss':
-                alerts_1.Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id);
+                alerts_1.Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST);
                 break;
             case 'no_ammo': alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 1, 0);
-            case 'ok': alerts_1.Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id);
+            case 'ok': alerts_1.Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST);
         }
         alerts_1.Alerts.battle_update_unit(battle, attacker);
         alerts_1.Alerts.battle_update_unit(battle, defender);
@@ -128,7 +130,7 @@ var BattleEvent;
                 events_1.Event.stop_battle(battle);
             }
             if (dice <= flee_chance()) { // success
-                alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id);
+                alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3);
                 events_1.Event.stop_battle(battle);
             }
         }

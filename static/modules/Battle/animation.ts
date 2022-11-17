@@ -1,4 +1,4 @@
-import { CanvasContext, draw_image, ImagesDict } from "./battle_image_helper";
+import { ImagesDict } from "./battle_image_helper";
 import { BATTLE_ANIMATION_TICK } from "./constants";
 
 export class AnimatedImage {
@@ -29,7 +29,7 @@ export class AnimatedImage {
         }        
     }
 
-    set_action(tag:"move"|"idle"|"attack") {
+    set_action(tag:"move"|"idle"|"attack"|"prepare") {
         if (tag != this.action ){
             this.action = tag
             this.current = 0;
@@ -45,7 +45,7 @@ export class AnimatedImage {
     }
 
     // data is [x, y, w, h]
-    draw(ctx: CanvasContext, data: [number, number, number, number], images:ImagesDict) {
-        draw_image(ctx, images[this.get_image_name()], Math.floor(data[0]), Math.floor(data[1]), Math.floor(data[2]), Math.floor(data[3]))
+    draw(ctx: CanvasRenderingContext2D, data: [number, number, number, number], images:ImagesDict) {
+        ctx.drawImage(images[this.get_image_name()], Math.floor(data[0]), Math.floor(data[1]), Math.floor(data[2]), Math.floor(data[3]))
     }
 }

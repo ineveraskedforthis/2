@@ -1,9 +1,8 @@
-import { BattleImage, events_list } from "./battle_image.js";
-import { AttackEvent, get_mouse_pos_in_canvas, MissEvent, MovementBattleEvent, NewTurnEvent, RetreatEvent } from "./battle_image_helper.js";
+import { BattleImage, battle_in_progress, events_list, player_unit_id } from "./battle_image.js";
 import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, UnitSocket } from "../../../shared/battle_data"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js"
-import { MoveEvent } from "./battle_image_events.js";
+import { AttackEvent, MoveEvent, NewTurnEvent, NewUnitEvent, RetreatEvent } from "./battle_image_events.js";
 
 // export const battle_image = new BattleImageNext();
 const events_queue: BattleEventSocket[] = []
@@ -40,31 +39,19 @@ const BATTLE_CURRENT_UNIT = 'current_unit_turn'
 
 
 
-namespace bCallback {
-    export function new_unit(data: UnitSocket) {
-        BattleImage.add_fighter(data.id, data.tag, data.position, data.range, data.name, data.hp, data.max_hp, data.ap)
-    }
-
-    export function remove_unit(data: UnitSocket) {
-        BattleImage.remove_fighter(data.id)
-    }
-
-    export function set_current_active_unit(data: unit_id) {
-        battle_image.set_current_turn(data)
-    }
-    
+namespace bCallback {    
     export function link_player_to_unit(data: unit_id) {
-        battle_image.set_player(data)
+        BattleImage.set_player(data)
     }
 
     export function update_battle_state(data: BattleData) {
-        battle_image.update(data) 
+        BattleImage.load(data) 
     }
 
     export function update_battle_process(flag: boolean) {
         console.log('battle-in-process ' + flag)
         if (flag) {
-            if (battle_image.in_progress) {
+            if (battle_in_progress) {
                 socket.emit('request-battle-data')
             }
             start_battle()
@@ -76,31 +63,20 @@ namespace bCallback {
     export function event(action: BattleEventSocket) {
         // handle real actions
         if (action.tag == 'move') {
-            let event = new MoveEvent(action.creator, action.cost, action.)
-            console.log('move', action.target_position)
-            events_list.push(event)
-        }
-        else if (action.tag == 'attack') {
-            let event = new AttackEvent(action.creator, action.target_unit)
-            battle_image.events_list.push(event)
-        // }
-        // else if (action.tag == '') {
-        //     let event = new ClearBattleEvent()
-        //     battle_image.events_list.push(event)
+            BattleImage.new_event(new MoveEvent(action.index, action.creator, action.cost, action.target_position))
+        } else if (action.tag == 'attack') {
+            BattleImage.new_event(new AttackEvent(action.index, action.creator, action.cost, 0, action.target_unit))
         } else if (action.tag == 'new_turn') {
-            let event = new NewTurnEvent(action.creator)
-            battle_image.events_list.push(event)
+            BattleImage.new_event(new NewTurnEvent(action.index, action.creator))
         } else if (action.tag == 'flee'){
-            battle_image.events_list.push(new RetreatEvent(action.creator))
+            BattleImage.new_event(new RetreatEvent(action.index, action.creator))
         } else if (action.tag == 'end_turn') {
-            // battle_image.events_list.push()
+            // BattleImage.new_event()
         } else if (action.tag == 'miss') {
-            battle_image.events_list.push(new MissEvent(action.creator, action.target_unit))
+            // BattleImage.new_event(new MissEvent(action.creator, action.target_unit))
         } else if (action.tag == 'ranged_attack') {
-            let event = new AttackEvent(action.creator, action.target_unit)
-            battle_image.events_list.push(event)
-        }     
-        else {
+            BattleImage.new_event(new AttackEvent(action.index, action.creator, action.cost, 0, action.target_unit))
+        } else {
             console.log('unhandled input')
             console.log(action)
         }
@@ -110,28 +86,30 @@ namespace bCallback {
 function start_battle() {
     console.log('start battle')
     tab.turn_on('battle')
-    battle_image.clear()
+    BattleImage.reset()
 }
 
 function end_battle() {
     tab.turn_off('battle')
-    battle_image.clear()
+    BattleImage.reset()
 }
 
 
-socket.on('action-display', data =>     {battle_image.update_action_display(data.tag, data.value)})
-socket.on('new-action',                 msg => battle_image.add_action({name: msg, tag:msg}));
-socket.on('b-action-chance',            msg => battle_image.update_action_probability(msg.tag, msg.value))
+// non events
+socket.on('action-display', data =>     {BattleImage.update_action_display(data.tag, data.value)})
+socket.on('new-action',                 msg => BattleImage.add_action({name: msg, tag:msg}));
+socket.on('b-action-chance',            msg => BattleImage.update_action_probability(msg.tag, msg.value))
 socket.on('battle-in-process',          bCallback.update_battle_process)
-socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
-socket.on('battle-update-units',        data => battle_image.update(data))
-socket.on('battle-update-unit',         data => battle_image.update_unit(data))
-
-socket.on('battle-new-unit',                bCallback.new_unit)
-socket.on('battle-remove-unit',             bCallback.remove_unit)
-
+// socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
+socket.on('battle-update-units',        data => BattleImage.load(data))
 socket.on(UNIT_ID_MESSAGE,              bCallback.link_player_to_unit)
-socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
+
+// socket.on('battle-update-unit',         data => .update_unit(data))
+
+// socket.on('battle-new-unit',                bCallback.new_unit)
+// socket.on('battle-remove-unit',             bCallback.remove_unit)
+
+// socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
 socket.on('battle-event',               bCallback.event)
 
 console.log('battle callbacks are loaded')

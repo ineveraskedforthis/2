@@ -1,8 +1,11 @@
 import { battle_position, UnitSocket, unit_id } from "../../../shared/battle_data"
-import { BattleImage, units_views } from "./battle_image";
+import { BattleImage, battle_canvas, battle_canvas_context, player_unit_id, units_views } from "./battle_image";
 import { position_c } from "./battle_image_helper";
 import { BattleUnitView } from "./battle_view";
 import { BATTLE_MOVEMENT_SPEED } from "./constants";
+
+export type Image = any & { __brand: "image"};
+declare var images: {[_ in string]: Image};
 
 function new_log_message(msg: string) {
     if (msg == null) {
@@ -25,14 +28,17 @@ export class BattleImageEvent {
     hp_change: number
     unit: unit_id
     logged: boolean
+    
+    event_id: number
 
-    constructor(unit_id: unit_id, ap_change: number, hp_change: number) {
+    constructor(event_id: number, unit_id: unit_id, ap_change: number, hp_change: number) {
         this.unit = unit_id
         this.ap_change = ap_change
         this.ap_change_left = ap_change
         this.hp_change = hp_change
         this.hp_change_left = hp_change
         this.logged = false
+        this.event_id = event_id
         // this.ap_before = unit.ap
     }
 
@@ -43,14 +49,22 @@ export class BattleImageEvent {
     effect(dt: number): boolean {
         return true
     }
+
+    /**
+     * Calculates required time to finish event
+     * @returns Seconds required for an event
+     */
+    estimated_time_left(): number {
+        return 0 
+    }
 }
 
 export class MoveEvent extends BattleImageEvent {
     target_position: battle_position;
     total_distance: number;
 
-    constructor(unit_id: unit_id, ap_spent: number, target: battle_position) {
-        super(unit_id, ap_spent, 0)        
+    constructor(event_id: number, unit_id: unit_id, ap_spent: number, target: battle_position) {
+        super(event_id, unit_id, ap_spent, 0)        
         this.target_position = target
         const unit = units_views[this.unit]
         let direction = position_c.diff(unit.position, this.target_position)
@@ -85,6 +99,16 @@ export class MoveEvent extends BattleImageEvent {
             return false
         }
     }
+
+    estimated_time_left(): number {
+        const unit = units_views[this.unit]
+        if (unit == undefined) return 2;
+
+        let direction = position_c.diff(unit.position, this.target_position)
+        let norm = position_c.norm(direction)
+        const time_left = norm / BATTLE_MOVEMENT_SPEED
+        return time_left
+    }
 }
 
 const INSTANT_EVENT_DURATION = 2 //seconds
@@ -95,8 +119,8 @@ export class NewUnitEvent extends BattleImageEvent {
     time_passed: number
     data: UnitSocket
 
-    constructor(unit_id: unit_id, data: UnitSocket) {
-        super(unit_id, 0, 0)
+    constructor(event_id: number, unit_id: unit_id, data: UnitSocket) {
+        super(event_id, unit_id, 0, 0)
         this.unit = unit_id
         this.data = data
         this.type = 'update'
@@ -121,8 +145,8 @@ export class UpdateDataEvent extends BattleImageEvent {
     time_passed: number
     data: UnitSocket
 
-    constructor(unit_id: unit_id, data: UnitSocket) {
-        super(unit_id, 0, 0)
+    constructor(event_id: number, unit_id: unit_id, data: UnitSocket) {
+        super(event_id, unit_id, 0, 0)
         this.unit = unit_id
         this.data = data
         this.type = 'update'
@@ -159,20 +183,16 @@ export class UpdateDataEvent extends BattleImageEvent {
         return false
     }
 
-    generate_log_message():string {
-        return 'ok'
+    estimated_time_left(): number {
+        return INSTANT_EVENT_DURATION - this.time_passed
     }
 }
 
 export class ClearBattleEvent extends BattleImageEvent {
     effect(dt: number) {
         console.log('clear battle')
-        BattleImage.stop()
+        BattleImage.reset()
         return true
-    }
-
-    generate_log_message():string {
-        return "battle is finished"
     }
 }
 
@@ -192,104 +212,131 @@ function get_attack_direction(a: BattleUnitView, d: BattleUnitView) {
 
 // write attack stages
 
+// stand
+// prepare
+// hit
+
+const ATTACK_DURATION = 2
+const STAND_UNTIL   = 0.2
+const PREPARE_UNTIL = 1
+const HIT_UNTIL     = 2
+
 export class AttackEvent extends BattleImageEvent {
     target: unit_id
-
     current_duration: number
 
-    constructor(unit_id: unit_id, ap_change: number, hp_change: number, attack_data) {
-        super(unit_id, ap_change, hp_change)
-        this.target = attack_data.target
+    constructor(event_id: number, unit_id: unit_id, ap_change: number, hp_change: number, target_id: unit_id) {
+        super(event_id, unit_id, ap_change, hp_change)
+        this.target = target_id
+        this.current_duration = 0
     }
 
     effect(dt: number) {
-        let unit_view_attacker = units_views[this.unit]
-        let unit_view_defender = units_views[this.target]
+        if (!this.logged){
+            let unit_view_attacker = units_views[this.unit]
+            let unit_view_defender = units_views[this.target]
 
-        let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
-        direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+            let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
+            direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
 
-        unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: false}})
-        unit_view_attacker.animation_sequence.push({type: 'attack', data: direction_vec})
+            unit_view_defender.current_animation = {type: 'attacked', data: {direction: direction_vec, dodge: false}}
+            unit_view_attacker.current_animation = {type: 'attack', data: direction_vec}
+
+            this.logged = true
+
+            new_log_message(unit_view_attacker.name + ' attacks ' + unit_view_defender.name)
+        }
+
+        let attacker = units_views[this.unit]
+        let defender = units_views[this.target]
         
-        // unit_view_defender.animation_sequence.push('attack')
+        this.current_duration += dt
+
+        if (this.current_duration <= STAND_UNTIL) {
+            attacker.a_image.set_action('idle')
+        } else if (this.current_duration <= PREPARE_UNTIL) {
+            attacker.a_image.set_action('prepare')
+        } else if (this.current_duration <= HIT_UNTIL) {
+            attacker.a_image.set_action('attack')
+            let position = position_c.battle_to_canvas(defender.position)
+            battle_canvas_context.drawImage(images['attack_' + 0], position.x - 50, position.y - 80, 100, 100)
+        }
+
+        if (this.current_duration > ATTACK_DURATION) {
+            return true
+        }
+        return false
     }
 
-    generate_log_message():string {
-        let unit = units_data[this.unit_id]
-        let target = units_data[this.target_id]
-        let result = unit.name + ' attacks ' + target.name + ': '
-        return result + ' HIT!'
-    }
-}
-
-export class MissEvent {
-    type: 'miss'
-    unit_id: unit_id
-    target_id: unit_id
-
-    constructor(unit: unit_id, target: unit_id) {
-        this.type = 'miss'
-        this.unit_id = unit
-        this.target_id = target 
-    }
-
-    effect() {
-        let unit_view_attacker = units_views[this.unit_id]
-        let unit_view_defender = units_views[this.target_id]
-
-        let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
-        direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
-
-        unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
-    }
-
-    generate_log_message():string {
-        let unit = units_data[this.unit_id]
-        let target = units_data[this.target_id]
-        let result = unit.name + ' attacks ' + target.name + ': '
-        return result + ' MISS!';
+    estimated_time_left(): number {
+        return ATTACK_DURATION - this.current_duration
     }
 }
 
-export class RetreatEvent {
+// export class MissEvent {
+//     type: 'miss'
+//     unit_id: unit_id
+//     target_id: unit_id
+
+//     constructor(unit: unit_id, target: unit_id) {
+//         this.type = 'miss'
+//         this.unit_id = unit
+//         this.target_id = target 
+//     }
+
+//     effect() {
+//         let unit_view_attacker = units_views[this.unit_id]
+//         let unit_view_defender = units_views[this.target_id]
+
+//         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
+//         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+
+//         unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
+//     }
+
+//     generate_log_message():string {
+//         let unit = units_data[this.unit_id]
+//         let target = units_data[this.target_id]
+//         let result = unit.name + ' attacks ' + target.name + ': '
+//         return result + ' MISS!';
+//     }
+// }
+
+export class RetreatEvent extends BattleImageEvent {
     type: 'retreat'
     unit_id: unit_id
     
-    constructor(unit_id: unit_id) {
+    constructor(event_id: number, unit_id: unit_id) {
+        super(event_id, unit_id, 0, 0)
         this.unit_id = unit_id
         this.type = 'retreat'
     }
 
-    effect() {
-        if (this.unit_id == player_id) {
-            alert('You had retreated from the battle')
-        } else {
-            alert('Someone had retreated from the battle')
-        }
-    }
+    effect(dt: number) {
+        let unit = units_views[this.unit]
+        unit.killed = true
 
-    generate_log_message():string {
-        let unit = units_data[this.unit_id]
-        return unit.name + ' retreats'
+        if (this.unit_id == player_unit_id) {
+            new_log_message('You had retreated from the battle')
+        } else {
+            new_log_message(this.unit_id + 'had retreated from the battle')
+        }
+        return true
     }
 }
 
 
-
-
-
-export class NewTurnEvent {
-    type: 'new_turn'
+export class NewTurnEvent extends BattleImageEvent {
     unit:unit_id
 
-    constructor(unit: unit_id) {
-        this.type = 'new_turn'
+    constructor(event_id: number, unit: unit_id) {
+        super(event_id, unit, 0, 0)
         this.unit = unit
     }
 
-    effect() {
-        set_current_turn(this.unit)
+    effect(dt: number) {
+        BattleImage.set_current_turn(this.unit)
+        return true
     }
 
     generate_log_message():string {

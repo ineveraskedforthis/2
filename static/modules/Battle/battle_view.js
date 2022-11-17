@@ -1,6 +1,7 @@
 import { AnimatedImage, position_c, BATTLE_MOVEMENT_SPEED, BATTLE_ATTACK_DURATION, BATTLE_SCALE } from "./battle_image_helper.js";
 export class BattleUnitView {
     constructor(unit) {
+        this.name = unit.name;
         this.unit = unit;
         this.killed = unit.killed;
         this.position = unit.position;
@@ -14,8 +15,8 @@ export class BattleUnitView {
         this.animation_something = 0;
         this.a_image = new AnimatedImage(unit.tag);
     }
-    update(battle) {
-        if (battle.player_id == this.unit.id) {
+    update() {
+        if (player_id == this.unit.id) {
             battle.update_player_actions_availability();
         }
         this.hp_damaged = this.hp_damaged + this.hp - this.unit.hp;
@@ -26,7 +27,7 @@ export class BattleUnitView {
         let div = battle.container.querySelector('.enemy_list > .fighter_' + this.unit.id);
         div.innerHTML = this.unit.name + '<br> hp: ' + this.unit.hp + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10;
     }
-    handle_events(dt, battle, images) {
+    handle_events(dt, images) {
         let unit = this.unit;
         let direction = position_c.diff(unit.position, this.position);
         let norm = position_c.norm(direction);

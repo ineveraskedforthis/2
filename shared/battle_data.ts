@@ -43,6 +43,7 @@ export interface BattleEventSocket{
 }
 
 
+
 export type BattleData = {[_ in number]: UnitSocket};
 
 export type action_points = number & { __brand: "action_point"}

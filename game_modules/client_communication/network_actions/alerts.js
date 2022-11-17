@@ -89,14 +89,15 @@ var Alerts;
         Alerts.generic_user_alert(user, 'b-action-chance', { tag: tag, value: value });
     }
     Alerts.battle_action_chance = battle_action_chance;
-    function battle_event(battle, tag, unit_id, position, target) {
+    function battle_event(battle, tag, unit_id, position, target, cost) {
         battle.last_event_index += 1;
         const Event = {
             tag: tag,
             creator: unit_id,
             target_position: position,
             target_unit: target,
-            index: battle.last_event_index
+            index: battle.last_event_index,
+            cost: cost,
         };
         for (let unit of battle.heap.raw_data) {
             const character = systems_communication_1.Convert.unit_to_character(unit);

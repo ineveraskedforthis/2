@@ -1,7 +1,7 @@
 
 import { position, unit_id, battle_position, UnitSocket } from "../../../shared/battle_data"
 import { AnimatedImage } from "./animation"
-import { BattleUnitView } from "./battle_view.js"
+import { h } from "./battle_image"
 import { BATTLE_SCALE } from "./constants"
 
 declare var alert: (data: string) => {}
@@ -13,8 +13,6 @@ const NAMEPLATE_SHIFT_Y = 0
 export type canvas_position = position & { __brand: "canvas"}
 
 
-export type Canvas = any & { __brand: "canvas"};
-export type CanvasContext = any & { __brand: "canvas_context"};
 export type ImagesDict = {[_: string] : Image}
 export type Image = any & { __brand: "image"};
 
@@ -40,17 +38,17 @@ export namespace position_c {
         return {x: x * a.x, y: x * a.y} as Type
     }
 
-    export function battle_to_canvas(pos: battle_position, canvas_h: number, canvas_w: number) {
+    export function battle_to_canvas(pos: battle_position) {
         let centre = {x: pos.y, y: pos.x};
         centre.x = -centre.x * BATTLE_SCALE + 520;
-        centre.y = centre.y * BATTLE_SCALE + canvas_h / 2;
+        centre.y = centre.y * BATTLE_SCALE + h / 2;
         return raw_to_canvas(centre)
     }
 
-    export function canvas_to_battle(pos: canvas_position, canvas_h: number, canvas_w: number) {
+    export function canvas_to_battle(pos: canvas_position) {
         let tmp = {x: pos.x, y: pos.y}
         tmp.x = (tmp.x - 520) / (-BATTLE_SCALE);
-        tmp.y = (tmp.y - canvas_h / 2) / (BATTLE_SCALE)
+        tmp.y = (tmp.y - h / 2) / (BATTLE_SCALE)
         return raw_to_battle({x: tmp.y, y: tmp.x})
     }
 
@@ -67,11 +65,7 @@ export namespace position_c {
     }
 }
 
-export function draw_image(context:CanvasContext, image:Image, x:number, y:number, w:number, h:number) {
-    context.drawImage(image, x, y, w, h)
-}
-
-export function get_mouse_pos_in_canvas(canvas:CanvasContext, event: any): canvas_position {
+export function get_mouse_pos_in_canvas(canvas:HTMLCanvasElement, event: any): canvas_position {
     var rect = canvas.getBoundingClientRect();
     let tmp = {
       x: event.clientX - rect.left,
