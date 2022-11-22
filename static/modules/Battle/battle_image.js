@@ -6,7 +6,7 @@ import { BATTLE_SCALE } from './constants.js';
 import { IMAGES } from '../load_images.js';
 function build_unit_div(unit_data) {
     let div = document.createElement('div');
-    div.innerHTML = 'hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap;
+    div.innerHTML = unit_data.name + '(id:' + unit_data.id + ')' + '<br>  hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap;
     div.classList.add('fighter_' + unit_data.id);
     div.classList.add('enemy_status');
     div.onclick = () => BattleImage.select(unit_data.id);
