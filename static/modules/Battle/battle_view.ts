@@ -86,6 +86,7 @@ export class BattleUnitView {
         ctx.fill();
 
         // draw movement radius
+        ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         const MOVE_COST = 3
         
         ctx.beginPath();

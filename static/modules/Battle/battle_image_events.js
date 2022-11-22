@@ -45,17 +45,17 @@ export class BattleImageEvent {
             return false;
         }
         this.time_passed += dt;
-        this.ap_change_left = this.ap_change * (this.duration - this.time_passed) / this.duration;
-        this.hp_change_left = this.hp_change * (this.duration - this.time_passed) / this.duration;
-        let unit = units_views[this.unit];
-        unit.ap_change = this.ap_change_left;
-        unit.hp_change = this.hp_change_left;
         this.update(dt);
         if (this.time_passed >= this.duration) {
             this.ap_change_left = 0;
             this.hp_change_left = 0;
             return true;
         }
+        this.ap_change_left = this.ap_change * (this.duration - this.time_passed) / this.duration;
+        this.hp_change_left = this.hp_change * (this.duration - this.time_passed) / this.duration;
+        let unit = units_views[this.unit];
+        unit.ap_change = this.ap_change_left;
+        unit.hp_change = this.hp_change_left;
         return false;
     }
     /**
