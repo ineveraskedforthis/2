@@ -90,8 +90,14 @@ function load() {
     system_4.ItemOrders.load();
     data_1.Data.load();
     const characters = data_1.Data.Character.list();
+    //validating ids and connections
     for (const character of characters) {
         systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
+        const battle = systems_communication_1.Convert.character_to_battle(character);
+        if (battle == undefined) {
+            character.battle_id = -1;
+            character.battle_unit_id = -1;
+        }
     }
     // Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }

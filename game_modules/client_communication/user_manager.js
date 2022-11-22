@@ -207,6 +207,13 @@ var UserManagement;
         alerts_1.Alerts.generic_user_alert(user, 'character_exists', undefined);
         updates_1.SendUpdate.all(user);
         causality_graph_1.Update.update_root(user);
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        const battle = systems_communication_1.Convert.character_to_battle(character);
+        if (battle != undefined) {
+            alerts_1.Alerts.battle_to_character(battle, character);
+        }
         alerts_1.Alerts.generic_user_alert(user, 'loading_completed', '');
     }
     UserManagement.send_character_to_user = send_character_to_user;

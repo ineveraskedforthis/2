@@ -1,9 +1,4 @@
-
-
-
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-
-
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
@@ -11,9 +6,11 @@ import { GoodsMarket } from './modules/Market/market_table.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/CharacterScreen/character_screen.js'
 import { socket, globals } from './modules/globals.js';
 import { reg, login } from './modules/ViewManagement/scene.js'
-import { battle_image } from './modules/Battle/battle_image_init.js'
-
+import './modules/Battle/battle_image_init.js'
 import './modules/Market/items_market.js'
+import { BattleImage } from './modules/Battle/battle_image.js';
+import { loadImages } from './modules/load_images.js';
+
 
 var stash_tag_to_id = {}
 var stash_id_to_tag = {}
@@ -617,8 +614,8 @@ for (let i = 0; i<3; i++) {
     document.getElementById("eyes_"+ i).onclick = (event) => {
         event.preventDefault();
         character_display.eyes = i
-        document.getElementById("character_image_eyes").style.backgroundImage = 'url(/static/img/eyes_'+ i + '.png)'
-        document.getElementById("character_creation_image_eyes").style.backgroundImage = 'url(/static/img/eyes_'+ i + '.png)'
+        document.getElementById("character_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
+        document.getElementById("character_creation_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
         
     }
 }
@@ -626,16 +623,16 @@ for (let i = 0; i<3; i++) {
     document.getElementById("chin_"+ i).onclick = (event) => {
         event.preventDefault();
         character_display.chin = i
-        document.getElementById("character_image_chin").style.backgroundImage = 'url(/static/img/chin_'+ i + '.png)'
-        document.getElementById("character_creation_image_chin").style.backgroundImage = 'url(/static/img/chin_'+ i + '.png)'
+        document.getElementById("character_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
+        document.getElementById("character_creation_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
     }
 }
 for (let i = 0; i<3; i++) {
     document.getElementById("mouth_"+ i).onclick = (event) => {
         event.preventDefault();
         character_display.mouth = i
-        document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/mouth_'+ i + '.png)'
-        document.getElementById("character_creation_image_mouth").style.backgroundImage = 'url(/static/img/mouth_'+ i + '.png)'
+        document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
+        document.getElementById("character_creation_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
     }
 }
 //CHARACTER CREATION STUFF ENDS
@@ -1260,7 +1257,7 @@ function draw(time) {
 
     if (document.getElementById('actual_game_scene').style.visibility == 'visible') {
         if (!document.getElementById('battle_tab').classList.contains('hidden')) {
-            battle_image.draw(images, delta);
+            BattleImage.draw(delta);
         }
         if (!document.getElementById('map_tab').classList.contains('hidden')){
             map.draw(images, delta);
@@ -1270,7 +1267,7 @@ function draw(time) {
 }
 
 
-const images = loadImages(images_list[0], images_list[1], () => { 
+const images = loadImages(() => { 
     console.log(images);
     window.requestAnimationFrame(draw);
 });

@@ -1,7 +1,7 @@
 import { BattleImage, battle_in_progress } from "./battle_image.js";
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js";
-import { AttackEvent, MoveEvent, NewTurnEvent, RetreatEvent } from "./battle_image_events.js";
+import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, RetreatEvent } from "./battle_image_events.js";
 // export const battle_image = new BattleImageNext();
 const events_queue = [];
 BattleImage.add_action({ name: 'move', tag: 'move' });
@@ -44,12 +44,13 @@ var bCallback;
     }
     bCallback.update_battle_process = update_battle_process;
     function event(action) {
+        console.log(action);
         // handle real actions
         if (action.tag == 'move') {
-            BattleImage.new_event(new MoveEvent(action.index, action.creator, action.cost, action.target_position));
+            BattleImage.new_event(new MoveEvent(action.index, action.creator, -action.cost, action.target_position));
         }
         else if (action.tag == 'attack') {
-            BattleImage.new_event(new AttackEvent(action.index, action.creator, action.cost, 0, action.target_unit));
+            BattleImage.new_event(new AttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit));
         }
         else if (action.tag == 'new_turn') {
             BattleImage.new_event(new NewTurnEvent(action.index, action.creator));
@@ -58,13 +59,13 @@ var bCallback;
             BattleImage.new_event(new RetreatEvent(action.index, action.creator));
         }
         else if (action.tag == 'end_turn') {
-            // BattleImage.new_event()
+            BattleImage.new_event(new EndTurn(action.index, action.creator, -action.cost));
         }
         else if (action.tag == 'miss') {
             // BattleImage.new_event(new MissEvent(action.creator, action.target_unit))
         }
         else if (action.tag == 'ranged_attack') {
-            BattleImage.new_event(new AttackEvent(action.index, action.creator, action.cost, 0, action.target_unit));
+            BattleImage.new_event(new AttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit));
         }
         else {
             console.log('unhandled input');

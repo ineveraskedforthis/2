@@ -38,12 +38,16 @@ export namespace BattleEvent {
         //updating unit and heap
         battle.heap.pop()
         unit.next_turn_after = unit.slowness;
-        unit.action_points_left = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max) as action_points;
+
+        let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max) as action_points;
+        let ap_increase = new_ap - unit.action_points_left
+
+        unit.action_points_left = new_ap
         unit.dodge_turns = Math.max(0, unit.dodge_turns - 1)
         battle.heap.push(unit.id)
 
         // send updates
-        Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, 0)
+        Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, -ap_increase)
         Alerts.battle_update_unit(battle, unit)
     }
 
@@ -86,7 +90,7 @@ export namespace BattleEvent {
 
         unit.action_points_left =  unit.action_points_left - points_spent as action_points
         
-        Alerts.battle_event(battle, 'move', unit.id, target, unit.id, points_spent)
+        Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, points_spent)
         Alerts.battle_update_unit(battle, unit)
     }
 

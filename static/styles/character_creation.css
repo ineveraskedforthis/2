@@ -37,14 +37,14 @@
 }
 
 .image_body {
-    background-image: url(/static/img/pose.png);
+    background-image: url(/static/img/character_image/pose.png);
 }
 
 #character_image_eyes {
-    background-image: url(/static/img/eyes_1.png);
+    background-image: url(/static/img/character_image/eyes_1.png);
 }
 #character_creation_image_eyes {
-    background-image: url(/static/img/eyes_1.png);
+    background-image: url(/static/img/character_image/eyes_1.png);
 }
 
 

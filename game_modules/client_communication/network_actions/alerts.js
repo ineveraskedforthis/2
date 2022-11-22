@@ -121,6 +121,11 @@ var Alerts;
         }
     }
     Alerts.battle_update_unit = battle_update_unit;
+    function battle_to_character(battle, character) {
+        const data = system_1.BattleSystem.data(battle);
+        generic_character_alert(character, 'battle-update-units', data);
+    }
+    Alerts.battle_to_character = battle_to_character;
     function new_unit(battle, new_unit) {
         for (let unit of battle.heap.raw_data) {
             const character = systems_communication_1.Convert.unit_to_character(unit);

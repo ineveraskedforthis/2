@@ -1,8 +1,9 @@
 
-import { position, unit_id, battle_position, UnitSocket } from "../../../shared/battle_data"
-import { AnimatedImage } from "./animation"
-import { h } from "./battle_image"
-import { BATTLE_SCALE } from "./constants"
+import { position, unit_id, battle_position, UnitSocket } from "../../../shared/battle_data.js"
+import { AnimationDict } from "../load_images.js"
+import { AnimatedImage } from "./animation.js"
+import { h } from "./battle_image.js"
+import { BATTLE_SCALE } from "./constants.js"
 
 declare var alert: (data: string) => {}
 
@@ -12,9 +13,6 @@ const NAMEPLATE_SHIFT_Y = 0
 
 export type canvas_position = position & { __brand: "canvas"}
 
-
-export type ImagesDict = {[_: string] : Image}
-export type Image = any & { __brand: "image"};
 
 export namespace position_c {
 
@@ -55,12 +53,14 @@ export namespace position_c {
     export function raw_to_battle(pos: position) {
         return pos as battle_position
     }
+
     export function raw_to_canvas(pos: position) {
         return pos as canvas_position
     }
-    export function image_to_canvas(position:canvas_position, image: AnimatedImage, images:ImagesDict):[number, number, number, number] {
-        let w = image.get_w(images);
-        let h = image.get_h(images);
+
+    export function image_to_canvas(position:canvas_position, w:number, h:number):[number, number, number, number] {
+        // let w = image.get_w(images);
+        // let h = image.get_h(images);
         return [position.x - w/10, position.y - h/5 + 10, w/5, h/5]
     }
 }

@@ -171,10 +171,13 @@ var BattleSystem;
             events_1.BattleEvent.NewTurn(battle);
             // get information about current unit
             const unit = battle.heap.get_selected_unit();
+            console.log('current unit is' + unit?.id);
             if (unit == undefined) {
+                battle.ended = true;
                 return;
             }
             let character = systems_communication_1.Convert.unit_to_character(unit);
+            console.log(character.name);
             if (character.dead()) {
                 events_1.BattleEvent.Leave(battle, unit);
                 return;
@@ -189,6 +192,7 @@ var BattleSystem;
             // else ask ai to make all needed moves and end turn
             {
                 const responce = AI_turn(battle);
+                console.log(responce);
                 if (responce == 'end')
                     events_1.BattleEvent.EndTurn(battle, unit);
                 if (responce == 'leave')

@@ -39,9 +39,9 @@ export namespace SendUpdate {
             let unit_id = character.battle_unit_id
             console.log('unit id is ' + unit_id)            
             Alerts.battle_progress(user, true)
-            Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)
             Alerts.generic_user_alert(user, BATTLE_DATA_MESSAGE, BattleSystem.data(battle));
-            Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);      
+            Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);
+            Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)  
         } else {
             Alerts.battle_progress(user, false)
         }

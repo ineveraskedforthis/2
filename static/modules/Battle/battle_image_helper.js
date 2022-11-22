@@ -1,4 +1,5 @@
-import { BATTLE_SCALE } from "./constants";
+import { h } from "./battle_image.js";
+import { BATTLE_SCALE } from "./constants.js";
 const NAMEPLATE_SHIFT_X = 0;
 const NAMEPLATE_SHIFT_Y = 0;
 export var position_c;
@@ -23,17 +24,17 @@ export var position_c;
         return { x: x * a.x, y: x * a.y };
     }
     position_c.scalar_mult = scalar_mult;
-    function battle_to_canvas(pos, canvas_h, canvas_w) {
+    function battle_to_canvas(pos) {
         let centre = { x: pos.y, y: pos.x };
         centre.x = -centre.x * BATTLE_SCALE + 520;
-        centre.y = centre.y * BATTLE_SCALE + canvas_h / 2;
+        centre.y = centre.y * BATTLE_SCALE + h / 2;
         return raw_to_canvas(centre);
     }
     position_c.battle_to_canvas = battle_to_canvas;
-    function canvas_to_battle(pos, canvas_h, canvas_w) {
+    function canvas_to_battle(pos) {
         let tmp = { x: pos.x, y: pos.y };
         tmp.x = (tmp.x - 520) / (-BATTLE_SCALE);
-        tmp.y = (tmp.y - canvas_h / 2) / (BATTLE_SCALE);
+        tmp.y = (tmp.y - h / 2) / (BATTLE_SCALE);
         return raw_to_battle({ x: tmp.y, y: tmp.x });
     }
     position_c.canvas_to_battle = canvas_to_battle;
@@ -45,16 +46,13 @@ export var position_c;
         return pos;
     }
     position_c.raw_to_canvas = raw_to_canvas;
-    function image_to_canvas(position, image, images) {
-        let w = image.get_w(images);
-        let h = image.get_h(images);
+    function image_to_canvas(position, w, h) {
+        // let w = image.get_w(images);
+        // let h = image.get_h(images);
         return [position.x - w / 10, position.y - h / 5 + 10, w / 5, h / 5];
     }
     position_c.image_to_canvas = image_to_canvas;
 })(position_c || (position_c = {}));
-export function draw_image(context, image, x, y, w, h) {
-    context.drawImage(image, x, y, w, h);
-}
 export function get_mouse_pos_in_canvas(canvas, event) {
     var rect = canvas.getBoundingClientRect();
     let tmp = {

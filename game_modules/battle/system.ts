@@ -189,8 +189,10 @@ export namespace BattleSystem {
 
             // get information about current unit
             const unit = battle.heap.get_selected_unit()
-            if (unit == undefined) {return}
+            console.log('current unit is' + unit?.id)
+            if (unit == undefined) {battle.ended = true; return}
             let character:Character = Convert.unit_to_character(unit)
+            console.log(character.name)
 
             if (character.dead()) {
                 BattleEvent.Leave(battle, unit)
@@ -209,6 +211,7 @@ export namespace BattleSystem {
             // else ask ai to make all needed moves and end turn
             {
                 const responce = AI_turn(battle)
+                console.log(responce)
                 if (responce == 'end') BattleEvent.EndTurn(battle, unit)
                 if (responce == 'leave') BattleEvent.Leave(battle, unit);
             }

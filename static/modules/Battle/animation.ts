@@ -1,10 +1,10 @@
-import { ImagesDict } from "./battle_image_helper";
-import { BATTLE_ANIMATION_TICK } from "./constants";
+import { ANIMATIONS } from "../load_images.js";
+import { BATTLE_ANIMATION_TICK } from "./constants.js";
 
 export class AnimatedImage {
     tag: string;
     current: number;
-    action: string;
+    action: "move"|"idle"|"attack"|"prepare"
     animation_tick: number
 
     constructor(image_name:string) {
@@ -15,16 +15,17 @@ export class AnimatedImage {
     }
 
     get_image_name() {
-        return this.tag + '_' + this.action + '_' + ("0000" + this.current).slice(-4)
+        return this.tag + '_' + this.action
     }
     
-    update(dt: number, images:ImagesDict) {
+    update(dt: number) {
         this.animation_tick += dt
         while (this.animation_tick > BATTLE_ANIMATION_TICK) {
-            this.current += 1;
             this.animation_tick = this.animation_tick - BATTLE_ANIMATION_TICK
-            if (!(this.get_image_name() in images)) {
+            if ((ANIMATIONS[this.get_image_name()].length <= this.current) && (this.action == 'move')) {
                 this.current = 0
+            } else {
+                this.current += 1;
             }
         }        
     }
@@ -36,16 +37,24 @@ export class AnimatedImage {
         }
     }
 
-    get_w(images:ImagesDict) {
-        return images[this.get_image_name()].width
+    get_w() {
+        // console.log(this.get_image_name())
+        // console.log(ANIMATIONS)
+        return ANIMATIONS[this.get_image_name()].data.width / ANIMATIONS[this.get_image_name()].length
     }
     
-    get_h(images:ImagesDict) {
-        return images[this.get_image_name()].height
+    get_h() {
+        return ANIMATIONS[this.get_image_name()].data.height
     }
 
     // data is [x, y, w, h]
-    draw(ctx: CanvasRenderingContext2D, data: [number, number, number, number], images:ImagesDict) {
-        ctx.drawImage(images[this.get_image_name()], Math.floor(data[0]), Math.floor(data[1]), Math.floor(data[2]), Math.floor(data[3]))
+    draw(ctx: CanvasRenderingContext2D, data: [number, number, number, number]) {
+        const w = this.get_w()
+        const h = this.get_h()
+        const x = w * this.animation_tick
+        const y = 0
+        const image = ANIMATIONS[this.get_image_name()].data
+        ctx.drawImage(  image, x, y, w, h, 
+                        Math.floor(data[0]), Math.floor(data[1]), Math.floor(data[2]), Math.floor(data[3]))
     }
 }

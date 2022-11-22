@@ -108,7 +108,7 @@ export namespace Convert {
         return Data.Character.from_id(id as char_id)
     }
 
-    export function  unit_to_character(unit: Unit): Character {
+    export function unit_to_character(unit: Unit): Character {
         return id_to_character(unit.char_id)
     }
 

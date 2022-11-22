@@ -123,6 +123,11 @@ export namespace Alerts {
         }
     }
 
+    export function battle_to_character(battle: Battle, character: Character) {
+        const data = BattleSystem.data(battle)
+        generic_character_alert(character, 'battle-update-units', data)
+    }
+
     export function new_unit(battle: Battle, new_unit: Unit) {
         for (let unit of battle.heap.raw_data) {
             const character = Convert.unit_to_character(unit)

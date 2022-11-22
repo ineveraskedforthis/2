@@ -4,7 +4,7 @@ var salt = process.env.SALT;
 
 import fs from "fs"
 import { HumanTemplateNotAligned } from "../character/races/human";
-import { Link } from "../systems_communication";
+import { Convert, Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
 import { UI_Part, Update } from "./causality_graph";
@@ -210,6 +210,15 @@ export namespace UserManagement {
         Alerts.generic_user_alert(user, 'character_exists', undefined)
         SendUpdate.all(user)
         Update.update_root(user)
+        
+        
+        const character = Convert.user_to_character(user)
+
+        if (character == undefined) return
+        const battle = Convert.character_to_battle(character)
+        if (battle != undefined) {
+            Alerts.battle_to_character(battle, character)
+        }
         Alerts.generic_user_alert(user, 'loading_completed', '')
     }
 }

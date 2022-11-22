@@ -34,9 +34,9 @@ var SendUpdate;
             let unit_id = character.battle_unit_id;
             console.log('unit id is ' + unit_id);
             alerts_1.Alerts.battle_progress(user, true);
-            alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);
+            alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
         }
         else {
             alerts_1.Alerts.battle_progress(user, false);

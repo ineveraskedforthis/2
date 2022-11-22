@@ -29,6 +29,7 @@ import { Event } from "./game_modules/events/events";
 import { Convert, Link } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/battle/system";
 import { BulkOrders, ItemOrders } from "./game_modules/market/system";
+import { battle_id, unit_id } from "./shared/battle_data";
 
 
 
@@ -90,9 +91,16 @@ function load() {
 
     const characters = Data.Character.list()
 
+    //validating ids and connections
     for (const character of characters) {
         Link.character_and_cell(character, Convert.character_to_cell(character))
+        const battle = Convert.character_to_battle(character)
+        if (battle == undefined) {
+            character.battle_id = -1 as battle_id
+            character.battle_unit_id = -1 as unit_id
+        }
     }
+
 
     // Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }

@@ -29,6 +29,11 @@ var BattleAI;
             }
         }
         console.log('closest enemy is found ' + closest_enemy);
+        if (closest_enemy != undefined) {
+            let cha = systems_communication_1.Convert.unit_to_character(units[closest_enemy]);
+            console.log(cha.get_hp());
+            console.log(cha.name);
+        }
         return closest_enemy;
     }
     function convert_attack_to_action(battle, ind1, ind2, tag) {
@@ -66,6 +71,7 @@ var BattleAI;
             const target_id = calculate_closest_enemy(battle, agent_unit.id);
             // no target was found
             if (target_id == undefined) {
+                console.log('no target found, attempt to leave');
                 events_1.BattleEvent.Flee(battle, agent_unit);
                 return 'leave';
             }

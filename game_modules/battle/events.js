@@ -34,11 +34,13 @@ var BattleEvent;
         //updating unit and heap
         battle.heap.pop();
         unit.next_turn_after = unit.slowness;
-        unit.action_points_left = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max);
+        let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max);
+        let ap_increase = new_ap - unit.action_points_left;
+        unit.action_points_left = new_ap;
         unit.dodge_turns = Math.max(0, unit.dodge_turns - 1);
         battle.heap.push(unit.id);
         // send updates
-        alerts_1.Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, 0);
+        alerts_1.Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, -ap_increase);
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.EndTurn = EndTurn;
@@ -73,7 +75,7 @@ var BattleEvent;
         unit.position.x = tmp.x + unit.position.x;
         unit.position.y = tmp.y + unit.position.y;
         unit.action_points_left = unit.action_points_left - points_spent;
-        alerts_1.Alerts.battle_event(battle, 'move', unit.id, target, unit.id, points_spent);
+        alerts_1.Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, points_spent);
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.Move = Move;
