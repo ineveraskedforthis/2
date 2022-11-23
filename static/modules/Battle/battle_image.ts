@@ -18,8 +18,8 @@ interface battle_action {
 }
 
 
-function build_unit_div(unit_data: BattleUnit) {
-    let div = document.createElement('div')
+function build_unit_div(unit_data: BattleUnitView, div: HTMLDivElement|undefined) {
+    if (div == undefined) div = document.createElement('div')
     div.innerHTML = unit_data.name + '(id:' + unit_data.id + ')' + '<br>  hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap
     div.classList.add('fighter_' + unit_data.id)
     div.classList.add('enemy_status')
@@ -68,7 +68,7 @@ export let battle_in_progress                          = false
 
 //temporary
 export let  events_list: BattleImageEvent[]                  =[];
-let         units_data: {[_ in unit_id]: BattleUnit}         ={};
+// let         units_data: {[_ in unit_id]: BattleUnit}         ={};
 export let  units_views: {[_ in unit_id]: BattleUnitView}    ={};
 let         unit_ids: Set<unit_id>                           =new Set();
 let         anim_images: {[_ in unit_id]: AnimatedImage}     ={};
@@ -99,7 +99,7 @@ export namespace BattleImage {
         enemy_list_div.innerHTML = ''
 
         events_list     =[];
-        units_data      ={};
+        // units_data      ={};
         units_views     ={};
         unit_ids        =new Set();
         anim_images     ={};
@@ -115,12 +115,12 @@ export namespace BattleImage {
         let unit_view = new BattleUnitView(battle_unit)
 
         unit_ids.add(unit.id)
-        units_data[unit.id]     = battle_unit
+        // units_data[unit.id]     = battle_unit
         units_views[unit.id]    = unit_view
 
         anim_images[unit.id] = new AnimatedImage(unit.tag)
 
-        let div = build_unit_div(battle_unit)
+        let div = build_unit_div(unit_view, undefined)
         enemy_list_div.appendChild(div)
     }
 
@@ -153,11 +153,11 @@ export namespace BattleImage {
         })
     }
 
-    export function unit_div(id: unit_id|undefined): HTMLElement|undefined {
+    export function unit_div(id: unit_id|undefined): HTMLDivElement|undefined {
         if (id == undefined) return undefined;
         let div = enemy_list_div.querySelector('.fighter_' + id) 
         if (div == null) return undefined
-        return div as HTMLElement
+        return div as HTMLDivElement
     }
 
     export function unload_unit(unit: UnitSocket) {
@@ -183,8 +183,8 @@ export namespace BattleImage {
         if (player_unit_id != undefined) {
             let move_ap_div = document.getElementById('move'+'_ap_cost')!
 
-            const player_data = units_data[player_unit_id]
-            const target_data = units_data[selected]
+            const player_data = units_views[player_unit_id]
+            const target_data = units_views[selected]
             if (player_data == undefined) return
             if (target_data == undefined) return
 
@@ -263,7 +263,7 @@ export namespace BattleImage {
 
             if (player_unit_id != undefined) {
                 let move_ap_div = document.getElementById('move'+'_ap_cost')!
-                const player_data = units_data[player_unit_id]
+                const player_data = units_views[player_unit_id]
                 if (player_data == undefined) return;
                 let a = player_data.position
                 let b = position_c.canvas_to_battle(anchor_position)
@@ -389,11 +389,11 @@ export namespace BattleImage {
             return
         }
 
-        if (units_data[player_unit_id] == undefined) {
+        if (units_views[player_unit_id] == undefined) {
             return
         }
 
-        let player = units_data[player_unit_id]
+        let player = units_views[player_unit_id]
         if (player == undefined) return
 
         for (let i of actions) {
@@ -490,6 +490,12 @@ export namespace BattleImage {
             ctx.lineTo(centre2.x, centre2.y)
             ctx.stroke()
         }
+    }
+
+    export function update_unit_div(unit: unit_id) {
+        let div = unit_div(unit)
+        if (div == undefined) return
+        build_unit_div(units_views[unit], div)
     }
 }
 

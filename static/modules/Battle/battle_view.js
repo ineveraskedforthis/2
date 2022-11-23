@@ -4,6 +4,7 @@ import { position_c, } from "./battle_image_helper.js";
 import { BATTLE_SCALE } from "./constants.js";
 export class BattleUnitView {
     constructor(unit) {
+        this.id = unit.id;
         this.name = unit.name;
         this.unit = unit;
         this.killed = unit.killed;

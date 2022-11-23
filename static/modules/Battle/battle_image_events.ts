@@ -204,7 +204,7 @@ export class UpdateDataEvent extends BattleImageEvent {
         this.ap_change_left = this.ap_change
         this.hp_change_left = this.hp_change
         unit.position = this.data.position
-        this.logged = true
+        BattleImage.update_unit_div(unit.id)
     }
 }
 
@@ -333,9 +333,5 @@ export class NewTurnEvent extends BattleImageEvent {
 
     on_start(): void {
         BattleImage.set_current_turn(this.unit)
-    }
-
-    generate_log_message():string {
-        return 'new_turn'
     }
 }

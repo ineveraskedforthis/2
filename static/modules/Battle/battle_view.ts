@@ -11,6 +11,7 @@ import {
 import { BATTLE_SCALE } from "./constants.js"
 
 export class BattleUnitView {
+    id: unit_id
     position: battle_position
     hp: number
     max_hp: number
@@ -30,6 +31,7 @@ export class BattleUnitView {
     current_animation: animation_event|undefined
     
     constructor(unit: BattleUnit) {
+        this.id = unit.id
         this.name = unit.name
         this.unit = unit
         this.killed = unit.killed

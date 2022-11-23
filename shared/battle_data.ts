@@ -32,7 +32,7 @@ export interface BattleActionChance {
 }
 
 
-export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'|'new_turn';
+export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'|'new_turn'|'update';
 export interface BattleEventSocket{
     tag: BattleEventTag
     creator: unit_id
@@ -40,6 +40,7 @@ export interface BattleEventSocket{
     target_unit: unit_id
     cost: number
     index: number // events are numbered, they should be treated in succession
+    data?: UnitSocket
 }
 
 

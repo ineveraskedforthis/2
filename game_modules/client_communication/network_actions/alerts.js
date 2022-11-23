@@ -99,6 +99,10 @@ var Alerts;
             index: battle.last_event_index,
             cost: cost,
         };
+        if (tag == 'update') {
+            let unit_data = systems_communication_1.Convert.unit_to_unit_socket(battle.heap.get_unit(unit_id));
+            Event.data = unit_data;
+        }
         for (let unit of battle.heap.raw_data) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             generic_character_alert(character, 'battle-event', Event);
@@ -114,11 +118,12 @@ var Alerts;
     }
     Alerts.battle_update_data = battle_update_data;
     function battle_update_unit(battle, unit) {
-        const data = systems_communication_1.Convert.unit_to_unit_socket(unit);
-        for (let unit of battle.heap.raw_data) {
-            const character = systems_communication_1.Convert.unit_to_character(unit);
-            generic_character_alert(character, 'battle-update-unit', data);
-        }
+        Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
+        // const data = Convert.unit_to_unit_socket(unit)
+        // for (let unit of battle.heap.raw_data) {
+        //     const character = Convert.unit_to_character(unit)
+        //     generic_character_alert(character, 'battle-update-unit', data)
+        // }
     }
     Alerts.battle_update_unit = battle_update_unit;
     function battle_to_character(battle, character) {

@@ -4,8 +4,9 @@ import { socket } from '../globals.js';
 import { AnimatedImage } from './animation.js';
 import { BATTLE_SCALE } from './constants.js';
 import { IMAGES } from '../load_images.js';
-function build_unit_div(unit_data) {
-    let div = document.createElement('div');
+function build_unit_div(unit_data, div) {
+    if (div == undefined)
+        div = document.createElement('div');
     div.innerHTML = unit_data.name + '(id:' + unit_data.id + ')' + '<br>  hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap;
     div.classList.add('fighter_' + unit_data.id);
     div.classList.add('enemy_status');
@@ -44,7 +45,7 @@ export let player_unit_id = undefined;
 export let battle_in_progress = false;
 //temporary
 export let events_list = [];
-let units_data = {};
+// let         units_data: {[_ in unit_id]: BattleUnit}         ={};
 export let units_views = {};
 let unit_ids = new Set();
 let anim_images = {};
@@ -71,7 +72,7 @@ export var BattleImage;
         battle_in_progress = false;
         enemy_list_div.innerHTML = '';
         events_list = [];
-        units_data = {};
+        // units_data      ={};
         units_views = {};
         unit_ids = new Set();
         anim_images = {};
@@ -84,10 +85,10 @@ export var BattleImage;
         let battle_unit = new BattleUnit(unit);
         let unit_view = new BattleUnitView(battle_unit);
         unit_ids.add(unit.id);
-        units_data[unit.id] = battle_unit;
+        // units_data[unit.id]     = battle_unit
         units_views[unit.id] = unit_view;
         anim_images[unit.id] = new AnimatedImage(unit.tag);
-        let div = build_unit_div(battle_unit);
+        let div = build_unit_div(unit_view, undefined);
         enemy_list_div.appendChild(div);
     }
     BattleImage.load_unit = load_unit;
@@ -147,8 +148,8 @@ export var BattleImage;
         selected = index;
         if (player_unit_id != undefined) {
             let move_ap_div = document.getElementById('move' + '_ap_cost');
-            const player_data = units_data[player_unit_id];
-            const target_data = units_data[selected];
+            const player_data = units_views[player_unit_id];
+            const target_data = units_views[selected];
             if (player_data == undefined)
                 return;
             if (target_data == undefined)
@@ -230,7 +231,7 @@ export var BattleImage;
             anchor_position = pos;
             if (player_unit_id != undefined) {
                 let move_ap_div = document.getElementById('move' + '_ap_cost');
-                const player_data = units_data[player_unit_id];
+                const player_data = units_views[player_unit_id];
                 if (player_data == undefined)
                     return;
                 let a = player_data.position;
@@ -356,10 +357,10 @@ export var BattleImage;
         if (player_unit_id == undefined) {
             return;
         }
-        if (units_data[player_unit_id] == undefined) {
+        if (units_views[player_unit_id] == undefined) {
             return;
         }
-        let player = units_data[player_unit_id];
+        let player = units_views[player_unit_id];
         if (player == undefined)
             return;
         for (let i of actions) {
@@ -457,6 +458,13 @@ export var BattleImage;
         }
     }
     BattleImage.draw_anchor = draw_anchor;
+    function update_unit_div(unit) {
+        let div = unit_div(unit);
+        if (div == undefined)
+            return;
+        build_unit_div(units_views[unit], div);
+    }
+    BattleImage.update_unit_div = update_unit_div;
 })(BattleImage || (BattleImage = {}));
 // export class BattleImageNext {
 //     remove_fighter(unit_id: unit_id) {

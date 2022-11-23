@@ -1,7 +1,7 @@
 import { BattleImage, battle_in_progress } from "./battle_image.js";
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js";
-import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, RetreatEvent } from "./battle_image_events.js";
+import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, RetreatEvent, UpdateDataEvent } from "./battle_image_events.js";
 // export const battle_image = new BattleImageNext();
 const events_queue = [];
 BattleImage.add_action({ name: 'move', tag: 'move' });
@@ -66,6 +66,9 @@ var bCallback;
         }
         else if (action.tag == 'ranged_attack') {
             BattleImage.new_event(new AttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit));
+        }
+        else if (action.tag == 'update') {
+            BattleImage.new_event(new UpdateDataEvent(action.index, action.creator, action.data));
         }
         else {
             console.log('unhandled input');
