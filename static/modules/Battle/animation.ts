@@ -22,8 +22,10 @@ export class AnimatedImage {
         this.animation_tick += dt
         while (this.animation_tick > BATTLE_ANIMATION_TICK) {
             this.animation_tick = this.animation_tick - BATTLE_ANIMATION_TICK
-            if ((ANIMATIONS[this.get_image_name()].length <= this.current) && (this.action == 'move')) {
+            if ((ANIMATIONS[this.get_image_name()].length <= this.current + 1) && (this.action == 'move')) {
                 this.current = 0
+            } else if (ANIMATIONS[this.get_image_name()].length <= this.current + 1) { 
+                this.current = this.current
             } else {
                 this.current += 1;
             }
@@ -51,7 +53,7 @@ export class AnimatedImage {
     draw(ctx: CanvasRenderingContext2D, data: [number, number, number, number]) {
         const w = this.get_w()
         const h = this.get_h()
-        const x = w * this.animation_tick
+        const x = w * this.current
         const y = 0
         const image = ANIMATIONS[this.get_image_name()].data
         ctx.drawImage(  image, x, y, w, h, 
