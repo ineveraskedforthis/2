@@ -108,7 +108,7 @@ export namespace BattleImage {
 
     export function load_unit(unit: UnitSocket) {
         console.log('load unit')
-
+        console.log(unit)
         console.log("add fighter")
 
         let battle_unit = new BattleUnit(unit)

@@ -57,6 +57,8 @@ export class BattleImageEvent {
             this.logged = true
 
             let unit = units_views[this.unit]
+            if (unit == undefined) return true
+
             unit.hp = unit.hp + this.hp_change
             unit.ap = unit.ap + this.ap_change
 
@@ -309,8 +311,8 @@ export class AttackEvent extends BattleImageEvent {
 // }
 
 export class RetreatEvent extends BattleImageEvent {    
-    constructor(event_id: number, unit_id: unit_id) {
-        super(event_id, unit_id, 0, 0, 0)
+    constructor(event_id: number, unit_id: unit_id, cost: number) {
+        super(event_id, unit_id, 0, 0, cost)
     }
 
     on_start(): void {

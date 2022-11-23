@@ -38,6 +38,8 @@ export class BattleImageEvent {
             this.on_start();
             this.logged = true;
             let unit = units_views[this.unit];
+            if (unit == undefined)
+                return true;
             unit.hp = unit.hp + this.hp_change;
             unit.ap = unit.ap + this.ap_change;
             unit.ap_change = this.ap_change_left;
@@ -233,8 +235,8 @@ export class AttackEvent extends BattleImageEvent {
 //     }
 // }
 export class RetreatEvent extends BattleImageEvent {
-    constructor(event_id, unit_id) {
-        super(event_id, unit_id, 0, 0, 0);
+    constructor(event_id, unit_id, cost) {
+        super(event_id, unit_id, 0, 0, cost);
     }
     on_start() {
         let unit = units_views[this.unit];

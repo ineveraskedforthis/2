@@ -81,6 +81,7 @@ export var BattleImage;
     BattleImage.reset = reset;
     function load_unit(unit) {
         console.log('load unit');
+        console.log(unit);
         console.log("add fighter");
         let battle_unit = new BattleUnit(unit);
         let unit_view = new BattleUnitView(battle_unit);

@@ -70,7 +70,7 @@ namespace bCallback {
         } else if (action.tag == 'new_turn') {
             BattleImage.new_event(new NewTurnEvent(action.index, action.creator))
         } else if (action.tag == 'flee'){
-            BattleImage.new_event(new RetreatEvent(action.index, action.creator))
+            BattleImage.new_event(new RetreatEvent(action.index, action.creator, action.cost))
         } else if (action.tag == 'end_turn') {
             BattleImage.new_event(new EndTurn(action.index, action.creator, -action.cost))
         } else if (action.tag == 'miss') {
@@ -89,7 +89,7 @@ namespace bCallback {
 function start_battle() {
     console.log('start battle')
     tab.turn_on('battle')
-    BattleImage.reset()
+    // BattleImage.reset()
 }
 
 function end_battle() {
