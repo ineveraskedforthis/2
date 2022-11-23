@@ -160,6 +160,10 @@ var UserManagement;
         const character = events_1.Event.new_character(human_1.HumanTemplateNotAligned, name, starting_cell, model_variation);
         console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')');
         systems_communication_1.Link.character_and_user_data(character, user);
+        const real_user = get_user(id);
+        if (real_user != undefined) {
+            real_user.character_removed = false;
+        }
         // save_users()
     }
     UserManagement.get_new_character = get_new_character;

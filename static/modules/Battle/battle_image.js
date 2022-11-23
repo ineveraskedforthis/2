@@ -417,6 +417,8 @@ export var BattleImage;
             let view = units_views[Number(unit_id)];
             if (view == undefined)
                 continue;
+            if (view.hp == 0)
+                continue;
             view.draw(dt, selected, hovered, player_unit_id);
         }
         draw_anchor();

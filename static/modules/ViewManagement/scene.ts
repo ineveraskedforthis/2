@@ -17,6 +17,7 @@ function show_game() {
 }
 
 function show_scene(scene_id: string) {
+    console.log('show ' + scene_id)
     let parent_elem = document.getElementById(scene_id)!.parentElement!;
     for (var i = 0; i < parent_elem.children.length; i++) {
         if (parent_elem.children[i].id != undefined && parent_elem.children[i].id != null && parent_elem.children[i].id != ''){

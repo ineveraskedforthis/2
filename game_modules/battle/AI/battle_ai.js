@@ -30,7 +30,7 @@ var BattleAI;
         }
         console.log('closest enemy is found ' + closest_enemy);
         if (closest_enemy != undefined) {
-            let cha = systems_communication_1.Convert.unit_to_character(units[closest_enemy]);
+            let cha = systems_communication_1.Convert.unit_to_character(battle.heap.get_unit(closest_enemy));
             console.log(cha.get_hp());
             console.log(cha.name);
         }

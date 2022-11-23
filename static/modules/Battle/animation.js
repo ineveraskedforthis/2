@@ -14,7 +14,7 @@ export class AnimatedImage {
         this.animation_tick += dt;
         while (this.animation_tick > BATTLE_ANIMATION_TICK) {
             this.animation_tick = this.animation_tick - BATTLE_ANIMATION_TICK;
-            if ((ANIMATIONS[this.get_image_name()].length <= this.current + 1) && (this.action == 'move')) {
+            if ((ANIMATIONS[this.get_image_name()].length <= this.current + 1) && ((this.action == 'move') || (this.action == 'idle'))) {
                 this.current = 0;
             }
             else if (ANIMATIONS[this.get_image_name()].length <= this.current + 1) {

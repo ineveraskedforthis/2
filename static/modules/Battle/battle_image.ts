@@ -447,6 +447,7 @@ export namespace BattleImage {
             if (had_left[unit_id]) continue
             let view = units_views[Number(unit_id) as unit_id]
             if (view == undefined) continue
+            if (view.hp == 0) continue
             view.draw(dt, selected, hovered, player_unit_id)
         }
 

@@ -184,6 +184,7 @@ export namespace Link {
         if (UserManagement.user_is_online(user.id)) {
             console.log('user is online')
             let user_online = UserManagement.get_user(user.id as user_online_id)
+            user_online.character_created = true
             UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation')
         }
         UserManagement.save_users()

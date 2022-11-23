@@ -171,6 +171,9 @@ export namespace UserManagement {
         const character = Event.new_character(HumanTemplateNotAligned, name, starting_cell, model_variation)
         console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
+        
+        const real_user = get_user(id as user_online_id)
+        if (real_user != undefined) {real_user.character_removed = false}
         // save_users()
     }
 

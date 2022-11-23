@@ -12,7 +12,7 @@ import { Attack } from "../../character/attack/system";
 export namespace BattleAI {
 
     function calculate_closest_enemy(battle: Battle, index: unit_id):unit_id|undefined {
-        let closest_enemy = undefined;
+        let closest_enemy: undefined|unit_id = undefined;
         const units = battle.heap.raw_data;
         const unit = battle.heap.get_unit(index);
         let min_distance = 100;
@@ -33,7 +33,7 @@ export namespace BattleAI {
         }
         console.log('closest enemy is found ' + closest_enemy)
         if (closest_enemy != undefined){
-            let cha = Convert.unit_to_character(units[closest_enemy])
+            let cha = Convert.unit_to_character(battle.heap.get_unit(closest_enemy))
             console.log(cha.get_hp())
             console.log(cha.name)
         }

@@ -178,6 +178,7 @@ var Link;
         if (user_manager_1.UserManagement.user_is_online(user.id)) {
             console.log('user is online');
             let user_online = user_manager_1.UserManagement.get_user(user.id);
+            user_online.character_created = true;
             user_manager_1.UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation');
         }
         user_manager_1.UserManagement.save_users();
