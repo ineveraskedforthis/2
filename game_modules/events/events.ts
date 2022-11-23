@@ -269,6 +269,7 @@ export namespace Event {
             BattleEvent.NewUnit(battle, defender_unit)
             Link.character_battle_unit(attacker, battle, attacker_unit)
             Link.character_battle_unit(defender, battle, defender_unit)
+            Alerts.battle_update_data(battle)
             UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
             UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)
         }

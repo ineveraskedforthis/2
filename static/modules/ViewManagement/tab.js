@@ -1,4 +1,4 @@
-export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'local_characters'];
+export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'localcharacters'];
 // global state
 const tabs_queue = [];
 const tabs_position = {};

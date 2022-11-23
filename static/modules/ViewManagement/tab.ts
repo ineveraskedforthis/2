@@ -1,6 +1,6 @@
 import { Socket } from "../../../shared/battle_data"
 
-export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'local_characters']
+export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'localcharacters']
 
 interface tab_property {
     top: string,

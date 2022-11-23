@@ -249,6 +249,7 @@ var Event;
             events_1.BattleEvent.NewUnit(battle, defender_unit);
             systems_communication_1.Link.character_battle_unit(attacker, battle, attacker_unit);
             systems_communication_1.Link.character_battle_unit(defender, battle, defender_unit);
+            alerts_1.Alerts.battle_update_data(battle);
             user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 19 /* UI_Part.BATTLE */);
             user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 19 /* UI_Part.BATTLE */);
         }
