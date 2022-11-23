@@ -5,6 +5,8 @@ const geom_1 = require("../../geom");
 const systems_communication_1 = require("../../systems_communication");
 const events_1 = require("../events");
 const system_1 = require("../../character/attack/system");
+const data_1 = require("../../data");
+const racial_hostility_1 = require("../../character/races/racial_hostility");
 var BattleAI;
 (function (BattleAI) {
     function calculate_closest_enemy(battle, index) {
@@ -12,6 +14,7 @@ var BattleAI;
         const units = battle.heap.raw_data;
         const unit = battle.heap.get_unit(index);
         let min_distance = 100;
+        const character = systems_communication_1.Convert.unit_to_character(unit);
         for (let i = 0; i < units.length; i++) {
             const target_unit = units[i];
             if (target_unit == undefined) {
@@ -23,7 +26,9 @@ var BattleAI;
             const d = geom_1.geom.dist(unit.position, target_unit.position);
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
                 && (unit.team != target_unit.team)
-                && (target_character.get_hp() > 0)) {
+                && ((data_1.Data.Reputation.a_is_enemy_of_b(character.id, target_character.id))
+                    || ((0, racial_hostility_1.hostile)(character.race(), target_character.race())))
+                && (!target_character.dead())) {
                 closest_enemy = target_unit.id;
                 min_distance = d;
             }

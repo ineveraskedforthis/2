@@ -93,6 +93,19 @@ var Data;
                 reputation[char_id][faction].level = level;
         }
         Reputation.set = set;
+        function a_is_enemy_of_b(a, b) {
+            if (reputation[b] == undefined)
+                return false;
+            const rep = reputation[a];
+            for (let [faction, reputation] of Object.entries(rep)) {
+                if (reputation.level == 'member') {
+                    if (from_id(reputation.faction, b) == 'enemy')
+                        return true;
+                }
+            }
+            return false;
+        }
+        Reputation.a_is_enemy_of_b = a_is_enemy_of_b;
     })(Reputation = Data.Reputation || (Data.Reputation = {}));
     let Battle;
     (function (Battle) {

@@ -79,7 +79,9 @@ namespace bCallback {
             BattleImage.new_event(new AttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit))
         } else if (action.tag == 'update') {
             BattleImage.new_event(new UpdateDataEvent(action.index, action.creator, action.data!))
-        } else {
+        } else if (action.tag == 'unit_join') {
+            BattleImage.new_event(new NewUnitEvent(action.index, action.creator, action.data!))
+        }else {
             console.log('unhandled input')
             console.log(action)
         }

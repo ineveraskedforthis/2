@@ -6,6 +6,7 @@ import { SAVE_GAME_PATH } from "../game_launch"
 import { battle_id, unit_id } from "../shared/battle_data"
 import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
+import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
 import { char_id, order_bulk_id, order_item_id } from "./types"
 
@@ -103,6 +104,17 @@ export namespace Data {
             if (reputation[char_id] == undefined) reputation[char_id] = {}
             if (reputation[char_id][faction] == undefined) reputation[char_id][faction] = {faction: faction, level: level}
             else reputation[char_id][faction].level = level
+        }
+
+        export function a_is_enemy_of_b(a: char_id, b: char_id) {
+            if (reputation[b] == undefined) return false
+            const rep = reputation[a]
+            for (let [faction, reputation] of Object.entries(rep)) {
+                if (reputation.level == 'member') {
+                    if (from_id(reputation.faction, b) == 'enemy') return true
+                }
+            }
+            return false
         }
     }
 

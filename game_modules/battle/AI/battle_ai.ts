@@ -7,7 +7,8 @@ import { Battle } from "../classes/battle";
 import { Convert } from "../../systems_communication";
 import { BattleEvent } from "../events";
 import { Attack } from "../../character/attack/system";
-
+import { Data } from "../../data";
+import { hostile} from "../../character/races/racial_hostility"
 
 export namespace BattleAI {
 
@@ -16,6 +17,8 @@ export namespace BattleAI {
         const units = battle.heap.raw_data;
         const unit = battle.heap.get_unit(index);
         let min_distance = 100;
+        const character = Convert.unit_to_character(unit)
+
         for (let i = 0; i < units.length; i++) {
             const target_unit = units[i]
             if (target_unit == undefined) {continue}
@@ -24,8 +27,10 @@ export namespace BattleAI {
 
             const d = geom.dist(unit.position, target_unit.position);
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
-                && (unit.team != target_unit.team) 
-                && (target_character.get_hp() > 0)) 
+                && (unit.team != target_unit.team)
+                && (    (Data.Reputation.a_is_enemy_of_b(character.id, target_character.id)) 
+                        || (hostile(character.race(), target_character.race())))
+                && (!target_character.dead())) 
                 {
                     closest_enemy = target_unit.id;
                     min_distance = d;

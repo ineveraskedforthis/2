@@ -641,16 +641,19 @@ for (let i = 0; i<3; i++) {
 //EQUIP DISPLAY
 
 function update_equip(data) {
+    console.log('equip update')
+    console.log(data)
     for (let tag of EQUIPMENT_TAGS) {
         let div = document.querySelector('.character_image.equip.' + tag);
-
-        let item_tag = data[tag]?.tag||'empty';
+        console.log(tag, data.equip[tag])
+        let item_tag = data.equip[tag]?.name||'empty';
 
         if (tag == 'secondary') {
             continue
         }
 
-        div.style = "background: no-repeat center/100% url(/static/img/" + item_tag + "_big.png);"
+        console.log("/static/img/character_image/" + item_tag + "_big.png")
+        div.style = "background: no-repeat center/100% url(/static/img/character_image/" + item_tag + "_big.png);"
     }
 }
 

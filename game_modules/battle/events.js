@@ -12,6 +12,7 @@ var BattleEvent;
     function NewUnit(battle, unit) {
         battle.heap.add_unit(unit);
         alerts_1.Alerts.new_unit(battle, unit);
+        alerts_1.Alerts.battle_event(battle, 'unit_join', unit.id, unit.position, unit.id, 0);
     }
     BattleEvent.NewUnit = NewUnit;
     function Leave(battle, unit) {
@@ -135,6 +136,7 @@ var BattleEvent;
                 alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3);
                 events_1.Event.stop_battle(battle);
             }
+            alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
         }
         alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left);
     }

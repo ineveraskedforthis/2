@@ -73,7 +73,7 @@ exports.RAT_SKIN_HELMET_ARGUMENT = {
     slot: 'head',
     material: skin,
     weapon_tag: 'twohanded',
-    model_tag: 'rat_skin_armour',
+    model_tag: 'rat_skin_helmet',
     resists: base_resists(skin, 'head'),
     damage: new damage_types_1.Damage(),
     range: 1

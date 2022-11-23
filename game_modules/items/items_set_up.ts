@@ -80,7 +80,7 @@ export const RAT_SKIN_HELMET_ARGUMENT: ItemJson = {
     slot: 'head',
     material: skin,
     weapon_tag: 'twohanded',
-    model_tag: 'rat_skin_armour',
+    model_tag: 'rat_skin_helmet',
     resists: base_resists(skin, 'head'),
     damage: new Damage(),
     range: 1

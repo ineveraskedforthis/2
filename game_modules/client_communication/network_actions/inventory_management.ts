@@ -20,6 +20,7 @@ function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) =
 
 export namespace InventoryCommands {
     export function equip(sw: SocketWrapper, msg: number) {
+        console.log('equip command + ' + msg)
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
         if (character.in_battle()) { return }

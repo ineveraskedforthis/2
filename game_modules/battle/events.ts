@@ -16,6 +16,7 @@ export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
         battle.heap.add_unit(unit)
         Alerts.new_unit(battle, unit)
+        Alerts.battle_event(battle, 'unit_join', unit.id, unit.position, unit.id, 0)
     }
 
     export function Leave(battle: Battle, unit: Unit|undefined) {
@@ -155,6 +156,7 @@ export namespace BattleEvent {
                 Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3)
                 Event.stop_battle(battle)
             }
+            Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
         }
         Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left)
     } 
