@@ -238,10 +238,10 @@ function get_attack_direction(a: BattleUnitView, d: BattleUnitView) {
 // prepare
 // hit
 
-const ATTACK_DURATION = 2
+const ATTACK_DURATION = 1
 const STAND_UNTIL   = 0.2
-const PREPARE_UNTIL = 1
-const HIT_UNTIL     = 2
+const PREPARE_UNTIL = 0.6
+const HIT_UNTIL     = 1
 
 export class AttackEvent extends BattleImageEvent {
     target: unit_id
