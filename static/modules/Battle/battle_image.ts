@@ -130,8 +130,8 @@ export namespace BattleImage {
             estimated_events_time += event.estimated_time_left()
         }
         let time_scale = 1
-        if (estimated_events_time > 3) {
-            time_scale = estimated_events_time / 3
+        if (estimated_events_time > 0.5) {
+            time_scale = estimated_events_time / 0.5
         }
 
         const scaled_dt = dt * time_scale

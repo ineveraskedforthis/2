@@ -310,8 +310,11 @@ var CharacterSystem;
     //     }
     function update(dt) {
         ai_campaign_decision_timer += dt;
-        if (ai_campaign_decision_timer > 4) {
+        if (ai_campaign_decision_timer > 8) {
             for (let char of data_1.Data.Character.list()) {
+                if (char.dead()) {
+                    continue;
+                }
                 if (Math.random() > 0.6) {
                     ai_manager_1.CampaignAI.decision(char);
                 }

@@ -337,8 +337,11 @@ export namespace CharacterSystem {
     export function update(dt: number) {
         ai_campaign_decision_timer += dt
 
-        if (ai_campaign_decision_timer > 4) {
+        if (ai_campaign_decision_timer > 8) {
             for (let char of Data.Character.list()) {
+                if (char.dead()) {
+                    continue
+                }
                 if (Math.random() > 0.6) {
                     CampaignAI.decision(char)
                 }                
