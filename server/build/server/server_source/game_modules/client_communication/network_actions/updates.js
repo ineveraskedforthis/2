@@ -146,6 +146,12 @@ var SendUpdate;
         if (character == undefined)
             return;
         alerts_1.Alerts.skill(user, 'clothier', character.skills.clothier);
+    }
+    SendUpdate.skill_clothier = skill_clothier;
+    function craft_clothier(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
         let value = craft_1.CraftProbability.from_rat_skin(character);
         alerts_1.Alerts.craft(user, 'craft_rat_pants', value);
         alerts_1.Alerts.craft(user, 'craft_rat_armour', value);
@@ -153,7 +159,7 @@ var SendUpdate;
         alerts_1.Alerts.craft(user, 'craft_rat_helmet', value);
         alerts_1.Alerts.craft(user, 'craft_rat_boots', value);
     }
-    SendUpdate.skill_clothier = skill_clothier;
+    SendUpdate.craft_clothier = craft_clothier;
     function skill_cooking(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
@@ -205,6 +211,7 @@ var SendUpdate;
     function all_craft(user) {
         cooking_craft(user);
         woodwork_craft(user);
+        craft_clothier(user);
     }
     SendUpdate.all_craft = all_craft;
     function cooking_craft(user) {

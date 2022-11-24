@@ -9,12 +9,12 @@ export namespace Loot {
     export function base(dead:tagRACE):{material: material_index, amount: number}[] {
         switch(dead) {
             case 'elo': return [{material: ELODINO_FLESH, amount: 1}]
-            case 'human': return [{material: MEAT, amount: 1}]
+            case 'human': return [{material: MEAT, amount: 6}]
             case 'rat': {
                     return  [  
-                        {material: MEAT,     amount: 1},
-                        {material: RAT_BONE, amount: 3},
-                        {material: RAT_SKIN, amount: 1}
+                        {material: MEAT,     amount: 3},
+                        {material: RAT_BONE, amount: 5},
+                        {material: RAT_SKIN, amount: 4}
                     ]
                 }
             case 'graci': return [{material: GRACI_HAIR, amount: 3}]
@@ -23,7 +23,7 @@ export namespace Loot {
     }
 
     export function skinning(dead: tagRACE): number {
-        if (dead == 'rat') return 2
+        if (dead == 'rat') return 4
         return 0
     }
 }

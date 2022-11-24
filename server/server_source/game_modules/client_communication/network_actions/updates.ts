@@ -161,6 +161,12 @@ export namespace SendUpdate {
         if (character == undefined) return
         
         Alerts.skill(user, 'clothier', character.skills.clothier)
+    }
+
+    export function craft_clothier(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
         let value = CraftProbability.from_rat_skin(character)
         Alerts.craft(user, 'craft_rat_pants',  value)
         Alerts.craft(user, 'craft_rat_armour', value)
@@ -210,7 +216,6 @@ export namespace SendUpdate {
     export function all_skills(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
-
         for (let i in character.skills) {
             Alerts.skill(user, i, character.skills[i as keyof SkillList])
         }
@@ -220,6 +225,7 @@ export namespace SendUpdate {
     export function all_craft(user: User) {
         cooking_craft(user)
         woodwork_craft(user)
+        craft_clothier(user)
     }
 
     export function cooking_craft(user: User) {
