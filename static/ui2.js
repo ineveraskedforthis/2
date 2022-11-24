@@ -1234,18 +1234,26 @@ function draw(time) {
         globals.action_ratio = globals.action_time / globals.action_total_time
         let div = document.getElementById('action_progress_bar')
         if (globals.action_total_time * 1.2 <= globals.action_time ) {
+            // if current action_time >= total_time * 1.2
+            // so if action had ended with a little overshoot
+            // then stop action
             globals.action_in_progress = false
             div.classList.add('hidden')
+            //check repeat action flags
             console.log('keep doing?')
             console.log(globals.keep_doing)
             if (globals.keep_doing != undefined) {
                 map.send_local_cell_action(globals.keep_doing)
             }
+            //do the movement again if you are not at destination already
+            if (map.move_flag) {
+                map.send_cell_action('continue_move')
+            }            
             // map.move_flag = false
         } else {
             let bar = div.querySelector('span')
             bar.style.width = Math.floor(globals.action_time / globals.action_total_time * 10000)/ 100 + '%'
-            if (map.move_flag) {map.movement_progress = globals.action_time / globals.action_total_time }
+            if (map.move_flag) {map.movement_progress = globals.action_ratio}
         }    
     }
 

@@ -105,6 +105,7 @@ export function init_map_control(map, globals) {
             let tmp = Date.now()
             if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
                 map.select_hex(selected_hex[0], selected_hex[1]);
+                map.move_flag = true
                 map.send_cell_action('move')
             }  
         } else {
@@ -187,7 +188,7 @@ export class Map {
         this.curr_section = undefined;
         this.sections = undefined;
 
-        this.move_flag = false
+        this.move_flag = false // does player follow some path currently?
         this.movement_progress = 0
 
         this.hex_h = this.hex_side * Math.sqrt(3) / 2
@@ -313,6 +314,7 @@ export class Map {
         let adj_flag = this.check_move(this.selected[0] - this.curr_pos[0], this.selected[1] - this.curr_pos[1])
         if ((action == 'move') && (adj_flag)) {
             this.move_target = this.selected
+            this.move_flag = true
             this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
         } else if ((this.selected[0] == this.curr_pos[0]) && (this.selected[1] == this.curr_pos[1])) {
             this.socket.emit(action, {x: this.selected[0], y: this.selected[1]})
@@ -320,7 +322,8 @@ export class Map {
             this.path_progress += 1
             this.move_target = this.real_path[this.path_progress + 1]
             this.socket.emit('move', {x: this.real_path[this.path_progress + 1][0], y: this.real_path[this.path_progress + 1][1]})    
-        } else if ((this.real_path.length > 1) && ((this.move_flag == false)|| (this.movement_progress > 0.99))) {
+        } else if ((this.real_path.length > 1) && ((this.move_flag == true) || (this.movement_progress > 0.99))) {
+            this.move_flag = true
             this.path_progress = 1
             this.path = this.create_path()
             this.move_target = this.real_path[this.path_progress + 1]
@@ -737,12 +740,24 @@ export class Map {
         let tmp1 = this.curr_pos[1]
         this.curr_pos = [i, j];
         this.curr_territory = get_territory_tag(i, j);
-        
-        if (!teleport_flag) {
-            if ((tmp0 != 0) || (tmp1 != 0)) {
-                this.send_cell_action('continue_move')
+
+        console.log('move flag')
+        console.log(this.real_path[this.real_path.length - 1])
+        console.log(this.curr_pos)
+        console.log(this.move_flag)
+        if (this.move_flag) {
+            if ((this.real_path[this.real_path.length - 1][0] == this.curr_pos[0]) && (this.real_path[this.real_path.length - 1][1] == this.curr_pos[1])) {
+                this.move_flag = false
             }
         }
+        console.log(this.move_flag)
+
+
+        // if (!teleport_flag) {
+        //     if ((tmp0 != 0) || (tmp1 != 0)) {
+        //         this.send_cell_action('move')
+        //     }
+        // }
 
         let tag = i + '_' + j
         if (this.data[tag] != undefined) {
