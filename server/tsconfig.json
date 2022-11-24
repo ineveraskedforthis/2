@@ -7,7 +7,7 @@
     "module": "commonjs",
     "target": "es2021",
 
-    "outDir": "./server_build",
+    "outDir": "./build",
     // "rootDirs": ["./server_source, ../shared"],
     "strict": true,
     "esModuleInterop": true,

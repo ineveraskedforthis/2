@@ -19,9 +19,9 @@ console.log('Welcome')
 import * as path from "path";
 
 app.use(express.json());
-app.use('/static', express.static(path.join(__dirname, 'static')));
+app.use('/static', express.static(path.join(__dirname, '../../../../static')));
 app.get('/', (req:any, res:any) => {
-    res.sendFile(__dirname + '/views/index2.html');
+    res.sendFile(path.join(__dirname, '../../../../views/index2.html'));
 });
 http.listen(port, () => {
     console.log('listening on *:3000');
