@@ -30,8 +30,8 @@ function load_animation_set(tag, attack, idle, move, prepare, on_image_load) {
     load_animation(tag, 'prepare', prepare, on_image_load);
     load_animation(tag, 'attack', attack, on_image_load);
 }
-add_image_to_load('attack_0', './battle/attack_0');
-add_image_to_load('attack_1', './battle/attack_1');
+add_image_to_load('attack_0', 'battle/attack_0');
+add_image_to_load('attack_1', 'battle/attack_1');
 export function loadImages(onAllLoaded) {
     numLoading = names.length;
     const onload = () => {

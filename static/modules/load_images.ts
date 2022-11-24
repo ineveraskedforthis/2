@@ -54,8 +54,8 @@ function load_animation_set(tag: string, attack: number, idle: number, move: num
 
 
 
-add_image_to_load('attack_0', './battle/attack_0')
-add_image_to_load('attack_1', './battle/attack_1')
+add_image_to_load('attack_0', 'battle/attack_0')
+add_image_to_load('attack_1', 'battle/attack_1')
 
 
 
