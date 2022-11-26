@@ -1,7 +1,31 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.migrate = void 0;
-const game_launch_1 = require("./game_launch");
+exports.migrate = exports.set_version = void 0;
+const path = __importStar(require("path"));
+const fs_1 = require("fs");
 const elo_1 = require("./game_modules/character/races/elo");
 const graci_1 = require("./game_modules/character/races/graci");
 const human_1 = require("./game_modules/character/races/human");
@@ -16,7 +40,31 @@ const items_set_up_1 = require("./game_modules/items/items_set_up");
 const system_2 = require("./game_modules/items/system");
 const materials_manager_1 = require("./game_modules/manager_classes/materials_manager");
 const system_3 = require("./game_modules/map/system");
+const constants_1 = require("./game_modules/static_data/constants");
+var SAVE_GAME_PATH = path.join('save_1');
+if (!(0, fs_1.existsSync)(SAVE_GAME_PATH)) {
+    (0, fs_1.mkdirSync)(SAVE_GAME_PATH);
+}
+console.log(SAVE_GAME_PATH);
+const version_path = path.join(SAVE_GAME_PATH, 'version.txt');
+function get_version_raw() {
+    if (!(0, fs_1.existsSync)(version_path)) {
+        (0, fs_1.writeFileSync)(version_path, '');
+    }
+    return (0, fs_1.readFileSync)(version_path).toString();
+}
+function set_version(n) {
+    (0, fs_1.writeFileSync)(version_path, '' + n);
+}
+exports.set_version = set_version;
+function get_version() {
+    let data = Number(get_version_raw());
+    return data;
+}
 function migrate(current_version, target_version) {
+    system_1.CharacterSystem.load();
+    system_3.MapSystem.load();
+    data_1.Data.load();
     console.log('migration from ' + current_version + ' to ' + target_version);
     if (current_version == 0) {
         set_up_initial_data();
@@ -25,11 +73,12 @@ function migrate(current_version, target_version) {
         create_starting_agents();
     }
     if (current_version == 2) {
+        set_up_cooks();
     }
 }
 exports.migrate = migrate;
 function set_up_initial_data() {
-    (0, game_launch_1.set_version)(1);
+    set_version(1);
 }
 function create_starting_agents() {
     system_3.MapSystem.load();
@@ -109,25 +158,31 @@ function create_starting_agents() {
     //     mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
     // mage.changed = true
     // mage.faction_id = 3
-    (0, game_launch_1.set_version)(2);
+    set_version(2);
 }
 const dummy_model = { chin: 0, mouth: 0, eyes: 0 };
 function create_cook(x, y) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    const cook = events_1.Event.new_character(human_1.HumanTemplateColony, 'Trader', cell, dummy_model);
+    const cook = events_1.Event.new_character(human_1.HumanTemplateColony, 'Local cook', cell, dummy_model);
+    cook.stash.inc(materials_manager_1.FOOD, 10);
+    cook.savings.inc(500);
+    cook.skills.cooking = 100;
+    cook.perks.meat_master = true;
+    return cook;
 }
 function set_up_cooks() {
-    // let cook =  this.create_new_character(pool, 'Cook', starting_cell_id, -1)
-    // cook.learn_perk("meat_master")
-    // cook.skills.cooking = 100
-    // cook.stash.inc(FOOD, 10)
-    // cook.savings.inc(500 as money)
-    // cook.faction_id = 3
-    // //  cook.sell(pool, FOOD, 500, 10 as money)
-    // let forest_cook =  this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
-    // forest_cook.stash.inc(FOOD, 10)
-    // forest_cook.savings.inc(500 as money)
-    // forest_cook.skills.cooking = 100
-    // forest_cook.learn_perk("meat_master")
-    // forest_cook.faction_id = 3
+    let cook_forest = create_cook(7, 5);
+    data_1.Data.Reputation.set(factions_1.Factions.Steppes.id, cook_forest.id, "member");
+    let cook_port = create_cook(0, 3);
+    data_1.Data.Reputation.set(factions_1.Factions.City.id, cook_port.id, "member");
+    let cook_port2 = create_cook(3, 8);
+    data_1.Data.Reputation.set(factions_1.Factions.City.id, cook_port2.id, "member");
+    let cook_port3 = create_cook(1, 6);
+    data_1.Data.Reputation.set(factions_1.Factions.City.id, cook_port3.id, "member");
+    set_version(3);
 }
+let version = get_version();
+console.log(version);
+migrate(version, constants_1.constants.version);
+system_1.CharacterSystem.save();
+data_1.Data.save();

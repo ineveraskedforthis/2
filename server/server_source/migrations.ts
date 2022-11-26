@@ -1,4 +1,5 @@
-import { set_version } from "./game_launch"
+import * as path from "path";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { EloTemplate } from "./game_modules/character/races/elo"
 import { GraciTemplate } from "./game_modules/character/races/graci"
 import { HumanTemplateColony } from "./game_modules/character/races/human"
@@ -14,8 +15,38 @@ import { ItemSystem } from "./game_modules/items/system"
 import { ELODINO_FLESH, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./game_modules/manager_classes/materials_manager"
 import { MapSystem } from "./game_modules/map/system"
 import { money } from "./game_modules/types"
+import { constants } from "./game_modules/static_data/constants";
+
+
+var SAVE_GAME_PATH = path.join('save_1')
+if (!existsSync(SAVE_GAME_PATH)){
+    mkdirSync(SAVE_GAME_PATH);
+}
+console.log(SAVE_GAME_PATH)
+
+const version_path = path.join(SAVE_GAME_PATH, 'version.txt')
+
+function get_version_raw():string {
+    if (!existsSync(version_path)) {
+        writeFileSync(version_path, '')
+    }
+    return readFileSync(version_path).toString()
+}
+
+export function set_version(n: number) {
+    writeFileSync(version_path, '' + n)
+}
+
+function get_version():number {
+    let data = Number(get_version_raw())
+    return data
+}
 
 export function migrate(current_version:number, target_version:number) {
+    CharacterSystem.load()
+    MapSystem.load()
+    Data.load()
+
     console.log('migration from ' + current_version  + ' to ' + target_version)
     if (current_version == 0) {
         set_up_initial_data()
@@ -26,7 +57,7 @@ export function migrate(current_version:number, target_version:number) {
     }
 
     if (current_version == 2) {
-        
+        set_up_cooks()
     }
 }
 
@@ -145,24 +176,35 @@ function create_starting_agents() {
 const dummy_model = {chin: 0, mouth: 0, eyes: 0}
 function create_cook(x: number, y: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    const cook =  Event.new_character(HumanTemplateColony, 'Trader', cell, dummy_model)
+    const cook =  Event.new_character(HumanTemplateColony, 'Local cook', cell, dummy_model)
+    cook.stash.inc(FOOD, 10)
+    cook.savings.inc(500 as money)
+    cook.skills.cooking = 100
+    cook.perks.meat_master = true
+    return cook
 }
 
 function set_up_cooks() {
-    
+    let cook_forest = create_cook(7, 5)
+    Data.Reputation.set(Factions.Steppes.id, cook_forest.id, "member")
 
-    // let cook =  this.create_new_character(pool, 'Cook', starting_cell_id, -1)
-    // cook.learn_perk("meat_master")
-    // cook.skills.cooking = 100
-    // cook.stash.inc(FOOD, 10)
-    // cook.savings.inc(500 as money)
-    // cook.faction_id = 3
-    // //  cook.sell(pool, FOOD, 500, 10 as money)
-    
-    // let forest_cook =  this.create_new_character(pool, 'Old cook', this.get_cell_id_by_x_y(7, 5), -1)
-    // forest_cook.stash.inc(FOOD, 10)
-    // forest_cook.savings.inc(500 as money)
-    // forest_cook.skills.cooking = 100
-    // forest_cook.learn_perk("meat_master")
-    // forest_cook.faction_id = 3
+    let cook_port = create_cook(0, 3)
+    Data.Reputation.set(Factions.City.id, cook_port.id, "member")
+
+    let cook_port2 = create_cook(3, 8)
+    Data.Reputation.set(Factions.City.id, cook_port2.id, "member")
+
+    let cook_port3 = create_cook(1, 6)
+    Data.Reputation.set(Factions.City.id, cook_port3.id, "member")
+
+    set_version(3)
 }
+
+
+let version = get_version()
+console.log(version)
+
+migrate(version, constants.version)
+
+CharacterSystem.save()
+Data.save()

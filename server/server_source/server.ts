@@ -5,7 +5,7 @@ const port = process.env.PORT || 3000;
 
 var express = require('express');
 var app = express();
-export var http = require('http').createServer(app);
+var http = require('http').createServer(app);
 
 export interface io_type {
     connect(url: string): Socket;
@@ -29,4 +29,9 @@ http.listen(port, () => {
 
 
 import { launch } from "./game_launch.js";
+import { SocketManager } from "./game_modules/client_communication/socket_manager.js";
+
+export var io = require('socket.io')(http);
+export var socket_manager = new SocketManager(io)
+
 launch(http, app)

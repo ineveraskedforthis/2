@@ -23,9 +23,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.set_version = exports.launch = exports.socket_manager = exports.io = exports.SAVE_GAME_PATH = void 0;
+exports.launch = exports.SAVE_GAME_PATH = void 0;
 const path = __importStar(require("path"));
-const fs_1 = require("fs");
 const fs = __importStar(require("fs"));
 exports.SAVE_GAME_PATH = path.join('save_1');
 if (!fs.existsSync(exports.SAVE_GAME_PATH)) {
@@ -37,19 +36,14 @@ const data_1 = require("./game_modules/data");
 //importing order is important because of global lists of entities
 const system_1 = require("./game_modules/character/system");
 const system_2 = require("./game_modules/map/system");
-const socket_manager_1 = require("./game_modules/client_communication/socket_manager");
 const user_manager_1 = require("./game_modules/client_communication/user_manager");
-const constants_1 = require("./game_modules/static_data/constants");
-const migrations_1 = require("./migrations");
-const server_1 = require("./server");
+// import { http, io_type } from "./server";
 const action_manager_1 = require("./game_modules/actions/action_manager");
 const auth_1 = require("./game_modules/client_communication/network_actions/auth");
 const events_1 = require("./game_modules/events/events");
 const systems_communication_1 = require("./game_modules/systems_communication");
 const system_3 = require("./game_modules/battle/system");
 const system_4 = require("./game_modules/market/system");
-exports.io = require('socket.io')(server_1.http);
-exports.socket_manager = new socket_manager_1.SocketManager(exports.io);
 const gameloop = require('node-gameloop');
 var shutdown = false;
 function launch(http_server, express_server) {
@@ -67,10 +61,7 @@ function launch(http_server, express_server) {
             shutdown = true;
         });
         console.log('reading save files');
-        console.log('connection ready, checking for version update');
-        let version = get_version();
-        console.log(version);
-        (0, migrations_1.migrate)(version, constants_1.constants.version);
+        console.log('connection ready');
         load();
         console.log('systems are ready');
         gameloop.setGameLoop((delta) => update(delta, http_server, express_server), 100);
@@ -141,19 +132,4 @@ function update(delta, http_server, express_server) {
         save();
         update_timer = 0;
     }
-}
-const version_path = path.join(exports.SAVE_GAME_PATH, 'version.txt');
-function get_version_raw() {
-    if (!(0, fs_1.existsSync)(version_path)) {
-        (0, fs_1.writeFileSync)(version_path, '');
-    }
-    return (0, fs_1.readFileSync)(version_path).toString();
-}
-function set_version(n) {
-    (0, fs_1.writeFileSync)(version_path, '' + n);
-}
-exports.set_version = set_version;
-function get_version() {
-    let data = Number(get_version_raw());
-    return data;
 }

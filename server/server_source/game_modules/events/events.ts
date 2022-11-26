@@ -211,6 +211,7 @@ export namespace Event {
         Unlink.character_and_battle(character, battle)
 
         const cell = Convert.character_to_cell(character)
+        cell.changed_characters = true
         Unlink.character_and_cell(character, cell)
         character.cleared = true
 

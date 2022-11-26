@@ -189,6 +189,7 @@ var Event;
         const battle = systems_communication_1.Convert.character_to_battle(character);
         systems_communication_1.Unlink.character_and_battle(character, battle);
         const cell = systems_communication_1.Convert.character_to_cell(character);
+        cell.changed_characters = true;
         systems_communication_1.Unlink.character_and_cell(character, cell);
         character.cleared = true;
     }

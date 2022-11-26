@@ -741,6 +741,7 @@ export class Map {
             if ((this.data[tag].urban == 1) || (this.data[tag].rural > 0)) {
                 return 'coast_rural'
             }
+            return 'coast'
         }
         
         if (this.data[tag] != undefined) {

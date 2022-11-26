@@ -52,6 +52,7 @@ export namespace EventMarket {
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
+        UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.STASH)
 
         const cell = Convert.character_to_cell(seller)
         Effect.Update.cell_market(cell)
@@ -65,6 +66,7 @@ export namespace EventMarket {
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
+        UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.STASH)
         
         const cell = Convert.character_to_cell(seller)
         Effect.Update.cell_market(cell)

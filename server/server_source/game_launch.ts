@@ -20,9 +20,7 @@ import { SocketManager } from "./game_modules/client_communication/socket_manage
 import { UserManagement } from "./game_modules/client_communication/user_manager";
 
 
-import { constants } from "./game_modules/static_data/constants";
-import { migrate } from "./migrations";
-import { http, io_type } from "./server";
+// import { http, io_type } from "./server";
 import { ActionManager } from "./game_modules/actions/action_manager";
 import { Auth } from "./game_modules/client_communication/network_actions/auth";
 import { Event } from "./game_modules/events/events";
@@ -30,14 +28,6 @@ import { Convert, Link } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/battle/system";
 import { BulkOrders, ItemOrders } from "./game_modules/market/system";
 import { battle_id, unit_id } from "../../shared/battle_data";
-
-
-
-
-
-
-export var io:io_type = require('socket.io')(http);
-export var socket_manager = new SocketManager(io)
 
 
 
@@ -62,11 +52,10 @@ export function launch(http_server: any, express_server: any) {
         });
 
         console.log('reading save files');
-        console.log('connection ready, checking for version update');
-        let version = get_version()
-        console.log(version)
+        console.log('connection ready');
 
-        migrate(version, constants.version)
+
+
         load()
         
 
@@ -154,20 +143,4 @@ function update(delta: number, http_server:any, express_server: any) {
     }
 }
 
-const version_path = path.join(SAVE_GAME_PATH, 'version.txt')
 
-function get_version_raw():string {
-    if (!existsSync(version_path)) {
-        writeFileSync(version_path, '')
-    }
-    return readFileSync(version_path).toString()
-}
-
-export function set_version(n: number) {
-    writeFileSync(version_path, '' + n)
-}
-
-function get_version():number {
-    let data = Number(get_version_raw())
-    return data
-}

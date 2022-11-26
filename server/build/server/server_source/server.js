@@ -23,12 +23,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.http = void 0;
+exports.socket_manager = exports.io = void 0;
 require('dotenv').config({ path: __dirname + '/.env' });
 const port = process.env.PORT || 3000;
 var express = require('express');
 var app = express();
-exports.http = require('http').createServer(app);
+var http = require('http').createServer(app);
 ;
 console.log('Welcome');
 const path = __importStar(require("path"));
@@ -37,8 +37,11 @@ app.use('/static', express.static(path.join(__dirname, '../../../../static')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../../views/index2.html'));
 });
-exports.http.listen(port, () => {
+http.listen(port, () => {
     console.log('listening on *:3000');
 });
 const game_launch_js_1 = require("./game_launch.js");
-(0, game_launch_js_1.launch)(exports.http, app);
+const socket_manager_js_1 = require("./game_modules/client_communication/socket_manager.js");
+exports.io = require('socket.io')(http);
+exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);
+(0, game_launch_js_1.launch)(http, app);

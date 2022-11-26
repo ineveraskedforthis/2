@@ -42,6 +42,7 @@ var EventMarket;
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 4 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 5 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 5 /* UI_Part.SAVINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 4 /* UI_Part.STASH */);
         const cell = systems_communication_1.Convert.character_to_cell(seller);
         effects_1.Effect.Update.cell_market(cell);
     }
@@ -53,6 +54,7 @@ var EventMarket;
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 4 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 5 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 5 /* UI_Part.SAVINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 4 /* UI_Part.STASH */);
         const cell = systems_communication_1.Convert.character_to_cell(seller);
         effects_1.Effect.Update.cell_market(cell);
     }
