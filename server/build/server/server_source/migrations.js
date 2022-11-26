@@ -71,9 +71,15 @@ function migrate(current_version, target_version) {
     }
     if (current_version == 1) {
         create_starting_agents();
+        set_version(2);
     }
     if (current_version == 2) {
         set_up_cooks();
+        set_version(3);
+    }
+    if (current_version == 3) {
+        set_up_guards_1();
+        set_version(4);
     }
 }
 exports.migrate = migrate;
@@ -135,13 +141,6 @@ function create_starting_agents() {
     // fletcher.learn_perk('fletcher')
     // fletcher.changed = true
     // fletcher.faction_id = 3
-    // let spearman =  this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
-    // spearman.skills.polearms = 100
-    // spearman.learn_perk("advanced_polearm")
-    // let spear = new Weapon(BONE_SPEAR_ARGUMENT)
-    // spearman.equip.data.weapon = spear
-    // spearman.changed = true
-    // spearman.faction_id = 3
     // let meat_bag =  this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
     // meat_bag.stash.inc(MEAT, 200)
     //     meat_bag.sell(pool, MEAT, 10, 10 as money)
@@ -158,7 +157,6 @@ function create_starting_agents() {
     //     mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
     // mage.changed = true
     // mage.faction_id = 3
-    set_version(2);
 }
 const dummy_model = { chin: 0, mouth: 0, eyes: 0 };
 function create_cook(x, y) {
@@ -170,6 +168,21 @@ function create_cook(x, y) {
     cook.perks.meat_master = true;
     return cook;
 }
+function create_guard(x, y) {
+    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    let spearman = events_1.Event.new_character(human_1.HumanTemplateColony, 'Local militia', cell, dummy_model);
+    spearman.skills.polearms = 100;
+    spearman.perks.advanced_polearm = true;
+    let spear = system_2.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
+    let armour = system_2.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
+    spearman.equip.data.weapon = spear;
+    spearman.equip.data.armour.body = armour;
+    return spearman;
+}
+function city_guard(x, y) {
+    let guard = create_guard(x, y);
+    data_1.Data.Reputation.set(factions_1.Factions.City.id, guard.id, "member");
+}
 function set_up_cooks() {
     let cook_forest = create_cook(7, 5);
     data_1.Data.Reputation.set(factions_1.Factions.Steppes.id, cook_forest.id, "member");
@@ -179,7 +192,18 @@ function set_up_cooks() {
     data_1.Data.Reputation.set(factions_1.Factions.City.id, cook_port2.id, "member");
     let cook_port3 = create_cook(1, 6);
     data_1.Data.Reputation.set(factions_1.Factions.City.id, cook_port3.id, "member");
-    set_version(3);
+}
+function set_up_guards_1() {
+    let guard_forest = create_guard(7, 5);
+    data_1.Data.Reputation.set(factions_1.Factions.Steppes.id, guard_forest.id, "member");
+    city_guard(0, 3);
+    city_guard(0, 3);
+    city_guard(3, 8);
+    city_guard(1, 6);
+    city_guard(3, 5);
+    city_guard(1, 3);
+    city_guard(2, 5);
+    city_guard(0, 4);
 }
 let version = get_version();
 console.log(version);

@@ -10,7 +10,7 @@ import { Event } from "./game_modules/events/events"
 import { EventInventory } from "./game_modules/events/inventory_events"
 import { EventMarket } from "./game_modules/events/market"
 import { Factions } from "./game_modules/factions"
-import { BONE_SPEAR_ARGUMENT } from "./game_modules/items/items_set_up"
+import { BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT } from "./game_modules/items/items_set_up"
 import { ItemSystem } from "./game_modules/items/system"
 import { ELODINO_FLESH, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./game_modules/manager_classes/materials_manager"
 import { MapSystem } from "./game_modules/map/system"
@@ -54,10 +54,17 @@ export function migrate(current_version:number, target_version:number) {
 
     if (current_version == 1) {
         create_starting_agents()
+        set_version(2)
     }
 
     if (current_version == 2) {
         set_up_cooks()
+        set_version(3)
+    }
+
+    if (current_version == 3) {
+        set_up_guards_1()
+        set_version(4)
     }
 }
 
@@ -143,13 +150,7 @@ function create_starting_agents() {
     // fletcher.changed = true
     // fletcher.faction_id = 3
 
-    // let spearman =  this.create_new_character(pool, 'Spearman', this.get_cell_id_by_x_y(3, 6), -1)
-    // spearman.skills.polearms = 100
-    // spearman.learn_perk("advanced_polearm")
-    // let spear = new Weapon(BONE_SPEAR_ARGUMENT)
-    // spearman.equip.data.weapon = spear
-    // spearman.changed = true
-    // spearman.faction_id = 3
+
     
 
     // let meat_bag =  this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
@@ -170,7 +171,6 @@ function create_starting_agents() {
     // mage.changed = true
     // mage.faction_id = 3
 
-    set_version(2)
 }
 
 const dummy_model = {chin: 0, mouth: 0, eyes: 0}
@@ -182,6 +182,24 @@ function create_cook(x: number, y: number) {
     cook.skills.cooking = 100
     cook.perks.meat_master = true
     return cook
+}
+
+function create_guard(x: number, y: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let spearman =  Event.new_character(HumanTemplateColony, 'Local militia', cell, dummy_model)
+    spearman.skills.polearms = 100
+    spearman.perks.advanced_polearm = true
+    let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
+    let armour = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
+    spearman.equip.data.weapon = spear
+    spearman.equip.data.armour.body = armour
+
+    return spearman
+}
+
+function city_guard(x: number, y: number) {
+    let guard = create_guard(x, y)
+    Data.Reputation.set(Factions.City.id, guard.id, "member")
 }
 
 function set_up_cooks() {
@@ -197,7 +215,20 @@ function set_up_cooks() {
     let cook_port3 = create_cook(1, 6)
     Data.Reputation.set(Factions.City.id, cook_port3.id, "member")
 
-    set_version(3)
+
+}
+
+function set_up_guards_1() {
+    let guard_forest = create_guard(7, 5)
+    Data.Reputation.set(Factions.Steppes.id, guard_forest.id, "member")
+    city_guard(0, 3)
+    city_guard(0, 3)
+    city_guard(3, 8)
+    city_guard(1, 6)
+    city_guard(3, 5)
+    city_guard(1, 3)
+    city_guard(2, 5)
+    city_guard(0, 4)
 }
 
 
