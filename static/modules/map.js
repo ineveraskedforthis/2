@@ -733,6 +733,24 @@ export class Map {
         return ((v1[0] - v2[0]) * (v1[0] - v2[0]) + (v1[1] - v2[1]) * (v1[1] - v2[1])) /10000
     }
 
+    get_bg_tag(i, j) {
+        if (this.terrain[i][j] == 'coast') {
+            return 'coast'
+        }
+
+        let tag = i + '_' + j
+        if (this.data[tag] != undefined) {
+            if (this.data[tag].urban >= 2) {
+                return 'colony'
+            } 
+            if (this.data[tag].wild >= 1) {
+                return 'forest'
+            }
+        }
+
+        return undefined
+    }
+
     set_curr_pos(i, j, teleport_flag) {
         console.log('new position')
         console.log(i, j)
@@ -759,17 +777,11 @@ export class Map {
         //     }
         // }
 
-        let tag = i + '_' + j
-        if (this.data[tag] != undefined) {
-            if (this.data[tag].urban >= 2) {
-                return 'colony'
-            } 
-            if (this.data[tag].wild >= 1) {
-                return 'forest'
-            }
-        }
         
-        
+        let res = this.get_bg_tag(i, j)
+        if (res != undefined) {
+            return res
+        }        
         // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];
     }
@@ -778,15 +790,10 @@ export class Map {
         let [i, j] = this.curr_pos
         this.curr_territory = get_territory_tag(i, j);
 
-        let tag = i + '_' + j
-        if (this.data[tag] != undefined) {
-            if (this.data[tag].urban >= 2) {
-                return 'colony'
-            } 
-            if (this.data[tag].wild >= 1) {
-                return 'forest'
-            }
-        }      
+        let res = this.get_bg_tag(i, j)
+        if (res != undefined) {
+            return res
+        }
         
         // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];
