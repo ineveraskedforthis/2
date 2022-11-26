@@ -734,11 +734,15 @@ export class Map {
     }
 
     get_bg_tag(i, j) {
-        if (this.terrain[i][j] == 'coast') {
-            return 'coast'
-        }
-
         let tag = i + '_' + j
+
+        if (this.terrain[i][j] == 'coast') {
+            if (this.data[tag] == undefined) return 'coast'
+            if ((this.data[tag].urban == 1) || (this.data[tag].rural > 0)) {
+                return 'coast_rural'
+            }
+        }
+        
         if (this.data[tag] != undefined) {
             if (this.data[tag].urban >= 2) {
                 return 'colony'
@@ -794,7 +798,7 @@ export class Map {
         if (res != undefined) {
             return res
         }
-        
+
         // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];
     }
