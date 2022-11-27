@@ -60,7 +60,7 @@ var CharacterSystem;
         let stash = JSON.stringify(c.stash.get_json());
         let trade_stash = JSON.stringify(c.trade_stash.get_json());
         let savings = c.savings.get();
-        let trade_savings = c.savings.get();
+        let trade_savings = c.trade_savings.get();
         let status = JSON.stringify(c.status);
         let skills = JSON.stringify(c.skills);
         let perks = JSON.stringify(c.perks);
