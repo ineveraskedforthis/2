@@ -142,6 +142,7 @@ export namespace BattleEvent {
         Alerts.battle_update_unit(battle, attacker)
         Alerts.battle_update_unit(battle, defender)
     }
+    
     export function Flee(battle: Battle, unit: Unit) {
         const character = Convert.unit_to_character(unit)
         if (unit.action_points_left >= 3) {

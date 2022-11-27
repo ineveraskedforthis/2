@@ -5,11 +5,24 @@ const AVERAGE_SKILL = 30;
 const IDEAL_DIST = 20; // AVERAGE_SKILL archer can hit with 1 probability in ideal conditions
 const STRESS_HINDER = 0.2; // maximal reduction to accuracy
 const RAGE_HINDER = 0.2; // maximal reduction to accuracy
+const EASY_DIST = 5; // EVERY ARCHER CAN HIT AT THIS DISTANCE
+const DIFFICULTY_BEYOND_IDEAL_SCALE = 5;
 var Accuracy;
 (function (Accuracy) {
     function ranged(character, distance) {
-        let base_accuracy = (IDEAL_DIST / (distance + 0.1)) * (character.skills.ranged / AVERAGE_SKILL);
-        let accuracy = base_accuracy * (1 - STRESS_HINDER * character.status.stress / 100) * (1 - RAGE_HINDER * character.status.rage);
+        if (distance < EASY_DIST)
+            return 1;
+        let skill_difficulty_multiplier = 60;
+        if (character.skills.ranged > 0) {
+            skill_difficulty_multiplier = AVERAGE_SKILL / character.skills.ranged;
+        }
+        const difficulty = (distance - EASY_DIST) * skill_difficulty_multiplier;
+        const ideal_difficulty = IDEAL_DIST - EASY_DIST;
+        let base_accuracy = 1;
+        if (ideal_difficulty < difficulty) {
+            base_accuracy = 5 / (5 + (difficulty - ideal_difficulty) / DIFFICULTY_BEYOND_IDEAL_SCALE);
+        }
+        let accuracy = base_accuracy * (1 - STRESS_HINDER * character.status.stress / 100) * (1 - RAGE_HINDER * character.status.rage / 100);
         return Math.min(accuracy, 1);
     }
     Accuracy.ranged = ranged;

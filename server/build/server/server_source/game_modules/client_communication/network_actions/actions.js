@@ -138,8 +138,13 @@ var HandleAction;
         //     return  battle.action(index, {action: 'push_back', target: input.target})
         // } else if (input.action == 'magic_bolt') {
         //     return  battle.action(index, {action: 'magic_bolt', target: input.target})
-        // } else if (input.action == 'shoot') { 
-        //     return  battle.action(index, {action: 'shoot', target: input.target})
+        else if (input.action == 'shoot') {
+            if (input.target == undefined)
+                return;
+            const defender_id = input.target;
+            const defender = system_1.BattleSystem.id_to_unit(defender_id, battle);
+            return events_1.BattleEvent.Shoot(battle, unit, defender);
+        }
         else if (input.action == 'flee') {
             events_1.BattleEvent.Flee(battle, unit);
         }

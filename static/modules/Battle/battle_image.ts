@@ -141,6 +141,7 @@ export namespace BattleImage {
             const responce = current_event.effect(scaled_dt)
             if (responce) {
                 events_list = events_list.slice(1)
+                update_selection_data()
             }            
             current_event.ap_change_left
         }
@@ -175,25 +176,30 @@ export namespace BattleImage {
         anchor_position = undefined
     }
 
+    export function update_selection_data() {
+        if (selected == undefined) return
+        if (player_unit_id == undefined) return
+
+        const player_data = units_views[player_unit_id]
+        const target_data = units_views[selected]
+        if (player_data == undefined) return
+        if (target_data == undefined) return
+
+        let a = player_data.position
+        let b = target_data.position
+        let dist = Math.floor(position_c.dist(a, b) * 100) / 100
+
+        let move_ap_div = document.getElementById('move'+'_ap_cost')!
+        move_ap_div.innerHTML = 'ap: ' + (dist * 3).toFixed(2)
+        socket.emit('req-ranged-accuracy', dist)
+    }
+
     export function select(index: unit_id) {
         unselect()
 
         selected = index;
 
-        if (player_unit_id != undefined) {
-            let move_ap_div = document.getElementById('move'+'_ap_cost')!
-
-            const player_data = units_views[player_unit_id]
-            const target_data = units_views[selected]
-            if (player_data == undefined) return
-            if (target_data == undefined) return
-
-            let a = player_data.position
-            let b = target_data.position
-            let dist = Math.floor(position_c.dist(a, b) * 100) / 100
-            move_ap_div.innerHTML = 'ap: ' + dist * 3
-            socket.emit('req-ranged-accuracy', dist)
-        }
+        update_selection_data()
 
         let div = unit_div(index)
         if (div != undefined) div.classList.add('selected_unit')
