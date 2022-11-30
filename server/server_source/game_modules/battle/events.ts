@@ -9,6 +9,7 @@ import { BattleAI } from "./AI/battle_ai"
 import { Battle } from "./classes/battle"
 import { Unit } from "./classes/unit"
 import { BattleSystem } from "./system"
+import { can_cast_magic_bolt, can_shoot } from "../character/skills"
 
 
 
@@ -125,10 +126,17 @@ export namespace BattleEvent {
 
         const COST = 3
 
+        if (!can_shoot(AttackerCharacter)) {
+            return 
+        }
+
         if (attacker.action_points_left < COST) {
             Alerts.not_enough_to_character(AttackerCharacter, 'action_points', COST, attacker.action_points_left)
             return
         }
+
+
+
         let dist = geom.dist(attacker.position, defender.position)
         const DefenderCharacter = Convert.unit_to_character(defender)
 
@@ -161,6 +169,25 @@ export namespace BattleEvent {
         }
         Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left)
     } 
+
+    export function MagicBolt(battle: Battle, attacker: Unit, defender: Unit) {
+        const AttackerCharacter = Convert.unit_to_character(attacker)
+        const COST = 1
+        if (!can_cast_magic_bolt(AttackerCharacter)) {
+            return
+        }
+        const DefenderCharacter = Convert.unit_to_character(defender)
+
+        attacker.action_points_left = attacker.action_points_left - COST as action_points
+        let responce = Event.magic_bolt(AttackerCharacter, DefenderCharacter, defender.dodge_turns > 0)
+
+        switch(responce) {
+            case 'miss': Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST); break;
+            case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST)
+        }
+        Alerts.battle_update_unit(battle, attacker)
+        Alerts.battle_update_unit(battle, defender)
+    }
 
     function flee_chance(){
         return 0.5

@@ -38,6 +38,14 @@ var Attack;
         return result;
     }
     Attack.generate_ranged = generate_ranged;
+    function generate_magic_bolt(character) {
+        const base_damage = 5;
+        const damage = Math.round(base_damage * system_1.CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 10));
+        const result = new class_1.AttackObj('ranged');
+        result.damage.fire = damage;
+        return result;
+    }
+    Attack.generate_magic_bolt = generate_magic_bolt;
     function defend_against_melee(attack, defender) {
         const skill = Math.floor(system_1.CharacterSystem.attack_skill(defender) * (1 - defender.get_rage() / 100));
         attack.defence_skill = skill;

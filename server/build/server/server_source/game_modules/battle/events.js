@@ -7,6 +7,7 @@ const geom_1 = require("../geom");
 const systems_communication_1 = require("../systems_communication");
 const battle_ai_1 = require("./AI/battle_ai");
 const system_1 = require("./system");
+const skills_1 = require("../character/skills");
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
@@ -105,6 +106,9 @@ var BattleEvent;
     function Shoot(battle, attacker, defender) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const COST = 3;
+        if (!(0, skills_1.can_shoot)(AttackerCharacter)) {
+            return;
+        }
         if (attacker.action_points_left < COST) {
             alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', COST, attacker.action_points_left);
             return;
@@ -141,6 +145,25 @@ var BattleEvent;
         alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left);
     }
     BattleEvent.Flee = Flee;
+    function MagicBolt(battle, attacker, defender) {
+        const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
+        const COST = 1;
+        if (!(0, skills_1.can_cast_magic_bolt)(AttackerCharacter)) {
+            return;
+        }
+        const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
+        attacker.action_points_left = attacker.action_points_left - COST;
+        let responce = events_1.Event.magic_bolt(AttackerCharacter, DefenderCharacter, defender.dodge_turns > 0);
+        switch (responce) {
+            case 'miss':
+                alerts_1.Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST);
+                break;
+            case 'ok': alerts_1.Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST);
+        }
+        alerts_1.Alerts.battle_update_unit(battle, attacker);
+        alerts_1.Alerts.battle_update_unit(battle, defender);
+    }
+    BattleEvent.MagicBolt = MagicBolt;
     function flee_chance() {
         return 0.5;
     }

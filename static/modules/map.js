@@ -736,7 +736,7 @@ export class Map {
     get_bg_tag(i, j) {
         let tag = i + '_' + j
 
-        if (this.terrain[i][j] == 'coast') {
+        if ((this.terrain[i] != undefined) && (this.terrain[i][j] == 'coast')) {
             if (this.data[tag] == undefined) return 'coast'
             if ((this.data[tag].urban == 1) || (this.data[tag].rural > 0)) {
                 return 'coast_rural'

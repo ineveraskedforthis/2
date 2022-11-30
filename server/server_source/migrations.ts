@@ -66,6 +66,11 @@ export function migrate(current_version:number, target_version:number) {
         set_up_guards_1()
         set_version(4)
     }
+
+    if (current_version == 4) {
+        cancel_cook_orders()
+        set_version(5)
+    }
 }
 
 function set_up_initial_data() {
@@ -229,6 +234,16 @@ function set_up_guards_1() {
     city_guard(1, 3)
     city_guard(2, 5)
     city_guard(0, 4)
+}
+
+function cancel_cook_orders() {
+    console.log('cancelling orders of cooks')
+
+    for (let character of Data.Character.list()) {
+        if (character.name != 'Trader') {
+            EventMarket.clear_orders(character)
+        }        
+    }
 }
 
 

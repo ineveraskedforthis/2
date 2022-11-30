@@ -184,7 +184,6 @@ export class AttackEvent extends BattleImageEvent {
     constructor(event_id, unit_id, ap_change, hp_change, target_id) {
         super(event_id, unit_id, ap_change, hp_change, ATTACK_DURATION);
         this.target = target_id;
-        this.current_duration = 0;
     }
     on_start() {
         let unit_view_attacker = units_views[this.unit];
@@ -198,16 +197,64 @@ export class AttackEvent extends BattleImageEvent {
     update(dt) {
         let attacker = units_views[this.unit];
         let defender = units_views[this.target];
-        if (this.current_duration <= STAND_UNTIL) {
+        if (this.time_passed <= STAND_UNTIL) {
             attacker.a_image.set_action('idle');
         }
-        else if (this.current_duration <= PREPARE_UNTIL) {
+        else if (this.time_passed <= PREPARE_UNTIL) {
             attacker.a_image.set_action('prepare');
         }
-        else if (this.current_duration <= HIT_UNTIL) {
+        else if (this.time_passed <= HIT_UNTIL) {
             attacker.a_image.set_action('attack');
             let position = position_c.battle_to_canvas(defender.position);
             battle_canvas_context.drawImage(IMAGES['attack_' + 0], position.x - 50, position.y - 80, 100, 100);
+        }
+    }
+}
+export class RangedAttackEvent extends BattleImageEvent {
+    constructor(event_id, unit_id, ap_change, hp_change, target_id) {
+        const unit = units_views[unit_id];
+        const unit2 = units_views[target_id];
+        let direction = position_c.diff(unit.position, unit2.position);
+        let norm = position_c.norm(direction);
+        super(event_id, unit_id, ap_change, hp_change, norm * 10);
+        this.target = target_id;
+    }
+    on_start() {
+        let unit_view_attacker = units_views[this.unit];
+        let unit_view_defender = units_views[this.target];
+        let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position);
+        direction_vec = position_c.scalar_mult(1 / position_c.norm(direction_vec), direction_vec);
+        unit_view_defender.current_animation = { type: 'attacked', data: { direction: direction_vec, dodge: false } };
+        unit_view_attacker.current_animation = { type: 'attack', data: direction_vec };
+        new_log_message(unit_view_attacker.name + ' attacks ' + unit_view_defender.name);
+    }
+    update(dt) {
+        let attacker = units_views[this.unit];
+        let defender = units_views[this.target];
+        const t = this.time_passed / this.duration;
+        const A = position_c.battle_to_canvas(attacker.position);
+        const B = position_c.battle_to_canvas(defender.position);
+        const projx = A.x * (1 - t) + B.x * (t);
+        const projy = A.y * (1 - t) + B.y * (t);
+        console.log(projx, projy);
+        console.log(t);
+        battle_canvas_context.beginPath();
+        battle_canvas_context.fillStyle = "rgba(200, 0, 0, 0.5)";
+        battle_canvas_context.arc(projx, projy, 10, 0, 2 * Math.PI);
+        battle_canvas_context.fill();
+        if (this.time_passed <= STAND_UNTIL) {
+            attacker.a_image.set_action('idle');
+        }
+        else if (this.time_passed <= PREPARE_UNTIL) {
+            attacker.a_image.set_action('prepare');
+        }
+        else if (this.time_passed <= HIT_UNTIL) {
+            attacker.a_image.set_action('attack');
+            let position = position_c.battle_to_canvas(defender.position);
+            battle_canvas_context.drawImage(IMAGES['attack_' + 0], position.x - 50, position.y - 80, 100, 100);
+        }
+        else {
+            attacker.a_image.set_action('idle');
         }
     }
 }

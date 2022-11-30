@@ -14,7 +14,8 @@ import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { User } from "../client_communication/user";
 import { UserManagement } from "../client_communication/user_manager";
-import { ARROW_BONE, material_index, RAT_SKIN } from "../manager_classes/materials_manager";
+import { character_list } from "../data";
+import { ARROW_BONE, material_index, RAT_SKIN, ZAZ } from "../manager_classes/materials_manager";
 import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert, Link, Unlink } from "../systems_communication";
@@ -47,26 +48,7 @@ export namespace Event {
         return character
     }
 
-    export function shoot(attacker: Character, defender: Character, distance: number, flag_dodge: boolean): 'ok'|'no_ammo'|'miss' {
-        // sanity checks
-        if (defender.get_hp() == 0) return 'miss'
-        if (attacker.get_hp() == 0) return 'miss'
-        if (attacker.stash.get(ARROW_BONE) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 1, 0); return 'no_ammo'}
-
-        //remove arrow
-        change_stash(attacker, ARROW_BONE, -1)
-
-        //check missed attack because of lack of skill
-        const acc = Accuracy.ranged(attacker, distance)
-        const dice_accuracy = Math.random()
-        if (dice_accuracy > acc) { 
-            const dice_skill_up = Math.random()
-            if (dice_skill_up > attacker.skills.ranged) {
-                increase_weapon_skill(attacker, 'ranged')
-            }
-            return 'miss' 
-        }
-
+    function ranged_dodge(attacker: Character, defender: Character, flag_dodge: boolean) {
         // evasion helps against arrows better than in melee
         // 100 evasion - 2 * attack skill = 100% of arrows are missing
         // evaded attack does not rise skill of attacker
@@ -87,11 +69,64 @@ export namespace Event {
         if (evasion_roll < evasion_chance) {
             return 'miss'
         }
+    }
+
+    export function shoot(attacker: Character, defender: Character, distance: number, flag_dodge: boolean): 'ok'|'no_ammo'|'miss' {
+        // sanity checks
+        if (defender.get_hp() == 0) return 'miss'
+        if (attacker.get_hp() == 0) return 'miss'
+        if (attacker.stash.get(ARROW_BONE) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 1, 0); return 'no_ammo'}
+
+        //remove arrow
+        change_stash(attacker, ARROW_BONE, -1)
+
+        //check missed attack because of lack of skill
+        const acc = Accuracy.ranged(attacker, distance)
+        const dice_accuracy = Math.random()
+        if (dice_accuracy > acc) { 
+            const dice_skill_up = Math.random()
+            if (dice_skill_up > attacker.skills.ranged) {
+                increase_weapon_skill(attacker, 'ranged')
+            }
+            return 'miss' 
+        }
+
+        const responce = ranged_dodge(attacker, defender, flag_dodge)
+        if (responce == 'miss') {
+            return 'miss'
+        }
 
         // create attack
         const attack = Attack.generate_ranged(attacker)
         CharacterSystem.damage(defender, attack.damage)
         UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
+        return 'ok'
+    }
+
+    export function magic_bolt(attacker: Character, defender: Character, flag_dodge: boolean) {
+        if (defender.dead()) return 'miss'
+        if (attacker.dead()) return 'miss'
+
+        const BLOOD_COST = 10
+
+        // managing costs
+        if (attacker.stash.get(ZAZ) > 0) attacker.stash.inc(ZAZ, -1)
+        else if (attacker.status.blood >= BLOOD_COST) attacker.status.blood -= BLOOD_COST
+        else {
+            const blood = attacker.status.blood;
+            const hp = attacker.status.hp;
+            if (blood + hp > BLOOD_COST) {
+                attacker.status.blood = 0
+                attacker.status.hp -= (BLOOD_COST - blood)
+            } else {
+                attacker.status.hp = 1
+            }
+        }
+
+        const attack = Attack.generate_magic_bolt(attacker)
+        CharacterSystem.damage(defender, attack.damage)
+        UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
+        UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS)
         return 'ok'
     }
 

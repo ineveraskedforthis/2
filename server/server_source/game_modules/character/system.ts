@@ -207,7 +207,11 @@ export namespace CharacterSystem {
     }
 
     export function phys_power(character: Character) {
-        return character.stats.stats.phys_power + character.equip.get_phys_power_modifier()
+        return character.stats.stats.phys_power * character.equip.get_phys_power_modifier()
+    }
+
+    export function magic_power(character: Character) {
+        return character.stats.stats.magic_power + character.equip.get_magic_power()
     }
 
     export function attack_skill(character: Character) {

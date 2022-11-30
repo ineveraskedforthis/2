@@ -397,9 +397,9 @@ export var BattleImage;
     }
     BattleImage.update_action_display = update_action_display;
     function draw(dt) {
+        battle_canvas_context.clearRect(0, 0, w, h);
         //handle_events
         update(dt);
-        battle_canvas_context.clearRect(0, 0, w, h);
         // draw background only once (no camera movement support yet)
         if (!background_flag) {
             let ctx = canvas_background.getContext('2d');

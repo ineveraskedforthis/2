@@ -425,10 +425,9 @@ export namespace BattleImage {
     }
 
     export function draw(dt: number) {
-        //handle_events
-        update(dt)
-
         battle_canvas_context.clearRect(0, 0, w, h);
+        //handle_events
+        update(dt)       
 
         // draw background only once (no camera movement support yet)
         if (!background_flag){

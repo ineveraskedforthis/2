@@ -71,10 +71,15 @@ var EventMarket;
         effects_1.Effect.Update.cell_market(cell);
     }
     EventMarket.buyout_item = buyout_item;
+    /**
+     * Clears all character orders.
+     * @param character
+     */
     function clear_orders(character) {
         console.log('clear all orders of ' + character.name);
         remove_bulk_orders(character);
         remove_item_orders(character);
+        character.trade_savings.transfer_all(character.savings);
     }
     EventMarket.clear_orders = clear_orders;
     function remove_item_orders(character) {

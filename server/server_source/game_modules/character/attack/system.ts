@@ -37,6 +37,15 @@ export namespace Attack {
         return result
     }
 
+    export function generate_magic_bolt(character: Character): AttackObj {
+        const base_damage = 5
+        const damage = Math.round(base_damage * CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 10))
+        const result = new AttackObj('ranged')
+        result.damage.fire = damage
+
+        return result
+    }
+
     export function defend_against_melee(attack: AttackObj, defender: Character) {
         const skill = Math.floor(CharacterSystem.attack_skill(defender) * (1 - defender.get_rage() / 100))
         attack.defence_skill = skill

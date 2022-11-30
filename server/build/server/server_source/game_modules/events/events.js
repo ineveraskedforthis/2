@@ -38,6 +38,29 @@ var Event;
         return character;
     }
     Event.new_character = new_character;
+    function ranged_dodge(attacker, defender, flag_dodge) {
+        // evasion helps against arrows better than in melee
+        // 100 evasion - 2 * attack skill = 100% of arrows are missing
+        // evaded attack does not rise skill of attacker
+        // dodge is an active evasion
+        // it gives base 20% of arrows missing
+        // and you rise your evasion if you are attacked
+        const attack_skill = 2 * attacker.skills.ranged;
+        const evasion = defender.skills.evasion;
+        let evasion_chance = evasion - attack_skill;
+        if (flag_dodge)
+            evasion_chance = evasion_chance + 0.1;
+        if (flag_dodge) {
+            const dice_evasion_skill_up = Math.random();
+            if (dice_evasion_skill_up < attack_skill - evasion) {
+                increase_evasion(defender);
+            }
+        }
+        const evasion_roll = Math.random();
+        if (evasion_roll < evasion_chance) {
+            return 'miss';
+        }
+    }
     function shoot(attacker, defender, distance, flag_dodge) {
         // sanity checks
         if (defender.get_hp() == 0)
@@ -60,25 +83,8 @@ var Event;
             }
             return 'miss';
         }
-        // evasion helps against arrows better than in melee
-        // 100 evasion - 2 * attack skill = 100% of arrows are missing
-        // evaded attack does not rise skill of attacker
-        // dodge is an active evasion
-        // it gives base 20% of arrows missing
-        // and you rise your evasion if you are attacked
-        const attack_skill = 2 * attacker.skills.ranged;
-        const evasion = defender.skills.evasion;
-        let evasion_chance = evasion - attack_skill;
-        if (flag_dodge)
-            evasion_chance = evasion_chance + 0.1;
-        if (flag_dodge) {
-            const dice_evasion_skill_up = Math.random();
-            if (dice_evasion_skill_up < attack_skill - evasion) {
-                increase_evasion(defender);
-            }
-        }
-        const evasion_roll = Math.random();
-        if (evasion_roll < evasion_chance) {
+        const responce = ranged_dodge(attacker, defender, flag_dodge);
+        if (responce == 'miss') {
             return 'miss';
         }
         // create attack
@@ -88,6 +94,35 @@ var Event;
         return 'ok';
     }
     Event.shoot = shoot;
+    function magic_bolt(attacker, defender, flag_dodge) {
+        if (defender.dead())
+            return 'miss';
+        if (attacker.dead())
+            return 'miss';
+        const BLOOD_COST = 10;
+        // managing costs
+        if (attacker.stash.get(materials_manager_1.ZAZ) > 0)
+            attacker.stash.inc(materials_manager_1.ZAZ, -1);
+        else if (attacker.status.blood >= BLOOD_COST)
+            attacker.status.blood -= BLOOD_COST;
+        else {
+            const blood = attacker.status.blood;
+            const hp = attacker.status.hp;
+            if (blood + hp > BLOOD_COST) {
+                attacker.status.blood = 0;
+                attacker.status.hp -= (BLOOD_COST - blood);
+            }
+            else {
+                attacker.status.hp = 1;
+            }
+        }
+        const attack = system_2.Attack.generate_magic_bolt(attacker);
+        system_3.CharacterSystem.damage(defender, attack.damage);
+        user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
+        return 'ok';
+    }
+    Event.magic_bolt = magic_bolt;
     function attack(attacker, defender, dodge_flag, attack_type) {
         if (attacker.dead())
             return;

@@ -203,9 +203,13 @@ var CharacterSystem;
     }
     CharacterSystem.ranged_damage_raw = ranged_damage_raw;
     function phys_power(character) {
-        return character.stats.stats.phys_power + character.equip.get_phys_power_modifier();
+        return character.stats.stats.phys_power * character.equip.get_phys_power_modifier();
     }
     CharacterSystem.phys_power = phys_power;
+    function magic_power(character) {
+        return character.stats.stats.magic_power + character.equip.get_magic_power();
+    }
+    CharacterSystem.magic_power = magic_power;
     function attack_skill(character) {
         const weapon = character.equip.data.weapon;
         if (weapon == undefined)

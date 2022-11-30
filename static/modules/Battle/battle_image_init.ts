@@ -2,7 +2,7 @@ import { BattleImage, battle_in_progress, events_list, player_unit_id } from "./
 import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, UnitSocket } from "../../../shared/battle_data.js"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js"
-import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RetreatEvent, UpdateDataEvent } from "./battle_image_events.js";
+import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UpdateDataEvent } from "./battle_image_events.js";
 
 // export const battle_image = new BattleImageNext();
 const events_queue: BattleEventSocket[] = []
@@ -76,7 +76,7 @@ namespace bCallback {
         } else if (action.tag == 'miss') {
             // BattleImage.new_event(new MissEvent(action.creator, action.target_unit))
         } else if (action.tag == 'ranged_attack') {
-            BattleImage.new_event(new AttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit))
+            BattleImage.new_event(new RangedAttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit))
         } else if (action.tag == 'update') {
             BattleImage.new_event(new UpdateDataEvent(action.index, action.creator, action.data!))
         } else if (action.tag == 'unit_join') {

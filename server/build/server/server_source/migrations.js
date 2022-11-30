@@ -81,6 +81,10 @@ function migrate(current_version, target_version) {
         set_up_guards_1();
         set_version(4);
     }
+    if (current_version == 4) {
+        cancel_cook_orders();
+        set_version(5);
+    }
 }
 exports.migrate = migrate;
 function set_up_initial_data() {
@@ -204,6 +208,14 @@ function set_up_guards_1() {
     city_guard(1, 3);
     city_guard(2, 5);
     city_guard(0, 4);
+}
+function cancel_cook_orders() {
+    console.log('cancelling orders of cooks');
+    for (let character of data_1.Data.Character.list()) {
+        if (character.name != 'Trader') {
+            market_1.EventMarket.clear_orders(character);
+        }
+    }
 }
 let version = get_version();
 console.log(version);
