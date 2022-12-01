@@ -39,6 +39,9 @@ export namespace BattleAI {
             // we know that they are not hostile because of race.
             // so we check if there b has bad reputation with a's faction
             if (!Data.Reputation.a_is_enemy_of_b(unit_char.id, potential_enemy_char.id)) {
+                // if he is not a racial enemy and not an reputational enemy, then he is not an enemy
+                // being in separate teams must be just an accident
+                // i should consider tracking personal relationships
                 return false
             }
         }
