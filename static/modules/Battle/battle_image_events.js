@@ -216,7 +216,7 @@ export class RangedAttackEvent extends BattleImageEvent {
         const unit2 = units_views[target_id];
         let direction = position_c.diff(unit.position, unit2.position);
         let norm = position_c.norm(direction);
-        super(event_id, unit_id, ap_change, hp_change, norm * 10);
+        super(event_id, unit_id, ap_change, hp_change, norm * 2);
         this.target = target_id;
     }
     on_start() {

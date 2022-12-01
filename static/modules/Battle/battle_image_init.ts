@@ -20,7 +20,7 @@ BattleImage.add_action({name: 'Slash', tag: 'attack_slice', cost: 3})
 BattleImage.add_action({name: 'Pierce', tag: 'attack_pierce', cost: 3})
 BattleImage.add_action({name: 'Knock',  tag: 'attack_blunt', cost: 3})
 
-// battle_image.add_action({name: 'magic_bolt', tag: 'magic_bolt', cost: 3})
+BattleImage.add_action({name: 'magic_bolt', tag: 'magic_bolt', cost: 3})
 // battle_image.add_action({name: 'fast attack', tag: 'fast_attack', cost: 1})
 BattleImage.add_action({name: 'shoot', tag: 'shoot', cost: 3})
 // battle_image.add_action({name: 'dodge', tag: 'dodge', cost: 4})

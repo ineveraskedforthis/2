@@ -124,13 +124,16 @@ export namespace HandleAction {
         //         return {action: "not_learnt"}
         //     }
         //     return  battle.action(index, {action: 'push_back', target: input.target})
-        // } else if (input.action == 'magic_bolt') {
-        //     return  battle.action(index, {action: 'magic_bolt', target: input.target})
-        else if (input.action == 'shoot') { 
+        else if (input.action == 'magic_bolt') {
             if (input.target == undefined) return
             const defender_id = input.target as unit_id
             const defender = BattleSystem.id_to_unit(defender_id, battle)
-            return BattleEvent.Shoot(battle, unit, defender)
+            return BattleEvent.MagicBolt(battle, unit, defender)
+        } else if (input.action == 'shoot') { 
+            if (input.target == undefined) return
+            const defender_id = input.target as unit_id
+            const defender = BattleSystem.id_to_unit(defender_id, battle)
+            BattleEvent.Shoot(battle, unit, defender)
         } else if (input.action == 'flee') {
             BattleEvent.Flee(battle, unit)
         } else if (input.action == 'switch_weapon') {
