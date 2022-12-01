@@ -12,7 +12,7 @@ import { EventMarket } from "./game_modules/events/market"
 import { Factions } from "./game_modules/factions"
 import { BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT } from "./game_modules/items/items_set_up"
 import { ItemSystem } from "./game_modules/items/system"
-import { ELODINO_FLESH, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./game_modules/manager_classes/materials_manager"
+import { ARROW_BONE, ELODINO_FLESH, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./game_modules/manager_classes/materials_manager"
 import { MapSystem } from "./game_modules/map/system"
 import { money } from "./game_modules/types"
 import { constants } from "./game_modules/static_data/constants";
@@ -200,6 +200,21 @@ function create_guard(x: number, y: number) {
     spearman.equip.data.armour.body = armour
 
     return spearman
+}
+
+function fletcher(x: number, y: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let fletcher = Event.new_character(HumanTemplateColony, 'Fletcher', cell, dummy_model)
+
+    fletcher.skills.woodwork = 100
+    fletcher.perks.fletcher = true
+    fletcher.skills.ranged = 30
+
+    fletcher.stash.inc(ARROW_BONE, 50)
+    fletcher.stash.inc(RAT_BONE, 3)
+    fletcher.stash.inc(WOOD, 1)
+
+    fletcher.savings.inc(1000 as money)
 }
 
 function city_guard(x: number, y: number) {
