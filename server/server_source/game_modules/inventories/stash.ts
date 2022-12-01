@@ -20,12 +20,10 @@ export class Stash {
     }
 
     load_from_json(data:StashData) {
-        console.log(data)
         for (let [i, amount] of Object.entries(data)) {
             if (amount == null) amount = 0
             this.data[Number(i) as material_index] = amount
         }
-        console.log(this.data)
     }
 
     inc(tag: material_index, x: number) {
