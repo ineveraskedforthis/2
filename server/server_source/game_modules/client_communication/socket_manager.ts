@@ -68,7 +68,7 @@ export class SocketManager {
             socket.on('execute-order',  (msg: any) => InventoryCommands.execute_bulk_order(user, msg.amount, msg.order))
 
 
-            // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
+            socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
             // socket.on('char-info-detailed', () => this.send_char_info(user));
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
 
@@ -81,7 +81,7 @@ export class SocketManager {
 
             
 
-            socket.on('eat',  () =>             HandleAction.act(user, CharacterAction.GATHER_WOOD));
+            socket.on('eat',  () =>             HandleAction.act(user, CharacterAction.EAT));
             socket.on('clean',  () =>           HandleAction.act(user, CharacterAction.CLEAN));
             socket.on('rest',  () =>            HandleAction.act(user, CharacterAction.REST));
             socket.on('move', (msg: any) =>     HandleAction.move(user, msg));
@@ -586,22 +586,29 @@ export class SocketManager {
     //     this.io.emit('users-online', tmp);
     // }
     
-    //  send_message(user: User, msg: string) {
-    //     if (msg.length > 1000) {
-    //         user.socket.emit('new-message', 'message-too-long')
-    //         return
-    //     }
-    //     // msg = validator.escape(msg)
-    //     var id =  this.world.get_new_id(this.pool, 'messages')
-    //     var message = {id: id, msg: msg, user: 'аноньчик'};
-    //     if (user != null) {
-    //         message.user = user.login;
-    //     }
-    //      this.load_message_to_database(message);
-    //     this.io.emit('new-message', message);
-    // }
+    send_message(sw: SocketWrapper, msg: string) {
+        if (msg.length > 1000) {
+            sw.socket.emit('new-message', 'message-too-long')
+            return
+        }
+        // msg = validator.escape(msg)
+        var id =  this.MESSAGE_ID + 1
+        var message = {id: id, msg: msg, user: 'аноньчик'};
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character != undefined) {
+            message.user = character?.name + `(${user.data.login})`;
+        }
+
+        this.MESSAGE_ID++
+        this.MESSAGES.push({id: message.id, sender: message.user, content: message.msg})
+
+        // this.load_message_to_database(message);
+        this.io.emit('new-message', message);
+    }
 
     //  load_message_to_database(message: {msg: string, user: string}) {
+
+
     //      // @ts-ignore: Unreachable code error
     //     if (global.flag_nodb) {
     //         return
@@ -611,6 +618,8 @@ export class SocketManager {
     // }
 
     //  load_messages_from_database() {
+
+
     //     // @ts-ignore: Unreachable code error
     //     if (global.flag_nodb) {
     //         return {rows: []}

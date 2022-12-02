@@ -12,6 +12,7 @@ const system_1 = require("../map/system");
 const actions_1 = require("./network_actions/actions");
 const action_manager_1 = require("../actions/action_manager");
 const run_event_1 = require("./network_actions/run_event");
+const systems_communication_1 = require("../systems_communication");
 const inventory_management_1 = require("./network_actions/inventory_management");
 const request_1 = require("./network_actions/request");
 const skills_1 = require("../static_data/skills");
@@ -43,7 +44,7 @@ class SocketManager {
             // 
             socket.on('buyout', (msg) => inventory_management_1.InventoryCommands.buyout(user, msg));
             socket.on('execute-order', (msg) => inventory_management_1.InventoryCommands.execute_bulk_order(user, msg.amount, msg.order));
-            // socket.on('new-message',  (msg: any) => this.send_message(user, msg + ''));
+            socket.on('new-message', (msg) => this.send_message(user, msg + ''));
             // socket.on('char-info-detailed', () => this.send_char_info(user));
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
             socket.on('equip', (msg) => inventory_management_1.InventoryCommands.equip(user, msg));
@@ -51,7 +52,7 @@ class SocketManager {
             // socket.on('enchant-weapon',  (msg: any) => this.enchant_weapon(user, msg));
             socket.on('switch-weapon', (msg) => inventory_management_1.InventoryCommands.switch_weapon(user));
             socket.on('unequip', (msg) => inventory_management_1.InventoryCommands.unequip(user, msg));
-            socket.on('eat', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_WOOD));
+            socket.on('eat', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.EAT));
             socket.on('clean', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CLEAN));
             socket.on('rest', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.REST));
             socket.on('move', (msg) => actions_1.HandleAction.move(user, msg));
@@ -119,6 +120,370 @@ class SocketManager {
         else {
             user_manager_1.UserManagement.send_character_to_user(user);
         }
+    }
+    // send_all(character:Character) {
+    //     console.log('SENDING ALL TO USER')
+    //     this.send_to_character_user(character, 'name', character.name);
+    //     this.send_hp_update(character);
+    //     this.send_exp_update(character);
+    //     this.send_status_update(character);
+    //     // this.send_tactics_info(character);
+    //     this.send_savings_update(character);
+    //     this.send_skills_info(character);
+    //     this.send_map_pos_info(character, true);
+    //     this.send_new_actions(character);
+    //     this.send_item_market_update_to_character(character);
+    //     this.send_explored(character);
+    //     this.send_teacher_info(character);
+    //     let user = character.get_user();
+    //     this.send_char_info(user);
+    //     let cell = this.world.entity_manager.get_cell_by_id(character.cell_id)
+    //     if (cell != undefined) {
+    //         this.send_cell_updates(cell)
+    //         this.send_market_info_character(cell, character)
+    //     }
+    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'end_turn', value: 1})
+    //     this.send_to_character_user(character, 'b-action-chance', {tag: 'move', value: 1})
+    // }
+    // // actions
+    // // eslint-disable-next-line no-unused-vars
+    //  attack(user: User, data: any) {
+    //     console.log('attack random enemy')
+    //     if (user.logged_in && !user.get_character().in_battle()) {
+    //         let char = user.get_character();
+    //         let res =  this.world.action_manager.start_action(CharacterAction.ATTACK, char, undefined)
+    //         if (res == CharacterActionResponce.OK) {
+    //             let battle_id = char.get_battle_id()
+    //             let battle = this.world.get_battle_from_id(battle_id)
+    //             if (battle != undefined) {
+    //                 console.log('battle had started')
+    //                 battle.send_data_start()
+    //             }
+    //         } else if (res == CharacterActionResponce.NO_POTENTIAL_ENEMY) {
+    //             user.socket.emit('alert', 'No enemies')
+    //         }
+    //     }
+    // }
+    // 
+    // //  attack_local_outpost(socket, user_data, data) {
+    // //     if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
+    // //         let char = user_data.current_user.character;
+    // //         let battle =  char.attack_local_outpost(this.pool);
+    // //         if (battle != undefined) {
+    // //             battle.send_data_start()
+    // //         }
+    // //     }
+    // // }
+    // //  up_skill(user, msg) {
+    // //     if (msg in this.world.constants.SKILLS && user_data.current_user != null) {
+    // //         let char = user_data.current_user.character;
+    // //         let result =  char.add_skill(this.pool, msg + '');
+    // //         if (result != undefined) {
+    // //             this.send_new_tactic_action(char, result);
+    // //         }
+    // //         this.send_skills_info(char);
+    // //         this.send_tactics_info(char);
+    // //         this.send_exp_update(char)
+    // //     }
+    // // }
+    //  eat(user: User) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         let res =  this.world.action_manager.start_action(CharacterAction.EAT, char, undefined)
+    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //             user.socket.emit('alert', 'not enough food')
+    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //             user.socket.emit('alert', 'you are in battle')
+    //         }
+    //     }
+    // }
+    //  clean(user: User) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         let res =  this.world.action_manager.start_action(CharacterAction.CLEAN, char, undefined)
+    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //             user.socket.emit('alert', 'no water available')
+    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //             user.socket.emit('alert', 'you are in battle')
+    //         }
+    //     }
+    // }
+    //  hunt(user: User) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         let res =  this.world.action_manager.start_action(CharacterAction.HUNT, char, undefined)
+    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //             user.socket.emit('alert', 'no prey here')
+    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //             user.socket.emit('alert', 'you are in battle')
+    //         }
+    //     }
+    // }
+    //  gather_wood(user: User) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         let res =  this.world.action_manager.start_action(CharacterAction.GATHER_WOOD, char, undefined)
+    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //             user.socket.emit('alert', 'no wood here')
+    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //             user.socket.emit('alert', 'you are in battle')
+    //         }
+    //     }
+    // }
+    //  rest(user: User) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         let res =  this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
+    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //             user.socket.emit('alert', 'no place to rest here')
+    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //             user.socket.emit('alert', 'you are in battle')
+    //         }
+    //     }
+    // }
+    //  craft(user: User, craft_action: CharacterAction) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         let res =  this.world.action_manager.start_action(craft_action, char, undefined)
+    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //             user.socket.emit('alert', 'not enough resources')
+    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //             user.socket.emit('alert', 'you are in battle')
+    //         } else if (res == CharacterActionResponce.FAILED) {
+    //             user.socket.emit('alert', 'failed')
+    //         }
+    //     }
+    // }
+    // //  craft_clothes(user: User) {
+    // //     if (user.logged_in) {
+    // //         let char = user.get_character();
+    // //         let res =  char.craft_clothes(this.pool);
+    // //         if (res != 'ok') {
+    // //             user.socket.emit('alert', res);
+    // //         }
+    // //     }
+    // // }
+    //  enchant(user: User, msg: number) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         // let res =  char.enchant(this.pool, msg);
+    //         // if (res != 'ok') {
+    //         //     socket.emit('alert', res);
+    //         // }
+    //     }
+    // }
+    //  disenchant(user: User, msg: number) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         // let res =  char.disenchant(this.pool, msg);
+    //         // if (res != 'ok') {
+    //         //     socket.emit('alert', res);
+    //         // }
+    //     }
+    // }
+    // //  set_tactic(user: User, msg: any) {
+    // //     if (user.logged_in) {
+    // //         let char = user.get_character();
+    // //         //  char.set_tactic(this.pool, msg);
+    // //         this.send_tactics_info(char);
+    // //     }
+    // // }
+    // // information sending
+    // send_new_tactic_action(character: Character, action: any) {
+    //     this.send_to_character_user(character, 'new-action', action);
+    // }
+    // send_new_actions(character: Character) {
+    //     let actions = character.get_actions();
+    //     for (let i of actions) {
+    //         this.send_new_tactic_action(character, i);
+    //     }
+    // }
+    // // send_tactics_info(character) {
+    // //     // this.send_to_character_user(character, 'tactic', character.data.tactic)
+    // // }
+    // send_message_to_character_user(character: Character, msg: any) {
+    //     let user = this.world.user_manager.get_user_from_character(character);
+    //     if (user != undefined) {
+    //         this.send_message_to_user(user, msg);
+    //     }       
+    // }
+    // send_to_character_user(character:Character, tag: string, msg: any) {
+    //     let user = this.world.user_manager.get_user_from_character(character);
+    //     if (user != undefined) {
+    //         this.send_to_user(user, tag, msg);
+    //     }
+    // }
+    // send_message_to_user(user: User, msg: string) {
+    //     this.send_to_user(user, 'log-message', msg)
+    // }
+    // send_to_user(user: User, tag: string, msg: any) {
+    //     user.socket.emit(tag, msg)
+    // }
+    // get_user_socket(user: User) {
+    //     return user.socket;
+    // }
+    // send_hp_update(character: Character) {
+    //     this.send_status_update(character)
+    // }
+    // send_updates_to_char(character: Character) {
+    //     let user = this.world.user_manager.get_user_from_character(character);
+    //     if (user == undefined) {
+    //         return
+    //     }
+    //     let socket = this.get_user_socket(user)
+    //     if (socket != undefined) {
+    //        this.send_char_info(user)
+    //     }
+    // }
+    // send_char_info(user: User) {
+    //     if (user != null) {
+    //         let char = user.get_character()
+    //         user.socket.emit('char-info-detailed', {
+    //             stats: {
+    //                 phys_power: char.stats.phys_power,
+    //                 magic_power: char.stats.magic_power,
+    //                 movement_speed: char.stats.movement_speed
+    //             },
+    //             resists: char.get_resists()});
+    //         this.send_equip_update(user)
+    //         this.send_stash_update(user)
+    //     }
+    // }
+    // send_item_market_update(cell_id: number) {
+    //     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, cell_id)
+    //     // console.log('updating market at ' + cell_id)
+    //     let cell = this.world.entity_manager.get_cell_by_id(cell_id)
+    //     if (cell == undefined) {
+    //         return
+    //     }
+    //     let characters_list = cell.get_characters_list()
+    //     for (let item of characters_list) {
+    //         let id = item.id
+    //         let character = this.world.entity_manager.chars[id]
+    //         this.send_to_character_user(character, 'item-market-data', data)
+    //     }
+    // }
+    // send_market_info(market: Cell) {
+    //     let responce = this.prepare_market_orders(market)
+    //     let list = Array.from(market.characters_list)
+    //     for (let item of list) {
+    //         let character = this.world.get_char_from_id(item)
+    //         this.send_to_character_user(character, 'market-data', responce)
+    //     }
+    //     for (let i of this.sockets) {
+    //         if (i.current_user != null) {
+    //             let char = i.current_user.character;
+    //             try {
+    //                 let cell1: any = char.get_cell();
+    //                 if (i.online && i.market_data && (cell1.id == market.id)) {
+    //                     i.socket.emit('market-data', responce)
+    //                 }
+    //             } catch(error) {
+    //                 console.log(i.current_user.login)
+    //             }
+    //         }
+    //     }
+    // }
+    // send_all_market_info() {
+    //     // for (let market of this.world.entity_manager.markets) {
+    //     //     this.send_market_info(market)
+    //     // }
+    // }
+    // send_teacher_info(character: Character) {
+    //     let cell = character.get_cell();
+    //     if (cell != undefined) {
+    //         let res = this.world.get_cell_teacher(cell.i, cell.j);
+    //         this.send_to_character_user(character, 'local-skills', res)
+    //     }        
+    // }
+    // send_perks_info(user: User, character_id: number) {
+    //     // console.log('request perks from ' + character_id )
+    //     let character = user.get_character()
+    //     let target_character = this.world.entity_manager.chars[character_id]
+    //     if (target_character == undefined) {
+    //         user.socket.emit('alert', 'character does not exist')
+    //         return
+    //     }
+    //     if (character == undefined) {
+    //         user.socket.emit('alert', 'your character does not exist')
+    //         return
+    //     }
+    //     if (character.cell_id != target_character.cell_id) {
+    //         user.socket.emit('alert', 'not in the same cell')
+    //         return
+    //     }
+    //     let data = target_character.skills.perks
+    //     let responce:{[_ in Perks]?: number} = {}
+    //     for (let i of perks_list) {
+    //         if (data[i] == true) {
+    //             responce[i] = perk_price(i)
+    //         }
+    //     }
+    //     user.socket.emit('perks-info', responce)
+    // }
+    // send_learn_perk_request(user: User, character_id: number, perk_tag:Perks) {
+    //     let character = user.get_character()
+    //     let target_character = this.world.entity_manager.chars[character_id]
+    //     if (target_character == undefined) {
+    //         return
+    //     }
+    //     if (character == undefined) {
+    //         return
+    //     }
+    //     if (character.cell_id != target_character.cell_id) {
+    //         user.socket.emit('alert', 'not in the same cell')
+    //         return
+    //     }
+    //     if (target_character.skills.perks[perk_tag] != true) {
+    //         user.socket.emit('alert', "target doesn't know this perk")
+    //         return
+    //     }
+    //     {
+    //         let savings = character.savings.get()
+    //         let price = perk_price(perk_tag) as money
+    //         if (savings < price) {
+    //             user.socket.emit('alert', 'not enough money')
+    //             return
+    //         }
+    //         let responce = perk_requirement(perk_tag, character)
+    //         if (responce != 'ok') {
+    //             user.socket.emit('alert', responce)
+    //             return
+    //         } 
+    //         character.savings.transfer(target_character.savings, price)
+    //         character.learn_perk(perk_tag)
+    //         user.socket.emit('perk learnt')
+    //         this.send_skills_info(character)
+    //     }
+    // }
+    // update_user_list(){
+    //     var tmp: number[] = [];
+    //     var users_online = this.world.user_manager.users_online;
+    //     for (var user of this.world.user_manager.users) {
+    //         if (user != undefined) {
+    //             if (users_online[user.id]) {
+    //                 tmp.push(user.id);
+    //             }
+    //         }            
+    //     }
+    //     this.io.emit('users-online', tmp);
+    // }
+    send_message(sw, msg) {
+        if (msg.length > 1000) {
+            sw.socket.emit('new-message', 'message-too-long');
+            return;
+        }
+        // msg = validator.escape(msg)
+        var id = this.MESSAGE_ID + 1;
+        var message = { id: id, msg: msg, user: 'аноньчик' };
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character != undefined) {
+            message.user = character?.name + `(${user.data.login})`;
+        }
+        this.MESSAGE_ID++;
+        this.MESSAGES.push({ id: message.id, sender: message.user, content: message.msg });
+        // this.load_message_to_database(message);
+        this.io.emit('new-message', message);
     }
 }
 exports.SocketManager = SocketManager;
