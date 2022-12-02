@@ -14,6 +14,12 @@ export class geom {
         return {x: v.x / n, y: v.y / n}
     }
 
+    /**
+     * a minus b
+     * @param a 
+     * @param b 
+     * @returns 
+     */
     static minus(a: point, b: point) {
         return {x: a.x - b.x, y: a.y - b.y}
     }

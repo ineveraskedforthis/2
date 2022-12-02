@@ -12,6 +12,12 @@ class geom {
         let n = geom.norm(v);
         return { x: v.x / n, y: v.y / n };
     }
+    /**
+     * a minus b
+     * @param a
+     * @param b
+     * @returns
+     */
     static minus(a, b) {
         return { x: a.x - b.x, y: a.y - b.y };
     }

@@ -11,7 +11,7 @@ import { Unit } from "./classes/unit"
 import { BattleSystem } from "./system"
 import { can_cast_magic_bolt, can_shoot } from "../character/skills"
 
-
+export const MOVE_COST = 3
 
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
@@ -80,7 +80,6 @@ export namespace BattleEvent {
 
         let tmp = geom.minus(target, unit.position)
 
-        let MOVE_COST = 3
         var points_spent = geom.norm(tmp) * MOVE_COST
 
         if (points_spent > unit.action_points_left) {

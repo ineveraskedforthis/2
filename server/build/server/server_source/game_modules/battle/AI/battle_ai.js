@@ -48,11 +48,15 @@ var BattleAI;
         const delta = geom_1.geom.minus(unit_2.position, unit_1.position);
         const dist = geom_1.geom.norm(delta);
         const range = attacker.range();
+        const pot_move = unit_1.action_points_left / events_1.MOVE_COST; // potential movement
+        // if target is far away
         if (dist > range) {
+            // start with target position
             let target = { x: unit_2.position.x, y: unit_2.position.y };
             let action_tag = "move";
-            target.x += geom_1.geom.normalize(delta).x * (Math.max(dist - range + 0.1, 0));
-            target.y += geom_1.geom.normalize(delta).y * (Math.max(dist - range + 0.1, 0));
+            // subtruct from it range: we want to get into attacking range 
+            target.x -= geom_1.geom.normalize(delta).x * (Math.max(range - 0.1, 0));
+            target.y -= geom_1.geom.normalize(delta).y * (Math.max(range - 0.1, 0));
             return { action: action_tag, target: target };
         }
         else {

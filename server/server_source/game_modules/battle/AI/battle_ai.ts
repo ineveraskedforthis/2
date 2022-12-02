@@ -5,7 +5,7 @@ import { Unit } from "../classes/unit";
 import { ActionTag, AttackAction, battle_position, EndTurn, FastAttackAction, MoveAction, unit_id } from "../../../../../shared/battle_data";
 import { Battle } from "../classes/battle";
 import { Convert } from "../../systems_communication";
-import { BattleEvent } from "../events";
+import { BattleEvent, MOVE_COST } from "../events";
 import { Attack } from "../../character/attack/system";
 import { Data } from "../../data";
 import { hostile} from "../../character/races/racial_hostility"
@@ -54,12 +54,16 @@ export namespace BattleAI {
         const delta = geom.minus(unit_2.position, unit_1.position);
         const dist = geom.norm(delta)
         const range = attacker.range()
+        const pot_move = unit_1.action_points_left / MOVE_COST // potential movement
 
+        // if target is far away
         if (dist > range) {
+            // start with target position
             let target: point = {x: unit_2.position.x, y: unit_2.position.y}
             let action_tag: ActionTag = "move";
-            target.x += geom.normalize(delta).x * (Math.max(dist - range + 0.1, 0));
-            target.y += geom.normalize(delta).y * (Math.max(dist - range + 0.1, 0));
+            // subtruct from it range: we want to get into attacking range 
+            target.x -= geom.normalize(delta).x * (Math.max(range - 0.1, 0));
+            target.y -= geom.normalize(delta).y * (Math.max(range - 0.1, 0));
             return {action: action_tag, target: target as battle_position}
         } else {
             if (unit_1.action_points_left < 3) return {action: 'end_turn'}
