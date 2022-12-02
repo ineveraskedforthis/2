@@ -80,7 +80,7 @@ export namespace Data {
                 reputation[reputation_line.char] = reputation_line.item
             }
 
-            console.log('battles loaded')
+            console.log('reputation loaded')
         }
 
         export function save() {

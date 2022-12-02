@@ -12,6 +12,44 @@ import { hostile} from "../../character/races/racial_hostility"
 
 export namespace BattleAI {
 
+    /**
+     * Checks if unit should consider other unit as a target.
+     * @param unit 
+     * @param unit_char 
+     * @param potential_enemy 
+     * @param potential_enemy_char 
+     * @returns 
+     */
+    function is_enemy(unit: Unit, unit_char: Character, potential_enemy: Unit|undefined, potential_enemy_char: Character) {
+        if (potential_enemy == undefined)
+            return false
+        // team check
+        if (unit.team == potential_enemy.team)
+            return false
+
+        // death check
+        if (potential_enemy_char.dead()) 
+            return false
+        if (unit_char.dead())
+            return false
+
+        // hostility check:
+        // if there is no racial hostility, then check for reputational hostility
+        if (!hostile(unit_char.race(), potential_enemy_char.race())) {
+            // we know that they are not hostile because of race.
+            // so we check if there b has bad reputation with a's faction
+            if (!Data.Reputation.a_is_enemy_of_b(unit_char.id, potential_enemy_char.id)) {
+                // if he is not a racial enemy and not an reputational enemy, then he is not an enemy
+                // being in separate teams must be just an accident
+                // i should consider tracking personal relationships
+                return false
+            }
+        }
+
+        // otherwise, he is an enemy
+        return true
+    }
+
     function calculate_closest_enemy(battle: Battle, index: unit_id):unit_id|undefined {
         let closest_enemy: undefined|unit_id = undefined;
         const units = battle.heap.raw_data;
@@ -24,18 +62,15 @@ export namespace BattleAI {
             if (target_unit == undefined) {continue}
             const target_character = Convert.unit_to_character(target_unit)
             if (target_character.dead()) continue
-
             const d = geom.dist(unit.position, target_unit.position);
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
-                && (unit.team != target_unit.team)
-                && (    (Data.Reputation.a_is_enemy_of_b(character.id, target_character.id)) 
-                        || (hostile(character.race(), target_character.race())))
-                && (!target_character.dead())) 
+                && is_enemy(unit, character, target_unit, target_character)) 
                 {
                     closest_enemy = target_unit.id;
                     min_distance = d;
                 }
         }
+
         console.log('closest enemy is found ' + closest_enemy)
         if (closest_enemy != undefined){
             let cha = Convert.unit_to_character(battle.heap.get_unit(closest_enemy))

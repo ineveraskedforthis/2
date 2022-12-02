@@ -15,13 +15,11 @@ class Stash {
         return data;
     }
     load_from_json(data) {
-        console.log(data);
         for (let [i, amount] of Object.entries(data)) {
             if (amount == null)
                 amount = 0;
             this.data[Number(i)] = amount;
         }
-        console.log(this.data);
     }
     inc(tag, x) {
         let tag_stash = this.get(tag);

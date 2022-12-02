@@ -9,6 +9,40 @@ const data_1 = require("../../data");
 const racial_hostility_1 = require("../../character/races/racial_hostility");
 var BattleAI;
 (function (BattleAI) {
+    /**
+     * Checks if unit should consider other unit as a target.
+     * @param unit
+     * @param unit_char
+     * @param potential_enemy
+     * @param potential_enemy_char
+     * @returns
+     */
+    function is_enemy(unit, unit_char, potential_enemy, potential_enemy_char) {
+        if (potential_enemy == undefined)
+            return false;
+        // team check
+        if (unit.team == potential_enemy.team)
+            return false;
+        // death check
+        if (potential_enemy_char.dead())
+            return false;
+        if (unit_char.dead())
+            return false;
+        // hostility check:
+        // if there is no racial hostility, then check for reputational hostility
+        if (!(0, racial_hostility_1.hostile)(unit_char.race(), potential_enemy_char.race())) {
+            // we know that they are not hostile because of race.
+            // so we check if there b has bad reputation with a's faction
+            if (!data_1.Data.Reputation.a_is_enemy_of_b(unit_char.id, potential_enemy_char.id)) {
+                // if he is not a racial enemy and not an reputational enemy, then he is not an enemy
+                // being in separate teams must be just an accident
+                // i should consider tracking personal relationships
+                return false;
+            }
+        }
+        // otherwise, he is an enemy
+        return true;
+    }
     function calculate_closest_enemy(battle, index) {
         let closest_enemy = undefined;
         const units = battle.heap.raw_data;
@@ -25,10 +59,7 @@ var BattleAI;
                 continue;
             const d = geom_1.geom.dist(unit.position, target_unit.position);
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
-                && (unit.team != target_unit.team)
-                && ((data_1.Data.Reputation.a_is_enemy_of_b(character.id, target_character.id))
-                    || ((0, racial_hostility_1.hostile)(character.race(), target_character.race())))
-                && (!target_character.dead())) {
+                && is_enemy(unit, character, target_unit, target_character)) {
                 closest_enemy = target_unit.id;
                 min_distance = d;
             }

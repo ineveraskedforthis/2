@@ -61,7 +61,7 @@ var Data;
                 let reputation_line = JSON.parse(line);
                 reputation[reputation_line.char] = reputation_line.item;
             }
-            console.log('battles loaded');
+            console.log('reputation loaded');
         }
         Reputation.load = load;
         function save() {

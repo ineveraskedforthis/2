@@ -183,6 +183,17 @@ function create_guard(x, y) {
     spearman.equip.data.armour.body = armour;
     return spearman;
 }
+function fletcher(x, y) {
+    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    let fletcher = events_1.Event.new_character(human_1.HumanTemplateColony, 'Fletcher', cell, dummy_model);
+    fletcher.skills.woodwork = 100;
+    fletcher.perks.fletcher = true;
+    fletcher.skills.ranged = 30;
+    fletcher.stash.inc(materials_manager_1.ARROW_BONE, 50);
+    fletcher.stash.inc(materials_manager_1.RAT_BONE, 3);
+    fletcher.stash.inc(materials_manager_1.WOOD, 1);
+    fletcher.savings.inc(1000);
+}
 function city_guard(x, y) {
     let guard = create_guard(x, y);
     data_1.Data.Reputation.set(factions_1.Factions.City.id, guard.id, "member");
