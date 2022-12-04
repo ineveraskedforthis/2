@@ -167,6 +167,10 @@ var BattleEvent;
     function flee_chance() {
         return 0.5;
     }
+    function Update(battle, unit) {
+        alerts_1.Alerts.battle_update_unit(battle, unit);
+    }
+    BattleEvent.Update = Update;
 })(BattleEvent = exports.BattleEvent || (exports.BattleEvent = {}));
 //         if (action.action == 'magic_bolt') {
 //             if (!can_cast_magic_bolt(character)) {

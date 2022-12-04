@@ -150,6 +150,7 @@ export class UpdateDataEvent extends BattleImageEvent {
         this.hp_change = this.data.hp - unit.hp;
         this.ap_change_left = this.ap_change;
         this.hp_change_left = this.hp_change;
+        unit.range = this.data.range;
         unit.position = this.data.position;
         BattleImage.update_unit_div(unit.id);
     }

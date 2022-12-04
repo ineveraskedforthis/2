@@ -23,7 +23,8 @@ export class BattleUnitView {
     name: string
     side_bar_div: any
     killed: boolean
-    unit: BattleUnit
+    // unit: BattleUnit
+    range: number
     a_image: AnimatedImage
     animation_timer: number
     animation_something: number
@@ -33,7 +34,8 @@ export class BattleUnitView {
     constructor(unit: BattleUnit) {
         this.id = unit.id
         this.name = unit.name
-        this.unit = unit
+        this.range = unit.range
+        // this.unit = unit
         this.killed = unit.killed
         this.position = unit.position
         this.ap = unit.ap
@@ -49,19 +51,19 @@ export class BattleUnitView {
     }
     
     update(hp_change: number, ap_change: number) {
-        if (player_unit_id == this.unit.id) {
+        if (player_unit_id == this.id) {
             BattleImage.update_player_actions_availability()
         }
         this.hp_change = hp_change
         this.ap_change = ap_change
-        this.hp = this.unit.hp
-        this.ap = this.unit.ap 
-        this.killed = this.unit.killed
+        // this.hp = this.unit.hp
+        // this.ap = this.unit.ap 
+        // this.killed = this.unit.killed
 
-        let div = BattleImage.unit_div(this.unit.id)
-        if (div != undefined) div.innerHTML = this.unit.name 
-                                              + '<br> hp: ' + this.unit.hp
-                                              + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10
+        // let div = BattleImage.unit_div(this.unit.id)
+        // if (div != undefined) div.innerHTML = this.unit.name 
+        //                                       + '<br> hp: ' + this.unit.hp
+        //                                       + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10
     }
 
 
@@ -69,7 +71,7 @@ export class BattleUnitView {
         if (this.killed) {
             return
         }
-        let unit = this.unit
+        // let unit = this.unit
 
         let pos = position_c.battle_to_canvas(this.position)
         let ctx = battle_canvas_context
@@ -77,10 +79,10 @@ export class BattleUnitView {
         //draw character attack radius circle and color it depending on it's status in ui
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, BATTLE_SCALE * unit.range, 0, 2 * Math.PI);
-        if (selected == unit.id) {
+        ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range, 0, 2 * Math.PI);
+        if (selected == this.id) {
             ctx.fillStyle = "rgba(10, 10, 200, 0.7)" // blue if selecter
-        } else if (hovered == unit.id) {
+        } else if (hovered == this.id) {
             ctx.fillStyle = "rgba(0, 230, 0, 0.7)" // green if hovered and not selecter
         } else {
             ctx.fillStyle = "rgba(200, 200, 0, 0.5)" // yellow otherwise
@@ -101,7 +103,7 @@ export class BattleUnitView {
         
         //draw a border of circle above
         ctx.beginPath();
-        ctx.arc(pos.x, pos.y, BATTLE_SCALE * unit.range, 0, 2 * Math.PI);
+        ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range, 0, 2 * Math.PI);
         ctx.closePath();
         ctx.stroke();
 
@@ -116,10 +118,10 @@ export class BattleUnitView {
 
         ctx.font = '15px serif';
         // select style depending on hover/selection status
-        if (selected == unit.id) {
+        if (selected == this.id) {
             ctx.fillStyle = "rgba(255, 255, 255, 1)"
             ctx.strokeStyle = "rgba(0, 0, 0, 1)"
-        } else if (hovered == unit.id) {
+        } else if (hovered == this.id) {
             ctx.fillStyle = "rgba(255, 255, 255, 1)"
             ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         } else {
@@ -140,8 +142,8 @@ export class BattleUnitView {
             ctx.strokeRect(nameplate_left, pos.y - 100, nameplate_width, 20)
             
             //prepare and draw name string
-            let string = unit.name
-            if (unit.id == player_id) {
+            let string = this.name
+            if (this.id == player_id) {
                 string = string + '(YOU)'
             }
             ctx.fillText(string + ' || ' + this.hp + ' hp', pos.x - 45, pos.y - 105);

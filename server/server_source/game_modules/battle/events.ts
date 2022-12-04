@@ -191,6 +191,10 @@ export namespace BattleEvent {
     function flee_chance(){
         return 0.5
     }
+
+    export function Update(battle: Battle, unit: Unit) {
+        Alerts.battle_update_unit(battle, unit)
+    }
 }
 
 //         if (action.action == 'magic_bolt') {

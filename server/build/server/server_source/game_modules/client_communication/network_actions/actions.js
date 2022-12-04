@@ -155,6 +155,7 @@ var HandleAction;
         }
         else if (input.action == 'switch_weapon') {
             inventory_events_1.EventInventory.switch_weapon(character);
+            events_1.BattleEvent.Update(battle, unit);
         }
         else {
             return;

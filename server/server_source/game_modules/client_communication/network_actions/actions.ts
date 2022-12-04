@@ -138,6 +138,7 @@ export namespace HandleAction {
             BattleEvent.Flee(battle, unit)
         } else if (input.action == 'switch_weapon') {
             EventInventory.switch_weapon(character)
+            BattleEvent.Update(battle, unit)
         } else {
             return  
         }
