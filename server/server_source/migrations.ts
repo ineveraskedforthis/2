@@ -12,10 +12,14 @@ import { EventMarket } from "./game_modules/events/market"
 import { Factions } from "./game_modules/factions"
 import { BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT } from "./game_modules/items/items_set_up"
 import { ItemSystem } from "./game_modules/items/system"
-import { ARROW_BONE, ELODINO_FLESH, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./game_modules/manager_classes/materials_manager"
+import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./game_modules/manager_classes/materials_manager"
 import { MapSystem } from "./game_modules/map/system"
 import { money } from "./game_modules/types"
 import { constants } from "./game_modules/static_data/constants";
+
+
+const LUMP_OF_MONEY = 1000 as money
+const TONS_OF_MONEY = 30000 as money
 
 
 var SAVE_GAME_PATH = path.join('save_1')
@@ -70,6 +74,11 @@ export function migrate(current_version:number, target_version:number) {
     if (current_version == 4) {
         cancel_cook_orders()
         set_version(5)
+    }
+
+    if (current_version == 5) {
+        misc_characters()
+        set_version(6)
     }
 }
 
@@ -130,52 +139,11 @@ function create_starting_agents() {
         EventMarket.sell_item(Trader, index, 50 as money)
     }
 
-
-    // let armour_master =  this.create_new_character(pool, 'Armour master', starting_cell_id, -1)
-    // armour_master.skills.clothier = 100
-    // armour_master.skills.perks.skin_armour_master = true
-    // armour_master.stash.inc(RAT_SKIN, 40)
-    // armour_master.savings.inc(1000 as money)
-    // armour_master.faction_id = 3
-
-
     // let monk =  this.create_new_character(pool, 'Old monk', this.get_cell_id_by_x_y(7, 5), -1)
     // monk.skills.noweapon = 100
     // monk.learn_perk("advanced_unarmed")
     // monk.faction_id = 3
-    // monk.changed = true
-
-
-    
-
-    // let fletcher =  this.create_new_character(pool, 'Fletcher', this.get_cell_id_by_x_y(3, 3), -1)
-    // fletcher.stash.inc(ARROW_BONE, 20)
-    // fletcher.savings.inc(1000 as money)
-    // fletcher.learn_perk('fletcher')
-    // fletcher.changed = true
-    // fletcher.faction_id = 3
-
-
-    
-
-    // let meat_bag =  this.create_new_character(pool, 'Meat Bag', this.get_cell_id_by_x_y(0, 3), -1)
-    // meat_bag.stash.inc(MEAT, 200)
-    //     meat_bag.sell(pool, MEAT, 10, 10 as money)
-    // if (nodb_mode_check()) {meat_bag.change_hp(-99)}
-    // meat_bag.faction_id = 3
-
-    // let mage =  this.create_new_character(pool, 'Mage', this.get_cell_id_by_x_y(1, 5), -1)
-    // mage.skills.magic_mastery = 100
-    // mage.learn_perk('mage_initiation')
-    // mage.learn_perk('magic_bolt')
-    // mage.stash.inc(ZAZ, 300)
-    // mage.savings.inc(30000 as money)
-    //     mage.sell(pool, ZAZ, 200, 50 as money)
-    //     mage.buy(pool, ELODINO_FLESH, 200, 50 as money)
-    //     mage.buy(pool, GRACI_HAIR, 10, 1000 as money)
-    // mage.changed = true
-    // mage.faction_id = 3
-
+    // monk.changed = true    
 }
 
 const dummy_model = {chin: 0, mouth: 0, eyes: 0}
@@ -198,6 +166,8 @@ function create_guard(x: number, y: number) {
     let armour = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
     spearman.equip.data.weapon = spear
     spearman.equip.data.armour.body = armour
+    let index = EventInventory.add_item(spearman, spear)
+    EventInventory.equip_from_backpack(spearman, index)
 
     return spearman
 }
@@ -214,7 +184,38 @@ function fletcher(x: number, y: number) {
     fletcher.stash.inc(RAT_BONE, 3)
     fletcher.stash.inc(WOOD, 1)
 
-    fletcher.savings.inc(1000 as money)
+    fletcher.savings.inc(LUMP_OF_MONEY)
+    return fletcher
+}
+
+function mage(x: number, y: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let mage = Event.new_character(HumanTemplateColony, 'Mage', cell, dummy_model)
+
+    mage.skills.magic_mastery = 100
+    mage.perks.mage_initiation = true
+    mage.perks.magic_bolt = true
+
+    mage.stash.inc(ZAZ, 300)
+    mage.savings.inc(TONS_OF_MONEY)
+
+    EventMarket.sell(mage, ZAZ, 200, 50 as money)
+    EventMarket.buy( mage, ELODINO_FLESH, 200, 20 as money )
+    EventMarket.buy( mage, GRACI_HAIR, 10, 1000 as money)
+
+    return mage
+}
+
+function armour_master(x: number, y: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let master = Event.new_character(HumanTemplateColony, 'Armourer', cell, dummy_model)
+
+    master.skills.clothier = 100
+    master.perks.skin_armour_master = true
+    master.stash.inc(RAT_SKIN, 40)
+    master.savings.inc(LUMP_OF_MONEY)
+    
+    return master
 }
 
 function city_guard(x: number, y: number) {
@@ -261,6 +262,23 @@ function cancel_cook_orders() {
     }
 }
 
+function misc_characters() {
+    const fletcher_city = fletcher(3, 3)
+    Data.Reputation.set(Factions.City.id, fletcher_city.id, "member")
+
+    const fletcher_city_south = fletcher(3, 6)
+    Data.Reputation.set(Factions.City.id, fletcher_city_south.id, "member")
+
+    const fletcher_forest = fletcher(7, 5)
+    Data.Reputation.set(Factions.Steppes.id, fletcher_forest.id, "member")
+
+    const mage_city = mage(1, 6)
+    Data.Reputation.set(Factions.Mages.id, mage_city.id, "friend")
+    Data.Reputation.set(Factions.Mages.id, mage_city.id, "member")
+
+    const armourer_city = armour_master(0, 3)
+    Data.Reputation.set(Factions.City.id, armourer_city.id, "member")
+}
 
 let version = get_version()
 console.log(version)
