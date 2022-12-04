@@ -71,8 +71,8 @@ class SocketManager {
             socket.on('mrarmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR));
             socket.on('battle-action', (msg) => actions_1.HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
-            // socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
-            // socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
+            socket.on('request-perks', (msg) => request_1.Request.perks(user, msg));
+            socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg.id, msg.tag));
         });
     }
     disconnect(user) {
@@ -376,66 +376,6 @@ class SocketManager {
     //         let res = this.world.get_cell_teacher(cell.i, cell.j);
     //         this.send_to_character_user(character, 'local-skills', res)
     //     }        
-    // }
-    // send_perks_info(user: User, character_id: number) {
-    //     // console.log('request perks from ' + character_id )
-    //     let character = user.get_character()
-    //     let target_character = this.world.entity_manager.chars[character_id]
-    //     if (target_character == undefined) {
-    //         user.socket.emit('alert', 'character does not exist')
-    //         return
-    //     }
-    //     if (character == undefined) {
-    //         user.socket.emit('alert', 'your character does not exist')
-    //         return
-    //     }
-    //     if (character.cell_id != target_character.cell_id) {
-    //         user.socket.emit('alert', 'not in the same cell')
-    //         return
-    //     }
-    //     let data = target_character.skills.perks
-    //     let responce:{[_ in Perks]?: number} = {}
-    //     for (let i of perks_list) {
-    //         if (data[i] == true) {
-    //             responce[i] = perk_price(i)
-    //         }
-    //     }
-    //     user.socket.emit('perks-info', responce)
-    // }
-    // send_learn_perk_request(user: User, character_id: number, perk_tag:Perks) {
-    //     let character = user.get_character()
-    //     let target_character = this.world.entity_manager.chars[character_id]
-    //     if (target_character == undefined) {
-    //         return
-    //     }
-    //     if (character == undefined) {
-    //         return
-    //     }
-    //     if (character.cell_id != target_character.cell_id) {
-    //         user.socket.emit('alert', 'not in the same cell')
-    //         return
-    //     }
-    //     if (target_character.skills.perks[perk_tag] != true) {
-    //         user.socket.emit('alert', "target doesn't know this perk")
-    //         return
-    //     }
-    //     {
-    //         let savings = character.savings.get()
-    //         let price = perk_price(perk_tag) as money
-    //         if (savings < price) {
-    //             user.socket.emit('alert', 'not enough money')
-    //             return
-    //         }
-    //         let responce = perk_requirement(perk_tag, character)
-    //         if (responce != 'ok') {
-    //             user.socket.emit('alert', responce)
-    //             return
-    //         } 
-    //         character.savings.transfer(target_character.savings, price)
-    //         character.learn_perk(perk_tag)
-    //         user.socket.emit('perk learnt')
-    //         this.send_skills_info(character)
-    //     }
     // }
     // update_user_list(){
     //     var tmp: number[] = [];

@@ -169,4 +169,9 @@ export namespace Alerts {
     export function action_ping(character: Character, duration: number, is_move:boolean) {
         generic_character_alert(character, 'action-ping', {tag: 'start', time: duration, is_move: is_move})
     }    
+
+    export function perks(user: User, character: Character) {
+        console.log(character.perks)
+        Alerts.generic_user_alert(user, 'perks-update', character.perks)
+    }
 }

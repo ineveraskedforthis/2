@@ -24,4 +24,27 @@ var SocketCommand;
         events_1.Event.start_battle(character, target_character);
     }
     SocketCommand.attack_character = attack_character;
+    function learn_perk(sw, character_id, perk_tag) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        const data = Number(character_id);
+        const target_character = systems_communication_1.Convert.number_to_character(data);
+        if (target_character == undefined)
+            return;
+        if (character.cell_id != target_character.cell_id) {
+            user.socket.emit('alert', 'not in the same cell');
+            return;
+        }
+        if (target_character.perks[perk_tag] != true) {
+            user.socket.emit('alert', "target doesn't know this perk");
+            return;
+        }
+        if (character.perks[perk_tag] == true) {
+            user.socket.emit('alert', "you already know it");
+            return;
+        }
+        events_1.Event.buy_perk(character, perk_tag, target_character);
+    }
+    SocketCommand.learn_perk = learn_perk;
 })(SocketCommand = exports.SocketCommand || (exports.SocketCommand = {}));

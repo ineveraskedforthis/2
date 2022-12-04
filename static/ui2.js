@@ -384,9 +384,12 @@ function update_skill_data(data) {
 }
 
 function update_perks(data) {
+    console.log('PERKS!!!!')
+    console.log(data)
     let div2 = document.getElementById('perks_tab');
     div2.innerHTML = ''
-    for (let tag in data.perks) {
+    for (let tag in data) {
+        console.log(tag)
         let div = document.createElement('div')
         div.innerHTML = tag
         div2.append(div)
@@ -810,9 +813,9 @@ socket.on('map-pos', msg => {
 });
 
 function update_background() {
-    console.log('update_background')
+    // console.log('update_background')
     let location = map.re_set_cur_pos();
-    console.log(location)
+    // console.log(location)
     change_bg(location);
 }
 
@@ -1008,14 +1011,14 @@ function create_market_order_row(good_tag, amount, sell_price, buy_price, dummy_
 
 function update_market(data) {
     console.log('update market')
-    console.log(data)
+    // console.log(data)
 
     market_div.innerHTML = ''
 
     create_market_order_row('Item type', 'Amount', 'Sell price', 'Buy_price', true)
 
     for (let item of data) {
-        console.log(item)
+        // console.log(item)
         let sell_price = '?'
         let buy_price = '?'
         if (item.typ == 'sell') {sell_price = item.price}
@@ -1064,6 +1067,7 @@ function send_perk_learning_request(i) {
 
 function build_perks_list(data) {
     console.log('build perks')
+    console.log(data)
     let big_div = document.getElementById('available_perks')
     let div_for_a_list = document.getElementById('perks_for_learning')
 
@@ -1088,6 +1092,8 @@ function build_perks_list(data) {
 }
 
 socket.on('perks-info', (msg) => {build_perks_list(msg)})
+
+socket.on('perks-update', (msg) => {update_perks(msg)})
 
 
 

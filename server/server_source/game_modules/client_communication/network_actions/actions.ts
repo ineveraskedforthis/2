@@ -3,6 +3,7 @@ import { ActionManager, ActionTargeted, CharacterAction, CharacterActionResponce
 import { Battle } from "../../battle/classes/battle";
 import { BattleEvent } from "../../battle/events";
 import { BattleSystem } from "../../battle/system";
+import { Perks } from "../../character/skills";
 import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
 import { Convert } from "../../systems_communication";

@@ -84,6 +84,26 @@ var Data;
             return responce.level;
         }
         Reputation.from_id = from_id;
+        /**
+         *
+         * @param a his factions are checked
+         * @param X reputation level
+         * @param b his reputation is checked
+         * @returns **true** if b has a reputation level X with one of factions of a and **false** otherwise
+         */
+        function a_X_b(a, X, b) {
+            if (reputation[b] == undefined)
+                return false;
+            const rep = reputation[a];
+            for (let [faction, reputation] of Object.entries(rep)) {
+                if (reputation.level == 'member') {
+                    if (from_id(reputation.faction, b) == X)
+                        return true;
+                }
+            }
+            return false;
+        }
+        Reputation.a_X_b = a_X_b;
         function set(faction, char_id, level) {
             if (reputation[char_id] == undefined)
                 reputation[char_id] = {};

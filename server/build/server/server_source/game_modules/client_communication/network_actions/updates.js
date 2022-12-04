@@ -206,6 +206,7 @@ var SendUpdate;
             alerts_1.Alerts.skill(user, i, character.skills[i]);
         }
         cell_probability(user);
+        alerts_1.Alerts.perks(user, character);
     }
     SendUpdate.all_skills = all_skills;
     function all_craft(user) {

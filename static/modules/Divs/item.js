@@ -11,7 +11,7 @@ function send_equip_weapon_message(index) {
 }
 const damage_types = ['fire', 'slice', 'pierce', 'blunt'];
 export function generate_name(item) {
-    console.log(item.name);
+    // console.log(item.name)
     let name_string = item.name;
     for (let aff of item.affixes_list) {
         if (aff.tag.startsWith('of')) {
@@ -71,7 +71,7 @@ export function generate_dummy_item_backpack_div() {
         const name = document.createElement('div');
         name.innerHTML = 'Item name';
         name.classList.add('item_label');
-        name.classList.add('width-200');
+        name.classList.add('width-175');
         div.appendChild(name);
     }
     {

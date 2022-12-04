@@ -7,6 +7,7 @@ const events_1 = require("../battle/events");
 const system_1 = require("../battle/system");
 const system_2 = require("../character/attack/system");
 const generate_loot_1 = require("../character/races/generate_loot");
+const skills_1 = require("../character/skills");
 const system_3 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
@@ -17,6 +18,22 @@ const effects_1 = require("./effects");
 const market_1 = require("./market");
 var Event;
 (function (Event) {
+    function buy_perk(student, perk, teacher) {
+        let savings = student.savings.get();
+        let price = (0, skills_1.perk_price)(perk, student, teacher);
+        if (savings < price) {
+            alerts_1.Alerts.not_enough_to_character(student, 'money', price, savings);
+            return;
+        }
+        let responce = (0, skills_1.perk_requirement)(perk, student);
+        if (responce != 'ok') {
+            alerts_1.Alerts.generic_character_alert(student, 'alert', responce);
+            return;
+        }
+        student.savings.transfer(teacher.savings, price);
+        effects_1.Effect.learn_perk(student, perk);
+    }
+    Event.buy_perk = buy_perk;
     function move(character, new_cell) {
         // console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y)
         const old_cell = systems_communication_1.Convert.character_to_cell(character);

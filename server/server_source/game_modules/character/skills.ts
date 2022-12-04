@@ -1,7 +1,8 @@
 import { ARROW_BONE, ZAZ } from "../manager_classes/materials_manager";
-import { weapon_attack_tag, WEAPON_TYPE } from "../types";
+import { money, weapon_attack_tag, WEAPON_TYPE } from "../types";
 import { Item } from "../items/item";
 import { Character } from "./character";
+import { Data } from "../data";
 
 
 export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'|'skin_armour_master'
@@ -17,7 +18,7 @@ export interface PerksTable {
     skin_armour_master?:boolean
 }
 
-export function perk_price(tag: Perks):number {
+function perk_base_price(tag: Perks) {
     switch(tag) {
         case 'meat_master': return 100
         case 'advanced_unarmed': return 200
@@ -28,6 +29,17 @@ export function perk_price(tag: Perks):number {
         case 'skin_armour_master': return 1000
     }
 }
+
+export function perk_price(tag: Perks, student: Character, teacher: Character):money {
+    let price = perk_base_price(tag)
+    
+    if (Data.Reputation.a_X_b(teacher.id, 'enemy', student.id)) price = price * 10
+    if (!Data.Reputation.a_X_b(teacher.id, 'friend', student.id)) price = price * 1.5
+    if (!Data.Reputation.a_X_b(teacher.id, 'member', student.id)) price = price * 1.5
+
+    return Math.round(price) as money
+}
+
 export function perk_requirement(tag:Perks, character: Character) {
     switch(tag) {
         case 'meat_master': {

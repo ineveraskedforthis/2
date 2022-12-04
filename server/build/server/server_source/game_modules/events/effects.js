@@ -50,4 +50,9 @@ var Effect;
         }
         Change.skill = skill;
     })(Change = Effect.Change || (Effect.Change = {}));
+    function learn_perk(student, perk) {
+        student.perks[perk] = true;
+        user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 12 /* UI_Part.SKILLS */);
+    }
+    Effect.learn_perk = learn_perk;
 })(Effect = exports.Effect || (exports.Effect = {}));

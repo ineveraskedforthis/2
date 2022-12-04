@@ -8,7 +8,7 @@ import { Attack } from "../character/attack/system";
 import { Character } from "../character/character";
 import { ModelVariant } from "../character/character_parts";
 import { Loot } from "../character/races/generate_loot";
-import { skill } from "../character/skills";
+import { Perks, perk_price, perk_requirement, skill } from "../character/skills";
 import { CharacterSystem } from "../character/system";
 import { CharacterTemplate } from "../character/templates";
 import { UI_Part } from "../client_communication/causality_graph";
@@ -25,6 +25,28 @@ import { Effect } from "./effects";
 import { EventMarket } from "./market";
 
 export namespace Event {
+
+    export function buy_perk(student: Character, perk: Perks, teacher: Character) {
+        let savings = student.savings.get()
+        let price = perk_price(perk, student, teacher)
+
+        if (savings < price) {
+            Alerts.not_enough_to_character(student, 'money', price, savings)
+            return
+        }
+        
+
+        let responce = perk_requirement(perk, student)
+        if (responce != 'ok') {
+            Alerts.generic_character_alert(student, 'alert', responce)
+            return
+        } 
+
+
+        student.savings.transfer(teacher.savings, price)
+
+        Effect.learn_perk(student, perk)
+    }
 
     export function move(character: Character, new_cell: Cell) {
         // console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y)

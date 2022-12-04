@@ -100,6 +100,24 @@ export namespace Data {
             return responce.level
         }
 
+        /**
+         * 
+         * @param a his factions are checked  
+         * @param X reputation level
+         * @param b his reputation is checked
+         * @returns **true** if b has a reputation level X with one of factions of a and **false** otherwise
+         */
+        export function a_X_b(a: char_id, X: reputation_level, b: char_id) {
+            if (reputation[b] == undefined) return false
+            const rep = reputation[a]
+            for (let [faction, reputation] of Object.entries(rep)) {
+                if (reputation.level == 'member') {
+                    if (from_id(reputation.faction, b) == X) return true
+                }
+            }
+            return false
+        }
+
         export function set(faction: number, char_id: char_id, level: reputation_level) {
             if (reputation[char_id] == undefined) reputation[char_id] = {}
             if (reputation[char_id][faction] == undefined) reputation[char_id][faction] = {faction: faction, level: level}

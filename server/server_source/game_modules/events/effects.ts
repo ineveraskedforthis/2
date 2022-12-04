@@ -1,8 +1,9 @@
 import { equip_slot } from "../../../../shared/inventory";
 import { Character } from "../character/character";
-import { skill } from "../character/skills";
+import { Perks, skill } from "../character/skills";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
+import { character_list } from "../data";
 import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
 
@@ -48,5 +49,10 @@ export namespace Effect {
             character.skills[skill] += dx 
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKILLS)
         }
+    }
+
+    export function learn_perk(student: Character, perk: Perks){
+        student.perks[perk] = true
+        UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SKILLS)
     }
 }

@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SkillList = exports.can_shoot = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
+const data_1 = require("../data");
 exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master'];
-function perk_price(tag) {
+function perk_base_price(tag) {
     switch (tag) {
         case 'meat_master': return 100;
         case 'advanced_unarmed': return 200;
@@ -13,6 +14,16 @@ function perk_price(tag) {
         case 'fletcher': return 200;
         case 'skin_armour_master': return 1000;
     }
+}
+function perk_price(tag, student, teacher) {
+    let price = perk_base_price(tag);
+    if (data_1.Data.Reputation.a_X_b(teacher.id, 'enemy', student.id))
+        price = price * 10;
+    if (!data_1.Data.Reputation.a_X_b(teacher.id, 'friend', student.id))
+        price = price * 1.5;
+    if (!data_1.Data.Reputation.a_X_b(teacher.id, 'member', student.id))
+        price = price * 1.5;
+    return Math.round(price);
 }
 exports.perk_price = perk_price;
 function perk_requirement(tag, character) {

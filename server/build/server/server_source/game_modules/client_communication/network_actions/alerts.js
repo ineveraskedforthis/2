@@ -170,4 +170,9 @@ var Alerts;
         generic_character_alert(character, 'action-ping', { tag: 'start', time: duration, is_move: is_move });
     }
     Alerts.action_ping = action_ping;
+    function perks(user, character) {
+        console.log(character.perks);
+        Alerts.generic_user_alert(user, 'perks-update', character.perks);
+    }
+    Alerts.perks = perks;
 })(Alerts = exports.Alerts || (exports.Alerts = {}));

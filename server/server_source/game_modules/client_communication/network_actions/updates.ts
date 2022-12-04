@@ -217,6 +217,8 @@ export namespace SendUpdate {
             Alerts.skill(user, i, character.skills[i as keyof SkillList])
         }
         cell_probability(user)
+
+        Alerts.perks(user, character)
     }
 
     export function all_craft(user: User) {
