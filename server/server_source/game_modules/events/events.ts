@@ -8,6 +8,7 @@ import { Attack } from "../character/attack/system";
 import { Character } from "../character/character";
 import { ModelVariant } from "../character/character_parts";
 import { Loot } from "../character/races/generate_loot";
+import { skill } from "../character/skills";
 import { CharacterSystem } from "../character/system";
 import { CharacterTemplate } from "../character/templates";
 import { UI_Part } from "../client_communication/causality_graph";
@@ -20,6 +21,7 @@ import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert, Link, Unlink } from "../systems_communication";
 import { cell_id, damage_type, weapon_attack_tag } from "../types";
+import { Effect } from "./effects";
 import { EventMarket } from "./market";
 
 export namespace Event {
@@ -331,6 +333,14 @@ export namespace Event {
 
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         }
+    }
+
+    export function on_craft_update(character: Character, skill: skill, craft_tier: number) {
+        const dice = Math.random()
+        const current = character.skills[skill]
+        if (dice < craft_tier / current) Effect.Change.skill(character, skill, 1)
+        Effect.Change.stress(character, 1)
+        Effect.Change.fatigue(character, craft_tier)
     }
 
     //  spell_attack(target: Character, tag: spell_tags) {

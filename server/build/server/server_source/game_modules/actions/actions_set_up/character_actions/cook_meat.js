@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.cook_elo_to_zaz = exports.cook_meat = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
-const craft_1 = require("../../../calculations/craft");
 const user_manager_1 = require("../../../client_communication/user_manager");
-const alerts_1 = require("../../../client_communication/network_actions/alerts");
+const craft_1 = require("../../../craft/craft");
+const craft_2 = require("../../../calculations/craft");
 exports.cook_meat = {
     duration(char) {
         // return 1 + char.get_fatigue() / 20 + (100 - char.skills.cooking) / 20;
@@ -23,28 +23,8 @@ exports.cook_meat = {
     result: function (char, data) {
         let tmp = char.stash.get(materials_manager_1.MEAT);
         if (tmp > 0) {
-            let skill = char.skills.cooking;
-            let check = craft_1.CraftProbability.meat_to_food(char);
-            let dice = Math.random();
             char.stash.inc(materials_manager_1.MEAT, -1);
-            char.change_fatigue(10);
-            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-            if (dice < check) {
-                char.stash.inc(materials_manager_1.FOOD, 1);
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-                return 1 /* CharacterActionResponce.OK */;
-            }
-            else {
-                if (skill < 19) {
-                    char.skills.cooking += 1;
-                    user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 13 /* UI_Part.COOKING_SKILL */);
-                }
-                char.change_stress(5);
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
-                alerts_1.Alerts.failed(char);
-                return 4 /* CharacterActionResponce.FAILED */;
-            }
+            (0, craft_1.craft_bulk)(char, materials_manager_1.FOOD, craft_2.Craft.Amount.Cooking.meat, 'cooking', 1);
         }
     },
     start: function (char, data) {
@@ -57,7 +37,7 @@ exports.cook_elo_to_zaz = {
     check: function (char, data) {
         if (!char.in_battle()) {
             let tmp = char.stash.get(materials_manager_1.ELODINO_FLESH);
-            if (tmp >= 5) {
+            if (tmp >= 1) {
                 return 1 /* CharacterActionResponce.OK */;
             }
             return 3 /* CharacterActionResponce.NO_RESOURCE */;
@@ -67,35 +47,10 @@ exports.cook_elo_to_zaz = {
     result: function (char, data) {
         let tmp = char.stash.get(materials_manager_1.ELODINO_FLESH);
         if (tmp > 0) {
-            let skill1 = char.skills.cooking;
-            let skill2 = char.skills.magic_mastery;
-            let check = craft_1.CraftProbability.elo_to_food(char);
-            let dice = Math.random();
-            char.stash.inc(materials_manager_1.ELODINO_FLESH, -5);
-            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
+            char.stash.inc(materials_manager_1.ELODINO_FLESH, -1);
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-            if (dice < check) {
-                char.stash.inc(materials_manager_1.ZAZ, 1);
-                char.stash.inc(materials_manager_1.MEAT, 1);
-                dice = Math.random() * 100;
-                if (dice * char.skills.magic_mastery < 5) {
-                    char.skills.magic_mastery += 1;
-                }
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-                return 1 /* CharacterActionResponce.OK */;
-            }
-            else {
-                let dice = Math.random();
-                if (skill1 < craft_1.COOK_ELODINO_DIFFICULTY * dice) {
-                    char.skills.cooking += 1;
-                }
-                char.change_stress(5);
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-                alerts_1.Alerts.failed(char);
-                return 4 /* CharacterActionResponce.FAILED */;
-            }
+            (0, craft_1.craft_bulk)(char, materials_manager_1.FOOD, craft_2.Craft.Amount.Cooking.elodino, 'cooking', 3);
+            (0, craft_1.craft_bulk)(char, materials_manager_1.ZAZ, craft_2.Craft.Amount.elodino_zaz_extraction, 'cooking', 3);
         }
     },
     start: function (char, data) {

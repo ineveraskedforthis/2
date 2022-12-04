@@ -3,10 +3,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../../items/items_set_up");
-const system_1 = require("../../../items/system");
-const craft_1 = require("../../../calculations/craft");
 const user_manager_1 = require("../../../client_communication/user_manager");
-const alerts_1 = require("../../../client_communication/network_actions/alerts");
+const craft_1 = require("../../../craft/craft");
+const craft_2 = require("../../../calculations/craft");
 function generate_rat_skin_craft(arg, cost) {
     return {
         duration(char) {
@@ -26,27 +25,9 @@ function generate_rat_skin_craft(arg, cost) {
         result: function (char, data) {
             let tmp = char.stash.get(materials_manager_1.RAT_SKIN);
             if (tmp >= cost) {
-                let skill = char.skills.clothier;
                 char.stash.inc(materials_manager_1.RAT_SKIN, -cost);
-                char.change_fatigue(10);
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
                 user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-                let dice = Math.random();
-                if (dice < craft_1.CraftProbability.from_rat_skin(char)) {
-                    let armour = system_1.ItemSystem.create(arg);
-                    char.equip.data.backpack.add(armour);
-                    user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 6 /* UI_Part.INVENTORY */);
-                    return 1 /* CharacterActionResponce.OK */;
-                }
-                else {
-                    char.change_stress(1);
-                    if (skill < 20) {
-                        char.skills.clothier += 1;
-                        user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 12 /* UI_Part.SKILLS */);
-                    }
-                    alerts_1.Alerts.failed(char);
-                    return 4 /* CharacterActionResponce.FAILED */;
-                }
+                (0, craft_1.craft_item)(char, arg, craft_2.Craft.Durability.skin_item, 'clothier', 2);
             }
         },
         start: function (char, data) {

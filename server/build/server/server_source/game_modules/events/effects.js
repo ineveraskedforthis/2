@@ -17,4 +17,37 @@ var Effect;
         }
         Update.cell_market = cell_market;
     })(Update = Effect.Update || (Effect.Update = {}));
+    function change_durability(character, slot, dx) {
+        const item = character.equip.slot_to_item(slot);
+        if (item == undefined)
+            return;
+        item.durability += dx;
+        if (item.durability < 1)
+            destroy_item(character, slot);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
+    }
+    Effect.change_durability = change_durability;
+    function destroy_item(character, slot) {
+        character.equip.destroy_slot(slot);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
+    }
+    Effect.destroy_item = destroy_item;
+    let Change;
+    (function (Change) {
+        function fatigue(character, dx) {
+            character.change_fatigue(dx);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+        }
+        Change.fatigue = fatigue;
+        function stress(character, dx) {
+            character.change_stress(dx);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+        }
+        Change.stress = stress;
+        function skill(character, skill, dx) {
+            character.skills[skill] += dx;
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 12 /* UI_Part.SKILLS */);
+        }
+        Change.skill = skill;
+    })(Change = Effect.Change || (Effect.Change = {}));
 })(Effect = exports.Effect || (exports.Effect = {}));

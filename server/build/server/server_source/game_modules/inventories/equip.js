@@ -211,6 +211,20 @@ class Equip {
         this.data.backpack.add(item);
         this.data.armour[tag] = undefined;
     }
+    destroy_slot(tag) {
+        if (tag == 'weapon') {
+            this.data.weapon = undefined;
+            return;
+        }
+        this.data.armour[tag] = undefined;
+        return;
+    }
+    slot_to_item(tag) {
+        if (tag == 'weapon') {
+            return this.data.weapon;
+        }
+        return this.data.armour[tag];
+    }
     get_data() {
         return {
             equip: {

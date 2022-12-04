@@ -253,6 +253,23 @@ export class Equip {
         this.data.armour[tag] = undefined
     }
 
+    destroy_slot(tag: equip_slot) {
+        if (tag == 'weapon') {
+            this.data.weapon = undefined
+            return
+        }
+        
+        this.data.armour[tag] = undefined
+        return
+    }
+
+    slot_to_item(tag: equip_slot) {
+        if (tag == 'weapon') {
+            return this.data.weapon
+        }
+        return this.data.armour[tag]
+    }
+
     get_data():EquipSocket {
         return {
             equip: {

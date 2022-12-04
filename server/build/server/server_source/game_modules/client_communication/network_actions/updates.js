@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendUpdate = void 0;
 const battle_calcs_1 = require("../../battle/battle_calcs");
-const craft_1 = require("../../calculations/craft");
 const system_1 = require("../../map/system");
 const systems_communication_1 = require("../../systems_communication");
 const types_1 = require("../../types");
@@ -11,6 +10,7 @@ const difficulty_1 = require("../../calculations/difficulty");
 const system_2 = require("../../battle/system");
 const constants_1 = require("../../static_data/constants");
 const helper_functions_1 = require("../helper_functions");
+const craft_1 = require("../../calculations/craft");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -152,7 +152,7 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        let value = craft_1.CraftProbability.from_rat_skin(character);
+        let value = craft_1.Craft.Durability.skin_item(character);
         alerts_1.Alerts.craft(user, 'craft_rat_pants', value);
         alerts_1.Alerts.craft(user, 'craft_rat_armour', value);
         alerts_1.Alerts.craft(user, 'craft_rat_gloves', value);
@@ -218,19 +218,19 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.craft(user, 'cook_elodin', craft_1.CraftProbability.elo_to_food(character));
-        alerts_1.Alerts.craft(user, 'cook_meat', craft_1.CraftProbability.meat_to_food(character));
+        alerts_1.Alerts.craft(user, 'cook_elodin', craft_1.Craft.Amount.elodino_zaz_extraction(character));
+        alerts_1.Alerts.craft(user, 'cook_meat', craft_1.Craft.Amount.Cooking.meat(character));
     }
     SendUpdate.cooking_craft = cooking_craft;
     function woodwork_craft(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        let value = craft_1.CraftProbability.basic_wood(character);
+        let value = craft_1.Craft.Durability.wood_item(character);
         alerts_1.Alerts.craft(user, 'craft_spear', value);
         alerts_1.Alerts.craft(user, 'craft_bone_spear', value);
         alerts_1.Alerts.craft(user, 'craft_wood_bow', value);
-        alerts_1.Alerts.craft(user, 'craft_bone_arrow', craft_1.CraftProbability.arrow(character));
+        alerts_1.Alerts.craft(user, 'craft_bone_arrow', craft_1.Craft.Amount.arrow(character));
     }
     SendUpdate.woodwork_craft = woodwork_craft;
     function ranged(user, distance) {

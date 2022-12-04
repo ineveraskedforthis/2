@@ -31,7 +31,7 @@ export function generate_item_backpack_div(item) {
         name.innerHTML = name_string;
         name.classList.add('item_tier_' + Math.min(item.affixes, 4));
         name.classList.add('item_label');
-        name.classList.add('width-200');
+        name.classList.add('width-175');
         div.appendChild(name);
     }
     {

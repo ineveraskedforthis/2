@@ -49,8 +49,7 @@ export function select_item(id: number, div: HTMLElement) {
             selected_div?.classList.remove('selected')
             selected = undefined
             selected_div = undefined
-        }
-        
+        }        
     }
 }
 

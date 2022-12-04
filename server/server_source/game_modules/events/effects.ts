@@ -1,3 +1,6 @@
+import { equip_slot } from "../../../../shared/inventory";
+import { Character } from "../character/character";
+import { skill } from "../character/skills";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 import { Cell } from "../map/cell";
@@ -13,5 +16,37 @@ export namespace Effect {
                 UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.MARKET)
             }
         }
-    }    
+    }
+
+    export function change_durability(character: Character, slot: equip_slot, dx: number) {
+        const item = character.equip.slot_to_item(slot)
+        if (item == undefined) return
+        item.durability += dx
+
+        if (item.durability < 1) destroy_item(character, slot)
+
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
+    }
+
+    export function destroy_item(character:Character, slot: equip_slot) {
+        character.equip.destroy_slot(slot)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
+    }
+
+    export namespace Change {
+        export function fatigue(character: Character, dx: number) {
+            character.change_fatigue(dx)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+        }
+
+        export function stress(character: Character, dx: number) {
+            character.change_stress(dx)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+        }
+
+        export function skill(character: Character, skill: skill, dx: number) {
+            character.skills[skill] += dx 
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKILLS)
+        }
+    }
 }

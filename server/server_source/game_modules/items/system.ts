@@ -85,8 +85,12 @@ export namespace ItemSystem {
             case 'pierce': {damage.pierce = ItemSystem.weight(item) * item.damage.pierce + affix_damage.pierce; break}
             case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice + affix_damage.slice; break}
         }
+
+        const durability_mod = 0.3 + 0.7 * item.durability / 100
+        DmgOps.mult_ip(damage, durability_mod)
+
         // fire damage is alwasys added
-        damage.fire = item.damage.fire        
+        damage.fire = item.damage.fire + affix_damage.fire
 
         return damage
     }
@@ -120,13 +124,21 @@ export namespace ItemSystem {
         for (let aff of item.affixes) {
             damage = damage_affixes_effects[aff.tag](damage)
         }
+
+        let tmp = damage.fire
+
+        const durability_mod = 0.3 + 0.7 * item.durability / 100
+        DmgOps.mult_ip(damage, durability_mod)
+
+        damage.fire = tmp
+
         return damage
     }
 
     export function resists(item:Item|undefined) {
         if (item == undefined) {return empty_resists}
 
-        let result = item.resists        
+        let result = DmgOps.copy(item.resists)     
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = protection_affixes_effects[affix.tag];
@@ -134,6 +146,10 @@ export namespace ItemSystem {
                 result = f(result);
             }
         }
+
+        const durability_mod = 0.2 + 0.8 * item.durability / 100
+        DmgOps.mult_ip(result, durability_mod)
+
         return result;
     }
 

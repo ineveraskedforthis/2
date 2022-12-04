@@ -5,9 +5,8 @@ import { Character } from "../../../character/character";
 import { map_position } from "../../../types";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";
-import { CraftProbability } from "../../../calculations/craft";
-import { ItemSystem } from "../../../items/system";
-import { Alerts } from "../../../client_communication/network_actions/alerts";
+import { Craft } from "../../../calculations/craft";
+import { craft_bulk, craft_item } from "../../../craft/craft";
 
 export const craft_bone_spear = {
     duration(char: Character) {
@@ -30,31 +29,10 @@ export const craft_bone_spear = {
         let tmp = char.stash.get(WOOD)
         let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp > 2) && (tmp_2 > 3)) { 
-
-            let skill = char.skills.woodwork;
-
             char.stash.inc(WOOD, -3)
             char.stash.inc(RAT_BONE, -4)
-            char.change_fatigue(10)
-
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
             UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-
-            let dice = Math.random()
-            if (dice < CraftProbability.basic_wood(char)) {
-                let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
-                char.equip.data.backpack.add(spear)
-                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.INVENTORY)
-                return CharacterActionResponce.OK
-            } else {
-                char.change_stress(1)
-                if (skill < 20) {
-                    char.skills.woodwork += 1
-                    UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
-                }
-                Alerts.failed(char)
-                return CharacterActionResponce.FAILED
-            }
+            craft_item(char, BONE_SPEAR_ARGUMENT, Craft.Durability.wood_item, 'woodwork', 2)
         }
     },
 
@@ -83,21 +61,10 @@ export const craft_bone_arrow = {
         let tmp = char.stash.get(WOOD)
         let tmp_2 = char.stash.get(RAT_BONE)
         if ((tmp >= 1) && (tmp_2 >= 10)) { 
-            let skill = char.skills.woodwork;
-
             char.stash.inc(WOOD, -1)
             char.stash.inc(RAT_BONE, -10)
-            char.change_fatigue(10)
 
-            let dice = Math.random()
-            let amount = Math.round((CraftProbability.arrow(char) / dice) * 10)
-            char.stash.inc(ARROW_BONE, amount)
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-
-            if (skill < 10) {
-                char.skills.woodwork += 1
-            }
+            craft_bulk(char, ARROW_BONE, Craft.Amount.arrow, 'woodwork', 1)
         }
     },
 
@@ -123,31 +90,10 @@ export const craft_wood_bow = {
 
     result:  function(char:Character, data: map_position) {
         let tmp = char.stash.get(WOOD)
-        if ((tmp >= 3)) { 
-            let skill = char.skills.woodwork;
-
+        if ((tmp >= 3)) {
             char.stash.inc(WOOD, -3)
-            char.change_fatigue(10)
 
-            let dice = Math.random()
-            if (dice < CraftProbability.basic_wood(char)) {
-                let bow = ItemSystem.create(BASIC_BOW_ARGUMENT)
-                char.equip.data.backpack.add(bow)
-
-                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
-                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.INVENTORY)
-
-                return CharacterActionResponce.OK
-            } else {
-                char.change_stress(1)
-                if (skill < 20) {
-                    char.skills.woodwork += 1
-                    UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
-                }
-                Alerts.failed(char)
-                return CharacterActionResponce.FAILED
-            }
+            craft_item(char, BASIC_BOW_ARGUMENT, Craft.Durability.wood_item, 'woodwork', 3)
         }
     },
 

@@ -13,6 +13,7 @@ const user_manager_1 = require("../client_communication/user_manager");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_4 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
+const effects_1 = require("./effects");
 const market_1 = require("./market");
 var Event;
 (function (Event) {
@@ -313,6 +314,15 @@ var Event;
         }
     }
     Event.stop_battle = stop_battle;
+    function on_craft_update(character, skill, craft_tier) {
+        const dice = Math.random();
+        const current = character.skills[skill];
+        if (dice < craft_tier / current)
+            effects_1.Effect.Change.skill(character, skill, 1);
+        effects_1.Effect.Change.stress(character, 1);
+        effects_1.Effect.Change.fatigue(character, craft_tier);
+    }
+    Event.on_craft_update = on_craft_update;
     //  spell_attack(target: Character, tag: spell_tags) {
     //     let result = new AttackResult()
     //     if (tag == 'bolt') {

@@ -164,3 +164,5 @@ export class SkillList {
         this.ranged         = 0;
     }
 }
+
+export type skill = keyof SkillList

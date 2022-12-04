@@ -765,7 +765,7 @@ function update_craft_probability(data) {
         console.log('craft does not exist????')
         return
     }
-    div.innerHTML = Math.floor(data.value * 100) + '%'
+    div.innerHTML = Math.floor(data.value)
 }
 
 socket.on('craft-probability', msg => update_craft_probability(msg))

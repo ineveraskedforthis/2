@@ -165,7 +165,7 @@ var AI;
         let base_price_bones = 1;
         let input_price = (base_price_wood + 10 * base_price_bones);
         let profit = 0.5;
-        let sell_price = Math.floor(input_price * (1 + profit) / craft_1.CraftProbability.arrow(character) / 10) + 1;
+        let sell_price = Math.floor(input_price * (1 + profit) / craft_1.Craft.Amount.arrow(character)) + 1;
         // bones_to_buy * b_p + wood_to_buy * w_p = savings
         // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0
         // so

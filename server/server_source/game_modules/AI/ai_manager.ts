@@ -11,7 +11,7 @@ import { Event } from "../events/events";
 import { money } from "../types";
 import { BulkOrders, ItemOrders } from "../market/system";
 import { EventMarket } from "../events/market";
-import { CraftProbability } from "../calculations/craft";
+import { Craft } from "../calculations/craft";
 
 
 // function MAYOR_AI(mayor: Character) {
@@ -189,7 +189,7 @@ export namespace AI {
         let input_price = (base_price_wood + 10 * base_price_bones)
         let profit = 0.5
 
-        let sell_price = Math.floor(input_price * (1 + profit) / CraftProbability.arrow(character) / 10) + 1 as money
+        let sell_price = Math.floor(input_price * (1 + profit) / Craft.Amount.arrow(character)) + 1 as money
 
         // bones_to_buy * b_p + wood_to_buy * w_p = savings
         // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0

@@ -90,8 +90,10 @@ var ItemSystem;
                 break;
             }
         }
+        const durability_mod = 0.3 + 0.7 * item.durability / 100;
+        damage_types_1.DmgOps.mult_ip(damage, durability_mod);
         // fire damage is alwasys added
-        damage.fire = item.damage.fire;
+        damage.fire = item.damage.fire + affix_damage.fire;
         return damage;
     }
     ItemSystem.melee_damage = melee_damage;
@@ -121,6 +123,10 @@ var ItemSystem;
         for (let aff of item.affixes) {
             damage = affix_1.damage_affixes_effects[aff.tag](damage);
         }
+        let tmp = damage.fire;
+        const durability_mod = 0.3 + 0.7 * item.durability / 100;
+        damage_types_1.DmgOps.mult_ip(damage, durability_mod);
+        damage.fire = tmp;
         return damage;
     }
     ItemSystem.damage_breakdown = damage_breakdown;
@@ -128,7 +134,7 @@ var ItemSystem;
         if (item == undefined) {
             return empty_resists;
         }
-        let result = item.resists;
+        let result = damage_types_1.DmgOps.copy(item.resists);
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = affix_1.protection_affixes_effects[affix.tag];
@@ -136,6 +142,8 @@ var ItemSystem;
                 result = f(result);
             }
         }
+        const durability_mod = 0.2 + 0.8 * item.durability / 100;
+        damage_types_1.DmgOps.mult_ip(result, durability_mod);
         return result;
     }
     ItemSystem.resists = resists;

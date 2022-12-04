@@ -1,8 +1,5 @@
 import { Accuracy } from "../../battle/battle_calcs";
-import { CraftProbability } from "../../calculations/craft";
 import { SkillList } from "../../character/skills";
-import { CharacterSystem } from "../../character/system";
-import { Cell } from "../../map/cell";
 import { MapSystem } from "../../map/system";
 import { Development } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";
@@ -10,10 +7,10 @@ import { cell_id, weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
 import { Alerts } from "./alerts";
 import { CellActionProb } from "../../calculations/difficulty";
-import { Battle } from "../../battle/classes/battle";
 import { BattleSystem } from "../../battle/system";
 import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
 import { prepare_market_orders } from "../helper_functions";
+import { Craft } from "../../calculations/craft";
 
 
 export namespace SendUpdate {
@@ -167,7 +164,7 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        let value = CraftProbability.from_rat_skin(character)
+        let value = Craft.Durability.skin_item(character)
         Alerts.craft(user, 'craft_rat_pants',  value)
         Alerts.craft(user, 'craft_rat_armour', value)
         Alerts.craft(user, 'craft_rat_gloves', value)
@@ -232,19 +229,19 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.craft(user, 'cook_elodin', CraftProbability.elo_to_food(character))
-        Alerts.craft(user, 'cook_meat', CraftProbability.meat_to_food(character))
+        Alerts.craft(user, 'cook_elodin', Craft.Amount.elodino_zaz_extraction(character))
+        Alerts.craft(user, 'cook_meat', Craft.Amount.Cooking.meat(character))
     }
 
     export function woodwork_craft(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        let value = CraftProbability.basic_wood(character)
+        let value = Craft.Durability.wood_item(character)
         Alerts.craft(user, 'craft_spear',       value)
         Alerts.craft(user, 'craft_bone_spear',  value)
         Alerts.craft(user, 'craft_wood_bow',    value)
-        Alerts.craft(user, 'craft_bone_arrow', CraftProbability.arrow(character))
+        Alerts.craft(user, 'craft_bone_arrow', Craft.Amount.arrow(character))
     }
 
     export function ranged(user: User, distance: number) {

@@ -6,10 +6,11 @@ import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGU
 import { map_position } from "../../../types";
 import { ItemSystem } from "../../../items/system";
 import { ItemJson } from "../../../items/item";
-import { CraftProbability } from "../../../calculations/craft";
 import { UserManagement } from "../../../client_communication/user_manager";
 import { UI_Part } from "../../../client_communication/causality_graph";
 import { Alerts } from "../../../client_communication/network_actions/alerts";
+import { craft_item } from "../../../craft/craft";
+import { Craft } from "../../../calculations/craft";
 
 
 
@@ -33,29 +34,10 @@ function generate_rat_skin_craft(arg: ItemJson, cost: number) {
     
         result:  function(char:Character, data: map_position) {
             let tmp = char.stash.get(RAT_SKIN)
-            if (tmp >= cost) {
-                let skill = char.skills.clothier;
-    
+            if (tmp >= cost) {    
                 char.stash.inc(RAT_SKIN, -cost)
-                char.change_fatigue(10)
-                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
                 UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-
-                let dice = Math.random()
-                if (dice < CraftProbability.from_rat_skin(char)) {
-                    let armour = ItemSystem.create(arg)
-                    char.equip.data.backpack.add(armour)
-                    UserManagement.add_user_to_update_queue(char.user_id, UI_Part.INVENTORY)
-                    return CharacterActionResponce.OK
-                } else {
-                    char.change_stress(1)
-                    if (skill < 20) {
-                        char.skills.clothier += 1
-                        UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
-                    }
-                    Alerts.failed(char)
-                    return CharacterActionResponce.FAILED
-                }
+                craft_item(char, arg, Craft.Durability.skin_item, 'clothier', 2)
             }
         },
     
