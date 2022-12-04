@@ -74,8 +74,10 @@ export class SocketManager {
 
 
             socket.on('equip',  (msg: any) =>           InventoryCommands.equip(user, msg));
-            // socket.on('enchant-armour',  (msg: any) => this.enchant_armour(user, msg));
-            // socket.on('enchant-weapon',  (msg: any) => this.enchant_weapon(user, msg));
+
+            socket.on('enchant',  (msg: any) => InventoryCommands.enchant(user, msg));
+            // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
+
             socket.on('switch-weapon',  (msg: any) =>   InventoryCommands.switch_weapon(user))
             socket.on('unequip',  (msg: any) =>         InventoryCommands.unequip(user, msg));
 
@@ -104,9 +106,10 @@ export class SocketManager {
             socket.on('mrhelmet',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_HELMET))
             socket.on('mrarmour',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_ARMOUR))
 
-            // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
+            
             socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))
+
             // socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
             // socket.on('learn-perk', (msg:any) => this.send_learn_perk_request(user, msg.id, msg.tag))
         });
@@ -335,25 +338,7 @@ export class SocketManager {
     // //     }
     // // }
 
-    //  enchant(user: User, msg: number) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //         // let res =  char.enchant(this.pool, msg);
-    //         // if (res != 'ok') {
-    //         //     socket.emit('alert', res);
-    //         // }
-    //     }
-    // }
 
-    //  disenchant(user: User, msg: number) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //         // let res =  char.disenchant(this.pool, msg);
-    //         // if (res != 'ok') {
-    //         //     socket.emit('alert', res);
-    //         // }
-    //     }
-    // }
 
     // //  set_tactic(user: User, msg: any) {
     // //     if (user.logged_in) {

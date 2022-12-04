@@ -283,4 +283,24 @@ export namespace InventoryCommands {
 
         EventMarket.remove_item_orders(character)
     }
+
+    export function enchant(sw: SocketWrapper, msg: number) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        msg = Number(msg)
+
+        if (isNaN(msg)) return
+
+        EventInventory.enchant(character, msg)
+    }
+
+    //  disenchant(user: User, msg: number) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         // let res =  char.disenchant(this.pool, msg);
+    //         // if (res != 'ok') {
+    //         //     socket.emit('alert', res);
+    //         // }
+    //     }
+    // }
 }

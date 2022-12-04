@@ -5,7 +5,7 @@ function send_equip_weapon_message(index:number) {
     const enchant = document.getElementById('enchant') as HTMLInputElement 
     let value = enchant.checked
     if (value) {
-        socket.emit('enchant-weapon', index);
+        socket.emit('enchant', index);
     } else {
         socket.emit('equip', index);
     }

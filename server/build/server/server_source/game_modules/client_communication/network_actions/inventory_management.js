@@ -271,4 +271,23 @@ var InventoryCommands;
         market_1.EventMarket.remove_item_orders(character);
     }
     InventoryCommands.clear_item_orders = clear_item_orders;
+    function enchant(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        msg = Number(msg);
+        if (isNaN(msg))
+            return;
+        inventory_events_1.EventInventory.enchant(character, msg);
+    }
+    InventoryCommands.enchant = enchant;
+    //  disenchant(user: User, msg: number) {
+    //     if (user.logged_in) {
+    //         let char = user.get_character();
+    //         // let res =  char.disenchant(this.pool, msg);
+    //         // if (res != 'ok') {
+    //         //     socket.emit('alert', res);
+    //         // }
+    //     }
+    // }
 })(InventoryCommands = exports.InventoryCommands || (exports.InventoryCommands = {}));

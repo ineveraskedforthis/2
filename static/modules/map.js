@@ -745,12 +745,19 @@ export class Map {
         }
         
         if (this.data[tag] != undefined) {
-            if (this.data[tag].urban >= 2) {
-                return 'colony'
-            } 
             if (this.data[tag].wild >= 1) {
                 return 'forest'
             }
+
+            if (this.data[tag].urban >= 2) {
+                return 'colony'
+            } 
+
+            if (this.data[tag].urban >= 1) {
+                return 'urban_1'
+            }
+            
+            
         }
 
         return undefined

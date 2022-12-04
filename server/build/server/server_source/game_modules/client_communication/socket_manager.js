@@ -48,8 +48,8 @@ class SocketManager {
             // socket.on('char-info-detailed', () => this.send_char_info(user));
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
             socket.on('equip', (msg) => inventory_management_1.InventoryCommands.equip(user, msg));
-            // socket.on('enchant-armour',  (msg: any) => this.enchant_armour(user, msg));
-            // socket.on('enchant-weapon',  (msg: any) => this.enchant_weapon(user, msg));
+            socket.on('enchant', (msg) => inventory_management_1.InventoryCommands.enchant(user, msg));
+            // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
             socket.on('switch-weapon', (msg) => inventory_management_1.InventoryCommands.switch_weapon(user));
             socket.on('unequip', (msg) => inventory_management_1.InventoryCommands.unequip(user, msg));
             socket.on('eat', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.EAT));
@@ -69,7 +69,6 @@ class SocketManager {
             socket.on('mrboots', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_BOOTS));
             socket.on('mrhelmet', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_HELMET));
             socket.on('mrarmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR));
-            // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
             socket.on('battle-action', (msg) => actions_1.HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
             // socket.on('request-perks', (msg:any) => this.send_perks_info(user, msg))
@@ -263,24 +262,6 @@ class SocketManager {
     // //         }
     // //     }
     // // }
-    //  enchant(user: User, msg: number) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //         // let res =  char.enchant(this.pool, msg);
-    //         // if (res != 'ok') {
-    //         //     socket.emit('alert', res);
-    //         // }
-    //     }
-    // }
-    //  disenchant(user: User, msg: number) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //         // let res =  char.disenchant(this.pool, msg);
-    //         // if (res != 'ok') {
-    //         //     socket.emit('alert', res);
-    //         // }
-    //     }
-    // }
     // //  set_tactic(user: User, msg: any) {
     // //     if (user.logged_in) {
     // //         let char = user.get_character();

@@ -3,7 +3,7 @@ function send_equip_weapon_message(index) {
     const enchant = document.getElementById('enchant');
     let value = enchant.checked;
     if (value) {
-        socket.emit('enchant-weapon', index);
+        socket.emit('enchant', index);
     }
     else {
         socket.emit('equip', index);

@@ -37,8 +37,7 @@ function send_enchant_request(socket) {
         if (items[i].checked) index = parseInt(items[i].value);
     }
 
-    socket.emit('ench', index)
-    socket.emit('char-info-detailed');
+    socket.emit('enchant', index)
 }
 
 function send_disenchant_request(socket) {
@@ -48,8 +47,7 @@ function send_disenchant_request(socket) {
         if (items[i].checked) index = parseInt(items[i].value);
     }
 
-    socket.emit('disench', index)
-    socket.emit('char-info-detailed');
+    socket.emit('disenchant', index)
 }
 
 function get_item_image(tag) {
