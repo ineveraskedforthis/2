@@ -25,6 +25,7 @@ export interface ItemData {
     resists: damageSocket
     affixes_list: affix[]
     item_type: equip_slot
+    durability: number
     backpack_index?: number
     price?: number
     seller?: string

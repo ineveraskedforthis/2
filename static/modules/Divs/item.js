@@ -52,6 +52,13 @@ export function generate_item_backpack_div(item) {
         damage.classList.add('width-100');
         div.appendChild(damage);
     }
+    {
+        const durability = document.createElement('div');
+        durability.innerHTML = item.durability.toString();
+        durability.classList.add('width-50');
+        durability.classList.add('align-right');
+        div.appendChild(durability);
+    }
     if (item.backpack_index != undefined) {
         ((index) => div.onclick = () => send_equip_weapon_message(index))(item.backpack_index);
     }

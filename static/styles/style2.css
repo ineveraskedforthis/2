@@ -286,8 +286,16 @@ body {
     width: 200px;
 }
 
+.width-175 {
+    width: 175px;
+}
+
 .width-100 {
     width: 100px;
+}
+
+.width-50 {
+    width: 50px;
 }
 
 .width-25 {

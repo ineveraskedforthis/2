@@ -146,6 +146,7 @@ var ItemSystem;
             name: item.tag(),
             affixes: item.affixes.length,
             affixes_list: item.affixes,
+            durability: item.durability,
             item_type: item.slot,
             damage: damage_breakdown(item),
             resists: resists(item),

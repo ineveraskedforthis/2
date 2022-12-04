@@ -36,7 +36,7 @@ export function generate_item_backpack_div(item: ItemData) {
         name.innerHTML = name_string
         name.classList.add('item_tier_' + Math.min(item.affixes, 4))
         name.classList.add('item_label')
-        name.classList.add('width-200')
+        name.classList.add('width-175')
         div.appendChild(name)
     }
     
@@ -57,6 +57,15 @@ export function generate_item_backpack_div(item: ItemData) {
         damage.classList.add('row')
         damage.classList.add('width-100')
         div.appendChild(damage)
+    }
+
+    {
+        const durability = document.createElement('div')
+        durability.innerHTML = item.durability.toString()
+        durability.classList.add('width-50')
+        durability.classList.add('align-right')
+
+        div.appendChild(durability)
     }
 
     if (item.backpack_index != undefined) {
