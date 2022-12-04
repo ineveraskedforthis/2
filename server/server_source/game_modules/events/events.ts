@@ -98,6 +98,20 @@ export namespace Event {
             return 'miss'
         }
 
+        // durability changes
+        const roll_weapon = Math.random()
+        if (roll_weapon < 0.2) {
+            Effect.change_durability(attacker, 'weapon', -1)
+        }
+        {
+            const roll = Math.random()
+            if (roll < 0.5) Effect.change_durability(defender, 'body', -1);
+            else if (roll < 0.7) Effect.change_durability(defender, 'legs', -1)
+            else if (roll < 0.8) Effect.change_durability(defender, 'foot', -1)
+            else if (roll < 0.9) Effect.change_durability(defender, 'head', -1)
+            else Effect.change_durability(defender, 'arms', -1)
+        }
+
         // create attack
         const attack = Attack.generate_ranged(attacker)
         CharacterSystem.damage(defender, attack.damage)
@@ -192,6 +206,19 @@ export namespace Event {
             }
         }
 
+
+        // durability changes
+        if (!attack.flags.miss) {
+            Effect.change_durability(attacker, 'weapon', -1)
+            if (attack.flags.blocked) {Effect.change_durability(defender, 'weapon', -1)} else {
+                const roll = Math.random()
+                if (roll < 0.5) Effect.change_durability(defender, 'body', -1);
+                else if (roll < 0.7) Effect.change_durability(defender, 'legs', -1)
+                else if (roll < 0.8) Effect.change_durability(defender, 'foot', -1)
+                else if (roll < 0.9) Effect.change_durability(defender, 'head', -1)
+                else Effect.change_durability(defender, 'arms', -1)
+            }
+        }
 
 
         //apply damage after all modifiers

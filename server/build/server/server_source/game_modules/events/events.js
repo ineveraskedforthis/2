@@ -88,6 +88,24 @@ var Event;
         if (responce == 'miss') {
             return 'miss';
         }
+        // durability changes
+        const roll_weapon = Math.random();
+        if (roll_weapon < 0.2) {
+            effects_1.Effect.change_durability(attacker, 'weapon', -1);
+        }
+        {
+            const roll = Math.random();
+            if (roll < 0.5)
+                effects_1.Effect.change_durability(defender, 'body', -1);
+            else if (roll < 0.7)
+                effects_1.Effect.change_durability(defender, 'legs', -1);
+            else if (roll < 0.8)
+                effects_1.Effect.change_durability(defender, 'foot', -1);
+            else if (roll < 0.9)
+                effects_1.Effect.change_durability(defender, 'head', -1);
+            else
+                effects_1.Effect.change_durability(defender, 'arms', -1);
+        }
         // create attack
         const attack = system_2.Attack.generate_ranged(attacker);
         system_3.CharacterSystem.damage(defender, attack.damage);
@@ -177,6 +195,26 @@ var Event;
             const dice = Math.random();
             if ((dice < 0.01) && (attack.attack_skill <= 30)) {
                 increase_weapon_skill(defender, attack.weapon_type);
+            }
+        }
+        // durability changes
+        if (!attack.flags.miss) {
+            effects_1.Effect.change_durability(attacker, 'weapon', -1);
+            if (attack.flags.blocked) {
+                effects_1.Effect.change_durability(defender, 'weapon', -1);
+            }
+            else {
+                const roll = Math.random();
+                if (roll < 0.5)
+                    effects_1.Effect.change_durability(defender, 'body', -1);
+                else if (roll < 0.7)
+                    effects_1.Effect.change_durability(defender, 'legs', -1);
+                else if (roll < 0.8)
+                    effects_1.Effect.change_durability(defender, 'foot', -1);
+                else if (roll < 0.9)
+                    effects_1.Effect.change_durability(defender, 'head', -1);
+                else
+                    effects_1.Effect.change_durability(defender, 'arms', -1);
             }
         }
         //apply damage after all modifiers
