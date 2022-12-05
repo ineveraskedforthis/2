@@ -383,18 +383,7 @@ function update_skill_data(data) {
     span.style.width = value + '%'
 }
 
-function update_perks(data) {
-    console.log('PERKS!!!!')
-    console.log(data)
-    let div2 = document.getElementById('perks_tab');
-    div2.innerHTML = ''
-    for (let tag in data) {
-        console.log(tag)
-        let div = document.createElement('div')
-        div.innerHTML = tag
-        div2.append(div)
-    }
-}
+
 
 // function shadow_skill(tag) {
 //     skill_divs[tag].classList.add('shadowed')
@@ -1089,6 +1078,19 @@ function build_perks_list(data) {
     }
     
     big_div.classList.remove('hidden')
+}
+
+function update_perks(data) {
+    console.log('PERKS!!!!')
+    console.log(data)
+    let div2 = document.getElementById('perks_tab');
+    div2.innerHTML = ''
+    for (let tag in data) {
+        console.log(tag)
+        let div = document.createElement('div')
+        div.innerHTML = tag
+        div2.append(div)
+    }
 }
 
 socket.on('perks-info', (msg) => {build_perks_list(msg)})

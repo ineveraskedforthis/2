@@ -15,6 +15,7 @@ const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_4 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
 const effects_1 = require("./effects");
+const inventory_events_1 = require("./inventory_events");
 const market_1 = require("./market");
 var Event;
 (function (Event) {
@@ -127,6 +128,10 @@ var Event;
         const attack = system_2.Attack.generate_ranged(attacker);
         system_3.CharacterSystem.damage(defender, attack.damage);
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
+        //if target is dead, loot it all
+        if (defender.dead()) {
+            kill(attacker, defender);
+        }
         return 'ok';
     }
     Event.shoot = shoot;
@@ -156,6 +161,10 @@ var Event;
         system_3.CharacterSystem.damage(defender, attack.damage);
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
+        //if target is dead, loot it all
+        if (defender.dead()) {
+            kill(attacker, defender);
+        }
         return 'ok';
     }
     Event.magic_bolt = magic_bolt;
@@ -255,6 +264,12 @@ var Event;
             killer.stash.inc(item.material, item.amount);
         }
         console.log(killer.stash.data);
+        //loot items rgo
+        console.log('check items drop');
+        const dropped_items = generate_loot_1.Loot.items(victim.race());
+        for (let item of dropped_items) {
+            inventory_events_1.EventInventory.add_item(killer, item);
+        }
         // skinning check
         const skin = generate_loot_1.Loot.skinning(victim.archetype.race);
         if (skin > 0) {

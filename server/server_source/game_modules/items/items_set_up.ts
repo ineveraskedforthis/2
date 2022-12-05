@@ -12,6 +12,7 @@ function base_resists(material: ITEM_MATERIAL, slot: equip_slot) {
 
 const wood = materials.index_to_material(WOOD)
 const skin = materials.index_to_material(RAT_SKIN)
+const bone = materials.index_to_material(RAT_BONE)
 const empty_resists = new Damage()
 
 export const BASIC_BOW_ARGUMENT: ItemJson = {
@@ -82,6 +83,18 @@ export const RAT_SKIN_HELMET_ARGUMENT: ItemJson = {
     weapon_tag: 'twohanded',
     model_tag: 'rat_skin_helmet',
     resists: base_resists(skin, 'head'),
+    damage: new Damage(),
+    range: 1
+}
+
+export const RAT_SKULL_HELMET_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'head',
+    material: bone,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skull_helmet',
+    resists: base_resists(bone, 'head'),
     damage: new Damage(),
     range: 1
 }

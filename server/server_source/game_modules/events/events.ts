@@ -22,6 +22,7 @@ import { MapSystem } from "../map/system";
 import { Convert, Link, Unlink } from "../systems_communication";
 import { cell_id, damage_type, weapon_attack_tag } from "../types";
 import { Effect } from "./effects";
+import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
 
 export namespace Event {
@@ -109,7 +110,7 @@ export namespace Event {
         const dice_accuracy = Math.random()
         if (dice_accuracy > acc) { 
             const dice_skill_up = Math.random()
-            if (dice_skill_up > attacker.skills.ranged) {
+            if (dice_skill_up * 100 > attacker.skills.ranged) {
                 increase_weapon_skill(attacker, 'ranged')
             }
             return 'miss' 
@@ -138,6 +139,12 @@ export namespace Event {
         const attack = Attack.generate_ranged(attacker)
         CharacterSystem.damage(defender, attack.damage)
         UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
+        
+        //if target is dead, loot it all
+        if (defender.dead()) {
+            kill(attacker, defender)
+        }
+
         return 'ok'
     }
 
@@ -165,12 +172,18 @@ export namespace Event {
         CharacterSystem.damage(defender, attack.damage)
         UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS)
+
+        //if target is dead, loot it all
+        if (defender.dead()) {
+            kill(attacker, defender)
+        }
+
         return 'ok'
     }
 
     export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: damage_type) {
         if (attacker.dead()) return
-        if (attacker.dead()) return
+        if (defender.dead()) return
         const attack = Attack.generate_melee(attacker, attack_type)
         Attack.defend_against_melee(attack, defender)
         
@@ -263,11 +276,18 @@ export namespace Event {
 
         const loot = CharacterSystem.rgo_check(victim)
         CharacterSystem.transfer_all(victim, killer)
-
         for (const item of loot) {
             killer.stash.inc(item.material, item.amount)
         }
         console.log(killer.stash.data)
+
+        //loot items rgo
+        console.log('check items drop')
+        const dropped_items = Loot.items(victim.race())
+        for (let item of dropped_items) {
+            EventInventory.add_item(killer, item)
+        } 
+
         // skinning check
         const skin = Loot.skinning(victim.archetype.race)
         if (skin > 0) {

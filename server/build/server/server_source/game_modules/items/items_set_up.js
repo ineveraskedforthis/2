@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
+exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const damage_types_1 = require("../misc/damage_types");
 const system_1 = require("./system");
@@ -11,6 +11,7 @@ function base_resists(material, slot) {
 }
 const wood = materials_manager_1.materials.index_to_material(materials_manager_1.WOOD);
 const skin = materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN);
+const bone = materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE);
 const empty_resists = new damage_types_1.Damage();
 exports.BASIC_BOW_ARGUMENT = {
     durability: 100,
@@ -75,6 +76,17 @@ exports.RAT_SKIN_HELMET_ARGUMENT = {
     weapon_tag: 'twohanded',
     model_tag: 'rat_skin_helmet',
     resists: base_resists(skin, 'head'),
+    damage: new damage_types_1.Damage(),
+    range: 1
+};
+exports.RAT_SKULL_HELMET_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'head',
+    material: bone,
+    weapon_tag: 'twohanded',
+    model_tag: 'rat_skull_helmet',
+    resists: base_resists(bone, 'head'),
     damage: new damage_types_1.Damage(),
     range: 1
 };
