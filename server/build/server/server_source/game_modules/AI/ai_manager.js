@@ -11,6 +11,7 @@ const events_1 = require("../events/events");
 const system_2 = require("../market/system");
 const market_1 = require("../events/market");
 const craft_1 = require("../calculations/craft");
+const basic_functions_1 = require("../calculations/basic_functions");
 // function MAYOR_AI(mayor: Character) {
 //     let faction = mayor.get_faction()
 //     let territories = faction.get_territories_list()
@@ -109,7 +110,7 @@ var CampaignAI;
                 break;
             }
         }
-        if ((char.get_fatigue() > 90) || (char.get_stress() > 40)) {
+        if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
             action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
             return;
         }
@@ -212,11 +213,11 @@ var AI;
         let resource = character.stash.get(materials_manager_1.RAT_SKIN);
         let savings = character.savings.get();
         let skin_to_buy = Math.floor(savings / base_price_skin);
-        // console.log('armour')
-        // console.log(resource, savings, skin_to_buy)
+        console.log('armour');
+        console.log(resource, savings, skin_to_buy);
         if (skin_to_buy > 5) {
             system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
-            market_1.EventMarket.sell(character, materials_manager_1.RAT_SKIN, skin_to_buy, base_price_skin);
+            market_1.EventMarket.buy(character, materials_manager_1.RAT_SKIN, (0, basic_functions_1.trim)(skin_to_buy, 0, 50), base_price_skin);
         }
         if (resource > craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
             action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR, character, [0, 0]);

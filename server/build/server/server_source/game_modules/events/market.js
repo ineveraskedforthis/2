@@ -9,7 +9,6 @@ const effects_1 = require("./effects");
 var EventMarket;
 (function (EventMarket) {
     function buy(character, material, amount, price) {
-        console.log('buy ' + material + ' ' + amount + ' ' + price);
         const responce = system_1.BulkOrders.new_buy_order(material, amount, price, character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
         const cell = systems_communication_1.Convert.character_to_cell(character);
@@ -18,7 +17,7 @@ var EventMarket;
     }
     EventMarket.buy = buy;
     function sell(character, material, amount, price) {
-        console.log('sell ' + material + ' ' + amount + ' ' + price);
+        // console.log('sell ' + material + ' ' + amount + ' ' + price)
         const responce = system_1.BulkOrders.new_sell_order(material, amount, price, character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
         const cell = systems_communication_1.Convert.character_to_cell(character);

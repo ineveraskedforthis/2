@@ -192,7 +192,7 @@ export namespace CharacterSystem {
         //handle case of unarmed
         const damage = new Damage()
         if (type == 'blunt')    {
-            if (character.perks.advanced_unarmed) {damage.blunt = 15} else {damage.blunt = 5}
+            if (character.perks.advanced_unarmed) {damage.blunt = 30} else {damage.blunt = 10}
         }
         if (type == 'slice')    {
             if (character.perks.claws) {damage.slice = 15} else {damage.slice = 2}

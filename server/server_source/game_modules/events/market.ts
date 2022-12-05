@@ -13,7 +13,6 @@ import { Effect } from "./effects"
 
 export namespace EventMarket {
     export function buy(character: Character, material:material_index, amount: number, price: money) {
-        console.log('buy ' + material + ' ' + amount + ' ' + price)
         const responce = BulkOrders.new_buy_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
 
@@ -24,7 +23,7 @@ export namespace EventMarket {
     }
 
     export function sell(character: Character, material:material_index, amount: number, price: money) {
-        console.log('sell ' + material + ' ' + amount + ' ' + price)
+        // console.log('sell ' + material + ' ' + amount + ' ' + price)
         const responce = BulkOrders.new_sell_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
 

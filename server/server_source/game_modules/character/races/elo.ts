@@ -16,7 +16,7 @@ const ElodinoStats: Stats = {
     movement_speed: 2
 }
 
-const ElodinoResists = new Damage(10, 0, 0, 20)
+const ElodinoResists = new Damage(30, 50, 0, 20)
 
 const elo_moraes = ['xi', 'lo', 'mi', 'ki', 'a', 'i', 'ku']
 function generate_name() {

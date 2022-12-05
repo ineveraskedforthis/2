@@ -9,9 +9,10 @@ export namespace Attack {
         const result = new AttackObj(CharacterSystem.melee_weapon_type(character))
         DmgOps.add_ip(result.damage, CharacterSystem.melee_damage_raw(character, type))
         const physical_modifier = CharacterSystem.phys_power(character)
-        DmgOps.mult_ip(result.damage, 1 + physical_modifier / 10)
+        DmgOps.mult_ip(result.damage, physical_modifier / 10)
         result.attack_skill = CharacterSystem.attack_skill(character)
         DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 50)
+        console.log(result)
         return result
     }
 

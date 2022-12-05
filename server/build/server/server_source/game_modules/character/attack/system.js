@@ -10,9 +10,10 @@ var Attack;
         const result = new class_1.AttackObj(system_1.CharacterSystem.melee_weapon_type(character));
         damage_types_1.DmgOps.add_ip(result.damage, system_1.CharacterSystem.melee_damage_raw(character, type));
         const physical_modifier = system_1.CharacterSystem.phys_power(character);
-        damage_types_1.DmgOps.mult_ip(result.damage, 1 + physical_modifier / 10);
+        damage_types_1.DmgOps.mult_ip(result.damage, physical_modifier / 10);
         result.attack_skill = system_1.CharacterSystem.attack_skill(character);
         damage_types_1.DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 50);
+        console.log(result);
         return result;
     }
     Attack.generate_melee = generate_melee;

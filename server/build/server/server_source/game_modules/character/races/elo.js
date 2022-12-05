@@ -15,7 +15,7 @@ const ElodinoStats = {
     magic_power: 20,
     movement_speed: 2
 };
-const ElodinoResists = new damage_types_1.Damage(10, 0, 0, 20);
+const ElodinoResists = new damage_types_1.Damage(30, 50, 0, 20);
 const elo_moraes = ['xi', 'lo', 'mi', 'ki', 'a', 'i', 'ku'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(elo_moraes, 3);

@@ -16,7 +16,7 @@ const RatStats: Stats = {
     movement_speed: 2
 }
 
-const RatResists = new Damage(10, 0, 0, 20)
+const RatResists = new Damage(5, 5, 5, 20)
 
 const rat_moraes = ['s', 'shi', "S'", "fu", 'fi']
 function generate_name() {

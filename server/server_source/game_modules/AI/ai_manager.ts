@@ -12,6 +12,7 @@ import { money } from "../types";
 import { BulkOrders, ItemOrders } from "../market/system";
 import { EventMarket } from "../events/market";
 import { Craft } from "../calculations/craft";
+import { trim } from "../calculations/basic_functions";
 
 
 // function MAYOR_AI(mayor: Character) {
@@ -123,7 +124,7 @@ export namespace CampaignAI {
             }
         }
 
-        if ((char.get_fatigue() > 90) || (char.get_stress() > 40)) {
+        if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
             ActionManager.start_action(CharacterAction.REST, char, [0, 0])
             return
         }
@@ -250,11 +251,11 @@ export namespace AI {
 
         let skin_to_buy = Math.floor(savings / base_price_skin)
 
-        // console.log('armour')
-        // console.log(resource, savings, skin_to_buy)
+        console.log('armour')
+        console.log(resource, savings, skin_to_buy)
         if (skin_to_buy > 5) {
             BulkOrders.remove_by_condition(character, RAT_SKIN)
-            EventMarket.sell(character, RAT_SKIN, skin_to_buy, base_price_skin)
+            EventMarket.buy(character, RAT_SKIN, trim(skin_to_buy, 0, 50), base_price_skin)
         }
 
         if (resource > RAT_SKIN_ARMOUR_SKIN_NEEDED) {

@@ -15,7 +15,7 @@ const RatStats = {
     magic_power: 20,
     movement_speed: 2
 };
-const RatResists = new damage_types_1.Damage(10, 0, 0, 20);
+const RatResists = new damage_types_1.Damage(5, 5, 5, 20);
 const rat_moraes = ['s', 'shi', "S'", "fu", 'fi'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(rat_moraes, 5);

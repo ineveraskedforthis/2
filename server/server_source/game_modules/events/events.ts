@@ -225,6 +225,8 @@ export namespace Event {
                 if (dice * 100 > skill) increase_block(defender)
             }
 
+            Attack.block(attack, skill)
+
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random()
             if ((dice < 0.01) && (skill <= 15)) {
@@ -259,15 +261,20 @@ export namespace Event {
 
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random()
-            if ((dice < 0.01) && (attack.attack_skill <= 30)) {
+            if ((dice < 0.02) && (attack.attack_skill <= 30)) {
                 increase_weapon_skill(defender, attack.weapon_type)
+            }
+            const dice2 = Math.random()
+            if ((dice2 < 0.02) && (attack.attack_skill <= 30)) {
+                increase_weapon_skill(attacker, attack.weapon_type)
             }
         }
 
 
         // durability changes
         if (!attack.flags.miss) {
-            Effect.change_durability(attacker, 'weapon', -1)
+            const durability_roll = Math.random()
+            if (durability_roll < 0.5) Effect.change_durability(attacker, 'weapon', -1);
             if (attack.flags.blocked) {Effect.change_durability(defender, 'weapon', -1)} else {
                 const roll = Math.random()
                 if (roll < 0.5) Effect.change_durability(defender, 'body', -1);
@@ -279,7 +286,10 @@ export namespace Event {
         }
 
 
+        
+
         //apply damage after all modifiers
+        console.log(attack)
         CharacterSystem.damage(defender, attack.damage)
         defender.change_status(attack.defender_status_change)
         attacker.change_status(attack.attacker_status_change)
