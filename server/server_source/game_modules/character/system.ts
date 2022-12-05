@@ -232,6 +232,13 @@ export namespace CharacterSystem {
         return weapon.weapon_tag
     }
 
+    export function melee_weapon_type(character: Character):weapon_attack_tag {
+        const weapon = character.equip.data.weapon
+        if (weapon == undefined) return 'noweapon'
+        if (weapon.weapon_tag == 'ranged') return 'polearms'
+        return weapon.weapon_tag
+    }
+
     export function damage(character: Character, damage: Damage) {
         let total = 0
         for (let tag of damage_types) {

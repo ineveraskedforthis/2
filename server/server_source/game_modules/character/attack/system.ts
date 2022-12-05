@@ -6,7 +6,7 @@ import { AttackObj } from "./class";
 
 export namespace Attack {
     export function generate_melee(character: Character, type: damage_type): AttackObj {
-        const result = new AttackObj(CharacterSystem.weapon_type(character))
+        const result = new AttackObj(CharacterSystem.melee_weapon_type(character))
         DmgOps.add_ip(result.damage, CharacterSystem.melee_damage_raw(character, type))
         const physical_modifier = CharacterSystem.phys_power(character)
         DmgOps.mult_ip(result.damage, 1 + physical_modifier / 10)

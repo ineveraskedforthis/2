@@ -188,7 +188,7 @@ export namespace Event {
         Attack.defend_against_melee(attack, defender)
         
         {// evasion
-            const skill = defender.skills.evasion
+            const skill = defender.skills.evasion + Math.round(Math.random() * 2)
             attack.defence_skill += skill
 
             //active dodge
@@ -215,11 +215,12 @@ export namespace Event {
         }
 
         {//block
-            const skill = defender.skills.blocking
+            const skill = defender.skills.blocking + Math.round(Math.random() * 2)
             attack.defence_skill += skill
             if ((skill > attack.attack_skill)) {
                 attack.flags.blocked = true
-                increase_evasion(defender)
+                let dice = Math.random()
+                if (dice * 100 > skill) increase_block(defender)
             }
 
             //fighting provides constant growth of this skill up to some level
@@ -229,9 +230,29 @@ export namespace Event {
             }
         }
 
+        {//weapon mastery
+            const weapon = CharacterSystem.melee_weapon_type(defender)
+            const skill = defender.skills[weapon] + Math.round(Math.random() * 2)
+            attack.defence_skill += skill
+            if ((skill > attack.attack_skill)) {
+                attack.flags.blocked = true
+                let dice = Math.random()
+                if (dice * 100 > skill) Effect.Change.skill(defender, weapon, 1)
+            }
+
+            //fighting provides constant growth of this skill up to some level
+            const dice = Math.random()
+            if ((dice < 0.02) && (skill <= 20)) {
+                Effect.Change.skill(defender, weapon, 1)
+            }
+        }
+
         {//weapon skill update
+            // if attacker skill is lower than defence skill, then attacker can improve
             if (attack.attack_skill < attack.defence_skill) {
-                increase_weapon_skill(attacker, attack.weapon_type)
+                const diff = attack.defence_skill - attack.attack_skill
+                const dice = Math.random()
+                if (dice * 300 < diff) increase_weapon_skill(attacker, attack.weapon_type)
             }
 
             //fighting provides constant growth of this skill up to some level
