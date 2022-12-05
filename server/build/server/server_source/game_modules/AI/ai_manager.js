@@ -75,7 +75,7 @@ var CampaignAI;
             return;
         switch (char.archetype.ai_map) {
             case 'steppe_walker_agressive': {
-                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
                     action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {
@@ -91,7 +91,7 @@ var CampaignAI;
                 break;
             }
             case 'steppe_walker_passive': {
-                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
                     action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {
@@ -100,7 +100,7 @@ var CampaignAI;
                 break;
             }
             case 'forest_walker': {
-                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
                     action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {

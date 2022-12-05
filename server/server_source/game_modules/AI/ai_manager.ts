@@ -90,7 +90,7 @@ export namespace CampaignAI {
 
         switch(char.archetype.ai_map) {
             case 'steppe_walker_agressive': {
-                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
                     ActionManager.start_action(CharacterAction.REST, char, [0, 0])
                 } else {
                     let target = AIhelper.enemies_in_cell(char)
@@ -105,7 +105,7 @@ export namespace CampaignAI {
             }
 
             case 'steppe_walker_passive': {
-                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
                     ActionManager.start_action(CharacterAction.REST, char, [0, 0])
                 } else {
                     random_walk(char, steppe_constraints)
@@ -114,7 +114,7 @@ export namespace CampaignAI {
             }
 
             case 'forest_walker': {
-                if ((char.get_fatigue() > 30) || (char.get_stress() > 30)) {
+                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
                     ActionManager.start_action(CharacterAction.REST, char, [0, 0])
                 } else {
                     random_walk(char, forest_constraints)

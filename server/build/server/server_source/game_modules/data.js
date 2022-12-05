@@ -112,8 +112,10 @@ var Data;
          * @returns
          */
         function set_a_X_b(a, X, b) {
+            if (reputation[a] == undefined)
+                return;
             if (reputation[b] == undefined)
-                return false;
+                reputation[b] = {};
             const rep = reputation[a];
             for (let [faction, reputation] of Object.entries(rep)) {
                 if (reputation.level == 'member') {
@@ -133,6 +135,8 @@ var Data;
         }
         Reputation.set = set;
         function a_is_enemy_of_b(a, b) {
+            if (reputation[a] == undefined)
+                return false;
             if (reputation[b] == undefined)
                 return false;
             const rep = reputation[a];

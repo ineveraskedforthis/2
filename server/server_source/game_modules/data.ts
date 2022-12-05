@@ -126,7 +126,8 @@ export namespace Data {
          * @returns 
          */
         export function set_a_X_b(a: char_id, X: reputation_level, b: char_id) {
-            if (reputation[b] == undefined) return false
+            if (reputation[a] == undefined) return
+            if (reputation[b] == undefined) reputation[b] = {}
             const rep = reputation[a]
             for (let [faction, reputation] of Object.entries(rep)) {
                 if (reputation.level == 'member') {
@@ -143,6 +144,7 @@ export namespace Data {
         }
 
         export function a_is_enemy_of_b(a: char_id, b: char_id) {
+            if (reputation[a] == undefined) return false
             if (reputation[b] == undefined) return false
             const rep = reputation[a]
             for (let [faction, reputation] of Object.entries(rep)) {
