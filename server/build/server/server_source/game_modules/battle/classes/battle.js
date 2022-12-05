@@ -9,6 +9,7 @@ class Battle {
         this.waiting_for_input = false;
         this.ended = false;
         this.last_event_index = 0;
+        this.grace_period = 0;
     }
 }
 exports.Battle = Battle;

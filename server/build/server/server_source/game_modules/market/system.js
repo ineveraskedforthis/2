@@ -11,7 +11,7 @@ const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 const classes_1 = require("./classes");
 const fs_1 = __importDefault(require("fs"));
-const game_launch_1 = require("../../game_launch");
+const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 var path = require('path');
 var AuctionResponce;
 (function (AuctionResponce) {
@@ -24,7 +24,7 @@ var AuctionResponce;
 })(AuctionResponce = exports.AuctionResponce || (exports.AuctionResponce = {}));
 const empty_stash = new stash_1.Stash();
 // this file does not handle networking
-const save_path_bulk = path.join(game_launch_1.SAVE_GAME_PATH, 'bulk_market.txt');
+const save_path_bulk = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'bulk_market.txt');
 var BulkOrders;
 (function (BulkOrders) {
     function save() {
@@ -156,7 +156,7 @@ var BulkOrders;
     }
     BulkOrders.new_sell_order = new_sell_order;
 })(BulkOrders = exports.BulkOrders || (exports.BulkOrders = {}));
-const save_path_item = path.join(game_launch_1.SAVE_GAME_PATH, 'item_market.txt');
+const save_path_item = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'item_market.txt');
 var ItemOrders;
 (function (ItemOrders) {
     function save() {

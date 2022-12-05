@@ -9,9 +9,9 @@ const alerts_1 = require("./alerts");
 const common_validations_1 = require("./common_validations");
 const fs_1 = __importDefault(require("fs"));
 var path = require('path');
-const game_launch_1 = require("../../../game_launch");
+const SAVE_GAME_PATH_1 = require("../../../SAVE_GAME_PATH");
 var current_sessions = {};
-const save_path = path.join(game_launch_1.SAVE_GAME_PATH, 'sessions.txt');
+const save_path = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'sessions.txt');
 var Auth;
 (function (Auth) {
     function load() {

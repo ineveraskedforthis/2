@@ -176,6 +176,9 @@ export class Map {
         this.tiles.push(new Image)
         this.tiles[12].src = 'static/img/tiles/rats.png';
 
+        this.tiles.push(new Image)
+        this.tiles[13].src = 'static/img/tiles/elodinos.png';
+
         this.canvas = canvas;
         this.socket = socket
         this.hex_side = 23;
@@ -594,6 +597,10 @@ export class Map {
 
             if (this.data[tag].rats == 1) {
                 ctx.drawImage(this.tiles[12], center_x - this.hex_side, center_y - h)
+            }
+
+            if (this.data[tag].elodinos == 1) {
+                ctx.drawImage(this.tiles[13], center_x - this.hex_side, center_y - h)
             }
         }
         

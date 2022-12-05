@@ -19,7 +19,7 @@ exports.rest = {
             if (cell.can_rest()) {
                 return 1 /* CharacterActionResponce.OK */;
             }
-            if (char.get_fatigue() < 40) {
+            if (char.get_fatigue() < 25) {
                 return 3 /* CharacterActionResponce.NO_RESOURCE */;
             }
             return 1 /* CharacterActionResponce.OK */;
@@ -30,12 +30,12 @@ exports.rest = {
         const cell = systems_communication_1.Convert.character_to_cell(char);
         if (cell == undefined)
             return;
-        if (cell.can_rest() || (char.archetype.race == 'rat')) {
+        if (cell.can_rest() || (char.archetype.race == 'rat') || (char.race() == 'elo')) {
             char.set_fatigue(0);
             char.change_stress(-4);
         }
         else {
-            char.set_fatigue(30);
+            char.set_fatigue(25);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
     },

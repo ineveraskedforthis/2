@@ -10,7 +10,7 @@ import { cell_id, char_id, money, order_bulk_id, order_item_id } from "../types"
 import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
 
 import fs from "fs"
-import { SAVE_GAME_PATH } from "../../game_launch";
+import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 var path = require('path')
 
 export enum AuctionResponce {

@@ -32,7 +32,7 @@ import { Craft } from "../calculations/craft";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 function forest_constraints(cell: Cell) {
-    return (cell.development['urban'] < 1) && (cell.development['wild'] < 1)
+    return (cell.development['urban'] < 1) && (cell.development['wild'] > 0)
 } 
 function steppe_constraints(cell: Cell) {
     return (cell.development['urban'] < 1) && (cell.development['wild'] < 1)

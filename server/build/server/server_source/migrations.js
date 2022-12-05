@@ -41,6 +41,7 @@ const system_2 = require("./game_modules/items/system");
 const materials_manager_1 = require("./game_modules/manager_classes/materials_manager");
 const system_3 = require("./game_modules/map/system");
 const constants_1 = require("./game_modules/static_data/constants");
+const systems_communication_1 = require("./game_modules/systems_communication");
 const LUMP_OF_MONEY = 1000;
 const TONS_OF_MONEY = 30000;
 var SAVE_GAME_PATH = path.join('save_1');
@@ -91,6 +92,10 @@ function migrate(current_version, target_version) {
         misc_characters();
         set_version(6);
     }
+    if (current_version == 6) {
+        fix_factions();
+        set_version(7);
+    }
 }
 exports.migrate = migrate;
 function set_up_initial_data() {
@@ -101,7 +106,7 @@ function create_starting_agents() {
     system_1.CharacterSystem.load();
     const RatsStartingCell = system_3.MapSystem.coordinate_to_id(6, 5);
     const GraciStartingCell = system_3.MapSystem.coordinate_to_id(15, 8);
-    const EloStartingCell = system_3.MapSystem.coordinate_to_id(18, 10);
+    const EloStartingCell = system_3.MapSystem.coordinate_to_id(18, 4);
     const dummy_model = { chin: 0, mouth: 0, eyes: 0 };
     for (let i = 1; i < 60; i++) {
         events_1.Event.new_character(rat_1.RatTemplate, undefined, RatsStartingCell, dummy_model);
@@ -243,6 +248,20 @@ function misc_characters() {
     data_1.Data.Reputation.set(factions_1.Factions.Mages.id, mage_city.id, "member");
     const armourer_city = armour_master(0, 3);
     data_1.Data.Reputation.set(factions_1.Factions.City.id, armourer_city.id, "member");
+}
+function fix_factions() {
+    const EloStartingCell = system_3.MapSystem.coordinate_to_cell([18, 4]);
+    for (let character of data_1.Data.Character.list()) {
+        if (character.race() == 'elo') {
+            data_1.Data.Reputation.set(factions_1.Factions.Elodinos.id, character.id, "member");
+            if (systems_communication_1.Convert.character_to_cell(character).development.wild == 0) {
+                events_1.Event.move(character, EloStartingCell);
+            }
+        }
+        if (character.race() == 'graci') {
+            data_1.Data.Reputation.set(factions_1.Factions.Graci.id, character.id, "member");
+        }
+    }
 }
 let version = get_version();
 console.log(version);

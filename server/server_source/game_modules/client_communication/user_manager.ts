@@ -11,7 +11,7 @@ import { UI_Part, Update } from "./causality_graph";
 import { cell_id, char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
 import { Event } from "../events/events";
 import { ModelVariant } from "../character/character_parts";
-import { SAVE_GAME_PATH } from "../../game_launch";
+import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 var path = require('path')
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}

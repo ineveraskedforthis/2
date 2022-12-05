@@ -11,7 +11,7 @@ import fs from "fs"
 import { Archetype, InnateStats, Stats, Status } from "./character_parts";
 import { Data } from "../data";
 var path = require('path')
-import { SAVE_GAME_PATH } from "../../game_launch";
+import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 import { CampaignAI } from "../AI/ai_manager";
 
 var loaded_flag_characters = false

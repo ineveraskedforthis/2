@@ -16,6 +16,8 @@ import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, MEAT, RAT_BONE, RAT_SKIN, 
 import { MapSystem } from "./game_modules/map/system"
 import { money } from "./game_modules/types"
 import { constants } from "./game_modules/static_data/constants";
+import { Convert } from "./game_modules/systems_communication";
+import { Cell } from "./game_modules/map/cell";
 
 
 const LUMP_OF_MONEY = 1000 as money
@@ -80,11 +82,18 @@ export function migrate(current_version:number, target_version:number) {
         misc_characters()
         set_version(6)
     }
+
+    if (current_version == 6) {
+        fix_factions()
+        set_version(7)
+    }
 }
 
 function set_up_initial_data() {
     set_version(1)
 }
+
+
 
 function create_starting_agents() {
     
@@ -94,7 +103,7 @@ function create_starting_agents() {
 
     const RatsStartingCell = MapSystem.coordinate_to_id(6, 5)
     const GraciStartingCell = MapSystem.coordinate_to_id(15, 8)
-    const EloStartingCell = MapSystem.coordinate_to_id(18, 10)
+    const EloStartingCell = MapSystem.coordinate_to_id(18, 4)
 
     const dummy_model = {chin: 0, mouth: 0, eyes: 0}
 
@@ -278,6 +287,21 @@ function misc_characters() {
 
     const armourer_city = armour_master(0, 3)
     Data.Reputation.set(Factions.City.id, armourer_city.id, "member")
+}
+
+function fix_factions() {
+    const EloStartingCell = MapSystem.coordinate_to_cell([18, 4])
+    for (let character of Data.Character.list()) {
+        if (character.race() == 'elo') {
+            Data.Reputation.set(Factions.Elodinos.id, character.id, "member")
+            if (Convert.character_to_cell(character).development.wild == 0) {
+                Event.move(character, EloStartingCell as Cell)
+            }
+        }
+        if (character.race() == 'graci') {
+            Data.Reputation.set(Factions.Graci.id, character.id, "member")
+        }
+    }
 }
 
 let version = get_version()

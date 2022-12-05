@@ -1,8 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MapSystem = void 0;
+const elo_1 = require("../character/races/elo");
 const rat_1 = require("../character/races/rat");
+const data_1 = require("../data");
 const events_1 = require("../events/events");
+const factions_1 = require("../factions");
 const map_definitions_1 = require("../static_data/map_definitions");
 const cell_1 = require("./cell");
 var size = [0, 0];
@@ -83,13 +86,18 @@ var MapSystem;
         return (y >= 0) && (x >= 0) && (x < size[0]) && (y < size[1]);
     }
     MapSystem.validate_coordinates = validate_coordinates;
-    function update(dt, rats_number) {
+    function update(dt, rats_number, elodino_number) {
         for (const cell of cells) {
             if (cell == undefined)
                 continue;
             cell.update(dt);
             if ((rats_number < 60) && (cell.development.rats == 1)) {
-                events_1.Event.new_character(rat_1.RatTemplate, undefined, cell.id, undefined);
+                let rat = events_1.Event.new_character(rat_1.RatTemplate, undefined, cell.id, undefined);
+                data_1.Data.Reputation.set(factions_1.Factions.Rats.id, rat.id, 'member');
+            }
+            if ((elodino_number < 40) && (cell.development.elodinos == 1)) {
+                let elo = events_1.Event.new_character(elo_1.EloTemplate, undefined, cell.id, undefined);
+                data_1.Data.Reputation.set(factions_1.Factions.Elodinos.id, elo.id, 'member');
             }
         }
     }

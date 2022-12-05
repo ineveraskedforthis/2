@@ -28,4 +28,9 @@ export namespace Factions {
         id: 5,
         name: 'Mages of the City'
     }
+
+    export const Graci: faction = {
+        id: 6,
+        name: 'Graci'
+    }
 }

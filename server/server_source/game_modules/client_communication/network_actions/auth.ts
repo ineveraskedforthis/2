@@ -5,7 +5,7 @@ import { Alerts } from "./alerts";
 import { Validator } from "./common_validations";
 import fs from "fs"
 var path = require('path')
-import { SAVE_GAME_PATH } from "../../../game_launch";
+import { SAVE_GAME_PATH } from "../../../SAVE_GAME_PATH";
 
 var current_sessions:{[_: string]: user_id} = {}
 

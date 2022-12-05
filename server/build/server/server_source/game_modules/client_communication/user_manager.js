@@ -14,7 +14,7 @@ const updates_1 = require("./network_actions/updates");
 const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
 const events_1 = require("../events/events");
-const game_launch_1 = require("../../game_launch");
+const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 var path = require('path');
 exports.users_data_dict = {};
 var users_data_list = [];
@@ -22,7 +22,7 @@ var login_to_user_data = {};
 exports.users_online_dict = {};
 var users_to_update = new Set();
 var last_id = 0;
-const save_path = path.join(game_launch_1.SAVE_GAME_PATH, 'users.txt');
+const save_path = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'users.txt');
 var UserManagement;
 (function (UserManagement) {
     function load_users() {

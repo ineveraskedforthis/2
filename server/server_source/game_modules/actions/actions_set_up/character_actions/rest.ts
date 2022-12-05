@@ -24,7 +24,7 @@ export const rest = {
                  return CharacterActionResponce.OK
             }
 
-            if (char.get_fatigue() < 40) {
+            if (char.get_fatigue() < 25) {
                 return CharacterActionResponce.NO_RESOURCE
             }
 
@@ -36,11 +36,11 @@ export const rest = {
     result:  function(char:Character, data: map_position) {
         const cell = Convert.character_to_cell(char)
         if (cell == undefined) return 
-        if (cell.can_rest() || (char.archetype.race == 'rat')) {
+        if (cell.can_rest() || (char.archetype.race == 'rat') || (char.race() == 'elo')) {
             char.set_fatigue(0)
             char.change_stress(-4)
         } else {
-            char.set_fatigue(30)
+            char.set_fatigue(25)
         }
 
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)

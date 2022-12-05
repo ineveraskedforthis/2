@@ -7,7 +7,7 @@ const class_1 = require("./class");
 var Attack;
 (function (Attack) {
     function generate_melee(character, type) {
-        const result = new class_1.AttackObj(system_1.CharacterSystem.weapon_type(character));
+        const result = new class_1.AttackObj(system_1.CharacterSystem.melee_weapon_type(character));
         damage_types_1.DmgOps.add_ip(result.damage, system_1.CharacterSystem.melee_damage_raw(character, type));
         const physical_modifier = system_1.CharacterSystem.phys_power(character);
         damage_types_1.DmgOps.mult_ip(result.damage, 1 + physical_modifier / 10);

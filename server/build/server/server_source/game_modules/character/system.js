@@ -11,10 +11,10 @@ const generate_loot_1 = require("./races/generate_loot");
 const fs_1 = __importDefault(require("fs"));
 const data_1 = require("../data");
 var path = require('path');
-const game_launch_1 = require("../../game_launch");
+const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const ai_manager_1 = require("../AI/ai_manager");
 var loaded_flag_characters = false;
-const save_path = path.join(game_launch_1.SAVE_GAME_PATH, 'characters.txt');
+const save_path = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'characters.txt');
 var ai_campaign_decision_timer = 0;
 var CharacterSystem;
 (function (CharacterSystem) {
@@ -230,6 +230,15 @@ var CharacterSystem;
         return weapon.weapon_tag;
     }
     CharacterSystem.weapon_type = weapon_type;
+    function melee_weapon_type(character) {
+        const weapon = character.equip.data.weapon;
+        if (weapon == undefined)
+            return 'noweapon';
+        if (weapon.weapon_tag == 'ranged')
+            return 'polearms';
+        return weapon.weapon_tag;
+    }
+    CharacterSystem.melee_weapon_type = melee_weapon_type;
     function damage(character, damage) {
         let total = 0;
         for (let tag of damage_types_1.damage_types) {

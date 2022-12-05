@@ -17,6 +17,7 @@ export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
         battle.heap.add_unit(unit)
         Alerts.new_unit(battle, unit)
+        if (battle.grace_period > 0) battle.grace_period += 6
         Alerts.battle_event(battle, 'unit_join', unit.id, unit.position, unit.id, 0)
     }
 
@@ -47,6 +48,8 @@ export namespace BattleEvent {
         unit.action_points_left = new_ap
         unit.dodge_turns = Math.max(0, unit.dodge_turns - 1)
         battle.heap.push(unit.id)
+
+        battle.grace_period = Math.max(battle.grace_period - 1, 0)
 
         // send updates
         Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, -ap_increase)

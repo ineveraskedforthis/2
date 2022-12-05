@@ -1,15 +1,4 @@
-import * as path from "path";
 import { readFileSync, writeFileSync, existsSync } from "fs";
-import * as fs from 'fs'
-
-export var SAVE_GAME_PATH = path.join('save_1')
-if (!fs.existsSync(SAVE_GAME_PATH)){
-    fs.mkdirSync(SAVE_GAME_PATH);
-}
-console.log(SAVE_GAME_PATH)
-
-
-
 
 // Always the first.
 import { Data } from "./game_modules/data";
@@ -123,6 +112,7 @@ function update(delta: number, http_server:any, express_server: any) {
     BattleSystem.update()
 
     let rats = 0
+    let elos = 0
 
     for (let character of Data.Character.list()) {
         if (character.dead()) {
@@ -131,10 +121,14 @@ function update(delta: number, http_server:any, express_server: any) {
             if (character.archetype.race == 'rat') {
                 rats += 1
             }
+
+            if (character.race() == 'elo') {
+                elos += 1
+            }
         }
     }
 
-    MapSystem.update(delta, rats)
+    MapSystem.update(delta, rats, elos)
     
     update_timer += delta
     if (update_timer > 50000) {

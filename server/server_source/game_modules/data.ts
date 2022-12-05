@@ -2,7 +2,7 @@
 
 import fs from "fs"
 import path from "path"
-import { SAVE_GAME_PATH } from "../game_launch"
+import { SAVE_GAME_PATH } from "../SAVE_GAME_PATH"
 import { battle_id, unit_id } from "../../../shared/battle_data"
 import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
@@ -113,6 +113,24 @@ export namespace Data {
             for (let [faction, reputation] of Object.entries(rep)) {
                 if (reputation.level == 'member') {
                     if (from_id(reputation.faction, b) == X) return true
+                }
+            }
+            return false
+        }
+
+        /**
+         * sets reputation of b to X with factions of a 
+         * @param a his factions are checked  
+         * @param X reputation level
+         * @param b his reputation is changed
+         * @returns 
+         */
+        export function set_a_X_b(a: char_id, X: reputation_level, b: char_id) {
+            if (reputation[b] == undefined) return false
+            const rep = reputation[a]
+            for (let [faction, reputation] of Object.entries(rep)) {
+                if (reputation.level == 'member') {
+                    set(reputation.faction, b, X)
                 }
             }
             return false

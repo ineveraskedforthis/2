@@ -11,7 +11,7 @@ import fs from "fs"
 import { Event } from "../events/events"
 import { Data } from "../data"
 import path from "path"
-import { SAVE_GAME_PATH } from "../../game_launch"
+import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH"
 
 var last_unit_id = 0 as unit_id
 
@@ -82,6 +82,7 @@ export namespace BattleSystem {
         }
         battle.ended = json.ended
         battle.last_event_index = json.last_event_index
+        battle.grace_period = json.grace_period||0
         return battle
     }
 
@@ -101,6 +102,7 @@ export namespace BattleSystem {
         const last_id = Data.Battle.id()
         let heap = new UnitsHeap([])
         let battle = new Battle(last_id, heap)
+        battle.grace_period = 6
         Data.Battle.set(last_id, battle)
         return last_id
     }

@@ -15,7 +15,7 @@ import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { User } from "../client_communication/user";
 import { UserManagement } from "../client_communication/user_manager";
-import { character_list } from "../data";
+import { character_list, Data } from "../data";
 import { ARROW_BONE, material_index, RAT_SKIN, ZAZ } from "../manager_classes/materials_manager";
 import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
@@ -186,6 +186,8 @@ export namespace Event {
         if (defender.dead()) return
         const attack = Attack.generate_melee(attacker, attack_type)
         Attack.defend_against_melee(attack, defender)
+
+        Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
         
         {// evasion
             const skill = defender.skills.evasion + Math.round(Math.random() * 2)

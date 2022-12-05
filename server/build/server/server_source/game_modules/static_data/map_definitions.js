@@ -82,9 +82,9 @@ exports.STARTING_DEVELOPMENT = {
     '18_8': { rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0 },
     '18_9': { rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0 },
     //forest 3
-    '18_4': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0 },
-    '18_5': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0 },
-    '18_7': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0 },
+    '18_4': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0, elodinos: 1 },
+    '18_5': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0, elodinos: 1 },
+    '18_7': { rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0, elodinos: 1 },
 };
 exports.STARTING_TERRAIN = [['sea', 'sea', 'sea', 'city', 'city', 'sea', 'sea'],
     ['sea', 'sea', 'city', 'city', 'city', 'city', 'city', 'sea', 'sea'],

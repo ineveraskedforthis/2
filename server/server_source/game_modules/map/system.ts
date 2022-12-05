@@ -1,5 +1,8 @@
+import { EloTemplate } from "../character/races/elo";
 import { RatTemplate } from "../character/races/rat";
+import { Data } from "../data";
 import { Event } from "../events/events";
+import { Factions } from "../factions";
 import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
 import { cell_id, world_dimensions } from "../types";
 import { Cell} from "./cell";
@@ -83,12 +86,18 @@ export namespace MapSystem {
         return (y >= 0) && (x >= 0) && (x < size[0]) && (y < size[1]) 
     }
 
-    export function update(dt: number, rats_number: number) {
+    export function update(dt: number, rats_number: number, elodino_number: number) {
         for (const cell of cells) {
             if (cell == undefined) continue
             cell.update(dt)
             if ((rats_number < 60) && (cell.development.rats == 1)) {
-                Event.new_character(RatTemplate, undefined, cell.id, undefined)
+                let rat = Event.new_character(RatTemplate, undefined, cell.id, undefined)
+                Data.Reputation.set(Factions.Rats.id, rat.id, 'member')
+            }
+
+            if ((elodino_number < 40) && (cell.development.elodinos == 1)) {
+                let elo = Event.new_character(EloTemplate, undefined, cell.id, undefined)
+                Data.Reputation.set(Factions.Elodinos.id, elo.id, 'member')
             }
         }
     }

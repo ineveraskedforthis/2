@@ -8,6 +8,7 @@ export interface Development {
     wastelands: 0|1|2|3;
     rupture?: 0|1;
     rats?: 0|1;
+    elodinos?: 0|1;
 }
 
 export interface CellResources {
@@ -114,10 +115,9 @@ export const STARTING_DEVELOPMENT: {[_ in string]: Development} = {
     '18_9': {rural: 0, urban: 0, wild: 2, ruins: 0, wastelands: 0},
 
     //forest 3
-    '18_4': {rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0},
-    '18_5': {rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0},
-    '18_7': {rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0},
-
+    '18_4': {rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0, elodinos: 1},
+    '18_5': {rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0, elodinos: 1},
+    '18_7': {rural: 0, urban: 0, wild: 3, ruins: 0, wastelands: 0, elodinos: 1},
 }
 
 export const STARTING_TERRAIN: terrain[][] = 

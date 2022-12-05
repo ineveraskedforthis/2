@@ -23,4 +23,8 @@ var Factions;
         id: 5,
         name: 'Mages of the City'
     };
+    Factions.Graci = {
+        id: 6,
+        name: 'Graci'
+    };
 })(Factions = exports.Factions || (exports.Factions = {}));

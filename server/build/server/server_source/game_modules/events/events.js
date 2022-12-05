@@ -11,6 +11,7 @@ const skills_1 = require("../character/skills");
 const system_3 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
+const data_1 = require("../data");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_4 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
@@ -97,7 +98,7 @@ var Event;
         const dice_accuracy = Math.random();
         if (dice_accuracy > acc) {
             const dice_skill_up = Math.random();
-            if (dice_skill_up > attacker.skills.ranged) {
+            if (dice_skill_up * 100 > attacker.skills.ranged) {
                 increase_weapon_skill(attacker, 'ranged');
             }
             return 'miss';
@@ -171,12 +172,13 @@ var Event;
     function attack(attacker, defender, dodge_flag, attack_type) {
         if (attacker.dead())
             return;
-        if (attacker.dead())
+        if (defender.dead())
             return;
         const attack = system_2.Attack.generate_melee(attacker, attack_type);
         system_2.Attack.defend_against_melee(attack, defender);
+        data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
         { // evasion
-            const skill = defender.skills.evasion;
+            const skill = defender.skills.evasion + Math.round(Math.random() * 2);
             attack.defence_skill += skill;
             //active dodge
             if (dodge_flag) {
@@ -201,11 +203,13 @@ var Event;
             }
         }
         { //block
-            const skill = defender.skills.blocking;
+            const skill = defender.skills.blocking + Math.round(Math.random() * 2);
             attack.defence_skill += skill;
             if ((skill > attack.attack_skill)) {
                 attack.flags.blocked = true;
-                increase_evasion(defender);
+                let dice = Math.random();
+                if (dice * 100 > skill)
+                    increase_block(defender);
             }
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random();
@@ -213,9 +217,29 @@ var Event;
                 increase_block(defender);
             }
         }
+        { //weapon mastery
+            const weapon = system_3.CharacterSystem.melee_weapon_type(defender);
+            const skill = defender.skills[weapon] + Math.round(Math.random() * 2);
+            attack.defence_skill += skill;
+            if ((skill > attack.attack_skill)) {
+                attack.flags.blocked = true;
+                let dice = Math.random();
+                if (dice * 100 > skill)
+                    effects_1.Effect.Change.skill(defender, weapon, 1);
+            }
+            //fighting provides constant growth of this skill up to some level
+            const dice = Math.random();
+            if ((dice < 0.02) && (skill <= 20)) {
+                effects_1.Effect.Change.skill(defender, weapon, 1);
+            }
+        }
         { //weapon skill update
+            // if attacker skill is lower than defence skill, then attacker can improve
             if (attack.attack_skill < attack.defence_skill) {
-                increase_weapon_skill(attacker, attack.weapon_type);
+                const diff = attack.defence_skill - attack.attack_skill;
+                const dice = Math.random();
+                if (dice * 300 < diff)
+                    increase_weapon_skill(attacker, attack.weapon_type);
             }
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random();

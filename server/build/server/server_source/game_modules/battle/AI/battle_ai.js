@@ -112,8 +112,13 @@ var BattleAI;
             // no target was found
             if (target_id == undefined) {
                 console.log('no target found, attempt to leave');
-                events_1.BattleEvent.Flee(battle, agent_unit);
-                return 'leave';
+                if (battle.grace_period == 0) {
+                    events_1.BattleEvent.Flee(battle, agent_unit);
+                    return 'leave';
+                }
+                else {
+                    return 'end';
+                }
             }
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual');
             if (attack_move.action == 'end_turn')

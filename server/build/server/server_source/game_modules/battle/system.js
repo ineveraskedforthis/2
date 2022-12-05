@@ -14,12 +14,12 @@ const events_1 = require("./events");
 const fs_1 = __importDefault(require("fs"));
 const data_1 = require("../data");
 const path_1 = __importDefault(require("path"));
-const game_launch_1 = require("../../game_launch");
+const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 var last_unit_id = 0;
 function time_distance(a, b) {
     return b - a;
 }
-const save_path = path_1.default.join(game_launch_1.SAVE_GAME_PATH, 'battles.txt');
+const save_path = path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'battles.txt');
 var BattleSystem;
 (function (BattleSystem) {
     function id_to_unit(id, battle) {
@@ -81,6 +81,7 @@ var BattleSystem;
         }
         battle.ended = json.ended;
         battle.last_event_index = json.last_event_index;
+        battle.grace_period = json.grace_period || 0;
         return battle;
     }
     function json_to_heap(s) {
@@ -99,6 +100,7 @@ var BattleSystem;
         const last_id = data_1.Data.Battle.id();
         let heap = new heap_1.UnitsHeap([]);
         let battle = new battle_1.Battle(last_id, heap);
+        battle.grace_period = 6;
         data_1.Data.Battle.set(last_id, battle);
         return last_id;
     }

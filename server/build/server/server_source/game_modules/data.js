@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Data = exports.character_list = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const game_launch_1 = require("../game_launch");
+const SAVE_GAME_PATH_1 = require("../SAVE_GAME_PATH");
 var battles_list = [];
 var battles_dict = {};
 var last_id = 0;
@@ -34,7 +34,7 @@ var reputation = {};
 //     }
 // }
 // const X = EntityData<Character, char_id>
-const save_path = path_1.default.join(game_launch_1.SAVE_GAME_PATH, 'reputation.txt');
+const save_path = path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'reputation.txt');
 var Data;
 (function (Data) {
     function load() {
@@ -104,6 +104,25 @@ var Data;
             return false;
         }
         Reputation.a_X_b = a_X_b;
+        /**
+         * sets reputation of b to X with factions of a
+         * @param a his factions are checked
+         * @param X reputation level
+         * @param b his reputation is changed
+         * @returns
+         */
+        function set_a_X_b(a, X, b) {
+            if (reputation[b] == undefined)
+                return false;
+            const rep = reputation[a];
+            for (let [faction, reputation] of Object.entries(rep)) {
+                if (reputation.level == 'member') {
+                    set(reputation.faction, b, X);
+                }
+            }
+            return false;
+        }
+        Reputation.set_a_X_b = set_a_X_b;
         function set(faction, char_id, level) {
             if (reputation[char_id] == undefined)
                 reputation[char_id] = {};

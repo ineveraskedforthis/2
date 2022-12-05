@@ -14,6 +14,8 @@ var BattleEvent;
     function NewUnit(battle, unit) {
         battle.heap.add_unit(unit);
         alerts_1.Alerts.new_unit(battle, unit);
+        if (battle.grace_period > 0)
+            battle.grace_period += 6;
         alerts_1.Alerts.battle_event(battle, 'unit_join', unit.id, unit.position, unit.id, 0);
     }
     BattleEvent.NewUnit = NewUnit;
@@ -42,6 +44,7 @@ var BattleEvent;
         unit.action_points_left = new_ap;
         unit.dodge_turns = Math.max(0, unit.dodge_turns - 1);
         battle.heap.push(unit.id);
+        battle.grace_period = Math.max(battle.grace_period - 1, 0);
         // send updates
         alerts_1.Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, -ap_increase);
         alerts_1.Alerts.battle_update_unit(battle, unit);
