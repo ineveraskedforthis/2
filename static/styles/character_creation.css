@@ -24,16 +24,34 @@
     background-size:contain;
 }
 
-#character_image_body {
-    background-image: url(/static/img/pose.png);
+.character_creation_image {
+    position:absolute;
+    width: 300px;
+    height: 525px;
+    top: 20%;
+    left: 10%;
+
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size:contain;
 }
+
+.image_body {
+    background-image: url(/static/img/character_image/pose.png);
+}
+
 #character_image_eyes {
-    background-image: url(/static/img/eyes_1.png);
+    background-image: url(/static/img/character_image/eyes_1.png);
 }
+#character_creation_image_eyes {
+    background-image: url(/static/img/character_image/eyes_1.png);
+}
+
 
 #character_creation > .character_image_col {
     position: relative;
-    width: 25%;    
+    width: 25%;
+    background-color: rgba(250, 235, 215, 0.807);
 }
 
 
@@ -46,6 +64,7 @@
     flex-direction: row;
 }
 
+
 #character_creation > .character_stats > .page {
     overflow: auto;
     height: 100%;
@@ -54,7 +73,7 @@
     display: flex;
     flex-direction: column;
     background: rgba(216, 216, 216, 0.356);
-    visibility: hidden;
+    /* visibility: hidden; */
 }
 
 #character_creation > .character_stats > .page > div {
@@ -72,3 +91,4 @@
     width: 100%;
     height: 10%;
 }
+

@@ -23,7 +23,9 @@ const territories = {
         'rat_plains': ['4_2', '4_3', '4_4', '4_5', '4_6', '4_7', '4_8',
                        '5_3', '5_4', '5_5', '5_6', '5_7', '5_8', '5_9',
                        '6_3', '6_4', '6_5', '6_6', '6_7', '6_8', '6_9', '6_10',
-                       '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10']
+                       '7_3', '7_4', '7_5', '7_6', '7_7', '7_8', '7_9', '7_10'],
+
+        'forest': []
     }
 
 const terr_id = {
@@ -57,7 +59,7 @@ const BACKGROUNDS = {
     'rat_plains': 'red_steppe',
     'graci_plains': 'red_steppe',
     'sea': 'red_steppe',
-    'forest_boundary': 'forest',
+    'forest': 'forest',
     'unknown': 'red_steppe'
 }
 
@@ -103,6 +105,7 @@ export function init_map_control(map, globals) {
             let tmp = Date.now()
             if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
                 map.select_hex(selected_hex[0], selected_hex[1]);
+                map.move_flag = true
                 map.send_cell_action('move')
             }  
         } else {
@@ -133,7 +136,7 @@ export function init_map_control(map, globals) {
 
 
 export class Map {
-    constructor(canvas, container, socket) {
+    constructor(canvas, container, socket, globals) {
 
         this.time = 0
 
@@ -170,6 +173,12 @@ export class Map {
         this.tiles.push(new Image)
         this.tiles[11].src = 'static/img/tiles/rural.png';
 
+        this.tiles.push(new Image)
+        this.tiles[12].src = 'static/img/tiles/rats.png';
+
+        this.tiles.push(new Image)
+        this.tiles[13].src = 'static/img/tiles/elodinos.png';
+
         this.canvas = canvas;
         this.socket = socket
         this.hex_side = 23;
@@ -182,7 +191,7 @@ export class Map {
         this.curr_section = undefined;
         this.sections = undefined;
 
-        this.move_flag = false
+        this.move_flag = false // does player follow some path currently?
         this.movement_progress = 0
 
         this.hex_h = this.hex_side * Math.sqrt(3) / 2
@@ -239,6 +248,27 @@ export class Map {
                 desktop_button.appendChild(chance_label)
             }
 
+            if (action_tag == 'hunt' || action_tag == 'gather_wood' ){   
+                let repeat_button = document.createElement('div')
+                repeat_button.innerHTML = 'repeat';
+                repeat_button.classList.add('active');
+                repeat_button.classList.add('bordered');
+                ((button, map_manager, action_tag, global_blob) => 
+                    button.onclick = () => 
+                    {
+                        console.log(global_blob)
+                        if (global_blob.keep_doing == action_tag) {
+                            global_blob.keep_doing = undefined
+                        } else {
+                            global_blob.keep_doing = action_tag
+                            map_manager.send_cell_action(action_tag)
+                        }
+                        console.log(global_blob)
+                    }
+                )(repeat_button, this, action_tag, globals);
+                desktop_button.appendChild(repeat_button)
+            }
+
             ((button, map_manager, action_tag) => 
                     button.onclick = () => map_manager.send_local_cell_action(action_tag)
             )(desktop_button, this, action_tag);
@@ -287,6 +317,7 @@ export class Map {
         let adj_flag = this.check_move(this.selected[0] - this.curr_pos[0], this.selected[1] - this.curr_pos[1])
         if ((action == 'move') && (adj_flag)) {
             this.move_target = this.selected
+            this.move_flag = true
             this.socket.emit('move', {x: this.selected[0], y: this.selected[1]})
         } else if ((this.selected[0] == this.curr_pos[0]) && (this.selected[1] == this.curr_pos[1])) {
             this.socket.emit(action, {x: this.selected[0], y: this.selected[1]})
@@ -294,7 +325,8 @@ export class Map {
             this.path_progress += 1
             this.move_target = this.real_path[this.path_progress + 1]
             this.socket.emit('move', {x: this.real_path[this.path_progress + 1][0], y: this.real_path[this.path_progress + 1][1]})    
-        } else if ((this.real_path.length > 1) && ((this.move_flag == false)|| (this.movement_progress > 0.99))) {
+        } else if ((this.real_path.length > 1) && ((this.move_flag == true) || (this.movement_progress > 0.99))) {
+            this.move_flag = true
             this.path_progress = 1
             this.path = this.create_path()
             this.move_target = this.real_path[this.path_progress + 1]
@@ -304,6 +336,11 @@ export class Map {
 
     send_local_cell_action(action) {
         this.socket.emit(action, {x: this.curr_pos[0], y: this.curr_pos[1]})
+        this.last_action = action
+    }
+
+    send_last_action() {
+        this.send_local_cell_action(this.last_action)
     }
 
     mark_visited(data) {
@@ -557,6 +594,14 @@ export class Map {
             if (this.data[tag].rural >= 1) {
                 ctx.drawImage(this.tiles[11], center_x - this.hex_side, center_y - h)
             }
+
+            if (this.data[tag].rats == 1) {
+                ctx.drawImage(this.tiles[12], center_x - this.hex_side, center_y - h)
+            }
+
+            if (this.data[tag].elodinos == 1) {
+                ctx.drawImage(this.tiles[13], center_x - this.hex_side, center_y - h)
+            }
         }
         
         
@@ -695,18 +740,80 @@ export class Map {
         return ((v1[0] - v2[0]) * (v1[0] - v2[0]) + (v1[1] - v2[1]) * (v1[1] - v2[1])) /10000
     }
 
+    get_bg_tag(i, j) {
+        let tag = i + '_' + j
+
+        if ((this.terrain[i] != undefined) && (this.terrain[i][j] == 'coast')) {
+            if (this.data[tag] == undefined) return 'coast'
+            if ((this.data[tag].urban == 1) || (this.data[tag].rural > 0)) {
+                return 'coast_rural'
+            }
+            return 'coast'
+        }
+        
+        if (this.data[tag] != undefined) {
+            if (this.data[tag].wild >= 1) {
+                return 'forest'
+            }
+
+            if (this.data[tag].urban >= 2) {
+                return 'colony'
+            } 
+
+            if (this.data[tag].urban >= 1) {
+                return 'urban_1'
+            }
+            
+            
+        }
+
+        return undefined
+    }
+
     set_curr_pos(i, j, teleport_flag) {
+        console.log('new position')
+        console.log(i, j)
         let tmp0 = this.curr_pos[0]
         let tmp1 = this.curr_pos[1]
         this.curr_pos = [i, j];
         this.curr_territory = get_territory_tag(i, j);
-        
-        if (!teleport_flag) {
-            if ((tmp0 != 0) || (tmp1 != 0)) {
-                this.send_cell_action('continue_move')
+
+        console.log('move flag')
+        console.log(this.real_path[this.real_path.length - 1])
+        console.log(this.curr_pos)
+        console.log(this.move_flag)
+        if (this.move_flag) {
+            if ((this.real_path[this.real_path.length - 1][0] == this.curr_pos[0]) && (this.real_path[this.real_path.length - 1][1] == this.curr_pos[1])) {
+                this.move_flag = false
             }
         }
+        console.log(this.move_flag)
+
+
+        // if (!teleport_flag) {
+        //     if ((tmp0 != 0) || (tmp1 != 0)) {
+        //         this.send_cell_action('move')
+        //     }
+        // }
+
         
+        let res = this.get_bg_tag(i, j)
+        if (res != undefined) {
+            return res
+        }        
+        // this.visit_spotted = []
+        return BACKGROUNDS[this.curr_territory];
+    }
+
+    re_set_cur_pos() {
+        let [i, j] = this.curr_pos
+        this.curr_territory = get_territory_tag(i, j);
+
+        let res = this.get_bg_tag(i, j)
+        if (res != undefined) {
+            return res
+        }
+
         // this.visit_spotted = []
         return BACKGROUNDS[this.curr_territory];
     }

@@ -1,41 +1,25 @@
-// eslint-disable-next-line no-undef
-var socket = io();
-
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'local_characters']
+
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
-// import {init_battle_control} from './modules/battle_image.js';
-import {GoodsMarket, ItemMarketTable} from './modules/market_table.js';
-import {CharacterScreen, EQUIPMENT_TAGS} from './modules/character_screen.js'
+import { GoodsMarket } from './modules/Market/market_table.js';
+import {CharacterScreen, EQUIPMENT_TAGS} from './modules/CharacterScreen/character_screen.js'
+import { socket, globals } from './modules/globals.js';
+import { reg, login } from './modules/ViewManagement/scene.js'
+import './modules/Battle/battle_image_init.js'
+import './modules/Market/items_market.js'
+import { BattleImage } from './modules/Battle/battle_image.js';
+import { loadImages } from './modules/load_images.js';
 
-import { BattleImageNext } from './modules/battle_image.js';
-import { init_battle_control } from './modules/battle_image_init.js'
-
-// import * as BattleImageNext from  './modules/battle_image.js';
-// import * as init_battle_control from './modules/battle_image_init.js'
-
-var globals = {
-    prev_mouse_x: null,
-    prev_mouse_y: null,
-    pressed: false,
-    pressed_resize_bottom: false,
-    pressed_resize_top: false,
-    bcp: false,
-    socket: socket
-}
 
 var stash_tag_to_id = {}
 var stash_id_to_tag = {}
 
 const char_info_monster = new CharInfoMonster();
-const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket);
+const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket, globals);
 init_map_control(map, globals);
-var battle_image = new BattleImageNext(document.getElementById('battle_canvas'), document.getElementById('battle_canvas_background'));
-init_battle_control(battle_image, globals);
-window.battle_image = battle_image
-const character_screen = new CharacterScreen(socket);
 
+const character_screen = new CharacterScreen(socket);
 
 
 // noselect tabs 
@@ -48,7 +32,6 @@ const character_screen = new CharacterScreen(socket);
 
 // market
 const goods_market = new GoodsMarket(document.querySelector('.goods_market'), socket);
-const item_market_table = new ItemMarketTable(document.getElementById('auction_house_tab'), socket);
 
 {
     let market_button = document.getElementById('open_market')
@@ -86,134 +69,6 @@ socket.on('connect', () => {
         socket.emit('session', tmp);
     }
 })
-
-
-// MOVABLE STUFF 
-
-
-var tabs_queue = []
-
-var tabs_position = {}
-
-
-let tabs_properties = JSON.parse(localStorage.getItem('tabs_properties'))
-
-function save_tab(tag) {
-    let tab = document.getElementById(tag + '_tab')
-    tabs_properties[tag] = {
-        top: tab.style.top,
-        left: tab.style.left,
-        width: tab.style.width,
-        height: tab.style.height,
-        zIndex: tab.style.zIndex,
-        active: !tab.classList.contains('hidden')
-    }
-    localStorage.setItem('tabs_properties', JSON.stringify(tabs_properties))
-}
-
-function load_tab(tag) {
-    console.log(tag)
-    let tab = document.getElementById(tag + '_tab')
-    tab.style.top = tabs_properties[tag].top
-    tab.style.left = tabs_properties[tag].left
-    tab.style.width = tabs_properties[tag].width
-    tab.style.height = tabs_properties[tag].height
-    tab.style.zIndex = tabs_properties[tag].zIndex
-
-    if (tabs_properties[tag].active) {
-        toogle_tab(tag)
-    }
-}
-
-if (tabs_properties == null) {
-    tabs_properties = {}
-}
-
-for (let tag of game_tabs) {
-    console.log(tabs_properties)
-    if (tag in tabs_properties) {
-        load_tab(tag)
-    } else {
-        save_tab(tag)
-    }
-} 
-
-let bottom_corners = document.querySelectorAll('.movable > .bottom')
-for (let corner of bottom_corners) {
-    (corner => {corner.onmousedown = (event) =>{
-        if (!globals.pressed_resize_bottom)
-        {
-            globals.pressed_resize_bottom = true
-            globals.current_resize = corner.parentElement
-
-            let tag = corner.parentElement.id.split('_')[0]
-            pop_tab(tag)
-            push_tab(tag)
-        } else {
-            globals.pressed_resize_bottom = false
-            let tag = corner.parentElement.id.split('_')[0]
-            save_tab(tag)
-        }
-    }})(corner)
-}
-
-let top_corners = document.querySelectorAll('.movable > .top')
-for (let corner of top_corners) {
-    (corner => {corner.onmousedown = (event) =>{
-        if (!globals.pressed_resize_top)
-        {
-            globals.pressed_resize_top = true
-            globals.current_resize = corner.parentElement
-
-            let tag = corner.parentElement.id.split('_')[0]
-            pop_tab(tag)
-            push_tab(tag)
-        } else {
-            globals.pressed_resize_top = false
-            let tag = corner.parentElement.id.split('_')[0]
-            save_tab(tag)    
-        }
-    }})(corner)
-}
-
-let game_scene = document.getElementById('actual_game_scene')
-game_scene.onmousemove = event => {
-        if (globals.pressed_resize_bottom)
-        {
-            let x = event.pageX;
-            let y = event.pageY;
-            let rect_1 = globals.current_resize.getBoundingClientRect();
-            let rect_2 = game_scene.getBoundingClientRect();
-            let new_width = x - rect_1.left + 2;
-            let new_height = y - rect_1.top + 2;
-            globals.current_resize.style.width = new_width + 'px'
-            globals.current_resize.style.height = new_height + 'px'
-        }
-        if (globals.pressed_resize_top)
-        {
-            let x = event.pageX;
-            let y = event.pageY;
-            let rect_1 = globals.current_resize.getBoundingClientRect();
-            let rect_2 = game_scene.getBoundingClientRect();
-
-            let width = rect_1.right - rect_1.left;
-            let height = rect_1.bottom - rect_1.top;
-            let new_left = Math.min(rect_1.right - 1, Math.min(rect_2.right - rect_2.left - width, Math.max(1, x - rect_2.left - 1)));
-            let new_top = Math.min(rect_1.bottom - 1, Math.min(rect_2.bottom - rect_2.top - height, Math.max(1, y - rect_2.top - 1)));
-            // let new_width = rect_1.right - rect_1.left - (new_left - old_left);
-            // let new_height = rect_1.bottom - rect_1.top - (new_top - old_top);
-
-            globals.current_resize.style.top = new_top + 'px';
-            globals.current_resize.style.left = new_left + 'px';
-            // globals.current_resize.style.width = new_width + 'px'
-            // globals.current_resize.style.height = new_height + 'px'
-        }
-};
-
-// MOVABLE STUFF END
-
-
-
 
 
 // MESSAGES STUFF
@@ -265,153 +120,6 @@ document.getElementById('send_message_button').onclick = (event) => {
 
 //MESSAGES STUFF END
 
-
-
-//CHANGE SCENES STUFF
-function show_char_creation() {
-    show_scene("character_creation")
-    document.getElementById('page_1').style.visibility = 'inherit';
-}
-
-function show_game() {
-    show_scene("actual_game_scene")
-}
-
-function show_scene(scene_id) {
-    let parent_elem = document.getElementById(scene_id).parentElement;
-    for (var i = 0; i < parent_elem.childNodes.length; i++) {
-        if (parent_elem.childNodes[i].id != undefined && parent_elem.childNodes[i].id != null && parent_elem.childNodes[i].id != ''){
-            document.getElementById(parent_elem.childNodes[i].id).style.visibility = 'hidden';
-        }
-    }
-    document.getElementById(scene_id).style.visibility = 'visible';    
-}
-
-{
-    let tab = document.getElementById('battle_tab');
-    tab.classList.add('hidden');
-}
-
-
-function toogle_tab(tag) {
-    // console.log('toogle tab ' + tag)
-    let tab = document.getElementById(tag + '_tab');
-    let button = document.getElementById(tag + '_button')
-
-    button.classList.toggle('active')
-
-    // console.log(tab.classList.contains('hidden'))
-    // console.log(tab.classList)
-    if (tab.classList.contains('hidden')) {
-        tab.classList.remove('hidden');
-        push_tab(tag)
-        return 'on'
-    } else {
-        
-        tab.classList.add('hidden');
-        pop_tab(tag)
-        
-        return 'off'
-    }
-
-    
-}
-
-function push_tab(tag) {
-    let tab = document.getElementById(tag + '_tab');
-    tabs_queue.push(tag)
-    tabs_position[tag] = tabs_queue.length - 1
-    tab.style.zIndex = +tabs_queue.length + 1
-
-    save_tab(tag)
-}
-
-function pop_tab(tag) {
-    tabs_queue.splice(tabs_position[tag], 1)
-    update_z_levels_tabs()
-    save_tab(tag)
-}
-
-window.addEventListener('keydown', function(event) {
-    if (event.defaultPrevented) {
-        return
-    }
-
-    // console.log(event.code)
-
-    if (event.code == "Escape") {
-        // console.log('!!!')
-        let length = tabs_queue.length
-        // console.log(length)
-        if (length > 0) {
-            toogle_tab(tabs_queue[length - 1])
-        }
-    }
-})
-
-function update_z_levels_tabs() {
-    for (let i in tabs_queue) {
-        let tab_tag = tabs_queue[i]
-        tabs_position[tab_tag] = i
-        let tab = document.getElementById(tab_tag + '_tab');
-        tab.style.zIndex = tabs_position[tab_tag]
-
-        save_tab(tab_tag)
-    } 
-}
-
-function turn_tab_on(tag) {
-    let tab = document.getElementById(tag + '_tab');
-    tab.classList.remove('hidden');
-    if (tag != 'battle') {
-        let button = document.getElementById(tag + '_button')
-        button.classList.toggle('active')
-    }    
-
-    push_tab(tag)
-}
-
-function turn_tab_off(tag) {
-    let tab = document.getElementById(tag + '_tab');
-    tab.classList.add('hidden');
-
-    if (tag != 'battle') {
-        let button = document.getElementById(tag + '_button')
-        button.classList.toggle('active')
-    }   
-
-    pop_tab(tag)
-}
-
-function tag_to_turn_off_f(tag) {
-    return () => turn_tab_off(tag)
-}
-
-for (let tag of game_tabs) {
-    if (tag == 'battle') {
-        continue
-    }
-    let button = document.getElementById(tag + '_button');
-    button.onclick = () => {
-        let res = toogle_tab(tag);
-        
-        console.log(tag, res)
-        if ((tag == 'market') & (res == 'on')) {
-            socket.emit('send-market-data', true)
-        } else {
-            socket.emit('send-market-data', false)
-        }
-    }
-
-    {
-        let tab = document.getElementById(tag + '_tab')
-        let div = document.createElement('div')
-        div.classList.add('close_tab')
-        div.onclick = tag_to_turn_off_f(tag)
-        tab.appendChild(div)
-    }    
-}
-//CHANGE SCENES STUFF
 
 
 // QUESTS
@@ -586,27 +294,27 @@ document.getElementById('perks_header').onclick = () => {
     hide_skill_tab('skills')
 }
 
-document.getElementById('open_armour_header').onclick = () => {
-    skill_tab_select('open_armour')
-    show_skill_tab('backpack_armour')
-    skill_tab_deselect('open_weapon')
-    skill_tab_deselect('open_all')
-    hide_skill_tab('backpack_weapon')
-}
-document.getElementById('open_weapon_header').onclick = () => {
-    skill_tab_select('open_weapon')
-    show_skill_tab('backpack_weapon')
-    skill_tab_deselect('open_armour')
-    skill_tab_deselect('open_all')
-    hide_skill_tab('backpack_armour')
-}
-document.getElementById('open_all_header').onclick = () => {
-    skill_tab_select('open_all')
-    show_skill_tab('backpack_weapon')
-    show_skill_tab('backpack_armour')
-    skill_tab_deselect('open_armour')
-    skill_tab_deselect('open_weapon')
-}
+// document.getElementById('open_armour_header').onclick = () => {
+//     skill_tab_select('open_armour')
+//     show_skill_tab('backpack_armour')
+//     skill_tab_deselect('open_weapon')
+//     skill_tab_deselect('open_all')
+//     hide_skill_tab('backpack_weapon')
+// }
+// document.getElementById('open_weapon_header').onclick = () => {
+//     skill_tab_select('open_weapon')
+//     show_skill_tab('backpack_weapon')
+//     skill_tab_deselect('open_armour')
+//     skill_tab_deselect('open_all')
+//     hide_skill_tab('backpack_armour')
+// }
+// document.getElementById('open_all_header').onclick = () => {
+//     skill_tab_select('open_all')
+//     show_skill_tab('backpack_weapon')
+//     show_skill_tab('backpack_armour')
+//     skill_tab_deselect('open_armour')
+//     skill_tab_deselect('open_weapon')
+// }
 
 function set_skill_description(tag) {
     if (CURR_SKILL_DESC != tag) {
@@ -659,23 +367,23 @@ function build_skill_div(tag){
 }
 
 function update_skill_data(data) {
-    console.log('update skill data')
-    console.log(data)
-    for (let tag in SKILL_TAGS) {
-        let div = document.getElementById(tag + '_skill_div')
-        let amount = div.querySelector('.practice_n')
-        amount.innerHTML = data[tag]?.practice
-        let span = div.querySelector('.hbar > span')
-        span.style.width = data[tag]?.practice + '%'
+    const tag = data.tag
+    const value = data.value
+
+    const div = document.getElementById(tag + '_skill_div')
+    if (div == undefined) {
+        return
     }
-    let div2 = document.getElementById('perks_tab');
-    div2.innerHTML = ''
-    for (let tag in data.perks) {
-        let div = document.createElement('div')
-        div.innerHTML = tag
-        div2.append(div)
+    const amount = div.querySelector('.practice_n')
+    if (amount == null) {
+        return
     }
+    amount.innerHTML = value
+    const span = div.querySelector('.hbar > span')
+    span.style.width = value + '%'
 }
+
+
 
 // function shadow_skill(tag) {
 //     skill_divs[tag].classList.add('shadowed')
@@ -868,32 +576,55 @@ document.getElementById('login-frame').onsubmit = (event) => {
 
 
 //CHARACTER CREATION STUFF
-document.getElementById("next_1").onclick = (event) => {
-    event.preventDefault();
-    document.getElementById("page_2").style.visibility = 'inherit'
+var character_display = {
+    eyes: 1,
+    chin: 0,
+    mouth: 0
 }
+
+// document.getElementById("next_1").onclick = (event) => {
+//     event.preventDefault();
+//     document.getElementById("page_2").style.visibility = 'inherit'
+// }
 
 document.getElementById("next_2").onclick = (event) => {
     event.preventDefault();
-    show_game();
+    let name = document.getElementById('char_name').value
+    let data = {
+        name: name,
+        mouth: character_display.mouth,
+        chin: character_display.chin,
+        eyes: character_display.eyes
+    }
+    console.log(data)
+    socket.emit('create_character', data)
 }
+
+
 
 for (let i = 0; i<3; i++) {
     document.getElementById("eyes_"+ i).onclick = (event) => {
         event.preventDefault();
-        document.getElementById("character_image_eyes").style.backgroundImage = 'url(/static/img/eyes_'+ i + '.png)'
+        character_display.eyes = i
+        document.getElementById("character_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
+        document.getElementById("character_creation_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
+        
     }
 }
 for (let i = 0; i<3; i++) {
     document.getElementById("chin_"+ i).onclick = (event) => {
         event.preventDefault();
-        document.getElementById("character_image_chin").style.backgroundImage = 'url(/static/img/chin_'+ i + '.png)'
+        character_display.chin = i
+        document.getElementById("character_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
+        document.getElementById("character_creation_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
     }
 }
 for (let i = 0; i<3; i++) {
     document.getElementById("mouth_"+ i).onclick = (event) => {
         event.preventDefault();
-        document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/mouth_'+ i + '.png)'
+        character_display.mouth = i
+        document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
+        document.getElementById("character_creation_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
     }
 }
 //CHARACTER CREATION STUFF ENDS
@@ -902,32 +633,25 @@ for (let i = 0; i<3; i++) {
 //EQUIP DISPLAY
 
 function update_equip(data) {
+    console.log('equip update')
+    console.log(data)
     for (let tag of EQUIPMENT_TAGS) {
         let div = document.querySelector('.character_image.equip.' + tag);
-
-        let item_tag = data[tag]?.tag||'empty';
+        console.log(tag, data.equip[tag])
+        let item_tag = data.equip[tag]?.name||'empty';
 
         if (tag == 'secondary') {
             continue
         }
 
-        div.style = "background: no-repeat center/100% url(/static/img/" + item_tag + "_big.png);"
+        console.log("/static/img/character_image/" + item_tag + "_big.png")
+        div.style = "background: no-repeat center/100% url(/static/img/character_image/" + item_tag + "_big.png);"
     }
 }
 
 //EQUIP DISPLAY END
 
-function start_battle(data) {
-    console.log('start battle')
-    turn_tab_on('battle')
-    battle_image.clear()
-    battle_image.load(data)
-}
 
-function end_battle() {
-    turn_tab_off('battle')
-    battle_image.clear()
-}
 
 
 //stash update
@@ -1029,7 +753,11 @@ function send_switch_weapon_request() {
 function update_craft_probability(data) {
     console.log(data)
     let div = document.getElementById(data.tag + '_chance')
-    div.innerHTML = Math.floor(data.value * 100) + '%'
+    if (div == undefined) {
+        console.log('craft does not exist????')
+        return
+    }
+    div.innerHTML = Math.floor(data.value)
 }
 
 socket.on('craft-probability', msg => update_craft_probability(msg))
@@ -1044,14 +772,15 @@ socket.on('alert', msg => {my_alert(msg); new_log_message(msg)});
 socket.on('sections', msg => map.load_sections(msg));
 
 socket.on('is-reg-valid', msg => my_alert(msg));
-socket.on('is-reg-completed', msg => reg(msg));
 socket.on('is-login-valid', msg => my_alert(msg));
+
+socket.on('is-reg-completed', msg => reg(msg));
 socket.on('is-login-completed', msg => login(msg));
 
 socket.on('session', msg => {localStorage.setItem('session', msg)})
 socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 
-socket.on('hp', msg => char_info_monster.update_status(msg));
+socket.on('hp', msg => char_info_monster.update_hp(msg));
 socket.on('exp', msg => char_info_monster.update_exp(msg));
 socket.on('savings', msg => update_savings(msg));
 socket.on('savings-trade', msg => update_savings_trade(msg));
@@ -1066,41 +795,39 @@ socket.on('log-message', msg => new_log_message(msg));
 socket.on('new-message', msg => new_message(msg));
 
 socket.on('map-pos', msg => {
+    console.log('map-pos')
     let location = map.set_curr_pos(msg.x, msg.y, msg.teleport_flag);
+    console.log(location)
     change_bg(location);
 });
+
+function update_background() {
+    // console.log('update_background')
+    let location = map.re_set_cur_pos();
+    // console.log(location)
+    change_bg(location);
+}
+
+
 socket.on('explore', msg => {map.explore(msg)});
 
-socket.on('new-action', msg => battle_image.add_action({name: msg, tag:msg}));
-socket.on('b-action-chance', msg => battle_image.update_action_probability(msg.tag, msg.value))
-
-socket.on('battle-has-started', data => start_battle(data))
-socket.on('battle-has-ended', data => end_battle(data))
-socket.on('battle-update', data => battle_image.update(data))
-socket.on('battle-action', data => {
-    battle_image.handle_socket_data(data);
-})
-socket.on('enemy-update', data => battle_image.update(data))
-socket.on('player-position', data => {((bi, data) => (bi.set_player(data)))(battle_image, data)})
 
 socket.on('skill-tags', data => load_skill_tags(data));
-socket.on('skills', msg => update_skill_data(msg));
+socket.on('skill', msg => update_skill_data(msg));
 // socket.on('local-skills', msg => update_local_skills(msg))
 
 // socket.on('market-data', data => goods_market.update_data(data));
 
 socket.on('market-data', data => update_market(data));
 
-socket.on('item-market-data', data => {item_market_table.update(data)});
-
-
-socket.on('action-display', data => {battle_image.update_action_display(data.tag, data.value)})
-
 
 socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
 socket.on('cell-visited', data => map.mark_visited(data))
 
-socket.on('map-data-cells', data => { map.load_data(data)})
+socket.on('map-data-cells', data => { 
+    map.load_data(data)
+    update_background()
+})
 socket.on('map-data-terrain', data => {map.load_terrain(data)})
 socket.on('map-data-reset', data => {map.reset()})
 socket.on('map-action-status', data => map.update_action_status(data))
@@ -1273,14 +1000,14 @@ function create_market_order_row(good_tag, amount, sell_price, buy_price, dummy_
 
 function update_market(data) {
     console.log('update market')
-    console.log(data)
+    // console.log(data)
 
     market_div.innerHTML = ''
 
     create_market_order_row('Item type', 'Amount', 'Sell price', 'Buy_price', true)
 
     for (let item of data) {
-        console.log(item)
+        // console.log(item)
         let sell_price = '?'
         let buy_price = '?'
         if (item.typ == 'sell') {sell_price = item.price}
@@ -1329,6 +1056,7 @@ function send_perk_learning_request(i) {
 
 function build_perks_list(data) {
     console.log('build perks')
+    console.log(data)
     let big_div = document.getElementById('available_perks')
     let div_for_a_list = document.getElementById('perks_for_learning')
 
@@ -1352,7 +1080,22 @@ function build_perks_list(data) {
     big_div.classList.remove('hidden')
 }
 
+function update_perks(data) {
+    console.log('PERKS!!!!')
+    console.log(data)
+    let div2 = document.getElementById('perks_tab');
+    div2.innerHTML = ''
+    for (let tag in data) {
+        console.log(tag)
+        let div = document.createElement('div')
+        div.innerHTML = tag
+        div2.append(div)
+    }
+}
+
 socket.on('perks-info', (msg) => {build_perks_list(msg)})
+
+socket.on('perks-update', (msg) => {update_perks(msg)})
 
 
 
@@ -1467,30 +1210,6 @@ function my_alert(msg) {
     }
 }
 
-function login(msg) {
-    if (msg != 'ok') {
-        alert(msg);
-    } else if (msg == 'ok') {
-        // tactic_screen.reset_tactic()
-        show_game();
-    }
-    let tutorial_stage = localStorage.getItem('tutorial');
-    if (tutorial_stage == null) {
-        // show_tutorial(0);
-    }
-}
-
-function reg(msg) {
-    if (msg != 'ok') {
-        alert(msg);
-    } else if (msg == 'ok') {
-        // tactic_screen.reset_tactic()
-        // show_char_creation();
-        show_game();
-    }
-}
-
-
 function restart_action_bar(time, is_move) {
     // console.log('???')
     globals.action_total_time = time
@@ -1522,14 +1241,27 @@ function draw(time) {
         globals.action_time += delta
         globals.action_ratio = globals.action_time / globals.action_total_time
         let div = document.getElementById('action_progress_bar')
-        if (globals.action_total_time <= globals.action_time) {
+        if (globals.action_total_time * 1.2 <= globals.action_time ) {
+            // if current action_time >= total_time * 1.2
+            // so if action had ended with a little overshoot
+            // then stop action
             globals.action_in_progress = false
             div.classList.add('hidden')
+            //check repeat action flags
+            console.log('keep doing?')
+            console.log(globals.keep_doing)
+            if (globals.keep_doing != undefined) {
+                map.send_local_cell_action(globals.keep_doing)
+            }
+            //do the movement again if you are not at destination already
+            if (map.move_flag) {
+                map.send_cell_action('continue_move')
+            }            
             // map.move_flag = false
         } else {
             let bar = div.querySelector('span')
             bar.style.width = Math.floor(globals.action_time / globals.action_total_time * 10000)/ 100 + '%'
-            if (map.move_flag) {map.movement_progress = globals.action_time / globals.action_total_time }
+            if (map.move_flag) {map.movement_progress = globals.action_ratio}
         }    
     }
 
@@ -1544,7 +1276,7 @@ function draw(time) {
 
     if (document.getElementById('actual_game_scene').style.visibility == 'visible') {
         if (!document.getElementById('battle_tab').classList.contains('hidden')) {
-            battle_image.draw(images, delta);
+            BattleImage.draw(delta);
         }
         if (!document.getElementById('map_tab').classList.contains('hidden')){
             map.draw(images, delta);
@@ -1554,7 +1286,7 @@ function draw(time) {
 }
 
 
-const images = loadImages(images_list[0], images_list[1], () => { 
+const images = loadImages(() => { 
     console.log(images);
     window.requestAnimationFrame(draw);
 });

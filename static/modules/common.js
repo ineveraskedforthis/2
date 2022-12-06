@@ -1,7 +1,3 @@
-export function draw_image(context, image, x, y, w, h) {
-    context.drawImage(image, x, y, w, h)
-}
-
 function change_image_data(image_data, f) {
     for (var i = 0; i < image_data.data.length; i += 4) {
         let r = image_data.data[i + 0];

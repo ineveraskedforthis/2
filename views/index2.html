@@ -57,8 +57,13 @@
             </div>
         </div>
 
+        <div id = "main_menu" class = "game_scene">
+            <div id="to_character_creation" class="main_menu_button"> Play. </div>
+            <div class="main_menu_button"> <a href="https://github.com/ineveraskedforthis/2" target="_blank">Github</a> </div>
+            <div class="main_menu_button"> <a href="https://netr.itch.io/" target="_blank">Itch.io</a></div>
+        </div>
+
         <div id = "character_creation" class="game_scene">
-            
             <div class="character_stats">
                 <div id="page_1" class="page">
                     <div>YOUR NAME</div>
@@ -89,17 +94,25 @@
                             </div>    
                         </div>
                     </div>
-                    <button id="next_1" class="next">Next</button>
+                    <!-- <button id="next_1" class="next">Next</button> -->
                 </div>
                 <div id="page_2" class="page">
                     <div>TRAITS</div>
-                    <button id="next_2" class="next">Next</button>
+                    <button id="next_2" class="next">Create</button>
                 </div>
             </div>
+
+            <div id = "page_3" class="character_image_col noselect">
+                <div id="character_creation_image_body" class="character_creation_image image_body"></div>
+                <div id="character_creation_image_eyes" class="character_creation_image"></div>
+                <div id="character_creation_image_chin" class="character_creation_image"></div>
+                <div id="character_creation_image_mouth" class="character_creation_image"></div>
+            </div>
         </div>
+
         <div id="actual_game_scene" class="game_scene">
             <div class="character_image_col noselect">
-                <div id="character_image_body" class="character_image"></div>
+                <div id="character_image_body" class="character_image image_body"></div>
                 <div id="character_image_eyes" class="character_image"></div>
                 <div id="character_image_chin" class="character_image"></div>
                 <div id="character_image_mouth" class="character_image"></div>
@@ -108,7 +121,7 @@
                 <div class="character_image equip foot"></div>
                 <div class="character_image equip head"></div>
                 <div class="character_image equip arms"></div>
-                <div class="character_image equip right_hand"></div>
+                <div class="character_image equip weapon"></div>
             </div>
 
 
@@ -202,7 +215,7 @@
                 <div id = "stash_button", class = 'control_button tooltip'><span class="tooltiptext">Stash</span></div>
                 <!-- <div id = "backpack_button", class = 'control_button tooltip'><span class="tooltiptext">Backpack</span></div> -->
                 <div id = "craft_button", class = 'control_button tooltip'><span class="tooltiptext">Craft</span></div>
-                <div id = "local_characters_button", class = 'control_button tooltip'><span class="tooltiptext">Local characters</span></div>
+                <div id = "localcharacters_button", class = 'control_button tooltip'><span class="tooltiptext">Local characters</span></div>
             </div>
 
             <div id = "action_progress_bar" class = "hidden">
@@ -210,7 +223,7 @@
             </span>
             </div>
 
-            <div id="local_characters_tab", class="game_tab movable noselect hidden">
+            <div id="localcharacters_tab", class="game_tab movable noselect hidden">
                 <div> Local characters. </div>
                 <div>
                     <button id="attack_selected_charater"> Attack </button>
@@ -361,19 +374,19 @@
 
             <div id = 'battle_tab', class="game_tab hidden movable noselect">
                 <div class = 'battle_display'>
-                    <canvas id='battle_canvas' width=700 height=450, class="_battle_canvas"></canvas>
-                    <canvas id='battle_canvas_background' width=700 height=450, class="_battle_canvas"></canvas>
+                    <canvas id='battle_canvas' width=1790 height=890, class="_battle_canvas"></canvas>
+                    <canvas id='battle_canvas_background' width=1790 height=890, class="_battle_canvas"></canvas>
                 </div>
 
-                <div class = 'battle_control'></div>                
-
-                <div class = 'aps'></div>
+                <div class = 'battle_control'>
+                
+                </div>
 
                 <div class="enemy_list">
                     <div class='enemy_status'></div>
                 </div>
 
-                <div class="corner top"></div>
+                <!-- <div class="corner top"></div> -->
                 <!-- <div class="corner bottom"></div> -->
             </div>
 
@@ -456,7 +469,7 @@
 
             <div id = "stats_tab" class="game_tab hidden movable noselect">
                 <div id = 'stats', class = 'character_screen_frame'></div>
-            </div>>
+            </div>
 
 
             <div id = "actions_tab" class="game_tab hidden movable noselect">
@@ -466,16 +479,16 @@
             <div id="equip_tab" class="game_tab hidden movable noselect">
 
                 <div id = "backpack_tab" class="character_screen_frame">
-                    <div class="header_container">
+                    <!-- <div class="header_container">
                         <div id="open_armour_header" class="selected header">Armour</div>
                         <div id="open_weapon_header" class="header">Weapon</div>
                         <div id="open_all_header" class="header">All</div>
-                    </div>
+                    </div> -->
 
                     <div id="backpacks_collection"> 
     
-                        <div id="backpack_armour_tab" class = "backpack_tab"></div>    
-                        <div id="backpack_weapon_tab" class = "backpack_tab hidden"></div>
+                        <!-- <div id="backpack_armour_tab" class = "backpack_tab"></div>     -->
+                        <div id="backpack_weapon_tab" class = "backpack_tab"></div>
 
                     </div>
     
@@ -487,12 +500,12 @@
                         <!-- <div id="eq_head_image", class = 'item_image'></div> -->
                         <span id="eq_head_tooltip", class="tooltiptext"></span>
                     </div>
-                    <div id = 'eq_right_hand', class = 'item_frame tooltip'>
-                        <!-- <div id="eq_right_hand_image", class = 'item_image'></div> -->
-                        <span id="eq_right_hand_tooltip", class="tooltiptext"></span>
+                    <div id = 'eq_weapon', class = 'item_frame tooltip'>
+                        <!-- <div id="eq_weapon_image", class = 'item_image'></div> -->
+                        <span id="eq_weapon_tooltip", class="tooltiptext"></span>
                     </div>
                     <div id = 'eq_secondary', class = 'item_frame tooltip'>
-                        <!-- <div id="eq_right_hand_image", class = 'item_image'></div> -->
+                        <!-- <div id="eq_weapon_image", class = 'item_image'></div> -->
                         <span id="eq_secondary_tooltip", class="tooltiptext"></span>
                     </div>
                     <div id = 'eq_body', class = 'item_frame tooltip'>
@@ -541,7 +554,7 @@
     </div>
 
 
-    <script src="/static/modules/load_images.js"></script>
+    <script type="module" src="/static/modules/load_images.js"></script>
     <script src='/socket.io/socket.io.js'></script>
     <script type="module" src="/static/ui2.js"></script>
 </body>

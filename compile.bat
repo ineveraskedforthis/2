@@ -1,1 +1,1 @@
-tsc & tsc -p ./static/
+tsc -p ./server/ & tsc -p ./static/

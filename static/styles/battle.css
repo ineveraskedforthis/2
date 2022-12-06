@@ -24,11 +24,11 @@
 
 #battle_tab > .enemy_list {
     position: absolute;
-    top: 5px;
-    left: 710px;
-    width: 215px;
-    height: 70%;
-
+    top: 10px;
+    right: 5px;
+    width: 220px;
+    height: 100%;
+    z-index: 3;
 }
 
 #battle_tab > .enemy_list > .enemy_status{
@@ -57,10 +57,10 @@
 
 #battle_tab > .battle_control{
     position: absolute;
-    top: 455px;
+    bottom: 5px;
     left: 5px;
-    width: 698px;
-    height: 48px;
+    width: 80%;
+    height: 70px;
     display: flex;
     flex-direction: row;
     z-index: 3;
@@ -70,7 +70,7 @@
 .battle_control> .battle_action{
     border: rgb(143, 6, 6) solid 1px;
     width: 70px;
-    height: 44px;
+    height: 100%;
     text-align: center;
     color: darkgreen;
     background-color: rgba(255, 255, 255, .5);
@@ -90,7 +90,7 @@
     border: rgb(21, 240, 39) solid 2px;
 }
 
-#battle_tab > .aps {
+/* #battle_tab > .aps {
     position: absolute;
     top: 505px;
     height: 30px;
@@ -98,6 +98,6 @@
     left: 5px;
     border: rgb(143, 6, 6) solid 1px;
     background-color: rgba(255, 255, 255, .5);
-}
+} */
 
 

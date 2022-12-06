@@ -32,15 +32,19 @@
     background-color: rgba(10, 10, 200, 0.5);
 }
 
-.item_row {
-    height: 16px
+.item {
+    height: auto;
+    width: auto;
 }
 
-.item_row:hover {
+.item:hover {
     background: linear-gradient(0.25turn, transparent, palegoldenrod);
 }
-.item_row:active {
+.item:active {
     background: linear-gradient(0.25turn, transparent, yellow, yellow);
+}
+.item.selected {
+    background: linear-gradient(0.25turn, transparent, blue, blue);
 }
 
 .item_tier_0 {

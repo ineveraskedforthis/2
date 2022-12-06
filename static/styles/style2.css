@@ -216,7 +216,7 @@ body {
     top: 10%;
     width: 50%;
     height: 70%;
-    background: rgba(91, 33, 33, 0.879);
+    background: rgba(91, 33, 33, 0.91);
     /* color: rgb(13, 228, 77); */
     color: whitesmoke;
 }
@@ -277,6 +277,39 @@ body {
     height: auto;
 }
 
+.row {
+    display: flex;
+    flex-direction: row;
+}
+
+.width-200 {
+    width: 200px;
+}
+
+.width-175 {
+    width: 175px;
+}
+
+.width-100 {
+    width: 100px;
+}
+
+.width-50 {
+    width: 50px;
+}
+
+.width-25 {
+    width: 25px;
+}
+
+.height-25 {
+    height: 25px;
+}
+
+.align-right {
+    text-align: right;
+}
+
 .craft_option > div {
     flex-grow: 1;
 }
@@ -309,7 +342,10 @@ body {
 
 
 #characters_list {
-    margin-top: 20px;
+    overflow-y: scroll;
+    height: 80%;
+    border: white 1px solid;
+    width: 100%;
 }
 
 #characters_list > div {
@@ -325,4 +361,42 @@ body {
 #characters_list > div.selected {
     background-color: greenyellow;
     color: blue;
+}
+
+#main_menu {
+    width: 40%;
+    left: 30%;
+    height: 50%;
+    top: 40%;
+}
+
+.main_menu_button {
+    width: 100%;
+    height: 30px;
+    background-color: azure;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.main_menu_button:hover {
+    background-color: yellow;
+}
+
+.main_menu_button:active {
+    background-color: aquamarine;
+}
+
+
+.active {
+    background-color: brown;
+}
+.active:hover {
+    background-color: yellow;
+}
+.active:active {
+    background-color: aquamarine;
+}
+
+.border-white {
+    border: white 1px solid;
 }
