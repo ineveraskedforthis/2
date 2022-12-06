@@ -126,7 +126,7 @@ export namespace Update {
         // console.log(user.updates[current])
 
         if (force_update || (user.updates[current])) {
-            console.log('updating ' + current + ' ' + current)
+            // console.log('updating ' + current + ' ' + current)
             update_function[current](user); return}
         const ch = children[current]
         if (ch == undefined) {

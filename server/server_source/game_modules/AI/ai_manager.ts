@@ -149,7 +149,11 @@ export namespace AI {
         let resource = character.stash.get(MEAT)
         let food_in_stash = character.stash.get(FOOD)
         let base_buy_price = 5 as money
-        let base_sell_price = 10 as money
+        // let base_sell_price = 10 as money
+        const profit = 1.5
+
+        let sell_price = Math.round(base_buy_price * (1 + profit) / Craft.Amount.Cooking.meat(character)) + 1 as money
+
         let savings = character.savings.get()
         // console.log("AI tick")
         // console.log(prepared_meat, resource, food_in_stash, savings)
@@ -168,7 +172,7 @@ export namespace AI {
 
         if (food_in_stash > 0) {
             BulkOrders.remove_by_condition(character, FOOD)
-            EventMarket.sell(character, FOOD, food_in_stash, base_sell_price)
+            EventMarket.sell(character, FOOD, food_in_stash, sell_price)
         }
     }
 
@@ -185,10 +189,13 @@ export namespace AI {
         let reserve_units = Math.min(wood, bones / 10)
 
         let arrows_in_stash = character.stash.get(ARROW_BONE)
-        let base_price_wood = 5 as money
-        let base_price_bones = 1 as money
+        let base_price_wood = 10 as money
+        let cell = Convert.character_to_cell(character)
+        if (cell.can_gather_wood()) base_price_wood = 3 as money
+
+        let base_price_bones = 3 as money
         let input_price = (base_price_wood + 10 * base_price_bones)
-        let profit = 0.5
+        let profit = 3
 
         let sell_price = Math.floor(input_price * (1 + profit) / Craft.Amount.arrow(character)) + 1 as money
 

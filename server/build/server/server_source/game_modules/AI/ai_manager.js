@@ -133,7 +133,9 @@ var AI;
         let resource = character.stash.get(materials_manager_1.MEAT);
         let food_in_stash = character.stash.get(materials_manager_1.FOOD);
         let base_buy_price = 5;
-        let base_sell_price = 10;
+        // let base_sell_price = 10 as money
+        const profit = 1.5;
+        let sell_price = Math.round(base_buy_price * (1 + profit) / craft_1.Craft.Amount.Cooking.meat(character)) + 1;
         let savings = character.savings.get();
         // console.log("AI tick")
         // console.log(prepared_meat, resource, food_in_stash, savings)
@@ -148,7 +150,7 @@ var AI;
         }
         if (food_in_stash > 0) {
             system_2.BulkOrders.remove_by_condition(character, materials_manager_1.FOOD);
-            market_1.EventMarket.sell(character, materials_manager_1.FOOD, food_in_stash, base_sell_price);
+            market_1.EventMarket.sell(character, materials_manager_1.FOOD, food_in_stash, sell_price);
         }
     }
     AI.cook_food = cook_food;
@@ -162,10 +164,13 @@ var AI;
         let trade_savings = character.trade_savings.get();
         let reserve_units = Math.min(wood, bones / 10);
         let arrows_in_stash = character.stash.get(materials_manager_1.ARROW_BONE);
-        let base_price_wood = 5;
-        let base_price_bones = 1;
+        let base_price_wood = 10;
+        let cell = systems_communication_1.Convert.character_to_cell(character);
+        if (cell.can_gather_wood())
+            base_price_wood = 3;
+        let base_price_bones = 3;
         let input_price = (base_price_wood + 10 * base_price_bones);
-        let profit = 0.5;
+        let profit = 3;
         let sell_price = Math.floor(input_price * (1 + profit) / craft_1.Craft.Amount.arrow(character)) + 1;
         // bones_to_buy * b_p + wood_to_buy * w_p = savings
         // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0
