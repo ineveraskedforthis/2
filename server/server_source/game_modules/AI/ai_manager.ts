@@ -258,8 +258,8 @@ export namespace AI {
 
         let skin_to_buy = Math.floor(savings / base_price_skin)
 
-        console.log('armour')
-        console.log(resource, savings, skin_to_buy)
+        // console.log('armour')
+        // console.log(resource, savings, skin_to_buy)
         if (skin_to_buy > 5) {
             BulkOrders.remove_by_condition(character, RAT_SKIN)
             EventMarket.buy(character, RAT_SKIN, trim(skin_to_buy, 0, 50), base_price_skin)
