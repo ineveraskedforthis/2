@@ -97,6 +97,8 @@ export class SocketManager {
             socket.on('cfood',  () =>      HandleAction.act(user, CharacterAction.COOK.MEAT));
             socket.on('czaz',  () =>       HandleAction.act(user, CharacterAction.COOK.ELODINO));
             socket.on('mspear', () =>      HandleAction.act(user, CharacterAction.CRAFT.SPEAR))
+            socket.on('mmace', () =>       HandleAction.act(user, CharacterAction.CRAFT.MACE))
+            socket.on('mdagger', () =>     HandleAction.act(user, CharacterAction.CRAFT.DAGGER))
             socket.on('mbspear',  () =>    HandleAction.act(user, CharacterAction.CRAFT.BONE_SPEAR))
             socket.on('mbow',  () =>       HandleAction.act(user, CharacterAction.CRAFT.WOOD_BOW))
             socket.on('marr',  () =>       HandleAction.act(user, CharacterAction.CRAFT.BONE_ARROW))

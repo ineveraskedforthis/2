@@ -713,6 +713,16 @@ function send_switch_weapon_request() {
 }
 
 {
+    let div = document.getElementById('craft_mace')
+    div.onclick = () => socket.emit('mmace')
+}
+
+{
+    let div = document.getElementById('craft_dagger')
+    div.onclick = () => socket.emit('mdagger')
+}
+
+{
     let div = document.getElementById('craft_wood_bow')
     div.onclick = () => socket.emit('mbow')
 }

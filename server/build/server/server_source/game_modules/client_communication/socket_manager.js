@@ -61,6 +61,8 @@ class SocketManager {
             socket.on('cfood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.MEAT));
             socket.on('czaz', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.ELODINO));
             socket.on('mspear', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.SPEAR));
+            socket.on('mmace', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.MACE));
+            socket.on('mdagger', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.DAGGER));
             socket.on('mbspear', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.BONE_SPEAR));
             socket.on('mbow', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.WOOD_BOW));
             socket.on('marr', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.BONE_ARROW));

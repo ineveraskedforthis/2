@@ -54,7 +54,7 @@ exports.BONE_DAGGER_ARGUMENT = {
     weapon_tag: 'onehand',
     model_tag: 'bone_dagger',
     resists: empty_resists,
-    damage: new damage_types_1.Damage(1, 4, 8),
+    damage: new damage_types_1.Damage(1, 6, 12),
     range: 0.8
 };
 exports.WOODEN_MACE_ARGUMENT = {

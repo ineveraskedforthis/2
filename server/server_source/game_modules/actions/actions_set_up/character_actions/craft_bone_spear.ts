@@ -135,8 +135,8 @@ export const craft_bone_dagger = {
 
     check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
-            let tmp = char.stash.get(WOOD)
-            if ((tmp >= 8)) {
+            let tmp = char.stash.get(RAT_BONE)
+            if ((tmp >= 15)) {
                 return CharacterActionResponce.OK
             }
             return CharacterActionResponce.NO_RESOURCE
@@ -145,9 +145,9 @@ export const craft_bone_dagger = {
     },
 
     result:  function(char:Character, data: map_position) {
-        let tmp = char.stash.get(WOOD)
-        if ((tmp >= 8)) {
-            char.stash.inc(WOOD, -8)
+        let tmp = char.stash.get(RAT_BONE)
+        if ((tmp >= 15)) {
+            char.stash.inc(RAT_BONE, -15)
             craft_item(char, BONE_DAGGER_ARGUMENT, Craft.Durability.bone_item, 'bone_carving', 5)
         }
     },

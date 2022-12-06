@@ -115,8 +115,8 @@ exports.craft_bone_dagger = {
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let tmp = char.stash.get(materials_manager_1.WOOD);
-            if ((tmp >= 8)) {
+            let tmp = char.stash.get(materials_manager_1.RAT_BONE);
+            if ((tmp >= 15)) {
                 return 1 /* CharacterActionResponce.OK */;
             }
             return 3 /* CharacterActionResponce.NO_RESOURCE */;
@@ -124,9 +124,9 @@ exports.craft_bone_dagger = {
         return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        let tmp = char.stash.get(materials_manager_1.WOOD);
-        if ((tmp >= 8)) {
-            char.stash.inc(materials_manager_1.WOOD, -8);
+        let tmp = char.stash.get(materials_manager_1.RAT_BONE);
+        if ((tmp >= 15)) {
+            char.stash.inc(materials_manager_1.RAT_BONE, -15);
             (0, craft_2.craft_item)(char, items_set_up_1.BONE_DAGGER_ARGUMENT, craft_1.Craft.Durability.bone_item, 'bone_carving', 5);
         }
     },

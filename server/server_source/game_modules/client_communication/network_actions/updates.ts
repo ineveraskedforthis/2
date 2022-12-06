@@ -225,6 +225,7 @@ export namespace SendUpdate {
         cooking_craft(user)
         woodwork_craft(user)
         craft_clothier(user)
+        bone_carving_craft(user)
     }
 
     export function cooking_craft(user: User) {
@@ -244,6 +245,15 @@ export namespace SendUpdate {
         Alerts.craft(user, 'craft_bone_spear',  value)
         Alerts.craft(user, 'craft_wood_bow',    value)
         Alerts.craft(user, 'craft_bone_arrow', Craft.Amount.arrow(character))
+        Alerts.craft(user, 'craft_mace', value)
+    }
+
+    export function bone_carving_craft(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        let value = Craft.Durability.bone_item(character)
+        Alerts.craft(user, 'craft_dagger',       value)
     }
 
     export function ranged(user: User, distance: number) {

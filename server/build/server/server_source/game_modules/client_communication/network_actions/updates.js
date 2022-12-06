@@ -213,6 +213,7 @@ var SendUpdate;
         cooking_craft(user);
         woodwork_craft(user);
         craft_clothier(user);
+        bone_carving_craft(user);
     }
     SendUpdate.all_craft = all_craft;
     function cooking_craft(user) {
@@ -232,8 +233,17 @@ var SendUpdate;
         alerts_1.Alerts.craft(user, 'craft_bone_spear', value);
         alerts_1.Alerts.craft(user, 'craft_wood_bow', value);
         alerts_1.Alerts.craft(user, 'craft_bone_arrow', craft_1.Craft.Amount.arrow(character));
+        alerts_1.Alerts.craft(user, 'craft_mace', value);
     }
     SendUpdate.woodwork_craft = woodwork_craft;
+    function bone_carving_craft(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        let value = craft_1.Craft.Durability.bone_item(character);
+        alerts_1.Alerts.craft(user, 'craft_dagger', value);
+    }
+    SendUpdate.bone_carving_craft = bone_carving_craft;
     function ranged(user, distance) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)

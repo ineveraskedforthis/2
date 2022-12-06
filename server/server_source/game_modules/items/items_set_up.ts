@@ -59,7 +59,7 @@ export const BONE_DAGGER_ARGUMENT: ItemJson = {
     weapon_tag: 'onehand',
     model_tag: 'bone_dagger',
     resists: empty_resists,
-    damage: new Damage(1, 4, 8),
+    damage: new Damage(1, 6, 12),
     range: 0.8
 }
 

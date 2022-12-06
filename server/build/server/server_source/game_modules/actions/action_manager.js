@@ -39,6 +39,8 @@ var CharacterAction;
         CRAFT.RAT_BOOTS = craft_rat_armour_1.craft_rat_boots;
         CRAFT.WOOD_BOW = craft_bone_spear_1.craft_wood_bow;
         CRAFT.BONE_ARROW = craft_bone_spear_1.craft_bone_arrow;
+        CRAFT.DAGGER = craft_bone_spear_1.craft_bone_dagger;
+        CRAFT.MACE = craft_bone_spear_1.craft_wooden_mace;
     })(CRAFT = CharacterAction.CRAFT || (CharacterAction.CRAFT = {}));
 })(CharacterAction = exports.CharacterAction || (exports.CharacterAction = {}));
 var ActionManager;
