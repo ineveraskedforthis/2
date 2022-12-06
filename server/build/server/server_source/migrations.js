@@ -71,30 +71,37 @@ function migrate(current_version, target_version) {
     console.log('migration from ' + current_version + ' to ' + target_version);
     if (current_version == 0) {
         set_up_initial_data();
+        current_version = 1;
     }
     if (current_version == 1) {
         create_starting_agents();
         set_version(2);
+        current_version = 2;
     }
     if (current_version == 2) {
         set_up_cooks();
         set_version(3);
+        current_version = 3;
     }
     if (current_version == 3) {
         set_up_guards_1();
         set_version(4);
+        current_version = 4;
     }
     if (current_version == 4) {
         cancel_cook_orders();
         set_version(5);
+        current_version = 5;
     }
     if (current_version == 5) {
         misc_characters();
         set_version(6);
+        current_version = 6;
     }
     if (current_version == 6) {
         fix_factions();
         set_version(7);
+        current_version = 7;
     }
 }
 exports.migrate = migrate;
