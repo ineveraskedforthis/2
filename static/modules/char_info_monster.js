@@ -57,4 +57,9 @@ export class CharInfoMonster {
         this.fatigue.innerHTML = data.c.fatigue;
         this.fatigue_display.style.width = `${Math.floor(data.c.fatigue)}%`;
     }
+
+    update_hp(data) {
+        this.hp.innerHTML = `${data.c}/${data.m}`
+        this.hp_display.style.width = `${Math.floor(data.c/data.m * 100)}%`;
+    }
 }
