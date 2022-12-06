@@ -231,7 +231,7 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.craft(user, 'cook_elodin', Craft.Amount.elodino_zaz_extraction(character))
+        Alerts.craft(user, 'cook_elodino', Craft.Amount.elodino_zaz_extraction(character))
         Alerts.craft(user, 'cook_meat', Craft.Amount.Cooking.meat(character))
     }
 

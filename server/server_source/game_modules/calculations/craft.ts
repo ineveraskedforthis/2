@@ -58,6 +58,10 @@ export namespace Craft {
             return from_skill(character.skills.woodwork, BASIC_WOOD_DIFFICULTY)  
         }
 
+        export function bone_item(character: Character) {
+            return from_skill(character.skills.bone_carving, 40)  
+        }
+
         export function skin_item(character: Character) {
             let durability = from_skill(character.skills.clothier, RAT_SKIN_DIFFICULTY)
             if (character.perks.skin_armour_master) durability += 10

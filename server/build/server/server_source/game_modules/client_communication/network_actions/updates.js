@@ -219,7 +219,7 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.craft(user, 'cook_elodin', craft_1.Craft.Amount.elodino_zaz_extraction(character));
+        alerts_1.Alerts.craft(user, 'cook_elodino', craft_1.Craft.Amount.elodino_zaz_extraction(character));
         alerts_1.Alerts.craft(user, 'cook_meat', craft_1.Craft.Amount.Cooking.meat(character));
     }
     SendUpdate.cooking_craft = cooking_craft;

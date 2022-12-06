@@ -61,6 +61,10 @@ var Craft;
             return from_skill(character.skills.woodwork, exports.BASIC_WOOD_DIFFICULTY);
         }
         Durability.wood_item = wood_item;
+        function bone_item(character) {
+            return from_skill(character.skills.bone_carving, 40);
+        }
+        Durability.bone_item = bone_item;
         function skin_item(character) {
             let durability = from_skill(character.skills.clothier, exports.RAT_SKIN_DIFFICULTY);
             if (character.perks.skin_armour_master)

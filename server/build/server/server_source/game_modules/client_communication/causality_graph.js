@@ -90,7 +90,7 @@ var Update;
         // console.log(force_update)
         // console.log(user.updates[current])
         if (force_update || (user.updates[current])) {
-            console.log('updating ' + current + ' ' + current);
+            // console.log('updating ' + current + ' ' + current)
             update_function[current](user);
             return;
         }

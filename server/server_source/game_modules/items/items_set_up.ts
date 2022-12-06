@@ -51,6 +51,30 @@ export const BONE_SPEAR_ARGUMENT: ItemJson = {
     range: 2
 }
 
+export const BONE_DAGGER_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'weapon',
+    material: bone,
+    weapon_tag: 'onehand',
+    model_tag: 'bone_dagger',
+    resists: empty_resists,
+    damage: new Damage(1, 4, 8),
+    range: 0.8
+}
+
+export const WOODEN_MACE_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'weapon',
+    material: wood,
+    weapon_tag: 'onehand',
+    model_tag: 'wooden_mace',
+    resists: empty_resists,
+    damage: new Damage(12, 0, 0),
+    range: 1.3
+}
+
 export const RAT_SKIN_PANTS_ARGUMENT: ItemJson = {
     durability: 100,
     affixes: [],

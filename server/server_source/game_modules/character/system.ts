@@ -13,6 +13,7 @@ import { Data } from "../data";
 var path = require('path')
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 import { CampaignAI } from "../AI/ai_manager";
+import { skill, SkillList } from "./skills";
 
 var loaded_flag_characters = false
 
@@ -104,7 +105,11 @@ export namespace CharacterSystem {
 
         character.set_status(JSON.parse(raw_status) as Status)
 
-        character.skills = JSON.parse(raw_skills)
+        character.skills = new SkillList()
+        for (let [_, skill] of Object.entries(JSON.parse(raw_skills) as SkillList)) {
+            character.skills[_ as skill] = skill
+        }
+
         character.perks = JSON.parse(raw_perks)
 
         return character

@@ -157,7 +157,8 @@ export class SkillList {
     evasion: number;
     woodwork: number;
     hunt: number;
-    ranged: number
+    ranged: number;
+    bone_carving: number;
 
 
     constructor() {
@@ -174,6 +175,7 @@ export class SkillList {
         this.woodwork       = 0;
         this.hunt           = 0;
         this.ranged         = 0;
+        this.bone_carving   = 0
     }
 }
 

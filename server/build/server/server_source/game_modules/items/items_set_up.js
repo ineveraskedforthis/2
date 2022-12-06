@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
+exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.WOODEN_MACE_ARGUMENT = exports.BONE_DAGGER_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const damage_types_1 = require("../misc/damage_types");
 const system_1 = require("./system");
@@ -45,6 +45,28 @@ exports.BONE_SPEAR_ARGUMENT = {
     resists: empty_resists,
     damage: new damage_types_1.Damage(2, 8, 3),
     range: 2
+};
+exports.BONE_DAGGER_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'weapon',
+    material: bone,
+    weapon_tag: 'onehand',
+    model_tag: 'bone_dagger',
+    resists: empty_resists,
+    damage: new damage_types_1.Damage(1, 4, 8),
+    range: 0.8
+};
+exports.WOODEN_MACE_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'weapon',
+    material: wood,
+    weapon_tag: 'onehand',
+    model_tag: 'wooden_mace',
+    resists: empty_resists,
+    damage: new damage_types_1.Damage(12, 0, 0),
+    range: 1.3
 };
 exports.RAT_SKIN_PANTS_ARGUMENT = {
     durability: 100,

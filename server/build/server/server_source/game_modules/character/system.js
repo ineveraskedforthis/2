@@ -13,6 +13,7 @@ const data_1 = require("../data");
 var path = require('path');
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const ai_manager_1 = require("../AI/ai_manager");
+const skills_1 = require("./skills");
 var loaded_flag_characters = false;
 const save_path = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'characters.txt');
 var ai_campaign_decision_timer = 0;
@@ -89,7 +90,10 @@ var CharacterSystem;
         character.savings.inc(Number(raw_savings));
         character.trade_savings.inc(Number(raw_trade_savings));
         character.set_status(JSON.parse(raw_status));
-        character.skills = JSON.parse(raw_skills);
+        character.skills = new skills_1.SkillList();
+        for (let [_, skill] of Object.entries(JSON.parse(raw_skills))) {
+            character.skills[_] = skill;
+        }
         character.perks = JSON.parse(raw_perks);
         return character;
     }

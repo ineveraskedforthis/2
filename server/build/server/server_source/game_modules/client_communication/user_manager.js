@@ -188,7 +188,7 @@ var UserManagement;
     function update_users() {
         // console.log('update loop')
         for (let item of users_to_update) {
-            console.log('send_update to ' + item.data.login);
+            // console.log('send_update to ' + item.data.login)          
             if (item.character_created) {
                 send_character_to_user(item);
                 item.character_created = false;

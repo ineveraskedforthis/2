@@ -248,6 +248,8 @@ const SKILL_NAMES = {
     evasion: 'Evading attacks',
     woodwork: 'Woodworking',
     hunt: 'Hunting',    
+    bone_carving: 'Bone carving',
+    twohanded: 'Two-handed weapons'
 }
 
 var CURR_SKILL_DESC = undefined

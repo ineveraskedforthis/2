@@ -1,6 +1,6 @@
 import { CharacterActionResponce } from "../../action_manager";
 import { ARROW_BONE, RAT_BONE, WOOD } from "../../../manager_classes/materials_manager";
-import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT } from "../../../items/items_set_up";
+import { BASIC_BOW_ARGUMENT, BONE_DAGGER_ARGUMENT, BONE_SPEAR_ARGUMENT, WOODEN_MACE_ARGUMENT } from "../../../items/items_set_up";
 import { Character } from "../../../character/character";
 import { map_position } from "../../../types";
 import { UserManagement } from "../../../client_communication/user_manager";
@@ -92,8 +92,63 @@ export const craft_wood_bow = {
         let tmp = char.stash.get(WOOD)
         if ((tmp >= 3)) {
             char.stash.inc(WOOD, -3)
-
             craft_item(char, BASIC_BOW_ARGUMENT, Craft.Durability.wood_item, 'woodwork', 3)
+        }
+    },
+
+    start:  function(char:Character, data: map_position) {
+    },
+}
+
+export const craft_wooden_mace = {
+    duration(char: Character) {
+        return 0.5;
+    },
+
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
+        if (!char.in_battle()) {
+            let tmp = char.stash.get(WOOD)
+            if ((tmp >= 8)) {
+                return CharacterActionResponce.OK
+            }
+            return CharacterActionResponce.NO_RESOURCE
+        } 
+        return CharacterActionResponce.IN_BATTLE
+    },
+
+    result:  function(char:Character, data: map_position) {
+        let tmp = char.stash.get(WOOD)
+        if ((tmp >= 8)) {
+            char.stash.inc(WOOD, -8)
+            craft_item(char, WOODEN_MACE_ARGUMENT, Craft.Durability.wood_item, 'woodwork', 1)
+        }
+    },
+
+    start:  function(char:Character, data: map_position) {
+    },
+}
+
+export const craft_bone_dagger = {
+    duration(char: Character) {
+        return 0.5;
+    },
+
+    check:  function(char:Character, data: map_position): CharacterActionResponce {
+        if (!char.in_battle()) {
+            let tmp = char.stash.get(WOOD)
+            if ((tmp >= 8)) {
+                return CharacterActionResponce.OK
+            }
+            return CharacterActionResponce.NO_RESOURCE
+        } 
+        return CharacterActionResponce.IN_BATTLE
+    },
+
+    result:  function(char:Character, data: map_position) {
+        let tmp = char.stash.get(WOOD)
+        if ((tmp >= 8)) {
+            char.stash.inc(WOOD, -8)
+            craft_item(char, BONE_DAGGER_ARGUMENT, Craft.Durability.bone_item, 'bone_carving', 5)
         }
     },
 
