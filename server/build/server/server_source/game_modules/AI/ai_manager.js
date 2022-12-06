@@ -218,8 +218,8 @@ var AI;
         let resource = character.stash.get(materials_manager_1.RAT_SKIN);
         let savings = character.savings.get();
         let skin_to_buy = Math.floor(savings / base_price_skin);
-        console.log('armour');
-        console.log(resource, savings, skin_to_buy);
+        // console.log('armour')
+        // console.log(resource, savings, skin_to_buy)
         if (skin_to_buy > 5) {
             system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
             market_1.EventMarket.buy(character, materials_manager_1.RAT_SKIN, (0, basic_functions_1.trim)(skin_to_buy, 0, 50), base_price_skin);
