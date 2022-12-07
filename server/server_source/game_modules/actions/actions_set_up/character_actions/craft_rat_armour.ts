@@ -47,9 +47,11 @@ function generate_rat_skin_craft(arg: ItemJson, cost: number) {
 }
 
 export const RAT_SKIN_ARMOUR_SKIN_NEEDED = 10
+export const RAT_SKIN_PANTS_SKIN_NEEDED = 8
+export const RAT_SKIN_BOOTS_SKIN_NEEDED = 5
 
 export const craft_rat_armour = generate_rat_skin_craft(RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_ARMOUR_SKIN_NEEDED)
 export const craft_rat_gloves = generate_rat_skin_craft(RAT_SKIN_GLOVES_ARGUMENT, 5)
-export const craft_rat_pants = generate_rat_skin_craft(RAT_SKIN_PANTS_ARGUMENT, 8)
+export const craft_rat_pants = generate_rat_skin_craft(RAT_SKIN_PANTS_ARGUMENT, RAT_SKIN_PANTS_SKIN_NEEDED)
 export const craft_rat_helmet = generate_rat_skin_craft(RAT_SKIN_HELMET_ARGUMENT, 5)
-export const craft_rat_boots = generate_rat_skin_craft(RAT_SKIN_BOOTS_ARGUMENT, 5)
+export const craft_rat_boots = generate_rat_skin_craft(RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_BOOTS_SKIN_NEEDED)

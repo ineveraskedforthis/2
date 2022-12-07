@@ -213,8 +213,8 @@ var AI;
         }
     }
     AI.make_arrow = make_arrow;
+    const base_price_skin = 10;
     function make_armour(character) {
-        let base_price_skin = 10;
         let resource = character.stash.get(materials_manager_1.RAT_SKIN);
         let savings = character.savings.get();
         let skin_to_buy = Math.floor(savings / base_price_skin);
@@ -225,15 +225,51 @@ var AI;
             market_1.EventMarket.buy(character, materials_manager_1.RAT_SKIN, (0, basic_functions_1.trim)(skin_to_buy, 0, 50), base_price_skin);
         }
         if (resource > craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
-            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR, character, [0, 0]);
+            const flags = check_if_set_is_ready(character);
+            if (!flags.body)
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR, character, [0, 0]);
+            else if (!flags.legs)
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_PANTS, character, [0, 0]);
+            else if (!flags.foot)
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0]);
+            else
+                sell_set(character);
         }
+    }
+    AI.make_armour = make_armour;
+    function check_if_set_is_ready(character) {
+        let flags = { 'legs': false, 'body': false, 'foot': false };
         let data = character.equip.data.backpack.items;
         for (let [index, item] of Object.entries(data)) {
             if (item?.slot == 'body') {
-                let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 1.5);
+                flags.body = true;
+            }
+            if (item?.slot == 'legs') {
+                flags.legs = true;
+            }
+            if (item?.slot == 'foot') {
+                flags.foot = true;
+            }
+        }
+        // console.log(flags)
+        return flags;
+    }
+    function sell_set(character) {
+        // console.log('armourer is ready to sell things')
+        let data = character.equip.data.backpack.items;
+        for (let [index, item] of Object.entries(data)) {
+            if (item?.slot == 'body') {
+                let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 2);
+                market_1.EventMarket.sell_item(character, Number(index), price);
+            }
+            if (item?.slot == 'foot') {
+                let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_BOOTS_SKIN_NEEDED * 2);
+                market_1.EventMarket.sell_item(character, Number(index), price);
+            }
+            if (item?.slot == 'legs') {
+                let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_PANTS_SKIN_NEEDED * 2);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
         }
     }
-    AI.make_armour = make_armour;
 })(AI = exports.AI || (exports.AI = {}));
