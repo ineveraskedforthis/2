@@ -12,7 +12,7 @@ import { Alerts } from "../../../client_communication/network_actions/alerts";
 import { craft_item } from "../../../craft/craft";
 import { Craft } from "../../../calculations/craft";
 
-
+export const RAT_ARMOUR_TIER = 25
 
 function generate_rat_skin_craft(arg: ItemJson, cost: number) {
     return {
@@ -37,7 +37,7 @@ function generate_rat_skin_craft(arg: ItemJson, cost: number) {
             if (tmp >= cost) {    
                 char.stash.inc(RAT_SKIN, -cost)
                 UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-                craft_item(char, arg, Craft.Durability.skin_item, 'clothier', 2)
+                craft_item(char, arg, Craft.Durability.skin_item, 'clothier', RAT_ARMOUR_TIER)
             }
         },
     

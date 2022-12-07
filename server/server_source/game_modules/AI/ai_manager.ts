@@ -14,6 +14,8 @@ import { EventMarket } from "../events/market";
 import { Craft } from "../calculations/craft";
 import { trim } from "../calculations/basic_functions";
 import { Data } from "../data";
+import { COOKING_TIER } from "../actions/actions_set_up/character_actions/cook_meat";
+import { ARROW_TIER } from "../actions/actions_set_up/character_actions/craft_bone_arrow";
 
 
 // function MAYOR_AI(mayor: Character) {
@@ -153,7 +155,7 @@ export namespace AI {
         // let base_sell_price = 10 as money
         const profit = 1.5
 
-        let sell_price = Math.round(base_buy_price * (1 + profit) / Craft.Amount.Cooking.meat(character)) + 1 as money
+        let sell_price = Math.round(base_buy_price * (1 + profit) / Craft.Amount.Cooking.meat(character, COOKING_TIER)) + 1 as money
 
         let savings = character.savings.get()
         // console.log("AI tick")
@@ -198,7 +200,7 @@ export namespace AI {
         let input_price = (base_price_wood + 10 * base_price_bones)
         let profit = 3
 
-        let sell_price = Math.floor(input_price * (1 + profit) / Craft.Amount.arrow(character)) + 1 as money
+        let sell_price = Math.floor(input_price * (1 + profit) / Craft.Amount.arrow(character, ARROW_TIER)) + 1 as money
 
         // bones_to_buy * b_p + wood_to_buy * w_p = savings
         // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0
@@ -273,7 +275,7 @@ export namespace AI {
             if (!flags.body) ActionManager.start_action(CharacterAction.CRAFT.RAT_ARMOUR, character, [0, 0])
             else if (!flags.legs) ActionManager.start_action(CharacterAction.CRAFT.RAT_PANTS, character, [0, 0])
             else if (!flags.foot) ActionManager.start_action(CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0])
-            else sell_set(character)
+            else sell_armour_set(character)
         }
     }
 
@@ -297,7 +299,7 @@ export namespace AI {
         return flags
     }
 
-    function sell_set(character: Character) {
+    function sell_armour_set(character: Character) {
         // console.log('armourer is ready to sell things')
         let data = character.equip.data.backpack.items
         for (let [index, item] of Object.entries(data) ) {

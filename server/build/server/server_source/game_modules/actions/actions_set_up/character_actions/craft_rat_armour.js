@@ -1,11 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_BOOTS_SKIN_NEEDED = exports.RAT_SKIN_PANTS_SKIN_NEEDED = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = void 0;
+exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_BOOTS_SKIN_NEEDED = exports.RAT_SKIN_PANTS_SKIN_NEEDED = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = exports.RAT_ARMOUR_TIER = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../../items/items_set_up");
 const user_manager_1 = require("../../../client_communication/user_manager");
 const craft_1 = require("../../../craft/craft");
 const craft_2 = require("../../../calculations/craft");
+exports.RAT_ARMOUR_TIER = 25;
 function generate_rat_skin_craft(arg, cost) {
     return {
         duration(char) {
@@ -27,7 +28,7 @@ function generate_rat_skin_craft(arg, cost) {
             if (tmp >= cost) {
                 char.stash.inc(materials_manager_1.RAT_SKIN, -cost);
                 user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-                (0, craft_1.craft_item)(char, arg, craft_2.Craft.Durability.skin_item, 'clothier', 2);
+                (0, craft_1.craft_item)(char, arg, craft_2.Craft.Durability.skin_item, 'clothier', exports.RAT_ARMOUR_TIER);
             }
         },
         start: function (char, data) {

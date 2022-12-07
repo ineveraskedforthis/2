@@ -12,6 +12,8 @@ const system_2 = require("../market/system");
 const market_1 = require("../events/market");
 const craft_1 = require("../calculations/craft");
 const basic_functions_1 = require("../calculations/basic_functions");
+const cook_meat_1 = require("../actions/actions_set_up/character_actions/cook_meat");
+const craft_bone_arrow_1 = require("../actions/actions_set_up/character_actions/craft_bone_arrow");
 // function MAYOR_AI(mayor: Character) {
 //     let faction = mayor.get_faction()
 //     let territories = faction.get_territories_list()
@@ -135,7 +137,7 @@ var AI;
         let base_buy_price = 5;
         // let base_sell_price = 10 as money
         const profit = 1.5;
-        let sell_price = Math.round(base_buy_price * (1 + profit) / craft_1.Craft.Amount.Cooking.meat(character)) + 1;
+        let sell_price = Math.round(base_buy_price * (1 + profit) / craft_1.Craft.Amount.Cooking.meat(character, cook_meat_1.COOKING_TIER)) + 1;
         let savings = character.savings.get();
         // console.log("AI tick")
         // console.log(prepared_meat, resource, food_in_stash, savings)
@@ -171,7 +173,7 @@ var AI;
         let base_price_bones = 3;
         let input_price = (base_price_wood + 10 * base_price_bones);
         let profit = 3;
-        let sell_price = Math.floor(input_price * (1 + profit) / craft_1.Craft.Amount.arrow(character)) + 1;
+        let sell_price = Math.floor(input_price * (1 + profit) / craft_1.Craft.Amount.arrow(character, craft_bone_arrow_1.ARROW_TIER)) + 1;
         // bones_to_buy * b_p + wood_to_buy * w_p = savings
         // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0
         // so
@@ -233,7 +235,7 @@ var AI;
             else if (!flags.foot)
                 action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0]);
             else
-                sell_set(character);
+                sell_armour_set(character);
         }
     }
     AI.make_armour = make_armour;
@@ -254,7 +256,7 @@ var AI;
         // console.log(flags)
         return flags;
     }
-    function sell_set(character) {
+    function sell_armour_set(character) {
         // console.log('armourer is ready to sell things')
         let data = character.equip.data.backpack.items;
         for (let [index, item] of Object.entries(data)) {

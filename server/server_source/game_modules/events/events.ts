@@ -440,7 +440,7 @@ export namespace Event {
     export function on_craft_update(character: Character, skill: skill, craft_tier: number) {
         const dice = Math.random()
         const current = character.skills[skill]
-        if (dice < craft_tier / current) Effect.Change.skill(character, skill, 1)
+        if ((current == 0) || (dice < (current - craft_tier) / 100)) Effect.Change.skill(character, skill, 1)
         Effect.Change.stress(character, 1)
         Effect.Change.fatigue(character, craft_tier)
     }
