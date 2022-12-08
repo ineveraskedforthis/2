@@ -36,6 +36,9 @@ function steppe_constraints(cell) {
 }
 var CampaignAI;
 (function (CampaignAI) {
+    const base_price_wood = 10;
+    const base_price_bones = 3;
+    const base_price_skin = 10;
     // constructor(world:World) {
     //     this.world = world
     // }
@@ -119,11 +122,17 @@ var CampaignAI;
         if ((char.skills.cooking > 40) || (char.perks.meat_master == true)) {
             AI.cook_food(char);
         }
-        if ((char.skills.woodwork > 40) || (char.perks.fletcher == true)) {
-            AI.make_arrow(char);
+        if ((char.skills.woodwork > 40) && (char.perks.fletcher == true)) {
+            AI.make_arrow(char, base_price_wood, base_price_bones);
         }
-        if ((char.skills.clothier > 40) || (char.perks.skin_armour_master == true)) {
-            AI.make_armour(char);
+        if ((char.skills.woodwork > 40) && (char.perks.weapon_maker == true)) {
+            AI.make_wooden_weapon(char, base_price_wood);
+        }
+        if ((char.skills.bone_carving > 40) && (char.perks.weapon_maker == true)) {
+            AI.make_bone_weapon(char, base_price_bones);
+        }
+        if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
+            AI.make_armour(char, base_price_skin);
         }
     }
     CampaignAI.decision = decision;
@@ -156,7 +165,7 @@ var AI;
         }
     }
     AI.cook_food = cook_food;
-    function make_arrow(character) {
+    function make_arrow(character, price_wood, price_bones) {
         system_2.BulkOrders.remove_by_condition(character, materials_manager_1.WOOD);
         system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_BONE);
         let arrows = character.trade_stash.get(materials_manager_1.ARROW_BONE) + character.stash.get(materials_manager_1.ARROW_BONE);
@@ -166,12 +175,11 @@ var AI;
         let trade_savings = character.trade_savings.get();
         let reserve_units = Math.min(wood, bones / 10);
         let arrows_in_stash = character.stash.get(materials_manager_1.ARROW_BONE);
-        let base_price_wood = 10;
+        let local_price_wood = price_wood;
         let cell = systems_communication_1.Convert.character_to_cell(character);
         if (cell.can_gather_wood())
-            base_price_wood = 3;
-        let base_price_bones = 3;
-        let input_price = (base_price_wood + 10 * base_price_bones);
+            local_price_wood = 3;
+        let input_price = (local_price_wood + 10 * price_bones);
         let profit = 3;
         let sell_price = Math.floor(input_price * (1 + profit) / craft_1.Craft.Amount.arrow(character, craft_bone_arrow_1.ARROW_TIER)) + 1;
         // bones_to_buy * b_p + wood_to_buy * w_p = savings
@@ -190,19 +198,19 @@ var AI;
         // makes sense only if results are not negative
         if (reserve_units < 5) {
             let savings = character.savings.get();
-            let wood_to_buy = -((-bones + 10 * wood) * base_price_bones - savings) / (10 * base_price_bones + base_price_wood);
-            let bones_to_buy = (savings - wood_to_buy * base_price_wood) / base_price_bones;
+            let wood_to_buy = -((-bones + 10 * wood) * price_bones - savings) / (10 * price_bones + local_price_wood);
+            let bones_to_buy = (savings - wood_to_buy * local_price_wood) / price_bones;
             // console.log(savings, bones, wood)
             // console.log(wood_to_buy, bones_to_buy)
             if ((wood_to_buy >= 1) && (bones_to_buy >= 1)) {
-                market_1.EventMarket.buy(character, materials_manager_1.WOOD, Math.floor(wood_to_buy), base_price_wood);
-                market_1.EventMarket.buy(character, materials_manager_1.RAT_BONE, Math.floor(bones_to_buy), base_price_bones);
+                market_1.EventMarket.buy(character, materials_manager_1.WOOD, Math.floor(wood_to_buy), local_price_wood);
+                market_1.EventMarket.buy(character, materials_manager_1.RAT_BONE, Math.floor(bones_to_buy), price_bones);
             }
             else if ((wood_to_buy >= 1) && (bones_to_buy < 1)) {
-                market_1.EventMarket.buy(character, materials_manager_1.WOOD, Math.floor(savings / base_price_wood), base_price_wood);
+                market_1.EventMarket.buy(character, materials_manager_1.WOOD, Math.floor(savings / local_price_wood), local_price_wood);
             }
             else if ((wood_to_buy < 1) && (bones_to_buy >= 1)) {
-                market_1.EventMarket.buy(character, materials_manager_1.RAT_BONE, Math.floor(savings / base_price_bones), base_price_bones);
+                market_1.EventMarket.buy(character, materials_manager_1.RAT_BONE, Math.floor(savings / price_bones), price_bones);
             }
         }
         if (arrows < 100) {
@@ -215,16 +223,16 @@ var AI;
         }
     }
     AI.make_arrow = make_arrow;
-    const base_price_skin = 10;
-    function make_armour(character) {
+    function make_armour(character, price_skin) {
+        system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
         let resource = character.stash.get(materials_manager_1.RAT_SKIN);
         let savings = character.savings.get();
-        let skin_to_buy = Math.floor(savings / base_price_skin);
+        let skin_to_buy = Math.floor(savings / price_skin);
         // console.log('armour')
         // console.log(resource, savings, skin_to_buy)
         if (skin_to_buy > 5) {
             system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
-            market_1.EventMarket.buy(character, materials_manager_1.RAT_SKIN, (0, basic_functions_1.trim)(skin_to_buy, 0, 50), base_price_skin);
+            market_1.EventMarket.buy(character, materials_manager_1.RAT_SKIN, (0, basic_functions_1.trim)(skin_to_buy, 0, 50), price_skin);
         }
         if (resource > craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
             const flags = check_if_set_is_ready(character);
@@ -235,7 +243,7 @@ var AI;
             else if (!flags.foot)
                 action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0]);
             else
-                sell_armour_set(character);
+                sell_armour_set(character, price_skin);
         }
     }
     AI.make_armour = make_armour;
@@ -256,22 +264,69 @@ var AI;
         // console.log(flags)
         return flags;
     }
-    function sell_armour_set(character) {
-        // console.log('armourer is ready to sell things')
+    function sell_armour_set(character, price_skin) {
         let data = character.equip.data.backpack.items;
         for (let [index, item] of Object.entries(data)) {
             if (item?.slot == 'body') {
-                let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 2);
+                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 2);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
             if (item?.slot == 'foot') {
-                let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_BOOTS_SKIN_NEEDED * 2);
+                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_BOOTS_SKIN_NEEDED * 2);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
             if (item?.slot == 'legs') {
-                let price = Math.floor(base_price_skin * craft_rat_armour_1.RAT_SKIN_PANTS_SKIN_NEEDED * 2);
+                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_PANTS_SKIN_NEEDED * 2);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
         }
     }
+    function sell_weapons(character) {
+        let data = character.equip.data.backpack.items;
+        for (let [index, item] of Object.entries(data)) {
+            if (item?.slot == 'weapon') {
+                const price_noise = Math.random() * 100;
+                let price = Math.floor(150 + price_noise);
+                market_1.EventMarket.sell_item(character, Number(index), price);
+            }
+        }
+    }
+    function make_wooden_weapon(character, price_wood) {
+        system_2.BulkOrders.remove_by_condition(character, materials_manager_1.WOOD);
+        let savings = character.savings.get();
+        let wood_to_buy = Math.floor(savings / price_wood);
+        if (wood_to_buy > 5) {
+            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.WOOD);
+            market_1.EventMarket.buy(character, materials_manager_1.WOOD, (0, basic_functions_1.trim)(wood_to_buy, 0, 50), price_wood);
+        }
+        let resource = character.stash.get(materials_manager_1.WOOD);
+        if (resource > 20) {
+            const dice = Math.random();
+            if (dice < 0.5)
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.SPEAR, character, [0, 0]);
+            else if (dice < 0.8)
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.MACE, character, [0, 0]);
+            else
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.WOOD_BOW, character, [0, 0]);
+        }
+        sell_weapons(character);
+    }
+    AI.make_wooden_weapon = make_wooden_weapon;
+    function make_bone_weapon(character, bone_price) {
+        system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_BONE);
+        let savings = character.savings.get();
+        let bones_to_buy = Math.floor(savings / bone_price);
+        if (bones_to_buy > 5) {
+            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_BONE);
+            market_1.EventMarket.buy(character, materials_manager_1.RAT_BONE, (0, basic_functions_1.trim)(bones_to_buy, 0, 50), bone_price);
+        }
+        let resource = character.stash.get(materials_manager_1.RAT_BONE);
+        if (resource > 20) {
+            const dice = Math.random();
+            if (dice < 1)
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.DAGGER, character, [0, 0]);
+        }
+        sell_weapons(character);
+    }
+    AI.make_bone_weapon = make_bone_weapon;
 })(AI = exports.AI || (exports.AI = {}));

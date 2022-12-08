@@ -94,6 +94,12 @@ export function migrate(current_version:number, target_version:number) {
         set_version(7)
         current_version = 7
     }
+
+    if (current_version == 7) {
+        more_crafters()
+        set_version(8)
+        current_version = 8
+    }
 }
 
 function set_up_initial_data() {
@@ -222,14 +228,44 @@ function mage(x: number, y: number) {
     return mage
 }
 
-function armour_master(x: number, y: number) {
+function armour_master(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
     let master = Event.new_character(HumanTemplateColony, 'Armourer', cell, dummy_model)
 
     master.skills.clothier = 100
     master.perks.skin_armour_master = true
-    master.stash.inc(RAT_SKIN, 40)
+    master.stash.inc(RAT_SKIN, 50)
     master.savings.inc(LUMP_OF_MONEY)
+
+    Data.Reputation.set(faction_id, master.id, "member")
+    
+    return master
+}
+
+function weapon_master_wood(x: number, y: number, faction_id: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let master = Event.new_character(HumanTemplateColony, 'Weapons maker', cell, dummy_model)
+
+    master.skills.woodwork = 100
+    master.perks.weapon_maker = true
+    master.stash.inc(WOOD, 15)
+    master.savings.inc(LUMP_OF_MONEY)
+
+    Data.Reputation.set(faction_id, master.id, "member")
+    
+    return master
+}
+
+function bone_carver_weapon(x: number, y: number, faction_id: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let master = Event.new_character(HumanTemplateColony, 'Weapons maker', cell, dummy_model)
+
+    master.skills.bone_carving = 100
+    master.perks.weapon_maker = true
+    master.stash.inc(RAT_BONE, 40)
+    master.savings.inc(LUMP_OF_MONEY)
+
+    Data.Reputation.set(faction_id, master.id, "member")
     
     return master
 }
@@ -292,8 +328,7 @@ function misc_characters() {
     Data.Reputation.set(Factions.Mages.id, mage_city.id, "friend")
     Data.Reputation.set(Factions.Mages.id, mage_city.id, "member")
 
-    const armourer_city = armour_master(0, 3)
-    Data.Reputation.set(Factions.City.id, armourer_city.id, "member")
+    armour_master(0, 3, Factions.City.id)
 }
 
 function fix_factions() {
@@ -309,6 +344,18 @@ function fix_factions() {
             Data.Reputation.set(Factions.Graci.id, character.id, "member")
         }
     }
+}
+
+function more_crafters() {
+    weapon_master_wood(0, 3, Factions.City.id)
+    weapon_master_wood(3, 4, Factions.City.id)
+    weapon_master_wood(3, 6, Factions.City.id)
+    weapon_master_wood(0, 7, Factions.City.id)
+
+    armour_master(3, 6, Factions.City.id)
+    armour_master(3, 8, Factions.City.id)
+
+    bone_carver_weapon(1, 5, Factions.City.id)
 }
 
 let version = get_version()

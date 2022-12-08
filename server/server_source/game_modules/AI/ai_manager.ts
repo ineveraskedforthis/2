@@ -44,6 +44,10 @@ function steppe_constraints(cell: Cell) {
 
 export namespace CampaignAI {
 
+    const base_price_wood = 10 as money
+    const base_price_bones = 3 as money
+    const base_price_skin = 10 as money
+
     // constructor(world:World) {
     //     this.world = world
     // }
@@ -136,17 +140,27 @@ export namespace CampaignAI {
             AI.cook_food(char)
         }
 
-        if ((char.skills.woodwork > 40) || (char.perks.fletcher == true)) {
-            AI.make_arrow(char)
+        if ((char.skills.woodwork > 40) && (char.perks.fletcher == true)) {
+            AI.make_arrow(char, base_price_wood, base_price_bones)
         }
 
-        if ((char.skills.clothier > 40) ||(char.perks.skin_armour_master == true)) {
-            AI.make_armour(char)
+        if ((char.skills.woodwork > 40) && (char.perks.weapon_maker == true)) {
+            AI.make_wooden_weapon(char, base_price_wood)
+        }
+
+        if ((char.skills.bone_carving > 40) && (char.perks.weapon_maker == true)) {
+            AI.make_bone_weapon(char, base_price_bones)
+        }
+
+        if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
+            AI.make_armour(char, base_price_skin)
         }
     }
 }
 
 export namespace AI {
+
+
     export  function cook_food(character:Character) {
         let prepared_meat = character.trade_stash.get(FOOD) + character.stash.get(FOOD)
         let resource = character.stash.get(MEAT)
@@ -179,7 +193,9 @@ export namespace AI {
         }
     }
 
-    export  function make_arrow(character:Character) {
+
+
+    export  function make_arrow(character:Character, price_wood: money, price_bones: money) {
         BulkOrders.remove_by_condition(character, WOOD)
         BulkOrders.remove_by_condition(character, RAT_BONE)
 
@@ -192,12 +208,11 @@ export namespace AI {
         let reserve_units = Math.min(wood, bones / 10)
 
         let arrows_in_stash = character.stash.get(ARROW_BONE)
-        let base_price_wood = 10 as money
+        let local_price_wood = price_wood
         let cell = Convert.character_to_cell(character)
-        if (cell.can_gather_wood()) base_price_wood = 3 as money
+        if (cell.can_gather_wood()) local_price_wood = 3 as money
 
-        let base_price_bones = 3 as money
-        let input_price = (base_price_wood + 10 * base_price_bones)
+        let input_price = (local_price_wood + 10 * price_bones)
         let profit = 3
 
         let sell_price = Math.floor(input_price * (1 + profit) / Craft.Amount.arrow(character, ARROW_TIER)) + 1 as money
@@ -226,18 +241,18 @@ export namespace AI {
 
             let savings = character.savings.get()
             
-            let wood_to_buy = -((-bones + 10 * wood) * base_price_bones - savings) / (10 * base_price_bones + base_price_wood)
-            let bones_to_buy = (savings - wood_to_buy * base_price_wood) / base_price_bones
+            let wood_to_buy = -((-bones + 10 * wood) * price_bones - savings) / (10 * price_bones + local_price_wood)
+            let bones_to_buy = (savings - wood_to_buy * local_price_wood) / price_bones
             // console.log(savings, bones, wood)
             // console.log(wood_to_buy, bones_to_buy)
 
             if ((wood_to_buy >= 1) && (bones_to_buy >= 1)) {
-                EventMarket.buy(character, WOOD, Math.floor(wood_to_buy), base_price_wood)
-                EventMarket.buy(character, RAT_BONE, Math.floor(bones_to_buy), base_price_bones)
+                EventMarket.buy(character, WOOD, Math.floor(wood_to_buy), local_price_wood)
+                EventMarket.buy(character, RAT_BONE, Math.floor(bones_to_buy), price_bones)
             } else if ((wood_to_buy >= 1) && (bones_to_buy < 1)) {
-                EventMarket.buy(character, WOOD, Math.floor(savings / base_price_wood), base_price_wood)
+                EventMarket.buy(character, WOOD, Math.floor(savings / local_price_wood), local_price_wood)
             } else if ((wood_to_buy < 1) && (bones_to_buy >= 1)) {
-                EventMarket.buy(character, RAT_BONE, Math.floor(savings / base_price_bones), base_price_bones)
+                EventMarket.buy(character, RAT_BONE, Math.floor(savings / price_bones), price_bones)
             } 
         }
 
@@ -252,22 +267,20 @@ export namespace AI {
         }
     }
 
-    const base_price_skin = 10 as money
 
-    export  function make_armour(character:Character) {
-        
 
+    export  function make_armour(character:Character, price_skin: money) {
+        BulkOrders.remove_by_condition(character, RAT_SKIN)
         let resource = character.stash.get(RAT_SKIN)
         let savings = character.savings.get()
-        
 
-        let skin_to_buy = Math.floor(savings / base_price_skin)
+        let skin_to_buy = Math.floor(savings / price_skin)
 
         // console.log('armour')
         // console.log(resource, savings, skin_to_buy)
         if (skin_to_buy > 5) {
             BulkOrders.remove_by_condition(character, RAT_SKIN)
-            EventMarket.buy(character, RAT_SKIN, trim(skin_to_buy, 0, 50), base_price_skin)
+            EventMarket.buy(character, RAT_SKIN, trim(skin_to_buy, 0, 50), price_skin)
         }
 
         if (resource > RAT_SKIN_ARMOUR_SKIN_NEEDED) {
@@ -275,7 +288,7 @@ export namespace AI {
             if (!flags.body) ActionManager.start_action(CharacterAction.CRAFT.RAT_ARMOUR, character, [0, 0])
             else if (!flags.legs) ActionManager.start_action(CharacterAction.CRAFT.RAT_PANTS, character, [0, 0])
             else if (!flags.foot) ActionManager.start_action(CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0])
-            else sell_armour_set(character)
+            else sell_armour_set(character, price_skin)
         }
     }
 
@@ -299,24 +312,75 @@ export namespace AI {
         return flags
     }
 
-    function sell_armour_set(character: Character) {
-        // console.log('armourer is ready to sell things')
+    function sell_armour_set(character: Character, price_skin: money) {
         let data = character.equip.data.backpack.items
         for (let [index, item] of Object.entries(data) ) {
             if (item?.slot == 'body') {
-                let price = Math.floor(base_price_skin * RAT_SKIN_ARMOUR_SKIN_NEEDED * 2) as money
+                let price = Math.floor(price_skin * RAT_SKIN_ARMOUR_SKIN_NEEDED * 2) as money
                 EventMarket.sell_item(character, Number(index), price)
             }
 
             if (item?.slot == 'foot') {
-                let price = Math.floor(base_price_skin * RAT_SKIN_BOOTS_SKIN_NEEDED * 2) as money
+                let price = Math.floor(price_skin * RAT_SKIN_BOOTS_SKIN_NEEDED * 2) as money
                 EventMarket.sell_item(character, Number(index), price)
             }
 
             if (item?.slot == 'legs') {
-                let price = Math.floor(base_price_skin * RAT_SKIN_PANTS_SKIN_NEEDED * 2) as money
+                let price = Math.floor(price_skin * RAT_SKIN_PANTS_SKIN_NEEDED * 2) as money
                 EventMarket.sell_item(character, Number(index), price)
             }
         }
+    }
+
+    function sell_weapons(character: Character) {
+        let data = character.equip.data.backpack.items
+        for (let [index, item] of Object.entries(data) ) {
+            if (item?.slot == 'weapon') {
+                const price_noise = Math.random() * 100
+                let price = Math.floor(150 + price_noise) as money
+                EventMarket.sell_item(character, Number(index), price)
+            }
+        }
+    }
+
+    export function make_wooden_weapon(character: Character, price_wood: money) {
+        BulkOrders.remove_by_condition(character, WOOD)
+
+        let savings = character.savings.get()
+        let wood_to_buy = Math.floor(savings / price_wood)
+        if (wood_to_buy > 5) {
+            BulkOrders.remove_by_condition(character, WOOD)
+            EventMarket.buy(character, WOOD, trim(wood_to_buy, 0, 50), price_wood)
+        }
+
+        let resource = character.stash.get(WOOD)
+        if (resource > 20) {
+            const dice = Math.random()
+            if (dice < 0.5) ActionManager.start_action(CharacterAction.CRAFT.SPEAR, character, [0, 0])
+            else if (dice < 0.8) ActionManager.start_action(CharacterAction.CRAFT.MACE, character, [0, 0])
+            else ActionManager.start_action(CharacterAction.CRAFT.WOOD_BOW, character, [0, 0])
+        }
+
+        sell_weapons(character)
+    }
+
+
+    export function make_bone_weapon(character: Character, bone_price: money) {
+        BulkOrders.remove_by_condition(character, RAT_BONE)
+
+        let savings = character.savings.get()
+        let bones_to_buy = Math.floor(savings / bone_price)
+        if (bones_to_buy > 5) {
+            BulkOrders.remove_by_condition(character, RAT_BONE)
+            EventMarket.buy(character, RAT_BONE, trim(bones_to_buy, 0, 50), bone_price)
+        }
+
+        let resource = character.stash.get(RAT_BONE)
+        if (resource > 20) {
+            const dice = Math.random()
+            if (dice < 1) ActionManager.start_action(CharacterAction.CRAFT.DAGGER, character, [0, 0])
+        }
+
+        sell_weapons(character)
     }
 }

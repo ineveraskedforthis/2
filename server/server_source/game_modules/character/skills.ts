@@ -8,14 +8,15 @@ import { Data } from "../data";
 export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'|'skin_armour_master'
 export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master']
 export interface PerksTable {
-    meat_master?: boolean; //100% chance to prepare meat
-    claws?: boolean; // + unarmed damage
-    advanced_unarmed?:boolean; //allows unarmed dodge and fast attacks
+    meat_master?: boolean;
+    claws?: boolean;
+    advanced_unarmed?:boolean;
     advanced_polearm?:boolean
     mage_initiation?:boolean
     magic_bolt?:boolean
     fletcher?:boolean
     skin_armour_master?:boolean
+    weapon_maker?:boolean
 }
 
 function perk_base_price(tag: Perks) {

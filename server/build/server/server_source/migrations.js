@@ -103,6 +103,11 @@ function migrate(current_version, target_version) {
         set_version(7);
         current_version = 7;
     }
+    if (current_version == 7) {
+        more_crafters();
+        set_version(8);
+        current_version = 8;
+    }
 }
 exports.migrate = migrate;
 function set_up_initial_data() {
@@ -200,13 +205,34 @@ function mage(x, y) {
     market_1.EventMarket.buy(mage, materials_manager_1.GRACI_HAIR, 10, 1000);
     return mage;
 }
-function armour_master(x, y) {
+function armour_master(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
     let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Armourer', cell, dummy_model);
     master.skills.clothier = 100;
     master.perks.skin_armour_master = true;
-    master.stash.inc(materials_manager_1.RAT_SKIN, 40);
+    master.stash.inc(materials_manager_1.RAT_SKIN, 50);
     master.savings.inc(LUMP_OF_MONEY);
+    data_1.Data.Reputation.set(faction_id, master.id, "member");
+    return master;
+}
+function weapon_master_wood(x, y, faction_id) {
+    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Weapons maker', cell, dummy_model);
+    master.skills.woodwork = 100;
+    master.perks.weapon_maker = true;
+    master.stash.inc(materials_manager_1.WOOD, 15);
+    master.savings.inc(LUMP_OF_MONEY);
+    data_1.Data.Reputation.set(faction_id, master.id, "member");
+    return master;
+}
+function bone_carver_weapon(x, y, faction_id) {
+    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Weapons maker', cell, dummy_model);
+    master.skills.bone_carving = 100;
+    master.perks.weapon_maker = true;
+    master.stash.inc(materials_manager_1.RAT_BONE, 40);
+    master.savings.inc(LUMP_OF_MONEY);
+    data_1.Data.Reputation.set(faction_id, master.id, "member");
     return master;
 }
 function city_guard(x, y) {
@@ -253,8 +279,7 @@ function misc_characters() {
     const mage_city = mage(1, 6);
     data_1.Data.Reputation.set(factions_1.Factions.Mages.id, mage_city.id, "friend");
     data_1.Data.Reputation.set(factions_1.Factions.Mages.id, mage_city.id, "member");
-    const armourer_city = armour_master(0, 3);
-    data_1.Data.Reputation.set(factions_1.Factions.City.id, armourer_city.id, "member");
+    armour_master(0, 3, factions_1.Factions.City.id);
 }
 function fix_factions() {
     const EloStartingCell = system_3.MapSystem.coordinate_to_cell([18, 4]);
@@ -269,6 +294,15 @@ function fix_factions() {
             data_1.Data.Reputation.set(factions_1.Factions.Graci.id, character.id, "member");
         }
     }
+}
+function more_crafters() {
+    weapon_master_wood(0, 3, factions_1.Factions.City.id);
+    weapon_master_wood(3, 4, factions_1.Factions.City.id);
+    weapon_master_wood(3, 6, factions_1.Factions.City.id);
+    weapon_master_wood(0, 7, factions_1.Factions.City.id);
+    armour_master(3, 6, factions_1.Factions.City.id);
+    armour_master(3, 8, factions_1.Factions.City.id);
+    bone_carver_weapon(1, 5, factions_1.Factions.City.id);
 }
 let version = get_version();
 console.log(version);
