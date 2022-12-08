@@ -25,6 +25,8 @@ var Craft;
                 let base_amount = Math.round(ratio * ELODINO_TO_FOOD);
                 if (character.perks.meat_master)
                     base_amount += 1;
+                if (character.perks.alchemist)
+                    base_amount += 1;
                 return base_amount;
             }
             Cooking.elodino = elodino;

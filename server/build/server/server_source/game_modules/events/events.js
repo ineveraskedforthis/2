@@ -5,6 +5,7 @@ const helpers_1 = require("../AI/helpers");
 const battle_calcs_1 = require("../battle/battle_calcs");
 const events_1 = require("../battle/events");
 const system_1 = require("../battle/system");
+const basic_functions_1 = require("../calculations/basic_functions");
 const system_2 = require("../character/attack/system");
 const generate_loot_1 = require("../character/races/generate_loot");
 const skills_1 = require("../character/skills");
@@ -41,8 +42,31 @@ var Event;
         const old_cell = systems_communication_1.Convert.character_to_cell(character);
         systems_communication_1.Unlink.character_and_cell(character, old_cell);
         systems_communication_1.Link.character_and_cell(character, new_cell);
-        // effect on fatigue
-        character.change('fatigue', 2);
+        let probability = 0.5;
+        if (old_cell.development.wild > 0)
+            probability += 0.1;
+        if (old_cell.development.wild > 1)
+            probability += 0.1;
+        if (old_cell.development.urban > 0)
+            probability -= 0.2;
+        if (old_cell.development.rural > 0)
+            probability -= 0.1;
+        // effect on fatigue depending on boots
+        if (character.equip.data.armour.foot == undefined) {
+            character.change('fatigue', 5);
+        }
+        else {
+            const durability = character.equip.data.armour.foot.durability;
+            character.change('fatigue', Math.round((0, basic_functions_1.trim)(5 - 4 * (durability / 100), 1, 5)));
+        }
+        const dice = Math.random();
+        if (dice < probability) {
+            effects_1.Effect.change_durability(character, 'foot', -1);
+            let skill_dice = Math.random();
+            if (skill_dice * skill_dice * skill_dice > character.skills.travelling / 100) {
+                effects_1.Effect.Change.skill(character, 'travelling', 1);
+            }
+        }
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.MAP */);
     }

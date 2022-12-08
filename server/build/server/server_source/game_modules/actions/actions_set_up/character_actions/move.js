@@ -5,7 +5,16 @@ const system_1 = require("../../../map/system");
 const events_1 = require("../../../events/events");
 exports.move = {
     duration(char) {
-        return 1 + char.get_fatigue() / 30;
+        let duration = 1;
+        duration += char.get_fatigue() / 100;
+        if (char.equip.data.armour.foot == undefined) {
+            duration = duration * 1.5;
+        }
+        else {
+            duration = duration * (1.5 - char.equip.data.armour.foot.durability / 200);
+        }
+        duration = duration * (1 - char.skills.travelling / 200);
+        return duration;
     },
     check: function (char, data) {
         if (char.in_battle()) {

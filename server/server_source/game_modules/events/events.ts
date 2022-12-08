@@ -4,6 +4,7 @@ import { Accuracy } from "../battle/battle_calcs";
 import { Battle } from "../battle/classes/battle";
 import { BattleEvent } from "../battle/events";
 import { BattleSystem } from "../battle/system";
+import { trim } from "../calculations/basic_functions";
 import { Attack } from "../character/attack/system";
 import { Character } from "../character/character";
 import { ModelVariant } from "../character/character_parts";
@@ -55,8 +56,29 @@ export namespace Event {
         Unlink.character_and_cell(character, old_cell)
         Link.character_and_cell(character, new_cell)
 
-        // effect on fatigue
-        character.change('fatigue', 2);
+        let probability = 0.5
+        if (old_cell.development.wild > 0) probability += 0.1
+        if (old_cell.development.wild > 1) probability += 0.1
+        if (old_cell.development.urban > 0) probability -= 0.2
+        if (old_cell.development.rural > 0) probability -= 0.1
+
+        // effect on fatigue depending on boots
+        if (character.equip.data.armour.foot == undefined) {
+            character.change('fatigue', 5);
+        } else {
+            const durability = character.equip.data.armour.foot.durability
+            character.change('fatigue', Math.round(trim(5 - 4 * (durability / 100), 1, 5)))
+        }
+
+        const dice = Math.random()
+        if (dice < probability) {
+            Effect.change_durability(character, 'foot', -1)
+            
+            let skill_dice = Math.random()
+            if (skill_dice * skill_dice * skill_dice > character.skills.travelling / 100) {
+                Effect.Change.skill(character, 'travelling', 1)
+            }
+        }
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MAP)

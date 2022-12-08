@@ -147,6 +147,7 @@ class SkillList {
         this.hunt = 0;
         this.ranged = 0;
         this.bone_carving = 0;
+        this.travelling = 0;
     }
 }
 exports.SkillList = SkillList;

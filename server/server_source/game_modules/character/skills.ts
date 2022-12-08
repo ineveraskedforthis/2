@@ -161,6 +161,7 @@ export class SkillList {
     hunt: number;
     ranged: number;
     bone_carving: number;
+    travelling: number;
 
 
     constructor() {
@@ -177,7 +178,8 @@ export class SkillList {
         this.woodwork       = 0;
         this.hunt           = 0;
         this.ranged         = 0;
-        this.bone_carving   = 0
+        this.bone_carving   = 0;
+        this.travelling     = 0;
     }
 }
 

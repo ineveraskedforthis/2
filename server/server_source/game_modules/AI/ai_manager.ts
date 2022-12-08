@@ -415,4 +415,8 @@ export namespace AI {
 
         sell_weapons(character)
     }
+
+    export function make_boots(character: Character, skin_price: money) {
+
+    }
 }
