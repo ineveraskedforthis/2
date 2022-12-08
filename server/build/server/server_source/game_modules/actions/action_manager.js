@@ -27,6 +27,7 @@ var CharacterAction;
     let COOK;
     (function (COOK) {
         COOK.MEAT = cook_meat_1.cook_meat;
+        COOK.FISH = cook_meat_1.cook_fish;
         COOK.ELODINO = cook_meat_1.cook_elo_to_zaz;
     })(COOK = CharacterAction.COOK || (CharacterAction.COOK = {}));
     let CRAFT;

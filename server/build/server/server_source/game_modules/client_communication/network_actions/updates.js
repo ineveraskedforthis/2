@@ -226,6 +226,7 @@ var SendUpdate;
             return;
         alerts_1.Alerts.craft(user, 'cook_elodino', craft_1.Craft.Amount.elodino_zaz_extraction(character, cook_meat_1.ELODINO_TIER));
         alerts_1.Alerts.craft(user, 'cook_meat', craft_1.Craft.Amount.Cooking.meat(character, cook_meat_1.COOKING_TIER));
+        alerts_1.Alerts.craft(user, 'cook_fish', craft_1.Craft.Amount.Cooking.meat(character, cook_meat_1.COOKING_TIER));
     }
     SendUpdate.cooking_craft = cooking_craft;
     function woodwork_craft(user) {

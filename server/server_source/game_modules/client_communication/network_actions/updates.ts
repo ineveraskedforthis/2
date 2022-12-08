@@ -238,6 +238,7 @@ export namespace SendUpdate {
 
         Alerts.craft(user, 'cook_elodino', Craft.Amount.elodino_zaz_extraction(character, ELODINO_TIER))
         Alerts.craft(user, 'cook_meat', Craft.Amount.Cooking.meat(character, COOKING_TIER))
+        Alerts.craft(user, 'cook_fish', Craft.Amount.Cooking.meat(character, COOKING_TIER))
     }
 
     export function woodwork_craft(user: User) {

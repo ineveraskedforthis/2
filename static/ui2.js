@@ -705,6 +705,11 @@ function send_switch_weapon_request() {
 }
 
 {
+    let div = document.getElementById('cook_fish')
+    div.onclick = () => socket.emit('cfish')
+}
+
+{
     let div = document.getElementById('cook_elodino')
     div.onclick = () => socket.emit('czaz')
 }
