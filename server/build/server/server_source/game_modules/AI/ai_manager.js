@@ -358,4 +358,7 @@ var AI;
         sell_weapons(character);
     }
     AI.make_bone_weapon = make_bone_weapon;
+    function make_boots(character, skin_price) {
+    }
+    AI.make_boots = make_boots;
 })(AI = exports.AI || (exports.AI = {}));

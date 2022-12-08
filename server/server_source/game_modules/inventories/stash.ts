@@ -32,7 +32,7 @@ export class Stash {
         if (tag_stash == undefined) {
             tag_stash = 0
         }
-        if ((x == undefined)||(x == NaN)) {
+        if ((x == undefined)||(Number.isNaN(x))) {
             x = 0
         }
         if (tag_stash + x < 0) {
@@ -47,7 +47,7 @@ export class Stash {
     }
 
     set(tag: material_index, x: number) {
-        if ((x < 0)||(x == undefined)||(x == NaN)) {
+        if ((x < 0)||(x == undefined)||(Number.isNaN(x))) {
             this.data[tag] = 0
         } else {
             this.data[tag] = x;
@@ -57,12 +57,12 @@ export class Stash {
 
     get(tag: material_index):number {
         let tmp = this.data[tag]
-        if ((tmp == undefined)||(tmp == NaN)) return 0
+        if ((tmp == undefined)||(Number.isNaN(tmp))) return 0
         return tmp;
     }
 
     transfer(target: Stash, tag: material_index, amount: number) {
-        if ((amount == undefined) || (amount == null) || (amount == NaN)) amount = 0
+        if ((amount == undefined) || (amount == null) || (Number.isNaN(amount))) amount = 0
         var tmp = this.inc(tag, -amount);
         target.inc(tag, -tmp);
         return -tmp;
