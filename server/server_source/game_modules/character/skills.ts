@@ -17,6 +17,7 @@ export interface PerksTable {
     fletcher?:boolean
     skin_armour_master?:boolean
     weapon_maker?:boolean
+    alchemist?:boolean
 }
 
 function perk_base_price(tag: Perks) {

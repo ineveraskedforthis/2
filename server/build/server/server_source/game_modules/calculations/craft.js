@@ -34,6 +34,8 @@ var Craft;
             let base_amount = Math.round(ratio * ELODINO_TO_ZAZ);
             if (character.perks.mage_initiation)
                 base_amount += 1;
+            if (character.perks.alchemist)
+                base_amount += 2;
             return base_amount;
         }
         Amount.elodino_zaz_extraction = elodino_zaz_extraction;

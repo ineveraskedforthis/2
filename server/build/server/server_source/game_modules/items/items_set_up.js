@@ -62,7 +62,7 @@ exports.WOODEN_MACE_ARGUMENT = {
     affixes: [],
     slot: 'weapon',
     material: wood,
-    weapon_tag: 'onehand',
+    weapon_tag: 'twohanded',
     model_tag: 'wooden_mace',
     resists: empty_resists,
     damage: new damage_types_1.Damage(12, 0, 0),

@@ -39,6 +39,7 @@ var CampaignAI;
     const base_price_wood = 10;
     const base_price_bones = 3;
     const base_price_skin = 10;
+    const base_price_elodino = 50;
     // constructor(world:World) {
     //     this.world = world
     // }
@@ -134,11 +135,39 @@ var CampaignAI;
         if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
             AI.make_armour(char, base_price_skin);
         }
+        if ((char.perks.alchemist)) {
+            AI.extract_zaz(char, base_price_elodino);
+        }
     }
     CampaignAI.decision = decision;
 })(CampaignAI = exports.CampaignAI || (exports.CampaignAI = {}));
 var AI;
 (function (AI) {
+    function extract_zaz(character, price_elo) {
+        const zaz_price = Math.round(2 * price_elo / craft_1.Craft.Amount.elodino_zaz_extraction(character, cook_meat_1.ELODINO_TIER));
+        const current_zaz = character.stash.get(materials_manager_1.ZAZ);
+        if (current_zaz > 0) {
+            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.ZAZ);
+            let total_amount = character.stash.get(materials_manager_1.ZAZ);
+            market_1.EventMarket.sell(character, materials_manager_1.ZAZ, total_amount, zaz_price);
+        }
+        system_2.BulkOrders.remove_by_condition(character, materials_manager_1.ELODINO_FLESH);
+        const savings = character.savings.get();
+        const resource = character.stash.get(materials_manager_1.ELODINO_FLESH);
+        const want_to_buy = (0, basic_functions_1.trim)(20 - resource, 0, savings / price_elo);
+        if ((want_to_buy > 5)) {
+            market_1.EventMarket.buy(character, materials_manager_1.ELODINO_FLESH, want_to_buy, price_elo);
+        }
+        if (resource > 0) {
+            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.COOK.ELODINO, character, [0, 0]);
+        }
+        let food_in_stash = character.stash.get(materials_manager_1.FOOD);
+        if (food_in_stash > 0) {
+            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.FOOD);
+            market_1.EventMarket.sell(character, materials_manager_1.FOOD, food_in_stash, 0); //alchemist sells very cheap food
+        }
+    }
+    AI.extract_zaz = extract_zaz;
     function cook_food(character) {
         let prepared_meat = character.trade_stash.get(materials_manager_1.FOOD) + character.stash.get(materials_manager_1.FOOD);
         let resource = character.stash.get(materials_manager_1.MEAT);

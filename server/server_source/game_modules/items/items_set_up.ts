@@ -68,7 +68,7 @@ export const WOODEN_MACE_ARGUMENT: ItemJson = {
     affixes: [],
     slot: 'weapon',
     material: wood,
-    weapon_tag: 'onehand',
+    weapon_tag: 'twohanded',
     model_tag: 'wooden_mace',
     resists: empty_resists,
     damage: new Damage(12, 0, 0),

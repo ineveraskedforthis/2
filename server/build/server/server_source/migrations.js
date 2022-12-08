@@ -108,6 +108,11 @@ function migrate(current_version, target_version) {
         set_version(8);
         current_version = 8;
     }
+    if (current_version == 8) {
+        alchemists();
+        set_version(9);
+        current_version = 9;
+    }
 }
 exports.migrate = migrate;
 function set_up_initial_data() {
@@ -204,6 +209,17 @@ function mage(x, y) {
     market_1.EventMarket.buy(mage, materials_manager_1.ELODINO_FLESH, 200, 20);
     market_1.EventMarket.buy(mage, materials_manager_1.GRACI_HAIR, 10, 1000);
     return mage;
+}
+function alchemist(x, y, faction_id) {
+    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    let alchemist = events_1.Event.new_character(human_1.HumanTemplateColony, 'Alchemist', cell, dummy_model);
+    alchemist.skills.magic_mastery = 60;
+    alchemist.perks.mage_initiation = true;
+    alchemist.perks.alchemist = true;
+    alchemist.stash.inc(materials_manager_1.ZAZ, 5);
+    alchemist.savings.inc(TONS_OF_MONEY);
+    data_1.Data.Reputation.set(faction_id, alchemist.id, "member");
+    return alchemist;
 }
 function armour_master(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
@@ -303,6 +319,12 @@ function more_crafters() {
     armour_master(3, 6, factions_1.Factions.City.id);
     armour_master(3, 8, factions_1.Factions.City.id);
     bone_carver_weapon(1, 5, factions_1.Factions.City.id);
+}
+function alchemists() {
+    alchemist(1, 5, factions_1.Factions.Mages.id);
+    alchemist(1, 6, factions_1.Factions.Mages.id);
+    alchemist(2, 6, factions_1.Factions.Mages.id);
+    alchemist(2, 7, factions_1.Factions.Mages.id);
 }
 let version = get_version();
 console.log(version);

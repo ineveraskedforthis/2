@@ -20,6 +20,7 @@ export namespace Craft {
                 const ratio = ratio_from_skill(character.skills.cooking, tier)
                 let base_amount = Math.round(ratio * ELODINO_TO_FOOD)
                 if (character.perks.meat_master) base_amount += 1
+                if (character.perks.alchemist) base_amount += 1
                 return base_amount
             }
         }
@@ -28,6 +29,7 @@ export namespace Craft {
             const ratio = ratio_from_skill(character.skills.magic_mastery, tier)
             let base_amount = Math.round(ratio * ELODINO_TO_ZAZ)
             if (character.perks.mage_initiation) base_amount += 1
+            if (character.perks.alchemist) base_amount += 2
             return base_amount
         }
 

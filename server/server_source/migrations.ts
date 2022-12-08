@@ -100,6 +100,12 @@ export function migrate(current_version:number, target_version:number) {
         set_version(8)
         current_version = 8
     }
+
+    if (current_version == 8) {
+        alchemists()
+        set_version(9)
+        current_version = 9
+    }
 }
 
 function set_up_initial_data() {
@@ -226,6 +232,22 @@ function mage(x: number, y: number) {
     EventMarket.buy( mage, GRACI_HAIR, 10, 1000 as money)
 
     return mage
+}
+
+function alchemist(x: number, y: number, faction_id: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let alchemist = Event.new_character(HumanTemplateColony, 'Alchemist', cell, dummy_model)
+
+    alchemist.skills.magic_mastery = 60
+    alchemist.perks.mage_initiation = true
+    alchemist.perks.alchemist = true
+
+    alchemist.stash.inc(ZAZ, 5)
+    alchemist.savings.inc(TONS_OF_MONEY)
+
+    Data.Reputation.set(faction_id, alchemist.id, "member")
+
+    return alchemist
 }
 
 function armour_master(x: number, y: number, faction_id: number) {
@@ -356,6 +378,13 @@ function more_crafters() {
     armour_master(3, 8, Factions.City.id)
 
     bone_carver_weapon(1, 5, Factions.City.id)
+}
+
+function alchemists() {
+    alchemist(1, 5, Factions.Mages.id)
+    alchemist(1, 6, Factions.Mages.id)
+    alchemist(2, 6, Factions.Mages.id)
+    alchemist(2, 7, Factions.Mages.id)
 }
 
 let version = get_version()
