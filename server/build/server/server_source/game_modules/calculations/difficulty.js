@@ -41,4 +41,9 @@ var CellActionProb;
         return hunt_probability(skill);
     }
     CellActionProb.hunt = hunt;
+    function fish(character) {
+        let skill = character.skills.fishing;
+        return hunt_probability(skill);
+    }
+    CellActionProb.fish = fish;
 })(CellActionProb = exports.CellActionProb || (exports.CellActionProb = {}));

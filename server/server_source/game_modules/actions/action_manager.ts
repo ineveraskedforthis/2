@@ -4,7 +4,7 @@ import { eat } from "./actions_set_up/character_actions/eat"
 import { cook_elo_to_zaz, cook_meat } from "./actions_set_up/character_actions/cook_meat"
 import { clean } from './actions_set_up/character_actions/clean'
 import { rest } from "./actions_set_up/character_actions/rest"
-import { hunt } from "./actions_set_up/character_actions/hunt"
+import { fish, hunt } from "./actions_set_up/character_actions/hunt"
 // import { attack } from "./actions_set_up/character_actions/attack"
 import { gather_wood } from "./actions_set_up/character_actions/gather_wood"
 import { craft_bone_dagger, craft_bone_spear, craft_spear, craft_wooden_mace, craft_wood_bow } from "./actions_set_up/character_actions/craft_weapon"
@@ -55,6 +55,7 @@ export namespace CharacterAction {
     export const CLEAN = clean
     export const EAT = eat
     export const HUNT = hunt
+    export const FISH = fish
     export const REST = rest
     // export const ATTACK = attack
     export const GATHER_WOOD = gather_wood

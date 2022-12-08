@@ -135,6 +135,9 @@ var CampaignAI;
         if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
             AI.make_armour(char, base_price_skin);
         }
+        if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
+            AI.make_boots(char, base_price_skin);
+        }
         if ((char.perks.alchemist)) {
             AI.extract_zaz(char, base_price_elodino);
         }
@@ -297,15 +300,15 @@ var AI;
         let data = character.equip.data.backpack.items;
         for (let [index, item] of Object.entries(data)) {
             if (item?.slot == 'body') {
-                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 2);
+                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
             if (item?.slot == 'foot') {
-                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_BOOTS_SKIN_NEEDED * 2);
+                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_BOOTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
             if (item?.slot == 'legs') {
-                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_PANTS_SKIN_NEEDED * 2);
+                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_PANTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
         }
@@ -359,6 +362,20 @@ var AI;
     }
     AI.make_bone_weapon = make_bone_weapon;
     function make_boots(character, skin_price) {
+        system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
+        let savings = character.savings.get();
+        let skin_to_buy = Math.floor(savings / skin_price);
+        if (skin_to_buy > 5) {
+            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
+            market_1.EventMarket.buy(character, materials_manager_1.RAT_SKIN, (0, basic_functions_1.trim)(skin_to_buy, 0, 50), skin_price);
+        }
+        let resource = character.stash.get(materials_manager_1.RAT_SKIN);
+        if (resource > 10) {
+            const dice = Math.random();
+            if (dice < 1)
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0]);
+        }
+        sell_armour_set(character, skin_price);
     }
     AI.make_boots = make_boots;
 })(AI = exports.AI || (exports.AI = {}));

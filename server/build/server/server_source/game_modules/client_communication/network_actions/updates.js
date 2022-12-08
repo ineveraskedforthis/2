@@ -337,6 +337,7 @@ var SendUpdate;
         if (character == undefined)
             return;
         const cell = systems_communication_1.Convert.character_to_cell(character);
+        alerts_1.Alerts.map_action(user, 'fish', cell.can_fish());
         alerts_1.Alerts.map_action(user, 'hunt', cell.can_hunt());
         alerts_1.Alerts.map_action(user, 'clean', cell.can_clean());
         alerts_1.Alerts.map_action(user, 'gather_wood', cell.can_gather_wood());
@@ -363,6 +364,7 @@ var SendUpdate;
         if (character == undefined)
             return;
         alerts_1.Alerts.cell_action(user, 'hunt', difficulty_1.CellActionProb.hunt(character));
+        alerts_1.Alerts.cell_action(user, 'fish', difficulty_1.CellActionProb.fish(character));
     }
     SendUpdate.cell_probability = cell_probability;
     function update_player_actions_availability() {

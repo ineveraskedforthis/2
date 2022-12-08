@@ -57,6 +57,7 @@ class SocketManager {
             socket.on('rest', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.REST));
             socket.on('move', (msg) => actions_1.HandleAction.move(user, msg));
             socket.on('hunt', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.HUNT));
+            socket.on('fish', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.FISH));
             socket.on('gather_wood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_WOOD));
             socket.on('cfood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.MEAT));
             socket.on('czaz', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.ELODINO));

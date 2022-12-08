@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ARROW_BONE = exports.WATER = exports.MEAT = exports.ZAZ = exports.FOOD = exports.STEEL = exports.WOOD = exports.GRACI_HAIR = exports.ELODINO_FLESH = exports.RAT_BONE = exports.RAT_SKIN = exports.materials = exports.MaterialsManager = void 0;
+exports.TEXTILE = exports.COTTON = exports.FISH = exports.ARROW_BONE = exports.WATER = exports.MEAT = exports.ZAZ = exports.FOOD = exports.STEEL = exports.WOOD = exports.GRACI_HAIR = exports.ELODINO_FLESH = exports.RAT_BONE = exports.RAT_SKIN = exports.materials = exports.MaterialsManager = void 0;
 const item_1 = require("../items/item");
 class MaterialsManager {
     constructor() {
@@ -53,3 +53,6 @@ exports.ZAZ = exports.materials.create_material(1, 10, 'zaz');
 exports.MEAT = exports.materials.create_material(3, 1, 'meat');
 exports.WATER = exports.materials.create_material(2, 1, 'water');
 exports.ARROW_BONE = exports.materials.create_material(0.5, 3, 'arrow_bone');
+exports.FISH = exports.materials.create_material(3, 1, 'fish');
+exports.COTTON = exports.materials.create_material(1, 1, 'cotton');
+exports.TEXTILE = exports.materials.create_material(1, 3, 'textile');

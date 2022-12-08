@@ -350,6 +350,7 @@ export namespace SendUpdate {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
         const cell = Convert.character_to_cell(character)
+        Alerts.map_action(user, 'fish'          , cell.can_fish())
         Alerts.map_action(user, 'hunt'          , cell.can_hunt())
         Alerts.map_action(user, 'clean'         , cell.can_clean())
         Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
@@ -377,6 +378,7 @@ export namespace SendUpdate {
         if (character == undefined) return
 
         Alerts.cell_action(user, 'hunt', CellActionProb.hunt(character))
+        Alerts.cell_action(user, 'fish', CellActionProb.fish(character))
     }
 
     export function update_player_actions_availability() {

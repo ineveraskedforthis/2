@@ -121,6 +121,10 @@ export class Cell {
         return ((this.development.wild > 0) || (this.resources.prey))
     }
 
+    can_fish(): boolean{
+        return (this.resources.fish)
+    }
+
     can_rest(): boolean{
         return (this.development.urban > 0)
     }
@@ -137,7 +141,7 @@ export class Cell {
         return undefined
     }
 
-     update(dt: number) {
+    update(dt: number) {
         if (this.visited_recently) {
             this.last_visit += dt
             if (this.last_visit > 10) {

@@ -88,6 +88,7 @@ export class SocketManager {
             socket.on('rest',  () =>            HandleAction.act(user, CharacterAction.REST));
             socket.on('move', (msg: any) =>     HandleAction.move(user, msg));
             socket.on('hunt',  () =>            HandleAction.act(user, CharacterAction.HUNT))
+            socket.on('fish',  () =>            HandleAction.act(user, CharacterAction.FISH))
             socket.on('gather_wood', () =>      HandleAction.act(user, CharacterAction.GATHER_WOOD))            
             
 

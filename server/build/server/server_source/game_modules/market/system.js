@@ -51,7 +51,7 @@ var BulkOrders;
                 continue;
             }
             const order = JSON.parse(line);
-            console.log(order);
+            // console.log(order)
             data_1.Data.BulkOrders.set(order.id, order.owner_id, order);
             const last_id = data_1.Data.BulkOrders.id();
             data_1.Data.BulkOrders.set_id(Math.max(order.id, last_id));

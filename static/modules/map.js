@@ -218,7 +218,7 @@ export class Map {
             )(this.socket);
         }
 
-        let rest_of_actions = ['attack', 'gather_wood', 'hunt', 'clean', 'rest']
+        let rest_of_actions = ['fish', 'gather_wood', 'hunt', 'clean', 'rest']
 
 
         let desktop_container = document.getElementById('desktop_actions')
@@ -248,7 +248,7 @@ export class Map {
                 desktop_button.appendChild(chance_label)
             }
 
-            if (action_tag == 'hunt' || action_tag == 'gather_wood' ){   
+            if (action_tag == 'hunt' || action_tag == 'gather_wood' || action_tag == 'fish'){   
                 let repeat_button = document.createElement('div')
                 repeat_button.innerHTML = 'repeat';
                 repeat_button.classList.add('active');

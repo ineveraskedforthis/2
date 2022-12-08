@@ -8,9 +8,20 @@ import { ItemSystem } from "../items/system";
 import { material_index } from "../manager_classes/materials_manager";
 
 export function craft_item(character: Character, item: ItemJson, durability: (character: Character, tier: number) => number, skill: skill, tier: number) {
-    let spear = ItemSystem.create(item)
-    spear.durability = durability(character, tier)
-    character.equip.data.backpack.add(spear)
+    let result = ItemSystem.create(item)
+    result.durability = durability(character, tier)
+    result.durability += Math.round(Math.random() * 10)
+    if (result.slot == 'weapon') {
+        if (character.perks.weapon_maker) result.durability += 10
+    } else {
+        if (character.perks.skin_armour_master && (item.material.string_tag == 'rat_skin')) {
+            result.durability += 10
+        }
+        if (character.perks.shoemaker && (item.slot == 'foot')) {
+            result.durability += 10
+        }
+    }
+    character.equip.data.backpack.add(result)
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
     Event.on_craft_update(character, skill, tier)
 }

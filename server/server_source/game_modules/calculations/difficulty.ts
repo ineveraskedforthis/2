@@ -38,4 +38,9 @@ export namespace CellActionProb {
         let skill = character.skills.hunt
         return hunt_probability(skill)
     }
+
+    export function fish(character: Character) {
+        let skill = character.skills.fishing
+        return hunt_probability(skill)
+    }
 }

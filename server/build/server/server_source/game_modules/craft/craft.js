@@ -5,9 +5,22 @@ const user_manager_1 = require("../client_communication/user_manager");
 const events_1 = require("../events/events");
 const system_1 = require("../items/system");
 function craft_item(character, item, durability, skill, tier) {
-    let spear = system_1.ItemSystem.create(item);
-    spear.durability = durability(character, tier);
-    character.equip.data.backpack.add(spear);
+    let result = system_1.ItemSystem.create(item);
+    result.durability = durability(character, tier);
+    result.durability += Math.round(Math.random() * 10);
+    if (result.slot == 'weapon') {
+        if (character.perks.weapon_maker)
+            result.durability += 10;
+    }
+    else {
+        if (character.perks.skin_armour_master && (item.material.string_tag == 'rat_skin')) {
+            result.durability += 10;
+        }
+        if (character.perks.shoemaker && (item.slot == 'foot')) {
+            result.durability += 10;
+        }
+    }
+    character.equip.data.backpack.add(result);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
     events_1.Event.on_craft_update(character, skill, tier);
 }

@@ -157,6 +157,10 @@ export namespace CampaignAI {
             AI.make_armour(char, base_price_skin)
         }
 
+        if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
+            AI.make_boots(char, base_price_skin)
+        }
+
         if ((char.perks.alchemist)) {
             AI.extract_zaz(char, base_price_elodino)
         }
@@ -348,17 +352,17 @@ export namespace AI {
         let data = character.equip.data.backpack.items
         for (let [index, item] of Object.entries(data) ) {
             if (item?.slot == 'body') {
-                let price = Math.floor(price_skin * RAT_SKIN_ARMOUR_SKIN_NEEDED * 2) as money
+                let price = Math.floor(price_skin * RAT_SKIN_ARMOUR_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10) as money
                 EventMarket.sell_item(character, Number(index), price)
             }
 
             if (item?.slot == 'foot') {
-                let price = Math.floor(price_skin * RAT_SKIN_BOOTS_SKIN_NEEDED * 2) as money
+                let price = Math.floor(price_skin * RAT_SKIN_BOOTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10) as money
                 EventMarket.sell_item(character, Number(index), price)
             }
 
             if (item?.slot == 'legs') {
-                let price = Math.floor(price_skin * RAT_SKIN_PANTS_SKIN_NEEDED * 2) as money
+                let price = Math.floor(price_skin * RAT_SKIN_PANTS_SKIN_NEEDED * 2* item.durability / 100 + Math.random() * 10) as money
                 EventMarket.sell_item(character, Number(index), price)
             }
         }
@@ -417,6 +421,21 @@ export namespace AI {
     }
 
     export function make_boots(character: Character, skin_price: money) {
+        BulkOrders.remove_by_condition(character, RAT_SKIN)
 
+        let savings = character.savings.get()
+        let skin_to_buy = Math.floor(savings / skin_price)
+        if (skin_to_buy > 5) {
+            BulkOrders.remove_by_condition(character, RAT_SKIN)
+            EventMarket.buy(character, RAT_SKIN, trim(skin_to_buy, 0, 50), skin_price)
+        }
+
+        let resource = character.stash.get(RAT_SKIN)
+        if (resource > 10) {
+            const dice = Math.random()
+            if (dice < 1) ActionManager.start_action(CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0])
+        }
+
+        sell_armour_set(character, skin_price)
     }
 }

@@ -82,6 +82,9 @@ class Cell {
     can_hunt() {
         return ((this.development.wild > 0) || (this.resources.prey));
     }
+    can_fish() {
+        return (this.resources.fish);
+    }
     can_rest() {
         return (this.development.urban > 0);
     }

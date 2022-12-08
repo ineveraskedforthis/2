@@ -250,7 +250,8 @@ const SKILL_NAMES = {
     hunt: 'Hunting',    
     bone_carving: 'Bone carving',
     twohanded: 'Two-handed weapons',
-    travelling: 'Travelling'
+    travelling: 'Travelling',
+    fishing: 'Fishing'
 }
 
 var CURR_SKILL_DESC = undefined

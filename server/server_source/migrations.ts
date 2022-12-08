@@ -106,6 +106,12 @@ export function migrate(current_version:number, target_version:number) {
         set_version(9)
         current_version = 9
     }
+
+    if (current_version == 9) {
+        shoemakers()
+        set_version(10)
+        current_version = 10
+    }
 }
 
 function set_up_initial_data() {
@@ -264,6 +270,20 @@ function armour_master(x: number, y: number, faction_id: number) {
     return master
 }
 
+function shoemaker(x: number, y: number, faction_id: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let master = Event.new_character(HumanTemplateColony, 'Shoemaker', cell, dummy_model)
+
+    master.skills.clothier = 100
+    master.perks.shoemaker = true
+    master.stash.inc(RAT_SKIN, 50)
+    master.savings.inc(LUMP_OF_MONEY)
+
+    Data.Reputation.set(faction_id, master.id, "member")
+    
+    return master
+}
+
 function weapon_master_wood(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
     let master = Event.new_character(HumanTemplateColony, 'Weapons maker', cell, dummy_model)
@@ -385,6 +405,13 @@ function alchemists() {
     alchemist(1, 6, Factions.Mages.id)
     alchemist(2, 6, Factions.Mages.id)
     alchemist(2, 7, Factions.Mages.id)
+}
+
+function shoemakers() {
+    shoemaker(0, 3, Factions.City.id)
+    shoemaker(2, 4, Factions.City.id)
+    shoemaker(3, 3, Factions.City.id)
+    shoemaker(3, 6, Factions.City.id)
 }
 
 let version = get_version()

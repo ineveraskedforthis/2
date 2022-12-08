@@ -153,12 +153,12 @@ export const STARTING_RESOURCES: {[_ in string]: CellResources} = {
     //coast colony
     '3_2': {water: true, prey: false, forest: false, fish: true},
     '2_2': {water: true, prey: false, forest: false, fish: true},
-    '1_2': {water: true, prey: false, forest: false, fish: false},
-    '1_3': {water: true, prey: false, forest: false, fish: false},
-    '0_3': {water: true, prey: false, forest: false, fish: false},
-    '0_4': {water: true, prey: false, forest: false, fish: false},
-    '1_5': {water: true, prey: false, forest: false, fish: false},
-    '1_6': {water: true, prey: false, forest: false, fish: false},
+    '1_2': {water: true, prey: false, forest: false, fish: true},
+    '1_3': {water: true, prey: false, forest: false, fish: true},
+    '0_3': {water: true, prey: false, forest: false, fish: true},
+    '0_4': {water: true, prey: false, forest: false, fish: true},
+    '1_5': {water: true, prey: false, forest: false, fish: true},
+    '1_6': {water: true, prey: false, forest: false, fish: true},
     '2_7': {water: true, prey: false, forest: false, fish: false},
     '3_8': {water: true, prey: false, forest: false, fish: false},
 

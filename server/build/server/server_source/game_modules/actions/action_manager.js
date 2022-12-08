@@ -20,6 +20,7 @@ var CharacterAction;
     CharacterAction.CLEAN = clean_1.clean;
     CharacterAction.EAT = eat_1.eat;
     CharacterAction.HUNT = hunt_1.hunt;
+    CharacterAction.FISH = hunt_1.fish;
     CharacterAction.REST = rest_1.rest;
     // export const ATTACK = attack
     CharacterAction.GATHER_WOOD = gather_wood_1.gather_wood;

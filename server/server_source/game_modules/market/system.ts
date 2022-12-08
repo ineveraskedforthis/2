@@ -53,7 +53,7 @@ export namespace BulkOrders {
         for (let line of lines) {
             if (line == '') {continue}
             const order: OrderBulk = JSON.parse(line)
-            console.log(order)
+            // console.log(order)
             Data.BulkOrders.set(order.id, order.owner_id, order)
             const last_id = Data.BulkOrders.id()
             Data.BulkOrders.set_id(Math.max(order.id, last_id) as order_bulk_id)            

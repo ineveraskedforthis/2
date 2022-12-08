@@ -18,6 +18,7 @@ export interface PerksTable {
     skin_armour_master?:boolean
     weapon_maker?:boolean
     alchemist?:boolean
+    shoemaker?:boolean
 }
 
 function perk_base_price(tag: Perks) {
@@ -25,7 +26,7 @@ function perk_base_price(tag: Perks) {
         case 'meat_master': return 100
         case 'advanced_unarmed': return 200
         case 'advanced_polearm': return 200
-        case 'mage_initiation': return 1000
+        case 'mage_initiation': return 2000
         case 'magic_bolt': return 100
         case 'fletcher': return 200
         case 'skin_armour_master': return 1000
@@ -162,6 +163,7 @@ export class SkillList {
     ranged: number;
     bone_carving: number;
     travelling: number;
+    fishing: number;
 
 
     constructor() {
@@ -180,6 +182,7 @@ export class SkillList {
         this.ranged         = 0;
         this.bone_carving   = 0;
         this.travelling     = 0;
+        this.fishing        = 0
     }
 }
 
