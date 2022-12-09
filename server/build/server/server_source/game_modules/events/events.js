@@ -34,6 +34,8 @@ var Event;
             return;
         }
         student.savings.transfer(teacher.savings, price);
+        user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 5 /* UI_Part.SAVINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(teacher.user_id, 5 /* UI_Part.SAVINGS */);
         effects_1.Effect.learn_perk(student, perk);
     }
     Event.buy_perk = buy_perk;
@@ -181,6 +183,10 @@ var Event;
             else {
                 attacker.status.hp = 1;
             }
+        }
+        const dice = Math.random();
+        if (dice > attacker.skills.magic_mastery / 50) {
+            effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1);
         }
         const attack = system_2.Attack.generate_magic_bolt(attacker);
         system_3.CharacterSystem.damage(defender, attack.damage);

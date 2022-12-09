@@ -216,7 +216,10 @@ export namespace CharacterSystem {
     }
 
     export function magic_power(character: Character) {
-        return character.stats.stats.magic_power + character.equip.get_magic_power()
+        let result = character.stats.stats.magic_power + character.equip.get_magic_power()
+        if (character.perks.mage_initiation) result += 10
+        if (character.perks.magic_bolt) result += 10
+        return result
     }
 
     export function attack_skill(character: Character) {

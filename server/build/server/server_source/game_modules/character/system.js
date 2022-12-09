@@ -211,7 +211,12 @@ var CharacterSystem;
     }
     CharacterSystem.phys_power = phys_power;
     function magic_power(character) {
-        return character.stats.stats.magic_power + character.equip.get_magic_power();
+        let result = character.stats.stats.magic_power + character.equip.get_magic_power();
+        if (character.perks.mage_initiation)
+            result += 10;
+        if (character.perks.magic_bolt)
+            result += 10;
+        return result;
     }
     CharacterSystem.magic_power = magic_power;
     function attack_skill(character) {

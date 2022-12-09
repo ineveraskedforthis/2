@@ -8,6 +8,7 @@ import { ItemSystem } from "../items/system";
 import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
 import { ZAZ } from "../manager_classes/materials_manager";
 import { Alerts } from "../client_communication/network_actions/alerts";
+import { Effect } from "./effects";
 
 export namespace EventInventory {
     export function equip_from_backpack(character: Character, index: number) {
@@ -37,9 +38,12 @@ export namespace EventInventory {
     }
 
     export function enchant(character: Character, index: number) {
-        const enchant_rating = character.stats.stats.magic_power * character.skills.magic_mastery / 100 
-        // so it's ~5 at 50 magic mastery
-        // and 1 at 10 magic mastery
+        let enchant_rating = character.stats.stats.magic_power * (1 + character.skills.magic_mastery / 100 )
+        // so it's ~15 at 50 magic mastery
+        // and 1 at 20 magic mastery
+        if (character.perks.mage_initiation) {
+            enchant_rating = enchant_rating * 2
+        }
 
         let item = character.equip.data.backpack.items[index]
         if (item == undefined) return 
@@ -50,6 +54,9 @@ export namespace EventInventory {
         }
         
         character.stash.inc(ZAZ, -1)
+
+        if (character.skills.magic_mastery < 10) Effect.Change.skill(character, 'magic_mastery', 1)
+
         if (item.is_weapon()) roll_affix_weapon(enchant_rating, item)
         else roll_affix_armour(enchant_rating, item)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)

@@ -22,7 +22,7 @@ export namespace HandleAction {
         // sanitise data
         const x = Number(data.x)
         const y = Number(data.y)
-        if ((x == NaN) || (y == NaN)) {
+        if ((Number.isNaN(x)) || (Number.isNaN(y))) {
             return
         }
 

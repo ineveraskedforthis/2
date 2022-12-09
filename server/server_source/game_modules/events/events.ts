@@ -47,6 +47,8 @@ export namespace Event {
 
         student.savings.transfer(teacher.savings, price)
 
+        UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SAVINGS)
+        UserManagement.add_user_to_update_queue(teacher.user_id, UI_Part.SAVINGS)
         Effect.learn_perk(student, perk)
     }
 
@@ -188,6 +190,11 @@ export namespace Event {
             } else {
                 attacker.status.hp = 1
             }
+        }
+
+        const dice = Math.random()
+        if (dice > attacker.skills.magic_mastery / 50) {
+            Effect.Change.skill(attacker, 'magic_mastery', 1)
         }
 
         const attack = Attack.generate_magic_bolt(attacker)

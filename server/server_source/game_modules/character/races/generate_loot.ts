@@ -12,7 +12,7 @@ const SKIN_HUMAN_DIFFICULTY = 40
 export namespace Loot {
     export function base(dead:tagRACE):{material: material_index, amount: number}[] {
         switch(dead) {
-            case 'elo': return [{material: ELODINO_FLESH, amount: 1}]
+            case 'elo': return [{material: ELODINO_FLESH, amount: 3}]
             case 'human': return [{material: MEAT, amount: 6}]
             case 'rat': {
                     return  [  
@@ -21,7 +21,7 @@ export namespace Loot {
                         {material: RAT_SKIN, amount: 4}
                     ]
                 }
-            case 'graci': return [{material: GRACI_HAIR, amount: 3}]
+            case 'graci': return [{material: GRACI_HAIR, amount: 3}, {material: MEAT, amount: 50}]
         }
         return []
     }

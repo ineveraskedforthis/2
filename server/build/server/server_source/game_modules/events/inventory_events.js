@@ -5,6 +5,7 @@ const user_manager_1 = require("../client_communication/user_manager");
 const affix_1 = require("../base_game_classes/affix");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const alerts_1 = require("../client_communication/network_actions/alerts");
+const effects_1 = require("./effects");
 var EventInventory;
 (function (EventInventory) {
     function equip_from_backpack(character, index) {
@@ -34,9 +35,12 @@ var EventInventory;
     }
     EventInventory.add_item = add_item;
     function enchant(character, index) {
-        const enchant_rating = character.stats.stats.magic_power * character.skills.magic_mastery / 100;
-        // so it's ~5 at 50 magic mastery
-        // and 1 at 10 magic mastery
+        let enchant_rating = character.stats.stats.magic_power * (1 + character.skills.magic_mastery / 100);
+        // so it's ~15 at 50 magic mastery
+        // and 1 at 20 magic mastery
+        if (character.perks.mage_initiation) {
+            enchant_rating = enchant_rating * 2;
+        }
         let item = character.equip.data.backpack.items[index];
         if (item == undefined)
             return;
@@ -45,6 +49,8 @@ var EventInventory;
             return;
         }
         character.stash.inc(materials_manager_1.ZAZ, -1);
+        if (character.skills.magic_mastery < 10)
+            effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
         if (item.is_weapon())
             (0, affix_1.roll_affix_weapon)(enchant_rating, item);
         else

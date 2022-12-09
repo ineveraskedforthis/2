@@ -26,7 +26,7 @@ function perk_base_price(tag: Perks) {
         case 'meat_master': return 100
         case 'advanced_unarmed': return 200
         case 'advanced_polearm': return 200
-        case 'mage_initiation': return 2000
+        case 'mage_initiation': return 1000
         case 'magic_bolt': return 100
         case 'fletcher': return 200
         case 'skin_armour_master': return 1000

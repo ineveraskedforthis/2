@@ -11,7 +11,7 @@ var Loot;
 (function (Loot) {
     function base(dead) {
         switch (dead) {
-            case 'elo': return [{ material: materials_manager_1.ELODINO_FLESH, amount: 1 }];
+            case 'elo': return [{ material: materials_manager_1.ELODINO_FLESH, amount: 3 }];
             case 'human': return [{ material: materials_manager_1.MEAT, amount: 6 }];
             case 'rat': {
                 return [
@@ -20,7 +20,7 @@ var Loot;
                     { material: materials_manager_1.RAT_SKIN, amount: 4 }
                 ];
             }
-            case 'graci': return [{ material: materials_manager_1.GRACI_HAIR, amount: 3 }];
+            case 'graci': return [{ material: materials_manager_1.GRACI_HAIR, amount: 3 }, { material: materials_manager_1.MEAT, amount: 50 }];
         }
         return [];
     }
