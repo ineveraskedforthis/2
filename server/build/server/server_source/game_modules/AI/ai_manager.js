@@ -12,7 +12,7 @@ const system_2 = require("../market/system");
 const market_1 = require("../events/market");
 const craft_1 = require("../calculations/craft");
 const basic_functions_1 = require("../calculations/basic_functions");
-const cook_meat_1 = require("../actions/actions_set_up/character_actions/cook_meat");
+const craft_bulk_1 = require("../actions/actions_set_up/character_actions/craft_bulk");
 const craft_bone_arrow_1 = require("../actions/actions_set_up/character_actions/craft_bone_arrow");
 // function MAYOR_AI(mayor: Character) {
 //     let faction = mayor.get_faction()
@@ -147,7 +147,7 @@ var CampaignAI;
 var AI;
 (function (AI) {
     function extract_zaz(character, price_elo) {
-        const zaz_price = Math.round(2 * price_elo / craft_1.Craft.Amount.elodino_zaz_extraction(character, cook_meat_1.ELODINO_TIER));
+        const zaz_price = Math.round(2 * price_elo / craft_1.Craft.Amount.elodino_zaz_extraction(character, craft_bulk_1.ELODINO_TIER));
         const current_zaz = character.stash.get(materials_manager_1.ZAZ);
         if (current_zaz > 0) {
             system_2.BulkOrders.remove_by_condition(character, materials_manager_1.ZAZ);
@@ -178,7 +178,7 @@ var AI;
         let base_buy_price = 5;
         // let base_sell_price = 10 as money
         const profit = 1.5;
-        let sell_price = Math.round(base_buy_price * (1 + profit) / craft_1.Craft.Amount.Cooking.meat(character, cook_meat_1.COOKING_TIER)) + 1;
+        let sell_price = Math.round(base_buy_price * (1 + profit) / craft_1.Craft.Amount.Cooking.meat(character, craft_bulk_1.COOKING_TIER)) + 1;
         let savings = character.savings.get();
         // console.log("AI tick")
         // console.log(prepared_meat, resource, food_in_stash, savings)

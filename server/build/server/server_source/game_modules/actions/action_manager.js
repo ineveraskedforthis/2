@@ -3,12 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActionManager = exports.CharacterAction = void 0;
 const move_1 = require("./actions_set_up/character_actions/move");
 const eat_1 = require("./actions_set_up/character_actions/eat");
-const cook_meat_1 = require("./actions_set_up/character_actions/cook_meat");
+const craft_bulk_1 = require("./actions_set_up/character_actions/craft_bulk");
 const clean_1 = require("./actions_set_up/character_actions/clean");
 const rest_1 = require("./actions_set_up/character_actions/rest");
 const hunt_1 = require("./actions_set_up/character_actions/hunt");
 // import { attack } from "./actions_set_up/character_actions/attack"
-const gather_wood_1 = require("./actions_set_up/character_actions/gather_wood");
+const gather_1 = require("./actions_set_up/character_actions/gather");
 const craft_weapon_1 = require("./actions_set_up/character_actions/craft_weapon");
 const craft_bone_arrow_1 = require("./actions_set_up/character_actions/craft_bone_arrow");
 const craft_rat_armour_1 = require("./actions_set_up/character_actions/craft_rat_armour");
@@ -23,12 +23,13 @@ var CharacterAction;
     CharacterAction.FISH = hunt_1.fish;
     CharacterAction.REST = rest_1.rest;
     // export const ATTACK = attack
-    CharacterAction.GATHER_WOOD = gather_wood_1.gather_wood;
+    CharacterAction.GATHER_WOOD = gather_1.gather_wood;
+    CharacterAction.GATHER_COTTON = gather_1.gather_cotton;
     let COOK;
     (function (COOK) {
-        COOK.MEAT = cook_meat_1.cook_meat;
-        COOK.FISH = cook_meat_1.cook_fish;
-        COOK.ELODINO = cook_meat_1.cook_elo_to_zaz;
+        COOK.MEAT = craft_bulk_1.cook_meat;
+        COOK.FISH = craft_bulk_1.cook_fish;
+        COOK.ELODINO = craft_bulk_1.cook_elo_to_zaz;
     })(COOK = CharacterAction.COOK || (CharacterAction.COOK = {}));
     let CRAFT;
     (function (CRAFT) {

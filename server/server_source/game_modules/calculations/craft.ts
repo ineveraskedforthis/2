@@ -25,6 +25,10 @@ export namespace Craft {
             }
         }
 
+        export function textile(character: Character, tier: number) {
+            return ratio_from_skill(character.skills.clothier, tier)
+        }
+
         export function elodino_zaz_extraction(character: Character, tier: number) {
             const ratio = ratio_from_skill(character.skills.magic_mastery, tier)
             let base_amount = Math.round(ratio * ELODINO_TO_ZAZ)

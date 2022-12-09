@@ -1,12 +1,12 @@
 import { Character } from "../character/character"
 import { move } from './actions_set_up/character_actions/move'
 import { eat } from "./actions_set_up/character_actions/eat"
-import { cook_elo_to_zaz, cook_fish, cook_meat } from "./actions_set_up/character_actions/cook_meat"
+import { cook_elo_to_zaz, cook_fish, cook_meat } from "./actions_set_up/character_actions/craft_bulk"
 import { clean } from './actions_set_up/character_actions/clean'
 import { rest } from "./actions_set_up/character_actions/rest"
 import { fish, hunt } from "./actions_set_up/character_actions/hunt"
 // import { attack } from "./actions_set_up/character_actions/attack"
-import { gather_wood } from "./actions_set_up/character_actions/gather_wood"
+import { gather_cotton, gather_wood } from "./actions_set_up/character_actions/gather"
 import { craft_bone_dagger, craft_bone_spear, craft_spear, craft_wooden_mace, craft_wood_bow } from "./actions_set_up/character_actions/craft_weapon"
 import { craft_bone_arrow } from "./actions_set_up/character_actions/craft_bone_arrow"
 import { craft_rat_armour, craft_rat_boots, craft_rat_gloves, craft_rat_helmet, craft_rat_pants } from "./actions_set_up/character_actions/craft_rat_armour"
@@ -59,6 +59,7 @@ export namespace CharacterAction {
     export const REST = rest
     // export const ATTACK = attack
     export const GATHER_WOOD = gather_wood
+    export const GATHER_COTTON = gather_cotton
 
     export namespace COOK {
         export const MEAT = cook_meat

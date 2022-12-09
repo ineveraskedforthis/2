@@ -13,7 +13,7 @@ const helper_functions_1 = require("../helper_functions");
 const craft_1 = require("../../calculations/craft");
 const craft_weapon_1 = require("../../actions/actions_set_up/character_actions/craft_weapon");
 const craft_rat_armour_1 = require("../../actions/actions_set_up/character_actions/craft_rat_armour");
-const cook_meat_1 = require("../../actions/actions_set_up/character_actions/cook_meat");
+const craft_bulk_1 = require("../../actions/actions_set_up/character_actions/craft_bulk");
 const craft_bone_arrow_1 = require("../../actions/actions_set_up/character_actions/craft_bone_arrow");
 var SendUpdate;
 (function (SendUpdate) {
@@ -224,9 +224,9 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.craft(user, 'cook_elodino', craft_1.Craft.Amount.elodino_zaz_extraction(character, cook_meat_1.ELODINO_TIER));
-        alerts_1.Alerts.craft(user, 'cook_meat', craft_1.Craft.Amount.Cooking.meat(character, cook_meat_1.COOKING_TIER));
-        alerts_1.Alerts.craft(user, 'cook_fish', craft_1.Craft.Amount.Cooking.meat(character, cook_meat_1.COOKING_TIER));
+        alerts_1.Alerts.craft(user, 'cook_elodino', craft_1.Craft.Amount.elodino_zaz_extraction(character, craft_bulk_1.ELODINO_TIER));
+        alerts_1.Alerts.craft(user, 'cook_meat', craft_1.Craft.Amount.Cooking.meat(character, craft_bulk_1.COOKING_TIER));
+        alerts_1.Alerts.craft(user, 'cook_fish', craft_1.Craft.Amount.Cooking.meat(character, craft_bulk_1.COOKING_TIER));
     }
     SendUpdate.cooking_craft = cooking_craft;
     function woodwork_craft(user) {
@@ -342,6 +342,7 @@ var SendUpdate;
         alerts_1.Alerts.map_action(user, 'hunt', cell.can_hunt());
         alerts_1.Alerts.map_action(user, 'clean', cell.can_clean());
         alerts_1.Alerts.map_action(user, 'gather_wood', cell.can_gather_wood());
+        alerts_1.Alerts.map_action(user, 'gather_cotton', cell.can_gather_cotton());
     }
     SendUpdate.local_actions = local_actions;
     function map_related(user) {

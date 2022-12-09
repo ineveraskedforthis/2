@@ -14,7 +14,7 @@ import { EventMarket } from "../events/market";
 import { Craft } from "../calculations/craft";
 import { trim } from "../calculations/basic_functions";
 import { Data } from "../data";
-import { COOKING_TIER, ELODINO_TIER } from "../actions/actions_set_up/character_actions/cook_meat";
+import { COOKING_TIER, ELODINO_TIER } from "../actions/actions_set_up/character_actions/craft_bulk";
 import { ARROW_TIER } from "../actions/actions_set_up/character_actions/craft_bone_arrow";
 
 

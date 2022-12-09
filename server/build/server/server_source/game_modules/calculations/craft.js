@@ -31,6 +31,10 @@ var Craft;
             }
             Cooking.elodino = elodino;
         })(Cooking = Amount.Cooking || (Amount.Cooking = {}));
+        function textile(character, tier) {
+            return ratio_from_skill(character.skills.clothier, tier);
+        }
+        Amount.textile = textile;
         function elodino_zaz_extraction(character, tier) {
             const ratio = ratio_from_skill(character.skills.magic_mastery, tier);
             let base_amount = Math.round(ratio * ELODINO_TO_ZAZ);

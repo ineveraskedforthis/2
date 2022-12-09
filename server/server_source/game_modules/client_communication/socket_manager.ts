@@ -90,7 +90,7 @@ export class SocketManager {
             socket.on('hunt',  () =>            HandleAction.act(user, CharacterAction.HUNT))
             socket.on('fish',  () =>            HandleAction.act(user, CharacterAction.FISH))
             socket.on('gather_wood', () =>      HandleAction.act(user, CharacterAction.GATHER_WOOD))            
-            
+            socket.on('gather_cotton', () =>    HandleAction.act(user, CharacterAction.GATHER_COTTON)) 
 
             
 

@@ -91,6 +91,9 @@ class Cell {
     can_gather_wood() {
         return (this.development.wild > 0);
     }
+    can_gather_cotton() {
+        return (this.development.rural > 0);
+    }
     get_item_market() {
         return undefined;
     }

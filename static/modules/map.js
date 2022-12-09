@@ -211,24 +211,24 @@ export class Map {
         }
 
 
-        {
-            let button = document.getElementById('move_button');
-            (() => 
-                    button.onclick = () => this.send_cell_action('move')
-            )(this.socket);
-        }
+        // {
+        //     let button = document.getElementById('move_button');
+        //     (() => 
+        //             button.onclick = () => this.send_cell_action('move')
+        //     )(this.socket);
+        // }
 
-        let rest_of_actions = ['fish', 'gather_wood', 'hunt', 'clean', 'rest']
+        let rest_of_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest']
 
 
         let desktop_container = document.getElementById('desktop_actions')
 
 
         for (let action_tag of rest_of_actions) {
-            let map_button = document.getElementById(action_tag + '_button');
-            ((button, map_manager, action_tag) => 
-                    button.onclick = () => map_manager.send_cell_action(action_tag)
-            )(map_button, this, action_tag);
+            // let map_button = document.getElementById(action_tag + '_button');
+            // ((button, map_manager, action_tag) => 
+            //         button.onclick = () => map_manager.send_cell_action(action_tag)
+            // )(map_button, this, action_tag);
 
             let desktop_button = document.createElement('div')
             desktop_button.id = action_tag + '_button_desktop';
@@ -248,7 +248,7 @@ export class Map {
                 desktop_button.appendChild(chance_label)
             }
 
-            if (action_tag == 'hunt' || action_tag == 'gather_wood' || action_tag == 'fish'){   
+            if (action_tag == 'hunt' || action_tag == 'gather_wood' || action_tag == 'gather_cotton' || action_tag == 'fish'){   
                 let repeat_button = document.createElement('div')
                 repeat_button.innerHTML = 'repeat';
                 repeat_button.classList.add('active');
