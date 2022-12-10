@@ -49,6 +49,7 @@ app.use('/static', express.static(path.join(__dirname, '../../../../static')));
 app.get('/', (req:any, res:any) => {
     res.sendFile(path.join(__dirname, '../../../../views/index2.html'));
 });
+
 server.listen(port, () => {
     console.log('listening on *:' + port);
 });
@@ -57,7 +58,7 @@ server.listen(port, () => {
 import { launch } from "./game_launch.js";
 import { SocketManager } from "./game_modules/client_communication/socket_manager.js";
 
-export var io = require('socket.io')(http);
+export var io = require('socket.io')(server);
 export var socket_manager = new SocketManager(io)
 
 launch(server)

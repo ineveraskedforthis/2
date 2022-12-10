@@ -67,6 +67,6 @@ server.listen(port, () => {
 });
 const game_launch_js_1 = require("./game_launch.js");
 const socket_manager_js_1 = require("./game_modules/client_communication/socket_manager.js");
-exports.io = require('socket.io')(http_1.default);
+exports.io = require('socket.io')(server);
 exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);
 (0, game_launch_js_1.launch)(server);
