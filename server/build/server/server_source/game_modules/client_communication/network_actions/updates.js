@@ -123,7 +123,7 @@ var SendUpdate;
     }
     SendUpdate.savings = savings;
     function status(user) {
-        console.log('update status');
+        // console.log('update status')
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -138,7 +138,7 @@ var SendUpdate;
     }
     SendUpdate.stash = stash;
     function equip(user) {
-        console.log('update equip');
+        // console.log('update equip')
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
