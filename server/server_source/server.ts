@@ -1,6 +1,10 @@
 'use strict'
 
 require('dotenv').config({path: __dirname + '/.env'});
+
+console.log(__dirname)
+console.log(process.env)
+
 const port = process.env.PORT || 3000;
 
 var express = require('express');
@@ -24,7 +28,7 @@ app.get('/', (req:any, res:any) => {
     res.sendFile(path.join(__dirname, '../../../../views/index2.html'));
 });
 http.listen(port, () => {
-    console.log('listening on *:3000');
+    console.log('listening on *:' + port);
 });
 
 
