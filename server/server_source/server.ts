@@ -1,9 +1,9 @@
 'use strict'
 
-require('dotenv').config({path: __dirname + '/.env'});
+import * as dotenv from 'dotenv'
+dotenv.config({path: __dirname + '/.env'});
 
-console.log(__dirname)
-console.log(process.env)
+console.log(process.env.PORT)
 
 const port = process.env.PORT || 3000;
 

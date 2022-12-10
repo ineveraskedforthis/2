@@ -24,7 +24,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.socket_manager = exports.io = void 0;
-require('dotenv').config({ path: __dirname + '/.env' });
+const dotenv = __importStar(require("dotenv"));
+dotenv.config({ path: __dirname + '/.env' });
+console.log(process.env.PORT);
 const port = process.env.PORT || 3000;
 var express = require('express');
 var app = express();
@@ -38,7 +40,7 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../../views/index2.html'));
 });
 http.listen(port, () => {
-    console.log('listening on *:3000');
+    console.log('listening on *:' + port);
 });
 const game_launch_js_1 = require("./game_launch.js");
 const socket_manager_js_1 = require("./game_modules/client_communication/socket_manager.js");

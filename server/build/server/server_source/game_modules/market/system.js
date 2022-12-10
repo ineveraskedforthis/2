@@ -185,7 +185,6 @@ var ItemOrders;
             const order_raw = JSON.parse(line);
             const item = system_2.ItemSystem.from_string(JSON.stringify(order_raw.item));
             const order = new classes_1.OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished);
-            console.log(order);
             data_1.Data.ItemOrders.set(order.id, order.owner_id, order);
             const last_id = data_1.Data.ItemOrders.id();
             data_1.Data.ItemOrders.set_id(Math.max(order.id, last_id));

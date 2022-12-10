@@ -191,8 +191,6 @@ export namespace ItemOrders {
             const item = ItemSystem.from_string(JSON.stringify(order_raw.item))
             const order = new OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished)
             
-            console.log(order)
-            
             Data.ItemOrders.set(order.id, order.owner_id, order)
             const last_id = Data.ItemOrders.id()
             Data.ItemOrders.set_id(Math.max(order.id, last_id) as order_item_id)            
