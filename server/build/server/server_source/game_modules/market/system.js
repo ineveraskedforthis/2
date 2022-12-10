@@ -224,6 +224,8 @@ var ItemOrders;
                 continue;
             if (order.finished)
                 continue;
+            if (order.owner_id != who.id)
+                continue;
             console.log(order.owner_id, who.id);
             remove(order.id, who);
         }
