@@ -17,6 +17,7 @@ import { Convert, Link } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/battle/system";
 import { BulkOrders, ItemOrders } from "./game_modules/market/system";
 import { battle_id, unit_id } from "../../shared/battle_data";
+import { Server } from "./server";
 
 
 
@@ -24,7 +25,7 @@ import { battle_id, unit_id } from "../../shared/battle_data";
 const gameloop = require('node-gameloop');
 var shutdown = false
 
-export function launch(http_server: any, express_server: any) {
+export function launch(http_server: Server) {
     try {
 
         process.on('SIGTERM', () => {
@@ -50,7 +51,7 @@ export function launch(http_server: any, express_server: any) {
 
 
         console.log('systems are ready');
-        gameloop.setGameLoop( (delta: number) => update(delta, http_server, express_server), 100 );
+        gameloop.setGameLoop( (delta: number) => update(delta, http_server), 100 );
 
     } catch (e) {
         console.log(e);
@@ -95,7 +96,7 @@ function save() {
 
 var update_timer = 0
 
-function update(delta: number, http_server:any, express_server: any) {
+function update(delta: number, http_server: Server) {
     if (shutdown) {
         http_server.close()
         // express_server.close(() => {

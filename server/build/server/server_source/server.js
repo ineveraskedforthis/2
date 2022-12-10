@@ -22,28 +22,51 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.socket_manager = exports.io = void 0;
 const dotenv = __importStar(require("dotenv"));
 dotenv.config({ path: __dirname + '/.env' });
 console.log(process.env.PORT);
 const port = process.env.PORT || 3000;
-var express = require('express');
-var app = express();
-var http = require('http').createServer(app);
+const fs_1 = require("fs");
+const express_1 = __importDefault(require("express"));
+const http_1 = __importDefault(require("http"));
+const https_1 = __importDefault(require("https"));
+var options = undefined;
+if ((process.env.CERT != undefined) && (process.env.KEY != undefined)) {
+    console.log('certificate variable is found, attempt to construct according options');
+    options = {
+        key: (0, fs_1.readFileSync)(process.env.KEY),
+        cert: (0, fs_1.readFileSync)(process.env.CERT),
+    };
+}
+else {
+    console.log('no certificate');
+}
+var server = undefined;
+var app = (0, express_1.default)();
+if (options == undefined) {
+    server = http_1.default.createServer(app);
+}
+else {
+    server = https_1.default.createServer(options, app);
+}
 ;
 console.log('Welcome');
 const path = __importStar(require("path"));
-app.use(express.json());
-app.use('/static', express.static(path.join(__dirname, '../../../../static')));
+app.use(express_1.default.json());
+app.use('/static', express_1.default.static(path.join(__dirname, '../../../../static')));
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../../views/index2.html'));
 });
-http.listen(port, () => {
+server.listen(port, () => {
     console.log('listening on *:' + port);
 });
 const game_launch_js_1 = require("./game_launch.js");
 const socket_manager_js_1 = require("./game_modules/client_communication/socket_manager.js");
-exports.io = require('socket.io')(http);
+exports.io = require('socket.io')(http_1.default);
 exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);
-(0, game_launch_js_1.launch)(http, app);
+(0, game_launch_js_1.launch)(server);

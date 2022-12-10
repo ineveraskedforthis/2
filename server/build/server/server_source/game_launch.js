@@ -16,7 +16,7 @@ const system_3 = require("./game_modules/battle/system");
 const system_4 = require("./game_modules/market/system");
 const gameloop = require('node-gameloop');
 var shutdown = false;
-function launch(http_server, express_server) {
+function launch(http_server) {
     try {
         process.on('SIGTERM', () => {
             console.info('SIGTERM signal received. Preparing for shutdown');
@@ -34,7 +34,7 @@ function launch(http_server, express_server) {
         console.log('connection ready');
         load();
         console.log('systems are ready');
-        gameloop.setGameLoop((delta) => update(delta, http_server, express_server), 100);
+        gameloop.setGameLoop((delta) => update(delta, http_server), 100);
     }
     catch (e) {
         console.log(e);
@@ -72,7 +72,7 @@ function save() {
     data_1.Data.save();
 }
 var update_timer = 0;
-function update(delta, http_server, express_server) {
+function update(delta, http_server) {
     if (shutdown) {
         http_server.close();
         // express_server.close(() => {
