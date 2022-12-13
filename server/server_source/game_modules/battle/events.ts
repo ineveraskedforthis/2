@@ -9,7 +9,7 @@ import { BattleAI } from "./AI/battle_ai"
 import { Battle } from "./classes/battle"
 import { Unit } from "./classes/unit"
 import { BattleSystem } from "./system"
-import { can_cast_magic_bolt, can_shoot } from "../character/skills"
+import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/skills"
 
 export const MOVE_COST = 3
 
@@ -198,33 +198,22 @@ export namespace BattleEvent {
     export function Update(battle: Battle, unit: Unit) {
         Alerts.battle_update_unit(battle, unit)
     }
+
+    export function Dodge(battle: Battle, unit: Unit) {
+        const character = Convert.unit_to_character(unit)
+        if (!can_dodge(character)) {
+            return
+        }
+
+        if (unit.action_points_left < 4) {
+            return
+        }
+
+        unit.dodge_turns = 2
+        unit.action_points_left = unit.action_points_left - 4 as action_points
+    }
 }
 
-//         if (action.action == 'magic_bolt') {
-//             if (!can_cast_magic_bolt(character)) {
-//                 // console.log('???')
-//                 return {action: "not_learnt", who: unit_index}
-//             }
-//             if (action.target == null) {
-//                 return { action: 'no_target_selected', who: unit_index}
-//             }
-//             if (unit.action_points_left < 3) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-            
-//             let target_unit = this.heap.get_unit(action.target);
-//             let target_char = this.world.get_char_from_id(target_unit.char_id);
-
-//             if (character.skills.perks.magic_bolt != true) {
-//                 character.stash.inc(ZAZ, -1)
-//             }
-
-//             let result =  character.spell_attack(target_char, 'bolt');
-//             unit.action_points_left -= 3
-//             this.changed = true
-
-//             return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//         }
 
 //         if (action.action == 'push_back') {
 //             if(!can_push_back(character)) {
@@ -302,20 +291,7 @@ export namespace BattleEvent {
 //             return { action: 'no_target_selected' };
 //         }
 
-//         if (action.action == 'dodge') {
 
-//             if (!can_dodge(character)) {
-//                 return { action: "not_learnt", who: unit_index}
-//             }
-
-//             if (unit.action_points_left < 4) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-
-//             unit.dodge_turns = 2
-//             unit.action_points_left -= 4
-//             return {action: 'dodge', who: unit_index}
-//         }
 
 
 

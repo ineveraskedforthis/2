@@ -19,6 +19,7 @@ export interface PerksTable {
     weapon_maker?:boolean
     alchemist?:boolean
     shoemaker?:boolean
+    dodge?:boolean
 }
 
 function perk_base_price(tag: Perks) {
@@ -91,17 +92,22 @@ export function perk_requirement(tag:Perks, character: Character) {
         }
     }
 }
+
 function weapon_type(weapon: Item|undefined):weapon_attack_tag {
     if (weapon == undefined) {
         return 'noweapon'
     }
     return weapon.weapon_tag
 }
+
 export function can_dodge(character:Character):boolean {
     if (character.perks.advanced_unarmed == true) {
         if (weapon_type(character.equip.data.weapon) == 'noweapon') {
             return true
         }
+    }
+    if (character.perks.dodge == true) {
+        return true
     }
     return false
 }
