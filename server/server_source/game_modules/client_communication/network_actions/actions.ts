@@ -3,7 +3,7 @@ import { ActionManager, ActionTargeted, CharacterAction, CharacterActionResponce
 import { Battle } from "../../battle/classes/battle";
 import { BattleEvent } from "../../battle/events";
 import { BattleSystem } from "../../battle/system";
-import { Perks } from "../../character/skills";
+import { can_dodge, Perks } from "../../character/skills";
 import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
 import { Convert } from "../../systems_communication";
@@ -109,23 +109,22 @@ export namespace HandleAction {
             BattleEvent.Attack(battle, unit, defender, 'pierce')
         } else if (input.action == 'end_turn') {
             BattleEvent.EndTurn(battle, unit)
-        }
         // else if (input.action == 'fast_attack') {
         //     if(!can_fast_attack(character)) {
         //         return {action: "not_learnt"}
         //     }
         //     return  battle.action(index, BattleAI.convert_attack_to_action(battle, index, input.target, 'fast'))
-        // } else if (input.action == 'dodge') {
-        //     if(!can_dodge(character)) {
-        //         return {action: "not_learnt"}
-        //     }
-        //     return  battle.action(index, {action: 'dodge', who: index})
+        } else if (input.action == 'dodge') {
+            if(!can_dodge(character)) {
+                return {action: "not_learnt"}
+            }
+            return BattleEvent.Dodge(battle, unit)
         // } else if (input.action == 'push_back') {
         //     if(!can_push_back(character)) {
         //         return {action: "not_learnt"}
         //     }
         //     return  battle.action(index, {action: 'push_back', target: input.target})
-        else if (input.action == 'magic_bolt') {
+        } else if (input.action == 'magic_bolt') {
             if (input.target == undefined) return
             const defender_id = input.target as unit_id
             const defender = BattleSystem.id_to_unit(defender_id, battle)

@@ -4,6 +4,7 @@ exports.HandleAction = void 0;
 const action_manager_1 = require("../../actions/action_manager");
 const events_1 = require("../../battle/events");
 const system_1 = require("../../battle/system");
+const skills_1 = require("../../character/skills");
 const inventory_events_1 = require("../../events/inventory_events");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
@@ -120,22 +121,23 @@ var HandleAction;
         }
         else if (input.action == 'end_turn') {
             events_1.BattleEvent.EndTurn(battle, unit);
+            // else if (input.action == 'fast_attack') {
+            //     if(!can_fast_attack(character)) {
+            //         return {action: "not_learnt"}
+            //     }
+            //     return  battle.action(index, BattleAI.convert_attack_to_action(battle, index, input.target, 'fast'))
         }
-        // else if (input.action == 'fast_attack') {
-        //     if(!can_fast_attack(character)) {
-        //         return {action: "not_learnt"}
-        //     }
-        //     return  battle.action(index, BattleAI.convert_attack_to_action(battle, index, input.target, 'fast'))
-        // } else if (input.action == 'dodge') {
-        //     if(!can_dodge(character)) {
-        //         return {action: "not_learnt"}
-        //     }
-        //     return  battle.action(index, {action: 'dodge', who: index})
-        // } else if (input.action == 'push_back') {
-        //     if(!can_push_back(character)) {
-        //         return {action: "not_learnt"}
-        //     }
-        //     return  battle.action(index, {action: 'push_back', target: input.target})
+        else if (input.action == 'dodge') {
+            if (!(0, skills_1.can_dodge)(character)) {
+                return { action: "not_learnt" };
+            }
+            return events_1.BattleEvent.Dodge(battle, unit);
+            // } else if (input.action == 'push_back') {
+            //     if(!can_push_back(character)) {
+            //         return {action: "not_learnt"}
+            //     }
+            //     return  battle.action(index, {action: 'push_back', target: input.target})
+        }
         else if (input.action == 'magic_bolt') {
             if (input.target == undefined)
                 return;

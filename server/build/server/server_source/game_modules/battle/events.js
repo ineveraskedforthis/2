@@ -174,28 +174,19 @@ var BattleEvent;
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.Update = Update;
+    function Dodge(battle, unit) {
+        const character = systems_communication_1.Convert.unit_to_character(unit);
+        if (!(0, skills_1.can_dodge)(character)) {
+            return;
+        }
+        if (unit.action_points_left < 4) {
+            return;
+        }
+        unit.dodge_turns = 2;
+        unit.action_points_left = unit.action_points_left - 4;
+    }
+    BattleEvent.Dodge = Dodge;
 })(BattleEvent = exports.BattleEvent || (exports.BattleEvent = {}));
-//         if (action.action == 'magic_bolt') {
-//             if (!can_cast_magic_bolt(character)) {
-//                 // console.log('???')
-//                 return {action: "not_learnt", who: unit_index}
-//             }
-//             if (action.target == null) {
-//                 return { action: 'no_target_selected', who: unit_index}
-//             }
-//             if (unit.action_points_left < 3) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-//             let target_unit = this.heap.get_unit(action.target);
-//             let target_char = this.world.get_char_from_id(target_unit.char_id);
-//             if (character.skills.perks.magic_bolt != true) {
-//                 character.stash.inc(ZAZ, -1)
-//             }
-//             let result =  character.spell_attack(target_char, 'bolt');
-//             unit.action_points_left -= 3
-//             this.changed = true
-//             return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
-//         }
 //         if (action.action == 'push_back') {
 //             if(!can_push_back(character)) {
 //                 return {action: "not_learnt", who: unit_index}
@@ -252,17 +243,6 @@ var BattleEvent;
 //                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
 //             }
 //             return { action: 'no_target_selected' };
-//         }
-//         if (action.action == 'dodge') {
-//             if (!can_dodge(character)) {
-//                 return { action: "not_learnt", who: unit_index}
-//             }
-//             if (unit.action_points_left < 4) {
-//                 return { action: 'not_enough_ap', who: unit_index}
-//             }
-//             unit.dodge_turns = 2
-//             unit.action_points_left -= 4
-//             return {action: 'dodge', who: unit_index}
 //         }
 //         if (action.action == 'switch_weapon') {
 //             // console.log('????')

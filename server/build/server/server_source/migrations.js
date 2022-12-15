@@ -118,6 +118,11 @@ function migrate(current_version, target_version) {
         set_version(10);
         current_version = 10;
     }
+    if (current_version == 10) {
+        monk();
+        set_version(11);
+        current_version = 11;
+    }
 }
 exports.migrate = migrate;
 function set_up_initial_data() {
@@ -266,6 +271,16 @@ function bone_carver_weapon(x, y, faction_id) {
     data_1.Data.Reputation.set(faction_id, master.id, "member");
     return master;
 }
+function unarmed_master(x, y, faction_id) {
+    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Monk', cell, dummy_model);
+    master.skills.noweapon = 100;
+    master.perks.dodge = true;
+    master.perks.advanced_unarmed = true;
+    master.savings.inc(LUMP_OF_MONEY);
+    data_1.Data.Reputation.set(faction_id, master.id, "member");
+    return master;
+}
 function city_guard(x, y) {
     let guard = create_guard(x, y);
     data_1.Data.Reputation.set(factions_1.Factions.City.id, guard.id, "member");
@@ -346,6 +361,9 @@ function shoemakers() {
     shoemaker(2, 4, factions_1.Factions.City.id);
     shoemaker(3, 3, factions_1.Factions.City.id);
     shoemaker(3, 6, factions_1.Factions.City.id);
+}
+function monk() {
+    unarmed_master(7, 5, factions_1.Factions.Steppes.id);
 }
 let version = get_version();
 console.log(version);

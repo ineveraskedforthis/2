@@ -11,7 +11,7 @@ BattleImage.add_action({ name: 'Knock', tag: 'attack_blunt', cost: 3 });
 BattleImage.add_action({ name: 'magic_bolt', tag: 'magic_bolt', cost: 3 });
 // battle_image.add_action({name: 'fast attack', tag: 'fast_attack', cost: 1})
 BattleImage.add_action({ name: 'shoot', tag: 'shoot', cost: 3 });
-// battle_image.add_action({name: 'dodge', tag: 'dodge', cost: 4})
+BattleImage.add_action({ name: 'dodge', tag: 'dodge', cost: 4 });
 // battle_image.add_action({name: 'push back', tag: 'push_back', cost: 5})
 BattleImage.add_action({ name: 'retreat', tag: 'flee', cost: 3 });
 BattleImage.add_action({ name: 'switch weapon', tag: 'switch_weapon', cost: 3 });

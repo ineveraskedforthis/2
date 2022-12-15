@@ -87,6 +87,9 @@ function can_dodge(character) {
             return true;
         }
     }
+    if (character.perks.dodge == true) {
+        return true;
+    }
     return false;
 }
 exports.can_dodge = can_dodge;
