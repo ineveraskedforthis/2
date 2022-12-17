@@ -220,6 +220,12 @@ function mage(x, y) {
     market_1.EventMarket.buy(mage, materials_manager_1.GRACI_HAIR, 10, 1000);
     return mage;
 }
+function blood_mage(x, y, faction_id) {
+    const blood_mage = mage(x, y);
+    blood_mage.perks.blood_mage = true;
+    data_1.Data.Reputation.set(faction_id, blood_mage.id, "member");
+    return blood_mage;
+}
 function alchemist(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
     let alchemist = events_1.Event.new_character(human_1.HumanTemplateColony, 'Alchemist', cell, dummy_model);
@@ -364,6 +370,9 @@ function shoemakers() {
 }
 function monk() {
     unarmed_master(7, 5, factions_1.Factions.Steppes.id);
+}
+function mages_and_foreign_trader() {
+    blood_mage(10, 8, factions_1.Factions.Steppes.id);
 }
 let version = get_version();
 console.log(version);

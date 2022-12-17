@@ -219,6 +219,10 @@ export namespace CharacterSystem {
         let result = character.stats.stats.magic_power + character.equip.get_magic_power()
         if (character.perks.mage_initiation) result += 10
         if (character.perks.magic_bolt) result += 10
+        if (character.perks.blood_mage) {
+            const blood_mod = character.status.blood / 50
+            result = Math.round(result * (1 + blood_mod))
+        }
         return result
     }
 

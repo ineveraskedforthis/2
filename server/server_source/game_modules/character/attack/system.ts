@@ -60,15 +60,17 @@ export namespace Attack {
     }
 
     export function dodge(attack: AttackObj, skill: number) {
-        const skill_diff = skill - attack.attack_skill
+        let skill_diff = skill - attack.attack_skill
         if (skill_diff <= 0) return
+        if (skill_diff > 100) skill_diff = 100
         DmgOps.mult_ip(attack.damage, 1 - skill_diff / 100)
     }
 
     export function block(attack: AttackObj, skill: number) {
-        // blocking is easier but harms weapon
-        const skill_diff = (skill * 2 - attack.attack_skill)
+        // blocking is easier but harms weapon and can't block damage completely
+        let skill_diff = (skill * 2 - attack.attack_skill)
         if (skill_diff <= 0) return
+        if (skill_diff > 60) skill_diff = 60
         DmgOps.mult_ip(attack.damage, 1 - skill_diff / 100)
     }
 }

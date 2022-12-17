@@ -59,17 +59,21 @@ var Attack;
     }
     Attack.defend_against_melee = defend_against_melee;
     function dodge(attack, skill) {
-        const skill_diff = skill - attack.attack_skill;
+        let skill_diff = skill - attack.attack_skill;
         if (skill_diff <= 0)
             return;
+        if (skill_diff > 100)
+            skill_diff = 100;
         damage_types_1.DmgOps.mult_ip(attack.damage, 1 - skill_diff / 100);
     }
     Attack.dodge = dodge;
     function block(attack, skill) {
-        // blocking is easier but harms weapon
-        const skill_diff = (skill * 2 - attack.attack_skill);
+        // blocking is easier but harms weapon and can't block damage completely
+        let skill_diff = (skill * 2 - attack.attack_skill);
         if (skill_diff <= 0)
             return;
+        if (skill_diff > 60)
+            skill_diff = 60;
         damage_types_1.DmgOps.mult_ip(attack.damage, 1 - skill_diff / 100);
     }
     Attack.block = block;

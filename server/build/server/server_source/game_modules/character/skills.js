@@ -3,13 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SkillList = exports.can_shoot = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = exports.perk_requirement = exports.perk_price = exports.perks_list = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const data_1 = require("../data");
-exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master'];
+exports.perks_list = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master', 'blood_mage'];
 function perk_base_price(tag) {
     switch (tag) {
         case 'meat_master': return 100;
         case 'advanced_unarmed': return 200;
         case 'advanced_polearm': return 200;
         case 'mage_initiation': return 1000;
+        case 'blood_mage': return 1000;
         case 'magic_bolt': return 100;
         case 'fletcher': return 200;
         case 'skin_armour_master': return 1000;
@@ -64,6 +65,15 @@ function perk_requirement(tag, character) {
             }
             if (character.skills.magic_mastery < 15) {
                 return 'not_enough_magic_skill_15';
+            }
+            return 'ok';
+        }
+        case 'blood_mage': {
+            if (!character.perks.mage_initiation) {
+                return 'not_initiated';
+            }
+            if (character.skills.magic_mastery < 30) {
+                return 'not_enough_magic_skill_30';
             }
             return 'ok';
         }

@@ -216,6 +216,10 @@ var CharacterSystem;
             result += 10;
         if (character.perks.magic_bolt)
             result += 10;
+        if (character.perks.blood_mage) {
+            const blood_mod = character.status.blood / 50;
+            result = Math.round(result * (1 + blood_mod));
+        }
         return result;
     }
     CharacterSystem.magic_power = magic_power;

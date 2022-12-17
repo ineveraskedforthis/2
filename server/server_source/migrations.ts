@@ -246,6 +246,14 @@ function mage(x: number, y: number) {
     return mage
 }
 
+function blood_mage(x: number, y: number, faction_id: number) {
+    const blood_mage = mage(x, y)
+    blood_mage.perks.blood_mage = true
+    Data.Reputation.set(faction_id, blood_mage.id, "member")
+
+    return blood_mage
+}
+
 function alchemist(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
     let alchemist = Event.new_character(HumanTemplateColony, 'Alchemist', cell, dummy_model)
@@ -436,6 +444,11 @@ function shoemakers() {
 
 function monk() {
     unarmed_master(7, 5, Factions.Steppes.id)
+}
+
+function mages_and_foreign_trader() {
+    blood_mage(10, 8, Factions.Steppes.id)
+    
 }
 
 let version = get_version()

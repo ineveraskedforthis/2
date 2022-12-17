@@ -5,8 +5,8 @@ import { Character } from "./character";
 import { Data } from "../data";
 
 
-export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'|'skin_armour_master'
-export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master']
+export type Perks = 'meat_master'|'advanced_unarmed'|'advanced_polearm'|'mage_initiation'|'magic_bolt'|'fletcher'|'skin_armour_master'|'blood_mage'
+export const perks_list:Perks[] = ['meat_master', 'advanced_unarmed', 'advanced_polearm', 'mage_initiation', 'magic_bolt', 'fletcher', 'skin_armour_master', 'blood_mage']
 export interface PerksTable {
     meat_master?: boolean;
     claws?: boolean;
@@ -14,6 +14,7 @@ export interface PerksTable {
     advanced_polearm?:boolean
     mage_initiation?:boolean
     magic_bolt?:boolean
+    blood_mage?:boolean
     fletcher?:boolean
     skin_armour_master?:boolean
     weapon_maker?:boolean
@@ -28,6 +29,7 @@ function perk_base_price(tag: Perks) {
         case 'advanced_unarmed': return 200
         case 'advanced_polearm': return 200
         case 'mage_initiation': return 1000
+        case 'blood_mage': return 1000
         case 'magic_bolt': return 100
         case 'fletcher': return 200
         case 'skin_armour_master': return 1000
@@ -82,6 +84,15 @@ export function perk_requirement(tag:Perks, character: Character) {
             }
             if (character.skills.magic_mastery < 15) {
                 return 'not_enough_magic_skill_15'
+            }
+            return 'ok'
+        }
+        case 'blood_mage': {
+            if (!character.perks.mage_initiation) {
+                return 'not_initiated'
+            }
+            if (character.skills.magic_mastery < 30) {
+                return 'not_enough_magic_skill_30'
             }
             return 'ok'
         }
