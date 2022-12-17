@@ -188,15 +188,11 @@ export class Equip {
         let backpack = this.data.backpack;
         let item = backpack.items[index]
         if (item != undefined) {
-            console.log('equip ' + item.tag())
             let slot = item.slot;
-            // console.log(slot)
-            // console.log(armour_slots)       
             let tmp = this.data.armour[slot as armour_slot];
             this.data.armour[slot as armour_slot] = item
             backpack.items[index] = tmp
             this.changed = true
-            console.log(this.data.armour)
         }
     }
 

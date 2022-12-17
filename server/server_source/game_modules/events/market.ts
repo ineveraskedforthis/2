@@ -34,7 +34,7 @@ export namespace EventMarket {
     }
 
     export function sell_item(character: Character, index: number, price: money) {
-        console.log('sell item index ' + index)
+        // console.log('sell item index ' + index)
         const responce = ItemOrders.sell(character, index, price)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
 
@@ -92,7 +92,7 @@ export namespace EventMarket {
      * @param character 
      */
     export function clear_orders(character: Character) {
-        console.log('clear all orders of ' + character.name)
+        // console.log('clear all orders of ' + character.name)
         remove_bulk_orders(character)
         remove_item_orders(character)
         character.trade_savings.transfer_all(character.savings)        

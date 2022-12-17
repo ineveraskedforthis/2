@@ -128,7 +128,10 @@ exports.damage_affixes_effects = {
         damage.fire += 10;
         return damage;
     },
-    precise: dummy_damage_mod,
+    precise: (damage) => {
+        damage.pierce += 10;
+        return damage;
+    },
     of_madness: (damage) => {
         damage.slice += 20;
         return damage;

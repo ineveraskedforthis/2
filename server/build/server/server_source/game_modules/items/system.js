@@ -50,7 +50,13 @@ var ItemSystem;
     }
     ItemSystem.create = create;
     function weight(item) {
-        return item.material.density * size(item);
+        let modifier = 0;
+        for (let affix of item.affixes) {
+            if (affix.tag == 'heavy') {
+                modifier += 5;
+            }
+        }
+        return item.material.density * size(item) + modifier;
     }
     ItemSystem.weight = weight;
     function power(item) {

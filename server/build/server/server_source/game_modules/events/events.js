@@ -305,7 +305,7 @@ var Event;
             }
         }
         //apply damage after all modifiers
-        console.log(attack);
+        // console.log(attack)
         system_3.CharacterSystem.damage(defender, attack.damage);
         defender.change_status(attack.defender_status_change);
         attacker.change_status(attack.attacker_status_change);
@@ -325,9 +325,9 @@ var Event;
         for (const item of loot) {
             killer.stash.inc(item.material, item.amount);
         }
-        console.log(killer.stash.data);
+        // console.log(killer.stash.data)
         //loot items rgo
-        console.log('check items drop');
+        // console.log('check items drop')
         const dropped_items = generate_loot_1.Loot.items(victim.race());
         for (let item of dropped_items) {
             inventory_events_1.EventInventory.add_item(killer, item);

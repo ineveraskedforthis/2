@@ -145,7 +145,10 @@ export const damage_affixes_effects:{[_ in affix_tag]: DamageModificationFunctio
         damage.fire += 10
         return damage
     },
-    precise: dummy_damage_mod,
+    precise: (damage: Damage) => {
+        damage.pierce += 10;
+        return damage
+    },
     of_madness: (damage: Damage) => {
         damage.slice +=  20;
         return damage

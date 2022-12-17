@@ -26,7 +26,7 @@ var EventMarket;
     }
     EventMarket.sell = sell;
     function sell_item(character, index, price) {
-        console.log('sell item index ' + index);
+        // console.log('sell item index ' + index)
         const responce = system_1.ItemOrders.sell(character, index, price);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
         const cell = systems_communication_1.Convert.character_to_cell(character);
@@ -75,7 +75,7 @@ var EventMarket;
      * @param character
      */
     function clear_orders(character) {
-        console.log('clear all orders of ' + character.name);
+        // console.log('clear all orders of ' + character.name)
         remove_bulk_orders(character);
         remove_item_orders(character);
         character.trade_savings.transfer_all(character.savings);
