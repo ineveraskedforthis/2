@@ -9,7 +9,7 @@ import { BattleAI } from "./AI/battle_ai"
 import { Battle } from "./classes/battle"
 import { Unit } from "./classes/unit"
 import { BattleSystem } from "./system"
-import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/skills"
+import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/Perks"
 
 export const MOVE_COST = 3
 

@@ -1,5 +1,5 @@
 import { equip_slot } from "../../../../shared/inventory";
-import { materials, RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
+import { ELODINO_FLESH, materials, RAT_BONE, RAT_SKIN, STEEL, WOOD } from "../manager_classes/materials_manager";
 import { Damage } from "../misc/damage_types";
 import { ItemJson, ITEM_MATERIAL } from "./item";
 import { ItemSystem } from "./system";
@@ -13,6 +13,8 @@ function base_resists(material: ITEM_MATERIAL, slot: equip_slot) {
 const wood = materials.index_to_material(WOOD)
 const skin = materials.index_to_material(RAT_SKIN)
 const bone = materials.index_to_material(RAT_BONE)
+const elodino = materials.index_to_material(ELODINO_FLESH)
+const steel = materials.index_to_material(STEEL)
 const empty_resists = new Damage()
 
 export const BASIC_BOW_ARGUMENT: ItemJson = {
@@ -63,6 +65,18 @@ export const BONE_DAGGER_ARGUMENT: ItemJson = {
     range: 0.8
 }
 
+export const SWORD_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'weapon',
+    material: steel,
+    weapon_tag: 'onehand',
+    model_tag: 'sword',
+    resists: empty_resists,
+    damage: new Damage(5, 5, 20),
+    range: 1.2
+}
+
 export const WOODEN_MACE_ARGUMENT: ItemJson = {
     durability: 100,
     affixes: [],
@@ -94,6 +108,18 @@ export const RAT_SKIN_ARMOUR_ARGUMENT: ItemJson = {
     material: skin,
     weapon_tag: 'twohanded',
     model_tag: 'rat_skin_armour',
+    resists: base_resists(skin, 'body'),
+    damage: new Damage(),
+    range: 1
+}
+
+export const ELODINO_DRESS_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'body',
+    material: elodino,
+    weapon_tag: 'twohanded',
+    model_tag: 'elodino_dress',
     resists: base_resists(skin, 'body'),
     damage: new Damage(),
     range: 1

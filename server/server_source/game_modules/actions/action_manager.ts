@@ -7,9 +7,9 @@ import { rest } from "./actions_set_up/character_actions/rest"
 import { fish, hunt } from "./actions_set_up/character_actions/hunt"
 // import { attack } from "./actions_set_up/character_actions/attack"
 import { gather_cotton, gather_wood } from "./actions_set_up/character_actions/gather"
-import { craft_bone_dagger, craft_bone_spear, craft_spear, craft_wooden_mace, craft_wood_bow } from "./actions_set_up/character_actions/craft_weapon"
+import { craft_bone_dagger, craft_bone_spear, craft_spear, craft_sword, craft_wooden_mace, craft_wood_bow } from "./actions_set_up/character_actions/craft_weapon"
 import { craft_bone_arrow } from "./actions_set_up/character_actions/craft_bone_arrow"
-import { craft_rat_armour, craft_rat_boots, craft_rat_gloves, craft_rat_helmet, craft_rat_pants } from "./actions_set_up/character_actions/craft_rat_armour"
+import { craft_elo_dress, craft_rat_armour, craft_rat_boots, craft_rat_gloves, craft_rat_helmet, craft_rat_pants } from "./actions_set_up/character_actions/craft_armour"
 import { Alerts } from "../client_communication/network_actions/alerts"
 import { Data } from "../data"
 
@@ -79,6 +79,8 @@ export namespace CharacterAction {
         export const BONE_ARROW = craft_bone_arrow
         export const DAGGER = craft_bone_dagger
         export const MACE = craft_wooden_mace
+        export const SWORD = craft_sword
+        export const ELO_DRESS = craft_elo_dress
     }    
 }
 

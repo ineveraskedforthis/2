@@ -1,5 +1,5 @@
 import { Accuracy } from "../../battle/battle_calcs";
-import { Perks, perks_list, perk_price } from "../../character/skills";
+import { Perks, perks_list, perk_price } from "../../character/Perks";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper } from "../user";
 import { Alerts } from "./alerts";

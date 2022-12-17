@@ -1,6 +1,7 @@
 import {Stash} from "../inventories/stash"
 import { Archetype, InnateStats, ModelVariant, Stats, Status, status_type } from "./character_parts";
-import { PerksTable, SkillList } from "./skills";
+import { SkillList } from "./skills";
+import { PerksTable } from "./Perks";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { cell_id, char_id, map_position, money, TEMP_USER_ID, user_id } from "../types";

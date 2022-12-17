@@ -1,5 +1,5 @@
-import { RAT_BONE, WOOD } from "../../../manager_classes/materials_manager";
-import { BASIC_BOW_ARGUMENT, BONE_DAGGER_ARGUMENT, BONE_SPEAR_ARGUMENT, SPEAR_ARGUMENT, WOODEN_MACE_ARGUMENT } from "../../../items/items_set_up";
+import { RAT_BONE, STEEL, WOOD } from "../../../manager_classes/materials_manager";
+import { BASIC_BOW_ARGUMENT, BONE_DAGGER_ARGUMENT, BONE_SPEAR_ARGUMENT, SPEAR_ARGUMENT, SWORD_ARGUMENT, WOODEN_MACE_ARGUMENT } from "../../../items/items_set_up";
 import { Craft } from "../../../calculations/craft";
 import { generate_craft_item_action } from "./generate_craft_item_action";
 const bone_spear_input = [{material: WOOD, amount: 3}, {material: RAT_BONE, amount: 4}]
@@ -20,3 +20,7 @@ export const craft_wood_bow     = generate_craft_item_action([{material: WOOD, a
     BASIC_BOW_ARGUMENT,     Craft.Durability.wood_item, 35, 'woodwork')
 export const craft_spear        = generate_craft_item_action([{material: WOOD, amount: 3}], 
     SPEAR_ARGUMENT,         Craft.Durability.wood_item, 15, 'woodwork')
+
+export const craft_sword        = generate_craft_item_action([{material: STEEL, amount: 2}], 
+    SWORD_ARGUMENT,         Craft.Durability.metal_weapon, 60, 'smith')
+

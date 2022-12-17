@@ -1,4 +1,4 @@
-import { RAT_SKIN_ARMOUR_SKIN_NEEDED, RAT_SKIN_BOOTS_SKIN_NEEDED, RAT_SKIN_PANTS_SKIN_NEEDED } from "../actions/actions_set_up/character_actions/craft_rat_armour";
+import { RAT_SKIN_ARMOUR_SKIN_NEEDED, RAT_SKIN_BOOTS_SKIN_NEEDED, RAT_SKIN_PANTS_SKIN_NEEDED } from "../actions/actions_set_up/character_actions/craft_armour";
 import type { Character } from "../character/character"
 import { hostile } from "../character/races/racial_hostility";
 import { ActionManager, CharacterAction } from "../actions/action_manager";
@@ -160,7 +160,7 @@ export namespace CampaignAI {
         if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
             AI.make_boots(char, base_price_skin)
         }
-
+        
         if ((char.perks.alchemist)) {
             AI.extract_zaz(char, base_price_elodino)
         }

@@ -1,4 +1,4 @@
-import { Perks } from "../../character/skills";
+import { Perks } from "../../character/Perks";
 import { Event } from "../../events/events";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper, User } from "../user";

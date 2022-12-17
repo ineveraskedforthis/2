@@ -12,7 +12,7 @@ import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../..
 import { prepare_market_orders } from "../helper_functions";
 import { Craft } from "../../calculations/craft";
 import { BONE_SPEAR_TIER, DAGGER_TIER, MACE_TIER, SPEAR_TIER, WOOD_BOW_TIER } from "../../actions/actions_set_up/character_actions/craft_weapon";
-import { RAT_ARMOUR_TIER } from "../../actions/actions_set_up/character_actions/craft_rat_armour";
+import { RAT_ARMOUR_TIER } from "../../actions/actions_set_up/character_actions/craft_armour";
 import { COOKING_TIER, ELODINO_TIER } from "../../actions/actions_set_up/character_actions/craft_bulk";
 import { ARROW_TIER } from "../../actions/actions_set_up/character_actions/craft_bone_arrow";
 

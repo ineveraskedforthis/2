@@ -63,6 +63,10 @@ export namespace Craft {
             return durability
         }
 
+        export function metal_weapon(character: Character, tier: number) {
+            return from_skill(character.skills.smith, tier)
+        }
+
         export function from_skill(skill: number, difficulty: number) {
             const base = Math.round(skill / difficulty * 100)
             return trim(base, 10, 100)

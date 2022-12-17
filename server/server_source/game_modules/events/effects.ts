@@ -1,6 +1,7 @@
 import { equip_slot } from "../../../../shared/inventory";
 import { Character } from "../character/character";
-import { Perks, skill } from "../character/skills";
+import { skill } from "../character/skills";
+import { Perks } from "../character/Perks";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 import { character_list } from "../data";
