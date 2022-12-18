@@ -74,6 +74,9 @@ var ItemSystem;
         if (materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH).string_tag == (item.material.string_tag)) {
             result += 5;
         }
+        if (materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR).string_tag == (item.material.string_tag)) {
+            result += 5;
+        }
         return result;
     }
     ItemSystem.power = power;
