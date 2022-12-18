@@ -1,5 +1,5 @@
 import { equip_slot } from "../../../../shared/inventory";
-import { ELODINO_FLESH, materials, RAT_BONE, RAT_SKIN, STEEL, WOOD } from "../manager_classes/materials_manager";
+import { ELODINO_FLESH, GRACI_HAIR, materials, RAT_BONE, RAT_SKIN, STEEL, WOOD } from "../manager_classes/materials_manager";
 import { Damage } from "../misc/damage_types";
 import { ItemJson, ITEM_MATERIAL } from "./item";
 import { ItemSystem } from "./system";
@@ -15,6 +15,7 @@ const skin = materials.index_to_material(RAT_SKIN)
 const bone = materials.index_to_material(RAT_BONE)
 const elodino = materials.index_to_material(ELODINO_FLESH)
 const steel = materials.index_to_material(STEEL)
+const graci_hair = materials.index_to_material(GRACI_HAIR)
 const empty_resists = new Damage()
 
 export const BASIC_BOW_ARGUMENT: ItemJson = {
@@ -116,7 +117,7 @@ export const RAT_SKIN_ARMOUR_ARGUMENT: ItemJson = {
 export const ELODINO_DRESS_ARGUMENT: ItemJson = {
     durability: 100,
     affixes: [],
-    slot: 'body',
+    slot: 'legs',
     material: elodino,
     weapon_tag: 'twohanded',
     model_tag: 'elodino_dress',
@@ -132,6 +133,18 @@ export const RAT_SKIN_HELMET_ARGUMENT: ItemJson = {
     material: skin,
     weapon_tag: 'twohanded',
     model_tag: 'rat_skin_helmet',
+    resists: base_resists(skin, 'head'),
+    damage: new Damage(),
+    range: 1
+}
+
+export const GRACI_HAIR_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'head',
+    material: graci_hair,
+    weapon_tag: 'twohanded',
+    model_tag: 'graci_hair',
     resists: base_resists(skin, 'head'),
     damage: new Damage(),
     range: 1

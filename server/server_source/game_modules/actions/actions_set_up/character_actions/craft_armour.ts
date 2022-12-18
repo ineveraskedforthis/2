@@ -1,7 +1,7 @@
 import { Character } from "../../../character/character";
 import { CharacterActionResponce } from "../../action_manager";
-import { ELODINO_FLESH, RAT_SKIN } from "../../../manager_classes/materials_manager";
-import { ELODINO_DRESS_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../../items/items_set_up";
+import { ELODINO_FLESH, GRACI_HAIR, RAT_SKIN } from "../../../manager_classes/materials_manager";
+import { ELODINO_DRESS_ARGUMENT, GRACI_HAIR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_GLOVES_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "../../../items/items_set_up";
 
 import { map_position } from "../../../types";
 import { ItemSystem } from "../../../items/system";
@@ -59,4 +59,8 @@ export const craft_rat_boots = generate_rat_skin_craft(RAT_SKIN_BOOTS_ARGUMENT, 
 
 export const craft_elo_dress = generate_craft_item_action(
     [{amount: 4, material: ELODINO_FLESH}], ELODINO_DRESS_ARGUMENT, 
+    Craft.Durability.skin_item, 50, 'clothier')
+
+export const craft_graci_hair = generate_craft_item_action(
+    [{amount: 2, material: GRACI_HAIR}], GRACI_HAIR_ARGUMENT, 
     Craft.Durability.skin_item, 50, 'clothier')

@@ -74,6 +74,10 @@ var Craft;
             return durability;
         }
         Durability.skin_item = skin_item;
+        function metal_weapon(character, tier) {
+            return from_skill(character.skills.smith, tier);
+        }
+        Durability.metal_weapon = metal_weapon;
         function from_skill(skill, difficulty) {
             const base = Math.round(skill / difficulty * 100);
             return (0, basic_functions_1.trim)(base, 10, 100);

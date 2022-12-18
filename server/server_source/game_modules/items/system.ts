@@ -3,7 +3,7 @@ import { damage_type } from "../types";
 import { damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
 import { Damage, DmgOps } from "../misc/damage_types";
 import { Item, ItemJson, Itemlette } from "./item";
-import { ELODINO_FLESH, materials, MaterialsManager } from "../manager_classes/materials_manager";
+import { ELODINO_FLESH, GRACI_HAIR, materials, MaterialsManager } from "../manager_classes/materials_manager";
 
 const empty_resists = new Damage()
 
@@ -76,6 +76,9 @@ export namespace ItemSystem {
         }
 
         if (materials.index_to_material(ELODINO_FLESH).string_tag == (item.material.string_tag)) {
+            result += 5
+        }
+        if (materials.index_to_material(GRACI_HAIR).string_tag == (item.material.string_tag)) {
             result += 5
         }
 

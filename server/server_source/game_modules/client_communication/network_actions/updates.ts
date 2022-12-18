@@ -288,7 +288,7 @@ export namespace SendUpdate {
     }
 
     export function explored(user: User) {
-        console.log('send exploration')
+        // console.log('send exploration')
         // var stack = new Error().stack
         // console.log( stack )
 
@@ -320,7 +320,7 @@ export namespace SendUpdate {
     }
 
     export function map_position(user: User, teleport_flag:boolean) {
-        console.log('send map position')
+        // console.log('send map position')
         let character = Convert.user_to_character(user)
         if (character == undefined) return
         let cell = Convert.character_to_cell(character)
@@ -333,13 +333,13 @@ export namespace SendUpdate {
     }
 
     export function map_position_move(user: User) {
-        console.log('send map position')
+        // console.log('send map position')
         map_position(user, false)
     }
 
     export function local_characters(user: User) {
         // prepare data
-        console.log('send local characters')
+        // console.log('send local characters')
         const character = Convert.user_to_character(user)
         if (character == undefined) return
         const cell = Convert.character_to_cell(character)
@@ -359,14 +359,14 @@ export namespace SendUpdate {
     }
 
     export function map_related(user: User) {
-        console.log('update map related')
+        // console.log('update map related')
         local_actions(user)
         local_characters(user)
         explored(user)
     }
 
     export function belongings(user: User) {
-        console.log('update belongings')
+        // console.log('update belongings')
         stash(user)
         savings(user)
         equip(user)

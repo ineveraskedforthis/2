@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Request = void 0;
 const battle_calcs_1 = require("../../battle/battle_calcs");
-const skills_1 = require("../../character/skills");
+const Perks_1 = require("../../character/Perks");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 var Request;
@@ -41,9 +41,9 @@ var Request;
         }
         let data = target_character.perks;
         let responce = {};
-        for (let perk of skills_1.perks_list) {
+        for (let perk of Perks_1.perks_list) {
             if (data[perk] == true) {
-                responce[perk] = (0, skills_1.perk_price)(perk, character, target_character);
+                responce[perk] = (0, Perks_1.perk_price)(perk, character, target_character);
             }
         }
         sw.socket.emit('perks-info', responce);

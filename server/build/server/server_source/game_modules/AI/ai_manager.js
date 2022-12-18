@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AI = exports.CampaignAI = void 0;
-const craft_rat_armour_1 = require("../actions/actions_set_up/character_actions/craft_rat_armour");
+const craft_armour_1 = require("../actions/actions_set_up/character_actions/craft_armour");
 const action_manager_1 = require("../actions/action_manager");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
@@ -266,7 +266,7 @@ var AI;
             system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
             market_1.EventMarket.buy(character, materials_manager_1.RAT_SKIN, (0, basic_functions_1.trim)(skin_to_buy, 0, 50), price_skin);
         }
-        if (resource > craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
+        if (resource > craft_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
             const flags = check_if_set_is_ready(character);
             if (!flags.body)
                 action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR, character, [0, 0]);
@@ -300,15 +300,15 @@ var AI;
         let data = character.equip.data.backpack.items;
         for (let [index, item] of Object.entries(data)) {
             if (item?.slot == 'body') {
-                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
+                let price = Math.floor(price_skin * craft_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
             if (item?.slot == 'foot') {
-                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_BOOTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
+                let price = Math.floor(price_skin * craft_armour_1.RAT_SKIN_BOOTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
             if (item?.slot == 'legs') {
-                let price = Math.floor(price_skin * craft_rat_armour_1.RAT_SKIN_PANTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
+                let price = Math.floor(price_skin * craft_armour_1.RAT_SKIN_PANTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
         }

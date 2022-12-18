@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.WOODEN_MACE_ARGUMENT = exports.BONE_DAGGER_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
+exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.GRACI_HAIR_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.ELODINO_DRESS_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.WOODEN_MACE_ARGUMENT = exports.SWORD_ARGUMENT = exports.BONE_DAGGER_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const damage_types_1 = require("../misc/damage_types");
 const system_1 = require("./system");
@@ -12,6 +12,9 @@ function base_resists(material, slot) {
 const wood = materials_manager_1.materials.index_to_material(materials_manager_1.WOOD);
 const skin = materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN);
 const bone = materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE);
+const elodino = materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH);
+const steel = materials_manager_1.materials.index_to_material(materials_manager_1.STEEL);
+const graci_hair = materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR);
 const empty_resists = new damage_types_1.Damage();
 exports.BASIC_BOW_ARGUMENT = {
     durability: 100,
@@ -57,6 +60,17 @@ exports.BONE_DAGGER_ARGUMENT = {
     damage: new damage_types_1.Damage(1, 6, 12),
     range: 0.8
 };
+exports.SWORD_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'weapon',
+    material: steel,
+    weapon_tag: 'onehand',
+    model_tag: 'sword',
+    resists: empty_resists,
+    damage: new damage_types_1.Damage(5, 5, 20),
+    range: 1.2
+};
 exports.WOODEN_MACE_ARGUMENT = {
     durability: 100,
     affixes: [],
@@ -90,6 +104,17 @@ exports.RAT_SKIN_ARMOUR_ARGUMENT = {
     damage: new damage_types_1.Damage(),
     range: 1
 };
+exports.ELODINO_DRESS_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'legs',
+    material: elodino,
+    weapon_tag: 'twohanded',
+    model_tag: 'elodino_dress',
+    resists: base_resists(skin, 'body'),
+    damage: new damage_types_1.Damage(),
+    range: 1
+};
 exports.RAT_SKIN_HELMET_ARGUMENT = {
     durability: 100,
     affixes: [],
@@ -97,6 +122,17 @@ exports.RAT_SKIN_HELMET_ARGUMENT = {
     material: skin,
     weapon_tag: 'twohanded',
     model_tag: 'rat_skin_helmet',
+    resists: base_resists(skin, 'head'),
+    damage: new damage_types_1.Damage(),
+    range: 1
+};
+exports.GRACI_HAIR_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'head',
+    material: graci_hair,
+    weapon_tag: 'twohanded',
+    model_tag: 'graci_hair',
     resists: base_resists(skin, 'head'),
     damage: new damage_types_1.Damage(),
     range: 1

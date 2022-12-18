@@ -8,7 +8,7 @@ const system_1 = require("../battle/system");
 const basic_functions_1 = require("../calculations/basic_functions");
 const system_2 = require("../character/attack/system");
 const generate_loot_1 = require("../character/races/generate_loot");
-const skills_1 = require("../character/skills");
+const Perks_1 = require("../character/Perks");
 const system_3 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
@@ -23,12 +23,12 @@ var Event;
 (function (Event) {
     function buy_perk(student, perk, teacher) {
         let savings = student.savings.get();
-        let price = (0, skills_1.perk_price)(perk, student, teacher);
+        let price = (0, Perks_1.perk_price)(perk, student, teacher);
         if (savings < price) {
             alerts_1.Alerts.not_enough_to_character(student, 'money', price, savings);
             return;
         }
-        let responce = (0, skills_1.perk_requirement)(perk, student);
+        let responce = (0, Perks_1.perk_requirement)(perk, student);
         if (responce != 'ok') {
             alerts_1.Alerts.generic_character_alert(student, 'alert', responce);
             return;

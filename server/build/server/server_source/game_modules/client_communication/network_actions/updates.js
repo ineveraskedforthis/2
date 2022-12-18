@@ -12,7 +12,7 @@ const constants_1 = require("../../static_data/constants");
 const helper_functions_1 = require("../helper_functions");
 const craft_1 = require("../../calculations/craft");
 const craft_weapon_1 = require("../../actions/actions_set_up/character_actions/craft_weapon");
-const craft_rat_armour_1 = require("../../actions/actions_set_up/character_actions/craft_rat_armour");
+const craft_armour_1 = require("../../actions/actions_set_up/character_actions/craft_armour");
 const craft_bulk_1 = require("../../actions/actions_set_up/character_actions/craft_bulk");
 const craft_bone_arrow_1 = require("../../actions/actions_set_up/character_actions/craft_bone_arrow");
 var SendUpdate;
@@ -156,7 +156,7 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        let value = craft_1.Craft.Durability.skin_item(character, craft_rat_armour_1.RAT_ARMOUR_TIER);
+        let value = craft_1.Craft.Durability.skin_item(character, craft_armour_1.RAT_ARMOUR_TIER);
         alerts_1.Alerts.craft(user, 'craft_rat_pants', value);
         alerts_1.Alerts.craft(user, 'craft_rat_armour', value);
         alerts_1.Alerts.craft(user, 'craft_rat_gloves', value);
@@ -276,7 +276,7 @@ var SendUpdate;
     }
     SendUpdate.market = market;
     function explored(user) {
-        console.log('send exploration');
+        // console.log('send exploration')
         // var stack = new Error().stack
         // console.log( stack )
         let character = systems_communication_1.Convert.user_to_character(user);
@@ -304,7 +304,7 @@ var SendUpdate;
     }
     SendUpdate.explored = explored;
     function map_position(user, teleport_flag) {
-        console.log('send map position');
+        // console.log('send map position')
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -318,13 +318,13 @@ var SendUpdate;
     }
     SendUpdate.map_position = map_position;
     function map_position_move(user) {
-        console.log('send map position');
+        // console.log('send map position')
         map_position(user, false);
     }
     SendUpdate.map_position_move = map_position_move;
     function local_characters(user) {
         // prepare data
-        console.log('send local characters');
+        // console.log('send local characters')
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -346,14 +346,14 @@ var SendUpdate;
     }
     SendUpdate.local_actions = local_actions;
     function map_related(user) {
-        console.log('update map related');
+        // console.log('update map related')
         local_actions(user);
         local_characters(user);
         explored(user);
     }
     SendUpdate.map_related = map_related;
     function belongings(user) {
-        console.log('update belongings');
+        // console.log('update belongings')
         stash(user);
         savings(user);
         equip(user);

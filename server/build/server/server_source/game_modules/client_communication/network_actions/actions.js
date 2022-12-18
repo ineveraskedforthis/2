@@ -4,7 +4,7 @@ exports.HandleAction = void 0;
 const action_manager_1 = require("../../actions/action_manager");
 const events_1 = require("../../battle/events");
 const system_1 = require("../../battle/system");
-const skills_1 = require("../../character/skills");
+const Perks_1 = require("../../character/Perks");
 const inventory_events_1 = require("../../events/inventory_events");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
@@ -128,7 +128,7 @@ var HandleAction;
             //     return  battle.action(index, BattleAI.convert_attack_to_action(battle, index, input.target, 'fast'))
         }
         else if (input.action == 'dodge') {
-            if (!(0, skills_1.can_dodge)(character)) {
+            if (!(0, Perks_1.can_dodge)(character)) {
                 return { action: "not_learnt" };
             }
             return events_1.BattleEvent.Dodge(battle, unit);

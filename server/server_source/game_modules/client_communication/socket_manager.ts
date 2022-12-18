@@ -109,7 +109,8 @@ export class SocketManager {
             socket.on('mrboots',  () =>    HandleAction.act(user, CharacterAction.CRAFT.RAT_BOOTS))
             socket.on('mrhelmet',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_HELMET))
             socket.on('mrarmour',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_ARMOUR))
-
+            socket.on('melodress', () =>   HandleAction.act(user, CharacterAction.CRAFT.ELO_DRESS))
+            socket.on('mgracihair', () =>   HandleAction.act(user, CharacterAction.CRAFT.GRACI_HAIR))
             
             socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))

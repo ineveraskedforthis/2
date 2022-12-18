@@ -4,6 +4,7 @@ exports.ItemSystem = void 0;
 const affix_1 = require("../base_game_classes/affix");
 const damage_types_1 = require("../misc/damage_types");
 const item_1 = require("./item");
+const materials_manager_1 = require("../manager_classes/materials_manager");
 const empty_resists = new damage_types_1.Damage();
 var ItemSystem;
 (function (ItemSystem) {
@@ -69,6 +70,9 @@ var ItemSystem;
             if (f != undefined) {
                 result = f(result);
             }
+        }
+        if (materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH).string_tag == (item.material.string_tag)) {
+            result += 5;
         }
         return result;
     }

@@ -769,6 +769,16 @@ function send_switch_weapon_request() {
     div.onclick = () => socket.emit('mrboots')
 }
 
+{
+    let div = document.getElementById('craft_elo_dress')
+    div.onclick = () => socket.emit('melodress')
+}
+
+{
+    let div = document.getElementById('craft_graci_hair')
+    div.onclick = () => socket.emit('mgracihair')
+}
+
 function update_craft_probability(data) {
     console.log(data)
     let div = document.getElementById(data.tag + '_chance')
