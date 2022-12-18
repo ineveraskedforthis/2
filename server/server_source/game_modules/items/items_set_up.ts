@@ -114,6 +114,18 @@ export const RAT_SKIN_ARMOUR_ARGUMENT: ItemJson = {
     range: 1
 }
 
+export const BONE_ARMOUR_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'body',
+    material: bone,
+    weapon_tag: 'twohanded',
+    model_tag: 'bone_armour',
+    resists: base_resists(bone, 'body'),
+    damage: new Damage(),
+    range: 1
+}
+
 export const ELODINO_DRESS_ARGUMENT: ItemJson = {
     durability: 100,
     affixes: [],

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.GRACI_HAIR_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.ELODINO_DRESS_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.WOODEN_MACE_ARGUMENT = exports.SWORD_ARGUMENT = exports.BONE_DAGGER_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
+exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.GRACI_HAIR_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.ELODINO_DRESS_ARGUMENT = exports.BONE_ARMOUR_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.WOODEN_MACE_ARGUMENT = exports.SWORD_ARGUMENT = exports.BONE_DAGGER_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const damage_types_1 = require("../misc/damage_types");
 const system_1 = require("./system");
@@ -101,6 +101,17 @@ exports.RAT_SKIN_ARMOUR_ARGUMENT = {
     weapon_tag: 'twohanded',
     model_tag: 'rat_skin_armour',
     resists: base_resists(skin, 'body'),
+    damage: new damage_types_1.Damage(),
+    range: 1
+};
+exports.BONE_ARMOUR_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'body',
+    material: bone,
+    weapon_tag: 'twohanded',
+    model_tag: 'bone_armour',
+    resists: base_resists(bone, 'body'),
     damage: new damage_types_1.Damage(),
     range: 1
 };

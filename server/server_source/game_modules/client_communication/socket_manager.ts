@@ -111,6 +111,7 @@ export class SocketManager {
             socket.on('mrarmour',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_ARMOUR))
             socket.on('melodress', () =>   HandleAction.act(user, CharacterAction.CRAFT.ELO_DRESS))
             socket.on('mgracihair', () =>   HandleAction.act(user, CharacterAction.CRAFT.GRACI_HAIR))
+            socket.on('mbonearmour', () =>   HandleAction.act(user, CharacterAction.CRAFT.BONE_ARMOUR))
             
             socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))

@@ -69,7 +69,7 @@ export namespace Craft {
 
         export function from_skill(skill: number, difficulty: number) {
             const base = Math.round(skill / difficulty * 100)
-            return trim(base, 10, 100)
+            return trim(base, 5, 150)
         }
     }
 }

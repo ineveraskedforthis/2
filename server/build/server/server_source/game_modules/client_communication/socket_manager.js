@@ -76,6 +76,7 @@ class SocketManager {
             socket.on('mrarmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR));
             socket.on('melodress', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.ELO_DRESS));
             socket.on('mgracihair', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.GRACI_HAIR));
+            socket.on('mbonearmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.BONE_ARMOUR));
             socket.on('battle-action', (msg) => actions_1.HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
             socket.on('request-perks', (msg) => request_1.Request.perks(user, msg));

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.craft_graci_hair = exports.craft_elo_dress = exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_BOOTS_SKIN_NEEDED = exports.RAT_SKIN_PANTS_SKIN_NEEDED = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = exports.RAT_ARMOUR_TIER = void 0;
+exports.craft_bone_armour = exports.craft_graci_hair = exports.craft_elo_dress = exports.craft_rat_boots = exports.craft_rat_helmet = exports.craft_rat_pants = exports.craft_rat_gloves = exports.craft_rat_armour = exports.RAT_SKIN_BOOTS_SKIN_NEEDED = exports.RAT_SKIN_PANTS_SKIN_NEEDED = exports.RAT_SKIN_ARMOUR_SKIN_NEEDED = exports.RAT_ARMOUR_TIER = void 0;
 const materials_manager_1 = require("../../../manager_classes/materials_manager");
 const items_set_up_1 = require("../../../items/items_set_up");
 const user_manager_1 = require("../../../client_communication/user_manager");
@@ -46,3 +46,4 @@ exports.craft_rat_helmet = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_HELME
 exports.craft_rat_boots = generate_rat_skin_craft(items_set_up_1.RAT_SKIN_BOOTS_ARGUMENT, exports.RAT_SKIN_BOOTS_SKIN_NEEDED);
 exports.craft_elo_dress = (0, generate_craft_item_action_1.generate_craft_item_action)([{ amount: 4, material: materials_manager_1.ELODINO_FLESH }], items_set_up_1.ELODINO_DRESS_ARGUMENT, craft_2.Craft.Durability.skin_item, 50, 'clothier');
 exports.craft_graci_hair = (0, generate_craft_item_action_1.generate_craft_item_action)([{ amount: 2, material: materials_manager_1.GRACI_HAIR }], items_set_up_1.GRACI_HAIR_ARGUMENT, craft_2.Craft.Durability.skin_item, 50, 'clothier');
+exports.craft_bone_armour = (0, generate_craft_item_action_1.generate_craft_item_action)([{ amount: 50, material: materials_manager_1.RAT_BONE }], items_set_up_1.BONE_ARMOUR_ARGUMENT, craft_2.Craft.Durability.bone_item, 50, 'bone_carving');

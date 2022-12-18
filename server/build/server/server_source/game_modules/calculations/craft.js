@@ -80,7 +80,7 @@ var Craft;
         Durability.metal_weapon = metal_weapon;
         function from_skill(skill, difficulty) {
             const base = Math.round(skill / difficulty * 100);
-            return (0, basic_functions_1.trim)(base, 10, 100);
+            return (0, basic_functions_1.trim)(base, 5, 150);
         }
         Durability.from_skill = from_skill;
     })(Durability = Craft.Durability || (Craft.Durability = {}));

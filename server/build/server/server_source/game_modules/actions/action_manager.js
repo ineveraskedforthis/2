@@ -47,6 +47,7 @@ var CharacterAction;
         CRAFT.SWORD = craft_weapon_1.craft_sword;
         CRAFT.ELO_DRESS = craft_armour_1.craft_elo_dress;
         CRAFT.GRACI_HAIR = craft_armour_1.craft_graci_hair;
+        CRAFT.BONE_ARMOUR = craft_armour_1.craft_bone_armour;
     })(CRAFT = CharacterAction.CRAFT || (CharacterAction.CRAFT = {}));
 })(CharacterAction = exports.CharacterAction || (exports.CharacterAction = {}));
 var ActionManager;

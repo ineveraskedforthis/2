@@ -449,7 +449,7 @@ var Event;
     function on_craft_update(character, skill, craft_tier) {
         const dice = Math.random();
         const current = character.skills[skill];
-        console.log(dice, craft_tier, current, (craft_tier - current) / 100);
+        // console.log(dice, craft_tier, current, (craft_tier - current) / 100)
         if ((current == 0) || (dice < (craft_tier - current) / 100))
             effects_1.Effect.Change.skill(character, skill, 1);
         effects_1.Effect.Change.stress(character, 1);

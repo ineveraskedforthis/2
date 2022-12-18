@@ -251,7 +251,8 @@ const SKILL_NAMES = {
     bone_carving: 'Bone carving',
     twohanded: 'Two-handed weapons',
     travelling: 'Travelling',
-    fishing: 'Fishing'
+    fishing: 'Fishing',
+    smith: 'Smith'
 }
 
 var CURR_SKILL_DESC = undefined
@@ -778,6 +779,13 @@ function send_switch_weapon_request() {
     let div = document.getElementById('craft_graci_hair')
     div.onclick = () => socket.emit('mgracihair')
 }
+
+{
+    let div = document.getElementById('craft_bone_armour')
+    div.onclick = () => socket.emit('mbonearmour')
+}
+
+
 
 function update_craft_probability(data) {
     console.log(data)
