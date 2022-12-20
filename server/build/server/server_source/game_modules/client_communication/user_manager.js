@@ -157,7 +157,7 @@ var UserManagement;
             console.log('attempt to generate character for user who already owns one');
             return;
         }
-        const character = events_1.Event.new_character(human_1.HumanTemplateNotAligned, name, starting_cell, model_variation);
+        const character = events_1.Event.new_character(human_1.Human, name, starting_cell, model_variation);
         console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')');
         systems_communication_1.Link.character_and_user_data(character, user);
         const real_user = get_user(id);

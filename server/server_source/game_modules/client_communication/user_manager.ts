@@ -3,7 +3,7 @@ var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 
 import fs from "fs"
-import { HumanTemplateNotAligned } from "../character/races/human";
+import { Human } from "../character/races/human";
 import { Convert, Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
@@ -168,7 +168,7 @@ export namespace UserManagement {
             return
         }
 
-        const character = Event.new_character(HumanTemplateNotAligned, name, starting_cell, model_variation)
+        const character = Event.new_character(Human, name, starting_cell, model_variation)
         console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
         

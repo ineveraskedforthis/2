@@ -147,7 +147,7 @@ function create_starting_agents() {
     /// test person
     const starting_cell_colony = system_3.MapSystem.coordinate_to_id(0, 3);
     {
-        let Trader = events_1.Event.new_character(human_1.HumanTemplateColony, 'Trader', starting_cell_colony, dummy_model);
+        let Trader = events_1.Event.new_character(human_1.Human, 'Trader', starting_cell_colony, dummy_model);
         Trader.stash.inc(materials_manager_1.MEAT, 10);
         Trader.stash.inc(materials_manager_1.WOOD, 100);
         Trader.stash.inc(materials_manager_1.FOOD, 500);
@@ -175,7 +175,7 @@ function create_starting_agents() {
 const dummy_model = { chin: 0, mouth: 0, eyes: 0 };
 function create_cook(x, y) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    const cook = events_1.Event.new_character(human_1.HumanTemplateColony, 'Local cook', cell, dummy_model);
+    const cook = events_1.Event.new_character(human_1.Human, 'Local cook', cell, dummy_model);
     cook.stash.inc(materials_manager_1.FOOD, 10);
     cook.savings.inc(500);
     cook.skills.cooking = 100;
@@ -184,7 +184,7 @@ function create_cook(x, y) {
 }
 function create_guard(x, y) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let spearman = events_1.Event.new_character(human_1.HumanTemplateColony, 'Local militia', cell, dummy_model);
+    let spearman = events_1.Event.new_character(human_1.Human, 'Local militia', cell, dummy_model);
     spearman.skills.polearms = 100;
     spearman.perks.advanced_polearm = true;
     let spear = system_2.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
@@ -197,7 +197,7 @@ function create_guard(x, y) {
 }
 function fletcher(x, y) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let fletcher = events_1.Event.new_character(human_1.HumanTemplateColony, 'Fletcher', cell, dummy_model);
+    let fletcher = events_1.Event.new_character(human_1.Human, 'Fletcher', cell, dummy_model);
     fletcher.skills.woodwork = 100;
     fletcher.perks.fletcher = true;
     fletcher.skills.ranged = 30;
@@ -209,7 +209,7 @@ function fletcher(x, y) {
 }
 function mage(x, y) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let mage = events_1.Event.new_character(human_1.HumanTemplateColony, 'Mage', cell, dummy_model);
+    let mage = events_1.Event.new_character(human_1.Human, 'Mage', cell, dummy_model);
     mage.skills.magic_mastery = 100;
     mage.perks.mage_initiation = true;
     mage.perks.magic_bolt = true;
@@ -228,7 +228,7 @@ function blood_mage(x, y, faction_id) {
 }
 function alchemist(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let alchemist = events_1.Event.new_character(human_1.HumanTemplateColony, 'Alchemist', cell, dummy_model);
+    let alchemist = events_1.Event.new_character(human_1.Human, 'Alchemist', cell, dummy_model);
     alchemist.skills.magic_mastery = 60;
     alchemist.perks.mage_initiation = true;
     alchemist.perks.alchemist = true;
@@ -239,7 +239,7 @@ function alchemist(x, y, faction_id) {
 }
 function armour_master(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Armourer', cell, dummy_model);
+    let master = events_1.Event.new_character(human_1.Human, 'Armourer', cell, dummy_model);
     master.skills.clothier = 100;
     master.perks.skin_armour_master = true;
     master.stash.inc(materials_manager_1.RAT_SKIN, 50);
@@ -249,7 +249,7 @@ function armour_master(x, y, faction_id) {
 }
 function shoemaker(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Shoemaker', cell, dummy_model);
+    let master = events_1.Event.new_character(human_1.Human, 'Shoemaker', cell, dummy_model);
     master.skills.clothier = 100;
     master.perks.shoemaker = true;
     master.stash.inc(materials_manager_1.RAT_SKIN, 50);
@@ -259,7 +259,7 @@ function shoemaker(x, y, faction_id) {
 }
 function weapon_master_wood(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Weapons maker', cell, dummy_model);
+    let master = events_1.Event.new_character(human_1.Human, 'Weapons maker', cell, dummy_model);
     master.skills.woodwork = 100;
     master.perks.weapon_maker = true;
     master.stash.inc(materials_manager_1.WOOD, 15);
@@ -269,7 +269,7 @@ function weapon_master_wood(x, y, faction_id) {
 }
 function bone_carver_weapon(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Weapons maker', cell, dummy_model);
+    let master = events_1.Event.new_character(human_1.Human, 'Weapons maker', cell, dummy_model);
     master.skills.bone_carving = 100;
     master.perks.weapon_maker = true;
     master.stash.inc(materials_manager_1.RAT_BONE, 40);
@@ -279,7 +279,7 @@ function bone_carver_weapon(x, y, faction_id) {
 }
 function unarmed_master(x, y, faction_id) {
     const cell = system_3.MapSystem.coordinate_to_id(x, y);
-    let master = events_1.Event.new_character(human_1.HumanTemplateColony, 'Monk', cell, dummy_model);
+    let master = events_1.Event.new_character(human_1.Human, 'Monk', cell, dummy_model);
     master.skills.noweapon = 100;
     master.perks.dodge = true;
     master.perks.advanced_unarmed = true;

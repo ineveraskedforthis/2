@@ -21,6 +21,4 @@ const HumanStats:Stats = {
 
 const HumanBaseResists = new Damage(0, 0, 0, 0)
 
-
-export const HumanTemplateNotAligned = new CharacterTemplate(0, HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists, -1)
-export const HumanTemplateColony = new CharacterTemplate(0, HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists, 3)
+export const Human = new CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)

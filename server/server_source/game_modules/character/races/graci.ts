@@ -18,9 +18,9 @@ const GraciStats: Stats = {
 
 const GraciResists = new Damage(0, 0, 0, 0)
 
-const graci_moraes = ['O', 'u', 'la', 'ma', 'a', 'A', 'ou']
+const graci_moraes = ['O', 'u', 'La', 'Ma', 'a', 'A', 'Ou']
 function generate_name() {
     return gen_from_moraes(graci_moraes, 2)
 }
 
-export const GraciTemplate = new CharacterTemplate(0, GraciArchetype, generate_name, 1000, GraciStats, GraciResists, -1)
+export const GraciTemplate = new CharacterTemplate(GraciArchetype, generate_name, 1000, GraciStats, GraciResists)

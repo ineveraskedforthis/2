@@ -4,7 +4,7 @@ import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } fro
 import { ItemSystem } from "./game_modules/items/system";
 import { Equip } from "./game_modules/inventories/equip";
 import { CharacterSystem } from "./game_modules/character/system";
-import { HumanTemplateColony } from "./game_modules/character/races/human";
+import { Human } from "./game_modules/character/races/human";
 import { Inventory } from "./game_modules/inventories/inventory";
 import { MapSystem } from "./game_modules/map/system";
 
@@ -33,7 +33,7 @@ function add_testing_items_to_equip(equip: Equip) {
 
 function character_serialization_test_simple() {
     console.log('basic character serialisation test')
-    const character = CharacterSystem.template_to_character(HumanTemplateColony, 'peter', 1 as cell_id)
+    const character = CharacterSystem.template_to_character(Human, 'peter', 1 as cell_id)
     const string = CharacterSystem.character_to_string(character)
     const character2 = CharacterSystem.string_to_character(string)
     const string2 = CharacterSystem.character_to_string(character2)
@@ -43,7 +43,7 @@ function character_serialization_test_simple() {
 
 function character_serialisation_test_advanced() {
     console.log('stash, items and skills character serialisation test')
-    const character = CharacterSystem.template_to_character(HumanTemplateColony, 'peter', 1 as cell_id)
+    const character = CharacterSystem.template_to_character(Human, 'peter', 1 as cell_id)
     character.stash.inc(WOOD, 1)
     character.stash.inc(MEAT, 1000)
     character.savings.inc(124 as money)

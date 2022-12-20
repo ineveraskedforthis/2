@@ -28,7 +28,7 @@ function add_testing_items_to_equip(equip) {
 }
 function character_serialization_test_simple() {
     console.log('basic character serialisation test');
-    const character = system_2.CharacterSystem.template_to_character(human_1.HumanTemplateColony, 'peter', 1);
+    const character = system_2.CharacterSystem.template_to_character(human_1.Human, 'peter', 1);
     const string = system_2.CharacterSystem.character_to_string(character);
     const character2 = system_2.CharacterSystem.string_to_character(string);
     const string2 = system_2.CharacterSystem.character_to_string(character2);
@@ -36,7 +36,7 @@ function character_serialization_test_simple() {
 }
 function character_serialisation_test_advanced() {
     console.log('stash, items and skills character serialisation test');
-    const character = system_2.CharacterSystem.template_to_character(human_1.HumanTemplateColony, 'peter', 1);
+    const character = system_2.CharacterSystem.template_to_character(human_1.Human, 'peter', 1);
     character.stash.inc(materials_manager_1.WOOD, 1);
     character.stash.inc(materials_manager_1.MEAT, 1000);
     character.savings.inc(124);

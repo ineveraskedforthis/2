@@ -16,8 +16,8 @@ const GraciStats = {
     movement_speed: 3
 };
 const GraciResists = new damage_types_1.Damage(0, 0, 0, 0);
-const graci_moraes = ['O', 'u', 'la', 'ma', 'a', 'A', 'ou'];
+const graci_moraes = ['O', 'u', 'La', 'Ma', 'a', 'A', 'Ou'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(graci_moraes, 2);
 }
-exports.GraciTemplate = new templates_1.CharacterTemplate(0, GraciArchetype, generate_name, 1000, GraciStats, GraciResists, -1);
+exports.GraciTemplate = new templates_1.CharacterTemplate(GraciArchetype, generate_name, 1000, GraciStats, GraciResists);

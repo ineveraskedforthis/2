@@ -2,7 +2,7 @@ import * as path from "path";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { EloTemplate } from "./game_modules/character/races/elo"
 import { GraciTemplate } from "./game_modules/character/races/graci"
-import { HumanTemplateColony } from "./game_modules/character/races/human"
+import { Human } from "./game_modules/character/races/human"
 import { RatTemplate } from "./game_modules/character/races/rat"
 import { CharacterSystem } from "./game_modules/character/system"
 import { Data } from "./game_modules/data"
@@ -155,7 +155,7 @@ function create_starting_agents() {
     const starting_cell_colony = MapSystem.coordinate_to_id(0, 3)
     
     {
-        let Trader = Event.new_character(HumanTemplateColony, 'Trader', starting_cell_colony, dummy_model)
+        let Trader = Event.new_character(Human, 'Trader', starting_cell_colony, dummy_model)
                 
         Trader.stash.inc(MEAT, 10)
         Trader.stash.inc(WOOD, 100)
@@ -189,7 +189,7 @@ function create_starting_agents() {
 const dummy_model = {chin: 0, mouth: 0, eyes: 0}
 function create_cook(x: number, y: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    const cook =  Event.new_character(HumanTemplateColony, 'Local cook', cell, dummy_model)
+    const cook =  Event.new_character(Human, 'Local cook', cell, dummy_model)
     cook.stash.inc(FOOD, 10)
     cook.savings.inc(500 as money)
     cook.skills.cooking = 100
@@ -199,7 +199,7 @@ function create_cook(x: number, y: number) {
 
 function create_guard(x: number, y: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let spearman =  Event.new_character(HumanTemplateColony, 'Local militia', cell, dummy_model)
+    let spearman =  Event.new_character(Human, 'Local militia', cell, dummy_model)
     spearman.skills.polearms = 100
     spearman.perks.advanced_polearm = true
     let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
@@ -214,7 +214,7 @@ function create_guard(x: number, y: number) {
 
 function fletcher(x: number, y: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let fletcher = Event.new_character(HumanTemplateColony, 'Fletcher', cell, dummy_model)
+    let fletcher = Event.new_character(Human, 'Fletcher', cell, dummy_model)
 
     fletcher.skills.woodwork = 100
     fletcher.perks.fletcher = true
@@ -230,7 +230,7 @@ function fletcher(x: number, y: number) {
 
 function mage(x: number, y: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let mage = Event.new_character(HumanTemplateColony, 'Mage', cell, dummy_model)
+    let mage = Event.new_character(Human, 'Mage', cell, dummy_model)
 
     mage.skills.magic_mastery = 100
     mage.perks.mage_initiation = true
@@ -256,7 +256,7 @@ function blood_mage(x: number, y: number, faction_id: number) {
 
 function alchemist(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let alchemist = Event.new_character(HumanTemplateColony, 'Alchemist', cell, dummy_model)
+    let alchemist = Event.new_character(Human, 'Alchemist', cell, dummy_model)
 
     alchemist.skills.magic_mastery = 60
     alchemist.perks.mage_initiation = true
@@ -272,7 +272,7 @@ function alchemist(x: number, y: number, faction_id: number) {
 
 function armour_master(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let master = Event.new_character(HumanTemplateColony, 'Armourer', cell, dummy_model)
+    let master = Event.new_character(Human, 'Armourer', cell, dummy_model)
 
     master.skills.clothier = 100
     master.perks.skin_armour_master = true
@@ -286,7 +286,7 @@ function armour_master(x: number, y: number, faction_id: number) {
 
 function shoemaker(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let master = Event.new_character(HumanTemplateColony, 'Shoemaker', cell, dummy_model)
+    let master = Event.new_character(Human, 'Shoemaker', cell, dummy_model)
 
     master.skills.clothier = 100
     master.perks.shoemaker = true
@@ -300,7 +300,7 @@ function shoemaker(x: number, y: number, faction_id: number) {
 
 function weapon_master_wood(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let master = Event.new_character(HumanTemplateColony, 'Weapons maker', cell, dummy_model)
+    let master = Event.new_character(Human, 'Weapons maker', cell, dummy_model)
 
     master.skills.woodwork = 100
     master.perks.weapon_maker = true
@@ -314,7 +314,7 @@ function weapon_master_wood(x: number, y: number, faction_id: number) {
 
 function bone_carver_weapon(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let master = Event.new_character(HumanTemplateColony, 'Weapons maker', cell, dummy_model)
+    let master = Event.new_character(Human, 'Weapons maker', cell, dummy_model)
 
     master.skills.bone_carving = 100
     master.perks.weapon_maker = true
@@ -328,7 +328,7 @@ function bone_carver_weapon(x: number, y: number, faction_id: number) {
 
 function unarmed_master(x: number, y: number, faction_id: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let master = Event.new_character(HumanTemplateColony, 'Monk', cell, dummy_model)
+    let master = Event.new_character(Human, 'Monk', cell, dummy_model)
 
     master.skills.noweapon = 100
     master.perks.dodge = true

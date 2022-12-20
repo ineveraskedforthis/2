@@ -20,4 +20,4 @@ const elo_moraes = ['xi', 'lo', 'mi', 'ki', 'a', 'i', 'ku'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(elo_moraes, 3);
 }
-exports.EloTemplate = new templates_1.CharacterTemplate(0, ElodinoArchetype, generate_name, 200, ElodinoStats, ElodinoResists, 2);
+exports.EloTemplate = new templates_1.CharacterTemplate(ElodinoArchetype, generate_name, 200, ElodinoStats, ElodinoResists);

@@ -16,6 +16,12 @@ const RatStats: Stats = {
     movement_speed: 2
 }
 
+const BigRatStats: Stats = {
+    phys_power: 30,
+    magic_power: 20,
+    movement_speed: 1
+}
+
 const RatResists = new Damage(5, 5, 5, 20)
 
 const rat_moraes = ['s', 'shi', "S'", "fu", 'fi']
@@ -23,4 +29,5 @@ function generate_name() {
     return gen_from_moraes(rat_moraes, 5)
 }
 
-export const RatTemplate = new CharacterTemplate(0, RatArchetype, generate_name, 50, RatStats, RatResists, 1)
+export const RatTemplate = new CharacterTemplate(RatArchetype, generate_name, 50, RatStats, RatResists)
+export const BigRatTemplate = new CharacterTemplate(RatArchetype, generate_name, 150, BigRatStats, RatResists)

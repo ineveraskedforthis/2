@@ -23,4 +23,4 @@ function generate_name() {
     return gen_from_moraes(elo_moraes, 3)
 }
 
-export const EloTemplate = new CharacterTemplate(0, ElodinoArchetype, generate_name, 200, ElodinoStats, ElodinoResists, 2)
+export const EloTemplate = new CharacterTemplate(ElodinoArchetype, generate_name, 200, ElodinoStats, ElodinoResists)
