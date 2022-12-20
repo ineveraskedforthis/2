@@ -10,6 +10,20 @@ const RatArchetype: Archetype = {
     race: 'rat'
 }
 
+const BigRatArchetype: Archetype = {
+    model: 'bigrat',
+    ai_map: 'steppe_walker_agressive',
+    ai_battle: 'basic',
+    race: 'rat'
+}
+
+const MageRatArchetype: Archetype = {
+    model: 'magerat',
+    ai_map: 'steppe_walker_agressive',
+    ai_battle: 'basic',
+    race: 'rat'
+}
+
 const RatStats: Stats = {
     phys_power: 15,
     magic_power: 20,
@@ -30,4 +44,5 @@ function generate_name() {
 }
 
 export const RatTemplate = new CharacterTemplate(RatArchetype, generate_name, 50, RatStats, RatResists)
-export const BigRatTemplate = new CharacterTemplate(RatArchetype, generate_name, 150, BigRatStats, RatResists)
+export const BigRatTemplate = new CharacterTemplate(BigRatArchetype, generate_name, 150, BigRatStats, RatResists)
+export const MageRatTemplate = new CharacterTemplate(MageRatArchetype, generate_name, 20, RatStats, RatResists)
