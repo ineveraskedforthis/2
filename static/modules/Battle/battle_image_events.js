@@ -177,10 +177,10 @@ function get_attack_direction(a, d) {
 // stand
 // prepare
 // hit
-const ATTACK_DURATION = 1;
+const ATTACK_DURATION = 2;
 const STAND_UNTIL = 0.2;
-const PREPARE_UNTIL = 0.6;
-const HIT_UNTIL = 1;
+const PREPARE_UNTIL = 1.8;
+const HIT_UNTIL = 2;
 export class AttackEvent extends BattleImageEvent {
     constructor(event_id, unit_id, ap_change, hp_change, target_id) {
         super(event_id, unit_id, ap_change, hp_change, ATTACK_DURATION);

@@ -7,6 +7,7 @@ const events_1 = require("../events");
 const system_1 = require("../../character/attack/system");
 const data_1 = require("../../data");
 const racial_hostility_1 = require("../../character/races/racial_hostility");
+const system_2 = require("../system");
 var BattleAI;
 (function (BattleAI) {
     /**
@@ -79,7 +80,7 @@ var BattleAI;
         const delta = geom_1.geom.minus(unit_2.position, unit_1.position);
         const dist = geom_1.geom.norm(delta);
         const range = attacker.range();
-        const pot_move = unit_1.action_points_left / events_1.MOVE_COST; // potential movement
+        const pot_move = unit_1.action_points_left / system_2.BattleSystem.move_cost(unit_1); // potential movement
         // if target is far away
         if (dist > range) {
             // start with target position

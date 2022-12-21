@@ -257,4 +257,10 @@ export namespace BattleSystem {
         }
         return data
     }
+
+    export function move_cost(unit: Unit): number {
+        const character = Convert.unit_to_character(unit)
+        const speed = character.stats.stats.movement_speed
+        return (3 / speed)
+    }
 }

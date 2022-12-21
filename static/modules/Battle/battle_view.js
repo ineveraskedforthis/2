@@ -8,7 +8,7 @@ export class BattleUnitView {
         this.name = unit.name;
         this.range = unit.range;
         // this.unit = unit
-        this.killed = unit.killed;
+        this.killed = (unit.hp == 0);
         this.position = unit.position;
         this.ap = unit.ap;
         this.ap_change = 0;
@@ -18,6 +18,7 @@ export class BattleUnitView {
         this.hp_change = 0;
         this.animation_timer = 0;
         this.animation_something = 0;
+        this.move_cost = unit.move_cost;
         this.a_image = new AnimatedImage(unit.tag);
     }
     update(hp_change, ap_change) {
@@ -57,10 +58,9 @@ export class BattleUnitView {
         ctx.fill();
         // draw movement radius
         ctx.strokeStyle = "rgba(0, 0, 0, 1)";
-        const MOVE_COST = 3;
         ctx.beginPath();
         ctx.setLineDash([20, 20]);
-        ctx.arc(pos.x, pos.y, BATTLE_SCALE * (this.ap - this.ap_change) / MOVE_COST, 0, 2 * Math.PI);
+        ctx.arc(pos.x, pos.y, BATTLE_SCALE * (this.ap - this.ap_change) / this.move_cost, 0, 2 * Math.PI);
         ctx.closePath();
         ctx.stroke();
         ctx.setLineDash([]);

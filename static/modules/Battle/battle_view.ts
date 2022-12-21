@@ -1,10 +1,9 @@
-import { battle_position, unit_id } from "../../../shared/battle_data.js"
+import { battle_position, UnitSocket, unit_id } from "../../../shared/battle_data.js"
 import { AnimationDict } from "../load_images.js"
 import { AnimatedImage } from "./animation.js"
 import { BattleImage, battle_canvas_context, enemy_list_div, player_unit_id } from "./battle_image.js"
 
 import { 
-    BattleUnit, 
     animation_event, 
     position_c, 
 } from "./battle_image_helper.js"
@@ -19,6 +18,7 @@ export class BattleUnitView {
     ap: number
     max_ap: number
     ap_change:number
+    move_cost: number
 
     name: string
     side_bar_div: any
@@ -28,15 +28,14 @@ export class BattleUnitView {
     a_image: AnimatedImage
     animation_timer: number
     animation_something: number
-
     current_animation: animation_event|undefined
     
-    constructor(unit: BattleUnit) {
+    constructor(unit: UnitSocket) {
         this.id = unit.id
         this.name = unit.name
         this.range = unit.range
         // this.unit = unit
-        this.killed = unit.killed
+        this.killed = (unit.hp == 0)
         this.position = unit.position
         this.ap = unit.ap
         this.ap_change = 0
@@ -46,6 +45,7 @@ export class BattleUnitView {
         this.hp_change = 0
         this.animation_timer = 0
         this.animation_something = 0
+        this.move_cost = unit.move_cost
 
         this.a_image = new AnimatedImage(unit.tag)
     }
@@ -91,11 +91,10 @@ export class BattleUnitView {
 
         // draw movement radius
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
-        const MOVE_COST = 3
         
         ctx.beginPath();
         ctx.setLineDash([20, 20])
-        ctx.arc(pos.x, pos.y, BATTLE_SCALE * (this.ap - this.ap_change) / MOVE_COST, 0, 2 * Math.PI);
+        ctx.arc(pos.x, pos.y, BATTLE_SCALE * (this.ap - this.ap_change) / this.move_cost, 0, 2 * Math.PI);
         ctx.closePath();
         ctx.stroke();
 

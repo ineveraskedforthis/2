@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BattleEvent = exports.MOVE_COST = void 0;
+exports.BattleEvent = void 0;
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const events_1 = require("../events/events");
 const geom_1 = require("../geom");
@@ -8,7 +8,7 @@ const systems_communication_1 = require("../systems_communication");
 const battle_ai_1 = require("./AI/battle_ai");
 const system_1 = require("./system");
 const Perks_1 = require("../character/Perks");
-exports.MOVE_COST = 3;
+// export const MOVE_COST = 3
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
@@ -72,9 +72,9 @@ var BattleEvent;
     BattleEvent.NewTurn = NewTurn;
     function Move(battle, unit, target) {
         let tmp = geom_1.geom.minus(target, unit.position);
-        var points_spent = geom_1.geom.norm(tmp) * exports.MOVE_COST;
+        var points_spent = geom_1.geom.norm(tmp) * system_1.BattleSystem.move_cost(unit);
         if (points_spent > unit.action_points_left) {
-            tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / exports.MOVE_COST);
+            tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / system_1.BattleSystem.move_cost(unit));
             points_spent = unit.action_points_left;
         }
         unit.position.x = tmp.x + unit.position.x;

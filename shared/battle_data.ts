@@ -24,6 +24,7 @@ export interface UnitSocket {
     id: unit_id
     next_turn: number
     dead: boolean
+    move_cost: number
 }
 
 export interface BattleActionChance {

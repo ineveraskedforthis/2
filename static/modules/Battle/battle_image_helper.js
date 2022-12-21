@@ -61,32 +61,3 @@ export function get_mouse_pos_in_canvas(canvas, event) {
     };
     return position_c.raw_to_canvas(tmp);
 }
-export class BattleUnit {
-    constructor(unit) {
-        this.id = unit.id;
-        this.name = unit.name;
-        this.hp = unit.hp;
-        this.max_hp = unit.max_hp;
-        this.ap = unit.ap;
-        this.range = unit.range;
-        this.position = unit.position;
-        this.killed = false;
-        if (unit.hp == 0) {
-            this.killed = true;
-        }
-        this.tag = unit.tag;
-    }
-    update(hp, ap, position, range) {
-        if (hp != undefined)
-            this.hp = hp;
-        if (ap != undefined)
-            this.ap = ap;
-        if (position != undefined)
-            this.position = position;
-        if (range != undefined)
-            this.range = range;
-        if (hp == 0) {
-            this.killed = true;
-        }
-    }
-}

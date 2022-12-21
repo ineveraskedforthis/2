@@ -15,6 +15,7 @@ import { MapSystem } from "./map/system";
 import { OrderBulk, OrderItem, OrderItemJson } from "./market/classes";
 import { cell_id, char_id, order_bulk_id, order_item_id, user_online_id } from "./types";
 import { Alerts } from "./client_communication/network_actions/alerts";
+import { BattleSystem } from "./battle/system";
 
 
 export namespace Convert {
@@ -146,7 +147,8 @@ export namespace Convert {
             ap: unit.action_points_left,
             id: unit.id,
             next_turn: unit.next_turn_after,
-            dead: character.dead()
+            dead: character.dead(),
+            move_cost: BattleSystem.move_cost(unit)
         }
     }
 

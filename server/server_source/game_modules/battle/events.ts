@@ -11,7 +11,7 @@ import { Unit } from "./classes/unit"
 import { BattleSystem } from "./system"
 import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/Perks"
 
-export const MOVE_COST = 3
+// export const MOVE_COST = 3
 
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
@@ -83,10 +83,10 @@ export namespace BattleEvent {
 
         let tmp = geom.minus(target, unit.position)
 
-        var points_spent = geom.norm(tmp) * MOVE_COST
+        var points_spent = geom.norm(tmp) * BattleSystem.move_cost(unit)
 
         if (points_spent > unit.action_points_left) {
-            tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / MOVE_COST)
+            tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / BattleSystem.move_cost(unit))
             points_spent = unit.action_points_left
         }
         unit.position.x = tmp.x + unit.position.x;

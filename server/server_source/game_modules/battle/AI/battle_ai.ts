@@ -5,10 +5,11 @@ import { Unit } from "../classes/unit";
 import { ActionTag, AttackAction, battle_position, EndTurn, FastAttackAction, MoveAction, unit_id } from "../../../../../shared/battle_data";
 import { Battle } from "../classes/battle";
 import { Convert } from "../../systems_communication";
-import { BattleEvent, MOVE_COST } from "../events";
+import { BattleEvent } from "../events";
 import { Attack } from "../../character/attack/system";
 import { Data } from "../../data";
 import { hostile} from "../../character/races/racial_hostility"
+import { BattleSystem } from "../system";
 
 export namespace BattleAI {
 
@@ -89,7 +90,7 @@ export namespace BattleAI {
         const delta = geom.minus(unit_2.position, unit_1.position);
         const dist = geom.norm(delta)
         const range = attacker.range()
-        const pot_move = unit_1.action_points_left / MOVE_COST // potential movement
+        const pot_move = unit_1.action_points_left / BattleSystem.move_cost(unit_1) // potential movement
 
         // if target is far away
         if (dist > range) {

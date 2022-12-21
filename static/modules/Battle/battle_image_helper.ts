@@ -74,42 +74,42 @@ export function get_mouse_pos_in_canvas(canvas:HTMLCanvasElement, event: any): c
     return position_c.raw_to_canvas(tmp)
 }
 
-export class BattleUnit {
-    id: unit_id
-    name: string
-    hp: number
-    max_hp: number
-    ap: number
-    range: number
-    position: battle_position
-    killed: boolean
-    tag: string
+// export class BattleUnit {
+//     id: unit_id
+//     name: string
+//     hp: number
+//     max_hp: number
+//     ap: number
+//     range: number
+//     position: battle_position
+//     killed: boolean
+//     tag: string
 
-    constructor(unit: UnitSocket) {
-        this.id = unit.id
-        this.name = unit.name
-        this.hp = unit.hp
-        this.max_hp = unit.max_hp
-        this.ap = unit.ap
-        this.range = unit.range
-        this.position = unit.position
-        this.killed = false
-        if (unit.hp == 0) {
-            this.killed = true
-        }
-        this.tag = unit.tag
-    }
+//     constructor(unit: UnitSocket) {
+//         this.id = unit.id
+//         this.name = unit.name
+//         this.hp = unit.hp
+//         this.max_hp = unit.max_hp
+//         this.ap = unit.ap
+//         this.range = unit.range
+//         this.position = unit.position
+//         this.killed = false
+//         if (unit.hp == 0) {
+//             this.killed = true
+//         }
+//         this.tag = unit.tag
+//     }
 
-    update(hp: number, ap: number, position: battle_position, range: number) {
-        if (hp != undefined) this.hp = hp;
-        if (ap != undefined) this.ap = ap
-        if (position != undefined) this.position = position
-        if (range != undefined) this.range = range
-        if (hp == 0) {
-            this.killed = true
-        }
-    }
-}
+//     update(hp: number, ap: number, position: battle_position, range: number) {
+//         if (hp != undefined) this.hp = hp;
+//         if (ap != undefined) this.ap = ap
+//         if (position != undefined) this.position = position
+//         if (range != undefined) this.range = range
+//         if (hp == 0) {
+//             this.killed = true
+//         }
+//     }
+// }
 
 export interface animation_event {
     type: "move"|"attack"|"update"|'attacked'

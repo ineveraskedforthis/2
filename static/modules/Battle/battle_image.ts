@@ -1,4 +1,4 @@
-import {BattleUnit, canvas_position, get_mouse_pos_in_canvas, position_c} from './battle_image_helper.js'
+import {canvas_position, get_mouse_pos_in_canvas, position_c} from './battle_image_helper.js'
 
 import { BattleData, unit_id, UnitSocket } from "../../../shared/battle_data.js"
 import { BattleUnitView } from './battle_view.js';
@@ -111,8 +111,7 @@ export namespace BattleImage {
         console.log(unit)
         console.log("add fighter")
 
-        let battle_unit = new BattleUnit(unit)
-        let unit_view = new BattleUnitView(battle_unit)
+        let unit_view = new BattleUnitView(unit)
 
         unit_ids.add(unit.id)
         // units_data[unit.id]     = battle_unit
@@ -190,7 +189,7 @@ export namespace BattleImage {
         let dist = Math.floor(position_c.dist(a, b) * 100) / 100
 
         let move_ap_div = document.getElementById('move'+'_ap_cost')!
-        move_ap_div.innerHTML = 'ap: ' + (dist * 3).toFixed(2)
+        move_ap_div.innerHTML = 'ap: ' + (dist * player_data.move_cost).toFixed(2)
         socket.emit('req-ranged-accuracy', dist)
     }
 

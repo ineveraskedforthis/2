@@ -9,6 +9,7 @@ const data_1 = require("./data");
 const system_3 = require("./map/system");
 const classes_1 = require("./market/classes");
 const alerts_1 = require("./client_communication/network_actions/alerts");
+const system_4 = require("./battle/system");
 var Convert;
 (function (Convert) {
     function number_to_order_item_id(id) {
@@ -135,7 +136,8 @@ var Convert;
             ap: unit.action_points_left,
             id: unit.id,
             next_turn: unit.next_turn_after,
-            dead: character.dead()
+            dead: character.dead(),
+            move_cost: system_4.BattleSystem.move_cost(unit)
         };
     }
     Convert.unit_to_unit_socket = unit_to_unit_socket;
