@@ -1,5 +1,5 @@
 import { EloTemplate } from "../character/races/elo";
-import { RatTemplate } from "../character/races/rat";
+import { BigRatTemplate, RatTemplate } from "../character/races/rat";
 import { Data } from "../data";
 import { Event } from "../events/events";
 import { Factions } from "../factions";
@@ -90,9 +90,16 @@ export namespace MapSystem {
         for (const cell of cells) {
             if (cell == undefined) continue
             cell.update(dt)
-            if ((rats_number < 60) && (cell.development.rats == 1)) {
-                let rat = Event.new_character(RatTemplate, undefined, cell.id, undefined)
-                Data.Reputation.set(Factions.Rats.id, rat.id, 'member')
+            if ((rats_number < 100) && (cell.development.rats == 1)) {
+                let dice = Math.random()
+                if (dice < 0.7) {
+                    let rat = Event.new_character(RatTemplate, undefined, cell.id, undefined)
+                    Data.Reputation.set(Factions.Rats.id, rat.id, 'member')
+                } else {
+                    let rat = Event.new_character(BigRatTemplate, undefined, cell.id, undefined)
+                    Data.Reputation.set(Factions.Rats.id, rat.id, 'member')
+                }
+                
             }
 
             if ((elodino_number < 40) && (cell.development.elodinos == 1)) {

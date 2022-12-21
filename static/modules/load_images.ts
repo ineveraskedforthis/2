@@ -69,10 +69,11 @@ export function loadImages(onAllLoaded: () => void) {
         }
     }
 
-    load_animation_set('rat', 1, 2, 1, 1, onload)
-    load_animation_set('elo', 1, 1, 5, 1, onload)
-    load_animation_set('human', 1, 1, 6, 1, onload)
-    load_animation_set('graci', 1, 1, 5, 1, onload)
+    load_animation_set('rat',       1, 2, 1, 1, onload)
+    load_animation_set('bigrat',    1, 1, 1, 1, onload)
+    load_animation_set('elo',       1, 1, 5, 1, onload)
+    load_animation_set('human',     1, 1, 6, 1, onload)
+    load_animation_set('graci',     1, 1, 5, 1, onload)
 
     // const images: ImagesDict = {};
     for (let i = 0; i < names.length; i++) {

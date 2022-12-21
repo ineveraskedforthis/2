@@ -91,9 +91,16 @@ var MapSystem;
             if (cell == undefined)
                 continue;
             cell.update(dt);
-            if ((rats_number < 60) && (cell.development.rats == 1)) {
-                let rat = events_1.Event.new_character(rat_1.RatTemplate, undefined, cell.id, undefined);
-                data_1.Data.Reputation.set(factions_1.Factions.Rats.id, rat.id, 'member');
+            if ((rats_number < 100) && (cell.development.rats == 1)) {
+                let dice = Math.random();
+                if (dice < 0.7) {
+                    let rat = events_1.Event.new_character(rat_1.RatTemplate, undefined, cell.id, undefined);
+                    data_1.Data.Reputation.set(factions_1.Factions.Rats.id, rat.id, 'member');
+                }
+                else {
+                    let rat = events_1.Event.new_character(rat_1.BigRatTemplate, undefined, cell.id, undefined);
+                    data_1.Data.Reputation.set(factions_1.Factions.Rats.id, rat.id, 'member');
+                }
             }
             if ((elodino_number < 40) && (cell.development.elodinos == 1)) {
                 let elo = events_1.Event.new_character(elo_1.EloTemplate, undefined, cell.id, undefined);
