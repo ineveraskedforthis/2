@@ -145,7 +145,11 @@ export class SocketManager {
         if (sw.user_id == '#') return
         let user = UserManagement.get_user(sw.user_id)
 
-        if (!Validator.isAlphaNum(data.name)) Alerts.generic_user_alert(user, 'alert', 'character is not allowed')
+        if (!Validator.isAlphaNum(data.name)) {
+            Alerts.generic_user_alert(user, 'alert', 'character is not allowed')
+            return
+        }
+        
         let model_variation:ModelVariant = {
             eyes: data.eyes,
             chin: data.chin,

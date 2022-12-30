@@ -106,9 +106,6 @@ export namespace BattleAI {
             switch(tag) {
                 case 'fast': return {action: 'fast_attack', target: ind2}
             }
-            if (attacker.perks.magic_bolt) {
-                return {action: 'magic_bolt', target: ind2}
-            }
             return {action: 'attack', target: ind2}
         }
     }
@@ -141,8 +138,8 @@ export namespace BattleAI {
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual')
 
             if (attack_move.action == 'end_turn') return 'end'      
-
-            if (attack_move.action == 'magic_bolt') {
+            
+            if ((agent_character.perks.magic_bolt) && (agent_unit.action_points_left >= 3)) {
                 BattleEvent.MagicBolt(battle, agent_unit, defender_unit)
                 return 'again'
             }

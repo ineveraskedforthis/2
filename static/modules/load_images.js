@@ -42,6 +42,7 @@ export function loadImages(onAllLoaded) {
     };
     load_animation_set('rat', 1, 2, 1, 1, onload);
     load_animation_set('bigrat', 1, 1, 1, 1, onload);
+    load_animation_set('magerat', 1, 1, 1, 1, onload);
     load_animation_set('elo', 1, 1, 5, 1, onload);
     load_animation_set('human', 1, 1, 6, 1, onload);
     load_animation_set('graci', 1, 1, 5, 1, onload);

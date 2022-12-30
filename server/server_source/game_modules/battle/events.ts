@@ -174,7 +174,7 @@ export namespace BattleEvent {
 
     export function MagicBolt(battle: Battle, attacker: Unit, defender: Unit) {
         const AttackerCharacter = Convert.unit_to_character(attacker)
-        const COST = 1
+        const COST = 3
         if (!can_cast_magic_bolt(AttackerCharacter)) {
             return
         }

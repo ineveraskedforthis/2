@@ -150,7 +150,7 @@ var BattleEvent;
     BattleEvent.Flee = Flee;
     function MagicBolt(battle, attacker, defender) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
-        const COST = 1;
+        const COST = 3;
         if (!(0, Perks_1.can_cast_magic_bolt)(AttackerCharacter)) {
             return;
         }

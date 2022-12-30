@@ -24,12 +24,12 @@ const MageRatArchetype = {
 };
 const RatStats = {
     phys_power: 15,
-    magic_power: 20,
+    magic_power: 10,
     movement_speed: 2
 };
 const BigRatStats = {
     phys_power: 30,
-    magic_power: 20,
+    magic_power: 10,
     movement_speed: 1
 };
 const RatResists = new damage_types_1.Damage(5, 5, 5, 20);
