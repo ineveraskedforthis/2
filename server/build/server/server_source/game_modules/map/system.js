@@ -8,6 +8,7 @@ const events_1 = require("../events/events");
 const factions_1 = require("../factions");
 const map_definitions_1 = require("../static_data/map_definitions");
 const cell_1 = require("./cell");
+const templates_1 = require("../templates");
 var size = [0, 0];
 var max_direction = 30;
 var cells = [];
@@ -91,15 +92,18 @@ var MapSystem;
             if (cell == undefined)
                 continue;
             cell.update(dt);
-            if ((rats_number < 100) && (cell.development.rats == 1)) {
+            if ((rats_number < 120) && (cell.development.rats == 1)) {
                 let dice = Math.random();
-                if (dice < 0.7) {
+                if (dice < 0.6) {
                     let rat = events_1.Event.new_character(rat_1.RatTemplate, undefined, cell.id, undefined);
                     data_1.Data.Reputation.set(factions_1.Factions.Rats.id, rat.id, 'member');
                 }
-                else {
+                else if (dice < 0.8) {
                     let rat = events_1.Event.new_character(rat_1.BigRatTemplate, undefined, cell.id, undefined);
                     data_1.Data.Reputation.set(factions_1.Factions.Rats.id, rat.id, 'member');
+                }
+                else if (dice < 1) {
+                    templates_1.Template.Character.MageRat(cell.x, cell.y);
                 }
             }
             if ((elodino_number < 40) && (cell.development.elodinos == 1)) {

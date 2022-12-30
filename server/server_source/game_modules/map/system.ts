@@ -6,6 +6,7 @@ import { Factions } from "../factions";
 import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
 import { cell_id, world_dimensions } from "../types";
 import { Cell} from "./cell";
+import { Template } from "../templates";
 
 var size:world_dimensions = [0, 0]
 var max_direction:number = 30
@@ -90,16 +91,17 @@ export namespace MapSystem {
         for (const cell of cells) {
             if (cell == undefined) continue
             cell.update(dt)
-            if ((rats_number < 100) && (cell.development.rats == 1)) {
+            if ((rats_number < 120) && (cell.development.rats == 1)) {
                 let dice = Math.random()
-                if (dice < 0.7) {
+                if (dice < 0.6) {
                     let rat = Event.new_character(RatTemplate, undefined, cell.id, undefined)
                     Data.Reputation.set(Factions.Rats.id, rat.id, 'member')
-                } else {
+                } else if (dice < 0.8) {
                     let rat = Event.new_character(BigRatTemplate, undefined, cell.id, undefined)
                     Data.Reputation.set(Factions.Rats.id, rat.id, 'member')
-                }
-                
+                } else if (dice < 1) {
+                    Template.Character.MageRat(cell.x, cell.y)
+                }                
             }
 
             if ((elodino_number < 40) && (cell.development.elodinos == 1)) {
