@@ -1,4 +1,4 @@
-import { AttackObj } from "../character/attack/class";
+import { AttackObj } from "../attack/class";
 import { Damage } from "../misc/damage_types";
 
 export type spell_tags = 'bolt'|'charge'

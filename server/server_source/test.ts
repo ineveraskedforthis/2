@@ -4,7 +4,7 @@ import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } fro
 import { ItemSystem } from "./game_modules/items/system";
 import { Equip } from "./game_modules/inventories/equip";
 import { CharacterSystem } from "./game_modules/character/system";
-import { Human } from "./game_modules/character/races/human";
+import { Human } from "./game_modules/races/human";
 import { Inventory } from "./game_modules/inventories/inventory";
 import { MapSystem } from "./game_modules/map/system";
 

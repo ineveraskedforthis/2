@@ -3,7 +3,7 @@ var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 
 import fs from "fs"
-import { Human } from "../character/races/human";
+import { Human } from "../races/human";
 import { Convert, Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";

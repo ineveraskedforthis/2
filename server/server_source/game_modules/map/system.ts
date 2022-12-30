@@ -1,5 +1,5 @@
-import { EloTemplate } from "../character/races/elo";
-import { BigRatTemplate, RatTemplate } from "../character/races/rat";
+import { EloTemplate } from "../races/elo";
+import { BigRatTemplate, RatTemplate } from "../races/rat";
 import { Data } from "../data";
 import { Event } from "../events/events";
 import { Factions } from "../factions";

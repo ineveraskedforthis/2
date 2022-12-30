@@ -5,7 +5,7 @@ import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
 import { Damage, damage_types, DmgOps } from "../misc/damage_types";
 import { Character } from "./character";
-import { Loot } from "./races/generate_loot";
+import { Loot } from "../races/generate_loot";
 import { CharacterTemplate } from "./templates";
 import fs from "fs"
 import { Archetype, InnateStats, Stats, Status } from "./character_parts";

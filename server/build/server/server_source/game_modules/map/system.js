@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MapSystem = void 0;
-const elo_1 = require("../character/races/elo");
-const rat_1 = require("../character/races/rat");
+const elo_1 = require("../races/elo");
+const rat_1 = require("../races/rat");
 const data_1 = require("../data");
 const events_1 = require("../events/events");
 const factions_1 = require("../factions");

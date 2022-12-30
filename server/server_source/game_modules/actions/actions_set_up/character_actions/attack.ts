@@ -5,7 +5,7 @@ import { Convert } from "../../../systems_communication";
 import { map_position } from "../../../types";
 import { CharacterSystem } from "../../../character/system";
 
-import { hostile } from "../../../character/races/racial_hostility";
+import { hostile } from "../../../races/racial_hostility";
 
 // export const attack:ActionTargeted = {
 //     duration(char: Character) {

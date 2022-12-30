@@ -1,9 +1,9 @@
 import * as path from "path";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
-import { EloTemplate } from "./game_modules/character/races/elo"
-import { GraciTemplate } from "./game_modules/character/races/graci"
-import { Human } from "./game_modules/character/races/human"
-import { RatTemplate } from "./game_modules/character/races/rat"
+import { EloTemplate } from "./game_modules/races/elo"
+import { GraciTemplate } from "./game_modules/races/graci"
+import { Human } from "./game_modules/races/human"
+import { RatTemplate } from "./game_modules/races/rat"
 import { CharacterSystem } from "./game_modules/character/system"
 import { Data } from "./game_modules/data"
 import { Event } from "./game_modules/events/events"

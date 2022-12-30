@@ -1,6 +1,6 @@
 import { RAT_SKIN_ARMOUR_SKIN_NEEDED, RAT_SKIN_BOOTS_SKIN_NEEDED, RAT_SKIN_PANTS_SKIN_NEEDED } from "../actions/actions_set_up/character_actions/craft_armour";
 import type { Character } from "../character/character"
-import { hostile } from "../character/races/racial_hostility";
+import { hostile } from "../races/racial_hostility";
 import { ActionManager, CharacterAction } from "../actions/action_manager";
 import { ARROW_BONE, ELODINO_FLESH, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";

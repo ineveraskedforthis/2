@@ -4,9 +4,9 @@ exports.BattleAI = void 0;
 const geom_1 = require("../../geom");
 const systems_communication_1 = require("../../systems_communication");
 const events_1 = require("../events");
-const system_1 = require("../../character/attack/system");
+const system_1 = require("../../attack/system");
 const data_1 = require("../../data");
-const racial_hostility_1 = require("../../character/races/racial_hostility");
+const racial_hostility_1 = require("../../races/racial_hostility");
 const system_2 = require("../system");
 var BattleAI;
 (function (BattleAI) {
@@ -97,6 +97,9 @@ var BattleAI;
             switch (tag) {
                 case 'fast': return { action: 'fast_attack', target: ind2 };
             }
+            if (attacker.perks.magic_bolt) {
+                return { action: 'magic_bolt', target: ind2 };
+            }
             return { action: 'attack', target: ind2 };
         }
     }
@@ -121,10 +124,14 @@ var BattleAI;
                     return 'end';
                 }
             }
+            const defender_unit = battle.heap.get_unit(target_id);
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual');
             if (attack_move.action == 'end_turn')
                 return 'end';
-            const defender_unit = battle.heap.get_unit(target_id);
+            if (attack_move.action == 'magic_bolt') {
+                events_1.BattleEvent.MagicBolt(battle, agent_unit, defender_unit);
+                return 'again';
+            }
             if (attack_move.action == 'attack') {
                 //decide on attack type
                 const attack_type = system_1.Attack.best_melee_damage_type(agent_character);

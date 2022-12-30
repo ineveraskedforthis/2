@@ -5,7 +5,7 @@ const items_set_up_1 = require("./game_modules/items/items_set_up");
 const system_1 = require("./game_modules/items/system");
 const equip_1 = require("./game_modules/inventories/equip");
 const system_2 = require("./game_modules/character/system");
-const human_1 = require("./game_modules/character/races/human");
+const human_1 = require("./game_modules/races/human");
 const inventory_1 = require("./game_modules/inventories/inventory");
 const system_3 = require("./game_modules/map/system");
 function string_difference([a, b]) {

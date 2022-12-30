@@ -1,10 +1,10 @@
-import { trim } from "../../calculations/basic_functions";
-import { Item } from "../../items/item";
-import { RAT_SKULL_HELMET_ARGUMENT } from "../../items/items_set_up";
-import { ItemSystem } from "../../items/system";
-import { ELODINO_FLESH, GRACI_HAIR, material_index, MEAT, RAT_BONE, RAT_SKIN } from "../../manager_classes/materials_manager";
-import { Character} from "../character";
-import { tagRACE } from "../character_parts";
+import { trim } from "../calculations/basic_functions";
+import { Item } from "../items/item";
+import { RAT_SKULL_HELMET_ARGUMENT } from "../items/items_set_up";
+import { ItemSystem } from "../items/system";
+import { ELODINO_FLESH, GRACI_HAIR, material_index, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
+import { Character} from "../character/character";
+import { tagRACE } from "../character/character_parts";
 
 const SKIN_RAT_DIFFICULTY = 10
 const SKIN_HUMAN_DIFFICULTY = 40

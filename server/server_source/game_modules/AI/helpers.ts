@@ -1,7 +1,7 @@
 import { battle_id } from "../../../../shared/battle_data"
 import { Battle } from "../battle/classes/battle"
 import { Character } from "../character/character"
-import { hostile } from "../character/races/racial_hostility"
+import { hostile } from "../races/racial_hostility"
 import { Event } from "../events/events"
 import { Convert } from "../systems_communication"
 

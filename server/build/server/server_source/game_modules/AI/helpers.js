@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIhelper = void 0;
-const racial_hostility_1 = require("../character/races/racial_hostility");
+const racial_hostility_1 = require("../races/racial_hostility");
 const events_1 = require("../events/events");
 const systems_communication_1 = require("../systems_communication");
 var AIhelper;
