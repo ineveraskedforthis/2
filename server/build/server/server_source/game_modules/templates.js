@@ -34,5 +34,11 @@ var Template;
             return elo;
         }
         Character.MageElo = MageElo;
+        function BerserkRat(x, y) {
+            let rat = Base(rat_1.BerserkRatTemplate, undefined, undefined, x, y, factions_1.Factions.Rats.id);
+            rat.perks.charge = true;
+            return rat;
+        }
+        Character.BerserkRat = BerserkRat;
     })(Character = Template.Character || (Template.Character = {}));
 })(Template = exports.Template || (exports.Template = {}));

@@ -139,6 +139,10 @@ var BattleAI;
                 return 'again';
             }
             if (attack_move.action == 'move') {
+                if (agent_character.perks.charge && (agent_unit.action_points_left >= 1)) {
+                    events_1.BattleEvent.Charge(battle, agent_unit, defender_unit);
+                    return 'again';
+                }
                 events_1.BattleEvent.Move(battle, agent_unit, attack_move.target);
                 if (agent_unit.action_points_left < 1)
                     return 'end';

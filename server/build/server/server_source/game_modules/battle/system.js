@@ -116,7 +116,7 @@ var BattleSystem;
         else {
             var position = { x: 0 + dx, y: 0 + dy };
         }
-        const unit = new unit_1.Unit(last_unit_id, position, team, 10, 10, 10, 3, character.id);
+        const unit = new unit_1.Unit(last_unit_id, position, team, 5, 10, 10, 3, character.id);
         return unit;
     }
     BattleSystem.create_unit = create_unit;

@@ -21,7 +21,7 @@ function load_animation(tag_thing, tag_animation, count, on_image_load) {
         length: count,
         data: new Image()
     };
-    ANIMATIONS[tag_thing + '_' + tag_animation].data.src = ['static', 'img', 'animation', tag_thing, tag_thing + '_' + tag_animation + '.png'].join('/');
+    ANIMATIONS[tag_thing + '_' + tag_animation].data.src = ['static', 'img', 'animation', tag_thing, tag_animation + '.png'].join('/');
     ANIMATIONS[tag_thing + '_' + tag_animation].data.onload = on_image_load;
 }
 function load_animation_set(tag, attack, idle, move, prepare, on_image_load) {

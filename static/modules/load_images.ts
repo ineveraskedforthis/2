@@ -40,7 +40,7 @@ function load_animation(tag_thing: string, tag_animation: string, count: number,
         length: count,
         data: new Image()
     }
-    ANIMATIONS[tag_thing + '_' + tag_animation].data.src = ['static', 'img', 'animation', tag_thing, tag_thing + '_' + tag_animation + '.png'].join('/') 
+    ANIMATIONS[tag_thing + '_' + tag_animation].data.src = ['static', 'img', 'animation', tag_thing, tag_animation + '.png'].join('/') 
     ANIMATIONS[tag_thing + '_' + tag_animation].data.onload = on_image_load
 }
 

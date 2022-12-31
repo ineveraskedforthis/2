@@ -79,7 +79,7 @@ exports.WOODEN_MACE_ARGUMENT = {
     weapon_tag: 'twohanded',
     model_tag: 'wooden_mace',
     resists: empty_resists,
-    damage: new damage_types_1.Damage(12, 0, 0),
+    damage: new damage_types_1.Damage(8, 0, 0),
     range: 1.3
 };
 exports.RAT_SKIN_PANTS_ARGUMENT = {
