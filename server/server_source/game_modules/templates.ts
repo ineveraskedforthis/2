@@ -6,7 +6,7 @@ import { Factions } from "./factions"
 import { ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
 import { EloTemplate } from "./races/elo"
-import { MageRatTemplate } from "./races/rat"
+import { BerserkRatTemplate, MageRatTemplate } from "./races/rat"
 
 export namespace Template {
     export namespace Character {
@@ -31,6 +31,12 @@ export namespace Template {
             elo.perks.mage_initiation = true
             elo.stash.inc(ZAZ, 30)
             return elo
+        }
+
+        export function BerserkRat(x: number, y: number) {
+            let rat = Base(BerserkRatTemplate, undefined, undefined, x, y, Factions.Rats.id)
+            rat.perks.charge = true
+            return rat
         }
     }
 }

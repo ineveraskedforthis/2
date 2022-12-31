@@ -13,6 +13,11 @@ import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/Perks"
 
 // export const MOVE_COST = 3
 
+const COST = {
+    ATTACK: 3,
+    CHARGE: 1,
+}
+
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
         battle.heap.add_unit(unit)
@@ -98,6 +103,26 @@ export namespace BattleEvent {
         Alerts.battle_update_unit(battle, unit)
     }
 
+    export function Charge(battle: Battle, unit: Unit, target: Unit) {
+        if (unit.action_points_left < COST.CHARGE) {
+            return
+        }
+        unit.action_points_left = unit.action_points_left - COST.CHARGE as action_points
+
+        const character = Convert.unit_to_character(unit)
+
+        let dist = geom.dist(unit.position, target.position)        
+        if (dist > (character.range() - 0.1)) {
+            let direction = geom.minus(target.position, unit.position);
+            let stop_before = geom.mult(geom.normalize(direction), character.range() - 0.1);
+            direction = geom.minus(direction, stop_before)
+            unit.position.x = direction.x
+            unit.position.y = direction.y
+        }
+
+        Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, COST.CHARGE)
+    }
+
     export function Attack(battle: Battle, attacker: Unit, defender:Unit, attack_type: melee_attack_type) {
         const AttackerCharacter = Convert.unit_to_character(attacker)
         const COST = 3
@@ -136,8 +161,6 @@ export namespace BattleEvent {
             Alerts.not_enough_to_character(AttackerCharacter, 'action_points', COST, attacker.action_points_left)
             return
         }
-
-
 
         let dist = geom.dist(attacker.position, defender.position)
         const DefenderCharacter = Convert.unit_to_character(defender)
@@ -291,44 +314,4 @@ export namespace BattleEvent {
 //             return { action: 'no_target_selected' };
 //         }
 
-
-
-
-
-//         if (action.action == 'switch_weapon') {
-//             // console.log('????')
-//             if (unit.action_points_left < 3) {
-//                 return {action: 'not_enough_ap', who: unit_index}
-//             }
-//             unit.action_points_left -= 3
-//             character.switch_weapon()
-//             return {action: 'switch_weapon', who: unit_index}
-//         }
-        
-
-//         if (action.action == 'spell_target') {
-//             if (unit.action_points_left > 3) {
-//                 let spell_tag = action.spell_tag;
-//                 let unit2 = this.heap.get_unit(action.target);
-//                 let target_char = this.world.get_char_from_id(unit2.char_id);
-//                 let result =  character.spell_attack(target_char, spell_tag);
-//                 if (result.flags.close_distance) {
-//                     let dist = geom.dist(unit.position, unit2.position)
-//                     if (dist > 1.9) {
-//                         let v = geom.minus(unit2.position, unit.position);
-//                         let u = geom.mult(geom.normalize(v), 0.9);
-//                         v = geom.minus(v, u)
-//                         unit.position.x = v.x
-//                         unit.position.y = v.y
-//                     }
-//                     result.new_pos = {x: unit.position.x, y: unit.position.y};
-//                 }
-//                 unit.action_points_left -= 3
-//                 this.changed = true
-//                 return {action: spell_tag, who: unit_index, result: result, actor_name: character.name};
-//             }
-//         }
-
-
-//         this.changed = true
 //     }

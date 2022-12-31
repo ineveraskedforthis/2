@@ -17,6 +17,13 @@ const BigRatArchetype: Archetype = {
     race: 'rat'
 }
 
+const BerserkRatArchetype: Archetype = {
+    model: 'berserkrat',
+    ai_map: 'steppe_walker_agressive',
+    ai_battle: 'basic',
+    race: 'rat'
+}
+
 const MageRatArchetype: Archetype = {
     model: 'magerat',
     ai_map: 'steppe_walker_agressive',
@@ -37,6 +44,7 @@ const BigRatStats: Stats = {
 }
 
 const RatResists = new Damage(5, 5, 5, 20)
+const BerserkResists = new Damage(0, 0, 0, 0)
 
 const rat_moraes = ['s', 'shi', "S'", "fu", 'fi']
 function generate_name() {
@@ -46,3 +54,4 @@ function generate_name() {
 export const RatTemplate = new CharacterTemplate(RatArchetype, generate_name, 50, RatStats, RatResists)
 export const BigRatTemplate = new CharacterTemplate(BigRatArchetype, generate_name, 150, BigRatStats, RatResists)
 export const MageRatTemplate = new CharacterTemplate(MageRatArchetype, generate_name, 20, RatStats, RatResists)
+export const BerserkRatTemplate = new CharacterTemplate(BerserkRatArchetype, generate_name, 100, BigRatStats, BerserkResists)

@@ -22,6 +22,7 @@ export interface PerksTable {
     alchemist?: boolean;
     shoemaker?: boolean;
     dodge?: boolean;
+    charge?: boolean;
 }
 function perk_base_price(tag: Perks) {
     switch (tag) {

@@ -156,6 +156,12 @@ export namespace BattleAI {
             }
 
             if (attack_move.action == 'move') {
+                
+                if (agent_character.perks.charge && (agent_unit.action_points_left >= 1)) {
+                    BattleEvent.Charge(battle, agent_unit, defender_unit)
+                    return 'again'
+                }
+
                 BattleEvent.Move(battle, agent_unit, attack_move.target)
                 if (agent_unit.action_points_left < 1) return 'end'
                 return 'again'

@@ -120,7 +120,7 @@ export namespace BattleSystem {
         }
 
         const unit = new Unit(last_unit_id, position, team,
-            10 as action_points, 10 as action_points, 10 as action_points, 3 as action_points, 
+            5 as action_points, 10 as action_points, 10 as action_points, 3 as action_points, 
             character.id)
         
         return unit
