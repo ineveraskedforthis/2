@@ -764,7 +764,9 @@ export class Map {
                 return 'urban_1'
             }
             
-            
+            if (this.data[tag].rural >= 1) {
+                return 'rural_1'
+            }
         }
 
         return undefined
