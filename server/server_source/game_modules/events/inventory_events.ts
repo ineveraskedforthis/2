@@ -6,9 +6,10 @@ import { UserManagement } from "../client_communication/user_manager";
 import { Item } from "../items/item";
 import { ItemSystem } from "../items/system";
 import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
-import { ZAZ } from "../manager_classes/materials_manager";
+import { materials, ZAZ } from "../manager_classes/materials_manager";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { Effect } from "./effects";
+import { Event } from "./events";
 
 export namespace EventInventory {
     export function equip_from_backpack(character: Character, index: number) {
@@ -18,6 +19,16 @@ export namespace EventInventory {
 
     export function unequip(character: Character, slot: equip_slot) {
         character.equip.unequip(slot)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
+    }
+
+    export function destroy_in_backpack(character: Character, index: number) {
+        const item = character.equip.data.backpack.items[index]
+        if (item == undefined) return
+
+        const material = materials.tag_to_index(item.material.string_tag)
+        Event.change_stash(character, material, 1)
+        character.equip.data.backpack.remove(index)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
     }
 

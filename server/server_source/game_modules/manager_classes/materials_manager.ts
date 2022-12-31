@@ -5,7 +5,7 @@ export type material_index = number & { __brand: "index of the material"}
 
 export class MaterialsManager{
     materials: ITEM_MATERIAL[]
-    mat_dict: {[key: string]: number}
+    mat_dict: {[key: string]: material_index}
     new_material_id: material_index
     list_of_indices: material_index[]
 
@@ -44,6 +44,10 @@ export class MaterialsManager{
 
     tag_to_material(tag:string) {
         return this.materials[this.mat_dict[tag]]
+    }
+    
+    tag_to_index(tag:string) {
+        return this.mat_dict[tag]
     }
 
     validate_material(x: number) {

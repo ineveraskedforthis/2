@@ -1,13 +1,18 @@
 import { socket } from "../globals.js";
 function send_equip_weapon_message(index) {
+    const destroy = document.getElementById('destroy');
+    let value_destroy = destroy.checked;
+    if (value_destroy) {
+        socket.emit('destroy', index);
+        return;
+    }
     const enchant = document.getElementById('enchant');
     let value = enchant.checked;
     if (value) {
         socket.emit('enchant', index);
+        return;
     }
-    else {
-        socket.emit('equip', index);
-    }
+    socket.emit('equip', index);
 }
 const damage_types = ['fire', 'slice', 'pierce', 'blunt'];
 export function generate_name(item) {

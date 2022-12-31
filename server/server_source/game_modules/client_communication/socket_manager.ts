@@ -76,6 +76,7 @@ export class SocketManager {
             socket.on('equip',  (msg: any) =>           InventoryCommands.equip(user, msg));
 
             socket.on('enchant',  (msg: any) => InventoryCommands.enchant(user, msg));
+            socket.on('destroy',  (msg: any) => InventoryCommands.break_item(user, msg));
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
 
             socket.on('switch-weapon',  (msg: any) =>   InventoryCommands.switch_weapon(user))

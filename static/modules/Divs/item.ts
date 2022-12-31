@@ -2,13 +2,21 @@ import { damage_type, ItemData } from "../../../shared/inventory"
 import { socket } from "../globals.js"
 
 function send_equip_weapon_message(index:number) {
+    const destroy = document.getElementById('destroy') as HTMLInputElement 
+    let value_destroy = destroy.checked
+    if (value_destroy) {
+        socket.emit('destroy', index);
+        return
+    }
+
     const enchant = document.getElementById('enchant') as HTMLInputElement 
     let value = enchant.checked
     if (value) {
         socket.emit('enchant', index);
-    } else {
-        socket.emit('equip', index);
-    }
+        return
+    } 
+    
+    socket.emit('equip', index);
 }
 
 const damage_types: damage_type[] = ['fire', 'slice', 'pierce', 'blunt']

@@ -33,6 +33,9 @@ class MaterialsManager {
     tag_to_material(tag) {
         return this.materials[this.mat_dict[tag]];
     }
+    tag_to_index(tag) {
+        return this.mat_dict[tag];
+    }
     validate_material(x) {
         if (x < this.new_material_id) {
             return true;

@@ -23,6 +23,7 @@ export function craft_item(character: Character, item: ItemJson, durability: (ch
     }
     character.equip.data.backpack.add(result)
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
+    UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
     Event.on_craft_update(character, skill, tier)
 }
 

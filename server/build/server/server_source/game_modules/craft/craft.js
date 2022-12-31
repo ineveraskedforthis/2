@@ -22,6 +22,7 @@ function craft_item(character, item, durability, skill, tier) {
     }
     character.equip.data.backpack.add(result);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
+    user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
     events_1.Event.on_craft_update(character, skill, tier);
 }
 exports.craft_item = craft_item;

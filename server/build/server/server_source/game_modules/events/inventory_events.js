@@ -6,6 +6,7 @@ const affix_1 = require("../base_game_classes/affix");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const effects_1 = require("./effects");
+const events_1 = require("./events");
 var EventInventory;
 (function (EventInventory) {
     function equip_from_backpack(character, index) {
@@ -18,6 +19,16 @@ var EventInventory;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
     }
     EventInventory.unequip = unequip;
+    function destroy_in_backpack(character, index) {
+        const item = character.equip.data.backpack.items[index];
+        if (item == undefined)
+            return;
+        const material = materials_manager_1.materials.tag_to_index(item.material.string_tag);
+        events_1.Event.change_stash(character, material, 1);
+        character.equip.data.backpack.remove(index);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
+    }
+    EventInventory.destroy_in_backpack = destroy_in_backpack;
     function unequip_secondary(character) {
         character.equip.unequip_secondary();
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);

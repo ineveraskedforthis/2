@@ -49,6 +49,7 @@ class SocketManager {
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
             socket.on('equip', (msg) => inventory_management_1.InventoryCommands.equip(user, msg));
             socket.on('enchant', (msg) => inventory_management_1.InventoryCommands.enchant(user, msg));
+            socket.on('destroy', (msg) => inventory_management_1.InventoryCommands.break_item(user, msg));
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
             socket.on('switch-weapon', (msg) => inventory_management_1.InventoryCommands.switch_weapon(user));
             socket.on('unequip', (msg) => inventory_management_1.InventoryCommands.unequip(user, msg));

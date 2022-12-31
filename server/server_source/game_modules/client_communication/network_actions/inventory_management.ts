@@ -57,50 +57,6 @@ export namespace InventoryCommands {
             }
         }
     }
-
-    // export function enchant_weapon(sw: SocketWrapper, msg: number) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-    //     let item = character.equip.data.backpack.weapons[msg];
-        
-
-    //     if (item != undefined) {
-    //         let REQUIRED_AMOUNT = 1
-    //         let AMOUNT = character.stash.get(ZAZ)
-
-    //         if ( AMOUNT >= REQUIRED_AMOUNT) {
-    //             roll_affix_weapon(character.get_enchant_rating(), item)
-    //             character.stash.inc(ZAZ, -1)
-    //         } else {
-    //             Alerts.not_enough_to_user(user, 'zaz', REQUIRED_AMOUNT, AMOUNT)
-    //         }                
-    //     }
-    // }
-
-    // export function enchant_armour(sw: SocketWrapper, msg: number) {
-    //     if (!Validator.valid_user(user)) return false
-    //     let character = Convert.user_to_character(user)
-
-    //     let item = character.equip.data.backpack.armours[msg]
-    //     if (item != undefined) {
-    //         let REQUIRED_AMOUNT = 1
-    //         let AMOUNT = character.stash.get(ZAZ)
-
-    //         if (AMOUNT >= REQUIRED_AMOUNT) {
-    //             roll_affix_armour(character.get_enchant_rating(), item)
-    //             character.stash.inc(ZAZ, -1)
-    //         } else {
-    //             Alerts.not_enough_to_user(user, 'zaz', REQUIRED_AMOUNT, AMOUNT)
-    //         }                
-    //     }            
-    // }
-
-
-
-
-
-
-
     
     export function buy(sw: SocketWrapper, msg: any) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
@@ -282,6 +238,16 @@ export namespace InventoryCommands {
         if (character == undefined) return
 
         EventMarket.remove_item_orders(character)
+    }
+
+    export function break_item(sw: SocketWrapper, msg: number) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        msg = Number(msg)
+
+        if (isNaN(msg)) return
+
+        EventInventory.destroy_in_backpack(character, msg)
     }
 
     export function enchant(sw: SocketWrapper, msg: number) {
