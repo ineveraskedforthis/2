@@ -86,7 +86,7 @@ export const WOODEN_MACE_ARGUMENT: ItemJson = {
     weapon_tag: 'twohanded',
     model_tag: 'wooden_mace',
     resists: empty_resists,
-    damage: new Damage(12, 0, 0),
+    damage: new Damage(10, 0, 0),
     range: 1.3
 }
 

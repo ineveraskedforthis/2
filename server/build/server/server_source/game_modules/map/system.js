@@ -106,9 +106,15 @@ var MapSystem;
                     templates_1.Template.Character.MageRat(cell.x, cell.y);
                 }
             }
-            if ((elodino_number < 40) && (cell.development.elodinos == 1)) {
-                let elo = events_1.Event.new_character(elo_1.EloTemplate, undefined, cell.id, undefined);
-                data_1.Data.Reputation.set(factions_1.Factions.Elodinos.id, elo.id, 'member');
+            if ((elodino_number < 60) && (cell.development.elodinos == 1)) {
+                let dice = Math.random();
+                if (dice < 0.7) {
+                    let elo = events_1.Event.new_character(elo_1.EloTemplate, undefined, cell.id, undefined);
+                    data_1.Data.Reputation.set(factions_1.Factions.Elodinos.id, elo.id, 'member');
+                }
+                else {
+                    templates_1.Template.Character.MageElo(cell.x, cell.y);
+                }
             }
         }
     }

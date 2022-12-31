@@ -6,6 +6,7 @@ const events_1 = require("./events/events");
 const factions_1 = require("./factions");
 const materials_manager_1 = require("./manager_classes/materials_manager");
 const system_1 = require("./map/system");
+const elo_1 = require("./races/elo");
 const rat_1 = require("./races/rat");
 var Template;
 (function (Template) {
@@ -25,5 +26,13 @@ var Template;
             return rat;
         }
         Character.MageRat = MageRat;
+        function MageElo(x, y) {
+            let elo = Base(elo_1.EloTemplate, undefined, undefined, x, y, factions_1.Factions.Elodinos.id);
+            elo.perks.magic_bolt = true;
+            elo.perks.mage_initiation = true;
+            elo.stash.inc(materials_manager_1.ZAZ, 30);
+            return elo;
+        }
+        Character.MageElo = MageElo;
     })(Character = Template.Character || (Template.Character = {}));
 })(Template = exports.Template || (exports.Template = {}));
