@@ -162,7 +162,7 @@ var Event;
         return 'ok';
     }
     Event.shoot = shoot;
-    function magic_bolt(attacker, defender, flag_dodge) {
+    function magic_bolt(attacker, defender, dist, flag_dodge) {
         if (defender.dead())
             return 'miss';
         if (attacker.dead())
@@ -188,7 +188,7 @@ var Event;
         if (dice > attacker.skills.magic_mastery / 50) {
             effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1);
         }
-        const attack = system_2.Attack.generate_magic_bolt(attacker);
+        const attack = system_2.Attack.generate_magic_bolt(attacker, dist);
         system_3.CharacterSystem.damage(defender, attack.damage);
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);

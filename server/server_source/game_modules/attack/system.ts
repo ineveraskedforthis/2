@@ -38,11 +38,14 @@ export namespace Attack {
         return result
     }
 
-    export function generate_magic_bolt(character: Character): AttackObj {
-        const base_damage = 4
+    export function generate_magic_bolt(character: Character, dist: number): AttackObj {
+        const base_damage = 8
         const damage = Math.round(base_damage * CharacterSystem.magic_power(character) / 10 * (1 + character.skills.magic_mastery / 10))
         const result = new AttackObj('ranged')
         result.damage.fire = damage
+        if (dist > 1) {
+            result.damage.fire = Math.round(damage / 5 + (damage * 4 / 5) / dist)
+        }
 
         return result
     }

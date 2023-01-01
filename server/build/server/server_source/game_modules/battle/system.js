@@ -259,7 +259,7 @@ var BattleSystem;
     function move_cost(unit) {
         const character = systems_communication_1.Convert.unit_to_character(unit);
         const speed = character.stats.stats.movement_speed;
-        return (3 / speed);
+        return (2.5 / speed);
     }
     BattleSystem.move_cost = move_cost;
 })(BattleSystem = exports.BattleSystem || (exports.BattleSystem = {}));

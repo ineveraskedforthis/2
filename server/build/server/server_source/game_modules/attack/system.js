@@ -39,11 +39,14 @@ var Attack;
         return result;
     }
     Attack.generate_ranged = generate_ranged;
-    function generate_magic_bolt(character) {
-        const base_damage = 4;
+    function generate_magic_bolt(character, dist) {
+        const base_damage = 10;
         const damage = Math.round(base_damage * system_1.CharacterSystem.magic_power(character) / 10 * (1 + character.skills.magic_mastery / 10));
         const result = new class_1.AttackObj('ranged');
         result.damage.fire = damage;
+        if (dist > 1) {
+            result.damage.fire = Math.round(damage / 5 + (damage * 4 / 5) / dist);
+        }
         return result;
     }
     Attack.generate_magic_bolt = generate_magic_bolt;

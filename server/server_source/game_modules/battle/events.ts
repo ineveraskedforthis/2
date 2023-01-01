@@ -209,10 +209,12 @@ export namespace BattleEvent {
         if (!can_cast_magic_bolt(AttackerCharacter)) {
             return
         }
-        const DefenderCharacter = Convert.unit_to_character(defender)
+        if (attacker.action_points_left < COST) return 
 
+        const DefenderCharacter = Convert.unit_to_character(defender)        
         attacker.action_points_left = attacker.action_points_left - COST as action_points
-        let responce = Event.magic_bolt(AttackerCharacter, DefenderCharacter, defender.dodge_turns > 0)
+        let dist = geom.dist(attacker.position, defender.position)
+        let responce = Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
 
         switch(responce) {
             case 'miss': Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST); break;

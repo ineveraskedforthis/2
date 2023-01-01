@@ -173,7 +173,7 @@ export namespace Event {
         return 'ok'
     }
 
-    export function magic_bolt(attacker: Character, defender: Character, flag_dodge: boolean) {
+    export function magic_bolt(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
         if (defender.dead()) return 'miss'
         if (attacker.dead()) return 'miss'
 
@@ -198,7 +198,7 @@ export namespace Event {
             Effect.Change.skill(attacker, 'magic_mastery', 1)
         }
 
-        const attack = Attack.generate_magic_bolt(attacker)
+        const attack = Attack.generate_magic_bolt(attacker, dist)
         CharacterSystem.damage(defender, attack.damage)
         UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS)
