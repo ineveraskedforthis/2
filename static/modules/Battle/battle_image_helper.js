@@ -1,4 +1,4 @@
-import { h } from "./battle_image.js";
+import { h, w } from "./battle_image.js";
 import { BATTLE_SCALE } from "./constants.js";
 const NAMEPLATE_SHIFT_X = 0;
 const NAMEPLATE_SHIFT_Y = 0;
@@ -26,14 +26,14 @@ export var position_c;
     position_c.scalar_mult = scalar_mult;
     function battle_to_canvas(pos) {
         let centre = { x: pos.y, y: pos.x };
-        centre.x = -centre.x * BATTLE_SCALE + 520;
+        centre.x = -centre.x * BATTLE_SCALE + w / 2;
         centre.y = centre.y * BATTLE_SCALE + h / 2;
         return raw_to_canvas(centre);
     }
     position_c.battle_to_canvas = battle_to_canvas;
     function canvas_to_battle(pos) {
         let tmp = { x: pos.x, y: pos.y };
-        tmp.x = (tmp.x - 520) / (-BATTLE_SCALE);
+        tmp.x = (tmp.x - w / 2) / (-BATTLE_SCALE);
         tmp.y = (tmp.y - h / 2) / (BATTLE_SCALE);
         return raw_to_battle({ x: tmp.y, y: tmp.x });
     }

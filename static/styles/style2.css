@@ -306,6 +306,10 @@ body {
     height: 25px;
 }
 
+.height-50 {
+    height: 50px;
+}
+
 .align-right {
     text-align: right;
 }

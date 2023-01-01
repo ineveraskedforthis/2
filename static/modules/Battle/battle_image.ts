@@ -1,6 +1,6 @@
 import {canvas_position, get_mouse_pos_in_canvas, position_c} from './battle_image_helper.js'
 
-import { BattleData, unit_id, UnitSocket } from "../../../shared/battle_data.js"
+import { BattleData, unit_id, UnitSocket, battle_position } from "../../../shared/battle_data.js"
 import { BattleUnitView } from './battle_view.js';
 import { socket } from '../globals.js';
 import { BattleImageEvent } from './battle_image_events.js';
@@ -423,18 +423,46 @@ export namespace BattleImage {
         }
     }
 
-    export function draw(dt: number) {
-        battle_canvas_context.clearRect(0, 0, w, h);
-        //handle_events
-        update(dt)       
+    export function draw_background() {
+        // drawing battle layout
 
-        // draw background only once (no camera movement support yet)
-        if (!background_flag){
-            let ctx = canvas_background.getContext('2d');
-            ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
-            background_flag = true;
-        } 
+        const left = -7
+        const right = 7
+        const top = -15
+        const bottom = 15
 
+        const corners = [{x: left, y: top}, {x: right, y: top}, {x: right, y: bottom}, {x: left, y: bottom}, {x: left, y: top}]
+
+        battle_canvas_context.strokeStyle = 'rgba(0, 0, 0, 1)';
+        battle_canvas_context.beginPath();
+        battle_canvas_context.setLineDash([]);
+        const c1 = position_c.battle_to_canvas(corners[0] as battle_position)
+        battle_canvas_context.moveTo(c1.x, c1.y);
+        for (let c of corners) {
+            const next = position_c.battle_to_canvas(c as battle_position)
+            battle_canvas_context.lineTo(next.x, next.y)
+        }
+        battle_canvas_context.stroke()
+
+        battle_canvas_context.beginPath();
+        battle_canvas_context.setLineDash([3, 15]);
+        for (let i = left + 1; i < right; i++) {
+            const start_point = position_c.battle_to_canvas({x: i, y: top} as battle_position)
+            const end_point = position_c.battle_to_canvas({x: i, y: bottom} as battle_position)
+            battle_canvas_context.moveTo(start_point.x, start_point.y);
+            battle_canvas_context.lineTo(end_point.x, end_point.y)
+        }
+        
+        for (let i = top + 1; i < bottom; i++) {
+            const start_point = position_c.battle_to_canvas({x: left, y: i} as battle_position)
+            const end_point = position_c.battle_to_canvas({x: right, y: i} as battle_position)
+            battle_canvas_context.moveTo(start_point.x, start_point.y);
+            battle_canvas_context.lineTo(end_point.x, end_point.y)
+        }
+        battle_canvas_context.stroke()
+    }
+
+    export function draw_units(dt: number) {
         //sort views by y coordinate
         var draw_order = Array.from(unit_ids)
 
@@ -454,7 +482,22 @@ export namespace BattleImage {
             if (view.hp == 0) continue
             view.draw(dt, selected, hovered, player_unit_id)
         }
+    }
 
+    export function draw(dt: number) {
+        battle_canvas_context.clearRect(0, 0, w, h);
+        //handle_events
+        update(dt)       
+
+        // draw background only once (no camera movement support yet)
+        if (!background_flag){
+            let ctx = canvas_background.getContext('2d');
+            ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
+            background_flag = true;
+        } 
+
+        draw_background()    
+        draw_units(dt)
         draw_anchor()
     }
 

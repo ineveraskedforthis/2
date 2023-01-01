@@ -253,6 +253,7 @@ export class Map {
                 repeat_button.innerHTML = 'repeat';
                 repeat_button.classList.add('active');
                 repeat_button.classList.add('bordered');
+                repeat_button.classList.add('height-25');
                 ((button, map_manager, action_tag, global_blob) => 
                     button.onclick = () => 
                     {

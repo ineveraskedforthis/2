@@ -395,16 +395,41 @@ export var BattleImage;
         }
     }
     BattleImage.update_action_display = update_action_display;
-    function draw(dt) {
-        battle_canvas_context.clearRect(0, 0, w, h);
-        //handle_events
-        update(dt);
-        // draw background only once (no camera movement support yet)
-        if (!background_flag) {
-            let ctx = canvas_background.getContext('2d');
-            ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
-            background_flag = true;
+    function draw_background() {
+        // drawing battle layout
+        const left = -7;
+        const right = 7;
+        const top = -15;
+        const bottom = 15;
+        const corners = [{ x: left, y: top }, { x: right, y: top }, { x: right, y: bottom }, { x: left, y: bottom }, { x: left, y: top }];
+        battle_canvas_context.strokeStyle = 'rgba(0, 0, 0, 1)';
+        battle_canvas_context.beginPath();
+        battle_canvas_context.setLineDash([]);
+        const c1 = position_c.battle_to_canvas(corners[0]);
+        battle_canvas_context.moveTo(c1.x, c1.y);
+        for (let c of corners) {
+            const next = position_c.battle_to_canvas(c);
+            battle_canvas_context.lineTo(next.x, next.y);
         }
+        battle_canvas_context.stroke();
+        battle_canvas_context.beginPath();
+        battle_canvas_context.setLineDash([3, 15]);
+        for (let i = left + 1; i < right; i++) {
+            const start_point = position_c.battle_to_canvas({ x: i, y: top });
+            const end_point = position_c.battle_to_canvas({ x: i, y: bottom });
+            battle_canvas_context.moveTo(start_point.x, start_point.y);
+            battle_canvas_context.lineTo(end_point.x, end_point.y);
+        }
+        for (let i = top + 1; i < bottom; i++) {
+            const start_point = position_c.battle_to_canvas({ x: left, y: i });
+            const end_point = position_c.battle_to_canvas({ x: right, y: i });
+            battle_canvas_context.moveTo(start_point.x, start_point.y);
+            battle_canvas_context.lineTo(end_point.x, end_point.y);
+        }
+        battle_canvas_context.stroke();
+    }
+    BattleImage.draw_background = draw_background;
+    function draw_units(dt) {
         //sort views by y coordinate
         var draw_order = Array.from(unit_ids);
         draw_order.sort((a, b) => {
@@ -427,6 +452,20 @@ export var BattleImage;
                 continue;
             view.draw(dt, selected, hovered, player_unit_id);
         }
+    }
+    BattleImage.draw_units = draw_units;
+    function draw(dt) {
+        battle_canvas_context.clearRect(0, 0, w, h);
+        //handle_events
+        update(dt);
+        // draw background only once (no camera movement support yet)
+        if (!background_flag) {
+            let ctx = canvas_background.getContext('2d');
+            ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
+            background_flag = true;
+        }
+        draw_background();
+        draw_units(dt);
         draw_anchor();
     }
     BattleImage.draw = draw;
