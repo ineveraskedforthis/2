@@ -2,6 +2,7 @@
 
 
 #status_frame{
+    position: relative;
     color: rgb(13, 228, 77);  
     display: flex;
     flex-direction: column;

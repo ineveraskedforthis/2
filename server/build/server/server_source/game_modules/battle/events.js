@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BattleEvent = void 0;
+exports.BattleEvent = exports.HALFHEIGHT = exports.HALFWIDTH = void 0;
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const events_1 = require("../events/events");
 const geom_1 = require("../geom");
@@ -8,11 +8,14 @@ const systems_communication_1 = require("../systems_communication");
 const battle_ai_1 = require("./AI/battle_ai");
 const system_1 = require("./system");
 const Perks_1 = require("../character/Perks");
+const basic_functions_1 = require("../calculations/basic_functions");
 // export const MOVE_COST = 3
 const COST = {
     ATTACK: 3,
     CHARGE: 1,
 };
+exports.HALFWIDTH = 7;
+exports.HALFHEIGHT = 15;
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
@@ -81,13 +84,18 @@ var BattleEvent;
             tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / system_1.BattleSystem.move_cost(unit));
             points_spent = unit.action_points_left;
         }
-        unit.position.x = tmp.x + unit.position.x;
-        unit.position.y = tmp.y + unit.position.y;
+        const result = { x: tmp.x + unit.position.x, y: tmp.y + unit.position.y };
+        SetCoord(battle, unit, result);
         unit.action_points_left = unit.action_points_left - points_spent;
         alerts_1.Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, points_spent);
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.Move = Move;
+    function SetCoord(battle, unit, target) {
+        unit.position.x = (0, basic_functions_1.trim)(target.x, -exports.HALFWIDTH, exports.HALFWIDTH);
+        unit.position.y = (0, basic_functions_1.trim)(target.y, -exports.HALFHEIGHT, exports.HALFHEIGHT);
+    }
+    BattleEvent.SetCoord = SetCoord;
     function Charge(battle, unit, target) {
         if (unit.action_points_left < COST.CHARGE) {
             return;
@@ -99,8 +107,7 @@ var BattleEvent;
             let direction = geom_1.geom.minus(target.position, unit.position);
             let stop_before = geom_1.geom.mult(geom_1.geom.normalize(direction), character.range() - 0.1);
             direction = geom_1.geom.minus(direction, stop_before);
-            unit.position.x = direction.x;
-            unit.position.y = direction.y;
+            SetCoord(battle, unit, direction);
         }
         alerts_1.Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, COST.CHARGE);
     }

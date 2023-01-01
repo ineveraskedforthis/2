@@ -20,8 +20,8 @@ export class geom {
      * @param b 
      * @returns 
      */
-    static minus(a: point, b: point) {
-        return {x: a.x - b.x, y: a.y - b.y}
+    static minus<T extends point>(a: T, b: T): T {
+        return {x: a.x - b.x, y: a.y - b.y} as T
     }
 
     static dist(a: point, b: point) {

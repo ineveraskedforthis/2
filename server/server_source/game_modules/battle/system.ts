@@ -6,7 +6,7 @@ import { BattleAI } from "./AI/battle_ai"
 import { Battle } from "./classes/battle"
 import { UnitsHeap } from "./classes/heap"
 import { Unit } from "./classes/unit"
-import { BattleEvent } from "./events"
+import { BattleEvent, HALFHEIGHT, HALFWIDTH } from "./events"
 import fs from "fs"
 import { Event } from "../events/events"
 import { Data } from "../data"
@@ -107,15 +107,23 @@ export namespace BattleSystem {
         return last_id
     }
 
+    // team 0 is a defender and spawns at the center
+    // other teams spawn around center
     export function create_unit(character: Character, team: number): Unit {
         last_unit_id = last_unit_id + 1 as unit_id
         
         // deciding position
-        const dx = Math.random() * 2
-        const dy = Math.random() * 2
-        if (team == 1) {
-            var position = {x: 0 + dx, y: 8 + dy} as battle_position
+        if (team == 0) {
+            const dx = Math.random() * 2 - 1
+            const dy = Math.random() * 2 - 1
+            var position = {x: 0 + dx, y: 0 + dy} as battle_position
         } else {
+            let dx = Math.random() * 2 - 1
+            let dy = Math.random() * 2 - 1
+            const norm = Math.sqrt((dx * dx + dy * dy))
+            dx = dx + dx / norm * HALFWIDTH / 2
+            dy = dy + dy / norm * HALFHEIGHT / 2
+            console.log(dx, dy)
             var position = {x: 0 + dx, y: 0 + dy} as battle_position
         }
 

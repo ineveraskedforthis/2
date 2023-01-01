@@ -7,6 +7,7 @@ import { BattleImageEvent } from './battle_image_events.js';
 import { AnimatedImage } from './animation.js';
 import { BATTLE_SCALE } from './constants.js';
 import { AnimationDict, IMAGES, ImagesDict } from '../load_images.js';
+import { timeEnd } from 'console';
 
 declare var alert: (data: string) => {}
 
@@ -79,6 +80,98 @@ let    actions: battle_action[]                         =[]
 
 let background_flag = false
 let background = 'colony'
+
+let tiles:(number|undefined)[] = []
+
+
+const left = -7
+const right = 7
+const top = -15
+const bottom = 15
+
+const width = right - left 
+const height = bottom - top
+const max_dim = Math.max(width, height)
+
+function x_y_to_tile(x: number, y: number) {
+    return (x - left) * max_dim + y 
+}
+
+function set_tile(x: number, y: number, value: number) {
+    const tile = x_y_to_tile(x, y)
+    tiles[tile] = value
+}
+
+function get_tile(x: number, y: number) {
+    const tile = x_y_to_tile(x, y)
+    return tiles[tile]
+}
+
+const corners = [{x: left, y: top}, {x: right, y: top}, {x: right, y: bottom}, {x: left, y: bottom}, {x: left, y: top}]
+
+type f3 = [number, number, number]
+
+function random(l: number, r: number) {
+    return Math.random() * (r - l) + l
+}
+
+function generate_noise_vectors(n: number) {
+    let vectors:f3[] = []
+    for (let i = 0; i < n; i++) {
+        vectors.push([random(left * 1.1, right * 1.1), random(top * 1.1, bottom * 1.1), random(-0.5, 0.5)])
+    }
+    return vectors
+}
+
+function dot3(a: f3, b: f3) {
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+}
+
+function dist(a: f3, b: f3) {
+    const c: f3 = [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+    return Math.sqrt(dot3(c, c))
+}
+
+function calculate_noise(x: number, y: number, noise_vectors: f3[]) {
+    const tile_vector: f3 = [x, y, 0]
+    let noise = 0
+    for (let vector of noise_vectors) {
+        noise += 1 / (5 + dist(tile_vector, vector))
+    }
+
+    return noise
+}
+
+function generate_tiles() {
+    const noise_vectors = generate_noise_vectors(10)
+    console.log(noise_vectors)
+    let max_noise = 0
+    let min_noise = 9999
+    for (let i = left; i < right; i++ ) {
+        for (let j = top; j < bottom; j++) {
+            const noise = calculate_noise(i, j, noise_vectors)
+            if (noise > max_noise) {max_noise = noise}
+            if (noise < min_noise) {min_noise = noise}
+            set_tile(i, j, noise)
+        }
+    }
+
+    for (let i = left; i < right; i++ ) {
+        for (let j = top; j < bottom; j++) {
+            let noise = get_tile(i, j)
+            if (noise == undefined) continue
+            set_tile(i, j, (noise - min_noise) / (max_noise - min_noise))
+        }
+    }
+}
+
+generate_tiles()
+console.log('TILES')
+console.log(tiles)
+
+const tilemap = new Image()
+tilemap.src = 'static/img/battle_tiles.png'
+
 
 export namespace BattleImage {
     export function load(data: BattleData) {
@@ -424,14 +517,34 @@ export namespace BattleImage {
     }
 
     export function draw_background() {
-        // drawing battle layout
+        // tiles
 
-        const left = -7
-        const right = 7
-        const top = -15
-        const bottom = 15
+        for (let i = left; i < right; i++) {
+            for (let j = top; j < bottom; j++) {
+                const start_point = position_c.battle_to_canvas({x: i, y: j + 1} as battle_position)
+                const colour = get_tile(i, j)
+                if (colour == undefined) continue
+                const rgba = `rgba(${Math.floor(colour * 255)}, 0, 0, 1)`
+                // battle_canvas_context.fillStyle = rgba
+                // battle_canvas_context.fillRect(start_point.x, start_point.y, BATTLE_SCALE, BATTLE_SCALE)
+                let tile = 0
+                if ((colour > 0.7) || (colour < 0.2)) {
+                    tile = 1
+                }
 
-        const corners = [{x: left, y: top}, {x: right, y: top}, {x: right, y: bottom}, {x: left, y: bottom}, {x: left, y: top}]
+                battle_canvas_context.drawImage(
+                    tilemap, 
+                    tile * 50, 0,
+                    50, 50,
+                    start_point.x, start_point.y,
+                    BATTLE_SCALE, BATTLE_SCALE
+                )
+
+                // battle_canvas_context.fillRect((i + 20) * 10 + 30, (j + 20) * 10 + 30, 10, 10)
+            }
+        }
+
+        // grid
 
         battle_canvas_context.strokeStyle = 'rgba(0, 0, 0, 1)';
         battle_canvas_context.beginPath();
@@ -444,22 +557,23 @@ export namespace BattleImage {
         }
         battle_canvas_context.stroke()
 
-        battle_canvas_context.beginPath();
-        battle_canvas_context.setLineDash([3, 15]);
-        for (let i = left + 1; i < right; i++) {
-            const start_point = position_c.battle_to_canvas({x: i, y: top} as battle_position)
-            const end_point = position_c.battle_to_canvas({x: i, y: bottom} as battle_position)
-            battle_canvas_context.moveTo(start_point.x, start_point.y);
-            battle_canvas_context.lineTo(end_point.x, end_point.y)
-        }
+        // battle_canvas_context.beginPath();
+        // battle_canvas_context.setLineDash([3, 15]);
+        // for (let i = left + 1; i < right; i++) {
+        //     const start_point = position_c.battle_to_canvas({x: i, y: top} as battle_position)
+        //     const end_point = position_c.battle_to_canvas({x: i, y: bottom} as battle_position)
+        //     battle_canvas_context.moveTo(start_point.x, start_point.y);
+        //     battle_canvas_context.lineTo(end_point.x, end_point.y)
+        // }
         
-        for (let i = top + 1; i < bottom; i++) {
-            const start_point = position_c.battle_to_canvas({x: left, y: i} as battle_position)
-            const end_point = position_c.battle_to_canvas({x: right, y: i} as battle_position)
-            battle_canvas_context.moveTo(start_point.x, start_point.y);
-            battle_canvas_context.lineTo(end_point.x, end_point.y)
-        }
-        battle_canvas_context.stroke()
+        // for (let i = top + 1; i < bottom; i++) {
+        //     const start_point = position_c.battle_to_canvas({x: left, y: i} as battle_position)
+        //     const end_point = position_c.battle_to_canvas({x: right, y: i} as battle_position)
+        //     battle_canvas_context.moveTo(start_point.x, start_point.y);
+        //     battle_canvas_context.lineTo(end_point.x, end_point.y)
+        // }
+        // battle_canvas_context.stroke()
+        
     }
 
     export function draw_units(dt: number) {

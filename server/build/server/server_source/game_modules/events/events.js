@@ -413,7 +413,7 @@ var Event;
             console.log('new battle: ' + battle_id);
             const battle = systems_communication_1.Convert.id_to_battle(battle_id);
             const attacker_unit = system_1.BattleSystem.create_unit(attacker, 1);
-            const defender_unit = system_1.BattleSystem.create_unit(defender, 2);
+            const defender_unit = system_1.BattleSystem.create_unit(defender, 0);
             events_1.BattleEvent.NewUnit(battle, attacker_unit);
             events_1.BattleEvent.NewUnit(battle, defender_unit);
             systems_communication_1.Link.character_battle_unit(attacker, battle, attacker_unit);

@@ -10,6 +10,7 @@ import { Battle } from "./classes/battle"
 import { Unit } from "./classes/unit"
 import { BattleSystem } from "./system"
 import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/Perks"
+import { trim } from "../calculations/basic_functions"
 
 // export const MOVE_COST = 3
 
@@ -17,6 +18,9 @@ const COST = {
     ATTACK: 3,
     CHARGE: 1,
 }
+
+export const HALFWIDTH = 7
+export const HALFHEIGHT = 15 
 
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
@@ -91,16 +95,21 @@ export namespace BattleEvent {
         var points_spent = geom.norm(tmp) * BattleSystem.move_cost(unit)
 
         if (points_spent > unit.action_points_left) {
-            tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / BattleSystem.move_cost(unit))
+            tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / BattleSystem.move_cost(unit)) as battle_position
             points_spent = unit.action_points_left
         }
-        unit.position.x = tmp.x + unit.position.x;
-        unit.position.y = tmp.y + unit.position.y;
+        const result = {x: tmp.x + unit.position.x, y: tmp.y + unit.position.y} as battle_position
+        SetCoord(battle, unit, result)
 
         unit.action_points_left =  unit.action_points_left - points_spent as action_points
         
         Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, points_spent)
         Alerts.battle_update_unit(battle, unit)
+    }
+
+    export function SetCoord(battle: Battle, unit: Unit, target: battle_position) {
+        unit.position.x = trim(target.x, -HALFWIDTH, HALFWIDTH)
+        unit.position.y = trim(target.y, -HALFHEIGHT, HALFHEIGHT)
     }
 
     export function Charge(battle: Battle, unit: Unit, target: Unit) {
@@ -115,9 +124,8 @@ export namespace BattleEvent {
         if (dist > (character.range() - 0.1)) {
             let direction = geom.minus(target.position, unit.position);
             let stop_before = geom.mult(geom.normalize(direction), character.range() - 0.1);
-            direction = geom.minus(direction, stop_before)
-            unit.position.x = direction.x
-            unit.position.y = direction.y
+            direction = geom.minus(direction, stop_before) as battle_position
+            SetCoord(battle, unit, direction)
         }
 
         Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, COST.CHARGE)

@@ -5,6 +5,7 @@ import { BattleImage, battle_canvas_context, enemy_list_div, player_unit_id } fr
 
 import { 
     animation_event, 
+    canvas_position, 
     position_c, 
 } from "./battle_image_helper.js"
 import { BATTLE_SCALE } from "./constants.js"
@@ -67,15 +68,7 @@ export class BattleUnitView {
     }
 
 
-    draw(dt: number, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined) {
-        if (this.killed) {
-            return
-        }
-        // let unit = this.unit
-
-        let pos = position_c.battle_to_canvas(this.position)
-        let ctx = battle_canvas_context
-
+    draw_circles(ctx: CanvasRenderingContext2D, pos: canvas_position, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined) {
         //draw character attack radius circle and color it depending on it's status in ui
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         ctx.beginPath();
@@ -111,44 +104,59 @@ export class BattleUnitView {
         ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
         ctx.closePath();
         ctx.stroke();
+    }
 
+
+    draw(dt: number, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined) {
+        if (this.killed) {
+            return
+        }
+        // let unit = this.unit
+
+        let pos = position_c.battle_to_canvas(this.position)
+        let ctx = battle_canvas_context
+
+        
+        this.draw_circles(ctx, pos, selected, hovered, player_id)
 
         //draw nameplates
 
+        // choose font
         ctx.font = '15px serif';
+
         // select style depending on hover/selection status
         if (selected == this.id) {
-            ctx.fillStyle = "rgba(255, 255, 255, 1)"
+            ctx.fillStyle = "rgba(0, 0, 0, 1)"
             ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         } else if (hovered == this.id) {
-            ctx.fillStyle = "rgba(255, 255, 255, 1)"
+            ctx.fillStyle = "rgba(0, 0, 0, 1)"
             ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         } else {
-            ctx.fillStyle = "rgba(0, 0, 0, 0.1)"
-            ctx.strokeStyle = "rgba(0, 0, 0, 0.1)"
+            ctx.fillStyle = "rgba(0, 0, 0, 0.3)"
+            ctx.strokeStyle = "rgba(0, 0, 0, 0.3)"
         }
 
         // draw an actual nameplate
         {
             const nameplate_left = pos.x - 50
-            const nameplate_top = pos.y - 120
+            const nameplate_top = pos.y + 50
             const nameplate_width = 100
             const nameplate_height = 20
 
             // name rect
-            ctx.strokeRect(nameplate_left, pos.y - 120, nameplate_width, 20)
+            ctx.strokeRect(nameplate_left, nameplate_top, nameplate_width, nameplate_height)
             // ap rect
-            ctx.strokeRect(nameplate_left, pos.y - 100, nameplate_width, 20)
+            ctx.strokeRect(nameplate_left, nameplate_top + 20, nameplate_width, nameplate_height)
             
             //prepare and draw name string
             let string = this.name
             if (this.id == player_id) {
                 string = string + '(YOU)'
             }
-            ctx.fillText(string + ' || ' + this.hp + ' hp', pos.x - 45, pos.y - 105);
+            ctx.fillText(string + ' || ' + this.hp + ' hp', nameplate_left + 5, nameplate_top + 15);
 
             // draw ap string
-            ctx.fillText('ap:  ' + Math.floor(this.ap * 10) / 10, pos.x - 45, pos.y - 85);
+            ctx.fillText('ap:  ' + Math.floor(this.ap * 10) / 10, nameplate_left + 5, nameplate_top + 20 + 15);
         }
 
         // draw character's image
@@ -166,7 +174,7 @@ export class BattleUnitView {
             const width_hp = this.hp * width_hp_1
             const width_damage = -this.hp_change * width_hp_1
             const height_hp = 10
-            const hp_bar_margin_down = 60
+            const hp_bar_margin_down = -40
 
             const hp_left = pos.x - width_max_hp / 2
             const hp_top = pos.y - height_hp - hp_bar_margin_down
@@ -187,7 +195,7 @@ export class BattleUnitView {
             const width_ap = this.ap * width_ap_1
             const width_change = this.ap_change * width_ap_1
             const height_ap = 4
-            const ap_bar_margin_down = 73
+            const ap_bar_margin_down = -30
 
             const ap_left = pos.x - width_max_ap / 2
             const ap_top = pos.y - height_ap - ap_bar_margin_down
