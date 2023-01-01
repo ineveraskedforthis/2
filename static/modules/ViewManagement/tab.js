@@ -1,4 +1,4 @@
-export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'localcharacters'];
+export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market'];
 // global state
 const tabs_queue = [];
 const tabs_position = {};
@@ -27,6 +27,8 @@ export var tab;
     function load(tag) {
         console.log(tag);
         let tab = document.getElementById(tag + '_tab');
+        if (tab == null)
+            return;
         console.log(tabs_properties[tag]);
         if (tabs_properties[tag] == undefined) {
             save(tag);

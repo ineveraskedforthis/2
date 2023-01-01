@@ -1,6 +1,6 @@
 import { Socket } from "../../../shared/battle_data"
 
-export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market', 'localcharacters']
+export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market']
 
 interface tab_property {
     top: string,
@@ -39,7 +39,8 @@ export namespace tab {
 
     export function load(tag: string) {
         console.log(tag)
-        let tab = document.getElementById(tag + '_tab')!
+        let tab = document.getElementById(tag + '_tab')
+        if (tab == null) return
         console.log(tabs_properties[tag])
         if (tabs_properties[tag] == undefined) {
             save(tag)

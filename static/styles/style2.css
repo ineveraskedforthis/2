@@ -341,27 +341,6 @@ body {
 }
 
 
-#characters_list {
-    overflow-y: scroll;
-    height: 80%;
-    border: white 1px solid;
-    width: 100%;
-}
-
-#characters_list > div {
-    height: 20px;
-    width: 100%;
-}
-
-#characters_list > div:hover {
-    background-color: yellow;
-    color: blue;
-}
-
-#characters_list > div.selected {
-    background-color: greenyellow;
-    color: blue;
-}
 
 #main_menu {
     width: 40%;

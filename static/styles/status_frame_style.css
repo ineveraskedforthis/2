@@ -7,6 +7,7 @@
     flex-direction: column;
     height: auto;
     width: 204px;
+    z-index: 100;
 }
 
 div#status_frame>div{

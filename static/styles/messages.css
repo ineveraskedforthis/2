@@ -1,25 +1,55 @@
+#messages_frame {
+    display: flex;
+    flex-direction: row;
+}
 
 #messages_frame > .container {
-    position: absolute;
-    width: 100%;
+    width: 50%;
     height: 100%;
     background: rgba(78, 11, 11, 0.7);
+    display: flex;
+    flex-direction: column;
+}
+
+
+#characters_list {
+    overflow-y: scroll;
+    width: 100%;
+    flex: auto;
+}
+
+#characters_list > div {
+    height: 20px;
+    width: 100%;
+}
+
+#characters_list > div:hover {
+    background-color: yellow;
+    color: blue;
+}
+
+#characters_list > div.selected {
+    background-color: greenyellow;
+    color: blue;
 }
 
 #messages_frame > .container > .header {
-    position: absolute;
+    /* position: absolute; */
     width: 100%;
     height: 33px;
     background: rgba(143, 47, 71, 1.0);
+    display: flex;
+    flex-direction: row;
 }
 
 #messages_frame > .container > .header > div {
-    position: relative;
     height: 33px;
     line-height: 33px;
-    width: 86px;
     background-image: url(/static/img/chat_button.png);
-    float: left;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    flex: auto;
     text-align: center;
 }
 
@@ -33,35 +63,40 @@
     background-image: url(/static/img/chat_button_selected.png);
 }
 
-#messages_frame > .container > .messages_display {
-    position: absolute;
-    top: 33px;
-    height: 70%;
+#list_of_messages {
+    height: 80%;
+    width: 100%;
+}
+
+.messages_display {
+    height: 100%;
     width: 100%;
     overflow: auto;
-    color: rgb(13, 228, 77);
 }
 
 #log {
-    visibility: hidden;
+    display: none;
 }
 
 #send_message_frame {
-    position: absolute;
-    bottom: 0%;
-    height: 30px;
     width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex: auto;
 }
 
 #message_field {
-    position: absolute;
-    width: 80%;
-    height: 100% - 0px;
+    /* position: absolute; */
+    flex: 4;
+    height: 100%;
+    border: 0;
+    padding: 0;
 }
 
 #send_message_button {
-    position: absolute;
-    width: 18%;
+    /* position: absolute; */
+    flex: 1;
     height: 100%;
-    right: 0px;
+    padding: 0%;
+    border: 0;
 }

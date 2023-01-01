@@ -99,15 +99,15 @@ function new_message(msg) {
 }
 
 document.getElementById('open_chat_button').onclick = () => {
-    document.getElementById('log').style.visibility = 'hidden';
-    document.getElementById('chat').style.visibility = 'inherit';
+    document.getElementById('log').style.display = 'none';
+    document.getElementById('chat').style.display = 'block';
     document.getElementById('open_log_button').classList.remove('selected');
     document.getElementById('open_chat_button').classList.add('selected');
 }
 
 document.getElementById('open_log_button').onclick = () => {
-    document.getElementById('chat').style.visibility = 'hidden';
-    document.getElementById('log').style.visibility = 'inherit';
+    document.getElementById('chat').style.display = 'none';
+    document.getElementById('log').style.display = 'block';
     document.getElementById('open_chat_button').classList.remove('selected');
     document.getElementById('open_log_button').classList.add('selected');
 }
