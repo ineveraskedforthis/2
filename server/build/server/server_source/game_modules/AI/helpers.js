@@ -54,13 +54,19 @@ var AIhelper;
     AIhelper.check_battles_to_join = check_battles_to_join;
     function check_team_to_join(agent, battle, exclude) {
         let data = battle.heap.raw_data;
+        let potential_team = -1;
         for (let item of data) {
             const target = systems_communication_1.Convert.unit_to_character(item);
             if (agent.race() == target.race() && (item.team != exclude) && (!target.dead())) {
-                return item.team;
+                if (potential_team == 0)
+                    continue;
+                else
+                    potential_team = item.team;
             }
         }
-        return 'no_interest';
+        if (potential_team == -1)
+            return 'no_interest';
+        return potential_team;
     }
     AIhelper.check_team_to_join = check_team_to_join;
 })(AIhelper = exports.AIhelper || (exports.AIhelper = {}));
