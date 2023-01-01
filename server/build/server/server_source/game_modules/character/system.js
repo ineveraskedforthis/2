@@ -268,7 +268,7 @@ var CharacterSystem;
     }
     CharacterSystem.transfer_all = transfer_all;
     function rgo_check(character) {
-        const loot = generate_loot_1.Loot.base(character.archetype.race);
+        const loot = generate_loot_1.Loot.base(character.archetype.model);
         return loot;
     }
     CharacterSystem.rgo_check = rgo_check;

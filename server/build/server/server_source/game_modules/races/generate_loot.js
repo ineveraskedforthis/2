@@ -20,6 +20,20 @@ var Loot;
                     { material: materials_manager_1.RAT_SKIN, amount: 4 }
                 ];
             }
+            case 'magerat': {
+                return [
+                    { material: materials_manager_1.MEAT, amount: 2 },
+                    { material: materials_manager_1.RAT_BONE, amount: 5 },
+                    { material: materials_manager_1.RAT_SKIN, amount: 1 }
+                ];
+            }
+            case 'bigrat': {
+                return [
+                    { material: materials_manager_1.MEAT, amount: 6 },
+                    { material: materials_manager_1.RAT_BONE, amount: 7 },
+                    { material: materials_manager_1.RAT_SKIN, amount: 8 }
+                ];
+            }
             case 'graci': return [{ material: materials_manager_1.GRACI_HAIR, amount: 3 }, { material: materials_manager_1.MEAT, amount: 50 }];
         }
         return [];

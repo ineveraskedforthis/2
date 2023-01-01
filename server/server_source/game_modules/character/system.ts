@@ -267,7 +267,7 @@ export namespace CharacterSystem {
     }
 
     export function rgo_check(character: Character):{material: material_index, amount: number}[] {
-        const loot = Loot.base(character.archetype.race)
+        const loot = Loot.base(character.archetype.model)
         return loot
     }
 

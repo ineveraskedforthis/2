@@ -345,6 +345,7 @@ export namespace BattleImage {
             if (had_left[i]) continue
             let unit = units_views[i]
             if (unit == undefined) continue;
+            if (unit.hp == 0) continue
             let centre = position_c.battle_to_canvas(unit.position)
             let dx = centre.x - pos.x;
             let dy = centre.y - pos.y;
@@ -657,7 +658,12 @@ export namespace BattleImage {
     export function update_unit_div(unit: unit_id) {
         let div = unit_div(unit)
         if (div == undefined) return
-        build_unit_div(units_views[unit], div)
+        const unit_view = units_views[unit]
+        if (unit_view.hp == 0) {
+            div.style.display = "none"
+        } else {
+            build_unit_div(units_views[unit], div)
+        }
     }
 }
 
