@@ -5,6 +5,11 @@ body {
     /* overflow: hidden; */
 }
 
+.container-vertical {
+    display: flex;
+    flex-direction: column;
+}
+
 #bg_fade {
     position: absolute;
     top: 0;
@@ -161,13 +166,7 @@ body {
 
 
 
-#messages_frame {
-    position: absolute;
-    bottom: 0%;
-    right: 0%;
-    width: 30%;
-    height: 30%;
-}
+
 
 #desktop_actions {
     position: absolute;

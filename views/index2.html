@@ -186,6 +186,8 @@
                         <div id="open_chat_button" class="selected">chat</div>
                         <div id="open_log_button" >logs</div>
                         <div id="open_3_button" >3</div>
+                        <div id="open_4_button" >4</div>
+                        <div id="open_5_button" >5</div>
                     </div>
                     <div id='list_of_messages'> 
                         <div id='log' class="messages_display">
@@ -197,14 +199,6 @@
                         <input id='message_field', type="text", placeholder='New message'>
                         <input type='submit', id='send_message_button', value= 'Send' >
                     </div>
-                </div>
-
-                <div class="container">
-                    <div>
-                        <button id="attack_selected_charater"> Attack </button>
-                        <button id="request_perks_selected_charater"> Request perks list. </button>
-                    </div>
-                    <div id="characters_list"></div>
                 </div>
             </div>
 
@@ -372,6 +366,13 @@
             </div>
 
             <div id = 'map_tab', class = "game_tab hidden movable noselect">
+                <div class="container-vertical">
+                    <div>
+                        <button id="attack_selected_charater"> Attack </button>
+                        <button id="request_perks_selected_charater"> Request perks list. </button>
+                    </div>
+                    <div id="characters_list"></div>
+                </div>
                 <div id = 'map_context' class="hidden">
                     <div id='map_control'>
                         <div id = 'map_buttons'>

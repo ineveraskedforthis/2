@@ -1,5 +1,6 @@
 #map_tab {
     display: flex;
+    flex-direction: row;
     /* color: rgb(13, 228, 77); */
 }
 

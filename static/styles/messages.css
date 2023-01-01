@@ -1,4 +1,12 @@
 #messages_frame {
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
+    width: 30%;
+    height: 30%;
+}
+
+#messages_frame {
     display: flex;
     flex-direction: row;
 }
@@ -8,6 +16,7 @@
     height: 100%;
     background: rgba(78, 11, 11, 0.7);
     display: flex;
+    flex: auto;
     flex-direction: column;
 }
 
@@ -16,6 +25,7 @@
     overflow-y: scroll;
     width: 100%;
     flex: auto;
+    height: auto;
 }
 
 #characters_list > div {
