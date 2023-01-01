@@ -137,6 +137,7 @@ export var BattleImage;
         for (let [_, unit] of Object.entries(data)) {
             load_unit(unit);
         }
+        socket.emit('req-player-index');
     }
     BattleImage.load = load;
     function reset() {
@@ -324,7 +325,7 @@ export var BattleImage;
                 update_move_ap_cost(dist, player_data.move_cost);
             }
             else {
-                socket.emit('req-player-index', dist);
+                socket.emit('req-player-index');
             }
         }
     }

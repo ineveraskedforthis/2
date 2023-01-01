@@ -180,6 +180,7 @@ export namespace BattleImage {
         for (let [_, unit] of Object.entries(data)) {
             load_unit(unit)
         }
+        socket.emit('req-player-index')
     }
 
     export function reset() {
@@ -368,7 +369,7 @@ export namespace BattleImage {
                 let dist = Math.floor(position_c.dist(a, b) * 100) / 100
                 update_move_ap_cost(dist, player_data.move_cost)
             } else {
-                socket.emit('req-player-index', dist)
+                socket.emit('req-player-index')
             }
         }
     }
