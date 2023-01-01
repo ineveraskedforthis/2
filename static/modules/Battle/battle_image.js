@@ -184,8 +184,8 @@ export var BattleImage;
             if (responce) {
                 events_list = events_list.slice(1);
                 update_selection_data();
+                update_unit_div(current_event.unit);
             }
-            current_event.ap_change_left;
         }
     }
     BattleImage.update = update;

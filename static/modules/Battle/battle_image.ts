@@ -234,8 +234,8 @@ export namespace BattleImage {
             if (responce) {
                 events_list = events_list.slice(1)
                 update_selection_data()
-            }            
-            current_event.ap_change_left
+                update_unit_div(current_event.unit)
+            }
         }
     }
 
