@@ -40,7 +40,7 @@ var Attack;
     }
     Attack.generate_ranged = generate_ranged;
     function generate_magic_bolt(character, dist) {
-        const base_damage = 10;
+        const base_damage = 7;
         const damage = Math.round(base_damage * system_1.CharacterSystem.magic_power(character) / 10 * (1 + character.skills.magic_mastery / 10));
         const result = new class_1.AttackObj('ranged');
         result.damage.fire = damage;

@@ -39,7 +39,7 @@ export namespace Attack {
     }
 
     export function generate_magic_bolt(character: Character, dist: number): AttackObj {
-        const base_damage = 8
+        const base_damage = 7
         const damage = Math.round(base_damage * CharacterSystem.magic_power(character) / 10 * (1 + character.skills.magic_mastery / 10))
         const result = new AttackObj('ranged')
         result.damage.fire = damage
