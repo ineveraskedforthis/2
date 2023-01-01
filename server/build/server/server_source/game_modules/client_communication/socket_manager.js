@@ -80,6 +80,7 @@ class SocketManager {
             socket.on('mbonearmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.BONE_ARMOUR));
             socket.on('battle-action', (msg) => actions_1.HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
+            socket.on('req-player-index', () => request_1.Request.player_index(user));
             socket.on('request-perks', (msg) => request_1.Request.perks(user, msg));
             socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg.id, msg.tag));
         });

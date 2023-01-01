@@ -47,6 +47,8 @@ export namespace SendUpdate {
             Alerts.battle_progress(user, false)
         }
     }
+
+
     
 // send_data_start() {
 //         this.world.socket_manager.send_battle_data_start(this)

@@ -222,7 +222,7 @@ export namespace BattleEvent {
         Alerts.battle_update_unit(battle, defender)
     }
 
-    function flee_chance(){
+    export function flee_chance(){
         return 0.5
     }
 

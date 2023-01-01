@@ -59,18 +59,18 @@
     position: absolute;
     bottom: 5px;
     left: 5px;
-    width: 80%;
-    height: 70px;
+    width: 100%;
+    height: 80px;
     display: flex;
     flex-direction: row;
     z-index: 3;
-    border: rgb(143, 6, 6) solid 1px;
 }
 
 .battle_control> .battle_action{
-    border: rgb(143, 6, 6) solid 1px;
-    width: 70px;
+    border: rgb(143, 6, 6) solid 2px;
+    width: 80px;
     height: 100%;
+    margin-left: 5px;
     text-align: center;
     color: darkgreen;
     background-color: rgba(255, 255, 255, .5);

@@ -2,7 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Request = void 0;
 const battle_calcs_1 = require("../../battle/battle_calcs");
+const events_1 = require("../../battle/events");
 const Perks_1 = require("../../character/Perks");
+const constants_1 = require("../../static_data/constants");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 var Request;
@@ -49,4 +51,17 @@ var Request;
         sw.socket.emit('perks-info', responce);
     }
     Request.perks = perks;
+    function player_index(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        if (character.in_battle()) {
+            let unit_id = character.battle_unit_id;
+            alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
+            alerts_1.Alerts.battle_action_chance(user, 'flee', events_1.BattleEvent.flee_chance());
+        }
+    }
+    Request.player_index = player_index;
 })(Request = exports.Request || (exports.Request = {}));

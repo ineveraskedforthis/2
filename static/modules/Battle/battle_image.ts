@@ -16,6 +16,7 @@ interface battle_action {
     name: string,
     tag: string,
     cost?: number
+    probabilistic?: boolean
 }
 
 
@@ -270,7 +271,7 @@ export namespace BattleImage {
 
     export function update_selection_data() {
         if (selected == undefined) return
-        if (player_unit_id == undefined) return
+        if (player_unit_id == undefined) {return}
 
         const player_data = units_views[player_unit_id]
         const target_data = units_views[selected]
@@ -281,8 +282,7 @@ export namespace BattleImage {
         let b = target_data.position
         let dist = Math.floor(position_c.dist(a, b) * 100) / 100
 
-        let move_ap_div = document.getElementById('move'+'_ap_cost')!
-        move_ap_div.innerHTML = 'ap: ' + (dist * player_data.move_cost).toFixed(2)
+        update_move_ap_cost(dist, player_data.move_cost)
         socket.emit('req-ranged-accuracy', dist)
     }
 
@@ -361,15 +361,21 @@ export namespace BattleImage {
             anchor_position = pos;
 
             if (player_unit_id != undefined) {
-                let move_ap_div = document.getElementById('move'+'_ap_cost')!
                 const player_data = units_views[player_unit_id]
                 if (player_data == undefined) return;
                 let a = player_data.position
                 let b = position_c.canvas_to_battle(anchor_position)
                 let dist = Math.floor(position_c.dist(a, b) * 100) / 100
-                move_ap_div.innerHTML = 'ap: ' + dist * 3
+                update_move_ap_cost(dist, player_data.move_cost)
+            } else {
+                socket.emit('req-player-index', dist)
             }
         }
+    }
+
+    function update_move_ap_cost(dist: number, move_cost: number) {
+        let move_ap_div = document.getElementById('move'+'_ap_cost')!
+        move_ap_div.innerHTML = 'ap: ' + (dist * move_cost).toFixed(2)
     }
 
     function change_bg(bg:string) {
@@ -404,7 +410,7 @@ export namespace BattleImage {
             }
         }
         
-        {
+        if (action_type.probabilistic) {
             let label = document.createElement('div')
             label.id = action_type.tag + '_chance_b'
             label.innerHTML = '???%'

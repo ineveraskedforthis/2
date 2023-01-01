@@ -1,5 +1,7 @@
 import { Accuracy } from "../../battle/battle_calcs";
+import { BattleEvent } from "../../battle/events";
 import { Perks, perks_list, perk_price } from "../../character/Perks";
+import { UNIT_ID_MESSAGE } from "../../static_data/constants";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper } from "../user";
 import { Alerts } from "./alerts";
@@ -49,5 +51,19 @@ export namespace Request {
         }
         
         sw.socket.emit('perks-info', responce)
+    }
+
+    export function player_index(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+
+        if (character.in_battle()) {
+            let unit_id = character.battle_unit_id      
+            Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)  
+            Alerts.battle_action_chance(user, 'flee', BattleEvent.flee_chance())
+        }
     }
 }

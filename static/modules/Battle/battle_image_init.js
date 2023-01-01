@@ -4,18 +4,18 @@ import { socket } from "../globals.js";
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UpdateDataEvent } from "./battle_image_events.js";
 // export const battle_image = new BattleImageNext();
 const events_queue = [];
-BattleImage.add_action({ name: 'move', tag: 'move' });
+BattleImage.add_action({ name: 'Move', tag: 'move' });
 BattleImage.add_action({ name: 'Slash', tag: 'attack_slice', cost: 3 });
 BattleImage.add_action({ name: 'Pierce', tag: 'attack_pierce', cost: 3 });
 BattleImage.add_action({ name: 'Knock', tag: 'attack_blunt', cost: 3 });
-BattleImage.add_action({ name: 'magic_bolt', tag: 'magic_bolt', cost: 3 });
+BattleImage.add_action({ name: 'Magic Bolt', tag: 'magic_bolt', cost: 3 });
 // battle_image.add_action({name: 'fast attack', tag: 'fast_attack', cost: 1})
-BattleImage.add_action({ name: 'shoot', tag: 'shoot', cost: 3 });
-BattleImage.add_action({ name: 'dodge', tag: 'dodge', cost: 4 });
+BattleImage.add_action({ name: 'Shoot', tag: 'shoot', cost: 3, probabilistic: true });
+BattleImage.add_action({ name: 'Dodge', tag: 'dodge', cost: 4 });
 // battle_image.add_action({name: 'push back', tag: 'push_back', cost: 5})
-BattleImage.add_action({ name: 'retreat', tag: 'flee', cost: 3 });
-BattleImage.add_action({ name: 'switch weapon', tag: 'switch_weapon', cost: 3 });
-BattleImage.add_action({ name: 'end turn', tag: 'end_turn', cost: 0 });
+BattleImage.add_action({ name: 'Retreat', tag: 'flee', cost: 3, probabilistic: true });
+BattleImage.add_action({ name: 'Switch Weapon', tag: 'switch_weapon', cost: 3 });
+BattleImage.add_action({ name: 'End Turn', tag: 'end_turn', cost: 0 });
 //              BATTLES 
 const UNIT_ID_MESSAGE = 'unit_id';
 const BATTLE_DATA_MESSAGE = 'battle_data';

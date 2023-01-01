@@ -198,6 +198,7 @@ var BattleEvent;
     function flee_chance() {
         return 0.5;
     }
+    BattleEvent.flee_chance = flee_chance;
     function Update(battle, unit) {
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
