@@ -199,10 +199,10 @@ var Link;
             const id = item.id;
             const local_character = Convert.id_to_character(id);
             user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
-            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 20 /* UI_Part.MARKET */);
+            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 19 /* UI_Part.MARKET */);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 20 /* UI_Part.MARKET */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 19 /* UI_Part.MARKET */);
         // exploration
         character.explored[cell.id] = true;
         let neighbours = system_3.MapSystem.neighbours_cells(cell.id);

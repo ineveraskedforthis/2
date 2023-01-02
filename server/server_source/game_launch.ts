@@ -18,6 +18,7 @@ import { BattleSystem } from "./game_modules/battle/system";
 import { BulkOrders, ItemOrders } from "./game_modules/market/system";
 import { battle_id, unit_id } from "../../shared/battle_data";
 import { Server } from "./server";
+import { EventMarket } from "./game_modules/events/market";
 
 
 
@@ -78,6 +79,7 @@ function load() {
             character.battle_id = -1 as battle_id
             character.battle_unit_id = -1 as unit_id
         }
+        EventMarket.clear_orders(character)
     }
 
 

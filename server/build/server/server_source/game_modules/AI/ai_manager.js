@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AI = exports.CampaignAI = void 0;
-const craft_armour_1 = require("../actions/actions_set_up/character_actions/craft_armour");
 const action_manager_1 = require("../actions/action_manager");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
@@ -10,10 +9,11 @@ const helpers_1 = require("./helpers");
 const events_1 = require("../events/events");
 const system_2 = require("../market/system");
 const market_1 = require("../events/market");
-const craft_1 = require("../calculations/craft");
 const basic_functions_1 = require("../calculations/basic_functions");
-const craft_bulk_1 = require("../actions/actions_set_up/character_actions/craft_bulk");
-const craft_bone_arrow_1 = require("../actions/actions_set_up/character_actions/craft_bone_arrow");
+const crafts_storage_1 = require("../craft/crafts_storage");
+const cooking_1 = require("../craft/cooking");
+const ammunition_1 = require("../craft/ammunition");
+const items_1 = require("../craft/items");
 // function MAYOR_AI(mayor: Character) {
 //     let faction = mayor.get_faction()
 //     let territories = faction.get_territories_list()
@@ -36,17 +36,6 @@ function steppe_constraints(cell) {
 }
 var CampaignAI;
 (function (CampaignAI) {
-    const base_price_wood = 10;
-    const base_price_bones = 3;
-    const base_price_skin = 10;
-    const base_price_elodino = 50;
-    // constructor(world:World) {
-    //     this.world = world
-    // }
-    // path_finding_calculations() {
-    // }
-    // move_toward_colony(char: Character) {
-    // }
     function random_walk(char, constraints) {
         let cell = systems_communication_1.Convert.character_to_cell(char);
         let possible_moves = [];
@@ -121,140 +110,49 @@ var CampaignAI;
             return;
         }
         if ((char.skills.cooking > 40) || (char.perks.meat_master == true)) {
-            AI.cook_food(char);
+            AI.craft_bulk(char, cooking_1.Cooking.meat);
         }
         if ((char.skills.woodwork > 40) && (char.perks.fletcher == true)) {
-            AI.make_arrow(char, base_price_wood, base_price_bones);
-        }
-        if ((char.skills.woodwork > 40) && (char.perks.weapon_maker == true)) {
-            AI.make_wooden_weapon(char, base_price_wood);
-        }
-        if ((char.skills.bone_carving > 40) && (char.perks.weapon_maker == true)) {
-            AI.make_bone_weapon(char, base_price_bones);
-        }
-        if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
-            AI.make_armour(char, base_price_skin);
-        }
-        if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
-            AI.make_boots(char, base_price_skin);
+            AI.craft_bulk(char, ammunition_1.AmmunitionCraft.bone_arrow);
         }
         if ((char.perks.alchemist)) {
-            AI.extract_zaz(char, base_price_elodino);
+            AI.craft_bulk(char, cooking_1.Cooking.elodino);
+        }
+        if ((char.skills.woodwork > 40) && (char.perks.weapon_maker == true)) {
+            AI.make_wooden_weapon(char, (0, helpers_1.base_price)(char, materials_manager_1.WOOD));
+        }
+        if ((char.skills.bone_carving > 40) && (char.perks.weapon_maker == true)) {
+            AI.make_bone_weapon(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_BONE));
+        }
+        if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
+            AI.make_armour(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_SKIN));
+        }
+        if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
+            AI.make_boots(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_SKIN));
         }
     }
     CampaignAI.decision = decision;
 })(CampaignAI = exports.CampaignAI || (exports.CampaignAI = {}));
 var AI;
 (function (AI) {
-    function extract_zaz(character, price_elo) {
-        const zaz_price = Math.round(2 * price_elo / craft_1.Craft.Amount.elodino_zaz_extraction(character, craft_bulk_1.ELODINO_TIER));
-        const current_zaz = character.stash.get(materials_manager_1.ZAZ);
-        if (current_zaz > 0) {
-            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.ZAZ);
-            let total_amount = character.stash.get(materials_manager_1.ZAZ);
-            market_1.EventMarket.sell(character, materials_manager_1.ZAZ, total_amount, zaz_price);
+    function craft_bulk(character, craft) {
+        const buy = helpers_1.AIhelper.buy_craft_inputs(character, character.savings.get(), craft.input);
+        const sell_prices = helpers_1.AIhelper.sell_prices_craft_bulk(character, craft);
+        for (let item of sell_prices) {
+            const current = character.stash.get(item.material);
+            if (current == 0)
+                continue;
+            system_2.BulkOrders.remove_by_condition(character, item.material);
+            let total_amount = character.stash.get(item.material);
+            market_1.EventMarket.sell(character, item.material, total_amount, item.price);
         }
-        system_2.BulkOrders.remove_by_condition(character, materials_manager_1.ELODINO_FLESH);
-        const savings = character.savings.get();
-        const resource = character.stash.get(materials_manager_1.ELODINO_FLESH);
-        const want_to_buy = (0, basic_functions_1.trim)(20 - resource, 0, savings / price_elo);
-        if ((want_to_buy > 5)) {
-            market_1.EventMarket.buy(character, materials_manager_1.ELODINO_FLESH, want_to_buy, price_elo);
+        for (let item of buy) {
+            system_2.BulkOrders.remove_by_condition(character, item.material);
+            market_1.EventMarket.buy(character, item.material, item.amount, item.price);
         }
-        if (resource > 0) {
-            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.COOK.ELODINO, character, [0, 0]);
-        }
-        let food_in_stash = character.stash.get(materials_manager_1.FOOD);
-        if (food_in_stash > 0) {
-            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.FOOD);
-            market_1.EventMarket.sell(character, materials_manager_1.FOOD, food_in_stash, 0); //alchemist sells very cheap food
-        }
+        action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[craft.id], character, [0, 0]);
     }
-    AI.extract_zaz = extract_zaz;
-    function cook_food(character) {
-        let prepared_meat = character.trade_stash.get(materials_manager_1.FOOD) + character.stash.get(materials_manager_1.FOOD);
-        let resource = character.stash.get(materials_manager_1.MEAT);
-        let food_in_stash = character.stash.get(materials_manager_1.FOOD);
-        let base_buy_price = 5;
-        // let base_sell_price = 10 as money
-        const profit = 1.5;
-        let sell_price = Math.round(base_buy_price * (1 + profit) / craft_1.Craft.Amount.Cooking.meat(character, craft_bulk_1.COOKING_TIER)) + 1;
-        let savings = character.savings.get();
-        // console.log("AI tick")
-        // console.log(prepared_meat, resource, food_in_stash, savings)
-        //  character.world.entity_manager.remove_orders(character)
-        if ((resource < 5) && (savings > base_buy_price)) {
-            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.MEAT);
-            // console.log(Math.floor(savings / base_buy_price), base_buy_price)
-            market_1.EventMarket.buy(character, materials_manager_1.MEAT, Math.floor(savings / base_buy_price), base_buy_price);
-        }
-        if (prepared_meat < 10) {
-            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.COOK.MEAT, character, [0, 0]);
-        }
-        if (food_in_stash > 0) {
-            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.FOOD);
-            market_1.EventMarket.sell(character, materials_manager_1.FOOD, food_in_stash, sell_price);
-        }
-    }
-    AI.cook_food = cook_food;
-    function make_arrow(character, price_wood, price_bones) {
-        system_2.BulkOrders.remove_by_condition(character, materials_manager_1.WOOD);
-        system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_BONE);
-        let arrows = character.trade_stash.get(materials_manager_1.ARROW_BONE) + character.stash.get(materials_manager_1.ARROW_BONE);
-        let wood = character.stash.get(materials_manager_1.WOOD);
-        let bones = character.stash.get(materials_manager_1.RAT_BONE);
-        let savings = character.savings.get();
-        let trade_savings = character.trade_savings.get();
-        let reserve_units = Math.min(wood, bones / 10);
-        let arrows_in_stash = character.stash.get(materials_manager_1.ARROW_BONE);
-        let local_price_wood = price_wood;
-        let cell = systems_communication_1.Convert.character_to_cell(character);
-        if (cell.can_gather_wood())
-            local_price_wood = 3;
-        let input_price = (local_price_wood + 10 * price_bones);
-        let profit = 3;
-        let sell_price = Math.floor(input_price * (1 + profit) / craft_1.Craft.Amount.arrow(character, craft_bone_arrow_1.ARROW_TIER)) + 1;
-        // bones_to_buy * b_p + wood_to_buy * w_p = savings
-        // (bones_to_buy + bones) - 10 (wood_to_buy + wood) = 0
-        // so
-        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
-        // bones_to_buy       - wood_to_buy * 10             = -bones + 10 * wood
-        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
-        // bones_to_buy * b_p - wood_to_buy * 10 b_p         = (-bones + 10 * wood) * b_p
-        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
-        //                    - wood_to_buy * (10 b_p + w_p) = (-bones + 10 * wood) * b_p - savings
-        // bones_to_buy * b_p + wood_to_buy * w_p            = savings
-        //                    - wood_to_buy                  = ((-bones + 10 * wood) * b_p - savings) / (10 b_p + w_p)
-        // bones_to_buy                                      = (savings - wood_to_buy * w_p) / b_p
-        //                    - wood_to_buy                  = ((-bones + 10 * wood) * b_p - savings) / (10 b_p + w_p)
-        // makes sense only if results are not negative
-        if (reserve_units < 5) {
-            let savings = character.savings.get();
-            let wood_to_buy = -((-bones + 10 * wood) * price_bones - savings) / (10 * price_bones + local_price_wood);
-            let bones_to_buy = (savings - wood_to_buy * local_price_wood) / price_bones;
-            // console.log(savings, bones, wood)
-            // console.log(wood_to_buy, bones_to_buy)
-            if ((wood_to_buy >= 1) && (bones_to_buy >= 1)) {
-                market_1.EventMarket.buy(character, materials_manager_1.WOOD, Math.floor(wood_to_buy), local_price_wood);
-                market_1.EventMarket.buy(character, materials_manager_1.RAT_BONE, Math.floor(bones_to_buy), price_bones);
-            }
-            else if ((wood_to_buy >= 1) && (bones_to_buy < 1)) {
-                market_1.EventMarket.buy(character, materials_manager_1.WOOD, Math.floor(savings / local_price_wood), local_price_wood);
-            }
-            else if ((wood_to_buy < 1) && (bones_to_buy >= 1)) {
-                market_1.EventMarket.buy(character, materials_manager_1.RAT_BONE, Math.floor(savings / price_bones), price_bones);
-            }
-        }
-        if (arrows < 100) {
-            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.BONE_ARROW, character, [0, 0]);
-        }
-        if (arrows_in_stash > 0) {
-            system_2.BulkOrders.remove_by_condition(character, materials_manager_1.ARROW_BONE);
-            arrows_in_stash = character.stash.get(materials_manager_1.ARROW_BONE);
-            market_1.EventMarket.sell(character, materials_manager_1.ARROW_BONE, arrows_in_stash, sell_price);
-        }
-    }
-    AI.make_arrow = make_arrow;
+    AI.craft_bulk = craft_bulk;
     function make_armour(character, price_skin) {
         system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
         let resource = character.stash.get(materials_manager_1.RAT_SKIN);
@@ -266,14 +164,14 @@ var AI;
             system_2.BulkOrders.remove_by_condition(character, materials_manager_1.RAT_SKIN);
             market_1.EventMarket.buy(character, materials_manager_1.RAT_SKIN, (0, basic_functions_1.trim)(skin_to_buy, 0, 50), price_skin);
         }
-        if (resource > craft_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED) {
+        if (resource > 10) {
             const flags = check_if_set_is_ready(character);
             if (!flags.body)
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR, character, [0, 0]);
+                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.armour.id], character, [0, 0]);
             else if (!flags.legs)
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_PANTS, character, [0, 0]);
+                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.pants.id], character, [0, 0]);
             else if (!flags.foot)
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0]);
+                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.boots.id], character, [0, 0]);
             else
                 sell_armour_set(character, price_skin);
         }
@@ -300,15 +198,15 @@ var AI;
         let data = character.equip.data.backpack.items;
         for (let [index, item] of Object.entries(data)) {
             if (item?.slot == 'body') {
-                let price = Math.floor(price_skin * craft_armour_1.RAT_SKIN_ARMOUR_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
+                let price = helpers_1.AIhelper.sell_price_craft_item(character, items_1.CraftItem.RatSkin.armour);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
             if (item?.slot == 'foot') {
-                let price = Math.floor(price_skin * craft_armour_1.RAT_SKIN_BOOTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
+                let price = helpers_1.AIhelper.sell_price_craft_item(character, items_1.CraftItem.RatSkin.boots);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
             if (item?.slot == 'legs') {
-                let price = Math.floor(price_skin * craft_armour_1.RAT_SKIN_PANTS_SKIN_NEEDED * 2 * item.durability / 100 + Math.random() * 10);
+                let price = helpers_1.AIhelper.sell_price_craft_item(character, items_1.CraftItem.RatSkin.pants);
                 market_1.EventMarket.sell_item(character, Number(index), price);
             }
         }
@@ -335,11 +233,11 @@ var AI;
         if (resource > 20) {
             const dice = Math.random();
             if (dice < 0.5)
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.SPEAR, character, [0, 0]);
+                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.spear.id], character, [0, 0]);
             else if (dice < 0.8)
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.MACE, character, [0, 0]);
+                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.mace.id], character, [0, 0]);
             else
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.WOOD_BOW, character, [0, 0]);
+                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.bow.id], character, [0, 0]);
         }
         sell_weapons(character);
     }
@@ -356,7 +254,7 @@ var AI;
         if (resource > 20) {
             const dice = Math.random();
             if (dice < 1)
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.DAGGER, character, [0, 0]);
+                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Bone.dagger.id], character, [0, 0]);
         }
         sell_weapons(character);
     }
@@ -373,7 +271,7 @@ var AI;
         if (resource > 10) {
             const dice = Math.random();
             if (dice < 1)
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.CRAFT.RAT_BOOTS, character, [0, 0]);
+                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.boots.id], character, [0, 0]);
         }
         sell_armour_set(character, skin_price);
     }

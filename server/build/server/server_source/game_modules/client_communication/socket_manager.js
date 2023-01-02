@@ -16,6 +16,7 @@ const systems_communication_1 = require("../systems_communication");
 const inventory_management_1 = require("./network_actions/inventory_management");
 const request_1 = require("./network_actions/request");
 const skills_1 = require("../static_data/skills");
+const crafts_storage_1 = require("../craft/crafts_storage");
 class SocketManager {
     // sessions: {[_ in string]: number}
     constructor(io) {
@@ -61,23 +62,11 @@ class SocketManager {
             socket.on('fish', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.FISH));
             socket.on('gather_wood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_WOOD));
             socket.on('gather_cotton', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_COTTON));
-            socket.on('cfood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.MEAT));
-            socket.on('cfish', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.FISH));
-            socket.on('czaz', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.COOK.ELODINO));
-            socket.on('mspear', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.SPEAR));
-            socket.on('mmace', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.MACE));
-            socket.on('mdagger', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.DAGGER));
-            socket.on('mbspear', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.BONE_SPEAR));
-            socket.on('mbow', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.WOOD_BOW));
-            socket.on('marr', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.BONE_ARROW));
-            socket.on('mrpants', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_PANTS));
-            socket.on('mrgloves', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_GLOVES));
-            socket.on('mrboots', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_BOOTS));
-            socket.on('mrhelmet', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_HELMET));
-            socket.on('mrarmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.RAT_ARMOUR));
-            socket.on('melodress', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.ELO_DRESS));
-            socket.on('mgracihair', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.GRACI_HAIR));
-            socket.on('mbonearmour', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CRAFT.BONE_ARMOUR));
+            socket.on('craft', (msg) => {
+                if (typeof (msg) != 'string')
+                    return;
+                actions_1.HandleAction.act(user, crafts_storage_1.craft_actions[msg]);
+            });
             socket.on('battle-action', (msg) => actions_1.HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
             socket.on('req-player-index', () => request_1.Request.player_index(user));

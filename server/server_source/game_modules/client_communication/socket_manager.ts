@@ -16,6 +16,7 @@ import { ModelVariant } from "../character/character_parts";
 import { InventoryCommands } from "./network_actions/inventory_management";
 import { Request } from "./network_actions/request";
 import { SKILLS } from "../static_data/skills";
+import { craft_actions } from "../craft/crafts_storage";
 
 interface Message {
     id: number
@@ -94,25 +95,10 @@ export class SocketManager {
             socket.on('gather_cotton', () =>    HandleAction.act(user, CharacterAction.GATHER_COTTON)) 
 
             
-
-
-            socket.on('cfood',  () =>      HandleAction.act(user, CharacterAction.COOK.MEAT));
-            socket.on('cfish',  () =>      HandleAction.act(user, CharacterAction.COOK.FISH));
-            socket.on('czaz',  () =>       HandleAction.act(user, CharacterAction.COOK.ELODINO));
-            socket.on('mspear', () =>      HandleAction.act(user, CharacterAction.CRAFT.SPEAR))
-            socket.on('mmace', () =>       HandleAction.act(user, CharacterAction.CRAFT.MACE))
-            socket.on('mdagger', () =>     HandleAction.act(user, CharacterAction.CRAFT.DAGGER))
-            socket.on('mbspear',  () =>    HandleAction.act(user, CharacterAction.CRAFT.BONE_SPEAR))
-            socket.on('mbow',  () =>       HandleAction.act(user, CharacterAction.CRAFT.WOOD_BOW))
-            socket.on('marr',  () =>       HandleAction.act(user, CharacterAction.CRAFT.BONE_ARROW))
-            socket.on('mrpants',  () =>    HandleAction.act(user, CharacterAction.CRAFT.RAT_PANTS))
-            socket.on('mrgloves',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_GLOVES))
-            socket.on('mrboots',  () =>    HandleAction.act(user, CharacterAction.CRAFT.RAT_BOOTS))
-            socket.on('mrhelmet',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_HELMET))
-            socket.on('mrarmour',  () =>   HandleAction.act(user, CharacterAction.CRAFT.RAT_ARMOUR))
-            socket.on('melodress', () =>   HandleAction.act(user, CharacterAction.CRAFT.ELO_DRESS))
-            socket.on('mgracihair', () =>   HandleAction.act(user, CharacterAction.CRAFT.GRACI_HAIR))
-            socket.on('mbonearmour', () =>   HandleAction.act(user, CharacterAction.CRAFT.BONE_ARMOUR))
+            socket.on('craft', (msg) => {
+                if (typeof(msg) != 'string') return
+                HandleAction.act(user, craft_actions[msg])
+            })
             
             socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))

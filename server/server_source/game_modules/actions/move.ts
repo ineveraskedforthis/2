@@ -1,7 +1,7 @@
-import { Character } from "../../../character/character";
-import {ActionTargeted, CharacterActionResponce} from '../../action_manager'
-import { MapSystem } from "../../../map/system";
-import { Event } from "../../../events/events";
+import { Character } from "../character/character";
+import {ActionTargeted, CharacterActionResponce} from './action_manager'
+import { MapSystem } from "../map/system";
+import { Event } from "../events/events";
 
 export const move:ActionTargeted ={
     duration(char: Character) {

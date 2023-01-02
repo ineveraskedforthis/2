@@ -1,9 +1,9 @@
-import type { Character } from "../../../character/character";
-import { CharacterActionResponce } from "../../action_manager";
-import { FOOD } from "../../../manager_classes/materials_manager";
-import { map_position } from "../../../types";
-import { UserManagement } from "../../../client_communication/user_manager";
-import { UI_Part } from "../../../client_communication/causality_graph";
+import type { Character } from "../character/character";
+import { CharacterActionResponce } from "./action_manager";
+import { FOOD } from "../manager_classes/materials_manager";
+import { map_position } from "../types";
+import { UserManagement } from "../client_communication/user_manager";
+import { UI_Part } from "../client_communication/causality_graph";
 
 export const eat = {
     duration(char: Character) {

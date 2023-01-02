@@ -12,7 +12,7 @@ var Effect;
             for (let item of locals) {
                 const id = item.id;
                 const local_character = systems_communication_1.Convert.id_to_character(id);
-                user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 20 /* UI_Part.MARKET */);
+                user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 19 /* UI_Part.MARKET */);
             }
         }
         Update.cell_market = cell_market;

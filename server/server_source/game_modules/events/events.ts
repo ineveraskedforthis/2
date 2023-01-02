@@ -466,16 +466,6 @@ export namespace Event {
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         }
     }
-
-    export function on_craft_update(character: Character, skill: skill, craft_tier: number) {
-        const dice = Math.random()
-        const current = character.skills[skill]
-        // console.log(dice, craft_tier, current, (craft_tier - current) / 100)
-        if ((current == 0) || (dice < (craft_tier - current) / 100)) Effect.Change.skill(character, skill, 1)
-        Effect.Change.stress(character, 1)
-        Effect.Change.fatigue(character, craft_tier)
-    }
-
     //  spell_attack(target: Character, tag: spell_tags) {
     //     let result = new AttackResult()
 

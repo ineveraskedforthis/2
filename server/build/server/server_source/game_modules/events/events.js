@@ -419,8 +419,8 @@ var Event;
             systems_communication_1.Link.character_battle_unit(attacker, battle, attacker_unit);
             systems_communication_1.Link.character_battle_unit(defender, battle, defender_unit);
             alerts_1.Alerts.battle_update_data(battle);
-            user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 19 /* UI_Part.BATTLE */);
-            user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 19 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 18 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 18 /* UI_Part.BATTLE */);
         }
     }
     Event.start_battle = start_battle;
@@ -431,7 +431,7 @@ var Event;
         const unit = system_1.BattleSystem.create_unit(agent, team);
         events_1.BattleEvent.NewUnit(battle, unit);
         systems_communication_1.Link.character_battle_unit(agent, battle, unit);
-        user_manager_1.UserManagement.add_user_to_update_queue(agent.user_id, 19 /* UI_Part.BATTLE */);
+        user_manager_1.UserManagement.add_user_to_update_queue(agent.user_id, 18 /* UI_Part.BATTLE */);
     }
     Event.join_battle = join_battle;
     function stop_battle(battle) {
@@ -442,20 +442,10 @@ var Event;
                 character.battle_id = -1;
                 character.battle_unit_id = -1;
             }
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 19 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
         }
     }
     Event.stop_battle = stop_battle;
-    function on_craft_update(character, skill, craft_tier) {
-        const dice = Math.random();
-        const current = character.skills[skill];
-        // console.log(dice, craft_tier, current, (craft_tier - current) / 100)
-        if ((current == 0) || (dice < (craft_tier - current) / 100))
-            effects_1.Effect.Change.skill(character, skill, 1);
-        effects_1.Effect.Change.stress(character, 1);
-        effects_1.Effect.Change.fatigue(character, craft_tier);
-    }
-    Event.on_craft_update = on_craft_update;
     //  spell_attack(target: Character, tag: spell_tags) {
     //     let result = new AttackResult()
     //     if (tag == 'bolt') {

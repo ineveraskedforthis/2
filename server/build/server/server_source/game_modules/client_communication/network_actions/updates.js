@@ -10,11 +10,6 @@ const difficulty_1 = require("../../calculations/difficulty");
 const system_2 = require("../../battle/system");
 const constants_1 = require("../../static_data/constants");
 const helper_functions_1 = require("../helper_functions");
-const craft_1 = require("../../calculations/craft");
-const craft_weapon_1 = require("../../actions/actions_set_up/character_actions/craft_weapon");
-const craft_armour_1 = require("../../actions/actions_set_up/character_actions/craft_armour");
-const craft_bulk_1 = require("../../actions/actions_set_up/character_actions/craft_bulk");
-const craft_bone_arrow_1 = require("../../actions/actions_set_up/character_actions/craft_bone_arrow");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -152,18 +147,6 @@ var SendUpdate;
         alerts_1.Alerts.skill(user, 'clothier', character.skills.clothier);
     }
     SendUpdate.skill_clothier = skill_clothier;
-    function craft_clothier(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        let value = craft_1.Craft.Durability.skin_item(character, craft_armour_1.RAT_ARMOUR_TIER);
-        alerts_1.Alerts.craft(user, 'craft_rat_pants', value);
-        alerts_1.Alerts.craft(user, 'craft_rat_armour', value);
-        alerts_1.Alerts.craft(user, 'craft_rat_gloves', value);
-        alerts_1.Alerts.craft(user, 'craft_rat_helmet', value);
-        alerts_1.Alerts.craft(user, 'craft_rat_boots', value);
-    }
-    SendUpdate.craft_clothier = craft_clothier;
     function skill_cooking(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
@@ -214,40 +197,8 @@ var SendUpdate;
     }
     SendUpdate.all_skills = all_skills;
     function all_craft(user) {
-        cooking_craft(user);
-        woodwork_craft(user);
-        craft_clothier(user);
-        bone_carving_craft(user);
     }
     SendUpdate.all_craft = all_craft;
-    function cooking_craft(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        alerts_1.Alerts.craft(user, 'cook_elodino', craft_1.Craft.Amount.elodino_zaz_extraction(character, craft_bulk_1.ELODINO_TIER));
-        alerts_1.Alerts.craft(user, 'cook_meat', craft_1.Craft.Amount.Cooking.meat(character, craft_bulk_1.COOKING_TIER));
-        alerts_1.Alerts.craft(user, 'cook_fish', craft_1.Craft.Amount.Cooking.meat(character, craft_bulk_1.COOKING_TIER));
-    }
-    SendUpdate.cooking_craft = cooking_craft;
-    function woodwork_craft(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        alerts_1.Alerts.craft(user, 'craft_spear', craft_1.Craft.Durability.wood_item(character, craft_weapon_1.SPEAR_TIER));
-        alerts_1.Alerts.craft(user, 'craft_bone_spear', craft_1.Craft.Durability.wood_item(character, craft_weapon_1.BONE_SPEAR_TIER));
-        alerts_1.Alerts.craft(user, 'craft_wood_bow', craft_1.Craft.Durability.wood_item(character, craft_weapon_1.WOOD_BOW_TIER));
-        alerts_1.Alerts.craft(user, 'craft_bone_arrow', craft_1.Craft.Amount.arrow(character, craft_bone_arrow_1.ARROW_TIER));
-        alerts_1.Alerts.craft(user, 'craft_mace', craft_1.Craft.Durability.wood_item(character, craft_weapon_1.MACE_TIER));
-    }
-    SendUpdate.woodwork_craft = woodwork_craft;
-    function bone_carving_craft(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        let value = craft_1.Craft.Durability.bone_item(character, craft_weapon_1.DAGGER_TIER);
-        alerts_1.Alerts.craft(user, 'craft_dagger', value);
-    }
-    SendUpdate.bone_carving_craft = bone_carving_craft;
     function ranged(user, distance) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)

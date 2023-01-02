@@ -8,8 +8,8 @@ const children = {
         7 /* UI_Part.MAP */,
         12 /* UI_Part.SKILLS */,
         17 /* UI_Part.CRAFT */,
-        19 /* UI_Part.BATTLE */,
-        20 /* UI_Part.MARKET */],
+        18 /* UI_Part.BATTLE */,
+        19 /* UI_Part.MARKET */],
     [1 /* UI_Part.STATUS */]: [2 /* UI_Part.HP */],
     [3 /* UI_Part.BELONGINGS */]: [4 /* UI_Part.STASH */,
         5 /* UI_Part.SAVINGS */,
@@ -23,7 +23,7 @@ const children = {
         16 /* UI_Part.SKINNING_SKILL */,
         15 /* UI_Part.WEAPON_SKILL */,
         14 /* UI_Part.DEFENCE_SKILL */],
-    [17 /* UI_Part.CRAFT */]: [18 /* UI_Part.COOKING_CRAFT */]
+    // [UI_Part.CRAFT]                 : [ UI_Part.COOKING_CRAFT]
 };
 function empty_function(user) { }
 const update_function = {
@@ -45,13 +45,13 @@ const update_function = {
     [14 /* UI_Part.DEFENCE_SKILL */]: updates_1.SendUpdate.skill_defence,
     [15 /* UI_Part.WEAPON_SKILL */]: updates_1.SendUpdate.skill_weapon,
     [17 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
-    [18 /* UI_Part.COOKING_CRAFT */]: updates_1.SendUpdate.cooking_craft,
-    [19 /* UI_Part.BATTLE */]: updates_1.SendUpdate.battle,
-    [20 /* UI_Part.MARKET */]: updates_1.SendUpdate.market
+    // [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
+    [18 /* UI_Part.BATTLE */]: updates_1.SendUpdate.battle,
+    [19 /* UI_Part.MARKET */]: updates_1.SendUpdate.market
 };
 const influence = {
     [12 /* UI_Part.SKILLS */]: [17 /* UI_Part.CRAFT */],
-    [13 /* UI_Part.COOKING_SKILL */]: [18 /* UI_Part.COOKING_CRAFT */],
+    // [UI_Part.COOKING_SKILL]     : [UI_Part.COOKING_CRAFT],
 };
 // if node: ask to update node and leave
 // else: try updating children

@@ -1,12 +1,10 @@
-import { Cell } from "../../../map/cell";
-import { ActionTargeted, CharacterActionResponce } from "../../action_manager";
-import { COTTON, WOOD } from "../../../manager_classes/materials_manager";
-import type { Character } from "../../../character/character";
-import { Convert } from "../../../systems_communication";
-import { map_position } from "../../../types";
-import { UserManagement } from "../../../client_communication/user_manager";
-import { UI_Part } from "../../../client_communication/causality_graph";
-
+import { Character } from "../character/character";
+import { UI_Part } from "../client_communication/causality_graph";
+import { UserManagement } from "../client_communication/user_manager";
+import { WOOD, COTTON } from "../manager_classes/materials_manager";
+import { Convert } from "../systems_communication";
+import { map_position } from "../types";
+import { ActionTargeted, CharacterActionResponce } from "./action_manager";
 
 export const gather_wood: ActionTargeted = {
     duration(char: Character) {

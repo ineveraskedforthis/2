@@ -10,11 +10,9 @@ import { CellActionProb } from "../../calculations/difficulty";
 import { BattleSystem } from "../../battle/system";
 import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
 import { prepare_market_orders } from "../helper_functions";
-import { Craft } from "../../calculations/craft";
-import { BONE_SPEAR_TIER, DAGGER_TIER, MACE_TIER, SPEAR_TIER, WOOD_BOW_TIER } from "../../actions/actions_set_up/character_actions/craft_weapon";
-import { RAT_ARMOUR_TIER } from "../../actions/actions_set_up/character_actions/craft_armour";
-import { COOKING_TIER, ELODINO_TIER } from "../../actions/actions_set_up/character_actions/craft_bulk";
-import { ARROW_TIER } from "../../actions/actions_set_up/character_actions/craft_bone_arrow";
+import { durability } from "../../craft/CraftItem";
+import { CraftItem } from "../../craft/items";
+
 
 
 export namespace SendUpdate {
@@ -166,18 +164,6 @@ export namespace SendUpdate {
         Alerts.skill(user, 'clothier', character.skills.clothier)
     }
 
-    export function craft_clothier(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
-
-        let value = Craft.Durability.skin_item(character, RAT_ARMOUR_TIER)
-        Alerts.craft(user, 'craft_rat_pants',  value)
-        Alerts.craft(user, 'craft_rat_armour', value)
-        Alerts.craft(user, 'craft_rat_gloves', value)
-        Alerts.craft(user, 'craft_rat_helmet', value)
-        Alerts.craft(user, 'craft_rat_boots',  value)
-    }
-
     export function skill_cooking(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
@@ -228,38 +214,7 @@ export namespace SendUpdate {
     }
 
     export function all_craft(user: User) {
-        cooking_craft(user)
-        woodwork_craft(user)
-        craft_clothier(user)
-        bone_carving_craft(user)
-    }
 
-    export function cooking_craft(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
-
-        Alerts.craft(user, 'cook_elodino', Craft.Amount.elodino_zaz_extraction(character, ELODINO_TIER))
-        Alerts.craft(user, 'cook_meat', Craft.Amount.Cooking.meat(character, COOKING_TIER))
-        Alerts.craft(user, 'cook_fish', Craft.Amount.Cooking.meat(character, COOKING_TIER))
-    }
-
-    export function woodwork_craft(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
-
-        Alerts.craft(user, 'craft_spear',       Craft.Durability.wood_item(character, SPEAR_TIER))
-        Alerts.craft(user, 'craft_bone_spear',  Craft.Durability.wood_item(character, BONE_SPEAR_TIER))
-        Alerts.craft(user, 'craft_wood_bow',    Craft.Durability.wood_item(character, WOOD_BOW_TIER))
-        Alerts.craft(user, 'craft_bone_arrow', Craft.Amount.arrow(character, ARROW_TIER))
-        Alerts.craft(user, 'craft_mace', Craft.Durability.wood_item(character, MACE_TIER))
-    }
-
-    export function bone_carving_craft(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
-
-        let value = Craft.Durability.bone_item(character, DAGGER_TIER)
-        Alerts.craft(user, 'craft_dagger',       value)
     }
 
     export function ranged(user: User, distance: number) {
