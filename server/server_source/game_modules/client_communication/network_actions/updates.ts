@@ -12,18 +12,24 @@ import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../..
 import { prepare_market_orders } from "../helper_functions";
 import { durability } from "../../craft/CraftItem";
 import { CraftItem } from "../../craft/items";
+import { crafts_bulk } from "../../craft/crafts_storage";
+import { output_bulk } from "../../craft/CraftBulk";
 
 
 
 export namespace SendUpdate {
     export function all(user: User) {
+        for (let item of Object.values(crafts_bulk)) {
+            Alerts.craft_bulk_complete(user, item.id, item)
+        }
+
         status(user)
         belongings(user)
         all_skills(user)
         all_craft(user)
         map_related(user)
         battle(user)
-        market(user)
+        market(user)        
     }
 
     export function battle(user: User) {
@@ -214,7 +220,12 @@ export namespace SendUpdate {
     }
 
     export function all_craft(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
 
+        for (let item of Object.values(crafts_bulk)) {
+            Alerts.craft_bulk(user, item.id, output_bulk(character, item))
+        }
     }
 
     export function ranged(user: User, distance: number) {

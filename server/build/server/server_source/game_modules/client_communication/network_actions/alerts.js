@@ -77,10 +77,14 @@ var Alerts;
         generic_user_alert(user, tag, msg);
     }
     Alerts.generic_character_alert = generic_character_alert;
-    function craft(user, tag, value) {
-        Alerts.generic_user_alert(user, 'craft-probability', { tag: tag, value: value });
+    function craft_bulk(user, tag, value) {
+        Alerts.generic_user_alert(user, 'craft-bulk', { tag: tag, value: value });
     }
-    Alerts.craft = craft;
+    Alerts.craft_bulk = craft_bulk;
+    function craft_bulk_complete(user, tag, value) {
+        Alerts.generic_user_alert(user, 'craft-bulk-complete', { tag: tag, value: value });
+    }
+    Alerts.craft_bulk_complete = craft_bulk_complete;
     function skill(user, tag, value) {
         Alerts.generic_user_alert(user, 'skill', { tag: tag, value: value });
     }

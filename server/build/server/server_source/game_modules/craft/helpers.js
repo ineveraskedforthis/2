@@ -14,7 +14,7 @@ function roll_skill_improvement(current, target) {
     if (target == 0)
         return false;
     const dice = Math.random();
-    if (dice < (target - current) / target)
+    if (dice < ((0, basic_functions_1.trim)(target * 2, 0, 100) - current) / (0, basic_functions_1.trim)(target * 2, 0, 100))
         return true;
 }
 exports.roll_skill_improvement = roll_skill_improvement;

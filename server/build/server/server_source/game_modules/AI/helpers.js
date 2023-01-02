@@ -24,6 +24,8 @@ function base_price(character, material) {
             return 10;
         case materials_manager_1.ELODINO_FLESH:
             return 50;
+        case materials_manager_1.MEAT:
+            return 8;
     }
     return 50;
 }

@@ -698,109 +698,6 @@ function send_switch_weapon_request() {
 }
 
 
-//craft 
-
-{
-    let div = document.getElementById('cook_meat')
-    div.onclick = () => socket.emit('cfood')
-}
-
-{
-    let div = document.getElementById('cook_fish')
-    div.onclick = () => socket.emit('cfish')
-}
-
-{
-    let div = document.getElementById('cook_elodino')
-    div.onclick = () => socket.emit('czaz')
-}
-
-{
-    let div = document.getElementById('craft_spear')
-    div.onclick = () => socket.emit('mspear')
-}
-
-{
-    let div = document.getElementById('craft_mace')
-    div.onclick = () => socket.emit('mmace')
-}
-
-{
-    let div = document.getElementById('craft_dagger')
-    div.onclick = () => socket.emit('mdagger')
-}
-
-{
-    let div = document.getElementById('craft_wood_bow')
-    div.onclick = () => socket.emit('mbow')
-}
-
-{
-    let div = document.getElementById('craft_bone_spear')
-    div.onclick = () => socket.emit('mbspear')
-}
-
-{
-    let div = document.getElementById('craft_bone_arrow')
-    div.onclick = () => socket.emit('marr')
-}
-
-{
-    let div = document.getElementById('craft_rat_pants')
-    div.onclick = () => socket.emit('mrpants')
-}
-
-{
-    let div = document.getElementById('craft_rat_armour')
-    div.onclick = () => socket.emit('mrarmour')
-}
-
-{
-    let div = document.getElementById('craft_rat_gloves')
-    div.onclick = () => socket.emit('mrgloves')
-}
-
-{
-    let div = document.getElementById('craft_rat_helmet')
-    div.onclick = () => socket.emit('mrhelmet')
-}
-
-{
-    let div = document.getElementById('craft_rat_boots')
-    div.onclick = () => socket.emit('mrboots')
-}
-
-{
-    let div = document.getElementById('craft_elo_dress')
-    div.onclick = () => socket.emit('melodress')
-}
-
-{
-    let div = document.getElementById('craft_graci_hair')
-    div.onclick = () => socket.emit('mgracihair')
-}
-
-{
-    let div = document.getElementById('craft_bone_armour')
-    div.onclick = () => socket.emit('mbonearmour')
-}
-
-
-
-function update_craft_probability(data) {
-    console.log(data)
-    let div = document.getElementById(data.tag + '_chance')
-    if (div == undefined) {
-        console.log('craft does not exist????')
-        return
-    }
-    div.innerHTML = Math.floor(data.value)
-}
-
-socket.on('craft-probability', msg => update_craft_probability(msg))
-
-
-
 // SOCKET ONS
 
 socket.on('tags', msg => update_tags(msg));
@@ -1134,6 +1031,79 @@ socket.on('perks-info', (msg) => {build_perks_list(msg)})
 
 socket.on('perks-update', (msg) => {update_perks(msg)})
 
+                // <div id = "cook_meat" class="craft_option">
+                //     <div class="goods_icon" style="background: no-repeat center/100% url(/static/img/stash_meat.png);"> </div>
+                //     <div>=></div>
+                //     <div class="goods_icon" style="background: no-repeat center/100% url(/static/img/stash_food.png);"> </div>
+                //     <div id = "cook_meat_chance" class = "probability"> 0% </div>
+                // </div>
+
+const craft_list_div = document.getElementById('craft_list')
+
+function construct_craft_div(data) {
+    let div = document.getElementById('c_' + data.tag)
+    if (div != null) {
+        return
+    }
+
+    let craft_div = document.createElement('div')
+    craft_div.id = 'c_' + data.id
+    craft_div.classList.add('craft_option')
+    craft_list_div.appendChild(craft_div)
+
+    const inputs_div = document.createElement('div')
+    for (let input of data.input) {
+        const input_div = document.createElement('div')
+        input_div.classList.add('goods_icon')
+        input_div.style = `background: no-repeat center/100% url(/static/img/stash_${stash_id_to_tag[input.material]}.png);`
+        input_div.innerHTML = input.amount
+        inputs_div.appendChild(input_div)
+    }
+    craft_div.appendChild(inputs_div)
+
+    const outputs_div = document.createElement('div')
+    for (let output of data.output) {
+        const output_div = document.createElement('div')
+        output_div.classList.add('material_id' + output.material)
+        output_div.classList.add('goods_icon')
+        output_div.style = `background: no-repeat center/100% url(/static/img/stash_${stash_id_to_tag[output.material]}.png);`
+        outputs_div.appendChild(output_div)
+    }
+    craft_div.appendChild(outputs_div);
+
+    ((tag) => (craft_div.onclick = () => {
+        socket.emit('craft', tag)
+        console.log('emit craft' + tag)
+    }))(data.id)
+}
+
+function update_craft_div(message) {
+    let div = document.getElementById('c_' + message.tag)
+    if (div == null) {
+        return
+    }
+
+    for (let item of message.value) {
+        const div_output = div.querySelector('.material_id' + item.material)
+        div_output.innerHTML = item.amount
+    }
+}
+
+
+// function update_craft_probability(data) {
+//     console.log(data)
+//     let div = document.getElementById(data.tag + '_chance')
+//     if (div == undefined) {
+//         console.log('craft does not exist????')
+//         return
+//     }
+//     div.innerHTML = Math.floor(data.value)
+// }
+
+// socket.on('craft-probability', msg => update_craft_probability(msg))
+
+socket.on('craft-bulk', (msg) => {console.log(msg); update_craft_div(msg)})
+socket.on('craft-bulk-complete', (msg) => {console.log(msg); construct_craft_div(msg.value)})
 
 
 function update_tags(msg) {

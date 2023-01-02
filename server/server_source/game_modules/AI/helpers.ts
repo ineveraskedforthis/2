@@ -6,7 +6,7 @@ import { Event } from "../events/events"
 import { Convert } from "../systems_communication"
 import { money } from "../types"
 import { output_bulk } from "../craft/CraftBulk"
-import { ELODINO_FLESH, materials, material_index, RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager"
+import { ELODINO_FLESH, materials, material_index, RAT_BONE, RAT_SKIN, WOOD, MEAT } from "../manager_classes/materials_manager"
 import { Stash } from "../inventories/stash"
 import { trim } from "../calculations/basic_functions"
 import { durability } from "../craft/CraftItem"
@@ -30,6 +30,9 @@ export function base_price(character: Character, material: material_index): mone
 
         case ELODINO_FLESH:
             return 50 as money
+        
+        case MEAT:
+            return 8 as money
     }
 
     return 50 as money

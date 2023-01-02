@@ -226,12 +226,12 @@ export namespace ItemOrders {
     }
 
     export function remove_all_character(who:Character) {
-        console.log('attempt to remove item orders')
+        // console.log('attempt to remove item orders')
         for (let order of Data.ItemOrders.list()) {
             if (order == undefined) continue;
             if (order.finished) continue;
             if (order.owner_id != who.id) continue;
-            console.log(order.owner_id, who.id)
+            // console.log(order.owner_id, who.id)
             remove(order.id, who)
         }
     }
