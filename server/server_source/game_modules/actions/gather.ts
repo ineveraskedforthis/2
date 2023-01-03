@@ -1,6 +1,8 @@
 import { Character } from "../character/character";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
+import { Effect } from "../events/effects";
+import { Event } from "../events/events";
 import { WOOD, COTTON } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
 import { map_position } from "../types";
@@ -30,7 +32,7 @@ export const gather_wood: ActionTargeted = {
         char.change('fatigue', 10)
         char.change('blood', 1)
         char.change('stress', 1)
-        char.stash.inc(WOOD, 1)
+        Event.change_stash(char, WOOD, 1)
 
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
@@ -66,7 +68,7 @@ export const gather_cotton: ActionTargeted = {
         char.change('fatigue', 10)
         char.change('blood', 1)
         char.change('stress', 1)
-        char.stash.inc(COTTON, 1)
+        Event.change_stash(char, COTTON, 1)
 
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)

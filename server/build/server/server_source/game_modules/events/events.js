@@ -129,6 +129,10 @@ var Event;
             }
             return 'miss';
         }
+        const dice_skill_up = Math.random();
+        if (dice_skill_up * 50 > attacker.skills.ranged) {
+            increase_weapon_skill(attacker, 'ranged');
+        }
         const responce = ranged_dodge(attacker, defender, flag_dodge);
         if (responce == 'miss') {
             return 'miss';
@@ -260,7 +264,7 @@ var Event;
             }
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random();
-            if ((dice < 0.02) && (skill <= 20)) {
+            if ((dice < 0.1) && (skill <= 20)) {
                 effects_1.Effect.Change.skill(defender, weapon, 1);
             }
         }
@@ -274,11 +278,11 @@ var Event;
             }
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random();
-            if ((dice < 0.02) && (attack.attack_skill <= 30)) {
+            if ((dice < 0.5) && (attack.attack_skill <= 30)) {
                 increase_weapon_skill(defender, attack.weapon_type);
             }
             const dice2 = Math.random();
-            if ((dice2 < 0.02) && (attack.attack_skill <= 30)) {
+            if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
                 increase_weapon_skill(attacker, attack.weapon_type);
             }
         }
@@ -384,6 +388,10 @@ var Event;
     Event.increase_weapon_skill = increase_weapon_skill;
     function change_stash(character, tag, amount) {
         character.stash.inc(tag, amount);
+        let user = systems_communication_1.Convert.character_to_user(character);
+        if (user == undefined)
+            return;
+        alerts_1.Alerts.log_to_user(user, `change ${materials_manager_1.materials.index_to_material(tag).string_tag} by ${amount}`);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
     }
     Event.change_stash = change_stash;

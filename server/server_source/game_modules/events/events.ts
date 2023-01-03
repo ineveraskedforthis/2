@@ -18,7 +18,7 @@ import { Alerts } from "../client_communication/network_actions/alerts";
 import { User } from "../client_communication/user";
 import { UserManagement } from "../client_communication/user_manager";
 import { character_list, Data } from "../data";
-import { ARROW_BONE, material_index, RAT_SKIN, ZAZ } from "../manager_classes/materials_manager";
+import { ARROW_BONE, materials, material_index, RAT_SKIN, ZAZ } from "../manager_classes/materials_manager";
 import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert, Link, Unlink } from "../systems_communication";
@@ -140,6 +140,12 @@ export namespace Event {
             }
             return 'miss' 
         }
+
+        const dice_skill_up = Math.random()
+        if (dice_skill_up * 50 > attacker.skills.ranged) {
+            increase_weapon_skill(attacker, 'ranged')
+        }
+
 
         const responce = ranged_dodge(attacker, defender, flag_dodge)
         if (responce == 'miss') {
@@ -276,7 +282,7 @@ export namespace Event {
 
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random()
-            if ((dice < 0.02) && (skill <= 20)) {
+            if ((dice < 0.1) && (skill <= 20)) {
                 Effect.Change.skill(defender, weapon, 1)
             }
         }
@@ -291,11 +297,11 @@ export namespace Event {
 
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random()
-            if ((dice < 0.02) && (attack.attack_skill <= 30)) {
+            if ((dice < 0.5) && (attack.attack_skill <= 30)) {
                 increase_weapon_skill(defender, attack.weapon_type)
             }
             const dice2 = Math.random()
-            if ((dice2 < 0.02) && (attack.attack_skill <= 30)) {
+            if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
                 increase_weapon_skill(attacker, attack.weapon_type)
             }
         }
@@ -409,6 +415,9 @@ export namespace Event {
 
     export function change_stash(character: Character, tag: material_index, amount: number) {
         character.stash.inc(tag, amount)
+        let user = Convert.character_to_user(character)
+        if (user == undefined) return
+        Alerts.log_to_user(user, `change ${materials.index_to_material(tag).string_tag} by ${amount}`)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
     }
 

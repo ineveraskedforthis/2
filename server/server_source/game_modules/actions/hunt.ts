@@ -5,6 +5,7 @@ import { Convert } from "../systems_communication";
 import { map_position } from "../types";
 import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
+import { Event } from "../events/events";
 
 
 export const hunt = {
@@ -34,7 +35,7 @@ export const hunt = {
         char.change_fatigue(10)
 
         if (dice * 100 < skill) {
-            char.stash.inc(MEAT, 1)
+            Event.change_stash(char, MEAT, 1)
             char.change_blood(5)
 
             UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)

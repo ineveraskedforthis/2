@@ -4,6 +4,7 @@ exports.fish = exports.hunt = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
 const user_manager_1 = require("../client_communication/user_manager");
+const events_1 = require("../events/events");
 exports.hunt = {
     duration(char) {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
@@ -29,7 +30,7 @@ exports.hunt = {
         let dice = Math.random();
         char.change_fatigue(10);
         if (dice * 100 < skill) {
-            char.stash.inc(materials_manager_1.MEAT, 1);
+            events_1.Event.change_stash(char, materials_manager_1.MEAT, 1);
             char.change_blood(5);
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
