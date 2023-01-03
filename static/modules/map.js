@@ -325,6 +325,7 @@ export class Map {
         } else if (action == 'continue_move') {
             this.path_progress += 1
             this.move_target = this.real_path[this.path_progress + 1]
+            if (this.real_path[this.path_progress + 1] == undefined) return
             this.socket.emit('move', {x: this.real_path[this.path_progress + 1][0], y: this.real_path[this.path_progress + 1][1]})    
         } else if ((this.real_path.length > 1) && ((this.move_flag == true) || (this.movement_progress > 0.99))) {
             this.move_flag = true

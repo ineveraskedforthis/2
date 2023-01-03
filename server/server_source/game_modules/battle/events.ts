@@ -172,7 +172,7 @@ export namespace BattleEvent {
                 if (geom.dist(unit.position, attacker.position) > range) continue
 
                 let damaged_character = Convert.unit_to_character(unit)
-                Event.attack(AttackerCharacter, damaged_character, true, attack_type)
+                Event.attack(AttackerCharacter, damaged_character, false, attack_type)
                 Alerts.battle_event(battle, 'attack', attacker.id, unit.position, unit.id, 0)
                 Alerts.battle_update_unit(battle, unit)
             }
