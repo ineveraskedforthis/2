@@ -46,10 +46,8 @@ function durability(character, craft) {
     let durability = 0;
     for (let item of craft.difficulty) {
         durability += base_durability(character.skills[item.skill], item.difficulty);
-        console.log(durability, character.skills[item.skill], item.difficulty);
     }
     durability = durability / craft.difficulty.length;
-    console.log(durability, craft.difficulty.length);
     return Math.floor(durability + bonus_durability(character, craft));
 }
 exports.durability = durability;
