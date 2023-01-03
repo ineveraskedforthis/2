@@ -9,6 +9,7 @@ const battle_ai_1 = require("./AI/battle_ai");
 const system_1 = require("./system");
 const Perks_1 = require("../character/Perks");
 const basic_functions_1 = require("../calculations/basic_functions");
+const system_2 = require("../character/system");
 // export const MOVE_COST = 3
 const COST = {
     ATTACK: 3,
@@ -128,6 +129,31 @@ var BattleEvent;
         }
         let dodge_flag = (defender.dodge_turns > 0);
         attacker.action_points_left = attacker.action_points_left - COST;
+        if (attack_type == 'pierce') {
+            let a = attacker.position;
+            let b = defender.position;
+            let c = { x: b.x - a.x, y: b.y - a.y };
+            let norm = Math.sqrt(c.x * c.x + c.y * c.y);
+            let power_ratio = system_2.CharacterSystem.phys_power(AttackerCharacter) / system_2.CharacterSystem.phys_power(DefenderCharacter);
+            let scale = AttackerCharacter.range() * power_ratio / norm;
+            c = { x: c.x * scale, y: c.y * scale };
+            SetCoord(battle, defender, { x: b.x + c.x, y: b.y + c.y });
+        }
+        if (attack_type == 'slice') {
+            let a = attacker.position;
+            let b = defender.position;
+            let range = AttackerCharacter.range();
+            for (let unit of Object.values(battle.heap.data)) {
+                if (unit.id == attacker.id)
+                    continue;
+                if (geom_1.geom.dist(unit.position, attacker.position) > range)
+                    continue;
+                let damaged_character = systems_communication_1.Convert.unit_to_character(unit);
+                events_1.Event.attack(AttackerCharacter, damaged_character, true, attack_type);
+                alerts_1.Alerts.battle_event(battle, 'attack', attacker.id, unit.position, unit.id, 0);
+                alerts_1.Alerts.battle_update_unit(battle, unit);
+            }
+        }
         events_1.Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type);
         alerts_1.Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id, COST);
         alerts_1.Alerts.battle_update_unit(battle, attacker);

@@ -11,6 +11,7 @@ import { Unit } from "./classes/unit"
 import { BattleSystem } from "./system"
 import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/Perks"
 import { trim } from "../calculations/basic_functions"
+import { CharacterSystem } from "../character/system"
 
 // export const MOVE_COST = 3
 
@@ -150,6 +151,32 @@ export namespace BattleEvent {
 
         let dodge_flag = (defender.dodge_turns > 0)
         attacker.action_points_left = attacker.action_points_left - COST as action_points
+        if (attack_type == 'pierce') {
+            let a = attacker.position
+            let b = defender.position
+            let c = {x: b.x - a.x, y: b.y - a.y}
+            let norm = Math.sqrt(c.x * c.x + c.y * c.y)
+            let power_ratio = CharacterSystem.phys_power(AttackerCharacter) / CharacterSystem.phys_power(DefenderCharacter)
+            let scale = AttackerCharacter.range() * power_ratio / norm
+            c = {x: c.x * scale, y: c.y * scale}
+            SetCoord(battle, defender, {x: b.x + c.x, y: b.y + c.y} as battle_position)
+        }
+
+        if (attack_type == 'slice') {
+            let a = attacker.position
+            let b = defender.position
+            let range = AttackerCharacter.range()
+
+            for (let unit of Object.values(battle.heap.data)) {
+                if (unit.id == attacker.id) continue
+                if (geom.dist(unit.position, attacker.position) > range) continue
+                
+                let damaged_character = Convert.unit_to_character(unit)
+                Event.attack(AttackerCharacter, damaged_character, true, attack_type)
+                Alerts.battle_event(battle, 'attack', attacker.id, unit.position, unit.id, 0)
+                Alerts.battle_update_unit(battle, unit)
+            }
+        }
         Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type)
         Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id, COST)
         Alerts.battle_update_unit(battle, attacker)
