@@ -46,14 +46,17 @@ function durability(character, craft) {
     let durability = 0;
     for (let item of craft.difficulty) {
         durability += base_durability(character.skills[item.skill], item.difficulty);
+        console.log(durability, character.skills[item.skill], item.difficulty);
     }
     durability = durability / craft.difficulty.length;
-    return durability + bonus_durability(character, craft);
+    console.log(durability, craft.difficulty.length);
+    return Math.floor(durability + bonus_durability(character, craft));
 }
 exports.durability = durability;
 function create_item(template, durability) {
     let result = system_1.ItemSystem.create(template);
     // introduce some luck
+    result.durability = durability;
     result.durability += Math.round(Math.random() * 10);
     return result;
 }

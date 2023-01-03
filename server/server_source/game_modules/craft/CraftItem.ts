@@ -51,12 +51,13 @@ export function durability(character: Character, craft: CraftItem): number {
         durability += base_durability(character.skills[item.skill], item.difficulty)
     }
     durability = durability / craft.difficulty.length
-    return durability + bonus_durability(character, craft)
+    return Math.floor(durability + bonus_durability(character, craft))
 }
 
 export function create_item(template: ItemJson, durability: number) {
     let result = ItemSystem.create(template);
     // introduce some luck
+    result.durability = durability
     result.durability += Math.round(Math.random() * 10);
 
     return result
