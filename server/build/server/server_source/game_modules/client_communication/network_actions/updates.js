@@ -10,6 +10,7 @@ const difficulty_1 = require("../../calculations/difficulty");
 const system_2 = require("../../battle/system");
 const constants_1 = require("../../static_data/constants");
 const helper_functions_1 = require("../helper_functions");
+const CraftItem_1 = require("../../craft/CraftItem");
 const crafts_storage_1 = require("../../craft/crafts_storage");
 const CraftBulk_1 = require("../../craft/CraftBulk");
 var SendUpdate;
@@ -17,6 +18,9 @@ var SendUpdate;
     function all(user) {
         for (let item of Object.values(crafts_storage_1.crafts_bulk)) {
             alerts_1.Alerts.craft_bulk_complete(user, item.id, item);
+        }
+        for (let item of Object.values(crafts_storage_1.crafts_items)) {
+            alerts_1.Alerts.craft_item_complete(user, item.id, item);
         }
         status(user);
         belongings(user);
@@ -207,6 +211,9 @@ var SendUpdate;
             return;
         for (let item of Object.values(crafts_storage_1.crafts_bulk)) {
             alerts_1.Alerts.craft_bulk(user, item.id, (0, CraftBulk_1.output_bulk)(character, item));
+        }
+        for (let item of Object.values(crafts_storage_1.crafts_items)) {
+            alerts_1.Alerts.craft_item(user, item.id, (0, CraftItem_1.durability)(character, item));
         }
     }
     SendUpdate.all_craft = all_craft;

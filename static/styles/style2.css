@@ -5,9 +5,48 @@ body {
     /* overflow: hidden; */
 }
 
+.highlight {
+    background-color: rgba(250, 235, 215, 0.505);
+}
+
+.hover:hover {
+    background-color: yellow;
+}
+
+.press:active {
+    background-color: rgba(172, 255, 47, 0.447)
+}
+
 .container-vertical {
     display: flex;
     flex-direction: column;
+}
+
+.container-vertical > .div {
+    width: 100%;
+}
+
+.container-horizontal {
+    display: flex;
+    flex-direction: row;
+}
+.container-horizontal {
+    height: 100%;
+}
+
+.flex-1 {
+    flex: 1
+}
+
+.flex-2 {
+    flex: 2
+}
+.flex-3 {
+    flex: 3
+}
+
+.scroll-y {
+    overflow-y: scroll;
 }
 
 #bg_fade {
@@ -221,7 +260,7 @@ body {
 }
 
 .hidden {
-    visibility: hidden;
+    visibility: collapse;
     display: none;
 }
 
@@ -271,8 +310,8 @@ body {
 .craft_option {
     display: flex;
     flex-direction: row;
-    margin: 5px;
-    width: 150px;
+    margin-top: 5px;
+    width: 100%;
     height: auto;
 }
 
@@ -309,8 +348,16 @@ body {
     height: 50px;
 }
 
+.height-200 {
+    height: 50px;
+}
+
 .align-right {
     text-align: right;
+}
+
+.align-center {
+    text-align: center;
 }
 
 .craft_option > div {
@@ -323,7 +370,7 @@ body {
 }
 
 .craft_option:hover {
-    background: linear-gradient(0.25turn, palegoldenrod, transparent);
+    background: linear-gradient(0.25turn, rgba(238, 232, 170, 0.543), transparent);
 }
 .craft_option:hover > .goods_icon {
     color: black;
@@ -331,7 +378,7 @@ body {
 }
 
 .craft_option:active{
-    background: linear-gradient(0.25turn, greenyellow, transparent);
+    background: linear-gradient(0.25turn, rgba(172, 255, 47, 0.447), transparent);
 }
 .craft_option:active > .goods_icon {
     color: black;
@@ -339,8 +386,9 @@ body {
 }
 
 .goods_icon {
-    width: 30px;
+    width: 50px;
     height: 30px;
+    background-repeat: no-repeat;
 }
 
 

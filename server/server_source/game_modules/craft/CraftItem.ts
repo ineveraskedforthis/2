@@ -44,7 +44,7 @@ function bonus_durability(character: Character, craft: CraftItem) {
     return durability
 }
 
-export function durability(character: Character, craft: CraftItem) {
+export function durability(character: Character, craft: CraftItem): number {
     // calculate base durability as average
     let durability = 0
     for (let item of craft.difficulty) {

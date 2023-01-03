@@ -12,7 +12,7 @@ import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../..
 import { prepare_market_orders } from "../helper_functions";
 import { durability } from "../../craft/CraftItem";
 import { CraftItem } from "../../craft/items";
-import { crafts_bulk } from "../../craft/crafts_storage";
+import { crafts_bulk, crafts_items } from "../../craft/crafts_storage";
 import { output_bulk } from "../../craft/CraftBulk";
 
 
@@ -21,6 +21,10 @@ export namespace SendUpdate {
     export function all(user: User) {
         for (let item of Object.values(crafts_bulk)) {
             Alerts.craft_bulk_complete(user, item.id, item)
+        }
+
+        for (let item of Object.values(crafts_items)) {
+            Alerts.craft_item_complete(user, item.id, item)
         }
 
         status(user)
@@ -225,6 +229,10 @@ export namespace SendUpdate {
 
         for (let item of Object.values(crafts_bulk)) {
             Alerts.craft_bulk(user, item.id, output_bulk(character, item))
+        }
+
+        for (let item of Object.values(crafts_items)) {
+            Alerts.craft_item(user, item.id, durability(character, item))
         }
     }
 

@@ -4,7 +4,7 @@ import { Battle } from "../../battle/classes/battle";
 import { Unit } from "../../battle/classes/unit";
 import { BattleSystem } from "../../battle/system";
 import { Character } from "../../character/character";
-import { box, CraftBulk } from "../../craft/crafts_storage";
+import { box, CraftBulk, CraftItem } from "../../craft/crafts_storage";
 import { Cell } from "../../map/cell";
 import { OrderBulkJson } from "../../market/classes";
 import { Convert } from "../../systems_communication";
@@ -85,6 +85,13 @@ export namespace Alerts {
     }
     export function craft_bulk_complete(user: User, tag: string, value: CraftBulk) {
         Alerts.generic_user_alert(user, 'craft-bulk-complete', {tag: tag, value: value})
+    }
+
+    export function craft_item(user: User, tag: string, value: number) {
+        Alerts.generic_user_alert(user, 'craft-item', {tag: tag, value: value})
+    }
+    export function craft_item_complete(user: User, tag: string, value: CraftItem) {
+        Alerts.generic_user_alert(user, 'craft-item-complete', {tag: tag, value: value})
     }
 
     export function skill(user: User, tag: string, value: number) {

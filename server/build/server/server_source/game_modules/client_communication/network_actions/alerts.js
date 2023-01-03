@@ -85,6 +85,14 @@ var Alerts;
         Alerts.generic_user_alert(user, 'craft-bulk-complete', { tag: tag, value: value });
     }
     Alerts.craft_bulk_complete = craft_bulk_complete;
+    function craft_item(user, tag, value) {
+        Alerts.generic_user_alert(user, 'craft-item', { tag: tag, value: value });
+    }
+    Alerts.craft_item = craft_item;
+    function craft_item_complete(user, tag, value) {
+        Alerts.generic_user_alert(user, 'craft-item-complete', { tag: tag, value: value });
+    }
+    Alerts.craft_item_complete = craft_item_complete;
     function skill(user, tag, value) {
         Alerts.generic_user_alert(user, 'skill', { tag: tag, value: value });
     }

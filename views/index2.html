@@ -231,10 +231,18 @@
             </div> 
 
             <div id="craft_tab", class="game_tab hidden movable noselect">
-                <div id="craft_list"></div>
-
+                
+                <div id="craft_management" class="container-horizontal"> 
+                    <div class="container-vertical flex-1">
+                        <div id = "craft-tag-item" class="height-50 align-center highlight hover press">Items</div>
+                        <div id = "craft-tag-bulk" class="height-50 align-center highlight hover press">Bulk</div>
+                    </div>
+                    <div id="craft_list" class="container-vertical scroll-y flex-3 align-right">
+                    </div>
+                </div>
+                
                 <div class="corner top"></div>
-                <!-- <div class="corner bottom"></div> -->
+                <div class="corner bottom"></div>
             </div>
 
             <div id="stash_tab", class="game_tab hidden movable noselect">

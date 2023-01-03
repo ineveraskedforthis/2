@@ -180,9 +180,8 @@
 #craft_tab {
     top: 5px;
     left: 830px;
-    height:auto;
-    width:auto;
-    padding-top: 20px;
+    height:400px;
+    width:400px;
 }
 
 #stash_tab {
