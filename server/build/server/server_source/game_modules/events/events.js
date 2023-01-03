@@ -324,6 +324,9 @@ var Event;
     function kill(killer, victim) {
         console.log(killer.name + ' kills ' + victim.name);
         death(victim);
+        if (killer.id == victim.id) {
+            return;
+        }
         const loot = system_3.CharacterSystem.rgo_check(victim);
         system_3.CharacterSystem.transfer_all(victim, killer);
         for (const item of loot) {

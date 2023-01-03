@@ -343,6 +343,10 @@ export namespace Event {
         console.log(killer.name + ' kills ' + victim.name)
         death(victim)
 
+        if (killer.id == victim.id) {
+            return
+        }
+
         const loot = CharacterSystem.rgo_check(victim)
         CharacterSystem.transfer_all(victim, killer)
         for (const item of loot) {

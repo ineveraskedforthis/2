@@ -133,6 +133,7 @@ export namespace BattleEvent {
     }
 
     export function Attack(battle: Battle, attacker: Unit, defender:Unit, attack_type: melee_attack_type) {
+        if (attacker.id == defender.id) return
         const AttackerCharacter = Convert.unit_to_character(attacker)
         const COST = 3
 

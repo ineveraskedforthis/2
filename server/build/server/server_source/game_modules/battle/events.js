@@ -114,6 +114,8 @@ var BattleEvent;
     }
     BattleEvent.Charge = Charge;
     function Attack(battle, attacker, defender, attack_type) {
+        if (attacker.id == defender.id)
+            return;
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const COST = 3;
         let dist = geom_1.geom.dist(attacker.position, defender.position);
