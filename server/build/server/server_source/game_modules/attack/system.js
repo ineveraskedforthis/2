@@ -45,7 +45,7 @@ var Attack;
         const result = new class_1.AttackObj('ranged');
         result.damage.fire = damage;
         if (dist > 1) {
-            result.damage.fire = Math.round(damage / 5 + (damage * 4 / 5) / dist);
+            result.damage.fire = Math.round(damage / 7 + (damage * 6 / 7) / dist);
         }
         return result;
     }
