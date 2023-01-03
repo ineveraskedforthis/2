@@ -144,6 +144,13 @@ export namespace InventoryCommands {
             return
         }
 
+        if (msg.price > 99999999999) {
+            user.socket.emit('alert', 'invalid_price')
+            return
+        }
+
+        console.log('sell is valid')
+
         let responce = EventMarket.sell(
             character, 
             msg.material as material_index, 

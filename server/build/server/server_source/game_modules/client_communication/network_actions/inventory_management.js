@@ -152,6 +152,11 @@ var InventoryCommands;
             user.socket.emit('alert', 'invalid_material');
             return;
         }
+        if (msg.price > 99999999999) {
+            user.socket.emit('alert', 'invalid_price');
+            return;
+        }
+        console.log('sell is valid');
         let responce = market_1.EventMarket.sell(character, msg.material, msg.amount, msg.price);
         if (responce != 'ok') {
             alerts_1.Alerts.generic_user_alert(user, 'alert', responce);
