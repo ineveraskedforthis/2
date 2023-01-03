@@ -116,6 +116,7 @@ export namespace Alerts {
             let unit_data = Convert.unit_to_unit_socket(battle.heap.get_unit(unit_id))
             Event.data = unit_data
         }
+
         for (let unit of battle.heap.raw_data) {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-event', Event)

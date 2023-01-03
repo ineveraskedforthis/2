@@ -59,11 +59,20 @@ export namespace Request {
             sw.socket.emit('alert', 'your character does not exist')
             return
         }
+        const unit = Convert.character_to_unit(character)
+        if (unit == undefined) return
 
-        if (character.in_battle()) {
-            let unit_id = character.battle_unit_id      
-            Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)  
-            Alerts.battle_action_chance(user, 'flee', BattleEvent.flee_chance())
+        Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit.id)          
+    }
+
+    export function flee_chance(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
         }
+        const unit = Convert.character_to_unit(character)
+        if (unit == undefined) return
+        Alerts.battle_action_chance(user, 'flee', BattleEvent.flee_chance(unit.position))
     }
 }

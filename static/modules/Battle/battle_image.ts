@@ -181,6 +181,7 @@ export namespace BattleImage {
             load_unit(unit)
         }
         socket.emit('req-player-index')
+        socket.emit('req-flee-chance')
     }
 
     export function reset() {
@@ -370,6 +371,7 @@ export namespace BattleImage {
                 update_move_ap_cost(dist, player_data.move_cost)
             } else {
                 socket.emit('req-player-index')
+                socket.emit('req-flee-chance')
             }
         }
     }

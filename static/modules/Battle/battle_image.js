@@ -138,6 +138,7 @@ export var BattleImage;
             load_unit(unit);
         }
         socket.emit('req-player-index');
+        socket.emit('req-flee-chance');
     }
     BattleImage.load = load;
     function reset() {
@@ -326,6 +327,7 @@ export var BattleImage;
             }
             else {
                 socket.emit('req-player-index');
+                socket.emit('req-flee-chance');
             }
         }
     }

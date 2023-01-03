@@ -170,7 +170,7 @@ export namespace BattleEvent {
             for (let unit of Object.values(battle.heap.data)) {
                 if (unit.id == attacker.id) continue
                 if (geom.dist(unit.position, attacker.position) > range) continue
-                
+
                 let damaged_character = Convert.unit_to_character(unit)
                 Event.attack(AttackerCharacter, damaged_character, true, attack_type)
                 Alerts.battle_event(battle, 'attack', attacker.id, unit.position, unit.id, 0)
@@ -221,7 +221,7 @@ export namespace BattleEvent {
                 Event.stop_battle(battle)
             }
 
-            if (dice <= flee_chance()) { // success
+            if (dice <= flee_chance(unit.position)) { // success
                 Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3)
                 Event.stop_battle(battle)
             }
@@ -251,8 +251,8 @@ export namespace BattleEvent {
         Alerts.battle_update_unit(battle, defender)
     }
 
-    export function flee_chance(){
-        return 0.5
+    export function flee_chance(position: battle_position){
+        return 0.6 + Math.max(position.x / HALFWIDTH, position.y / HALFHEIGHT) / 2
     }
 
     export function Update(battle: Battle, unit: Unit) {

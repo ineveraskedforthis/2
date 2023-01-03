@@ -1,3 +1,4 @@
+import { socket } from "../globals.js";
 import { IMAGES } from "../load_images.js";
 import { BattleImage, battle_canvas_context, player_unit_id, units_views } from "./battle_image.js";
 import { position_c } from "./battle_image_helper.js";
@@ -101,6 +102,9 @@ export class MoveEvent extends BattleImageEvent {
         if (norm < BATTLE_MOVEMENT_SPEED * dt) {
             unit.position = this.target_position;
             unit.a_image.set_action('idle');
+            if (player_unit_id == unit.id) {
+                socket.emit('req-flee-chance');
+            }
         }
         else {
             unit.position = position_c.sum(unit.position, move);

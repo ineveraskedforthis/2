@@ -193,7 +193,7 @@ var BattleEvent;
             if (system_1.BattleSystem.safe(battle)) {
                 events_1.Event.stop_battle(battle);
             }
-            if (dice <= flee_chance()) { // success
+            if (dice <= flee_chance(unit.position)) { // success
                 alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3);
                 events_1.Event.stop_battle(battle);
             }
@@ -224,8 +224,8 @@ var BattleEvent;
         alerts_1.Alerts.battle_update_unit(battle, defender);
     }
     BattleEvent.MagicBolt = MagicBolt;
-    function flee_chance() {
-        return 0.5;
+    function flee_chance(position) {
+        return 0.6 + Math.max(position.x / exports.HALFWIDTH, position.y / exports.HALFHEIGHT) / 2;
     }
     BattleEvent.flee_chance = flee_chance;
     function Update(battle, unit) {

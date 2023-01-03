@@ -57,11 +57,22 @@ var Request;
             sw.socket.emit('alert', 'your character does not exist');
             return;
         }
-        if (character.in_battle()) {
-            let unit_id = character.battle_unit_id;
-            alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
-            alerts_1.Alerts.battle_action_chance(user, 'flee', events_1.BattleEvent.flee_chance());
-        }
+        const unit = systems_communication_1.Convert.character_to_unit(character);
+        if (unit == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit.id);
     }
     Request.player_index = player_index;
+    function flee_chance(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        const unit = systems_communication_1.Convert.character_to_unit(character);
+        if (unit == undefined)
+            return;
+        alerts_1.Alerts.battle_action_chance(user, 'flee', events_1.BattleEvent.flee_chance(unit.position));
+    }
+    Request.flee_chance = flee_chance;
 })(Request = exports.Request || (exports.Request = {}));
