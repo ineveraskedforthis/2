@@ -4,6 +4,7 @@ import { FOOD } from "../manager_classes/materials_manager";
 import { map_position } from "../types";
 import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
+import { Event } from "../events/events";
 
 export const eat = {
     duration(char: Character) {
@@ -25,7 +26,7 @@ export const eat = {
         char.change_hp(10);
         char.change_fatigue(-10)
         char.change_stress(-1)
-        char.stash.inc(FOOD, -1);
+        Event.change_stash(char, FOOD, -1)
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
     },

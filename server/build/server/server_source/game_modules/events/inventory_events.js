@@ -59,7 +59,7 @@ var EventInventory;
             alerts_1.Alerts.not_enough_to_character(character, 'ZAZ', 1, character.stash.get(materials_manager_1.ZAZ));
             return;
         }
-        character.stash.inc(materials_manager_1.ZAZ, -1);
+        events_1.Event.change_stash(character, materials_manager_1.ZAZ, -1);
         if (character.skills.magic_mastery < 10)
             effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
         if (item.is_weapon())

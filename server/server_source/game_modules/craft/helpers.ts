@@ -3,6 +3,7 @@ import { Stash } from "../inventories/stash";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
 import { skill_check, box } from "./crafts_storage";
+import { Event } from "../events/events";
 
 export const MAX_SKILL_MULTIPLIER_BULK = 10
 export function skill_to_ratio(skill: number, difficulty: number) {
@@ -47,8 +48,8 @@ export function check_inputs(inputs: box[], stash: Stash) {
     return flag;
 }
 
-export function use_input(input: box[], stash: Stash) {
+export function use_input(input: box[], character: Character) {
     for (let item of input) {
-        stash.inc(item.material, -item.amount);
+        Event.change_stash(character, item.material, -item.amount)
     }
 }

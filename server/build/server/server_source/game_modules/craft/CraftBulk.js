@@ -6,16 +6,17 @@ const materials_manager_1 = require("../manager_classes/materials_manager");
 const generate_action_1 = require("./generate_action");
 const crafts_storage_1 = require("./crafts_storage");
 const helpers_1 = require("./helpers");
+const events_1 = require("../events/events");
 function event_craft_bulk(character, craft) {
-    (0, helpers_1.use_input)(craft.input, character.stash);
-    produce_output(output_bulk(character, craft), character.stash);
+    (0, helpers_1.use_input)(craft.input, character);
+    produce_output(output_bulk(character, craft), character);
     (0, helpers_1.on_craft_update)(character, craft.difficulty);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
 }
 exports.event_craft_bulk = event_craft_bulk;
-function produce_output(output, stash) {
+function produce_output(output, character) {
     for (let item of output) {
-        stash.inc(item.material, item.amount);
+        events_1.Event.change_stash(character, item.material, item.amount);
     }
 }
 exports.produce_output = produce_output;

@@ -87,7 +87,7 @@ export const fish = {
         char.change_fatigue(10)
 
         if (dice * 100 < skill) {
-            char.stash.inc(FISH, 1)
+            Event.change_stash(char, FISH, 1)
             UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
             return CharacterActionResponce.OK
         } else {

@@ -76,7 +76,7 @@ exports.fish = {
         let dice = Math.random();
         char.change_fatigue(10);
         if (dice * 100 < skill) {
-            char.stash.inc(materials_manager_1.FISH, 1);
+            events_1.Event.change_stash(char, materials_manager_1.FISH, 1);
             user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
             return 1 /* CharacterActionResponce.OK */;
         }

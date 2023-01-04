@@ -64,7 +64,7 @@ export namespace EventInventory {
             return
         }
         
-        character.stash.inc(ZAZ, -1)
+        Event.change_stash(character, ZAZ, -1)
 
         if (character.skills.magic_mastery < 10) Effect.Change.skill(character, 'magic_mastery', 1)
 

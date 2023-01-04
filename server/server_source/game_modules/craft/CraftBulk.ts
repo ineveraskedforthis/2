@@ -6,18 +6,19 @@ import { ARROW_BONE, FOOD, ZAZ } from "../manager_classes/materials_manager";
 import { generate_bulk_craft_action } from "./generate_action";
 import { box, CraftBulk, crafts_bulk, craft_actions, skill_check } from "./crafts_storage";
 import { use_input, on_craft_update, skill_to_ratio, MAX_SKILL_MULTIPLIER_BULK } from "./helpers";
+import { Event } from "../events/events";
 
 
 export function event_craft_bulk(character: Character, craft: CraftBulk) {
-    use_input(craft.input, character.stash);
-    produce_output(output_bulk(character, craft), character.stash);
+    use_input(craft.input, character);
+    produce_output(output_bulk(character, craft), character);
     on_craft_update(character, craft.difficulty);
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH);
 }
 
-export function produce_output(output: box[], stash: Stash) {
+export function produce_output(output: box[], character: Character) {
     for (let item of output) {
-        stash.inc(item.material, item.amount);
+        Event.change_stash(character, item.material, item.amount)
     }
 }
 

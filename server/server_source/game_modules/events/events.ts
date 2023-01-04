@@ -186,7 +186,7 @@ export namespace Event {
         const BLOOD_COST = 10
 
         // managing costs
-        if (attacker.stash.get(ZAZ) > 0) attacker.stash.inc(ZAZ, -1)
+        if (attacker.stash.get(ZAZ) > 0) Event.change_stash(attacker, ZAZ, -1)
         else if (attacker.status.blood >= BLOOD_COST) attacker.status.blood -= BLOOD_COST
         else {
             const blood = attacker.status.blood;
@@ -350,7 +350,7 @@ export namespace Event {
         const loot = CharacterSystem.rgo_check(victim)
         CharacterSystem.transfer_all(victim, killer)
         for (const item of loot) {
-            killer.stash.inc(item.material, item.amount)
+            Event.change_stash(killer, item.material, item.amount)
         }
         // console.log(killer.stash.data)
 
@@ -366,7 +366,7 @@ export namespace Event {
         if (skin > 0) {
             const dice = Math.random()
             if (dice < killer.skills.skinning / 100) {
-                killer.stash.inc(RAT_SKIN, skin)
+                Event.change_stash(killer, RAT_SKIN, skin)
             } else {
                 increase_skinning(killer)
             }
@@ -421,7 +421,7 @@ export namespace Event {
         character.stash.inc(tag, amount)
         let user = Convert.character_to_user(character)
         if (user == undefined) return
-        Alerts.log_to_user(user, `change ${materials.index_to_material(tag).string_tag} by ${amount}`)
+        Alerts.log_to_user(user, `change ${materials.index_to_material(tag).string_tag} by ${amount}. Now: ${character.stash.get(tag)}`)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
     }
 

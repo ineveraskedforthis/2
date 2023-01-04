@@ -64,7 +64,7 @@ export function create_item(template: ItemJson, durability: number) {
 }
 
 export function event_craft_item(character: Character, craft: CraftItem) {
-    use_input(craft.input, character.stash);
+    use_input(craft.input, character);
     let result = create_item(craft.output, durability(character, craft))
     character.equip.data.backpack.add(result);
 
