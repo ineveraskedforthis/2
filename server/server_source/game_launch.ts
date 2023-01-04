@@ -79,7 +79,7 @@ function load() {
             character.battle_id = -1 as battle_id
             character.battle_unit_id = -1 as unit_id
         }
-        EventMarket.clear_orders(character)
+        // EventMarket.clear_orders(character)
     }
 
 

@@ -14,7 +14,6 @@ const events_1 = require("./game_modules/events/events");
 const systems_communication_1 = require("./game_modules/systems_communication");
 const system_3 = require("./game_modules/battle/system");
 const system_4 = require("./game_modules/market/system");
-const market_1 = require("./game_modules/events/market");
 const gameloop = require('node-gameloop');
 var shutdown = false;
 function launch(http_server) {
@@ -60,7 +59,7 @@ function load() {
             character.battle_id = -1;
             character.battle_unit_id = -1;
         }
-        market_1.EventMarket.clear_orders(character);
+        // EventMarket.clear_orders(character)
     }
     // Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }
