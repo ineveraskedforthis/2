@@ -58,12 +58,14 @@ export namespace BattleAI {
         let min_distance = 100;
         const character = Convert.unit_to_character(unit)
 
-        for (let i = 0; i < units.length; i++) {
-            const target_unit = units[i]
+        for (let target_unit of Object.values(battle.heap.data)) {
             if (target_unit == undefined) {continue}
+            if (target_unit.id == index) continue
             const target_character = Convert.unit_to_character(target_unit)
             if (target_character.dead()) continue
             const d = geom.dist(unit.position, target_unit.position);
+            // console.log(target_character.name)
+            // console.log(Math.abs(d) <= Math.abs(min_distance), is_enemy(unit, character, target_unit, target_character))
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
                 && is_enemy(unit, character, target_unit, target_character)) 
                 {
@@ -136,6 +138,8 @@ export namespace BattleAI {
             
             
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual')
+
+            console.log(attack_move)
 
             if (attack_move.action == 'end_turn') return 'end'      
             

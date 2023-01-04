@@ -127,6 +127,7 @@ export namespace Event {
         if (attacker.get_hp() == 0) return 'miss'
         if (attacker.stash.get(ARROW_BONE) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 1, 0); return 'no_ammo'}
 
+        Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
         //remove arrow
         change_stash(attacker, ARROW_BONE, -1)
 
@@ -182,6 +183,8 @@ export namespace Event {
     export function magic_bolt(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
         if (defender.dead()) return 'miss'
         if (attacker.dead()) return 'miss'
+
+        Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
 
         const BLOOD_COST = 10
 

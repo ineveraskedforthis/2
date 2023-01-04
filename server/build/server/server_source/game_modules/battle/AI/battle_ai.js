@@ -50,15 +50,18 @@ var BattleAI;
         const unit = battle.heap.get_unit(index);
         let min_distance = 100;
         const character = systems_communication_1.Convert.unit_to_character(unit);
-        for (let i = 0; i < units.length; i++) {
-            const target_unit = units[i];
+        for (let target_unit of Object.values(battle.heap.data)) {
             if (target_unit == undefined) {
                 continue;
             }
+            if (target_unit.id == index)
+                continue;
             const target_character = systems_communication_1.Convert.unit_to_character(target_unit);
             if (target_character.dead())
                 continue;
             const d = geom_1.geom.dist(unit.position, target_unit.position);
+            // console.log(target_character.name)
+            // console.log(Math.abs(d) <= Math.abs(min_distance), is_enemy(unit, character, target_unit, target_character))
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
                 && is_enemy(unit, character, target_unit, target_character)) {
                 closest_enemy = target_unit.id;
@@ -123,6 +126,7 @@ var BattleAI;
             }
             const defender_unit = battle.heap.get_unit(target_id);
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual');
+            console.log(attack_move);
             if (attack_move.action == 'end_turn')
                 return 'end';
             if ((agent_character.perks.magic_bolt) && (agent_unit.action_points_left >= 3)) {

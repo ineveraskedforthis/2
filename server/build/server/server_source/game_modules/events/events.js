@@ -117,6 +117,7 @@ var Event;
             alerts_1.Alerts.not_enough_to_character(attacker, 'arrow', 1, 0);
             return 'no_ammo';
         }
+        data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
         //remove arrow
         change_stash(attacker, materials_manager_1.ARROW_BONE, -1);
         //check missed attack because of lack of skill
@@ -171,6 +172,7 @@ var Event;
             return 'miss';
         if (attacker.dead())
             return 'miss';
+        data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
         const BLOOD_COST = 10;
         // managing costs
         if (attacker.stash.get(materials_manager_1.ZAZ) > 0)
