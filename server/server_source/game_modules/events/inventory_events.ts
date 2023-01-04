@@ -10,6 +10,7 @@ import { materials, ZAZ } from "../manager_classes/materials_manager";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { Effect } from "./effects";
 import { Event } from "./events";
+import { CharacterSystem } from "../character/system";
 
 export namespace EventInventory {
     export function equip_from_backpack(character: Character, index: number) {
@@ -49,7 +50,7 @@ export namespace EventInventory {
     }
 
     export function enchant(character: Character, index: number) {
-        let enchant_rating = character.stats.stats.magic_power * (1 + character.skills.magic_mastery / 100 )
+        let enchant_rating = CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 100 )
         // so it's ~15 at 50 magic mastery
         // and 1 at 20 magic mastery
         if (character.perks.mage_initiation) {
