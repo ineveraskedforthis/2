@@ -1,5 +1,6 @@
-import { BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../../../shared/battle_data";
+import { AttackAction, BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../../../shared/battle_data";
 import { ItemData } from "../../../../../shared/inventory";
+import { AttackObj } from "../../attack/class";
 import { Battle } from "../../battle/classes/battle";
 import { Unit } from "../../battle/classes/unit";
 import { BattleSystem } from "../../battle/system";
@@ -7,6 +8,7 @@ import { Character } from "../../character/character";
 import { box, CraftBulk, CraftItem } from "../../craft/crafts_storage";
 import { Cell } from "../../map/cell";
 import { OrderBulkJson } from "../../market/classes";
+import { Damage } from "../../misc/damage_types";
 import { Convert } from "../../systems_communication";
 import { UI_Part } from "../causality_graph";
 import { User } from "../user";
@@ -51,6 +53,15 @@ export namespace Alerts {
 
     export function log_to_user(user: User, message: string) {
         user.socket.emit('log-message', message);
+    }
+
+    export function log_attack(character: Character, attack: AttackObj, resistance: Damage, total_damage: number, role: 'defender'|'attacker') {
+        generic_character_alert(character, 'log-attack', {
+            attack: attack,
+            res: resistance,
+            total: total_damage,
+            role: role
+        })
     }
 
     export function login_is_completed(user: User) {

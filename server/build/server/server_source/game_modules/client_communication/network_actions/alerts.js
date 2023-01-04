@@ -46,6 +46,15 @@ var Alerts;
         user.socket.emit('log-message', message);
     }
     Alerts.log_to_user = log_to_user;
+    function log_attack(character, attack, resistance, total_damage, role) {
+        generic_character_alert(character, 'log-attack', {
+            attack: attack,
+            res: resistance,
+            total: total_damage,
+            role: role
+        });
+    }
+    Alerts.log_attack = log_attack;
     function login_is_completed(user) {
         user.socket.emit('is-login-completed', 'ok');
     }

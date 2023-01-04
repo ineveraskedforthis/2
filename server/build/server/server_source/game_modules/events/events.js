@@ -203,9 +203,12 @@ var Event;
     }
     Event.magic_bolt = magic_bolt;
     function deal_damage(defender, attack, attacker) {
-        system_3.CharacterSystem.damage(defender, attack.damage);
+        const total = system_3.CharacterSystem.damage(defender, attack.damage);
         defender.change_status(attack.defender_status_change);
         attacker.change_status(attack.attacker_status_change);
+        const resistance = system_3.CharacterSystem.resistance(defender);
+        alerts_1.Alerts.log_attack(defender, attack, resistance, total, 'defender');
+        alerts_1.Alerts.log_attack(attacker, attack, resistance, total, 'attacker');
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
     }

@@ -175,7 +175,7 @@ var BattleSystem;
             }
             // if turn is still running, then do nothing
             if (battle.waiting_for_input) {
-                return;
+                continue;
             }
             // if battle is not waiting for input, then we need to start new turn
             events_1.BattleEvent.NewTurn(battle);
@@ -184,20 +184,20 @@ var BattleSystem;
             console.log('current unit is' + unit?.id);
             if (unit == undefined) {
                 battle.ended = true;
-                return;
+                continue;
             }
             let character = systems_communication_1.Convert.unit_to_character(unit);
             console.log(character.name);
             if (character.dead()) {
                 events_1.BattleEvent.Leave(battle, unit);
-                return;
+                continue;
             }
             system_1.CharacterSystem.battle_update(character);
             //processing cases of player and ai separately for a now
             // if character is player, then wait for input
             if (character.is_player()) {
                 battle.waiting_for_input = true;
-                return;
+                continue;
             }
             // else ask ai to make all needed moves and end turn
             {

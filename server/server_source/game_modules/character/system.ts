@@ -257,7 +257,7 @@ export namespace CharacterSystem {
      * Damages character, accounting for resistances
      * @param character Damaged character
      * @param damage damage
-     * @returns 
+     * @returns total damage dealt
      */
     export function damage(character: Character, damage: Damage) {
         let total = 0
@@ -265,7 +265,7 @@ export namespace CharacterSystem {
         for (let tag of damage_types) {
             const damage_curr = trim(damage[tag] - resistance[tag], 0, 100000)
             character.change_hp(-damage_curr)
-            total += damage[tag]
+            total += damage_curr
         }
         return total
     }

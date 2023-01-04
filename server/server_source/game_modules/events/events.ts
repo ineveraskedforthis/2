@@ -219,9 +219,15 @@ export namespace Event {
     }
 
     function deal_damage(defender: Character, attack: AttackObj, attacker: Character) {
-        CharacterSystem.damage(defender, attack.damage);
+        const total = CharacterSystem.damage(defender, attack.damage);
         defender.change_status(attack.defender_status_change);
         attacker.change_status(attack.attacker_status_change);
+
+        const resistance = CharacterSystem.resistance(defender)
+
+        Alerts.log_attack(defender, attack, resistance, total, 'defender')
+        Alerts.log_attack(attacker, attack, resistance, total, 'attacker')
+
         UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS);
         UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS);
     }
@@ -320,7 +326,9 @@ export namespace Event {
         if (!attack.flags.miss) {
             const durability_roll = Math.random()
             if (durability_roll < 0.5) Effect.change_durability(attacker, 'weapon', -1);
-            if (attack.flags.blocked) {Effect.change_durability(defender, 'weapon', -1)} else {
+            if (attack.flags.blocked) {
+                Effect.change_durability(defender, 'weapon', -1)
+            } else {
                 const roll = Math.random()
                 if (roll < 0.5) Effect.change_durability(defender, 'body', -1);
                 else if (roll < 0.7) Effect.change_durability(defender, 'legs', -1)

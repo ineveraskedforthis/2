@@ -197,7 +197,7 @@ export namespace BattleSystem {
 
             // if turn is still running, then do nothing
             if (battle.waiting_for_input) {
-                return
+                continue
             }
 
             // if battle is not waiting for input, then we need to start new turn
@@ -206,13 +206,13 @@ export namespace BattleSystem {
             // get information about current unit
             const unit = battle.heap.get_selected_unit()
             console.log('current unit is' + unit?.id)
-            if (unit == undefined) {battle.ended = true; return}
+            if (unit == undefined) {battle.ended = true; continue}
             let character:Character = Convert.unit_to_character(unit)
             console.log(character.name)
 
             if (character.dead()) {
                 BattleEvent.Leave(battle, unit)
-                return
+                continue
             }
 
             CharacterSystem.battle_update(character)
@@ -221,7 +221,7 @@ export namespace BattleSystem {
             // if character is player, then wait for input
             if (character.is_player()) {
                 battle.waiting_for_input = true
-                return
+                continue
             } 
 
             // else ask ai to make all needed moves and end turn

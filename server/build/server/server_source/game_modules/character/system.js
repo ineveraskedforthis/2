@@ -257,7 +257,7 @@ var CharacterSystem;
      * Damages character, accounting for resistances
      * @param character Damaged character
      * @param damage damage
-     * @returns
+     * @returns total damage dealt
      */
     function damage(character, damage) {
         let total = 0;
@@ -265,7 +265,7 @@ var CharacterSystem;
         for (let tag of damage_types_1.damage_types) {
             const damage_curr = (0, basic_functions_1.trim)(damage[tag] - resistance[tag], 0, 100000);
             character.change_hp(-damage_curr);
-            total += damage[tag];
+            total += damage_curr;
         }
         return total;
     }
