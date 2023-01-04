@@ -173,7 +173,7 @@ export namespace BattleEvent {
                 if (geom.dist(unit.position, attacker.position) > range) continue
                 let damaged_character = Convert.unit_to_character(unit)
 
-                if (!BattleAI.is_enemy(attacker, AttackerCharacter, unit, damaged_character)) continue
+                if (unit.team == attacker.team) continue
 
                 Event.attack(AttackerCharacter, damaged_character, false, attack_type)
                 Alerts.battle_event(battle, 'attack', attacker.id, unit.position, unit.id, 0)
