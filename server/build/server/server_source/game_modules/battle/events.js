@@ -151,6 +151,8 @@ var BattleEvent;
                 if (geom_1.geom.dist(unit.position, attacker.position) > range)
                     continue;
                 let damaged_character = systems_communication_1.Convert.unit_to_character(unit);
+                if (!battle_ai_1.BattleAI.is_enemy(attacker, AttackerCharacter, unit, damaged_character))
+                    continue;
                 events_1.Event.attack(AttackerCharacter, damaged_character, false, attack_type);
                 alerts_1.Alerts.battle_event(battle, 'attack', attacker.id, unit.position, unit.id, 0);
                 alerts_1.Alerts.battle_update_unit(battle, unit);

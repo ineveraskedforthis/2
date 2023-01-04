@@ -158,8 +158,7 @@ var Event;
         }
         // create attack
         const attack = system_2.Attack.generate_ranged(attacker);
-        system_3.CharacterSystem.damage(defender, attack.damage);
-        user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
+        deal_damage(defender, attack, attacker);
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender);
@@ -195,9 +194,7 @@ var Event;
             effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1);
         }
         const attack = system_2.Attack.generate_magic_bolt(attacker, dist);
-        system_3.CharacterSystem.damage(defender, attack.damage);
-        user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
-        user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
+        deal_damage(defender, attack, attacker);
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender);
@@ -205,6 +202,13 @@ var Event;
         return 'ok';
     }
     Event.magic_bolt = magic_bolt;
+    function deal_damage(defender, attack, attacker) {
+        system_3.CharacterSystem.damage(defender, attack.damage);
+        defender.change_status(attack.defender_status_change);
+        attacker.change_status(attack.attacker_status_change);
+        user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
+    }
     function attack(attacker, defender, dodge_flag, attack_type) {
         if (attacker.dead())
             return;
@@ -311,12 +315,7 @@ var Event;
             }
         }
         //apply damage after all modifiers
-        // console.log(attack)
-        system_3.CharacterSystem.damage(defender, attack.damage);
-        defender.change_status(attack.defender_status_change);
-        attacker.change_status(attack.attacker_status_change);
-        user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
-        user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
+        deal_damage(defender, attack, attacker);
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender);
@@ -459,44 +458,4 @@ var Event;
         }
     }
     Event.stop_battle = stop_battle;
-    //  spell_attack(target: Character, tag: spell_tags) {
-    //     let result = new AttackResult()
-    //     if (tag == 'bolt') {
-    //         let bolt_difficulty = 30
-    //         let dice = Math.random() * bolt_difficulty
-    //         let skill = this.skills.magic_mastery
-    //         if (skill < dice) {
-    //             this.skills.magic_mastery += 1
-    //         }
-    //     }
-    //     result = spells[tag](result);
-    //     result = this.mod_spell_damage_with_stats(result, tag);
-    //     this.change_status(result.attacker_status_change)
-    //     result =  target.take_damage(pool, 'ranged', result);
-    //     return result;
-    // }
-    //  take_damage(mod:'fast'|'heavy'|'usual'|'ranged', result: AttackResult): Promise<AttackResult> {
-    //     let res:any = this.get_resists();
-    //     if (!result.flags.evade && !result.flags.miss) {
-    //         for (let i of damage_types) {
-    //             if (result.damage[i] > 0) {
-    //                 let curr_damage = Math.max(0, result.damage[i] - res[i]);
-    //                 if ((curr_damage > 0) && ((i == 'slice') || (i == 'pierce')) && !(mod == 'ranged')) {
-    //                     result.attacker_status_change.blood += Math.floor(curr_damage / 10)
-    //                     result.defender_status_change.blood += Math.floor(curr_damage / 10)
-    //                 }
-    //                 result.total_damage += curr_damage;
-    //                 this.change_hp(-curr_damage);
-    //                 if (this.get_hp() == 0) {
-    //                      this.world.entity_manager.remove_orders(pool, this)
-    //                      AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
-    //                     result.flags.killing_strike = true
-    //                 }
-    //             }
-    //         }
-    //         this.change_status(result.defender_status_change)
-    //     }
-    //      this.save_to_db(pool)
-    //     return result;
-    // }
 })(Event = exports.Event || (exports.Event = {}));

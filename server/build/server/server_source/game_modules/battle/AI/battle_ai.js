@@ -44,6 +44,7 @@ var BattleAI;
         // otherwise, he is an enemy
         return true;
     }
+    BattleAI.is_enemy = is_enemy;
     function calculate_closest_enemy(battle, index) {
         let closest_enemy = undefined;
         const units = battle.heap.raw_data;

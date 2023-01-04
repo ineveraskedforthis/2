@@ -14,6 +14,7 @@ var path = require('path');
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const ai_manager_1 = require("../AI/ai_manager");
 const skills_1 = require("./skills");
+const basic_functions_1 = require("../calculations/basic_functions");
 var loaded_flag_characters = false;
 const save_path = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'characters.txt');
 var ai_campaign_decision_timer = 0;
@@ -252,10 +253,18 @@ var CharacterSystem;
         return weapon.weapon_tag;
     }
     CharacterSystem.melee_weapon_type = melee_weapon_type;
+    /**
+     * Damages character, accounting for resistances
+     * @param character Damaged character
+     * @param damage damage
+     * @returns
+     */
     function damage(character, damage) {
         let total = 0;
+        let resistance = CharacterSystem.resistance(character);
         for (let tag of damage_types_1.damage_types) {
-            character.change_hp(-damage[tag]);
+            const damage_curr = (0, basic_functions_1.trim)(damage[tag] - resistance[tag], 0, 100000);
+            character.change_hp(-damage_curr);
             total += damage[tag];
         }
         return total;
