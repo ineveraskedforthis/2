@@ -96,7 +96,7 @@ var BulkOrders;
         const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         const pay = amount * order.price;
         if (order.amount < amount)
-            return 'invalid_order';
+            amount = order.amount;
         if (buyer.savings.get() < pay)
             return 'not_enough_money';
         const material = order.tag;
@@ -114,9 +114,9 @@ var BulkOrders;
         const order = data_1.Data.BulkOrders.from_id(id);
         const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
         if (order.amount < amount)
-            return 'invalid_order';
+            amount = order.amount;
         if (seller.stash.get(order.tag) < amount)
-            return 'not_enough_items_in_stash';
+            amount = seller.stash.get(order.tag);
         const pay = amount * order.price;
         const material = order.tag;
         // shadow operations

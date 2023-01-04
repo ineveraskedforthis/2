@@ -915,6 +915,24 @@ function create_market_order_row(good_tag, amount, sell_price, buy_price, dummy_
 
         {
             let div = document.createElement('div');
+            div.innerHTML = 'Buy/Sell 10';
+            div.classList.add('market_button');
+            div_cell.appendChild(div);
+
+            ((order_id, button) => button.onclick = () => send_execute_order_request(order_id, 10))(order_id, div)
+        }
+
+        {
+            let div = document.createElement('div');
+            div.innerHTML = 'Buy/Sell 50';
+            div.classList.add('market_button');
+            div_cell.appendChild(div);
+
+            ((order_id, button) => button.onclick = () => send_execute_order_request(order_id, 50))(order_id, div)
+        }
+
+        {
+            let div = document.createElement('div');
             div.innerHTML = 'Remove';
             div.classList.add('market_button');
             div_cell.appendChild(div);

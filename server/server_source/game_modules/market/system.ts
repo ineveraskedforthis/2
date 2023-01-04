@@ -98,7 +98,7 @@ export namespace BulkOrders {
         const owner = Convert.id_to_character(order.owner_id)
         const pay = amount * order.price as money
 
-        if (order.amount < amount)      return 'invalid_order' 
+        if (order.amount < amount) amount = order.amount
         if (buyer.savings.get() < pay)  return 'not_enough_money'
 
         const material = order.tag        
@@ -120,8 +120,8 @@ export namespace BulkOrders {
         const order = Data.BulkOrders.from_id(id)
         const owner = Convert.id_to_character(order.owner_id)
         
-        if (order.amount < amount) return 'invalid_order'       
-        if (seller.stash.get(order.tag) < amount) return 'not_enough_items_in_stash'
+        if (order.amount < amount) amount = order.amount    
+        if (seller.stash.get(order.tag) < amount) amount = seller.stash.get(order.tag)
         
         const pay = amount * order.price as money
         const material = order.tag   
