@@ -4,18 +4,16 @@ import { socket } from "../globals.js";
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UpdateDataEvent } from "./battle_image_events.js";
 // export const battle_image = new BattleImageNext();
 const events_queue = [];
-BattleImage.add_action({ name: 'Move', tag: 'move' });
-BattleImage.add_action({ name: 'Slash', tag: 'attack_slice', cost: 3 });
-BattleImage.add_action({ name: 'Pierce', tag: 'attack_pierce', cost: 3 });
-BattleImage.add_action({ name: 'Knock', tag: 'attack_blunt', cost: 3 });
-BattleImage.add_action({ name: 'Magic Bolt', tag: 'magic_bolt', cost: 3 });
-// battle_image.add_action({name: 'fast attack', tag: 'fast_attack', cost: 1})
-BattleImage.add_action({ name: 'Shoot', tag: 'shoot', cost: 3, probabilistic: true });
-BattleImage.add_action({ name: 'Dodge', tag: 'dodge', cost: 4 });
-// battle_image.add_action({name: 'push back', tag: 'push_back', cost: 5})
-BattleImage.add_action({ name: 'Retreat', tag: 'flee', cost: 3, probabilistic: true });
-BattleImage.add_action({ name: 'Switch Weapon', tag: 'switch_weapon', cost: 3 });
-BattleImage.add_action({ name: 'End Turn', tag: 'end_turn', cost: 0 });
+BattleImage.add_action({ name: 'Move', tag: 'move' }, 'q');
+BattleImage.add_action({ name: 'Slash', tag: 'attack_slice', cost: 3 }, 'w');
+BattleImage.add_action({ name: 'Pierce', tag: 'attack_pierce', cost: 3 }, 'e');
+BattleImage.add_action({ name: 'Knock', tag: 'attack_blunt', cost: 3 }, 'r');
+BattleImage.add_action({ name: 'Magic Bolt', tag: 'magic_bolt', cost: 3 }, 'a');
+BattleImage.add_action({ name: 'Shoot', tag: 'shoot', cost: 3, probabilistic: true }, 's');
+BattleImage.add_action({ name: 'Dodge', tag: 'dodge', cost: 4 }, 'd');
+BattleImage.add_action({ name: 'Retreat', tag: 'flee', cost: 3, probabilistic: true }, 'f');
+BattleImage.add_action({ name: 'Switch Weapon', tag: 'switch_weapon', cost: 3 }, 'z');
+BattleImage.add_action({ name: 'End Turn', tag: 'end_turn', cost: 0 }, 'x');
 //              BATTLES 
 const UNIT_ID_MESSAGE = 'unit_id';
 const BATTLE_DATA_MESSAGE = 'battle_data';
@@ -91,7 +89,7 @@ function end_battle() {
 }
 // non events
 socket.on('action-display', data => { BattleImage.update_action_display(data.tag, data.value); });
-socket.on('new-action', msg => BattleImage.add_action({ name: msg, tag: msg }));
+// socket.on('new-action',                 msg => BattleImage.add_action({name: msg, tag:msg}, undefined));
 socket.on('b-action-chance', msg => BattleImage.update_action_probability(msg.tag, msg.value));
 socket.on('battle-in-process', bCallback.update_battle_process);
 // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)

@@ -173,6 +173,16 @@ console.log(tiles)
 const tilemap = new Image()
 tilemap.src = 'static/img/battle_tiles.png'
 
+let key_to_action: {[_ in string]: string|undefined} = {}
+
+function HOTKEYS_HANDLER(e: KeyboardEvent) {
+    let action = key_to_action[e.key]
+    if (action != undefined) {
+        BattleImage.send_action(action)
+    }
+}
+
+document.addEventListener('keyup', HOTKEYS_HANDLER, false);
 
 export namespace BattleImage {
     export function load(data: BattleData) {
@@ -387,7 +397,7 @@ export namespace BattleImage {
         ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
     }
 
-    export function add_action(action_type:battle_action) {
+    export function add_action(action_type:battle_action, hotkey: string) {
         actions.push(action_type)
 
         console.log(action_type)
@@ -399,7 +409,7 @@ export namespace BattleImage {
         
         {
             let label = document.createElement('div')
-            label.innerHTML = action_type.name
+            label.innerHTML = `(${hotkey}) ${action_type.name}`
             action_div.appendChild(label)
         }
 
@@ -420,6 +430,7 @@ export namespace BattleImage {
             action_div.appendChild(label)
         }
         
+        key_to_action[hotkey] = action_type.tag
         action_div.onclick = () => send_action(action_type.tag)
 
         // action_divs[action_type.name] = action_div
@@ -444,7 +455,7 @@ export namespace BattleImage {
         current_turn = index
     }
 
-    function send_action(tag:string) {
+    export function send_action(tag:string) {
         console.log('send action ' + tag)
         if (tag.startsWith('spell')) {
             if (selected != undefined) {

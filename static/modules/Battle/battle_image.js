@@ -130,6 +130,14 @@ console.log('TILES');
 console.log(tiles);
 const tilemap = new Image();
 tilemap.src = 'static/img/battle_tiles.png';
+let key_to_action = {};
+function HOTKEYS_HANDLER(e) {
+    let action = key_to_action[e.key];
+    if (action != undefined) {
+        BattleImage.send_action(action);
+    }
+}
+document.addEventListener('keyup', HOTKEYS_HANDLER, false);
 export var BattleImage;
 (function (BattleImage) {
     function load(data) {
@@ -341,7 +349,7 @@ export var BattleImage;
         let ctx = canvas_background.getContext('2d');
         ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
     }
-    function add_action(action_type) {
+    function add_action(action_type, hotkey) {
         actions.push(action_type);
         console.log(action_type);
         let action_div = document.createElement('div');
@@ -350,7 +358,7 @@ export var BattleImage;
         action_div.id = "battle_action_" + action_type.tag;
         {
             let label = document.createElement('div');
-            label.innerHTML = action_type.name;
+            label.innerHTML = `(${hotkey}) ${action_type.name}`;
             action_div.appendChild(label);
         }
         {
@@ -367,6 +375,7 @@ export var BattleImage;
             label.innerHTML = '???%';
             action_div.appendChild(label);
         }
+        key_to_action[hotkey] = action_type.tag;
         action_div.onclick = () => send_action(action_type.tag);
         // action_divs[action_type.name] = action_div
         let div = document.querySelector('.battle_control');
@@ -440,6 +449,7 @@ export var BattleImage;
             socket.emit('battle-action', { action: 'end_turn' });
         }
     }
+    BattleImage.send_action = send_action;
     function set_player(unit_id) {
         console.log('set_player_position');
         console.log(unit_id);
