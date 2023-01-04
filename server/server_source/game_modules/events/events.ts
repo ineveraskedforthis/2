@@ -9,15 +9,13 @@ import { Attack } from "../attack/system";
 import { Character } from "../character/character";
 import { ModelVariant } from "../character/character_parts";
 import { Loot } from "../races/generate_loot";
-import { skill } from "../character/skills";
 import { Perks, perk_price, perk_requirement } from "../character/Perks";
 import { CharacterSystem } from "../character/system";
 import { CharacterTemplate } from "../character/templates";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
-import { User } from "../client_communication/user";
 import { UserManagement } from "../client_communication/user_manager";
-import { character_list, Data } from "../data";
+import { Data } from "../data";
 import { ARROW_BONE, materials, material_index, RAT_SKIN, ZAZ } from "../manager_classes/materials_manager";
 import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
@@ -26,6 +24,7 @@ import { cell_id, damage_type, weapon_attack_tag } from "../types";
 import { Effect } from "./effects";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
+import { AttackObj } from "../attack/class";
 
 export namespace Event {
 
@@ -169,9 +168,9 @@ export namespace Event {
 
         // create attack
         const attack = Attack.generate_ranged(attacker)
-        CharacterSystem.damage(defender, attack.damage)
-        UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
         
+        deal_damage(defender, attack, attacker)
+
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender)
@@ -208,9 +207,8 @@ export namespace Event {
         }
 
         const attack = Attack.generate_magic_bolt(attacker, dist)
-        CharacterSystem.damage(defender, attack.damage)
-        UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
-        UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS)
+
+        deal_damage(defender, attack, attacker);
 
         //if target is dead, loot it all
         if (defender.dead()) {
@@ -218,6 +216,14 @@ export namespace Event {
         }
 
         return 'ok'
+    }
+
+    function deal_damage(defender: Character, attack: AttackObj, attacker: Character) {
+        CharacterSystem.damage(defender, attack.damage);
+        defender.change_status(attack.defender_status_change);
+        attacker.change_status(attack.attacker_status_change);
+        UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS);
+        UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS);
     }
 
     export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: damage_type) {
@@ -328,13 +334,7 @@ export namespace Event {
         
 
         //apply damage after all modifiers
-        // console.log(attack)
-        CharacterSystem.damage(defender, attack.damage)
-        defender.change_status(attack.defender_status_change)
-        attacker.change_status(attack.attacker_status_change)
-        
-        UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS)
-        UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS)
+        deal_damage(defender, attack, attacker)
 
         //if target is dead, loot it all
         if (defender.dead()) {
@@ -482,50 +482,4 @@ export namespace Event {
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         }
     }
-    //  spell_attack(target: Character, tag: spell_tags) {
-    //     let result = new AttackResult()
-
-    //     if (tag == 'bolt') {
-    //         let bolt_difficulty = 30
-    //         let dice = Math.random() * bolt_difficulty
-    //         let skill = this.skills.magic_mastery
-    //         if (skill < dice) {
-    //             this.skills.magic_mastery += 1
-    //         }
-    //     }
-
-    //     result = spells[tag](result);
-    //     result = this.mod_spell_damage_with_stats(result, tag);
-
-    //     this.change_status(result.attacker_status_change)
-
-    //     result =  target.take_damage(pool, 'ranged', result);
-    //     return result;
-    // }
-
-    //  take_damage(mod:'fast'|'heavy'|'usual'|'ranged', result: AttackResult): Promise<AttackResult> {
-    //     let res:any = this.get_resists();
-        
-    //     if (!result.flags.evade && !result.flags.miss) {
-    //         for (let i of damage_types) {
-    //             if (result.damage[i] > 0) {
-    //                 let curr_damage = Math.max(0, result.damage[i] - res[i]);
-    //                 if ((curr_damage > 0) && ((i == 'slice') || (i == 'pierce')) && !(mod == 'ranged')) {
-    //                     result.attacker_status_change.blood += Math.floor(curr_damage / 10)
-    //                     result.defender_status_change.blood += Math.floor(curr_damage / 10)
-    //                 }
-    //                 result.total_damage += curr_damage;
-    //                 this.change_hp(-curr_damage);
-    //                 if (this.get_hp() == 0) {
-    //                      this.world.entity_manager.remove_orders(pool, this)
-    //                      AuctionManagement.cancel_all_orders(pool, this.world.entity_manager, this.world.socket_manager, this)
-    //                     result.flags.killing_strike = true
-    //                 }
-    //             }
-    //         }
-    //         this.change_status(result.defender_status_change)
-    //     }
-    //      this.save_to_db(pool)
-    //     return result;
-    // }
 }

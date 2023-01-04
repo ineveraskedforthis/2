@@ -14,6 +14,7 @@ var path = require('path')
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 import { CampaignAI } from "../AI/ai_manager";
 import { skill, SkillList } from "./skills";
+import { trim } from "../calculations/basic_functions";
 
 var loaded_flag_characters = false
 
@@ -251,10 +252,19 @@ export namespace CharacterSystem {
         return weapon.weapon_tag
     }
 
+
+    /**
+     * Damages character, accounting for resistances
+     * @param character Damaged character
+     * @param damage damage
+     * @returns 
+     */
     export function damage(character: Character, damage: Damage) {
         let total = 0
+        let resistance = CharacterSystem.resistance(character)
         for (let tag of damage_types) {
-            character.change_hp(-damage[tag])
+            const damage_curr = trim(damage[tag] - resistance[tag], 0, 100000)
+            character.change_hp(-damage_curr)
             total += damage[tag]
         }
         return total
