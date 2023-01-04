@@ -7,6 +7,7 @@ const materials_manager_1 = require("../manager_classes/materials_manager");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const effects_1 = require("./effects");
 const events_1 = require("./events");
+const system_1 = require("../character/system");
 var EventInventory;
 (function (EventInventory) {
     function equip_from_backpack(character, index) {
@@ -46,7 +47,7 @@ var EventInventory;
     }
     EventInventory.add_item = add_item;
     function enchant(character, index) {
-        let enchant_rating = character.stats.stats.magic_power * (1 + character.skills.magic_mastery / 100);
+        let enchant_rating = system_1.CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 100);
         // so it's ~15 at 50 magic mastery
         // and 1 at 20 magic mastery
         if (character.perks.mage_initiation) {

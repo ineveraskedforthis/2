@@ -843,6 +843,20 @@ function select_character(id) {
     update_characters_list(test_data)
 }
 
+
+
+{   
+    function generate_toggle(div) {
+        return () => {div.classList.toggle('border-yellow')}
+    }
+    const destroy_button = document.getElementById('destroy')
+    const enchant_button = document.getElementById('enchant')
+
+    const affected_div = document.getElementById('equip_tab')
+    destroy_button.onclick = generate_toggle(affected_div)
+}
+
+
 {
     let button = document.getElementById('clear_orders_button')
     button.onclick = () => socket.emit('clear-orders')
