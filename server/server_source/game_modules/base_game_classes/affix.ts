@@ -182,24 +182,27 @@ export const protection_affixes_effects:{[_ in affix_tag]: DamageModificationFun
         of_madness: dummy_damage_mod,
         calm: dummy_damage_mod,
         thick: (resists: Damage) => {
+            resists.fire += 3;
             resists.pierce += 5;
             resists.slice += 10;
             return resists;
         },
 
         layered: (resists: Damage) => {
+            resists.fire += 3;
             resists.pierce += 10;
             return resists;
         },
 
         of_heat: (resists: Damage) => {
-            resists.fire += 5;
+            resists.fire += 10;
             return resists;
         },
 
         of_power: dummy_damage_mod,
 
         hard: (resists: Damage) => {
+            resists.fire += 2;
             resists.blunt += 3;
             resists.pierce += 3;
             resists.slice += 3;
@@ -207,6 +210,7 @@ export const protection_affixes_effects:{[_ in affix_tag]: DamageModificationFun
         },
 
         of_elder_beast: (resists: Damage) => {
+            resists.fire +=       5;
             resists.blunt +=      5 ;
             resists.pierce +=     5 ;
             resists.slice +=      5 ;

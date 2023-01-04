@@ -161,26 +161,30 @@ exports.protection_affixes_effects = {
     of_madness: dummy_damage_mod,
     calm: dummy_damage_mod,
     thick: (resists) => {
+        resists.fire += 3;
         resists.pierce += 5;
         resists.slice += 10;
         return resists;
     },
     layered: (resists) => {
+        resists.fire += 3;
         resists.pierce += 10;
         return resists;
     },
     of_heat: (resists) => {
-        resists.fire += 5;
+        resists.fire += 10;
         return resists;
     },
     of_power: dummy_damage_mod,
     hard: (resists) => {
+        resists.fire += 2;
         resists.blunt += 3;
         resists.pierce += 3;
         resists.slice += 3;
         return resists;
     },
     of_elder_beast: (resists) => {
+        resists.fire += 5;
         resists.blunt += 5;
         resists.pierce += 5;
         resists.slice += 5;
