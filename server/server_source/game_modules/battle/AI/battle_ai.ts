@@ -21,7 +21,7 @@ export namespace BattleAI {
      * @param potential_enemy_char 
      * @returns 
      */
-    function is_enemy(unit: Unit, unit_char: Character, potential_enemy: Unit|undefined, potential_enemy_char: Character) {
+    export function is_enemy(unit: Unit, unit_char: Character, potential_enemy: Unit|undefined, potential_enemy_char: Character) {
         if (potential_enemy == undefined)
             return false
         // team check
