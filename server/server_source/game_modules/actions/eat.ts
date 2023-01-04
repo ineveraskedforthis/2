@@ -23,6 +23,8 @@ export const eat = {
 
     result:  function(char:Character, data: map_position) {
         char.change_hp(10);
+        char.change_fatigue(-10)
+        char.change_stress(-1)
         char.stash.inc(FOOD, -1);
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)

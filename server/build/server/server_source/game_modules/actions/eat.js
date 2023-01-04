@@ -19,6 +19,8 @@ exports.eat = {
     },
     result: function (char, data) {
         char.change_hp(10);
+        char.change_fatigue(-10);
+        char.change_stress(-1);
         char.stash.inc(materials_manager_1.FOOD, -1);
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);

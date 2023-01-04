@@ -21,6 +21,7 @@ export namespace Template {
             let rat = Base(MageRatTemplate, undefined, undefined, x, y, Factions.Rats.id)
             rat.perks.magic_bolt = true
             rat.perks.mage_initiation = true
+            rat.perks.claws = true
             rat.stash.inc(ZAZ, 5)
             return rat
         }
@@ -36,6 +37,8 @@ export namespace Template {
         export function BerserkRat(x: number, y: number) {
             let rat = Base(BerserkRatTemplate, undefined, undefined, x, y, Factions.Rats.id)
             rat.perks.charge = true
+            rat.perks.claws = true
+            rat.skills.noweapon = 40
             return rat
         }
     }

@@ -22,6 +22,7 @@ var Template;
             let rat = Base(rat_1.MageRatTemplate, undefined, undefined, x, y, factions_1.Factions.Rats.id);
             rat.perks.magic_bolt = true;
             rat.perks.mage_initiation = true;
+            rat.perks.claws = true;
             rat.stash.inc(materials_manager_1.ZAZ, 5);
             return rat;
         }
@@ -37,6 +38,8 @@ var Template;
         function BerserkRat(x, y) {
             let rat = Base(rat_1.BerserkRatTemplate, undefined, undefined, x, y, factions_1.Factions.Rats.id);
             rat.perks.charge = true;
+            rat.perks.claws = true;
+            rat.skills.noweapon = 40;
             return rat;
         }
         Character.BerserkRat = BerserkRat;
