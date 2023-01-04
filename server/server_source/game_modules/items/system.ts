@@ -97,7 +97,10 @@ export namespace ItemSystem {
         let damage = new Damage()
         switch(type) {
             case 'blunt': {damage.blunt = ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt; break}
-            case 'pierce': {damage.pierce = ItemSystem.weight(item) * item.damage.pierce + affix_damage.pierce; break}
+            case 'pierce': {
+                damage.pierce = ItemSystem.weight(item) * item.damage.pierce + affix_damage.pierce;
+                damage.blunt = Math.floor(ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt) / 10; break
+            }
             case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice + affix_damage.slice; break}
         }
 
@@ -121,10 +124,12 @@ export namespace ItemSystem {
 
         let damage = new Damage()
         if (weapon?.weapon_tag == 'ranged') {
-            damage.pierce = 10
+            damage.pierce = Math.floor(50 * weapon.durability / 100)
             damage = DmgOps.add(damage, affix_damage)
             return damage
         }
+
+        return damage
 
         damage.blunt = weight(weapon) * weapon.damage.blunt
         damage.pierce = weight(weapon) * weapon.damage.pierce
@@ -134,6 +139,7 @@ export namespace ItemSystem {
 
     export function damage_breakdown(item: Item): Damage {
         let damage = DmgOps.copy(item.damage)
+
         DmgOps.mult_ip(damage, ItemSystem.weight(item))
         damage.fire = item.damage.fire
 
@@ -182,6 +188,7 @@ export namespace ItemSystem {
             durability: item.durability,
             item_type: item.slot,
             damage: damage_breakdown(item),
+            ranged_damage: DmgOps.total(ranged_damage(item)),
             resists: resists(item),
             // ranged_damage: ranged_damage(item)
             is_weapon: item.is_weapon()

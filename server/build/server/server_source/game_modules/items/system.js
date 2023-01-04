@@ -96,6 +96,7 @@ var ItemSystem;
             }
             case 'pierce': {
                 damage.pierce = ItemSystem.weight(item) * item.damage.pierce + affix_damage.pierce;
+                damage.blunt = Math.floor(ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt) / 10;
                 break;
             }
             case 'slice': {
@@ -120,10 +121,11 @@ var ItemSystem;
         }
         let damage = new damage_types_1.Damage();
         if (weapon?.weapon_tag == 'ranged') {
-            damage.pierce = 10;
+            damage.pierce = Math.floor(50 * weapon.durability / 100);
             damage = damage_types_1.DmgOps.add(damage, affix_damage);
             return damage;
         }
+        return damage;
         damage.blunt = weight(weapon) * weapon.damage.blunt;
         damage.pierce = weight(weapon) * weapon.damage.pierce;
         damage.slice = weight(weapon) * weapon.damage.slice;
@@ -171,6 +173,7 @@ var ItemSystem;
             durability: item.durability,
             item_type: item.slot,
             damage: damage_breakdown(item),
+            ranged_damage: damage_types_1.DmgOps.total(ranged_damage(item)),
             resists: resists(item),
             // ranged_damage: ranged_damage(item)
             is_weapon: item.is_weapon()

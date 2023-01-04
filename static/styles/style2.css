@@ -320,12 +320,20 @@ body {
     flex-direction: row;
 }
 
+.width-auto {
+    width: auto;
+}
+
 .width-200 {
     width: 200px;
 }
 
 .width-175 {
     width: 175px;
+}
+
+.width-125 {
+    width: 125px;
 }
 
 .width-100 {

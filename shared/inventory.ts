@@ -21,9 +21,10 @@ export type EquipSocket = {
 export interface ItemData {
     name: string,
     affixes: number,
-    damage: damageSocket
-    resists: damageSocket
-    affixes_list: affix[]
+    damage: damageSocket,
+    ranged_damage: number,
+    resists: damageSocket,
+    affixes_list: affix[],
     item_type: equip_slot
     durability: number
     backpack_index?: number
