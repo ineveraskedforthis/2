@@ -2,7 +2,7 @@ import { action_points, battle_position, ms, unit_id } from "../../../../shared/
 import { Alerts } from "../client_communication/network_actions/alerts"
 import { Event } from "../events/events"
 import { geom } from "../geom"
-import { Convert } from "../systems_communication"
+import { Convert, Unlink } from "../systems_communication"
 import { melee_attack_type } from "../types"
 import { Character } from "../character/character"
 import { BattleAI } from "./AI/battle_ai"
@@ -12,6 +12,8 @@ import { BattleSystem } from "./system"
 import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/Perks"
 import { trim } from "../calculations/basic_functions"
 import { CharacterSystem } from "../character/system"
+import { UserManagement } from "../client_communication/user_manager"
+import { UI_Part } from "../client_communication/causality_graph"
 
 // export const MOVE_COST = 3
 
@@ -35,6 +37,13 @@ export namespace BattleEvent {
         if (unit == undefined) return
         battle.heap.delete(unit)
         Alerts.remove_unit(battle, unit)
+        
+        const character = Convert.unit_to_character(unit)
+        Unlink.character_and_battle(character, battle)
+
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
+        if (battle.heap.get_units_amount() == 0)
+            Event.stop_battle(battle)
     }
 
     export function EndTurn(battle: Battle, unit: Unit) {
@@ -221,12 +230,13 @@ export namespace BattleEvent {
             let dice = Math.random();
 
             if (BattleSystem.safe(battle)) {
-                Event.stop_battle(battle)
+                Leave(battle, unit)
             }
 
             if (dice <= flee_chance(unit.position)) { // success
                 Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3)
-                Event.stop_battle(battle)
+                Leave(battle, unit)
+                // Event.stop_battle(battle)
             }
             Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
         }

@@ -10,6 +10,7 @@ const system_1 = require("./system");
 const Perks_1 = require("../character/Perks");
 const basic_functions_1 = require("../calculations/basic_functions");
 const system_2 = require("../character/system");
+const user_manager_1 = require("../client_communication/user_manager");
 // export const MOVE_COST = 3
 const COST = {
     ATTACK: 3,
@@ -32,6 +33,11 @@ var BattleEvent;
             return;
         battle.heap.delete(unit);
         alerts_1.Alerts.remove_unit(battle, unit);
+        const character = systems_communication_1.Convert.unit_to_character(unit);
+        systems_communication_1.Unlink.character_and_battle(character, battle);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
+        if (battle.heap.get_units_amount() == 0)
+            events_1.Event.stop_battle(battle);
     }
     BattleEvent.Leave = Leave;
     function EndTurn(battle, unit) {
@@ -195,11 +201,12 @@ var BattleEvent;
             unit.action_points_left = unit.action_points_left - 3;
             let dice = Math.random();
             if (system_1.BattleSystem.safe(battle)) {
-                events_1.Event.stop_battle(battle);
+                Leave(battle, unit);
             }
             if (dice <= flee_chance(unit.position)) { // success
                 alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3);
-                events_1.Event.stop_battle(battle);
+                Leave(battle, unit);
+                // Event.stop_battle(battle)
             }
             alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
         }

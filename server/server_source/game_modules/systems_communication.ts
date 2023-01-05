@@ -242,7 +242,7 @@ export namespace Unlink {
     export function character_and_battle(character: Character, battle: Battle|undefined) {
         if (battle == undefined) return
         const unit = Convert.character_to_unit(character)
-        BattleEvent.Leave(battle, unit)
+        // BattleEvent.Leave(battle, unit)
         character.battle_id = -1 as battle_id
         character.battle_unit_id = -1 as unit_id
     }

@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
-const events_1 = require("./battle/events");
 const system_1 = require("./character/system");
 const system_2 = require("./items/system");
 const user_manager_1 = require("./client_communication/user_manager");
@@ -237,7 +236,7 @@ var Unlink;
         if (battle == undefined)
             return;
         const unit = Convert.character_to_unit(character);
-        events_1.BattleEvent.Leave(battle, unit);
+        // BattleEvent.Leave(battle, unit)
         character.battle_id = -1;
         character.battle_unit_id = -1;
     }
