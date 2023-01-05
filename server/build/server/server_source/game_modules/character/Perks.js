@@ -81,6 +81,7 @@ function perk_requirement(tag, character) {
             if (character.skills.clothier < 15) {
                 return 'not_enough_clothier_skill_15';
             }
+            return 'ok';
         }
     }
 }

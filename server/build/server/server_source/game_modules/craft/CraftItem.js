@@ -34,7 +34,7 @@ function bonus_durability(character, craft) {
     }
     else {
         if (character.perks.skin_armour_master && skin_flag)
-            durability += 10;
+            durability += 20;
         if (character.perks.shoemaker && (template.slot == 'foot')) {
             durability += 10;
         }
