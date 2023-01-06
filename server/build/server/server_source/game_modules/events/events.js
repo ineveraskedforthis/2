@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
-const helpers_1 = require("../AI/helpers");
 const battle_calcs_1 = require("../battle/battle_calcs");
 const events_1 = require("../battle/events");
 const system_1 = require("../battle/system");
@@ -418,9 +417,9 @@ var Event;
         const battle = systems_communication_1.Convert.character_to_battle(defender);
         const unit_def = systems_communication_1.Convert.character_to_unit(defender);
         if ((battle != undefined) && (unit_def != undefined)) {
-            let team = helpers_1.AIhelper.check_team_to_join(attacker, battle, unit_def.team);
-            if (team == 'no_interest')
-                team = Math.random();
+            // let team = AIhelper.check_team_to_join(attacker, battle, unit_def.team)
+            // if (team == 'no_interest') team = Math.random()
+            let team = system_1.BattleSystem.get_empty_team(battle);
             join_battle(attacker, battle, team);
         }
         else {
@@ -444,6 +443,7 @@ var Event;
             return;
         }
         const unit = system_1.BattleSystem.create_unit(agent, team);
+        alerts_1.Alerts.battle_update_data(battle);
         events_1.BattleEvent.NewUnit(battle, unit);
         systems_communication_1.Link.character_battle_unit(agent, battle, unit);
         user_manager_1.UserManagement.add_user_to_update_queue(agent.user_id, 18 /* UI_Part.BATTLE */);
@@ -451,7 +451,7 @@ var Event;
     Event.join_battle = join_battle;
     function stop_battle(battle) {
         battle.ended = true;
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             if (character != undefined) {
                 character.battle_id = -1;

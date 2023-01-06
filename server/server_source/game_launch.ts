@@ -19,6 +19,8 @@ import { BulkOrders, ItemOrders } from "./game_modules/market/system";
 import { battle_id, unit_id } from "../../shared/battle_data";
 import { Server } from "./server";
 import { EventMarket } from "./game_modules/events/market";
+import { BattleEvent } from "./game_modules/battle/events";
+import { convertTypeAcquisitionFromJson } from "typescript";
 
 
 
@@ -82,6 +84,18 @@ function load() {
         // EventMarket.clear_orders(character)
     }
 
+    for (const battle of Data.Battle.list()) {
+        console.log('test battle for shadow units')
+        for (let unit of Object.values(battle.heap.data)) {
+            let id = unit.char_id
+            let character = Data.Character.from_id(id)
+            if (character == undefined || !character.in_battle()) {
+                BattleEvent.Leave(battle, unit)
+            }
+        }
+
+        
+    }
 
     // Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }

@@ -8,6 +8,7 @@ const CraftBulk_1 = require("../craft/CraftBulk");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const CraftItem_1 = require("../craft/CraftItem");
+const battle_ai_1 = require("../battle/battle_ai");
 function base_price(character, material) {
     switch (material) {
         case materials_manager_1.WOOD: {
@@ -79,11 +80,11 @@ var AIhelper;
     }
     AIhelper.check_battles_to_join = check_battles_to_join;
     function check_team_to_join(agent, battle, exclude) {
-        let data = battle.heap.raw_data;
+        let data = Object.values(battle.heap.data);
         let potential_team = -1;
         for (let item of data) {
             const target = systems_communication_1.Convert.unit_to_character(item);
-            if (agent.race() == target.race() && (item.team != exclude) && (!target.dead())) {
+            if (battle_ai_1.BattleAI.is_friend(agent, target) && (item.team != exclude)) {
                 if (potential_team == 0)
                     continue;
                 else

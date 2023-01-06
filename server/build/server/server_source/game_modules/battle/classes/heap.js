@@ -8,7 +8,7 @@ exports.UnitsHeap = void 0;
 */
 class UnitsHeap {
     constructor(raw_data) {
-        this.raw_data = [];
+        // this.raw_data = []
         this.data = {};
         this.heap = [];
         this.last = 0;
@@ -20,7 +20,7 @@ class UnitsHeap {
         return this.data[this.heap[i]].next_turn_after;
     }
     get_units_amount() {
-        return this.raw_data.length;
+        return Object.keys(this.data).length;
     }
     get_unit(i) {
         return this.data[i];
@@ -42,6 +42,7 @@ class UnitsHeap {
         this.last -= 1;
         this.heap[position] = this.heap[this.last];
         this.shift_down(position);
+        delete this.data[x.id];
     }
     push(obj) {
         this.heap[this.last] = obj;
@@ -82,7 +83,6 @@ class UnitsHeap {
     }
     add_unit(u) {
         this.data[u.id] = u;
-        this.raw_data.push(u);
         this.push(u.id);
     }
     swap(a, b) {
@@ -102,7 +102,7 @@ class UnitsHeap {
         return tmp;
     }
     update(dt) {
-        for (let unit of this.raw_data) {
+        for (let unit of Object.values(this.data)) {
             unit.next_turn_after = unit.next_turn_after - dt;
         }
     }

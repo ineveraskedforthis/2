@@ -450,8 +450,9 @@ export namespace Event {
         const battle = Convert.character_to_battle(defender)
         const unit_def = Convert.character_to_unit(defender)
         if ((battle != undefined) && (unit_def != undefined)) {
-            let team = AIhelper.check_team_to_join(attacker, battle, unit_def.team)
-            if (team == 'no_interest') team = Math.random()
+            // let team = AIhelper.check_team_to_join(attacker, battle, unit_def.team)
+            // if (team == 'no_interest') team = Math.random()
+            let team = BattleSystem.get_empty_team(battle)
             join_battle(attacker, battle, team)
         } else {
             const battle_id = BattleSystem.create_battle()
@@ -472,6 +473,7 @@ export namespace Event {
     export function join_battle(agent: Character, battle: Battle, team: number) {
         if (agent.in_battle()) {return}
         const unit = BattleSystem.create_unit(agent, team)
+        Alerts.battle_update_data(battle)
         BattleEvent.NewUnit(battle, unit)
         Link.character_battle_unit(agent, battle, unit)
         UserManagement.add_user_to_update_queue(agent.user_id, UI_Part.BATTLE)
@@ -479,7 +481,7 @@ export namespace Event {
 
     export function stop_battle(battle: Battle) {
         battle.ended = true
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = Convert.unit_to_character(unit)
             
             if (character != undefined) {

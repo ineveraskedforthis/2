@@ -128,7 +128,7 @@ export namespace Alerts {
             Event.data = unit_data
         }
 
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-event', Event)
         }
@@ -136,7 +136,7 @@ export namespace Alerts {
 
     export function battle_update_data(battle: Battle) {
         const data = BattleSystem.data(battle)
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-update-units', data)
         }
@@ -157,14 +157,14 @@ export namespace Alerts {
     }
 
     export function new_unit(battle: Battle, new_unit: Unit) {
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-new-unit', Convert.unit_to_unit_socket(new_unit))
         }
     }
 
     export function remove_unit(battle: Battle, removed_unit: Unit) {
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-remove-unit', Convert.unit_to_unit_socket(removed_unit))
         }

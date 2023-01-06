@@ -11,6 +11,7 @@ import { Stash } from "../inventories/stash"
 import { trim } from "../calculations/basic_functions"
 import { durability } from "../craft/CraftItem"
 import { box, CraftBulk, CraftItem } from "../craft/crafts_storage"
+import { BattleAI } from "../battle/battle_ai"
 
 export function base_price(character: Character, material: material_index): money {
     switch(material) {
@@ -92,11 +93,11 @@ export namespace AIhelper {
         return false
     }
     export function check_team_to_join(agent: Character, battle: Battle, exclude?: number):number|'no_interest' {
-        let data = battle.heap.raw_data
+        let data = Object.values(battle.heap.data)
         let potential_team = -1
         for (let item of data) {
             const target = Convert.unit_to_character(item)
-            if (agent.race() == target.race() && (item.team != exclude) && (!target.dead())) {
+            if (BattleAI.is_friend(agent, target) && (item.team != exclude)) {
                 if (potential_team == 0) continue
                 else potential_team = item.team
             }

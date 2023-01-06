@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleSystem = void 0;
 const systems_communication_1 = require("../systems_communication");
 const system_1 = require("../character/system");
-const battle_ai_1 = require("./AI/battle_ai");
+const battle_ai_1 = require("./battle_ai");
 const battle_1 = require("./classes/battle");
 const heap_1 = require("./classes/heap");
 const unit_1 = require("./classes/unit");
@@ -86,7 +86,7 @@ var BattleSystem;
     }
     function json_to_heap(s) {
         const h = new heap_1.UnitsHeap([]);
-        for (let unit of s.raw_data) {
+        for (let unit of Object.values(s.data)) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             if (character != undefined)
                 h.add_unit(unit);
@@ -105,6 +105,16 @@ var BattleSystem;
         return last_id;
     }
     BattleSystem.create_battle = create_battle;
+    function get_empty_team(battle) {
+        let max = 0;
+        for (let unit of Object.values(battle.heap.data)) {
+            if (max < unit.team) {
+                max = unit.team;
+            }
+        }
+        return max + 1;
+    }
+    BattleSystem.get_empty_team = get_empty_team;
     // team 0 is a defender and spawns at the center
     // other teams spawn around center
     function create_unit(character, team) {
@@ -214,7 +224,7 @@ var BattleSystem;
     /** Checks if there is only one team left */
     function safe(battle) {
         const teams = {};
-        for (const unit of battle.heap.raw_data) {
+        for (const unit of Object.values(battle.heap.data)) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             if (character == undefined)
                 continue;
@@ -247,11 +257,10 @@ var BattleSystem;
     }
     function data(battle) {
         let data = {};
-        for (var i = 0; i < battle.heap.raw_data.length; i++) {
-            let unit = battle.heap.raw_data[i];
+        for (let unit of Object.values(battle.heap.data)) {
             let character = systems_communication_1.Convert.unit_to_character(unit);
             if (!character.dead())
-                data[i] = (systems_communication_1.Convert.unit_to_unit_socket(unit));
+                data[unit.id] = (systems_communication_1.Convert.unit_to_unit_socket(unit));
         }
         return data;
     }

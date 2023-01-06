@@ -5,7 +5,7 @@ const alerts_1 = require("../client_communication/network_actions/alerts");
 const events_1 = require("../events/events");
 const geom_1 = require("../geom");
 const systems_communication_1 = require("../systems_communication");
-const battle_ai_1 = require("./AI/battle_ai");
+const battle_ai_1 = require("./battle_ai");
 const system_1 = require("./system");
 const Perks_1 = require("../character/Perks");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -31,9 +31,12 @@ var BattleEvent;
     function Leave(battle, unit) {
         if (unit == undefined)
             return;
+        console.log('leave' + unit.id);
         battle.heap.delete(unit);
         alerts_1.Alerts.remove_unit(battle, unit);
+        alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 0);
         const character = systems_communication_1.Convert.unit_to_character(unit);
+        console.log(character.name);
         systems_communication_1.Unlink.character_and_battle(character, battle);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
         if (battle.heap.get_units_amount() == 0)
@@ -201,14 +204,14 @@ var BattleEvent;
             unit.action_points_left = unit.action_points_left - 3;
             let dice = Math.random();
             if (system_1.BattleSystem.safe(battle)) {
+                alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
                 Leave(battle, unit);
             }
             if (dice <= flee_chance(unit.position)) { // success
                 alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3);
+                alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
                 Leave(battle, unit);
-                // Event.stop_battle(battle)
             }
-            alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
         }
         alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left);
     }

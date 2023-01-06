@@ -51,9 +51,29 @@ export namespace BattleAI {
         return true
     }
 
+    export function is_friend(character: Character, potential_friend_of_character: Character) {
+        if (potential_friend_of_character.dead()) {
+            return false
+        }
+
+        if (hostile(character.race(), potential_friend_of_character.race())) {
+            return false
+        }
+
+        if (Data.Reputation.a_X_b(character.id, 'friend', potential_friend_of_character.id)) {
+            return true
+        }
+
+        if (Data.Reputation.a_X_b(character.id, 'member', potential_friend_of_character.id)) {
+            return true
+        }
+
+        return false
+    }
+
     function calculate_closest_enemy(battle: Battle, index: unit_id):unit_id|undefined {
         let closest_enemy: undefined|unit_id = undefined;
-        const units = battle.heap.raw_data;
+        // const units = battle.heap.raw_data;
         const unit = battle.heap.get_unit(index);
         let min_distance = 100;
         const character = Convert.unit_to_character(unit)

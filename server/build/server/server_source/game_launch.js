@@ -14,6 +14,7 @@ const events_1 = require("./game_modules/events/events");
 const systems_communication_1 = require("./game_modules/systems_communication");
 const system_3 = require("./game_modules/battle/system");
 const system_4 = require("./game_modules/market/system");
+const events_2 = require("./game_modules/battle/events");
 const gameloop = require('node-gameloop');
 var shutdown = false;
 function launch(http_server) {
@@ -60,6 +61,16 @@ function load() {
             character.battle_unit_id = -1;
         }
         // EventMarket.clear_orders(character)
+    }
+    for (const battle of data_1.Data.Battle.list()) {
+        console.log('test battle for shadow units');
+        for (let unit of Object.values(battle.heap.data)) {
+            let id = unit.char_id;
+            let character = data_1.Data.Character.from_id(id);
+            if (character == undefined || !character.in_battle()) {
+                events_2.BattleEvent.Leave(battle, unit);
+            }
+        }
     }
     // Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }

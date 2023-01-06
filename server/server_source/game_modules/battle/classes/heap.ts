@@ -10,12 +10,12 @@ import { Unit } from "./unit";
 export class UnitsHeap {
     
     data: {[_ in unit_id]: Unit};
-    raw_data: Unit[];
+    // raw_data: Unit[];
     last: number;
     heap: unit_id[];
 
     constructor(raw_data: Unit[]) {
-        this.raw_data = []
+        // this.raw_data = []
         this.data = {}
         this.heap = []
         this.last = 0;
@@ -29,7 +29,7 @@ export class UnitsHeap {
     }
 
     get_units_amount() {
-        return this.raw_data.length
+        return Object.keys(this.data).length
     }
 
     get_unit(i: unit_id): Unit {
@@ -52,6 +52,9 @@ export class UnitsHeap {
         this.last -= 1
         this.heap[position] = this.heap[this.last]       
         this.shift_down(position)
+
+        delete this.data[x.id]
+        
     }
 
     push(obj: unit_id) {
@@ -92,7 +95,6 @@ export class UnitsHeap {
 
     add_unit(u: Unit) {
         this.data[u.id] = u
-        this.raw_data.push(u)
         this.push(u.id)
     }
 
@@ -115,7 +117,7 @@ export class UnitsHeap {
     }
 
     update(dt: number) {
-        for (let unit of this.raw_data) {
+        for (let unit of Object.values(this.data)) {
             unit.next_turn_after = unit.next_turn_after - dt
         }
     }

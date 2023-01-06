@@ -124,7 +124,7 @@ var Alerts;
             let unit_data = systems_communication_1.Convert.unit_to_unit_socket(battle.heap.get_unit(unit_id));
             Event.data = unit_data;
         }
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             generic_character_alert(character, 'battle-event', Event);
         }
@@ -132,7 +132,7 @@ var Alerts;
     Alerts.battle_event = battle_event;
     function battle_update_data(battle) {
         const data = system_1.BattleSystem.data(battle);
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             generic_character_alert(character, 'battle-update-units', data);
         }
@@ -153,14 +153,14 @@ var Alerts;
     }
     Alerts.battle_to_character = battle_to_character;
     function new_unit(battle, new_unit) {
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             generic_character_alert(character, 'battle-new-unit', systems_communication_1.Convert.unit_to_unit_socket(new_unit));
         }
     }
     Alerts.new_unit = new_unit;
     function remove_unit(battle, removed_unit) {
-        for (let unit of battle.heap.raw_data) {
+        for (let unit of Object.values(battle.heap.data)) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             generic_character_alert(character, 'battle-remove-unit', systems_communication_1.Convert.unit_to_unit_socket(removed_unit));
         }

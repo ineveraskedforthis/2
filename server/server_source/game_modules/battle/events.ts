@@ -35,10 +35,13 @@ export namespace BattleEvent {
 
     export function Leave(battle: Battle, unit: Unit|undefined) {
         if (unit == undefined) return
+        console.log('leave' + unit.id)
         battle.heap.delete(unit)
         Alerts.remove_unit(battle, unit)
+        Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 0)
         
         const character = Convert.unit_to_character(unit)
+        console.log(character.name)
         Unlink.character_and_battle(character, battle)
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
@@ -230,15 +233,15 @@ export namespace BattleEvent {
             let dice = Math.random();
 
             if (BattleSystem.safe(battle)) {
+                Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
                 Leave(battle, unit)
             }
 
             if (dice <= flee_chance(unit.position)) { // success
                 Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3)
+                Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
                 Leave(battle, unit)
-                // Event.stop_battle(battle)
-            }
-            Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
+            }            
         }
         Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left)
     } 

@@ -88,7 +88,7 @@ export namespace BattleSystem {
 
     function json_to_heap(s: UnitsHeap) {
         const h = new UnitsHeap([])
-        for (let unit of s.raw_data) {
+        for (let unit of Object.values(s.data)) {
             const character = Convert.unit_to_character(unit)
             if (character != undefined) h.add_unit(unit)
         }
@@ -105,6 +105,16 @@ export namespace BattleSystem {
         battle.grace_period = 6
         Data.Battle.set(last_id, battle)
         return last_id
+    }
+
+    export function get_empty_team(battle: Battle) {
+        let max = 0
+        for (let unit of Object.values(battle.heap.data)) {
+            if (max < unit.team) {
+                max = unit.team
+            }
+        }
+        return max + 1
     }
 
     // team 0 is a defender and spawns at the center
@@ -237,7 +247,7 @@ export namespace BattleSystem {
     /** Checks if there is only one team left */
     export function safe(battle: Battle) {
         const teams:{[_ in number]:number} = {}
-        for (const unit of battle.heap.raw_data) {
+        for (const unit of Object.values(battle.heap.data)) {
             const character = Convert.unit_to_character(unit)
             if (character == undefined) continue
             if (character.dead()) continue
@@ -264,10 +274,9 @@ export namespace BattleSystem {
 
     export function data(battle: Battle):BattleData {
         let data:BattleData = {};
-        for (var i = 0; i < battle.heap.raw_data.length; i++) {
-            let unit = battle.heap.raw_data[i];
+        for (let unit of Object.values(battle.heap.data)) {
             let character:Character = Convert.unit_to_character(unit)
-            if (!character.dead()) data[i] = (Convert.unit_to_unit_socket(unit))
+            if (!character.dead()) data[unit.id] = (Convert.unit_to_unit_socket(unit))
         }
         return data
     }
