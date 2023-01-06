@@ -2,7 +2,7 @@ import { action_points, BattleData, battle_id, battle_position, ms, unit_id } fr
 import { Convert } from "../systems_communication"
 import { Character } from "../character/character"
 import { CharacterSystem } from "../character/system"
-import { BattleAI } from "./AI/battle_ai"
+import { BattleAI } from "./battle_ai"
 import { Battle } from "./classes/battle"
 import { UnitsHeap } from "./classes/heap"
 import { Unit } from "./classes/unit"

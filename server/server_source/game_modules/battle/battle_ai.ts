@@ -1,15 +1,15 @@
-import type { Character } from "../../character/character";
+import type { Character } from "../character/character";
 
-import {geom, point} from '../../geom'
-import { Unit } from "../classes/unit";
-import { ActionTag, AttackAction, battle_position, EndTurn, FastAttackAction, MagicBoltAction, MoveAction, unit_id } from "../../../../../shared/battle_data";
-import { Battle } from "../classes/battle";
-import { Convert } from "../../systems_communication";
-import { BattleEvent } from "../events";
-import { Attack } from "../../attack/system";
-import { Data } from "../../data";
-import { hostile} from "../../races/racial_hostility"
-import { BattleSystem } from "../system";
+import {geom, point} from '../geom'
+import { Unit } from "./classes/unit";
+import { ActionTag, AttackAction, battle_position, EndTurn, FastAttackAction, MagicBoltAction, MoveAction, unit_id } from "../../../../shared/battle_data";
+import { Battle } from "./classes/battle";
+import { Convert } from "../systems_communication";
+import { BattleEvent } from "./events";
+import { Attack } from "../attack/system";
+import { Data } from "../data";
+import { hostile} from "../races/racial_hostility"
+import { BattleSystem } from "./system";
 
 export namespace BattleAI {
 
