@@ -56,6 +56,7 @@ export class SocketManager {
 
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
             socket.on('attack-character',  (msg: any) => SocketCommand.attack_character(user, msg));
+            socket.on('support-character',  (msg: any) => SocketCommand.support_character(user, msg));
 
             socket.on('buy',  (msg: any)    =>      InventoryCommands.buy(user, msg));
             socket.on('sell',  (msg: any)   =>      InventoryCommands.sell(user, msg));
@@ -83,7 +84,6 @@ export class SocketManager {
             socket.on('switch-weapon',  (msg: any) =>   InventoryCommands.switch_weapon(user))
             socket.on('unequip',  (msg: any) =>         InventoryCommands.unequip(user, msg));
 
-            
 
             socket.on('eat',  () =>             HandleAction.act(user, CharacterAction.EAT));
             socket.on('clean',  () =>           HandleAction.act(user, CharacterAction.CLEAN));

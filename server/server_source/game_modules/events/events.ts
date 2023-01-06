@@ -1,5 +1,4 @@
 import { battle_id, unit_id } from "../../../../shared/battle_data";
-import { AIhelper } from "../AI/helpers";
 import { Accuracy } from "../battle/battle_calcs";
 import { Battle } from "../battle/classes/battle";
 import { BattleEvent } from "../battle/events";
@@ -434,6 +433,22 @@ export namespace Event {
         if (user == undefined) return
         Alerts.log_to_user(user, `change ${materials.index_to_material(tag).string_tag} by ${amount}. Now: ${character.stash.get(tag)}`)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
+    }
+
+    export function support_in_battle(character: Character, target: Character) {
+        console.log('attempt to support in battle')
+
+        if (character.id == target.id) return undefined
+        if (!target.in_battle()) return
+        if (character.cell_id != target.cell_id) {return undefined}
+        console.log('validated')
+
+        const battle = Convert.character_to_battle(target)
+        if (battle == undefined) return
+        const unit_target = Convert.character_to_unit(target)
+        if (unit_target == undefined) return
+
+        join_battle(character, battle, unit_target.team)
     }
 
     export function start_battle(attacker: Character, defender: Character) {

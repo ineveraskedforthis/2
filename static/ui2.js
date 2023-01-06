@@ -822,9 +822,18 @@ function attack_selected_character() {
     }
     socket.emit('attack-character', globals.selected_character)
 }
+function support_selected_character() {
+    if (globals.selected_character == undefined) {
+        return
+    }
+    socket.emit('support-character', globals.selected_character)
+}
+
 {
     let attack_button = document.getElementById("attack_selected_charater")
     attack_button.onclick = attack_selected_character
+    let support_button = document.getElementById("support_selected_charater")
+    support_button.onclick = support_selected_character
 }
 
 function update_characters_list(data) {

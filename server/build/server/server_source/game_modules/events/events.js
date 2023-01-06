@@ -401,6 +401,25 @@ var Event;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
     }
     Event.change_stash = change_stash;
+    function support_in_battle(character, target) {
+        console.log('attempt to support in battle');
+        if (character.id == target.id)
+            return undefined;
+        if (!target.in_battle())
+            return;
+        if (character.cell_id != target.cell_id) {
+            return undefined;
+        }
+        console.log('validated');
+        const battle = systems_communication_1.Convert.character_to_battle(target);
+        if (battle == undefined)
+            return;
+        const unit_target = systems_communication_1.Convert.character_to_unit(target);
+        if (unit_target == undefined)
+            return;
+        join_battle(character, battle, unit_target.team);
+    }
+    Event.support_in_battle = support_in_battle;
     function start_battle(attacker, defender) {
         console.log('attempt to start battle');
         if (attacker.id == defender.id)

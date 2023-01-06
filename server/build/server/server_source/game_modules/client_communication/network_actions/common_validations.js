@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Validator = void 0;
+const systems_communication_1 = require("../../systems_communication");
 const a = 'a'.charCodeAt(0);
 const z = 'z'.charCodeAt(0);
 const A = 'A'.charCodeAt(0);
@@ -60,4 +61,23 @@ var Validator;
         return true;
     }
     Validator.can_act = can_act;
+    function valid_action_to_character(user, character, target) {
+        if (user == undefined)
+            return [undefined, undefined, undefined];
+        if (character == undefined)
+            return [undefined, undefined, undefined];
+        if (!Validator.can_act(user, character)) {
+            return [undefined, undefined, undefined];
+        }
+        console.log('user is valid');
+        const data = Number(target);
+        if (isNaN(data))
+            return [undefined, undefined, undefined];
+        const target_character = systems_communication_1.Convert.number_to_character(data);
+        if (target_character == undefined)
+            return [undefined, undefined, undefined];
+        console.log('target character is vaalid');
+        return [user, character, target_character];
+    }
+    Validator.valid_action_to_character = valid_action_to_character;
 })(Validator = exports.Validator || (exports.Validator = {}));

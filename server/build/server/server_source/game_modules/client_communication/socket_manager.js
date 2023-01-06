@@ -36,6 +36,7 @@ class SocketManager {
             socket.on('play', (msg) => this.play(user));
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
             socket.on('attack-character', (msg) => run_event_1.SocketCommand.attack_character(user, msg));
+            socket.on('support-character', (msg) => run_event_1.SocketCommand.support_character(user, msg));
             socket.on('buy', (msg) => inventory_management_1.InventoryCommands.buy(user, msg));
             socket.on('sell', (msg) => inventory_management_1.InventoryCommands.sell(user, msg));
             socket.on('sell-item', (msg) => inventory_management_1.InventoryCommands.sell_item(user, msg));

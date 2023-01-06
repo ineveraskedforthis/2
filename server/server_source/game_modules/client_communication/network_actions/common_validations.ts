@@ -1,4 +1,5 @@
 import { Character } from "../../character/character";
+import { Convert } from "../../systems_communication";
 import { User } from "../user";
 
 const a     = 'a'.charCodeAt(0)
@@ -51,5 +52,19 @@ export namespace Validator {
         if (character.dead()) return false
 
         return true
+    }
+
+    export function valid_action_to_character(user: User|undefined, character: Character|undefined, target: unknown): [User, Character, Character]|[undefined, undefined, undefined] {
+        if (user == undefined) return [undefined, undefined, undefined] 
+        if (character == undefined) return [undefined, undefined, undefined] 
+        if (!Validator.can_act(user, character)) {return [undefined, undefined, undefined] }
+        console.log('user is valid')
+        const data = Number(target)
+        if (isNaN(data)) return [undefined, undefined, undefined] 
+        const target_character = Convert.number_to_character(data)
+        if (target_character == undefined) return [undefined, undefined, undefined] 
+        console.log('target character is vaalid')
+        
+        return [user, character, target_character]
     }
 }
