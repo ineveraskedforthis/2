@@ -458,24 +458,26 @@ export namespace Event {
             const battle_id = BattleSystem.create_battle()
             console.log('new battle: ' + battle_id)
             const battle = Convert.id_to_battle(battle_id)
-            const attacker_unit = BattleSystem.create_unit(attacker, 1)
-            const defender_unit = BattleSystem.create_unit(defender, 0)
-            BattleEvent.NewUnit(battle, attacker_unit)
-            BattleEvent.NewUnit(battle, defender_unit)
-            Link.character_battle_unit(attacker, battle, attacker_unit)
-            Link.character_battle_unit(defender, battle, defender_unit)
-            Alerts.battle_update_data(battle)
-            UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
-            UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)
+            join_battle(defender, battle, 0)
+            join_battle(attacker, battle, 1)
+            // const attacker_unit = BattleSystem.create_unit(attacker, 1)
+            // const defender_unit = BattleSystem.create_unit(defender, 0)
+            // BattleEvent.NewUnit(battle, attacker_unit)
+            // BattleEvent.NewUnit(battle, defender_unit)
+            // Link.character_battle_unit(attacker, battle, attacker_unit)
+            // Link.character_battle_unit(defender, battle, defender_unit)
+            // Alerts.battle_update_data(battle)
+            // UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
+            // UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)
         }
     }
 
     export function join_battle(agent: Character, battle: Battle, team: number) {
         if (agent.in_battle()) {return}
         const unit = BattleSystem.create_unit(agent, team)
-        Alerts.battle_update_data(battle)
         BattleEvent.NewUnit(battle, unit)
         Link.character_battle_unit(agent, battle, unit)
+        Alerts.battle_update_data(battle)
         UserManagement.add_user_to_update_queue(agent.user_id, UI_Part.BATTLE)
     }
 

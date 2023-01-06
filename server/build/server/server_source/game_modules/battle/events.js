@@ -32,6 +32,7 @@ var BattleEvent;
         if (unit == undefined)
             return;
         console.log('leave' + unit.id);
+        EndTurn(battle, unit);
         battle.heap.delete(unit);
         alerts_1.Alerts.remove_unit(battle, unit);
         alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 0);
@@ -39,8 +40,10 @@ var BattleEvent;
         console.log(character.name);
         systems_communication_1.Unlink.character_and_battle(character, battle);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
-        if (battle.heap.get_units_amount() == 0)
+        if (battle.heap.get_units_amount() == 0) {
             events_1.Event.stop_battle(battle);
+            return;
+        }
     }
     BattleEvent.Leave = Leave;
     function EndTurn(battle, unit) {
@@ -206,11 +209,13 @@ var BattleEvent;
             if (system_1.BattleSystem.safe(battle)) {
                 alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
                 Leave(battle, unit);
+                return;
             }
             if (dice <= flee_chance(unit.position)) { // success
                 alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3);
                 alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
                 Leave(battle, unit);
+                return;
             }
         }
         alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left);

@@ -33,16 +33,23 @@ class UnitsHeap {
     }
     delete(x) {
         var position = undefined;
-        for (let i = 0; i < this.heap.length; i++) {
+        for (let i = 0; i < this.last; i++) {
             if (this.heap[i] == x.id)
                 position = i;
         }
         if (position == undefined)
-            return;
+            return false;
         this.last -= 1;
         this.heap[position] = this.heap[this.last];
         this.shift_down(position);
         delete this.data[x.id];
+        console.log(`${x.id} is removed from the heap, current state:`);
+        console.log(this.last);
+        console.log(this.heap);
+        console.log(this.data);
+        if (position == 0)
+            return true;
+        return false;
     }
     push(obj) {
         this.heap[this.last] = obj;

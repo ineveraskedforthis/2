@@ -125,6 +125,8 @@ var Alerts;
             Event.data = unit_data;
         }
         for (let unit of Object.values(battle.heap.data)) {
+            if (unit == undefined)
+                continue;
             const character = systems_communication_1.Convert.unit_to_character(unit);
             generic_character_alert(character, 'battle-event', Event);
         }

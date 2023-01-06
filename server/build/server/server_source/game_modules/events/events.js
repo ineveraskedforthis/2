@@ -426,15 +426,17 @@ var Event;
             const battle_id = system_1.BattleSystem.create_battle();
             console.log('new battle: ' + battle_id);
             const battle = systems_communication_1.Convert.id_to_battle(battle_id);
-            const attacker_unit = system_1.BattleSystem.create_unit(attacker, 1);
-            const defender_unit = system_1.BattleSystem.create_unit(defender, 0);
-            events_1.BattleEvent.NewUnit(battle, attacker_unit);
-            events_1.BattleEvent.NewUnit(battle, defender_unit);
-            systems_communication_1.Link.character_battle_unit(attacker, battle, attacker_unit);
-            systems_communication_1.Link.character_battle_unit(defender, battle, defender_unit);
-            alerts_1.Alerts.battle_update_data(battle);
-            user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 18 /* UI_Part.BATTLE */);
-            user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 18 /* UI_Part.BATTLE */);
+            join_battle(defender, battle, 0);
+            join_battle(attacker, battle, 1);
+            // const attacker_unit = BattleSystem.create_unit(attacker, 1)
+            // const defender_unit = BattleSystem.create_unit(defender, 0)
+            // BattleEvent.NewUnit(battle, attacker_unit)
+            // BattleEvent.NewUnit(battle, defender_unit)
+            // Link.character_battle_unit(attacker, battle, attacker_unit)
+            // Link.character_battle_unit(defender, battle, defender_unit)
+            // Alerts.battle_update_data(battle)
+            // UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
+            // UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)
         }
     }
     Event.start_battle = start_battle;
@@ -443,9 +445,9 @@ var Event;
             return;
         }
         const unit = system_1.BattleSystem.create_unit(agent, team);
-        alerts_1.Alerts.battle_update_data(battle);
         events_1.BattleEvent.NewUnit(battle, unit);
         systems_communication_1.Link.character_battle_unit(agent, battle, unit);
+        alerts_1.Alerts.battle_update_data(battle);
         user_manager_1.UserManagement.add_user_to_update_queue(agent.user_id, 18 /* UI_Part.BATTLE */);
     }
     Event.join_battle = join_battle;
