@@ -10,6 +10,7 @@ import './modules/Battle/battle_image_init.js'
 import './modules/Market/items_market.js'
 import { BattleImage } from './modules/Battle/battle_image.js';
 import { loadImages } from './modules/load_images.js';
+import './new_log_message.js';
 
 
 var stash_tag_to_id = {}
@@ -70,74 +71,6 @@ socket.on('connect', () => {
     }
 })
 
-
-// MESSAGES STUFF
-function new_log_message(msg) {
-    if (msg == null) {
-        return
-    }
-    if (msg == 'you_are_dead') {
-        turn_tab_off('battle')
-    }
-    var log = document.getElementById('log');
-    var new_line = document.createElement('p');
-    var text = document.createTextNode(msg);
-    new_line.append(text);
-    log.appendChild(new_line);
-    log.scrollTop = log.scrollHeight
-}
-
-function new_message(msg) {
-    if (msg != 'message-too-long') {
-        var chat = document.getElementById('chat');
-        var new_line = document.createElement('p');
-        var text = document.createTextNode(msg.user + ': ' + msg.msg);
-        new_line.append(text);
-        chat.appendChild(new_line);
-        chat.scrollTop = chat.scrollHeight
-    }
-}
-
-document.getElementById('open_chat_button').onclick = () => {
-    document.getElementById('log').style.display = 'none';
-    document.getElementById('log-attack').style.display = 'none';
-    document.getElementById('chat').style.display = 'block';
-
-    document.getElementById('open_log_button').classList.remove('selected');
-    document.getElementById('open_log-attack_button').classList.remove('selected');
-
-    document.getElementById('open_chat_button').classList.add('selected');
-}
-
-document.getElementById('open_log_button').onclick = () => {
-    document.getElementById('chat').style.display = 'none';
-    document.getElementById('log-attack').style.display = 'none';
-    document.getElementById('log').style.display = 'block';
-
-    document.getElementById('open_log-attack_button').classList.remove('selected');
-    document.getElementById('open_chat_button').classList.remove('selected');
-
-    document.getElementById('open_log_button').classList.add('selected');
-}
-
-document.getElementById('open_log-attack_button').onclick = () => {
-    document.getElementById('chat').style.display = 'none';
-    document.getElementById('log-attack').style.display = 'block';
-    document.getElementById('log').style.display = 'none';
-
-    document.getElementById('open_log_button').classList.remove('selected');
-    document.getElementById('open_chat_button').classList.remove('selected');
-
-    document.getElementById('open_log-attack_button').classList.add('selected');
-}
-
-document.getElementById('send_message_button').onclick = (event) => {
-    event.preventDefault();
-    let message = document.getElementById('message_field').value;
-    socket.emit('new-message', message);
-}
-
-//MESSAGES STUFF END
 
 
 
@@ -722,30 +655,7 @@ function send_switch_weapon_request() {
 socket.on('tags', msg => update_tags(msg));
 socket.on('alert', msg => {my_alert(msg); new_log_message(msg)});
 
-function new_log_attack_message(msg) {
-    let log_message = ''
-    if (msg.role == 'attacker')
-        log_message += 'you has attacked \n'
-    else 
-        log_message += 'you was attacked \n'
-    log_message += 'damage | resist | after \n'
 
-    for (let tag of ['fire', 'blunt', 'pierce', 'slice']) {
-        log_message += `${tag}: ${msg.attack.damage[tag]}, ${msg.res[tag]}, ${Math.max(0, msg.attack.damage[tag] - msg.res[tag])} \n`
-    } 
-
-    log_message += `total damage: ${msg.total} \n`
-
-    var log = document.getElementById('log-attack');
-    var new_line = document.createElement('p');
-    var text = document.createTextNode(log_message);
-    new_line.style = 'white-space: pre-line'
-    new_line.append(text);
-    log.appendChild(new_line);
-    log.scrollTop = log.scrollHeight
-}
-
-socket.on('log-attack', msg => {new_log_attack_message(msg)});
 
 socket.on('sections', msg => map.load_sections(msg));
 
@@ -769,8 +679,7 @@ socket.on('char-info-detailed', msg => character_screen.update(msg))
 socket.on('stash-update', msg => {console.log('stash-update'); update_stash(msg)});
 socket.on('equip-update', msg => {character_screen.update_equip(msg); update_equip(msg)});
 
-socket.on('log-message', msg => new_log_message(msg));
-socket.on('new-message', msg => new_message(msg));
+
 
 socket.on('map-pos', msg => {
     console.log('map-pos')

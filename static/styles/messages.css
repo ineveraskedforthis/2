@@ -84,10 +84,6 @@
     overflow: auto;
 }
 
-#log {
-    display: none;
-}
-
 #send_message_frame {
     width: 100%;
     display: flex;
