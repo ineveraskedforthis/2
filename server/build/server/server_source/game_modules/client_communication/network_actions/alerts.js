@@ -140,6 +140,12 @@ var Alerts;
         }
     }
     Alerts.battle_update_data = battle_update_data;
+    function battle_update_units(battle) {
+        for (let unit of Object.values(battle.heap.data)) {
+            Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
+        }
+    }
+    Alerts.battle_update_units = battle_update_units;
     function battle_update_unit(battle, unit) {
         Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
         // const data = Convert.unit_to_unit_socket(unit)

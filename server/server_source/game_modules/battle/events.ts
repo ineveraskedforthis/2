@@ -27,6 +27,7 @@ export const HALFHEIGHT = 15
 
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
+        unit.next_turn_after = battle.heap.last * unit.slowness + Math.random()
         battle.heap.add_unit(unit)
         Alerts.new_unit(battle, unit)
         if (battle.grace_period > 0) battle.grace_period += 6
@@ -67,7 +68,7 @@ export namespace BattleEvent {
 
         //updating unit and heap
         battle.heap.pop()
-        unit.next_turn_after = unit.slowness;
+        unit.next_turn_after = unit.slowness * battle.heap.last;
 
         let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max) as action_points;
         let ap_increase = new_ap - unit.action_points_left
@@ -104,7 +105,8 @@ export namespace BattleEvent {
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
         Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0)
-        Alerts.battle_update_unit(battle, unit)
+        Alerts.battle_update_data(battle)
+        Alerts.battle_update_units(battle)
     }
 
     export function Move(battle: Battle, unit: Unit, target: battle_position) {

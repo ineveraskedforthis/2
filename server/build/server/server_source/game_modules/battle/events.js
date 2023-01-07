@@ -21,6 +21,7 @@ exports.HALFHEIGHT = 15;
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
+        unit.next_turn_after = battle.heap.last * unit.slowness + Math.random();
         battle.heap.add_unit(unit);
         alerts_1.Alerts.new_unit(battle, unit);
         if (battle.grace_period > 0)
@@ -59,7 +60,7 @@ var BattleEvent;
         battle.waiting_for_input = false;
         //updating unit and heap
         battle.heap.pop();
-        unit.next_turn_after = unit.slowness;
+        unit.next_turn_after = unit.slowness * battle.heap.last;
         let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max);
         let ap_increase = new_ap - unit.action_points_left;
         unit.action_points_left = new_ap;
@@ -89,7 +90,8 @@ var BattleEvent;
         let time_passed = unit.next_turn_after;
         battle.heap.update(time_passed);
         alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0);
-        alerts_1.Alerts.battle_update_unit(battle, unit);
+        alerts_1.Alerts.battle_update_data(battle);
+        alerts_1.Alerts.battle_update_units(battle);
     }
     BattleEvent.NewTurn = NewTurn;
     function Move(battle, unit, target) {

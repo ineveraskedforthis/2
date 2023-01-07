@@ -19,8 +19,10 @@ class UnitsHeap {
     get_value(i) {
         return this.data[this.heap[i]].next_turn_after;
     }
+    get_max() {
+    }
     get_units_amount() {
-        return Object.keys(this.data).length;
+        return this.last;
     }
     get_unit(i) {
         return this.data[i];
@@ -47,9 +49,7 @@ class UnitsHeap {
         console.log(this.last);
         console.log(this.heap);
         console.log(this.data);
-        if (position == 0)
-            return true;
-        return false;
+        return this.last;
     }
     push(obj) {
         this.heap[this.last] = obj;

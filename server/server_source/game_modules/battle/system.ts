@@ -145,7 +145,9 @@ export namespace BattleSystem {
             10 as action_points,
             10 as action_points,
             4 as action_points, 
-            character.id)
+            character.id,
+            Math.random()
+            )
         
         return unit
     }

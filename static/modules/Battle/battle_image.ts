@@ -95,7 +95,12 @@ namespace UnitsQueueManagement {
             if (unit == undefined) continue
 
             canvas.strokeRect(left + width * last_index, top, width, height)
-            canvas.fillText(unit.name, left + width * last_index, top + text_margin_top)
+            canvas.fillText(unit.name, left + width * last_index + 20, top + text_margin_top)
+            if (player_unit_id == id) {
+                canvas.fillText('YOU', left + width * last_index + 20, top + text_margin_top * 2)
+            }
+
+            canvas.fillText(unit.next_turn.toFixed(2), left + width * last_index + 100, top + text_margin_top)
             last_index += 1
         }
     }

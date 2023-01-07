@@ -427,15 +427,6 @@ var Event;
             const battle = systems_communication_1.Convert.id_to_battle(battle_id);
             join_battle(defender, battle, 0);
             join_battle(attacker, battle, 1);
-            // const attacker_unit = BattleSystem.create_unit(attacker, 1)
-            // const defender_unit = BattleSystem.create_unit(defender, 0)
-            // BattleEvent.NewUnit(battle, attacker_unit)
-            // BattleEvent.NewUnit(battle, defender_unit)
-            // Link.character_battle_unit(attacker, battle, attacker_unit)
-            // Link.character_battle_unit(defender, battle, defender_unit)
-            // Alerts.battle_update_data(battle)
-            // UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.BATTLE)
-            // UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.BATTLE)
         }
     }
     Event.start_battle = start_battle;

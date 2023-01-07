@@ -143,6 +143,12 @@ export namespace Alerts {
         }
     }
 
+    export function battle_update_units(battle: Battle) {
+        for (let unit of Object.values(battle.heap.data)) {
+            Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
+        }
+    }
+
     export function battle_update_unit(battle: Battle, unit: Unit) {
         Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
         // const data = Convert.unit_to_unit_socket(unit)
