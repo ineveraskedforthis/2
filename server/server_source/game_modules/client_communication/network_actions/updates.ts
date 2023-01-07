@@ -15,6 +15,7 @@ import { CraftItem } from "../../craft/items";
 import { crafts_bulk, crafts_items } from "../../craft/crafts_storage";
 import { output_bulk } from "../../craft/CraftBulk";
 import { CharacterSystem } from "../../character/system";
+import { Attack } from "../../attack/system";
 
 
 
@@ -34,7 +35,8 @@ export namespace SendUpdate {
         all_craft(user)
         map_related(user)
         battle(user)
-        market(user)        
+        market(user)   
+        stats(user)     
     }
 
     export function stats(user: User) {
@@ -46,8 +48,11 @@ export namespace SendUpdate {
             magic_power: CharacterSystem.magic_power(character),
             enchant_rating: CharacterSystem.enchant_rating(character),
             movement_cost: CharacterSystem.movement_cost_battle(character),
-            move_duration_map: CharacterSystem.movement_duration_map(character)
+            move_duration_map: CharacterSystem.movement_duration_map(character),
+            base_damage_magic_bolt: Attack.magic_bolt_base_damage(character)
         }
+
+        Alerts.generic_user_alert(user, 'stats', stats);
     }
 
     export function battle(user: User) {

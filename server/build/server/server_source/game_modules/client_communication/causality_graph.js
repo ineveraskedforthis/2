@@ -9,7 +9,8 @@ const children = {
         12 /* UI_Part.SKILLS */,
         17 /* UI_Part.CRAFT */,
         18 /* UI_Part.BATTLE */,
-        19 /* UI_Part.MARKET */],
+        19 /* UI_Part.MARKET */,
+        20 /* UI_Part.STATS */],
     [1 /* UI_Part.STATUS */]: [2 /* UI_Part.HP */],
     [3 /* UI_Part.BELONGINGS */]: [4 /* UI_Part.STASH */,
         5 /* UI_Part.SAVINGS */,
@@ -47,10 +48,14 @@ const update_function = {
     [17 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
     // [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
     [18 /* UI_Part.BATTLE */]: updates_1.SendUpdate.battle,
-    [19 /* UI_Part.MARKET */]: updates_1.SendUpdate.market
+    [19 /* UI_Part.MARKET */]: updates_1.SendUpdate.market,
+    [20 /* UI_Part.STATS */]: updates_1.SendUpdate.stats,
 };
 const influence = {
-    [12 /* UI_Part.SKILLS */]: [17 /* UI_Part.CRAFT */],
+    [12 /* UI_Part.SKILLS */]: [17 /* UI_Part.CRAFT */, 20 /* UI_Part.STATS */],
+    [6 /* UI_Part.INVENTORY */]: [20 /* UI_Part.STATS */],
+    [3 /* UI_Part.BELONGINGS */]: [20 /* UI_Part.STATS */],
+    [1 /* UI_Part.STATUS */]: [20 /* UI_Part.STATS */]
     // [UI_Part.COOKING_SKILL]     : [UI_Part.COOKING_CRAFT],
 };
 // if node: ask to update node and leave

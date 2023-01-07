@@ -14,6 +14,7 @@ const CraftItem_1 = require("../../craft/CraftItem");
 const crafts_storage_1 = require("../../craft/crafts_storage");
 const CraftBulk_1 = require("../../craft/CraftBulk");
 const system_3 = require("../../character/system");
+const system_4 = require("../../attack/system");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -30,6 +31,7 @@ var SendUpdate;
         map_related(user);
         battle(user);
         market(user);
+        stats(user);
     }
     SendUpdate.all = all;
     function stats(user) {
@@ -41,8 +43,10 @@ var SendUpdate;
             magic_power: system_3.CharacterSystem.magic_power(character),
             enchant_rating: system_3.CharacterSystem.enchant_rating(character),
             movement_cost: system_3.CharacterSystem.movement_cost_battle(character),
-            move_duration_map: system_3.CharacterSystem.movement_duration_map(character)
+            move_duration_map: system_3.CharacterSystem.movement_duration_map(character),
+            base_damage_magic_bolt: system_4.Attack.magic_bolt_base_damage(character)
         };
+        alerts_1.Alerts.generic_user_alert(user, 'stats', stats);
     }
     SendUpdate.stats = stats;
     function battle(user) {

@@ -66,5 +66,37 @@ function update_perks(data) {
         div2.append(div);
     }
 }
-socket.on('perks-info', (msg) => { build_perks_list(msg); });
-socket.on('perks-update', (msg) => { update_perks(msg); });
+
+function flex_something(s, w) {
+    const item = document.createElement('div')
+    item.classList.add('container-horizontal')
+
+    const label = document.createElement('div')
+    label.classList.add('flex-2')
+    label.innerHTML = s 
+
+    const data = document.createElement('div')
+    data.classList.add('flex-1')
+    data.innerHTML = w
+
+    item.appendChild(label)
+    item.appendChild(data)
+
+    return item
+}
+
+function update_stats(data) {
+    const stats_tab = document.getElementById('stats_tab')
+    stats_tab.innerHTML = ''
+
+    stats_tab.appendChild(flex_something(`Physical power: `,             `${data.phys_power}`))
+    stats_tab.appendChild(flex_something(`Magic power: `,                `${data.magic_power}`))
+    stats_tab.appendChild(flex_something(`Enchant rating: `,             `${data.enchant_rating.toFixed(2)}`))
+    stats_tab.appendChild(flex_something(`Cost of battle movement: `,    `${data.movement_cost.toFixed(2)}`))
+    stats_tab.appendChild(flex_something(`Movement duration: `,          `${data.move_duration_map.toFixed(2)}`))
+    stats_tab.appendChild(flex_something(`Magic bolt base damage `,      `${data.base_damage_magic_bolt.toFixed(2)}`))
+}
+
+socket.on('perks-info',     build_perks_list);
+socket.on('perks-update',   update_perks);
+socket.on('stats',          update_stats)

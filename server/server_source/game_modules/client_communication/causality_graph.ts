@@ -26,7 +26,8 @@ export const enum UI_Part {
         CRAFT,
             // COOKING_CRAFT, 
         BATTLE,
-        MARKET
+        MARKET,
+        STATS,
 }
 
 const children:{[_ in UI_Part]?: UI_Part[]} = {
@@ -36,7 +37,8 @@ const children:{[_ in UI_Part]?: UI_Part[]} = {
                                             UI_Part.SKILLS, 
                                             UI_Part.CRAFT, 
                                             UI_Part.BATTLE,
-                                            UI_Part.MARKET],
+                                            UI_Part.MARKET,
+                                            UI_Part.STATS],
         [UI_Part.STATUS]                : [ UI_Part.HP],
         [UI_Part.BELONGINGS]            : [ UI_Part.STASH, 
                                             UI_Part.SAVINGS, 
@@ -76,11 +78,15 @@ const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
         [UI_Part.CRAFT]                 : SendUpdate.all_craft,
             // [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
         [UI_Part.BATTLE]                : SendUpdate.battle,
-        [UI_Part.MARKET]                : SendUpdate.market
+        [UI_Part.MARKET]                : SendUpdate.market,
+        [UI_Part.STATS]                 : SendUpdate.stats,
 }
 
 const influence:{[_ in UI_Part]?: UI_Part[]} = {
-    [UI_Part.SKILLS]            : [UI_Part.CRAFT],
+    [UI_Part.SKILLS]            : [UI_Part.CRAFT, UI_Part.STATS],
+    [UI_Part.INVENTORY]         : [UI_Part.STATS],
+    [UI_Part.BELONGINGS]        : [UI_Part.STATS],
+    [UI_Part.STATUS]            : [UI_Part.STATS]
     // [UI_Part.COOKING_SKILL]     : [UI_Part.COOKING_CRAFT],
 }
 
@@ -128,7 +134,8 @@ export namespace Update {
 
         if (force_update || (user.updates[current])) {
             // console.log('updating ' + current + ' ' + current)
-            update_function[current](user); return}
+            update_function[current](user); return
+        }
         const ch = children[current]
         if (ch == undefined) {
             return

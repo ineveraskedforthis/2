@@ -98,7 +98,7 @@ var Event;
         if (flag_dodge) {
             const dice_evasion_skill_up = Math.random();
             if (dice_evasion_skill_up < attack_skill - evasion) {
-                increase_evasion(defender);
+                effects_1.Effect.Change.skill(defender, 'evasion', 1);
             }
         }
         const evasion_roll = Math.random();
@@ -125,13 +125,13 @@ var Event;
         if (dice_accuracy > acc) {
             const dice_skill_up = Math.random();
             if (dice_skill_up * 100 > attacker.skills.ranged) {
-                increase_weapon_skill(attacker, 'ranged');
+                effects_1.Effect.Change.skill(attacker, 'ranged', 1);
             }
             return 'miss';
         }
         const dice_skill_up = Math.random();
         if (dice_skill_up * 50 > attacker.skills.ranged) {
-            increase_weapon_skill(attacker, 'ranged');
+            effects_1.Effect.Change.skill(attacker, 'ranged', 1);
         }
         const responce = ranged_dodge(attacker, defender, flag_dodge);
         if (responce == 'miss') {
@@ -228,7 +228,7 @@ var Event;
                 system_2.Attack.dodge(attack, 50);
                 // attempts to evade increase your skill
                 if (skill < attack.attack_skill) {
-                    increase_evasion(defender);
+                    effects_1.Effect.Change.skill(defender, 'evasion', 1);
                 }
             }
             //passive evasion
@@ -240,7 +240,7 @@ var Event;
                 //fighting against stronger enemies provides constant growth of this skill up to some level
                 const dice = Math.random();
                 if ((dice < 0.01) && (skill <= 15)) {
-                    increase_evasion(defender);
+                    effects_1.Effect.Change.skill(defender, 'evasion', 1);
                 }
             }
         }
@@ -251,13 +251,13 @@ var Event;
                 attack.flags.blocked = true;
                 let dice = Math.random();
                 if (dice * 100 > skill)
-                    increase_block(defender);
+                    effects_1.Effect.Change.skill(defender, 'blocking', 1);
             }
             system_2.Attack.block(attack, skill);
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random();
             if ((dice < 0.01) && (skill <= 15)) {
-                increase_block(defender);
+                effects_1.Effect.Change.skill(defender, 'blocking', 1);
             }
         }
         { //weapon mastery
@@ -282,16 +282,16 @@ var Event;
                 const diff = attack.defence_skill - attack.attack_skill;
                 const dice = Math.random();
                 if (dice * 300 < diff)
-                    increase_weapon_skill(attacker, attack.weapon_type);
+                    effects_1.Effect.Change.skill(attacker, attack.weapon_type, 1);
             }
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random();
             if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-                increase_weapon_skill(defender, attack.weapon_type);
+                effects_1.Effect.Change.skill(defender, attack.weapon_type, 1);
             }
             const dice2 = Math.random();
             if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
-                increase_weapon_skill(attacker, attack.weapon_type);
+                effects_1.Effect.Change.skill(attacker, attack.weapon_type, 1);
             }
         }
         // durability changes
@@ -350,7 +350,7 @@ var Event;
                 Event.change_stash(killer, materials_manager_1.RAT_SKIN, skin);
             }
             else {
-                increase_skinning(killer);
+                effects_1.Effect.Change.skill(killer, 'skinning', 1);
             }
         }
         user_manager_1.UserManagement.add_user_to_update_queue(killer.user_id, 4 /* UI_Part.STASH */);
@@ -372,26 +372,6 @@ var Event;
         character.cleared = true;
     }
     Event.death = death;
-    function increase_evasion(character) {
-        character.skills.evasion += 1;
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 14 /* UI_Part.DEFENCE_SKILL */);
-    }
-    Event.increase_evasion = increase_evasion;
-    function increase_block(character) {
-        character.skills.blocking += 1;
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 14 /* UI_Part.DEFENCE_SKILL */);
-    }
-    Event.increase_block = increase_block;
-    function increase_skinning(character) {
-        character.skills.skinning += 1;
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 16 /* UI_Part.SKINNING_SKILL */);
-    }
-    Event.increase_skinning = increase_skinning;
-    function increase_weapon_skill(character, skill) {
-        character.skills[skill] += 1;
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 15 /* UI_Part.WEAPON_SKILL */);
-    }
-    Event.increase_weapon_skill = increase_weapon_skill;
     function change_stash(character, tag, amount) {
         character.stash.inc(tag, amount);
         let user = systems_communication_1.Convert.character_to_user(character);

@@ -110,7 +110,7 @@ export namespace Event {
         if (flag_dodge) {
             const dice_evasion_skill_up = Math.random()
             if (dice_evasion_skill_up < attack_skill - evasion) {
-                increase_evasion(defender)
+                Effect.Change.skill(defender, 'evasion', 1)
             }
         }
         const evasion_roll = Math.random()
@@ -135,14 +135,14 @@ export namespace Event {
         if (dice_accuracy > acc) { 
             const dice_skill_up = Math.random()
             if (dice_skill_up * 100 > attacker.skills.ranged) {
-                increase_weapon_skill(attacker, 'ranged')
+                Effect.Change.skill(attacker, 'ranged', 1)
             }
             return 'miss' 
         }
 
         const dice_skill_up = Math.random()
         if (dice_skill_up * 50 > attacker.skills.ranged) {
-            increase_weapon_skill(attacker, 'ranged')
+            Effect.Change.skill(attacker, 'ranged', 1)
         }
 
 
@@ -249,7 +249,7 @@ export namespace Event {
                 Attack.dodge(attack, 50)
                 // attempts to evade increase your skill
                 if (skill < attack.attack_skill) {
-                    increase_evasion(defender)
+                    Effect.Change.skill(defender, 'evasion', 1)
                 }
             }
 
@@ -261,7 +261,7 @@ export namespace Event {
                 //fighting against stronger enemies provides constant growth of this skill up to some level
                 const dice = Math.random()
                 if ((dice < 0.01) && (skill <= 15)) {
-                    increase_evasion(defender)
+                    Effect.Change.skill(defender, 'evasion', 1)
                 }
             }
         }
@@ -272,7 +272,7 @@ export namespace Event {
             if ((skill > attack.attack_skill)) {
                 attack.flags.blocked = true
                 let dice = Math.random()
-                if (dice * 100 > skill) increase_block(defender)
+                if (dice * 100 > skill) Effect.Change.skill(defender, 'blocking', 1)
             }
 
             Attack.block(attack, skill)
@@ -280,7 +280,7 @@ export namespace Event {
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random()
             if ((dice < 0.01) && (skill <= 15)) {
-                increase_block(defender)
+                Effect.Change.skill(defender, 'blocking', 1)
             }
         }
 
@@ -306,17 +306,17 @@ export namespace Event {
             if (attack.attack_skill < attack.defence_skill) {
                 const diff = attack.defence_skill - attack.attack_skill
                 const dice = Math.random()
-                if (dice * 300 < diff) increase_weapon_skill(attacker, attack.weapon_type)
+                if (dice * 300 < diff) Effect.Change.skill(attacker, attack.weapon_type, 1)
             }
 
             //fighting provides constant growth of this skill up to some level
             const dice = Math.random()
             if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-                increase_weapon_skill(defender, attack.weapon_type)
+                Effect.Change.skill(defender, attack.weapon_type, 1)
             }
             const dice2 = Math.random()
             if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
-                increase_weapon_skill(attacker, attack.weapon_type)
+                Effect.Change.skill(attacker, attack.weapon_type, 1)
             }
         }
 
@@ -378,7 +378,7 @@ export namespace Event {
             if (dice < killer.skills.skinning / 100) {
                 Event.change_stash(killer, RAT_SKIN, skin)
             } else {
-                increase_skinning(killer)
+                Effect.Change.skill(killer, 'skinning', 1)
             }
         }
         UserManagement.add_user_to_update_queue(killer.user_id, UI_Part.STASH)
@@ -404,27 +404,6 @@ export namespace Event {
         Unlink.character_and_cell(character, cell)
         character.cleared = true
 
-    }
-
-
-    export function increase_evasion(character: Character) {
-        character.skills.evasion += 1
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.DEFENCE_SKILL)
-    }
-
-    export function increase_block(character: Character) {
-        character.skills.blocking += 1
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.DEFENCE_SKILL)
-    }
-
-    export function increase_skinning(character: Character) {
-        character.skills.skinning += 1
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKINNING_SKILL)
-    }
-
-    export function increase_weapon_skill(character: Character, skill: weapon_attack_tag) {
-        character.skills[skill] += 1
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.WEAPON_SKILL)
     }
 
     export function change_stash(character: Character, tag: material_index, amount: number) {
