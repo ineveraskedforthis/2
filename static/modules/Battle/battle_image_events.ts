@@ -213,7 +213,15 @@ export class UpdateDataEvent extends BattleImageEvent {
         unit.range = this.data.range
 
         unit.position = this.data.position
-        BattleImage.update_unit_div(unit.id)
+        unit.next_turn = this.data.next_turn
+
+        BattleImage.update_unit_displays(unit.id)
+    }
+}
+
+export class UnitLeftEvent extends BattleImageEvent {
+    on_start(): void {
+        BattleImage.unload_unit_by_id(this.unit)
     }
 }
 

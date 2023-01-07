@@ -46,12 +46,12 @@ export namespace BattleEvent {
         Unlink.character_and_battle(character, battle)
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
+        Alerts.battle_event(battle, 'unit_left', unit.id, unit.position, unit.id, 0)
+
         if (battle.heap.get_units_amount() == 0) {
             Event.stop_battle(battle)
             return
         }
-
-        
     }
 
     export function EndTurn(battle: Battle, unit: Unit) {
@@ -104,6 +104,7 @@ export namespace BattleEvent {
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
         Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0)
+        Alerts.battle_update_unit(battle, unit)
     }
 
     export function Move(battle: Battle, unit: Unit, target: battle_position) {

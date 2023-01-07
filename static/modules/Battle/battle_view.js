@@ -19,6 +19,7 @@ export class BattleUnitView {
         this.animation_timer = 0;
         this.animation_something = 0;
         this.move_cost = unit.move_cost;
+        this.next_turn = unit.next_turn;
         this.a_image = new AnimatedImage(unit.tag);
     }
     update(hp_change, ap_change) {

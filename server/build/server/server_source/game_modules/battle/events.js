@@ -40,6 +40,7 @@ var BattleEvent;
         console.log(character.name);
         systems_communication_1.Unlink.character_and_battle(character, battle);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
+        alerts_1.Alerts.battle_event(battle, 'unit_left', unit.id, unit.position, unit.id, 0);
         if (battle.heap.get_units_amount() == 0) {
             events_1.Event.stop_battle(battle);
             return;
@@ -88,6 +89,7 @@ var BattleEvent;
         let time_passed = unit.next_turn_after;
         battle.heap.update(time_passed);
         alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0);
+        alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.NewTurn = NewTurn;
     function Move(battle, unit, target) {

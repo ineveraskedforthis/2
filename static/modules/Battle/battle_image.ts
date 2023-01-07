@@ -35,6 +35,8 @@ export const battle_canvas = document.getElementById('battle_canvas')! as HTMLCa
 export const battle_canvas_context = battle_canvas.getContext('2d') as CanvasRenderingContext2D
 export const canvas_background = document.getElementById('battle_canvas_background')! as HTMLCanvasElement
 
+
+
 var bcp = false
 
 battle_canvas.onmousedown = (event: any) => {
@@ -75,6 +77,59 @@ export let  units_views: {[_ in unit_id]: BattleUnitView}    ={};
 let         unit_ids: Set<unit_id>                           =new Set();
 let         anim_images: {[_ in unit_id]: AnimatedImage}     ={};
 let         had_left: {[_ in unit_id]: boolean}              ={};
+let         units_queue: unit_id[] = []
+
+namespace UnitsQueueManagement {
+    const width = 200
+    const text_margin_top = 20
+    const top = 20
+    const left = 300
+    const height = 50
+
+    export function draw(canvas: CanvasRenderingContext2D) {
+        canvas.fillStyle = 'rgb(0, 0, 0)'
+        let last_index = 0
+        for (let id of units_queue) {
+            let unit = units_views[id]
+            if (had_left[id]) continue
+            if (unit == undefined) continue
+
+            canvas.strokeRect(left + width * last_index, top, width, height)
+            canvas.fillText(unit.name, left + width * last_index, top + text_margin_top)
+            last_index += 1
+        }
+    }
+
+    function swap_forward(i: number) {
+        let unit = units_views[units_queue[i]]
+        let next_unit = units_views[units_queue[i + 1]]
+        if (unit == undefined) return
+        if ((next_unit != undefined) && (next_unit.next_turn > unit.next_turn)) return
+        if (next_unit != undefined) units_queue[i] = next_unit.id
+        units_queue[i + 1] = unit.id
+        return unit.next_turn
+    }
+
+    export function end_turn() {
+        console.log('update units queue')
+        if (units_queue.length <= 1) return
+        for (let i = 0; i < units_queue.length - 1; i++) {
+            let response = swap_forward(i)
+            console.log(response)
+        }
+        console.log(units_queue)
+    }
+
+    export function new_unit(id: unit_id) {
+        units_queue.unshift(id)
+        end_turn()
+    }
+
+    export function clear() {
+        units_queue = []
+    }
+}
+
 
 //persistent
 let    actions: battle_action[]                         =[]
@@ -210,6 +265,8 @@ export namespace BattleImage {
         unit_ids        =new Set();
         anim_images     ={};
         had_left        ={};
+
+        UnitsQueueManagement.clear()
     }
 
     export function load_unit(unit: UnitSocket) {
@@ -227,6 +284,8 @@ export namespace BattleImage {
 
         let div = build_unit_div(unit_view, undefined)
         enemy_list_div.appendChild(div)
+
+        UnitsQueueManagement.new_unit(unit.id)
     }
 
     export function update(dt: number) {
@@ -267,10 +326,16 @@ export namespace BattleImage {
     }
 
     export function unload_unit(unit: UnitSocket) {
-        const div = unit_div(unit.id)
+        unload_unit_by_id(unit.id)
+    }
+
+    export function unload_unit_by_id(unit: unit_id) {
+        const div = unit_div(unit)
         if (div != undefined) div.parentElement?.removeChild(div)
-        units_views[unit.id].killed = true
-        had_left[unit.id] = true
+        units_views[unit].killed = true
+        had_left[unit] = true
+
+        UnitsQueueManagement.end_turn()
     }
 
     function unselect() {
@@ -621,6 +686,7 @@ export namespace BattleImage {
 
     export function draw(dt: number) {
         battle_canvas_context.clearRect(0, 0, w, h);
+        UnitsQueueManagement.draw(battle_canvas_context)
         //handle_events
         update(dt)       
 
@@ -673,6 +739,11 @@ export namespace BattleImage {
             ctx.lineTo(centre2.x, centre2.y)
             ctx.stroke()
         }
+    }
+
+    export function update_unit_displays(unit: unit_id) {
+        BattleImage.update_unit_div(unit)
+        UnitsQueueManagement.end_turn()
     }
 
     export function update_unit_div(unit: unit_id) {

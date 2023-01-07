@@ -30,6 +30,7 @@ export class BattleUnitView {
     animation_timer: number
     animation_something: number
     current_animation: animation_event|undefined
+    next_turn: number
     
     constructor(unit: UnitSocket) {
         this.id = unit.id
@@ -48,6 +49,8 @@ export class BattleUnitView {
         this.animation_something = 0
         this.move_cost = unit.move_cost
 
+        this.next_turn = unit.next_turn
+
         this.a_image = new AnimatedImage(unit.tag)
     }
     
@@ -57,6 +60,7 @@ export class BattleUnitView {
         }
         this.hp_change = hp_change
         this.ap_change = ap_change
+        
         // this.hp = this.unit.hp
         // this.ap = this.unit.ap 
         // this.killed = this.unit.killed

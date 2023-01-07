@@ -72,7 +72,7 @@ export class UnitsHeap {
 
     shift_up(i:number) {
         let tmp = i;
-        while (tmp > 0 && this.get_value(tmp) < this.get_value(Math.floor((tmp - 1) / 2))) {
+        while ((tmp > 0) && (this.get_value(tmp) < this.get_value(Math.floor((tmp - 1) / 2)))) {
             this.swap(tmp, Math.floor((tmp - 1) / 2))
             tmp = Math.floor((tmp - 1) / 2)
         }

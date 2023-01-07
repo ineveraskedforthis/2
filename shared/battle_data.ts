@@ -33,7 +33,7 @@ export interface BattleActionChance {
 }
 
 
-export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'|'new_turn'|'update'|'unit_join';
+export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'|'new_turn'|'update'|'unit_join'|'unit_left';
 export interface BattleEventSocket{
     tag: BattleEventTag
     creator: unit_id

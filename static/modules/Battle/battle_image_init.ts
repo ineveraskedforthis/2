@@ -2,7 +2,7 @@ import { BattleImage, battle_in_progress, events_list, player_unit_id } from "./
 import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, UnitSocket } from "../../../shared/battle_data.js"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js"
-import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UpdateDataEvent } from "./battle_image_events.js";
+import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
 
 // export const battle_image = new BattleImageNext();
 const events_queue: BattleEventSocket[] = []
@@ -58,30 +58,57 @@ namespace bCallback {
         }
     }
 
-    export function event(action: BattleEventSocket) {
+    export function event(action: BattleEventSocket): boolean {
         console.log(action)
-        // handle real actions
-        if (action.tag == 'move') {
-            BattleImage.new_event(new MoveEvent(action.index, action.creator, -action.cost, action.target_position))
-        } else if (action.tag == 'attack') {
-            BattleImage.new_event(new AttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit))
-        } else if (action.tag == 'new_turn') {
-            BattleImage.new_event(new NewTurnEvent(action.index, action.creator))
-        } else if (action.tag == 'flee'){
-            BattleImage.new_event(new RetreatEvent(action.index, action.creator, action.cost))
-        } else if (action.tag == 'end_turn') {
-            BattleImage.new_event(new EndTurn(action.index, action.creator, -action.cost))
-        } else if (action.tag == 'miss') {
-            // BattleImage.new_event(new MissEvent(action.creator, action.target_unit))
-        } else if (action.tag == 'ranged_attack') {
-            BattleImage.new_event(new RangedAttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit))
-        } else if (action.tag == 'update') {
-            BattleImage.new_event(new UpdateDataEvent(action.index, action.creator, action.data!))
-        } else if (action.tag == 'unit_join') {
-            BattleImage.new_event(new NewUnitEvent(action.index, action.creator, action.data!))
-        }else {
-            console.log('unhandled input')
-            console.log(action)
+        switch(action.tag) {
+            case 'attack': {
+                BattleImage.new_event(new AttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit))
+                return true
+            }
+
+            case 'flee': {
+                BattleImage.new_event(new RetreatEvent(action.index, action.creator, action.cost))
+                return true
+            }
+
+            case 'miss': {
+                return true
+            }
+
+            case 'move': {
+                BattleImage.new_event(new MoveEvent(action.index, action.creator, -action.cost, action.target_position))
+                return true
+            }
+
+            case 'new_turn': {
+                BattleImage.new_event(new NewTurnEvent(action.index, action.creator))
+                return true
+            }
+
+            case 'ranged_attack': {
+                BattleImage.new_event(new RangedAttackEvent(action.index, action.creator, -action.cost, 0, action.target_unit))
+                return true
+            }
+
+            case 'unit_join': {
+                BattleImage.new_event(new NewUnitEvent(action.index, action.creator, action.data!))
+                return true
+            }
+
+            case 'unit_left': {
+                BattleImage.new_event(new UnitLeftEvent(action.index, action.creator, 0, 0, 0))
+                return true
+            }
+
+            case 'update': {
+                BattleImage.new_event(new UpdateDataEvent(action.index, action.creator, action.data!))
+                return true
+            }
+
+            case 'end_turn': {
+                BattleImage.new_event(new EndTurn(action.index, action.creator, -action.cost))
+                return true
+            }
         }
     }
 }

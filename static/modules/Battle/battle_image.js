@@ -50,6 +50,62 @@ export let units_views = {};
 let unit_ids = new Set();
 let anim_images = {};
 let had_left = {};
+let units_queue = [];
+var UnitsQueueManagement;
+(function (UnitsQueueManagement) {
+    const width = 200;
+    const text_margin_top = 20;
+    const top = 20;
+    const left = 300;
+    const height = 50;
+    function draw(canvas) {
+        canvas.fillStyle = 'rgb(0, 0, 0)';
+        let last_index = 0;
+        for (let id of units_queue) {
+            let unit = units_views[id];
+            if (had_left[id])
+                continue;
+            if (unit == undefined)
+                continue;
+            canvas.strokeRect(left + width * last_index, top, width, height);
+            canvas.fillText(unit.name, left + width * last_index, top + text_margin_top);
+            last_index += 1;
+        }
+    }
+    UnitsQueueManagement.draw = draw;
+    function swap_forward(i) {
+        let unit = units_views[units_queue[i]];
+        let next_unit = units_views[units_queue[i + 1]];
+        if (unit == undefined)
+            return;
+        if ((next_unit != undefined) && (next_unit.next_turn > unit.next_turn))
+            return;
+        if (next_unit != undefined)
+            units_queue[i] = next_unit.id;
+        units_queue[i + 1] = unit.id;
+        return unit.next_turn;
+    }
+    function end_turn() {
+        console.log('update units queue');
+        if (units_queue.length <= 1)
+            return;
+        for (let i = 0; i < units_queue.length - 1; i++) {
+            let response = swap_forward(i);
+            console.log(response);
+        }
+        console.log(units_queue);
+    }
+    UnitsQueueManagement.end_turn = end_turn;
+    function new_unit(id) {
+        units_queue.unshift(id);
+        end_turn();
+    }
+    UnitsQueueManagement.new_unit = new_unit;
+    function clear() {
+        units_queue = [];
+    }
+    UnitsQueueManagement.clear = clear;
+})(UnitsQueueManagement || (UnitsQueueManagement = {}));
 //persistent
 let actions = [];
 let background_flag = false;
@@ -163,6 +219,7 @@ export var BattleImage;
         unit_ids = new Set();
         anim_images = {};
         had_left = {};
+        UnitsQueueManagement.clear();
     }
     BattleImage.reset = reset;
     function load_unit(unit) {
@@ -176,6 +233,7 @@ export var BattleImage;
         anim_images[unit.id] = new AnimatedImage(unit.tag);
         let div = build_unit_div(unit_view, undefined);
         enemy_list_div.appendChild(div);
+        UnitsQueueManagement.new_unit(unit.id);
     }
     BattleImage.load_unit = load_unit;
     function update(dt) {
@@ -216,13 +274,18 @@ export var BattleImage;
     }
     BattleImage.unit_div = unit_div;
     function unload_unit(unit) {
-        const div = unit_div(unit.id);
-        if (div != undefined)
-            div.parentElement?.removeChild(div);
-        units_views[unit.id].killed = true;
-        had_left[unit.id] = true;
+        unload_unit_by_id(unit.id);
     }
     BattleImage.unload_unit = unload_unit;
+    function unload_unit_by_id(unit) {
+        const div = unit_div(unit);
+        if (div != undefined)
+            div.parentElement?.removeChild(div);
+        units_views[unit].killed = true;
+        had_left[unit] = true;
+        UnitsQueueManagement.end_turn();
+    }
+    BattleImage.unload_unit_by_id = unload_unit_by_id;
     function unselect() {
         let div = unit_div(selected);
         if (div != undefined)
@@ -566,6 +629,7 @@ export var BattleImage;
     BattleImage.draw_units = draw_units;
     function draw(dt) {
         battle_canvas_context.clearRect(0, 0, w, h);
+        UnitsQueueManagement.draw(battle_canvas_context);
         //handle_events
         update(dt);
         // draw background only once (no camera movement support yet)
@@ -616,6 +680,11 @@ export var BattleImage;
         }
     }
     BattleImage.draw_anchor = draw_anchor;
+    function update_unit_displays(unit) {
+        BattleImage.update_unit_div(unit);
+        UnitsQueueManagement.end_turn();
+    }
+    BattleImage.update_unit_displays = update_unit_displays;
     function update_unit_div(unit) {
         let div = unit_div(unit);
         if (div == undefined)
