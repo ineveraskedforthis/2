@@ -3,9 +3,9 @@ const table_items = document.getElementById('backpack_weapon_tab');
 const item_select_div = document.getElementById('create_auction_order_item');
 const header_div = generate_dummy_item_backpack_div();
 const EQUIPMENT_TAGS = ['weapon', 'secondary', 'body', 'legs', 'foot', 'head', 'arms'];
-function add_option(name, type, id) {
+function add_option(name, id) {
     let option = document.createElement('option');
-    option.value = JSON.stringify({ index: id, type: type });
+    option.value = JSON.stringify({ index: id });
     option.innerHTML = name;
     item_select_div.appendChild(option);
 }
@@ -21,7 +21,7 @@ export function update_backpack(data) {
             const item = generate_item_backpack_div(weapon);
             item.classList.add('item');
             table_items.appendChild(item);
-            add_option(generate_name(weapon), 'weapon', weapon.backpack_index);
+            add_option(generate_name(weapon), weapon.backpack_index);
         }
     }
 }

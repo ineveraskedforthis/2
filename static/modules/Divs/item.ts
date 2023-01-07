@@ -2,19 +2,34 @@ import { damage_type, ItemData } from "../../../shared/inventory"
 import { socket } from "../globals.js"
 
 function send_equip_weapon_message(index:number) {
-    const destroy = document.getElementById('destroy') as HTMLInputElement 
-    let value_destroy = destroy.checked
-    if (value_destroy) {
-        socket.emit('destroy', index);
-        return
+    {   
+        const destroy = document.getElementById('destroy') as HTMLInputElement 
+        let value_destroy = destroy.checked
+        if (value_destroy) {
+            socket.emit('destroy', index);
+            return
+        }
     }
 
-    const enchant = document.getElementById('enchant') as HTMLInputElement 
-    let value = enchant.checked
-    if (value) {
-        socket.emit('enchant', index);
-        return
-    } 
+    {
+        const enchant = document.getElementById('enchant') as HTMLInputElement 
+        let value = enchant.checked
+        if (value) {
+            socket.emit('enchant', index);
+            return
+        } 
+    }
+
+    {
+        const fill_market = document.getElementById('fill_market') as HTMLInputElement 
+        let value = fill_market.checked
+        if (value) {
+            const item_select_div = document.getElementById('create_auction_order_item') as HTMLSelectElement
+            item_select_div.value = JSON.stringify({index: index})
+            return
+        }        
+    }
+    
     
     socket.emit('equip', index);
 }

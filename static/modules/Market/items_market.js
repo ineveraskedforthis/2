@@ -53,48 +53,5 @@ export function update_item_market(data) {
         }
         item_market_container.appendChild(div);
     }
-    // console.log('update auction')
-    // console.log(data)
-    // let table = document.createElement('table');
-    // {
-    //     let row = table.insertRow()
-    //     this.add_cell_to_row(row, 'owner_name');
-    //     this.add_cell_to_row(row, '| item.tag');
-    //     this.add_cell_to_row(row, '| buyout_price');
-    //     // this.add_cell_to_row(row, '| current_price');
-    //     // this.add_cell_to_row(row, '| time left')
-    // }
-    // for (let data_row of data) {
-    //     let row = table.insertRow()
-    //     this.add_cell_to_row(row, data_row.seller_name);
-    //     {
-    //         let cell = row.insertCell();
-    //         let item_block = document.createElement('div')
-    //         item_block.setAttribute('class', 'tooltip')
-    //         item_block.innerHTML = data_row.item_name
-    //         let span = document.createElement('span')
-    //         span.setAttribute('class', 'tooltiptext');
-    //         span.innerHTML = ''
-    //         // for (let j of data_row.affixes){
-    //         //     let affix = i.item['a' + j];
-    //         //     if (affix != undefined){
-    //         //         span.innerHTML = affix.tag + ' ' + affix.tier + ' | ';
-    //         //     }
-    //         // }
-    //         item_block.appendChild(span)
-    //         cell.appendChild(item_block)
-    //     }
-    //     this.add_cell_to_row(row, '| ' + data_row.price);
-    //     {
-    //         let cell = row.insertCell();
-    //         let radio_button = document.createElement('input');
-    //         radio_button.setAttribute('type', 'radio');
-    //         radio_button.setAttribute('name', 'market_item_list_radio');
-    //         radio_button.setAttribute('value', data_row.id);
-    //         cell.appendChild(radio_button);
-    //     }
-    // }
-    // this.table_container.innerHTML = '';
-    // this.table_container.appendChild(table);
 }
 build();

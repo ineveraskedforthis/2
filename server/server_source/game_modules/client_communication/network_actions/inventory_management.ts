@@ -168,9 +168,7 @@ export namespace InventoryCommands {
         if (character == undefined) return
 
         let index = parseInt(msg.index);
-        let type = msg.item_type
         let price = parseInt(msg.price);
-        if ((type != 'armour') && (type != 'weapon')) return;
         if (isNaN(index) || isNaN(price)) return;
         console.log('validated')
 

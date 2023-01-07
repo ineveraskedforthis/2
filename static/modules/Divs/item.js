@@ -1,16 +1,29 @@
 import { socket } from "../globals.js";
 function send_equip_weapon_message(index) {
-    const destroy = document.getElementById('destroy');
-    let value_destroy = destroy.checked;
-    if (value_destroy) {
-        socket.emit('destroy', index);
-        return;
+    {
+        const destroy = document.getElementById('destroy');
+        let value_destroy = destroy.checked;
+        if (value_destroy) {
+            socket.emit('destroy', index);
+            return;
+        }
     }
-    const enchant = document.getElementById('enchant');
-    let value = enchant.checked;
-    if (value) {
-        socket.emit('enchant', index);
-        return;
+    {
+        const enchant = document.getElementById('enchant');
+        let value = enchant.checked;
+        if (value) {
+            socket.emit('enchant', index);
+            return;
+        }
+    }
+    {
+        const fill_market = document.getElementById('fill_market');
+        let value = fill_market.checked;
+        if (value) {
+            const item_select_div = document.getElementById('create_auction_order_item');
+            item_select_div.value = JSON.stringify({ index: index });
+            return;
+        }
     }
     socket.emit('equip', index);
 }
