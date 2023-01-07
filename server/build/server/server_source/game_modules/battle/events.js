@@ -248,7 +248,7 @@ var BattleEvent;
     }
     BattleEvent.MagicBolt = MagicBolt;
     function flee_chance(position) {
-        return 0.6 + Math.max(position.x / exports.HALFWIDTH, position.y / exports.HALFHEIGHT) / 2;
+        return 0.6 + Math.max(Math.abs(position.x) / exports.HALFWIDTH, Math.abs(position.y) / exports.HALFHEIGHT) / 2;
     }
     BattleEvent.flee_chance = flee_chance;
     function Update(battle, unit) {
