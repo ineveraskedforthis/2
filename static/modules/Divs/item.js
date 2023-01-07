@@ -17,6 +17,14 @@ function send_equip_weapon_message(index) {
         }
     }
     {
+        const reenchant = document.getElementById('reenchant');
+        let value = reenchant.checked;
+        if (value) {
+            socket.emit('reenchant', index);
+            return;
+        }
+    }
+    {
         const fill_market = document.getElementById('fill_market');
         let value = fill_market.checked;
         if (value) {

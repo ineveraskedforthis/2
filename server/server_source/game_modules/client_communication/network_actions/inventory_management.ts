@@ -265,6 +265,16 @@ export namespace InventoryCommands {
         EventInventory.enchant(character, msg)
     }
 
+    export function reroll_enchant(sw: SocketWrapper, msg: number) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        msg = Number(msg)
+
+        if (isNaN(msg)) return
+
+        EventInventory.reroll_enchant(character, msg)
+    }
+
     //  disenchant(user: User, msg: number) {
     //     if (user.logged_in) {
     //         let char = user.get_character();

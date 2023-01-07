@@ -65,6 +65,26 @@ var EventInventory;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
     }
     EventInventory.enchant = enchant;
+    function reroll_enchant(character, index) {
+        let enchant_rating = system_1.CharacterSystem.enchant_rating(character) * 0.8;
+        let item = character.equip.data.backpack.items[index];
+        if (item == undefined)
+            return;
+        if (character.stash.get(materials_manager_1.ZAZ) < 1) {
+            alerts_1.Alerts.not_enough_to_character(character, 'ZAZ', 1, character.stash.get(materials_manager_1.ZAZ));
+            return;
+        }
+        let rolls = item.affixes.length;
+        item.affixes = [];
+        for (let i = 0; i < rolls; i++) {
+            if (item.is_weapon())
+                (0, affix_1.roll_affix_weapon)(enchant_rating, item);
+            else
+                (0, affix_1.roll_affix_armour)(enchant_rating, item);
+        }
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
+    }
+    EventInventory.reroll_enchant = reroll_enchant;
     function test(character) {
     }
 })(EventInventory = exports.EventInventory || (exports.EventInventory = {}));

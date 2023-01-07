@@ -21,6 +21,15 @@ function send_equip_weapon_message(index:number) {
     }
 
     {
+        const reenchant = document.getElementById('reenchant') as HTMLInputElement 
+        let value = reenchant.checked
+        if (value) {
+            socket.emit('reenchant', index);
+            return
+        } 
+    }
+
+    {
         const fill_market = document.getElementById('fill_market') as HTMLInputElement 
         let value = fill_market.checked
         if (value) {

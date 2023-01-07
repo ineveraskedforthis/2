@@ -69,6 +69,26 @@ export namespace EventInventory {
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
     }
 
+    export function reroll_enchant(character: Character, index: number) {
+        let enchant_rating = CharacterSystem.enchant_rating(character) * 0.8
+
+        let item = character.equip.data.backpack.items[index]
+        if (item == undefined) return 
+
+        if (character.stash.get(ZAZ) < 1) {
+            Alerts.not_enough_to_character(character, 'ZAZ', 1, character.stash.get(ZAZ))
+            return
+        }
+
+        let rolls = item.affixes.length
+        item.affixes = []
+        for (let i = 0; i < rolls; i++) {
+            if (item.is_weapon()) roll_affix_weapon(enchant_rating, item)
+            else roll_affix_armour(enchant_rating, item)
+        }
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
+    }
+
     function test(character: Character) {
         
     }

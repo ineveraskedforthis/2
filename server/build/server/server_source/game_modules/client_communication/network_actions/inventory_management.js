@@ -263,6 +263,16 @@ var InventoryCommands;
         inventory_events_1.EventInventory.enchant(character, msg);
     }
     InventoryCommands.enchant = enchant;
+    function reroll_enchant(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        msg = Number(msg);
+        if (isNaN(msg))
+            return;
+        inventory_events_1.EventInventory.reroll_enchant(character, msg);
+    }
+    InventoryCommands.reroll_enchant = reroll_enchant;
     //  disenchant(user: User, msg: number) {
     //     if (user.logged_in) {
     //         let char = user.get_character();
