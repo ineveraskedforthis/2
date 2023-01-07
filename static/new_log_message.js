@@ -76,3 +76,4 @@ document.getElementById('send_message_button').onclick = (event) => {
 socket.on('log-attack', msg => { new_log_attack_message(msg); });
 socket.on('log-message', msg => new_log_message(msg));
 socket.on('new-message', msg => new_message(msg));
+socket.on('alert', msg => {my_alert(msg); new_log_message(msg)});
