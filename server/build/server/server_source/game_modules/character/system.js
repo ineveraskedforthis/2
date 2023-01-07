@@ -224,6 +224,41 @@ var CharacterSystem;
         return result;
     }
     CharacterSystem.magic_power = magic_power;
+    function enchant_rating(character) {
+        let enchant_rating = CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 100);
+        // so it's ~15 at 50 magic mastery
+        // and 1 at 20 magic mastery
+        if (character.perks.mage_initiation) {
+            enchant_rating = enchant_rating * 2;
+        }
+        return enchant_rating;
+    }
+    CharacterSystem.enchant_rating = enchant_rating;
+    function movement_speed_battle(character) {
+        let speed = character.stats.stats.movement_speed;
+        speed = speed * (2 - character.get_fatigue() / 100) * boots_speed_multiplier(character);
+        return speed;
+    }
+    function movement_cost_battle(character) {
+        return (2.5 / movement_speed_battle(character));
+    }
+    CharacterSystem.movement_cost_battle = movement_cost_battle;
+    function boots_speed_multiplier(character) {
+        let base = 0.75;
+        if (character.equip.data.armour.foot != undefined) {
+            base = base + character.equip.data.armour.foot.durability / 200;
+        }
+        return base;
+    }
+    CharacterSystem.boots_speed_multiplier = boots_speed_multiplier;
+    function movement_duration_map(character) {
+        let duration = 1;
+        duration += character.get_fatigue() / 100;
+        duration = duration / boots_speed_multiplier(character);
+        duration = duration * (1 - character.skills.travelling / 200);
+        return duration;
+    }
+    CharacterSystem.movement_duration_map = movement_duration_map;
     function attack_skill(character) {
         const weapon = character.equip.data.weapon;
         if (weapon == undefined)

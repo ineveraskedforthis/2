@@ -50,12 +50,7 @@ export namespace EventInventory {
     }
 
     export function enchant(character: Character, index: number) {
-        let enchant_rating = CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 100 )
-        // so it's ~15 at 50 magic mastery
-        // and 1 at 20 magic mastery
-        if (character.perks.mage_initiation) {
-            enchant_rating = enchant_rating * 2
-        }
+        let enchant_rating = CharacterSystem.enchant_rating(character)
 
         let item = character.equip.data.backpack.items[index]
         if (item == undefined) return 

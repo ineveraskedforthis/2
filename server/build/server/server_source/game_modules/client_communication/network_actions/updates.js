@@ -13,6 +13,7 @@ const helper_functions_1 = require("../helper_functions");
 const CraftItem_1 = require("../../craft/CraftItem");
 const crafts_storage_1 = require("../../craft/crafts_storage");
 const CraftBulk_1 = require("../../craft/CraftBulk");
+const system_3 = require("../../character/system");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -31,6 +32,19 @@ var SendUpdate;
         market(user);
     }
     SendUpdate.all = all;
+    function stats(user) {
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        const stats = {
+            phys_power: system_3.CharacterSystem.phys_power(character),
+            magic_power: system_3.CharacterSystem.magic_power(character),
+            enchant_rating: system_3.CharacterSystem.enchant_rating(character),
+            movement_cost: system_3.CharacterSystem.movement_cost_battle(character),
+            move_duration_map: system_3.CharacterSystem.movement_duration_map(character)
+        };
+    }
+    SendUpdate.stats = stats;
     function battle(user) {
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)

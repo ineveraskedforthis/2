@@ -3,18 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.move = void 0;
 const system_1 = require("../map/system");
 const events_1 = require("../events/events");
+const system_2 = require("../character/system");
 exports.move = {
     duration(char) {
-        let duration = 1;
-        duration += char.get_fatigue() / 100;
-        if (char.equip.data.armour.foot == undefined) {
-            duration = duration * 1.5;
-        }
-        else {
-            duration = duration * (1.5 - char.equip.data.armour.foot.durability / 200);
-        }
-        duration = duration * (1 - char.skills.travelling / 200);
-        return duration;
+        return system_2.CharacterSystem.movement_duration_map(char);
     },
     check: function (char, data) {
         if (char.in_battle()) {

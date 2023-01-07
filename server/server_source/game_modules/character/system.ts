@@ -227,6 +227,47 @@ export namespace CharacterSystem {
         return result
     }
 
+    export function enchant_rating(character: Character): number {
+        let enchant_rating = CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 100 )
+        // so it's ~15 at 50 magic mastery
+        // and 1 at 20 magic mastery
+        if (character.perks.mage_initiation) {
+            enchant_rating = enchant_rating * 2
+        }
+
+        return enchant_rating
+    }
+
+    function movement_speed_battle(character: Character): number {
+        let speed = character.stats.stats.movement_speed
+        speed = speed * (2 - character.get_fatigue() / 100) * boots_speed_multiplier(character)
+
+        return speed
+    }
+
+    export function movement_cost_battle(character: Character): number {
+        return (2.5 / movement_speed_battle(character))
+    }
+
+    export function boots_speed_multiplier(character: Character): number {
+        let base = 0.75
+
+        if (character.equip.data.armour.foot != undefined) {
+            base = base + character.equip.data.armour.foot.durability / 200
+        }
+
+        return base
+    }
+
+    export function movement_duration_map(character: Character): number {
+        let duration = 1
+        duration += character.get_fatigue() / 100
+        duration = duration / boots_speed_multiplier(character)
+        duration = duration * (1 - character.skills.travelling / 200)
+
+        return duration
+    }
+
     export function attack_skill(character: Character) {
         const weapon = character.equip.data.weapon
         if (weapon == undefined) return character.skills.noweapon

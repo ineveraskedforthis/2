@@ -2,19 +2,11 @@ import { Character } from "../character/character";
 import {ActionTargeted, CharacterActionResponce} from './action_manager'
 import { MapSystem } from "../map/system";
 import { Event } from "../events/events";
+import { CharacterSystem } from "../character/system";
 
 export const move:ActionTargeted ={
     duration(char: Character) {
-        let duration = 1
-        duration += char.get_fatigue() / 100
-        if (char.equip.data.armour.foot == undefined) {
-            duration = duration * 1.5
-        } else {
-            duration = duration * (1.5 - char.equip.data.armour.foot.durability / 200)
-        }
-        duration = duration * (1 - char.skills.travelling / 200)
-
-        return duration;
+        return CharacterSystem.movement_duration_map(char);
     },
 
     check: function (char: Character, data: [number, number]) {

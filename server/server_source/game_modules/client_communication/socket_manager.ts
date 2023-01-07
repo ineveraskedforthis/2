@@ -412,26 +412,6 @@ export class SocketManager {
     //     }
     // }
 
-
-
-    // send_char_info(user: User) {
-    //     if (user != null) {
-    //         let char = user.get_character()
-    //         user.socket.emit('char-info-detailed', {
-    //             stats: {
-    //                 phys_power: char.stats.phys_power,
-    //                 magic_power: char.stats.magic_power,
-    //                 movement_speed: char.stats.movement_speed
-    //             },
-    //             resists: char.get_resists()});
-    //         this.send_equip_update(user)
-    //         this.send_stash_update(user)
-    //     }
-    // }
-
-
-
-
     // send_item_market_update(cell_id: number) {
     //     let data = AuctionManagement.cell_id_to_orders_socket_data_list(this.world.entity_manager, cell_id)
     //     // console.log('updating market at ' + cell_id)

@@ -14,6 +14,7 @@ import { durability } from "../../craft/CraftItem";
 import { CraftItem } from "../../craft/items";
 import { crafts_bulk, crafts_items } from "../../craft/crafts_storage";
 import { output_bulk } from "../../craft/CraftBulk";
+import { CharacterSystem } from "../../character/system";
 
 
 
@@ -34,6 +35,19 @@ export namespace SendUpdate {
         map_related(user)
         battle(user)
         market(user)        
+    }
+
+    export function stats(user: User) {
+        const character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        const stats = {
+            phys_power: CharacterSystem.phys_power(character),
+            magic_power: CharacterSystem.magic_power(character),
+            enchant_rating: CharacterSystem.enchant_rating(character),
+            movement_cost: CharacterSystem.movement_cost_battle(character),
+            move_duration_map: CharacterSystem.movement_duration_map(character)
+        }
     }
 
     export function battle(user: User) {
