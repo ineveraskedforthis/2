@@ -115,9 +115,9 @@ body {
     width: 100%;
     margin-top: 40px;
 }
-#reg-frame {
+/* #reg-frame {
     visibility: hidden;
-}
+} */
 #select_box > div {
     position: relative;
     height: 35px;

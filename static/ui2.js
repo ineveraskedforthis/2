@@ -18,6 +18,7 @@ import { update_market } from './update_market.js';
 import { update_characters_list } from './update_characters_list.js';
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { goods_market } from './goods_market.js'
+import { set_up_header_with_strings } from './headers.js';
 
 
 const char_info_monster = new CharInfoMonster();
@@ -42,43 +43,11 @@ socket.on('connect', () => {
     }
 })
 
-function show_skill_tab(tag) {
-    let tab = document.getElementById(tag + '_tab');
-    tab.classList.remove('hidden');
-    // tab.style.height = undefined
-}
-
-function hide_skill_tab(tag) {
-    let tab = document.getElementById(tag + '_tab');
-    tab.classList.add('hidden');
-    // tab.style.height = '0%'
-}
-
-function skill_tab_select(tag) {
-    let tab = document.getElementById(tag + '_header')
-    tab.classList.add('selected')
-    
-}
-function skill_tab_deselect(tag) {
-    let tab = document.getElementById(tag + '_header')
-    tab.classList.remove('selected')
-    
-}
-
-document.getElementById('skills_header').onclick = () => {
-    skill_tab_select('skills')
-    show_skill_tab('skills')
-    skill_tab_deselect('perks')
-    hide_skill_tab('perks')
-}
-
-document.getElementById('perks_header').onclick = () => {
-    skill_tab_select('perks')
-    show_skill_tab('perks')
-    skill_tab_deselect('skills')
-    hide_skill_tab('skills')
-}
-
+set_up_header_with_strings([
+    {element: 'skills_header', connected_element: 'skills_tab'},
+    {element: 'perks_header', connected_element: 'perks_tab'}, 
+    {element: 'stats_header', connected_element: 'stats_tab'}
+])
 
 var SKILL_TAGS = {}
 
@@ -237,8 +206,6 @@ socket.on('tags', msg => {
 
 socket.on('sections', msg => map.load_sections(msg));
 
-socket.on('is-reg-valid', msg => my_alert(msg));
-socket.on('is-login-valid', msg => my_alert(msg));
 
 socket.on('is-reg-completed', msg => reg(msg));
 socket.on('is-login-completed', msg => login(msg));
@@ -332,11 +299,7 @@ function change_bg(tag) {
     div.style.backgroundImage = "url(/static/img/bg_" + tag + ".png)"
 }
 
-function my_alert(msg) {
-    if (msg != 'ok') {
-        alert(msg);
-    }
-}
+
 
 function restart_action_bar(time, is_move) {
     // console.log('???')

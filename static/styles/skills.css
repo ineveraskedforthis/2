@@ -7,11 +7,11 @@
     height: 25px;
     display: flex;
     flex-direction: row;
-    flex-grow: 1;
+    /* flex-grow: 1; */
 }
 
 #skills_header_container > .header{
-    width: 50%;
+    flex-grow: 1;
     height: 100%;
     text-align: center;
     border: white 1px solid;

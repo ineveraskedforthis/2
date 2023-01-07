@@ -1,3 +1,4 @@
+import { set_up_header_with_strings } from './headers.js';
 import { socket } from './modules/globals.js';
 
 // MESSAGES STUFF
@@ -49,31 +50,27 @@ function new_log_attack_message(msg) {
     new_message_to_box('log-attack', log_message)
 }
 
-function switch_log_to(target) {
-    for (let tag of message_boxes) {
-        document.getElementById(tag).classList.add('hidden');
-        document.getElementById(`open_${tag}_button`).classList.remove('selected');
-    }
+set_up_header_with_strings([
+    {element: 'open_chat_button',       connected_element: 'chat'},
+    {element: 'open_log_button',        connected_element: 'log'},
+    {element: 'open_log-attack_button', connected_element: 'log-attack'}
+])
 
-    document.getElementById(target).classList.remove('hidden');
-    document.getElementById(`open_${target}_button`).classList.add('selected');
-}
-document.getElementById('open_chat_button').onclick = () => {
-    switch_log_to('chat');
-};
-document.getElementById('open_log_button').onclick = () => {
-    switch_log_to('log');
-};
-document.getElementById('open_log-attack_button').onclick = () => {
-    switch_log_to('log-attack');
-};
 document.getElementById('send_message_button').onclick = (event) => {
     event.preventDefault();
     let message = document.getElementById('message_field').value;
     socket.emit('new-message', message);
 };
 
+function my_alert(msg) {
+    if (msg != 'ok') {
+        alert(msg);
+    }
+}
+
 socket.on('log-attack', msg => { new_log_attack_message(msg); });
 socket.on('log-message', msg => new_log_message(msg));
 socket.on('new-message', msg => new_message(msg));
 socket.on('alert', msg => {my_alert(msg); new_log_message(msg)});
+socket.on('is-reg-valid', msg => my_alert(msg));
+socket.on('is-login-valid', msg => my_alert(msg));
