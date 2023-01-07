@@ -80,7 +80,12 @@ export namespace EventInventory {
             return
         }
 
+
         let rolls = item.affixes.length
+        Event.change_stash(character, ZAZ, -1)
+        if (character.skills.magic_mastery < 10 * rolls) Effect.Change.skill(character, 'magic_mastery', 1)
+
+        
         item.affixes = []
         for (let i = 0; i < rolls; i++) {
             if (item.is_weapon()) roll_affix_weapon(enchant_rating, item)
