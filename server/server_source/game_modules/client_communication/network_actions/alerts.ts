@@ -123,7 +123,7 @@ export namespace Alerts {
             index: battle.last_event_index,
             cost: cost,
         }
-        if ((tag == 'update') || (tag == 'unit_join')){
+        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
             let unit_data = Convert.unit_to_unit_socket(battle.heap.get_unit(unit_id))
             Event.data = unit_data
         }

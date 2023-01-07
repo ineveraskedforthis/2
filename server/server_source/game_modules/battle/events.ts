@@ -101,12 +101,12 @@ export namespace BattleEvent {
         }
 
         console.log(unit.id + ' current unit')
-
+        Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0)
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
-        Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0)
-        Alerts.battle_update_data(battle)
-        Alerts.battle_update_units(battle)
+
+        // Alerts.battle_update_data(battle)
+        // Alerts.battle_update_units(battle)
     }
 
     export function Move(battle: Battle, unit: Unit, target: battle_position) {

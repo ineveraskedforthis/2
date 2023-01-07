@@ -81,7 +81,7 @@ namespace bCallback {
             }
 
             case 'new_turn': {
-                BattleImage.new_event(new NewTurnEvent(action.index, action.creator))
+                BattleImage.new_event(new NewTurnEvent(action.index, action.creator, action.data!))
                 return true
             }
 

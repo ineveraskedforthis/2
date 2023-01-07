@@ -455,7 +455,10 @@ export var BattleImage;
         label.innerHTML = Math.floor(value * 100) + '%';
     }
     BattleImage.update_action_probability = update_action_probability;
-    function set_current_turn(index) {
+    function set_current_turn(index, time_passed) {
+        for (let unit of Object.values(units_views)) {
+            unit.next_turn -= time_passed;
+        }
         console.log('new turn ' + index + ' ' + current_turn);
         const div_prev = unit_div(current_turn);
         if (div_prev != undefined)

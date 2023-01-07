@@ -515,7 +515,11 @@ export namespace BattleImage {
         label.innerHTML = Math.floor(value * 100) + '%'
     }
 
-    export function set_current_turn(index: unit_id) {
+    export function set_current_turn(index: unit_id, time_passed: number) {
+        for (let unit of Object.values(units_views)) {
+            unit.next_turn -= time_passed
+        }
+
         console.log('new turn ' + index + ' ' + current_turn)
         const div_prev = unit_div(current_turn)
         if (div_prev != undefined) div_prev.classList.remove('current_turn')

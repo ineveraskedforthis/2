@@ -10,6 +10,8 @@ export class Battle {
     last_event_index: number
     grace_period: number
 
+    ai_timer?: ms
+
     constructor(id: battle_id, heap: UnitsHeap) {
         this.heap = heap
         this.id = id

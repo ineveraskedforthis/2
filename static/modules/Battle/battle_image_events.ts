@@ -401,11 +401,17 @@ export class RetreatEvent extends BattleImageEvent {
 
 
 export class NewTurnEvent extends BattleImageEvent {
-    constructor(event_id: number, unit: unit_id) {
-        super(event_id, unit, 0, 0, 0)
+    data: UnitSocket
+
+    constructor(event_id: number, unit_id: unit_id, data: UnitSocket) {
+        super(event_id, unit_id, 0, 0, INSTANT_EVENT_DURATION)
+        this.unit = unit_id
+        this.data = data
+        this.time_passed = 0
     }
 
     on_start(): void {
-        BattleImage.set_current_turn(this.unit)
+        let time_passed = this.data.next_turn
+        BattleImage.set_current_turn(this.unit, time_passed)
     }
 }

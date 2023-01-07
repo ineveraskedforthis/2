@@ -193,7 +193,11 @@ export namespace BattleSystem {
         BattleEvent.NewUnit(battle, unit)
     }
 
-    export function update() {
+    export function process_turn_ai() {
+
+    }
+
+    export function update(dt:ms) {
         const current_date = Date.now() as ms
 
         for (let battle of Data.Battle.list()) {
@@ -211,16 +215,30 @@ export namespace BattleSystem {
             if (battle.waiting_for_input) {
                 continue
             }
+            // if ai is waiting, continue countdown
+            if (battle.ai_timer != undefined) {
+                if ((battle.ai_timer < 2000)) {
+                    battle.ai_timer = battle.ai_timer + dt as ms
+                    continue
+                } else {
+                    // and finally finish the turn and turn timer off
+                    const unit = battle.heap.get_selected_unit()
+                    if (unit == undefined) {
+                        battle.ended =  true; continue
+                    }
+                    BattleEvent.EndTurn(battle, unit)
+                    battle.ai_timer = undefined
+                    continue
+                }
+            }
 
             // if battle is not waiting for input, then we need to start new turn
             BattleEvent.NewTurn(battle)
 
             // get information about current unit
             const unit = battle.heap.get_selected_unit()
-            console.log('current unit is' + unit?.id)
-            if (unit == undefined) {battle.ended = true; continue}
+            if (unit == undefined) {battle.ended =  true; continue}
             let character:Character = Convert.unit_to_character(unit)
-            console.log(character.name)
 
             if (character.dead()) {
                 BattleEvent.Leave(battle, unit)
@@ -235,13 +253,19 @@ export namespace BattleSystem {
                 battle.waiting_for_input = true
                 continue
             } 
+            
+            // give AI 2 seconds before ending a turn to imitate spending time to a turn
+            // wait 2 seconds for an AI turn
 
-            // else ask ai to make all needed moves and end turn
-            {
+            // if ai timer for ending a turn is not set, make turns as usual
+            if (battle.ai_timer == undefined) {
                 const responce = AI_turn(battle)
                 console.log(responce)
-                if (responce == 'end') BattleEvent.EndTurn(battle, unit)
-                if (responce == 'leave') BattleEvent.Leave(battle, unit);
+                // when ai wants to leave, launch the timer
+                if (responce == 'end') {
+                    battle.ai_timer = 0 as ms
+                }
+                if (responce == 'leave') BattleEvent.Leave(battle, unit);  
             }
         }
     }

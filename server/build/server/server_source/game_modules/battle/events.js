@@ -87,11 +87,11 @@ var BattleEvent;
             return { responce: 'no_units_left' };
         }
         console.log(unit.id + ' current unit');
+        alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0);
         let time_passed = unit.next_turn_after;
         battle.heap.update(time_passed);
-        alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0);
-        alerts_1.Alerts.battle_update_data(battle);
-        alerts_1.Alerts.battle_update_units(battle);
+        // Alerts.battle_update_data(battle)
+        // Alerts.battle_update_units(battle)
     }
     BattleEvent.NewTurn = NewTurn;
     function Move(battle, unit, target) {

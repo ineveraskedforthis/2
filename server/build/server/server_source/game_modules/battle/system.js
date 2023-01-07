@@ -170,7 +170,10 @@ var BattleSystem;
         events_1.BattleEvent.NewUnit(battle, unit);
     }
     BattleSystem.add_figther = add_figther;
-    function update() {
+    function process_turn_ai() {
+    }
+    BattleSystem.process_turn_ai = process_turn_ai;
+    function update(dt) {
         const current_date = Date.now();
         for (let battle of data_1.Data.Battle.list()) {
             if (battle.ended)
@@ -187,17 +190,33 @@ var BattleSystem;
             if (battle.waiting_for_input) {
                 continue;
             }
+            // if ai is waiting, continue countdown
+            if (battle.ai_timer != undefined) {
+                if ((battle.ai_timer < 2000)) {
+                    battle.ai_timer = battle.ai_timer + dt;
+                    continue;
+                }
+                else {
+                    // and finally finish the turn and turn timer off
+                    const unit = battle.heap.get_selected_unit();
+                    if (unit == undefined) {
+                        battle.ended = true;
+                        continue;
+                    }
+                    events_1.BattleEvent.EndTurn(battle, unit);
+                    battle.ai_timer = undefined;
+                    continue;
+                }
+            }
             // if battle is not waiting for input, then we need to start new turn
             events_1.BattleEvent.NewTurn(battle);
             // get information about current unit
             const unit = battle.heap.get_selected_unit();
-            console.log('current unit is' + unit?.id);
             if (unit == undefined) {
                 battle.ended = true;
                 continue;
             }
             let character = systems_communication_1.Convert.unit_to_character(unit);
-            console.log(character.name);
             if (character.dead()) {
                 events_1.BattleEvent.Leave(battle, unit);
                 continue;
@@ -209,12 +228,16 @@ var BattleSystem;
                 battle.waiting_for_input = true;
                 continue;
             }
-            // else ask ai to make all needed moves and end turn
-            {
+            // give AI 2 seconds before ending a turn to imitate spending time to a turn
+            // wait 2 seconds for an AI turn
+            // if ai timer for ending a turn is not set, make turns as usual
+            if (battle.ai_timer == undefined) {
                 const responce = AI_turn(battle);
                 console.log(responce);
-                if (responce == 'end')
-                    events_1.BattleEvent.EndTurn(battle, unit);
+                // when ai wants to leave, launch the timer
+                if (responce == 'end') {
+                    battle.ai_timer = 0;
+                }
                 if (responce == 'leave')
                     events_1.BattleEvent.Leave(battle, unit);
             }

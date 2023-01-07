@@ -16,7 +16,7 @@ import { Event } from "./game_modules/events/events";
 import { Convert, Link } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/battle/system";
 import { BulkOrders, ItemOrders } from "./game_modules/market/system";
-import { battle_id, unit_id } from "../../shared/battle_data";
+import { battle_id, ms, unit_id } from "../../shared/battle_data";
 import { Server } from "./server";
 import { EventMarket } from "./game_modules/events/market";
 import { BattleEvent } from "./game_modules/battle/events";
@@ -111,7 +111,7 @@ function save() {
 }
 
 var update_timer = 0
-
+                    // seconds
 function update(delta: number, http_server: Server) {
     if (shutdown) {
         http_server.close()
@@ -126,7 +126,7 @@ function update(delta: number, http_server: Server) {
     
     ActionManager.update_characters(delta)
     UserManagement.update_users()
-    BattleSystem.update()
+    BattleSystem.update(delta * 1000 as ms)
 
     let rats = 0
     let elos = 0

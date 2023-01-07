@@ -84,6 +84,7 @@ function save() {
     data_1.Data.save();
 }
 var update_timer = 0;
+// seconds
 function update(delta, http_server) {
     if (shutdown) {
         http_server.close();
@@ -96,7 +97,7 @@ function update(delta, http_server) {
     system_1.CharacterSystem.update(delta);
     action_manager_1.ActionManager.update_characters(delta);
     user_manager_1.UserManagement.update_users();
-    system_3.BattleSystem.update();
+    system_3.BattleSystem.update(delta * 1000);
     let rats = 0;
     let elos = 0;
     for (let character of data_1.Data.Character.list()) {
