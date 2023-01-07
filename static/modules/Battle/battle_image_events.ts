@@ -331,9 +331,6 @@ export class RangedAttackEvent extends BattleImageEvent {
         const projx = A.x * (1 - t) + B.x * (t)
         const projy = A.y * (1 - t) + B.y * (t)
 
-        console.log(projx, projy)
-
-        console.log(t)
         battle_canvas_context.beginPath();
         battle_canvas_context.fillStyle = "rgba(200, 0, 0, 0.5)"
         battle_canvas_context.arc(projx, projy, 10, 0, 2 * Math.PI)

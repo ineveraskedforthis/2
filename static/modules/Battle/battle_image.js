@@ -7,7 +7,7 @@ import { IMAGES } from '../load_images.js';
 function build_unit_div(unit_data, div) {
     if (div == undefined)
         div = document.createElement('div');
-    div.innerHTML = unit_data.name + '(id:' + unit_data.id + ')' + '<br>  hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap;
+    div.innerHTML = unit_data.name + '(id:' + unit_data.id + ')' + '<br>  hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap.toFixed(2);
     div.classList.add('fighter_' + unit_data.id);
     div.classList.add('enemy_status');
     div.onclick = () => BattleImage.select(unit_data.id);
@@ -630,7 +630,7 @@ export var BattleImage;
                 continue;
             if (view.hp == 0)
                 continue;
-            view.draw(dt, selected, hovered, player_unit_id);
+            view.draw(dt, selected, hovered, player_unit_id, current_turn);
         }
     }
     BattleImage.draw_units = draw_units;

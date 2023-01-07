@@ -60,7 +60,11 @@ var Request;
         const unit = systems_communication_1.Convert.character_to_unit(character);
         if (unit == undefined)
             return;
+        const battle = systems_communication_1.Convert.character_to_battle(character);
+        if (battle == undefined)
+            return;
         alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit.id);
+        alerts_1.Alerts.generic_user_alert(user, 'current-unit-turn', battle.heap.get_selected_unit()?.id);
     }
     Request.player_index = player_index;
     function flee_chance(sw) {

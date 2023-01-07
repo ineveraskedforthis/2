@@ -22,7 +22,7 @@ interface battle_action {
 
 function build_unit_div(unit_data: BattleUnitView, div: HTMLDivElement|undefined) {
     if (div == undefined) div = document.createElement('div')
-    div.innerHTML = unit_data.name + '(id:' + unit_data.id + ')' + '<br>  hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap
+    div.innerHTML = unit_data.name + '(id:' + unit_data.id + ')' + '<br>  hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap.toFixed(2)
     div.classList.add('fighter_' + unit_data.id)
     div.classList.add('enemy_status')
     div.onclick = () => BattleImage.select(unit_data.id)
@@ -689,7 +689,7 @@ export namespace BattleImage {
             let view = units_views[Number(unit_id) as unit_id]
             if (view == undefined) continue
             if (view.hp == 0) continue
-            view.draw(dt, selected, hovered, player_unit_id)
+            view.draw(dt, selected, hovered, player_unit_id, current_turn)
         }
     }
 

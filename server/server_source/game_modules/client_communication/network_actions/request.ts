@@ -62,7 +62,11 @@ export namespace Request {
         const unit = Convert.character_to_unit(character)
         if (unit == undefined) return
 
-        Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit.id)          
+        const battle = Convert.character_to_battle(character)
+        if (battle == undefined) return
+
+        Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit.id)  
+        Alerts.generic_user_alert(user, 'current-unit-turn', battle.heap.get_selected_unit()?.id)
     }
 
     export function flee_chance(sw: SocketWrapper) {

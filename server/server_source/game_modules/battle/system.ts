@@ -119,7 +119,7 @@ export namespace BattleSystem {
 
     // team 0 is a defender and spawns at the center
     // other teams spawn around center
-    export function create_unit(character: Character, team: number): Unit {
+    export function create_unit(character: Character, team: number, battle: Battle): Unit {
         last_unit_id = last_unit_id + 1 as unit_id
         
         // deciding position
@@ -146,7 +146,7 @@ export namespace BattleSystem {
             10 as action_points,
             4 as action_points, 
             character.id,
-            Math.random()
+            battle.heap.get_max()
             )
         
         return unit
@@ -189,7 +189,7 @@ export namespace BattleSystem {
         const battle = Convert.id_to_battle(battle_id)
         if (battle == undefined) return
         
-        const unit = create_unit(character, team)
+        const unit = create_unit(character, team, battle)
         BattleEvent.NewUnit(battle, unit)
     }
 

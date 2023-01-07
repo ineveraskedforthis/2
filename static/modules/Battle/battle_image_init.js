@@ -24,6 +24,10 @@ var bCallback;
         BattleImage.set_player(data);
     }
     bCallback.link_player_to_unit = link_player_to_unit;
+    function link_current_turn(data) {
+        BattleImage.set_current_turn(data, 0);
+    }
+    bCallback.link_current_turn = link_current_turn;
     function update_battle_state(data) {
         BattleImage.load(data);
     }
@@ -104,6 +108,7 @@ socket.on('battle-in-process', bCallback.update_battle_process);
 // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
 socket.on('battle-update-units', data => BattleImage.load(data));
 socket.on(UNIT_ID_MESSAGE, bCallback.link_player_to_unit);
+socket.on('current-unit-turn', bCallback.link_current_turn);
 // socket.on('battle-update-unit',         data => .update_unit(data))
 // socket.on('battle-new-unit',                bCallback.new_unit)
 // socket.on('battle-remove-unit',             bCallback.remove_unit)

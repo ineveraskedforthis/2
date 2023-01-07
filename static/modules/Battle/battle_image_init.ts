@@ -3,6 +3,7 @@ import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, Uni
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js"
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
+import { SocketAddress } from "net";
 
 // export const battle_image = new BattleImageNext();
 const events_queue: BattleEventSocket[] = []
@@ -40,6 +41,10 @@ const BATTLE_CURRENT_UNIT = 'current_unit_turn'
 namespace bCallback {    
     export function link_player_to_unit(data: unit_id) {
         BattleImage.set_player(data)
+    }
+
+    export function link_current_turn(data: unit_id) {
+        BattleImage.set_current_turn(data, 0)
     }
 
     export function update_battle_state(data: BattleData) {
@@ -133,6 +138,7 @@ socket.on('battle-in-process',          bCallback.update_battle_process)
 // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
 socket.on('battle-update-units',        data => BattleImage.load(data))
 socket.on(UNIT_ID_MESSAGE,              bCallback.link_player_to_unit)
+socket.on('current-unit-turn',          bCallback.link_current_turn)
 
 // socket.on('battle-update-unit',         data => .update_unit(data))
 

@@ -117,7 +117,7 @@ var BattleSystem;
     BattleSystem.get_empty_team = get_empty_team;
     // team 0 is a defender and spawns at the center
     // other teams spawn around center
-    function create_unit(character, team) {
+    function create_unit(character, team, battle) {
         last_unit_id = last_unit_id + 1;
         // deciding position
         if (team == 0) {
@@ -134,7 +134,7 @@ var BattleSystem;
             console.log(dx, dy);
             var position = { x: 0 + dx, y: 0 + dy };
         }
-        const unit = new unit_1.Unit(last_unit_id, position, team, 3, 10, 10, 4, character.id, Math.random());
+        const unit = new unit_1.Unit(last_unit_id, position, team, 3, 10, 10, 4, character.id, battle.heap.get_max());
         return unit;
     }
     BattleSystem.create_unit = create_unit;
@@ -166,7 +166,7 @@ var BattleSystem;
         const battle = systems_communication_1.Convert.id_to_battle(battle_id);
         if (battle == undefined)
             return;
-        const unit = create_unit(character, team);
+        const unit = create_unit(character, team, battle);
         events_1.BattleEvent.NewUnit(battle, unit);
     }
     BattleSystem.add_figther = add_figther;

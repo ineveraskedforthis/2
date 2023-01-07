@@ -31,6 +31,8 @@ export class BattleUnitView {
     animation_something: number
     current_animation: animation_event|undefined
     next_turn: number
+
+    timer: number
     
     constructor(unit: UnitSocket) {
         this.id = unit.id
@@ -52,6 +54,8 @@ export class BattleUnitView {
         this.next_turn = unit.next_turn
 
         this.a_image = new AnimatedImage(unit.tag)
+
+        this.timer = 0
     }
     
     update(hp_change: number, ap_change: number) {
@@ -72,7 +76,7 @@ export class BattleUnitView {
     }
 
 
-    draw_circles(ctx: CanvasRenderingContext2D, pos: canvas_position, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined) {
+    draw_circles(dt: number, ctx: CanvasRenderingContext2D, pos: canvas_position, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined, current_turn: unit_id|undefined) {
         //draw character attack radius circle and color it depending on it's status in ui
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         ctx.beginPath();
@@ -85,7 +89,7 @@ export class BattleUnitView {
             ctx.fillStyle = "rgba(200, 200, 0, 0.5)" // yellow otherwise
         }
         ctx.fill();
-
+    
         // draw movement radius
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         
@@ -103,25 +107,78 @@ export class BattleUnitView {
         ctx.closePath();
         ctx.stroke();
 
+        
+
         //draw small circle at unit's base
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, BATTLE_SCALE/10, 0, 2 * Math.PI);
         ctx.closePath();
         ctx.stroke();
+
+        // draw waves from inner circle to outer for current turn
+        if (this.id == current_turn) {
+            let wave = Math.sin(this.timer)
+            let radius_end = Math.max(BATTLE_SCALE * (this.ap - this.ap_change) / this.move_cost / 2, BATTLE_SCALE * this.range / 2, 5)
+            let radius_start = BATTLE_SCALE/10
+
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)"
+            //draw small circle at unit's base
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, radius_end * Math.abs(wave) + radius_start * (1 - Math.abs(wave)), 0, 2 * Math.PI);
+            ctx.closePath();
+            ctx.stroke();
+        } 
+
+        //mark player with something cool
+        if (this.id == player_id) {
+            ctx.fillStyle = "rgba(0, 0, 0, 0.8)"
+            ctx.beginPath();
+            const pi = Math.PI
+            
+            let angle = this.timer * (this.ap / 5)
+            let dx = Math.cos(angle) * BATTLE_SCALE * this.range
+            let dy = Math.sin(angle) * BATTLE_SCALE * this.range
+            ctx.moveTo(pos.x + dx, pos.y + dy)
+
+            for (let i = 0; i < 20; i++) {
+                angle = this.timer * (this.ap / 5) + 5 * pi * i / 6 
+                let dx = Math.cos(angle) * BATTLE_SCALE * this.range
+                let dy = Math.sin(angle) * BATTLE_SCALE * this.range
+                ctx.lineTo(pos.x + dx, pos.y + dy)
+            }
+
+            // angle = this.timer + pi / 6
+            // dx = Math.cos(angle) * BATTLE_SCALE * this.range
+            // dy = Math.sin(angle) * BATTLE_SCALE * this.range
+            // ctx.moveTo(pos.x + dx, pos.y + dy)
+
+            // for (let i = 0; i < 4; i++) {
+            //     let angle = this.timer + 2*pi * i / 3 + pi / 6
+            //     let dx = Math.cos(angle) * BATTLE_SCALE * this.range
+            //     let dy = Math.sin(angle) * BATTLE_SCALE * this.range
+            //     ctx.lineTo(pos.x + dx, pos.y + dy)
+            // }
+
+            ctx.stroke();
+        }
     }
 
 
-    draw(dt: number, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined) {
+    draw(dt: number, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined, current_turn: unit_id|undefined) {
         if (this.killed) {
             return
         }
+
+        this.timer += dt
+
+
         // let unit = this.unit
 
         let pos = position_c.battle_to_canvas(this.position)
         let ctx = battle_canvas_context
 
         
-        this.draw_circles(ctx, pos, selected, hovered, player_id)
+        this.draw_circles(dt, ctx, pos, selected, hovered, player_id, current_turn)
 
         //draw nameplates
 
@@ -141,27 +198,7 @@ export class BattleUnitView {
         }
 
         // draw an actual nameplate
-        {
-            const nameplate_left = pos.x - 50
-            const nameplate_top = pos.y + 50
-            const nameplate_width = 100
-            const nameplate_height = 20
-
-            // name rect
-            ctx.strokeRect(nameplate_left, nameplate_top, nameplate_width, nameplate_height)
-            // ap rect
-            ctx.strokeRect(nameplate_left, nameplate_top + 20, nameplate_width, nameplate_height)
-            
-            //prepare and draw name string
-            let string = this.name
-            if (this.id == player_id) {
-                string = string + '(YOU)'
-            }
-            ctx.fillText(string + ' || ' + this.hp + ' hp', nameplate_left + 5, nameplate_top + 15);
-
-            // draw ap string
-            ctx.fillText('ap:  ' + Math.floor(this.ap * 10) / 10, nameplate_left + 5, nameplate_top + 20 + 15);
-        }
+        this.draw_nameplate(pos, ctx, player_id)
 
         // draw character's image
         let image_pos = position_c.image_to_canvas(pos, this.a_image.get_w(), this.a_image.get_h())
@@ -218,4 +255,29 @@ export class BattleUnitView {
             }
         }
     }  
+
+
+    private draw_nameplate(pos: canvas_position, ctx: CanvasRenderingContext2D, player_id: unit_id | undefined) {
+        {
+            const nameplate_left = pos.x - 50
+            const nameplate_top = pos.y + 50
+            const nameplate_width = 100
+            const nameplate_height = 20
+
+            // name rect
+            ctx.strokeRect(nameplate_left, nameplate_top, nameplate_width, nameplate_height)
+            // ap rect
+            ctx.strokeRect(nameplate_left, nameplate_top + 20, nameplate_width, nameplate_height)
+
+            //prepare and draw name string
+            let string = this.name
+            if (this.id == player_id) {
+                string = string + '(YOU)'
+            }
+            ctx.fillText(string + ' || ' + this.hp + ' hp', nameplate_left + 5, nameplate_top + 15)
+
+            // draw ap string
+            ctx.fillText('ap:  ' + Math.floor(this.ap * 10) / 10, nameplate_left + 5, nameplate_top + 20 + 15)
+        }
+    }
 }

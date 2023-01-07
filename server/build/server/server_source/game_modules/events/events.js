@@ -434,7 +434,7 @@ var Event;
         if (agent.in_battle()) {
             return;
         }
-        const unit = system_1.BattleSystem.create_unit(agent, team);
+        const unit = system_1.BattleSystem.create_unit(agent, team, battle);
         events_1.BattleEvent.NewUnit(battle, unit);
         systems_communication_1.Link.character_battle_unit(agent, battle, unit);
         alerts_1.Alerts.battle_update_data(battle);

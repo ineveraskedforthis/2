@@ -20,6 +20,13 @@ class UnitsHeap {
         return this.data[this.heap[i]].next_turn_after;
     }
     get_max() {
+        let max = 0;
+        for (let i of Object.values(this.data)) {
+            if (i.next_turn_after > max) {
+                max = i.next_turn_after;
+            }
+        }
+        return max;
     }
     get_units_amount() {
         return this.last;
