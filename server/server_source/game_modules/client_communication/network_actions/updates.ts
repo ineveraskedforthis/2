@@ -6,7 +6,6 @@ import { Convert } from "../../systems_communication";
 import { cell_id, weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
 import { Alerts } from "./alerts";
-import { CellActionProb } from "../../calculations/difficulty";
 import { BattleSystem } from "../../battle/system";
 import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
 import { prepare_market_orders } from "../helper_functions";
@@ -373,9 +372,6 @@ export namespace SendUpdate {
     export function cell_probability(user: User) {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
-
-        Alerts.cell_action(user, 'hunt', CellActionProb.hunt(character))
-        Alerts.cell_action(user, 'fish', CellActionProb.fish(character))
     }
 
     export function update_player_actions_availability() {

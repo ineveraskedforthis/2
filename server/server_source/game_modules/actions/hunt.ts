@@ -1,11 +1,12 @@
 import { CharacterActionResponce } from "./action_manager";
-import { FISH, MEAT } from "../manager_classes/materials_manager";
+import { FISH, MEAT, RAT_SKIN } from "../manager_classes/materials_manager";
 import type { Character } from "../character/character";
 import { Convert } from "../systems_communication";
 import { map_position } from "../types";
 import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Event } from "../events/events";
+import { Effect } from "../events/effects";
 
 
 export const hunt = {
@@ -28,33 +29,30 @@ export const hunt = {
     },
 
     result:  function(char:Character, data: map_position) {
-
         let skill = char.skills.hunt
-        let dice = Math.random()
-
+        let skinning = char.skills.skinning
         char.change_fatigue(10)
 
-        if (dice * 100 < skill) {
-            Event.change_stash(char, MEAT, 1)
-            char.change_blood(5)
+        let amount_meat = Math.floor(skill / 10) + 1
+        let amount_skin = Math.max(Math.floor(skill / 20))
 
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
-            return CharacterActionResponce.OK
-        } else {
-            let dice = Math.random()
-            if (dice * 100 > skill) {
-                char.skills.hunt += 1
-                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
-            }
-            char.change_stress(1)
-
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
-            return CharacterActionResponce.FAILED
+        if (Math.random() < 0.1) {
+            amount_meat += 10
+            amount_skin += 1
         }
+
         
-        
+        if (Math.random() * Math.random() > skill / 100) {
+            Effect.Change.skill(char, 'hunt', 1)
+            Effect.Change.stress(char, 1)
+        }
+
+        if (amount_skin * Math.random() > skinning / 20) {
+            Effect.Change.skill(char, 'skinning', 1)
+        }
+
+        Event.change_stash(char, MEAT, amount_meat)
+        Event.change_stash(char, RAT_SKIN, amount_skin)
     },
 
     start:  function(char:Character, data: map_position) {
@@ -82,26 +80,25 @@ export const fish = {
 
     result:  function(char:Character, data: map_position) {
         let skill = char.skills.fishing
-        let dice = Math.random()
 
         char.change_fatigue(10)
 
-        if (dice * 100 < skill) {
-            Event.change_stash(char, FISH, 1)
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-            return CharacterActionResponce.OK
-        } else {
-            let dice = Math.random()
-            if (dice * 100 > skill) {
-                char.skills.fishing += 1
-                UserManagement.add_user_to_update_queue(char.user_id, UI_Part.SKILLS)
-            }
-            char.change_stress(1)
+        let amount = Math.floor(skill / 20) + 1
 
-            // UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-            UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
-            return CharacterActionResponce.FAILED
+        if (Math.random() < 0.01) {
+            amount += 10
         }
+
+        if (Math.random() < 0.0001) {
+            amount += 100
+        }
+        
+        if (Math.random() * Math.random() > skill / 100) {
+            Effect.Change.skill(char, 'fishing', 1)
+            Effect.Change.stress(char, 1)
+        }
+
+        Event.change_stash(char, FISH, amount)
     },
 
     start:  function(char:Character, data: map_position) {

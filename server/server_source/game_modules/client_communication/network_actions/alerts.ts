@@ -201,7 +201,6 @@ export namespace Alerts {
     }    
 
     export function perks(user: User, character: Character) {
-        console.log(character.perks)
         Alerts.generic_user_alert(user, 'perks-update', character.perks)
     }
 }

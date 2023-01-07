@@ -200,7 +200,6 @@ var Alerts;
     }
     Alerts.action_ping = action_ping;
     function perks(user, character) {
-        console.log(character.perks);
         Alerts.generic_user_alert(user, 'perks-update', character.perks);
     }
     Alerts.perks = perks;

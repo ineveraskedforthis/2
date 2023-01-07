@@ -3,8 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.fish = exports.hunt = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
-const user_manager_1 = require("../client_communication/user_manager");
 const events_1 = require("../events/events");
+const effects_1 = require("../events/effects");
 exports.hunt = {
     duration(char) {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
@@ -27,26 +27,23 @@ exports.hunt = {
     },
     result: function (char, data) {
         let skill = char.skills.hunt;
-        let dice = Math.random();
+        let skinning = char.skills.skinning;
         char.change_fatigue(10);
-        if (dice * 100 < skill) {
-            events_1.Event.change_stash(char, materials_manager_1.MEAT, 1);
-            char.change_blood(5);
-            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
-            return 1 /* CharacterActionResponce.OK */;
+        let amount_meat = Math.floor(skill / 10) + 1;
+        let amount_skin = Math.max(Math.floor(skill / 20));
+        if (Math.random() < 0.1) {
+            amount_meat += 10;
+            amount_skin += 1;
         }
-        else {
-            let dice = Math.random();
-            if (dice * 100 > skill) {
-                char.skills.hunt += 1;
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 12 /* UI_Part.SKILLS */);
-            }
-            char.change_stress(1);
-            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
-            return 4 /* CharacterActionResponce.FAILED */;
+        if (Math.random() * Math.random() > skill / 100) {
+            effects_1.Effect.Change.skill(char, 'hunt', 1);
+            effects_1.Effect.Change.stress(char, 1);
         }
+        if (amount_skin * Math.random() > skinning / 20) {
+            effects_1.Effect.Change.skill(char, 'skinning', 1);
+        }
+        events_1.Event.change_stash(char, materials_manager_1.MEAT, amount_meat);
+        events_1.Event.change_stash(char, materials_manager_1.RAT_SKIN, amount_skin);
     },
     start: function (char, data) {
     },
@@ -73,24 +70,19 @@ exports.fish = {
     },
     result: function (char, data) {
         let skill = char.skills.fishing;
-        let dice = Math.random();
         char.change_fatigue(10);
-        if (dice * 100 < skill) {
-            events_1.Event.change_stash(char, materials_manager_1.FISH, 1);
-            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
-            return 1 /* CharacterActionResponce.OK */;
+        let amount = Math.floor(skill / 20) + 1;
+        if (Math.random() < 0.01) {
+            amount += 10;
         }
-        else {
-            let dice = Math.random();
-            if (dice * 100 > skill) {
-                char.skills.fishing += 1;
-                user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 12 /* UI_Part.SKILLS */);
-            }
-            char.change_stress(1);
-            // UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)
-            user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
-            return 4 /* CharacterActionResponce.FAILED */;
+        if (Math.random() < 0.0001) {
+            amount += 100;
         }
+        if (Math.random() * Math.random() > skill / 100) {
+            effects_1.Effect.Change.skill(char, 'fishing', 1);
+            effects_1.Effect.Change.stress(char, 1);
+        }
+        events_1.Event.change_stash(char, materials_manager_1.FISH, amount);
     },
     start: function (char, data) {
     },

@@ -75,6 +75,9 @@ var EventInventory;
             return;
         }
         let rolls = item.affixes.length;
+        events_1.Event.change_stash(character, materials_manager_1.ZAZ, -1);
+        if (character.skills.magic_mastery < 10 * rolls)
+            effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
         item.affixes = [];
         for (let i = 0; i < rolls; i++) {
             if (item.is_weapon())
