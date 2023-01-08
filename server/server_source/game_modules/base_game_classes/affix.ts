@@ -3,6 +3,7 @@ import { affix_tag } from "../../../../shared/inventory";
 import { AttackObj } from "../attack/class";
 import { Character } from "../character/character";
 import { Item } from "../items/item";
+import { ELODINO_FLESH, GRACI_HAIR, materials } from "../manager_classes/materials_manager";
 import { Damage } from "../misc/damage_types";
 
 export function get_potential_affix_weapon(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
@@ -10,20 +11,22 @@ export function get_potential_affix_weapon(enchant_rating:number, item:Item):{ta
     
     // checking for phys damage mods
     if ((item.damage.pierce > 0) || (item.damage.slice > 0)) {
-        potential_affix.push({tag: 'sharp', weight: 10})
+        potential_affix.push({tag: 'sharp', weight: 20})
         potential_affix.push({tag: 'notched', weight: 2})
     }
     if ((item.damage.slice > 0) || (item.damage.blunt > 0)){
-        potential_affix.push({tag: 'heavy', weight: 5})
+        potential_affix.push({tag: 'heavy', weight: 10})
     }
 
     // adding universal mods
-    potential_affix.push({tag: 'hot', weight: 1})
-    potential_affix.push({tag: 'of_power', weight: 1})
-    potential_affix.push({tag: 'precise', weight: 5})
+    if (enchant_rating > 20) {
+        potential_affix.push({tag: 'hot', weight: 1})
+        potential_affix.push({tag: 'of_power', weight: 1})
+        potential_affix.push({tag: 'precise', weight: 5})
+    }
 
     // extra mods
-    if (enchant_rating > 20) {
+    if (enchant_rating > 150) {
         potential_affix.push({tag: 'daemonic', weight: 1})
         potential_affix.push({tag: 'of_madness', weight: 1})
     }
@@ -31,7 +34,48 @@ export function get_potential_affix_weapon(enchant_rating:number, item:Item):{ta
 }
 
 export function get_potential_affix_armour(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
-    return [{tag: 'thick', weight: 10}, {tag: 'layered', weight: 10}, {tag: 'hard', weight: 10}, {tag: 'of_heat', weight: 3}, {tag: 'of_power', weight: 3}, {tag: 'of_protection', weight: 1}, {tag: 'of_painful_protection', weight: 1}]
+    let potential_affix:{tag: affix_tag, weight: number}[] = []
+
+    //universal    
+    potential_affix.push({tag: 'thick', weight: 25})
+    potential_affix.push({tag: 'layered', weight: 25})
+    potential_affix.push({tag: 'hard', weight: 25})
+
+    // special when you reach 
+    if (enchant_rating > 30) {
+        potential_affix.push({tag: 'of_heat', weight: 3})
+        potential_affix.push({tag: 'of_power', weight: 3})
+        potential_affix.push({tag: 'of_protection', weight: 3})
+    }
+
+
+    // for local creatures you have better chances for special affixes
+    // if your enchanting rating is high
+    if (enchant_rating > 60) {
+        if (item.material.string_tag == materials.index_to_material(ELODINO_FLESH).string_tag) {
+            potential_affix.push({tag: 'of_heat', weight: 5})
+            potential_affix.push({tag: 'of_power', weight: 5})
+            potential_affix.push({tag: 'of_protection', weight: 5})
+            potential_affix.push({tag: 'of_painful_protection', weight: 1})
+            potential_affix.push({tag: 'of_elodino_pleasure', weight: 10})
+            potential_affix.push({tag: 'of_elder_beast', weight: 1})
+        }
+    }
+    
+    if (enchant_rating > 100) {
+        if (item.material.string_tag == materials.index_to_material(GRACI_HAIR).string_tag) {
+            potential_affix.push({tag: 'of_heat', weight: 5})
+            potential_affix.push({tag: 'of_power', weight: 5})
+            potential_affix.push({tag: 'of_protection', weight: 5})
+            potential_affix.push({tag: 'of_painful_protection', weight: 1})
+            potential_affix.push({tag: 'of_graci_beauty', weight: 10})
+            potential_affix.push({tag: 'of_elder_beast', weight: 1})
+        }
+    }
+
+
+
+    return potential_affix
 }
 
 
@@ -84,54 +128,30 @@ function dummy_damage_mod(result: Damage) {
     return result
 }
 
-export const attack_affixes_effects:{[_ in affix_tag]: AttackModificationFunction} = {
-    thick: dummy_attack_mod,
-    of_elodino_pleasure: dummy_attack_mod,
-    hard: dummy_attack_mod,
-    of_graci_beauty: dummy_attack_mod,
-    of_painful_protection: dummy_attack_mod,
-    of_elder_beast: dummy_attack_mod,
-    of_protection: dummy_attack_mod,
-    layered: dummy_attack_mod,
-    of_heat: dummy_attack_mod,
-    sharp: dummy_attack_mod,
-    heavy: dummy_attack_mod,
-    hot: dummy_attack_mod,
+export const attack_affixes_effects:{[_ in affix_tag]?: AttackModificationFunction} = {
     precise: (result: AttackObj) => {
-        result.chance_to_hit += 0.02
+        result.attack_skill += 10
         return result
     },
     of_madness: (result: AttackObj) => {
-        result.attacker_status_change.rage +=      2 ;
-        return result
-    },
-    calm: (result: AttackObj) => {
-        result.attacker_status_change.rage +=     -1 ;
+        result.attacker_status_change.rage +=       50;
         return result
     },
     daemonic: (result: AttackObj) => {
-        result.attacker_status_change.stress+=   90;
-        result.attacker_status_change.rage +=    100;
+        result.attacker_status_change.stress+=      100;
+        result.attacker_status_change.rage +=       100;
+        result.attacker_status_change.fatigue +=    100;
         return result
     },
     notched: (result: AttackObj) => {
-        result.attacker_status_change.blood += 2;
-        result.defender_status_change.blood += 2
+        result.attacker_status_change.blood += 10;
+        result.defender_status_change.blood += 10
         return result
     },
     of_power: dummy_attack_mod
 }
 
-export const damage_affixes_effects:{[_ in affix_tag]: DamageModificationFunction} = {
-    thick: dummy_damage_mod,
-    of_elodino_pleasure: dummy_damage_mod,
-    hard: dummy_damage_mod,
-    of_graci_beauty: dummy_damage_mod,
-    of_painful_protection: dummy_damage_mod,
-    of_elder_beast: dummy_damage_mod,
-    of_protection: dummy_damage_mod,
-    layered: dummy_damage_mod,
-    of_heat: dummy_damage_mod,
+export const damage_affixes_effects:{[_ in affix_tag]?: DamageModificationFunction} = {
     sharp: (damage: Damage) => {
         damage.pierce += 5;
         damage.slice += 5
@@ -150,10 +170,11 @@ export const damage_affixes_effects:{[_ in affix_tag]: DamageModificationFunctio
         return damage
     },
     of_madness: (damage: Damage) => {
-        damage.slice +=  20;
+        damage.slice  += 50;
+        damage.pierce += 50;
+        damage.blunt  += 50
         return damage
     },
-    calm: dummy_damage_mod,
     daemonic: (damage: Damage) => {
         damage.fire +=  300;
         return damage
@@ -172,15 +193,7 @@ export const damage_affixes_effects:{[_ in affix_tag]: DamageModificationFunctio
 
 
 
-export const protection_affixes_effects:{[_ in affix_tag]: DamageModificationFunction} = {
-        sharp: dummy_damage_mod,
-        hot: dummy_damage_mod,
-        notched: dummy_damage_mod,
-        daemonic: dummy_damage_mod,
-        heavy: dummy_damage_mod,
-        precise: dummy_damage_mod,
-        of_madness: dummy_damage_mod,
-        calm: dummy_damage_mod,
+export const protection_affixes_effects:{[_ in affix_tag]?: DamageModificationFunction} = {
         thick: (resists: Damage) => {
             resists.fire += 3;
             resists.pierce += 5;
@@ -252,11 +265,11 @@ export const get_power:{[_ in affix_tag]?: power_modification} = {
             return data
         }, 
         of_elodino_pleasure: (data: number) => {
-            data += 4
+            data += 5
             return data
         },
         of_graci_beauty: (data: number) => {
-            data += 2
+            data += 5
             return data
         }
     }
@@ -271,6 +284,10 @@ export const update_character:{[_ in affix_tag]?: character_update_function} = {
         },
 
         of_graci_beauty: (agent: Character) => {
+            agent.change('stress', 1);
+        },
+
+        of_elodino_pleasure: (agent: Character) => {
             agent.change('stress', 1);
         },
 

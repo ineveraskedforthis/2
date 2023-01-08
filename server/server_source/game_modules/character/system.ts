@@ -15,6 +15,7 @@ import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 import { CampaignAI } from "../AI/ai_manager";
 import { skill, SkillList } from "./skills";
 import { trim } from "../calculations/basic_functions";
+import { Effect } from "../events/effects";
 
 var loaded_flag_characters = false
 
@@ -206,10 +207,18 @@ export namespace CharacterSystem {
         if (type == 'pierce')   {damage.pierce  = 0}
         return damage
     }
+
     export function ranged_damage_raw(character: Character) {
         const damage = character.equip.get_ranged_damage()
         if (damage != undefined) return damage
         return new Damage()
+    }
+
+    export function ranged_skill(character: Character) {
+        let base = character.skills.ranged
+        const rage_mod = (100 - character.get_rage()) / 100
+        const stress_mod = (100 - character.get_stress()) / 100
+        return Math.round(base * rage_mod * stress_mod)
     }
 
     export function phys_power(character: Character) {
@@ -270,8 +279,14 @@ export namespace CharacterSystem {
 
     export function attack_skill(character: Character) {
         const weapon = character.equip.data.weapon
-        if (weapon == undefined) return character.skills.noweapon
-        return character.skills[weapon.weapon_tag]
+        let skill = 0
+        if (weapon == undefined) skill = character.skills.noweapon
+        else skill = character.skills[weapon.weapon_tag]
+        
+        const rage_mod = (100 - character.get_rage()) / 100
+        const stress_mod = (100 - character.get_stress()) / 100
+
+        return Math.round(skill * rage_mod * stress_mod)
     }
 
     export function resistance(character: Character) {
@@ -322,111 +337,31 @@ export namespace CharacterSystem {
         return loot
     }
 
-//     mod_spell_damage_with_stats(result: AttackResult, tag:spell_tags) {
-//         let power_mod = this.get_magic_power() / 10
-//         let skill_mod = this.skills.magic_mastery / 10
-//         let damage_mod = power_mod * (skill_mod + 1)
-
-//         if (this.skills.perks.magic_bolt) {
-//             damage_mod = damage_mod * 1.5
-//         }
-
-//         if (this.skills.perks.mage_initiation) {
-//             damage_mod = damage_mod * 1.5
-//         }
-
-//         damage_mod = Math.floor(damage_mod)
-
-//         result.damage['blunt']  = Math.floor(Math.max(1, result.damage['blunt']     * damage_mod));
-//         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce']    * damage_mod));
-//         result.damage['slice']  = Math.floor(Math.max(0, result.damage['slice']     * damage_mod));
-//         result.damage['fire']   = Math.floor(Math.max(0, result.damage['fire']      * damage_mod));
-
-//         return result
-//     }
-
-//     roll_accuracy(result: AttackResult, mod: 'fast'|'heavy'|'usual'|'ranged', distance?: number) {
-//         let dice = Math.random();
-
-//         result.chance_to_hit = this.get_accuracy(result, mod, distance)
-        
-//         if (dice > result.chance_to_hit) {
-//             result.flags.miss = true;
-//         }
-
-//         return result
-//     }
-
-//     roll_crit(result: AttackResult) {
-//         let dice = Math.random()
-
-//         let crit_chance = this.get_crit_chance("attack");
-//         let mult = this.get_crit_mult();
-
-//         if (dice < crit_chance) {
-//             result.damage['blunt'] = result.damage['blunt'] * mult;
-//             result.damage['pierce'] = result.damage['pierce'] * mult;
-//             result.damage['slice'] = result.damage['slice'] * mult;
-//             result.flags.crit = true;
-//         }
-
-//         return result
-//     }
-
-//     roll_dodge(result: AttackResult, mod: 'fast'|'heavy'|'usual'|'ranged', dodge_flag: boolean) {
-//         let dice = Math.random()
-
-//         let base_evade_chance = this.get_evasion_chance();
-//         let attack_specific_dodge = 0;
-
-//         if (dodge_flag) switch(mod){
-//             case 'fast': {attack_specific_dodge = 0.2; break}
-//             case 'usual': {attack_specific_dodge = 0.5; break}
-//             case 'heavy': {attack_specific_dodge = 1; break}
-//             case 'ranged': {attack_specific_dodge = 0.2;break}
-//         }
-
-//         let evade_chance = base_evade_chance + attack_specific_dodge
-
-//         if (dice < evade_chance) {
-//             result.flags.evade = true
-//             result.flags.crit = false
-//         }
-
-//         return result
-//     }
-
-//     roll_block(result: AttackResult) {
-//         let dice = Math.random()
-
-//         let block_chance = this.get_block_chance();
-
-//         if (dice < block_chance) {
-//             result.flags.blocked = true;
-//         }
-
-//         return result;
-//     }
-
     export function update(dt: number) {
         ai_campaign_decision_timer += dt
 
         if (ai_campaign_decision_timer > 8) {
-            for (let char of Data.Character.list()) {
-                if (char.dead()) {
+            for (let character of Data.Character.list()) {
+                if (character.dead()) {
                     continue
                 }
                 if (Math.random() > 0.6) {
-                    CampaignAI.decision(char)
+                    CampaignAI.decision(character)
                 }                
             }
             ai_campaign_decision_timer = 0
         }
+
         
+        for (let character of Data.Character.list()) {
+            if (character.dead()) {
+                continue
+            }
+            if (!character.in_battle()) Effect.Change.rage(character, -1)
+        }
     }
 
     export function battle_update(character: Character) {
 
     }
-
 }

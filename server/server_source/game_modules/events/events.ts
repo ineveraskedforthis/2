@@ -24,6 +24,7 @@ import { Effect } from "./effects";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
 import { AttackObj } from "../attack/class";
+import { Damage, DmgOps } from "../misc/damage_types";
 
 export namespace Event {
 
@@ -96,26 +97,30 @@ export namespace Event {
         return character
     }
 
-    function ranged_dodge(attacker: Character, defender: Character, flag_dodge: boolean) {
+    function ranged_dodge(attack: AttackObj, defender: Character, flag_dodge: boolean) {
         // evasion helps against arrows better than in melee
         // 100 evasion - 2 * attack skill = 100% of arrows are missing
         // evaded attack does not rise skill of attacker
         // dodge is an active evasion
-        // it gives base 20% of arrows missing
+        // it gives base 10% of arrows missing
         // and you rise your evasion if you are attacked
-        const attack_skill = 2 * attacker.skills.ranged
+        const attack_skill = 2 * attack.attack_skill
         const evasion = defender.skills.evasion
-        let evasion_chance = evasion - attack_skill
+
+        let evasion_chance = evasion / (100 + attack_skill)
         if (flag_dodge) evasion_chance = evasion_chance + 0.1
-        if (flag_dodge) {
-            const dice_evasion_skill_up = Math.random()
-            if (dice_evasion_skill_up < attack_skill - evasion) {
-                Effect.Change.skill(defender, 'evasion', 1)
-            }
-        }
+
         const evasion_roll = Math.random()
         if (evasion_roll < evasion_chance) {
+            attack.flags.miss = true
             return 'miss'
+        }
+
+        if (flag_dodge) {
+            const dice_evasion_skill_up = Math.random()
+            if (dice_evasion_skill_up > evasion_chance) {
+                Effect.Change.skill(defender, 'evasion', 1)
+            }
         }
     }
 
@@ -145,18 +150,20 @@ export namespace Event {
             Effect.Change.skill(attacker, 'ranged', 1)
         }
 
+        // create attack
+        const attack = Attack.generate_ranged(attacker)
 
-        const responce = ranged_dodge(attacker, defender, flag_dodge)
-        if (responce == 'miss') {
-            return 'miss'
-        }
-
-        // durability changes
+        // durability changes weapon
         const roll_weapon = Math.random()
         if (roll_weapon < 0.2) {
             Effect.change_durability(attacker, 'weapon', -1)
         }
-        {
+
+        const responce = ranged_dodge(attack, defender, flag_dodge)
+        
+        if (responce == 'miss') {
+            DmgOps.mult_ip(attack.damage, 0)
+        } else {
             const roll = Math.random()
             if (roll < 0.5) Effect.change_durability(defender, 'body', -1);
             else if (roll < 0.7) Effect.change_durability(defender, 'legs', -1)
@@ -165,8 +172,12 @@ export namespace Event {
             else Effect.change_durability(defender, 'arms', -1)
         }
 
-        // create attack
-        const attack = Attack.generate_ranged(attacker)
+        //apply status to attack
+        attack.attacker_status_change.fatigue += 5
+        attack.defender_status_change.fatigue += 5
+        attack.defender_status_change.stress += 3
+
+        attack.defence_skill += defender.skills.evasion
         
         deal_damage(defender, attack, attacker)
 
@@ -206,6 +217,7 @@ export namespace Event {
         }
 
         const attack = Attack.generate_magic_bolt(attacker, dist)
+        attack.defender_status_change.stress += 5
 
         deal_damage(defender, attack, attacker);
 
@@ -235,117 +247,160 @@ export namespace Event {
         if (attacker.dead()) return
         if (defender.dead()) return
         const attack = Attack.generate_melee(attacker, attack_type)
-        Attack.defend_against_melee(attack, defender)
+
+        //status changes for melee attack
+        attack.attacker_status_change.rage += 5
+        attack.attacker_status_change.fatigue += 5
+        attack.defender_status_change.rage += 3
+        attack.defender_status_change.stress += 1
 
         Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
         
-        {// evasion
-            const skill = defender.skills.evasion + Math.round(Math.random() * 2)
-            attack.defence_skill += skill
+        //calculating defense skill
+        evade(defender, attack, dodge_flag);
+        block(defender, attack);
+        parry(defender, attack);
 
-            //active dodge
-            if (dodge_flag) {
-                attack.flags.miss = true
-                Attack.dodge(attack, 50)
-                // attempts to evade increase your skill
-                if (skill < attack.attack_skill) {
-                    Effect.Change.skill(defender, 'evasion', 1)
-                }
-            }
-
-            //passive evasion
-            if (skill > attack.attack_skill) {
-                attack.flags.miss = true
-                Attack.dodge(attack, skill)
-            } else {
-                //fighting against stronger enemies provides constant growth of this skill up to some level
-                const dice = Math.random()
-                if ((dice < 0.01) && (skill <= 15)) {
-                    Effect.Change.skill(defender, 'evasion', 1)
-                }
-            }
-        }
-
-        {//block
-            const skill = defender.skills.blocking + Math.round(Math.random() * 2)
-            attack.defence_skill += skill
-            if ((skill > attack.attack_skill)) {
-                attack.flags.blocked = true
-                let dice = Math.random()
-                if (dice * 100 > skill) Effect.Change.skill(defender, 'blocking', 1)
-            }
-
-            Attack.block(attack, skill)
-
-            //fighting provides constant growth of this skill up to some level
-            const dice = Math.random()
-            if ((dice < 0.01) && (skill <= 15)) {
-                Effect.Change.skill(defender, 'blocking', 1)
-            }
-        }
-
-        {//weapon mastery
-            const weapon = CharacterSystem.melee_weapon_type(defender)
-            const skill = defender.skills[weapon] + Math.round(Math.random() * 2)
-            attack.defence_skill += skill
-            if ((skill > attack.attack_skill)) {
-                attack.flags.blocked = true
-                let dice = Math.random()
-                if (dice * 100 > skill) Effect.Change.skill(defender, weapon, 1)
-            }
-
-            //fighting provides constant growth of this skill up to some level
-            const dice = Math.random()
-            if ((dice < 0.1) && (skill <= 20)) {
-                Effect.Change.skill(defender, weapon, 1)
-            }
-        }
-
-        {//weapon skill update
-            // if attacker skill is lower than defence skill, then attacker can improve
-            if (attack.attack_skill < attack.defence_skill) {
-                const diff = attack.defence_skill - attack.attack_skill
-                const dice = Math.random()
-                if (dice * 300 < diff) Effect.Change.skill(attacker, attack.weapon_type, 1)
-            }
-
-            //fighting provides constant growth of this skill up to some level
-            const dice = Math.random()
-            if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-                Effect.Change.skill(defender, attack.weapon_type, 1)
-            }
-            const dice2 = Math.random()
-            if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
-                Effect.Change.skill(attacker, attack.weapon_type, 1)
-            }
-        }
-
-
-        // durability changes
-        if (!attack.flags.miss) {
-            const durability_roll = Math.random()
-            if (durability_roll < 0.5) Effect.change_durability(attacker, 'weapon', -1);
-            if (attack.flags.blocked) {
-                Effect.change_durability(defender, 'weapon', -1)
-            } else {
-                const roll = Math.random()
-                if (roll < 0.5) Effect.change_durability(defender, 'body', -1);
-                else if (roll < 0.7) Effect.change_durability(defender, 'legs', -1)
-                else if (roll < 0.8) Effect.change_durability(defender, 'foot', -1)
-                else if (roll < 0.9) Effect.change_durability(defender, 'head', -1)
-                else Effect.change_durability(defender, 'arms', -1)
-            }
-        }
-
-
+        //calculating improvement to skill
+        attack_skill_improvement(attacker, defender, attack);
         
+        //breaking items
+        attack_affect_durability(attacker, defender, attack);   
 
-        //apply damage after all modifiers
+        //applying defense and attack skill
+        let damage_modifier = (40 + attack.attack_skill) / (40 + attack.defence_skill)
+        DmgOps.mult_ip(attack.damage, damage_modifier)
+
+        //apply damage and status effect after all modifiers
         deal_damage(defender, attack, attacker)
 
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender)
+        }
+    }
+
+    function attack_affect_durability(attacker: Character, defender: Character, attack: AttackObj) {
+        if (!attack.flags.miss) {
+            const durability_roll = Math.random();
+            if (durability_roll < 0.5)
+                Effect.change_durability(attacker, 'weapon', -1);
+
+            if (attack.flags.blocked) {
+                Effect.change_durability(defender, 'weapon', -1);
+            } else {
+                const roll = Math.random();
+                if (roll < 0.5)
+                    Effect.change_durability(defender, 'body', -1);
+                else if (roll < 0.7)
+                    Effect.change_durability(defender, 'legs', -1);
+                else if (roll < 0.8)
+                    Effect.change_durability(defender, 'foot', -1);
+                else if (roll < 0.9)
+                    Effect.change_durability(defender, 'head', -1);
+                else
+                    Effect.change_durability(defender, 'arms', -1);
+            }
+        }
+    }
+
+    function attack_skill_improvement(attacker: Character, defender: Character, attack: AttackObj) {
+        // if attacker skill is lower than total defence skill of attack, then attacker can improve
+        if (attack.attack_skill < attack.defence_skill) {
+            const improvement_rate = (100 + attack.defence_skill) / (100 + attack.attack_skill)
+            if (improvement_rate > 1) {
+                Effect.Change.skill(attacker, attack.weapon_type, Math.floor(improvement_rate))
+            } else {
+                const dice = Math.random();
+                if (dice < improvement_rate)
+                    Effect.Change.skill(attacker, attack.weapon_type, 1);
+            }            
+        }
+
+        //fighting provides constant growth of this skill up to some level
+        //for defender
+        const dice = Math.random();
+        if ((dice < 0.5) && (attack.attack_skill <= 30)) {
+            Effect.Change.skill(defender, CharacterSystem.melee_weapon_type(defender), 1);
+        }
+        //for attacker
+        const dice2 = Math.random();
+        if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
+            Effect.Change.skill(attacker, attack.weapon_type, 1);
+        }
+    }
+
+    function parry(defender: Character, attack: AttackObj) {
+        const weapon = CharacterSystem.melee_weapon_type(defender);
+        const skill = defender.skills[weapon] + Math.round(Math.random() * 5);
+        attack.defence_skill += skill;
+
+        // roll parry
+        const parry_dice = Math.random()
+        if ((skill > attack.attack_skill)) {
+            attack.defence_skill += 40
+            attack.flags.blocked = true;
+        }
+
+        //fighting provides constant growth of this skill up to some level
+        if (skill < attack.attack_skill) {
+            Effect.Change.skill(defender, weapon, 1);
+        }
+
+        const dice = Math.random();
+        if ((dice < 0.1) && (skill <= 10)) {
+            Effect.Change.skill(defender, weapon, 1);
+        }
+    }
+
+    function block(defender: Character, attack: AttackObj) {
+        const skill = defender.skills.blocking + Math.round(Math.random() * 10);
+        attack.defence_skill += skill;
+
+        // roll block
+        const block_dice = Math.random()
+        if (block_dice * skill > attack.defence_skill) {
+            attack.flags.blocked = true
+        }
+
+        //fighting provides constant growth of this skill
+        if (skill < attack.attack_skill) {
+            Effect.Change.skill(defender, 'blocking', 1);
+        }
+
+        const dice = Math.random();
+        if ((dice < 0.1) && (skill <= 20)) {
+            Effect.Change.skill(defender, 'blocking', 1);
+        }
+    }
+
+    function evade(defender: Character, attack: AttackObj, dodge_flag: boolean) {
+        //this skill has quite wide deviation
+        const skill = trim(defender.skills.evasion + Math.round((Math.random() - 0.5) * 40), 0, 200);
+
+        //passive evasion
+        attack.defence_skill += skill;
+
+        //active dodge
+        if (dodge_flag) {
+            attack.flags.miss = true
+            attack.defence_skill += 50
+        }
+
+        // roll miss
+        const block_dice = Math.random()
+        if (block_dice * skill > attack.defence_skill) {
+            attack.flags.miss = true
+        }
+
+        //fighting provides constant growth of this skill
+        if (skill < attack.attack_skill) {
+            Effect.Change.skill(defender, 'evasion', 1);
+        }
+
+        const dice = Math.random();
+        if ((dice < 0.1) && (skill <= 10)) {
+            Effect.Change.skill(defender, 'evasion', 1);
         }
     }
 

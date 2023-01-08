@@ -8,12 +8,19 @@ var Attack;
 (function (Attack) {
     function generate_melee(character, type) {
         const result = new class_1.AttackObj(system_1.CharacterSystem.melee_weapon_type(character));
+        //add base item damage
         damage_types_1.DmgOps.add_ip(result.damage, system_1.CharacterSystem.melee_damage_raw(character, type));
+        //account for strength
         const physical_modifier = system_1.CharacterSystem.phys_power(character);
         damage_types_1.DmgOps.mult_ip(result.damage, physical_modifier / 10);
-        result.attack_skill = system_1.CharacterSystem.attack_skill(character);
+        //account for character own skill
+        result.attack_skill += system_1.CharacterSystem.attack_skill(character);
+        //account for items modifiers
+        // may change skill and everything
+        character.equip.modify_attack(result);
+        //modify base damage with skill
         damage_types_1.DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 50);
-        console.log(result);
+        // console.log(result)
         return result;
     }
     Attack.generate_melee = generate_melee;
@@ -33,8 +40,17 @@ var Attack;
     Attack.best_melee_damage_type = best_melee_damage_type;
     function generate_ranged(character) {
         const result = new class_1.AttackObj('ranged');
+        //raw items damage
         damage_types_1.DmgOps.add_ip(result.damage, system_1.CharacterSystem.ranged_damage_raw(character));
-        const skill = character.skills.ranged;
+        //account for strength
+        const physical_modifier = system_1.CharacterSystem.phys_power(character);
+        damage_types_1.DmgOps.mult_ip(result.damage, physical_modifier / 10);
+        //account for items modifiers
+        character.equip.modify_attack(result);
+        //account for own skill
+        const skill = system_1.CharacterSystem.ranged_skill(character);
+        result.attack_skill += skill;
+        //modify current damage with skill
         damage_types_1.DmgOps.mult_ip(result.damage, 1 + skill / 20);
         return result;
     }
@@ -53,53 +69,4 @@ var Attack;
         return result;
     }
     Attack.generate_magic_bolt = generate_magic_bolt;
-    function defend_against_melee(attack, defender) {
-        const skill = Math.floor(system_1.CharacterSystem.attack_skill(defender) * (1 - defender.get_rage() / 100));
-        attack.defence_skill = skill;
-        const dice = Math.random();
-        const crit_chance = (attack.attack_skill - attack.defence_skill) / 100 + 0.1;
-        if (dice < crit_chance)
-            attack.flags.crit = true;
-        const res = system_1.CharacterSystem.resistance(defender);
-        damage_types_1.DmgOps.subtract_ip(attack.damage, res);
-    }
-    Attack.defend_against_melee = defend_against_melee;
-    function dodge(attack, skill) {
-        let skill_diff = skill - attack.attack_skill;
-        if (skill_diff <= 0)
-            return;
-        if (skill_diff > 100)
-            skill_diff = 100;
-        damage_types_1.DmgOps.mult_ip(attack.damage, 1 - skill_diff / 100);
-    }
-    Attack.dodge = dodge;
-    function block(attack, skill) {
-        // blocking is easier but harms weapon and can't block damage completely
-        let skill_diff = (skill * 2 - attack.attack_skill);
-        if (skill_diff <= 0)
-            return;
-        if (skill_diff > 60)
-            skill_diff = 60;
-        damage_types_1.DmgOps.mult_ip(attack.damage, 1 - skill_diff / 100);
-    }
-    Attack.block = block;
 })(Attack = exports.Attack || (exports.Attack = {}));
-// export function generate_attack(mod:'fast'|'usual'|'heavy'|'ranged'): AttackResult {
-// }
-//         let phys_power = this.get_phys_power() / 10
-//         switch(mod) {
-//             case 'usual': {phys_power = phys_power * 2; break}
-//             case 'heavy': {phys_power = phys_power * 5; break}
-//             case 'ranged': {phys_power = phys_power * 2; break}
-//         }
-//         let magic_power = this.get_magic_power() / 10
-//         if (mod != 'ranged') {
-//             result.attacker_status_change.rage = 5
-//         }
-//         result.attacker_status_change.fatigue = 1
-//         result.damage['blunt'] = Math.floor(Math.max(1, result.damage['blunt'] * phys_power));
-//         result.damage['pierce'] = Math.floor(Math.max(0, result.damage['pierce'] * phys_power));
-//         result.damage['slice'] = Math.floor(Math.max(0, result.damage['slice'] * phys_power));
-//         result.damage['fire'] = Math.floor(Math.max(0, result.damage['fire'] * magic_power));
-//         return result
-//     }

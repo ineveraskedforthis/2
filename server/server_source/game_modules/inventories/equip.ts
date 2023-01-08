@@ -6,6 +6,7 @@ import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
 import { Damage, DmgOps } from "../misc/damage_types";
 import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
+import { AttackObj } from "../attack/class";
 
 interface EquipJson {
     weapon?: ItemJson;
@@ -289,6 +290,13 @@ export class Equip {
         return resists
     }
 
+    modify_attack(attack: AttackObj) {
+        for (let i of armour_slots) {
+            ItemSystem.modify_attack(this.data.armour[i], attack)
+        }
+        ItemSystem.modify_attack(this.data.weapon, attack)
+    }
+
     get_json() {
         return this.data.get_json();
     }
@@ -304,5 +312,4 @@ export class Equip {
     from_string(s: string) {
         this.data.from_string(s)
     }
-
 }

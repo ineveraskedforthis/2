@@ -242,6 +242,12 @@ class Equip {
         }
         return resists;
     }
+    modify_attack(attack) {
+        for (let i of types_1.armour_slots) {
+            system_1.ItemSystem.modify_attack(this.data.armour[i], attack);
+        }
+        system_1.ItemSystem.modify_attack(this.data.weapon, attack);
+    }
     get_json() {
         return this.data.get_json();
     }

@@ -1,11 +1,20 @@
 import { ItemData } from "../../../../shared/inventory";
 import { damage_type } from "../types";
-import { damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
+import { attack_affixes_effects, damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
 import { Damage, DmgOps } from "../misc/damage_types";
 import { Item, ItemJson, Itemlette } from "./item";
 import { ELODINO_FLESH, GRACI_HAIR, materials, MaterialsManager } from "../manager_classes/materials_manager";
+import { Status } from "../character/character_parts";
+import { AttackObj } from "../attack/class";
 
 const empty_resists = new Damage()
+const empty_status : Status = {
+    fatigue: 0,
+    stress: 0,
+    hp: 0,
+    rage: 0,
+    blood: 0
+}
 
 export namespace ItemSystem {
 
@@ -90,7 +99,9 @@ export namespace ItemSystem {
         let affix_damage = new Damage()
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
-            affix_damage = damage_affixes_effects[affix.tag](affix_damage);
+            let effect = damage_affixes_effects[affix.tag]
+            if (effect == undefined) continue
+            affix_damage = effect(affix_damage);
         }
 
         // calculating base damage of item and adding affix
@@ -119,7 +130,9 @@ export namespace ItemSystem {
         let affix_damage = new Damage()
         for (let i = 0; i < weapon.affixes.length; i++) {
             let affix = weapon.affixes[i];
-            affix_damage = damage_affixes_effects[affix.tag](affix_damage);
+            let effect = damage_affixes_effects[affix.tag]
+            if (effect == undefined) continue
+            affix_damage = (affix_damage);
         }
 
         let damage = new Damage()
@@ -144,7 +157,9 @@ export namespace ItemSystem {
         damage.fire = item.damage.fire
 
         for (let aff of item.affixes) {
-            damage = damage_affixes_effects[aff.tag](damage)
+            let effect = damage_affixes_effects[aff.tag]
+            if (effect == undefined) continue
+            damage = effect(damage)
         }
 
         let tmp = damage.fire
@@ -173,6 +188,20 @@ export namespace ItemSystem {
         DmgOps.mult_ip(result, durability_mod)
 
         return result;
+    }
+
+    export function modify_attack(item: Item|undefined, attack: AttackObj) {
+        if (item == undefined) return attack
+
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
+            let f = attack_affixes_effects[affix.tag];
+            if (f == undefined) continue
+            
+            f(attack);
+        }
+
+        return attack
     }
 
     export function item_data(item: Item):ItemData 

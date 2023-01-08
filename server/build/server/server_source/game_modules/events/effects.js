@@ -44,6 +44,11 @@ var Effect;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.stress = stress;
+        function rage(character, dx) {
+            character.change_rage(dx);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+        }
+        Change.rage = rage;
         function skill(character, skill, dx) {
             character.skills[skill] += dx;
             if (character.skills[skill] > 100)

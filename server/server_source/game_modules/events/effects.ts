@@ -46,6 +46,11 @@ export namespace Effect {
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
+        export function rage(character: Character, dx: number) {
+            character.change_rage(dx)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+        }
+
         export function skill(character: Character, skill: skill, dx: number) {
             character.skills[skill] += dx 
             if (character.skills[skill] > 100) 

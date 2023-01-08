@@ -6,6 +6,13 @@ const damage_types_1 = require("../misc/damage_types");
 const item_1 = require("./item");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const empty_resists = new damage_types_1.Damage();
+const empty_status = {
+    fatigue: 0,
+    stress: 0,
+    hp: 0,
+    rage: 0,
+    blood: 0
+};
 var ItemSystem;
 (function (ItemSystem) {
     function to_string(item) {
@@ -85,7 +92,10 @@ var ItemSystem;
         let affix_damage = new damage_types_1.Damage();
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
-            affix_damage = affix_1.damage_affixes_effects[affix.tag](affix_damage);
+            let effect = affix_1.damage_affixes_effects[affix.tag];
+            if (effect == undefined)
+                continue;
+            affix_damage = effect(affix_damage);
         }
         // calculating base damage of item and adding affix
         let damage = new damage_types_1.Damage();
@@ -117,7 +127,10 @@ var ItemSystem;
         let affix_damage = new damage_types_1.Damage();
         for (let i = 0; i < weapon.affixes.length; i++) {
             let affix = weapon.affixes[i];
-            affix_damage = affix_1.damage_affixes_effects[affix.tag](affix_damage);
+            let effect = affix_1.damage_affixes_effects[affix.tag];
+            if (effect == undefined)
+                continue;
+            affix_damage = (affix_damage);
         }
         let damage = new damage_types_1.Damage();
         if (weapon?.weapon_tag == 'ranged') {
@@ -137,7 +150,10 @@ var ItemSystem;
         damage_types_1.DmgOps.mult_ip(damage, ItemSystem.weight(item));
         damage.fire = item.damage.fire;
         for (let aff of item.affixes) {
-            damage = affix_1.damage_affixes_effects[aff.tag](damage);
+            let effect = affix_1.damage_affixes_effects[aff.tag];
+            if (effect == undefined)
+                continue;
+            damage = effect(damage);
         }
         let tmp = damage.fire;
         const durability_mod = 0.3 + 0.7 * item.durability / 100;
@@ -163,6 +179,19 @@ var ItemSystem;
         return result;
     }
     ItemSystem.resists = resists;
+    function modify_attack(item, attack) {
+        if (item == undefined)
+            return attack;
+        for (let i = 0; i < item.affixes.length; i++) {
+            let affix = item.affixes[i];
+            let f = affix_1.attack_affixes_effects[affix.tag];
+            if (f == undefined)
+                continue;
+            f(attack);
+        }
+        return attack;
+    }
+    ItemSystem.modify_attack = modify_attack;
     function item_data(item) {
         if (item == undefined)
             return undefined;
