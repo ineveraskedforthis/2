@@ -131,7 +131,7 @@ export namespace AIhelper {
 
         // (buy) = (10 * input - stash) - find corner of buyment box
         for (let item of input) {
-            const amount = trim(10 * item.amount - character.stash.get(item.material), 0, 50)
+            const amount = trim(10 * item.amount - character.stash.get(item.material), 0, 9999)
             buy.push({material: item.material, amount: amount, price: base_price(character, item.material)})
         }
 

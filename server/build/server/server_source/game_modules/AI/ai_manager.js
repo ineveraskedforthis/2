@@ -147,6 +147,10 @@ var AI;
             market_1.EventMarket.sell(character, item.material, total_amount, item.price);
         }
         for (let item of buy) {
+            if (character.stash.get(item.material) > 50)
+                continue;
+            if (item.amount == 0)
+                continue;
             system_2.BulkOrders.remove_by_condition(character, item.material);
             market_1.EventMarket.buy(character, item.material, item.amount, item.price);
         }

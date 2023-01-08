@@ -163,7 +163,7 @@ export class EndTurn extends BattleImageEvent {
 
     on_start(): void {
         let unit = units_views[this.unit]
-        new_log_message('end turn' + unit.name)
+        if (unit != undefined) new_log_message('end turn' + unit.name)
         this.logged = true
     }
 }
@@ -204,6 +204,7 @@ export class UpdateDataEvent extends BattleImageEvent {
 
     on_start(): void {
         let unit = units_views[this.unit]
+        if (unit == undefined) return
         new_log_message('update data of ' + unit.name)
         this.ap_change = this.data.ap - unit.ap
         this.hp_change = this.data.hp - unit.hp

@@ -222,7 +222,14 @@ export namespace CharacterSystem {
     }
 
     export function phys_power(character: Character) {
-        return character.stats.stats.phys_power * character.equip.get_phys_power_modifier()
+        let base = character.stats.stats.phys_power
+        base += character.skills.travelling / 30
+        base += character.skills.noweapon / 50
+        base += character.skills.fishing / 50
+        base += character.skills.ranged / 60
+        base += character.skills.woodwork / 40
+        base += (character.skills.onehand + character.skills.polearms + character.skills.twohanded) / 50
+        return Math.floor(base * character.equip.get_phys_power_modifier())
     }
 
     export function magic_power(character: Character) {

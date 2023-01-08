@@ -165,6 +165,8 @@ export namespace AI {
         }
 
         for (let item of buy) {
+            if (character.stash.get(item.material) > 50) continue 
+            if (item.amount == 0) continue
             BulkOrders.remove_by_condition(character, item.material)
             EventMarket.buy(character, item.material, item.amount, item.price)
         }

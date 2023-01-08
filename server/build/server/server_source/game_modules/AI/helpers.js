@@ -117,7 +117,7 @@ var AIhelper;
         let buy = [];
         // (buy) = (10 * input - stash) - find corner of buyment box
         for (let item of input) {
-            const amount = (0, basic_functions_1.trim)(10 * item.amount - character.stash.get(item.material), 0, 50);
+            const amount = (0, basic_functions_1.trim)(10 * item.amount - character.stash.get(item.material), 0, 9999);
             buy.push({ material: item.material, amount: amount, price: base_price(character, item.material) });
         }
         // normalise (buy) with price metric down to budget

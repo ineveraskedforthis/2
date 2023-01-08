@@ -70,7 +70,10 @@ export namespace BattleEvent {
         battle.heap.pop()
         unit.next_turn_after = battle.heap.get_max() + 1
 
-        let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn), unit.action_points_max) as action_points;
+        const character = Convert.unit_to_character(unit)
+        const rage_mod = (100 + character.get_rage()) / 100
+
+        let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn * rage_mod), unit.action_points_max) as action_points;
         let ap_increase = new_ap - unit.action_points_left
 
         unit.action_points_left = new_ap

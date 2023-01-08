@@ -217,7 +217,7 @@ export namespace BattleSystem {
             }
             // if ai is waiting, continue countdown
             if (battle.ai_timer != undefined) {
-                if ((battle.ai_timer < 2000)) {
+                if ((battle.ai_timer < 500)) {
                     battle.ai_timer = battle.ai_timer + dt as ms
                     continue
                 } else {
