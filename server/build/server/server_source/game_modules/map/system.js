@@ -9,6 +9,7 @@ const factions_1 = require("../factions");
 const map_definitions_1 = require("../static_data/map_definitions");
 const cell_1 = require("./cell");
 const templates_1 = require("../templates");
+const basic_functions_1 = require("../calculations/basic_functions");
 var size = [0, 0];
 var max_direction = 30;
 var cells = [];
@@ -88,6 +89,47 @@ var MapSystem;
     }
     MapSystem.validate_coordinates = validate_coordinates;
     function update(dt, rats_number, elodino_number) {
+        // updating rat scent
+        for (const cell of cells) {
+            if (cell == undefined)
+                continue;
+            // reduce it by dt / 100
+            cell.rat_scent -= dt / 100;
+            // then calculate base scent
+            if (cell.development.rats == 1) {
+                // lairs always have 50 scent
+                cell.rat_scent = 50;
+            }
+            else {
+                // take an average of scent around
+                let total = 0;
+                let neighbours = neighbours_cells(cell.id);
+                for (let neighbour of neighbours) {
+                    total += neighbour.rat_scent;
+                }
+                total = total / neighbours.length;
+                cell.rat_scent = total;
+            }
+            if (cell.development.urban > 0) {
+                cell.rat_scent -= 10;
+            }
+            if (cell.development.rural > 0) {
+                cell.rat_scent -= 5;
+            }
+            if (cell.development.wild > 0) {
+                cell.rat_scent -= 10;
+            }
+            // add scent to cells with rats
+            // let guests = cell.characters_set
+            // let rats = 0
+            // for (let guest of guests) {
+            //     let character = Data.Character.from_id(guest)
+            //     if (character.race() == 'rat') rats += 1
+            // }
+            // cell.rat_scent += rats
+            // trim to avoid weirdness
+            cell.rat_scent = (0, basic_functions_1.trim)(cell.rat_scent, 0, 50);
+        }
         for (const cell of cells) {
             if (cell == undefined)
                 continue;

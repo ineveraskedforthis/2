@@ -10,7 +10,7 @@ import { Event } from "../events/events";
 import { money } from "../types";
 import { BulkOrders, ItemOrders } from "../market/system";
 import { EventMarket } from "../events/market";
-import { trim } from "../calculations/basic_functions";
+import { select_max, select_weighted, trim } from "../calculations/basic_functions";
 import { Data } from "../data";
 import { CraftBulk, crafts_bulk, craft_actions } from "../craft/crafts_storage";
 import { Cooking } from "../craft/cooking";
@@ -63,6 +63,27 @@ export namespace CampaignAI {
         }   
     }
 
+    export function rat_walk(character: Character, constraints: (cell: Cell) => boolean) {
+        let cell = Convert.character_to_cell(character)
+        let potential_moves = MapSystem.neighbours_cells(cell.id, ).map((x) => 
+            {return {item: x, weight: x.rat_scent}})
+        let target = select_weighted(potential_moves, constraints)
+        ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
+    }
+
+    export function rat_go_home(character: Character, constraints: (cell: Cell) => boolean) {
+        let cell = Convert.character_to_cell(character)
+        let potential_moves = MapSystem.neighbours_cells(cell.id, ).map((x) => 
+            {return {item: x, weight: x.rat_scent}})
+        let target = select_max(potential_moves, constraints)
+        if (target != undefined)
+        if (cell.rat_scent > target.rat_scent) {
+            ActionManager.start_action(CharacterAction.REST, character, [cell.x, cell.y])
+        } else {
+            ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
+        }
+    }
+
     export function decision(char: Character) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
@@ -80,72 +101,113 @@ export namespace CampaignAI {
         let responce = AIhelper.check_battles_to_join(char)
         if (responce) return;
 
-        switch(char.archetype.ai_map) {
-            case 'steppe_walker_agressive': {
-                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
-                    ActionManager.start_action(CharacterAction.REST, char, [0, 0])
-                } else {
-                    let target = AIhelper.enemies_in_cell(char)
-                    const target_char = Convert.id_to_character(target)
-                    if (target_char != undefined) {
-                        Event.start_battle(char, target_char)
-                    } else {
-                        random_walk(char, steppe_constraints)
-                    }
-                }
-                break
+        if (char.race() == 'rat') {
+            if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
+                ActionManager.start_action(CharacterAction.REST, char, [0, 0])
+                return
+            } else if (char.get_fatigue() > 30) {
+                rat_go_home(char, steppe_constraints)
+                return
             }
 
-            case 'steppe_walker_passive': {
-                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
-                    ActionManager.start_action(CharacterAction.REST, char, [0, 0])
-                } else {
-                    random_walk(char, steppe_constraints)
-                }
-                break
-            }
-
-            case 'forest_walker': {
-                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
-                    ActionManager.start_action(CharacterAction.REST, char, [0, 0])
-                } else {
-                    random_walk(char, forest_constraints)
-                }
-                break
+            let target = AIhelper.enemies_in_cell(char)
+            const target_char = Convert.id_to_character(target)
+            if (target_char != undefined) {
+                Event.start_battle(char, target_char)
+            } else {
+                rat_walk(char, steppe_constraints)
+                return
             }
         }
+        else {
+            movement_rest_decision(char);
+        }
+
 
         if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
             ActionManager.start_action(CharacterAction.REST, char, [0, 0])
             return
         }
 
+        decide_craft(char);
+    }
+    
+
+    function decide_craft(char: Character) {
         if ((char.skills.cooking > 40) || (char.perks.meat_master == true)) {
-            AI.craft_bulk(char, Cooking.meat)
+            AI.craft_bulk(char, Cooking.meat);
         }
 
         if ((char.skills.woodwork > 40) && (char.perks.fletcher == true)) {
-            AI.craft_bulk(char, AmmunitionCraft.bone_arrow)
+            AI.craft_bulk(char, AmmunitionCraft.bone_arrow);
         }
 
         if ((char.perks.alchemist)) {
-            AI.craft_bulk(char, Cooking.elodino)
+            AI.craft_bulk(char, Cooking.elodino);
         }
 
         if ((char.skills.woodwork > 40) && (char.perks.weapon_maker == true)) {
-            AI.make_wooden_weapon(char, base_price(char, WOOD))
+            AI.make_wooden_weapon(char, base_price(char, WOOD));
         }
 
         if ((char.skills.bone_carving > 40) && (char.perks.weapon_maker == true)) {
-            AI.make_bone_weapon(char, base_price(char, RAT_BONE))
+            AI.make_bone_weapon(char, base_price(char, RAT_BONE));
         }
 
         if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
-            AI.make_armour(char, base_price(char, RAT_SKIN))
+            AI.make_armour(char, base_price(char, RAT_SKIN));
         }
 
         if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
-            AI.make_boots(char, base_price(char, RAT_SKIN))
+            AI.make_boots(char, base_price(char, RAT_SKIN));
+        }
+    }
+
+    function movement_rest_decision(char: Character) {
+        switch (char.archetype.ai_map) {
+            case 'steppe_walker_agressive': {
+                if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
+                    ActionManager.start_action(CharacterAction.REST, char, [0, 0]);
+                } else {
+                    if (char.race() == 'rat') {
+                        if (char.get_fatigue() > 30) {
+                            rat_go_home(char, steppe_constraints);
+                            break;
+                        }
+                    }
+
+                    let target = AIhelper.enemies_in_cell(char);
+                    const target_char = Convert.id_to_character(target);
+                    if (target_char != undefined) {
+                        Event.start_battle(char, target_char);
+                    } else {
+                        if (char.race() == 'rat') {
+                            rat_walk(char, steppe_constraints);
+                            break;
+                        }
+                        random_walk(char, steppe_constraints);
+                    }
+                }
+                break;
+            }
+
+            case 'steppe_walker_passive': {
+                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
+                    ActionManager.start_action(CharacterAction.REST, char, [0, 0]);
+                } else {
+                    random_walk(char, steppe_constraints);
+                }
+                break;
+            }
+
+            case 'forest_walker': {
+                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
+                    ActionManager.start_action(CharacterAction.REST, char, [0, 0]);
+                } else {
+                    random_walk(char, forest_constraints);
+                }
+                break;
+            }
         }
     }
 }

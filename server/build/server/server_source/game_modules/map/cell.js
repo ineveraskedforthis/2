@@ -23,6 +23,10 @@ class Cell {
         else {
             this.development = development;
         }
+        this.rat_scent = 0;
+        if (this.development.rats == 1) {
+            this.rat_scent = 100;
+        }
         if (res == undefined) {
             this.resources = { water: false, prey: false, forest: false, fish: false };
         }

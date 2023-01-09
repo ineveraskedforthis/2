@@ -84,6 +84,10 @@ export namespace Event {
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MAP)
+
+        let user = Convert.character_to_user(character)
+        if (user == undefined) return
+        Alerts.log_to_user(user, 'rat scent ' + new_cell.rat_scent)
     }
 
     export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant|undefined) {

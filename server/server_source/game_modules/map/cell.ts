@@ -20,6 +20,7 @@ export class Cell {
 
     visited_recently: boolean;
     last_visit: number
+    rat_scent: number
     
 
     development: Development;
@@ -47,11 +48,17 @@ export class Cell {
         // this.orders_item = new Set()
         this.characters_set = new Set()
         this.saved_characters_list = []
+        
 
         if (development == undefined) {
             this.development = {rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0};
         } else {
             this.development = development
+        }
+
+        this.rat_scent = 0
+        if (this.development.rats == 1) {
+            this.rat_scent = 100
         }
 
         if (res == undefined) {

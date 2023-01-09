@@ -71,6 +71,10 @@ var Event;
         }
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.MAP */);
+        let user = systems_communication_1.Convert.character_to_user(character);
+        if (user == undefined)
+            return;
+        alerts_1.Alerts.log_to_user(user, 'rat scent ' + new_cell.rat_scent);
     }
     Event.move = move;
     function new_character(template, name, starting_cell, model) {

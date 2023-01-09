@@ -7,6 +7,7 @@ import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE 
 import { cell_id, world_dimensions } from "../types";
 import { Cell} from "./cell";
 import { Template } from "../templates";
+import { trim } from "../calculations/basic_functions";
 
 var size:world_dimensions = [0, 0]
 var max_direction:number = 30
@@ -88,6 +89,55 @@ export namespace MapSystem {
     }
 
     export function update(dt: number, rats_number: number, elodino_number: number) {
+        
+        // updating rat scent
+
+        for (const cell of cells) {
+            if (cell == undefined) continue
+            // reduce it by dt / 100
+            cell.rat_scent -=dt / 100
+            
+            // then calculate base scent
+            if (cell.development.rats == 1) {
+                // lairs always have 50 scent
+                cell.rat_scent = 50
+            } else {
+                // take an average of scent around
+                let total = 0
+                let neighbours = neighbours_cells(cell.id)
+                for (let neighbour of neighbours) {
+                    total += neighbour.rat_scent 
+                }
+                total = total / neighbours.length
+                cell.rat_scent = total
+            }
+
+            if (cell.development.urban > 0) {
+                cell.rat_scent -= 10
+            }
+
+            if (cell.development.rural > 0) {
+                cell.rat_scent -= 5
+            }
+
+            if (cell.development.wild > 0) {
+                cell.rat_scent -= 10
+            }
+
+            // add scent to cells with rats
+            // let guests = cell.characters_set
+            // let rats = 0
+            // for (let guest of guests) {
+            //     let character = Data.Character.from_id(guest)
+            //     if (character.race() == 'rat') rats += 1
+            // }
+
+            // cell.rat_scent += rats
+
+            // trim to avoid weirdness
+            cell.rat_scent = trim(cell.rat_scent, 0, 50)
+        }
+
         for (const cell of cells) {
             if (cell == undefined) continue
             cell.update(dt)

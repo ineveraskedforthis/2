@@ -55,6 +55,26 @@ var CampaignAI;
         }
     }
     CampaignAI.random_walk = random_walk;
+    function rat_walk(character, constraints) {
+        let cell = systems_communication_1.Convert.character_to_cell(character);
+        let potential_moves = system_1.MapSystem.neighbours_cells(cell.id).map((x) => { return { item: x, weight: x.rat_scent }; });
+        let target = (0, basic_functions_1.select_weighted)(potential_moves, constraints);
+        action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.MOVE, character, [target.x, target.y]);
+    }
+    CampaignAI.rat_walk = rat_walk;
+    function rat_go_home(character, constraints) {
+        let cell = systems_communication_1.Convert.character_to_cell(character);
+        let potential_moves = system_1.MapSystem.neighbours_cells(cell.id).map((x) => { return { item: x, weight: x.rat_scent }; });
+        let target = (0, basic_functions_1.select_max)(potential_moves, constraints);
+        if (target != undefined)
+            if (cell.rat_scent > target.rat_scent) {
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, character, [cell.x, cell.y]);
+            }
+            else {
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.MOVE, character, [target.x, target.y]);
+            }
+    }
+    CampaignAI.rat_go_home = rat_go_home;
     function decision(char) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
@@ -69,18 +89,81 @@ var CampaignAI;
         let responce = helpers_1.AIhelper.check_battles_to_join(char);
         if (responce)
             return;
+        if (char.race() == 'rat') {
+            if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
+                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
+                return;
+            }
+            else if (char.get_fatigue() > 30) {
+                rat_go_home(char, steppe_constraints);
+                return;
+            }
+            let target = helpers_1.AIhelper.enemies_in_cell(char);
+            const target_char = systems_communication_1.Convert.id_to_character(target);
+            if (target_char != undefined) {
+                events_1.Event.start_battle(char, target_char);
+            }
+            else {
+                rat_walk(char, steppe_constraints);
+                return;
+            }
+        }
+        else {
+            movement_rest_decision(char);
+        }
+        if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
+            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
+            return;
+        }
+        decide_craft(char);
+    }
+    CampaignAI.decision = decision;
+    function decide_craft(char) {
+        if ((char.skills.cooking > 40) || (char.perks.meat_master == true)) {
+            AI.craft_bulk(char, cooking_1.Cooking.meat);
+        }
+        if ((char.skills.woodwork > 40) && (char.perks.fletcher == true)) {
+            AI.craft_bulk(char, ammunition_1.AmmunitionCraft.bone_arrow);
+        }
+        if ((char.perks.alchemist)) {
+            AI.craft_bulk(char, cooking_1.Cooking.elodino);
+        }
+        if ((char.skills.woodwork > 40) && (char.perks.weapon_maker == true)) {
+            AI.make_wooden_weapon(char, (0, helpers_1.base_price)(char, materials_manager_1.WOOD));
+        }
+        if ((char.skills.bone_carving > 40) && (char.perks.weapon_maker == true)) {
+            AI.make_bone_weapon(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_BONE));
+        }
+        if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
+            AI.make_armour(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_SKIN));
+        }
+        if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
+            AI.make_boots(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_SKIN));
+        }
+    }
+    function movement_rest_decision(char) {
         switch (char.archetype.ai_map) {
             case 'steppe_walker_agressive': {
-                if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
+                if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
                     action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {
+                    if (char.race() == 'rat') {
+                        if (char.get_fatigue() > 30) {
+                            rat_go_home(char, steppe_constraints);
+                            break;
+                        }
+                    }
                     let target = helpers_1.AIhelper.enemies_in_cell(char);
                     const target_char = systems_communication_1.Convert.id_to_character(target);
                     if (target_char != undefined) {
                         events_1.Event.start_battle(char, target_char);
                     }
                     else {
+                        if (char.race() == 'rat') {
+                            rat_walk(char, steppe_constraints);
+                            break;
+                        }
                         random_walk(char, steppe_constraints);
                     }
                 }
@@ -105,33 +188,7 @@ var CampaignAI;
                 break;
             }
         }
-        if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
-            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
-            return;
-        }
-        if ((char.skills.cooking > 40) || (char.perks.meat_master == true)) {
-            AI.craft_bulk(char, cooking_1.Cooking.meat);
-        }
-        if ((char.skills.woodwork > 40) && (char.perks.fletcher == true)) {
-            AI.craft_bulk(char, ammunition_1.AmmunitionCraft.bone_arrow);
-        }
-        if ((char.perks.alchemist)) {
-            AI.craft_bulk(char, cooking_1.Cooking.elodino);
-        }
-        if ((char.skills.woodwork > 40) && (char.perks.weapon_maker == true)) {
-            AI.make_wooden_weapon(char, (0, helpers_1.base_price)(char, materials_manager_1.WOOD));
-        }
-        if ((char.skills.bone_carving > 40) && (char.perks.weapon_maker == true)) {
-            AI.make_bone_weapon(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_BONE));
-        }
-        if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
-            AI.make_armour(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_SKIN));
-        }
-        if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
-            AI.make_boots(char, (0, helpers_1.base_price)(char, materials_manager_1.RAT_SKIN));
-        }
     }
-    CampaignAI.decision = decision;
 })(CampaignAI = exports.CampaignAI || (exports.CampaignAI = {}));
 var AI;
 (function (AI) {
