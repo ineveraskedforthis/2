@@ -328,6 +328,45 @@ div {
     width: auto;
 }
 
+.stash_up {
+    animation-duration: 1s;
+    animation-name: stash_up_animation;
+    animation-iteration-count: 1;
+}
+
+@keyframes stash_up_animation {
+    from {
+        background-color: greenyellow;
+    }
+
+    50% {
+        background-color: lime;
+    }
+
+    to {
+        background-color: rgb(206, 156, 164);
+    }
+}
+
+.stash_down {
+    animation-duration: 1s;
+    animation-name: stash_down_animation;
+    animation-iteration-count: 1;
+}
+
+@keyframes stash_down_animation {
+    from {
+        background-color: brown;
+    }
+
+    50% {
+        background-color: red;
+    }
+
+    to {
+        background-color: rgb(206, 156, 164);
+    }
+}
 
 .craft_option {
     display: flex;
@@ -460,3 +499,6 @@ div {
 .border-white {
     border: white 1px solid;
 }
+
+
+

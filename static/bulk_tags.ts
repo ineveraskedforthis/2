@@ -31,6 +31,12 @@ export function update_tags(msg: {[key: string]: number}) {
             div_cell.classList.add('goods_type_stash');
             div_cell.classList.add('tooltip');
             div_cell.classList.add(tag);
+
+            ((div_cell: HTMLDivElement) => div_cell.addEventListener("animationend", (event) => {
+                div_cell.classList.remove('stash_up')
+                div_cell.classList.remove('stash_down')
+            }, false))(div_cell);
+
             ((tag) => div_cell.onclick = () => { process_stash_click(tag); })(tag);
 
             {
@@ -68,10 +74,10 @@ export function update_tags(msg: {[key: string]: number}) {
 export function update_savings(msg: number) {
     document.getElementById('savings')!.innerHTML = 'Money: ' + msg;
 }
+
 export function update_savings_trade(msg: number) {
     document.getElementById('savings_trade')!.innerHTML = 'Money reserved in trade: ' + msg;
 }
-
 
 export function update_stash(data: number[]) {
     console.log("STAAAAASH");
@@ -79,9 +85,24 @@ export function update_stash(data: number[]) {
     for (let tag in stash_id_to_tag) {
         let stash = document.getElementById('goods_stash')!;
         // console.log(tag, stash_id_to_tag[tag])
-        let div = stash.querySelector('.' + stash_id_to_tag[tag] + ' > .goods_amount_in_inventory');
+        let background_div = stash.querySelector('.' + stash_id_to_tag[tag])!
+        if (background_div == null) continue
+        let div = background_div.querySelector('.goods_amount_in_inventory');
         if (div != null) {
-            div.innerHTML = (data[tag] || 0).toString();
+            let current = Number(div.innerHTML)
+            if (current > data[tag]) {
+                background_div.classList.remove('stash_up')
+                background_div.classList.remove('stash_down')
+                background_div.classList.add('stash_down')
+                div.innerHTML = (data[tag] || 0).toString();
+            } else if (current < data[tag]) {
+                background_div.classList.remove('stash_up')
+                background_div.classList.remove('stash_down')
+                background_div.classList.add('stash_up')
+                div.innerHTML = (data[tag] || 0).toString();
+            } else if (isNaN(current)) {
+                div.innerHTML = (data[tag] || 0).toString();
+            }
         }
     }
 }
