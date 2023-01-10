@@ -374,6 +374,7 @@ div {
     margin-top: 5px;
     width: 100%;
     height: auto;
+    flex-shrink: 0;
 }
 
 .row {
