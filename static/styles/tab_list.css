@@ -15,6 +15,41 @@
     left: 5px;
 }
 
+.game_tab_header {
+    height: 24px;
+    flex-shrink: 0;
+    text-align: center;
+    border-radius: 1px;
+    border-color: bisque;
+    border-width: 1px;
+    border-style: solid;
+}
+
+.game_tab_header:hover {
+    background-color: bisque;
+    color: black;
+}
+
+.game_tab_header:active {
+    background-color: white;
+    color: black;
+}
+
+.game_tab_label {
+    flex: 1;
+}
+
+.tab_content {
+    flex: 1;
+    /* margin: 2px; */
+
+    border-radius: 1px;
+    border-color: bisque;
+    border-width: 1px;
+    border-style: solid;
+    overflow-y: auto;
+}
+
 
 .control_button {
     background-image: url(/static/img/tab_buttons/attack_button.png);
@@ -156,7 +191,7 @@
     left: 280px;
     top: 150px;
     width: 800px;
-    height: 400px;
+    height: auto;
 }
 
 #battle_tab {
@@ -180,7 +215,7 @@
 #craft_tab {
     top: 5px;
     left: 830px;
-    height:400px;
+    height:800px;
     width:400px;
 }
 

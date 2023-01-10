@@ -5,6 +5,10 @@ body {
     /* overflow: hidden; */
 }
 
+div {
+    box-sizing: border-box;
+}
+
 .highlight {
     background-color: rgba(250, 235, 215, 0.505);
 }
@@ -34,16 +38,20 @@ body {
     flex-direction: column;
 }
 
-.container-vertical > .div {
+.container-vertical > div {
     width: 100%;
+    min-width: 0;
+    min-height: 0;
 }
 
 .container-horizontal {
     display: flex;
     flex-direction: row;
 }
-.container-horizontal {
+.container-horizontal > div {
     height: 100%;
+    min-width: 0;
+    min-height: 0;
 }
 
 .flex-1 {
@@ -174,11 +182,11 @@ body {
 }
 
 .close_tab {
-    position: absolute;
+    position: relative;
     top: 0%;
     right: 0%;
     width: 20px;
-    height: 20px;
+    height: 100px;
 
     background-image: url(/static/img/tab_buttons/close_tab_passive.png);
 }
@@ -203,9 +211,11 @@ body {
 }
 
 .movable > .top {
-    position: absolute;
+    position: relative;
     top: 0%;
     left: 0%;
+    width: 100%;
+    height: 10px;
 }
 
 .movable > .bottom {

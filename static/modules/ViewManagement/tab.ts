@@ -20,6 +20,10 @@ let RESIZE_PRESSED_BOTTOM = false
 let RESIZE_PRESSED_TOP = false
 let RESIZE_ELEMENT:null|HTMLElement = null
 
+let MOVE_TAB_PRESS = false
+let MOVE_TAB_ELEMENT:null|HTMLElement = null
+let MOVE_TAB_OFFSET: [number, number] = [0, 0]
+
 
 export namespace tab {
 
@@ -114,10 +118,13 @@ export namespace tab {
 
             {
                 let tab = document.getElementById(tag + '_tab')!
-                let div = document.createElement('div')
-                div.classList.add('close_tab')
-                div.onclick = tag_to_turn_off_f(tag)
-                tab.appendChild(div)
+                let header = tab.querySelector(".game_tab_header")
+                if (header != null) {
+                    let div = document.createElement('div')
+                    div.classList.add('close_tab')
+                    div.onclick = tag_to_turn_off_f(tag)
+                    header.appendChild(div)
+                }                
             }
         }
     }
@@ -144,30 +151,59 @@ export namespace tab {
     }
 
     function init_corners_top() {
-        let top_corners = document.querySelectorAll('.movable > .top')
-        for (let corner of top_corners) {
-            (corner => {corner.onmousedown = (event) =>{
-                if (!RESIZE_PRESSED_TOP)
+        let headers = document.querySelectorAll('.game_tab > div > .game_tab_label')
+        for (let header of headers) {
+            (header => {header.onmousedown = (event) =>{
+                console.log('detect press')
+                console.log('current state is ' + MOVE_TAB_PRESS)
+                if (!MOVE_TAB_PRESS)
                 {
-                    RESIZE_PRESSED_TOP = true
-                    RESIZE_ELEMENT = corner.parentElement
+                    MOVE_TAB_PRESS = true
+                    MOVE_TAB_ELEMENT = header.parentElement!.parentElement
+                    MOVE_TAB_OFFSET = [event.offsetX, event.offsetY]
 
-                    let tag = corner.parentElement!.id.split('_')[0]
+                    console.log('selected element')
+                    console.log(MOVE_TAB_ELEMENT)
+
+                    console.log('offset')
+                    console.log(MOVE_TAB_OFFSET)
+
+                    let tag = header.parentElement!.parentElement!.id.split('_')[0]
                     tab.pop(tag)
                     tab.push(tag)
                 } else {
-                    RESIZE_PRESSED_TOP = false
-                    let tag = corner.parentElement!.id.split('_')[0]
+                    MOVE_TAB_PRESS = false
+                    let tag = header.parentElement!.parentElement!.id.split('_')[0]
                     tab.save(tag)    
                 }
-            }})(corner as HTMLElement)
+            }})(header as HTMLElement)
         }
     }
 
     function init_resize() {
         let game_scene = document.getElementById('actual_game_scene')!
         game_scene.onmousemove = event => {
-            if (RESIZE_ELEMENT == null) return
+            if ((RESIZE_ELEMENT == null) && (MOVE_TAB_PRESS == null)) return
+
+            if (MOVE_TAB_PRESS) {
+                const x = event.pageX
+                const y = event.pageY
+                let rect = game_scene.getBoundingClientRect();
+
+                const new_left = x - MOVE_TAB_OFFSET[0] - rect.left
+                const new_top  = y - MOVE_TAB_OFFSET[1] - rect.top
+                
+
+                console.log(x, y, new_left, new_top)
+
+                if (MOVE_TAB_ELEMENT != null) {
+                    MOVE_TAB_ELEMENT.style.left = new_left + 'px'
+                    MOVE_TAB_ELEMENT.style.top  = new_top  + 'px'
+                }                
+            }
+
+            if ((RESIZE_ELEMENT == null)) return
+
             if (RESIZE_PRESSED_BOTTOM)
                 {
                     let x = event.pageX;
@@ -179,25 +215,25 @@ export namespace tab {
                     RESIZE_ELEMENT.style.width = new_width + 'px'
                     RESIZE_ELEMENT.style.height = new_height + 'px'
                 }
-            if (RESIZE_PRESSED_TOP)
-                {
-                    let x = event.pageX;
-                    let y = event.pageY;
-                    let rect_1 = RESIZE_ELEMENT.getBoundingClientRect();
-                    let rect_2 = game_scene.getBoundingClientRect();
+            // if (RESIZE_PRESSED_TOP)
+            //     {
+            //         let x = event.pageX;
+            //         let y = event.pageY;
+            //         let rect_1 = RESIZE_ELEMENT.getBoundingClientRect();
+            //         let rect_2 = game_scene.getBoundingClientRect();
 
-                    let width = rect_1.right - rect_1.left;
-                    let height = rect_1.bottom - rect_1.top;
-                    let new_left = Math.min(rect_1.right - 1, Math.min(rect_2.right - rect_2.left - width, Math.max(1, x - rect_2.left - 1)));
-                    let new_top = Math.min(rect_1.bottom - 1, Math.min(rect_2.bottom - rect_2.top - height, Math.max(1, y - rect_2.top - 1)));
-                    // let new_width = rect_1.right - rect_1.left - (new_left - old_left);
-                    // let new_height = rect_1.bottom - rect_1.top - (new_top - old_top);
+            //         let width = rect_1.right - rect_1.left;
+            //         let height = rect_1.bottom - rect_1.top;
+            //         let new_left = Math.min(rect_1.right - 1, Math.min(rect_2.right - rect_2.left - width, Math.max(1, x - rect_2.left - 1)));
+            //         let new_top = Math.min(rect_1.bottom - 1, Math.min(rect_2.bottom - rect_2.top - height, Math.max(1, y - rect_2.top - 1)));
+            //         // let new_width = rect_1.right - rect_1.left - (new_left - old_left);
+            //         // let new_height = rect_1.bottom - rect_1.top - (new_top - old_top);
 
-                    RESIZE_ELEMENT.style.top = new_top + 'px';
-                    RESIZE_ELEMENT.style.left = new_left + 'px';
-                    // RESIZE_ELEMENT.style.width = new_width + 'px'
-                    // RESIZE_ELEMENT.style.height = new_height + 'px'
-                }
+            //         RESIZE_ELEMENT.style.top = new_top + 'px';
+            //         RESIZE_ELEMENT.style.left = new_left + 'px';
+            //         // RESIZE_ELEMENT.style.width = new_width + 'px'
+            //         // RESIZE_ELEMENT.style.height = new_height + 'px'
+            //     }
         };
     }
 

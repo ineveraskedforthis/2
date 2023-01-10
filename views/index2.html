@@ -232,9 +232,13 @@
                 <div id="perks_for_learning"></div>
             </div> 
 
-            <div id="craft_tab", class="game_tab hidden movable noselect">
-                
-                <div id="craft_management" class="container-horizontal"> 
+            <div id="craft_tab" class="game_tab hidden movable noselect container-vertical">
+                <div class="game_tab_header container-horizontal"> 
+                    <div class="game_tab_label">
+                    Craft
+                    </div> 
+                </div>
+                <div id="craft_management" class="container-horizontal tab_content"> 
                     <div class="container-vertical flex-1">
                         <div id = "craft-tag-item" class="height-50 align-center highlight hover press">Items</div>
                         <div id = "craft-tag-bulk" class="height-50 align-center highlight hover press">Bulk</div>
@@ -242,63 +246,52 @@
                     <div id="craft_list" class="container-vertical scroll-y flex-3 align-right">
                     </div>
                 </div>
-                
-                <div class="corner top"></div>
+            </div>
+
+            <div id="stash_tab" class="game_tab hidden movable noselect">
+                <div class="game_tab_header container-horizontal"> 
+                    <div class="game_tab_label">
+                        Stash
+                    </div> 
+                </div>
+
+                <div id = "goods_stash"></div>
+                <div id = "savings"></div>
+                <div id = "savings_trade"></div>                
                 <div class="corner bottom"></div>
             </div>
 
-            <div id="stash_tab", class="game_tab hidden movable noselect">
-                <div id = "goods_stash"></div>
-                <div id = "savings"></div>
-                <div id = "savings_trade"></div>
-                <div class="corner top"></div>
-                <!-- <div class="corner bottom"></div> -->
-            </div>
-
-            <div id = 'map_tab', class = "game_tab hidden movable noselect">
-                <div class="container-vertical">
-                    <div>
-                        <button id="attack_selected_charater"> Attack </button>
-                        <button id="support_selected_charater"> Support in battle. </button>
-                        <button id="request_perks_selected_charater"> Request perks list. </button>
-                    </div>
-                    <div id="characters_list"></div>
+            <div id = 'map_tab' class="game_tab hidden movable noselect container-vertical">
+                <div class="game_tab_header container-horizontal"> 
+                    <div class="game_tab_label">
+                    Map
+                    </div> 
                 </div>
-                <div id = 'map_context' class="hidden">
-                    <div id='map_control'>
-                        <div id = 'map_buttons'>
-                            Press right click mouse button to move.
-                            <!-- <div id='move_button' class = 'button'>
-                                Move
+                <div>
+                    <div class="container-horizontal">
+                        <div class="container-vertical">
+                            <div>
+                                <button id="attack_selected_charater"> Attack </button>
+                                <button id="support_selected_charater"> Support in battle. </button>
+                                <button id="request_perks_selected_charater"> Request perks list. </button>
                             </div>
-                            <div id='fish_button' class = 'button'>
-                                Fish
+                            <div id="characters_list"></div>
+                        </div>
+                        <div id = 'map_context' class="hidden">
+                            <div id='map_control'>
+                                <div id = 'map_buttons'>
+                                    Press right click mouse button to move.
+                                </div>                             
+                                <div id='local_description'></div>
                             </div>
-                            <div id='hunt_button' class = 'button'>
-                                Hunt 
-                            </div>
-                            <div id='clean_button' class="button">
-                                Clean
-                            </div>
-                            <div id='rest_button' class="button">
-                                Rest
-                            </div>
-                            <div id='gather_wood_button' class="button">
-                                Gather wood
-                            </div> -->
+                        </div>
+                        <div id = 'map_column'>
+                            <canvas id='map_canvas' width=800 height=400 oncontextmenu="return false;"></canvas>
+                        </div>
+                        <div id = 'description_column'> 
                         </div> 
-                        
-                        <div id='local_description'></div>
                     </div>
                 </div>
-                <div id = 'map_column'>
-                    <canvas id='map_canvas' width=800 height=400 oncontextmenu="return false;"></canvas>
-                </div>
-                <div id = 'description_column'> 
-                    
-                    
-                </div> 
-                <div class="corner top"></div>
                 <!-- <div class="corner bottom"></div> -->
             </div>
 
@@ -315,13 +308,15 @@
                 <div class="enemy_list">
                     <div class='enemy_status'></div>
                 </div>
-
-                <!-- <div class="corner top"></div> -->
-                <!-- <div class="corner bottom"></div> -->
             </div>
 
             
-            <div id = 'skilltree_tab', class="game_tab hidden movable noselect">
+            <div id = 'skilltree_tab', class="game_tab hidden movable noselect container-vertical">
+                <div class="game_tab_header container-horizontal"> 
+                    <div class="game_tab_label">
+                        Character
+                    </div> 
+                </div>
                 <div id = 'skills'> 
                     <div id = 'skills_header_container'>
                         <div id = 'skills_header' class="header">
@@ -348,56 +343,63 @@
                         </div>
                     </div>                    
                 </div>
-                <div class="corner top"></div>
                 <div class="corner bottom"></div>
             </div>
 
-            <div id = 'market_tab', class="game_tab hidden movable noselect">
-                <div id = 'market'> 
+            <div id = 'market_tab', class="game_tab hidden movable noselect container-vertical">
+                <div class="game_tab_header container-horizontal"> 
+                    <div class="game_tab_label">
+                        Market
+                    </div> 
+                </div>
+                <div id = 'market' class="tab_content container-vertical"> 
                     <div class="header">
                         <div id="open_market" class="selected">Common goods</div>
                         <div id="open_auction">Equipment</div>
                     </div>
                     <div class="market_body">
-                        <div class="goods_market market_tab" >
-                            <div class="goods_list">
+                        <div id="market_wrapper">
+                            <div class="goods_market market_tab" >
+                                <div class="goods_list">
+
+                                </div>
+
+                                <p>
+
+                                <div class="market_control"> 
+                                
+                                    <select name="order_material" id="create_order_material"></select>
+                                    <select name="order_type" id="create_order_type">
+                                        <option value="sell">Sell</option>
+                                        <option value="buy">Buy</option>
+                                    </select>
+                                    <input type="text" id="create_order_amount" placeholder="Amount">
+                                    <input type="text" id="create_order_price" placeholder="Price">
+                                    <button id="create_order_button"> Send </button>
+
+                                    <button id="clear_orders_button"> Clear all. </button>
+
+                                </div>
 
                             </div>
-
-                            <p>
-
-                            <div class="market_control"> 
-                            
-                                <select name="order_material" id="create_order_material"></select>
-                                <select name="order_type" id="create_order_type">
-                                    <option value="sell">Sell</option>
-                                    <option value="buy">Buy</option>
-                                </select>
-                                <input type="text" id="create_order_amount" placeholder="Amount">
-                                <input type="text" id="create_order_price" placeholder="Price">
-                                <button id="create_order_button"> Send </button>
-
-                                <button id="clear_orders_button"> Clear all. </button>
-
-                            </div>
-
                         </div>
                     
-                        <div class="auction_body market_tab hidden">
-                            <div id="auction_house_tab">
-                            </div>
+                        <div id="auction_wrapper">
+                            <div class="auction_body market_tab">
+                                <div id="auction_house_tab">
+                                </div>
 
-                            <p></p>
-                            <div class="auction_control">                             
-                                <select name="auction_order_item" id="create_auction_order_item"></select>
-                                <input type="text" id="create_auction_order_price" placeholder="Price">
-                                <button id="create_auction_order_button"> Sell </button>
-                                <button id="clear_auction_orders_button"> Clear all. </button>
+                                <p></p>
+                                <div class="auction_control">                             
+                                    <select name="auction_order_item" id="create_auction_order_item"></select>
+                                    <input type="text" id="create_auction_order_price" placeholder="Price">
+                                    <button id="create_auction_order_button"> Sell </button>
+                                    <button id="clear_auction_orders_button"> Clear all. </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="corner top"></div>
                 <div class="corner bottom"></div>
             </div>
 
@@ -411,72 +413,81 @@
                 <div id = 'character_screen_actions', class = 'character_screen_frame'></div>
             </div>
 
-            <div id="equip_tab" class="game_tab hidden movable noselect">
-
-                <div id = "backpack_tab" class="character_screen_frame">
-                    <!-- <div class="header_container">
-                        <div id="open_armour_header" class="selected header">Armour</div>
-                        <div id="open_weapon_header" class="header">Weapon</div>
-                        <div id="open_all_header" class="header">All</div>
-                    </div> -->
-
-                    <div id="backpacks_collection"> 
-    
-                        <!-- <div id="backpack_armour_tab" class = "backpack_tab"></div>     -->
-                        <div id="backpack_weapon_tab" class = "backpack_tab"></div>
-
-                    </div>
-    
+            <div id="equip_tab" class="game_tab hidden movable noselect container-vertical">
+                <div class="game_tab_header container-horizontal"> 
+                    <div class="game_tab_label">
+                        Equip
+                    </div> 
                 </div>
-    
-                <div id = 'equip', class = 'character_screen_frame'>
-                    <p class = "tab_label"> Equipment: </p>
-                    <div id = 'eq_head', class = 'item_frame tooltip'> 
-                        <!-- <div id="eq_head_image", class = 'item_image'></div> -->
-                        <span id="eq_head_tooltip", class="tooltiptext"></span>
+
+                <div class="tab_content">
+                    <div id = "backpack_tab" class="character_screen_frame">
+                        <!-- <div class="header_container">
+                            <div id="open_armour_header" class="selected header">Armour</div>
+                            <div id="open_weapon_header" class="header">Weapon</div>
+                            <div id="open_all_header" class="header">All</div>
+                        </div> -->
+
+                        <div id="backpacks_collection"> 
+        
+                            <!-- <div id="backpack_armour_tab" class = "backpack_tab"></div>     -->
+                            <div id="backpack_weapon_tab" class = "backpack_tab"></div>
+
+                        </div>
+        
                     </div>
-                    <div id = 'eq_weapon', class = 'item_frame tooltip'>
-                        <!-- <div id="eq_weapon_image", class = 'item_image'></div> -->
-                        <span id="eq_weapon_tooltip", class="tooltiptext"></span>
+        
+                    <div id = 'equip', class = 'character_screen_frame'>
+                        <p class = "tab_label"> Equipment: </p>
+                        <div id = 'eq_head', class = 'item_frame tooltip'> 
+                            <!-- <div id="eq_head_image", class = 'item_image'></div> -->
+                            <span id="eq_head_tooltip", class="tooltiptext"></span>
+                        </div>
+                        <div id = 'eq_weapon', class = 'item_frame tooltip'>
+                            <!-- <div id="eq_weapon_image", class = 'item_image'></div> -->
+                            <span id="eq_weapon_tooltip", class="tooltiptext"></span>
+                        </div>
+                        <div id = 'eq_secondary', class = 'item_frame tooltip'>
+                            <!-- <div id="eq_weapon_image", class = 'item_image'></div> -->
+                            <span id="eq_secondary_tooltip", class="tooltiptext"></span>
+                        </div>
+                        <div id = 'eq_body', class = 'item_frame tooltip'>
+                            <!-- <div id="eq_body_image", class = 'item_image'></div> -->
+                            <span id="eq_body_tooltip", class="tooltiptext"></span>
+                        </div>
+                        <div id = 'eq_legs', class = 'item_frame tooltip'>      
+                            <!-- <div id="eq_legs_image", class = 'item_image'></div> -->
+                            <span id="eq_legs_tooltip", class="tooltiptext"></span>
+                        </div>
+                        <div id = 'eq_foot', class = 'item_frame tooltip'>      
+                            <!-- <div id="eq_foot_image", class = 'item_image'></div> -->
+                            <span id="eq_foot_tooltip", class="tooltiptext"></span>
+                        </div>
+                        <div id = 'eq_arms', class = 'item_frame tooltip'>      
+                            <!-- <div id="eq_arms_image", class = 'item_image'></div> -->
+                            <span id="eq_arms_tooltip", class="tooltiptext"></span>
+                        </div>
+
+                        <button id="send_switch_weapon_request">Switch weapon</button>
                     </div>
-                    <div id = 'eq_secondary', class = 'item_frame tooltip'>
-                        <!-- <div id="eq_weapon_image", class = 'item_image'></div> -->
-                        <span id="eq_secondary_tooltip", class="tooltiptext"></span>
-                    </div>
-                    <div id = 'eq_body', class = 'item_frame tooltip'>
-                        <!-- <div id="eq_body_image", class = 'item_image'></div> -->
-                        <span id="eq_body_tooltip", class="tooltiptext"></span>
-                    </div>
-                    <div id = 'eq_legs', class = 'item_frame tooltip'>      
-                        <!-- <div id="eq_legs_image", class = 'item_image'></div> -->
-                        <span id="eq_legs_tooltip", class="tooltiptext"></span>
-                    </div>
-                    <div id = 'eq_foot', class = 'item_frame tooltip'>      
-                        <!-- <div id="eq_foot_image", class = 'item_image'></div> -->
-                        <span id="eq_foot_tooltip", class="tooltiptext"></span>
-                    </div>
-                    <div id = 'eq_arms', class = 'item_frame tooltip'>      
-                        <!-- <div id="eq_arms_image", class = 'item_image'></div> -->
-                        <span id="eq_arms_tooltip", class="tooltiptext"></span>
+                    <div>
+                        <input type="checkbox" id="enchant" name="enchant">
+                        <label for="enchant">"Enchant" mode (Press an item to attempt enchanting it)</label>
+                        <p>
+                        <input type="checkbox" id="reenchant" name="reenchant">
+                        <label for="reenchant">"Reroll enchants" mode (20% less enchant rating)</label>
+                        <p>
+                        <input type="checkbox" id="fill_market" name="fill_market">
+                        <label for="fill_market">"Fill market select" mode </label>
+                        <p>
+                        <input type="checkbox" id="destroy" name="destroy">
+                        <label for="destroy">"Destroy item" mode (Overrides everything)</label>
                     </div>
 
-                    <button id="send_switch_weapon_request">Switch weapon</button>
                 </div>
-                <div>
-                    <input type="checkbox" id="enchant" name="enchant">
-                    <label for="enchant">"Enchant" mode (Press an item to attempt enchanting it)</label>
-                    <p>
-                    <input type="checkbox" id="reenchant" name="reenchant">
-                    <label for="reenchant">"Reroll enchants" mode (20% less enchant rating)</label>
-                    <p>
-                    <input type="checkbox" id="fill_market" name="fill_market">
-                    <label for="fill_market">"Fill market select" mode </label>
-                    <p>
-                    <input type="checkbox" id="destroy" name="destroy">
-                    <label for="destroy">"Destroy item" mode (Overrides everything)</label>
-                </div>
-                <div class="corner top"></div>
-                <!-- <div class="corner bottom"></div> -->
+
+                
+                <div class="corner bottom"></div>
             </div>
 
             <div id="quest_tab" class="game_tab hidden movable noselect">
@@ -491,7 +502,7 @@
                     </div>
                 </div>
 
-                <div class="corner top"></div>
+                <!-- <div class="corner top"></div> -->
                 <div class="corner bottom"></div>
             </div>
         </div>  

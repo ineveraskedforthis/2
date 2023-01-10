@@ -1,16 +1,9 @@
-#map_tab {
-    display: flex;
-    flex-direction: row;
-    /* color: rgb(13, 228, 77); */
-}
-
 #map_column{
     height: 100%;
     width: 100%;
     border: rgb(168, 9, 9) solid 1px;
     overflow: hidden;
 }
-
 
 #local_description{
     position: absolute;

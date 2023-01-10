@@ -8,8 +8,8 @@ export const goods_market = new GoodsMarket(document.querySelector('.goods_marke
     let market_button = document.getElementById('open_market');
     let auction_button = document.getElementById('open_auction');
 
-    let market = document.querySelector('.goods_market');
-    let auction = document.querySelector('.auction_body');
+    let market = document.getElementById('market_wrapper');
+    let auction = document.getElementById('auction_wrapper');
 
     set_up_header_tab_choice([
         {element: market_button, connected_element: market},
