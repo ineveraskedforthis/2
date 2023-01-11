@@ -1,12 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Request = void 0;
+const system_1 = require("../../attack/system");
 const battle_calcs_1 = require("../../battle/battle_calcs");
 const events_1 = require("../../battle/events");
 const Perks_1 = require("../../character/Perks");
+const damage_types_1 = require("../../misc/damage_types");
 const constants_1 = require("../../static_data/constants");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
+const updates_1 = require("./updates");
 var Request;
 (function (Request) {
     function accuracy(sw, distance) {
@@ -24,6 +27,8 @@ var Request;
         const acc = battle_calcs_1.Accuracy.ranged(character, distance);
         // console.log(acc)
         alerts_1.Alerts.battle_action_chance(user, 'shoot', acc);
+        let magic_bolt = damage_types_1.DmgOps.total(system_1.Attack.generate_magic_bolt(character, distance).damage);
+        alerts_1.Alerts.battle_action_damage(user, 'magic_bolt', magic_bolt);
     }
     Request.accuracy = accuracy;
     function perks(sw, character_id) {
@@ -79,4 +84,13 @@ var Request;
         alerts_1.Alerts.battle_action_chance(user, 'flee', events_1.BattleEvent.flee_chance(unit.position));
     }
     Request.flee_chance = flee_chance;
+    function attack_damage(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        updates_1.SendUpdate.attack_damage(user);
+    }
+    Request.attack_damage = attack_damage;
 })(Request = exports.Request || (exports.Request = {}));

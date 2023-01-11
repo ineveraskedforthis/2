@@ -54,7 +54,10 @@ class SocketManager {
             socket.on('reenchant', (msg) => inventory_management_1.InventoryCommands.reroll_enchant(user, msg));
             socket.on('destroy', (msg) => inventory_management_1.InventoryCommands.break_item(user, msg));
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
-            socket.on('switch-weapon', (msg) => inventory_management_1.InventoryCommands.switch_weapon(user));
+            socket.on('switch-weapon', (msg) => {
+                inventory_management_1.InventoryCommands.switch_weapon(user);
+                request_1.Request.attack_damage(user);
+            });
             socket.on('unequip', (msg) => inventory_management_1.InventoryCommands.unequip(user, msg));
             socket.on('eat', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.EAT));
             socket.on('clean', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CLEAN));
@@ -73,6 +76,7 @@ class SocketManager {
             socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
             socket.on('req-player-index', () => request_1.Request.player_index(user));
             socket.on('req-flee-chance', () => request_1.Request.flee_chance(user));
+            socket.on('req-attacks-damage', () => request_1.Request.attack_damage(user));
             socket.on('request-perks', (msg) => request_1.Request.perks(user, msg));
             socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg.id, msg.tag));
         });

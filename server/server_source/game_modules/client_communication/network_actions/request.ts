@@ -1,10 +1,15 @@
+import { Attack } from "../../attack/system";
 import { Accuracy } from "../../battle/battle_calcs";
 import { BattleEvent } from "../../battle/events";
 import { Perks, perks_list, perk_price } from "../../character/Perks";
+import { DmgOps } from "../../misc/damage_types";
 import { UNIT_ID_MESSAGE } from "../../static_data/constants";
 import { Convert } from "../../systems_communication";
+import { Update } from "../causality_graph";
 import { SocketWrapper } from "../user";
 import { Alerts } from "./alerts";
+import { SendUpdate } from "./updates";
+
 
 export namespace Request {
     export function accuracy(sw: SocketWrapper, distance: number) {
@@ -22,6 +27,9 @@ export namespace Request {
         const acc = Accuracy.ranged(character, distance)
         // console.log(acc)
         Alerts.battle_action_chance(user, 'shoot', acc)
+
+        let magic_bolt = DmgOps.total(Attack.generate_magic_bolt(character, distance).damage)
+        Alerts.battle_action_damage(user, 'magic_bolt', magic_bolt)
     }
 
     export function perks(sw: SocketWrapper, character_id: number) {
@@ -78,5 +86,15 @@ export namespace Request {
         const unit = Convert.character_to_unit(character)
         if (unit == undefined) return
         Alerts.battle_action_chance(user, 'flee', BattleEvent.flee_chance(unit.position))
+    }
+
+    export function attack_damage(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+        
+        SendUpdate.attack_damage(user)
     }
 }

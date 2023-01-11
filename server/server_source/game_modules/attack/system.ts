@@ -3,7 +3,6 @@ import { DmgOps } from "../misc/damage_types";
 import { Character } from "../character/character";
 import { CharacterSystem } from "../character/system";
 import { AttackObj } from "./class";
-import { ItemSystem } from "../items/system";
 
 export namespace Attack {
     export function generate_melee(character: Character, type: damage_type): AttackObj {

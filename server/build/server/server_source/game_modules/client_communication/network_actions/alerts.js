@@ -110,6 +110,10 @@ var Alerts;
         Alerts.generic_user_alert(user, 'b-action-chance', { tag: tag, value: value });
     }
     Alerts.battle_action_chance = battle_action_chance;
+    function battle_action_damage(user, tag, value) {
+        Alerts.generic_user_alert(user, 'b-action-damage', { tag: tag, value: value });
+    }
+    Alerts.battle_action_damage = battle_action_damage;
     function battle_event(battle, tag, unit_id, position, target, cost) {
         battle.last_event_index += 1;
         const Event = {

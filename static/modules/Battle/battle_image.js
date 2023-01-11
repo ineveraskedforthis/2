@@ -442,6 +442,12 @@ export var BattleImage;
             label.innerHTML = '???%';
             action_div.appendChild(label);
         }
+        if (action_type.damaging) {
+            let label = document.createElement('div');
+            label.id = action_type.tag + '_damage_b';
+            label.innerHTML = '???';
+            action_div.appendChild(label);
+        }
         key_to_action[hotkey] = action_type.tag;
         action_div.onclick = () => send_action(action_type.tag);
         // action_divs[action_type.name] = action_div
@@ -455,6 +461,18 @@ export var BattleImage;
         label.innerHTML = Math.floor(value * 100) + '%';
     }
     BattleImage.update_action_probability = update_action_probability;
+    function update_action_damage(tag, value) {
+        console.log(tag, value);
+        let label = document.getElementById(tag + '_damage_b');
+        label.innerHTML = '~' + value.toString();
+    }
+    BattleImage.update_action_damage = update_action_damage;
+    function update_action_cost(tag, value) {
+        console.log(tag, value);
+        let label = document.getElementById(tag + '_ap_cost');
+        label.innerHTML = value.toString();
+    }
+    BattleImage.update_action_cost = update_action_cost;
     function set_current_turn(index, time_passed) {
         for (let unit of Object.values(units_views)) {
             unit.next_turn -= time_passed;

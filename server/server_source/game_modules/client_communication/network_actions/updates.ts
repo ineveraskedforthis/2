@@ -15,6 +15,8 @@ import { crafts_bulk, crafts_items } from "../../craft/crafts_storage";
 import { output_bulk } from "../../craft/CraftBulk";
 import { CharacterSystem } from "../../character/system";
 import { Attack } from "../../attack/system";
+import { Request } from "./request";
+import { DmgOps } from "../../misc/damage_types";
 
 
 
@@ -183,6 +185,7 @@ export namespace SendUpdate {
         if (character == undefined) return
 
         Alerts.generic_user_alert(user, 'equip-update', character.equip.get_data())
+        attack_damage(user)
     }
 
     export function skill_clothier(user: User) {
@@ -364,6 +367,22 @@ export namespace SendUpdate {
         stash(user)
         savings(user)
         equip(user)
+    }
+
+    export function attack_damage(user: User) {
+        const character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        let blunt  = DmgOps.total(Attack.generate_melee(character, 'blunt' ).damage)
+        let slice  = DmgOps.total(Attack.generate_melee(character, 'slice' ).damage)
+        let pierce = DmgOps.total(Attack.generate_melee(character, 'pierce').damage)
+
+        Alerts.battle_action_damage(user, 'attack_blunt', blunt)
+        Alerts.battle_action_damage(user, 'attack_slice', slice)
+        Alerts.battle_action_damage(user, 'attack_pierce', pierce)
+
+        let ranged = DmgOps.total(Attack.generate_ranged(character).damage)
+        Alerts.battle_action_damage(user, 'shoot', ranged)
     }
         
     //     // user.socket.emit('map-data-cells', this.world.constants.development)

@@ -113,6 +113,10 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'b-action-chance', {tag: tag, value: value})
     }
 
+    export function battle_action_damage(user: User, tag: string, value: number) {
+        Alerts.generic_user_alert(user, 'b-action-damage', {tag: tag, value: value})
+    }
+
     export function battle_event(battle: Battle, tag:BattleEventTag, unit_id:unit_id, position: battle_position, target:unit_id, cost: number) {
         battle.last_event_index += 1
         const Event:BattleEventSocket = {

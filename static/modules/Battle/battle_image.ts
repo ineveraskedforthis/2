@@ -17,6 +17,7 @@ interface battle_action {
     tag: string,
     cost?: number
     probabilistic?: boolean
+    damaging?: boolean
 }
 
 
@@ -499,6 +500,13 @@ export namespace BattleImage {
             label.innerHTML = '???%'
             action_div.appendChild(label)
         }
+
+        if (action_type.damaging) {
+            let label = document.createElement('div')
+            label.id = action_type.tag + '_damage_b'
+            label.innerHTML = '???'
+            action_div.appendChild(label)
+        }
         
         key_to_action[hotkey] = action_type.tag
         action_div.onclick = () => send_action(action_type.tag)
@@ -513,6 +521,18 @@ export namespace BattleImage {
         console.log(tag, value)
         let label = document.getElementById(tag + '_chance_b')!
         label.innerHTML = Math.floor(value * 100) + '%'
+    }
+
+    export function update_action_damage(tag: string, value: number) {
+        console.log(tag, value)
+        let label = document.getElementById(tag + '_damage_b')!
+        label.innerHTML = '~' + value.toString()
+    }
+
+    export function update_action_cost(tag: string, value: number) {
+        console.log(tag, value)
+        let label = document.getElementById(tag + '_ap_cost')!
+        label.innerHTML = value.toString()
     }
 
     export function set_current_turn(index: unit_id, time_passed: number) {

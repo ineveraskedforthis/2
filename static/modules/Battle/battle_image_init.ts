@@ -17,12 +17,14 @@ const events_queue: BattleEventSocket[] = []
 
 
 BattleImage.add_action({name: 'Move', tag: 'move'}, 'q')
-BattleImage.add_action({name: 'Slash', tag: 'attack_slice', cost: 3}, 'w')
-BattleImage.add_action({name: 'Pierce', tag: 'attack_pierce', cost: 3}, 'e')
-BattleImage.add_action({name: 'Knock',  tag: 'attack_blunt', cost: 3}, 'r')
 
-BattleImage.add_action({name: 'Magic Bolt', tag: 'magic_bolt', cost: 3}, 'a')
-BattleImage.add_action({name: 'Shoot', tag: 'shoot', cost: 3, probabilistic: true}, 's')
+BattleImage.add_action({name: 'Slash',  tag: 'attack_slice',    cost: 3, damaging: true}, 'w')
+BattleImage.add_action({name: 'Pierce', tag: 'attack_pierce',   cost: 3, damaging: true}, 'e')
+BattleImage.add_action({name: 'Knock',  tag: 'attack_blunt',    cost: 3, damaging: true}, 'r')
+
+BattleImage.add_action({name: 'Magic Bolt', tag: 'magic_bolt', cost: 3, damaging: true}, 'a')
+BattleImage.add_action({name: 'Shoot', tag: 'shoot', cost: 3, probabilistic: true, damaging: true}, 's')
+
 BattleImage.add_action({name: 'Dodge', tag: 'dodge', cost: 4}, 'd')
 
 BattleImage.add_action({name: 'Retreat', tag: 'flee', cost: 3, probabilistic: true}, 'f')
@@ -134,6 +136,8 @@ function end_battle() {
 socket.on('action-display', data =>     {BattleImage.update_action_display(data.tag, data.value)})
 // socket.on('new-action',                 msg => BattleImage.add_action({name: msg, tag:msg}, undefined));
 socket.on('b-action-chance',            msg => BattleImage.update_action_probability(msg.tag, msg.value))
+socket.on('b-action-damage',            msg => BattleImage.update_action_damage(msg.tag, msg.value))
+socket.on('b-action-cost',              msg => BattleImage.update_action_cost(msg.tag, msg.value))
 socket.on('battle-in-process',          bCallback.update_battle_process)
 // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
 socket.on('battle-update-units',        data => BattleImage.load(data))

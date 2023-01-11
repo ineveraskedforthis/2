@@ -7,6 +7,7 @@ import { UserManagement } from "../client_communication/user_manager";
 import { character_list } from "../data";
 import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
+import { Request } from "../client_communication/network_actions/request";
 
 export namespace Effect {
     export namespace Update {

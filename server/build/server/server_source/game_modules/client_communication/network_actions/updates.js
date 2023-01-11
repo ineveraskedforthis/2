@@ -14,6 +14,7 @@ const crafts_storage_1 = require("../../craft/crafts_storage");
 const CraftBulk_1 = require("../../craft/CraftBulk");
 const system_3 = require("../../character/system");
 const system_4 = require("../../attack/system");
+const damage_types_1 = require("../../misc/damage_types");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -164,6 +165,7 @@ var SendUpdate;
         if (character == undefined)
             return;
         alerts_1.Alerts.generic_user_alert(user, 'equip-update', character.equip.get_data());
+        attack_damage(user);
     }
     SendUpdate.equip = equip;
     function skill_clothier(user) {
@@ -345,6 +347,20 @@ var SendUpdate;
         equip(user);
     }
     SendUpdate.belongings = belongings;
+    function attack_damage(user) {
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        let blunt = damage_types_1.DmgOps.total(system_4.Attack.generate_melee(character, 'blunt').damage);
+        let slice = damage_types_1.DmgOps.total(system_4.Attack.generate_melee(character, 'slice').damage);
+        let pierce = damage_types_1.DmgOps.total(system_4.Attack.generate_melee(character, 'pierce').damage);
+        alerts_1.Alerts.battle_action_damage(user, 'attack_blunt', blunt);
+        alerts_1.Alerts.battle_action_damage(user, 'attack_slice', slice);
+        alerts_1.Alerts.battle_action_damage(user, 'attack_pierce', pierce);
+        let ranged = damage_types_1.DmgOps.total(system_4.Attack.generate_ranged(character).damage);
+        alerts_1.Alerts.battle_action_damage(user, 'shoot', ranged);
+    }
+    SendUpdate.attack_damage = attack_damage;
     //     // user.socket.emit('map-data-cells', this.world.constants.development)
     //     // user.socket.emit('map-data-terrain', this.world.constants.terrain)
     function cell_probability(user) {

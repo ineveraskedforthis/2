@@ -75,7 +75,7 @@ export class SocketManager {
             // socket.on('send-market-data', (msg: any) => {user.market_data = msg});
 
 
-            socket.on('equip',  (msg: any) =>           InventoryCommands.equip(user, msg));
+            socket.on('equip',  (msg: any) => InventoryCommands.equip(user, msg));
 
             socket.on('enchant',  (msg: any) => InventoryCommands.enchant(user, msg));
             socket.on('reenchant', (msg: any) => InventoryCommands.reroll_enchant(user, msg))
@@ -83,7 +83,10 @@ export class SocketManager {
             socket.on('destroy',  (msg: any) => InventoryCommands.break_item(user, msg));
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
 
-            socket.on('switch-weapon',  (msg: any) =>   InventoryCommands.switch_weapon(user))
+            socket.on('switch-weapon',  (msg: any) => {
+                InventoryCommands.switch_weapon(user)
+                Request.attack_damage(user)
+            })
             socket.on('unequip',  (msg: any) =>         InventoryCommands.unequip(user, msg));
 
 
@@ -104,8 +107,9 @@ export class SocketManager {
             
             socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))
-            socket.on('req-player-index', () =>  Request.player_index(user))
-            socket.on('req-flee-chance', () => Request.flee_chance(user))
+            socket.on('req-player-index',   () =>  Request.player_index(user))
+            socket.on('req-flee-chance',    () => Request.flee_chance(user))
+            socket.on('req-attacks-damage', () => Request.attack_damage(user))
 
             socket.on('request-perks', (msg:any) => Request.perks(user, msg))
             socket.on('learn-perk', (msg:any) => SocketCommand.learn_perk(user, msg.id, msg.tag))

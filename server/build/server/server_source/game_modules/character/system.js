@@ -181,15 +181,15 @@ var CharacterSystem;
         const damage = new damage_types_1.Damage();
         if (type == 'blunt') {
             if (character.perks.advanced_unarmed) {
-                damage.blunt = 30;
+                damage.blunt = 40;
             }
             else {
-                damage.blunt = 10;
+                damage.blunt = 15;
             }
         }
         if (type == 'slice') {
             if (character.perks.claws) {
-                damage.slice = 15;
+                damage.slice = 20;
             }
             else {
                 damage.slice = 2;
