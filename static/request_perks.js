@@ -96,12 +96,20 @@ function build_perks_list(data) {
 
         let label = document.createElement('div');
         label.innerHTML = i;
-        list_entry.appendChild(label);
+        
 
         let button = document.createElement('button');
         button.onclick = send_perk_learning_request(i);
         button.innerHTML = 'learn (' + data.perks[i] + ')';
+
+        label.classList.add('flex-3')
+        button.classList.add('flex-1')
+
+        list_entry.appendChild(label);
         list_entry.appendChild(button);
+
+        list_entry.classList.add('container-horizontal')
+        list_entry.classList.add('height-50')
 
         perks_div.appendChild(list_entry);
     }
@@ -119,10 +127,16 @@ function build_perks_list(data) {
         label.innerHTML = SKILL_NAMES[skill]
         button.innerHTML = `learn (${price})`
 
+        label.classList.add('flex-3')
+        button.classList.add('flex-1')
+
         button.onclick = send_skill_learning_request(skill)
 
         list_entry.append(label)
         list_entry.append(button)
+
+        list_entry.classList.add('container-horizontal')
+        list_entry.classList.add('height-50')
 
         skills_div.appendChild(list_entry)
     }

@@ -238,3 +238,7 @@
     z-index: 10;
     overflow-y: scroll;
 }
+
+#available_perks > div {
+    flex-shrink: 0;
+}
