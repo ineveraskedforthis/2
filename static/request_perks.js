@@ -81,9 +81,7 @@ function build_perks_list(data) {
     } else {
         for (let skill of Object.keys(data.skills)) {
             let [level, price] = data.skills[skill]
-            if (level > 70) {
-                greeting_line += `I am ${epitet(level)} at ${SKILL_NAMES[skill]}. `
-            }
+            greeting_line += `I am ${epitet(level)} at ${SKILL_NAMES[skill]}. `
         }
         greeting_line += `I can teach you for a price. `
     }

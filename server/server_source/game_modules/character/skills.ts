@@ -55,5 +55,5 @@ export function skill_price(tag: skill, student: Character, teacher: Character):
     if (!Data.Reputation.a_X_b(teacher.id, 'member', student.id))
         price = price * 1.5;
 
-    return Math.round(student.skills[tag] * price) as money
+    return Math.round(student.skills[tag] * price + 10) as money
 }

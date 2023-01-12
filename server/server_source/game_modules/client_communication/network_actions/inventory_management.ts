@@ -20,7 +20,6 @@ function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) =
 
 export namespace InventoryCommands {
     export function equip(sw: SocketWrapper, msg: number) {
-        // console.log('equip command + ' + msg)
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
         if (character.in_battle()) { return }
@@ -43,7 +42,6 @@ export namespace InventoryCommands {
         if (character == undefined) return
         if (character.in_battle()) { return }
 
-        // console.log('unequip ' + msg)
 
         if (msg == "weapon")    {EventInventory.unequip(character, 'weapon')}
         else if (msg == 'secondary'){EventInventory.unequip_secondary(character)}

@@ -16,18 +16,15 @@ import { SendUpdate } from "./updates";
 export namespace Request {
     export function accuracy(sw: SocketWrapper, distance: number) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        // console.log('request accuracy ' + distance)
         if (character == undefined) return;
         if (!user.logged_in) {
             return 
         }
         if (isNaN(distance)) {
-            // console.log('not_a_number')
             return 
         }
         
         const acc = Accuracy.ranged(character, distance)
-        // console.log(acc)
         Alerts.battle_action_chance(user, 'shoot', acc)
 
         let magic_bolt = DmgOps.total(Attack.generate_magic_bolt(character, distance).damage)

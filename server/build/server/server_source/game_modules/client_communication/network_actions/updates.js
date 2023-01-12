@@ -53,12 +53,9 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        console.log('update battle');
-        console.log('in battle?  ' + character.in_battle());
         if (character.in_battle()) {
             const battle = systems_communication_1.Convert.id_to_battle(character.battle_id);
             let unit_id = character.battle_unit_id;
-            console.log('unit id is ' + unit_id);
             alerts_1.Alerts.battle_progress(user, true);
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);
@@ -87,7 +84,6 @@ var SendUpdate;
     // send_battle_data_to_user(user: User) {
     // }
     // send_battle_data_start(battle: BattleReworked2) {
-    //     console.log('sending battle info')
     //     let units = battle.get_units()
     //     let data = battle.get_data()
     //     let status = battle.get_status()
@@ -145,7 +141,6 @@ var SendUpdate;
     }
     SendUpdate.savings = savings;
     function status(user) {
-        // console.log('update status')
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -160,7 +155,6 @@ var SendUpdate;
     }
     SendUpdate.stash = stash;
     function equip(user) {
-        // console.log('update equip')
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -264,9 +258,6 @@ var SendUpdate;
     }
     SendUpdate.market = market;
     function explored(user) {
-        // console.log('send exploration')
-        // var stack = new Error().stack
-        // console.log( stack )
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -292,7 +283,6 @@ var SendUpdate;
     }
     SendUpdate.explored = explored;
     function map_position(user, teleport_flag) {
-        // console.log('send map position')
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -306,13 +296,10 @@ var SendUpdate;
     }
     SendUpdate.map_position = map_position;
     function map_position_move(user) {
-        // console.log('send map position')
         map_position(user, false);
     }
     SendUpdate.map_position_move = map_position_move;
     function local_characters(user) {
-        // prepare data
-        // console.log('send local characters')
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
@@ -334,14 +321,12 @@ var SendUpdate;
     }
     SendUpdate.local_actions = local_actions;
     function map_related(user) {
-        // console.log('update map related')
         local_actions(user);
         local_characters(user);
         explored(user);
     }
     SendUpdate.map_related = map_related;
     function belongings(user) {
-        // console.log('update belongings')
         stash(user);
         savings(user);
         equip(user);
@@ -390,7 +375,6 @@ var SendUpdate;
     SendUpdate.update_player_actions_availability = update_player_actions_availability;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
 // update_market_info(market: Cell) {
-//     // console.log('sending market orders to client');
 //     let responce = this.prepare_market_orders(market)     
 //     for (let i of this.sockets) {
 //         if (i.current_user != null) {
@@ -401,7 +385,6 @@ var SendUpdate;
 //                     i.socket.emit('market-data', responce);
 //                 }
 //             } catch(error) {
-//                 console.log(i.current_user.login);
 //             }
 //         }
 //     }

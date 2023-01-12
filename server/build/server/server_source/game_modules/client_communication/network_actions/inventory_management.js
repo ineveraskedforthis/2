@@ -19,7 +19,6 @@ function r(f) {
 var InventoryCommands;
 (function (InventoryCommands) {
     function equip(sw, msg) {
-        // console.log('equip command + ' + msg)
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;
@@ -47,7 +46,6 @@ var InventoryCommands;
         if (character.in_battle()) {
             return;
         }
-        // console.log('unequip ' + msg)
         if (msg == "weapon") {
             inventory_events_1.EventInventory.unequip(character, 'weapon');
         }

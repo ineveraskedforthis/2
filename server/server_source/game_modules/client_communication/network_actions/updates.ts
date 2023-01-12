@@ -59,14 +59,10 @@ export namespace SendUpdate {
     export function battle(user: User) {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
-        
-        console.log('update battle')
-        console.log('in battle?  ' + character.in_battle())
 
         if (character.in_battle()) {
             const battle = Convert.id_to_battle(character.battle_id);
             let unit_id = character.battle_unit_id
-            console.log('unit id is ' + unit_id)            
             Alerts.battle_progress(user, true)
             Alerts.generic_user_alert(user, BATTLE_DATA_MESSAGE, BattleSystem.data(battle));
             Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);
@@ -101,7 +97,6 @@ export namespace SendUpdate {
     // }
 
     // send_battle_data_start(battle: BattleReworked2) {
-    //     console.log('sending battle info')
     //     let units = battle.get_units()
     //     let data = battle.get_data()
     //     let status = battle.get_status()
@@ -165,7 +160,6 @@ export namespace SendUpdate {
     }
  
     export function status(user: User) {
-        // console.log('update status')
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
@@ -180,7 +174,6 @@ export namespace SendUpdate {
     }
 
     export function equip(user: User) {
-        // console.log('update equip')
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
@@ -285,10 +278,6 @@ export namespace SendUpdate {
     }
 
     export function explored(user: User) {
-        // console.log('send exploration')
-        // var stack = new Error().stack
-        // console.log( stack )
-
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
@@ -317,7 +306,6 @@ export namespace SendUpdate {
     }
 
     export function map_position(user: User, teleport_flag:boolean) {
-        // console.log('send map position')
         let character = Convert.user_to_character(user)
         if (character == undefined) return
         let cell = Convert.character_to_cell(character)
@@ -330,13 +318,10 @@ export namespace SendUpdate {
     }
 
     export function map_position_move(user: User) {
-        // console.log('send map position')
         map_position(user, false)
     }
 
     export function local_characters(user: User) {
-        // prepare data
-        // console.log('send local characters')
         const character = Convert.user_to_character(user)
         if (character == undefined) return
         const cell = Convert.character_to_cell(character)
@@ -356,14 +341,12 @@ export namespace SendUpdate {
     }
 
     export function map_related(user: User) {
-        // console.log('update map related')
         local_actions(user)
         local_characters(user)
         explored(user)
     }
 
     export function belongings(user: User) {
-        // console.log('update belongings')
         stash(user)
         savings(user)
         equip(user)
@@ -423,7 +406,6 @@ export namespace SendUpdate {
 
 
     // update_market_info(market: Cell) {
-    //     // console.log('sending market orders to client');
     //     let responce = this.prepare_market_orders(market)     
 
     //     for (let i of this.sockets) {
@@ -435,7 +417,6 @@ export namespace SendUpdate {
     //                     i.socket.emit('market-data', responce);
     //                 }
     //             } catch(error) {
-    //                 console.log(i.current_user.login);
     //             }
     //         }
     //     }
