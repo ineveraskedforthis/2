@@ -422,6 +422,10 @@ div {
     height: 50px;
 }
 
+.height-auto {
+    height: auto;
+}
+
 .align-right {
     text-align: right;
 }

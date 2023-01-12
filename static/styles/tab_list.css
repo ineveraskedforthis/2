@@ -239,6 +239,10 @@
     overflow-y: scroll;
 }
 
+#character_greeting {
+    display: contents;
+}
+
 #available_perks > div {
     flex-shrink: 0;
 }
