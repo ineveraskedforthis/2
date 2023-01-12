@@ -49,8 +49,8 @@ var BattleEvent;
     }
     BattleEvent.Leave = Leave;
     function EndTurn(battle, unit) {
-        console.log(battle.id + ' end turn');
-        console.log(unit.id + 'unit id');
+        // console.log(battle.id + ' end turn')
+        // console.log(unit.id + 'unit id')
         // invalid battle
         if (battle.heap.get_selected_unit() == undefined)
             return false;
@@ -81,14 +81,14 @@ var BattleEvent;
      * @returns
      */
     function NewTurn(battle) {
-        console.log(battle.id + ' new turn');
+        // console.log(battle.id + ' new turn')
         let current_time = Date.now();
         battle.date_of_last_turn = current_time;
         let unit = battle.heap.get_selected_unit();
         if (unit == undefined) {
             return { responce: 'no_units_left' };
         }
-        console.log(unit.id + ' current unit');
+        // console.log(unit.id + ' current unit')
         alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0);
         let time_passed = unit.next_turn_after;
         battle.heap.update(time_passed);
