@@ -19,6 +19,7 @@ const effects_1 = require("./effects");
 const inventory_events_1 = require("./inventory_events");
 const market_1 = require("./market");
 const damage_types_1 = require("../misc/damage_types");
+const skills_1 = require("../character/skills");
 var Event;
 (function (Event) {
     function buy_perk(student, perk, teacher) {
@@ -39,6 +40,23 @@ var Event;
         effects_1.Effect.learn_perk(student, perk);
     }
     Event.buy_perk = buy_perk;
+    function buy_skill(student, skill, teacher) {
+        let savings = student.savings.get();
+        let price = (0, skills_1.skill_price)(skill, student, teacher);
+        if (savings < price) {
+            alerts_1.Alerts.not_enough_to_character(student, 'money', price, savings);
+            return;
+        }
+        if (teacher.skills[skill] <= student.skills[skill] + 20)
+            return;
+        if (teacher.skills[skill] < 30)
+            return;
+        student.savings.transfer(teacher.savings, price);
+        user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 5 /* UI_Part.SAVINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(teacher.user_id, 5 /* UI_Part.SAVINGS */);
+        effects_1.Effect.Change.skill(student, skill, 1);
+    }
+    Event.buy_skill = buy_skill;
     function move(character, new_cell) {
         // console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y)
         const old_cell = systems_communication_1.Convert.character_to_cell(character);

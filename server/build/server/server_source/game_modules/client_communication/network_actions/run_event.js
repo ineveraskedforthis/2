@@ -25,7 +25,13 @@ var SocketCommand;
         events_1.Event.support_in_battle(valid_character, target);
     }
     SocketCommand.support_character = support_character;
-    function learn_perk(sw, character_id, perk_tag) {
+    function learn_perk(sw, msg) {
+        if (msg == undefined)
+            return;
+        let character_id = msg.id;
+        let perk_tag = msg.tag;
+        if (typeof perk_tag != 'string')
+            return;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         const [valid_user, valid_character, target_character] = common_validations_1.Validator.valid_action_to_character(user, character, character_id);
         if (target_character == undefined)
@@ -45,4 +51,25 @@ var SocketCommand;
         events_1.Event.buy_perk(valid_character, perk_tag, target_character);
     }
     SocketCommand.learn_perk = learn_perk;
+    function learn_skill(sw, msg) {
+        if (msg == undefined)
+            return;
+        let character_id = msg.id;
+        let skill_tag = msg.tag;
+        if (typeof skill_tag != 'string')
+            return;
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        const [valid_user, valid_character, target_character] = common_validations_1.Validator.valid_action_to_character(user, character, character_id);
+        if (target_character == undefined)
+            return;
+        if (valid_character.cell_id != target_character.cell_id) {
+            valid_user.socket.emit('alert', 'not in the same cell');
+            return;
+        }
+        if (valid_character.skills[skill_tag] == undefined) {
+            return;
+        }
+        events_1.Event.buy_skill(valid_character, skill_tag, target_character);
+    }
+    SocketCommand.learn_skill = learn_skill;
 })(SocketCommand = exports.SocketCommand || (exports.SocketCommand = {}));

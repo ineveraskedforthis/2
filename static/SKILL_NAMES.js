@@ -15,5 +15,5 @@ export const SKILL_NAMES = {
     twohanded: 'Two-handed weapons',
     travelling: 'Travelling',
     fishing: 'Fishing',
-    smith: 'Smith'
+    smith: 'Smithing'
 };

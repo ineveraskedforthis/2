@@ -1,4 +1,5 @@
 import { socket, globals } from './modules/globals.js';
+import { SKILL_NAMES } from './SKILL_NAMES.js';
 
 // tmp.typ = this.typ;
 // tmp.tag = this.tag;
@@ -12,7 +13,7 @@ import { socket, globals } from './modules/globals.js';
 // tmp.id = this.id;
 // perks related
 function request_perks() {
-    socket.emit('request-perks', globals.selected_character);
+    socket.emit('request-talk', globals.selected_character);
 }
 {
     let button = document.getElementById('request_perks_selected_charater');
@@ -29,15 +30,70 @@ function close_perks() {
 function send_perk_learning_request(i) {
     return () => socket.emit('learn-perk', { tag: i, id: globals.selected_character });
 }
+function send_skill_learning_request(i) {
+    return () => socket.emit('learn-skill', { tag: i, id: globals.selected_character });
+}
+
+
+function epitet(number) {
+    if (number >= 90) {
+        return 'master'
+    }
+    if (number >= 70) {
+        return 'expert'
+    }
+    if (number >= 50) {
+        return 'competent'
+    }
+    if (number >= 30) {
+        return 'mediocre'
+    }
+}
+
+// {
+//             name: string,
+//             race: string,
+//             factions: { id: number; name: string; reputation: reputation_level }[]
+//             perks: {[_ in Perks]?: number}
+//             skills: {[_ in skill]?: [number, number]}
+//         }
 function build_perks_list(data) {
     console.log('build perks');
     console.log(data);
     let big_div = document.getElementById('available_perks');
-    let div_for_a_list = document.getElementById('perks_for_learning');
 
-    div_for_a_list.innerHTML = '';
 
-    for (let i in data) {
+    let greeting_line = `Hello, I am ${data.name} of ${data.race} race. `
+
+    let flag = true
+    for (let faction_block of data.factions) {
+        if (faction_block.reputation != 'neutral') {
+            flag = false
+            greeting_line += `I am ${faction_block.reputation} of ${faction_block.name}. `
+        }             
+    }
+    if (flag) {
+        greeting_line += ('I am not related to any local faction. ')
+    }
+
+    if (Object.keys(data.skills).length == 0) {
+        greeting_line += ('I have no particular skills. ')
+    } else {
+        for (let skill of Object.keys(data.skills)) {
+            let [level, price] = data.skills[skill]
+            if (level > 70) {
+                greeting_line += `I am ${epitet(level)} at ${SKILL_NAMES[skill]}. `
+            }
+        }
+        greeting_line += `I can teach you for a price. `
+    }
+
+    document.getElementById('character_greeting').innerHTML = greeting_line
+
+    let perks_div = document.getElementById('perks_for_learning');
+    perks_div.innerHTML = '';
+
+    for (let i in data.perks) {
         let list_entry = document.createElement('div');
 
         let label = document.createElement('div');
@@ -46,10 +102,31 @@ function build_perks_list(data) {
 
         let button = document.createElement('button');
         button.onclick = send_perk_learning_request(i);
-        button.innerHTML = 'learn (' + data[i] + ')';
+        button.innerHTML = 'learn (' + data.perks[i] + ')';
         list_entry.appendChild(button);
 
-        div_for_a_list.appendChild(list_entry);
+        perks_div.appendChild(list_entry);
+    }
+
+    let skills_div = document.getElementById('skills_for_learning');
+    skills_div.innerHTML = '';
+
+    for (let skill of Object.keys(data.skills)) {
+        let [level, price] = data.skills[skill]
+
+        let list_entry = document.createElement('div');
+        let label = document.createElement('div')
+        let button = document.createElement('button')
+        
+        label.innerHTML = SKILL_NAMES[skill]
+        button.innerHTML = `learn (${price})`
+
+        button.onclick = send_skill_learning_request(skill)
+
+        list_entry.append(label)
+        list_entry.append(button)
+
+        skills_div.appendChild(list_entry)
     }
 
     big_div.classList.remove('hidden');

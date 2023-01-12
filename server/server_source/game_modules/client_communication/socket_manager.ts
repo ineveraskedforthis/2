@@ -111,8 +111,11 @@ export class SocketManager {
             socket.on('req-flee-chance',    () => Request.flee_chance(user))
             socket.on('req-attacks-damage', () => Request.attack_damage(user))
 
-            socket.on('request-perks', (msg:any) => Request.perks(user, msg))
-            socket.on('learn-perk', (msg:any) => SocketCommand.learn_perk(user, msg.id, msg.tag))
+            socket.on('request-talk',   (msg:any) => Request.perks_and_skills(user, msg))
+            socket.on('learn-perk',     (msg: undefined|{id: unknown, tag: unknown}) =>
+                                         SocketCommand.learn_perk(user, msg))
+            socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) => 
+                                         SocketCommand.learn_skill(user, msg))
         });
     }
 

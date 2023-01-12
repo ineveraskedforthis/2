@@ -8,6 +8,7 @@ exports.Data = exports.character_list = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const SAVE_GAME_PATH_1 = require("../SAVE_GAME_PATH");
+const factions_1 = require("./factions");
 var battles_list = [];
 var battles_dict = {};
 var last_id = 0;
@@ -84,6 +85,18 @@ var Data;
             return responce.level;
         }
         Reputation.from_id = from_id;
+        function list_from_id(char_id) {
+            let responce = [];
+            for (let faction of Object.values(factions_1.Factions)) {
+                responce.push({
+                    id: faction.id,
+                    name: faction.name,
+                    reputation: from_id(faction.id, char_id)
+                });
+            }
+            return responce;
+        }
+        Reputation.list_from_id = list_from_id;
         /**
          *
          * @param a his factions are checked

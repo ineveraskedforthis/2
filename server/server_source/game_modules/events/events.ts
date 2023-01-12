@@ -25,6 +25,7 @@ import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
 import { AttackObj } from "../attack/class";
 import { Damage, DmgOps } from "../misc/damage_types";
+import { skill, skill_price } from "../character/skills";
 
 export namespace Event {
 
@@ -50,6 +51,26 @@ export namespace Event {
         UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SAVINGS)
         UserManagement.add_user_to_update_queue(teacher.user_id, UI_Part.SAVINGS)
         Effect.learn_perk(student, perk)
+    }
+
+    export function buy_skill(student: Character, skill: skill, teacher: Character) {
+        let savings = student.savings.get()
+        let price = skill_price(skill, student, teacher)
+
+        if (savings < price) {
+            Alerts.not_enough_to_character(student, 'money', price, savings)
+            return
+        }
+        
+        if (teacher.skills[skill] <= student.skills[skill] + 20) return
+        if (teacher.skills[skill] < 30) return
+        
+        student.savings.transfer(teacher.savings, price)
+
+        UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SAVINGS)
+        UserManagement.add_user_to_update_queue(teacher.user_id, UI_Part.SAVINGS)
+
+        Effect.Change.skill(student, skill, 1)
     }
 
     export function move(character: Character, new_cell: Cell) {

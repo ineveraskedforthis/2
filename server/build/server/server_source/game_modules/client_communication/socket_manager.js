@@ -77,8 +77,9 @@ class SocketManager {
             socket.on('req-player-index', () => request_1.Request.player_index(user));
             socket.on('req-flee-chance', () => request_1.Request.flee_chance(user));
             socket.on('req-attacks-damage', () => request_1.Request.attack_damage(user));
-            socket.on('request-perks', (msg) => request_1.Request.perks(user, msg));
-            socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg.id, msg.tag));
+            socket.on('request-talk', (msg) => request_1.Request.perks_and_skills(user, msg));
+            socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg));
+            socket.on('learn-skill', (msg) => run_event_1.SocketCommand.learn_skill(user, msg));
         });
     }
     disconnect(user) {

@@ -1,4 +1,5 @@
 import { Perks } from "../../character/Perks";
+import { skill } from "../../character/skills";
 import { Event } from "../../events/events";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper, User } from "../user";
@@ -24,7 +25,13 @@ export namespace SocketCommand {
         Event.support_in_battle(valid_character, target)
     }
 
-    export function learn_perk(sw: SocketWrapper, character_id: unknown, perk_tag:Perks) {
+    export function learn_perk(sw: SocketWrapper, msg: undefined|{id: unknown, tag: unknown}) {
+        if (msg == undefined) return
+        let character_id = msg.id
+        let perk_tag = msg.tag
+
+        if (typeof perk_tag != 'string') return
+        
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
         if (target_character == undefined) return
@@ -32,16 +39,39 @@ export namespace SocketCommand {
         if (valid_character.cell_id != target_character.cell_id) {
             valid_user.socket.emit('alert', 'not in the same cell')
             return
-        }
-        if (target_character.perks[perk_tag] != true) {
+        } 
+        if (target_character.perks[perk_tag as Perks] != true) {
             valid_user.socket.emit('alert', "target doesn't know this perk")
             return
         }
-        if (valid_character.perks[perk_tag] == true) {
+        if (valid_character.perks[perk_tag as Perks] == true) {
             valid_user.socket.emit('alert', "you already know it")
             return
         }
 
-        Event.buy_perk(valid_character, perk_tag, target_character)
+        Event.buy_perk(valid_character, perk_tag as Perks, target_character)
+    }
+
+    export function learn_skill(sw: SocketWrapper, msg: undefined|{id: unknown, tag: unknown}) {
+        if (msg == undefined) return
+        let character_id = msg.id
+        let skill_tag = msg.tag
+
+        if (typeof skill_tag != 'string') return
+
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
+        if (target_character == undefined) return
+
+        if (valid_character.cell_id != target_character.cell_id) {
+            valid_user.socket.emit('alert', 'not in the same cell')
+            return
+        } 
+
+        if (valid_character.skills[skill_tag as skill] == undefined) {
+            return
+        }
+
+        Event.buy_skill(valid_character, skill_tag as skill, target_character)
     }
 }

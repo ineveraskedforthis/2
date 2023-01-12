@@ -2,6 +2,8 @@ import { Attack } from "../../attack/system";
 import { Accuracy } from "../../battle/battle_calcs";
 import { BattleEvent } from "../../battle/events";
 import { Perks, perks_list, perk_price } from "../../character/Perks";
+import { skill, skill_price } from "../../character/skills";
+import { Data, reputation_level } from "../../data";
 import { DmgOps } from "../../misc/damage_types";
 import { UNIT_ID_MESSAGE } from "../../static_data/constants";
 import { Convert } from "../../systems_communication";
@@ -32,7 +34,7 @@ export namespace Request {
         Alerts.battle_action_damage(user, 'magic_bolt', magic_bolt)
     }
 
-    export function perks(sw: SocketWrapper, character_id: number) {
+    export function perks_and_skills(sw: SocketWrapper, character_id: number) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) {
             sw.socket.emit('alert', 'your character does not exist')
@@ -50,11 +52,39 @@ export namespace Request {
             return
         }
 
+        if (character_id == character.id) {
+            user.socket.emit('alert', "can't talk with yourself")
+            return 
+        }
+
         let data = target_character.perks
-        let responce:{[_ in Perks]?: number} = {}
+        let responce: {
+            name: string,
+            race: string,
+            factions: { id: number; name: string; reputation: reputation_level }[]
+            perks: {[_ in Perks]?: number}
+            skills: {[_ in skill]?: [number, number]}
+        } = {
+            name: target_character.name,
+            race: target_character.race(),
+            factions: Data.Reputation.list_from_id(target_character.id),
+            perks: {}, 
+            skills: {}
+        }
+
         for (let perk of perks_list) {
             if (data[perk] == true) {
-                responce[perk] = perk_price(perk, character, target_character)
+                responce.perks[perk] = perk_price(perk, character, target_character)
+            }
+        }
+
+        for (let skill of Object.keys(target_character.skills)) {
+            let teacher_skill = target_character.skills[skill as skill]
+            let user_skill = character.skills[skill as skill]
+            if ((teacher_skill >= 30) && (teacher_skill > user_skill + 20)) {
+                responce.skills[skill as skill] = [
+                    target_character.skills[skill as skill],
+                    skill_price(skill as skill, character, target_character)]
             }
         }
         

@@ -33,7 +33,7 @@ const empty_set_orders_item: Set<order_item_id> = new Set()
 var last_id_bulk = 0 as order_bulk_id
 var last_id_item = 0 as order_item_id
 
-type reputation_level = 'enemy'|'neutral'|'friend'|'member'
+export type reputation_level = 'enemy'|'neutral'|'friend'|'member'
 
 interface reputation {
     faction: number
@@ -98,6 +98,19 @@ export namespace Data {
             let responce = reputation[char_id][faction]
             if (responce == undefined) { return 'neutral' }
             return responce.level
+        }
+
+        export function list_from_id(char_id: char_id): { id: number; name: string; reputation: reputation_level }[] {
+            let responce = []
+            for (let faction of Object.values(Factions)) {
+                responce.push({
+                    id: faction.id,
+                    name: faction.name,
+                    reputation: from_id(faction.id, char_id)
+                })
+            }
+
+            return responce
         }
 
         /**
