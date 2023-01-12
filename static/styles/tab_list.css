@@ -236,4 +236,5 @@
     height: 500px;
     width: 500px;
     z-index: 10;
+    overflow-y: scroll;
 }
