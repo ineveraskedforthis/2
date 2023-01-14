@@ -118,7 +118,7 @@ var ItemSystem;
         damage_types_1.DmgOps.mult_ip(damage, durability_mod);
         // fire damage is alwasys added
         damage.fire = item.damage.fire + affix_damage.fire;
-        console.log(damage);
+        // console.log(damage)
         return damage;
     }
     ItemSystem.melee_damage = melee_damage;

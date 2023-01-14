@@ -194,7 +194,14 @@ export namespace CharacterSystem {
 
     export function melee_damage_raw(character: Character, type: damage_type) {
         const weapon_damage = character.equip.get_melee_damage(type)
-        if (weapon_damage != undefined) return weapon_damage
+        if (weapon_damage != undefined) {
+            if (character.perks.advanced_polearm) {
+                if (CharacterSystem.weapon_type(character) == 'polearms') {
+                    DmgOps.mult_ip(weapon_damage, 1.5)
+                }
+            }
+            return weapon_damage
+        }
 
         //handle case of unarmed
         const damage = new Damage()

@@ -99,11 +99,22 @@ class Character {
         return this.status.stress;
     }
     range() {
-        const result = this.equip.get_weapon_range();
-        if (result != undefined)
+        let result = this.equip.get_weapon_range();
+        if (result != undefined) {
+            let weapon = this.equip.data.weapon;
+            if (weapon?.weapon_tag == 'polearms') {
+                if (this.perks.advanced_polearm) {
+                    result += 0.5;
+                }
+            }
             return result;
+        }
         if (this.archetype.race == 'graci')
             return 2;
+        if (this.archetype.model == 'bigrat')
+            return 1;
+        if (this.archetype.model == 'elo')
+            return 1;
         return 0.5;
     }
     model() { return this.archetype.model; }

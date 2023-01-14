@@ -121,7 +121,7 @@ export namespace ItemSystem {
         // fire damage is alwasys added
         damage.fire = item.damage.fire + affix_damage.fire
 
-        console.log(damage)
+        // console.log(damage)
         return damage
     }
 
