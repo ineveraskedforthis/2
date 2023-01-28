@@ -61,7 +61,7 @@ var CampaignAI;
     CampaignAI.random_walk = random_walk;
     function rat_walk(character, constraints) {
         let cell = systems_communication_1.Convert.character_to_cell(character);
-        let potential_moves = system_1.MapSystem.neighbours_cells(cell.id).map((x) => { return { item: x, weight: x.rat_scent }; });
+        let potential_moves = system_1.MapSystem.neighbours_cells(cell.id).map((x) => { return { item: x, weight: (0, basic_functions_1.trim)(x.rat_scent, 0, 20) }; });
         let target = (0, basic_functions_1.select_weighted)(potential_moves, constraints);
         action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.MOVE, character, [target.x, target.y]);
     }

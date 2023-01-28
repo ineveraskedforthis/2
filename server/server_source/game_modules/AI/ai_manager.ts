@@ -70,7 +70,7 @@ export namespace CampaignAI {
     export function rat_walk(character: Character, constraints: (cell: Cell) => boolean) {
         let cell = Convert.character_to_cell(character)
         let potential_moves = MapSystem.neighbours_cells(cell.id, ).map((x) => 
-            {return {item: x, weight: x.rat_scent}})
+            {return {item: x, weight: trim(x.rat_scent, 0, 20)}})
         let target = select_weighted(potential_moves, constraints)
         ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
     }
