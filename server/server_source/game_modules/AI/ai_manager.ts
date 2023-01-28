@@ -36,10 +36,14 @@ import { CraftItem } from "../craft/items";
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 function forest_constraints(cell: Cell) {
-    return (cell.development['urban'] < 1) && (cell.development['wild'] > 0)
+    return (cell.development['urban'] < 1) 
+            && (cell.development['wild'] > 0)
+            && (MapSystem.can_move([cell.x, cell.y]))
 } 
 function steppe_constraints(cell: Cell) {
-    return (cell.development['urban'] < 1) && (cell.development['wild'] < 1)
+    return (cell.development['urban'] < 1) 
+            && (cell.development['wild'] < 1)
+            && (MapSystem.can_move([cell.x, cell.y]))
 }
 
 export namespace CampaignAI {

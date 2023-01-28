@@ -29,10 +29,14 @@ const items_1 = require("../craft/items");
 // }
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 function forest_constraints(cell) {
-    return (cell.development['urban'] < 1) && (cell.development['wild'] > 0);
+    return (cell.development['urban'] < 1)
+        && (cell.development['wild'] > 0)
+        && (system_1.MapSystem.can_move([cell.x, cell.y]));
 }
 function steppe_constraints(cell) {
-    return (cell.development['urban'] < 1) && (cell.development['wild'] < 1);
+    return (cell.development['urban'] < 1)
+        && (cell.development['wild'] < 1)
+        && (system_1.MapSystem.can_move([cell.x, cell.y]));
 }
 var CampaignAI;
 (function (CampaignAI) {
