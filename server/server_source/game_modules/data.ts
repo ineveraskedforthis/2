@@ -214,8 +214,10 @@ export namespace Data {
             characters_dict[id] = data
         }
 
-        export function from_id(id: char_id) {
-            return characters_dict[id]
+        export function from_id(id: char_id): Character
+        export function from_id(id: number): Character|undefined
+        export function from_id(id: char_id|number): Character|undefined {
+            return characters_dict[id as char_id]
         }
         export function list() {
             return character_list

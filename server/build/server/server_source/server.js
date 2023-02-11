@@ -28,7 +28,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.socket_manager = exports.io = void 0;
 const dotenv = __importStar(require("dotenv"));
-dotenv.config({ path: __dirname + '/.env' });
+const path = __importStar(require("path"));
+console.log(path.join(__dirname, '/.env'));
+dotenv.config({ path: path.join(__dirname, '/.env') });
 console.log(process.env.PORT);
 const port = process.env.PORT || 3000;
 const fs_1 = require("fs");
@@ -56,9 +58,115 @@ else {
 }
 ;
 console.log('Welcome');
-const path = __importStar(require("path"));
 app.use(express_1.default.json());
 app.use('/static', express_1.default.static(path.join(__dirname, '../../../../static')));
+app.get('/api/:API_KEY/character/:charID', (req, res) => {
+    const id = Number(req.params.charID);
+    // console.log(`request cell terrain ${id}`)
+    res.set('Access-Control-Allow-Origin', '*');
+    if (req.params.API_KEY != process.env.API_KEY) {
+        res.json({ valid: false, reason: 'wrong_api_key' });
+        return;
+    }
+    if (isNaN(id)) {
+        res.json({ valid: false, reason: 'id is NaN' });
+        return;
+    }
+    const character = data_js_1.Data.Character.from_id(id);
+    if (character == undefined) {
+        res.json({ valid: false, reason: 'no_character' });
+        return;
+    }
+    const response = {
+        valid: true,
+        name: character.name,
+        status: character.status,
+        stats: character.stats,
+        cell: character.cell_id,
+        stash: character.stash,
+        equip: character.equip.get_data(),
+        skills: character.skills,
+        perks: character.perks,
+        user_id: character.user_id
+    };
+    res.json(response);
+});
+app.get('/api/:API_KEY/cell/:cellID', (req, res) => {
+    const id = Number(req.params.cellID);
+    // console.log(`request cell ${id}`)
+    res.set('Access-Control-Allow-Origin', '*');
+    if (req.params.API_KEY != process.env.API_KEY) {
+        res.json({ valid: false });
+        return;
+    }
+    if (isNaN(id)) {
+        res.json({ valid: false });
+        return;
+    }
+    const cell = system_js_1.MapSystem.id_to_cell(id);
+    if (cell == undefined) {
+        res.json({ valid: false });
+        return;
+    }
+    const response = {
+        valid: true,
+        terrain: cell.terrain,
+        development: cell.development,
+        scent: cell.rat_scent,
+        local_characters: cell.saved_characters_list
+    };
+    res.json(response);
+});
+// app.get('/api/:API_KEY/cell/terrain/:cellID', (req: Request, res: Response) => {
+//     const id = Number(req.params.cellID)
+//     // console.log(`request cell terrain ${id}`)
+//     res.set('Access-Control-Allow-Origin', '*');
+//     if (req.params.API_KEY != process.env.API_KEY) {
+//         res.json({valid: false})
+//         return
+//     }
+//     if (isNaN(id)) {
+//         res.json({valid: false})
+//         return
+//     }
+//     const cell = MapSystem.id_to_cell(id as cell_id)
+//     if (cell == undefined) {
+//         res.json({valid: false})
+//         return
+//     }
+//     const response = {
+//         valid: true,
+//         terrain: cell.terrain,
+//         development: cell.development,
+//         scent: cell.rat_scent,
+//         population: cell.saved_characters_list.length
+//     }    
+//     res.json(response)
+// })
+app.get('/api/:API_KEY/map', (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
+    if (req.params.API_KEY != process.env.API_KEY) {
+        res.json({ valid: false });
+        return;
+    }
+    const cells = [];
+    for (let cell of system_js_1.MapSystem.get_cells()) {
+        if (cell == undefined)
+            continue;
+        cells[cell.id] = {
+            index: cell.id,
+            terrain: cell.terrain,
+            development: cell.development,
+            scent: cell.rat_scent,
+            population: cell.saved_characters_list.length
+        };
+    }
+    res.json({
+        width: system_js_1.MapSystem.get_size()[0],
+        height: system_js_1.MapSystem.get_size()[1],
+        cells: cells
+    });
+});
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../../views/index2.html'));
 });
@@ -67,6 +175,8 @@ server.listen(port, () => {
 });
 const game_launch_js_1 = require("./game_launch.js");
 const socket_manager_js_1 = require("./game_modules/client_communication/socket_manager.js");
+const system_js_1 = require("./game_modules/map/system.js");
+const data_js_1 = require("./game_modules/data.js");
 exports.io = require('socket.io')(server);
 exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);
 (0, game_launch_js_1.launch)(server);

@@ -16,6 +16,10 @@ var cells = [];
 const dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
 var MapSystem;
 (function (MapSystem) {
+    function get_cells() {
+        return cells;
+    }
+    MapSystem.get_cells = get_cells;
     function load() {
         console.log('loading map');
         size = map_definitions_1.WORLD_SIZE;
@@ -37,6 +41,10 @@ var MapSystem;
         console.log('map is loaded');
     }
     MapSystem.load = load;
+    function get_size() {
+        return size;
+    }
+    MapSystem.get_size = get_size;
     function coordinate_to_id(x, y) {
         return x * max_direction + y;
     }

@@ -16,6 +16,10 @@ var cells:(Cell|undefined)[] = []
 const dp = [[0, 1], [0 ,-1],[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
 
 export namespace MapSystem {
+    export function get_cells() {
+        return cells
+    }
+
     export function load() {
         console.log('loading map')
         size = WORLD_SIZE
@@ -36,6 +40,10 @@ export namespace MapSystem {
         }
 
         console.log('map is loaded')
+    }
+
+    export function get_size() {
+        return size
     }
 
     export function coordinate_to_id(x:number, y:number) {
