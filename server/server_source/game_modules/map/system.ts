@@ -96,19 +96,27 @@ export namespace MapSystem {
         return (y >= 0) && (x >= 0) && (x < size[0]) && (y < size[1]) 
     }
 
+    const max_scent = 50
+
     export function update(dt: number, rats_number: number, elodino_number: number) {
         
         // updating rat scent
 
         for (const cell of cells) {
             if (cell == undefined) continue
-            // reduce it by dt / 100
-            cell.rat_scent -=dt / 100
+
+            // constant change by dt / 100
+            let base_d_scent = dt / 100
+
+            // constant decay
+            let d_scent = -1 * base_d_scent
+
+            // cell.rat_scent -=dt / 100
             
-            // then calculate base scent
+            // then calculate base scent change
             if (cell.development.rats == 1) {
                 // lairs always have 50 scent
-                cell.rat_scent = 50
+                cell.rat_scent = max_scent
             } else {
                 // take an average of scent around
                 let total = 0
@@ -116,20 +124,22 @@ export namespace MapSystem {
                 for (let neighbour of neighbours) {
                     total += neighbour.rat_scent 
                 }
-                total = total / neighbours.length
-                cell.rat_scent = total
+                const average = total / neighbours.length * 0.95
+
+                d_scent += base_d_scent * (average - cell.rat_scent) * 5
+                // cell.rat_scent = total
             }
 
             if (cell.development.urban > 0) {
-                cell.rat_scent -= 10
+                d_scent -= 30 * base_d_scent
             }
 
             if (cell.development.rural > 0) {
-                cell.rat_scent -= 5
+                d_scent -= 20 * base_d_scent
             }
 
             if (cell.development.wild > 0) {
-                cell.rat_scent -= 10
+                d_scent -= 20 * base_d_scent
             }
 
             // add scent to cells with rats
@@ -143,7 +153,7 @@ export namespace MapSystem {
             // cell.rat_scent += rats
 
             // trim to avoid weirdness
-            cell.rat_scent = trim(cell.rat_scent, 0, 50)
+            cell.rat_scent = trim(cell.rat_scent + d_scent * 20, 0, 50)
         }
 
         for (const cell of cells) {

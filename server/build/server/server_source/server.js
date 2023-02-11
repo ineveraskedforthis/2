@@ -83,11 +83,12 @@ app.get('/api/:API_KEY/character/:charID', (req, res) => {
         status: character.status,
         stats: character.stats,
         cell: character.cell_id,
+        savings: character.savings,
         stash: character.stash,
         equip: character.equip.get_data(),
         skills: character.skills,
         perks: character.perks,
-        user_id: character.user_id
+        user_id: character.user_id,
     };
     res.json(response);
 });
