@@ -9,6 +9,7 @@ export type cell_id = number                & {__brand:  "cell"}
 export type order_bulk_id = number        & { __brand: "bulk_order"}
 export type order_item_id = number          & { __brand: "auction_order_id"}
 export type order_item_id_raw = number      & { __brand: "auction_order_id", __brand2: "raw"}
+export type house_id = number               & { __brand: "house_id"}
 
 export type money = number & { __brand: "money"}
 

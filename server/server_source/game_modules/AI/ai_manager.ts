@@ -64,7 +64,7 @@ export namespace CampaignAI {
         if (possible_moves.length > 0) {
             let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)]
             ActionManager.start_action(CharacterAction.MOVE, char, move_direction)  
-        }   
+        }
     }
 
     export function rat_walk(character: Character, constraints: (cell: Cell) => boolean) {

@@ -8,7 +8,7 @@ import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
 import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
-import { char_id, order_bulk_id, order_item_id } from "./types"
+import { cell_id, char_id, house_id, order_bulk_id, order_item_id } from "./types"
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
@@ -42,6 +42,12 @@ interface reputation {
 
 
 var reputation: {[_ in char_id]: {[_ in number]: reputation}} = {}
+
+
+var character_to_houses: Map<char_id, Set<house_id>> = new Map()
+var house_to_character: Map<house_id, char_id> = new Map()
+var house_to_cell: Map<house_id, cell_id> = new Map()
+var cell_to_houses: Map<cell_id, Set<house_id>> = new Map()
 
 
 // class EntityData<type, id_type extends number & {__brand: string}> {
