@@ -26,6 +26,7 @@ function construct_craft_div(data) {
     let craft_div = document.createElement('div');
     craft_div.id = 'c_' + data.id;
     craft_div.classList.add('craft_option');
+    craft_div.classList.add('border-red-thin')
     craft_list_div.appendChild(craft_div);
 
 
@@ -57,6 +58,7 @@ function construct_craft_item_div(data) {
     let craft_div = document.createElement('div');
     craft_div.id = 'c_' + data.id;
     craft_div.classList.add('craft_option');
+    craft_div.classList.add('border-red-thin')
     craft_list_div.appendChild(craft_div);
 
     craft_div.appendChild(construct_craft_inputs(data.input));

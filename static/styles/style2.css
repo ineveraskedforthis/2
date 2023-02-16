@@ -33,6 +33,10 @@ div {
     border: 4px solid gold;
 }
 
+.border-red-thin {
+    border: 1px solid crimson
+}
+
 .container-vertical {
     display: flex;
     flex-direction: column;
