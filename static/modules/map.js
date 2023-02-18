@@ -219,65 +219,7 @@ export class Map {
         // }
 
         let rest_of_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest']
-
-
-        let desktop_container = document.getElementById('desktop_actions')
-
-
-        for (let action_tag of rest_of_actions) {
-            // let map_button = document.getElementById(action_tag + '_button');
-            // ((button, map_manager, action_tag) => 
-            //         button.onclick = () => map_manager.send_cell_action(action_tag)
-            // )(map_button, this, action_tag);
-
-            let desktop_button = document.createElement('div')
-            desktop_button.id = action_tag + '_button_desktop';
-            desktop_button.classList.add('desktop_action_button');
-
-            {
-                let label = document.createElement('div')
-                label.innerHTML = action_tag
-                desktop_button.appendChild(label)
-            }
-
-            {
-                let chance_label = document.createElement('div')
-                chance_label.innerHTML = '100%'
-                chance_label.id = action_tag + '_chance_desktop'
-                chance_label.classList.add('probability')
-                desktop_button.appendChild(chance_label)
-            }
-
-            if (action_tag == 'hunt' || action_tag == 'gather_wood' || action_tag == 'gather_cotton' || action_tag == 'fish'){   
-                let repeat_button = document.createElement('div')
-                repeat_button.innerHTML = 'repeat';
-                repeat_button.classList.add('active');
-                repeat_button.classList.add('bordered');
-                repeat_button.classList.add('height-25');
-                ((button, map_manager, action_tag, global_blob) => 
-                    button.onclick = () => 
-                    {
-                        console.log(global_blob)
-                        if (global_blob.keep_doing == action_tag) {
-                            global_blob.keep_doing = undefined
-                        } else {
-                            global_blob.keep_doing = action_tag
-                            map_manager.send_cell_action(action_tag)
-                        }
-                        console.log(global_blob)
-                    }
-                )(repeat_button, this, action_tag, globals);
-                desktop_button.appendChild(repeat_button)
-            }
-
-            ((button, map_manager, action_tag) => 
-                    button.onclick = () => map_manager.send_local_cell_action(action_tag)
-            )(desktop_button, this, action_tag);
-
-            desktop_container.appendChild(desktop_button)
-        }
-
-        
+        this.set_local_actions(rest_of_actions, globals);
         
         this.container = container;
         this.description = document.createElement('div');
@@ -288,6 +230,59 @@ export class Map {
         this.path = {}
         this.real_path = []
         this.path_progress = 0
+    }
+
+    set_local_actions(rest_of_actions, globals) {
+        let desktop_container = document.getElementById('desktop_actions');
+
+        for (let action_tag of rest_of_actions) {
+            // let map_button = document.getElementById(action_tag + '_button');
+            // ((button, map_manager, action_tag) => 
+            //         button.onclick = () => map_manager.send_cell_action(action_tag)
+            // )(map_button, this, action_tag);
+            let desktop_button = document.createElement('div');
+            desktop_button.id = action_tag + '_button_desktop';
+            desktop_button.classList.add('desktop_action_button');
+
+            {
+                let label = document.createElement('div');
+                label.innerHTML = action_tag;
+                desktop_button.appendChild(label);
+            }
+
+            {
+                let chance_label = document.createElement('div');
+                chance_label.innerHTML = '100%';
+                chance_label.id = action_tag + '_chance_desktop';
+                chance_label.classList.add('probability');
+                desktop_button.appendChild(chance_label);
+            }
+
+            if (action_tag == 'hunt' || action_tag == 'gather_wood' || action_tag == 'gather_cotton' || action_tag == 'fish') {
+                let repeat_button = document.createElement('div');
+                repeat_button.innerHTML = 'repeat';
+                repeat_button.classList.add('active');
+                repeat_button.classList.add('bordered');
+                repeat_button.classList.add('height-25');
+                ((button, map_manager, action_tag, global_blob) => button.onclick = () => {
+                    console.log(global_blob);
+                    if (global_blob.keep_doing == action_tag) {
+                        global_blob.keep_doing = undefined;
+                    } else {
+                        global_blob.keep_doing = action_tag;
+                        map_manager.send_cell_action(action_tag);
+                    }
+                    console.log(global_blob);
+                }
+                )(repeat_button, this, action_tag, globals);
+                desktop_button.appendChild(repeat_button);
+            }
+
+            ((button, map_manager, action_tag) => button.onclick = () => map_manager.send_local_cell_action(action_tag)
+            )(desktop_button, this, action_tag);
+
+            desktop_container.appendChild(desktop_button);
+        }
     }
 
     update_probability(data) {

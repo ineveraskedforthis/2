@@ -3,16 +3,6 @@ import { cell_id, char_id, order_bulk_id, order_item_id, terrain} from "../types
 import { CellResources, Development } from "../static_data/map_definitions.js";
 import { Convert } from "../systems_communication.js";
 
-
-
-interface Actions {
-    hunt: boolean
-    rest_outside: boolean
-    rest_inn: boolean
-    rest_home: boolean,
-    clean: boolean
-}
-
 export class Cell {
     x: number;
     y: number;
@@ -109,20 +99,6 @@ export class Cell {
         return this.characters_set
     }
 
-    get_actions(): Actions {
-        let actions: Actions = {
-            hunt: false,
-            rest_outside: true,
-            rest_inn: false,
-            rest_home: false,
-            clean: false
-        }
-        actions.hunt = this.can_hunt()
-        actions.clean = this.can_clean()
-        actions.rest_inn = this.can_rest()
-        return actions
-    }
-
     get_home_price() {
         
     }
@@ -149,14 +125,6 @@ export class Cell {
 
     can_gather_cotton(): boolean {
         return (this.development.rural > 0)
-    }
-
-    get_item_market() {
-        return undefined
-    }
-
-    get_market() {
-        return undefined
     }
 
     update(dt: number) {

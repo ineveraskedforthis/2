@@ -88,6 +88,25 @@ export namespace CampaignAI {
         }
     }
 
+    function rat_decision(char: Character) {
+        if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
+            ActionManager.start_action(CharacterAction.REST, char, [0, 0])
+            return
+        } else if (char.get_fatigue() > 30) {
+            rat_go_home(char, steppe_constraints)
+            return
+        }
+
+        let target = AIhelper.enemies_in_cell(char)
+        const target_char = Convert.id_to_character(target)
+        if (target_char != undefined) {
+            Event.start_battle(char, target_char)
+        } else {
+            rat_walk(char, steppe_constraints)
+            return
+        }
+    }
+
     export function decision(char: Character) {
         // console.log(char.misc.ai_tag)
         if (char.is_player()) {
@@ -106,24 +125,8 @@ export namespace CampaignAI {
         if (responce) return;
 
         if (char.race() == 'rat') {
-            if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
-                ActionManager.start_action(CharacterAction.REST, char, [0, 0])
-                return
-            } else if (char.get_fatigue() > 30) {
-                rat_go_home(char, steppe_constraints)
-                return
-            }
-
-            let target = AIhelper.enemies_in_cell(char)
-            const target_char = Convert.id_to_character(target)
-            if (target_char != undefined) {
-                Event.start_battle(char, target_char)
-            } else {
-                rat_walk(char, steppe_constraints)
-                return
-            }
-        }
-        else {
+            rat_decision(char)
+        } else {
             movement_rest_decision(char);
         }
 
@@ -173,22 +176,11 @@ export namespace CampaignAI {
                 if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
                     ActionManager.start_action(CharacterAction.REST, char, [0, 0]);
                 } else {
-                    if (char.race() == 'rat') {
-                        if (char.get_fatigue() > 30) {
-                            rat_go_home(char, steppe_constraints);
-                            break;
-                        }
-                    }
-
                     let target = AIhelper.enemies_in_cell(char);
                     const target_char = Convert.id_to_character(target);
                     if (target_char != undefined) {
                         Event.start_battle(char, target_char);
                     } else {
-                        if (char.race() == 'rat') {
-                            rat_walk(char, steppe_constraints);
-                            break;
-                        }
                         random_walk(char, steppe_constraints);
                     }
                 }

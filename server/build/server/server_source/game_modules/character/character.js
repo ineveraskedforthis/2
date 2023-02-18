@@ -86,6 +86,9 @@ class Character {
     get_hp() {
         return this.status.hp;
     }
+    get_max_hp() {
+        return this.stats.max.hp;
+    }
     get_blood() {
         return this.status.blood;
     }

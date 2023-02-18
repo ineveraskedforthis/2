@@ -256,8 +256,9 @@ socket.on('market-data', data => update_market(data));
 
 
 socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
-socket.on('cell-visited', data => map.mark_visited(data))
 
+
+socket.on('cell-visited', data => map.mark_visited(data))
 socket.on('map-data-cells', data => { 
     map.load_data(data)
     update_background()
@@ -265,7 +266,6 @@ socket.on('map-data-cells', data => {
 socket.on('map-data-terrain', data => {map.load_terrain(data)})
 socket.on('map-data-reset', data => {map.reset()})
 socket.on('map-action-status', data => map.update_action_status(data))
-
 socket.on('cell-action-chance', msg => map.update_probability(msg))
 
 

@@ -69,19 +69,6 @@ class Cell {
     get_characters_id_set() {
         return this.characters_set;
     }
-    get_actions() {
-        let actions = {
-            hunt: false,
-            rest_outside: true,
-            rest_inn: false,
-            rest_home: false,
-            clean: false
-        };
-        actions.hunt = this.can_hunt();
-        actions.clean = this.can_clean();
-        actions.rest_inn = this.can_rest();
-        return actions;
-    }
     get_home_price() {
     }
     can_clean() {
@@ -101,12 +88,6 @@ class Cell {
     }
     can_gather_cotton() {
         return (this.development.rural > 0);
-    }
-    get_item_market() {
-        return undefined;
-    }
-    get_market() {
-        return undefined;
     }
     update(dt) {
         if (this.visited_recently) {
