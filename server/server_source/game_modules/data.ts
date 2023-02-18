@@ -8,7 +8,7 @@ import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
 import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
-import { cell_id, char_id, house_id, order_bulk_id, order_item_id } from "./types"
+import { cell_id, char_id, building_id, order_bulk_id, order_item_id } from "./types"
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
@@ -44,10 +44,10 @@ interface reputation {
 var reputation: {[_ in char_id]: {[_ in number]: reputation}} = {}
 
 
-var character_to_houses: Map<char_id, Set<house_id>> = new Map()
-var house_to_character: Map<house_id, char_id> = new Map()
-var house_to_cell: Map<house_id, cell_id> = new Map()
-var cell_to_houses: Map<cell_id, Set<house_id>> = new Map()
+var character_to_buildings: Map<char_id, Set<building_id>> = new Map()
+var building_to_character: Map<building_id, char_id> = new Map()
+var building_to_cell: Map<building_id, cell_id> = new Map()
+var cell_to_buildings: Map<cell_id, Set<building_id>> = new Map()
 
 
 // class EntityData<type, id_type extends number & {__brand: string}> {
@@ -61,35 +61,72 @@ var cell_to_houses: Map<cell_id, Set<house_id>> = new Map()
 // }
 
 // const X = EntityData<Character, char_id>
-const save_path = path.join(SAVE_GAME_PATH, 'reputation.txt')
+const save_path = 
+{
+    REPUTATION: path.join(SAVE_GAME_PATH, 'reputation.txt'),
+    BUILDINGS: path.join(SAVE_GAME_PATH, 'housing.txt'),
+    BUILDINGS_OWNERSHIP: path.join(SAVE_GAME_PATH, 'housing_ownership.txt')
+}
+
+function read_lines(file: string) {
+    if (!fs.existsSync(file)) {
+        fs.writeFileSync(file, '')
+    }
+    let data = fs.readFileSync(file).toString()
+    return data.split('\n')
+}
 
 export namespace Data {
     export function load() {
-        Reputation.load()
+        Reputation.load(save_path.REPUTATION)
+        Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP)
     }
     export function save() {
-        Reputation.save()
+        Reputation.save(save_path.REPUTATION)
+        Buildings.save(save_path.BUILDINGS)
+    }
+
+    export namespace Buildings {
+
+        export function load(save_path: string) {
+            console.log('loading buildings')
+        }
+
+        export function load_ownership(save_path: string) {
+            console.log('loading buildings ownership')
+            for (let line of read_lines(save_path)) {
+                if (line == '') {continue}
+                let {character, buildings}:{character: char_id, buildings: building_id[]} = JSON.parse(line)
+                set_character_buildings(character, buildings)
+            }
+        }
+
+        export function save(save_path: string) {
+
+        }
+
+        function set_character_buildings(character: char_id, buildings: building_id[]) {
+            character_to_buildings.set(character, new Set(buildings))
+            for (let building of buildings) {
+                building_to_character.set(building, character)
+            }
+        }
+
+        // function add_one_one
     }
 
     export namespace Reputation {
-        export function load() {
+        export function load(save_path: string) {
             console.log('loading reputation')
-            if (!fs.existsSync(save_path)) {
-                fs.writeFileSync(save_path, '')
-            }
-            let data = fs.readFileSync(save_path).toString()
-            let lines = data.split('\n')
-
-            for (let line of lines) {
+            for (let line of read_lines(save_path)) {
                 if (line == '') {continue}
                 let reputation_line:{char: char_id, item: {[_ in number]: reputation}} = JSON.parse(line)
                 reputation[reputation_line.char] = reputation_line.item
             }
-
             console.log('reputation loaded')
         }
 
-        export function save() {
+        export function save(save_path: string) {
             console.log('saving reputation')
             let str:string = ''
             for (let [char_id, item] of Object.entries(reputation)) {
