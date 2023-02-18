@@ -26,6 +26,10 @@ const empty_set_orders_item = new Set();
 var last_id_bulk = 0;
 var last_id_item = 0;
 var reputation = {};
+var character_to_buildings = new Map();
+var building_to_character = new Map();
+var building_to_cell = new Map();
+var cell_to_buildings = new Map();
 // class EntityData<type, id_type extends number & {__brand: string}> {
 //     list: type[]
 //     dict: {[_ in id_type]: type}
@@ -35,27 +39,63 @@ var reputation = {};
 //     }
 // }
 // const X = EntityData<Character, char_id>
-const save_path = path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'reputation.txt');
+const save_path = {
+    REPUTATION: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'reputation.txt'),
+    BUILDINGS: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'housing.txt'),
+    BUILDINGS_OWNERSHIP: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'housing_ownership.txt')
+};
+function read_lines(file) {
+    if (!fs_1.default.existsSync(file)) {
+        fs_1.default.writeFileSync(file, '');
+    }
+    let data = fs_1.default.readFileSync(file).toString();
+    return data.split('\n');
+}
 var Data;
 (function (Data) {
     function load() {
-        Reputation.load();
+        Reputation.load(save_path.REPUTATION);
+        Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP);
     }
     Data.load = load;
     function save() {
-        Reputation.save();
+        Reputation.save(save_path.REPUTATION);
+        Buildings.save(save_path.BUILDINGS);
     }
     Data.save = save;
+    let Buildings;
+    (function (Buildings) {
+        function load(save_path) {
+            console.log('loading buildings');
+        }
+        Buildings.load = load;
+        function load_ownership(save_path) {
+            console.log('loading buildings ownership');
+            for (let line of read_lines(save_path)) {
+                if (line == '') {
+                    continue;
+                }
+                let { character, buildings } = JSON.parse(line);
+                set_character_buildings(character, buildings);
+            }
+        }
+        Buildings.load_ownership = load_ownership;
+        function save(save_path) {
+        }
+        Buildings.save = save;
+        function set_character_buildings(character, buildings) {
+            character_to_buildings.set(character, new Set(buildings));
+            for (let building of buildings) {
+                building_to_character.set(building, character);
+            }
+        }
+        // function add_one_one
+    })(Buildings = Data.Buildings || (Data.Buildings = {}));
     let Reputation;
     (function (Reputation) {
-        function load() {
+        function load(save_path) {
             console.log('loading reputation');
-            if (!fs_1.default.existsSync(save_path)) {
-                fs_1.default.writeFileSync(save_path, '');
-            }
-            let data = fs_1.default.readFileSync(save_path).toString();
-            let lines = data.split('\n');
-            for (let line of lines) {
+            for (let line of read_lines(save_path)) {
                 if (line == '') {
                     continue;
                 }
@@ -65,7 +105,7 @@ var Data;
             console.log('reputation loaded');
         }
         Reputation.load = load;
-        function save() {
+        function save(save_path) {
             console.log('saving reputation');
             let str = '';
             for (let [char_id, item] of Object.entries(reputation)) {

@@ -124,13 +124,13 @@ var MapSystem;
                 // cell.rat_scent = total
             }
             if (cell.development.urban > 0) {
-                d_scent -= 20 * base_d_scent;
+                d_scent -= 30 * base_d_scent;
             }
             if (cell.development.rural > 0) {
-                d_scent -= 10 * base_d_scent;
+                d_scent -= 20 * base_d_scent;
             }
             if (cell.development.wild > 0) {
-                d_scent -= 10 * base_d_scent;
+                d_scent -= 20 * base_d_scent;
             }
             // add scent to cells with rats
             // let guests = cell.characters_set

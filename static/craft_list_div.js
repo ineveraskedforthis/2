@@ -15,20 +15,29 @@ function construct_craft_inputs(inputs) {
     }
     return inputs_div;
 }
-function construct_craft_div(data) {
-    let div = document.getElementById('c_' + data.id);
+
+function new_craft_option(id) {
+    let div = document.getElementById('c_' + id);
     if (div != null) {
         return;
     }
 
-    craft_bulk.push(data.id);
-
     let craft_div = document.createElement('div');
-    craft_div.id = 'c_' + data.id;
+    craft_div.id = 'c_' + id;
     craft_div.classList.add('craft_option');
     craft_div.classList.add('border-red-thin')
-    craft_list_div.appendChild(craft_div);
+    
+    let craft_div_wrapper = document.createElement('div')
+    craft_div_wrapper.appendChild(craft_div)
 
+    craft_list_div.appendChild(craft_div_wrapper);
+
+    return craft_div
+}
+
+function construct_craft_div(data) {
+    craft_bulk.push(data.id);
+    let craft_div = new_craft_option(data.id)
 
     craft_div.appendChild(construct_craft_inputs(data.input));
 
@@ -48,18 +57,8 @@ function construct_craft_div(data) {
     }))(data.id);
 }
 function construct_craft_item_div(data) {
-    let div = document.getElementById('c_' + data.id);
-    if (div != null) {
-        return;
-    }
-
     craft_items.push(data.id);
-
-    let craft_div = document.createElement('div');
-    craft_div.id = 'c_' + data.id;
-    craft_div.classList.add('craft_option');
-    craft_div.classList.add('border-red-thin')
-    craft_list_div.appendChild(craft_div);
+    let craft_div = new_craft_option(data.id)
 
     craft_div.appendChild(construct_craft_inputs(data.input));
 
@@ -104,14 +103,14 @@ function update_craft_item_div(message) {
 document.getElementById("craft-tag-item").onclick = () => {
     for (let tag of craft_items) {
         let div = document.getElementById('c_' + tag);
-        div.classList.toggle('hidden');
+        div.parentElement.classList.toggle('hidden');
     }
     document.getElementById("craft-tag-item").classList.toggle('highlight');
 };
 document.getElementById("craft-tag-bulk").onclick = () => {
     for (let tag of craft_bulk) {
         let div = document.getElementById('c_' + tag);
-        div.classList.toggle('hidden');
+        div.parentElement.classList.toggle('hidden');
     }
     document.getElementById("craft-tag-bulk").classList.toggle('highlight');
 };

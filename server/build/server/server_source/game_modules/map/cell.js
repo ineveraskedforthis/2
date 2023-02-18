@@ -72,13 +72,17 @@ class Cell {
     get_actions() {
         let actions = {
             hunt: false,
-            rest: false,
+            rest_outside: true,
+            rest_inn: false,
+            rest_home: false,
             clean: false
         };
         actions.hunt = this.can_hunt();
         actions.clean = this.can_clean();
-        actions.rest = this.can_rest();
+        actions.rest_inn = this.can_rest();
         return actions;
+    }
+    get_home_price() {
     }
     can_clean() {
         return (this.resources.water);
