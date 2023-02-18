@@ -1,7 +1,8 @@
 import { equip_slot } from "../../../../shared/inventory";
 import { ELODINO_FLESH, GRACI_HAIR, materials, RAT_BONE, RAT_SKIN, STEEL, WOOD } from "../manager_classes/materials_manager";
 import { Damage } from "../damage_types";
-import { ItemJson, ITEM_MATERIAL } from "./item";
+import { ItemJson } from "./item";
+import { ITEM_MATERIAL } from "./ITEM_MATERIAL";
 import { ItemSystem } from "./system";
 
 function base_resists(material: ITEM_MATERIAL, slot: equip_slot) {

@@ -1,4 +1,4 @@
-import { ITEM_MATERIAL } from "../items/item"
+import { ITEM_MATERIAL } from "../items/ITEM_MATERIAL"
 
 
 export type material_index = number & { __brand: "index of the material"}

@@ -1,17 +1,7 @@
 import { affix, equip_slot, ItemData } from "../../../../shared/inventory"
 import { weapon_tag } from "../types"
 import { Damage } from "../damage_types"
-
-export class ITEM_MATERIAL {
-    density: number
-    hardness: number
-    string_tag: string
-    constructor(density: number, hardness:number, string_tag: string) {
-        this.density = density
-        this.hardness = hardness
-        this.string_tag = string_tag
-    }
-}
+import { ITEM_MATERIAL } from "./ITEM_MATERIAL"
 
 export class Item {
     durability: number
