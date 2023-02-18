@@ -1,4 +1,4 @@
-import { damage_type } from "../types";
+import { damage_type } from "./types";
 
 export class Damage {
     blunt: number;

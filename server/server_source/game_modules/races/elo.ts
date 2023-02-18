@@ -1,5 +1,5 @@
-import { Damage } from "../misc/damage_types";
-import { Archetype, Stats } from "../character/character_parts";
+import { Damage } from "../damage_types";
+import { Archetype, Stats } from "../types";
 import { CharacterTemplate } from "../character/templates";
 import { gen_from_moraes } from "./generate_name_moraes";
 

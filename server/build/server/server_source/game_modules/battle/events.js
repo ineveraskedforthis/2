@@ -7,7 +7,7 @@ const geom_1 = require("../geom");
 const systems_communication_1 = require("../systems_communication");
 const battle_ai_1 = require("./battle_ai");
 const system_1 = require("./system");
-const Perks_1 = require("../character/Perks");
+const checks_1 = require("../character/checks");
 const basic_functions_1 = require("../calculations/basic_functions");
 const system_2 = require("../character/system");
 const user_manager_1 = require("../client_communication/user_manager");
@@ -185,7 +185,7 @@ var BattleEvent;
     function Shoot(battle, attacker, defender) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const COST = 3;
-        if (!(0, Perks_1.can_shoot)(AttackerCharacter)) {
+        if (!(0, checks_1.can_shoot)(AttackerCharacter)) {
             return;
         }
         if (attacker.action_points_left < COST) {
@@ -230,7 +230,7 @@ var BattleEvent;
     function MagicBolt(battle, attacker, defender) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const COST = 3;
-        if (!(0, Perks_1.can_cast_magic_bolt)(AttackerCharacter)) {
+        if (!(0, checks_1.can_cast_magic_bolt)(AttackerCharacter)) {
             return;
         }
         if (attacker.action_points_left < COST)
@@ -259,7 +259,7 @@ var BattleEvent;
     BattleEvent.Update = Update;
     function Dodge(battle, unit) {
         const character = systems_communication_1.Convert.unit_to_character(unit);
-        if (!(0, Perks_1.can_dodge)(character)) {
+        if (!(0, checks_1.can_dodge)(character)) {
             return;
         }
         if (unit.action_points_left < 4) {

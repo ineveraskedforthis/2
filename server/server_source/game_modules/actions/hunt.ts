@@ -1,4 +1,4 @@
-import { CharacterActionResponce } from "./action_manager";
+import { CharacterActionResponce } from "../action_types";
 import { FISH, MEAT, RAT_SKIN } from "../manager_classes/materials_manager";
 import type { Character } from "../character/character";
 import { Convert } from "../systems_communication";

@@ -6,9 +6,11 @@ import { BattleSystem } from "../battle/system";
 import { trim } from "../calculations/basic_functions";
 import { Attack } from "../attack/system";
 import { Character } from "../character/character";
-import { ModelVariant } from "../character/character_parts";
+import { ModelVariant } from "../types";
 import { Loot } from "../races/generate_loot";
-import { Perks, perk_price, perk_requirement } from "../character/Perks";
+import { Perks } from "../character/Perks";
+import { perk_requirement } from "../character/perk_requirement";
+import { perk_price } from "../prices/perk_base_price";
 import { CharacterSystem } from "../character/system";
 import { CharacterTemplate } from "../character/templates";
 import { UI_Part } from "../client_communication/causality_graph";
@@ -24,8 +26,9 @@ import { Effect } from "./effects";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
 import { AttackObj } from "../attack/class";
-import { Damage, DmgOps } from "../misc/damage_types";
-import { skill, skill_price } from "../character/skills";
+import { Damage, DmgOps } from "../damage_types";
+import { skill } from "../character/Skills";
+import { skill_price } from "../prices/skill_price";
 
 export namespace Event {
 
@@ -118,7 +121,7 @@ export namespace Event {
         const cell = MapSystem.SAFE_id_to_cell(starting_cell)
         Link.character_and_cell(character, cell)
 
-        CharacterSystem.save()
+        Data.CharacterDB.save()
         return character
     }
 

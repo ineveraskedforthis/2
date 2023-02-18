@@ -1,10 +1,10 @@
 import { ItemData } from "../../../../shared/inventory";
 import { damage_type } from "../types";
 import { attack_affixes_effects, damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
-import { Damage, DmgOps } from "../misc/damage_types";
+import { Damage, DmgOps } from "../damage_types";
 import { Item, ItemJson, Itemlette } from "./item";
 import { ELODINO_FLESH, GRACI_HAIR, materials, MaterialsManager } from "../manager_classes/materials_manager";
-import { Status } from "../character/character_parts";
+import { Status } from "../types";
 import { AttackObj } from "../attack/class";
 
 const empty_resists = new Damage()
@@ -17,18 +17,6 @@ const empty_status : Status = {
 }
 
 export namespace ItemSystem {
-
-    export function to_string(item: Item|undefined): string {
-        return(JSON.stringify(item))
-    }
-
-    export function from_string(s: string): Item {
-        const item_data:Item = JSON.parse(s)
-        let damage = DmgOps.copy(item_data.damage)
-        let resistance = DmgOps.copy(item_data.resists)
-        return new Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage)
-    }
-
     export function size (item: Itemlette): number {
         if (item.slot == 'weapon') {
             switch(item.weapon_tag) {

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Attack = void 0;
-const damage_types_1 = require("../misc/damage_types");
+const damage_types_1 = require("../damage_types");
 const system_1 = require("../character/system");
 const class_1 = require("./class");
 var Attack;

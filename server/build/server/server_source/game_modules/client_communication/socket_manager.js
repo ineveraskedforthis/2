@@ -10,7 +10,7 @@ const common_validations_1 = require("./network_actions/common_validations");
 const alerts_1 = require("./network_actions/alerts");
 const system_1 = require("../map/system");
 const actions_1 = require("./network_actions/actions");
-const action_manager_1 = require("../actions/action_manager");
+const action_types_1 = require("../action_types");
 const run_event_1 = require("./network_actions/run_event");
 const systems_communication_1 = require("../systems_communication");
 const inventory_management_1 = require("./network_actions/inventory_management");
@@ -59,14 +59,14 @@ class SocketManager {
                 request_1.Request.attack_damage(user);
             });
             socket.on('unequip', (msg) => inventory_management_1.InventoryCommands.unequip(user, msg));
-            socket.on('eat', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.EAT));
-            socket.on('clean', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.CLEAN));
-            socket.on('rest', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.REST));
+            socket.on('eat', () => actions_1.HandleAction.act(user, action_types_1.CharacterAction.EAT));
+            socket.on('clean', () => actions_1.HandleAction.act(user, action_types_1.CharacterAction.CLEAN));
+            socket.on('rest', () => actions_1.HandleAction.act(user, action_types_1.CharacterAction.REST));
             socket.on('move', (msg) => actions_1.HandleAction.move(user, msg));
-            socket.on('hunt', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.HUNT));
-            socket.on('fish', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.FISH));
-            socket.on('gather_wood', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_WOOD));
-            socket.on('gather_cotton', () => actions_1.HandleAction.act(user, action_manager_1.CharacterAction.GATHER_COTTON));
+            socket.on('hunt', () => actions_1.HandleAction.act(user, action_types_1.CharacterAction.HUNT));
+            socket.on('fish', () => actions_1.HandleAction.act(user, action_types_1.CharacterAction.FISH));
+            socket.on('gather_wood', () => actions_1.HandleAction.act(user, action_types_1.CharacterAction.GATHER_WOOD));
+            socket.on('gather_cotton', () => actions_1.HandleAction.act(user, action_types_1.CharacterAction.GATHER_COTTON));
             socket.on('craft', (msg) => {
                 if (typeof (msg) != 'string')
                     return;

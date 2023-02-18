@@ -1,13 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ActionManager = exports.CharacterAction = exports.dummy_start = exports.dummy_duration = void 0;
-const move_1 = require("./move");
-const eat_1 = require("./eat");
-const clean_1 = require("./clean");
-const rest_1 = require("./rest");
-const hunt_1 = require("./hunt");
+exports.ActionManager = exports.dummy_start = exports.dummy_duration = void 0;
 // import { attack } from "./attack"
-const gather_1 = require("./gather");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const data_1 = require("../data");
 function dummy_duration(char) {
@@ -16,18 +10,6 @@ function dummy_duration(char) {
 exports.dummy_duration = dummy_duration;
 function dummy_start(char) { }
 exports.dummy_start = dummy_start;
-var CharacterAction;
-(function (CharacterAction) {
-    CharacterAction.MOVE = move_1.move;
-    CharacterAction.CLEAN = clean_1.clean;
-    CharacterAction.EAT = eat_1.eat;
-    CharacterAction.HUNT = hunt_1.hunt;
-    CharacterAction.FISH = hunt_1.fish;
-    CharacterAction.REST = rest_1.rest;
-    // export const ATTACK = attack
-    CharacterAction.GATHER_WOOD = gather_1.gather_wood;
-    CharacterAction.GATHER_COTTON = gather_1.gather_cotton;
-})(CharacterAction = exports.CharacterAction || (exports.CharacterAction = {}));
 var ActionManager;
 (function (ActionManager) {
     function start_action(action, char, data) {
@@ -64,7 +46,7 @@ var ActionManager;
     }
     ActionManager.call_action = call_action;
     function update_characters(dt) {
-        for (let character of data_1.Data.Character.list()) {
+        for (let character of data_1.Data.CharacterDB.list()) {
             if (character == undefined)
                 continue;
             if (character.action != undefined) {

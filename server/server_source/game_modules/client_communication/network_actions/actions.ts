@@ -1,9 +1,11 @@
 import { battle_position, unit_id } from "../../../../../shared/battle_data";
-import { ActionManager, ActionTargeted, CharacterAction, CharacterActionResponce } from "../../actions/action_manager";
+import { ActionManager } from "../../actions/action_manager";
+import { ActionTargeted, CharacterAction, CharacterActionResponce } from "../../action_types";
 import { Battle } from "../../battle/classes/battle";
 import { BattleEvent } from "../../battle/events";
 import { BattleSystem } from "../../battle/system";
-import { can_dodge, Perks } from "../../character/Perks";
+import { Perks } from "../../character/Perks";
+import { can_dodge } from "../../character/checks";
 import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
 import { Convert } from "../../systems_communication";

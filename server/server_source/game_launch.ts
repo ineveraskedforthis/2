@@ -62,16 +62,13 @@ export function launch(http_server: Server) {
 }
 
 function load() {
-    CharacterSystem.load()
     MapSystem.load()
+    Data.load()
     UserManagement.load_users()
     Auth.load()
-    BattleSystem.load()
-    BulkOrders.load()
-    ItemOrders.load()
-    Data.load()
+    BattleSystem.load()    
 
-    const characters = Data.Character.list()
+    const characters = Data.CharacterDB.list()
 
     //validating ids and connections
     for (const character of characters) {
@@ -88,7 +85,7 @@ function load() {
         console.log('test battle for shadow units')
         for (let unit of Object.values(battle.heap.data)) {
             let id = unit.char_id
-            let character = Data.Character.from_id(id)
+            let character = Data.CharacterDB.from_id(id)
             if (character == undefined || !character.in_battle()) {
                 BattleEvent.Leave(battle, unit)
             }
@@ -101,12 +98,9 @@ function load() {
 }
 
 function save() {
-    CharacterSystem.save()
     UserManagement.save_users()
     Auth.save()
     BattleSystem.save()
-    BulkOrders.save()
-    ItemOrders.save()
     Data.save()
 }
 
@@ -131,7 +125,7 @@ function update(delta: number, http_server: Server) {
     let rats = 0
     let elos = 0
 
-    for (let character of Data.Character.list()) {
+    for (let character of Data.CharacterDB.list()) {
         if (character.dead()) {
             Event.death(character)
         } else {

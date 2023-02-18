@@ -1,6 +1,6 @@
 import { equip_slot } from "../../../../shared/inventory";
 import { ELODINO_FLESH, GRACI_HAIR, materials, RAT_BONE, RAT_SKIN, STEEL, WOOD } from "../manager_classes/materials_manager";
-import { Damage } from "../misc/damage_types";
+import { Damage } from "../damage_types";
 import { ItemJson, ITEM_MATERIAL } from "./item";
 import { ItemSystem } from "./system";
 

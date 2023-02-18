@@ -121,7 +121,7 @@ export namespace EventMarket {
         const order = Data.BulkOrders.from_id(order_id)      
         BulkOrders.remove(order_id)
 
-        const character = Data.Character.from_id(order.owner_id)
+        const character = Data.CharacterDB.from_id(order.owner_id)
         const cell = Convert.character_to_cell(character)
         Effect.Update.cell_market(cell)   
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)     

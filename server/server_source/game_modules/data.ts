@@ -8,7 +8,10 @@ import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
 import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
-import { cell_id, char_id, building_id, order_bulk_id, order_item_id } from "./types"
+import { cell_id, char_id, building_id, order_bulk_id, order_item_id, user_id, InnateStats, Stats, Archetype, money, Status } from "./types"
+import { SkillList, skill } from "./character/Skills"
+import { Item } from "./items/item"
+import { DmgOps } from "./damage_types"
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
@@ -65,7 +68,17 @@ const save_path =
 {
     REPUTATION: path.join(SAVE_GAME_PATH, 'reputation.txt'),
     BUILDINGS: path.join(SAVE_GAME_PATH, 'housing.txt'),
-    BUILDINGS_OWNERSHIP: path.join(SAVE_GAME_PATH, 'housing_ownership.txt')
+    BUILDINGS_OWNERSHIP: path.join(SAVE_GAME_PATH, 'housing_ownership.txt'),
+    CHARACTERS: path.join(SAVE_GAME_PATH, 'characters.txt')
+}
+
+const save_path_bulk = path.join(SAVE_GAME_PATH, 'bulk_market.txt')
+
+const save_path_item = path.join(SAVE_GAME_PATH, 'item_market.txt')
+
+
+const loaded_flag = {
+    Characters: false
 }
 
 function read_lines(file: string) {
@@ -76,12 +89,29 @@ function read_lines(file: string) {
     return data.split('\n')
 }
 
+export function item_to_string(item: Item|undefined): string {
+    return(JSON.stringify(item))
+}
+
+export function item_from_string(s: string): Item {
+    const item_data:Item = JSON.parse(s)
+    let damage = DmgOps.copy(item_data.damage)
+    let resistance = DmgOps.copy(item_data.resists)
+    return new Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage)
+}
+
 export namespace Data {
     export function load() {
+        CharacterDB.load(save_path.CHARACTERS)
+        BulkOrders.save()
+        ItemOrders.save()
         Reputation.load(save_path.REPUTATION)
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP)
     }
     export function save() {
+        CharacterDB.save()
+        BulkOrders.save()
+        ItemOrders.save()
         Reputation.save(save_path.REPUTATION)
         Buildings.save(save_path.BUILDINGS)
     }
@@ -239,7 +269,100 @@ export namespace Data {
         }
     }
 
-    export namespace Character {
+    export namespace CharacterDB {
+        export function load(save_path: string) {
+            if (loaded_flag.Characters) {
+                return
+            }
+            console.log('loading characters')
+            if (!fs.existsSync(save_path)) {
+                fs.writeFileSync(save_path, '')
+            }
+            let data = fs.readFileSync(save_path).toString()
+            let lines = data.split('\n')
+    
+            for (let line of lines) {
+                if (line == '') {continue}
+                const character = string_to_character(line)
+                Data.CharacterDB.set(character.id, character)
+                Data.CharacterDB.set_id(Math.max(character.id, Data.CharacterDB.id()) as char_id)
+            }
+            loaded_flag.Characters = true
+            console.log('characters loaded')
+        }
+    
+        export function save() {
+            console.log('saving characters')
+            let str:string = ''
+            for (let item of Data.CharacterDB.list()) {
+                if (item.dead()) continue
+                str = str + character_to_string(item) + '\n' 
+            }
+            fs.writeFileSync(save_path.CHARACTERS, str)
+            console.log('characters saved')
+        }
+    
+        export function character_to_string(c: Character) {
+            let ids = [c.id, c.battle_id, c.battle_unit_id, c.user_id, c.cell_id].join('&')
+            let name = c.name
+    
+            let archetype = JSON.stringify(c.archetype)
+    
+            let equip               = c.equip.to_string()
+            let stash               = JSON.stringify(c.stash.get_json())
+            let trade_stash         = JSON.stringify(c.trade_stash.get_json())
+            let savings             = c.savings.get()
+            let trade_savings       = c.trade_savings.get()
+    
+            let status =            JSON.stringify(c.status)
+            let skills =            JSON.stringify(c.skills)
+            let perks  =            JSON.stringify(c.perks)
+            let innate_stats  =            JSON.stringify(c.stats)
+            
+            let explored =          JSON.stringify({data: c.explored})
+    
+            return [ids, name, archetype, equip, stash, trade_stash, savings, trade_savings, status, skills, perks, innate_stats, explored].join(';')
+        }
+    
+        export function string_to_character(s: string) {
+            const [ids, name, raw_archetype, raw_equip, raw_stash, raw_trade_stash, raw_savings, raw_trade_savings, raw_status, raw_skills, raw_perks, raw_innate_stats, raw_explored] = s.split(';')
+            let [raw_id, raw_battle_id, raw_battle_unit_id, raw_user_id, raw_cell_id] = ids.split('&')
+    
+            if (raw_user_id != '#') {var user_id:user_id|'#' = Number(raw_user_id) as user_id} else {var user_id:user_id|'#' = '#'}
+    
+            const innate_stats:InnateStats = JSON.parse(raw_innate_stats)
+            const stats:Stats = innate_stats.stats
+    
+            const character = new Character(Number(raw_id), 
+                                            Number(raw_battle_id), Number(raw_battle_unit_id), 
+                                            user_id, Number(raw_cell_id) as cell_id, 
+                                                name, 
+                                                JSON.parse(raw_archetype) as Archetype, 
+                                                stats, innate_stats.max.hp)
+            character.stats = innate_stats
+            character.explored = JSON.parse(raw_explored).data
+    
+    
+            character.equip.from_string(raw_equip)
+    
+            character.stash.load_from_json(JSON.parse(raw_stash))
+            character.trade_stash.load_from_json(JSON.parse(raw_trade_stash))
+    
+            character.savings.inc(Number(raw_savings) as money)
+            character.trade_savings.inc(Number(raw_trade_savings) as money)
+    
+            character.set_status(JSON.parse(raw_status) as Status)
+    
+            character.skills = new SkillList()
+            for (let [_, item] of Object.entries(JSON.parse(raw_skills) as SkillList)) {
+                character.skills[_ as skill] = item
+            }
+    
+            character.perks = JSON.parse(raw_perks)
+    
+            return character
+        }
+
         export function increase_id() {
             last_character_id = last_character_id + 1 as char_id
         }
@@ -268,6 +391,38 @@ export namespace Data {
     }
 
     export namespace BulkOrders {
+        
+        export function save() {
+            console.log('saving bulk market orders')
+            let str:string = ''
+            for (let item of Data.BulkOrders.list()) {
+                if (item.amount == 0) continue;
+                str = str + JSON.stringify(item) + '\n' 
+                
+            }
+            fs.writeFileSync(save_path_bulk, str)
+            console.log('bulk market orders saved')
+            
+        }
+    
+        export function load() {
+            console.log('loading bulk market orders')
+            if (!fs.existsSync(save_path_bulk)) {
+                fs.writeFileSync(save_path_bulk, '')
+            }
+            let data = fs.readFileSync(save_path_bulk).toString()
+            let lines = data.split('\n')
+            for (let line of lines) {
+                if (line == '') {continue}
+                const order: OrderBulk = JSON.parse(line)
+                // console.log(order)
+                Data.BulkOrders.set(order.id, order.owner_id, order)
+                const last_id = Data.BulkOrders.id()
+                Data.BulkOrders.set_id(Math.max(order.id, last_id) as order_bulk_id)            
+            }
+            console.log('bulk market orders loaded')
+        }
+
         export function increase_id() {
             last_id_bulk = last_id_bulk + 1 as order_bulk_id
         }
@@ -303,6 +458,39 @@ export namespace Data {
         }
     }
     export namespace ItemOrders {
+        export function save() {
+            console.log('saving item market orders')
+            let str:string = ''
+            for (let item of Data.ItemOrders.list()) {
+                if (item.finished) continue;
+                str = str + JSON.stringify(item) + '\n' 
+                
+            }
+            fs.writeFileSync(save_path_item, str)
+            console.log('item market orders saved')
+            
+        }
+    
+        export function load() {
+            console.log('loading item market orders')
+            if (!fs.existsSync(save_path_item)) {
+                fs.writeFileSync(save_path_item, '')
+            }
+            let data = fs.readFileSync(save_path_item).toString()
+            let lines = data.split('\n')
+            for (let line of lines) {
+                if (line == '') {continue}
+                const order_raw: OrderItem = JSON.parse(line)
+                const item = item_from_string(JSON.stringify(order_raw.item))
+                const order = new OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished)
+                
+                Data.ItemOrders.set(order.id, order.owner_id, order)
+                const last_id = Data.ItemOrders.id()
+                Data.ItemOrders.set_id(Math.max(order.id, last_id) as order_item_id)            
+            }
+            console.log('item market orders loaded')
+        }
+
         export function increase_id() {
             last_id_item = last_id_item + 1 as order_item_id
         }

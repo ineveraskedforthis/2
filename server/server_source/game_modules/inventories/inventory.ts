@@ -1,4 +1,5 @@
 import { ItemData } from "../../../../shared/inventory";
+import { item_from_string, item_to_string } from "../data";
 import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
 
@@ -62,7 +63,7 @@ export class Inventory{
         const array:string[] = []
         for (let i of this.items) {
             if (i != undefined) {
-                array.push(ItemSystem.to_string(i))
+                array.push(item_to_string(i))
             }
         }
         return JSON.stringify({items_array: array})
@@ -73,7 +74,7 @@ export class Inventory{
         for (let i = 0; i <= 100; i++) {
             const tmp = data.items_array[i]
             if (tmp == undefined) return
-            this.items.push(ItemSystem.from_string(tmp))
+            this.items.push(item_from_string(tmp))
         }
     }
 

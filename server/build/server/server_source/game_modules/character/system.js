@@ -1,112 +1,24 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CharacterSystem = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
-const damage_types_1 = require("../misc/damage_types");
+const damage_types_1 = require("../damage_types");
 const character_1 = require("./character");
 const generate_loot_1 = require("../races/generate_loot");
-const fs_1 = __importDefault(require("fs"));
 const data_1 = require("../data");
-var path = require('path');
-const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const ai_manager_1 = require("../AI/ai_manager");
-const skills_1 = require("./skills");
 const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../events/effects");
-var loaded_flag_characters = false;
-const save_path = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'characters.txt');
 var ai_campaign_decision_timer = 0;
 var CharacterSystem;
 (function (CharacterSystem) {
-    function load() {
-        if (loaded_flag_characters) {
-            return;
-        }
-        console.log('loading characters');
-        if (!fs_1.default.existsSync(save_path)) {
-            fs_1.default.writeFileSync(save_path, '');
-        }
-        let data = fs_1.default.readFileSync(save_path).toString();
-        let lines = data.split('\n');
-        for (let line of lines) {
-            if (line == '') {
-                continue;
-            }
-            const character = string_to_character(line);
-            data_1.Data.Character.set(character.id, character);
-            data_1.Data.Character.set_id(Math.max(character.id, data_1.Data.Character.id()));
-        }
-        loaded_flag_characters = true;
-        console.log('characters loaded');
-    }
-    CharacterSystem.load = load;
-    function save() {
-        console.log('saving characters');
-        let str = '';
-        for (let item of data_1.Data.Character.list()) {
-            if (item.dead())
-                continue;
-            str = str + character_to_string(item) + '\n';
-        }
-        fs_1.default.writeFileSync(save_path, str);
-        console.log('characters saved');
-    }
-    CharacterSystem.save = save;
-    function character_to_string(c) {
-        let ids = [c.id, c.battle_id, c.battle_unit_id, c.user_id, c.cell_id].join('&');
-        let name = c.name;
-        let archetype = JSON.stringify(c.archetype);
-        let equip = c.equip.to_string();
-        let stash = JSON.stringify(c.stash.get_json());
-        let trade_stash = JSON.stringify(c.trade_stash.get_json());
-        let savings = c.savings.get();
-        let trade_savings = c.trade_savings.get();
-        let status = JSON.stringify(c.status);
-        let skills = JSON.stringify(c.skills);
-        let perks = JSON.stringify(c.perks);
-        let innate_stats = JSON.stringify(c.stats);
-        let explored = JSON.stringify({ data: c.explored });
-        return [ids, name, archetype, equip, stash, trade_stash, savings, trade_savings, status, skills, perks, innate_stats, explored].join(';');
-    }
-    CharacterSystem.character_to_string = character_to_string;
-    function string_to_character(s) {
-        const [ids, name, raw_archetype, raw_equip, raw_stash, raw_trade_stash, raw_savings, raw_trade_savings, raw_status, raw_skills, raw_perks, raw_innate_stats, raw_explored] = s.split(';');
-        let [raw_id, raw_battle_id, raw_battle_unit_id, raw_user_id, raw_cell_id] = ids.split('&');
-        if (raw_user_id != '#') {
-            var user_id = Number(raw_user_id);
-        }
-        else {
-            var user_id = '#';
-        }
-        const innate_stats = JSON.parse(raw_innate_stats);
-        const stats = innate_stats.stats;
-        const character = new character_1.Character(Number(raw_id), Number(raw_battle_id), Number(raw_battle_unit_id), user_id, Number(raw_cell_id), name, JSON.parse(raw_archetype), stats, innate_stats.max.hp);
-        character.stats = innate_stats;
-        character.explored = JSON.parse(raw_explored).data;
-        character.equip.from_string(raw_equip);
-        character.stash.load_from_json(JSON.parse(raw_stash));
-        character.trade_stash.load_from_json(JSON.parse(raw_trade_stash));
-        character.savings.inc(Number(raw_savings));
-        character.trade_savings.inc(Number(raw_trade_savings));
-        character.set_status(JSON.parse(raw_status));
-        character.skills = new skills_1.SkillList();
-        for (let [_, skill] of Object.entries(JSON.parse(raw_skills))) {
-            character.skills[_] = skill;
-        }
-        character.perks = JSON.parse(raw_perks);
-        return character;
-    }
-    CharacterSystem.string_to_character = string_to_character;
     function template_to_character(template, name, cell_id) {
-        data_1.Data.Character.increase_id();
+        data_1.Data.CharacterDB.increase_id();
         if (name == undefined)
             name = template.name_generator();
-        let character = new character_1.Character(data_1.Data.Character.id(), -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
+        let character = new character_1.Character(data_1.Data.CharacterDB.id(), -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
         character.stats.base_resists = damage_types_1.DmgOps.add(character.stats.base_resists, template.base_resists);
-        data_1.Data.Character.set(data_1.Data.Character.id(), character);
+        data_1.Data.CharacterDB.set(data_1.Data.CharacterDB.id(), character);
         character.explored[cell_id] = true;
         return character;
     }
@@ -345,7 +257,7 @@ var CharacterSystem;
     function update(dt) {
         ai_campaign_decision_timer += dt;
         if (ai_campaign_decision_timer > 8) {
-            for (let character of data_1.Data.Character.list()) {
+            for (let character of data_1.Data.CharacterDB.list()) {
                 if (character.dead()) {
                     continue;
                 }
@@ -355,7 +267,7 @@ var CharacterSystem;
             }
             ai_campaign_decision_timer = 0;
         }
-        for (let character of data_1.Data.Character.list()) {
+        for (let character of data_1.Data.CharacterDB.list()) {
             if (character.dead()) {
                 continue;
             }

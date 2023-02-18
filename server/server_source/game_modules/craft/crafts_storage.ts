@@ -1,5 +1,5 @@
-import { ActionTargeted } from "../actions/action_manager";
-import { skill } from "../character/skills";
+import { ActionTargeted } from "../action_types";
+import { skill } from "../character/Skills";
 import { ItemJson } from "../items/item";
 import { material_index } from "../manager_classes/materials_manager";
 

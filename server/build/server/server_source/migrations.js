@@ -30,16 +30,15 @@ const elo_1 = require("./game_modules/races/elo");
 const graci_1 = require("./game_modules/races/graci");
 const human_1 = require("./game_modules/races/human");
 const rat_1 = require("./game_modules/races/rat");
-const system_1 = require("./game_modules/character/system");
 const data_1 = require("./game_modules/data");
 const events_1 = require("./game_modules/events/events");
 const inventory_events_1 = require("./game_modules/events/inventory_events");
 const market_1 = require("./game_modules/events/market");
 const factions_1 = require("./game_modules/factions");
 const items_set_up_1 = require("./game_modules/items/items_set_up");
-const system_2 = require("./game_modules/items/system");
+const system_1 = require("./game_modules/items/system");
 const materials_manager_1 = require("./game_modules/manager_classes/materials_manager");
-const system_3 = require("./game_modules/map/system");
+const system_2 = require("./game_modules/map/system");
 const constants_1 = require("./game_modules/static_data/constants");
 const systems_communication_1 = require("./game_modules/systems_communication");
 const LUMP_OF_MONEY = 1000;
@@ -65,8 +64,7 @@ function get_version() {
     return data;
 }
 function migrate(current_version, target_version) {
-    system_1.CharacterSystem.load();
-    system_3.MapSystem.load();
+    system_2.MapSystem.load();
     data_1.Data.load();
     console.log('migration from ' + current_version + ' to ' + target_version);
     if (current_version == 0) {
@@ -129,11 +127,11 @@ function set_up_initial_data() {
     set_version(1);
 }
 function create_starting_agents() {
-    system_3.MapSystem.load();
-    system_1.CharacterSystem.load();
-    const RatsStartingCell = system_3.MapSystem.coordinate_to_id(6, 5);
-    const GraciStartingCell = system_3.MapSystem.coordinate_to_id(15, 8);
-    const EloStartingCell = system_3.MapSystem.coordinate_to_id(18, 4);
+    system_2.MapSystem.load();
+    data_1.Data.load();
+    const RatsStartingCell = system_2.MapSystem.coordinate_to_id(6, 5);
+    const GraciStartingCell = system_2.MapSystem.coordinate_to_id(15, 8);
+    const EloStartingCell = system_2.MapSystem.coordinate_to_id(18, 4);
     const dummy_model = { chin: 0, mouth: 0, eyes: 0 };
     for (let i = 1; i < 60; i++) {
         events_1.Event.new_character(rat_1.RatTemplate, undefined, RatsStartingCell, dummy_model);
@@ -145,7 +143,7 @@ function create_starting_agents() {
         events_1.Event.new_character(elo_1.EloTemplate, undefined, EloStartingCell, dummy_model);
     }
     /// test person
-    const starting_cell_colony = system_3.MapSystem.coordinate_to_id(0, 3);
+    const starting_cell_colony = system_2.MapSystem.coordinate_to_id(0, 3);
     {
         let Trader = events_1.Event.new_character(human_1.Human, 'Trader', starting_cell_colony, dummy_model);
         Trader.stash.inc(materials_manager_1.MEAT, 10);
@@ -161,7 +159,7 @@ function create_starting_agents() {
         market_1.EventMarket.buy(Trader, materials_manager_1.MEAT, 200, 5);
         market_1.EventMarket.sell(Trader, materials_manager_1.FOOD, 200, 15);
         market_1.EventMarket.sell(Trader, materials_manager_1.ZAZ, 100, 200);
-        const spear = system_2.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
+        const spear = system_1.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
         spear.affixes.push({ 'tag': 'sharp' });
         const index = inventory_events_1.EventInventory.add_item(Trader, spear);
         market_1.EventMarket.sell_item(Trader, index, 50);
@@ -174,7 +172,7 @@ function create_starting_agents() {
 }
 const dummy_model = { chin: 0, mouth: 0, eyes: 0 };
 function create_cook(x, y) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     const cook = events_1.Event.new_character(human_1.Human, 'Local cook', cell, dummy_model);
     cook.stash.inc(materials_manager_1.FOOD, 10);
     cook.savings.inc(500);
@@ -183,12 +181,12 @@ function create_cook(x, y) {
     return cook;
 }
 function create_guard(x, y) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let spearman = events_1.Event.new_character(human_1.Human, 'Local militia', cell, dummy_model);
     spearman.skills.polearms = 100;
     spearman.perks.advanced_polearm = true;
-    let spear = system_2.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
-    let armour = system_2.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
+    let spear = system_1.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
+    let armour = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
     spearman.equip.data.weapon = spear;
     spearman.equip.data.armour.body = armour;
     let index = inventory_events_1.EventInventory.add_item(spearman, spear);
@@ -196,7 +194,7 @@ function create_guard(x, y) {
     return spearman;
 }
 function fletcher(x, y) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let fletcher = events_1.Event.new_character(human_1.Human, 'Fletcher', cell, dummy_model);
     fletcher.skills.woodwork = 100;
     fletcher.perks.fletcher = true;
@@ -208,7 +206,7 @@ function fletcher(x, y) {
     return fletcher;
 }
 function mage(x, y) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let mage = events_1.Event.new_character(human_1.Human, 'Mage', cell, dummy_model);
     mage.skills.magic_mastery = 100;
     mage.perks.mage_initiation = true;
@@ -227,7 +225,7 @@ function blood_mage(x, y, faction_id) {
     return blood_mage;
 }
 function alchemist(x, y, faction_id) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let alchemist = events_1.Event.new_character(human_1.Human, 'Alchemist', cell, dummy_model);
     alchemist.skills.magic_mastery = 60;
     alchemist.perks.mage_initiation = true;
@@ -238,7 +236,7 @@ function alchemist(x, y, faction_id) {
     return alchemist;
 }
 function armour_master(x, y, faction_id) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let master = events_1.Event.new_character(human_1.Human, 'Armourer', cell, dummy_model);
     master.skills.clothier = 100;
     master.perks.skin_armour_master = true;
@@ -248,7 +246,7 @@ function armour_master(x, y, faction_id) {
     return master;
 }
 function shoemaker(x, y, faction_id) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let master = events_1.Event.new_character(human_1.Human, 'Shoemaker', cell, dummy_model);
     master.skills.clothier = 100;
     master.perks.shoemaker = true;
@@ -258,7 +256,7 @@ function shoemaker(x, y, faction_id) {
     return master;
 }
 function weapon_master_wood(x, y, faction_id) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let master = events_1.Event.new_character(human_1.Human, 'Weapons maker', cell, dummy_model);
     master.skills.woodwork = 100;
     master.perks.weapon_maker = true;
@@ -268,7 +266,7 @@ function weapon_master_wood(x, y, faction_id) {
     return master;
 }
 function bone_carver_weapon(x, y, faction_id) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let master = events_1.Event.new_character(human_1.Human, 'Weapons maker', cell, dummy_model);
     master.skills.bone_carving = 100;
     master.perks.weapon_maker = true;
@@ -278,7 +276,7 @@ function bone_carver_weapon(x, y, faction_id) {
     return master;
 }
 function unarmed_master(x, y, faction_id) {
-    const cell = system_3.MapSystem.coordinate_to_id(x, y);
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let master = events_1.Event.new_character(human_1.Human, 'Monk', cell, dummy_model);
     master.skills.noweapon = 100;
     master.perks.dodge = true;
@@ -315,7 +313,7 @@ function set_up_guards_1() {
 }
 function cancel_cook_orders() {
     console.log('cancelling orders of cooks');
-    for (let character of data_1.Data.Character.list()) {
+    for (let character of data_1.Data.CharacterDB.list()) {
         if (character.name != 'Trader') {
             market_1.EventMarket.clear_orders(character);
         }
@@ -334,8 +332,8 @@ function misc_characters() {
     armour_master(0, 3, factions_1.Factions.City.id);
 }
 function fix_factions() {
-    const EloStartingCell = system_3.MapSystem.coordinate_to_cell([18, 4]);
-    for (let character of data_1.Data.Character.list()) {
+    const EloStartingCell = system_2.MapSystem.coordinate_to_cell([18, 4]);
+    for (let character of data_1.Data.CharacterDB.list()) {
         if (character.race() == 'elo') {
             data_1.Data.Reputation.set(factions_1.Factions.Elodinos.id, character.id, "member");
             if (systems_communication_1.Convert.character_to_cell(character).development.wild == 0) {
@@ -377,5 +375,4 @@ function mages_and_foreign_trader() {
 let version = get_version();
 console.log(version);
 migrate(version, constants_1.constants.version);
-system_1.CharacterSystem.save();
 data_1.Data.save();

@@ -1,5 +1,5 @@
 import { Accuracy } from "../../battle/battle_calcs";
-import { SkillList } from "../../character/skills";
+import { SkillList } from "../../character/Skills";
 import { MapSystem } from "../../map/system";
 import { Development } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";
@@ -16,7 +16,7 @@ import { output_bulk } from "../../craft/CraftBulk";
 import { CharacterSystem } from "../../character/system";
 import { Attack } from "../../attack/system";
 import { Request } from "./request";
-import { DmgOps } from "../../misc/damage_types";
+import { DmgOps } from "../../damage_types";
 
 
 

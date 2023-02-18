@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AI = exports.CampaignAI = void 0;
 const action_manager_1 = require("../actions/action_manager");
+const action_types_1 = require("../action_types");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
 const system_1 = require("../map/system");
@@ -55,7 +56,7 @@ var CampaignAI;
         }
         if (possible_moves.length > 0) {
             let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
-            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.MOVE, char, move_direction);
+            action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, char, move_direction);
         }
     }
     CampaignAI.random_walk = random_walk;
@@ -63,7 +64,7 @@ var CampaignAI;
         let cell = systems_communication_1.Convert.character_to_cell(character);
         let potential_moves = system_1.MapSystem.neighbours_cells(cell.id).map((x) => { return { item: x, weight: (0, basic_functions_1.trim)(x.rat_scent, 0, 20) }; });
         let target = (0, basic_functions_1.select_weighted)(potential_moves, constraints);
-        action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.MOVE, character, [target.x, target.y]);
+        action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target.x, target.y]);
     }
     CampaignAI.rat_walk = rat_walk;
     function rat_go_home(character, constraints) {
@@ -72,16 +73,16 @@ var CampaignAI;
         let target = (0, basic_functions_1.select_max)(potential_moves, constraints);
         if (target != undefined)
             if (cell.rat_scent > target.rat_scent) {
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, character, [cell.x, cell.y]);
+                action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, character, [cell.x, cell.y]);
             }
             else {
-                action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.MOVE, character, [target.x, target.y]);
+                action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target.x, target.y]);
             }
     }
     CampaignAI.rat_go_home = rat_go_home;
     function rat_decision(char) {
         if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
-            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
+            action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
             return;
         }
         else if (char.get_fatigue() > 30) {
@@ -119,7 +120,7 @@ var CampaignAI;
             movement_rest_decision(char);
         }
         if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
-            action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
+            action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
             return;
         }
         decide_craft(char);
@@ -152,7 +153,7 @@ var CampaignAI;
         switch (char.archetype.ai_map) {
             case 'steppe_walker_agressive': {
                 if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
-                    action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
+                    action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {
                     let target = helpers_1.AIhelper.enemies_in_cell(char);
@@ -168,7 +169,7 @@ var CampaignAI;
             }
             case 'steppe_walker_passive': {
                 if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
-                    action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
+                    action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {
                     random_walk(char, steppe_constraints);
@@ -177,7 +178,7 @@ var CampaignAI;
             }
             case 'forest_walker': {
                 if ((char.get_fatigue() > 60) || (char.get_stress() > 30)) {
-                    action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.REST, char, [0, 0]);
+                    action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {
                     random_walk(char, forest_constraints);

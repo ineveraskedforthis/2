@@ -14,7 +14,7 @@ const crafts_storage_1 = require("../../craft/crafts_storage");
 const CraftBulk_1 = require("../../craft/CraftBulk");
 const system_3 = require("../../character/system");
 const system_4 = require("../../attack/system");
-const damage_types_1 = require("../../misc/damage_types");
+const damage_types_1 = require("../../damage_types");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {

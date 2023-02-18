@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemSystem = void 0;
 const affix_1 = require("../base_game_classes/affix");
-const damage_types_1 = require("../misc/damage_types");
+const damage_types_1 = require("../damage_types");
 const item_1 = require("./item");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const empty_resists = new damage_types_1.Damage();
@@ -15,17 +15,6 @@ const empty_status = {
 };
 var ItemSystem;
 (function (ItemSystem) {
-    function to_string(item) {
-        return (JSON.stringify(item));
-    }
-    ItemSystem.to_string = to_string;
-    function from_string(s) {
-        const item_data = JSON.parse(s);
-        let damage = damage_types_1.DmgOps.copy(item_data.damage);
-        let resistance = damage_types_1.DmgOps.copy(item_data.resists);
-        return new item_1.Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage);
-    }
-    ItemSystem.from_string = from_string;
     function size(item) {
         if (item.slot == 'weapon') {
             switch (item.weapon_tag) {

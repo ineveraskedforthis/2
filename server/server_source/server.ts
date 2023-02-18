@@ -67,7 +67,7 @@ app.get('/api/:API_KEY/character/:charID', (req: Request, res: Response) => {
         return
     }
 
-    const character = Data.Character.from_id(id)
+    const character = Data.CharacterDB.from_id(id)
     if (character == undefined) {
         res.json({valid: false, reason: 'no_character'})
         return

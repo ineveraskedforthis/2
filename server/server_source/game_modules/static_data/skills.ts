@@ -1,3 +1,3 @@
-import { SkillList } from "../character/skills";
+import { SkillList } from "../character/Skills";
 
 export const SKILLS = new SkillList()

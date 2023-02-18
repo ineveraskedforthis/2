@@ -136,7 +136,7 @@ var MapSystem;
             // let guests = cell.characters_set
             // let rats = 0
             // for (let guest of guests) {
-            //     let character = Data.Character.from_id(guest)
+            //     let character = Data.CharacterDB.from_id(guest)
             //     if (character.race() == 'rat') rats += 1
             // }
             // cell.rat_scent += rats

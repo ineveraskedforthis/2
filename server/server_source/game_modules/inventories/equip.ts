@@ -4,9 +4,10 @@ import { update_character } from "../base_game_classes/affix";
 import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
-import { Damage, DmgOps } from "../misc/damage_types";
+import { Damage, DmgOps } from "../damage_types";
 import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
 import { AttackObj } from "../attack/class";
+import { item_from_string, item_to_string } from "../data";
 
 interface EquipJson {
     weapon?: ItemJson;
@@ -69,13 +70,13 @@ class EquipData {
 
     to_string() {
         let result:EquipStrings = {
-            weapon: ItemSystem.to_string(this.weapon),
-            secondary: ItemSystem.to_string(this.secondary),
+            weapon: item_to_string(this.weapon),
+            secondary: item_to_string(this.secondary),
             armour: {},
             backpack: this.backpack.to_string()
         }
         for (let tag of armour_slots) {
-            result.armour[tag] = ItemSystem.to_string(this.armour[tag])
+            result.armour[tag] = item_to_string(this.armour[tag])
         }
 
         return JSON.stringify(result)
@@ -84,15 +85,15 @@ class EquipData {
     from_string(s: string) {
         const json:EquipStrings = JSON.parse(s)
         if (json.weapon != undefined) {
-                this.weapon                 = ItemSystem.from_string(json.weapon)
+                this.weapon                 = item_from_string(json.weapon)
         }
         if (json.secondary != undefined) {
-                this.secondary              = ItemSystem.from_string(json.secondary)
+                this.secondary              = item_from_string(json.secondary)
         }
         for (let tag of armour_slots) {
             const tmp = json.armour[tag] 
             if (tmp != undefined) {
-                this.armour[tag]            = ItemSystem.from_string(tmp)
+                this.armour[tag]            = item_from_string(tmp)
             }            
         }
 

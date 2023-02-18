@@ -101,7 +101,7 @@ var EventMarket;
     function remove_bulk_order(order_id) {
         const order = data_1.Data.BulkOrders.from_id(order_id);
         system_1.BulkOrders.remove(order_id);
-        const character = data_1.Data.Character.from_id(order.owner_id);
+        const character = data_1.Data.CharacterDB.from_id(order.owner_id);
         const cell = systems_communication_1.Convert.character_to_cell(character);
         effects_1.Effect.Update.cell_market(cell);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);

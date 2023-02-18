@@ -1,6 +1,6 @@
 import { weapon_attack_tag } from "../types";
-import { Damage } from "../misc/damage_types";
-import { Status } from "../character/character_parts";
+import { Damage } from "../damage_types";
+import { Status } from "../types";
 
 
 export class AttackObj {

@@ -27,40 +27,8 @@ const empty_stash = new Stash()
 
 // this file does not handle networking
 
-const save_path_bulk = path.join(SAVE_GAME_PATH, 'bulk_market.txt')
 
 export namespace BulkOrders {
-    export function save() {
-        console.log('saving bulk market orders')
-        let str:string = ''
-        for (let item of Data.BulkOrders.list()) {
-            if (item.amount == 0) continue;
-            str = str + JSON.stringify(item) + '\n' 
-            
-        }
-        fs.writeFileSync(save_path_bulk, str)
-        console.log('bulk market orders saved')
-        
-    }
-
-    export function load() {
-        console.log('loading bulk market orders')
-        if (!fs.existsSync(save_path_bulk)) {
-            fs.writeFileSync(save_path_bulk, '')
-        }
-        let data = fs.readFileSync(save_path_bulk).toString()
-        let lines = data.split('\n')
-        for (let line of lines) {
-            if (line == '') {continue}
-            const order: OrderBulk = JSON.parse(line)
-            // console.log(order)
-            Data.BulkOrders.set(order.id, order.owner_id, order)
-            const last_id = Data.BulkOrders.id()
-            Data.BulkOrders.set_id(Math.max(order.id, last_id) as order_bulk_id)            
-        }
-        console.log('bulk market orders loaded')
-    }
-
     // does not shadow resources, shadowing happens in create_type_order functions
     // private
     function create(amount: number, price: money, typ:'sell'|'buy', tag: material_index, owner: Character) {
@@ -72,7 +40,7 @@ export namespace BulkOrders {
 
     export function remove(id: order_bulk_id) {
         const order = Data.BulkOrders.from_id(id)
-        const character = Data.Character.from_id(order.owner_id)
+        const character = Data.CharacterDB.from_id(order.owner_id)
         if (order.typ == 'buy') {
             character.trade_savings.transfer(character.savings, order.amount * order.price as money)
         }
@@ -162,42 +130,7 @@ export namespace BulkOrders {
     }
 }
 
-const save_path_item = path.join(SAVE_GAME_PATH, 'item_market.txt')
-
 export namespace ItemOrders {
-    export function save() {
-        console.log('saving item market orders')
-        let str:string = ''
-        for (let item of Data.ItemOrders.list()) {
-            if (item.finished) continue;
-            str = str + JSON.stringify(item) + '\n' 
-            
-        }
-        fs.writeFileSync(save_path_item, str)
-        console.log('item market orders saved')
-        
-    }
-
-    export function load() {
-        console.log('loading item market orders')
-        if (!fs.existsSync(save_path_item)) {
-            fs.writeFileSync(save_path_item, '')
-        }
-        let data = fs.readFileSync(save_path_item).toString()
-        let lines = data.split('\n')
-        for (let line of lines) {
-            if (line == '') {continue}
-            const order_raw: OrderItem = JSON.parse(line)
-            const item = ItemSystem.from_string(JSON.stringify(order_raw.item))
-            const order = new OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished)
-            
-            Data.ItemOrders.set(order.id, order.owner_id, order)
-            const last_id = Data.ItemOrders.id()
-            Data.ItemOrders.set_id(Math.max(order.id, last_id) as order_item_id)            
-        }
-        console.log('item market orders loaded')
-    }
-
     export function create(owner: Character, item: Item, price: money, finished: boolean) {
         Data.ItemOrders.increase_id()
         let order = new OrderItem(Data.ItemOrders.id() as order_item_id, item, price as money, owner.id, finished)

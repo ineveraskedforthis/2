@@ -10,7 +10,7 @@ import { Alerts } from "./network_actions/alerts";
 import { UI_Part, Update } from "./causality_graph";
 import { cell_id, char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
 import { Event } from "../events/events";
-import { ModelVariant } from "../character/character_parts";
+import { ModelVariant } from "../types";
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 var path = require('path')
 

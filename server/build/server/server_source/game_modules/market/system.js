@@ -1,17 +1,11 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemOrders = exports.BulkOrders = exports.AuctionResponce = void 0;
 const system_1 = require("../character/system");
 const stash_1 = require("../inventories/stash");
-const system_2 = require("../items/system");
 const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 const classes_1 = require("./classes");
-const fs_1 = __importDefault(require("fs"));
-const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 var path = require('path');
 var AuctionResponce;
 (function (AuctionResponce) {
@@ -24,41 +18,8 @@ var AuctionResponce;
 })(AuctionResponce = exports.AuctionResponce || (exports.AuctionResponce = {}));
 const empty_stash = new stash_1.Stash();
 // this file does not handle networking
-const save_path_bulk = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'bulk_market.txt');
 var BulkOrders;
 (function (BulkOrders) {
-    function save() {
-        console.log('saving bulk market orders');
-        let str = '';
-        for (let item of data_1.Data.BulkOrders.list()) {
-            if (item.amount == 0)
-                continue;
-            str = str + JSON.stringify(item) + '\n';
-        }
-        fs_1.default.writeFileSync(save_path_bulk, str);
-        console.log('bulk market orders saved');
-    }
-    BulkOrders.save = save;
-    function load() {
-        console.log('loading bulk market orders');
-        if (!fs_1.default.existsSync(save_path_bulk)) {
-            fs_1.default.writeFileSync(save_path_bulk, '');
-        }
-        let data = fs_1.default.readFileSync(save_path_bulk).toString();
-        let lines = data.split('\n');
-        for (let line of lines) {
-            if (line == '') {
-                continue;
-            }
-            const order = JSON.parse(line);
-            // console.log(order)
-            data_1.Data.BulkOrders.set(order.id, order.owner_id, order);
-            const last_id = data_1.Data.BulkOrders.id();
-            data_1.Data.BulkOrders.set_id(Math.max(order.id, last_id));
-        }
-        console.log('bulk market orders loaded');
-    }
-    BulkOrders.load = load;
     // does not shadow resources, shadowing happens in create_type_order functions
     // private
     function create(amount, price, typ, tag, owner) {
@@ -69,7 +30,7 @@ var BulkOrders;
     }
     function remove(id) {
         const order = data_1.Data.BulkOrders.from_id(id);
-        const character = data_1.Data.Character.from_id(order.owner_id);
+        const character = data_1.Data.CharacterDB.from_id(order.owner_id);
         if (order.typ == 'buy') {
             character.trade_savings.transfer(character.savings, order.amount * order.price);
         }
@@ -156,42 +117,8 @@ var BulkOrders;
     }
     BulkOrders.new_sell_order = new_sell_order;
 })(BulkOrders = exports.BulkOrders || (exports.BulkOrders = {}));
-const save_path_item = path.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'item_market.txt');
 var ItemOrders;
 (function (ItemOrders) {
-    function save() {
-        console.log('saving item market orders');
-        let str = '';
-        for (let item of data_1.Data.ItemOrders.list()) {
-            if (item.finished)
-                continue;
-            str = str + JSON.stringify(item) + '\n';
-        }
-        fs_1.default.writeFileSync(save_path_item, str);
-        console.log('item market orders saved');
-    }
-    ItemOrders.save = save;
-    function load() {
-        console.log('loading item market orders');
-        if (!fs_1.default.existsSync(save_path_item)) {
-            fs_1.default.writeFileSync(save_path_item, '');
-        }
-        let data = fs_1.default.readFileSync(save_path_item).toString();
-        let lines = data.split('\n');
-        for (let line of lines) {
-            if (line == '') {
-                continue;
-            }
-            const order_raw = JSON.parse(line);
-            const item = system_2.ItemSystem.from_string(JSON.stringify(order_raw.item));
-            const order = new classes_1.OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished);
-            data_1.Data.ItemOrders.set(order.id, order.owner_id, order);
-            const last_id = data_1.Data.ItemOrders.id();
-            data_1.Data.ItemOrders.set_id(Math.max(order.id, last_id));
-        }
-        console.log('item market orders loaded');
-    }
-    ItemOrders.load = load;
     function create(owner, item, price, finished) {
         data_1.Data.ItemOrders.increase_id();
         let order = new classes_1.OrderItem(data_1.Data.ItemOrders.id(), item, price, owner.id, finished);

@@ -1,5 +1,5 @@
 import { Character } from "../character/character";
-import {CharacterActionResponce} from './action_manager'
+import { CharacterActionResponce } from "../action_types";
 import { map_position } from "../types";
 import { Convert } from "../systems_communication";
 import { UserManagement } from "../client_communication/user_manager";

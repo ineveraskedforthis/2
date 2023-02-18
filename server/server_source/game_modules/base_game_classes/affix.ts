@@ -4,7 +4,7 @@ import { AttackObj } from "../attack/class";
 import { Character } from "../character/character";
 import { Item } from "../items/item";
 import { ELODINO_FLESH, GRACI_HAIR, materials } from "../manager_classes/materials_manager";
-import { Damage } from "../misc/damage_types";
+import { Damage } from "../damage_types";
 
 export function get_potential_affix_weapon(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []

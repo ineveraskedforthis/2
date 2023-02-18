@@ -72,7 +72,7 @@ app.get('/api/:API_KEY/character/:charID', (req, res) => {
         res.json({ valid: false, reason: 'id is NaN' });
         return;
     }
-    const character = data_js_1.Data.Character.from_id(id);
+    const character = data_js_1.Data.CharacterDB.from_id(id);
     if (character == undefined) {
         res.json({ valid: false, reason: 'no_character' });
         return;

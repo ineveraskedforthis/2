@@ -1,5 +1,5 @@
 import { damage_type, melee_attack_type } from "../types";
-import { DmgOps } from "../misc/damage_types";
+import { DmgOps } from "../damage_types";
 import { Character } from "../character/character";
 import { CharacterSystem } from "../character/system";
 import { AttackObj } from "./class";

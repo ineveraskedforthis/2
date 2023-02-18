@@ -8,6 +8,7 @@ const system_2 = require("./game_modules/character/system");
 const human_1 = require("./game_modules/races/human");
 const inventory_1 = require("./game_modules/inventories/inventory");
 const system_3 = require("./game_modules/map/system");
+const data_1 = require("./game_modules/data");
 function string_difference([a, b]) {
     let resulta = '';
     let resultb = '';
@@ -29,9 +30,9 @@ function add_testing_items_to_equip(equip) {
 function character_serialization_test_simple() {
     console.log('basic character serialisation test');
     const character = system_2.CharacterSystem.template_to_character(human_1.Human, 'peter', 1);
-    const string = system_2.CharacterSystem.character_to_string(character);
-    const character2 = system_2.CharacterSystem.string_to_character(string);
-    const string2 = system_2.CharacterSystem.character_to_string(character2);
+    const string = data_1.Data.CharacterDB.character_to_string(character);
+    const character2 = data_1.Data.CharacterDB.string_to_character(string);
+    const string2 = data_1.Data.CharacterDB.character_to_string(character2);
     console.log(string == string2);
 }
 function character_serialisation_test_advanced() {
@@ -50,9 +51,9 @@ function character_serialisation_test_advanced() {
     character.perks.meat_master = true;
     character.explored[2] = true;
     character.explored[10] = true;
-    const string = system_2.CharacterSystem.character_to_string(character);
-    const character2 = system_2.CharacterSystem.string_to_character(string);
-    const string2 = system_2.CharacterSystem.character_to_string(character2);
+    const string = data_1.Data.CharacterDB.character_to_string(character);
+    const character2 = data_1.Data.CharacterDB.string_to_character(string);
+    const string2 = data_1.Data.CharacterDB.character_to_string(character2);
     console.log(string == string2);
 }
 function equip_string_test() {

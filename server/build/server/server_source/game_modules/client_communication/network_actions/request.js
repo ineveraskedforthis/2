@@ -5,9 +5,10 @@ const system_1 = require("../../attack/system");
 const battle_calcs_1 = require("../../battle/battle_calcs");
 const events_1 = require("../../battle/events");
 const Perks_1 = require("../../character/Perks");
-const skills_1 = require("../../character/skills");
+const perk_base_price_1 = require("../../prices/perk_base_price");
+const skill_price_1 = require("../../prices/skill_price");
 const data_1 = require("../../data");
-const damage_types_1 = require("../../misc/damage_types");
+const damage_types_1 = require("../../damage_types");
 const constants_1 = require("../../static_data/constants");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
@@ -59,7 +60,7 @@ var Request;
         };
         for (let perk of Perks_1.perks_list) {
             if (data[perk] == true) {
-                responce.perks[perk] = (0, Perks_1.perk_price)(perk, character, target_character);
+                responce.perks[perk] = (0, perk_base_price_1.perk_price)(perk, character, target_character);
             }
         }
         for (let skill of Object.keys(target_character.skills)) {
@@ -68,7 +69,7 @@ var Request;
             if ((teacher_skill >= 30) && (teacher_skill > user_skill + 20)) {
                 responce.skills[skill] = [
                     target_character.skills[skill],
-                    (0, skills_1.skill_price)(skill, character, target_character)
+                    (0, skill_price_1.skill_price)(skill, character, target_character)
                 ];
             }
         }

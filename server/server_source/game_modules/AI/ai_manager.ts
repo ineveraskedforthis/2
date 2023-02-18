@@ -1,6 +1,7 @@
 import type { Character } from "../character/character"
 import { hostile } from "../races/racial_hostility";
-import { ActionManager, CharacterAction } from "../actions/action_manager";
+import { ActionManager } from "../actions/action_manager";
+import { CharacterAction } from "../action_types";
 import { ARROW_BONE, ELODINO_FLESH, FOOD, MEAT, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
 import { MapSystem } from "../map/system";

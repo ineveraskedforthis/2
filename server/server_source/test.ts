@@ -7,6 +7,7 @@ import { CharacterSystem } from "./game_modules/character/system";
 import { Human } from "./game_modules/races/human";
 import { Inventory } from "./game_modules/inventories/inventory";
 import { MapSystem } from "./game_modules/map/system";
+import { Data } from "./game_modules/data";
 
 function string_difference([a, b]: [string, string]): [string, string] {
     let resulta = ''
@@ -34,9 +35,9 @@ function add_testing_items_to_equip(equip: Equip) {
 function character_serialization_test_simple() {
     console.log('basic character serialisation test')
     const character = CharacterSystem.template_to_character(Human, 'peter', 1 as cell_id)
-    const string = CharacterSystem.character_to_string(character)
-    const character2 = CharacterSystem.string_to_character(string)
-    const string2 = CharacterSystem.character_to_string(character2)
+    const string = Data.CharacterDB.character_to_string(character)
+    const character2 = Data.CharacterDB.string_to_character(string)
+    const string2 = Data.CharacterDB.character_to_string(character2)
 
     console.log(string == string2)
 }
@@ -62,9 +63,9 @@ function character_serialisation_test_advanced() {
     character.explored[2] = true
     character.explored[10] = true
 
-    const string = CharacterSystem.character_to_string(character)
-    const character2 = CharacterSystem.string_to_character(string)
-    const string2 = CharacterSystem.character_to_string(character2)
+    const string = Data.CharacterDB.character_to_string(character)
+    const character2 = Data.CharacterDB.string_to_character(string)
+    const string2 = Data.CharacterDB.character_to_string(character2)
 
     console.log(string==string2)
 }

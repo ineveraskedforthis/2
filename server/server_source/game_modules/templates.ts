@@ -1,4 +1,3 @@
-import { ModelVariant } from "./character/character_parts"
 import { CharacterTemplate } from "./character/templates"
 import { Data } from "./data"
 import { Event } from "./events/events"
@@ -7,6 +6,7 @@ import { ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
 import { EloTemplate } from "./races/elo"
 import { BerserkRatTemplate, MageRatTemplate } from "./races/rat"
+import { ModelVariant } from "./types"
 
 export namespace Template {
     export namespace Character {

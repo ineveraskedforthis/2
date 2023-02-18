@@ -6,7 +6,7 @@ import { Event } from "../events/events";
 import { WOOD, COTTON } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
 import { map_position } from "../types";
-import { ActionTargeted, CharacterActionResponce } from "./action_manager";
+import { ActionTargeted, CharacterActionResponce } from "../action_types";
 
 export const gather_wood: ActionTargeted = {
     duration(char: Character) {

@@ -2,10 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Character = void 0;
 const stash_1 = require("../inventories/stash");
-const character_parts_1 = require("./character_parts");
-const skills_1 = require("./skills");
 const equip_1 = require("../inventories/equip");
 const savings_1 = require("../inventories/savings");
+const types_1 = require("../types");
+const Skills_1 = require("./Skills");
 class Character {
     constructor(id, battle_id, battle_unit_id, user_id, cell_id, name, archetype, stats, max_hp) {
         this.id = id;
@@ -21,7 +21,7 @@ class Character {
         this.trade_stash = new stash_1.Stash();
         this.savings = new savings_1.Savings();
         this.trade_savings = new savings_1.Savings();
-        this.status = new character_parts_1.Status();
+        this.status = new types_1.Status();
         this.status.blood = 0;
         this.status.fatigue = 0;
         this.status.rage = 0;
@@ -30,9 +30,9 @@ class Character {
         this.cleared = false;
         this.action_progress = 0;
         this.action_duration = 0;
-        this.skills = new skills_1.SkillList();
+        this.skills = new Skills_1.SkillList();
         this.perks = {};
-        this.stats = new character_parts_1.InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp);
+        this.stats = new types_1.InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp);
         this.explored = [];
     }
     set_model_variation(data) {

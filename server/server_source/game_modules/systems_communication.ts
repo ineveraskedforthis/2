@@ -102,11 +102,11 @@ export namespace Convert {
     export function id_to_character(id: char_id|undefined|number): Character|undefined {
         if (id == undefined) return undefined
         if (id == -1) return undefined
-        return Data.Character.from_id(id as char_id)
+        return Data.CharacterDB.from_id(id as char_id)
     }
 
     export function number_to_character(id: number): Character|undefined {
-        return Data.Character.from_id(id as char_id)
+        return Data.CharacterDB.from_id(id as char_id)
     }
 
     export function unit_to_character(unit: Unit): Character {
@@ -190,7 +190,7 @@ export namespace Link {
             UserManagement.add_user_to_update_queue(user_online.data.id, 'character_creation')
         }
         UserManagement.save_users()
-        CharacterSystem.save()
+        Data.CharacterDB.save()
     }
 
     export function character_and_cell(character: Character, cell: Cell) {

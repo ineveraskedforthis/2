@@ -4,11 +4,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Data = exports.character_list = void 0;
+exports.Data = exports.item_from_string = exports.item_to_string = exports.character_list = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const SAVE_GAME_PATH_1 = require("../SAVE_GAME_PATH");
+const character_1 = require("./character/character");
 const factions_1 = require("./factions");
+const classes_1 = require("./market/classes");
+const Skills_1 = require("./character/Skills");
+const item_1 = require("./items/item");
+const damage_types_1 = require("./damage_types");
 var battles_list = [];
 var battles_dict = {};
 var last_id = 0;
@@ -42,7 +47,13 @@ var cell_to_buildings = new Map();
 const save_path = {
     REPUTATION: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'reputation.txt'),
     BUILDINGS: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'housing.txt'),
-    BUILDINGS_OWNERSHIP: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'housing_ownership.txt')
+    BUILDINGS_OWNERSHIP: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'housing_ownership.txt'),
+    CHARACTERS: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'characters.txt')
+};
+const save_path_bulk = path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'bulk_market.txt');
+const save_path_item = path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'item_market.txt');
+const loaded_flag = {
+    Characters: false
 };
 function read_lines(file) {
     if (!fs_1.default.existsSync(file)) {
@@ -51,14 +62,31 @@ function read_lines(file) {
     let data = fs_1.default.readFileSync(file).toString();
     return data.split('\n');
 }
+function item_to_string(item) {
+    return (JSON.stringify(item));
+}
+exports.item_to_string = item_to_string;
+function item_from_string(s) {
+    const item_data = JSON.parse(s);
+    let damage = damage_types_1.DmgOps.copy(item_data.damage);
+    let resistance = damage_types_1.DmgOps.copy(item_data.resists);
+    return new item_1.Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage);
+}
+exports.item_from_string = item_from_string;
 var Data;
 (function (Data) {
     function load() {
+        CharacterDB.load(save_path.CHARACTERS);
+        BulkOrders.save();
+        ItemOrders.save();
         Reputation.load(save_path.REPUTATION);
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP);
     }
     Data.load = load;
     function save() {
+        CharacterDB.save();
+        BulkOrders.save();
+        ItemOrders.save();
         Reputation.save(save_path.REPUTATION);
         Buildings.save(save_path.BUILDINGS);
     }
@@ -231,36 +259,147 @@ var Data;
         }
         Battle.list = list;
     })(Battle = Data.Battle || (Data.Battle = {}));
-    let Character;
-    (function (Character) {
+    let CharacterDB;
+    (function (CharacterDB) {
+        function load(save_path) {
+            if (loaded_flag.Characters) {
+                return;
+            }
+            console.log('loading characters');
+            if (!fs_1.default.existsSync(save_path)) {
+                fs_1.default.writeFileSync(save_path, '');
+            }
+            let data = fs_1.default.readFileSync(save_path).toString();
+            let lines = data.split('\n');
+            for (let line of lines) {
+                if (line == '') {
+                    continue;
+                }
+                const character = string_to_character(line);
+                Data.CharacterDB.set(character.id, character);
+                Data.CharacterDB.set_id(Math.max(character.id, Data.CharacterDB.id()));
+            }
+            loaded_flag.Characters = true;
+            console.log('characters loaded');
+        }
+        CharacterDB.load = load;
+        function save() {
+            console.log('saving characters');
+            let str = '';
+            for (let item of Data.CharacterDB.list()) {
+                if (item.dead())
+                    continue;
+                str = str + character_to_string(item) + '\n';
+            }
+            fs_1.default.writeFileSync(save_path.CHARACTERS, str);
+            console.log('characters saved');
+        }
+        CharacterDB.save = save;
+        function character_to_string(c) {
+            let ids = [c.id, c.battle_id, c.battle_unit_id, c.user_id, c.cell_id].join('&');
+            let name = c.name;
+            let archetype = JSON.stringify(c.archetype);
+            let equip = c.equip.to_string();
+            let stash = JSON.stringify(c.stash.get_json());
+            let trade_stash = JSON.stringify(c.trade_stash.get_json());
+            let savings = c.savings.get();
+            let trade_savings = c.trade_savings.get();
+            let status = JSON.stringify(c.status);
+            let skills = JSON.stringify(c.skills);
+            let perks = JSON.stringify(c.perks);
+            let innate_stats = JSON.stringify(c.stats);
+            let explored = JSON.stringify({ data: c.explored });
+            return [ids, name, archetype, equip, stash, trade_stash, savings, trade_savings, status, skills, perks, innate_stats, explored].join(';');
+        }
+        CharacterDB.character_to_string = character_to_string;
+        function string_to_character(s) {
+            const [ids, name, raw_archetype, raw_equip, raw_stash, raw_trade_stash, raw_savings, raw_trade_savings, raw_status, raw_skills, raw_perks, raw_innate_stats, raw_explored] = s.split(';');
+            let [raw_id, raw_battle_id, raw_battle_unit_id, raw_user_id, raw_cell_id] = ids.split('&');
+            if (raw_user_id != '#') {
+                var user_id = Number(raw_user_id);
+            }
+            else {
+                var user_id = '#';
+            }
+            const innate_stats = JSON.parse(raw_innate_stats);
+            const stats = innate_stats.stats;
+            const character = new character_1.Character(Number(raw_id), Number(raw_battle_id), Number(raw_battle_unit_id), user_id, Number(raw_cell_id), name, JSON.parse(raw_archetype), stats, innate_stats.max.hp);
+            character.stats = innate_stats;
+            character.explored = JSON.parse(raw_explored).data;
+            character.equip.from_string(raw_equip);
+            character.stash.load_from_json(JSON.parse(raw_stash));
+            character.trade_stash.load_from_json(JSON.parse(raw_trade_stash));
+            character.savings.inc(Number(raw_savings));
+            character.trade_savings.inc(Number(raw_trade_savings));
+            character.set_status(JSON.parse(raw_status));
+            character.skills = new Skills_1.SkillList();
+            for (let [_, item] of Object.entries(JSON.parse(raw_skills))) {
+                character.skills[_] = item;
+            }
+            character.perks = JSON.parse(raw_perks);
+            return character;
+        }
+        CharacterDB.string_to_character = string_to_character;
         function increase_id() {
             last_character_id = last_character_id + 1;
         }
-        Character.increase_id = increase_id;
+        CharacterDB.increase_id = increase_id;
         function id() {
             return last_character_id;
         }
-        Character.id = id;
+        CharacterDB.id = id;
         function set_id(x) {
             last_character_id = x;
         }
-        Character.set_id = set_id;
+        CharacterDB.set_id = set_id;
         function set(id, data) {
             exports.character_list.push(data);
             characters_dict[id] = data;
         }
-        Character.set = set;
+        CharacterDB.set = set;
         function from_id(id) {
             return characters_dict[id];
         }
-        Character.from_id = from_id;
+        CharacterDB.from_id = from_id;
         function list() {
             return exports.character_list;
         }
-        Character.list = list;
-    })(Character = Data.Character || (Data.Character = {}));
+        CharacterDB.list = list;
+    })(CharacterDB = Data.CharacterDB || (Data.CharacterDB = {}));
     let BulkOrders;
     (function (BulkOrders) {
+        function save() {
+            console.log('saving bulk market orders');
+            let str = '';
+            for (let item of Data.BulkOrders.list()) {
+                if (item.amount == 0)
+                    continue;
+                str = str + JSON.stringify(item) + '\n';
+            }
+            fs_1.default.writeFileSync(save_path_bulk, str);
+            console.log('bulk market orders saved');
+        }
+        BulkOrders.save = save;
+        function load() {
+            console.log('loading bulk market orders');
+            if (!fs_1.default.existsSync(save_path_bulk)) {
+                fs_1.default.writeFileSync(save_path_bulk, '');
+            }
+            let data = fs_1.default.readFileSync(save_path_bulk).toString();
+            let lines = data.split('\n');
+            for (let line of lines) {
+                if (line == '') {
+                    continue;
+                }
+                const order = JSON.parse(line);
+                // console.log(order)
+                Data.BulkOrders.set(order.id, order.owner_id, order);
+                const last_id = Data.BulkOrders.id();
+                Data.BulkOrders.set_id(Math.max(order.id, last_id));
+            }
+            console.log('bulk market orders loaded');
+        }
+        BulkOrders.load = load;
         function increase_id() {
             last_id_bulk = last_id_bulk + 1;
         }
@@ -298,6 +437,39 @@ var Data;
     })(BulkOrders = Data.BulkOrders || (Data.BulkOrders = {}));
     let ItemOrders;
     (function (ItemOrders) {
+        function save() {
+            console.log('saving item market orders');
+            let str = '';
+            for (let item of Data.ItemOrders.list()) {
+                if (item.finished)
+                    continue;
+                str = str + JSON.stringify(item) + '\n';
+            }
+            fs_1.default.writeFileSync(save_path_item, str);
+            console.log('item market orders saved');
+        }
+        ItemOrders.save = save;
+        function load() {
+            console.log('loading item market orders');
+            if (!fs_1.default.existsSync(save_path_item)) {
+                fs_1.default.writeFileSync(save_path_item, '');
+            }
+            let data = fs_1.default.readFileSync(save_path_item).toString();
+            let lines = data.split('\n');
+            for (let line of lines) {
+                if (line == '') {
+                    continue;
+                }
+                const order_raw = JSON.parse(line);
+                const item = item_from_string(JSON.stringify(order_raw.item));
+                const order = new classes_1.OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished);
+                Data.ItemOrders.set(order.id, order.owner_id, order);
+                const last_id = Data.ItemOrders.id();
+                Data.ItemOrders.set_id(Math.max(order.id, last_id));
+            }
+            console.log('item market orders loaded');
+        }
+        ItemOrders.load = load;
         function increase_id() {
             last_id_item = last_id_item + 1;
         }

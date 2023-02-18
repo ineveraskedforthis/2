@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EloTemplate = void 0;
-const damage_types_1 = require("../misc/damage_types");
+const damage_types_1 = require("../damage_types");
 const templates_1 = require("../character/templates");
 const generate_name_moraes_1 = require("./generate_name_moraes");
 const ElodinoArchetype = {

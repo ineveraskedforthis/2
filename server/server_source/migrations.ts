@@ -49,7 +49,6 @@ function get_version():number {
 }
 
 export function migrate(current_version:number, target_version:number) {
-    CharacterSystem.load()
     MapSystem.load()
     Data.load()
 
@@ -130,7 +129,7 @@ function create_starting_agents() {
     
 
     MapSystem.load()
-    CharacterSystem.load()
+    Data.load()
 
     const RatsStartingCell = MapSystem.coordinate_to_id(6, 5)
     const GraciStartingCell = MapSystem.coordinate_to_id(15, 8)
@@ -377,7 +376,7 @@ function set_up_guards_1() {
 function cancel_cook_orders() {
     console.log('cancelling orders of cooks')
 
-    for (let character of Data.Character.list()) {
+    for (let character of Data.CharacterDB.list()) {
         if (character.name != 'Trader') {
             EventMarket.clear_orders(character)
         }        
@@ -403,7 +402,7 @@ function misc_characters() {
 
 function fix_factions() {
     const EloStartingCell = MapSystem.coordinate_to_cell([18, 4])
-    for (let character of Data.Character.list()) {
+    for (let character of Data.CharacterDB.list()) {
         if (character.race() == 'elo') {
             Data.Reputation.set(Factions.Elodinos.id, character.id, "member")
             if (Convert.character_to_cell(character).development.wild == 0) {
@@ -456,5 +455,4 @@ console.log(version)
 
 migrate(version, constants.version)
 
-CharacterSystem.save()
 Data.save()

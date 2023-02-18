@@ -7,7 +7,8 @@ const system_1 = require("../battle/system");
 const basic_functions_1 = require("../calculations/basic_functions");
 const system_2 = require("../attack/system");
 const generate_loot_1 = require("../races/generate_loot");
-const Perks_1 = require("../character/Perks");
+const perk_requirement_1 = require("../character/perk_requirement");
+const perk_base_price_1 = require("../prices/perk_base_price");
 const system_3 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
@@ -18,18 +19,18 @@ const systems_communication_1 = require("../systems_communication");
 const effects_1 = require("./effects");
 const inventory_events_1 = require("./inventory_events");
 const market_1 = require("./market");
-const damage_types_1 = require("../misc/damage_types");
-const skills_1 = require("../character/skills");
+const damage_types_1 = require("../damage_types");
+const skill_price_1 = require("../prices/skill_price");
 var Event;
 (function (Event) {
     function buy_perk(student, perk, teacher) {
         let savings = student.savings.get();
-        let price = (0, Perks_1.perk_price)(perk, student, teacher);
+        let price = (0, perk_base_price_1.perk_price)(perk, student, teacher);
         if (savings < price) {
             alerts_1.Alerts.not_enough_to_character(student, 'money', price, savings);
             return;
         }
-        let responce = (0, Perks_1.perk_requirement)(perk, student);
+        let responce = (0, perk_requirement_1.perk_requirement)(perk, student);
         if (responce != 'ok') {
             alerts_1.Alerts.generic_character_alert(student, 'alert', responce);
             return;
@@ -42,7 +43,7 @@ var Event;
     Event.buy_perk = buy_perk;
     function buy_skill(student, skill, teacher) {
         let savings = student.savings.get();
-        let price = (0, skills_1.skill_price)(skill, student, teacher);
+        let price = (0, skill_price_1.skill_price)(skill, student, teacher);
         if (savings < price) {
             alerts_1.Alerts.not_enough_to_character(student, 'money', price, savings);
             return;
@@ -102,7 +103,7 @@ var Event;
         character.set_model_variation(model);
         const cell = system_4.MapSystem.SAFE_id_to_cell(starting_cell);
         systems_communication_1.Link.character_and_cell(character, cell);
-        system_3.CharacterSystem.save();
+        data_1.Data.CharacterDB.save();
         return character;
     }
     Event.new_character = new_character;

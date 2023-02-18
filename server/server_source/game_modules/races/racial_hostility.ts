@@ -1,5 +1,4 @@
-import { tagRACE } from "../character/character_parts"
-
+import { tagRACE } from "../types"
 
 export function hostile(actor: tagRACE, target: tagRACE):boolean {
     switch(actor) {

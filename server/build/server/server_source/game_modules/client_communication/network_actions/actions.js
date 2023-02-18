@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HandleAction = void 0;
 const action_manager_1 = require("../../actions/action_manager");
+const action_types_1 = require("../../action_types");
 const events_1 = require("../../battle/events");
 const system_1 = require("../../battle/system");
-const Perks_1 = require("../../character/Perks");
+const checks_1 = require("../../character/checks");
 const inventory_events_1 = require("../../events/inventory_events");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
@@ -26,7 +27,7 @@ var HandleAction;
             return;
         }
         const destination = [x, y];
-        let responce = action_manager_1.ActionManager.start_action(action_manager_1.CharacterAction.MOVE, character, destination);
+        let responce = action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, destination);
         if (responce == 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */) {
             alerts_1.Alerts.impossible_move(user);
         }
@@ -128,7 +129,7 @@ var HandleAction;
             //     return  battle.action(index, BattleAI.convert_attack_to_action(battle, index, input.target, 'fast'))
         }
         else if (input.action == 'dodge') {
-            if (!(0, Perks_1.can_dodge)(character)) {
+            if (!(0, checks_1.can_dodge)(character)) {
                 return { action: "not_learnt" };
             }
             return events_1.BattleEvent.Dodge(battle, unit);

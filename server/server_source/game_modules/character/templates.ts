@@ -1,5 +1,5 @@
-import { Damage } from "../misc/damage_types";
-import { Archetype, Stats, Status } from "./character_parts";
+import { Damage } from "../damage_types";
+import { Archetype, Stats } from "../types";
 
 export class CharacterTemplate {
     archetype: Archetype;

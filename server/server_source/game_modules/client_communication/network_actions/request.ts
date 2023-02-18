@@ -1,10 +1,12 @@
 import { Attack } from "../../attack/system";
 import { Accuracy } from "../../battle/battle_calcs";
 import { BattleEvent } from "../../battle/events";
-import { Perks, perks_list, perk_price } from "../../character/Perks";
-import { skill, skill_price } from "../../character/skills";
+import { Perks, perks_list } from "../../character/Perks";
+import { perk_price } from "../../prices/perk_base_price";
+import { skill } from "../../character/Skills";
+import { skill_price } from "../../prices/skill_price";
 import { Data, reputation_level } from "../../data";
-import { DmgOps } from "../../misc/damage_types";
+import { DmgOps } from "../../damage_types";
 import { UNIT_ID_MESSAGE } from "../../static_data/constants";
 import { Convert } from "../../systems_communication";
 import { Update } from "../causality_graph";

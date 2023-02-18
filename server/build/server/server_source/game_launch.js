@@ -13,7 +13,6 @@ const auth_1 = require("./game_modules/client_communication/network_actions/auth
 const events_1 = require("./game_modules/events/events");
 const systems_communication_1 = require("./game_modules/systems_communication");
 const system_3 = require("./game_modules/battle/system");
-const system_4 = require("./game_modules/market/system");
 const events_2 = require("./game_modules/battle/events");
 const gameloop = require('node-gameloop');
 var shutdown = false;
@@ -43,15 +42,12 @@ function launch(http_server) {
 }
 exports.launch = launch;
 function load() {
-    system_1.CharacterSystem.load();
     system_2.MapSystem.load();
+    data_1.Data.load();
     user_manager_1.UserManagement.load_users();
     auth_1.Auth.load();
     system_3.BattleSystem.load();
-    system_4.BulkOrders.load();
-    system_4.ItemOrders.load();
-    data_1.Data.load();
-    const characters = data_1.Data.Character.list();
+    const characters = data_1.Data.CharacterDB.list();
     //validating ids and connections
     for (const character of characters) {
         systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
@@ -66,7 +62,7 @@ function load() {
         console.log('test battle for shadow units');
         for (let unit of Object.values(battle.heap.data)) {
             let id = unit.char_id;
-            let character = data_1.Data.Character.from_id(id);
+            let character = data_1.Data.CharacterDB.from_id(id);
             if (character == undefined || !character.in_battle()) {
                 events_2.BattleEvent.Leave(battle, unit);
             }
@@ -75,12 +71,9 @@ function load() {
     // Event.new_character(HumanTemplateNotAligned, 'test', MapSystem.coordinate_to_id(7, 5), {mouth: 1, eyes: 1, chin: 1})
 }
 function save() {
-    system_1.CharacterSystem.save();
     user_manager_1.UserManagement.save_users();
     auth_1.Auth.save();
     system_3.BattleSystem.save();
-    system_4.BulkOrders.save();
-    system_4.ItemOrders.save();
     data_1.Data.save();
 }
 var update_timer = 0;
@@ -100,7 +93,7 @@ function update(delta, http_server) {
     system_3.BattleSystem.update(delta * 1000);
     let rats = 0;
     let elos = 0;
-    for (let character of data_1.Data.Character.list()) {
+    for (let character of data_1.Data.CharacterDB.list()) {
         if (character.dead()) {
             events_1.Event.death(character);
         }
