@@ -3,7 +3,7 @@ import { Accuracy } from "../../battle/battle_calcs";
 import { BattleEvent } from "../../battle/events";
 import { Perks, perks_list } from "../../character/Perks";
 import { perk_price } from "../../prices/perk_base_price";
-import { skill } from "../../character/Skills";
+import { skill } from "../../character/SkillList";
 import { skill_price } from "../../prices/skill_price";
 import { Data, reputation_level } from "../../data";
 import { DmgOps } from "../../damage_types";

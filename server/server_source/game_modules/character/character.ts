@@ -5,7 +5,7 @@ import { Savings} from "../inventories/savings";
 import { Archetype, cell_id, char_id, InnateStats, map_position, ModelVariant, money, Stats, Status, status_type, TEMP_USER_ID, user_id } from "../types";
 import { ActionTargeted } from "../action_types";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
-import { SkillList } from "./Skills";
+import { SkillList } from "./SkillList";
 
 export class Character {
     id: char_id;

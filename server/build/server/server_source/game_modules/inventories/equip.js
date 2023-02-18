@@ -6,7 +6,7 @@ const affix_1 = require("../base_game_classes/affix");
 const system_1 = require("../items/system");
 const damage_types_1 = require("../damage_types");
 const inventory_1 = require("./inventory");
-const data_1 = require("../data");
+const strings_management_1 = require("../strings_management");
 class EquipData {
     constructor() {
         // explicitly setting to undefined
@@ -44,28 +44,28 @@ class EquipData {
     }
     to_string() {
         let result = {
-            weapon: (0, data_1.item_to_string)(this.weapon),
-            secondary: (0, data_1.item_to_string)(this.secondary),
+            weapon: (0, strings_management_1.item_to_string)(this.weapon),
+            secondary: (0, strings_management_1.item_to_string)(this.secondary),
             armour: {},
             backpack: this.backpack.to_string()
         };
         for (let tag of types_1.armour_slots) {
-            result.armour[tag] = (0, data_1.item_to_string)(this.armour[tag]);
+            result.armour[tag] = (0, strings_management_1.item_to_string)(this.armour[tag]);
         }
         return JSON.stringify(result);
     }
     from_string(s) {
         const json = JSON.parse(s);
         if (json.weapon != undefined) {
-            this.weapon = (0, data_1.item_from_string)(json.weapon);
+            this.weapon = (0, strings_management_1.item_from_string)(json.weapon);
         }
         if (json.secondary != undefined) {
-            this.secondary = (0, data_1.item_from_string)(json.secondary);
+            this.secondary = (0, strings_management_1.item_from_string)(json.secondary);
         }
         for (let tag of types_1.armour_slots) {
             const tmp = json.armour[tag];
             if (tmp != undefined) {
-                this.armour[tag] = (0, data_1.item_from_string)(tmp);
+                this.armour[tag] = (0, strings_management_1.item_from_string)(tmp);
             }
         }
         this.backpack.from_string(json.backpack);

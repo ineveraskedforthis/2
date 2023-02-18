@@ -1,5 +1,5 @@
 import { Accuracy } from "../../battle/battle_calcs";
-import { SkillList } from "../../character/Skills";
+import { SkillList } from "../../character/SkillList";
 import { MapSystem } from "../../map/system";
 import { Development } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";

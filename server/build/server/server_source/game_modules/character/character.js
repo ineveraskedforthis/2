@@ -5,7 +5,7 @@ const stash_1 = require("../inventories/stash");
 const equip_1 = require("../inventories/equip");
 const savings_1 = require("../inventories/savings");
 const types_1 = require("../types");
-const Skills_1 = require("./Skills");
+const SkillList_1 = require("./SkillList");
 class Character {
     constructor(id, battle_id, battle_unit_id, user_id, cell_id, name, archetype, stats, max_hp) {
         this.id = id;
@@ -30,7 +30,7 @@ class Character {
         this.cleared = false;
         this.action_progress = 0;
         this.action_duration = 0;
-        this.skills = new Skills_1.SkillList();
+        this.skills = new SkillList_1.SkillList();
         this.perks = {};
         this.stats = new types_1.InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp);
         this.explored = [];

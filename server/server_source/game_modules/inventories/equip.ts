@@ -7,7 +7,7 @@ import { ItemSystem } from "../items/system";
 import { Damage, DmgOps } from "../damage_types";
 import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
 import { AttackObj } from "../attack/class";
-import { item_from_string, item_to_string } from "../data";
+import { item_from_string, item_to_string } from "../strings_management";
 
 interface EquipJson {
     weapon?: ItemJson;

@@ -1,5 +1,5 @@
 import { Perks } from "../../character/Perks";
-import { skill } from "../../character/Skills";
+import { skill } from "../../character/SkillList";
 import { Event } from "../../events/events";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper, User } from "../user";

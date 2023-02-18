@@ -27,7 +27,7 @@ import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
 import { AttackObj } from "../attack/class";
 import { Damage, DmgOps } from "../damage_types";
-import { skill } from "../character/Skills";
+import { skill } from "../character/SkillList";
 import { skill_price } from "../prices/skill_price";
 
 export namespace Event {
