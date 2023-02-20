@@ -1,6 +1,6 @@
 import { affix, equip_slot, ItemData } from "../../../../shared/inventory"
 import { weapon_tag } from "../types"
-import { Damage } from "../damage_types"
+import { Damage } from "../Damage"
 import { ITEM_MATERIAL } from "./ITEM_MATERIAL"
 
 export class Item {

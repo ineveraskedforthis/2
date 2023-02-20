@@ -1,5 +1,5 @@
 import { armour_slot } from "../../../shared/inventory"
-import { Damage } from "./damage_types"
+import { Damage } from "./Damage"
 
 export type char_id = number                    & {__brand:  "character_id"}
 export type TEMP_CHAR_ID = '@' 

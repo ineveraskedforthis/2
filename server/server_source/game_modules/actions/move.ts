@@ -1,5 +1,5 @@
 import { Character } from "../character/character";
-import { ActionTargeted, CharacterActionResponce } from "../action_types";
+import { ActionTargeted, CharacterActionResponce } from "../CharacterActionResponce";
 import { MapSystem } from "../map/system";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Human = void 0;
-const damage_types_1 = require("../damage_types");
+const Damage_1 = require("../Damage");
 const templates_1 = require("../character/templates");
 const HumanArchetype = {
     model: 'human',
@@ -17,5 +17,5 @@ const HumanStats = {
     magic_power: 10,
     movement_speed: 1
 };
-const HumanBaseResists = new damage_types_1.Damage(0, 0, 0, 0);
+const HumanBaseResists = new Damage_1.Damage(0, 0, 0, 0);
 exports.Human = new templates_1.CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists);

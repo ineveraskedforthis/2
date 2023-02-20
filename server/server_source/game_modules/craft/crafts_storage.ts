@@ -1,4 +1,4 @@
-import { ActionTargeted } from "../action_types";
+import { ActionTargeted } from "../CharacterActionResponce";
 import { skill } from "../character/SkillList";
 import { ItemJson } from "../items/item";
 import { material_index } from "../manager_classes/materials_manager";

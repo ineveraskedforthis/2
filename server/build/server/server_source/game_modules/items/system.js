@@ -3,9 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ItemSystem = void 0;
 const affix_1 = require("../base_game_classes/affix");
 const damage_types_1 = require("../damage_types");
+const Damage_1 = require("../Damage");
 const item_1 = require("./item");
 const materials_manager_1 = require("../manager_classes/materials_manager");
-const empty_resists = new damage_types_1.Damage();
+const empty_resists = new Damage_1.Damage();
 const empty_status = {
     fatigue: 0,
     stress: 0,
@@ -78,7 +79,7 @@ var ItemSystem;
     ItemSystem.power = power;
     function melee_damage(item, type) {
         // summing up all affixes
-        let affix_damage = new damage_types_1.Damage();
+        let affix_damage = new Damage_1.Damage();
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let effect = affix_1.damage_affixes_effects[affix.tag];
@@ -87,7 +88,7 @@ var ItemSystem;
             affix_damage = effect(affix_damage);
         }
         // calculating base damage of item and adding affix
-        let damage = new damage_types_1.Damage();
+        let damage = new Damage_1.Damage();
         switch (type) {
             case 'blunt': {
                 damage.blunt = ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt;
@@ -113,7 +114,7 @@ var ItemSystem;
     ItemSystem.melee_damage = melee_damage;
     function ranged_damage(weapon) {
         // summing up all affixes
-        let affix_damage = new damage_types_1.Damage();
+        let affix_damage = new Damage_1.Damage();
         for (let i = 0; i < weapon.affixes.length; i++) {
             let affix = weapon.affixes[i];
             let effect = affix_1.damage_affixes_effects[affix.tag];
@@ -121,7 +122,7 @@ var ItemSystem;
                 continue;
             affix_damage = (affix_damage);
         }
-        let damage = new damage_types_1.Damage();
+        let damage = new Damage_1.Damage();
         if (weapon?.weapon_tag == 'ranged') {
             damage.pierce = Math.floor(50 * weapon.durability / 100);
             damage = damage_types_1.DmgOps.add(damage, affix_damage);

@@ -8,7 +8,7 @@ import { Character } from "../../character/character";
 import { box, CraftBulk, CraftItem } from "../../craft/crafts_storage";
 import { Cell } from "../../map/cell";
 import { OrderBulkJson } from "../../market/classes";
-import { Damage } from "../../damage_types";
+import { Damage } from "../../Damage";
 import { Convert } from "../../systems_communication";
 import { UI_Part } from "../causality_graph";
 import { User } from "../user";

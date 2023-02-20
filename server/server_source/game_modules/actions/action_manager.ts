@@ -2,7 +2,7 @@ import { Character } from "../character/character"
 // import { attack } from "./attack"
 import { Alerts } from "../client_communication/network_actions/alerts"
 import { Data } from "../data"
-import { ActionTargeted, CharacterActionResponce } from "../action_types"
+import { ActionTargeted, CharacterActionResponce } from "../CharacterActionResponce";
 
 export function dummy_duration(char: Character) {
     return 0.5;

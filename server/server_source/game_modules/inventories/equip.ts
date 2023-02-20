@@ -4,7 +4,8 @@ import { update_character } from "../base_game_classes/affix";
 import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
-import { Damage, DmgOps } from "../damage_types";
+import { DmgOps } from "../damage_types";
+import { Damage } from "../Damage";
 import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
 import { AttackObj } from "../attack/class";
 import { item_from_string, item_to_string } from "../strings_management";
@@ -160,22 +161,22 @@ export class Equip {
         return 1
     }
 
-    update(agent:Character) {
-        for (let i of armour_slots) {
-            this.item_update(this.data.armour[i], agent);
-        }
-    }
+    // update(agent:Character) {
+    //     for (let i of armour_slots) {
+    //         this.item_update(this.data.armour[i], agent);
+    //     }
+    // }
 
-    item_update(item:Item|undefined, agent:Character) {
-        if (item == undefined) {return}
-        for (let i = 0; i < item.affixes.length; i++) {
-            let affix = item.affixes[i];
-            let f = update_character[affix.tag];
-            if (f != undefined) {
-                f(agent);
-            }
-        }
-    }
+    // item_update(item:Item|undefined, agent:Character) {
+    //     if (item == undefined) {return}
+    //     for (let i = 0; i < item.affixes.length; i++) {
+    //         let affix = item.affixes[i];
+    //         let f = update_character[affix.tag];
+    //         if (f != undefined) {
+    //             f(agent);
+    //         }
+    //     }
+    // }
 
     equip_from_backpack(index: number) {
         let backpack = this.data.backpack;

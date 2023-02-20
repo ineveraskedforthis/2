@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Equip = void 0;
 const types_1 = require("../types");
-const affix_1 = require("../base_game_classes/affix");
 const system_1 = require("../items/system");
 const damage_types_1 = require("../damage_types");
+const Damage_1 = require("../Damage");
 const inventory_1 = require("./inventory");
 const strings_management_1 = require("../strings_management");
 class EquipData {
@@ -119,23 +119,21 @@ class Equip {
     get_magic_power_modifier() {
         return 1;
     }
-    update(agent) {
-        for (let i of types_1.armour_slots) {
-            this.item_update(this.data.armour[i], agent);
-        }
-    }
-    item_update(item, agent) {
-        if (item == undefined) {
-            return;
-        }
-        for (let i = 0; i < item.affixes.length; i++) {
-            let affix = item.affixes[i];
-            let f = affix_1.update_character[affix.tag];
-            if (f != undefined) {
-                f(agent);
-            }
-        }
-    }
+    // update(agent:Character) {
+    //     for (let i of armour_slots) {
+    //         this.item_update(this.data.armour[i], agent);
+    //     }
+    // }
+    // item_update(item:Item|undefined, agent:Character) {
+    //     if (item == undefined) {return}
+    //     for (let i = 0; i < item.affixes.length; i++) {
+    //         let affix = item.affixes[i];
+    //         let f = update_character[affix.tag];
+    //         if (f != undefined) {
+    //             f(agent);
+    //         }
+    //     }
+    // }
     equip_from_backpack(index) {
         let backpack = this.data.backpack;
         let item = backpack.items[index];
@@ -237,7 +235,7 @@ class Equip {
         };
     }
     resists() {
-        let resists = new damage_types_1.Damage;
+        let resists = new Damage_1.Damage;
         for (let i of types_1.armour_slots) {
             damage_types_1.DmgOps.add_ip(resists, system_1.ItemSystem.resists(this.data.armour[i]));
         }

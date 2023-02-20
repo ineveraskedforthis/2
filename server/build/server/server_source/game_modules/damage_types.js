@@ -1,19 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.damage_types = exports.DmgOps = exports.Damage = void 0;
-class Damage {
-    constructor(blunt = 0, pierce = 0, slice = 0, fire = 0) {
-        this.blunt = blunt;
-        this.pierce = pierce;
-        this.slice = slice;
-        this.fire = fire;
-    }
-}
-exports.Damage = Damage;
+exports.damage_types = exports.DmgOps = void 0;
+const Damage_1 = require("./Damage");
 var DmgOps;
 (function (DmgOps) {
     function add(y, x) {
-        let responce = new Damage();
+        let responce = new Damage_1.Damage();
         for (let t of exports.damage_types) {
             responce[t] = x[t] + y[t];
         }
@@ -28,7 +20,7 @@ var DmgOps;
     }
     DmgOps.add_ip = add_ip;
     function subtract(x, y) {
-        let responce = new Damage();
+        let responce = new Damage_1.Damage();
         for (let t of exports.damage_types) {
             responce[t] = Math.max(x[t] - y[t], 0);
         }
@@ -50,7 +42,7 @@ var DmgOps;
     }
     DmgOps.mult_ip = mult_ip;
     function copy(x) {
-        return new Damage(x.blunt, x.pierce, x.slice, x.fire);
+        return new Damage_1.Damage(x.blunt, x.pierce, x.slice, x.fire);
     }
     DmgOps.copy = copy;
     function total(x) {

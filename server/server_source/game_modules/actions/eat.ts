@@ -1,5 +1,5 @@
 import type { Character } from "../character/character";
-import { CharacterActionResponce } from "../action_types";
+import { CharacterActionResponce } from "../CharacterActionResponce";
 import { FOOD } from "../manager_classes/materials_manager";
 import { map_position } from "../types";
 import { UserManagement } from "../client_communication/user_manager";

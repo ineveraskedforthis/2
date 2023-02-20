@@ -1,5 +1,5 @@
 import { weapon_attack_tag } from "../types";
-import { Damage } from "../damage_types";
+import { Damage } from "../Damage";
 import { Status } from "../types";
 
 

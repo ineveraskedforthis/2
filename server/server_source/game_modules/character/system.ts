@@ -3,7 +3,8 @@ import { cell_id, damage_type, money, weapon_attack_tag, weapon_tag } from "../t
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
-import { Damage, damage_types, DmgOps } from "../damage_types";
+import { damage_types, DmgOps } from "../damage_types";
+import { Damage } from "../Damage";
 import { Character } from "./character";
 import { Loot } from "../races/generate_loot";
 import { CharacterTemplate } from "./templates";

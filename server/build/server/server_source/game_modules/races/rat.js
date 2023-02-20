@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BerserkRatTemplate = exports.MageRatTemplate = exports.BigRatTemplate = exports.RatTemplate = void 0;
-const damage_types_1 = require("../damage_types");
+const Damage_1 = require("../Damage");
 const templates_1 = require("../character/templates");
 const generate_name_moraes_1 = require("./generate_name_moraes");
 const RatArchetype = {
@@ -38,8 +38,8 @@ const BigRatStats = {
     magic_power: 10,
     movement_speed: 1
 };
-const RatResists = new damage_types_1.Damage(5, 5, 5, 20);
-const BerserkResists = new damage_types_1.Damage(0, 0, 0, 0);
+const RatResists = new Damage_1.Damage(5, 5, 5, 20);
+const BerserkResists = new Damage_1.Damage(0, 0, 0, 0);
 const rat_moraes = ['s', 'shi', "S'", "fu", 'fi'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(rat_moraes, 5);

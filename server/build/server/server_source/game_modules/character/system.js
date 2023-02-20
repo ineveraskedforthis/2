@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CharacterSystem = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const damage_types_1 = require("../damage_types");
+const Damage_1 = require("../Damage");
 const character_1 = require("./character");
 const generate_loot_1 = require("../races/generate_loot");
 const data_1 = require("../data");
@@ -96,7 +97,7 @@ var CharacterSystem;
             return weapon_damage;
         }
         //handle case of unarmed
-        const damage = new damage_types_1.Damage();
+        const damage = new Damage_1.Damage();
         if (type == 'blunt') {
             if (character.perks.advanced_unarmed) {
                 damage.blunt = 40;
@@ -123,7 +124,7 @@ var CharacterSystem;
         const damage = character.equip.get_ranged_damage();
         if (damage != undefined)
             return damage;
-        return new damage_types_1.Damage();
+        return new Damage_1.Damage();
     }
     CharacterSystem.ranged_damage_raw = ranged_damage_raw;
     function ranged_skill(character) {

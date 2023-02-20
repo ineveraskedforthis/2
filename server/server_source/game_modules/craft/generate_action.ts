@@ -1,5 +1,5 @@
 import { dummy_duration, dummy_start } from "../actions/action_manager";
-import { CharacterActionResponce } from "../action_types";
+import { CharacterActionResponce } from "../CharacterActionResponce";
 import { Character } from "../character/character";
 import { map_position } from "../types";
 import { event_craft_bulk } from "./CraftBulk";

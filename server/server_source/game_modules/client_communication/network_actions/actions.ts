@@ -1,6 +1,7 @@
 import { battle_position, unit_id } from "../../../../../shared/battle_data";
 import { ActionManager } from "../../actions/action_manager";
-import { ActionTargeted, CharacterAction, CharacterActionResponce } from "../../action_types";
+import { CharacterAction } from "../../action_types";
+import { ActionTargeted, CharacterActionResponce } from "../../CharacterActionResponce";
 import { Battle } from "../../battle/classes/battle";
 import { BattleEvent } from "../../battle/events";
 import { BattleSystem } from "../../battle/system";

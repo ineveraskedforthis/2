@@ -1,7 +1,8 @@
 import { ItemData } from "../../../../shared/inventory";
 import { damage_type } from "../types";
 import { attack_affixes_effects, damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
-import { Damage, DmgOps } from "../damage_types";
+import { DmgOps } from "../damage_types";
+import { Damage } from "../Damage";
 import { Item, ItemJson, Itemlette } from "./item";
 import { ELODINO_FLESH, GRACI_HAIR, materials, MaterialsManager } from "../manager_classes/materials_manager";
 import { Status } from "../types";
