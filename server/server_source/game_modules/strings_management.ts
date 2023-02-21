@@ -3,6 +3,7 @@ import { DmgOps } from "./damage_types";
 import { Archetype, cell_id, InnateStats, money, Stats, Status, user_id } from "./types";
 import { Character } from "./character/character";
 import { SkillList, skill } from "./character/SkillList";
+import { Inventory } from "./inventories/inventory";
 
 
 export function item_to_string(item: Item | undefined): string {
@@ -75,4 +76,23 @@ export function string_to_character(s: string) {
     character.perks = JSON.parse(raw_perks)
 
     return character
+}
+
+export function inventory_to_string(inventory: Inventory) {
+    const array:string[] = []
+    for (let i of inventory.items) {
+        if (i != undefined) {
+            array.push(item_to_string(i))
+        }
+    }
+    return JSON.stringify({items_array: array})
+}
+
+export function inventory_from_string(inventory: Inventory, s: string) {
+    const data:{items_array: string[]} = JSON.parse(s)
+    for (let i = 0; i <= 100; i++) {
+        const tmp = data.items_array[i]
+        if (tmp == undefined) return
+        inventory.items.push(item_from_string(tmp))
+    }
 }

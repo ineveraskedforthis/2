@@ -64,6 +64,21 @@ export namespace AIhelper {
         } 
         return -1
     }
+
+    export function free_rats_in_cell(char: Character) {
+        let cell = Convert.character_to_cell(char)
+        let a = cell.get_characters_list()
+        for (let {id, name} of a) {
+            let target_char = Convert.id_to_character(id)
+            if (target_char.race() == 'rat') {
+                if (!target_char.in_battle() && !target_char.dead()) {
+                    return target_char.id
+                }                
+            }
+        } 
+        return undefined
+    }
+
     export function battles_in_cell(char: Character) {
         let battles:battle_id[] = []
         let cell = Convert.character_to_cell(char)

@@ -59,25 +59,6 @@ export class Inventory{
         return {items_array: array}
     }
 
-    to_string() {
-        const array:string[] = []
-        for (let i of this.items) {
-            if (i != undefined) {
-                array.push(item_to_string(i))
-            }
-        }
-        return JSON.stringify({items_array: array})
-    }
-
-    from_string(s: string) {
-        const data:{items_array: string[]} = JSON.parse(s)
-        for (let i = 0; i <= 100; i++) {
-            const tmp = data.items_array[i]
-            if (tmp == undefined) return
-            this.items.push(item_from_string(tmp))
-        }
-    }
-
     get_data():{items: ItemData[]} {
         const array:ItemData[] = []
         for (let [key, value] of Object.entries(this.items)) {

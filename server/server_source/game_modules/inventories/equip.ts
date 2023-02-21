@@ -1,14 +1,14 @@
 import { armour_slot, EquipSocket, equip_slot } from "../../../../shared/inventory";
 import { armour_slots, damage_type } from "../types";
-import { update_character } from "../base_game_classes/affix";
-import { Character } from "../character/character";
+// import { update_character } from "../base_game_classes/affix";
+// import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
 import { DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
 import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
 import { AttackObj } from "../attack/class";
-import { item_from_string, item_to_string } from "../strings_management";
+import { inventory_from_string, inventory_to_string, item_from_string, item_to_string } from "../strings_management";
 
 interface EquipJson {
     weapon?: ItemJson;
@@ -74,7 +74,7 @@ class EquipData {
             weapon: item_to_string(this.weapon),
             secondary: item_to_string(this.secondary),
             armour: {},
-            backpack: this.backpack.to_string()
+            backpack: inventory_to_string(this.backpack)
         }
         for (let tag of armour_slots) {
             result.armour[tag] = item_to_string(this.armour[tag])
@@ -98,7 +98,7 @@ class EquipData {
             }            
         }
 
-        this.backpack.from_string(json.backpack)
+        inventory_from_string(this.backpack, json.backpack)
     }
 }
 
