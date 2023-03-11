@@ -27,13 +27,13 @@ namespace RatHunter {
         if ((character.get_fatigue() > 70) || (character.get_stress() > 30)) {
             return HunterStates.Rest
         }
-        if (character.stash.get(MEAT) > 0) {
+        if (character.stash.get(MEAT) > 5) {
             return HunterStates.SellMeat
         }
-        if (character.stash.get(RAT_SKIN) > 0) {
+        if (character.stash.get(RAT_SKIN) > 5) {
             return HunterStates.SellSkin
         }
-        if (character.stash.get(RAT_BONE) > 0) {
+        if (character.stash.get(RAT_BONE) > 5) {
             return HunterStates.SellBones
         }
         if (character.get_hp() < character.get_max_hp() * 0.8) {
