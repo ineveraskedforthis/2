@@ -17,6 +17,7 @@ import { CraftBulk, crafts_bulk, craft_actions } from "../craft/crafts_storage";
 import { Cooking } from "../craft/cooking";
 import { AmmunitionCraft } from "../craft/ammunition";
 import { CraftItem } from "../craft/items";
+import { simple_constraints, steppe_constraints, forest_constraints } from "./simple_constraints";
 
 
 // function MAYOR_AI(mayor: Character) {
@@ -36,17 +37,6 @@ import { CraftItem } from "../craft/items";
 
 
 let dp = [[0, 1], [0 ,-1] ,[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
-function forest_constraints(cell: Cell) {
-    return (cell.development['urban'] < 1) 
-            && (cell.development['wild'] > 0)
-            && (MapSystem.can_move([cell.x, cell.y]))
-} 
-function steppe_constraints(cell: Cell) {
-    return (cell.development['urban'] < 1) 
-            && (cell.development['wild'] < 1)
-            && (MapSystem.can_move([cell.x, cell.y]))
-}
-
 export namespace CampaignAI {
 
     export function random_walk(char: Character, constraints: (cell: Cell) => boolean) {
@@ -70,10 +60,19 @@ export namespace CampaignAI {
 
     export function rat_walk(character: Character, constraints: (cell: Cell) => boolean) {
         let cell = Convert.character_to_cell(character)
-        let potential_moves = MapSystem.neighbours_cells(cell.id, ).map((x) => 
+        let potential_moves = MapSystem.neighbours_cells(cell.id).map((x) => 
             {return {item: x, weight: trim(x.rat_scent, 0, 20)}})
         let target = select_weighted(potential_moves, constraints)
         ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
+    }
+
+    export function market_walk(character: Character) {
+        let cell = Convert.character_to_cell(character)
+        let potential_moves = MapSystem.neighbours_cells(cell.id).map((x) => {
+            return {item: x, weight: x.market_scent}
+        })
+        let target = select_max(potential_moves, simple_constraints)
+        ActionManager.start_action(CharacterAction.MOVE, character, [target?.x, target?.y])
     }
 
     export function rat_go_home(character: Character, constraints: (cell: Cell) => boolean) {

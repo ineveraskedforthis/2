@@ -9,6 +9,7 @@ export interface Development {
     rupture?: 0|1;
     rats?: 0|1;
     elodinos?: 0|1;
+    market?: 1;
 }
 
 export interface CellResources {
@@ -68,7 +69,7 @@ export const STARTING_DEVELOPMENT: {[_ in string]: Development} = {
     //small forest outside big city with a settlement
     '7_5': {rural: 0, urban: 1, wild: 1, ruins: 0, wastelands: 0},
     '7_6': {rural: 1, urban: 0, wild: 0, ruins: 0, wastelands: 0},
-    '6_5': {rural: 1, urban: 0, wild: 0, ruins: 0, wastelands: 0},
+    '6_5': {rural: 1, urban: 0, wild: 0, ruins: 0, wastelands: 0, market: 1},
 
     //rat outposts
     '6_7':  {rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0, rats: 1},

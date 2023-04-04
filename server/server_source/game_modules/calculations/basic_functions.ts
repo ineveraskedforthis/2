@@ -24,9 +24,9 @@ export function select_weighted<T>(input: {item: T, weight: number}[], constrain
     return input[0].item
 }
 
-export function select_max<T>(input: {item: T, weight: number}[], constraints?: (cell: T) => boolean): T|undefined {
+export function select_max<T>(input: {item: T, weight: number}[], constraints?: (cell: T) => boolean): T {
     let max = 0
-    let result = undefined
+    let result = input[1].item
 
     for (let item of input) {
         if (constraints != undefined) {

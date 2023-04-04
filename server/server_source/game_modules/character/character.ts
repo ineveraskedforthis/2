@@ -6,6 +6,7 @@ import { Archetype, cell_id, char_id, InnateStats, map_position, ModelVariant, m
 import { ActionTargeted } from "../CharacterActionResponce";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
+import { AIstate } from "./AIstate";
 
 export class Character {
     id: char_id;
@@ -35,6 +36,8 @@ export class Character {
     archetype: Archetype
     explored: boolean[];
     next_cell: map_position
+
+    ai_state: AIstate;
 
     action: ActionTargeted|undefined
     action_progress: number
@@ -74,6 +77,8 @@ export class Character {
 
         this.action_progress = 0
         this.action_duration = 0
+
+        this.ai_state = AIstate.Idle
 
         this.skills = new SkillList()
         this.perks = {}

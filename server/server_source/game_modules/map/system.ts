@@ -160,15 +160,23 @@ export namespace MapSystem {
 
         for (const cell of cells) {
             if (cell == undefined) continue
-            let orders = Convert.cell_id_to_bulk_orders(cell.id)
-            
+                        
             let temp = 0
-            for (let order_id of orders) {
-                let order = Data.BulkOrders.from_id(order_id)
-                if ((order.tag == MEAT) && (order.typ == 'buy')) {
-                    temp += order.amount * order.price
+            if (cell.is_market()) {
+                temp = 100
+            } else {
+                let neighbours = neighbours_cells(cell.id)
+                let max = 0
+                for (let item of neighbours) {
+                    if (item.market_scent > max) {
+                        max = item.market_scent
+                    }
                 }
+
+                temp = max - 1
             }
+
+            cell.market_scent = temp
         }
 
         for (const cell of cells) {

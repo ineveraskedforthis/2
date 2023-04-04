@@ -14,7 +14,7 @@ export class Cell {
     last_visit: number
     rat_scent: number
 
-    meat_buyers_scent: number 
+    market_scent: number 
     
 
     development: Development;
@@ -55,7 +55,7 @@ export class Cell {
             this.rat_scent = 100
         }
 
-        this.meat_buyers_scent = 0
+        this.market_scent = 0
 
         if (res == undefined) {
             this.resources = {water: false, prey: false, forest: false, fish: false}
@@ -129,6 +129,10 @@ export class Cell {
 
     can_gather_cotton(): boolean {
         return (this.development.rural > 0)
+    }
+
+    is_market(): boolean {
+        return (this.development.market == 1)
     }
 
     update(dt: number) {

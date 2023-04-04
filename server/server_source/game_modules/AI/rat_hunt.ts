@@ -10,101 +10,68 @@ import { Convert } from "../systems_communication";
 import { money } from "../types";
 import { CampaignAI } from "./ai_manager";
 import { AIhelper, base_price } from "./helpers";
+import { simple_constraints } from "./constraints";
 
-const enum HunterStates {
-    FindRat,
-    BuyFood,
-    Eat,
-    Rest,
-    SellMeat,
-    SellSkin,
-    SellBones,
-    BuyWeapon
+function tired(character: Character) {
+    return (character.get_fatigue() > 70) || (character.get_stress() > 30)
 }
 
-namespace RatHunter {
-    function decide_state(character: Character):HunterStates {
-        if ((character.get_fatigue() > 70) || (character.get_stress() > 30)) {
-            return HunterStates.Rest
-        }
-        if (character.stash.get(MEAT) > 5) {
-            return HunterStates.SellMeat
-        }
-        if (character.stash.get(RAT_SKIN) > 5) {
-            return HunterStates.SellSkin
-        }
-        if (character.stash.get(RAT_BONE) > 5) {
-            return HunterStates.SellBones
-        }
-        if (character.get_hp() < character.get_max_hp() * 0.8) {
-            if ((character.stash.get(FOOD) == 0) && (character.savings.get() > 30)) {
-                return HunterStates.BuyFood
-            } else if (character.stash.get(FOOD) > 0) {
-                return HunterStates.Eat
-            }
-        }
-        return HunterStates.FindRat
+function low_hp(character: Character) {
+    return character.get_hp() < 0.5 * character.get_max_hp()
+}
+
+const LOOT = [MEAT, RAT_SKIN, RAT_BONE]
+
+function loot(character: Character) {
+    let tmp = 0
+    for (let tag of LOOT) {
+        tmp += character.stash.get(tag)
+    }
+    return tmp
+}
+
+function sell_loot(character: Character) {
+    for (let tag of LOOT) {
+        EventMarket.sell(
+            character, 
+            tag, 
+            character.stash.get(tag), 
+            base_price(character, tag) - 1 as money
+        )
+    }
+}
+
+function RatHunter(character: Character) {
+    if (character.in_battle()) return
+    if (character.action != undefined) return
+    if (character.is_player()) return
+
+    if (tired(character)) {
+        ActionManager.start_action(CharacterAction.REST, character, [0, 0])
+        return
     }
     
-    function decide_action(character: Character) {
-        if (character.action != undefined) {
-            return
+    if (loot(character) > 10) {
+        let cell = Convert.character_to_cell(character)
+        if (cell.is_market()) {
+            sell_loot(character)
+        } else {
+            CampaignAI.market_walk(character)
         }
+        return
+    }
 
-        const state = decide_state(character)
-        switch(state) {
-            case HunterStates.BuyFood: {
-                break
-            }
-            case HunterStates.BuyWeapon: {
-                break
-            }
-            case HunterStates.Eat: {
-                ActionManager.start_action(CharacterAction.EAT, character, [0, 0])
-                break
-            }
-            case HunterStates.FindRat: {
-                let target = AIhelper.free_rats_in_cell(character)
-                const target_char = Convert.id_to_character(target)
-                if (target_char != undefined) {
-                    Event.start_battle(character, target_char)
-                    break
-                }
+    if ((character.stash.get(FOOD) > 0) && low_hp(character)) {
+        ActionManager.start_action(CharacterAction.EAT, character, [0, 0])
+        return
+    }
 
-                CampaignAI.random_walk(character, (cell) => {return true}) 
-                break
-            }
-            case HunterStates.Rest: {
-                ActionManager.start_action(CharacterAction.REST, character, [0, 0])
-                break
-            }
-            case HunterStates.SellBones: {
-                EventMarket.sell(
-                    character, 
-                    RAT_BONE, 
-                    character.stash.get(RAT_BONE), 
-                    base_price(character, RAT_BONE) - 1 as money
-                )
-                break
-            }
-            case HunterStates.SellMeat: {
-                EventMarket.sell(
-                    character, 
-                    MEAT, 
-                    character.stash.get(MEAT), 
-                    base_price(character, MEAT) - 1 as money
-                )
-                break
-            }
-            case HunterStates.SellSkin: {
-                EventMarket.sell(
-                    character, 
-                    RAT_SKIN, 
-                    character.stash.get(RAT_SKIN), 
-                    base_price(character, RAT_SKIN) - 1 as money
-                )
-                break
-            }
-        }
+    // finding rats if nothing else is needed
+    let target = AIhelper.free_rats_in_cell(character)
+    const target_char = Convert.id_to_character(target)
+    if (target_char != undefined) {
+        Event.start_battle(character, target_char)
+    } else {
+        CampaignAI.random_walk(character, simple_constraints) 
     }
 }
