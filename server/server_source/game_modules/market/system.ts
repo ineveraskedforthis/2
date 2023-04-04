@@ -9,10 +9,6 @@ import { Convert } from "../systems_communication";
 import { cell_id, char_id, money, order_bulk_id, order_item_id } from "../types";
 import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
 
-import fs from "fs"
-import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
-var path = require('path')
-
 export enum AuctionResponce {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
     EMPTY_BACKPACK_SLOT = 'empty_backpack_slot',

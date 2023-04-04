@@ -13,6 +13,8 @@ export class Cell {
     visited_recently: boolean;
     last_visit: number
     rat_scent: number
+
+    meat_buyers_scent: number 
     
 
     development: Development;
@@ -52,6 +54,8 @@ export class Cell {
         if (this.development.rats == 1) {
             this.rat_scent = 100
         }
+
+        this.meat_buyers_scent = 0
 
         if (res == undefined) {
             this.resources = {water: false, prey: false, forest: false, fish: false}

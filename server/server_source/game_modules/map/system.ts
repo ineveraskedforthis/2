@@ -8,6 +8,8 @@ import { cell_id, world_dimensions } from "../types";
 import { Cell} from "./cell";
 import { Template } from "../templates";
 import { trim } from "../calculations/basic_functions";
+import { Convert } from "../systems_communication";
+import { MEAT } from "../manager_classes/materials_manager";
 
 var size:world_dimensions = [0, 0]
 var max_direction:number = 30
@@ -154,6 +156,19 @@ export namespace MapSystem {
 
             // trim to avoid weirdness
             cell.rat_scent = trim(cell.rat_scent + d_scent * 20, 0, 50)
+        }
+
+        for (const cell of cells) {
+            if (cell == undefined) continue
+            let orders = Convert.cell_id_to_bulk_orders(cell.id)
+            
+            let temp = 0
+            for (let order_id of orders) {
+                let order = Data.BulkOrders.from_id(order_id)
+                if ((order.tag == MEAT) && (order.typ == 'buy')) {
+                    temp += order.amount * order.price
+                }
+            }
         }
 
         for (const cell of cells) {
