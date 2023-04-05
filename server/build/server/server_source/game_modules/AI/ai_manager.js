@@ -125,6 +125,7 @@ var CampaignAI;
         movement_rest_decision(char);
         if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
             action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
+            console.log(char.name, ': i am stressed');
             return;
         }
         decide_craft(char);

@@ -73,10 +73,10 @@ function backpack_string_test() {
     const item2 = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_BOOTS_ARGUMENT);
     backpack.add(item);
     backpack.add(item2);
-    const j1 = backpack.to_string();
+    const j1 = (0, strings_management_1.inventory_to_string)(backpack);
     const b2 = new inventory_1.Inventory();
-    b2.from_string(j1);
-    const j2 = b2.to_string();
+    (0, strings_management_1.inventory_from_string)(b2, j1);
+    const j2 = (0, strings_management_1.inventory_to_string)(b2);
     console.log(j1 == j2);
 }
 function map_coords_test() {

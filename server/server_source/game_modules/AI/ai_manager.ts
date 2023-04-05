@@ -139,6 +139,7 @@ export namespace CampaignAI {
 
         if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
             ActionManager.start_action(CharacterAction.REST, char, [0, 0])
+            console.log(char.name, ': i am stressed')
             return
         }
 

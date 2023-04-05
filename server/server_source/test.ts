@@ -8,7 +8,7 @@ import { Human } from "./game_modules/races/human";
 import { Inventory } from "./game_modules/inventories/inventory";
 import { MapSystem } from "./game_modules/map/system";
 import { Data } from "./game_modules/data";
-import { character_to_string, string_to_character } from "./game_modules/strings_management";
+import { character_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/strings_management";
 
 function string_difference([a, b]: [string, string]): [string, string] {
     let resulta = ''
@@ -92,11 +92,10 @@ function backpack_string_test() {
     backpack.add(item)
     backpack.add(item2)
 
-    const j1 = backpack.to_string()
+    const j1 = inventory_to_string(backpack)
     const b2 = new Inventory()
-    b2.from_string(j1)
-    const j2 = b2.to_string()
-
+    inventory_from_string(b2, j1)
+    const j2 = inventory_to_string(b2)
     console.log(j1 == j2)
 }
 

@@ -1,0 +1,1 @@
+node ./server/build/server/server_source/test.js
