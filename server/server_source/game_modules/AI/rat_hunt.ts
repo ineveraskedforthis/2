@@ -49,25 +49,30 @@ export function RatHunter(character: Character) {
 
     if (tired(character)) {
         ActionManager.start_action(CharacterAction.REST, character, [0, 0])
+        console.log('resting')
         return
     }
 
     if (character.ai_state == AIstate.WaitSale) {
+        console.log('waiting for someone to buy my loot')
         return
     }
     
     if (loot(character) > 10) {
         let cell = Convert.character_to_cell(character)
         if (cell.is_market()) {
+            console.log('selling loot')
             sell_loot(character)
             character.ai_state = AIstate.WaitSale
         } else {
+            console.log('walking toward market')
             CampaignAI.market_walk(character)
         }
         return
     }
 
     if ((character.stash.get(FOOD) > 0) && low_hp(character)) {
+        console.log('low hp -> eating')
         ActionManager.start_action(CharacterAction.EAT, character, [0, 0])
         return
     }
@@ -76,8 +81,10 @@ export function RatHunter(character: Character) {
     let target = AIhelper.free_rats_in_cell(character)
     const target_char = Convert.id_to_character(target)
     if (target_char != undefined) {
+        console.log('found a rat, starting a fight')
         Event.start_battle(character, target_char)
     } else {
+        console.log('looking for rats')
         CampaignAI.random_walk(character, simple_constraints) 
     }
 }
