@@ -125,6 +125,12 @@ export function migrate(current_version:number, target_version:number) {
         current_version = 12
     }
 
+    if (current_version == 12) {
+        for (let item of Data.CharacterDB.list()) {
+            EventMarket.clear_orders(item)
+        }
+    }
+
     // if (current_version == 12) {
     //     rat_hunter(7, 5)
     //     set_version(12)

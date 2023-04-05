@@ -127,6 +127,11 @@ function migrate(current_version, target_version) {
         set_version(12);
         current_version = 12;
     }
+    if (current_version == 12) {
+        for (let item of data_1.Data.CharacterDB.list()) {
+            market_1.EventMarket.clear_orders(item);
+        }
+    }
     // if (current_version == 12) {
     //     rat_hunter(7, 5)
     //     set_version(12)

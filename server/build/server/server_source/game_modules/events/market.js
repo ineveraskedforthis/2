@@ -79,6 +79,7 @@ var EventMarket;
         remove_bulk_orders(character);
         remove_item_orders(character);
         character.trade_savings.transfer_all(character.savings);
+        character.trade_stash.transfer_all(character.stash);
     }
     EventMarket.clear_orders = clear_orders;
     function remove_item_orders(character) {
