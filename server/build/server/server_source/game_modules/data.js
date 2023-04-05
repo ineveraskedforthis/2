@@ -63,8 +63,8 @@ var Data;
 (function (Data) {
     function load() {
         CharacterDB.load(save_path.CHARACTERS);
-        BulkOrders.save();
-        ItemOrders.save();
+        BulkOrders.load();
+        ItemOrders.load();
         Reputation.load(save_path.REPUTATION);
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP);
     }

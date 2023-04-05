@@ -90,8 +90,8 @@ function read_lines(file: string) {
 export namespace Data {
     export function load() {
         CharacterDB.load(save_path.CHARACTERS)
-        BulkOrders.save()
-        ItemOrders.save()
+        BulkOrders.load()
+        ItemOrders.load()
         Reputation.load(save_path.REPUTATION)
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP)
     }
