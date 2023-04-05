@@ -56,6 +56,7 @@ function get_version_raw() {
     return (0, fs_1.readFileSync)(version_path).toString();
 }
 function set_version(n) {
+    console.log('set version ' + n);
     (0, fs_1.writeFileSync)(version_path, '' + n);
 }
 exports.set_version = set_version;
@@ -121,6 +122,16 @@ function migrate(current_version, target_version) {
         set_version(11);
         current_version = 11;
     }
+    if (current_version == 11) {
+        rat_hunter(7, 5);
+        set_version(12);
+        current_version = 12;
+    }
+    // if (current_version == 12) {
+    //     rat_hunter(7, 5)
+    //     set_version(12)
+    //     current_version = 12
+    // }
 }
 exports.migrate = migrate;
 function set_up_initial_data() {
@@ -192,6 +203,21 @@ function create_guard(x, y) {
     let index = inventory_events_1.EventInventory.add_item(spearman, spear);
     inventory_events_1.EventInventory.equip_from_backpack(spearman, index);
     return spearman;
+}
+function rat_hunter(x, y) {
+    const cell = system_2.MapSystem.coordinate_to_id(x, y);
+    let spearman = events_1.Event.new_character(human_1.RatHunterHuman, 'Rat hunter', cell, dummy_model);
+    spearman.skills.polearms = 100;
+    spearman.perks.advanced_polearm = true;
+    let spear = system_1.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
+    spear.durability = 200;
+    let armour = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
+    spearman.equip.data.weapon = spear;
+    spearman.equip.data.armour.body = armour;
+    spearman.archetype.ai_map = 'rat_hunter';
+    data_1.Data.CharacterDB.save();
+    // let index = EventInventory.add_item(spearman, spear)
+    // EventInventory.equip_from_backpack(spearman, index)
 }
 function fletcher(x, y) {
     const cell = system_2.MapSystem.coordinate_to_id(x, y);

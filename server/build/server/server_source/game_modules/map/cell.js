@@ -27,6 +27,7 @@ class Cell {
         if (this.development.rats == 1) {
             this.rat_scent = 100;
         }
+        this.market_scent = 0;
         if (res == undefined) {
             this.resources = { water: false, prey: false, forest: false, fish: false };
         }
@@ -88,6 +89,9 @@ class Cell {
     }
     can_gather_cotton() {
         return (this.development.rural > 0);
+    }
+    is_market() {
+        return (this.development.market == 1);
     }
     update(dt) {
         if (this.visited_recently) {

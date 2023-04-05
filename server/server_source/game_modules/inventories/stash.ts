@@ -11,6 +11,16 @@ export class Stash {
         this.changed = false;
     }
 
+    is_empty() {
+        for (let material of materials.get_materials_list()) {
+            if ((this.data[material] == null) || (this.data[material] == undefined)) continue
+            if (this.data[material] > 0) {
+                return false
+            }
+        }
+        return true
+    }
+
     get_json() {
         let data:{[_ in material_index]: number} = {};
         for (let material of materials.get_materials_list()) {

@@ -30,6 +30,7 @@ class Character {
         this.cleared = false;
         this.action_progress = 0;
         this.action_duration = 0;
+        this.ai_state = 0 /* AIstate.Idle */;
         this.skills = new SkillList_1.SkillList();
         this.perks = {};
         this.stats = new types_1.InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp);

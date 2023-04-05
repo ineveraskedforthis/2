@@ -53,7 +53,7 @@ export function RatHunter(character: Character) {
         return
     }
 
-    if (character.ai_state == AIstate.WaitSale) {
+    if (!character.trade_stash.is_empty()) {
         console.log('waiting for someone to buy my loot')
         return
     }

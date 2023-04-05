@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Inventory = void 0;
-const strings_management_1 = require("../strings_management");
 const system_1 = require("../items/system");
 class Inventory {
     constructor() {
@@ -42,24 +41,6 @@ class Inventory {
             }
         }
         return { items_array: array };
-    }
-    to_string() {
-        const array = [];
-        for (let i of this.items) {
-            if (i != undefined) {
-                array.push((0, strings_management_1.item_to_string)(i));
-            }
-        }
-        return JSON.stringify({ items_array: array });
-    }
-    from_string(s) {
-        const data = JSON.parse(s);
-        for (let i = 0; i <= 100; i++) {
-            const tmp = data.items_array[i];
-            if (tmp == undefined)
-                return;
-            this.items.push((0, strings_management_1.item_from_string)(tmp));
-        }
     }
     get_data() {
         const array = [];

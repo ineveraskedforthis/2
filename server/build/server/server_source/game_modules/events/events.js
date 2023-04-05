@@ -97,6 +97,8 @@ var Event;
     }
     Event.move = move;
     function new_character(template, name, starting_cell, model) {
+        console.log('creating new character');
+        console.log(name);
         let character = system_3.CharacterSystem.template_to_character(template, name, starting_cell);
         if (model == undefined)
             model = { chin: 0, mouth: 0, eyes: 0 };

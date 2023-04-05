@@ -2,7 +2,7 @@ import * as path from "path";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { EloTemplate } from "./game_modules/races/elo"
 import { GraciTemplate } from "./game_modules/races/graci"
-import { Human } from "./game_modules/races/human"
+import { Human, RatHunterHuman } from "./game_modules/races/human"
 import { RatTemplate } from "./game_modules/races/rat"
 import { CharacterSystem } from "./game_modules/character/system"
 import { Data } from "./game_modules/data"
@@ -40,6 +40,7 @@ function get_version_raw():string {
 }
 
 export function set_version(n: number) {
+    console.log('set version ' + n)
     writeFileSync(version_path, '' + n)
 }
 
@@ -121,7 +122,14 @@ export function migrate(current_version:number, target_version:number) {
     if (current_version == 11) {
         rat_hunter(7, 5)
         set_version(12)
+        current_version = 12
     }
+
+    // if (current_version == 12) {
+    //     rat_hunter(7, 5)
+    //     set_version(12)
+    //     current_version = 12
+    // }
 }
 
 function set_up_initial_data() {
@@ -218,7 +226,7 @@ function create_guard(x: number, y: number) {
 
 function rat_hunter(x: number, y: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
-    let spearman =  Event.new_character(Human, 'Local militia', cell, dummy_model)
+    let spearman =  Event.new_character(RatHunterHuman, 'Rat hunter', cell, dummy_model)
     spearman.skills.polearms = 100
     spearman.perks.advanced_polearm = true
     let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
@@ -227,6 +235,7 @@ function rat_hunter(x: number, y: number) {
     spearman.equip.data.weapon = spear
     spearman.equip.data.armour.body = armour
     spearman.archetype.ai_map = 'rat_hunter'
+    Data.CharacterDB.save()
     // let index = EventInventory.add_item(spearman, spear)
     // EventInventory.equip_from_backpack(spearman, index)
 }

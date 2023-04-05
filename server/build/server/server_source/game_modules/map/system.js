@@ -146,6 +146,25 @@ var MapSystem;
         for (const cell of cells) {
             if (cell == undefined)
                 continue;
+            let temp = 0;
+            if (cell.is_market()) {
+                temp = 100;
+            }
+            else {
+                let neighbours = neighbours_cells(cell.id);
+                let max = 0;
+                for (let item of neighbours) {
+                    if (item.market_scent > max) {
+                        max = item.market_scent;
+                    }
+                }
+                temp = max - 1;
+            }
+            cell.market_scent = temp;
+        }
+        for (const cell of cells) {
+            if (cell == undefined)
+                continue;
             cell.update(dt);
             if ((rats_number < 120) && (cell.development.rats == 1)) {
                 let dice = Math.random();

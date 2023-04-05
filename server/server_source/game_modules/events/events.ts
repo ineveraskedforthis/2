@@ -116,6 +116,8 @@ export namespace Event {
     }
 
     export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant|undefined) {
+        console.log('creating new character')
+        console.log(name)
         let character = CharacterSystem.template_to_character(template, name, starting_cell)
         if (model == undefined) model = {chin: 0, mouth: 0, eyes: 0}
         character.set_model_variation(model)

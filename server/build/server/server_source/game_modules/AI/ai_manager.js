@@ -15,6 +15,8 @@ const crafts_storage_1 = require("../craft/crafts_storage");
 const cooking_1 = require("../craft/cooking");
 const ammunition_1 = require("../craft/ammunition");
 const items_1 = require("../craft/items");
+const constraints_1 = require("./constraints");
+const rat_hunt_1 = require("./rat_hunt");
 // function MAYOR_AI(mayor: Character) {
 //     let faction = mayor.get_faction()
 //     let territories = faction.get_territories_list()
@@ -29,16 +31,6 @@ const items_1 = require("../craft/items");
 //     'major' : MAYOR_AI
 // }
 let dp = [[0, 1], [0, -1], [1, 0], [-1, 0], [1, 1], [-1, -1]];
-function forest_constraints(cell) {
-    return (cell.development['urban'] < 1)
-        && (cell.development['wild'] > 0)
-        && (system_1.MapSystem.can_move([cell.x, cell.y]));
-}
-function steppe_constraints(cell) {
-    return (cell.development['urban'] < 1)
-        && (cell.development['wild'] < 1)
-        && (system_1.MapSystem.can_move([cell.x, cell.y]));
-}
 var CampaignAI;
 (function (CampaignAI) {
     function random_walk(char, constraints) {
@@ -67,6 +59,15 @@ var CampaignAI;
         action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target.x, target.y]);
     }
     CampaignAI.rat_walk = rat_walk;
+    function market_walk(character) {
+        let cell = systems_communication_1.Convert.character_to_cell(character);
+        let potential_moves = system_1.MapSystem.neighbours_cells(cell.id).map((x) => {
+            return { item: x, weight: x.market_scent };
+        });
+        let target = (0, basic_functions_1.select_max)(potential_moves, constraints_1.simple_constraints);
+        action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target?.x, target?.y]);
+    }
+    CampaignAI.market_walk = market_walk;
     function rat_go_home(character, constraints) {
         let cell = systems_communication_1.Convert.character_to_cell(character);
         let potential_moves = system_1.MapSystem.neighbours_cells(cell.id).map((x) => { return { item: x, weight: x.rat_scent }; });
@@ -86,7 +87,7 @@ var CampaignAI;
             return;
         }
         else if (char.get_fatigue() > 30) {
-            rat_go_home(char, steppe_constraints);
+            rat_go_home(char, constraints_1.steppe_constraints);
             return;
         }
         let target = helpers_1.AIhelper.enemies_in_cell(char);
@@ -95,7 +96,7 @@ var CampaignAI;
             events_1.Event.start_battle(char, target_char);
         }
         else {
-            rat_walk(char, steppe_constraints);
+            rat_walk(char, constraints_1.steppe_constraints);
             return;
         }
     }
@@ -115,10 +116,13 @@ var CampaignAI;
             return;
         if (char.race() == 'rat') {
             rat_decision(char);
+            return;
         }
-        else {
-            movement_rest_decision(char);
+        if (char.archetype.ai_map == 'rat_hunter') {
+            (0, rat_hunt_1.RatHunter)(char);
+            return;
         }
+        movement_rest_decision(char);
         if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
             action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
             return;
@@ -162,7 +166,7 @@ var CampaignAI;
                         events_1.Event.start_battle(char, target_char);
                     }
                     else {
-                        random_walk(char, steppe_constraints);
+                        random_walk(char, constraints_1.steppe_constraints);
                     }
                 }
                 break;
@@ -172,7 +176,7 @@ var CampaignAI;
                     action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {
-                    random_walk(char, steppe_constraints);
+                    random_walk(char, constraints_1.steppe_constraints);
                 }
                 break;
             }
@@ -181,7 +185,7 @@ var CampaignAI;
                     action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
                 }
                 else {
-                    random_walk(char, forest_constraints);
+                    random_walk(char, constraints_1.forest_constraints);
                 }
                 break;
             }

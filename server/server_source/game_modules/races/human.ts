@@ -9,6 +9,13 @@ const HumanArchetype:Archetype = {
     race: 'human'
 }
 
+const RatHunterArchetype:Archetype = {
+    model: 'human',
+    ai_map: 'rat_hunter',
+    ai_battle: 'basic',
+    race: 'human',
+}
+
 function HumanNamesGen () {
     return 'name ' + Math.floor(Math.random() * 50)
 }
@@ -22,3 +29,5 @@ const HumanStats:Stats = {
 const HumanBaseResists = new Damage(0, 0, 0, 0)
 
 export const Human = new CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)
+
+export const RatHunterHuman = new CharacterTemplate(RatHunterArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)

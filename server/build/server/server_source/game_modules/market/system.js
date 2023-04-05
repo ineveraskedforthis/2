@@ -6,7 +6,6 @@ const stash_1 = require("../inventories/stash");
 const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 const classes_1 = require("./classes");
-var path = require('path');
 var AuctionResponce;
 (function (AuctionResponce) {
     AuctionResponce["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";

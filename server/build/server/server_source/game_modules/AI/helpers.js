@@ -47,6 +47,20 @@ var AIhelper;
         return -1;
     }
     AIhelper.enemies_in_cell = enemies_in_cell;
+    function free_rats_in_cell(char) {
+        let cell = systems_communication_1.Convert.character_to_cell(char);
+        let a = cell.get_characters_list();
+        for (let { id, name } of a) {
+            let target_char = systems_communication_1.Convert.id_to_character(id);
+            if (target_char.race() == 'rat') {
+                if (!target_char.in_battle() && !target_char.dead()) {
+                    return target_char.id;
+                }
+            }
+        }
+        return undefined;
+    }
+    AIhelper.free_rats_in_cell = free_rats_in_cell;
     function battles_in_cell(char) {
         let battles = [];
         let cell = systems_communication_1.Convert.character_to_cell(char);

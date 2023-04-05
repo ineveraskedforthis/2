@@ -30,7 +30,7 @@ function select_weighted(input, constraints) {
 exports.select_weighted = select_weighted;
 function select_max(input, constraints) {
     let max = 0;
-    let result = undefined;
+    let result = input[1].item;
     for (let item of input) {
         if (constraints != undefined) {
             if (!constraints(item.item))

@@ -47,7 +47,7 @@ class EquipData {
             weapon: (0, strings_management_1.item_to_string)(this.weapon),
             secondary: (0, strings_management_1.item_to_string)(this.secondary),
             armour: {},
-            backpack: this.backpack.to_string()
+            backpack: (0, strings_management_1.inventory_to_string)(this.backpack)
         };
         for (let tag of types_1.armour_slots) {
             result.armour[tag] = (0, strings_management_1.item_to_string)(this.armour[tag]);
@@ -68,7 +68,7 @@ class EquipData {
                 this.armour[tag] = (0, strings_management_1.item_from_string)(tmp);
             }
         }
-        this.backpack.from_string(json.backpack);
+        (0, strings_management_1.inventory_from_string)(this.backpack, json.backpack);
     }
 }
 class Equip {
