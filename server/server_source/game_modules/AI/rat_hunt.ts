@@ -11,6 +11,7 @@ import { money } from "../types";
 import { CampaignAI } from "./ai_manager";
 import { AIhelper, base_price } from "./helpers";
 import { simple_constraints } from "./constraints";
+import { AIstate } from "../character/AIstate";
 
 function tired(character: Character) {
     return (character.get_fatigue() > 70) || (character.get_stress() > 30)
@@ -41,7 +42,7 @@ function sell_loot(character: Character) {
     }
 }
 
-function RatHunter(character: Character) {
+export function RatHunter(character: Character) {
     if (character.in_battle()) return
     if (character.action != undefined) return
     if (character.is_player()) return
@@ -50,11 +51,16 @@ function RatHunter(character: Character) {
         ActionManager.start_action(CharacterAction.REST, character, [0, 0])
         return
     }
+
+    if (character.ai_state == AIstate.WaitSale) {
+        return
+    }
     
     if (loot(character) > 10) {
         let cell = Convert.character_to_cell(character)
         if (cell.is_market()) {
             sell_loot(character)
+            character.ai_state = AIstate.WaitSale
         } else {
             CampaignAI.market_walk(character)
         }

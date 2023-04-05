@@ -17,7 +17,8 @@ import { CraftBulk, crafts_bulk, craft_actions } from "../craft/crafts_storage";
 import { Cooking } from "../craft/cooking";
 import { AmmunitionCraft } from "../craft/ammunition";
 import { CraftItem } from "../craft/items";
-import { simple_constraints, steppe_constraints, forest_constraints } from "./simple_constraints";
+import { simple_constraints, steppe_constraints, forest_constraints } from "./constraints";
+import { RatHunter } from "./rat_hunt";
 
 
 // function MAYOR_AI(mayor: Character) {
@@ -126,10 +127,15 @@ export namespace CampaignAI {
 
         if (char.race() == 'rat') {
             rat_decision(char)
-        } else {
-            movement_rest_decision(char);
+            return
+        } 
+
+        if (char.archetype.ai_map == 'rat_hunter') {
+            RatHunter(char)
+            return
         }
 
+        movement_rest_decision(char);
 
         if ((char.get_fatigue() > 60) || (char.get_stress() > 40)) {
             ActionManager.start_action(CharacterAction.REST, char, [0, 0])
