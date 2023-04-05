@@ -117,6 +117,11 @@ export function migrate(current_version:number, target_version:number) {
         set_version(11)
         current_version = 11
     }
+
+    if (current_version == 11) {
+        rat_hunter(7, 5)
+        set_version(12)
+    }
 }
 
 function set_up_initial_data() {
@@ -209,6 +214,21 @@ function create_guard(x: number, y: number) {
     EventInventory.equip_from_backpack(spearman, index)
 
     return spearman
+}
+
+function rat_hunter(x: number, y: number) {
+    const cell = MapSystem.coordinate_to_id(x, y)
+    let spearman =  Event.new_character(Human, 'Local militia', cell, dummy_model)
+    spearman.skills.polearms = 100
+    spearman.perks.advanced_polearm = true
+    let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
+    spear.durability = 200
+    let armour = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
+    spearman.equip.data.weapon = spear
+    spearman.equip.data.armour.body = armour
+    spearman.archetype.ai_map = 'rat_hunter'
+    // let index = EventInventory.add_item(spearman, spear)
+    // EventInventory.equip_from_backpack(spearman, index)
 }
 
 function fletcher(x: number, y: number) {
@@ -338,6 +358,8 @@ function unarmed_master(x: number, y: number, faction_id: number) {
     
     return master
 }
+
+
 
 function city_guard(x: number, y: number) {
     let guard = create_guard(x, y)
