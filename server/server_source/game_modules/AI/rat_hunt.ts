@@ -42,6 +42,29 @@ function sell_loot(character: Character) {
     }
 }
 
+function buy_food(character: Character) {
+    let orders = Convert.cell_id_to_bulk_orders(character.cell_id)
+    let best_order = undefined
+    let best_price = 9999
+    for (let item of orders) {
+        let order = Convert.id_to_bulk_order(item)
+        if (order.typ == 'buy') continue
+        if (order.tag != FOOD) continue
+        if ((best_price > order.price) && (order.amount > 0)) {
+            best_price = order.price
+            best_order = order
+        }
+    }
+
+    if (best_order == undefined) return false
+
+    if (character.savings.get() >= best_price) {
+        EventMarket.execute_sell_order(character, best_order?.id, 1)
+        return true
+    }
+    return false
+}
+
 export function RatHunter(character: Character) {
     if (character.in_battle()) return
     if (character.action != undefined) return
@@ -53,8 +76,14 @@ export function RatHunter(character: Character) {
         return
     }
 
+
+    // character at market
     if (!character.trade_stash.is_empty()) {
         console.log('waiting for someone to buy my loot')
+
+        if (character.stash.get(FOOD) < 10) {
+            buy_food(character)
+        }
         return
     }
     
