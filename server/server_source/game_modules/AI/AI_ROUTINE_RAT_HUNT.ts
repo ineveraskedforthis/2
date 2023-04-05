@@ -4,68 +4,16 @@ import { ActionManager } from "../actions/action_manager";
 import { CharacterAction } from "../action_types";
 import { Character } from "../character/character";
 import { Event } from "../events/events";
-import { EventMarket } from "../events/market";
-import { FOOD, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
+import { FOOD } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
-import { money } from "../types";
 import { CampaignAI } from "./ai_manager";
-import { AIhelper, base_price } from "./helpers";
+import { AIhelper } from "./helpers";
 import { simple_constraints } from "./constraints";
 import { AIstate } from "../character/AIstate";
+import { tired, low_hp } from "./triggers";
+import { buy_food, loot, market_walk, random_walk, sell_loot } from "./actions";
 
-function tired(character: Character) {
-    return (character.get_fatigue() > 70) || (character.get_stress() > 30)
-}
-
-function low_hp(character: Character) {
-    return character.get_hp() < 0.5 * character.get_max_hp()
-}
-
-const LOOT = [MEAT, RAT_SKIN, RAT_BONE]
-
-function loot(character: Character) {
-    let tmp = 0
-    for (let tag of LOOT) {
-        tmp += character.stash.get(tag)
-    }
-    return tmp
-}
-
-function sell_loot(character: Character) {
-    for (let tag of LOOT) {
-        EventMarket.sell(
-            character, 
-            tag, 
-            character.stash.get(tag), 
-            base_price(character, tag) - 1 as money
-        )
-    }
-}
-
-function buy_food(character: Character) {
-    let orders = Convert.cell_id_to_bulk_orders(character.cell_id)
-    let best_order = undefined
-    let best_price = 9999
-    for (let item of orders) {
-        let order = Convert.id_to_bulk_order(item)
-        if (order.typ == 'buy') continue
-        if (order.tag != FOOD) continue
-        if ((best_price > order.price) && (order.amount > 0)) {
-            best_price = order.price
-            best_order = order
-        }
-    }
-
-    if (best_order == undefined) return false
-
-    if (character.savings.get() >= best_price) {
-        EventMarket.execute_sell_order(character, best_order?.id, 1)
-        return true
-    }
-    return false
-}
-
-export function RatHunter(character: Character) {
+export function RatHunterRoutine(character: Character) {
     if (character.in_battle()) return
     if (character.action != undefined) return
     if (character.is_player()) return
@@ -95,7 +43,7 @@ export function RatHunter(character: Character) {
             character.ai_state = AIstate.WaitSale
         } else {
             console.log('walking toward market')
-            CampaignAI.market_walk(character)
+            market_walk(character)
         }
         return
     }
@@ -114,6 +62,6 @@ export function RatHunter(character: Character) {
         Event.start_battle(character, target_char)
     } else {
         console.log('looking for rats')
-        CampaignAI.random_walk(character, simple_constraints) 
+        random_walk(character, simple_constraints) 
     }
 }
