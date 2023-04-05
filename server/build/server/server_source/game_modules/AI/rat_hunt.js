@@ -42,7 +42,7 @@ function RatHunter(character) {
         console.log('resting');
         return;
     }
-    if (character.ai_state == 1 /* AIstate.WaitSale */) {
+    if (!character.trade_stash.is_empty()) {
         console.log('waiting for someone to buy my loot');
         return;
     }
