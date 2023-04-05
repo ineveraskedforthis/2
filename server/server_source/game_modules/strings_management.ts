@@ -4,6 +4,7 @@ import { Archetype, cell_id, InnateStats, money, Stats, Status, user_id } from "
 import { Character } from "./character/character";
 import { SkillList, skill } from "./character/SkillList";
 import { Inventory } from "./inventories/inventory";
+import { Building } from "./DATA_LAYOUT_BUILDING";
 
 
 export function item_to_string(item: Item | undefined): string {
@@ -95,4 +96,12 @@ export function inventory_from_string(inventory: Inventory, s: string) {
         if (tmp == undefined) return
         inventory.items.push(item_from_string(tmp))
     }
+}
+
+export function building_to_string(building: Building) {
+    return JSON.stringify(building)
+}
+
+export function building_from_string(s: string): Building {
+    return JSON.parse(s) as Building
 }

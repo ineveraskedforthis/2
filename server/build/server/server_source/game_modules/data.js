@@ -28,10 +28,15 @@ const empty_set_orders_item = new Set();
 var last_id_bulk = 0;
 var last_id_item = 0;
 var reputation = {};
+//BUILDINGS 
+var last_id_building = 0;
+//OWNERSHIP
+//REFACTOR LATER TO LAW SYSTEM
 var character_to_buildings = new Map();
 var building_to_character = new Map();
 var building_to_cell = new Map();
 var cell_to_buildings = new Map();
+var id_to_building = new Map();
 // class EntityData<type, id_type extends number & {__brand: string}> {
 //     list: type[]
 //     dict: {[_ in id_type]: type}
@@ -66,6 +71,7 @@ var Data;
         BulkOrders.load();
         ItemOrders.load();
         Reputation.load(save_path.REPUTATION);
+        Buildings.load(save_path.BUILDINGS);
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP);
     }
     Data.load = load;
@@ -75,12 +81,21 @@ var Data;
         ItemOrders.save();
         Reputation.save(save_path.REPUTATION);
         Buildings.save(save_path.BUILDINGS);
+        Buildings.save_ownership(save_path.BUILDINGS_OWNERSHIP);
     }
     Data.save = save;
     let Buildings;
     (function (Buildings) {
         function load(save_path) {
             console.log('loading buildings');
+            for (let line of read_lines(save_path)) {
+                if (line == '') {
+                    continue;
+                }
+                let { id, building } = JSON.parse(line);
+                last_id_building = Math.max(id, last_id_building);
+                set_data(id, building);
+            }
         }
         Buildings.load = load;
         function load_ownership(save_path) {
@@ -89,21 +104,59 @@ var Data;
                 if (line == '') {
                     continue;
                 }
-                let { character, buildings } = JSON.parse(line);
-                set_character_buildings(character, buildings);
+                let { character, building } = JSON.parse(line);
+                set_ownership(character, building);
             }
         }
         Buildings.load_ownership = load_ownership;
         function save(save_path) {
+            let str = '';
+            id_to_building.forEach((value, key) => {
+                str += JSON.stringify({ id: key, building: value });
+            });
+            fs_1.default.writeFileSync(save_path, str);
         }
         Buildings.save = save;
-        function set_character_buildings(character, buildings) {
-            character_to_buildings.set(character, new Set(buildings));
-            for (let building of buildings) {
-                building_to_character.set(building, character);
-            }
+        function save_ownership(save_path) {
+            let str = '';
+            building_to_character.forEach((value, key) => {
+                str += JSON.stringify({ character: value, building: key });
+            });
+            fs_1.default.writeFileSync(save_path, str);
         }
-        // function add_one_one
+        Buildings.save_ownership = save_ownership;
+        function set_ownership(character, building) {
+            let buildings = character_to_buildings.get(character);
+            if (buildings == undefined) {
+                character_to_buildings.set(character, new Set([building]));
+            }
+            else {
+                buildings.add(building);
+            }
+            building_to_character.set(building, character);
+        }
+        Buildings.set_ownership = set_ownership;
+        function create(item) {
+            last_id_building = last_id_building + 1;
+            set_data(last_id_building, item);
+            return last_id_building;
+        }
+        Buildings.create = create;
+        function set_data(id, item) {
+            building_to_cell.set(id, item.cell_id);
+            let temp = cell_to_buildings.get(item.cell_id);
+            if (temp == undefined) {
+                cell_to_buildings.set(item.cell_id, new Set([id]));
+            }
+            else {
+                temp.add(id);
+            }
+            id_to_building.set(id, item);
+        }
+        function from_id(id) {
+            return id_to_building.get(id);
+        }
+        Buildings.from_id = from_id;
     })(Buildings = Data.Buildings || (Data.Buildings = {}));
     let Reputation;
     (function (Reputation) {

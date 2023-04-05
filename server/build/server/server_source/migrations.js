@@ -58,6 +58,7 @@ function get_version_raw() {
 function set_version(n) {
     console.log('set version ' + n);
     (0, fs_1.writeFileSync)(version_path, '' + n);
+    return n;
 }
 exports.set_version = set_version;
 function get_version() {
@@ -128,9 +129,24 @@ function migrate(current_version, target_version) {
         current_version = 12;
     }
     if (current_version == 12) {
-        for (let item of data_1.Data.CharacterDB.list()) {
-            market_1.EventMarket.clear_orders(item);
-        }
+        current_version = set_version(13);
+    }
+    if (current_version == 13) {
+        let cell = system_2.MapSystem.coordinate_to_id(7, 5);
+        let building = {
+            cell_id: cell,
+            durability: 100,
+            rooms: 4,
+            kitchen: 100,
+            workshop: 0,
+            is_inn: true,
+            room_cost: 5
+        };
+        let building_id = data_1.Data.Buildings.create(building);
+        let innkeeper = events_1.Event.new_character(human_1.Human, 'Innkeeper', cell, undefined);
+        innkeeper.savings.inc(500);
+        data_1.Data.Buildings.set_ownership(innkeeper.id, building_id);
+        current_version = set_version(14);
     }
     // if (current_version == 12) {
     //     rat_hunter(7, 5)

@@ -18,6 +18,9 @@ import { money } from "./game_modules/types"
 import { constants } from "./game_modules/static_data/constants";
 import { Convert } from "./game_modules/systems_communication";
 import { Cell } from "./game_modules/map/cell";
+import { Building } from "./game_modules/DATA_LAYOUT_BUILDING";
+import { Stash } from "./game_modules/inventories/stash";
+import { Savings } from "./game_modules/inventories/savings";
 
 
 const LUMP_OF_MONEY = 1000 as money
@@ -42,6 +45,7 @@ function get_version_raw():string {
 export function set_version(n: number) {
     console.log('set version ' + n)
     writeFileSync(version_path, '' + n)
+    return n
 }
 
 function get_version():number {
@@ -126,9 +130,27 @@ export function migrate(current_version:number, target_version:number) {
     }
 
     if (current_version == 12) {
-        for (let item of Data.CharacterDB.list()) {
-            EventMarket.clear_orders(item)
+        current_version = set_version(13)
+    }
+
+    if (current_version == 13) {
+        let cell = MapSystem.coordinate_to_id(7, 5)
+        let building:Building = {
+            cell_id: cell,
+            durability: 100,
+            rooms: 4,
+            kitchen: 100,
+            workshop: 0,
+            is_inn: true,
+            room_cost: 5
         }
+        let building_id = Data.Buildings.create(building)
+
+        let innkeeper = Event.new_character(Human, 'Innkeeper', cell, undefined)
+        innkeeper.savings.inc(500 as money)
+        Data.Buildings.set_ownership(innkeeper.id, building_id)
+
+        current_version = set_version(14)
     }
 
     // if (current_version == 12) {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.inventory_from_string = exports.inventory_to_string = exports.string_to_character = exports.character_to_string = exports.item_from_string = exports.item_to_string = void 0;
+exports.building_from_string = exports.building_to_string = exports.inventory_from_string = exports.inventory_to_string = exports.string_to_character = exports.character_to_string = exports.item_from_string = exports.item_to_string = void 0;
 const item_1 = require("./items/item");
 const damage_types_1 = require("./damage_types");
 const character_1 = require("./character/character");
@@ -81,3 +81,11 @@ function inventory_from_string(inventory, s) {
     }
 }
 exports.inventory_from_string = inventory_from_string;
+function building_to_string(building) {
+    return JSON.stringify(building);
+}
+exports.building_to_string = building_to_string;
+function building_from_string(s) {
+    return JSON.parse(s);
+}
+exports.building_from_string = building_from_string;

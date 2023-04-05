@@ -9,7 +9,8 @@ import { Character } from "./character/character"
 import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
 import { cell_id, char_id, building_id, order_bulk_id, order_item_id } from "./types"
-import { character_to_string, item_from_string, string_to_character } from "./strings_management"
+import { building_from_string, character_to_string, item_from_string, string_to_character } from "./strings_management"
+import { Building } from "./DATA_LAYOUT_BUILDING"
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
@@ -45,10 +46,18 @@ interface reputation {
 var reputation: {[_ in char_id]: {[_ in number]: reputation}} = {}
 
 
+//BUILDINGS 
+var last_id_building: building_id = 0 as building_id
+
+//OWNERSHIP
+//REFACTOR LATER TO LAW SYSTEM
 var character_to_buildings: Map<char_id, Set<building_id>> = new Map()
 var building_to_character: Map<building_id, char_id> = new Map()
+
 var building_to_cell: Map<building_id, cell_id> = new Map()
 var cell_to_buildings: Map<cell_id, Set<building_id>> = new Map()
+
+var id_to_building: Map<building_id, Building> = new Map()
 
 
 // class EntityData<type, id_type extends number & {__brand: string}> {
@@ -93,6 +102,7 @@ export namespace Data {
         BulkOrders.load()
         ItemOrders.load()
         Reputation.load(save_path.REPUTATION)
+        Buildings.load(save_path.BUILDINGS)
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP)
     }
     export function save() {
@@ -101,35 +111,80 @@ export namespace Data {
         ItemOrders.save()
         Reputation.save(save_path.REPUTATION)
         Buildings.save(save_path.BUILDINGS)
+        Buildings.save_ownership(save_path.BUILDINGS_OWNERSHIP)
     }
 
     export namespace Buildings {
 
         export function load(save_path: string) {
             console.log('loading buildings')
+            for (let line of read_lines(save_path)) {
+                if (line == '') {continue}
+                let {id, building}:{id: building_id, building: Building} = JSON.parse(line)
+                last_id_building = Math.max(id, last_id_building) as building_id
+                set_data(id, building)
+            }
         }
 
         export function load_ownership(save_path: string) {
             console.log('loading buildings ownership')
             for (let line of read_lines(save_path)) {
                 if (line == '') {continue}
-                let {character, buildings}:{character: char_id, buildings: building_id[]} = JSON.parse(line)
-                set_character_buildings(character, buildings)
+                let {character, building}:{character: char_id, building: building_id} = JSON.parse(line)
+                set_ownership(character, building)
             }
         }
 
         export function save(save_path: string) {
+            let str = ''
+            id_to_building.forEach((value, key) => {
+                str += JSON.stringify({id: key, building: value})
+            })
 
+            fs.writeFileSync(save_path, str)
         }
 
-        function set_character_buildings(character: char_id, buildings: building_id[]) {
-            character_to_buildings.set(character, new Set(buildings))
-            for (let building of buildings) {
-                building_to_character.set(building, character)
+        export function save_ownership(save_path: string) {
+            let str = ''
+            building_to_character.forEach((value, key) => {
+                str += JSON.stringify({character: value, building: key})
+            })
+
+            fs.writeFileSync(save_path, str)
+        }
+
+        export function set_ownership(character: char_id, building: building_id) {
+            let buildings = character_to_buildings.get(character)
+
+            if (buildings == undefined) {
+                character_to_buildings.set(character, new Set([building]))
+            } else {
+                buildings.add(building)
             }
+            building_to_character.set(building, character)
         }
 
-        // function add_one_one
+        export function create(item: Building) {
+            last_id_building = last_id_building + 1 as building_id
+            set_data(last_id_building, item)
+            return last_id_building
+        }
+
+        function set_data(id: building_id, item: Building) {
+            building_to_cell.set(id, item.cell_id)
+            let temp = cell_to_buildings.get(item.cell_id)
+            if (temp == undefined) {
+                cell_to_buildings.set(item.cell_id, new Set([id]))
+            } else {
+                temp.add(id)
+            } 
+
+            id_to_building.set(id, item)
+        }
+
+        export function from_id(id: building_id) {
+            return id_to_building.get(id)
+        }
     }
 
     export namespace Reputation {
