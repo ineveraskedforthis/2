@@ -29,18 +29,20 @@ function quality_to_name(n) {
     return 'luxury';
 }
 function tier_to_name(n) {
-    if (n = 1)
+    if (n == 1)
         return 'shack';
-    if (n = 2)
+    if (n == 2)
         return 'house';
-    if (n = 3)
+    if (n == 3)
         return 'mansion';
-    if (n = 4)
+    if (n == 4)
         return 'palace';
 }
 function building_div(b) {
     let div = document.createElement('div');
     let quality_label = document.createElement('div');
+    console.log(b.durability, b.tier);
+    console.log(quality_to_name(b.durability) + ' ' + tier_to_name(b.tier));
     quality_label.innerHTML = quality_to_name(b.durability) + ' ' + tier_to_name(b.tier);
     div.appendChild(quality_label);
     let rooms_label = document.createElement('div');

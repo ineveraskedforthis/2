@@ -53,6 +53,8 @@ function tier_to_name(n: number) {
 function building_div(b: Building) {
     let div = document.createElement('div')
     let quality_label = document.createElement('div')
+    console.log(b.durability, b.tier)
+    console.log(quality_to_name(b.durability) + ' ' + tier_to_name(b.tier))
     quality_label.innerHTML = quality_to_name(b.durability) + ' ' + tier_to_name(b.tier)   
     div.appendChild(quality_label)
 
