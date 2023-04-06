@@ -1,4 +1,4 @@
-import { cell_id } from "./types";
+import { cell_id, money } from "./types";
 
 export interface Building {
     cell_id: cell_id,
@@ -9,5 +9,5 @@ export interface Building {
 
     is_inn: boolean,
     
-    room_cost: number
+    room_cost: money
 }

@@ -142,7 +142,7 @@ export function migrate(current_version:number, target_version:number) {
             kitchen: 100,
             workshop: 0,
             is_inn: true,
-            room_cost: 5
+            room_cost: 5 as money
         }
         let building_id = Data.Buildings.create(building)
 

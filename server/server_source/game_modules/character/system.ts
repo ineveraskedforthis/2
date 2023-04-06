@@ -13,6 +13,7 @@ import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
 var ai_campaign_decision_timer = 0
+var character_state_update_timer = 0
 
 export namespace CharacterSystem {
     export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
@@ -251,6 +252,7 @@ export namespace CharacterSystem {
 
     export function update(dt: number) {
         ai_campaign_decision_timer += dt
+        character_state_update_timer += dt
 
         if (ai_campaign_decision_timer > 8) {
             for (let character of Data.CharacterDB.list()) {
@@ -265,11 +267,28 @@ export namespace CharacterSystem {
         }
 
         
-        for (let character of Data.CharacterDB.list()) {
-            if (character.dead()) {
-                continue
+        if (character_state_update_timer > 1) {
+            for (let character of Data.CharacterDB.list()) {
+                if (character.dead()) {
+                    continue
+                }
+                if (!character.in_battle()) {
+                    Effect.Change.rage(character, -1)
+                    if (character.current_building != undefined) {
+                        let building = Data.Buildings.from_id(character.current_building)
+                        let fatigue_change = -Math.floor(building.durability / 30 * character.get_fatigue() / 10)
+                        let stress_change = - Math.floor(building.durability / 30 * character.get_stress() / 10)
+                        Effect.Change.fatigue(character, fatigue_change)
+                        Effect.Change.stress(character, stress_change)
+
+                        if ((fatigue_change == 0) && (stress_change == 0)) {
+                            Effect.leave_room(character.id)
+                        }
+                    }
+                }
             }
-            if (!character.in_battle()) Effect.Change.rage(character, -1)
+
+            character_state_update_timer = 0
         }
     }
 

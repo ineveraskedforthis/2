@@ -2,7 +2,7 @@ import {Stash} from "../inventories/stash"
 import { PerksTable } from "./Perks";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
-import { Archetype, cell_id, char_id, InnateStats, map_position, ModelVariant, money, Stats, Status, status_type, TEMP_USER_ID, user_id } from "../types";
+import { Archetype, building_id, cell_id, char_id, InnateStats, map_position, ModelVariant, money, Stats, Status, status_type, TEMP_USER_ID, user_id } from "../types";
 import { ActionTargeted } from "../CharacterActionResponce";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
@@ -14,6 +14,7 @@ export class Character {
     battle_unit_id: unit_id;
     user_id: user_id|TEMP_USER_ID;
     cell_id: cell_id;
+    current_building: building_id|undefined;
 
     name: string;
 
@@ -59,6 +60,7 @@ export class Character {
         this.name = name
 
         this.archetype = archetype
+        this.current_building = undefined
 
         this.equip = new Equip()
         this.stash = new Stash()

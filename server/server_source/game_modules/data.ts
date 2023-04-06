@@ -58,6 +58,7 @@ var building_to_cell: Map<building_id, cell_id> = new Map()
 var cell_to_buildings: Map<cell_id, Set<building_id>> = new Map()
 
 var id_to_building: Map<building_id, Building> = new Map()
+var building_to_occupied_rooms: Map<building_id, number> = new Map()
 
 
 // class EntityData<type, id_type extends number & {__brand: string}> {
@@ -180,6 +181,21 @@ export namespace Data {
             } 
 
             id_to_building.set(id, item)
+            building_to_occupied_rooms.set(id, 0)
+        }
+
+        export function occupied_rooms(id: building_id) {
+            return building_to_occupied_rooms.get(id) as number
+        }
+
+        export function free_room(id:building_id) {
+            let rooms = occupied_rooms(id)
+            building_to_occupied_rooms.set(id, rooms - 1)
+        }
+
+        export function occupy_room(id:building_id) {
+            let rooms = occupied_rooms(id)
+            building_to_occupied_rooms.set(id, rooms + 1)
         }
 
 
@@ -189,6 +205,10 @@ export namespace Data {
 
         export function from_cell_id(id: cell_id) {
             return cell_to_buildings.get(id)
+        }
+
+        export function owner(id: building_id) {
+            return building_to_character.get(id)
         }
     }
 

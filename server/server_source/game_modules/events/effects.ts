@@ -4,10 +4,11 @@ import { skill } from "../character/SkillList";
 import { Perks } from "../character/Perks";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
-import { character_list } from "../data";
+import { Data, character_list } from "../data";
 import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
 import { Request } from "../client_communication/network_actions/request";
+import { building_id, char_id, money } from "../types";
 
 export namespace Effect {
     export namespace Update {
@@ -34,6 +35,14 @@ export namespace Effect {
     export function destroy_item(character:Character, slot: equip_slot) {
         character.equip.destroy_slot(slot)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
+    }
+
+    export namespace Transfer {
+        export function savings(from: Character, to: Character, x: money) {
+            from.savings.transfer(to.savings, x)
+            UserManagement.add_user_to_update_queue(from.user_id, UI_Part.SAVINGS)
+            UserManagement.add_user_to_update_queue(to.user_id, UI_Part.SAVINGS)
+        }
     }
 
     export namespace Change {
@@ -63,5 +72,37 @@ export namespace Effect {
     export function learn_perk(student: Character, perk: Perks){
         student.perks[perk] = true
         UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SKILLS)
+    }
+
+    export function rent_room(character_id: char_id, building_id: building_id) {
+        let building = Data.Buildings.from_id(building_id)
+        let rooms_not_available = Data.Buildings.occupied_rooms(building_id)
+        let owner_id = Data.Buildings.owner(building_id)
+        let character = Data.CharacterDB.from_id(character_id)
+
+        if (owner_id == undefined) {
+            return "no_owner"
+        }        
+        if (rooms_not_available >= building.rooms) {
+            return "no_rooms"
+        }
+        if (character.savings.get() < building.room_cost) {
+            return "not_enough_money"
+        }
+
+        let owner = Data.CharacterDB.from_id(owner_id)
+
+        if (owner.cell_id != character.cell_id) return "invalid_cell"
+        Effect.Transfer.savings(character, owner, building.room_cost)
+        character.current_building = building_id
+        return "ok"
+    }
+
+    export function leave_room(character_id: char_id) {
+        let character = Data.CharacterDB.from_id(character_id)
+        if (character.current_building == undefined) return
+
+        Data.Buildings.free_room(character.current_building)
+        character.current_building = undefined
     }
 }

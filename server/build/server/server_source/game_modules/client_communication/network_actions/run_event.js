@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketCommand = void 0;
+const data_1 = require("../../data");
+const effects_1 = require("../../events/effects");
 const events_1 = require("../../events/events");
 const systems_communication_1 = require("../../systems_communication");
 const common_validations_1 = require("./common_validations");
@@ -72,4 +74,22 @@ var SocketCommand;
         events_1.Event.buy_skill(valid_character, skill_tag, target_character);
     }
     SocketCommand.learn_skill = learn_skill;
+    function rent_room(sw, msg) {
+        console.log('???');
+        if (msg == undefined)
+            return;
+        let building_id = msg.id;
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        console.log(building_id);
+        if (character == undefined)
+            return;
+        if (typeof building_id != 'number')
+            return;
+        let building = data_1.Data.Buildings.from_id(building_id);
+        if (building == undefined)
+            return;
+        console.log(building.rooms);
+        let responce = effects_1.Effect.rent_room(character.id, building_id);
+    }
+    SocketCommand.rent_room = rent_room;
 })(SocketCommand = exports.SocketCommand || (exports.SocketCommand = {}));

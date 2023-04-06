@@ -117,6 +117,8 @@ export class SocketManager {
                                          SocketCommand.learn_perk(user, msg))
             socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) => 
                                          SocketCommand.learn_skill(user, msg))
+
+            socket.on('rent-room',      (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
         });
     }
 

@@ -16,7 +16,7 @@ function request() {
 }
 function rent_room(id) {
     return function () {
-        socket.emit('rent-room', id);
+        socket.emit('rent-room', { id: id });
     };
 }
 function quality_to_name(n) {

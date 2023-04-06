@@ -11,6 +11,7 @@ const ai_manager_1 = require("../AI/ai_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../events/effects");
 var ai_campaign_decision_timer = 0;
+var character_state_update_timer = 0;
 var CharacterSystem;
 (function (CharacterSystem) {
     function template_to_character(template, name, cell_id) {
@@ -257,6 +258,7 @@ var CharacterSystem;
     CharacterSystem.rgo_check = rgo_check;
     function update(dt) {
         ai_campaign_decision_timer += dt;
+        character_state_update_timer += dt;
         if (ai_campaign_decision_timer > 8) {
             for (let character of data_1.Data.CharacterDB.list()) {
                 if (character.dead()) {
@@ -268,12 +270,26 @@ var CharacterSystem;
             }
             ai_campaign_decision_timer = 0;
         }
-        for (let character of data_1.Data.CharacterDB.list()) {
-            if (character.dead()) {
-                continue;
+        if (character_state_update_timer > 1) {
+            for (let character of data_1.Data.CharacterDB.list()) {
+                if (character.dead()) {
+                    continue;
+                }
+                if (!character.in_battle()) {
+                    effects_1.Effect.Change.rage(character, -1);
+                    if (character.current_building != undefined) {
+                        let building = data_1.Data.Buildings.from_id(character.current_building);
+                        let fatigue_change = -Math.floor(building.durability / 30 * character.get_fatigue() / 10);
+                        let stress_change = -Math.floor(building.durability / 30 * character.get_stress() / 10);
+                        effects_1.Effect.Change.fatigue(character, fatigue_change);
+                        effects_1.Effect.Change.stress(character, stress_change);
+                        if ((fatigue_change == 0) && (stress_change == 0)) {
+                            effects_1.Effect.leave_room(character.id);
+                        }
+                    }
+                }
             }
-            if (!character.in_battle())
-                effects_1.Effect.Change.rage(character, -1);
+            character_state_update_timer = 0;
         }
     }
     CharacterSystem.update = update;

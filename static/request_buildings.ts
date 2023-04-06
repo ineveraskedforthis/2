@@ -28,7 +28,7 @@ function request() {
 
 function rent_room(id: number) {
     return function() {
-        socket.emit('rent-room', id)
+        socket.emit('rent-room', {id: id})
     }
 }
 

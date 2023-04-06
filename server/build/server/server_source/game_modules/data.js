@@ -37,6 +37,7 @@ var building_to_character = new Map();
 var building_to_cell = new Map();
 var cell_to_buildings = new Map();
 var id_to_building = new Map();
+var building_to_occupied_rooms = new Map();
 // class EntityData<type, id_type extends number & {__brand: string}> {
 //     list: type[]
 //     dict: {[_ in id_type]: type}
@@ -152,7 +153,22 @@ var Data;
                 temp.add(id);
             }
             id_to_building.set(id, item);
+            building_to_occupied_rooms.set(id, 0);
         }
+        function occupied_rooms(id) {
+            return building_to_occupied_rooms.get(id);
+        }
+        Buildings.occupied_rooms = occupied_rooms;
+        function free_room(id) {
+            let rooms = occupied_rooms(id);
+            building_to_occupied_rooms.set(id, rooms - 1);
+        }
+        Buildings.free_room = free_room;
+        function occupy_room(id) {
+            let rooms = occupied_rooms(id);
+            building_to_occupied_rooms.set(id, rooms + 1);
+        }
+        Buildings.occupy_room = occupy_room;
         function from_id(id) {
             return id_to_building.get(id);
         }
@@ -161,6 +177,10 @@ var Data;
             return cell_to_buildings.get(id);
         }
         Buildings.from_cell_id = from_cell_id;
+        function owner(id) {
+            return building_to_character.get(id);
+        }
+        Buildings.owner = owner;
     })(Buildings = Data.Buildings || (Data.Buildings = {}));
     let Reputation;
     (function (Reputation) {

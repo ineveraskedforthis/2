@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Effect = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
+const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 var Effect;
 (function (Effect) {
@@ -32,6 +33,15 @@ var Effect;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
     }
     Effect.destroy_item = destroy_item;
+    let Transfer;
+    (function (Transfer) {
+        function savings(from, to, x) {
+            from.savings.transfer(to.savings, x);
+            user_manager_1.UserManagement.add_user_to_update_queue(from.user_id, 5 /* UI_Part.SAVINGS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(to.user_id, 5 /* UI_Part.SAVINGS */);
+        }
+        Transfer.savings = savings;
+    })(Transfer = Effect.Transfer || (Effect.Transfer = {}));
     let Change;
     (function (Change) {
         function fatigue(character, dx) {
@@ -62,4 +72,34 @@ var Effect;
         user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 12 /* UI_Part.SKILLS */);
     }
     Effect.learn_perk = learn_perk;
+    function rent_room(character_id, building_id) {
+        let building = data_1.Data.Buildings.from_id(building_id);
+        let rooms_not_available = data_1.Data.Buildings.occupied_rooms(building_id);
+        let owner_id = data_1.Data.Buildings.owner(building_id);
+        let character = data_1.Data.CharacterDB.from_id(character_id);
+        if (owner_id == undefined) {
+            return "no_owner";
+        }
+        if (rooms_not_available >= building.rooms) {
+            return "no_rooms";
+        }
+        if (character.savings.get() < building.room_cost) {
+            return "not_enough_money";
+        }
+        let owner = data_1.Data.CharacterDB.from_id(owner_id);
+        if (owner.cell_id != character.cell_id)
+            return "invalid_cell";
+        Effect.Transfer.savings(character, owner, building.room_cost);
+        character.current_building = building_id;
+        return "ok";
+    }
+    Effect.rent_room = rent_room;
+    function leave_room(character_id) {
+        let character = data_1.Data.CharacterDB.from_id(character_id);
+        if (character.current_building == undefined)
+            return;
+        data_1.Data.Buildings.free_room(character.current_building);
+        character.current_building = undefined;
+    }
+    Effect.leave_room = leave_room;
 })(Effect = exports.Effect || (exports.Effect = {}));

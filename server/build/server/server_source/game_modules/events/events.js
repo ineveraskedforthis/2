@@ -35,9 +35,7 @@ var Event;
             alerts_1.Alerts.generic_character_alert(student, 'alert', responce);
             return;
         }
-        student.savings.transfer(teacher.savings, price);
-        user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 5 /* UI_Part.SAVINGS */);
-        user_manager_1.UserManagement.add_user_to_update_queue(teacher.user_id, 5 /* UI_Part.SAVINGS */);
+        effects_1.Effect.Transfer.savings(student, teacher, price);
         effects_1.Effect.learn_perk(student, perk);
     }
     Event.buy_perk = buy_perk;
@@ -52,9 +50,7 @@ var Event;
             return;
         if (teacher.skills[skill] < 30)
             return;
-        student.savings.transfer(teacher.savings, price);
-        user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 5 /* UI_Part.SAVINGS */);
-        user_manager_1.UserManagement.add_user_to_update_queue(teacher.user_id, 5 /* UI_Part.SAVINGS */);
+        effects_1.Effect.Transfer.savings(student, teacher, price);
         effects_1.Effect.Change.skill(student, skill, 1);
     }
     Event.buy_skill = buy_skill;

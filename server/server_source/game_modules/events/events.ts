@@ -6,7 +6,7 @@ import { BattleSystem } from "../battle/system";
 import { trim } from "../calculations/basic_functions";
 import { Attack } from "../attack/system";
 import { Character } from "../character/character";
-import { ModelVariant } from "../types";
+import { ModelVariant, building_id, char_id } from "../types";
 import { Loot } from "../races/generate_loot";
 import { Perks } from "../character/Perks";
 import { perk_requirement } from "../character/perk_requirement";
@@ -49,11 +49,7 @@ export namespace Event {
             return
         } 
 
-
-        student.savings.transfer(teacher.savings, price)
-
-        UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SAVINGS)
-        UserManagement.add_user_to_update_queue(teacher.user_id, UI_Part.SAVINGS)
+        Effect.Transfer.savings(student, teacher, price)
         Effect.learn_perk(student, perk)
     }
 
@@ -68,12 +64,8 @@ export namespace Event {
         
         if (teacher.skills[skill] <= student.skills[skill] + 20) return
         if (teacher.skills[skill] < 30) return
-        
-        student.savings.transfer(teacher.savings, price)
 
-        UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SAVINGS)
-        UserManagement.add_user_to_update_queue(teacher.user_id, UI_Part.SAVINGS)
-
+        Effect.Transfer.savings(student, teacher, price)
         Effect.Change.skill(student, skill, 1)
     }
 
