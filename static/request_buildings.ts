@@ -15,9 +15,13 @@ function close_buildings() {
     big_div.classList.add('hidden');
 }
 
+
 interface Building {
     id: number
     durability: number,
+    tier: number,
+    rooms: number,
+    rooms_occupied: number,
     is_inn: boolean,
     room_cost: number
 }
@@ -33,17 +37,28 @@ function rent_room(id: number) {
 }
 
 function quality_to_name(n: number) {
-    if (n < 30) return 'shack'
-    if (n < 60) return 'okay building'
-    if (n < 90) return 'nice building'
-    return 'luxury building'
+    if (n < 30) return 'crumbling'
+    if (n < 60) return ''
+    if (n < 90) return 'fine'
+    return 'luxury'
+}
+
+function tier_to_name(n: number) {
+    if (n == 1) return 'shack'
+    if (n == 2) return 'house'
+    if (n == 3) return 'mansion'
+    if (n == 4) return 'palace'
 }
 
 function building_div(b: Building) {
     let div = document.createElement('div')
     let quality_label = document.createElement('div')
-    quality_label.innerHTML = quality_to_name(b.durability)    
+    quality_label.innerHTML = quality_to_name(b.durability) + ' ' + tier_to_name(b.tier)   
     div.appendChild(quality_label)
+
+    let rooms_label = document.createElement('div')
+    rooms_label.innerHTML = b.rooms_occupied + '/' + b.rooms
+    div.appendChild(rooms_label)
 
     if (b.is_inn) {
         let rest_button = document.createElement('button')
@@ -54,6 +69,7 @@ function building_div(b: Building) {
     }
 
     div.classList.add('border-white')
+    div.classList.add('container-horizontal')
 
     return div    
 }

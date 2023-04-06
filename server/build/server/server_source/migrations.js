@@ -136,6 +136,7 @@ function migrate(current_version, target_version) {
         let building = {
             cell_id: cell,
             durability: 100,
+            tier: 3,
             rooms: 4,
             kitchen: 100,
             workshop: 0,

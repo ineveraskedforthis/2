@@ -508,4 +508,7 @@ var Event;
         }
     }
     Event.stop_battle = stop_battle;
+    function build_building(character) {
+    }
+    Event.build_building = build_building;
 })(Event = exports.Event || (exports.Event = {}));

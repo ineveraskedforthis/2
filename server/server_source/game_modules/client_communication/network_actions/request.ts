@@ -107,10 +107,14 @@ export namespace Request {
         }
         let buildings = Array.from(ids).map((id) => {
             let building = Data.Buildings.from_id(id)
+            let rooms_occupied = Data.Buildings.occupied_rooms(id)
             return {
                 id: id,
                 room_cost: building.room_cost,
+                rooms: building.rooms,
+                rooms_occupied: rooms_occupied,
                 durability: building.durability,
+                tier: building.tier,
                 is_inn: building.is_inn
             }
         })

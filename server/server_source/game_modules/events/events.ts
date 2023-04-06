@@ -557,4 +557,8 @@ export namespace Event {
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         }
     }
+
+    export function build_building(character: Character) {
+        
+    }
 }
