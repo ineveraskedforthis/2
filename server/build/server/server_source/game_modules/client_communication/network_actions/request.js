@@ -76,6 +76,32 @@ var Request;
         sw.socket.emit('perks-info', responce);
     }
     Request.perks_and_skills = perks_and_skills;
+    function local_buildings(sw) {
+        console.log('???');
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        let ids = data_1.Data.Buildings.from_cell_id(character.cell_id);
+        if (ids == undefined) {
+            alerts_1.Alerts.generic_user_alert(user, 'buildings-info', []);
+            return;
+        }
+        let buildings = Array.from(ids).map((id) => {
+            let building = data_1.Data.Buildings.from_id(id);
+            return {
+                id: id,
+                room_cost: building.room_cost,
+                durability: building.durability,
+                is_inn: building.is_inn
+            };
+        });
+        console.log(buildings);
+        alerts_1.Alerts.generic_user_alert(user, 'buildings-info', buildings);
+        return;
+    }
+    Request.local_buildings = local_buildings;
     function player_index(sw) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined) {

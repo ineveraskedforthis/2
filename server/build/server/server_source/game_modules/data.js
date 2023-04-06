@@ -157,6 +157,10 @@ var Data;
             return id_to_building.get(id);
         }
         Buildings.from_id = from_id;
+        function from_cell_id(id) {
+            return cell_to_buildings.get(id);
+        }
+        Buildings.from_cell_id = from_cell_id;
     })(Buildings = Data.Buildings || (Data.Buildings = {}));
     let Reputation;
     (function (Reputation) {

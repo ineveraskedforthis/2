@@ -227,12 +227,17 @@
             </div>
 
 
-            <div id="available_perks", class="game_tab hidden container-vertical">
+            <div id="available_perks", class="game_tab hidden container-vertical pop-up">
                 <button id="close_perks"> Close </button>
                 <div id="character_greeting" class="flex-1"></div>
                 <div id="skills_for_learning" class="container-vertical"></div>
                 <div id="perks_for_learning" class="container-vertical"></div>
             </div> 
+
+            <div id="local_buildings", class="game_tab hidden container-vertical pop-up">
+                <button id="close_buildings"> Close </button>
+                <div id="buildings_list" class="container-vertical"></div>
+            </div>
 
             <div id="craft_tab" class="game_tab hidden movable noselect container-vertical">
                 <div class="game_tab_header container-horizontal"> 
@@ -277,6 +282,7 @@
                                 <button id="attack_selected_charater"> Attack </button>
                                 <button id="support_selected_charater"> Support in battle. </button>
                                 <button id="request_perks_selected_charater"> Talk. </button>
+                                <button id="request_buildings">Local Buildings</button>
                             </div>
                             <div id="characters_list"></div>
                         </div>

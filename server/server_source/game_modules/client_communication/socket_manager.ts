@@ -112,6 +112,7 @@ export class SocketManager {
             socket.on('req-attacks-damage', () => Request.attack_damage(user))
 
             socket.on('request-talk',   (msg:any) => Request.perks_and_skills(user, msg))
+            socket.on('request-local-buildings', (msg:any) => Request.local_buildings(user))
             socket.on('learn-perk',     (msg: undefined|{id: unknown, tag: unknown}) =>
                                          SocketCommand.learn_perk(user, msg))
             socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) => 

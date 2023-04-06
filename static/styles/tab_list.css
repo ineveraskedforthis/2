@@ -230,7 +230,7 @@
     padding-left: 20px;
 }
 
-#available_perks {
+.pop-up {
     top: 50px;
     left: 500px;
     height: 500px;
@@ -243,6 +243,7 @@
     padding: 5px;
 }
 
+
 #character_greeting {
     display: contents;
     
@@ -252,6 +253,6 @@
     padding: 5px;
 }
 
-#available_perks > div {
+.pop-up > div {
     flex-shrink: 0;
 }

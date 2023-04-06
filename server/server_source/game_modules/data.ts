@@ -182,8 +182,13 @@ export namespace Data {
             id_to_building.set(id, item)
         }
 
+
         export function from_id(id: building_id) {
-            return id_to_building.get(id)
+            return id_to_building.get(id) as Building
+        }
+
+        export function from_cell_id(id: cell_id) {
+            return cell_to_buildings.get(id)
         }
     }
 

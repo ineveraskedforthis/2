@@ -90,6 +90,36 @@ export namespace Request {
         sw.socket.emit('perks-info', responce)
     }
 
+    export function local_buildings(sw: SocketWrapper) {
+        console.log('???')
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+
+        
+        let ids = Data.Buildings.from_cell_id(character.cell_id)
+
+        if (ids == undefined) {
+            Alerts.generic_user_alert(user, 'buildings-info', [])
+            return
+        }
+        let buildings = Array.from(ids).map((id) => {
+            let building = Data.Buildings.from_id(id)
+            return {
+                id: id,
+                room_cost: building.room_cost,
+                durability: building.durability,
+                is_inn: building.is_inn
+            }
+        })
+
+        console.log(buildings)
+        Alerts.generic_user_alert(user, 'buildings-info', buildings)
+        return
+    }
+
     export function player_index(sw: SocketWrapper) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) {

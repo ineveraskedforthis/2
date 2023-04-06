@@ -78,6 +78,7 @@ class SocketManager {
             socket.on('req-flee-chance', () => request_1.Request.flee_chance(user));
             socket.on('req-attacks-damage', () => request_1.Request.attack_damage(user));
             socket.on('request-talk', (msg) => request_1.Request.perks_and_skills(user, msg));
+            socket.on('request-local-buildings', (msg) => request_1.Request.local_buildings(user));
             socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg));
             socket.on('learn-skill', (msg) => run_event_1.SocketCommand.learn_skill(user, msg));
         });

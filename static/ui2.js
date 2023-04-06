@@ -11,6 +11,7 @@ import { BattleImage } from './modules/Battle/battle_image.js';
 import { loadImages } from './modules/load_images.js';
 import './new_log_message.js';
 import './request_perks.js'
+import './request_buildings.js'
 import './craft_list_div.js'
 import './login.js'
 import { stash_tag_to_id, stash_id_to_tag, update_savings, update_savings_trade, update_stash, update_tags } from './bulk_tags.js';
