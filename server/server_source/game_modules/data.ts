@@ -165,6 +165,23 @@ export namespace Data {
             building_to_character.set(building, character)
         }
 
+        export function remove_ownership(character: char_id, building: building_id) {
+            building_to_character.delete(building)
+            let buildings = character_to_buildings.get(character)
+            if (buildings == undefined) return
+            buildings.delete(building)
+        }
+
+        export function remove_ownership_character(character: char_id) {
+            let buildings = character_to_buildings.get(character)
+            if (buildings == undefined) return
+
+            for (let id of buildings.values()) {
+                building_to_character.delete(id)
+            }
+            buildings.clear()
+        }
+
         export function create(item: Building) {
             last_id_building = last_id_building + 1 as building_id
             set_data(last_id_building, item)

@@ -4,6 +4,7 @@ exports.Effect = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
 const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
+const scripted_values_1 = require("./scripted_values");
 var Effect;
 (function (Effect) {
     let Update;
@@ -77,19 +78,21 @@ var Effect;
         let rooms_not_available = data_1.Data.Buildings.occupied_rooms(building_id);
         let owner_id = data_1.Data.Buildings.owner(building_id);
         let character = data_1.Data.CharacterDB.from_id(character_id);
-        if (owner_id == undefined) {
-            return "no_owner";
-        }
         if (rooms_not_available >= building.rooms) {
             return "no_rooms";
         }
-        if (character.savings.get() < building.room_cost) {
+        if (owner_id == undefined) {
+            character.current_building = building_id;
+            return "no_owner";
+        }
+        let price = scripted_values_1.ScriptedValue.room_price(building_id);
+        if (character.savings.get() < price) {
             return "not_enough_money";
         }
         let owner = data_1.Data.CharacterDB.from_id(owner_id);
         if (owner.cell_id != character.cell_id)
             return "invalid_cell";
-        Effect.Transfer.savings(character, owner, building.room_cost);
+        Effect.Transfer.savings(character, owner, price);
         character.current_building = building_id;
         return "ok";
     }

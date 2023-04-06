@@ -408,6 +408,10 @@ var Event;
                 effects_1.Effect.Change.skill(killer, 'skinning', 1);
             }
         }
+        if (victim.current_building != undefined) {
+            effects_1.Effect.leave_room(victim.id);
+        }
+        data_1.Data.Buildings.remove_ownership_character(victim.id);
         user_manager_1.UserManagement.add_user_to_update_queue(killer.user_id, 4 /* UI_Part.STASH */);
     }
     Event.kill = kill;

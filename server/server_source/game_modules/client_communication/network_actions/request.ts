@@ -13,6 +13,7 @@ import { Update } from "../causality_graph";
 import { SocketWrapper } from "../user";
 import { Alerts } from "./alerts";
 import { SendUpdate } from "./updates";
+import { ScriptedValue } from "../../events/scripted_values";
 
 
 export namespace Request {
@@ -110,7 +111,7 @@ export namespace Request {
             let rooms_occupied = Data.Buildings.occupied_rooms(id)
             return {
                 id: id,
-                room_cost: building.room_cost,
+                room_cost: ScriptedValue.room_price(id),
                 rooms: building.rooms,
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,

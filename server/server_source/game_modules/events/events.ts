@@ -459,6 +459,13 @@ export namespace Event {
                 Effect.Change.skill(killer, 'skinning', 1)
             }
         }
+
+        if (victim.current_building != undefined) {
+            Effect.leave_room(victim.id)
+        }
+
+        Data.Buildings.remove_ownership_character(victim.id)
+
         UserManagement.add_user_to_update_queue(killer.user_id, UI_Part.STASH)
     }
 

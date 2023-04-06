@@ -137,6 +137,24 @@ var Data;
             building_to_character.set(building, character);
         }
         Buildings.set_ownership = set_ownership;
+        function remove_ownership(character, building) {
+            building_to_character.delete(building);
+            let buildings = character_to_buildings.get(character);
+            if (buildings == undefined)
+                return;
+            buildings.delete(building);
+        }
+        Buildings.remove_ownership = remove_ownership;
+        function remove_ownership_character(character) {
+            let buildings = character_to_buildings.get(character);
+            if (buildings == undefined)
+                return;
+            for (let id of buildings.values()) {
+                building_to_character.delete(id);
+            }
+            buildings.clear();
+        }
+        Buildings.remove_ownership_character = remove_ownership_character;
         function create(item) {
             last_id_building = last_id_building + 1;
             set_data(last_id_building, item);

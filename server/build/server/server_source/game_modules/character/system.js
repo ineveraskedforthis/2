@@ -279,8 +279,8 @@ var CharacterSystem;
                     effects_1.Effect.Change.rage(character, -1);
                     if (character.current_building != undefined) {
                         let building = data_1.Data.Buildings.from_id(character.current_building);
-                        let fatigue_change = -Math.floor(building.durability / 30 * character.get_fatigue() / 10);
-                        let stress_change = -Math.floor(building.durability / 30 * character.get_stress() / 10);
+                        let fatigue_change = -Math.floor(building.durability / 30 * character.get_fatigue() / 10 * building.tier / 2);
+                        let stress_change = -Math.floor(building.durability / 30 * character.get_stress() / 10 * building.tier / 5);
                         effects_1.Effect.Change.fatigue(character, fatigue_change);
                         effects_1.Effect.Change.stress(character, stress_change);
                         if ((fatigue_change == 0) && (stress_change == 0)) {

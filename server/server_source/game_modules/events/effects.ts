@@ -9,6 +9,7 @@ import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
 import { Request } from "../client_communication/network_actions/request";
 import { building_id, char_id, money } from "../types";
+import { ScriptedValue } from "./scripted_values";
 
 export namespace Effect {
     export namespace Update {
@@ -79,21 +80,22 @@ export namespace Effect {
         let rooms_not_available = Data.Buildings.occupied_rooms(building_id)
         let owner_id = Data.Buildings.owner(building_id)
         let character = Data.CharacterDB.from_id(character_id)
-
-        if (owner_id == undefined) {
-            return "no_owner"
-        }        
+       
         if (rooms_not_available >= building.rooms) {
             return "no_rooms"
         }
-        if (character.savings.get() < building.room_cost) {
+        if (owner_id == undefined) {
+            character.current_building = building_id
+            return "no_owner"
+        }
+        let price = ScriptedValue.room_price(building_id)
+        if (character.savings.get() < price) {
             return "not_enough_money"
         }
-
         let owner = Data.CharacterDB.from_id(owner_id)
 
         if (owner.cell_id != character.cell_id) return "invalid_cell"
-        Effect.Transfer.savings(character, owner, building.room_cost)
+        Effect.Transfer.savings(character, owner, price)
         character.current_building = building_id
         return "ok"
     }

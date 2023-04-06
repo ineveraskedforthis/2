@@ -13,6 +13,7 @@ const constants_1 = require("../../static_data/constants");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 const updates_1 = require("./updates");
+const scripted_values_1 = require("../../events/scripted_values");
 var Request;
 (function (Request) {
     function accuracy(sw, distance) {
@@ -93,7 +94,7 @@ var Request;
             let rooms_occupied = data_1.Data.Buildings.occupied_rooms(id);
             return {
                 id: id,
-                room_cost: building.room_cost,
+                room_cost: scripted_values_1.ScriptedValue.room_price(id),
                 rooms: building.rooms,
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,
