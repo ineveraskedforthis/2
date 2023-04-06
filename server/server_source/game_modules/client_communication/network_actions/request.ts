@@ -111,7 +111,7 @@ export namespace Request {
             let rooms_occupied = Data.Buildings.occupied_rooms(id)
             return {
                 id: id,
-                room_cost: ScriptedValue.room_price(id),
+                room_cost: ScriptedValue.room_price(id, character.id),
                 rooms: building.rooms,
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,

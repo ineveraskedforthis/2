@@ -17,7 +17,7 @@ import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { UserManagement } from "../client_communication/user_manager";
 import { Data } from "../data";
-import { ARROW_BONE, materials, material_index, RAT_SKIN, ZAZ } from "../manager_classes/materials_manager";
+import { ARROW_BONE, materials, material_index, RAT_SKIN, ZAZ, WOOD } from "../manager_classes/materials_manager";
 import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert, Link, Unlink } from "../systems_communication";
@@ -30,6 +30,7 @@ import { DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
 import { skill } from "../character/SkillList";
 import { skill_price } from "../prices/skill_price";
+import { ScriptedValue } from "./scripted_values";
 
 export namespace Event {
 
@@ -565,7 +566,12 @@ export namespace Event {
         }
     }
 
-    export function build_building(character: Character) {
-        
+    export function build_building(character: Character, tier: number) {
+        let cost = ScriptedValue.building_price_wood(tier)
+
+        if (character.stash.get(WOOD) < cost) return
+
+        change_stash(character, WOOD, cost)
+        Effect.new_building(character.cell_id, tier, tier, character.skills.woodwork)
     }
 }

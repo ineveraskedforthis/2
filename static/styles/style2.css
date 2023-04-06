@@ -45,7 +45,7 @@ div {
 .container-vertical > div {
     width: 100%;
     min-width: 0;
-    min-height: 0;
+    /* min-height: 0; */
 }
 
 .container-horizontal {
@@ -54,7 +54,7 @@ div {
 }
 .container-horizontal > div {
     height: 100%;
-    min-width: 0;
+    /* min-width: 0; */
     min-height: 0;
 }
 

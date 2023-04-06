@@ -78,14 +78,18 @@ var Effect;
         let rooms_not_available = data_1.Data.Buildings.occupied_rooms(building_id);
         let owner_id = data_1.Data.Buildings.owner(building_id);
         let character = data_1.Data.CharacterDB.from_id(character_id);
+        if (character.current_building != undefined) {
+            return "you are already somewhere";
+        }
         if (rooms_not_available >= building.rooms) {
             return "no_rooms";
         }
         if (owner_id == undefined) {
             character.current_building = building_id;
+            data_1.Data.Buildings.occupy_room(building_id);
             return "no_owner";
         }
-        let price = scripted_values_1.ScriptedValue.room_price(building_id);
+        let price = scripted_values_1.ScriptedValue.room_price(building_id, character_id);
         if (character.savings.get() < price) {
             return "not_enough_money";
         }
@@ -93,6 +97,7 @@ var Effect;
         if (owner.cell_id != character.cell_id)
             return "invalid_cell";
         Effect.Transfer.savings(character, owner, price);
+        data_1.Data.Buildings.occupy_room(building_id);
         character.current_building = building_id;
         return "ok";
     }
@@ -105,4 +110,17 @@ var Effect;
         character.current_building = undefined;
     }
     Effect.leave_room = leave_room;
+    function new_building(cell_id, tier, rooms, durability) {
+        data_1.Data.Buildings.create({
+            cell_id: cell_id,
+            durability: durability,
+            tier: tier,
+            rooms: rooms,
+            kitchen: 0,
+            workshop: 0,
+            is_inn: false,
+            room_cost: 5
+        });
+    }
+    Effect.new_building = new_building;
 })(Effect = exports.Effect || (exports.Effect = {}));

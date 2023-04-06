@@ -8,7 +8,7 @@ import { Data, character_list } from "../data";
 import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
 import { Request } from "../client_communication/network_actions/request";
-import { building_id, char_id, money } from "../types";
+import { building_id, cell_id, char_id, money } from "../types";
 import { ScriptedValue } from "./scripted_values";
 
 export namespace Effect {
@@ -80,15 +80,18 @@ export namespace Effect {
         let rooms_not_available = Data.Buildings.occupied_rooms(building_id)
         let owner_id = Data.Buildings.owner(building_id)
         let character = Data.CharacterDB.from_id(character_id)
-       
+        if (character.current_building != undefined) {
+            return "you are already somewhere"
+        }
         if (rooms_not_available >= building.rooms) {
             return "no_rooms"
         }
         if (owner_id == undefined) {
             character.current_building = building_id
+            Data.Buildings.occupy_room(building_id)
             return "no_owner"
         }
-        let price = ScriptedValue.room_price(building_id)
+        let price = ScriptedValue.room_price(building_id, character_id)
         if (character.savings.get() < price) {
             return "not_enough_money"
         }
@@ -96,6 +99,7 @@ export namespace Effect {
 
         if (owner.cell_id != character.cell_id) return "invalid_cell"
         Effect.Transfer.savings(character, owner, price)
+        Data.Buildings.occupy_room(building_id)
         character.current_building = building_id
         return "ok"
     }
@@ -106,5 +110,18 @@ export namespace Effect {
 
         Data.Buildings.free_room(character.current_building)
         character.current_building = undefined
+    }
+
+    export function new_building(cell_id: cell_id, tier: number, rooms: number, durability: number) {        
+        Data.Buildings.create({
+            cell_id: cell_id,
+            durability: durability,
+            tier: tier,
+            rooms: rooms,
+            kitchen: 0,
+            workshop: 0,
+            is_inn: false,
+            room_cost: 5 as money
+        })
     }
 }

@@ -94,7 +94,7 @@ var Request;
             let rooms_occupied = data_1.Data.Buildings.occupied_rooms(id);
             return {
                 id: id,
-                room_cost: scripted_values_1.ScriptedValue.room_price(id),
+                room_cost: scripted_values_1.ScriptedValue.room_price(id, character.id),
                 rooms: building.rooms,
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,

@@ -44,14 +44,18 @@ function building_div(b) {
     console.log(b.durability, b.tier);
     console.log(quality_to_name(b.durability) + ' ' + tier_to_name(b.tier));
     quality_label.innerHTML = quality_to_name(b.durability) + ' ' + tier_to_name(b.tier);
+    quality_label.classList.add('width-200');
     div.appendChild(quality_label);
     let rooms_label = document.createElement('div');
     rooms_label.innerHTML = b.rooms_occupied + '/' + b.rooms;
+    rooms_label.classList.add('width-50');
+    rooms_label.classList.add('align-center');
     div.appendChild(rooms_label);
     if (b.is_inn) {
         let rest_button = document.createElement('button');
         rest_button.onclick = rent_room(b.id);
         rest_button.innerHTML = 'rest cost: ' + b.room_cost.toString();
+        rest_button.classList.add('width-50');
         div.appendChild(rest_button);
     }
     div.classList.add('border-white');

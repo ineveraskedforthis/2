@@ -21,6 +21,7 @@ const inventory_events_1 = require("./inventory_events");
 const market_1 = require("./market");
 const damage_types_1 = require("../damage_types");
 const skill_price_1 = require("../prices/skill_price");
+const scripted_values_1 = require("./scripted_values");
 var Event;
 (function (Event) {
     function buy_perk(student, perk, teacher) {
@@ -512,7 +513,12 @@ var Event;
         }
     }
     Event.stop_battle = stop_battle;
-    function build_building(character) {
+    function build_building(character, tier) {
+        let cost = scripted_values_1.ScriptedValue.building_price_wood(tier);
+        if (character.stash.get(materials_manager_1.WOOD) < cost)
+            return;
+        change_stash(character, materials_manager_1.WOOD, cost);
+        effects_1.Effect.new_building(character.cell_id, tier, tier, character.skills.woodwork);
     }
     Event.build_building = build_building;
 })(Event = exports.Event || (exports.Event = {}));
