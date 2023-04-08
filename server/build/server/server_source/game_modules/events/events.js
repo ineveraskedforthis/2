@@ -517,7 +517,7 @@ var Event;
         let cost = scripted_values_1.ScriptedValue.building_price_wood(tier);
         if (character.stash.get(materials_manager_1.WOOD) < cost)
             return;
-        change_stash(character, materials_manager_1.WOOD, cost);
+        change_stash(character, materials_manager_1.WOOD, -cost);
         effects_1.Effect.new_building(character.cell_id, tier, tier, character.skills.woodwork);
     }
     Event.build_building = build_building;

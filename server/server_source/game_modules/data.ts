@@ -139,7 +139,7 @@ export namespace Data {
         export function save(save_path: string) {
             let str = ''
             id_to_building.forEach((value, key) => {
-                str += JSON.stringify({id: key, building: value})
+                str += JSON.stringify({id: key, building: value}) + '\n' 
             })
 
             fs.writeFileSync(save_path, str)
@@ -148,7 +148,7 @@ export namespace Data {
         export function save_ownership(save_path: string) {
             let str = ''
             building_to_character.forEach((value, key) => {
-                str += JSON.stringify({character: value, building: key})
+                str += JSON.stringify({character: value, building: key}) + '\n' 
             })
 
             fs.writeFileSync(save_path, str)

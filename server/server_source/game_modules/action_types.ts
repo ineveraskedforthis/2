@@ -14,7 +14,7 @@ export namespace CharacterAction {
     export const HUNT = hunt;
     export const FISH = fish;
     export const REST = rest;
-    export const PROPER_REST = proper_rest;
+    // export const PROPER_REST = proper_rest;
     // export const ATTACK = attack
     export const GATHER_WOOD = gather_wood;
     export const GATHER_COTTON = gather_cotton;

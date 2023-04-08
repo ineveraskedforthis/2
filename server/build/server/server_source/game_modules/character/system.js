@@ -10,6 +10,7 @@ const data_1 = require("../data");
 const ai_manager_1 = require("../AI/ai_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../events/effects");
+const scripted_values_1 = require("../events/scripted_values");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
@@ -279,11 +280,17 @@ var CharacterSystem;
                     effects_1.Effect.Change.rage(character, -1);
                     if (character.current_building != undefined) {
                         let building = data_1.Data.Buildings.from_id(character.current_building);
-                        let fatigue_change = -Math.floor(building.durability / 30 * character.get_fatigue() / 10 * building.tier / 2);
-                        let stress_change = -Math.floor(building.durability / 30 * character.get_stress() / 10 * building.tier / 5);
-                        effects_1.Effect.Change.fatigue(character, fatigue_change);
-                        effects_1.Effect.Change.stress(character, stress_change);
-                        if ((fatigue_change == 0) && (stress_change == 0)) {
+                        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(building.tier, building.durability, character.race());
+                        let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(building.tier, building.durability, character.race());
+                        if (fatigue_target < character.get_fatigue()) {
+                            let fatigue_change = (0, basic_functions_1.trim)(-5, fatigue_target - character.get_fatigue(), 0);
+                            effects_1.Effect.Change.fatigue(character, fatigue_change);
+                        }
+                        if (stress_target < character.get_stress()) {
+                            let stress_change = (0, basic_functions_1.trim)(-5, stress_target - character.get_stress(), 0);
+                            effects_1.Effect.Change.stress(character, stress_change);
+                        }
+                        if ((stress_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
                             effects_1.Effect.leave_room(character.id);
                         }
                     }

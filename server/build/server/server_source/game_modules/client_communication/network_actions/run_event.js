@@ -75,12 +75,10 @@ var SocketCommand;
     }
     SocketCommand.learn_skill = learn_skill;
     function rent_room(sw, msg) {
-        console.log('???');
         if (msg == undefined)
             return;
         let building_id = msg.id;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
-        console.log(building_id);
         if (character == undefined)
             return;
         if (typeof building_id != 'number')
@@ -88,8 +86,16 @@ var SocketCommand;
         let building = data_1.Data.Buildings.from_id(building_id);
         if (building == undefined)
             return;
-        console.log(building.rooms);
         let responce = effects_1.Effect.rent_room(character.id, building_id);
     }
     SocketCommand.rent_room = rent_room;
+    function build_building(sw, msg) {
+        if (typeof msg != 'number')
+            return;
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        events_1.Event.build_building(character, msg);
+    }
+    SocketCommand.build_building = build_building;
 })(SocketCommand = exports.SocketCommand || (exports.SocketCommand = {}));

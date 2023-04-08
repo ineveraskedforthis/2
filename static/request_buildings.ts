@@ -8,6 +8,11 @@ import { socket } from "./modules/globals.js";
         button.innerHTML = 'build  ' + tier_to_name(i)
         div?.appendChild(button)
     }
+
+    let close_button = document.createElement('div')
+    close_button.id = 'close_buildings'
+
+    div?.appendChild(close_button)
 }
 
 {
@@ -53,10 +58,10 @@ function build_building(tier: number) {
 }
 
 function quality_to_name(n: number) {
-    if (n < 30) return 'crumbling'
-    if (n < 60) return ''
-    if (n < 90) return 'fine'
-    return 'luxury'
+    if (n < 30) return 'crumbling ' + '(' + n + ')'
+    if (n < 60) return '' + '(' + n + ')'
+    if (n < 90) return 'fine' + '(' + n + ')'
+    return 'luxury' + '(' + n + ')'
 }
 
 function tier_to_name(n: number) {

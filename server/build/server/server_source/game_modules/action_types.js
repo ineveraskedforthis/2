@@ -15,7 +15,7 @@ var CharacterAction;
     CharacterAction.HUNT = hunt_1.hunt;
     CharacterAction.FISH = hunt_1.fish;
     CharacterAction.REST = rest_1.rest;
-    CharacterAction.PROPER_REST = rest_1.proper_rest;
+    // export const PROPER_REST = proper_rest;
     // export const ATTACK = attack
     CharacterAction.GATHER_WOOD = gather_1.gather_wood;
     CharacterAction.GATHER_COTTON = gather_1.gather_cotton;

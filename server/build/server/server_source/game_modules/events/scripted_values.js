@@ -18,4 +18,26 @@ var ScriptedValue;
         return tier * tier * 50;
     }
     ScriptedValue.building_price_wood = building_price_wood;
+    function rest_target_fatigue(tier, quality, race) {
+        let multiplier = 1;
+        if (race == 'rat')
+            multiplier = 0.25;
+        if (race == 'elo')
+            multiplier = 0.5;
+        if (race == 'graci')
+            multiplier = 0.9;
+        return Math.floor((5 - tier) * 6 * (200 - quality) / 100 * multiplier);
+    }
+    ScriptedValue.rest_target_fatigue = rest_target_fatigue;
+    function rest_target_stress(tier, quality, race) {
+        let multiplier = 1;
+        if (race == 'rat')
+            multiplier = 0.25;
+        if (race == 'elo')
+            multiplier = 0.5;
+        if (race == 'graci')
+            multiplier = 0.9;
+        return Math.floor((5 - tier) * 8 * (200 - quality) / 100 * multiplier);
+    }
+    ScriptedValue.rest_target_stress = rest_target_stress;
 })(ScriptedValue = exports.ScriptedValue || (exports.ScriptedValue = {}));

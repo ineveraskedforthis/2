@@ -113,7 +113,7 @@ var Data;
         function save(save_path) {
             let str = '';
             id_to_building.forEach((value, key) => {
-                str += JSON.stringify({ id: key, building: value });
+                str += JSON.stringify({ id: key, building: value }) + '\n';
             });
             fs_1.default.writeFileSync(save_path, str);
         }
@@ -121,7 +121,7 @@ var Data;
         function save_ownership(save_path) {
             let str = '';
             building_to_character.forEach((value, key) => {
-                str += JSON.stringify({ character: value, building: key });
+                str += JSON.stringify({ character: value, building: key }) + '\n';
             });
             fs_1.default.writeFileSync(save_path, str);
         }

@@ -1,5 +1,17 @@
 import { socket } from "./modules/globals.js";
 {
+    let div = document.getElementById('local_buildings');
+    for (let i = 1; i <= 4; i++) {
+        let button = document.createElement('button');
+        button.onclick = build_building(i);
+        button.innerHTML = 'build  ' + tier_to_name(i);
+        div?.appendChild(button);
+    }
+    let close_button = document.createElement('div');
+    close_button.id = 'close_buildings';
+    div?.appendChild(close_button);
+}
+{
     let button = document.getElementById('request_buildings');
     button.onclick = request;
 }
@@ -19,14 +31,19 @@ function rent_room(id) {
         socket.emit('rent-room', { id: id });
     };
 }
+function build_building(tier) {
+    return function () {
+        socket.emit('build-building', tier);
+    };
+}
 function quality_to_name(n) {
     if (n < 30)
-        return 'crumbling';
+        return 'crumbling ' + '(' + n + ')';
     if (n < 60)
-        return '';
+        return '' + '(' + n + ')';
     if (n < 90)
-        return 'fine';
-    return 'luxury';
+        return 'fine' + '(' + n + ')';
+    return 'luxury' + '(' + n + ')';
 }
 function tier_to_name(n) {
     if (n == 1)

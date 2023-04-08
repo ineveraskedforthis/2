@@ -571,7 +571,7 @@ export namespace Event {
 
         if (character.stash.get(WOOD) < cost) return
 
-        change_stash(character, WOOD, cost)
+        change_stash(character, WOOD, -cost)
         Effect.new_building(character.cell_id, tier, tier, character.skills.woodwork)
     }
 }

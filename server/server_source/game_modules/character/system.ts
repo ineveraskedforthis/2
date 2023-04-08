@@ -12,6 +12,7 @@ import { Data } from "../data";
 import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
+import { ScriptedValue } from "../events/scripted_values";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 
@@ -276,12 +277,20 @@ export namespace CharacterSystem {
                     Effect.Change.rage(character, -1)
                     if (character.current_building != undefined) {
                         let building = Data.Buildings.from_id(character.current_building)
-                        let fatigue_change = -Math.floor(building.durability / 30 * character.get_fatigue() / 10 * building.tier / 2)
-                        let stress_change = - Math.floor(building.durability / 30 * character.get_stress() / 10 * building.tier / 5)
-                        Effect.Change.fatigue(character, fatigue_change)
-                        Effect.Change.stress(character, stress_change)
+                        
+                        let fatigue_target = ScriptedValue.rest_target_fatigue(building.tier, building.durability, character.race())
+                        let stress_target = ScriptedValue.rest_target_stress(building.tier, building.durability, character.race())
+                        if (fatigue_target < character.get_fatigue()) {
+                            let fatigue_change = trim(-5, fatigue_target - character.get_fatigue(), 0)
+                            Effect.Change.fatigue(character, fatigue_change)
+                        }
 
-                        if ((fatigue_change == 0) && (stress_change == 0)) {
+                        if (stress_target < character.get_stress()) {
+                            let stress_change = trim(-5, stress_target - character.get_stress(), 0)
+                            Effect.Change.stress(character, stress_change)
+                        }                      
+
+                        if ((stress_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
                             Effect.leave_room(character.id)
                         }
                     }
