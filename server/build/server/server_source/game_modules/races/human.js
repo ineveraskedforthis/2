@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RatHunterHuman = exports.Human = void 0;
+exports.RatHunterHuman = exports.Trader = exports.Human = void 0;
 const Damage_1 = require("../Damage");
 const templates_1 = require("../character/templates");
 const HumanArchetype = {
@@ -15,6 +15,12 @@ const RatHunterArchetype = {
     ai_battle: 'basic',
     race: 'human',
 };
+const TraderArchetype = {
+    model: 'human',
+    ai_map: 'urban_trader',
+    ai_battle: 'basic',
+    race: 'human',
+};
 function HumanNamesGen() {
     return 'name ' + Math.floor(Math.random() * 50);
 }
@@ -25,4 +31,5 @@ const HumanStats = {
 };
 const HumanBaseResists = new Damage_1.Damage(0, 0, 0, 0);
 exports.Human = new templates_1.CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists);
+exports.Trader = new templates_1.CharacterTemplate(TraderArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists);
 exports.RatHunterHuman = new templates_1.CharacterTemplate(RatHunterArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists);

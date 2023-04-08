@@ -11,6 +11,7 @@ import { RatRoutine } from "./AI_ROUTINE_RAT";
 import { SteppeAgressiveRoutine, SteppePassiveRoutine, ForestPassiveRoutine } from "./AI_ROUTINE_GENERIC";
 import { tired } from "./triggers";
 import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
+import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 
 export namespace CampaignAI {
     export function decision(character: Character) {
@@ -35,12 +36,15 @@ export namespace CampaignAI {
             return
         } 
 
+        // console.log(character.archetype.ai_map)
+
         switch(character.archetype.ai_map) {
             case "steppe_walker_agressive":{SteppeAgressiveRoutine(character);break}
             case "dummy":{break}
             case "steppe_walker_passive":{SteppePassiveRoutine(character);break}
             case "forest_walker":{ForestPassiveRoutine(character);break;}
             case "rat_hunter":{RatHunterRoutine(character);break}
+            case "urban_trader":{TraderRoutine(character);break}
         }
 
         if (character.archetype.ai_map == 'dummy') {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.simple_constraints = exports.steppe_constraints = exports.forest_constraints = void 0;
+exports.simple_constraints = exports.urban_constraints = exports.steppe_constraints = exports.forest_constraints = void 0;
 const system_1 = require("../map/system");
 function forest_constraints(cell) {
     return (cell.development['urban'] < 1)
@@ -14,6 +14,11 @@ function steppe_constraints(cell) {
         && (system_1.MapSystem.can_move([cell.x, cell.y]));
 }
 exports.steppe_constraints = steppe_constraints;
+function urban_constraints(cell) {
+    return (cell.development['urban'] > 0)
+        && (system_1.MapSystem.can_move([cell.x, cell.y]));
+}
+exports.urban_constraints = urban_constraints;
 function simple_constraints(cell) {
     return system_1.MapSystem.can_move([cell.x, cell.y]);
 }

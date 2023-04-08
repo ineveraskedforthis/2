@@ -11,6 +11,11 @@ export function steppe_constraints(cell: Cell) {
         && (cell.development['wild'] < 1)
         && (MapSystem.can_move([cell.x, cell.y]));
 }
+
+export function urban_constraints(cell: Cell) {
+    return (cell.development['urban'] > 0)
+        && (MapSystem.can_move([cell.x, cell.y]));
+}
 export function simple_constraints(cell: Cell) {
     return MapSystem.can_move([cell.x, cell.y]);
 }

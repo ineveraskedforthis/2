@@ -4,7 +4,7 @@ import { Character } from "../character/character"
 import { hostile } from "../races/racial_hostility"
 import { Event } from "../events/events"
 import { Convert } from "../systems_communication"
-import { money } from "../types"
+import { cell_id, money } from "../types"
 import { output_bulk } from "../craft/CraftBulk"
 import { ELODINO_FLESH, materials, material_index, RAT_BONE, RAT_SKIN, WOOD, MEAT } from "../manager_classes/materials_manager"
 import { Stash } from "../inventories/stash"
@@ -12,14 +12,16 @@ import { trim } from "../calculations/basic_functions"
 import { durability } from "../craft/CraftItem"
 import { box, CraftBulk, CraftItem } from "../craft/crafts_storage"
 import { BattleAI } from "../battle/battle_ai"
+import { MapSystem } from "../map/system"
+import { AItrade } from "./AI_SCRIPTED_VALUES"
 
-export function base_price(character: Character, material: material_index): money {
+export function base_price(cell_id: cell_id, material: material_index): money {
     switch(material) {
         case WOOD: {
-            let cell = Convert.character_to_cell(character)
-            if (cell.can_gather_wood()) return 3 as money
+            let cell = MapSystem.id_to_cell(cell_id)
+            if (cell?.can_gather_wood()) return 3 as money
             return 10 as money
-        }            
+        }
         case RAT_BONE:
             return 3 as money
 
@@ -133,7 +135,7 @@ export namespace AIhelper {
     function price_norm_box(character: Character, items_vector: box[]): number {
         let norm = 0
         for (let item of items_vector) {
-            norm += item.amount * base_price(character, item.material)
+            norm += item.amount * AItrade.buy_price_bulk(character, item.material)
         }
         return norm
     }
@@ -147,7 +149,7 @@ export namespace AIhelper {
         // (buy) = (10 * input - stash) - find corner of buyment box
         for (let item of input) {
             const amount = trim(10 * item.amount - character.stash.get(item.material), 0, 9999)
-            buy.push({material: item.material, amount: amount, price: base_price(character, item.material)})
+            buy.push({material: item.material, amount: amount, price: AItrade.buy_price_bulk(character, item.material)})
         }
 
         // normalise (buy) with price metric down to budget

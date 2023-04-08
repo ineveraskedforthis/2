@@ -20,12 +20,10 @@ function RatHunterRoutine(character) {
         return;
     if ((0, triggers_1.tired)(character)) {
         action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, character, [0, 0]);
-        console.log('resting');
         return;
     }
     // character at market
     if (!character.trade_stash.is_empty()) {
-        console.log('waiting for someone to buy my loot');
         if (character.stash.get(materials_manager_1.FOOD) < 10) {
             (0, actions_1.buy_food)(character);
         }
@@ -35,18 +33,15 @@ function RatHunterRoutine(character) {
     if ((0, actions_1.loot)(character) > 10) {
         let cell = systems_communication_1.Convert.character_to_cell(character);
         if (cell.is_market()) {
-            console.log('selling loot');
             (0, actions_1.sell_loot)(character);
             character.ai_state = 1 /* AIstate.WaitSale */;
         }
         else {
-            console.log('walking toward market');
             (0, actions_1.market_walk)(character);
         }
         return;
     }
     if ((character.stash.get(materials_manager_1.FOOD) > 0) && (0, triggers_1.low_hp)(character)) {
-        console.log('low hp -> eating');
         action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.EAT, character, [0, 0]);
         return;
     }
@@ -54,11 +49,9 @@ function RatHunterRoutine(character) {
     let target = helpers_1.AIhelper.free_rats_in_cell(character);
     const target_char = systems_communication_1.Convert.id_to_character(target);
     if (target_char != undefined) {
-        console.log('found a rat, starting a fight');
         events_1.Event.start_battle(character, target_char);
     }
     else {
-        console.log('looking for rats');
         (0, actions_1.random_walk)(character, constraints_1.simple_constraints);
     }
 }

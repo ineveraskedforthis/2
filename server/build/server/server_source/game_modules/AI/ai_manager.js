@@ -6,6 +6,7 @@ const AI_ROUTINE_RAT_HUNT_1 = require("./AI_ROUTINE_RAT_HUNT");
 const AI_ROUTINE_RAT_1 = require("./AI_ROUTINE_RAT");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
+const AI_ROUTINE_URBAN_TRADER_1 = require("./AI_ROUTINE_URBAN_TRADER");
 var CampaignAI;
 (function (CampaignAI) {
     function decision(character) {
@@ -26,6 +27,7 @@ var CampaignAI;
             (0, AI_ROUTINE_RAT_1.RatRoutine)(character);
             return;
         }
+        // console.log(character.archetype.ai_map)
         switch (character.archetype.ai_map) {
             case "steppe_walker_agressive": {
                 (0, AI_ROUTINE_GENERIC_1.SteppeAgressiveRoutine)(character);
@@ -44,6 +46,10 @@ var CampaignAI;
             }
             case "rat_hunter": {
                 (0, AI_ROUTINE_RAT_HUNT_1.RatHunterRoutine)(character);
+                break;
+            }
+            case "urban_trader": {
+                (0, AI_ROUTINE_URBAN_TRADER_1.TraderRoutine)(character);
                 break;
             }
         }

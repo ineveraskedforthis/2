@@ -149,6 +149,12 @@ function migrate(current_version, target_version) {
         data_1.Data.Buildings.set_ownership(innkeeper.id, building_id);
         current_version = set_version(14);
     }
+    if (current_version == 14) {
+        let cell = system_2.MapSystem.coordinate_to_id(7, 5);
+        let trader = events_1.Event.new_character(human_1.Trader, "Trader", cell, undefined);
+        trader.savings.inc(800);
+        current_version = set_version(15);
+    }
     // if (current_version == 12) {
     //     rat_hunter(7, 5)
     //     set_version(12)

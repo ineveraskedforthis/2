@@ -9,11 +9,13 @@ const materials_manager_1 = require("../manager_classes/materials_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const CraftItem_1 = require("../craft/CraftItem");
 const battle_ai_1 = require("../battle/battle_ai");
-function base_price(character, material) {
+const system_1 = require("../map/system");
+const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
+function base_price(cell_id, material) {
     switch (material) {
         case materials_manager_1.WOOD: {
-            let cell = systems_communication_1.Convert.character_to_cell(character);
-            if (cell.can_gather_wood())
+            let cell = system_1.MapSystem.id_to_cell(cell_id);
+            if (cell?.can_gather_wood())
                 return 3;
             return 10;
         }
@@ -120,7 +122,7 @@ var AIhelper;
     function price_norm_box(character, items_vector) {
         let norm = 0;
         for (let item of items_vector) {
-            norm += item.amount * base_price(character, item.material);
+            norm += item.amount * AI_SCRIPTED_VALUES_1.AItrade.buy_price_bulk(character, item.material);
         }
         return norm;
     }
@@ -132,7 +134,7 @@ var AIhelper;
         // (buy) = (10 * input - stash) - find corner of buyment box
         for (let item of input) {
             const amount = (0, basic_functions_1.trim)(10 * item.amount - character.stash.get(item.material), 0, 9999);
-            buy.push({ material: item.material, amount: amount, price: base_price(character, item.material) });
+            buy.push({ material: item.material, amount: amount, price: AI_SCRIPTED_VALUES_1.AItrade.buy_price_bulk(character, item.material) });
         }
         // normalise (buy) with price metric down to budget
         let norm = price_norm(character, buy);

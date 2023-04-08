@@ -6,14 +6,14 @@ import { Data } from "../data";
 import { Effect } from "../events/effects";
 import { EventMarket } from "../events/market";
 import { ScriptedValue } from "../events/scripted_values";
-import { FOOD, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
+import { FOOD, MEAT, MaterialsManager, RAT_BONE, RAT_SKIN, materials } from "../manager_classes/materials_manager";
 import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
 import { money } from "../types";
 import { dp } from "./AI_CONSTANTS";
-import { simple_constraints } from "./constraints";
-import { base_price } from "./helpers";
+import { AItrade } from "./AI_SCRIPTED_VALUES";
+import { simple_constraints, urban_constraints } from "./constraints";
 
 const LOOT = [MEAT, RAT_SKIN, RAT_BONE];
 export function loot(character: Character) {
@@ -29,14 +29,52 @@ export function sell_loot(character: Character) {
             character,
             tag,
             character.stash.get(tag),
-            base_price(character, tag) - 1 as money
+            AItrade.sell_price_bulk(character, tag) - 1 as money
         );
     }
 }
+export function sell_all_stash(character: Character) {
+    for (let tag of materials.get_materials_list()) {
+        EventMarket.sell(
+            character,
+            tag,
+            character.stash.get(tag),
+            AItrade.sell_price_bulk(character, tag) as money
+        );
+    }
+}
+
 export function buy_food(character: Character) {
     let orders = Convert.cell_id_to_bulk_orders(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
+    for (let item of orders) {
+        let order = Convert.id_to_bulk_order(item);
+        if (order.typ == 'buy')
+            continue;
+        if (order.tag != FOOD)
+            continue;
+        if ((best_price > order.price) && (order.amount > 0)) {
+            best_price = order.price;
+            best_order = order;
+        }
+    }
+
+    if (best_order == undefined)
+        return false;
+
+    if (character.savings.get() >= best_price) {
+        EventMarket.execute_sell_order(character, best_order?.id, 1);
+        return true;
+    }
+    return false;
+}
+
+export function buy_random(character: Character) {
+    let orders = Convert.cell_id_to_bulk_orders(character.cell_id);
+    let best_order = undefined;
+    let best_price = 9999;
+
     for (let item of orders) {
         let order = Convert.id_to_bulk_order(item);
         if (order.typ == 'buy')
@@ -93,6 +131,10 @@ export function market_walk(character: Character) {
     })
     let target = select_max(potential_moves, simple_constraints)
     ActionManager.start_action(CharacterAction.MOVE, character, [target?.x, target?.y])
+}
+
+export function urban_walk(character: Character) {
+    random_walk(character, urban_constraints)
 }
 
 export function rat_go_home(character: Character, constraints: (cell: Cell) => boolean) {

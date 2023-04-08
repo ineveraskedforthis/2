@@ -2,5 +2,6 @@ export const enum AIstate {
     Idle,
     WaitSale,
     WaitBuy,
-    Patrol
+    Patrol,
+    GoToMarket
 }

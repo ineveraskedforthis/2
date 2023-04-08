@@ -2,7 +2,7 @@ import * as path from "path";
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 import { EloTemplate } from "./game_modules/races/elo"
 import { GraciTemplate } from "./game_modules/races/graci"
-import { Human, RatHunterHuman } from "./game_modules/races/human"
+import { Human, RatHunterHuman, Trader } from "./game_modules/races/human"
 import { RatTemplate } from "./game_modules/races/rat"
 import { CharacterSystem } from "./game_modules/character/system"
 import { Data } from "./game_modules/data"
@@ -152,6 +152,13 @@ export function migrate(current_version:number, target_version:number) {
         Data.Buildings.set_ownership(innkeeper.id, building_id)
 
         current_version = set_version(14)
+    }
+
+    if (current_version == 14) {
+        let cell = MapSystem.coordinate_to_id(7, 5)
+        let trader = Event.new_character(Trader, "Trader", cell, undefined)
+        trader.savings.inc(800 as money)
+        current_version = set_version(15)
     }
 
     // if (current_version == 12) {

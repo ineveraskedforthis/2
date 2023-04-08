@@ -2,6 +2,7 @@ import { Character } from "../character/character";
 import { AmmunitionCraft } from "../craft/ammunition";
 import { Cooking } from "../craft/cooking";
 import { RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
+import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { AIactions } from "./AIactions";
 import { rest_building, rest_outside } from "./actions";
 import { base_price } from "./helpers";
@@ -35,18 +36,18 @@ export function crafter_routine(character: Character) {
     }
 
     if ((character.skills.woodwork > 40) && (character.perks.weapon_maker == true)) {
-        AIactions.make_wooden_weapon(character, base_price(character, WOOD));
+        AIactions.make_wooden_weapon(character, AItrade.buy_price_bulk(character, WOOD));
     }
 
     if ((character.skills.bone_carving > 40) && (character.perks.weapon_maker == true)) {
-        AIactions.make_bone_weapon(character, base_price(character, RAT_BONE));
+        AIactions.make_bone_weapon(character, AItrade.buy_price_bulk(character, RAT_BONE));
     }
 
     if ((character.skills.clothier > 40) && (character.perks.skin_armour_master == true)) {
-        AIactions.make_armour(character, base_price(character, RAT_SKIN));
+        AIactions.make_armour(character, AItrade.buy_price_bulk(character, RAT_SKIN));
     }
 
     if ((character.skills.clothier > 40) && (character.perks.shoemaker == true)) {
-        AIactions.make_boots(character, base_price(character, RAT_SKIN));
+        AIactions.make_boots(character, AItrade.buy_price_bulk(character, RAT_SKIN));
     }
 }
