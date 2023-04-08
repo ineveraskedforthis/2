@@ -10,74 +10,41 @@ import { AIactions } from "./AIactions";
 import { RatRoutine } from "./AI_ROUTINE_RAT";
 import { SteppeAgressiveRoutine, SteppePassiveRoutine, ForestPassiveRoutine } from "./AI_ROUTINE_GENERIC";
 import { tired } from "./triggers";
+import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
 
 export namespace CampaignAI {
-    export function decision(char: Character) {
-        // console.log(char.misc.ai_tag)
-        if (char.is_player()) {
+    export function decision(character: Character) {
+        // console.log(character.misc.ai_tag)
+        if (character.is_player()) {
             return
         }
 
-        if (char.in_battle()) {
+        if (character.in_battle()) {
             return
         }
 
-        if (char.action != undefined) {
+        if (character.action != undefined) {
             return
         }
 
-        let responce = AIhelper.check_battles_to_join(char)
+        let responce = AIhelper.check_battles_to_join(character)
         if (responce) return;
 
-        if (char.race() == 'rat') {
-            RatRoutine(char)
+        if (character.race() == 'rat') {
+            RatRoutine(character)
             return
         } 
 
-        switch(char.archetype.ai_map) {
-            case "steppe_walker_agressive":{SteppeAgressiveRoutine(char);break}
+        switch(character.archetype.ai_map) {
+            case "steppe_walker_agressive":{SteppeAgressiveRoutine(character);break}
             case "dummy":{break}
-            case "steppe_walker_passive":{SteppePassiveRoutine(char);break}
-            case "forest_walker":{ForestPassiveRoutine(char);break;}
-            case "rat_hunter":{RatHunterRoutine(char);break}
+            case "steppe_walker_passive":{SteppePassiveRoutine(character);break}
+            case "forest_walker":{ForestPassiveRoutine(character);break;}
+            case "rat_hunter":{RatHunterRoutine(character);break}
         }
 
-        if (tired(char)) {
-            ActionManager.start_action(CharacterAction.REST, char, [0, 0])
-            return
-        }
-
-        decide_craft(char);
-    }
-    
-
-    function decide_craft(char: Character) {
-        if ((char.skills.cooking > 40) || (char.perks.meat_master == true)) {
-            AIactions.craft_bulk(char, Cooking.meat);
-        }
-
-        if ((char.skills.woodwork > 40) && (char.perks.fletcher == true)) {
-            AIactions.craft_bulk(char, AmmunitionCraft.bone_arrow);
-        }
-
-        if ((char.perks.alchemist)) {
-            AIactions.craft_bulk(char, Cooking.elodino);
-        }
-
-        if ((char.skills.woodwork > 40) && (char.perks.weapon_maker == true)) {
-            AIactions.make_wooden_weapon(char, base_price(char, WOOD));
-        }
-
-        if ((char.skills.bone_carving > 40) && (char.perks.weapon_maker == true)) {
-            AIactions.make_bone_weapon(char, base_price(char, RAT_BONE));
-        }
-
-        if ((char.skills.clothier > 40) && (char.perks.skin_armour_master == true)) {
-            AIactions.make_armour(char, base_price(char, RAT_SKIN));
-        }
-
-        if ((char.skills.clothier > 40) && (char.perks.shoemaker == true)) {
-            AIactions.make_boots(char, base_price(char, RAT_SKIN));
+        if (character.archetype.ai_map == 'dummy') {
+            crafter_routine(character)
         }
     }
 }

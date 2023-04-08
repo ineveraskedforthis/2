@@ -29,6 +29,7 @@ function RatHunterRoutine(character) {
         if (character.stash.get(materials_manager_1.FOOD) < 10) {
             (0, actions_1.buy_food)(character);
         }
+        (0, actions_1.rest_building)(character, character.savings.get());
         return;
     }
     if ((0, actions_1.loot)(character) > 10) {

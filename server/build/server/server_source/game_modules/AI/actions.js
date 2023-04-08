@@ -1,10 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rat_go_home = exports.market_walk = exports.rat_walk = exports.random_walk = exports.buy_food = exports.sell_loot = exports.loot = void 0;
+exports.rest_outside = exports.rest_building = exports.rat_go_home = exports.market_walk = exports.rat_walk = exports.random_walk = exports.buy_food = exports.sell_loot = exports.loot = void 0;
 const action_types_1 = require("../action_types");
 const action_manager_1 = require("../actions/action_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
+const data_1 = require("../data");
+const effects_1 = require("../events/effects");
 const market_1 = require("../events/market");
+const scripted_values_1 = require("../events/scripted_values");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_1 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
@@ -98,3 +101,33 @@ function rat_go_home(character, constraints) {
         }
 }
 exports.rat_go_home = rat_go_home;
+function rest_building(character, budget) {
+    let cell = character.cell_id;
+    let buildings = data_1.Data.Buildings.from_cell_id(cell);
+    if (buildings == undefined)
+        return false;
+    let fatigue_utility = 1;
+    let money_utility = 10;
+    let best_utility = 0;
+    let target = undefined;
+    for (let item of buildings) {
+        let price = scripted_values_1.ScriptedValue.room_price(item, character.id);
+        let building = data_1.Data.Buildings.from_id(item);
+        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(building.tier, building.durability, character.race());
+        let fatigue_change = character.get_fatigue() - fatigue_target;
+        let utility = fatigue_change * fatigue_utility - price * money_utility;
+        if ((utility > best_utility) && (price < budget)) {
+            target = item;
+            best_utility = utility;
+        }
+    }
+    if (target == undefined)
+        return false;
+    effects_1.Effect.rent_room(character.id, target);
+    return true;
+}
+exports.rest_building = rest_building;
+function rest_outside(character) {
+    action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, character, [0, 0]);
+}
+exports.rest_outside = rest_outside;

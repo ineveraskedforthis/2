@@ -3,14 +3,14 @@ import { ActionManager } from "../actions/action_manager";
 import { Character } from "../character/character";
 import { Event } from "../events/events";
 import { Convert } from "../systems_communication";
-import { random_walk } from "./actions";
+import { random_walk, rest_building, rest_outside } from "./actions";
 import { forest_constraints, steppe_constraints } from "./constraints";
 import { AIhelper } from "./helpers";
 import { tired } from "./triggers";
 
 export function SteppeAgressiveRoutine(character: Character) {
     if (tired(character)) {
-        ActionManager.start_action(CharacterAction.REST, character, [0, 0]);
+        rest_outside(character)
     } else {
         let target = AIhelper.enemies_in_cell(character);
         const target_char = Convert.id_to_character(target);
@@ -24,7 +24,7 @@ export function SteppeAgressiveRoutine(character: Character) {
 
 export function SteppePassiveRoutine(character: Character) {
     if (tired(character)) {
-        ActionManager.start_action(CharacterAction.REST, character, [0, 0]);
+        rest_outside(character)
     } else {
         random_walk(character, steppe_constraints);
     }
@@ -32,7 +32,7 @@ export function SteppePassiveRoutine(character: Character) {
 
 export function ForestPassiveRoutine(character: Character) {
     if (tired(character)) {
-        ActionManager.start_action(CharacterAction.REST, character, [0, 0]);
+        rest_outside(character)
     } else {
         random_walk(character, forest_constraints);
     }

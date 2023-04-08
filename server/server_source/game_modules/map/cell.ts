@@ -119,10 +119,6 @@ export class Cell {
         return (this.resources.fish)
     }
 
-    can_rest(): boolean{
-        return (this.development.urban > 0)
-    }
-
     can_gather_wood(): boolean {
         return (this.development.wild > 0)
     }

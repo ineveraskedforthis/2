@@ -2,7 +2,10 @@ import { CharacterAction } from "../action_types";
 import { ActionManager } from "../actions/action_manager";
 import { select_max, select_weighted, trim } from "../calculations/basic_functions";
 import { Character } from "../character/character";
+import { Data } from "../data";
+import { Effect } from "../events/effects";
 import { EventMarket } from "../events/market";
+import { ScriptedValue } from "../events/scripted_values";
 import { FOOD, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
 import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
@@ -103,4 +106,40 @@ export function rat_go_home(character: Character, constraints: (cell: Cell) => b
     } else {
         ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
     }
+}
+
+export function rest_building(character: Character, budget: money) {
+    let cell = character.cell_id
+    let buildings = Data.Buildings.from_cell_id(cell)
+
+    if (buildings == undefined) return false
+
+    let fatigue_utility = 1
+    let money_utility = 10
+
+    let best_utility = 0
+    let target = undefined
+
+    for (let item of buildings) {
+        let price = ScriptedValue.room_price(item, character.id)
+        let building = Data.Buildings.from_id(item)
+        let fatigue_target = ScriptedValue.rest_target_fatigue(building.tier, building.durability, character.race())
+        let fatigue_change = character.get_fatigue() - fatigue_target
+
+        let utility = fatigue_change * fatigue_utility - price * money_utility
+
+        if ((utility > best_utility) && (price < budget)) {
+            target = item
+            best_utility = utility
+        }
+    }
+
+    if (target == undefined) return false
+
+    Effect.rent_room(character.id, target)
+    return true
+}
+
+export function rest_outside(character: Character) {
+    ActionManager.start_action(CharacterAction.REST, character, [0, 0]);
 }

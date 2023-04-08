@@ -37,7 +37,7 @@ var ScriptedValue;
             multiplier = 0.5;
         if (race == 'graci')
             multiplier = 0.9;
-        return Math.floor((5 - tier) * 8 * (200 - quality) / 100 * multiplier);
+        return Math.floor((5 - tier) * 15 * (200 - quality) / 100 * multiplier);
     }
     ScriptedValue.rest_target_stress = rest_target_stress;
 })(ScriptedValue = exports.ScriptedValue || (exports.ScriptedValue = {}));

@@ -7,7 +7,7 @@ exports.STARTING_DEVELOPMENT = {
     // ######## IT'H ##########
     // ########################
     //colony center
-    '0_3': { rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0 },
+    '0_3': { rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0, market: 1 },
     '0_4': { rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0 },
     '1_3': { rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0 },
     '1_4': { rural: 0, urban: 2, wild: 0, ruins: 0, wastelands: 0 },

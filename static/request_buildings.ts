@@ -9,7 +9,8 @@ import { socket } from "./modules/globals.js";
         div?.appendChild(button)
     }
 
-    let close_button = document.createElement('div')
+    let close_button = document.createElement('button')
+    close_button.innerHTML = 'close'
     close_button.id = 'close_buildings'
 
     div?.appendChild(close_button)

@@ -11,7 +11,7 @@ import { AIhelper } from "./helpers";
 import { simple_constraints } from "./constraints";
 import { AIstate } from "../character/AIstate";
 import { tired, low_hp } from "./triggers";
-import { buy_food, loot, market_walk, random_walk, sell_loot } from "./actions";
+import { buy_food, loot, market_walk, random_walk, rest_building, sell_loot } from "./actions";
 
 export function RatHunterRoutine(character: Character) {
     if (character.in_battle()) return
@@ -32,6 +32,7 @@ export function RatHunterRoutine(character: Character) {
         if (character.stash.get(FOOD) < 10) {
             buy_food(character)
         }
+        rest_building(character, character.savings.get())
         return
     }
     
