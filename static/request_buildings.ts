@@ -1,6 +1,16 @@
 import { socket } from "./modules/globals.js";
 
 {
+    let div = document.getElementById('local_buildings')
+    for (let i = 1; i <= 4; i++) {
+        let button = document.createElement('button')
+        button.onclick = build_building(i)
+        button.innerHTML = 'build  ' + tier_to_name(i)
+        div?.appendChild(button)
+    }
+}
+
+{
     let button = document.getElementById('request_buildings')!;
     button.onclick = request;
 }
@@ -33,6 +43,12 @@ function request() {
 function rent_room(id: number) {
     return function() {
         socket.emit('rent-room', {id: id})
+    }
+}
+
+function build_building(tier: number) {
+    return function() {
+        socket.emit('build-building', tier)
     }
 }
 
@@ -94,4 +110,5 @@ socket.on('buildings-info', (data: Building[]) => {
     build_div(data)
     document.getElementById('local_buildings')!.classList.remove('hidden');
 })
+
 
