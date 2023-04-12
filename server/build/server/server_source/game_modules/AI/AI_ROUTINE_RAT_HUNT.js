@@ -33,6 +33,7 @@ function RatHunterRoutine(character) {
     if ((0, actions_1.loot)(character) > 10) {
         let cell = systems_communication_1.Convert.character_to_cell(character);
         if (cell.is_market()) {
+            (0, actions_1.update_price_beliefs)(character);
             (0, actions_1.sell_loot)(character);
             character.ai_state = 1 /* AIstate.WaitSale */;
         }

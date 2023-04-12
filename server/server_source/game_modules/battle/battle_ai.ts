@@ -94,11 +94,11 @@ export namespace BattleAI {
                 }
         }
 
-        console.log('closest enemy is found ' + closest_enemy)
+        // console.log('closest enemy is found ' + closest_enemy)
         if (closest_enemy != undefined){
             let cha = Convert.unit_to_character(battle.heap.get_unit(closest_enemy))
-            console.log(cha.get_hp())
-            console.log(cha.name)
+            // console.log(cha.get_hp())
+            // console.log(cha.name)
         }
 
         return closest_enemy
@@ -144,7 +144,7 @@ export namespace BattleAI {
             const target_id  = calculate_closest_enemy(battle, agent_unit.id)
             // no target was found
             if (target_id == undefined) {
-                console.log('no target found, attempt to leave')
+                // console.log('no target found, attempt to leave')
                 if (battle.grace_period == 0) {
                     BattleEvent.Flee(battle, agent_unit)
                     return 'leave'
@@ -159,7 +159,7 @@ export namespace BattleAI {
             
             const attack_move = convert_attack_to_action(battle, agent_unit.id, target_id, 'usual')
 
-            console.log(attack_move)
+            // console.log(attack_move)
 
             if (attack_move.action == 'end_turn') return 'end'      
             

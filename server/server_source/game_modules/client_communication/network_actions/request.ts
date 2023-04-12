@@ -92,7 +92,6 @@ export namespace Request {
     }
 
     export function local_buildings(sw: SocketWrapper) {
-        console.log('???')
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) {
             sw.socket.emit('alert', 'your character does not exist')
@@ -121,7 +120,7 @@ export namespace Request {
             }
         })
 
-        console.log(buildings)
+        // console.log(buildings)
         Alerts.generic_user_alert(user, 'buildings-info', buildings)
         return
     }

@@ -41,7 +41,7 @@ export function base_price(cell_id: cell_id, material: material_index): money {
             return 3 as money
     }
 
-    return 5 as money
+    return 9999 as money
 }
 
 interface price {

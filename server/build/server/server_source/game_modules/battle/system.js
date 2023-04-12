@@ -131,7 +131,7 @@ var BattleSystem;
             const norm = Math.sqrt((dx * dx + dy * dy));
             dx = dx + dx / norm * events_1.HALFWIDTH / 2;
             dy = dy + dy / norm * events_1.HALFHEIGHT / 2;
-            console.log(dx, dy);
+            // console.log(dx, dy)
             var position = { x: 0 + dx, y: 0 + dy };
         }
         const unit = new unit_1.Unit(last_unit_id, position, team, 3, 10, 10, 4, character.id, battle.heap.get_max());
@@ -233,7 +233,7 @@ var BattleSystem;
             // if ai timer for ending a turn is not set, make turns as usual
             if (battle.ai_timer == undefined) {
                 const responce = AI_turn(battle);
-                console.log(responce);
+                // console.log(responce)
                 // when ai wants to leave, launch the timer
                 if (responce == 'end') {
                     battle.ai_timer = 0;

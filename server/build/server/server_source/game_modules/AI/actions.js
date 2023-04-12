@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rest_outside = exports.rest_building = exports.rat_go_home = exports.urban_walk = exports.market_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy_food = exports.sell_all_stash = exports.sell_loot = exports.loot = void 0;
+exports.update_price_beliefs = exports.rest_outside = exports.rest_building = exports.rat_go_home = exports.urban_walk = exports.market_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy_food = exports.sell_all_stash = exports.sell_loot = exports.loot = void 0;
 const action_types_1 = require("../action_types");
 const action_manager_1 = require("../actions/action_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -165,3 +165,31 @@ function rest_outside(character) {
     action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, character, [0, 0]);
 }
 exports.rest_outside = rest_outside;
+function update_price_beliefs(character) {
+    let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
+    // updating price beliefs as you go
+    for (let item of orders) {
+        let order = data_1.Data.BulkOrders.from_id(item);
+        if (order.typ == "buy") {
+            let belief = character.ai_price_belief_sell.get(order.tag);
+            if (belief == undefined) {
+                character.ai_price_belief_sell.set(order.tag, order.price);
+            }
+            else {
+                character.ai_price_belief_sell.set(order.tag, order.price / 10 + belief * 9 / 10);
+            }
+            // console.log(`i think i can sell ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_sell.get(order.tag)}`)
+        }
+        if (order.typ == "sell") {
+            let belief = character.ai_price_belief_buy.get(order.tag);
+            if (belief == undefined) {
+                character.ai_price_belief_buy.set(order.tag, order.price);
+            }
+            else {
+                character.ai_price_belief_buy.set(order.tag, order.price / 10 + belief * 9 / 10);
+            }
+            // console.log(`i think i can buy ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_buy.get(order.tag)}`)
+        }
+    }
+}
+exports.update_price_beliefs = update_price_beliefs;

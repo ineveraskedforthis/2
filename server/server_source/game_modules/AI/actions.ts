@@ -185,3 +185,30 @@ export function rest_building(character: Character, budget: money) {
 export function rest_outside(character: Character) {
     ActionManager.start_action(CharacterAction.REST, character, [0, 0]);
 }
+
+export function update_price_beliefs(character: Character) {
+    let orders = Convert.cell_id_to_bulk_orders(character.cell_id)
+    // updating price beliefs as you go
+    for (let item of orders) {
+        let order = Data.BulkOrders.from_id(item)
+        if (order.typ == "buy") {
+            let belief = character.ai_price_belief_sell.get(order.tag)
+            if (belief == undefined) {
+                character.ai_price_belief_sell.set(order.tag, order.price)
+            } else {
+                character.ai_price_belief_sell.set(order.tag, order.price / 10 + belief * 9 / 10 as money)
+            }
+            // console.log(`i think i can sell ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_sell.get(order.tag)}`)
+        }
+
+        if (order.typ == "sell") {
+            let belief = character.ai_price_belief_buy.get(order.tag)
+            if (belief == undefined) {
+                character.ai_price_belief_buy.set(order.tag, order.price)
+            } else {
+                character.ai_price_belief_buy.set(order.tag, order.price / 10 + belief * 9 / 10 as money)
+            }
+            // console.log(`i think i can buy ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_buy.get(order.tag)}`)
+        }
+    }
+}

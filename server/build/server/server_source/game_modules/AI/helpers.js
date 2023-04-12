@@ -32,7 +32,7 @@ function base_price(cell_id, material) {
         case materials_manager_1.FOOD:
             return 3;
     }
-    return 5;
+    return 9999;
 }
 exports.base_price = base_price;
 var AIhelper;

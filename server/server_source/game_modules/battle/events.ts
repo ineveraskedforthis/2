@@ -36,14 +36,14 @@ export namespace BattleEvent {
 
     export function Leave(battle: Battle, unit: Unit|undefined) {
         if (unit == undefined) return
-        console.log('leave' + unit.id)
+        // console.log('leave' + unit.id)
         EndTurn(battle, unit)
         battle.heap.delete(unit)
         Alerts.remove_unit(battle, unit)
         Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 0)
         
         const character = Convert.unit_to_character(unit)
-        console.log(character.name)
+        // console.log(character.name)
         Unlink.character_and_battle(character, battle)
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)

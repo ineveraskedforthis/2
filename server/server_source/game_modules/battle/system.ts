@@ -133,7 +133,7 @@ export namespace BattleSystem {
             const norm = Math.sqrt((dx * dx + dy * dy))
             dx = dx + dx / norm * HALFWIDTH / 2
             dy = dy + dy / norm * HALFHEIGHT / 2
-            console.log(dx, dy)
+            // console.log(dx, dy)
             var position = {x: 0 + dx, y: 0 + dy} as battle_position
         }
 
@@ -260,7 +260,7 @@ export namespace BattleSystem {
             // if ai timer for ending a turn is not set, make turns as usual
             if (battle.ai_timer == undefined) {
                 const responce = AI_turn(battle)
-                console.log(responce)
+                // console.log(responce)
                 // when ai wants to leave, launch the timer
                 if (responce == 'end') {
                     battle.ai_timer = 0 as ms

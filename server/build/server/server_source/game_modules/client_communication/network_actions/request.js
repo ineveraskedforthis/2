@@ -78,7 +78,6 @@ var Request;
     }
     Request.perks_and_skills = perks_and_skills;
     function local_buildings(sw) {
-        console.log('???');
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined) {
             sw.socket.emit('alert', 'your character does not exist');
@@ -103,7 +102,7 @@ var Request;
                 is_inn: building.is_inn || (owner == undefined)
             };
         });
-        console.log(buildings);
+        // console.log(buildings)
         alerts_1.Alerts.generic_user_alert(user, 'buildings-info', buildings);
         return;
     }

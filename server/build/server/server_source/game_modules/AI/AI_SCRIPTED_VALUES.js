@@ -9,9 +9,9 @@ var AItrade;
         let belief = character.ai_price_belief_buy.get(material);
         if (belief != undefined)
             base = belief;
-        if (character.archetype.ai_map == 'urban_trader') {
-            return Math.floor(base * 0.8);
-        }
+        // if (character.archetype.ai_map == 'urban_trader') {
+        //     return Math.floor(base * 0.8) as money;
+        // }
         return base;
     }
     AItrade.buy_price_bulk = buy_price_bulk;
@@ -19,9 +19,9 @@ var AItrade;
         let belief = character.ai_price_belief_sell.get(material);
         if (belief == undefined)
             return 0;
-        if (character.archetype.ai_map == 'urban_trader') {
-            return Math.floor(belief * 1.2);
-        }
+        // if (character.archetype.ai_map == 'urban_trader') {
+        //     return Math.floor(belief * 1.2) as money
+        // }
         return belief;
     }
     AItrade.sell_price_bulk = sell_price_bulk;

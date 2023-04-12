@@ -66,11 +66,6 @@ export class UnitsHeap {
         
         delete this.data[x.id]
 
-        console.log(`${x.id} is removed from the heap, current state:`)
-        console.log(this.last)
-        console.log(this.heap)
-        console.log(this.data)    
-
         return this.last
     }
 
