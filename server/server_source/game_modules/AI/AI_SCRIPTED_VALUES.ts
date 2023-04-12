@@ -5,21 +5,21 @@ import { base_price } from "./helpers";
 
 export namespace AItrade {
     export function buy_price_bulk( character: Character, material: material_index) {
-        let base = base_price(character.cell_id, material)
-
-        if (character.archetype.ai_map == 'urban_trader') {
-            return Math.floor(base * 0.8) as money
-        }
-        return base as money
+        let base = base_price(character.cell_id, material);
+        let belief = character.ai_price_belief_buy.get(material);
+        if (belief != undefined) base = belief;
+        // if (character.archetype.ai_map == 'urban_trader') {
+        //     return Math.floor(base * 0.8) as money;
+        // }
+        return base as money;
     }
 
     export function sell_price_bulk(character: Character, material: material_index) {
-        let base = base_price(character.cell_id, material)
-
-        if (character.archetype.ai_map == 'urban_trader') {
-            return Math.floor(base * 1.5) as money
-        }
-
-        return base as money
+        let belief = character.ai_price_belief_sell.get(material)
+        if (belief == undefined) return 0;
+        // if (character.archetype.ai_map == 'urban_trader') {
+        //     return Math.floor(belief * 1.2) as money
+        // }
+        return belief as money
     }
 }

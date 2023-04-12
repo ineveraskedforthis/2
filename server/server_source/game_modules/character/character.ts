@@ -7,6 +7,7 @@ import { ActionTargeted } from "../CharacterActionResponce";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
 import { AIstate } from "./AIstate";
+import { material_index } from "../manager_classes/materials_manager";
 
 export class Character {
     id: char_id;
@@ -39,6 +40,8 @@ export class Character {
     next_cell: map_position
 
     ai_state: AIstate;
+    ai_price_belief_sell: Map<material_index, money>;
+    ai_price_belief_buy: Map<material_index, money>;
 
     action: ActionTargeted|undefined
     action_progress: number
@@ -80,7 +83,9 @@ export class Character {
         this.action_progress = 0
         this.action_duration = 0
 
-        this.ai_state = AIstate.Idle
+        this.ai_state = AIstate.Idle;
+        this.ai_price_belief_buy = new Map()
+        this.ai_price_belief_sell = new Map()
 
         this.skills = new SkillList()
         this.perks = {}

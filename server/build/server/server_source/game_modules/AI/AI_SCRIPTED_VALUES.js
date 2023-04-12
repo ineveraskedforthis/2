@@ -6,6 +6,9 @@ var AItrade;
 (function (AItrade) {
     function buy_price_bulk(character, material) {
         let base = (0, helpers_1.base_price)(character.cell_id, material);
+        let belief = character.ai_price_belief_buy.get(material);
+        if (belief != undefined)
+            base = belief;
         if (character.archetype.ai_map == 'urban_trader') {
             return Math.floor(base * 0.8);
         }
@@ -13,11 +16,13 @@ var AItrade;
     }
     AItrade.buy_price_bulk = buy_price_bulk;
     function sell_price_bulk(character, material) {
-        let base = (0, helpers_1.base_price)(character.cell_id, material);
+        let belief = character.ai_price_belief_sell.get(material);
+        if (belief == undefined)
+            return 0;
         if (character.archetype.ai_map == 'urban_trader') {
-            return Math.floor(base * 1.5);
+            return Math.floor(belief * 1.2);
         }
-        return base;
+        return belief;
     }
     AItrade.sell_price_bulk = sell_price_bulk;
 })(AItrade = exports.AItrade || (exports.AItrade = {}));
