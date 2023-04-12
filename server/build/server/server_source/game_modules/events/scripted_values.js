@@ -26,7 +26,7 @@ var ScriptedValue;
             multiplier = 0.5;
         if (race == 'graci')
             multiplier = 0.9;
-        return Math.floor((5 - tier) * 6 * (200 - quality) / 100 * multiplier);
+        return Math.floor((5 - tier) * 5 * (200 - quality) / 100 * multiplier);
     }
     ScriptedValue.rest_target_fatigue = rest_target_fatigue;
     function rest_target_stress(tier, quality, race) {

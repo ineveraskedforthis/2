@@ -1,7 +1,7 @@
 #skills{
     /* display: flex; */
     /* flex-direction: column; */
-    height: 100%;
+    height: calc(100% - 24px);
 }
 #skills_header_container{
     height: 25px;
