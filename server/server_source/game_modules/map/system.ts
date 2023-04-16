@@ -185,13 +185,11 @@ export namespace MapSystem {
             if ((rats_number < 120) && (cell.development.rats == 1)) {
                 let dice = Math.random()
                 if (dice < 0.6) {
-                    let rat = Event.new_character(RatTemplate, undefined, cell.id, undefined)
-                    Data.Reputation.set(Factions.Rats.id, rat.id, 'member')
+                    Template.Character.GenericRat(cell.x, cell.y, undefined)
                 } else if (dice < 0.8) {
-                    let rat = Event.new_character(BigRatTemplate, undefined, cell.id, undefined)
-                    Data.Reputation.set(Factions.Rats.id, rat.id, 'member')
+                    Template.Character.BigRat(cell.x, cell.y, undefined)
                 } else if (dice < 1) {
-                    Template.Character.MageRat(cell.x, cell.y)
+                    Template.Character.MageRat(cell.x, cell.y, undefined)
                 }                
             }
 
@@ -201,7 +199,7 @@ export namespace MapSystem {
                     let elo = Event.new_character(EloTemplate, undefined, cell.id, undefined)
                     Data.Reputation.set(Factions.Elodinos.id, elo.id, 'member')
                 } else {
-                    Template.Character.MageElo(cell.x, cell.y)
+                    Template.Character.MageElo(cell.x, cell.y, undefined)
                 }
             }
         }

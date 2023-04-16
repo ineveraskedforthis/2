@@ -256,6 +256,8 @@ var Data;
         function a_X_b(a, X, b) {
             if (reputation[b] == undefined)
                 return false;
+            if (reputation[a] == undefined)
+                return false;
             const rep = reputation[a];
             for (let [faction, reputation] of Object.entries(rep)) {
                 if (reputation.level == 'member') {

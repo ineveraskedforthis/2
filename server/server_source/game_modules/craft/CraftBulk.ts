@@ -7,6 +7,7 @@ import { generate_bulk_craft_action } from "./generate_action";
 import { box, CraftBulk, crafts_bulk, craft_actions, skill_check } from "./crafts_storage";
 import { use_input, on_craft_update, skill_to_ratio, MAX_SKILL_MULTIPLIER_BULK } from "./helpers";
 import { Event } from "../events/events";
+import { character_list } from "../data";
 
 
 export function event_craft_bulk(character: Character, craft: CraftBulk) {
@@ -55,7 +56,9 @@ export function output_bulk(character: Character, craft: CraftBulk) {
                 bonus += 5;
         }
 
-        result.push({ material: item.material, amount: Math.round(item.amount * ratio + bonus) });
+        let amount = Math.round(item.amount * ratio + bonus);
+        if (character.race() == 'rat') amount = 0;
+        if (amount > 0) result.push({ material: item.material, amount: amount });
     }
 
     return result;
@@ -71,4 +74,14 @@ export function new_craft_bulk(id: string, input: box[], output: box[], difficul
     craft_actions[id] = generate_bulk_craft_action(crafts_bulk[id]);
 
     return crafts_bulk[id]
+}
+
+export function get_crafts_bulk_list(character: Character) {
+    let list = []
+    for (let item of Object.values(crafts_bulk)) {
+        if (output_bulk(character, item).length > 0) {
+            list.push(item)
+        }
+    }
+    return list
 }

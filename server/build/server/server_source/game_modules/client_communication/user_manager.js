@@ -8,13 +8,12 @@ const user_1 = require("./user");
 var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 const fs_1 = __importDefault(require("fs"));
-const human_1 = require("../races/human");
 const systems_communication_1 = require("../systems_communication");
 const updates_1 = require("./network_actions/updates");
 const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
-const events_1 = require("../events/events");
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
+const templates_1 = require("../templates");
 var path = require('path');
 exports.users_data_dict = {};
 var users_data_list = [];
@@ -151,13 +150,40 @@ var UserManagement;
         return exports.users_data_dict[id];
     }
     UserManagement.get_user_data = get_user_data;
-    function get_new_character(id, name, model_variation, starting_cell) {
+    function get_new_character(id, name, model_variation, race) {
         let user = get_user_data(id);
         if (user.char_id != '@') {
             console.log('attempt to generate character for user who already owns one');
             return;
         }
-        const character = events_1.Event.new_character(human_1.Human, name, starting_cell, model_variation);
+        var character = undefined;
+        switch (race) {
+            case "human":
+                {
+                    character = templates_1.Template.Character.HumanCity(0, 3, name);
+                    break;
+                }
+                ;
+            case "rat": {
+                character = templates_1.Template.Character.BigRat(7, 5, name);
+                break;
+            }
+            case "graci": {
+                character = templates_1.Template.Character.Graci(14, 8, name);
+                break;
+            }
+            case "elo": {
+                character = templates_1.Template.Character.MageElo(18, 8, name);
+                break;
+            }
+            case "test": {
+                character = templates_1.Template.Character.HumanCity(0, 3, name);
+                break;
+            }
+        }
+        if (character == undefined)
+            return;
+        // const character = Event.new_character(template, name, starting_cell, model_variation)
         console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')');
         systems_communication_1.Link.character_and_user_data(character, user);
         const real_user = get_user(id);

@@ -42,10 +42,10 @@ export namespace tab {
     }
 
     export function load(tag: string) {
-        console.log(tag)
+        // console.log(tag)
         let tab = document.getElementById(tag + '_tab')
         if (tab == null) return
-        console.log(tabs_properties[tag])
+        // console.log(tabs_properties[tag])
         if (tabs_properties[tag] == undefined) {
             save(tag)
         }
@@ -69,7 +69,7 @@ export namespace tab {
         }
 
         for (let tag of game_tabs) {
-            console.log(tabs_properties)
+            // console.log(tabs_properties)
             load(tag)
         }
 
@@ -108,7 +108,7 @@ export namespace tab {
             button.onclick = () => {
                 let res = toogle(tag);
                 
-                console.log(tag, res)
+                // console.log(tag, res)
                 if ((tag == 'market') && (res == 'on')) {
                     socket.emit('send-market-data', true)
                 } else {
@@ -154,19 +154,19 @@ export namespace tab {
         let headers = document.querySelectorAll('.game_tab > div > .game_tab_label')
         for (let header of headers) {
             (header => {header.onmousedown = (event) =>{
-                console.log('detect press')
-                console.log('current state is ' + MOVE_TAB_PRESS)
+                // console.log('detect press')
+                // console.log('current state is ' + MOVE_TAB_PRESS)
                 if (!MOVE_TAB_PRESS)
                 {
                     MOVE_TAB_PRESS = true
                     MOVE_TAB_ELEMENT = header.parentElement!.parentElement
                     MOVE_TAB_OFFSET = [event.offsetX, event.offsetY]
 
-                    console.log('selected element')
-                    console.log(MOVE_TAB_ELEMENT)
+                    // console.log('selected element')
+                    // console.log(MOVE_TAB_ELEMENT)
 
-                    console.log('offset')
-                    console.log(MOVE_TAB_OFFSET)
+                    // console.log('offset')
+                    // console.log(MOVE_TAB_OFFSET)
 
                     let tag = header.parentElement!.parentElement!.id.split('_')[0]
                     tab.pop(tag)
@@ -194,7 +194,7 @@ export namespace tab {
                 const new_top  = y - MOVE_TAB_OFFSET[1] - rect.top
                 
 
-                console.log(x, y, new_left, new_top)
+                // console.log(x, y, new_left, new_top)
 
                 if (MOVE_TAB_ELEMENT != null) {
                     MOVE_TAB_ELEMENT.style.left = new_left + 'px'

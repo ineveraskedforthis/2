@@ -57,8 +57,14 @@ function construct_craft_div(data) {
     }))(data.id);
 }
 function construct_craft_item_div(data) {
-    craft_items.push(data.id);
-    let craft_div = new_craft_option(data.id)
+    let div = document.getElementById('c_' + data.tag);
+    if (div == undefined) {
+        craft_items.push(data.id);
+        var craft_div = new_craft_option(data.id)
+    } else {
+        var craft_div = div
+        craft_div.innerHTML = ''
+    }
 
     craft_div.appendChild(construct_craft_inputs(data.input));
 

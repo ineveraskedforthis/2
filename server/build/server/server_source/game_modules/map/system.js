@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MapSystem = void 0;
 const elo_1 = require("../races/elo");
-const rat_1 = require("../races/rat");
 const data_1 = require("../data");
 const events_1 = require("../events/events");
 const factions_1 = require("../factions");
@@ -169,15 +168,13 @@ var MapSystem;
             if ((rats_number < 120) && (cell.development.rats == 1)) {
                 let dice = Math.random();
                 if (dice < 0.6) {
-                    let rat = events_1.Event.new_character(rat_1.RatTemplate, undefined, cell.id, undefined);
-                    data_1.Data.Reputation.set(factions_1.Factions.Rats.id, rat.id, 'member');
+                    templates_1.Template.Character.GenericRat(cell.x, cell.y, undefined);
                 }
                 else if (dice < 0.8) {
-                    let rat = events_1.Event.new_character(rat_1.BigRatTemplate, undefined, cell.id, undefined);
-                    data_1.Data.Reputation.set(factions_1.Factions.Rats.id, rat.id, 'member');
+                    templates_1.Template.Character.BigRat(cell.x, cell.y, undefined);
                 }
                 else if (dice < 1) {
-                    templates_1.Template.Character.MageRat(cell.x, cell.y);
+                    templates_1.Template.Character.MageRat(cell.x, cell.y, undefined);
                 }
             }
             if ((elodino_number < 60) && (cell.development.elodinos == 1)) {
@@ -187,7 +184,7 @@ var MapSystem;
                     data_1.Data.Reputation.set(factions_1.Factions.Elodinos.id, elo.id, 'member');
                 }
                 else {
-                    templates_1.Template.Character.MageElo(cell.x, cell.y);
+                    templates_1.Template.Character.MageElo(cell.x, cell.y, undefined);
                 }
             }
         }

@@ -17,7 +17,7 @@
     position: absolute;
     width: 300px;
     left: 20%;
-    top: 30%;
+    bottom: 5%;
     height: 525px;
     background-position: center;
     background-repeat: no-repeat;
@@ -37,7 +37,7 @@
 }
 
 .image_body {
-    background-image: url(/static/img/character_image/pose.png);
+    background-image: url(/static/img/character_image/pose_human.png);
 }
 
 #character_image_eyes {

@@ -123,17 +123,32 @@ var character_display = {
 document.getElementById("next_2").onclick = (event) => {
     event.preventDefault();
     let name = document.getElementById('char_name').value
+    let race = document.getElementById('char_race').value
     let data = {
         name: name,
         mouth: character_display.mouth,
         chin: character_display.chin,
-        eyes: character_display.eyes
-    }
+        eyes: character_display.eyes,
+        race: race,
+    }    
     console.log(data)
     socket.emit('create_character', data)
 }
 
+document.getElementById('char_race').addEventListener('change', function() {
+    let race = document.getElementById('char_race').value
+    set_body_type(race)
+});
 
+function set_body_type(race) {
+    console.log(race)
+    document.getElementById('character_creation_image_body').style.backgroundImage = `url(/static/img/character_image/pose_${race}.png)`
+    document.getElementById('character_image_body').style.backgroundImage = `url(/static/img/character_image/pose_${race}.png)`
+}
+
+socket.on('model', (race) => {
+    set_body_type(race)
+})
 
 for (let i = 0; i<3; i++) {
     document.getElementById("eyes_"+ i).onclick = (event) => {

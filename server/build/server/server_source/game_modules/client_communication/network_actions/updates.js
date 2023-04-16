@@ -10,7 +10,6 @@ const system_2 = require("../../battle/system");
 const constants_1 = require("../../static_data/constants");
 const helper_functions_1 = require("../helper_functions");
 const CraftItem_1 = require("../../craft/CraftItem");
-const crafts_storage_1 = require("../../craft/crafts_storage");
 const CraftBulk_1 = require("../../craft/CraftBulk");
 const system_3 = require("../../character/system");
 const system_4 = require("../../attack/system");
@@ -18,12 +17,6 @@ const damage_types_1 = require("../../damage_types");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
-        for (let item of Object.values(crafts_storage_1.crafts_bulk)) {
-            alerts_1.Alerts.craft_bulk_complete(user, item.id, item);
-        }
-        for (let item of Object.values(crafts_storage_1.crafts_items)) {
-            alerts_1.Alerts.craft_item_complete(user, item.id, item);
-        }
         status(user);
         belongings(user);
         all_skills(user);
@@ -32,8 +25,16 @@ var SendUpdate;
         battle(user);
         market(user);
         stats(user);
+        race_model(user);
     }
     SendUpdate.all = all;
+    function race_model(user) {
+        const character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, 'model', character.race());
+    }
+    SendUpdate.race_model = race_model;
     function stats(user) {
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
@@ -222,10 +223,16 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        for (let item of Object.values(crafts_storage_1.crafts_bulk)) {
+        for (let item of (0, CraftBulk_1.get_crafts_bulk_list)(character)) {
+            alerts_1.Alerts.craft_bulk_complete(user, item.id, item);
+        }
+        for (let item of (0, CraftItem_1.get_crafts_item_list)(character)) {
+            alerts_1.Alerts.craft_item_complete(user, item.id, item);
+        }
+        for (let item of (0, CraftBulk_1.get_crafts_bulk_list)(character)) {
             alerts_1.Alerts.craft_bulk(user, item.id, (0, CraftBulk_1.output_bulk)(character, item));
         }
-        for (let item of Object.values(crafts_storage_1.crafts_items)) {
+        for (let item of (0, CraftItem_1.get_crafts_item_list)(character)) {
             alerts_1.Alerts.craft_item(user, item.id, (0, CraftItem_1.durability)(character, item));
         }
     }

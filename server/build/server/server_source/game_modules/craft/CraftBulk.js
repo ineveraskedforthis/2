@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.new_craft_bulk = exports.output_bulk = exports.produce_output = exports.event_craft_bulk = void 0;
+exports.get_crafts_bulk_list = exports.new_craft_bulk = exports.output_bulk = exports.produce_output = exports.event_craft_bulk = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const generate_action_1 = require("./generate_action");
@@ -47,7 +47,11 @@ function output_bulk(character, craft) {
             if (character.perks.fletcher)
                 bonus += 5;
         }
-        result.push({ material: item.material, amount: Math.round(item.amount * ratio + bonus) });
+        let amount = Math.round(item.amount * ratio + bonus);
+        if (character.race() == 'rat')
+            amount = 0;
+        if (amount > 0)
+            result.push({ material: item.material, amount: amount });
     }
     return result;
 }
@@ -63,3 +67,13 @@ function new_craft_bulk(id, input, output, difficulty) {
     return crafts_storage_1.crafts_bulk[id];
 }
 exports.new_craft_bulk = new_craft_bulk;
+function get_crafts_bulk_list(character) {
+    let list = [];
+    for (let item of Object.values(crafts_storage_1.crafts_bulk)) {
+        if (output_bulk(character, item).length > 0) {
+            list.push(item);
+        }
+    }
+    return list;
+}
+exports.get_crafts_bulk_list = get_crafts_bulk_list;

@@ -35,6 +35,6 @@ const HumanStats:Stats = {
 
 const HumanBaseResists = new Damage(0, 0, 0, 0)
 
-export const Human = new CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)
+export const HumanTemplate = new CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)
 export const Trader = new CharacterTemplate(TraderArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)
 export const RatHunterHuman = new CharacterTemplate(RatHunterArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)

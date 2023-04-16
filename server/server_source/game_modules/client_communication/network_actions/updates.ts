@@ -9,10 +9,10 @@ import { Alerts } from "./alerts";
 import { BattleSystem } from "../../battle/system";
 import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
 import { prepare_market_orders } from "../helper_functions";
-import { durability } from "../../craft/CraftItem";
+import { durability, get_crafts_item_list } from "../../craft/CraftItem";
 import { CraftItem } from "../../craft/items";
 import { crafts_bulk, crafts_items } from "../../craft/crafts_storage";
-import { output_bulk } from "../../craft/CraftBulk";
+import { get_crafts_bulk_list, output_bulk } from "../../craft/CraftBulk";
 import { CharacterSystem } from "../../character/system";
 import { Attack } from "../../attack/system";
 import { Request } from "./request";
@@ -22,14 +22,6 @@ import { DmgOps } from "../../damage_types";
 
 export namespace SendUpdate {
     export function all(user: User) {
-        for (let item of Object.values(crafts_bulk)) {
-            Alerts.craft_bulk_complete(user, item.id, item)
-        }
-
-        for (let item of Object.values(crafts_items)) {
-            Alerts.craft_item_complete(user, item.id, item)
-        }
-
         status(user)
         belongings(user)
         all_skills(user)
@@ -37,7 +29,14 @@ export namespace SendUpdate {
         map_related(user)
         battle(user)
         market(user)   
-        stats(user)     
+        stats(user)
+        race_model(user)
+    }
+
+    export function race_model(user: User) {
+        const character = Convert.user_to_character(user)
+        if (character == undefined) return
+        Alerts.generic_user_alert(user, 'model', character.race())
     }
 
     export function stats(user: User) {
@@ -241,11 +240,19 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        for (let item of Object.values(crafts_bulk)) {
+        for (let item of get_crafts_bulk_list(character)) {
+            Alerts.craft_bulk_complete(user, item.id, item)
+        }
+
+        for (let item of get_crafts_item_list(character)) {
+            Alerts.craft_item_complete(user, item.id, item)
+        }
+
+        for (let item of get_crafts_bulk_list(character)) {
             Alerts.craft_bulk(user, item.id, output_bulk(character, item))
         }
 
-        for (let item of Object.values(crafts_items)) {
+        for (let item of get_crafts_item_list(character)) {
             Alerts.craft_item(user, item.id, durability(character, item))
         }
     }

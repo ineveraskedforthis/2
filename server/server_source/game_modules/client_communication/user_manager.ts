@@ -3,15 +3,20 @@ var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 
 import fs from "fs"
-import { Human } from "../races/human";
+import { HumanTemplate } from "../races/human";
 import { Convert, Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
 import { UI_Part, Update } from "./causality_graph";
-import { cell_id, char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
+import { cell_id, char_id, tagRACE, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
 import { Event } from "../events/events";
 import { ModelVariant } from "../types";
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
+import { BigRatTemplate, RatTemplate } from "../races/rat";
+import { GraciTemplate } from "../races/graci";
+import { EloTemplate } from "../races/elo";
+import { Template } from "../templates";
+import { Character } from "../character/character";
 var path = require('path')
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
@@ -161,14 +166,26 @@ export namespace UserManagement {
         return users_data_dict[id]
     }
 
-    export function get_new_character(id: user_id, name: string, model_variation: ModelVariant, starting_cell: cell_id) {
+    export function get_new_character(id: user_id, name: string, model_variation: ModelVariant, race: tagRACE) {
         let user = get_user_data(id)
         if (user.char_id != '@') {
             console.log('attempt to generate character for user who already owns one')
             return
         }
 
-        const character = Event.new_character(Human, name, starting_cell, model_variation)
+        var character:Character|undefined = undefined
+        switch(race){
+            case "human":{character = Template.Character.HumanCity(0, 3, name);break};
+            case "rat":{character = Template.Character.BigRat(7, 5, name);break;}
+            case "graci":{character = Template.Character.Graci(14, 8, name);break}
+            case "elo":{character = Template.Character.MageElo(18, 8, name);break}
+            case "test":{character = Template.Character.HumanCity(0, 3, name);break}
+        }
+
+        if (character == undefined) return;
+
+
+        // const character = Event.new_character(template, name, starting_cell, model_variation)
         console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
         

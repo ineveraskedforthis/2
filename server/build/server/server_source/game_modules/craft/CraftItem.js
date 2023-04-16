@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.new_craft_item = exports.event_craft_item = exports.create_item = exports.durability = void 0;
+exports.get_crafts_item_list = exports.new_craft_item = exports.event_craft_item = exports.create_item = exports.durability = void 0;
 const basic_functions_1 = require("../calculations/basic_functions");
 const user_manager_1 = require("../client_communication/user_manager");
 const system_1 = require("../items/system");
@@ -79,3 +79,13 @@ function new_craft_item(id, input, output, difficulty) {
     return crafts_storage_1.crafts_items[id];
 }
 exports.new_craft_item = new_craft_item;
+function get_crafts_item_list(character) {
+    let list = [];
+    for (let item of Object.values(crafts_storage_1.crafts_items)) {
+        if (durability(character, item) > 9) {
+            list.push(item);
+        }
+    }
+    return list;
+}
+exports.get_crafts_item_list = get_crafts_item_list;

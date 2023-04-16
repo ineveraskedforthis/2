@@ -12,7 +12,7 @@ import { HandleAction } from "./network_actions/actions";
 import { CharacterAction } from "../action_types";
 import { SocketCommand } from "./network_actions/run_event";
 import { Convert } from "../systems_communication";
-import { ModelVariant } from "../types";
+import { ModelVariant, tagRACE } from "../types";
 import { InventoryCommands } from "./network_actions/inventory_management";
 import { Request } from "./network_actions/request";
 import { SKILLS } from "../static_data/skills";
@@ -144,13 +144,29 @@ export class SocketManager {
         }
     }
 
-    create_character(sw: SocketWrapper, data: {name: string, eyes: number, chin: number, mouth: number, location: string}) {
+    create_character(sw: SocketWrapper, data: {name: string, eyes: number, chin: number, mouth: number, location: string, race: string}) {
         if (sw.user_id == '#') return
         let user = UserManagement.get_user(sw.user_id)
 
         if (!Validator.isAlphaNum(data.name)) {
-            Alerts.generic_user_alert(user, 'alert', 'character is not allowed')
+            Alerts.generic_user_alert(user, 'alert', 'character name is not allowed')
             return
+        }
+
+        if (data.name == '') {
+            Alerts.generic_user_alert(user, 'alert', 'character name is not allowed')
+            return
+        }
+
+        let race: tagRACE = 'human'
+        if (data.race == 'graci') {
+            race = 'graci'
+        }
+        if (data.race == 'rat') {
+            race = 'rat'
+        }
+        if (data.race == 'elo') {
+            race = 'elo'
         }
         
         let model_variation:ModelVariant = {
@@ -158,11 +174,12 @@ export class SocketManager {
             chin: data.chin,
             mouth: data.mouth
         }
+        
+        // if (data.location == 'village') {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
+        // else                            {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
 
-        if (data.location == 'village') {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
-        else                            {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
-
-        UserManagement.get_new_character(sw.user_id, data.name, model_variation, starting_cell)
+        console.log(data)
+        UserManagement.get_new_character(sw.user_id, data.name, model_variation, race)
         UserManagement.update_users()
     }
 
