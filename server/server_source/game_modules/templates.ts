@@ -95,6 +95,7 @@ export namespace Template {
 
         export function Graci(x: number, y: number, name: string|undefined) {
             let graci = Base(GraciTemplate, name, undefined, x, y, Factions.Graci.id)
+            graci.skills.travelling = 70
             return graci
         }
     }

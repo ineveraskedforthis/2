@@ -196,8 +196,7 @@ export namespace MapSystem {
             if ((elodino_number < 60) && (cell.development.elodinos == 1)) {
                 let dice = Math.random()
                 if (dice < 0.7) {
-                    let elo = Event.new_character(EloTemplate, undefined, cell.id, undefined)
-                    Data.Reputation.set(Factions.Elodinos.id, elo.id, 'member')
+                    Template.Character.Elo(cell.x, cell.y, undefined)
                 } else {
                     Template.Character.MageElo(cell.x, cell.y, undefined)
                 }

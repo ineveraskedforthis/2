@@ -20,7 +20,7 @@ export namespace ScriptedValue {
         let multiplier = 1
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
-        if (race == 'graci') multiplier = 0.9
+        if (race == 'graci') multiplier = 0.1
         return Math.floor((5 - tier) * 5 * (200 - quality) / 100 * multiplier)
     }
 
@@ -28,7 +28,7 @@ export namespace ScriptedValue {
         let multiplier = 1
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
-        if (race == 'graci') multiplier = 0.9
+        if (race == 'graci') multiplier = 0.1
         return Math.floor((5 - tier) * 15 * (200 - quality) / 100 * multiplier)
     }
 }

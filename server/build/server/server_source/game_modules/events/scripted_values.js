@@ -25,7 +25,7 @@ var ScriptedValue;
         if (race == 'elo')
             multiplier = 0.5;
         if (race == 'graci')
-            multiplier = 0.9;
+            multiplier = 0.1;
         return Math.floor((5 - tier) * 5 * (200 - quality) / 100 * multiplier);
     }
     ScriptedValue.rest_target_fatigue = rest_target_fatigue;
@@ -36,7 +36,7 @@ var ScriptedValue;
         if (race == 'elo')
             multiplier = 0.5;
         if (race == 'graci')
-            multiplier = 0.9;
+            multiplier = 0.1;
         return Math.floor((5 - tier) * 15 * (200 - quality) / 100 * multiplier);
     }
     ScriptedValue.rest_target_stress = rest_target_stress;

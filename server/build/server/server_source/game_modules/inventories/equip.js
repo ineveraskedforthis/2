@@ -134,11 +134,20 @@ class Equip {
     //         }
     //     }
     // }
-    equip_from_backpack(index) {
+    equip_from_backpack(index, race) {
         let backpack = this.data.backpack;
         let item = backpack.items[index];
         if (item == undefined)
             return;
+        if (race == 'elo') {
+            return;
+        }
+        if (race == 'rat') {
+            return;
+        }
+        if (race == 'graci') {
+            return;
+        }
         if (item.slot == 'weapon') {
             this.equip_weapon(index);
         }

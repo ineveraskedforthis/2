@@ -121,6 +121,8 @@ export namespace Effect {
             kitchen: 0,
             workshop: 0,
             is_inn: false,
+            is_elodino: false,
+            is_rat_lair: false,
             room_cost: 5 as money
         })
     }

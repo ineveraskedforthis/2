@@ -8,7 +8,9 @@ export interface Building {
     kitchen: number,
     workshop: number,
 
-    is_inn: boolean,
+    is_inn: boolean|undefined,
+    is_rat_lair: boolean|undefined,
+    is_elodino: boolean|undefined,
     
     room_cost: money
 }

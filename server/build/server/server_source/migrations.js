@@ -139,6 +139,8 @@ function migrate(current_version, target_version) {
             kitchen: 100,
             workshop: 0,
             is_inn: true,
+            is_elodino: false,
+            is_rat_lair: false,
             room_cost: 5
         };
         let building_id = data_1.Data.Buildings.create(building);

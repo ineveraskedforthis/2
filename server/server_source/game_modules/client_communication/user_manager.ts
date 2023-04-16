@@ -183,9 +183,6 @@ export namespace UserManagement {
         }
 
         if (character == undefined) return;
-
-
-        // const character = Event.new_character(template, name, starting_cell, model_variation)
         console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
         
