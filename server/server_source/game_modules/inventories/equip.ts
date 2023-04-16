@@ -1,5 +1,5 @@
 import { armour_slot, EquipSocket, equip_slot } from "../../../../shared/inventory";
-import { armour_slots, damage_type } from "../types";
+import { armour_slots, damage_type, tagRACE } from "../types";
 // import { update_character } from "../base_game_classes/affix";
 // import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
@@ -178,10 +178,22 @@ export class Equip {
     //     }
     // }
 
-    equip_from_backpack(index: number) {
+    equip_from_backpack(index: number, race: tagRACE) {
         let backpack = this.data.backpack;
         let item = backpack.items[index]
         if (item == undefined) return
+
+        if (race == 'elo') {
+            return
+        }
+
+        if (race == 'rat') {
+            return
+        }
+
+        if (race == 'graci') {
+            return
+        }
 
         if (item.slot == 'weapon') {this.equip_weapon(index)}
         else {this.equip_armour(index)}
