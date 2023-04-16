@@ -299,7 +299,9 @@ export class RetreatEvent extends BattleImageEvent {
     }
     on_start() {
         let unit = units_views[this.unit];
-        unit.killed = true;
+        if (unit != undefined) {
+            unit.killed = true;
+        }
         if (this.unit == player_unit_id) {
             new_log_message('You had retreated from the battle');
         }

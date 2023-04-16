@@ -336,13 +336,27 @@ function restart_action_bar(time, is_move) {
     
 }
 
-var currentTime = (new Date()).getTime(); var lastTime = (new Date()).getTime();
+// var currentTime = (new Date()).getTime(); 
+// var lastTime = (new Date()).getTime();
+
 var delta = 0;
 
+// var start = undefined
+var previous = undefined
+
 function draw(time) {
-    currentTime = (new Date()).getTime();
-    delta = (currentTime - lastTime) / 1000;
-    lastTime = currentTime;
+    if (previous == undefined) {
+        previous = time
+    }
+
+    // currentTime = (new Date()).getTime();
+    // delta = (currentTime - lastTime) / 1000;
+    // lastTime = currentTime;
+
+    delta = (time - previous) / 1000
+    previous = time
+
+    // console.log('draw_main')
 
     if (globals.action_in_progress) {
         globals.action_time += delta

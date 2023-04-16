@@ -19,7 +19,7 @@ function construct_craft_inputs(inputs) {
 function new_craft_option(id) {
     let div = document.getElementById('c_' + id);
     if (div != null) {
-        return;
+        return undefined;
     }
 
     let craft_div = document.createElement('div');
@@ -38,6 +38,7 @@ function new_craft_option(id) {
 function construct_craft_div(data) {
     craft_bulk.push(data.id);
     let craft_div = new_craft_option(data.id)
+    if (craft_div == undefined) return
 
     craft_div.appendChild(construct_craft_inputs(data.input));
 

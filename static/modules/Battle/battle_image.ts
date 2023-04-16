@@ -633,7 +633,6 @@ export namespace BattleImage {
 
     export function draw_background() {
         // tiles
-
         for (let i = left; i < right; i++) {
             for (let j = top; j < bottom; j++) {
                 const start_point = position_c.battle_to_canvas({x: i, y: j + 1} as battle_position)
@@ -715,6 +714,7 @@ export namespace BattleImage {
 
     export function draw(dt: number) {
         battle_canvas_context.clearRect(0, 0, w, h);
+        
         UnitsQueueManagement.draw(battle_canvas_context)
         //handle_events
         update(dt)       
