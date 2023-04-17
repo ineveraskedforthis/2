@@ -134,28 +134,22 @@ class Equip {
     //         }
     //     }
     // }
-    equip_from_backpack(index, race) {
+    equip_from_backpack(index, model) {
         let backpack = this.data.backpack;
         let item = backpack.items[index];
         if (item == undefined)
             return;
-        if (race == 'elo') {
-            return;
-        }
-        if (race == 'rat') {
-            return;
-        }
-        if (race == 'graci') {
-            return;
-        }
         if (item.slot == 'weapon') {
-            this.equip_weapon(index);
+            this.equip_weapon(index, model);
         }
         else {
-            this.equip_armour(index);
+            this.equip_armour(index, model);
         }
     }
-    equip_armour(index) {
+    equip_armour(index, model) {
+        if (model != 'human') {
+            return;
+        }
         let backpack = this.data.backpack;
         let item = backpack.items[index];
         if (item != undefined) {
@@ -166,30 +160,44 @@ class Equip {
             this.changed = true;
         }
     }
-    equip_weapon(index) {
+    equip_weapon(index, model) {
         let backpack = this.data.backpack;
         if (index == undefined)
             return;
         let item = backpack.items[index];
-        if (item != undefined) {
-            if (item.slot != 'weapon') {
+        if (item == undefined)
+            return;
+        if (item.slot != 'weapon') {
+            return;
+        }
+        let tmp = this.data.weapon;
+        if (model == 'graci') {
+            if (item.model_tag == 'spear') {
+            }
+            else if (item.model_tag == 'bone_spear') {
+            }
+            else {
                 return;
             }
-            let tmp = this.data.weapon;
-            if (tmp == undefined) {
-                this.data.weapon = backpack.items[index];
+        }
+        else if (model == 'human') {
+        }
+        else {
+            return;
+        }
+        if (tmp == undefined) {
+            this.data.weapon = backpack.items[index];
+            backpack.items[index] = undefined;
+        }
+        else {
+            let tmp2 = this.data.secondary;
+            if (tmp2 == undefined) {
+                this.data.secondary = backpack.items[index];
                 backpack.items[index] = undefined;
             }
             else {
-                let tmp2 = this.data.secondary;
-                if (tmp2 == undefined) {
-                    this.data.secondary = backpack.items[index];
-                    backpack.items[index] = undefined;
-                }
-                else {
-                    this.data.weapon = backpack.items[index];
-                    backpack.items[index] = tmp;
-                }
+                this.data.weapon = backpack.items[index];
+                backpack.items[index] = tmp;
             }
         }
         this.changed = true;

@@ -1,10 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MapSystem = void 0;
-const elo_1 = require("../races/elo");
-const data_1 = require("../data");
-const events_1 = require("../events/events");
-const factions_1 = require("../factions");
 const map_definitions_1 = require("../static_data/map_definitions");
 const cell_1 = require("./cell");
 const templates_1 = require("../templates");
@@ -180,8 +176,7 @@ var MapSystem;
             if ((elodino_number < 60) && (cell.development.elodinos == 1)) {
                 let dice = Math.random();
                 if (dice < 0.7) {
-                    let elo = events_1.Event.new_character(elo_1.EloTemplate, undefined, cell.id, undefined);
-                    data_1.Data.Reputation.set(factions_1.Factions.Elodinos.id, elo.id, 'member');
+                    templates_1.Template.Character.Elo(cell.x, cell.y, undefined);
                 }
                 else {
                     templates_1.Template.Character.MageElo(cell.x, cell.y, undefined);

@@ -85,7 +85,7 @@ export class InnateStats {
 
 export type tagAI = 'steppe_walker_agressive'|'dummy'|'steppe_walker_passive'|'forest_walker'|'rat_hunter'|'urban_trader'
 export type tagRACE = 'human'|'rat'|'graci'|'elo'|'test'
-export type tagModel = 'human'|'rat'|'graci'|'elo'|'test'|'bigrat'|'magerat'|'berserkrat'
+export type tagModel = 'human'|'rat'|'graci'|'elo'|'test'|'bigrat'|'magerat'|'berserkrat'|'human_strong'
 type tagTactic = 'basic'
 
 export interface Archetype {

@@ -46,7 +46,13 @@ var Effect;
     let Change;
     (function (Change) {
         function fatigue(character, dx) {
+            let prev = character.get_fatigue();
             character.change_fatigue(dx);
+            let current = character.get_fatigue();
+            let change = current - prev;
+            if ((dx - change > 0)) {
+                stress(character, dx - change);
+            }
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.fatigue = fatigue;

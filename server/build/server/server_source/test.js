@@ -25,7 +25,7 @@ function add_testing_items_to_equip(equip) {
     const item2 = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
     const id1 = equip.data.backpack.add(item);
     const id2 = equip.data.backpack.add(item2);
-    equip.equip_weapon(id1);
+    equip.equip_weapon(id1, 'human');
 }
 function character_serialization_test_simple() {
     console.log('basic character serialisation test');

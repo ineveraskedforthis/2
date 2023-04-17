@@ -17,7 +17,8 @@ var Template;
         function Base(template, name, model, x, y, faction_id) {
             const cell = system_1.MapSystem.coordinate_to_id(x, y);
             let character = events_1.Event.new_character(template, name, cell, model);
-            data_1.Data.Reputation.set(faction_id, character.id, "member");
+            if (faction_id != undefined)
+                data_1.Data.Reputation.set(faction_id, character.id, "member");
             return character;
         }
         function GenericHuman(x, y, name, faction) {
@@ -42,6 +43,11 @@ var Template;
             return human;
         }
         Character.HumanSteppe = HumanSteppe;
+        function HumanStrong(x, y, name) {
+            let human = Base(human_1.HumanStrongTemplate, name, undefined, x, y, undefined);
+            return human;
+        }
+        Character.HumanStrong = HumanStrong;
         function HumanCity(x, y, name) {
             let human = GenericHuman(x, y, name, factions_1.Factions.City.id);
             human.skills.fishing += 20;
@@ -96,6 +102,7 @@ var Template;
         Character.Elo = Elo;
         function Graci(x, y, name) {
             let graci = Base(graci_1.GraciTemplate, name, undefined, x, y, factions_1.Factions.Graci.id);
+            graci.skills.travelling = 70;
             return graci;
         }
         Character.Graci = Graci;

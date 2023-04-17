@@ -84,10 +84,10 @@ export namespace Event {
 
         // effect on fatigue depending on boots
         if (character.equip.data.armour.foot == undefined) {
-            character.change('fatigue', 5);
+            Effect.Change.fatigue(character, 5)
         } else {
             const durability = character.equip.data.armour.foot.durability
-            character.change('fatigue', Math.round(trim(5 - 4 * (durability / 100), 1, 5)))
+            Effect.Change.fatigue(character, Math.round(trim(5 - 4 * (durability / 100), 1, 5)))
         }
 
         const dice = Math.random()

@@ -71,11 +71,11 @@ var Event;
             probability -= 0.1;
         // effect on fatigue depending on boots
         if (character.equip.data.armour.foot == undefined) {
-            character.change('fatigue', 5);
+            effects_1.Effect.Change.fatigue(character, 5);
         }
         else {
             const durability = character.equip.data.armour.foot.durability;
-            character.change('fatigue', Math.round((0, basic_functions_1.trim)(5 - 4 * (durability / 100), 1, 5)));
+            effects_1.Effect.Change.fatigue(character, Math.round((0, basic_functions_1.trim)(5 - 4 * (durability / 100), 1, 5)));
         }
         const dice = Math.random();
         if (dice < probability) {

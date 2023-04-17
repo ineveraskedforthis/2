@@ -28,7 +28,7 @@ exports.hunt = {
     result: function (char, data) {
         let skill = char.skills.hunt;
         let skinning = char.skills.skinning;
-        char.change_fatigue(10);
+        effects_1.Effect.Change.fatigue(char, 10);
         let amount_meat = Math.floor(skill / 10) + 1;
         let amount_skin = Math.max(Math.floor(skill / 20));
         if (Math.random() < 0.1) {
@@ -70,7 +70,7 @@ exports.fish = {
     },
     result: function (char, data) {
         let skill = char.skills.fishing;
-        char.change_fatigue(10);
+        effects_1.Effect.Change.fatigue(char, 10);
         let amount = Math.floor(skill / 20) + 1;
         if (Math.random() < 0.01) {
             amount += 10;

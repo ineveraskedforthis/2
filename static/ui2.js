@@ -142,39 +142,39 @@ document.getElementById('char_race').addEventListener('change', function() {
 
 function set_body_type(race) {
     console.log(race)
-    document.getElementById('character_creation_image_body').style.backgroundImage = `url(/static/img/character_image/pose_${race}.png)`
-    document.getElementById('character_image_body').style.backgroundImage = `url(/static/img/character_image/pose_${race}.png)`
+    document.getElementById('character_creation_image_body').src = `../static/img/character_image/pose_${race}.png`
+    document.getElementById('character_image_body').src = `../static/img/character_image/pose_${race}.png`
 }
 
 socket.on('model', (race) => {
     set_body_type(race)
 })
 
-for (let i = 0; i<3; i++) {
-    document.getElementById("eyes_"+ i).onclick = (event) => {
-        event.preventDefault();
-        character_display.eyes = i
-        document.getElementById("character_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
-        document.getElementById("character_creation_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
+// for (let i = 0; i<3; i++) {
+//     document.getElementById("eyes_"+ i).onclick = (event) => {
+//         event.preventDefault();
+//         character_display.eyes = i
+//         document.getElementById("character_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
+//         document.getElementById("character_creation_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
         
-    }
-}
-for (let i = 0; i<3; i++) {
-    document.getElementById("chin_"+ i).onclick = (event) => {
-        event.preventDefault();
-        character_display.chin = i
-        document.getElementById("character_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
-        document.getElementById("character_creation_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
-    }
-}
-for (let i = 0; i<3; i++) {
-    document.getElementById("mouth_"+ i).onclick = (event) => {
-        event.preventDefault();
-        character_display.mouth = i
-        document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
-        document.getElementById("character_creation_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
-    }
-}
+//     }
+// }
+// for (let i = 0; i<3; i++) {
+//     document.getElementById("chin_"+ i).onclick = (event) => {
+//         event.preventDefault();
+//         character_display.chin = i
+//         document.getElementById("character_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
+//         document.getElementById("character_creation_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
+//     }
+// }
+// for (let i = 0; i<3; i++) {
+//     document.getElementById("mouth_"+ i).onclick = (event) => {
+//         event.preventDefault();
+//         character_display.mouth = i
+//         document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
+//         document.getElementById("character_creation_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
+//     }
+// }
 //CHARACTER CREATION STUFF ENDS
 
 
@@ -193,7 +193,7 @@ function update_equip(data) {
         }
 
         console.log("/static/img/character_image/" + item_tag + "_big.png")
-        div.style = "background: no-repeat center/100% url(/static/img/character_image/" + item_tag + "_big.png);"
+        div.src = "../static/img/character_image/" + item_tag + "_big.png"
     }
 }
 

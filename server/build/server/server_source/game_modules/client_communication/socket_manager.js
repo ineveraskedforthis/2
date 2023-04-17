@@ -110,16 +110,6 @@ class SocketManager {
             alerts_1.Alerts.generic_user_alert(user, 'alert', 'character name is not allowed');
             return;
         }
-        let race = 'human';
-        if (data.race == 'graci') {
-            race = 'graci';
-        }
-        if (data.race == 'rat') {
-            race = 'rat';
-        }
-        if (data.race == 'elo') {
-            race = 'elo';
-        }
         let model_variation = {
             eyes: data.eyes,
             chin: data.chin,
@@ -128,7 +118,7 @@ class SocketManager {
         // if (data.location == 'village') {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
         // else                            {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
         console.log(data);
-        user_manager_1.UserManagement.get_new_character(sw.user_id, data.name, model_variation, race);
+        user_manager_1.UserManagement.get_new_character(sw.user_id, data.name, model_variation, data.race);
         user_manager_1.UserManagement.update_users();
     }
     play(sw) {

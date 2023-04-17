@@ -9,6 +9,13 @@ const HumanArchetype:Archetype = {
     race: 'human'
 }
 
+const HumanStrongArchetype:Archetype = {
+    model: 'human_strong',
+    ai_map: 'dummy',
+    ai_battle: 'basic',
+    race: 'human'
+}
+
 const RatHunterArchetype:Archetype = {
     model: 'human',
     ai_map: 'rat_hunter',
@@ -33,8 +40,15 @@ const HumanStats:Stats = {
     movement_speed: 1
 }
 
+const HumanStrongStats:Stats = {
+    phys_power: 20,
+    magic_power: 2,
+    movement_speed: 1.5
+}
+
 const HumanBaseResists = new Damage(0, 0, 0, 0)
 
 export const HumanTemplate = new CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)
+export const HumanStrongTemplate = new CharacterTemplate(HumanStrongArchetype, HumanNamesGen, 200, HumanStrongStats, HumanBaseResists)
 export const Trader = new CharacterTemplate(TraderArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)
 export const RatHunterHuman = new CharacterTemplate(RatHunterArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists)

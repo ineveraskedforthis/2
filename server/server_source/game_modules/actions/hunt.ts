@@ -31,7 +31,7 @@ export const hunt = {
     result:  function(char:Character, data: map_position) {
         let skill = char.skills.hunt
         let skinning = char.skills.skinning
-        char.change_fatigue(10)
+        Effect.Change.fatigue(char, 10)
 
         let amount_meat = Math.floor(skill / 10) + 1
         let amount_skin = Math.max(Math.floor(skill / 20))
@@ -81,7 +81,7 @@ export const fish = {
     result:  function(char:Character, data: map_position) {
         let skill = char.skills.fishing
 
-        char.change_fatigue(10)
+        Effect.Change.fatigue(char, 10)
 
         let amount = Math.floor(skill / 20) + 1
 

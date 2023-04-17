@@ -1,5 +1,5 @@
 import { armour_slot, EquipSocket, equip_slot } from "../../../../shared/inventory";
-import { armour_slots, damage_type, tagRACE } from "../types";
+import { armour_slots, damage_type, tagModel, tagRACE } from "../types";
 // import { update_character } from "../base_game_classes/affix";
 // import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
@@ -178,28 +178,20 @@ export class Equip {
     //     }
     // }
 
-    equip_from_backpack(index: number, race: tagRACE) {
+    equip_from_backpack(index: number, model: tagModel) {
         let backpack = this.data.backpack;
         let item = backpack.items[index]
         if (item == undefined) return
 
-        if (race == 'elo') {
-            return
-        }
-
-        if (race == 'rat') {
-            return
-        }
-
-        if (race == 'graci') {
-            return
-        }
-
-        if (item.slot == 'weapon') {this.equip_weapon(index)}
-        else {this.equip_armour(index)}
+        if (item.slot == 'weapon') {this.equip_weapon(index, model)}
+        else {this.equip_armour(index, model)}
     }
 
-    equip_armour(index:number) {
+    equip_armour(index:number, model: tagModel) {
+        if (model != 'human') {
+            return
+        }
+
         let backpack = this.data.backpack;
         let item = backpack.items[index]
         if (item != undefined) {
@@ -211,27 +203,40 @@ export class Equip {
         }
     }
 
-    equip_weapon(index:number|undefined) {
+    equip_weapon(index:number|undefined, model: tagModel) {
         let backpack = this.data.backpack;
         if (index == undefined) return
         let item = backpack.items[index]
-        if (item != undefined) {
-            if (item.slot != 'weapon') {return}
+        if (item == undefined) return
+        if (item.slot != 'weapon') {return}
+        let tmp = this.data.weapon;
 
-            let tmp = this.data.weapon;
-            
-            if (tmp == undefined) {
-                this.data.weapon = backpack.items[index];
+        if (model == 'graci') {
+            if (item.model_tag == 'spear') {
+
+            } else if (item.model_tag == 'bone_spear') {
+
+            } else {
+                return
+            }
+        } else if (model == 'human') {
+
+        } else {
+            return
+        }
+
+        
+        if (tmp == undefined) {
+            this.data.weapon = backpack.items[index];
+            backpack.items[index] = undefined
+        } else {
+            let tmp2 = this.data.secondary
+            if (tmp2 == undefined) {
+                this.data.secondary = backpack.items[index];
                 backpack.items[index] = undefined
             } else {
-                let tmp2 = this.data.secondary
-                if (tmp2 == undefined) {
-                    this.data.secondary = backpack.items[index];
-                    backpack.items[index] = undefined
-                } else {
-                    this.data.weapon = backpack.items[index];
-                    backpack.items[index] = tmp
-                }
+                this.data.weapon = backpack.items[index];
+                backpack.items[index] = tmp
             }
         }
         this.changed = true

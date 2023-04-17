@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.gather_cotton = exports.gather_wood = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
+const effects_1 = require("../events/effects");
 const events_1 = require("../events/events");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
@@ -26,9 +27,9 @@ exports.gather_wood = {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        char.change('fatigue', 10);
+        effects_1.Effect.Change.fatigue(char, 10);
+        effects_1.Effect.Change.stress(char, 1);
         char.change('blood', 1);
-        char.change('stress', 1);
         events_1.Event.change_stash(char, materials_manager_1.WOOD, 1);
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
@@ -58,9 +59,9 @@ exports.gather_cotton = {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        char.change('fatigue', 10);
+        effects_1.Effect.Change.fatigue(char, 10);
+        effects_1.Effect.Change.stress(char, 1);
         char.change('blood', 1);
-        char.change('stress', 1);
         events_1.Event.change_stash(char, materials_manager_1.COTTON, 1);
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);

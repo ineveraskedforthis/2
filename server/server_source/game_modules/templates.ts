@@ -6,16 +6,16 @@ import { ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
 import { EloTemplate } from "./races/elo"
 import { GraciTemplate } from "./races/graci"
-import { HumanTemplate } from "./races/human"
+import { HumanStrongTemplate, HumanTemplate } from "./races/human"
 import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/rat"
 import { ModelVariant } from "./types"
 
 export namespace Template {
     export namespace Character {
-        function Base(template:CharacterTemplate, name: string|undefined, model: ModelVariant|undefined ,x: number, y: number, faction_id: number) {
+        function Base(template:CharacterTemplate, name: string|undefined, model: ModelVariant|undefined ,x: number, y: number, faction_id: number|undefined) {
             const cell = MapSystem.coordinate_to_id(x, y)
             let character = Event.new_character(template, name, cell, model)
-            Data.Reputation.set(faction_id, character.id, "member")
+            if (faction_id != undefined) Data.Reputation.set(faction_id, character.id, "member")
             return character
         }
 
@@ -38,6 +38,11 @@ export namespace Template {
             human.skills.travelling += 30
             human.skills.ranged += 20
             human.skills.noweapon += 10
+            return human
+        }
+
+        export function HumanStrong(x: number, y: number, name: string|undefined) {
+            let human = Base(HumanStrongTemplate, name, undefined, x, y, undefined)
             return human
         }
 

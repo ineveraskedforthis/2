@@ -28,10 +28,9 @@ export const gather_wood: ActionTargeted = {
     },
 
     result: function(char:Character, data: map_position) {
-
-        char.change('fatigue', 10)
+        Effect.Change.fatigue(char, 10)
+        Effect.Change.stress(char, 1)
         char.change('blood', 1)
-        char.change('stress', 1)
         Event.change_stash(char, WOOD, 1)
 
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
@@ -65,9 +64,9 @@ export const gather_cotton: ActionTargeted = {
 
     result: function(char:Character, data: map_position) {
 
-        char.change('fatigue', 10)
-        char.change('blood', 1)
-        char.change('stress', 1)
+        Effect.Change.fatigue(char, 10)
+        Effect.Change.stress(char, 1)
+        char.change('blood', 1)        
         Event.change_stash(char, COTTON, 1)
 
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)

@@ -32,7 +32,7 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.generic_user_alert(user, 'model', character.race());
+        alerts_1.Alerts.generic_user_alert(user, 'model', character.model());
     }
     SendUpdate.race_model = race_model;
     function stats(user) {

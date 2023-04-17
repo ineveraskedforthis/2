@@ -36,7 +36,7 @@ export namespace SendUpdate {
     export function race_model(user: User) {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
-        Alerts.generic_user_alert(user, 'model', character.race())
+        Alerts.generic_user_alert(user, 'model', character.model())
     }
 
     export function stats(user: User) {

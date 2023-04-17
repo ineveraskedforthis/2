@@ -48,7 +48,13 @@ export namespace Effect {
 
     export namespace Change {
         export function fatigue(character: Character, dx: number) {
+            let prev = character.get_fatigue()
             character.change_fatigue(dx)
+            let current = character.get_fatigue()
+            let change = current - prev
+            if ((dx - change > 0)) {
+                stress(character, dx - change)
+            }
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 

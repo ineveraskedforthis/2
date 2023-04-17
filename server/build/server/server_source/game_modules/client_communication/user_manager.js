@@ -150,17 +150,24 @@ var UserManagement;
         return exports.users_data_dict[id];
     }
     UserManagement.get_user_data = get_user_data;
-    function get_new_character(id, name, model_variation, race) {
+    function get_new_character(id, name, model_variation, model) {
         let user = get_user_data(id);
         if (user.char_id != '@') {
             console.log('attempt to generate character for user who already owns one');
             return;
         }
         var character = undefined;
-        switch (race) {
+        console.log(model);
+        switch (model) {
             case "human":
                 {
                     character = templates_1.Template.Character.HumanCity(0, 3, name);
+                    break;
+                }
+                ;
+            case "human_strong":
+                {
+                    character = templates_1.Template.Character.HumanStrong(9, 11, name);
                     break;
                 }
                 ;
@@ -183,7 +190,6 @@ var UserManagement;
         }
         if (character == undefined)
             return;
-        // const character = Event.new_character(template, name, starting_cell, model_variation)
         console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')');
         systems_communication_1.Link.character_and_user_data(character, user);
         const real_user = get_user(id);

@@ -20,10 +20,15 @@
     left: 10%;
     bottom: 5%;
     /* height: 525px; */
-    height: 100%;
-    background-position: bottom center;
-    background-repeat: no-repeat;
-    background-size:contain;
+    /* height: 100%; */
+    /* height: 200%; */
+    object-position: left bottom;
+    object-fit: none;
+    transform: scale(0.8, 0.8);
+    transform-origin: bottom left;
+    /* background-position: bottom center; */
+    /* background-repeat: no-repeat; */
+    /* background-size:contain; */
 }
 
 .character_creation_image {
@@ -33,21 +38,23 @@
     top: 20%;
     left: 10%;
 
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size:contain;
+    object-position: 50% 50%;
+    object-fit: contain;
+    /* background-position: center; */
+    /* background-repeat: no-repeat; */
+    /* background-size:contain; */
 }
 
-.image_body {
+/* .image_body {
     background-image: url(/static/img/character_image/pose_human.png);
-}
-
+} */
+/* 
 #character_image_eyes {
     background-image: url(/static/img/character_image/eyes_1.png);
 }
 #character_creation_image_eyes {
     background-image: url(/static/img/character_image/eyes_1.png);
-}
+} */
 
 
 #character_creation > .character_image_col {

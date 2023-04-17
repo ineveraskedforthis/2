@@ -12,7 +12,7 @@ import { HandleAction } from "./network_actions/actions";
 import { CharacterAction } from "../action_types";
 import { SocketCommand } from "./network_actions/run_event";
 import { Convert } from "../systems_communication";
-import { ModelVariant, tagRACE } from "../types";
+import { ModelVariant, tagModel, tagRACE } from "../types";
 import { InventoryCommands } from "./network_actions/inventory_management";
 import { Request } from "./network_actions/request";
 import { SKILLS } from "../static_data/skills";
@@ -157,17 +157,6 @@ export class SocketManager {
             Alerts.generic_user_alert(user, 'alert', 'character name is not allowed')
             return
         }
-
-        let race: tagRACE = 'human'
-        if (data.race == 'graci') {
-            race = 'graci'
-        }
-        if (data.race == 'rat') {
-            race = 'rat'
-        }
-        if (data.race == 'elo') {
-            race = 'elo'
-        }
         
         let model_variation:ModelVariant = {
             eyes: data.eyes,
@@ -179,7 +168,7 @@ export class SocketManager {
         // else                            {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
 
         console.log(data)
-        UserManagement.get_new_character(sw.user_id, data.name, model_variation, race)
+        UserManagement.get_new_character(sw.user_id, data.name, model_variation, data.race as tagModel)
         UserManagement.update_users()
     }
 
