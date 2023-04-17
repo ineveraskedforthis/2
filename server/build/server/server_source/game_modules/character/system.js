@@ -10,7 +10,6 @@ const data_1 = require("../data");
 const ai_manager_1 = require("../AI/ai_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../events/effects");
-const scripted_values_1 = require("../events/scripted_values");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
@@ -278,23 +277,7 @@ var CharacterSystem;
                 }
                 if (!character.in_battle()) {
                     effects_1.Effect.Change.rage(character, -1);
-                    if (character.current_building != undefined) {
-                        let building = data_1.Data.Buildings.from_id(character.current_building);
-                        let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
-                        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
-                        let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race());
-                        if (fatigue_target < character.get_fatigue()) {
-                            let fatigue_change = (0, basic_functions_1.trim)(-5, fatigue_target - character.get_fatigue(), 0);
-                            effects_1.Effect.Change.fatigue(character, fatigue_change);
-                        }
-                        if (stress_target < character.get_stress()) {
-                            let stress_change = (0, basic_functions_1.trim)(-5, stress_target - character.get_stress(), 0);
-                            effects_1.Effect.Change.stress(character, stress_change);
-                        }
-                        if ((stress_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
-                            effects_1.Effect.leave_room(character.id);
-                        }
-                    }
+                    effects_1.Effect.rest_building_tick(character);
                 }
             }
             character_state_update_timer = 0;

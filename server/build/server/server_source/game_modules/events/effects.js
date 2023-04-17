@@ -5,6 +5,7 @@ const user_manager_1 = require("../client_communication/user_manager");
 const data_1 = require("../data");
 const systems_communication_1 = require("../systems_communication");
 const scripted_values_1 = require("./scripted_values");
+const basic_functions_1 = require("../calculations/basic_functions");
 var Effect;
 (function (Effect) {
     let Update;
@@ -128,4 +129,32 @@ var Effect;
         });
     }
     Effect.new_building = new_building;
+    function building_quality_reduction_roll(building) {
+        if (Math.random() > 0.8) {
+            building.durability = (0, basic_functions_1.trim)(building.durability - 1, 0, 1000);
+        }
+    }
+    Effect.building_quality_reduction_roll = building_quality_reduction_roll;
+    function rest_building_tick(character) {
+        if (character.current_building == undefined) {
+            return;
+        }
+        let building = data_1.Data.Buildings.from_id(character.current_building);
+        let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
+        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
+        let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race());
+        if (fatigue_target < character.get_fatigue()) {
+            let fatigue_change = (0, basic_functions_1.trim)(-5, fatigue_target - character.get_fatigue(), 0);
+            Effect.Change.fatigue(character, fatigue_change);
+        }
+        if (stress_target < character.get_stress()) {
+            let stress_change = (0, basic_functions_1.trim)(-5, stress_target - character.get_stress(), 0);
+            Effect.Change.stress(character, stress_change);
+        }
+        building_quality_reduction_roll(building);
+        if ((stress_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
+            Effect.leave_room(character.id);
+        }
+    }
+    Effect.rest_building_tick = rest_building_tick;
 })(Effect = exports.Effect || (exports.Effect = {}));
