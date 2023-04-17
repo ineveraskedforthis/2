@@ -18,7 +18,7 @@ import { money } from "./game_modules/types"
 import { constants } from "./game_modules/static_data/constants";
 import { Convert } from "./game_modules/systems_communication";
 import { Cell } from "./game_modules/map/cell";
-import { Building } from "./game_modules/DATA_LAYOUT_BUILDING";
+import { Building, BuildingType } from "./game_modules/DATA_LAYOUT_BUILDING";
 import { Stash } from "./game_modules/inventories/stash";
 import { Savings } from "./game_modules/inventories/savings";
 import { Template } from "./game_modules/templates";
@@ -139,13 +139,10 @@ export function migrate(current_version:number, target_version:number) {
         let building:Building = {
             cell_id: cell,
             durability: 100,
-            tier: 3,
+            type: BuildingType.Inn,
             rooms: 4,
             kitchen: 100,
             workshop: 0,
-            is_inn: true,
-            is_elodino: false,
-            is_rat_lair: false,
             room_cost: 5 as money
         }
         let building_id = Data.Buildings.create(building)

@@ -275,25 +275,7 @@ export namespace CharacterSystem {
                 }
                 if (!character.in_battle()) {
                     Effect.Change.rage(character, -1)
-                    if (character.current_building != undefined) {
-                        let building = Data.Buildings.from_id(character.current_building)
-                        
-                        let fatigue_target = ScriptedValue.rest_target_fatigue(building.tier, building.durability, character.race())
-                        let stress_target = ScriptedValue.rest_target_stress(building.tier, building.durability, character.race())
-                        if (fatigue_target < character.get_fatigue()) {
-                            let fatigue_change = trim(-5, fatigue_target - character.get_fatigue(), 0)
-                            Effect.Change.fatigue(character, fatigue_change)
-                        }
-
-                        if (stress_target < character.get_stress()) {
-                            let stress_change = trim(-5, stress_target - character.get_stress(), 0)
-                            Effect.Change.stress(character, stress_change)
-                        }                      
-
-                        if ((stress_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
-                            Effect.leave_room(character.id)
-                        }
-                    }
+                    Effect.rest_building_tick(character)
                 }
             }
 

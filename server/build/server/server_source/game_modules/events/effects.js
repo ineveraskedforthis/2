@@ -116,17 +116,14 @@ var Effect;
         character.current_building = undefined;
     }
     Effect.leave_room = leave_room;
-    function new_building(cell_id, tier, rooms, durability) {
+    function new_building(cell_id, type, rooms, durability) {
         data_1.Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
-            tier: tier,
+            type: type,
             rooms: rooms,
             kitchen: 0,
             workshop: 0,
-            is_inn: false,
-            is_elodino: false,
-            is_rat_lair: false,
             room_cost: 5
         });
     }

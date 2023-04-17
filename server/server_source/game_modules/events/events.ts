@@ -31,6 +31,7 @@ import { Damage } from "../Damage";
 import { skill } from "../character/SkillList";
 import { skill_price } from "../prices/skill_price";
 import { ScriptedValue } from "./scripted_values";
+import { BuildingType } from "../DATA_LAYOUT_BUILDING";
 
 export namespace Event {
 
@@ -566,12 +567,13 @@ export namespace Event {
         }
     }
 
-    export function build_building(character: Character, tier: number) {
-        let cost = ScriptedValue.building_price_wood(tier)
+    export function build_building(character: Character, type: BuildingType) {
+        let cost = ScriptedValue.building_price_wood(type)
+        let rooms = ScriptedValue.building_rooms(type)
 
         if (character.stash.get(WOOD) < cost) return
 
         change_stash(character, WOOD, -cost)
-        Effect.new_building(character.cell_id, tier, tier, character.skills.woodwork)
+        Effect.new_building(character.cell_id, type, rooms, character.skills.woodwork)
     }
 }

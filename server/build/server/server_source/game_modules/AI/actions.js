@@ -147,7 +147,8 @@ function rest_building(character, budget) {
     for (let item of buildings) {
         let price = scripted_values_1.ScriptedValue.room_price(item, character.id);
         let building = data_1.Data.Buildings.from_id(item);
-        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(building.tier, building.durability, character.race());
+        let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
+        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
         let fatigue_change = character.get_fatigue() - fatigue_target;
         let utility = fatigue_change * fatigue_utility - price * money_utility;
         if ((utility > best_utility) && (price < budget)) {

@@ -10,6 +10,8 @@ import { Convert } from "../systems_communication";
 import { Request } from "../client_communication/network_actions/request";
 import { building_id, cell_id, char_id, money } from "../types";
 import { ScriptedValue } from "./scripted_values";
+import { Building, BuildingType } from "../DATA_LAYOUT_BUILDING";
+import { trim } from "../calculations/basic_functions";
 
 export namespace Effect {
     export namespace Update {
@@ -118,18 +120,46 @@ export namespace Effect {
         character.current_building = undefined
     }
 
-    export function new_building(cell_id: cell_id, tier: number, rooms: number, durability: number) {        
+    export function new_building(cell_id: cell_id, type: BuildingType, rooms: number, durability: number) {        
         Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
-            tier: tier,
+            type: type,
             rooms: rooms,
             kitchen: 0,
             workshop: 0,
-            is_inn: false,
-            is_elodino: false,
-            is_rat_lair: false,
             room_cost: 5 as money
         })
+    }
+
+    export function building_quality_reduction_roll(building: Building) {
+        if (Math.random() > 0.8) {
+            building.durability = trim(building.durability - 1, 0, 1000)
+        }
+    }
+
+    export function rest_building_tick(character: Character) {
+        if (character.current_building == undefined) {
+            return
+        }
+        let building = Data.Buildings.from_id(character.current_building)
+        let tier = ScriptedValue.building_rest_tier(building.type, character)
+        let fatigue_target = ScriptedValue.rest_target_fatigue(tier, building.durability, character.race())
+        let stress_target = ScriptedValue.rest_target_stress(tier, building.durability, character.race())
+        if (fatigue_target < character.get_fatigue()) {
+            let fatigue_change = trim(-5, fatigue_target - character.get_fatigue(), 0)
+            Effect.Change.fatigue(character, fatigue_change)
+        }
+
+        if (stress_target < character.get_stress()) {
+            let stress_change = trim(-5, stress_target - character.get_stress(), 0)
+            Effect.Change.stress(character, stress_change)
+        }
+
+        building_quality_reduction_roll(building)
+
+        if ((stress_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
+            Effect.leave_room(character.id)
+        }
     }
 }

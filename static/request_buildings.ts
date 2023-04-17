@@ -2,12 +2,16 @@ import { socket } from "./modules/globals.js";
 
 {
     let div = document.getElementById('local_buildings')
-    for (let i = 1; i <= 4; i++) {
-        let button = document.createElement('button')
-        button.onclick = build_building(i)
-        button.innerHTML = 'build  ' + tier_to_name(i)
-        div?.appendChild(button)
-    }
+
+    // for (let i = 1; i <= 4; i++) {
+    
+    // for (let i = 1)
+    let button = document.createElement('button')
+    button.onclick = build_building(BuildingType.Shack)
+    button.innerHTML = 'build  ' + type_to_name(BuildingType.Shack)
+    div?.appendChild(button)
+
+    // }
 
     let close_button = document.createElement('button')
     close_button.innerHTML = 'close'
@@ -31,14 +35,20 @@ function close_buildings() {
     big_div.classList.add('hidden');
 }
 
+export const enum BuildingType {
+    Shack = 'shack',
+    Inn = 'inn',
+    HumanHouse = 'human_house',
+    RatLair = 'rat_lair',
+    ElodinoHouse = 'elodino_house',
+}
 
 interface Building {
     id: number
     durability: number,
-    tier: number,
+    type: BuildingType,
     rooms: number,
     rooms_occupied: number,
-    is_inn: boolean,
     room_cost: number
 }
 
@@ -52,9 +62,9 @@ function rent_room(id: number) {
     }
 }
 
-function build_building(tier: number) {
+function build_building(type: BuildingType) {
     return function() {
-        socket.emit('build-building', tier)
+        socket.emit('build-building', type)
     }
 }
 
@@ -65,19 +75,20 @@ function quality_to_name(n: number) {
     return 'luxury' + '(' + n + ')'
 }
 
-function tier_to_name(n: number) {
-    if (n == 1) return 'shack'
-    if (n == 2) return 'house'
-    if (n == 3) return 'mansion'
-    if (n == 4) return 'palace'
+function type_to_name(x: BuildingType) {
+    // if (n == 1) return 'shack'
+    // if (n == 2) return 'house'
+    // if (n == 3) return 'mansion'
+    // if (n == 4) return 'palace'
+    return x
 }
 
 function building_div(b: Building) {
     let div = document.createElement('div')
     let quality_label = document.createElement('div')
-    console.log(b.durability, b.tier)
-    console.log(quality_to_name(b.durability) + ' ' + tier_to_name(b.tier))
-    quality_label.innerHTML = quality_to_name(b.durability) + ' ' + tier_to_name(b.tier)   
+    console.log(b.durability, b.type)
+    console.log(quality_to_name(b.durability) + ' ' + type_to_name(b.type))
+    quality_label.innerHTML = quality_to_name(b.durability) + ' ' + type_to_name(b.type)   
     quality_label.classList.add('width-200')
     div.appendChild(quality_label)
     
@@ -88,13 +99,13 @@ function building_div(b: Building) {
     rooms_label.classList.add('align-center')
     div.appendChild(rooms_label)
 
-    if (b.is_inn) {
-        let rest_button = document.createElement('button')
-        rest_button.onclick = rent_room(b.id)
-        rest_button.innerHTML = 'rest cost: ' + b.room_cost.toString()
-        rest_button.classList.add('width-50')
-        div.appendChild(rest_button)        
-    }
+    // if (b.is_inn) {
+    let rest_button = document.createElement('button')
+    rest_button.onclick = rent_room(b.id)
+    rest_button.innerHTML = 'rest cost: ' + b.room_cost.toString()
+    rest_button.classList.add('width-50')
+    div.appendChild(rest_button)        
+    // }
 
     div.classList.add('border-white')
     div.classList.add('container-horizontal')

@@ -89,9 +89,21 @@ var SocketCommand;
         let responce = effects_1.Effect.rent_room(character.id, building_id);
     }
     SocketCommand.rent_room = rent_room;
+    function validate_building_type(msg) {
+        switch (msg) {
+            case ("elodino_house" /* BuildingType.ElodinoHouse */): return true;
+            case ("human_house" /* BuildingType.HumanHouse */): return true;
+            case ("inn" /* BuildingType.Inn */): return true;
+            case ("rat_lair" /* BuildingType.RatLair */): return true;
+            case ("shack" /* BuildingType.Shack */): return true;
+        }
+        return false;
+    }
     function build_building(sw, msg) {
-        if (typeof msg != 'number')
+        if (typeof msg != 'string')
             return;
+        if (!validate_building_type(msg))
+            return true;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;

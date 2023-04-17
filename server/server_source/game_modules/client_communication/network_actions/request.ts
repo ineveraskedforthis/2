@@ -108,15 +108,14 @@ export namespace Request {
         let buildings = Array.from(ids).map((id) => {
             let building = Data.Buildings.from_id(id)
             let rooms_occupied = Data.Buildings.occupied_rooms(id)
-            let owner = Data.Buildings.owner(id)
+            // let owner = Data.Buildings.owner(id)
             return {
                 id: id,
                 room_cost: ScriptedValue.room_price(id, character.id),
                 rooms: building.rooms,
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,
-                tier: building.tier,
-                is_inn: building.is_inn || (owner == undefined)
+                type: building.type,
             }
         })
 

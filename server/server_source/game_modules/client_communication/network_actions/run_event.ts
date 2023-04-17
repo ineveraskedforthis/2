@@ -1,3 +1,4 @@
+import { BuildingType } from "../../DATA_LAYOUT_BUILDING";
 import { Perks } from "../../character/Perks";
 import { skill } from "../../character/SkillList";
 import { Data } from "../../data";
@@ -89,10 +90,23 @@ export namespace SocketCommand {
         let responce = Effect.rent_room(character.id, building_id as building_id)
     }
 
+    function validate_building_type(msg: string) {
+        switch(msg){
+            case(BuildingType.ElodinoHouse): return true;
+            case(BuildingType.HumanHouse): return true;
+            case(BuildingType.Inn): return true;
+            case(BuildingType.RatLair): return true
+            case(BuildingType.Shack): return true;
+        }
+
+        return false
+    }
+
     export function build_building(sw: SocketWrapper, msg: unknown) {
-        if (typeof msg != 'number') return
+        if (typeof msg != 'string') return
+        if (!validate_building_type(msg)) return true
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
-        Event.build_building(character, msg)
+        Event.build_building(character, msg as BuildingType)
     }
 }

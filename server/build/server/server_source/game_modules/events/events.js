@@ -513,12 +513,13 @@ var Event;
         }
     }
     Event.stop_battle = stop_battle;
-    function build_building(character, tier) {
-        let cost = scripted_values_1.ScriptedValue.building_price_wood(tier);
+    function build_building(character, type) {
+        let cost = scripted_values_1.ScriptedValue.building_price_wood(type);
+        let rooms = scripted_values_1.ScriptedValue.building_rooms(type);
         if (character.stash.get(materials_manager_1.WOOD) < cost)
             return;
         change_stash(character, materials_manager_1.WOOD, -cost);
-        effects_1.Effect.new_building(character.cell_id, tier, tier, character.skills.woodwork);
+        effects_1.Effect.new_building(character.cell_id, type, rooms, character.skills.woodwork);
     }
     Event.build_building = build_building;
 })(Event = exports.Event || (exports.Event = {}));
