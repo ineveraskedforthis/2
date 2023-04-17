@@ -100,14 +100,29 @@ var SocketCommand;
         return false;
     }
     function build_building(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
         if (typeof msg != 'string')
             return;
         if (!validate_building_type(msg))
             return true;
-        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
-        if (character == undefined)
-            return;
         events_1.Event.build_building(character, msg);
     }
     SocketCommand.build_building = build_building;
+    function repair_building(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        if (msg == undefined)
+            return;
+        let building_id = msg.id;
+        if (typeof building_id != 'number')
+            return;
+        let building = data_1.Data.Buildings.from_id(building_id);
+        if (building == undefined)
+            return;
+        events_1.Event.repair_building(character, building_id);
+    }
+    SocketCommand.repair_building = repair_building;
 })(SocketCommand = exports.SocketCommand || (exports.SocketCommand = {}));

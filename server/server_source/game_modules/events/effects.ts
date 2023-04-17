@@ -133,9 +133,13 @@ export namespace Effect {
     }
 
     export function building_quality_reduction_roll(building: Building) {
-        if (Math.random() > 0.8) {
+        if (Math.random() > 0.9) {
             building.durability = trim(building.durability - 1, 0, 1000)
         }
+    }
+
+    export function building_repair(building: Building, x: number) {
+        building.durability = trim(building.durability + x, 0, 1000)
     }
 
     export function rest_building_tick(character: Character) {

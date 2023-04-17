@@ -130,11 +130,15 @@ var Effect;
     }
     Effect.new_building = new_building;
     function building_quality_reduction_roll(building) {
-        if (Math.random() > 0.8) {
+        if (Math.random() > 0.9) {
             building.durability = (0, basic_functions_1.trim)(building.durability - 1, 0, 1000);
         }
     }
     Effect.building_quality_reduction_roll = building_quality_reduction_roll;
+    function building_repair(building, x) {
+        building.durability = (0, basic_functions_1.trim)(building.durability + x, 0, 1000);
+    }
+    Effect.building_repair = building_repair;
     function rest_building_tick(character) {
         if (character.current_building == undefined) {
             return;

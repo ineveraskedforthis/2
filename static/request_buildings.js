@@ -33,6 +33,11 @@ function rent_room(id) {
         socket.emit('rent-room', { id: id });
     };
 }
+function repair_building(id) {
+    return function () {
+        socket.emit('repair-building', { id: id });
+    };
+}
 function build_building(type) {
     return function () {
         socket.emit('build-building', type);
@@ -73,6 +78,11 @@ function building_div(b) {
     rest_button.innerHTML = 'rest cost: ' + b.room_cost.toString();
     rest_button.classList.add('width-50');
     div.appendChild(rest_button);
+    let repair_button = document.createElement('button');
+    repair_button.onclick = repair_building(b.id);
+    repair_button.innerHTML = 'repair';
+    repair_button.classList.add('width-50');
+    div.appendChild(repair_button);
     // }
     div.classList.add('border-white');
     div.classList.add('container-horizontal');

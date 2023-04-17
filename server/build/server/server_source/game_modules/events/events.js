@@ -22,6 +22,7 @@ const market_1 = require("./market");
 const damage_types_1 = require("../damage_types");
 const skill_price_1 = require("../prices/skill_price");
 const scripted_values_1 = require("./scripted_values");
+const helpers_1 = require("../craft/helpers");
 var Event;
 (function (Event) {
     function buy_perk(student, perk, teacher) {
@@ -522,4 +523,19 @@ var Event;
         effects_1.Effect.new_building(character.cell_id, type, rooms, character.skills.woodwork);
     }
     Event.build_building = build_building;
+    function repair_building(character, builing_id) {
+        let building = data_1.Data.Buildings.from_id(builing_id);
+        let skill = character.skills.woodwork;
+        let repair = Math.min(5, skill - building.durability);
+        if (repair <= 0)
+            return;
+        let cost = Math.round(repair / 100 * scripted_values_1.ScriptedValue.building_price_wood(building.type) / 2 + 0.51);
+        if (cost > character.stash.get(materials_manager_1.WOOD))
+            return;
+        let difficulty = Math.floor(building.durability / 3 + 10);
+        (0, helpers_1.on_craft_update)(character, [{ skill: 'woodwork', difficulty: difficulty }]);
+        change_stash(character, materials_manager_1.WOOD, -cost);
+        effects_1.Effect.building_repair(building, repair);
+    }
+    Event.repair_building = repair_building;
 })(Event = exports.Event || (exports.Event = {}));

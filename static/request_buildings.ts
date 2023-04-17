@@ -62,6 +62,12 @@ function rent_room(id: number) {
     }
 }
 
+function repair_building(id: number) {
+    return function() {
+        socket.emit('repair-building', {id: id})
+    }
+}
+
 function build_building(type: BuildingType) {
     return function() {
         socket.emit('build-building', type)
@@ -104,7 +110,13 @@ function building_div(b: Building) {
     rest_button.onclick = rent_room(b.id)
     rest_button.innerHTML = 'rest cost: ' + b.room_cost.toString()
     rest_button.classList.add('width-50')
-    div.appendChild(rest_button)        
+    div.appendChild(rest_button)
+
+    let repair_button = document.createElement('button')
+    repair_button.onclick = repair_building(b.id)
+    repair_button.innerHTML = 'repair'
+    repair_button.classList.add('width-50')
+    div.appendChild(repair_button)
     // }
 
     div.classList.add('border-white')

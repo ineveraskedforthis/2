@@ -32,6 +32,7 @@ import { skill } from "../character/SkillList";
 import { skill_price } from "../prices/skill_price";
 import { ScriptedValue } from "./scripted_values";
 import { BuildingType } from "../DATA_LAYOUT_BUILDING";
+import { on_craft_update } from "../craft/helpers";
 
 export namespace Event {
 
@@ -575,5 +576,19 @@ export namespace Event {
 
         change_stash(character, WOOD, -cost)
         Effect.new_building(character.cell_id, type, rooms, character.skills.woodwork)
+    }
+
+    export function repair_building(character: Character, builing_id: building_id) {
+        let building = Data.Buildings.from_id(builing_id)
+        let skill = character.skills.woodwork
+        let repair = Math.min(5, skill - building.durability)
+        if (repair <= 0) return;
+        let cost = Math.round(repair / 100 * ScriptedValue.building_price_wood(building.type) / 2 + 0.51)
+        if (cost > character.stash.get(WOOD)) return;
+
+        let difficulty = Math.floor(building.durability / 3 + 10)
+        on_craft_update(character, [{skill: 'woodwork', difficulty: difficulty}])
+        change_stash(character, WOOD, -cost)
+        Effect.building_repair(building, repair)        
     }
 }

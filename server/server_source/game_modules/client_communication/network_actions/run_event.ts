@@ -103,10 +103,24 @@ export namespace SocketCommand {
     }
 
     export function build_building(sw: SocketWrapper, msg: unknown) {
-        if (typeof msg != 'string') return
-        if (!validate_building_type(msg)) return true
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
+
+        if (typeof msg != 'string') return
+        if (!validate_building_type(msg)) return true
         Event.build_building(character, msg as BuildingType)
+    }
+
+    export function repair_building(sw: SocketWrapper, msg: undefined|{id: unknown}) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        if (msg == undefined) return
+        let building_id = msg.id
+        if (typeof building_id != 'number') return
+        let building = Data.Buildings.from_id(building_id as building_id)
+        if (building == undefined) return
+
+        Event.repair_building(character, building_id as building_id)
     }
 }

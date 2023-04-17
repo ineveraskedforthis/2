@@ -119,8 +119,9 @@ export class SocketManager {
                                          SocketCommand.learn_skill(user, msg))
 
             
-            socket.on('build-building', (msg: unknown) => SocketCommand.build_building(user, msg))
-            socket.on('rent-room',      (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
+            socket.on('build-building',     (msg: unknown) => SocketCommand.build_building(user, msg))
+            socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
+            socket.on('repair-building',    (msg: undefined|{id: unknown}) => SocketCommand.repair_building(user, msg))
         });
     }
 
