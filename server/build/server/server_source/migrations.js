@@ -122,7 +122,7 @@ function migrate(current_version, target_version) {
         current_version = 11;
     }
     if (current_version == 11) {
-        rat_hunter(7, 5);
+        templates_1.Template.Character.HumanRatHunter(7, 5, "Rat Hunter");
         set_version(12);
         current_version = 12;
     }
@@ -228,21 +228,6 @@ function create_guard(x, y) {
     let index = inventory_events_1.EventInventory.add_item(spearman, spear);
     inventory_events_1.EventInventory.equip_from_backpack(spearman, index);
     return spearman;
-}
-function rat_hunter(x, y) {
-    const cell = system_2.MapSystem.coordinate_to_id(x, y);
-    let spearman = events_1.Event.new_character(human_1.RatHunterHuman, 'Rat hunter', cell, dummy_model);
-    spearman.skills.polearms = 100;
-    spearman.perks.advanced_polearm = true;
-    let spear = system_1.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
-    spear.durability = 200;
-    let armour = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
-    spearman.equip.data.weapon = spear;
-    spearman.equip.data.armour.body = armour;
-    spearman.archetype.ai_map = 'rat_hunter';
-    data_1.Data.CharacterDB.save();
-    // let index = EventInventory.add_item(spearman, spear)
-    // EventInventory.equip_from_backpack(spearman, index)
 }
 function fletcher(x, y) {
     const cell = system_2.MapSystem.coordinate_to_id(x, y);

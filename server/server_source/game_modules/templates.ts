@@ -2,6 +2,8 @@ import { CharacterTemplate } from "./character/templates"
 import { Data } from "./data"
 import { Event } from "./events/events"
 import { Factions } from "./factions"
+import { BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "./items/items_set_up"
+import { ItemSystem } from "./items/system"
 import { ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
 import { EloTemplate } from "./races/elo"
@@ -50,6 +52,31 @@ export namespace Template {
             let human = GenericHuman(x, y, name, Factions.City.id)
             human.skills.fishing += 20
             human.skills.noweapon += 5
+            return human
+        }
+
+        export function HumanSpearman(x: number, y: number, name: string|undefined) {
+            let human = HumanSteppe(x, y, undefined)
+            
+            human.skills.polearms = 60
+            human.skills.evasion += 10
+            human.skills.blocking += 10
+            human.perks.advanced_polearm = true
+            let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
+            spear.durability = 200
+            let armour = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
+            let pants = ItemSystem.create(RAT_SKIN_PANTS_ARGUMENT)
+            human.equip.data.weapon = spear
+            human.equip.data.armour.body = armour
+            human.equip.data.armour.legs = pants
+            return human
+        }
+
+        export function HumanRatHunter(x: number, y: number, name: string|undefined) {
+            let human = HumanSpearman(x, y, name)
+            human.archetype.ai_map = 'rat_hunter'
+            human.skills.skinning += 20
+            human.skills.hunt += 20
             return human
         }
 

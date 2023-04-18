@@ -125,7 +125,7 @@ export function migrate(current_version:number, target_version:number) {
     }
 
     if (current_version == 11) {
-        rat_hunter(7, 5)
+        Template.Character.HumanRatHunter(7, 5, "Rat Hunter")
         set_version(12)
         current_version = 12
     }
@@ -260,21 +260,7 @@ function create_guard(x: number, y: number) {
     return spearman
 }
 
-function rat_hunter(x: number, y: number) {
-    const cell = MapSystem.coordinate_to_id(x, y)
-    let spearman =  Event.new_character(RatHunterHuman, 'Rat hunter', cell, dummy_model)
-    spearman.skills.polearms = 100
-    spearman.perks.advanced_polearm = true
-    let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
-    spear.durability = 200
-    let armour = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
-    spearman.equip.data.weapon = spear
-    spearman.equip.data.armour.body = armour
-    spearman.archetype.ai_map = 'rat_hunter'
-    Data.CharacterDB.save()
-    // let index = EventInventory.add_item(spearman, spear)
-    // EventInventory.equip_from_backpack(spearman, index)
-}
+
 
 function fletcher(x: number, y: number) {
     const cell = MapSystem.coordinate_to_id(x, y)

@@ -4,8 +4,10 @@ exports.Template = void 0;
 const data_1 = require("./data");
 const events_1 = require("./events/events");
 const factions_1 = require("./factions");
+const items_set_up_1 = require("./items/items_set_up");
+const system_1 = require("./items/system");
 const materials_manager_1 = require("./manager_classes/materials_manager");
-const system_1 = require("./map/system");
+const system_2 = require("./map/system");
 const elo_1 = require("./races/elo");
 const graci_1 = require("./races/graci");
 const human_1 = require("./races/human");
@@ -15,7 +17,7 @@ var Template;
     let Character;
     (function (Character) {
         function Base(template, name, model, x, y, faction_id) {
-            const cell = system_1.MapSystem.coordinate_to_id(x, y);
+            const cell = system_2.MapSystem.coordinate_to_id(x, y);
             let character = events_1.Event.new_character(template, name, cell, model);
             if (faction_id != undefined)
                 data_1.Data.Reputation.set(faction_id, character.id, "member");
@@ -55,6 +57,30 @@ var Template;
             return human;
         }
         Character.HumanCity = HumanCity;
+        function HumanSpearman(x, y, name) {
+            let human = HumanSteppe(x, y, undefined);
+            human.skills.polearms = 60;
+            human.skills.evasion += 10;
+            human.skills.blocking += 10;
+            human.perks.advanced_polearm = true;
+            let spear = system_1.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
+            spear.durability = 200;
+            let armour = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
+            let pants = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_PANTS_ARGUMENT);
+            human.equip.data.weapon = spear;
+            human.equip.data.armour.body = armour;
+            human.equip.data.armour.legs = pants;
+            return human;
+        }
+        Character.HumanSpearman = HumanSpearman;
+        function HumanRatHunter(x, y, name) {
+            let human = HumanSpearman(x, y, name);
+            human.archetype.ai_map = 'rat_hunter';
+            human.skills.skinning += 20;
+            human.skills.hunt += 20;
+            return human;
+        }
+        Character.HumanRatHunter = HumanRatHunter;
         function GenericRat(x, y, name) {
             let rat = Base(rat_1.RatTemplate, name, undefined, x, y, factions_1.Factions.Rats.id);
             rat.perks.claws = true;
