@@ -182,6 +182,15 @@ class Equip {
         }
         else if (model == 'human') {
         }
+        else if (model == 'human_strong') {
+            if (item.model_tag == 'spear') {
+            }
+            else if (item.model_tag == 'bone_spear') {
+            }
+            else {
+                return;
+            }
+        }
         else {
             return;
         }

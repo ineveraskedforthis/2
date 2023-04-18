@@ -297,6 +297,9 @@ export namespace Event {
         let damage_modifier = (40 + attack.attack_skill) / (40 + attack.defence_skill)
         DmgOps.mult_ip(attack.damage, damage_modifier)
 
+        // console.log('attack after modification')
+        // console.log(attack)
+
         //apply damage and status effect after all modifiers
         deal_damage(defender, attack, attacker)
 

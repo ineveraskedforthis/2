@@ -18,7 +18,7 @@ var AItrade;
     function sell_price_bulk(character, material) {
         let belief = character.ai_price_belief_sell.get(material);
         if (belief == undefined)
-            return 0;
+            return 1;
         // if (character.archetype.ai_map == 'urban_trader') {
         //     return Math.floor(belief * 1.2) as money
         // }

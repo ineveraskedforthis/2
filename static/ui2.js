@@ -140,10 +140,13 @@ document.getElementById('char_race').addEventListener('change', function() {
     set_body_type(race)
 });
 
+var race_model = "human"
+
 function set_body_type(race) {
     console.log(race)
-    document.getElementById('character_creation_image_body').src = `../static/img/character_image/pose_${race}.png`
-    document.getElementById('character_image_body').src = `../static/img/character_image/pose_${race}.png`
+    race_model = race
+    document.getElementById('character_creation_image_body').src = `../static/img/character_image/${race}/pose.png`
+    document.getElementById('character_image_body').src = `../static/img/character_image/${race}/pose.png`
 }
 
 socket.on('model', (race) => {
@@ -192,8 +195,8 @@ function update_equip(data) {
             continue
         }
 
-        console.log("/static/img/character_image/" + item_tag + "_big.png")
-        div.src = "../static/img/character_image/" + item_tag + "_big.png"
+        console.log(`/static/img/character_image/${race_model}/${item_tag}_big.png`)
+        div.src = `../static/img/character_image/${race_model}/${item_tag}_big.png`
     }
 }
 

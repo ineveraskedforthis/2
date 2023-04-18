@@ -156,7 +156,7 @@ var Effect;
             Effect.Change.stress(character, stress_change);
         }
         building_quality_reduction_roll(building);
-        if ((stress_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
+        if ((fatigue_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
             Effect.leave_room(character.id);
         }
     }

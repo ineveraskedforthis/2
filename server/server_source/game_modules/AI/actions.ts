@@ -6,7 +6,7 @@ import { Data } from "../data";
 import { Effect } from "../events/effects";
 import { EventMarket } from "../events/market";
 import { ScriptedValue } from "../events/scripted_values";
-import { FOOD, MEAT, MaterialsManager, RAT_BONE, RAT_SKIN, materials } from "../manager_classes/materials_manager";
+import { FOOD, MEAT, MaterialsManager, RAT_BONE, RAT_SKIN, material_index, materials } from "../manager_classes/materials_manager";
 import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
@@ -25,14 +25,15 @@ export function loot(character: Character) {
 }
 export function sell_loot(character: Character) {
     for (let tag of LOOT) {
-        EventMarket.sell(
-            character,
-            tag,
-            character.stash.get(tag),
-            AItrade.sell_price_bulk(character, tag) - 1 as money
-        );
+        sell_material(character, tag)
     }
 }
+
+export function remove_orders(character: Character) {
+    EventMarket.remove_bulk_orders(character)
+}
+
+
 export function sell_all_stash(character: Character) {
     for (let tag of materials.get_materials_list()) {
         EventMarket.sell(
@@ -42,6 +43,35 @@ export function sell_all_stash(character: Character) {
             AItrade.sell_price_bulk(character, tag) as money
         );
     }
+}
+
+export function sell_material(character: Character, material: material_index) {
+    let orders = Convert.cell_id_to_bulk_orders(character.cell_id);
+    let best_order = undefined;
+    let best_price = 0;
+    for (let item of orders) {
+        let order = Convert.id_to_bulk_order(item);
+        if (order.typ == 'sell')
+            continue;
+        if (order.tag != material)
+            continue;
+        if ((best_price < order.price) && (order.amount > 0)) {
+            best_price = order.price;
+            best_order = order;
+        }
+    }
+
+    if (best_order == undefined) {
+        EventMarket.sell(
+                character,
+                material,
+                character.stash.get(material),
+                AItrade.sell_price_bulk(character, material) as money);
+        return false;
+    }
+
+    EventMarket.execute_buy_order(character, best_order.id, 1);
+    return true;
 }
 
 export function buy_food(character: Character) {
@@ -64,7 +94,7 @@ export function buy_food(character: Character) {
         return false;
 
     if (character.savings.get() >= best_price) {
-        EventMarket.execute_sell_order(character, best_order?.id, 1);
+        EventMarket.execute_sell_order(character, best_order.id, 1);
         return true;
     }
     return false;
@@ -187,6 +217,16 @@ export function rest_outside(character: Character) {
     ActionManager.start_action(CharacterAction.REST, character, [0, 0]);
 }
 
+export function roll_price_belief_sell_increase(character: Character, material: material_index, probability: number) {
+    let dice = Math.random()
+    let current = character.ai_price_belief_sell.get(material)
+    if (current == undefined) {
+        character.ai_price_belief_sell.set(material, 1 as money)
+    } else if (dice < probability) {
+        character.ai_price_belief_sell.set(material, current + 1 as money)
+    }
+}
+
 export function update_price_beliefs(character: Character) {
     let orders = Convert.cell_id_to_bulk_orders(character.cell_id)
     // updating price beliefs as you go
@@ -212,4 +252,39 @@ export function update_price_beliefs(character: Character) {
             // console.log(`i think i can buy ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_buy.get(order.tag)}`)
         }
     }
+
+    //adding a bit of healthy noise
+    character.ai_price_belief_buy.forEach((value, key, map) => {
+        if (value > 1) {
+            let dice = Math.random()
+            if (dice < 0.1) {
+                map.set(key, value - 1 as money)
+            }
+            if (dice > 0.9) {
+                map.set(key, value + 1 as money)
+            }
+        } else {
+            let dice = Math.random()
+            if (dice > 0.9) {
+                map.set(key, value + 1 as money)
+            }
+        }
+    });
+
+    character.ai_price_belief_sell.forEach((value, key, map) => {
+        if (value > 1) {
+            let dice = Math.random()
+            if (dice < 0.1) {
+                map.set(key, value - 1 as money)
+            }
+            if (dice > 0.9) {
+                map.set(key, value + 1 as money)
+            }
+        } else {
+            let dice = Math.random()
+            if (dice > 0.9) {
+                map.set(key, value + 1 as money)
+            }
+        }
+    });
 }

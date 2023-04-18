@@ -16,7 +16,7 @@ export namespace AItrade {
 
     export function sell_price_bulk(character: Character, material: material_index) {
         let belief = character.ai_price_belief_sell.get(material)
-        if (belief == undefined) return 0;
+        if (belief == undefined) return 1;
         // if (character.archetype.ai_map == 'urban_trader') {
         //     return Math.floor(belief * 1.2) as money
         // }

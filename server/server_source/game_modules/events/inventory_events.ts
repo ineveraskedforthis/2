@@ -14,7 +14,7 @@ import { CharacterSystem } from "../character/system";
 
 export namespace EventInventory {
     export function equip_from_backpack(character: Character, index: number) {
-        character.equip.equip_from_backpack(index, character.race())
+        character.equip.equip_from_backpack(index, character.model())
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
     }
 

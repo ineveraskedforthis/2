@@ -11,7 +11,7 @@ const system_1 = require("../character/system");
 var EventInventory;
 (function (EventInventory) {
     function equip_from_backpack(character, index) {
-        character.equip.equip_from_backpack(index, character.race());
+        character.equip.equip_from_backpack(index, character.model());
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
     }
     EventInventory.equip_from_backpack = equip_from_backpack;

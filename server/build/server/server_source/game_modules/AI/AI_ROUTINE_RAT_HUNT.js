@@ -24,10 +24,15 @@ function RatHunterRoutine(character) {
     }
     // character at market
     if (!character.trade_stash.is_empty()) {
+        (0, actions_1.update_price_beliefs)(character);
         if (character.stash.get(materials_manager_1.FOOD) < 10) {
             (0, actions_1.buy_food)(character);
         }
         (0, actions_1.rest_building)(character, character.savings.get());
+        if (Math.random() < 0.5) {
+            (0, actions_1.remove_orders)(character);
+            (0, actions_1.sell_loot)(character);
+        }
         return;
     }
     if ((0, actions_1.loot)(character) > 10) {

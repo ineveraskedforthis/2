@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EventMarket = void 0;
+const actions_1 = require("../AI/actions");
+const basic_functions_1 = require("../calculations/basic_functions");
 const user_manager_1 = require("../client_communication/user_manager");
 const data_1 = require("../data");
 const system_1 = require("../market/system");
@@ -35,9 +37,13 @@ var EventMarket;
     }
     EventMarket.sell_item = sell_item;
     function execute_sell_order(buyer, order_id, amount) {
-        system_1.BulkOrders.execute_sell_order(order_id, amount, buyer);
+        let result = system_1.BulkOrders.execute_sell_order(order_id, amount, buyer);
         const order = systems_communication_1.Convert.id_to_bulk_order(order_id);
         const seller = systems_communication_1.Convert.id_to_character(order.owner_id);
+        let order_amount = order.amount;
+        if ((seller.user_id == '#') && (result == 'ok')) {
+            (0, actions_1.roll_price_belief_sell_increase)(seller, order.tag, 1 / (0, basic_functions_1.trim)(order_amount, 1, 100));
+        }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 4 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 5 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 5 /* UI_Part.SAVINGS */);

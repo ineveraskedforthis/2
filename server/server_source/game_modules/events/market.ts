@@ -1,3 +1,5 @@
+import { roll_price_belief_sell_increase } from "../AI/actions"
+import { trim } from "../calculations/basic_functions"
 import { Character } from "../character/character"
 import { UI_Part } from "../client_communication/causality_graph"
 import { UserManagement } from "../client_communication/user_manager"
@@ -41,9 +43,17 @@ export namespace EventMarket {
     }
 
     export function execute_sell_order(buyer: Character, order_id: order_bulk_id, amount: number) {
-        BulkOrders.execute_sell_order(order_id, amount, buyer)
+        
+        
+        
+        let result = BulkOrders.execute_sell_order(order_id, amount, buyer)  
         const order = Convert.id_to_bulk_order(order_id)
         const seller = Convert.id_to_character(order.owner_id)
+        let order_amount = order.amount     
+
+        if ((seller.user_id == '#') && (result == 'ok')) {
+            roll_price_belief_sell_increase(seller, order.tag, 1 / trim(order_amount, 1, 100))
+        }
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)
