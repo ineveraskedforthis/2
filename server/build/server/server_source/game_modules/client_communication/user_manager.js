@@ -172,7 +172,7 @@ var UserManagement;
                 }
                 ;
             case "rat": {
-                character = templates_1.Template.Character.BigRat(7, 5, name);
+                character = templates_1.Template.Character.BigRat(6, 7, name);
                 break;
             }
             case "graci": {

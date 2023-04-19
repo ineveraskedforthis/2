@@ -57,8 +57,17 @@ var Template;
             return human;
         }
         Character.HumanCity = HumanCity;
-        function HumanSpearman(x, y, name) {
-            let human = HumanSteppe(x, y, undefined);
+        function HumanSpearman(x, y, name, faction) {
+            switch (faction) {
+                case "steppe": {
+                    var human = HumanSteppe(x, y, name);
+                    break;
+                }
+                case "city": {
+                    var human = HumanCity(x, y, name);
+                    break;
+                }
+            }
             human.skills.polearms = 60;
             human.skills.evasion += 10;
             human.skills.blocking += 10;
@@ -74,13 +83,74 @@ var Template;
         }
         Character.HumanSpearman = HumanSpearman;
         function HumanRatHunter(x, y, name) {
-            let human = HumanSpearman(x, y, name);
+            let human = HumanSpearman(x, y, name, 'steppe');
             human.archetype.ai_map = 'rat_hunter';
             human.skills.skinning += 20;
             human.skills.hunt += 20;
             return human;
         }
         Character.HumanRatHunter = HumanRatHunter;
+        function HumanCook(x, y, name, faction) {
+            switch (faction) {
+                case "steppe": {
+                    var human = HumanSteppe(x, y, name);
+                    break;
+                }
+                case "city": {
+                    var human = HumanCity(x, y, name);
+                    break;
+                }
+            }
+            human.stash.inc(materials_manager_1.FOOD, 10);
+            human.savings.inc(500);
+            human.skills.cooking = 70;
+            human.perks.meat_master = true;
+            return human;
+        }
+        Character.HumanCook = HumanCook;
+        function HumanFletcher(x, y, name, faction) {
+            switch (faction) {
+                case "steppe": {
+                    var human = HumanSteppe(x, y, name);
+                    break;
+                }
+                case "city": {
+                    var human = HumanCity(x, y, name);
+                    break;
+                }
+            }
+            human.skills.woodwork = 80;
+            human.perks.fletcher = true;
+            human.skills.ranged = 30;
+            human.stash.inc(materials_manager_1.ARROW_BONE, 50);
+            human.stash.inc(materials_manager_1.RAT_BONE, 3);
+            human.stash.inc(materials_manager_1.WOOD, 1);
+            human.savings.inc(500);
+            return human;
+        }
+        Character.HumanFletcher = HumanFletcher;
+        function HumanCityGuard(x, y, name) {
+            let human = HumanSpearman(x, y, name, 'city');
+            human.archetype.ai_map = 'urban_guard';
+            human.skills.polearms += 10;
+            return human;
+        }
+        Character.HumanCityGuard = HumanCityGuard;
+        function HumanLocalTrader(x, y, name, faction) {
+            switch (faction) {
+                case "steppe": {
+                    var human = HumanSteppe(x, y, name);
+                    break;
+                }
+                case "city": {
+                    var human = HumanCity(x, y, name);
+                    break;
+                }
+            }
+            human.archetype.ai_map = 'urban_trader';
+            human.savings.inc(800);
+        }
+        Character.HumanLocalTrader = HumanLocalTrader;
         function GenericRat(x, y, name) {
             let rat = Base(rat_1.RatTemplate, name, undefined, x, y, factions_1.Factions.Rats.id);
             rat.perks.claws = true;

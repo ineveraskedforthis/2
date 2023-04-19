@@ -57,7 +57,7 @@ var Event;
     }
     Event.buy_skill = buy_skill;
     function move(character, new_cell) {
-        // console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y)
+        // console.log(`Character ${character.name} moves to ${new_cell.x} ${new_cell.y}`)
         const old_cell = systems_communication_1.Convert.character_to_cell(character);
         systems_communication_1.Unlink.character_and_cell(character, old_cell);
         systems_communication_1.Link.character_and_cell(character, new_cell);
@@ -96,12 +96,15 @@ var Event;
     Event.move = move;
     function new_character(template, name, starting_cell, model) {
         console.log('creating new character');
-        console.log(name);
         let character = system_3.CharacterSystem.template_to_character(template, name, starting_cell);
         if (model == undefined)
             model = { chin: 0, mouth: 0, eyes: 0 };
         character.set_model_variation(model);
         const cell = system_4.MapSystem.SAFE_id_to_cell(starting_cell);
+        console.log(character.name);
+        console.log(template.archetype);
+        console.log(cell.x, cell.y);
+        console.log(character.ai_map());
         systems_communication_1.Link.character_and_cell(character, cell);
         data_1.Data.CharacterDB.save();
         return character;
@@ -384,7 +387,8 @@ var Event;
         }
     }
     function kill(killer, victim) {
-        console.log(killer.name + ' kills ' + victim.name);
+        let cell = system_4.MapSystem.id_to_cell(killer.cell_id);
+        console.log(killer.name + ' kills ' + victim.name + ' at ' + `(${cell?.x}, ${cell?.y})`);
         death(victim);
         if (killer.id == victim.id) {
             return;

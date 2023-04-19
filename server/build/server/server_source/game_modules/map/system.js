@@ -92,7 +92,7 @@ var MapSystem;
     }
     MapSystem.validate_coordinates = validate_coordinates;
     const max_scent = 50;
-    function update(dt, rats_number, elodino_number) {
+    function update(dt, rats_number, elodino_number, npc_humans) {
         // updating rat scent
         for (const cell of cells) {
             if (cell == undefined)
@@ -183,8 +183,23 @@ var MapSystem;
                 }
             }
         }
+        if (npc_humans <= 50) {
+            roll_human();
+        }
     }
     MapSystem.update = update;
+    function roll_human() {
+        let dice = Math.random();
+        if (dice < 0.08) {
+            templates_1.Template.Character.HumanRatHunter(0, 3, "Rat Hunter");
+        }
+        else if (dice < 0.16) {
+            templates_1.Template.Character.HumanCityGuard(0, 3, "Guard");
+        }
+        else if (dice < 0.32) {
+            templates_1.Template.Character.HumanLocalTrader(0, 3, "Local Trader", 'city');
+        }
+    }
     function can_move(pos) {
         if ((pos[0] < 0) || (pos[0] >= size[0])) {
             return false;

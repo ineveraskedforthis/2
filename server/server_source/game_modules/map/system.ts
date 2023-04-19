@@ -100,7 +100,7 @@ export namespace MapSystem {
 
     const max_scent = 50
 
-    export function update(dt: number, rats_number: number, elodino_number: number) {
+    export function update(dt: number, rats_number: number, elodino_number: number, npc_humans: number) {
         
         // updating rat scent
 
@@ -201,6 +201,21 @@ export namespace MapSystem {
                     Template.Character.MageElo(cell.x, cell.y, undefined)
                 }
             }
+        }
+
+        if (npc_humans <= 50) {
+            roll_human()
+        }
+    }
+
+    function roll_human() {
+        let dice = Math.random()
+        if (dice < 0.08) {
+            Template.Character.HumanRatHunter(0, 3, "Rat Hunter")
+        } else if (dice < 0.16) {
+            Template.Character.HumanCityGuard(0, 3, "Guard")
+        } else if (dice < 0.32) {
+            Template.Character.HumanLocalTrader(0, 3, "Local Trader", 'city')
         }
     }
 

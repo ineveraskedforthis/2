@@ -122,6 +122,7 @@ function update(delta: number, http_server: Server) {
 
     let rats = 0
     let elos = 0
+    let humans = 0
 
     for (let character of Data.CharacterDB.list()) {
         if (character.dead()) {
@@ -134,10 +135,14 @@ function update(delta: number, http_server: Server) {
             if (character.race() == 'elo') {
                 elos += 1
             }
+
+            if ((character.race() == 'human')&&(character.user_id == '#')) {
+                humans += 1
+            }
         }
     }
 
-    MapSystem.update(delta, rats, elos)
+    MapSystem.update(delta, rats, elos, humans)
     
     update_timer += delta
     if (update_timer > 50000) {

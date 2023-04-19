@@ -178,7 +178,7 @@ function rest_building(character, budget) {
         let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
         let fatigue_change = character.get_fatigue() - fatigue_target;
         let utility = fatigue_change * fatigue_utility - price * money_utility;
-        if ((utility > best_utility) && (price < budget)) {
+        if ((utility > best_utility) && (price < budget) && (data_1.Data.Buildings.occupied_rooms(item) < building.rooms)) {
             target = item;
             best_utility = utility;
         }
@@ -215,7 +215,7 @@ function update_price_beliefs(character) {
                 character.ai_price_belief_sell.set(order.tag, order.price);
             }
             else {
-                character.ai_price_belief_sell.set(order.tag, order.price / 10 + belief * 9 / 10);
+                character.ai_price_belief_sell.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10));
             }
             // console.log(`i think i can sell ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_sell.get(order.tag)}`)
         }
@@ -225,7 +225,7 @@ function update_price_beliefs(character) {
                 character.ai_price_belief_buy.set(order.tag, order.price);
             }
             else {
-                character.ai_price_belief_buy.set(order.tag, order.price / 10 + belief * 9 / 10);
+                character.ai_price_belief_buy.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10));
             }
             // console.log(`i think i can buy ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_buy.get(order.tag)}`)
         }

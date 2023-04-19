@@ -201,7 +201,7 @@ export function rest_building(character: Character, budget: money) {
 
         let utility = fatigue_change * fatigue_utility - price * money_utility
 
-        if ((utility > best_utility) && (price < budget)) {
+        if ((utility > best_utility) && (price < budget) && (Data.Buildings.occupied_rooms(item) < building.rooms)) {
             target = item
             best_utility = utility
         }
@@ -237,7 +237,7 @@ export function update_price_beliefs(character: Character) {
             if (belief == undefined) {
                 character.ai_price_belief_sell.set(order.tag, order.price)
             } else {
-                character.ai_price_belief_sell.set(order.tag, order.price / 10 + belief * 9 / 10 as money)
+                character.ai_price_belief_sell.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10) as money)
             }
             // console.log(`i think i can sell ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_sell.get(order.tag)}`)
         }
@@ -247,7 +247,7 @@ export function update_price_beliefs(character: Character) {
             if (belief == undefined) {
                 character.ai_price_belief_buy.set(order.tag, order.price)
             } else {
-                character.ai_price_belief_buy.set(order.tag, order.price / 10 + belief * 9 / 10 as money)
+                character.ai_price_belief_buy.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10) as money)
             }
             // console.log(`i think i can buy ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_buy.get(order.tag)}`)
         }

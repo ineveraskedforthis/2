@@ -169,9 +169,9 @@ function create_starting_agents() {
     const GraciStartingCell = system_2.MapSystem.coordinate_to_id(15, 8);
     const EloStartingCell = system_2.MapSystem.coordinate_to_id(18, 4);
     const dummy_model = { chin: 0, mouth: 0, eyes: 0 };
-    for (let i = 1; i < 60; i++) {
-        templates_1.Template.Character.GenericRat(6, 5, undefined);
-    }
+    // for (let i = 1; i < 60; i++) {
+    //     Template.Character.GenericRat(6, 5, undefined)
+    // }
     for (let i = 1; i < 20; i++) {
         templates_1.Template.Character.Graci(15, 8, undefined);
     }
@@ -207,40 +207,6 @@ function create_starting_agents() {
     // monk.changed = true    
 }
 const dummy_model = { chin: 0, mouth: 0, eyes: 0 };
-function create_cook(x, y) {
-    const cell = system_2.MapSystem.coordinate_to_id(x, y);
-    const cook = events_1.Event.new_character(human_1.HumanTemplate, 'Local cook', cell, dummy_model);
-    cook.stash.inc(materials_manager_1.FOOD, 10);
-    cook.savings.inc(500);
-    cook.skills.cooking = 100;
-    cook.perks.meat_master = true;
-    return cook;
-}
-function create_guard(x, y) {
-    const cell = system_2.MapSystem.coordinate_to_id(x, y);
-    let spearman = events_1.Event.new_character(human_1.HumanTemplate, 'Local militia', cell, dummy_model);
-    spearman.skills.polearms = 100;
-    spearman.perks.advanced_polearm = true;
-    let spear = system_1.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
-    let armour = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
-    spearman.equip.data.weapon = spear;
-    spearman.equip.data.armour.body = armour;
-    let index = inventory_events_1.EventInventory.add_item(spearman, spear);
-    inventory_events_1.EventInventory.equip_from_backpack(spearman, index);
-    return spearman;
-}
-function fletcher(x, y) {
-    const cell = system_2.MapSystem.coordinate_to_id(x, y);
-    let fletcher = events_1.Event.new_character(human_1.HumanTemplate, 'Fletcher', cell, dummy_model);
-    fletcher.skills.woodwork = 100;
-    fletcher.perks.fletcher = true;
-    fletcher.skills.ranged = 30;
-    fletcher.stash.inc(materials_manager_1.ARROW_BONE, 50);
-    fletcher.stash.inc(materials_manager_1.RAT_BONE, 3);
-    fletcher.stash.inc(materials_manager_1.WOOD, 1);
-    fletcher.savings.inc(LUMP_OF_MONEY);
-    return fletcher;
-}
 function mage(x, y) {
     const cell = system_2.MapSystem.coordinate_to_id(x, y);
     let mage = events_1.Event.new_character(human_1.HumanTemplate, 'Mage', cell, dummy_model);
@@ -322,22 +288,16 @@ function unarmed_master(x, y, faction_id) {
     return master;
 }
 function city_guard(x, y) {
-    let guard = create_guard(x, y);
-    data_1.Data.Reputation.set(factions_1.Factions.City.id, guard.id, "member");
+    templates_1.Template.Character.HumanCityGuard(x, y, 'Guard');
 }
 function set_up_cooks() {
-    let cook_forest = create_cook(7, 5);
-    data_1.Data.Reputation.set(factions_1.Factions.Steppes.id, cook_forest.id, "member");
-    let cook_port = create_cook(0, 3);
-    data_1.Data.Reputation.set(factions_1.Factions.City.id, cook_port.id, "member");
-    let cook_port2 = create_cook(3, 8);
-    data_1.Data.Reputation.set(factions_1.Factions.City.id, cook_port2.id, "member");
-    let cook_port3 = create_cook(1, 6);
-    data_1.Data.Reputation.set(factions_1.Factions.City.id, cook_port3.id, "member");
+    templates_1.Template.Character.HumanCook(7, 5, 'Cook', 'steppe');
+    templates_1.Template.Character.HumanCook(0, 3, 'Cook', 'city');
+    templates_1.Template.Character.HumanCook(3, 8, 'Cook', 'city');
+    templates_1.Template.Character.HumanCook(1, 6, 'Cook', 'city');
 }
 function set_up_guards_1() {
-    let guard_forest = create_guard(7, 5);
-    data_1.Data.Reputation.set(factions_1.Factions.Steppes.id, guard_forest.id, "member");
+    templates_1.Template.Character.HumanSpearman(7, 5, 'Guard', 'steppe');
     city_guard(0, 3);
     city_guard(0, 3);
     city_guard(3, 8);
@@ -356,12 +316,9 @@ function cancel_cook_orders() {
     }
 }
 function misc_characters() {
-    const fletcher_city = fletcher(3, 3);
-    data_1.Data.Reputation.set(factions_1.Factions.City.id, fletcher_city.id, "member");
-    const fletcher_city_south = fletcher(3, 6);
-    data_1.Data.Reputation.set(factions_1.Factions.City.id, fletcher_city_south.id, "member");
-    const fletcher_forest = fletcher(7, 5);
-    data_1.Data.Reputation.set(factions_1.Factions.Steppes.id, fletcher_forest.id, "member");
+    templates_1.Template.Character.HumanFletcher(3, 3, 'Fletcher', 'city');
+    templates_1.Template.Character.HumanFletcher(3, 6, 'Fletcher', 'city');
+    templates_1.Template.Character.HumanFletcher(7, 5, 'Fletcher', 'steppe');
     const mage_city = mage(1, 6);
     data_1.Data.Reputation.set(factions_1.Factions.Mages.id, mage_city.id, "friend");
     data_1.Data.Reputation.set(factions_1.Factions.Mages.id, mage_city.id, "member");

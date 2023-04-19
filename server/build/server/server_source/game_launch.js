@@ -92,6 +92,7 @@ function update(delta, http_server) {
     system_3.BattleSystem.update(delta * 1000);
     let rats = 0;
     let elos = 0;
+    let humans = 0;
     for (let character of data_1.Data.CharacterDB.list()) {
         if (character.dead()) {
             events_1.Event.death(character);
@@ -103,9 +104,12 @@ function update(delta, http_server) {
             if (character.race() == 'elo') {
                 elos += 1;
             }
+            if ((character.race() == 'human') && (character.user_id == '#')) {
+                humans += 1;
+            }
         }
     }
-    system_2.MapSystem.update(delta, rats, elos);
+    system_2.MapSystem.update(delta, rats, elos, humans);
     update_timer += delta;
     if (update_timer > 50000) {
         save();

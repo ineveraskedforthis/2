@@ -7,6 +7,7 @@ const AI_ROUTINE_RAT_1 = require("./AI_ROUTINE_RAT");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
 const AI_ROUTINE_URBAN_TRADER_1 = require("./AI_ROUTINE_URBAN_TRADER");
+const AI_ROUTINE_GUARD_1 = require("./AI_ROUTINE_GUARD");
 var CampaignAI;
 (function (CampaignAI) {
     function decision(character) {
@@ -50,6 +51,10 @@ var CampaignAI;
             }
             case "urban_trader": {
                 (0, AI_ROUTINE_URBAN_TRADER_1.TraderRoutine)(character);
+                break;
+            }
+            case "urban_guard": {
+                (0, AI_ROUTINE_GUARD_1.GuardUrbanRoutine)(character);
                 break;
             }
         }

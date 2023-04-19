@@ -178,7 +178,7 @@ export namespace UserManagement {
         switch(model){
             case "human":{character = Template.Character.HumanCity(0, 3, name);break};
             case "human_strong":{character = Template.Character.HumanStrong(9, 11, name);break};
-            case "rat":{character = Template.Character.BigRat(7, 5, name);break;}
+            case "rat":{character = Template.Character.BigRat(6, 7, name);break;}
             case "graci":{character = Template.Character.Graci(14, 8, name);break}
             case "elo":{character = Template.Character.MageElo(18, 8, name);break}
             case "test":{character = Template.Character.HumanCity(0, 3, name);break}

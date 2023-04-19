@@ -186,9 +186,9 @@ function create_starting_agents() {
 
     const dummy_model = {chin: 0, mouth: 0, eyes: 0}
 
-    for (let i = 1; i < 60; i++) {
-        Template.Character.GenericRat(6, 5, undefined)
-    }
+    // for (let i = 1; i < 60; i++) {
+    //     Template.Character.GenericRat(6, 5, undefined)
+    // }
 
     for (let i = 1; i < 20; i++) {
         Template.Character.Graci(15, 8, undefined)
@@ -235,48 +235,6 @@ function create_starting_agents() {
 }
 
 const dummy_model = {chin: 0, mouth: 0, eyes: 0}
-function create_cook(x: number, y: number) {
-    const cell = MapSystem.coordinate_to_id(x, y)
-    const cook =  Event.new_character(HumanTemplate, 'Local cook', cell, dummy_model)
-    cook.stash.inc(FOOD, 10)
-    cook.savings.inc(500 as money)
-    cook.skills.cooking = 100
-    cook.perks.meat_master = true
-    return cook
-}
-
-function create_guard(x: number, y: number) {
-    const cell = MapSystem.coordinate_to_id(x, y)
-    let spearman =  Event.new_character(HumanTemplate, 'Local militia', cell, dummy_model)
-    spearman.skills.polearms = 100
-    spearman.perks.advanced_polearm = true
-    let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
-    let armour = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
-    spearman.equip.data.weapon = spear
-    spearman.equip.data.armour.body = armour
-    let index = EventInventory.add_item(spearman, spear)
-    EventInventory.equip_from_backpack(spearman, index)
-
-    return spearman
-}
-
-
-
-function fletcher(x: number, y: number) {
-    const cell = MapSystem.coordinate_to_id(x, y)
-    let fletcher = Event.new_character(HumanTemplate, 'Fletcher', cell, dummy_model)
-
-    fletcher.skills.woodwork = 100
-    fletcher.perks.fletcher = true
-    fletcher.skills.ranged = 30
-
-    fletcher.stash.inc(ARROW_BONE, 50)
-    fletcher.stash.inc(RAT_BONE, 3)
-    fletcher.stash.inc(WOOD, 1)
-
-    fletcher.savings.inc(LUMP_OF_MONEY)
-    return fletcher
-}
 
 function mage(x: number, y: number) {
     const cell = MapSystem.coordinate_to_id(x, y)
@@ -390,32 +348,19 @@ function unarmed_master(x: number, y: number, faction_id: number) {
     return master
 }
 
-
-
 function city_guard(x: number, y: number) {
-    let guard = create_guard(x, y)
-    Data.Reputation.set(Factions.City.id, guard.id, "member")
+    Template.Character.HumanCityGuard(x, y, 'Guard')
 }
 
 function set_up_cooks() {
-    let cook_forest = create_cook(7, 5)
-    Data.Reputation.set(Factions.Steppes.id, cook_forest.id, "member")
-
-    let cook_port = create_cook(0, 3)
-    Data.Reputation.set(Factions.City.id, cook_port.id, "member")
-
-    let cook_port2 = create_cook(3, 8)
-    Data.Reputation.set(Factions.City.id, cook_port2.id, "member")
-
-    let cook_port3 = create_cook(1, 6)
-    Data.Reputation.set(Factions.City.id, cook_port3.id, "member")
-
-
+    Template.Character.HumanCook(7, 5, 'Cook', 'steppe')
+    Template.Character.HumanCook(0, 3, 'Cook', 'city')
+    Template.Character.HumanCook(3, 8, 'Cook', 'city')
+    Template.Character.HumanCook(1, 6, 'Cook', 'city')
 }
 
 function set_up_guards_1() {
-    let guard_forest = create_guard(7, 5)
-    Data.Reputation.set(Factions.Steppes.id, guard_forest.id, "member")
+    Template.Character.HumanSpearman(7, 5, 'Guard', 'steppe')
     city_guard(0, 3)
     city_guard(0, 3)
     city_guard(3, 8)
@@ -437,19 +382,13 @@ function cancel_cook_orders() {
 }
 
 function misc_characters() {
-    const fletcher_city = fletcher(3, 3)
-    Data.Reputation.set(Factions.City.id, fletcher_city.id, "member")
-
-    const fletcher_city_south = fletcher(3, 6)
-    Data.Reputation.set(Factions.City.id, fletcher_city_south.id, "member")
-
-    const fletcher_forest = fletcher(7, 5)
-    Data.Reputation.set(Factions.Steppes.id, fletcher_forest.id, "member")
+    Template.Character.HumanFletcher(3, 3, 'Fletcher', 'city')
+    Template.Character.HumanFletcher(3, 6, 'Fletcher', 'city')
+    Template.Character.HumanFletcher(7, 5, 'Fletcher', 'steppe')
 
     const mage_city = mage(1, 6)
     Data.Reputation.set(Factions.Mages.id, mage_city.id, "friend")
     Data.Reputation.set(Factions.Mages.id, mage_city.id, "member")
-
     armour_master(0, 3, Factions.City.id)
 }
 

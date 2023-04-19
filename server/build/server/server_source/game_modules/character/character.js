@@ -15,7 +15,7 @@ class Character {
         this.cell_id = cell_id;
         this.next_cell = [0, 0];
         this.name = name;
-        this.archetype = archetype;
+        this.archetype = Object.assign({}, archetype);
         this.current_building = undefined;
         this.equip = new equip_1.Equip();
         this.stash = new stash_1.Stash();

@@ -62,7 +62,8 @@ export class Character {
 
         this.name = name
 
-        this.archetype = archetype
+        this.archetype = Object.assign({}, archetype)
+        
         this.current_building = undefined
 
         this.equip = new Equip()

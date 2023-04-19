@@ -73,7 +73,7 @@ export namespace Event {
     }
 
     export function move(character: Character, new_cell: Cell) {
-        // console.log('Character moves to ' + new_cell.x + ' ' + new_cell.y)
+        // console.log(`Character ${character.name} moves to ${new_cell.x} ${new_cell.y}`)
         const old_cell = Convert.character_to_cell(character)
         Unlink.character_and_cell(character, old_cell)
         Link.character_and_cell(character, new_cell)
@@ -112,11 +112,14 @@ export namespace Event {
 
     export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant|undefined) {
         console.log('creating new character')
-        console.log(name)
         let character = CharacterSystem.template_to_character(template, name, starting_cell)
         if (model == undefined) model = {chin: 0, mouth: 0, eyes: 0}
         character.set_model_variation(model)
         const cell = MapSystem.SAFE_id_to_cell(starting_cell)
+        console.log(character.name)
+        console.log(template.archetype)
+        console.log(cell.x, cell.y)
+        console.log(character.ai_map())
         Link.character_and_cell(character, cell)
 
         Data.CharacterDB.save()
@@ -434,7 +437,8 @@ export namespace Event {
     }
 
     export function kill(killer: Character, victim: Character) {
-        console.log(killer.name + ' kills ' + victim.name)
+        let cell = MapSystem.id_to_cell(killer.cell_id)
+        console.log(killer.name + ' kills ' + victim.name + ' at ' + `(${cell?.x}, ${cell?.y})`)
         death(victim)
 
         if (killer.id == victim.id) {

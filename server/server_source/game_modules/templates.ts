@@ -4,13 +4,13 @@ import { Event } from "./events/events"
 import { Factions } from "./factions"
 import { BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "./items/items_set_up"
 import { ItemSystem } from "./items/system"
-import { ZAZ } from "./manager_classes/materials_manager"
+import { ARROW_BONE, FOOD, RAT_BONE, WOOD, ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
 import { EloTemplate } from "./races/elo"
 import { GraciTemplate } from "./races/graci"
 import { HumanStrongTemplate, HumanTemplate } from "./races/human"
 import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/rat"
-import { ModelVariant } from "./types"
+import { ModelVariant, money } from "./types"
 
 export namespace Template {
     export namespace Character {
@@ -55,8 +55,11 @@ export namespace Template {
             return human
         }
 
-        export function HumanSpearman(x: number, y: number, name: string|undefined) {
-            let human = HumanSteppe(x, y, undefined)
+        export function HumanSpearman(x: number, y: number, name: string|undefined, faction: 'steppe'|'city') {
+            switch(faction) {
+                case "steppe":{var human = HumanSteppe(x,y, name);break}
+                case "city":{var human = HumanCity(x, y, name);break}
+            }
             
             human.skills.polearms = 60
             human.skills.evasion += 10
@@ -73,11 +76,59 @@ export namespace Template {
         }
 
         export function HumanRatHunter(x: number, y: number, name: string|undefined) {
-            let human = HumanSpearman(x, y, name)
+            let human = HumanSpearman(x, y, name, 'steppe')
             human.archetype.ai_map = 'rat_hunter'
             human.skills.skinning += 20
             human.skills.hunt += 20
             return human
+        }
+
+        export function HumanCook(x: number, y: number, name: string|undefined, faction: 'steppe'|'city') {
+            switch(faction) {
+                case "steppe":{var human = HumanSteppe(x,y, name);break}
+                case "city":{var human = HumanCity(x, y, name);break}
+            }
+
+            human.stash.inc(FOOD, 10)
+            human.savings.inc(500 as money)
+            human.skills.cooking = 70
+            human.perks.meat_master = true
+            return human
+        }
+
+        export function HumanFletcher(x: number, y: number, name: string|undefined, faction: 'steppe'|'city') {
+            switch(faction) {
+                case "steppe":{var human = HumanSteppe(x,y, name);break}
+                case "city":{var human = HumanCity(x, y, name);break}
+            }
+
+            human.skills.woodwork = 80
+            human.perks.fletcher = true
+            human.skills.ranged = 30
+
+            human.stash.inc(ARROW_BONE, 50)
+            human.stash.inc(RAT_BONE, 3)
+            human.stash.inc(WOOD, 1)
+
+            human.savings.inc(500 as money)
+            return human
+        }
+
+        export function HumanCityGuard(x: number, y: number, name: string|undefined) {
+            let human = HumanSpearman(x, y, name, 'city')
+            human.archetype.ai_map = 'urban_guard'
+            human.skills.polearms += 10
+            return human
+        }
+
+        export function HumanLocalTrader(x: number, y: number, name: string|undefined, faction:'city'|'steppe'){
+            switch(faction) {
+                case "steppe":{var human = HumanSteppe(x,y, name);break}
+                case "city":{var human = HumanCity(x, y, name);break}
+            }
+
+            human.archetype.ai_map = 'urban_trader'
+            human.savings.inc(800 as money)
         }
 
         export function GenericRat(x: number, y: number, name:string|undefined) {
