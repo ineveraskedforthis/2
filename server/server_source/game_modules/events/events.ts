@@ -111,15 +111,15 @@ export namespace Event {
     }
 
     export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant|undefined) {
-        console.log('creating new character')
+        // console.log('creating new character')
         let character = CharacterSystem.template_to_character(template, name, starting_cell)
         if (model == undefined) model = {chin: 0, mouth: 0, eyes: 0}
         character.set_model_variation(model)
         const cell = MapSystem.SAFE_id_to_cell(starting_cell)
-        console.log(character.name)
-        console.log(template.archetype)
-        console.log(cell.x, cell.y)
-        console.log(character.ai_map())
+        // console.log(character.name)
+        // console.log(template.archetype)
+        // console.log(cell.x, cell.y)
+        // console.log(character.ai_map())
         Link.character_and_cell(character, cell)
 
         Data.CharacterDB.save()

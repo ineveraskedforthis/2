@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.GRACI_HAIR_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.ELODINO_DRESS_ARGUMENT = exports.BONE_ARMOUR_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.WOODEN_MACE_ARGUMENT = exports.SWORD_ARGUMENT = exports.BONE_DAGGER_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
+exports.CLOTH_HELMET_ARGUMENT = exports.CLOTH_ARMOUR_ARGUMENT = exports.CLOTH_GLOVES_ARGUMENT = exports.RAT_SKIN_GLOVES_ARGUMENT = exports.RAT_SKIN_BOOTS_ARGUMENT = exports.RAT_SKULL_HELMET_ARGUMENT = exports.GRACI_HAIR_ARGUMENT = exports.RAT_SKIN_HELMET_ARGUMENT = exports.ELODINO_DRESS_ARGUMENT = exports.BONE_ARMOUR_ARGUMENT = exports.RAT_SKIN_ARMOUR_ARGUMENT = exports.RAT_SKIN_PANTS_ARGUMENT = exports.WOODEN_MACE_ARGUMENT = exports.SWORD_ARGUMENT = exports.BONE_DAGGER_ARGUMENT = exports.BONE_SPEAR_ARGUMENT = exports.SPEAR_ARGUMENT = exports.BASIC_BOW_ARGUMENT = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const Damage_1 = require("../Damage");
 const system_1 = require("./system");
@@ -15,6 +15,7 @@ const bone = materials_manager_1.materials.index_to_material(materials_manager_1
 const elodino = materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH);
 const steel = materials_manager_1.materials.index_to_material(materials_manager_1.STEEL);
 const graci_hair = materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR);
+const cloth = materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE);
 const empty_resists = new Damage_1.Damage();
 exports.BASIC_BOW_ARGUMENT = {
     durability: 100,
@@ -178,6 +179,39 @@ exports.RAT_SKIN_GLOVES_ARGUMENT = {
     weapon_tag: 'twohanded',
     model_tag: 'rat_skin_gloves',
     resists: base_resists(skin, 'arms'),
+    damage: new Damage_1.Damage(),
+    range: 1
+};
+exports.CLOTH_GLOVES_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'arms',
+    material: cloth,
+    weapon_tag: 'twohanded',
+    model_tag: 'cloth_gloves',
+    resists: base_resists(cloth, 'arms'),
+    damage: new Damage_1.Damage(),
+    range: 1
+};
+exports.CLOTH_ARMOUR_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'body',
+    material: cloth,
+    weapon_tag: 'twohanded',
+    model_tag: 'cloth_armour',
+    resists: base_resists(cloth, 'body'),
+    damage: new Damage_1.Damage(),
+    range: 1
+};
+exports.CLOTH_HELMET_ARGUMENT = {
+    durability: 100,
+    affixes: [],
+    slot: 'head',
+    material: cloth,
+    weapon_tag: 'twohanded',
+    model_tag: 'cloth_helmet',
+    resists: base_resists(cloth, 'head'),
     damage: new Damage_1.Damage(),
     range: 1
 };

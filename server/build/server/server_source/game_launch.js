@@ -14,6 +14,7 @@ const events_1 = require("./game_modules/events/events");
 const systems_communication_1 = require("./game_modules/systems_communication");
 const system_3 = require("./game_modules/battle/system");
 const events_2 = require("./game_modules/battle/events");
+require("./game_modules/craft/craft");
 const gameloop = require('node-gameloop');
 var shutdown = false;
 function launch(http_server) {

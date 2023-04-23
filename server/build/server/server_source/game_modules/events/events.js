@@ -95,16 +95,16 @@ var Event;
     }
     Event.move = move;
     function new_character(template, name, starting_cell, model) {
-        console.log('creating new character');
+        // console.log('creating new character')
         let character = system_3.CharacterSystem.template_to_character(template, name, starting_cell);
         if (model == undefined)
             model = { chin: 0, mouth: 0, eyes: 0 };
         character.set_model_variation(model);
         const cell = system_4.MapSystem.SAFE_id_to_cell(starting_cell);
-        console.log(character.name);
-        console.log(template.archetype);
-        console.log(cell.x, cell.y);
-        console.log(character.ai_map());
+        // console.log(character.name)
+        // console.log(template.archetype)
+        // console.log(cell.x, cell.y)
+        // console.log(character.ai_map())
         systems_communication_1.Link.character_and_cell(character, cell);
         data_1.Data.CharacterDB.save();
         return character;

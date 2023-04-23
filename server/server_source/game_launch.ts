@@ -9,6 +9,7 @@ import { SocketManager } from "./game_modules/client_communication/socket_manage
 import { UserManagement } from "./game_modules/client_communication/user_manager";
 
 
+
 // import { http, io_type } from "./server";
 import { ActionManager } from "./game_modules/actions/action_manager";
 import { Auth } from "./game_modules/client_communication/network_actions/auth";
@@ -22,7 +23,7 @@ import { EventMarket } from "./game_modules/events/market";
 import { BattleEvent } from "./game_modules/battle/events";
 import { convertTypeAcquisitionFromJson } from "typescript";
 
-
+import "./game_modules/craft/craft"
 
 
 const gameloop = require('node-gameloop');

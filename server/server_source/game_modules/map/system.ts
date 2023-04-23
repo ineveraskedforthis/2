@@ -203,7 +203,7 @@ export namespace MapSystem {
             }
         }
 
-        if (npc_humans <= 50) {
+        if (npc_humans <= 80) {
             roll_human()
         }
     }

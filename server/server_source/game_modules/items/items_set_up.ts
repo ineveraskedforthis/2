@@ -1,5 +1,5 @@
 import { equip_slot } from "../../../../shared/inventory";
-import { ELODINO_FLESH, GRACI_HAIR, materials, RAT_BONE, RAT_SKIN, STEEL, WOOD } from "../manager_classes/materials_manager";
+import { ELODINO_FLESH, GRACI_HAIR, materials, RAT_BONE, RAT_SKIN, STEEL, TEXTILE, WOOD } from "../manager_classes/materials_manager";
 import { Damage } from "../Damage";
 import { ItemJson } from "./item";
 import { ITEM_MATERIAL } from "./ITEM_MATERIAL";
@@ -17,6 +17,7 @@ const bone = materials.index_to_material(RAT_BONE)
 const elodino = materials.index_to_material(ELODINO_FLESH)
 const steel = materials.index_to_material(STEEL)
 const graci_hair = materials.index_to_material(GRACI_HAIR)
+const cloth = materials.index_to_material(TEXTILE)
 const empty_resists = new Damage()
 
 export const BASIC_BOW_ARGUMENT: ItemJson = {
@@ -199,3 +200,38 @@ export const RAT_SKIN_GLOVES_ARGUMENT: ItemJson = {
     range: 1
 }
 
+export const CLOTH_GLOVES_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'arms',
+    material: cloth,
+    weapon_tag: 'twohanded',
+    model_tag: 'cloth_gloves',
+    resists: base_resists(cloth, 'arms'),
+    damage: new Damage(),
+    range: 1
+}
+
+export const CLOTH_ARMOUR_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'body',
+    material: cloth,
+    weapon_tag: 'twohanded',
+    model_tag: 'cloth_armour',
+    resists: base_resists(cloth, 'body'),
+    damage: new Damage(),
+    range: 1
+}
+
+export const CLOTH_HELMET_ARGUMENT: ItemJson = {
+    durability: 100,
+    affixes: [],
+    slot: 'head',
+    material: cloth,
+    weapon_tag: 'twohanded',
+    model_tag: 'cloth_helmet',
+    resists: base_resists(cloth, 'head'),
+    damage: new Damage(),
+    range: 1
+}

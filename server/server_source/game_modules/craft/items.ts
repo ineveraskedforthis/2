@@ -12,8 +12,11 @@ import {
     BONE_SPEAR_ARGUMENT,
     SPEAR_ARGUMENT,
     SWORD_ARGUMENT,
-    WOODEN_MACE_ARGUMENT} from "../items/items_set_up"
-import { RAT_SKIN, ELODINO_FLESH, RAT_BONE, GRACI_HAIR, STEEL, WOOD } from "../manager_classes/materials_manager"
+    WOODEN_MACE_ARGUMENT,
+    CLOTH_ARMOUR_ARGUMENT,
+    CLOTH_GLOVES_ARGUMENT,
+    CLOTH_HELMET_ARGUMENT} from "../items/items_set_up"
+import { RAT_SKIN, ELODINO_FLESH, RAT_BONE, GRACI_HAIR, STEEL, WOOD, TEXTILE } from "../manager_classes/materials_manager"
 import { new_craft_item } from "./CraftItem"
 
 export namespace CraftItem {
@@ -54,6 +57,30 @@ export namespace CraftItem {
                 [{skill: 'clothier', difficulty: 20}]
             )
     }
+
+    export namespace Cloth {
+        export const armour = 
+            new_craft_item(
+                'cloth_armour',
+                [{material: TEXTILE, amount: 10}],
+                CLOTH_ARMOUR_ARGUMENT,
+                [{skill: 'clothier', difficulty: 50}]
+            )
+        export const gloves = 
+            new_craft_item(
+                'cloth_gloves',
+                [{material: TEXTILE, amount: 3}],
+                CLOTH_GLOVES_ARGUMENT,
+                [{skill: 'clothier', difficulty: 50}]
+            )
+        export const helmet = 
+            new_craft_item(
+                'cloth_helmet',
+                [{material: TEXTILE, amount: 5}],
+                CLOTH_HELMET_ARGUMENT,
+                [{skill: 'clothier', difficulty: 50}]
+            )
+    }    
 
     export const elodino_dress = 
         new_craft_item(

@@ -14,6 +14,12 @@ var CraftItem;
         RatSkin.pants = (0, CraftItem_1.new_craft_item)('rat_skin_pants', [{ material: materials_manager_1.RAT_SKIN, amount: 8 }], items_set_up_1.RAT_SKIN_PANTS_ARGUMENT, [{ skill: 'clothier', difficulty: 20 }]);
         RatSkin.boots = (0, CraftItem_1.new_craft_item)('rat_skin_boots', [{ material: materials_manager_1.RAT_SKIN, amount: 8 }], items_set_up_1.RAT_SKIN_BOOTS_ARGUMENT, [{ skill: 'clothier', difficulty: 20 }]);
     })(RatSkin = CraftItem.RatSkin || (CraftItem.RatSkin = {}));
+    let Cloth;
+    (function (Cloth) {
+        Cloth.armour = (0, CraftItem_1.new_craft_item)('cloth_armour', [{ material: materials_manager_1.TEXTILE, amount: 10 }], items_set_up_1.CLOTH_ARMOUR_ARGUMENT, [{ skill: 'clothier', difficulty: 50 }]);
+        Cloth.gloves = (0, CraftItem_1.new_craft_item)('cloth_gloves', [{ material: materials_manager_1.TEXTILE, amount: 3 }], items_set_up_1.CLOTH_GLOVES_ARGUMENT, [{ skill: 'clothier', difficulty: 50 }]);
+        Cloth.helmet = (0, CraftItem_1.new_craft_item)('cloth_helmet', [{ material: materials_manager_1.TEXTILE, amount: 5 }], items_set_up_1.CLOTH_HELMET_ARGUMENT, [{ skill: 'clothier', difficulty: 50 }]);
+    })(Cloth = CraftItem.Cloth || (CraftItem.Cloth = {}));
     CraftItem.elodino_dress = (0, CraftItem_1.new_craft_item)('elodino_dress', [{ material: materials_manager_1.ELODINO_FLESH, amount: 4 }], items_set_up_1.ELODINO_DRESS_ARGUMENT, [{ skill: 'clothier', difficulty: 50 }]);
     CraftItem.graci_hair = (0, CraftItem_1.new_craft_item)('graci_hair', [{ material: materials_manager_1.GRACI_HAIR, amount: 1 }], items_set_up_1.GRACI_HAIR_ARGUMENT, [{ skill: 'clothier', difficulty: 5 }]);
     let Bone;
