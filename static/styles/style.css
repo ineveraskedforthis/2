@@ -75,7 +75,7 @@
 }
 
 #market_tab {
-    overflow: auto;
+    overflow: hidden;
 }
 
 

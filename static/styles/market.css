@@ -31,7 +31,7 @@
 #market > .market_body {
     /* position: absolute; */
     top: 20px;
-    /* height: calc(100% - 20px); */
+    height: calc(100% - 42px);
     width: 100%;
     /* padding: 2px; */
     flex: 1;
