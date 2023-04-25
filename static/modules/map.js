@@ -99,6 +99,7 @@ export function init_map_control(map, globals) {
 
     map.canvas.onmouseup = event => {
         event.preventDefault()
+        // let mouse_pos = {x: event.screenX, y: event.screenY}
         let mouse_pos = get_pos_in_canvas(map.canvas, event);
         let selected_hex = map.get_hex(mouse_pos.x, mouse_pos.y);
         if (event.button == 2) {
@@ -114,8 +115,8 @@ export function init_map_control(map, globals) {
                 map.select_hex(selected_hex[0], selected_hex[1]);
                 let context = document.getElementById('map_context');
 
-                context.style.top = mouse_pos.y + 5 + 'px';
-                context.style.left = mouse_pos.x + 5 + 'px';
+                context.style.top = event.clientY + 5 + 'px';
+                context.style.left = event.clientX + 5 + 'px';
                 context.classList.remove('hidden')
                 globals.map_context_dissapear_time = 1;
             }            

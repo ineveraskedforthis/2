@@ -49,10 +49,11 @@
 }
 
 #map_context {
-    position: absolute;
+    position: fixed;
     top: 10px;
     left: 10px;
     width: 400px;
+    height: auto;
     background: rgba(151, 0, 0, 0.66);
     border: rgb(168, 9, 9) solid 1px;
     overflow: hidden;
