@@ -25,6 +25,11 @@
     border-style: solid;
 }
 
+.game_tab_content {
+    height: calc(100% - 24px);
+    width: 100%;
+}
+
 .game_tab_header:hover {
     background-color: bisque;
     color: black;

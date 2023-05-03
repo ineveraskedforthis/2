@@ -9,6 +9,10 @@ div {
     box-sizing: border-box;
 }
 
+.height-full {
+    height: 100%;
+}
+
 .highlight {
     background-color: rgba(250, 235, 215, 0.505);
 }
