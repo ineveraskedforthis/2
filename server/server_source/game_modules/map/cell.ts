@@ -2,13 +2,18 @@ import { CharacterSystem } from "../character/system.js";
 import { cell_id, char_id, order_bulk_id, order_item_id, terrain} from "../types.js";
 import { CellResources, Development } from "../static_data/map_definitions.js";
 import { Convert } from "../systems_communication.js";
+import { CellType } from "./cell_type.js";
+import { Data } from "../data.js";
+import { Building } from "../DATA_LAYOUT_BUILDING.js";
+
+const BUILDINGS_PER_CELL = 10
 
 export class Cell {
     x: number;
     y: number;
     id: cell_id;
 
-    name: string;
+    // name: string;
 
     visited_recently: boolean;
     last_visit: number
@@ -16,10 +21,9 @@ export class Cell {
 
     market_scent: number 
     
-
-    development: Development;
-    resources: CellResources;
-    terrain: terrain;
+    // development: Development;
+    // resources: CellResources;
+    // terrain: terrain;
 
     changed_characters: boolean
     characters_set: Set<char_id>
@@ -28,45 +32,43 @@ export class Cell {
     // orders_bulk: Set<order_bulk_id>
     // orders_item: Set<order_item_id>
 
-    constructor(id: cell_id, x: number, y:number, name:string, development: Development, res: CellResources, terrain: terrain) {
+    constructor(id: cell_id, x: number, y:number, name:string, type: CellType, create_buildings: boolean) {
         this.id = id
         this.x = x
         this.y = y
 
-        this.name = name;
+        // this.name = name;
         this.visited_recently = false;
         this.last_visit = 0;
         this.changed_characters = true
 
-        // this.orders_bulk = new Set()
-        // this.orders_item = new Set()
         this.characters_set = new Set()
         this.saved_characters_list = []
-        
-
-        if (development == undefined) {
-            this.development = {rural: 0, urban: 0, wild: 0, ruins: 0, wastelands: 0};
-        } else {
-            this.development = development
-        }
-
+    
         this.rat_scent = 0
-        if (this.development.rats == 1) {
-            this.rat_scent = 100
-        }
-
         this.market_scent = 0
 
-        if (res == undefined) {
-            this.resources = {water: false, prey: false, forest: false, fish: false}
-        } else {
-            this.resources = res
-        }
+        switch(type) {
+            case CellType.Sea:{break}
+            case CellType.Steppe:{
+                for (let i = 0; i < BUILDINGS_PER_CELL; i++) {
+                    let steppe:Building = {
+                        cell_id: id,
+                        durability: 100,
 
-        if (terrain == undefined ) {
-            this.terrain = 'void'
-        } else {
-            this.terrain = terrain
+                    }
+                    Data.Buildings.create()
+                }
+                Data.Buildings
+            }
+            case CellType.Forest:
+            case CellType.Rupture:
+            case CellType.Coast:
+            case CellType.RatLair:
+            case CellType.ElodinoCity:
+            case CellType.HumanCity:
+            case CellType.HumanMarket:
+            case CellType.HumanVillage:
         }
     }
 

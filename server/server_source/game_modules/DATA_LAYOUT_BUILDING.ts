@@ -4,8 +4,6 @@ export interface Building {
     cell_id: cell_id,
     durability: number,
     rooms: number,
-    kitchen: number,
-    workshop: number,
     type: BuildingType,
     room_cost: money
 }
@@ -16,4 +14,7 @@ export const enum BuildingType {
     HumanHouse = 'human_house',
     RatLair = 'rat_lair',
     ElodinoHouse = 'elodino_house',
+    LandPlot = 'land_plot',
+    ForestPlot = 'forest_plot',
+    FarmPlot = 'farm_plot'
 }

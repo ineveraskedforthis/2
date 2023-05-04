@@ -10,6 +10,7 @@ import { Template } from "../templates";
 import { trim } from "../calculations/basic_functions";
 import { Convert } from "../systems_communication";
 import { MEAT } from "../manager_classes/materials_manager";
+import { Building } from "../DATA_LAYOUT_BUILDING";
 
 var size:world_dimensions = [0, 0]
 var max_direction:number = 30

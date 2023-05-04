@@ -141,8 +141,8 @@ export function migrate(current_version:number, target_version:number) {
             durability: 100,
             type: BuildingType.Inn,
             rooms: 4,
-            kitchen: 100,
-            workshop: 0,
+            // kitchen: 100,
+            // workshop: 0,
             room_cost: 5 as money
         }
         let building_id = Data.Buildings.create(building)
@@ -397,9 +397,9 @@ function fix_factions() {
     for (let character of Data.CharacterDB.list()) {
         if (character.race() == 'elo') {
             Data.Reputation.set(Factions.Elodinos.id, character.id, "member")
-            if (Convert.character_to_cell(character).development.wild == 0) {
+            // if (Convert.character_to_cell(character).development.wild == 0) {
                 Event.move(character, EloStartingCell as Cell)
-            }
+            // }
         }
         if (character.race() == 'graci') {
             Data.Reputation.set(Factions.Graci.id, character.id, "member")
