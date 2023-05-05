@@ -1,6 +1,6 @@
 // THIS MODULE MUST BE IMPORTED FIRST
 
-import fs from "fs"
+import fs, { read } from "fs"
 import path from "path"
 import { SAVE_GAME_PATH } from "../SAVE_GAME_PATH"
 import { battle_id } from "../../../shared/battle_data"
@@ -8,9 +8,19 @@ import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
 import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
-import { cell_id, char_id, building_id, order_bulk_id, order_item_id } from "./types"
+import { cell_id, char_id, building_id, order_bulk_id, order_item_id, world_dimensions } from "./types"
 import { building_from_string, character_to_string, item_from_string, string_to_character } from "./strings_management"
 import { Building } from "./DATA_LAYOUT_BUILDING"
+import { Cell } from "./map/DATA_LAYOUT_CELL"
+// import { Cell } from "./map/cell"
+
+
+
+var world_size:world_dimensions = [0, 0]
+var max_direction = 30
+const possible_directions = [[0, 1], [0 ,-1],[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
+
+
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
@@ -60,24 +70,18 @@ var cell_to_buildings: Map<cell_id, Set<building_id>> = new Map()
 var id_to_building: Map<building_id, Building> = new Map()
 var building_to_occupied_rooms: Map<building_id, number> = new Map()
 
+var cells: Cell[] = []
+var id_to_cell: Map<cell_id, Cell> = new Map()
 
-// class EntityData<type, id_type extends number & {__brand: string}> {
-//     list: type[]
-//     dict: {[_ in id_type]: type}
+var cell_to_characters_set: Map<cell_id, Set<char_id>> = new Map()
 
-//     constructor() {
-//         this.list = []
-//         this.dict = {}
-//     }
-// }
-
-// const X = EntityData<Character, char_id>
 const save_path = 
 {
     REPUTATION: path.join(SAVE_GAME_PATH, 'reputation.txt'),
     BUILDINGS: path.join(SAVE_GAME_PATH, 'housing.txt'),
     BUILDINGS_OWNERSHIP: path.join(SAVE_GAME_PATH, 'housing_ownership.txt'),
-    CHARACTERS: path.join(SAVE_GAME_PATH, 'characters.txt')
+    CHARACTERS: path.join(SAVE_GAME_PATH, 'characters.txt'),
+    CELLS: path.join(SAVE_GAME_PATH, 'cells.txt')
 }
 
 const save_path_bulk = path.join(SAVE_GAME_PATH, 'bulk_market.txt')
@@ -105,6 +109,7 @@ export namespace Data {
         Reputation.load(save_path.REPUTATION)
         Buildings.load(save_path.BUILDINGS)
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP)
+        Cells.load(save_path.CELLS)
     }
     export function save() {
         CharacterDB.save()
@@ -113,10 +118,90 @@ export namespace Data {
         Reputation.save(save_path.REPUTATION)
         Buildings.save(save_path.BUILDINGS)
         Buildings.save_ownership(save_path.BUILDINGS_OWNERSHIP)
+        Cells.save(save_path.CELLS)
+    }
+
+    export namespace Connection {
+        export function character_cell(character: char_id, cell: cell_id) {
+            let character_object = CharacterDB.from_id(character)
+            let old_cell = character_object.cell_id
+            character_object.cell_id = cell 
+
+            let set = cell_to_characters_set.get(cell)
+            if (set == undefined) {
+                cell_to_characters_set.set(cell, new Set([character]))
+            } else {
+                set.add(character)
+            }
+
+            cell_to_characters_set.get(old_cell)?.delete(character)
+        }
+    }
+
+    export namespace World {
+        export function load() {
+            
+        }
+
+        export function set_world_dimensions(size: world_dimensions) {
+            world_size = size
+            max_direction = Math.max(size[0], size[1])
+        }
+
+        export function get_world_dimensions() {
+            return world_size
+        }
+
+        export function 
+    }
+
+    export namespace Cells {
+        export function save(save_path: string) {
+            let str = '';
+
+            id_to_cell.forEach((value, key) => {
+                str += JSON.stringify({id: key, cell: value}) + '\n' 
+            })
+
+            fs.writeFileSync(save_path, str)
+        }
+
+        export function load(save_path: string) {
+            console.log('loading map...')
+
+            for (let line of read_lines(save_path)) {
+                if (line == '') continue
+
+                let {id, cell}:{id: cell_id, cell: Cell} = JSON.parse(line)
+                set_data(id, cell)
+            }
+        }
+
+        export function set_data(id: cell_id, cell: Cell) {
+            cells.push(cell)
+            id_to_cell.set(id, cell)
+        }
+
+        export function get_characters_set_from_cell(cell: cell_id) {
+            return cell_to_characters_set.get(cell)
+        }
+
+        export function get_characters_list_from_cell(cell: cell_id) {
+            let set = get_characters_set_from_cell(cell)
+            if (set == undefined) return []
+            return Array.from(set)
+        }
+
+        export function list() {
+            return cells
+        }
+
+        export function from_id(cell: cell_id) {
+            return id_to_cell.get(cell)
+        }
     }
 
     export namespace Buildings {
-
         export function load(save_path: string) {
             console.log('loading buildings')
             for (let line of read_lines(save_path)) {
@@ -371,6 +456,7 @@ export namespace Data {
                 const character = string_to_character(line)
                 Data.CharacterDB.set(character.id, character)
                 Data.CharacterDB.set_id(Math.max(character.id, Data.CharacterDB.id()) as char_id)
+                Connection.character_cell(character.id, character.cell_id)
             }
             loaded_flag.Characters = true
             console.log('characters loaded')

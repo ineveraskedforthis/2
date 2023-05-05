@@ -5,44 +5,48 @@ import { Event } from "../events/events";
 import { Factions } from "../factions";
 import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
 import { cell_id, world_dimensions } from "../types";
-import { Cell} from "./cell";
+// import { Cell} from "./cell";
 import { Template } from "../templates";
 import { trim } from "../calculations/basic_functions";
 import { Convert } from "../systems_communication";
 import { MEAT } from "../manager_classes/materials_manager";
 import { Building } from "../DATA_LAYOUT_BUILDING";
+import { Cell } from "./DATA_LAYOUT_CELL";
 
-var size:world_dimensions = [0, 0]
-var max_direction:number = 30
-var cells:(Cell|undefined)[] = []
+// var size:world_dimensions = [0, 0]
+// var max_direction:number = 30
 
-const dp = [[0, 1], [0 ,-1],[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
+// const dp = 
 
 export namespace MapSystem {
-    export function get_cells() {
-        return cells
+    export function cells() {
+        return Data.Cells.list()
     }
 
-    export function load() {
-        console.log('loading map')
-        size = WORLD_SIZE
-        max_direction = Math.max(size[0], size[1])
-        const development = STARTING_DEVELOPMENT
-        const resources = STARTING_RESOURCES
-        const terrain = STARTING_TERRAIN
+    export function initial_load() {
+        console.log('loading map')        
+        // const development = STARTING_DEVELOPMENT
+        // const resources = STARTING_RESOURCES
+        // const terrain = STARTING_TERRAIN
+
+        let size = Data.World.get_world_dimensions()
 
         for (let x = 0; x < size[0]; x++) {
             for (let y = 0; y < size[1]; y++) {
-                const string = x + '_' + y
                 const id = coordinate_to_id(x, y)
-                const tmp = terrain[x]
-                if (tmp == undefined) continue
-                const cell = new Cell(coordinate_to_id(x, y), x, y, string, development[string], resources[string], tmp[y])
-                cells[id] = cell
+                const cell: Cell =  {
+                    id: id,
+                    x: x,
+                    y: y,
+                    market_scent: 0,
+                    rat_scent: 0,
+                    rupture: false
+                }
+                Data.Cells.set_data(id, cell)
             }
         }
 
-        console.log('map is loaded')
+        console.log('map is initialised')
     }
 
     export function get_size() {

@@ -1,3 +1,4 @@
+import { CellType } from "../map/cell_type";
 import { terrain, world_dimensions } from "../types"
 
 export interface Development {
@@ -20,6 +21,22 @@ export interface CellResources {
 }
 
 export const WORLD_SIZE:world_dimensions = [27, 27]
+
+
+// export const WORLD_SETUP: {[_ in string]: CellType} = {
+//     // City
+//     '1_3': CellType.HumanMarket,
+//     '1_4': CellType.HumanCity,
+//     '1_5': CellType.HumanCity,
+//     '1_6': CellType.HumanCity,
+
+//     // Village
+//     '2_2': CellType.HumanVillage,
+//     '3_2': CellType.HumanVillage,
+
+
+// }
+
 
 export const STARTING_DEVELOPMENT: {[_ in string]: Development} = {
 

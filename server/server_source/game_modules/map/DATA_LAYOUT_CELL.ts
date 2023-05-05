@@ -1,6 +1,6 @@
 import { cell_id, char_id } from "../types";
 
-export interface CellData {
+export interface Cell {
     id: cell_id
     x: number,
     y: number,

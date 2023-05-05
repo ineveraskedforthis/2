@@ -8,7 +8,7 @@ import { Building } from "../DATA_LAYOUT_BUILDING.js";
 
 const BUILDINGS_PER_CELL = 10
 
-export class Cell {
+export class CellOld {
     x: number;
     y: number;
     id: cell_id;
