@@ -3,5 +3,5 @@ node_modules/
 .eslintrc.js
 .vscode
 *.png~
-*.txt
-save_1
+# *.txt
+save_1/
