@@ -1,14 +1,14 @@
 import { cell_id, money } from "./types";
 
-export interface Building {
+export interface LandPlot {
     cell_id: cell_id,
     durability: number,
     rooms: number,
-    type: BuildingType,
+    type: LandPlotType,
     room_cost: money
 }
 
-export const enum BuildingType {
+export const enum LandPlotType {
     Shack = 'shack',
     Inn = 'inn',
     HumanHouse = 'human_house',

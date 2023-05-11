@@ -27,7 +27,7 @@ export type weapon_attack_tag = weapon_tag | 'noweapon'
 export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
 export const weapon_attack_tags: weapon_attack_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']
 
-export type world_dimensions = [number, number]
+export type world_coordinates = [number, number]
 export type map_position = [number, number]
 export type terrain = 'sea' | 'city' | 'steppe' | 'coast' | 'void'
 

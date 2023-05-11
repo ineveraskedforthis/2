@@ -88,34 +88,34 @@ app.get('/api/:API_KEY/character/:charID', (req: Request, res: Response) => {
     res.json(response)
 })
 
-app.get('/api/:API_KEY/cell/:cellID', (req: Request, res: Response) => {
-    const id = Number(req.params.cellID)
-    // console.log(`request cell ${id}`)
+// app.get('/api/:API_KEY/cell/:cellID', (req: Request, res: Response) => {
+//     const id = Number(req.params.cellID)
+//     // console.log(`request cell ${id}`)
 
-    res.set('Access-Control-Allow-Origin', '*');
-    if (req.params.API_KEY != process.env.API_KEY) {
-        res.json({valid: false})
-        return
-    }
-    if (isNaN(id)) {
-        res.json({valid: false})
-        return
-    }
+//     res.set('Access-Control-Allow-Origin', '*');
+//     if (req.params.API_KEY != process.env.API_KEY) {
+//         res.json({valid: false})
+//         return
+//     }
+//     if (isNaN(id)) {
+//         res.json({valid: false})
+//         return
+//     }
 
-    const cell = MapSystem.id_to_cell(id as cell_id)
-    if (cell == undefined) {
-        res.json({valid: false})
-        return
-    }
-    const response = {
-        valid: true,
-        terrain: cell.terrain,
-        development: cell.development,
-        scent: cell.rat_scent,
-        local_characters: cell.saved_characters_list
-    }    
-    res.json(response)
-})
+//     const cell = MapSystem.id_to_cell(id as cell_id)
+//     if (cell == undefined) {
+//         res.json({valid: false})
+//         return
+//     }
+//     const response = {
+//         valid: true,
+//         terrain: cell.terrain,
+//         development: cell.development,
+//         scent: cell.rat_scent,
+//         local_characters: cell.saved_characters_list
+//     }    
+//     res.json(response)
+// })
 
 // app.get('/api/:API_KEY/cell/terrain/:cellID', (req: Request, res: Response) => {
 //     const id = Number(req.params.cellID)
@@ -146,32 +146,32 @@ app.get('/api/:API_KEY/cell/:cellID', (req: Request, res: Response) => {
 //     res.json(response)
 // })
 
-app.get('/api/:API_KEY/map', (req: Request, res: Response) => {
-    res.set('Access-Control-Allow-Origin', '*');
-    if (req.params.API_KEY != process.env.API_KEY) {
-        res.json({valid: false})
-        return
-    }
+// app.get('/api/:API_KEY/map', (req: Request, res: Response) => {
+//     res.set('Access-Control-Allow-Origin', '*');
+//     if (req.params.API_KEY != process.env.API_KEY) {
+//         res.json({valid: false})
+//         return
+//     }
 
-    const cells = []
-    for (let cell of MapSystem.get_cells()) {
-        if (cell == undefined) continue
+//     const cells = []
+//     for (let cell of MapSystem.get_cells()) {
+//         if (cell == undefined) continue
 
-        cells[cell.id] = {
-            index: cell.id,
-            terrain: cell.terrain,
-            development: cell.development,
-            scent: cell.rat_scent,
-            population: cell.saved_characters_list.length
-        }
-    }
+//         cells[cell.id] = {
+//             index: cell.id,
+//             terrain: cell.terrain,
+//             development: cell.development,
+//             scent: cell.rat_scent,
+//             population: cell.saved_characters_list.length
+//         }
+//     }
 
-    res.json({
-        width: MapSystem.get_size()[0],
-        height: MapSystem.get_size()[1],
-        cells: cells
-    })
-})
+//     res.json({
+//         width: MapSystem.get_size()[0],
+//         height: MapSystem.get_size()[1],
+//         cells: cells
+//     })
+// })
 
 app.get('/', (req:Request, res:Response) => {
     res.sendFile(path.join(__dirname, '../../../../views/index2.html'));

@@ -63,7 +63,7 @@ export function launch(http_server: Server) {
 }
 
 function load() {
-    MapSystem.load()
+    // MapSystem.load()
     Data.load()
     UserManagement.load_users()
     Auth.load()

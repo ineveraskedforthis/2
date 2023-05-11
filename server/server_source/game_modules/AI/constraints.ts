@@ -1,7 +1,9 @@
+import { Cell } from "../map/DATA_LAYOUT_CELL";
 import { MapSystem } from "../map/system";
-import { Cell } from "../map/cell";
+import { cell_id } from "../types";
 
-export function forest_constraints(cell: Cell) {
+
+export function forest_constraints(cell: cell_id) {
     return (cell.development['urban'] < 1)
         && (cell.development['wild'] > 0)
         && (MapSystem.can_move([cell.x, cell.y]));

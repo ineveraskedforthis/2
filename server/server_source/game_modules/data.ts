@@ -2,24 +2,24 @@
 
 import fs, { read } from "fs"
 import path from "path"
-import { SAVE_GAME_PATH } from "../SAVE_GAME_PATH"
+import { DEFAULT_WORLD_PATH, SAVE_GAME_PATH } from "../SAVE_GAME_PATH"
 import { battle_id } from "../../../shared/battle_data"
 import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
 import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
-import { cell_id, char_id, building_id, order_bulk_id, order_item_id, world_dimensions } from "./types"
+import { cell_id, char_id, building_id, order_bulk_id, order_item_id, world_coordinates } from "./types"
 import { building_from_string, character_to_string, item_from_string, string_to_character } from "./strings_management"
-import { Building } from "./DATA_LAYOUT_BUILDING"
+import { LandPlot } from "./DATA_LAYOUT_BUILDING"
 import { Cell } from "./map/DATA_LAYOUT_CELL"
+import { Terrain, string_to_terrain } from "./map/terrain"
 // import { Cell } from "./map/cell"
 
 
 
-var world_size:world_dimensions = [0, 0]
-var max_direction = 30
-const possible_directions = [[0, 1], [0 ,-1],[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
-
+var world_size:world_coordinates = [0, 0]
+var max_direction = 0
+var terrain: Terrain[][] = []
 
 
 var battles_list:Battle[] = []
@@ -67,7 +67,7 @@ var building_to_character: Map<building_id, char_id> = new Map()
 var building_to_cell: Map<building_id, cell_id> = new Map()
 var cell_to_buildings: Map<cell_id, Set<building_id>> = new Map()
 
-var id_to_building: Map<building_id, Building> = new Map()
+var id_to_building: Map<building_id, LandPlot> = new Map()
 var building_to_occupied_rooms: Map<building_id, number> = new Map()
 
 var cells: Cell[] = []
@@ -81,7 +81,10 @@ const save_path =
     BUILDINGS: path.join(SAVE_GAME_PATH, 'housing.txt'),
     BUILDINGS_OWNERSHIP: path.join(SAVE_GAME_PATH, 'housing_ownership.txt'),
     CHARACTERS: path.join(SAVE_GAME_PATH, 'characters.txt'),
-    CELLS: path.join(SAVE_GAME_PATH, 'cells.txt')
+    CELLS: path.join(SAVE_GAME_PATH, 'cells.txt'),
+
+    WORLD_DIMENSIONS: path.join(DEFAULT_WORLD_PATH, 'description.txt'),
+    TERRAIN: path.join(DEFAULT_WORLD_PATH, 'terrain.txt')
 }
 
 const save_path_bulk = path.join(SAVE_GAME_PATH, 'bulk_market.txt')
@@ -103,6 +106,7 @@ function read_lines(file: string) {
 
 export namespace Data {
     export function load() {
+        World.load()
         CharacterDB.load(save_path.CHARACTERS)
         BulkOrders.load()
         ItemOrders.load()
@@ -139,11 +143,66 @@ export namespace Data {
     }
 
     export namespace World {
-        export function load() {
-            
+        export const directions = [[0, 1], [0 ,-1],[1, 0] ,[-1 ,0],[1 ,1],[-1 ,-1]]
+
+        export function coordinate_to_id([x, y]: world_coordinates) {
+            return x * max_direction + y as cell_id
         }
 
-        export function set_world_dimensions(size: world_dimensions) {
+        export function id_to_coordinate(id: cell_id): world_coordinates {
+            let max = max_direction
+            return [Math.floor(id / max), id - Math.floor(id / max) * max]
+        }
+
+        export function load_world_dimensions(path: string) {
+            let data = fs.readFileSync(path).toString().split(' ')
+            world_size[0] = Number(data[0])
+            world_size[1] = Number(data[0])
+            max_direction = Math.max(world_size[0], world_size[1])
+        }
+
+        export function load_terrain(path: string) {
+            terrain = []
+            let lines = read_lines(path)
+            for (let line of lines) {
+                let terrains = line.split(' ')
+                let terrain_row = []
+                for (let terrain in terrains ) {
+                    terrain_row.push(string_to_terrain(terrain))
+                }
+                terrain.push(terrain_row)
+            }
+        }
+
+        export function load_forests(path: string) {
+            terrain = []
+            let lines = read_lines(path)
+            for (let line of lines) {
+                let row = line.split(' ')
+                for (let forest_level in row ) {
+                    for (let i = 0; i < Number(forest_level); i++)
+
+                    cell_id = 
+                    let forest: LandPlot = {
+                        durability: 100,
+                        cell_id: 
+                    }
+                    Buildings.create()
+                    terrain_row.push(string_to_terrain(terrain))
+                }
+            }
+        }
+
+        export function get_terrain() {
+            return terrain
+        }
+
+        export function load() {
+            load_world_dimensions(save_path.WORLD_DIMENSIONS)
+            load_terrain(save_path.TERRAIN)
+        }
+
+        export function set_world_dimensions(size: world_coordinates) {
             world_size = size
             max_direction = Math.max(size[0], size[1])
         }
@@ -152,7 +211,9 @@ export namespace Data {
             return world_size
         }
 
-        export function 
+        export function get_max_dimension() {
+            return max_direction
+        }
     }
 
     export namespace Cells {
@@ -206,7 +267,7 @@ export namespace Data {
             console.log('loading buildings')
             for (let line of read_lines(save_path)) {
                 if (line == '') {continue}
-                let {id, building}:{id: building_id, building: Building} = JSON.parse(line)
+                let {id, building}:{id: building_id, building: LandPlot} = JSON.parse(line)
                 last_id_building = Math.max(id, last_id_building) as building_id
                 set_data(id, building)
             }
@@ -267,13 +328,13 @@ export namespace Data {
             buildings.clear()
         }
 
-        export function create(item: Building) {
+        export function create(item: LandPlot) {
             last_id_building = last_id_building + 1 as building_id
             set_data(last_id_building, item)
             return last_id_building
         }
 
-        function set_data(id: building_id, item: Building) {
+        function set_data(id: building_id, item: LandPlot) {
             building_to_cell.set(id, item.cell_id)
             let temp = cell_to_buildings.get(item.cell_id)
             if (temp == undefined) {
@@ -302,7 +363,7 @@ export namespace Data {
 
 
         export function from_id(id: building_id) {
-            return id_to_building.get(id) as Building
+            return id_to_building.get(id) as LandPlot
         }
 
         export function from_cell_id(id: cell_id) {
