@@ -3,6 +3,7 @@ import { ActionTargeted, CharacterActionResponce } from "../CharacterActionRespo
 import { MapSystem } from "../map/system";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
+import { Data } from "../data";
 
 export const move:ActionTargeted ={
     duration(char: Character) {
@@ -14,7 +15,7 @@ export const move:ActionTargeted ={
             return CharacterActionResponce.IN_BATTLE
         }
         if (MapSystem.can_move(data)) {
-            let [x, y] = MapSystem.id_to_coordinate(char.cell_id)
+            let [x, y] = Data.World.id_to_coordinate(char.cell_id)
             let dx = data[0] - x;
             let dy = data[1] - y;
             if (MapSystem.is_valid_move(dx, dy)) {
@@ -34,7 +35,7 @@ export const move:ActionTargeted ={
 
     result: function (character: Character) {
         if (character.next_cell == undefined) return
-        const new_cell = MapSystem.coordinate_to_cell(character.next_cell)
+        const new_cell = Data.World.coordinate_to_id(character.next_cell)
         if (new_cell == undefined) {
             console.log('something wrong with movement')
             console.log(character.next_cell)

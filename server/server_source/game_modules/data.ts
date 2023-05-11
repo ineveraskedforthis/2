@@ -8,11 +8,13 @@ import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
 import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
-import { cell_id, char_id, building_id, order_bulk_id, order_item_id, world_coordinates } from "./types"
+import { cell_id, char_id, building_id, order_bulk_id, order_item_id, world_coordinates, money } from "./types"
 import { building_from_string, character_to_string, item_from_string, string_to_character } from "./strings_management"
 import { LandPlot } from "./DATA_LAYOUT_BUILDING"
 import { Cell } from "./map/DATA_LAYOUT_CELL"
 import { Terrain, string_to_terrain } from "./map/terrain"
+import { CellType } from "./map/cell_type"
+import { LandPlotType } from "./DATA_LAYOUT_BUILDING"
 // import { Cell } from "./map/cell"
 
 
@@ -84,7 +86,8 @@ const save_path =
     CELLS: path.join(SAVE_GAME_PATH, 'cells.txt'),
 
     WORLD_DIMENSIONS: path.join(DEFAULT_WORLD_PATH, 'description.txt'),
-    TERRAIN: path.join(DEFAULT_WORLD_PATH, 'terrain.txt')
+    TERRAIN: path.join(DEFAULT_WORLD_PATH, 'map_terrain.txt'),
+    FORESTS: path.join(DEFAULT_WORLD_PATH, 'map_forest.txt')
 }
 
 const save_path_bulk = path.join(SAVE_GAME_PATH, 'bulk_market.txt')
@@ -154,6 +157,25 @@ export namespace Data {
             return [Math.floor(id / max), id - Math.floor(id / max) * max]
         }
 
+        export function neighbours(id: cell_id) {
+            let arr = []
+            const [x, y] = id_to_coordinate(id)
+            for (const [s, t] of directions) {
+                const [x1, y1] = [x + s, y + t]
+                if (validate_coordinates([x1, y1])) {
+                    let id = coordinate_to_id([x1, y1])
+                    // arr.push([x1, y1])
+                    arr.push(id)
+                }
+            }
+            return arr
+        }
+
+        export function validate_coordinates([x, y]: world_coordinates): boolean {
+            let size = get_world_dimensions()
+            return (y >= 0) && (x >= 0) && (x < size[0]) && (y < size[1]) 
+        }
+
         export function load_world_dimensions(path: string) {
             let data = fs.readFileSync(path).toString().split(' ')
             world_size[0] = Number(data[0])
@@ -177,21 +199,26 @@ export namespace Data {
         export function load_forests(path: string) {
             terrain = []
             let lines = read_lines(path)
+            let x = 0
             for (let line of lines) {
                 let row = line.split(' ')
+                let y = 0
                 for (let forest_level in row ) {
-                    for (let i = 0; i < Number(forest_level); i++)
+                    let cell_id = coordinate_to_id([x, y])
 
-                    cell_id = 
-                    let forest: LandPlot = {
-                        durability: 100,
-                        cell_id: 
+                    for (let i = 0; i < Number(forest_level); i++) {
+                        let forest: LandPlot = {
+                            durability: 100,
+                            cell_id: cell_id,
+                            type: LandPlotType.ForestPlot,
+                            room_cost: 0 as money
+                        }
+                        Buildings.create(forest)
                     }
-                    Buildings.create()
-                    terrain_row.push(string_to_terrain(terrain))
                 }
             }
         }
+
 
         export function get_terrain() {
             return terrain
@@ -200,6 +227,7 @@ export namespace Data {
         export function load() {
             load_world_dimensions(save_path.WORLD_DIMENSIONS)
             load_terrain(save_path.TERRAIN)
+            load_forests(save_path.FORESTS)
         }
 
         export function set_world_dimensions(size: world_coordinates) {
@@ -259,6 +287,28 @@ export namespace Data {
 
         export function from_id(cell: cell_id) {
             return id_to_cell.get(cell)
+        }
+
+        export function has_forest(cell: cell_id) {
+            let land_plots = Buildings.from_cell_id(cell)
+            if (land_plots == undefined) return false
+            for (let plot_id of land_plots) {
+                let plot = Buildings.from_id(plot_id)
+                if (plot.type != LandPlotType.ForestPlot) continue
+                if (plot.durability > 0) return true
+            }
+        }
+
+        export function forestation(cell: cell_id) {
+            let result = 0
+            let land_plots = Buildings.from_cell_id(cell)
+            if (land_plots == undefined) return 0
+            for (let plot_id of land_plots) {
+                let plot = Buildings.from_id(plot_id)
+                if (plot.type != LandPlotType.ForestPlot) continue
+                result += plot.durability
+            }
+            return result
         }
     }
 

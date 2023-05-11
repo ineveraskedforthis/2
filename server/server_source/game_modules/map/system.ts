@@ -10,7 +10,7 @@ import { Template } from "../templates";
 import { trim } from "../calculations/basic_functions";
 import { Convert } from "../systems_communication";
 import { MEAT } from "../manager_classes/materials_manager";
-import { Building } from "../DATA_LAYOUT_BUILDING";
+// import { Building } from "../DATA_LAYOUT_BUILDING";
 import { Cell } from "./DATA_LAYOUT_CELL";
 import { terrain_can_move } from "./terrain";
 
@@ -69,19 +69,7 @@ export namespace MapSystem {
     //     return cells[id] as Cell
     // }
 
-    export function neighbours(id: cell_id) {
-        let arr = []
-        const [x, y] = id_to_coordinate(id)
-        for (const [s, t] of Data.World.directions) {
-            const [x1, y1] = [x + s, y + t]
-            if (validate_coordinates([x1, y1])) {
-                let id = coordinate_to_id([x1, y1])
-                // arr.push([x1, y1])
-                arr.push(id)
-            }
-        }
-        return arr
-    }
+    
 
     // export function neighbours_cells(id: cell_id): Cell[] {
     //     let arr = []
@@ -96,10 +84,7 @@ export namespace MapSystem {
     //     return arr
     // }
 
-    export function validate_coordinates([x, y]: world_coordinates): boolean {
-        let size = Data.World.get_world_dimensions()
-        return (y >= 0) && (x >= 0) && (x < size[0]) && (y < size[1]) 
-    }
+    
 
     const max_scent = 50
 
@@ -223,7 +208,7 @@ export namespace MapSystem {
     }
 
     export function can_move(pos: [number, number]) {
-        if (!validate_coordinates(pos)) return false 
+        if (!Data.World.validate_coordinates(pos)) return false 
         let terrain = Data.World.get_terrain()
         try {
             return terrain_can_move(terrain[pos[0]][pos[1]])

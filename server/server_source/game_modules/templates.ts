@@ -15,7 +15,7 @@ import { ModelVariant, money } from "./types"
 export namespace Template {
     export namespace Character {
         function Base(template:CharacterTemplate, name: string|undefined, model: ModelVariant|undefined ,x: number, y: number, faction_id: number|undefined) {
-            const cell = MapSystem.coordinate_to_id(x, y)
+            const cell = Data.World.coordinate_to_id([x, y])
             let character = Event.new_character(template, name, cell, model)
             if (faction_id != undefined) Data.Reputation.set(faction_id, character.id, "member")
             return character

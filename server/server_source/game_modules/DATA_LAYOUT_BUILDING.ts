@@ -3,7 +3,7 @@ import { cell_id, money } from "./types";
 export interface LandPlot {
     cell_id: cell_id,
     durability: number,
-    rooms: number,
+    // rooms: number,
     type: LandPlotType,
     room_cost: money
 }
