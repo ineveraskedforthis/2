@@ -1,3 +1,4 @@
+import { rooms } from "../DATA_LAYOUT_BUILDING";
 import { CharacterAction } from "../action_types";
 import { ActionManager } from "../actions/action_manager";
 import { select_max, select_weighted, trim } from "../calculations/basic_functions";
@@ -7,7 +8,8 @@ import { Effect } from "../events/effects";
 import { EventMarket } from "../events/market";
 import { ScriptedValue } from "../events/scripted_values";
 import { FOOD, MEAT, MaterialsManager, RAT_BONE, RAT_SKIN, material_index, materials } from "../manager_classes/materials_manager";
-import { Cell } from "../map/cell";
+import { Cell } from "../map/DATA_LAYOUT_CELL";
+// import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
 import { money } from "../types";
@@ -132,10 +134,10 @@ export function random_walk(char: Character, constraints: (cell: Cell) => boolea
     let possible_moves = []
     for (let d of dp) {      
         let tmp: [number, number] = [d[0] + cell.x, d[1] + cell.y]
-        // let territory = this.world.get_territory(tmp[0], tmp[1])
-        let target = MapSystem.coordinate_to_cell(tmp)
-        if (target != undefined) {
-            if (MapSystem.can_move(tmp) && constraints(target)) {
+        let target_id = Data.World.coordinate_to_id(tmp)
+        let target_cell = Data.Cells.from_id(target_id)
+        if (target_cell != undefined) {
+            if (MapSystem.can_move(tmp) && constraints(cell)) {
                 possible_moves.push(tmp)
             }
         } 
@@ -147,17 +149,20 @@ export function random_walk(char: Character, constraints: (cell: Cell) => boolea
 }
 
 export function rat_walk(character: Character, constraints: (cell: Cell) => boolean) {
-    let cell = Convert.character_to_cell(character)
-    let potential_moves = MapSystem.neighbours_cells(cell.id).map((x) => 
-        {return {item: x, weight: trim(x.rat_scent, 0, 20)}})
+    let cell_ids = Data.World.neighbours(character.cell_id)
+    let potential_moves = cell_ids.map((x) => {   
+        let cell = Data.Cells.from_id(x)
+        return {item: cell, weight: trim(cell.rat_scent, 0, 20)}
+    })
     let target = select_weighted(potential_moves, constraints)
     ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
 }
 
 export function market_walk(character: Character) {
-    let cell = Convert.character_to_cell(character)
-    let potential_moves = MapSystem.neighbours_cells(cell.id).map((x) => {
-        return {item: x, weight: x.market_scent}
+    let cell_ids = Data.World.neighbours(character.cell_id)
+    let potential_moves = cell_ids.map((x) => {   
+        let cell = Data.Cells.from_id(x)
+        return {item: cell, weight: cell.market_scent}
     })
     let target = select_max(potential_moves, simple_constraints)
     ActionManager.start_action(CharacterAction.MOVE, character, [target?.x, target?.y])
@@ -169,12 +174,13 @@ export function urban_walk(character: Character) {
 
 export function rat_go_home(character: Character, constraints: (cell: Cell) => boolean) {
     let cell = Convert.character_to_cell(character)
-    let potential_moves = MapSystem.neighbours_cells(cell.id, ).map((x) => 
+    let potential_moves = Data.World.neighbours(character.cell_id).map((x) => {return Data.Cells.from_id(x)}).map((x) => 
         {return {item: x, weight: x.rat_scent}})
     let target = select_max(potential_moves, constraints)
     if (target != undefined)
     if (cell.rat_scent > target.rat_scent) {
-        ActionManager.start_action(CharacterAction.REST, character, [cell.x, cell.y])
+        rest_building(character, character.savings.get())
+        // ActionManager.start_action(CharacterAction.REST, character, [cell.x, cell.y])
     } else {
         ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
     }
@@ -201,7 +207,7 @@ export function rest_building(character: Character, budget: money) {
 
         let utility = fatigue_change * fatigue_utility - price * money_utility
 
-        if ((utility > best_utility) && (price < budget) && (Data.Buildings.occupied_rooms(item) < building.rooms)) {
+        if ((utility > best_utility) && (price < budget) && (Data.Buildings.occupied_rooms(item) < rooms(building.type))) {
             target = item
             best_utility = utility
         }

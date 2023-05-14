@@ -5,21 +5,21 @@ import { Perks } from "../character/Perks";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 import { Data, character_list } from "../data";
-import { Cell } from "../map/cell";
+// import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
 import { Request } from "../client_communication/network_actions/request";
 import { building_id, cell_id, char_id, money } from "../types";
 import { ScriptedValue } from "./scripted_values";
-import { Building, BuildingType } from "../DATA_LAYOUT_BUILDING";
+import { LandPlot, LandPlotType, rooms } from "../DATA_LAYOUT_BUILDING";
 import { trim } from "../calculations/basic_functions";
+import { Cell } from "../map/DATA_LAYOUT_CELL";
 
 export namespace Effect {
     export namespace Update {
-        export function cell_market(cell: Cell) {
-            const locals = cell.get_characters_list()
+        export function cell_market(cell: cell_id) {
+            const locals = Data.Cells.get_characters_list_from_cell(cell) 
             for (let item of locals) {
-                const id = item.id
-                const local_character = Convert.id_to_character(id)
+                const local_character = Convert.id_to_character(item)
                 UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.MARKET)
             }
         }
@@ -91,7 +91,7 @@ export namespace Effect {
         if (character.current_building != undefined) {
             return "you are already somewhere"
         }
-        if (rooms_not_available >= building.rooms) {
+        if (rooms_not_available >= rooms(building.type)) {
             return "no_rooms"
         }
         if (owner_id == undefined) {
@@ -120,25 +120,24 @@ export namespace Effect {
         character.current_building = undefined
     }
 
-    export function new_building(cell_id: cell_id, type: BuildingType, rooms: number, durability: number) {        
+    export function new_building(cell_id: cell_id, type: LandPlotType, durability: number) {        
         Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
             type: type,
-            rooms: rooms,
-            kitchen: 0,
-            workshop: 0,
             room_cost: 5 as money
         })
     }
 
-    export function building_quality_reduction_roll(building: Building) {
+    export function building_quality_reduction_roll(building: LandPlot) {
+        if (building.type == LandPlotType.ForestPlot) return;
+        if (building.type == LandPlotType.LandPlot) return
         if (Math.random() > 0.9) {
             building.durability = trim(building.durability - 1, 0, 1000)
         }
     }
 
-    export function building_repair(building: Building, x: number) {
+    export function building_repair(building: LandPlot, x: number) {
         building.durability = trim(building.durability + x, 0, 1000)
     }
 

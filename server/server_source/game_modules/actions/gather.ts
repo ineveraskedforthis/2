@@ -7,6 +7,7 @@ import { WOOD, COTTON } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
 import { map_position } from "../types";
 import { ActionTargeted, CharacterActionResponce } from "../CharacterActionResponce";
+import { Data } from "../data";
 
 export const gather_wood: ActionTargeted = {
     duration(char: Character) {
@@ -15,11 +16,11 @@ export const gather_wood: ActionTargeted = {
 
     check: function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
-            let cell = Convert.character_to_cell(char);
+            let cell = char.cell_id;
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            if (cell.can_gather_wood()) {
+            if (Data.Cells.has_forest(cell)) {
                 return CharacterActionResponce.OK
             } else {
                 return CharacterActionResponce.NO_RESOURCE
@@ -50,11 +51,11 @@ export const gather_cotton: ActionTargeted = {
 
     check: function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
-            let cell = Convert.character_to_cell(char);
+            let cell = char.cell_id;
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            if (cell.can_gather_cotton()) {
+            if (Data.Cells.has_cotton(cell)) {
                 return CharacterActionResponce.OK
             } else {
                 return CharacterActionResponce.NO_RESOURCE

@@ -6,13 +6,16 @@ import { Unit } from "../../battle/classes/unit";
 import { BattleSystem } from "../../battle/system";
 import { Character } from "../../character/character";
 import { box, CraftBulk, CraftItem } from "../../craft/crafts_storage";
-import { Cell } from "../../map/cell";
+// import { Cell } from "../../map/cell";
 import { OrderBulkJson } from "../../market/classes";
 import { Damage } from "../../Damage";
 import { Convert } from "../../systems_communication";
 import { UI_Part } from "../causality_graph";
 import { User } from "../user";
 import { UserManagement } from "../user_manager";
+import { Cell } from "../../map/DATA_LAYOUT_CELL";
+import { Data } from "../../data";
+import { cell_id } from "../../types";
 
 export namespace Alerts {
     export function not_enough_to_user(user: User, tag: string, required: number, current: number) {
@@ -180,11 +183,11 @@ export namespace Alerts {
         }
     }
 
-    export function cell_locals(cell: Cell) {
-        const locals = cell.get_characters_list()
+    export function cell_locals(cell: cell_id) {
+        const locals = Data.Cells.get_characters_list_from_cell(cell)
         for (let item of locals) {
-            const id = item.id
-            const local_character = Convert.id_to_character(id)
+            // const id = item.id
+            const local_character = Convert.id_to_character(item)
             const local_user = Convert.character_to_user(local_character)
             if (local_user == undefined) {continue}
             UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)

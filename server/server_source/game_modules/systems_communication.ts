@@ -10,12 +10,13 @@ import { UI_Part } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { Data } from "./data";
-import { Cell } from "./map/cell";
+// import { Cell } from "./map/cell";
 import { MapSystem } from "./map/system";
 import { OrderBulk, OrderItem, OrderItemJson } from "./market/classes";
 import { cell_id, char_id, order_bulk_id, order_item_id, user_online_id } from "./types";
 import { Alerts } from "./client_communication/network_actions/alerts";
 import { BattleSystem } from "./battle/system";
+import { Cell } from "./map/DATA_LAYOUT_CELL";
 
 
 export namespace Convert {
@@ -61,10 +62,10 @@ export namespace Convert {
     }
 
     export function cell_id_to_bulk_orders(id: cell_id): Set<order_bulk_id> {
-        const cell = MapSystem.id_to_cell(id)
-        if (cell == undefined) return new Set();
-        const chars = cell.get_characters_id_set()
+        const chars = Data.Cells.get_characters_set_from_cell(id)
         const result:Set<order_bulk_id> = new Set()
+        if (chars == undefined)
+            return result
         for (let char_id of chars) {
             const char_orders = char_id_to_bulk_orders(char_id)
             for (let [_, order] of char_orders.entries()) {
@@ -75,10 +76,11 @@ export namespace Convert {
     }
 
     export function cell_id_to_item_orders_socket(cell_id: cell_id): ItemData[] {
-        const cell = MapSystem.id_to_cell(cell_id)
-        if (cell == undefined) return [];
-        const chars = cell.get_characters_id_set()
+        const chars = Data.Cells.get_characters_set_from_cell(cell_id)
         const result:ItemData[] = []
+        if (chars == undefined) {
+            return result
+        }
         for (let char_id of chars) {
             const char_orders = Data.CharacterItemOrders(char_id)
             for (let order_id of char_orders) {
@@ -168,7 +170,7 @@ export namespace Convert {
     }
 
     export function character_to_cell(character: Character):Cell {
-        let cell = MapSystem.SAFE_id_to_cell(character.cell_id)
+        let cell = Data.Cells.from_id(character.cell_id)
         return cell
     }
 }
@@ -193,34 +195,39 @@ export namespace Link {
         Data.CharacterDB.save()
     }
 
-    export function character_and_cell(character: Character, cell: Cell) {
+
+    export function send_local_characters_info(cell: cell_id) {
+        const characters = Data.Cells.get_characters_list_from_cell(cell)
+        for (let item of characters) {
+            const local_character = Convert.id_to_character(item)
+            UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.LOCAL_CHARACTERS)
+            UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.MARKET)
+        }
+    }
+
+    export function character_and_cell(character: char_id, new_cell: cell_id) {
         // console.log('linking character with cell ' + cell.x + ' ' + cell.y)
         // add to the list and notify locals
         // note: rewrite later to lazy sending: send local characters to local characters once in X seconds if there are changes
         //       and send list immediately only to entering user
-        cell.enter(character.id)
-        character.cell_id = cell.id
-        const locals = cell.get_characters_list()
-        for (let item of locals) {
-            const id = item.id
-            const local_character = Convert.id_to_character(id)
-            UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.LOCAL_CHARACTERS)
-            UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.MARKET)
-        }
-
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.LOCAL_CHARACTERS)
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MARKET)
+        // above is not needed
+        const old_cell = Data.Connection.character_cell(character, new_cell)
+        
+        send_local_characters_info(old_cell)
+        send_local_characters_info(new_cell)
 
         // exploration
-        character.explored[cell.id] = true
-        let neighbours = MapSystem.neighbours_cells(cell.id)
+        const character_object = Data.CharacterDB.from_id(character)
+        character_object.explored[new_cell] = true
+        let neighbours = Data.World.neighbours(new_cell)
+        
         for (let item of neighbours) {
-            character.explored[item.id] = true
+            character_object.explored[item] = true
         }
 
         //updates
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.EXPLORED)
-        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.LOCAL_ACTIONS)
+        UserManagement.add_user_to_update_queue(character_object.user_id, UI_Part.EXPLORED)
+        UserManagement.add_user_to_update_queue(character_object.user_id, UI_Part.LOCAL_ACTIONS)
     }
 }
 
@@ -234,10 +241,10 @@ export namespace Unlink {
         UserManagement.add_user_to_update_queue(user.id, 'character_removal')
     }
 
-    export function character_and_cell(character: Character, cell: Cell) {
-        cell.exit(character.id)
-        Alerts.cell_locals(cell)
-    }
+    // export function character_and_cell(character: Character, cell: Cell) {
+    //     cell.exit(character.id)
+    //     Alerts.cell_locals(cell)
+    // }
 
     export function character_and_battle(character: Character, battle: Battle|undefined) {
         if (battle == undefined) return

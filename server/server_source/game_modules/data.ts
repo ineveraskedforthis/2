@@ -129,7 +129,9 @@ export namespace Data {
     }
 
     export namespace Connection {
-        export function character_cell(character: char_id, cell: cell_id) {
+        
+        
+        export function character_cell(character: char_id, cell: cell_id): cell_id {
             let character_object = CharacterDB.from_id(character)
             let old_cell = character_object.cell_id
             character_object.cell_id = cell 
@@ -142,6 +144,8 @@ export namespace Data {
             }
 
             cell_to_characters_set.get(old_cell)?.delete(character)
+
+            return old_cell
         }
     }
 
@@ -285,8 +289,12 @@ export namespace Data {
             return cells
         }
 
-        export function from_id(cell: cell_id) {
-            return id_to_cell.get(cell)
+        export function from_id(cell: cell_id):Cell {
+            return id_to_cell.get(cell) as Cell
+        }
+
+        export function can_clean(cell: cell_id) {
+            return true
         }
 
         export function has_forest(cell: cell_id) {
@@ -299,6 +307,16 @@ export namespace Data {
             }
         }
 
+        export function has_cotton(cell: cell_id) {
+            let land_plots = Buildings.from_cell_id(cell)
+            if (land_plots == undefined) return false
+            for (let plot_id of land_plots) {
+                let plot = Buildings.from_id(plot_id)
+                if (plot.type != LandPlotType.CottonField) continue
+                if (plot.durability > 0) return true
+            }
+        }
+
         export function forestation(cell: cell_id) {
             let result = 0
             let land_plots = Buildings.from_cell_id(cell)
@@ -307,6 +325,19 @@ export namespace Data {
                 let plot = Buildings.from_id(plot_id)
                 if (plot.type != LandPlotType.ForestPlot) continue
                 result += plot.durability
+            }
+            return result
+        }
+        export function urbanisation(cell: cell_id) {
+            let result = 0
+            let land_plots = Buildings.from_cell_id(cell)
+            if (land_plots == undefined) return 0
+            for (let plot_id of land_plots) {
+                let plot = Buildings.from_id(plot_id)
+                if (plot.type == LandPlotType.HumanHouse) result += 1
+                else if (plot.type == LandPlotType.ElodinoHouse) result += 1
+                // else if (plot.type == LandPlotType.Shack) result += 1
+                else if (plot.type == LandPlotType.Inn) result += 1
             }
             return result
         }

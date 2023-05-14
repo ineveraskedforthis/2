@@ -67,24 +67,7 @@ export namespace MapSystem {
 
     // export function SAFE_id_to_cell(id: cell_id) {
     //     return cells[id] as Cell
-    // }
-
-    
-
-    // export function neighbours_cells(id: cell_id): Cell[] {
-    //     let arr = []
-    //     const [x, y] = id_to_coordinate(id)
-    //     for (const [s, t] of dp) {
-    //         const [x1, y1] = [x + s, y + t]
-    //         if (validate_coordinates([x1, y1])) {
-    //             let cell = coordinate_to_cell([x1, y1])
-    //             if (cell != undefined) arr.push(cell)
-    //         }
-    //     }
-    //     return arr
-    // }
-
-    
+    // }   
 
     const max_scent = 50
 

@@ -5,6 +5,7 @@ import { map_position } from "../types";
 import { Convert } from "../systems_communication";
 import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
+import { Data } from "../data";
 
 export const clean:ActionTargeted = {
     duration(char: Character) {
@@ -13,11 +14,11 @@ export const clean:ActionTargeted = {
 
     check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
-            const cell = Convert.character_to_cell(char)
+            const cell = char.cell_id
             if (cell == undefined) {
                 return CharacterActionResponce.INVALID_CELL
             }
-            if (cell.can_clean()) {
+            if (Data.Cells.can_clean(cell)) {
                 return CharacterActionResponce.OK
             } 
             return CharacterActionResponce.NO_RESOURCE
@@ -26,11 +27,11 @@ export const clean:ActionTargeted = {
     },
 
     result:  function(char:Character, data: map_position) {
-        const cell = Convert.character_to_cell(char)
+        const cell = char.cell_id
         if (cell == undefined) {
             return CharacterActionResponce.INVALID_CELL
         }
-        if (cell.can_clean()) {
+        if (Data.Cells.can_clean(cell)) {
             char.change_blood(-100)
             UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
         }
