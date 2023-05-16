@@ -18,6 +18,7 @@ GRID_STEP_Y = 10
 GAME_MAP: typing.DefaultDict[Coordinate, int] = dict()
 TERRAIN: typing.DefaultDict[Coordinate, str] = dict()
 LAYER_FOREST: typing.DefaultDict[Coordinate, int] = dict()
+MARKETS: typing.DefaultDict[Coordinate, bool] = dict()
 
 SIZE = 10
 
@@ -63,7 +64,6 @@ class CANVAS_MODE(Enum):
     FILL = 'FILL'
     PAINT = 'PAINT'
 
-
 MODE: CANVAS_MODE = CANVAS_MODE.PAINT
 def drag_start(event: tk.Event):
     global DRAG
@@ -107,8 +107,16 @@ def paint_terrain(canvas: tk.Canvas, coord: Coordinate, terrain: str):
     if not((0 <= coord[0] < WORLD_SIZE[0]) and (0 <= coord[1] < WORLD_SIZE[1])):
         return 
     TERRAIN[coord] = terrain
-    paint(canvas, coord, terrain_to_color(terrain))    
+    display_coord(canvas, coord, terrain_to_color(terrain))    
 
+def display_terrain(canvas: tk.Canvas, coord: Coordinate):
+    terrain = 'void'
+    try:
+        terrain = TERRAIN[coord]
+    except:
+        terrain = 'void'
+    display_coord(canvas, coord, terrain_to_color(terrain))
+    
 
 
 def paint_forest(canvas: tk.Canvas, coord: Coordinate, strength: int):
@@ -124,12 +132,12 @@ def paint_forest(canvas: tk.Canvas, coord: Coordinate, strength: int):
     except:
         LAYER_FOREST[coord] = strength
     
-    paint(canvas, coord, '#' + str(min(LAYER_FOREST[coord], 9)) + '00000')
+    display_coord(canvas, coord, '#' + str(min(LAYER_FOREST[coord], 9)) + '00000')
 
 
 
 
-def paint(canvas: tk.Canvas, coord: Coordinate, color: str):
+def display_coord(canvas: tk.Canvas, coord: Coordinate, color: str):
     global WORLD_SIZE
     if not((0 <= coord[0] < WORLD_SIZE[0]) and (0 <= coord[1] < WORLD_SIZE[1])):
         return 
@@ -163,6 +171,12 @@ def canvas_callvack(canvas: tk.Canvas, terrain_var: tk.StringVar, mode_var: tk.S
                     map_coord = coord_to_x_y(event.x + item[0], event.y + item[1], WORLD_SIZE)
                     paint_forest(canvas, map_coord, 1)
                 # render_forest(canvas)
+            elif map_layer_variable.get() == 'markets':
+                try:
+                    MARKETS[(x, y)] = not MARKETS[(x, y)]
+                except:
+                    MARKETS[(x, y)] = True
+                render_market(canvas)
             
         return
     
@@ -190,21 +204,33 @@ def render_terrain(canvas: tk.Canvas):
     global WORLD_SIZE
     for x in range(WORLD_SIZE[0]):
         for y in range(WORLD_SIZE[1]):
-            paint_terrain(canvas, (x, y), TERRAIN[(x, y)])
+            display_terrain(canvas, (x, y))
 
 def render_forest(canvas: tk.Canvas):
     global WORLD_SIZE
     for x in range(WORLD_SIZE[0]):
         for y in range(WORLD_SIZE[1]):
             if TERRAIN[(x, y)] == 'sea':
-                paint_terrain(canvas, (x, y), TERRAIN[(x, y)])
+                display_terrain(canvas, (x, y))
             else:
                 try: 
                     value = LAYER_FOREST[(x, y)]
                 except:
                     value = 0
-                paint(canvas, (x, y), '#' + str(min(value, 9)) + '00000')
+                display_coord(canvas, (x, y), '#' + str(min(value, 9)) + '00000')
 
+def render_market(canvas: tk.Canvas):
+    global WORLD_SIZE
+    for x in range(WORLD_SIZE[0]):
+        for y in range(WORLD_SIZE[1]):
+            if TERRAIN[(x, y)] == 'sea':
+                display_terrain(canvas, (x, y))
+            else:
+                try: 
+                    value = MARKETS[(x, y)]
+                except:
+                    value = 0
+                display_coord(canvas, (x, y), '#' + str(9 * value) + '00000')
 
 def render_map(canvas: tk.Canvas, layer_var: tk.StringVar):
     if layer_var.get() == 'terrain':
@@ -212,6 +238,9 @@ def render_map(canvas: tk.Canvas, layer_var: tk.StringVar):
         return
     if layer_var.get() == 'forest':
         render_forest(canvas)
+        return
+    if layer_var.get() == 'markets':
+        render_market(canvas)
         return
 
 
@@ -318,8 +347,15 @@ def show_forest(canvas: tk.Canvas):
 
     return show
 
+def show_markets(canvas: tk.Canvas):
+    def show():
+        map_layer_variable.set('markets')
+        render_map(canvas, map_layer_variable)
+    return show
+
 button_terrain = tk.Button(data_frame, text="Terrain", command=show_terrain(canvas))
 button_forest = tk.Button(data_frame, text="Forest", command=show_forest(canvas))
+button_markets = tk.Button(data_frame, text="Market", command=show_markets(canvas))
 
 tk.Label(brushes_frame, text="Select brush: ").pack()
 
@@ -329,6 +365,7 @@ loader(world_size, canvas, brushes_frame, current_brush)()
 button.pack(padx=5,pady=5,)
 button_terrain.pack(padx=5,pady=5,)
 button_forest.pack(padx=5,pady=5,)
+button_markets.pack(padx=5,pady=5)
 world_size_label.pack(padx=5,pady=5,)
 
 brushes_frame.pack()
