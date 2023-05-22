@@ -22,7 +22,7 @@ root = tk.Tk()
 canvas = tk.Canvas(root, bg="white", height=1000, width=1000)
 world_size = tk.StringVar(root, "????")
 current_terrain_brush = tk.StringVar(root, "void")
-current_faction_brush = tk.StringVar(root, "void")
+current_faction_brush = tk.StringVar(root, "city")
 mode_variable = tk.Variable(root, CanvasMode.PAINT)
 map_layer_variable = tk.StringVar(root, "terrain")
 
@@ -162,6 +162,11 @@ tk.Radiobutton(mode_frame,
                text="Paint",
                variable=mode_variable,
                value=CanvasMode.PAINT,
+               command=print_current_brush(mode_variable)).pack()
+tk.Radiobutton(mode_frame,
+               text="Secondary",
+               variable=mode_variable,
+               value=CanvasMode.SECONDARY,
                command=print_current_brush(mode_variable)).pack()
 
 

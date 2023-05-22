@@ -24,6 +24,8 @@ def terrain_to_color(terrain: str) -> str:
             return "blue"
         case "rupture":
             return "red"
+        case "ashlands":
+            return "grey"
 
     return "purple"
 

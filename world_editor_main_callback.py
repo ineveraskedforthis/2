@@ -78,10 +78,10 @@ class MapInteraction:
                 # print(x, y, selected_mode)
                 if selected_layer  == 'terrain':
                     selected_terrain = terrain.get()
-                    if selected_mode == 'CANVAS_selected_mode.PAINT':
+                    if selected_mode == "CanvasMode.PAINT":
                         Terrain.paint_pixel(game_map, coord, selected_terrain)
                         Terrain.render_pixel(game_map, coord)
-                    elif selected_mode == 'CANVAS_selected_mode.FILL':
+                    elif selected_mode == "CanvasMode.FILL":
                         Terrain.fill(game_map, coord, selected_terrain)
                 elif selected_layer  == 'forest':
                     noise = [(random.gauss(0, 30), random.gauss(0, 30)) for i in range(10)]
@@ -97,6 +97,8 @@ class MapInteraction:
                     Markets.paint_pixel(game_map, coord)
                     Markets.render_pixel(game_map, coord)
                 elif selected_layer == 'factions':
+                    selected_faction = faction.get()
+                    Factions.paint_pixel(game_map, coord, selected_faction)
                     Factions.render_pixel(game_map, coord)
 
         return callback

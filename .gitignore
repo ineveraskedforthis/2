@@ -5,3 +5,4 @@ node_modules/
 *.png~
 # *.txt
 save_1/
+__pycache__/

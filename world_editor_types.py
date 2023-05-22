@@ -10,3 +10,4 @@ class CanvasMode(Enum):
     """
     FILL = 'FILL'
     PAINT = 'PAINT'
+    SECONDARY = 'SECONDARY'
