@@ -65,19 +65,21 @@ export function launch(http_server: Server) {
 function load() {
     // MapSystem.load()
     Data.load()
+    
     UserManagement.load_users()
     Auth.load()
     BattleSystem.load()    
 
-    const characters = Data.CharacterDB.list()
+    const characters = Data.CharacterDB.list_of_id()
 
     //validating ids and connections
     for (const character of characters) {
-        Link.character_and_cell(character, Convert.character_to_cell(character))
-        const battle = Convert.character_to_battle(character)
+        const object = Data.CharacterDB.from_id(character)
+        Link.character_and_cell(character, object.cell_id)
+        const battle = Convert.character_to_battle(object)
         if (battle == undefined) {
-            character.battle_id = -1 as battle_id
-            character.battle_unit_id = -1 as unit_id
+            object.battle_id = -1 as battle_id
+            object.battle_unit_id = -1 as unit_id
         }
         // EventMarket.clear_orders(character)
     }

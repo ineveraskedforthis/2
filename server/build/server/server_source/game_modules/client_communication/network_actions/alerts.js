@@ -4,6 +4,7 @@ exports.Alerts = void 0;
 const system_1 = require("../../battle/system");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
+const data_1 = require("../../data");
 var Alerts;
 (function (Alerts) {
     function not_enough_to_user(user, tag, required, current) {
@@ -178,10 +179,10 @@ var Alerts;
     }
     Alerts.remove_unit = remove_unit;
     function cell_locals(cell) {
-        const locals = cell.get_characters_list();
+        const locals = data_1.Data.Cells.get_characters_list_from_cell(cell);
         for (let item of locals) {
-            const id = item.id;
-            const local_character = systems_communication_1.Convert.id_to_character(id);
+            // const id = item.id
+            const local_character = systems_communication_1.Convert.id_to_character(item);
             const local_user = systems_communication_1.Convert.character_to_user(local_character);
             if (local_user == undefined) {
                 continue;

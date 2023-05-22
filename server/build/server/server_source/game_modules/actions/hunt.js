@@ -2,20 +2,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fish = exports.hunt = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
-const systems_communication_1 = require("../systems_communication");
 const events_1 = require("../events/events");
 const effects_1 = require("../events/effects");
+const system_1 = require("../map/system");
 exports.hunt = {
     duration(char) {
         return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let cell = systems_communication_1.Convert.character_to_cell(char);
-            if (cell == undefined) {
-                return 6 /* CharacterActionResponce.INVALID_CELL */;
-            }
-            if (cell.can_hunt()) {
+            if (system_1.MapSystem.can_hunt(char.cell_id)) {
                 return 1 /* CharacterActionResponce.OK */;
             }
             else {
@@ -54,11 +50,7 @@ exports.fish = {
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let cell = systems_communication_1.Convert.character_to_cell(char);
-            if (cell == undefined) {
-                return 6 /* CharacterActionResponce.INVALID_CELL */;
-            }
-            if (cell.can_fish()) {
+            if (system_1.MapSystem.can_fish(char.cell_id)) {
                 return 1 /* CharacterActionResponce.OK */;
             }
             else {

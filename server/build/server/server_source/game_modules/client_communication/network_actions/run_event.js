@@ -91,11 +91,11 @@ var SocketCommand;
     SocketCommand.rent_room = rent_room;
     function validate_building_type(msg) {
         switch (msg) {
-            case ("elodino_house" /* BuildingType.ElodinoHouse */): return true;
-            case ("human_house" /* BuildingType.HumanHouse */): return true;
-            case ("inn" /* BuildingType.Inn */): return true;
-            case ("rat_lair" /* BuildingType.RatLair */): return true;
-            case ("shack" /* BuildingType.Shack */): return true;
+            case ("elodino_house" /* LandPlotType.ElodinoHouse */): return true;
+            case ("human_house" /* LandPlotType.HumanHouse */): return true;
+            case ("inn" /* LandPlotType.Inn */): return true;
+            case ("rat_lair" /* LandPlotType.RatLair */): return true;
+            case ("shack" /* LandPlotType.Shack */): return true;
         }
         return false;
     }

@@ -32,10 +32,7 @@ function TraderRoutine(character) {
     }
     if (character.ai_state == 4 /* AIstate.GoToMarket */) {
         // console.log('going to market')
-        let cell = system_1.MapSystem.id_to_cell(character.cell_id);
-        if (cell == undefined)
-            return;
-        if (cell.is_market()) {
+        if (system_1.MapSystem.has_market(character.cell_id)) {
             (0, actions_1.sell_all_stash)(character);
             character.ai_state = 1 /* AIstate.WaitSale */;
         }

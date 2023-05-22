@@ -14,12 +14,13 @@ import { box, CraftBulk, CraftItem } from "../craft/crafts_storage"
 import { BattleAI } from "../battle/battle_ai"
 import { MapSystem } from "../map/system"
 import { AItrade } from "./AI_SCRIPTED_VALUES"
+import { Data } from "../data"
 
 export function base_price(cell_id: cell_id, material: material_index): money {
     switch(material) {
         case WOOD: {
-            let cell = MapSystem.id_to_cell(cell_id)
-            if (cell?.can_gather_wood()) return 3 as money
+            // let cell = MapSystem.id_to_cell(cell_id)
+            if (MapSystem.has_wood(cell_id)) return 3 as money
             return 10 as money
         }
         case RAT_BONE:
@@ -57,9 +58,8 @@ interface priced_box {
 
 export namespace AIhelper {
     export function enemies_in_cell(char: Character) {
-        let cell = Convert.character_to_cell(char)
-        let a = cell.get_characters_list()
-        for (let {id, name} of a) {
+        let a = Data.Cells.get_characters_list_from_cell(char.cell_id)
+        for (let id of a) {
             let target_char = Convert.id_to_character(id)
             if (hostile(char.race(), target_char.race())) {
                 if (!target_char.in_battle() && !target_char.dead()) {
@@ -72,8 +72,8 @@ export namespace AIhelper {
 
     export function free_rats_in_cell(char: Character) {
         let cell = Convert.character_to_cell(char)
-        let a = cell.get_characters_list()
-        for (let {id, name} of a) {
+        let a = Data.Cells.get_characters_list_from_cell(char.cell_id)
+        for (let id of a) {
             let target_char = Convert.id_to_character(id)
             if (target_char.race() == 'rat') {
                 if (!target_char.in_battle() && !target_char.dead()) {
@@ -88,8 +88,8 @@ export namespace AIhelper {
         let battles:battle_id[] = []
         let cell = Convert.character_to_cell(char)
         if (cell == undefined) return battles
-        let a = cell.get_characters_list()
-        for (let {id, name} of a) {
+        let a = Data.Cells.get_characters_list_from_cell(char.cell_id)
+        for (let id of a) {
             let target_char = Convert.id_to_character(id)
             if (target_char.in_battle() && !target_char.dead()) {
                 battles.push(target_char.battle_id)

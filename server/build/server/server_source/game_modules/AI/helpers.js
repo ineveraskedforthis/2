@@ -11,11 +11,12 @@ const CraftItem_1 = require("../craft/CraftItem");
 const battle_ai_1 = require("../battle/battle_ai");
 const system_1 = require("../map/system");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
+const data_1 = require("../data");
 function base_price(cell_id, material) {
     switch (material) {
         case materials_manager_1.WOOD: {
-            let cell = system_1.MapSystem.id_to_cell(cell_id);
-            if (cell?.can_gather_wood())
+            // let cell = MapSystem.id_to_cell(cell_id)
+            if (system_1.MapSystem.has_wood(cell_id))
                 return 3;
             return 10;
         }
@@ -38,9 +39,8 @@ exports.base_price = base_price;
 var AIhelper;
 (function (AIhelper) {
     function enemies_in_cell(char) {
-        let cell = systems_communication_1.Convert.character_to_cell(char);
-        let a = cell.get_characters_list();
-        for (let { id, name } of a) {
+        let a = data_1.Data.Cells.get_characters_list_from_cell(char.cell_id);
+        for (let id of a) {
             let target_char = systems_communication_1.Convert.id_to_character(id);
             if ((0, racial_hostility_1.hostile)(char.race(), target_char.race())) {
                 if (!target_char.in_battle() && !target_char.dead()) {
@@ -53,8 +53,8 @@ var AIhelper;
     AIhelper.enemies_in_cell = enemies_in_cell;
     function free_rats_in_cell(char) {
         let cell = systems_communication_1.Convert.character_to_cell(char);
-        let a = cell.get_characters_list();
-        for (let { id, name } of a) {
+        let a = data_1.Data.Cells.get_characters_list_from_cell(char.cell_id);
+        for (let id of a) {
             let target_char = systems_communication_1.Convert.id_to_character(id);
             if (target_char.race() == 'rat') {
                 if (!target_char.in_battle() && !target_char.dead()) {
@@ -70,8 +70,8 @@ var AIhelper;
         let cell = systems_communication_1.Convert.character_to_cell(char);
         if (cell == undefined)
             return battles;
-        let a = cell.get_characters_list();
-        for (let { id, name } of a) {
+        let a = data_1.Data.Cells.get_characters_list_from_cell(char.cell_id);
+        for (let id of a) {
             let target_char = systems_communication_1.Convert.id_to_character(id);
             if (target_char.in_battle() && !target_char.dead()) {
                 battles.push(target_char.battle_id);

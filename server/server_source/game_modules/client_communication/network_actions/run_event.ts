@@ -1,4 +1,4 @@
-import { BuildingType } from "../../DATA_LAYOUT_BUILDING";
+import { LandPlotType } from "../../DATA_LAYOUT_BUILDING";
 import { Perks } from "../../character/Perks";
 import { skill } from "../../character/SkillList";
 import { Data } from "../../data";
@@ -92,11 +92,11 @@ export namespace SocketCommand {
 
     function validate_building_type(msg: string) {
         switch(msg){
-            case(BuildingType.ElodinoHouse): return true;
-            case(BuildingType.HumanHouse): return true;
-            case(BuildingType.Inn): return true;
-            case(BuildingType.RatLair): return true
-            case(BuildingType.Shack): return true;
+            case(LandPlotType.ElodinoHouse): return true;
+            case(LandPlotType.HumanHouse): return true;
+            case(LandPlotType.Inn): return true;
+            case(LandPlotType.RatLair): return true
+            case(LandPlotType.Shack): return true;
         }
 
         return false
@@ -108,7 +108,7 @@ export namespace SocketCommand {
 
         if (typeof msg != 'string') return
         if (!validate_building_type(msg)) return true
-        Event.build_building(character, msg as BuildingType)
+        Event.build_building(character, msg as LandPlotType)
     }
 
     export function repair_building(sw: SocketWrapper, msg: undefined|{id: unknown}) {

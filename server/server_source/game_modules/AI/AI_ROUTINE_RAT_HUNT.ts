@@ -12,6 +12,7 @@ import { simple_constraints } from "./constraints";
 import { AIstate } from "../character/AIstate";
 import { tired, low_hp } from "./triggers";
 import { buy_food, loot, market_walk, random_walk, remove_orders, rest_building, sell_loot, update_price_beliefs } from "./actions";
+import { MapSystem } from "../map/system";
 
 export function RatHunterRoutine(character: Character) {
     if (character.in_battle()) return
@@ -38,8 +39,8 @@ export function RatHunterRoutine(character: Character) {
     }
     
     if (loot(character) > 10) {
-        let cell = Convert.character_to_cell(character)
-        if (cell.is_market()) {
+        // let cell = Convert.character_to_cell(character)
+        if (MapSystem.has_market(character.cell_id)) {
             update_price_beliefs(character)
             sell_loot(character)
             character.ai_state = AIstate.WaitSale

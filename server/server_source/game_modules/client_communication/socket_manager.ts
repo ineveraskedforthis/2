@@ -3,7 +3,7 @@ import { SocketWrapper } from "./user";
 import { materials } from "../manager_classes/materials_manager";
 import { io_type, Socket } from "../../server";
 import { UserManagement} from "./user_manager";
-import { SECTIONS } from "../static_data/map_definitions";
+// import { SECTIONS } from "../static_data/map_definitions";
 import { Auth } from "./network_actions/auth";
 import { Validator } from "./network_actions/common_validations";
 import { Alerts } from "./network_actions/alerts";
@@ -137,7 +137,7 @@ export class SocketManager {
         
         socket.emit('tags', materials.get_materials_json());
         socket.emit('skill-tags', SKILLS);        
-        socket.emit('sections', SECTIONS);
+        // socket.emit('sections', SECTIONS);
         
         var messages = this.MESSAGES
         for (let message of messages) {

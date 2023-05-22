@@ -92,32 +92,32 @@ app.get('/api/:API_KEY/character/:charID', (req, res) => {
     };
     res.json(response);
 });
-app.get('/api/:API_KEY/cell/:cellID', (req, res) => {
-    const id = Number(req.params.cellID);
-    // console.log(`request cell ${id}`)
-    res.set('Access-Control-Allow-Origin', '*');
-    if (req.params.API_KEY != process.env.API_KEY) {
-        res.json({ valid: false });
-        return;
-    }
-    if (isNaN(id)) {
-        res.json({ valid: false });
-        return;
-    }
-    const cell = system_js_1.MapSystem.id_to_cell(id);
-    if (cell == undefined) {
-        res.json({ valid: false });
-        return;
-    }
-    const response = {
-        valid: true,
-        terrain: cell.terrain,
-        development: cell.development,
-        scent: cell.rat_scent,
-        local_characters: cell.saved_characters_list
-    };
-    res.json(response);
-});
+// app.get('/api/:API_KEY/cell/:cellID', (req: Request, res: Response) => {
+//     const id = Number(req.params.cellID)
+//     // console.log(`request cell ${id}`)
+//     res.set('Access-Control-Allow-Origin', '*');
+//     if (req.params.API_KEY != process.env.API_KEY) {
+//         res.json({valid: false})
+//         return
+//     }
+//     if (isNaN(id)) {
+//         res.json({valid: false})
+//         return
+//     }
+//     const cell = MapSystem.id_to_cell(id as cell_id)
+//     if (cell == undefined) {
+//         res.json({valid: false})
+//         return
+//     }
+//     const response = {
+//         valid: true,
+//         terrain: cell.terrain,
+//         development: cell.development,
+//         scent: cell.rat_scent,
+//         local_characters: cell.saved_characters_list
+//     }    
+//     res.json(response)
+// })
 // app.get('/api/:API_KEY/cell/terrain/:cellID', (req: Request, res: Response) => {
 //     const id = Number(req.params.cellID)
 //     // console.log(`request cell terrain ${id}`)
@@ -144,30 +144,29 @@ app.get('/api/:API_KEY/cell/:cellID', (req, res) => {
 //     }    
 //     res.json(response)
 // })
-app.get('/api/:API_KEY/map', (req, res) => {
-    res.set('Access-Control-Allow-Origin', '*');
-    if (req.params.API_KEY != process.env.API_KEY) {
-        res.json({ valid: false });
-        return;
-    }
-    const cells = [];
-    for (let cell of system_js_1.MapSystem.get_cells()) {
-        if (cell == undefined)
-            continue;
-        cells[cell.id] = {
-            index: cell.id,
-            terrain: cell.terrain,
-            development: cell.development,
-            scent: cell.rat_scent,
-            population: cell.saved_characters_list.length
-        };
-    }
-    res.json({
-        width: system_js_1.MapSystem.get_size()[0],
-        height: system_js_1.MapSystem.get_size()[1],
-        cells: cells
-    });
-});
+// app.get('/api/:API_KEY/map', (req: Request, res: Response) => {
+//     res.set('Access-Control-Allow-Origin', '*');
+//     if (req.params.API_KEY != process.env.API_KEY) {
+//         res.json({valid: false})
+//         return
+//     }
+//     const cells = []
+//     for (let cell of MapSystem.get_cells()) {
+//         if (cell == undefined) continue
+//         cells[cell.id] = {
+//             index: cell.id,
+//             terrain: cell.terrain,
+//             development: cell.development,
+//             scent: cell.rat_scent,
+//             population: cell.saved_characters_list.length
+//         }
+//     }
+//     res.json({
+//         width: MapSystem.get_size()[0],
+//         height: MapSystem.get_size()[1],
+//         cells: cells
+//     })
+// })
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../../../../views/index2.html'));
 });
@@ -176,7 +175,6 @@ server.listen(port, () => {
 });
 const game_launch_js_1 = require("./game_launch.js");
 const socket_manager_js_1 = require("./game_modules/client_communication/socket_manager.js");
-const system_js_1 = require("./game_modules/map/system.js");
 const data_js_1 = require("./game_modules/data.js");
 exports.io = require('socket.io')(server);
 exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);

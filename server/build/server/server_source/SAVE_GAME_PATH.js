@@ -23,7 +23,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SAVE_GAME_PATH = void 0;
+exports.DEFAULT_WORLD_PATH = exports.SAVE_GAME_PATH = void 0;
 const path = __importStar(require("path"));
 const fs = __importStar(require("fs"));
 exports.SAVE_GAME_PATH = path.join('save_1');
@@ -31,3 +31,7 @@ if (!fs.existsSync(exports.SAVE_GAME_PATH)) {
     fs.mkdirSync(exports.SAVE_GAME_PATH);
 }
 console.log(exports.SAVE_GAME_PATH);
+exports.DEFAULT_WORLD_PATH = path.join('default_world');
+if (!fs.existsSync(exports.DEFAULT_WORLD_PATH)) {
+    console.log('CREATE NEW WORLD IN WORLD EDITOR');
+}

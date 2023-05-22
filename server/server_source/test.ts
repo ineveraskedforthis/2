@@ -10,6 +10,10 @@ import { MapSystem } from "./game_modules/map/system";
 import { Data } from "./game_modules/data";
 import { character_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/strings_management";
 
+
+Data.World.load()
+
+
 function string_difference([a, b]: [string, string]): [string, string] {
     let resulta = ''
     let resultb = ''
@@ -102,11 +106,11 @@ function backpack_string_test() {
 function map_coords_test() {
     console.log('coord transformation test')
     let flag = true
-    
     console.log('coord -> id -> coord')
+    
     for (let i = 0; i <= 10; i++) {
         for (let j = 0; j <= 10; j++) {
-            let [x, y] = MapSystem.id_to_coordinate(MapSystem.coordinate_to_id([i, j]))
+            let [x, y] = Data.World.id_to_coordinate(Data.World.coordinate_to_id([i, j]))
             if ((x != i) || (y != j)) {
                 console.log(i, j, x, y)
                 flag = false
@@ -116,8 +120,8 @@ function map_coords_test() {
 
     console.log('id -> coord -> id')
     for (let i = 0; i <= 500; i++) {
-        let tmp = MapSystem.id_to_coordinate(i as cell_id)
-        let x = MapSystem.coordinate_to_id([tmp[0], tmp[1]])
+        let tmp = Data.World.id_to_coordinate(i as cell_id)
+        let x = Data.World.coordinate_to_id([tmp[0], tmp[1]])
         if (i != x) {
             console.log(i, x)
             flag = false

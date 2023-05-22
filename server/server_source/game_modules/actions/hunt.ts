@@ -7,6 +7,7 @@ import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Event } from "../events/events";
 import { Effect } from "../events/effects";
+import { MapSystem } from "../map/system";
 
 
 export const hunt = {
@@ -16,11 +17,7 @@ export const hunt = {
 
     check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
-            let cell = Convert.character_to_cell(char);
-            if (cell == undefined) {
-                return CharacterActionResponce.INVALID_CELL
-            }
-            if (cell.can_hunt()) {
+            if (MapSystem.can_hunt(char.cell_id)) {
                 return CharacterActionResponce.OK
             } else {
                 return CharacterActionResponce.NO_RESOURCE
@@ -66,11 +63,7 @@ export const fish = {
 
     check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (!char.in_battle()) {
-            let cell = Convert.character_to_cell(char);
-            if (cell == undefined) {
-                return CharacterActionResponce.INVALID_CELL
-            }
-            if (cell.can_fish()) {
+            if (MapSystem.can_fish(char.cell_id)) {
                 return CharacterActionResponce.OK
             } else {
                 return CharacterActionResponce.NO_RESOURCE

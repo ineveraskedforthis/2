@@ -1,0 +1,6 @@
+city;City;ivory3
+rats;Rats Kingdom;grey14
+steppe_humans;Humans of the Steppe;yellow3
+big_humans;Mutants;VioletRed
+graci;Graci Kingdom;white
+elodino_free;Elodino Federation;red3

@@ -3,18 +3,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Effect = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
 const data_1 = require("../data");
+// import { Cell } from "../map/cell";
 const systems_communication_1 = require("../systems_communication");
 const scripted_values_1 = require("./scripted_values");
+const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
 const basic_functions_1 = require("../calculations/basic_functions");
 var Effect;
 (function (Effect) {
     let Update;
     (function (Update) {
         function cell_market(cell) {
-            const locals = cell.get_characters_list();
+            const locals = data_1.Data.Cells.get_characters_list_from_cell(cell);
             for (let item of locals) {
-                const id = item.id;
-                const local_character = systems_communication_1.Convert.id_to_character(id);
+                const local_character = systems_communication_1.Convert.id_to_character(item);
                 user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 19 /* UI_Part.MARKET */);
             }
         }
@@ -88,7 +89,7 @@ var Effect;
         if (character.current_building != undefined) {
             return "you are already somewhere";
         }
-        if (rooms_not_available >= building.rooms) {
+        if (rooms_not_available >= (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type)) {
             return "no_rooms";
         }
         if (owner_id == undefined) {
@@ -117,19 +118,20 @@ var Effect;
         character.current_building = undefined;
     }
     Effect.leave_room = leave_room;
-    function new_building(cell_id, type, rooms, durability) {
+    function new_building(cell_id, type, durability) {
         data_1.Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
             type: type,
-            rooms: rooms,
-            kitchen: 0,
-            workshop: 0,
             room_cost: 5
         });
     }
     Effect.new_building = new_building;
     function building_quality_reduction_roll(building) {
+        if (building.type == "forest_plot" /* LandPlotType.ForestPlot */)
+            return;
+        if (building.type == "land_plot" /* LandPlotType.LandPlot */)
+            return;
         if (Math.random() > 0.9) {
             building.durability = (0, basic_functions_1.trim)(building.durability - 1, 0, 1000);
         }

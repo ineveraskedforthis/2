@@ -5,18 +5,18 @@ const user_manager_1 = require("../client_communication/user_manager");
 const effects_1 = require("../events/effects");
 const events_1 = require("../events/events");
 const materials_manager_1 = require("../manager_classes/materials_manager");
-const systems_communication_1 = require("../systems_communication");
+const data_1 = require("../data");
 exports.gather_wood = {
     duration(char) {
         return 1 + char.get_fatigue() / 50;
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let cell = systems_communication_1.Convert.character_to_cell(char);
+            let cell = char.cell_id;
             if (cell == undefined) {
                 return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
-            if (cell.can_gather_wood()) {
+            if (data_1.Data.Cells.has_forest(cell)) {
                 return 1 /* CharacterActionResponce.OK */;
             }
             else {
@@ -44,11 +44,11 @@ exports.gather_cotton = {
     },
     check: function (char, data) {
         if (!char.in_battle()) {
-            let cell = systems_communication_1.Convert.character_to_cell(char);
+            let cell = char.cell_id;
             if (cell == undefined) {
                 return 6 /* CharacterActionResponce.INVALID_CELL */;
             }
-            if (cell.can_gather_cotton()) {
+            if (data_1.Data.Cells.has_cotton(cell)) {
                 return 1 /* CharacterActionResponce.OK */;
             }
             else {

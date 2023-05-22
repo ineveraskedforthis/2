@@ -4,10 +4,8 @@ exports.Unlink = exports.Link = exports.Convert = void 0;
 const system_1 = require("./items/system");
 const user_manager_1 = require("./client_communication/user_manager");
 const data_1 = require("./data");
-const system_2 = require("./map/system");
 const classes_1 = require("./market/classes");
-const alerts_1 = require("./client_communication/network_actions/alerts");
-const system_3 = require("./battle/system");
+const system_2 = require("./battle/system");
 var Convert;
 (function (Convert) {
     function number_to_order_item_id(id) {
@@ -45,11 +43,10 @@ var Convert;
     }
     Convert.char_id_to_bulk_orders = char_id_to_bulk_orders;
     function cell_id_to_bulk_orders(id) {
-        const cell = system_2.MapSystem.id_to_cell(id);
-        if (cell == undefined)
-            return new Set();
-        const chars = cell.get_characters_id_set();
+        const chars = data_1.Data.Cells.get_characters_set_from_cell(id);
         const result = new Set();
+        if (chars == undefined)
+            return result;
         for (let char_id of chars) {
             const char_orders = char_id_to_bulk_orders(char_id);
             for (let [_, order] of char_orders.entries()) {
@@ -60,11 +57,11 @@ var Convert;
     }
     Convert.cell_id_to_bulk_orders = cell_id_to_bulk_orders;
     function cell_id_to_item_orders_socket(cell_id) {
-        const cell = system_2.MapSystem.id_to_cell(cell_id);
-        if (cell == undefined)
-            return [];
-        const chars = cell.get_characters_id_set();
+        const chars = data_1.Data.Cells.get_characters_set_from_cell(cell_id);
         const result = [];
+        if (chars == undefined) {
+            return result;
+        }
         for (let char_id of chars) {
             const char_orders = data_1.Data.CharacterItemOrders(char_id);
             for (let order_id of char_orders) {
@@ -135,7 +132,7 @@ var Convert;
             id: unit.id,
             next_turn: unit.next_turn_after,
             dead: character.dead(),
-            move_cost: system_3.BattleSystem.move_cost(unit)
+            move_cost: system_2.BattleSystem.move_cost(unit)
         };
     }
     Convert.unit_to_unit_socket = unit_to_unit_socket;
@@ -159,7 +156,7 @@ var Convert;
     }
     Convert.character_to_user = character_to_user;
     function character_to_cell(character) {
-        let cell = system_2.MapSystem.SAFE_id_to_cell(character.cell_id);
+        let cell = data_1.Data.Cells.from_id(character.cell_id);
         return cell;
     }
     Convert.character_to_cell = character_to_cell;
@@ -185,31 +182,34 @@ var Link;
         data_1.Data.CharacterDB.save();
     }
     Link.character_and_user_data = character_and_user_data;
-    function character_and_cell(character, cell) {
+    function send_local_characters_info(cell) {
+        const characters = data_1.Data.Cells.get_characters_list_from_cell(cell);
+        for (let item of characters) {
+            const local_character = Convert.id_to_character(item);
+            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 19 /* UI_Part.MARKET */);
+        }
+    }
+    Link.send_local_characters_info = send_local_characters_info;
+    function character_and_cell(character, new_cell) {
         // console.log('linking character with cell ' + cell.x + ' ' + cell.y)
         // add to the list and notify locals
         // note: rewrite later to lazy sending: send local characters to local characters once in X seconds if there are changes
         //       and send list immediately only to entering user
-        cell.enter(character.id);
-        character.cell_id = cell.id;
-        const locals = cell.get_characters_list();
-        for (let item of locals) {
-            const id = item.id;
-            const local_character = Convert.id_to_character(id);
-            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
-            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 19 /* UI_Part.MARKET */);
-        }
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 19 /* UI_Part.MARKET */);
+        // above is not needed
+        const old_cell = data_1.Data.Connection.character_cell(character, new_cell);
+        send_local_characters_info(old_cell);
+        send_local_characters_info(new_cell);
         // exploration
-        character.explored[cell.id] = true;
-        let neighbours = system_2.MapSystem.neighbours_cells(cell.id);
+        const character_object = data_1.Data.CharacterDB.from_id(character);
+        character_object.explored[new_cell] = true;
+        let neighbours = data_1.Data.World.neighbours(new_cell);
         for (let item of neighbours) {
-            character.explored[item.id] = true;
+            character_object.explored[item] = true;
         }
         //updates
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 9 /* UI_Part.EXPLORED */);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.LOCAL_ACTIONS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character_object.user_id, 9 /* UI_Part.EXPLORED */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character_object.user_id, 10 /* UI_Part.LOCAL_ACTIONS */);
     }
     Link.character_and_cell = character_and_cell;
 })(Link = exports.Link || (exports.Link = {}));
@@ -226,11 +226,10 @@ var Unlink;
         user_manager_1.UserManagement.add_user_to_update_queue(user.id, 'character_removal');
     }
     Unlink.user_data_and_character = user_data_and_character;
-    function character_and_cell(character, cell) {
-        cell.exit(character.id);
-        alerts_1.Alerts.cell_locals(cell);
-    }
-    Unlink.character_and_cell = character_and_cell;
+    // export function character_and_cell(character: Character, cell: Cell) {
+    //     cell.exit(character.id)
+    //     Alerts.cell_locals(cell)
+    // }
     function character_and_battle(character, battle) {
         if (battle == undefined)
             return;

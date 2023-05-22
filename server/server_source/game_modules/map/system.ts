@@ -3,7 +3,7 @@ import { BigRatTemplate, RatTemplate } from "../races/rat";
 import { Data } from "../data";
 import { Event } from "../events/events";
 import { Factions } from "../factions";
-import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
+// import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
 import { cell_id, world_coordinates } from "../types";
 // import { Cell} from "./cell";
 import { Template } from "../templates";
@@ -12,7 +12,7 @@ import { Convert } from "../systems_communication";
 import { MEAT } from "../manager_classes/materials_manager";
 // import { Building } from "../DATA_LAYOUT_BUILDING";
 import { Cell } from "./DATA_LAYOUT_CELL";
-import { terrain_can_move } from "./terrain";
+import { Terrain, terrain_can_move } from "./terrain";
 
 // var size:world_dimensions = [0, 0]
 // var max_direction:number = 30
@@ -54,20 +54,27 @@ export namespace MapSystem {
         return Data.World.get_world_dimensions()
     }
 
+    export function can_hunt(cell_id: cell_id) {
+        if (Data.Cells.forestation(cell_id) > 200) return true
+        if (Data.Cells.urbanisation(cell_id) < 5) return true
 
+        return false
+    }
 
-    // export function coordinate_to_cell(p: [number, number]) {
-    //     let id = coordinate_to_id(p[0], p[1])
-    //     return id_to_cell(id)
-    // }
+    export function can_fish(cell_id: cell_id) {
+        if (Data.World.id_to_terrain(cell_id) == Terrain.coast) return true
+        return false
+    }
 
-    // export function id_to_cell(id: cell_id) {
-    //     return cells[id]
-    // }
+    export function has_market(cell_id: cell_id) {
+        if (Data.World.id_to_market(cell_id)) return true
+        return false
+    }
 
-    // export function SAFE_id_to_cell(id: cell_id) {
-    //     return cells[id] as Cell
-    // }   
+    export function has_wood(cell_id: cell_id) {
+        if (Data.Cells.forestation(cell_id) > 100) return true
+        return false
+    }
 
     const max_scent = 50
 

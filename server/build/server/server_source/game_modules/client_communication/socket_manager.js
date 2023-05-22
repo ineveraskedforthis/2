@@ -4,7 +4,7 @@ exports.SocketManager = void 0;
 const user_1 = require("./user");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const user_manager_1 = require("./user_manager");
-const map_definitions_1 = require("../static_data/map_definitions");
+// import { SECTIONS } from "../static_data/map_definitions";
 const auth_1 = require("./network_actions/auth");
 const common_validations_1 = require("./network_actions/common_validations");
 const alerts_1 = require("./network_actions/alerts");
@@ -93,7 +93,7 @@ class SocketManager {
         console.log('a user connected');
         socket.emit('tags', materials_manager_1.materials.get_materials_json());
         socket.emit('skill-tags', skills_1.SKILLS);
-        socket.emit('sections', map_definitions_1.SECTIONS);
+        // socket.emit('sections', SECTIONS);
         var messages = this.MESSAGES;
         for (let message of messages) {
             socket.emit('new-message', { id: message.id, msg: message.content, user: message.sender });

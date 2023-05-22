@@ -1,365 +1,145 @@
-import tkinter as tk 
-import typing
-import math
-from enum import Enum
+"""
+World editor for the game.
+"""
+import tkinter as tk
+import functools as ft
+
 import sys
-import random
+
+from world_editor_types import CanvasMode
+from world_editor_canvas_manipulation import GameMap
+
+import world_editor_layer_terrain as Terrain
+import world_editor_layer_forest as Forest
+import world_editor_layer_factions as Factions
+import world_editor_layer_markets as Markets
+
+from world_editor_data import export_world, import_world, FACTION_COLOR
+from world_editor_main_callback import MapInteraction
 
 sys.setrecursionlimit(10000)
-
-Coordinate = typing.Tuple[int, int]
-
 root = tk.Tk()
+canvas = tk.Canvas(root, bg="white", height=1000, width=1000)
+world_size = tk.StringVar(root, "????")
+current_terrain_brush = tk.StringVar(root, "void")
+current_faction_brush = tk.StringVar(root, "void")
+mode_variable = tk.Variable(root, CanvasMode.PAINT)
+map_layer_variable = tk.StringVar(root, "terrain")
 
-WORLD_SIZE = [0, 0]
-GRID_STEP_X = 10
-GRID_STEP_Y = 10
-
-GAME_MAP: typing.DefaultDict[Coordinate, int] = dict()
-TERRAIN: typing.DefaultDict[Coordinate, str] = dict()
-LAYER_FOREST: typing.DefaultDict[Coordinate, int] = dict()
-MARKETS: typing.DefaultDict[Coordinate, bool] = dict()
-
-SIZE = 10
-
-def terrain_to_color(terrain: str) -> str:
-    match terrain:
-        case 'void':
-            return 'black'
-        case 'steppe':
-            return 'orange3'
-        case 'coast':
-            return 'yellow'
-        case 'sea':
-            return 'blue'
-        case 'rupture':
-            return 'red'
-
-def x_y_to_rect(x: int, y: int, size: Coordinate) -> typing.Tuple[int, int, int, int] :
-    z = -x - y
-    global GRID_STEP_Y
-    global GRID_STEP_X
-    global SIZE
-    left = x * GRID_STEP_X
-    top = (y - z - x * 2) * GRID_STEP_Y / 2 + max(size) * GRID_STEP_Y / 2;
-
-    return left, top, left + SIZE, top + SIZE
-
-def coord_to_x_y(s: int, t: int, size: Coordinate):
-    global GRID_STEP_Y
-    global GRID_STEP_X
-    global SIZE
-    x = math.floor(s / GRID_STEP_X)
-    # t = (y - z - x * 2 + max(size)) * GRID_STEP_Y / 2
-    # z = -x - y
-    # t = (y + y + x - x * 2 + max(size) * GRID_STEP_Y / 2)
-    # 2y = 2t / GRID_STEP_Y + x - max(size)
-    y = math.floor(t / GRID_STEP_Y + (x - max(size)) / 2)
-
-    return x, y
-
-DRAG = False
-
-class CANVAS_MODE(Enum):
-    FILL = 'FILL'
-    PAINT = 'PAINT'
-
-MODE: CANVAS_MODE = CANVAS_MODE.PAINT
-def drag_start(event: tk.Event):
-    global DRAG
-    DRAG = True
-def drag_stop(event: tk.Event):
-    global DRAG
-    DRAG = False
-
-directions = [[0, 1], [0 ,-1], [1, 0] ,[-1 ,0], [1 ,1], [-1 ,-1]]
+CurrentGameMap = GameMap(canvas, {}, (0, 0)) #type: ignore
+MapInteractor = MapInteraction()
+MapInteractor.init_canvas(CurrentGameMap,
+                          current_terrain_brush,
+                          current_faction_brush,
+                          mode_variable,
+                          map_layer_variable)
 
 
+MODE: CanvasMode = CanvasMode.PAINT
 
-def fill_terrain(canvas: tk.Canvas, coord: Coordinate, terrain: str):
-    if not((0 <= coord[0] < WORLD_SIZE[0]) and (0 <= coord[1] < WORLD_SIZE[1])):
-        return 
-    
-    try:
-        starting_terrain = TERRAIN[coord]
-    except:
-        starting_terrain = None
-    if starting_terrain == terrain: 
-        return    
-
-    # print(coord, terrain, starting_terrain)
-    paint_terrain(canvas, coord, terrain)
-    for direction in directions:
-        new_coord = (coord[0] + direction[0], coord[1] + direction[1])
-
-        try:
-            next_terrain = TERRAIN[new_coord]
-        except: 
-            next_terrain = None
-
-        if next_terrain == starting_terrain:
-            fill_terrain(canvas, new_coord, terrain)
-
-    
-
-def paint_terrain(canvas: tk.Canvas, coord: Coordinate, terrain: str):
-    global WORLD_SIZE
-    if not((0 <= coord[0] < WORLD_SIZE[0]) and (0 <= coord[1] < WORLD_SIZE[1])):
-        return 
-    TERRAIN[coord] = terrain
-    display_coord(canvas, coord, terrain_to_color(terrain))    
-
-def display_terrain(canvas: tk.Canvas, coord: Coordinate):
-    terrain = 'void'
-    try:
-        terrain = TERRAIN[coord]
-    except:
-        terrain = 'void'
-    display_coord(canvas, coord, terrain_to_color(terrain))
-    
-
-
-def paint_forest(canvas: tk.Canvas, coord: Coordinate, strength: int):
-    global WORLD_SIZE
-    if not((0 <= coord[0] < WORLD_SIZE[0]) and (0 <= coord[1] < WORLD_SIZE[1])):
-        return
-    if TERRAIN[coord] == 'sea':
-        return
-        
-
-    try:
-        LAYER_FOREST[coord] = min(LAYER_FOREST[coord] + strength, 9)
-    except:
-        LAYER_FOREST[coord] = strength
-    
-    display_coord(canvas, coord, '#' + str(min(LAYER_FOREST[coord], 9)) + '00000')
-
-
-
-
-def display_coord(canvas: tk.Canvas, coord: Coordinate, color: str):
-    global WORLD_SIZE
-    if not((0 <= coord[0] < WORLD_SIZE[0]) and (0 <= coord[1] < WORLD_SIZE[1])):
-        return 
-    global GAME_MAP
-    rect = GAME_MAP[coord]
-    canvas.itemconfig(rect, fill = color)
-
-
-def canvas_callvack(canvas: tk.Canvas, terrain_var: tk.StringVar, mode_var: tk.StringVar, map_layer_variable: tk.StringVar ):
-    
-    def callback(event: tk.Event):
-        global DRAG
-        if DRAG:
-            global WORLD_SIZE
-            MODE = mode_var.get()
-            x, y = coord_to_x_y(event.x, event.y, WORLD_SIZE)
-            # print(x, y, MODE)
-            if map_layer_variable.get() == 'terrain':
-                if MODE == 'CANVAS_MODE.PAINT':
-                    # print('paint', (x, y))
-                    paint_terrain(canvas, (x, y), terrain_var.get())
-                elif MODE == 'CANVAS_MODE.FILL':
-                    # print('fill', (x, y))
-                    fill_terrain(canvas, (x, y), terrain_var.get())
-            elif map_layer_variable.get() == 'forest':
-                noise = [(random.gauss(0, 30), random.gauss(0, 30)) for i in range(10)]
-                
-                paint_forest(canvas, (x, y), 2)
-
-                for item in noise:
-                    map_coord = coord_to_x_y(event.x + item[0], event.y + item[1], WORLD_SIZE)
-                    paint_forest(canvas, map_coord, 1)
-                # render_forest(canvas)
-            elif map_layer_variable.get() == 'markets':
-                try:
-                    MARKETS[(x, y)] = not MARKETS[(x, y)]
-                except:
-                    MARKETS[(x, y)] = True
-                render_market(canvas)
-            
-        return
-    
-    return callback
-
-def print_current_brush(variable: tk.StringVar):
+def print_current_brush(variable: tk.Variable):
+    """
+    Generates callback for printing selected brush
+    """
     def res():
         print(variable.get())
-
     return res
 
-
 def new_brush_option(brush_list: tk.Frame, option: str, variable: tk.StringVar):
-    tk.Radiobutton(brush_list, text=option, variable=variable, value=option, command=print_current_brush(variable)).pack(anchor='w')
+    """
+    Creates new option in given frame
+    """
+    tk.Radiobutton(brush_list,
+                   text=option,
+                   variable=variable,
+                   value=option,
+                   command=print_current_brush(variable)).pack(anchor='w')
 
+def render_map(game_map: GameMap, layer: tk.StringVar):
+    """Renders selected layer"""
+    selected_layer = layer.get()
+    match selected_layer:
+        case 'terrain':
+            game_map.render_layer(Terrain.render_pixel)
+        case 'forest':
+            game_map.render_layer(Forest.render_pixel)
+        case 'markets':
+            game_map.render_layer(Markets.render_pixel)
+        case 'factions':
+            game_map.render_layer(Factions.render_pixel)
 
-def redraw_grid(canvas: tk.Canvas, size: Coordinate):
-    for x in range(size[0]):
-        for y in range(size[1]):
-            left, top, right, bottom = x_y_to_rect(x, y, size)
-            rect = canvas.create_rectangle(left, top, right, bottom, fill='purple')
-            GAME_MAP[(x,y)] = rect
-
-def render_terrain(canvas: tk.Canvas):
-    global WORLD_SIZE
-    for x in range(WORLD_SIZE[0]):
-        for y in range(WORLD_SIZE[1]):
-            display_terrain(canvas, (x, y))
-
-def render_forest(canvas: tk.Canvas):
-    global WORLD_SIZE
-    for x in range(WORLD_SIZE[0]):
-        for y in range(WORLD_SIZE[1]):
-            if TERRAIN[(x, y)] == 'sea':
-                display_terrain(canvas, (x, y))
-            else:
-                try: 
-                    value = LAYER_FOREST[(x, y)]
-                except:
-                    value = 0
-                display_coord(canvas, (x, y), '#' + str(min(value, 9)) + '00000')
-
-def render_market(canvas: tk.Canvas):
-    global WORLD_SIZE
-    for x in range(WORLD_SIZE[0]):
-        for y in range(WORLD_SIZE[1]):
-            if TERRAIN[(x, y)] == 'sea':
-                display_terrain(canvas, (x, y))
-            else:
-                try: 
-                    value = MARKETS[(x, y)]
-                except:
-                    value = 0
-                display_coord(canvas, (x, y), '#' + str(9 * value) + '00000')
-
-def render_map(canvas: tk.Canvas, layer_var: tk.StringVar):
-    if layer_var.get() == 'terrain':
-        render_terrain(canvas)
-        return
-    if layer_var.get() == 'forest':
-        render_forest(canvas)
-        return
-    if layer_var.get() == 'markets':
-        render_market(canvas)
-        return
-
-
-def export_world():
-    global WORLD_SIZE
-    with open('./default_world/map_terrain.txt', 'w') as file:
-        for x in range(WORLD_SIZE[0]):
-            for y in range(WORLD_SIZE[1]):
-                try:
-                    terrain = TERRAIN[(x, y)]
-                except:
-                    terrain = 'void'
-                print(terrain, end=' ', file= file)
-            print(file = file)
-
-    with open('./default_world/map_forest.txt', 'w') as file:
-        for x in range(WORLD_SIZE[0]):
-            for y in range(WORLD_SIZE[1]):
-                try:
-                    forest = LAYER_FOREST[(x, y)]
-                except:
-                    forest = 0
-                print(forest, end=' ', file= file)
-            print(file = file)
-
-def import_world(canvas: tk.Canvas):
-    global WORLD_SIZE
-    try:
-        with open('./default_world/map_terrain.txt') as file:
-            for x in range(WORLD_SIZE[0]):
-                line = file.readline().strip().split()
-                for y in range(WORLD_SIZE[1]):
-                    paint_terrain(canvas, (x, y), line[y])
-    except:
-        print('no world terrain found for import')
-
-    try:
-        with open('./default_world/map_forest.txt') as file:
-            for x in range(WORLD_SIZE[0]):
-                line = file.readline().strip().split()
-                for y in range(WORLD_SIZE[1]):
-                    LAYER_FOREST[(x, y)] = int(line[y])
-    except:
-        print('no forest file')
-        
-
-
-def loader(world_size: tk.StringVar,
-           canvas: tk.Canvas, 
-           brush_list: tk.Frame, 
-           brush_variable: tk.StringVar):
-    
+def loader(game_map: GameMap,
+           brush_list: tk.Frame,
+           faction_brushes: tk.Frame,
+           brush_variable: tk.StringVar,
+           faction_variable: tk.StringVar,
+           layer_variable: tk.StringVar):
+    """Generates world loading callback"""
     def load_world():
-        with open('./default_world/description.txt') as file:
+        with open('./default_world/description.txt', encoding="utf-8") as file:
             inputs = file.read()
+            game_map.size = tuple(map(int, inputs.split()))
             world_size.set(inputs)
+            game_map.generate_grid()
+            import_world(game_map)
 
-            global WORLD_SIZE
-            WORLD_SIZE = tuple(map(int, inputs.split()))
-            redraw_grid(canvas, WORLD_SIZE)
-            import_world(canvas)
-                
-
-
-
-        with open('./default_world/terrain.txt') as file:
+        with open('./default_world/terrain.txt', encoding="utf-8") as file:
             for line in file.readlines():
                 new_brush_option(brush_list, line.strip(), brush_variable)
-                
+
+        with open('./default_world/factions.txt', encoding="utf-8") as file:
+            for line in file.readlines():
+                tag, name, color = line.strip().split(';')
+                print(tag, name)
+                new_brush_option(faction_brushes, tag, faction_variable)
+                FACTION_COLOR[tag] = color
+
+        render_map(game_map, layer_variable)
+
 
     return load_world
-
-world_size = tk.StringVar(root, "????")
-current_brush = tk.StringVar(root, "void")
-mode_variable = tk.Variable(root, CANVAS_MODE.PAINT)
-map_layer_variable = tk.Variable(root, "terrain")
-
-canvas = tk.Canvas(root, bg="white", height=1000, width=1000)
-
-canvas.bind("<ButtonRelease-1>", drag_stop)
-canvas.bind("<Button-1>", drag_start)
-canvas.bind("<B1-Motion>", canvas_callvack(canvas, current_brush, mode_variable, map_layer_variable))
-
 
 data_frame = tk.Frame(root)
 
 world_size_label = tk.Label(data_frame, textvariable=world_size)
 brushes_frame = tk.Frame(data_frame)
+faction_brushes_frame = tk.Frame(data_frame)
 
-button = tk.Button(data_frame, text="Export World", 
-                   command=export_world)
+button = tk.Button(data_frame, text="Export World",
+                   command=ft.partial(export_world, CurrentGameMap))
 
-def show_terrain(canvas: tk.Canvas):
+def show_layer(game_map: GameMap, layer: str):
+    """
+    Generates callback for setting current layer and rendering
+    """
     def show():
-        map_layer_variable.set('terrain')
-        render_map(canvas, map_layer_variable)
-
+        map_layer_variable.set(layer)
+        render_map(game_map, map_layer_variable)
     return show
 
-def show_forest(canvas: tk.Canvas): 
-    def show():
-        map_layer_variable.set('forest')
-        render_map(canvas, map_layer_variable)
-
-    return show
-
-def show_markets(canvas: tk.Canvas):
-    def show():
-        map_layer_variable.set('markets')
-        render_map(canvas, map_layer_variable)
-    return show
-
-button_terrain = tk.Button(data_frame, text="Terrain", command=show_terrain(canvas))
-button_forest = tk.Button(data_frame, text="Forest", command=show_forest(canvas))
-button_markets = tk.Button(data_frame, text="Market", command=show_markets(canvas))
+button_terrain = tk.Button(data_frame,
+                           text="Terrain",
+                           command=show_layer(CurrentGameMap, 'terrain'))
+button_forest = tk.Button(data_frame,
+                          text="Forest",
+                          command=show_layer(CurrentGameMap, 'forest'))
+button_markets = tk.Button(data_frame,
+                           text="Market",
+                           command=show_layer(CurrentGameMap, 'markets'))
+button_markets = tk.Button(data_frame,
+                           text="Factions",
+                           command=show_layer(CurrentGameMap, 'factions'))
 
 tk.Label(brushes_frame, text="Select brush: ").pack()
 
-loader(world_size, canvas, brushes_frame, current_brush)()
+tk.Label(faction_brushes_frame, text="Select faction").pack()
+
+loader(CurrentGameMap,
+       brushes_frame,
+       faction_brushes_frame,
+       current_terrain_brush,
+       current_faction_brush,
+       map_layer_variable)()
 
 
 button.pack(padx=5,pady=5,)
@@ -369,24 +149,24 @@ button_markets.pack(padx=5,pady=5)
 world_size_label.pack(padx=5,pady=5,)
 
 brushes_frame.pack()
+faction_brushes_frame.pack()
 
 mode_frame = tk.Frame(data_frame)
 
-tk.Radiobutton(mode_frame, text="Fill",  variable=mode_variable, value=CANVAS_MODE.FILL, command=print_current_brush(mode_variable)).pack()
-tk.Radiobutton(mode_frame, text="Paint", variable=mode_variable, value=CANVAS_MODE.PAINT, command=print_current_brush(mode_variable)).pack()
+tk.Radiobutton(mode_frame,
+               text="Fill",
+               variable=mode_variable,
+               value=CanvasMode.FILL,
+               command=print_current_brush(mode_variable)).pack()
+tk.Radiobutton(mode_frame,
+               text="Paint",
+               variable=mode_variable,
+               value=CanvasMode.PAINT,
+               command=print_current_brush(mode_variable)).pack()
 
 
 mode_frame.pack()
 canvas.pack(padx=5, pady=5, side="right")
 data_frame.pack(padx=5, pady=5, side='left', expand=True)
-
-
-
-
-
-
-
-
-
 
 root.mainloop()

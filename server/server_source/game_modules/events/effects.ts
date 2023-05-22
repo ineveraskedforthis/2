@@ -4,7 +4,7 @@ import { skill } from "../character/SkillList";
 import { Perks } from "../character/Perks";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
-import { Data, character_list } from "../data";
+import { Data} from "../data";
 // import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
 import { Request } from "../client_communication/network_actions/request";

@@ -14,6 +14,7 @@ import { SocketWrapper } from "../user";
 import { Alerts } from "./alerts";
 import { SendUpdate } from "./updates";
 import { ScriptedValue } from "../../events/scripted_values";
+import { rooms } from "../../DATA_LAYOUT_BUILDING";
 
 
 export namespace Request {
@@ -112,7 +113,7 @@ export namespace Request {
             return {
                 id: id,
                 room_cost: ScriptedValue.room_price(id, character.id),
-                rooms: building.rooms,
+                rooms: rooms(building.type),
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,
                 type: building.type,

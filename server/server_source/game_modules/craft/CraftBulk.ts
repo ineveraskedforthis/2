@@ -7,7 +7,6 @@ import { generate_bulk_craft_action } from "./generate_action";
 import { box, CraftBulk, crafts_bulk, craft_actions, skill_check } from "./crafts_storage";
 import { use_input, on_craft_update, skill_to_ratio, MAX_SKILL_MULTIPLIER_BULK } from "./helpers";
 import { Event } from "../events/events";
-import { character_list } from "../data";
 
 
 export function event_craft_bulk(character: Character, craft: CraftBulk) {

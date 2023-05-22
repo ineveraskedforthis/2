@@ -7,7 +7,6 @@ const factions_1 = require("./factions");
 const items_set_up_1 = require("./items/items_set_up");
 const system_1 = require("./items/system");
 const materials_manager_1 = require("./manager_classes/materials_manager");
-const system_2 = require("./map/system");
 const elo_1 = require("./races/elo");
 const graci_1 = require("./races/graci");
 const human_1 = require("./races/human");
@@ -17,7 +16,7 @@ var Template;
     let Character;
     (function (Character) {
         function Base(template, name, model, x, y, faction_id) {
-            const cell = system_2.MapSystem.coordinate_to_id(x, y);
+            const cell = data_1.Data.World.coordinate_to_id([x, y]);
             let character = events_1.Event.new_character(template, name, cell, model);
             if (faction_id != undefined)
                 data_1.Data.Reputation.set(faction_id, character.id, "member");

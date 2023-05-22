@@ -1,23 +1,25 @@
-import { BuildingType } from "../DATA_LAYOUT_BUILDING";
+import { LandPlotType } from "../DATA_LAYOUT_BUILDING";
 import { Character } from "../character/character";
 import { Data } from "../data";
 import { building_id, char_id, money, tagRACE } from "../types";
 
 export namespace ScriptedValue {
-    export function building_rest_tier(type: BuildingType, character: Character): number {
+    export function building_rest_tier(type: LandPlotType, character: Character): number {
         switch(type){
-            case BuildingType.Shack:return 2
-            case BuildingType.Inn:return 3
-            case BuildingType.HumanHouse:return 4
-            case BuildingType.RatLair: {
+            case LandPlotType.Shack:return 2
+            case LandPlotType.Inn:return 3
+            case LandPlotType.HumanHouse:return 4
+            case LandPlotType.RatLair: {
                 if (character.race() == 'rat') return 5
                 return 2
             }
-            case BuildingType.ElodinoHouse: {
+            case LandPlotType.ElodinoHouse: {
                 if (character.race() == 'elo') return 5
                 return 2
             }
         }
+
+        return 0
     }
 
 
@@ -31,25 +33,29 @@ export namespace ScriptedValue {
         return building.room_cost as money
     }
 
-    export function building_price_wood(type: BuildingType) {
+    export function building_price_wood(type: LandPlotType) {
         switch(type){
-            case BuildingType.Shack:return 50
-            case BuildingType.Inn:return 400
-            case BuildingType.HumanHouse:return 200
-            case BuildingType.RatLair:return 0
-            case BuildingType.ElodinoHouse:return 600
+            case LandPlotType.Shack:return 50
+            case LandPlotType.Inn:return 400
+            case LandPlotType.HumanHouse:return 200
+            case LandPlotType.RatLair:return 0
+            case LandPlotType.ElodinoHouse:return 600
+            case LandPlotType.CottonField: return 800
+            case LandPlotType.FarmPlot: return 800
+            case LandPlotType.ForestPlot: return 800
+            case LandPlotType.LandPlot: return 800
         }
     }
 
-    export function building_rooms(type: BuildingType) {
-        switch(type){
-            case BuildingType.Shack:return 1
-            case BuildingType.Inn:return 5
-            case BuildingType.HumanHouse:return 2
-            case BuildingType.RatLair:return 10
-            case BuildingType.ElodinoHouse:return 10
-        }
-    }
+    // export function building_rooms(type: BuildingType) {
+    //     switch(type){
+    //         case BuildingType.Shack:return 1
+    //         case BuildingType.Inn:return 5
+    //         case BuildingType.HumanHouse:return 2
+    //         case BuildingType.RatLair:return 10
+    //         case BuildingType.ElodinoHouse:return 10
+    //     }
+    // }
 
     export function rest_target_fatigue(tier: number, quality: number, race: tagRACE) {
         let multiplier = 1

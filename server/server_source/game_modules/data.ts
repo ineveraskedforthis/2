@@ -22,14 +22,15 @@ import { LandPlotType } from "./DATA_LAYOUT_BUILDING"
 var world_size:world_coordinates = [0, 0]
 var max_direction = 0
 var terrain: Terrain[][] = []
-
+var is_market: Boolean[][] = []
 
 var battles_list:Battle[] = []
 var battles_dict:{[_ in battle_id]: Battle} = {}
 var last_id:battle_id = 0 as battle_id
 
 var last_character_id = 0 as char_id
-export var character_list:Character[] = []
+var character_list:Character[] = []
+var character_id_list:char_id[] = []
 var characters_dict:{[_ in char_id]: Character} = {}
 
 var orders_bulk:OrderBulk[] = []
@@ -87,7 +88,8 @@ const save_path =
 
     WORLD_DIMENSIONS: path.join(DEFAULT_WORLD_PATH, 'description.txt'),
     TERRAIN: path.join(DEFAULT_WORLD_PATH, 'map_terrain.txt'),
-    FORESTS: path.join(DEFAULT_WORLD_PATH, 'map_forest.txt')
+    FORESTS: path.join(DEFAULT_WORLD_PATH, 'map_forest.txt'),
+    MARKETS: path.join(DEFAULT_WORLD_PATH, 'map_markets.txt')
 }
 
 const save_path_bulk = path.join(SAVE_GAME_PATH, 'bulk_market.txt')
@@ -200,6 +202,19 @@ export namespace Data {
             }
         }
 
+        export function load_markets(path: string) {
+            terrain = []
+            let lines = read_lines(path)
+            for (let line of lines) {
+                let row = line.split(' ')
+                let markets_row = []
+                for (let market in row ) {
+                    markets_row.push(Number(market) == 1)
+                }
+                is_market.push(markets_row)
+            }
+        }
+
         export function load_forests(path: string) {
             terrain = []
             let lines = read_lines(path)
@@ -228,10 +243,20 @@ export namespace Data {
             return terrain
         }
 
+        export function id_to_terrain(cell_id: cell_id){
+            let [x, y] = id_to_coordinate(cell_id)
+            return terrain[x][y]
+        }
+        export function id_to_market(cell_id: cell_id){
+            let [x, y] = id_to_coordinate(cell_id)
+            return is_market[x][y]
+        }
+
         export function load() {
             load_world_dimensions(save_path.WORLD_DIMENSIONS)
             load_terrain(save_path.TERRAIN)
             load_forests(save_path.FORESTS)
+            load_markets(save_path.MARKETS)
         }
 
         export function set_world_dimensions(size: world_coordinates) {
@@ -285,6 +310,17 @@ export namespace Data {
             return Array.from(set)
         }
 
+        export function get_characters_list_display(cell: cell_id) {
+            let set = get_characters_set_from_cell(cell)
+            if (set == undefined) return []
+            const array = Array.from(set)
+            let responce = []
+            for (const item of array) {
+                let character = Data.CharacterDB.from_id(item)
+                responce.push({name: character.name, id: item})
+            }
+        }
+
         export function list() {
             return cells
         }
@@ -316,7 +352,10 @@ export namespace Data {
                 if (plot.durability > 0) return true
             }
         }
-
+        export function has_market(cell: cell_id) {
+            let [x, y] = World.id_to_coordinate(cell)
+            return is_market[x][y]
+        }
         export function forestation(cell: cell_id) {
             let result = 0
             let land_plots = Buildings.from_cell_id(cell)
@@ -629,6 +668,7 @@ export namespace Data {
 
         export function set(id: char_id, data: Character) {
             character_list.push(data)
+            character_id_list.push(id)
             characters_dict[id] = data
         }
 
@@ -639,6 +679,9 @@ export namespace Data {
         }
         export function list() {
             return character_list
+        }
+        export function list_of_id(){
+            return character_id_list
         }
     }
 

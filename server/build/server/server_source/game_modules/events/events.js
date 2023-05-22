@@ -14,7 +14,6 @@ const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
 const data_1 = require("../data");
 const materials_manager_1 = require("../manager_classes/materials_manager");
-const system_4 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
 const effects_1 = require("./effects");
 const inventory_events_1 = require("./inventory_events");
@@ -22,7 +21,9 @@ const market_1 = require("./market");
 const damage_types_1 = require("../damage_types");
 const skill_price_1 = require("../prices/skill_price");
 const scripted_values_1 = require("./scripted_values");
+// import { BuildingType } from "../DATA_LAYOUT_BUILDING";
 const helpers_1 = require("../craft/helpers");
+const GRAVEYARD_CELL = 0;
 var Event;
 (function (Event) {
     function buy_perk(student, perk, teacher) {
@@ -56,19 +57,21 @@ var Event;
         effects_1.Effect.Change.skill(student, skill, 1);
     }
     Event.buy_skill = buy_skill;
-    function move(character, new_cell) {
+    function move(character, new_cell_id) {
         // console.log(`Character ${character.name} moves to ${new_cell.x} ${new_cell.y}`)
-        const old_cell = systems_communication_1.Convert.character_to_cell(character);
-        systems_communication_1.Unlink.character_and_cell(character, old_cell);
-        systems_communication_1.Link.character_and_cell(character, new_cell);
+        const old_cell_id = character.cell_id;
+        // Unlink.character_and_cell(character, old_cell)
+        systems_communication_1.Link.character_and_cell(character.id, new_cell_id);
         let probability = 0.5;
-        if (old_cell.development.wild > 0)
+        let urbanisation = data_1.Data.Cells.urbanisation(old_cell_id);
+        let forestation = data_1.Data.Cells.forestation(old_cell_id);
+        if (forestation > 100)
             probability += 0.1;
-        if (old_cell.development.wild > 1)
+        if (forestation > 300)
             probability += 0.1;
-        if (old_cell.development.urban > 0)
+        if (urbanisation > 4)
             probability -= 0.2;
-        if (old_cell.development.rural > 0)
+        if (urbanisation > 0)
             probability -= 0.1;
         // effect on fatigue depending on boots
         if (character.equip.data.armour.foot == undefined) {
@@ -91,6 +94,7 @@ var Event;
         let user = systems_communication_1.Convert.character_to_user(character);
         if (user == undefined)
             return;
+        let new_cell = data_1.Data.Cells.from_id(new_cell_id);
         alerts_1.Alerts.log_to_user(user, 'rat scent ' + new_cell.rat_scent);
     }
     Event.move = move;
@@ -100,12 +104,8 @@ var Event;
         if (model == undefined)
             model = { chin: 0, mouth: 0, eyes: 0 };
         character.set_model_variation(model);
-        const cell = system_4.MapSystem.SAFE_id_to_cell(starting_cell);
-        // console.log(character.name)
-        // console.log(template.archetype)
-        // console.log(cell.x, cell.y)
-        // console.log(character.ai_map())
-        systems_communication_1.Link.character_and_cell(character, cell);
+        const cell = data_1.Data.Cells.from_id(starting_cell);
+        systems_communication_1.Link.character_and_cell(character.id, cell.id);
         data_1.Data.CharacterDB.save();
         return character;
     }
@@ -387,7 +387,7 @@ var Event;
         }
     }
     function kill(killer, victim) {
-        let cell = system_4.MapSystem.id_to_cell(killer.cell_id);
+        let cell = data_1.Data.Cells.from_id(killer.cell_id);
         console.log(killer.name + ' kills ' + victim.name + ' at ' + `(${cell?.x}, ${cell?.y})`);
         death(victim);
         if (killer.id == victim.id) {
@@ -433,9 +433,9 @@ var Event;
         systems_communication_1.Unlink.user_data_and_character(user_data, character);
         const battle = systems_communication_1.Convert.character_to_battle(character);
         systems_communication_1.Unlink.character_and_battle(character, battle);
-        const cell = systems_communication_1.Convert.character_to_cell(character);
-        cell.changed_characters = true;
-        systems_communication_1.Unlink.character_and_cell(character, cell);
+        // const cell = Convert.character_to_cell(character)
+        // cell.changed_characters = true
+        systems_communication_1.Link.character_and_cell(character.id, GRAVEYARD_CELL);
         character.cleared = true;
     }
     Event.death = death;
@@ -522,11 +522,11 @@ var Event;
     Event.stop_battle = stop_battle;
     function build_building(character, type) {
         let cost = scripted_values_1.ScriptedValue.building_price_wood(type);
-        let rooms = scripted_values_1.ScriptedValue.building_rooms(type);
+        // let rooms = ScriptedValue.building_rooms(type)
         if (character.stash.get(materials_manager_1.WOOD) < cost)
             return;
         change_stash(character, materials_manager_1.WOOD, -cost);
-        effects_1.Effect.new_building(character.cell_id, type, rooms, character.skills.woodwork);
+        effects_1.Effect.new_building(character.cell_id, type, character.skills.woodwork);
     }
     Event.build_building = build_building;
     function repair_building(character, builing_id) {

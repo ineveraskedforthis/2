@@ -11,6 +11,7 @@ const helpers_1 = require("./helpers");
 const constraints_1 = require("./constraints");
 const triggers_1 = require("./triggers");
 const actions_1 = require("./actions");
+const system_1 = require("../map/system");
 function RatHunterRoutine(character) {
     if (character.in_battle())
         return;
@@ -36,8 +37,8 @@ function RatHunterRoutine(character) {
         return;
     }
     if ((0, actions_1.loot)(character) > 10) {
-        let cell = systems_communication_1.Convert.character_to_cell(character);
-        if (cell.is_market()) {
+        // let cell = Convert.character_to_cell(character)
+        if (system_1.MapSystem.has_market(character.cell_id)) {
             (0, actions_1.update_price_beliefs)(character);
             (0, actions_1.sell_loot)(character);
             character.ai_state = 1 /* AIstate.WaitSale */;

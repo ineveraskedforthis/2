@@ -14,6 +14,7 @@ const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
 const updates_1 = require("./updates");
 const scripted_values_1 = require("../../events/scripted_values");
+const DATA_LAYOUT_BUILDING_1 = require("../../DATA_LAYOUT_BUILDING");
 var Request;
 (function (Request) {
     function accuracy(sw, distance) {
@@ -95,7 +96,7 @@ var Request;
             return {
                 id: id,
                 room_cost: scripted_values_1.ScriptedValue.room_price(id, character.id),
-                rooms: building.rooms,
+                rooms: (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type),
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,
                 type: building.type,

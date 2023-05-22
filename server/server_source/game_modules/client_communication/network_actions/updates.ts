@@ -1,7 +1,7 @@
 import { Accuracy } from "../../battle/battle_calcs";
 import { SkillList } from "../../character/SkillList";
 import { MapSystem } from "../../map/system";
-import { Development } from "../../static_data/map_definitions";
+import { CellDisplayData } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";
 import { cell_id, weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
@@ -17,6 +17,8 @@ import { CharacterSystem } from "../../character/system";
 import { Attack } from "../../attack/system";
 import { Request } from "./request";
 import { DmgOps } from "../../damage_types";
+import { Data } from "../../data";
+import { terrain_to_string } from "../../map/terrain";
 
 
 
@@ -293,20 +295,28 @@ export namespace SendUpdate {
 
         for (let i = 0; i < character.explored.length; i++) {
             if (character.explored[i]) {
-                let cell = MapSystem.id_to_cell(i as cell_id)
+                let cell = Data.Cells.from_id(i as cell_id)
                 if (cell != undefined) {
                     let x = cell.x
                     let y = cell.y
-                    let data = cell.development
+                    let terrain = Data.World.id_to_terrain(cell.id);
+                    let forestation = Data.Cells.forestation(cell.id);
+                    let urbanisation = Data.Cells.urbanisation(cell.id);
 
-                    let res1: {[_ in string]: Development} = {}
-                    res1[x + '_' + y] = data
-                    if (data != undefined) {
-                        Alerts.generic_user_alert(user, 'map-data-cells', res1)
+                    // let res1: {[_ in string]: CellDisplayData} = {}
+                    
+                    const diplay_data = {
+                        terrain: terrain_to_string(terrain),
+                        forestaion: forestation,
+                        urbanisation: urbanisation
                     }
 
-                    let res2 = {x: x, y: y, ter: cell.terrain}
-                    Alerts.generic_user_alert(user, 'map-data-terrain', res2)
+                    // if (data != undefined) {
+                    //     Alerts.generic_user_alert(user, 'map-data-cells', res1)
+                    // }
+
+                    let res2 = {x: x, y: y, ter: diplay_data}
+                    Alerts.generic_user_alert(user, 'map-data-display', res2)
                 }
             }            
         }
@@ -331,8 +341,7 @@ export namespace SendUpdate {
     export function local_characters(user: User) {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
-        const cell = Convert.character_to_cell(character)
-        let characters_list = cell.get_characters_list()
+        let characters_list = Data.Cells.get_characters_list_display(character.cell_id)
         Alerts.generic_user_alert(user, 'cell-characters', characters_list)
     }
 
@@ -340,11 +349,11 @@ export namespace SendUpdate {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
         const cell = Convert.character_to_cell(character)
-        Alerts.map_action(user, 'fish'          , cell.can_fish())
-        Alerts.map_action(user, 'hunt'          , cell.can_hunt())
-        Alerts.map_action(user, 'clean'         , cell.can_clean())
-        Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
-        Alerts.map_action(user, 'gather_cotton'   , cell.can_gather_cotton())
+        // Alerts.map_action(user, 'fish'          , cell.can_fish())
+        // Alerts.map_action(user, 'hunt'          , cell.can_hunt())
+        // Alerts.map_action(user, 'clean'         , cell.can_clean())
+        // Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
+        // Alerts.map_action(user, 'gather_cotton' , cell.can_gather_cotton())
     }
 
     export function map_related(user: User) {

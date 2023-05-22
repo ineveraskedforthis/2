@@ -14,10 +14,7 @@ export namespace EventMarket {
     export function buy(character: Character, material:material_index, amount: number, price: money) {
         const responce = BulkOrders.new_buy_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
-
-        const cell = Convert.character_to_cell(character)
-        Effect.Update.cell_market(cell)
-
+        Effect.Update.cell_market(character.cell_id)
         return responce
     }
 
@@ -25,10 +22,7 @@ export namespace EventMarket {
         // console.log('sell ' + material + ' ' + amount + ' ' + price)
         const responce = BulkOrders.new_sell_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
-
-        const cell = Convert.character_to_cell(character)
-        Effect.Update.cell_market(cell)
-
+        Effect.Update.cell_market(character.cell_id)
         return responce
     }
 
@@ -37,8 +31,7 @@ export namespace EventMarket {
         const responce = ItemOrders.sell(character, index, price)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
 
-        const cell = Convert.character_to_cell(character)
-        Effect.Update.cell_market(cell)
+        Effect.Update.cell_market(character.cell_id)
         return responce
     }
 
@@ -60,8 +53,7 @@ export namespace EventMarket {
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.STASH)
 
-        const cell = Convert.character_to_cell(seller)
-        Effect.Update.cell_market(cell)
+        Effect.Update.cell_market(buyer.cell_id)
     }
 
     export function execute_buy_order(seller:Character, order_id: order_bulk_id, amount: number) {
@@ -74,8 +66,7 @@ export namespace EventMarket {
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.STASH)
         
-        const cell = Convert.character_to_cell(seller)
-        Effect.Update.cell_market(cell)
+        Effect.Update.cell_market(seller.cell_id)
     }
 
     export function buyout_item(buyer: Character, order_id: number) {
@@ -90,8 +81,7 @@ export namespace EventMarket {
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.BELONGINGS)
         UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
 
-        const cell = Convert.character_to_cell(buyer)
-        Effect.Update.cell_market(cell)
+        Effect.Update.cell_market(buyer.cell_id)
     }
 
     /**
@@ -109,8 +99,7 @@ export namespace EventMarket {
     export function remove_item_orders(character: Character) {
         ItemOrders.remove_all_character(character)
 
-        const cell = Convert.character_to_cell(character)
-        Effect.Update.cell_market(cell)
+        Effect.Update.cell_market(character.cell_id)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
     }
 
@@ -130,8 +119,7 @@ export namespace EventMarket {
         BulkOrders.remove(order_id)
 
         const character = Data.CharacterDB.from_id(order.owner_id)
-        const cell = Convert.character_to_cell(character)
-        Effect.Update.cell_market(cell)   
+        Effect.Update.cell_market(character.cell_id)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)     
     }
 }

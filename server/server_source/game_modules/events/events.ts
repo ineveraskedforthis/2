@@ -18,7 +18,7 @@ import { Alerts } from "../client_communication/network_actions/alerts";
 import { UserManagement } from "../client_communication/user_manager";
 import { Data } from "../data";
 import { ARROW_BONE, materials, material_index, RAT_SKIN, ZAZ, WOOD } from "../manager_classes/materials_manager";
-import { Cell } from "../map/cell";
+// import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert, Link, Unlink } from "../systems_communication";
 import { cell_id, damage_type, weapon_attack_tag } from "../types";
@@ -31,8 +31,12 @@ import { Damage } from "../Damage";
 import { skill } from "../character/SkillList";
 import { skill_price } from "../prices/skill_price";
 import { ScriptedValue } from "./scripted_values";
-import { BuildingType } from "../DATA_LAYOUT_BUILDING";
+// import { BuildingType } from "../DATA_LAYOUT_BUILDING";
 import { on_craft_update } from "../craft/helpers";
+import { Cell } from "../map/DATA_LAYOUT_CELL";
+import { LandPlotType } from "../DATA_LAYOUT_BUILDING";
+
+const GRAVEYARD_CELL = 0 as cell_id
 
 export namespace Event {
 
@@ -72,17 +76,19 @@ export namespace Event {
         Effect.Change.skill(student, skill, 1)
     }
 
-    export function move(character: Character, new_cell: Cell) {
+    export function move(character: Character, new_cell_id: cell_id) {
         // console.log(`Character ${character.name} moves to ${new_cell.x} ${new_cell.y}`)
-        const old_cell = Convert.character_to_cell(character)
-        Unlink.character_and_cell(character, old_cell)
-        Link.character_and_cell(character, new_cell)
+        const old_cell_id = character.cell_id
+        // Unlink.character_and_cell(character, old_cell)
+        Link.character_and_cell(character.id, new_cell_id)
 
         let probability = 0.5
-        if (old_cell.development.wild > 0) probability += 0.1
-        if (old_cell.development.wild > 1) probability += 0.1
-        if (old_cell.development.urban > 0) probability -= 0.2
-        if (old_cell.development.rural > 0) probability -= 0.1
+        let urbanisation = Data.Cells.urbanisation(old_cell_id)
+        let forestation = Data.Cells.forestation(old_cell_id)
+        if (forestation > 100) probability += 0.1
+        if (forestation > 300) probability += 0.1
+        if (urbanisation > 4) probability -= 0.2
+        if (urbanisation > 0) probability -= 0.1
 
         // effect on fatigue depending on boots
         if (character.equip.data.armour.foot == undefined) {
@@ -107,6 +113,7 @@ export namespace Event {
 
         let user = Convert.character_to_user(character)
         if (user == undefined) return
+        let new_cell = Data.Cells.from_id(new_cell_id)
         Alerts.log_to_user(user, 'rat scent ' + new_cell.rat_scent)
     }
 
@@ -115,13 +122,8 @@ export namespace Event {
         let character = CharacterSystem.template_to_character(template, name, starting_cell)
         if (model == undefined) model = {chin: 0, mouth: 0, eyes: 0}
         character.set_model_variation(model)
-        const cell = MapSystem.SAFE_id_to_cell(starting_cell)
-        // console.log(character.name)
-        // console.log(template.archetype)
-        // console.log(cell.x, cell.y)
-        // console.log(character.ai_map())
-        Link.character_and_cell(character, cell)
-
+        const cell = Data.Cells.from_id(starting_cell)
+        Link.character_and_cell(character.id, cell.id)
         Data.CharacterDB.save()
         return character
     }
@@ -437,7 +439,7 @@ export namespace Event {
     }
 
     export function kill(killer: Character, victim: Character) {
-        let cell = MapSystem.id_to_cell(killer.cell_id)
+        let cell = Data.Cells.from_id(killer.cell_id)
         console.log(killer.name + ' kills ' + victim.name + ' at ' + `(${cell?.x}, ${cell?.y})`)
         death(victim)
 
@@ -494,11 +496,10 @@ export namespace Event {
         const battle = Convert.character_to_battle(character)
         Unlink.character_and_battle(character, battle)
 
-        const cell = Convert.character_to_cell(character)
-        cell.changed_characters = true
-        Unlink.character_and_cell(character, cell)
+        // const cell = Convert.character_to_cell(character)
+        // cell.changed_characters = true
+        Link.character_and_cell(character.id, GRAVEYARD_CELL)
         character.cleared = true
-
     }
 
     export function change_stash(character: Character, tag: material_index, amount: number) {
@@ -575,14 +576,14 @@ export namespace Event {
         }
     }
 
-    export function build_building(character: Character, type: BuildingType) {
+    export function build_building(character: Character, type: LandPlotType) {
         let cost = ScriptedValue.building_price_wood(type)
-        let rooms = ScriptedValue.building_rooms(type)
+        // let rooms = ScriptedValue.building_rooms(type)
 
         if (character.stash.get(WOOD) < cost) return
 
         change_stash(character, WOOD, -cost)
-        Effect.new_building(character.cell_id, type, rooms, character.skills.woodwork)
+        Effect.new_building(character.cell_id, type, character.skills.woodwork)
     }
 
     export function repair_building(character: Character, builing_id: building_id) {

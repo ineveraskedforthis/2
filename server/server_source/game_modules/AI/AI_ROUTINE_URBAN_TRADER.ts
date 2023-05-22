@@ -33,7 +33,7 @@ export function TraderRoutine(character: Character) {
 
     if (character.ai_state == AIstate.GoToMarket) {
         // console.log('going to market')
-        if (MapSystem.is_market(character.cell_id)) {
+        if (MapSystem.has_market(character.cell_id)) {
             sell_all_stash(character)
             character.ai_state = AIstate.WaitSale
         } else {

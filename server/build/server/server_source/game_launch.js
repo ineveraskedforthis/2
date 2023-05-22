@@ -43,19 +43,20 @@ function launch(http_server) {
 }
 exports.launch = launch;
 function load() {
-    system_2.MapSystem.load();
+    // MapSystem.load()
     data_1.Data.load();
     user_manager_1.UserManagement.load_users();
     auth_1.Auth.load();
     system_3.BattleSystem.load();
-    const characters = data_1.Data.CharacterDB.list();
+    const characters = data_1.Data.CharacterDB.list_of_id();
     //validating ids and connections
     for (const character of characters) {
-        systems_communication_1.Link.character_and_cell(character, systems_communication_1.Convert.character_to_cell(character));
-        const battle = systems_communication_1.Convert.character_to_battle(character);
+        const object = data_1.Data.CharacterDB.from_id(character);
+        systems_communication_1.Link.character_and_cell(character, object.cell_id);
+        const battle = systems_communication_1.Convert.character_to_battle(object);
         if (battle == undefined) {
-            character.battle_id = -1;
-            character.battle_unit_id = -1;
+            object.battle_id = -1;
+            object.battle_unit_id = -1;
         }
         // EventMarket.clear_orders(character)
     }

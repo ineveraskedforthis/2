@@ -282,7 +282,7 @@ socket.on('map-data-cells', data => {
     map.load_data(data)
     update_background()
 })
-socket.on('map-data-terrain', data => {map.load_terrain(data)})
+socket.on('map-data-display', data => {map.load_terrain(data)})
 socket.on('map-data-reset', data => {map.reset()})
 socket.on('map-action-status', data => map.update_action_status(data))
 socket.on('cell-action-chance', msg => map.update_probability(msg))

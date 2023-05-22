@@ -2,18 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SendUpdate = void 0;
 const battle_calcs_1 = require("../../battle/battle_calcs");
-const system_1 = require("../../map/system");
 const systems_communication_1 = require("../../systems_communication");
 const types_1 = require("../../types");
 const alerts_1 = require("./alerts");
-const system_2 = require("../../battle/system");
+const system_1 = require("../../battle/system");
 const constants_1 = require("../../static_data/constants");
 const helper_functions_1 = require("../helper_functions");
 const CraftItem_1 = require("../../craft/CraftItem");
 const CraftBulk_1 = require("../../craft/CraftBulk");
-const system_3 = require("../../character/system");
-const system_4 = require("../../attack/system");
+const system_2 = require("../../character/system");
+const system_3 = require("../../attack/system");
 const damage_types_1 = require("../../damage_types");
+const data_1 = require("../../data");
+const terrain_1 = require("../../map/terrain");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -40,12 +41,12 @@ var SendUpdate;
         if (character == undefined)
             return;
         const stats = {
-            phys_power: system_3.CharacterSystem.phys_power(character),
-            magic_power: system_3.CharacterSystem.magic_power(character),
-            enchant_rating: system_3.CharacterSystem.enchant_rating(character),
-            movement_cost: system_3.CharacterSystem.movement_cost_battle(character),
-            move_duration_map: system_3.CharacterSystem.movement_duration_map(character),
-            base_damage_magic_bolt: system_4.Attack.magic_bolt_base_damage(character)
+            phys_power: system_2.CharacterSystem.phys_power(character),
+            magic_power: system_2.CharacterSystem.magic_power(character),
+            enchant_rating: system_2.CharacterSystem.enchant_rating(character),
+            movement_cost: system_2.CharacterSystem.movement_cost_battle(character),
+            move_duration_map: system_2.CharacterSystem.movement_duration_map(character),
+            base_damage_magic_bolt: system_3.Attack.magic_bolt_base_damage(character)
         };
         alerts_1.Alerts.generic_user_alert(user, 'stats', stats);
     }
@@ -58,7 +59,7 @@ var SendUpdate;
             const battle = systems_communication_1.Convert.id_to_battle(character.battle_id);
             let unit_id = character.battle_unit_id;
             alerts_1.Alerts.battle_progress(user, true);
-            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_2.BattleSystem.data(battle));
+            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_1.BattleSystem.data(battle));
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);
             alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
         }
@@ -272,18 +273,24 @@ var SendUpdate;
         map_position(user, true);
         for (let i = 0; i < character.explored.length; i++) {
             if (character.explored[i]) {
-                let cell = system_1.MapSystem.id_to_cell(i);
+                let cell = data_1.Data.Cells.from_id(i);
                 if (cell != undefined) {
                     let x = cell.x;
                     let y = cell.y;
-                    let data = cell.development;
-                    let res1 = {};
-                    res1[x + '_' + y] = data;
-                    if (data != undefined) {
-                        alerts_1.Alerts.generic_user_alert(user, 'map-data-cells', res1);
-                    }
-                    let res2 = { x: x, y: y, ter: cell.terrain };
-                    alerts_1.Alerts.generic_user_alert(user, 'map-data-terrain', res2);
+                    let terrain = data_1.Data.World.id_to_terrain(cell.id);
+                    let forestation = data_1.Data.Cells.forestation(cell.id);
+                    let urbanisation = data_1.Data.Cells.urbanisation(cell.id);
+                    // let res1: {[_ in string]: CellDisplayData} = {}
+                    const diplay_data = {
+                        terrain: (0, terrain_1.terrain_to_string)(terrain),
+                        forestaion: forestation,
+                        urbanisation: urbanisation
+                    };
+                    // if (data != undefined) {
+                    //     Alerts.generic_user_alert(user, 'map-data-cells', res1)
+                    // }
+                    let res2 = { x: x, y: y, ter: diplay_data };
+                    alerts_1.Alerts.generic_user_alert(user, 'map-data-display', res2);
                 }
             }
         }
@@ -310,8 +317,7 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        const cell = systems_communication_1.Convert.character_to_cell(character);
-        let characters_list = cell.get_characters_list();
+        let characters_list = data_1.Data.Cells.get_characters_list_display(character.cell_id);
         alerts_1.Alerts.generic_user_alert(user, 'cell-characters', characters_list);
     }
     SendUpdate.local_characters = local_characters;
@@ -320,11 +326,11 @@ var SendUpdate;
         if (character == undefined)
             return;
         const cell = systems_communication_1.Convert.character_to_cell(character);
-        alerts_1.Alerts.map_action(user, 'fish', cell.can_fish());
-        alerts_1.Alerts.map_action(user, 'hunt', cell.can_hunt());
-        alerts_1.Alerts.map_action(user, 'clean', cell.can_clean());
-        alerts_1.Alerts.map_action(user, 'gather_wood', cell.can_gather_wood());
-        alerts_1.Alerts.map_action(user, 'gather_cotton', cell.can_gather_cotton());
+        // Alerts.map_action(user, 'fish'          , cell.can_fish())
+        // Alerts.map_action(user, 'hunt'          , cell.can_hunt())
+        // Alerts.map_action(user, 'clean'         , cell.can_clean())
+        // Alerts.map_action(user, 'gather_wood'   , cell.can_gather_wood())
+        // Alerts.map_action(user, 'gather_cotton' , cell.can_gather_cotton())
     }
     SendUpdate.local_actions = local_actions;
     function map_related(user) {
@@ -343,13 +349,13 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        let blunt = damage_types_1.DmgOps.total(system_4.Attack.generate_melee(character, 'blunt').damage);
-        let slice = damage_types_1.DmgOps.total(system_4.Attack.generate_melee(character, 'slice').damage);
-        let pierce = damage_types_1.DmgOps.total(system_4.Attack.generate_melee(character, 'pierce').damage);
+        let blunt = damage_types_1.DmgOps.total(system_3.Attack.generate_melee(character, 'blunt').damage);
+        let slice = damage_types_1.DmgOps.total(system_3.Attack.generate_melee(character, 'slice').damage);
+        let pierce = damage_types_1.DmgOps.total(system_3.Attack.generate_melee(character, 'pierce').damage);
         alerts_1.Alerts.battle_action_damage(user, 'attack_blunt', blunt);
         alerts_1.Alerts.battle_action_damage(user, 'attack_slice', slice);
         alerts_1.Alerts.battle_action_damage(user, 'attack_pierce', pierce);
-        let ranged = damage_types_1.DmgOps.total(system_4.Attack.generate_ranged(character).damage);
+        let ranged = damage_types_1.DmgOps.total(system_3.Attack.generate_ranged(character).damage);
         alerts_1.Alerts.battle_action_damage(user, 'shoot', ranged);
     }
     SendUpdate.attack_damage = attack_damage;
