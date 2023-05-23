@@ -37,6 +37,16 @@ def export_world(game_map: GameMap):
                 print(value, end=' ', file= file)
             print(file = file)
 
+    with open('./default_world/map_factions.txt', 'w', encoding='utf-8') as file:
+        for x in range(game_map.size[0]):
+            for y in range(game_map.size[1]):
+                value = FACTIONS.get((x, y), 'none')
+                print(value, end=' ', file= file)
+            print(file = file)
+    
+    with open('./default_world/map_spawn_points.txt', 'w', encoding='utf-8') as file:
+        for key, value in SPAWN_POINTS.items():
+            print(key, value[0], value[1], file = file)
 
 def import_world(game_map: GameMap):
     """Imports world from txt files"""
@@ -67,3 +77,19 @@ def import_world(game_map: GameMap):
     except OSError:
         print('no market file')
         
+    try:
+        with open('./default_world/map_factions.txt', encoding='utf-8') as file:
+            for x in range(game_map.size[0]):
+                line = file.readline().strip().split()
+                for y in range(game_map.size[1]):
+                    FACTIONS[(x, y)] = line[y]
+    except OSError:
+        print('no factions file')
+
+    try:
+        with open('./default_world/map_spawn_points.txt', encoding='utf-8') as file:
+            for line in file.readlines():
+                tag, x, y = line.strip().split()
+                SPAWN_POINTS[tag] = (int(x), int(y))
+    except OSError:
+        print('no spawn points file')

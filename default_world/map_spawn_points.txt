@@ -1,0 +1,6 @@
+steppe_humans 9 9
+city 2 6
+rats 12 16
+graci 17 13
+elodino_free 24 20
+big_humans 10 28
