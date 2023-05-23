@@ -1,3 +1,4 @@
+none;None;black
 city;City;ivory3
 rats;Rats Kingdom;grey14
 steppe_humans;Humans of the Steppe;yellow3

@@ -14,7 +14,7 @@ import world_editor_layer_forest as Forest
 import world_editor_layer_factions as Factions
 import world_editor_layer_markets as Markets
 
-from world_editor_data import export_world, import_world, FACTION_COLOR
+from world_editor_data import export_world, import_world, FACTION_COLOR, FACTIONS_LIST
 from world_editor_main_callback import MapInteraction
 
 sys.setrecursionlimit(10000)
@@ -22,7 +22,7 @@ root = tk.Tk()
 canvas = tk.Canvas(root, bg="white", height=1000, width=1000)
 world_size = tk.StringVar(root, "????")
 current_terrain_brush = tk.StringVar(root, "void")
-current_faction_brush = tk.StringVar(root, "city")
+current_faction_brush = tk.StringVar(root, "none")
 mode_variable = tk.Variable(root, CanvasMode.PAINT)
 map_layer_variable = tk.StringVar(root, "terrain")
 
@@ -93,6 +93,7 @@ def loader(game_map: GameMap,
                 print(tag, name)
                 new_brush_option(faction_brushes, tag, faction_variable)
                 FACTION_COLOR[tag] = color
+                FACTIONS_LIST.append(tag)
 
         render_map(game_map, layer_variable)
 

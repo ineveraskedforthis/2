@@ -97,8 +97,12 @@ class MapInteraction:
                     Markets.paint_pixel(game_map, coord)
                     Markets.render_pixel(game_map, coord)
                 elif selected_layer == 'factions':
-                    selected_faction = faction.get()
-                    Factions.paint_pixel(game_map, coord, selected_faction)
-                    Factions.render_pixel(game_map, coord)
+                    match selected_mode:
+                        case "CanvasMode.PAINT":
+                            selected_faction = faction.get()
+                            Factions.paint_pixel(game_map, coord, selected_faction)
+                            Factions.render_pixel(game_map, coord)
+                        case "CanvasMode.SECONDARY":
+                            Factions.set_spawn(game_map, coord)
 
         return callback

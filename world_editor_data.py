@@ -12,6 +12,7 @@ MARKETS: typing.DefaultDict[Coordinate, bool] = {} #type: ignore
 FACTIONS: typing.DefaultDict[Coordinate, str] = {} #type: ignore
 SPAWN_POINTS: typing.DefaultDict[str, Coordinate] = {} #type: ignore
 FACTION_COLOR: typing.DefaultDict[str, str] = {} #type: ignore
+FACTIONS_LIST: typing.List[str]= []
 
 def export_world(game_map: GameMap):
     """Exports world into txt files"""
