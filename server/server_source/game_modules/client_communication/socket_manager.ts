@@ -145,7 +145,7 @@ export class SocketManager {
         }
     }
 
-    create_character(sw: SocketWrapper, data: {name: string, eyes: number, chin: number, mouth: number, location: string, race: string}) {
+    create_character(sw: SocketWrapper, data: {name: string, eyes: number, chin: number, mouth: number, faction: string, race: string}) {
         if (sw.user_id == '#') return
         let user = UserManagement.get_user(sw.user_id)
 
@@ -165,11 +165,8 @@ export class SocketManager {
             mouth: data.mouth
         }
         
-        // if (data.location == 'village') {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
-        // else                            {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
-
         console.log(data)
-        UserManagement.get_new_character(sw.user_id, data.name, model_variation, data.race as tagModel)
+        UserManagement.get_new_character(sw.user_id, data.name, model_variation, data.faction)
         UserManagement.update_users()
     }
 

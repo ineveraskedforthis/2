@@ -116,10 +116,8 @@ class SocketManager {
             chin: data.chin,
             mouth: data.mouth
         };
-        // if (data.location == 'village') {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
-        // else                            {var starting_cell = MapSystem.coordinate_to_id(7, 5)}
         console.log(data);
-        user_manager_1.UserManagement.get_new_character(sw.user_id, data.name, model_variation, data.race);
+        user_manager_1.UserManagement.get_new_character(sw.user_id, data.name, model_variation, data.faction);
         user_manager_1.UserManagement.update_users();
     }
     play(sw) {

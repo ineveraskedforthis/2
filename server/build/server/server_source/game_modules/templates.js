@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Template = void 0;
 const data_1 = require("./data");
 const events_1 = require("./events/events");
-const factions_1 = require("./factions");
+// import { Factions } from "./factions"
 const items_set_up_1 = require("./items/items_set_up");
 const system_1 = require("./items/system");
 const materials_manager_1 = require("./manager_classes/materials_manager");
@@ -34,7 +34,7 @@ var Template;
         }
         Character.GenericHuman = GenericHuman;
         function HumanSteppe(x, y, name) {
-            let human = GenericHuman(x, y, name, factions_1.Factions.Steppes.id);
+            let human = GenericHuman(x, y, name, 'steppe_humans');
             human.skills.hunt += 20;
             human.skills.skinning += 10;
             human.skills.cooking += 10;
@@ -50,7 +50,7 @@ var Template;
         }
         Character.HumanStrong = HumanStrong;
         function HumanCity(x, y, name) {
-            let human = GenericHuman(x, y, name, factions_1.Factions.City.id);
+            let human = GenericHuman(x, y, name, 'city');
             human.skills.fishing += 20;
             human.skills.noweapon += 5;
             return human;
@@ -151,13 +151,13 @@ var Template;
         }
         Character.HumanLocalTrader = HumanLocalTrader;
         function GenericRat(x, y, name) {
-            let rat = Base(rat_1.RatTemplate, name, undefined, x, y, factions_1.Factions.Rats.id);
+            let rat = Base(rat_1.RatTemplate, name, undefined, x, y, 'rats');
             rat.perks.claws = true;
             return rat;
         }
         Character.GenericRat = GenericRat;
         function MageRat(x, y, name) {
-            let rat = Base(rat_1.MageRatTemplate, name, undefined, x, y, factions_1.Factions.Rats.id);
+            let rat = Base(rat_1.MageRatTemplate, name, undefined, x, y, 'rats');
             rat.perks.claws = true;
             rat.perks.magic_bolt = true;
             rat.perks.mage_initiation = true;
@@ -166,7 +166,7 @@ var Template;
         }
         Character.MageRat = MageRat;
         function BerserkRat(x, y, name) {
-            let rat = Base(rat_1.BerserkRatTemplate, name, undefined, x, y, factions_1.Factions.Rats.id);
+            let rat = Base(rat_1.BerserkRatTemplate, name, undefined, x, y, 'rats');
             rat.perks.claws = true;
             rat.perks.charge = true;
             rat.skills.noweapon = 40;
@@ -174,14 +174,14 @@ var Template;
         }
         Character.BerserkRat = BerserkRat;
         function BigRat(x, y, name) {
-            let rat = Base(rat_1.BigRatTemplate, name, undefined, x, y, factions_1.Factions.Rats.id);
+            let rat = Base(rat_1.BigRatTemplate, name, undefined, x, y, 'rats');
             rat.perks.claws = true;
             rat.skills.noweapon = 40;
             return rat;
         }
         Character.BigRat = BigRat;
         function MageElo(x, y, name) {
-            let elo = Base(elo_1.EloTemplate, name, undefined, x, y, factions_1.Factions.Elodinos.id);
+            let elo = Base(elo_1.EloTemplate, name, undefined, x, y, 'elodino_free');
             elo.perks.magic_bolt = true;
             elo.perks.mage_initiation = true;
             elo.skills.magic_mastery = 20;
@@ -191,12 +191,12 @@ var Template;
         }
         Character.MageElo = MageElo;
         function Elo(x, y, name) {
-            let elo = Base(elo_1.EloTemplate, name, undefined, x, y, factions_1.Factions.Elodinos.id);
+            let elo = Base(elo_1.EloTemplate, name, undefined, x, y, 'elodino_free');
             return elo;
         }
         Character.Elo = Elo;
         function Graci(x, y, name) {
-            let graci = Base(graci_1.GraciTemplate, name, undefined, x, y, factions_1.Factions.Graci.id);
+            let graci = Base(graci_1.GraciTemplate, name, undefined, x, y, 'graci');
             graci.skills.travelling = 70;
             return graci;
         }

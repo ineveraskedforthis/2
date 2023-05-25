@@ -129,14 +129,29 @@ document.getElementById("next_2").onclick = (event) => {
         mouth: character_display.mouth,
         chin: character_display.chin,
         eyes: character_display.eyes,
-        race: race,
+        faction: race,
+        race: race
     }    
     console.log(data)
     socket.emit('create_character', data)
 }
 
 document.getElementById('char_race').addEventListener('change', function() {
-    let race = document.getElementById('char_race').value
+    let faction = document.getElementById('char_race').value
+                        //     <option value="city">Human from City</option>
+                        // <option value="steppe_humans">Human from Steppe</option>
+                        // <option value="big_humans">Mutated human</option>
+                        // <option value="rats">Rat</option>
+                        // <option value="graci">Graci</option>
+                        // <option value="elodino_free">Elodino</option>
+    
+    if (faction == 'city') var race = 'human' 
+    if (faction == 'steppe_humans') var race = 'human' 
+    if (faction == 'big_humans') var race = 'human_strong' 
+    if (faction == 'rats') var race = 'bigrat' 
+    if (faction == 'graci') var race = 'graci' 
+    if (faction == 'elodino_free') var race = 'elo' 
+
     set_body_type(race)
 });
 

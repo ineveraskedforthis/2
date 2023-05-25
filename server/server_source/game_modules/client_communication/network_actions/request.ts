@@ -62,7 +62,7 @@ export namespace Request {
         let responce: {
             name: string,
             race: string,
-            factions: { id: number; name: string; reputation: reputation_level }[]
+            factions: { tag: string; name: string; reputation: reputation_level }[]
             perks: {[_ in Perks]?: number}
             skills: {[_ in skill]?: [number, number]}
         } = {

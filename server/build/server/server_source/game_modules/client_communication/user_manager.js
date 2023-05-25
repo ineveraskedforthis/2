@@ -14,6 +14,7 @@ const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const templates_1 = require("../templates");
+const data_1 = require("../data");
 var path = require('path');
 exports.users_data_dict = {};
 var users_data_list = [];
@@ -150,41 +151,51 @@ var UserManagement;
         return exports.users_data_dict[id];
     }
     UserManagement.get_user_data = get_user_data;
-    function get_new_character(id, name, model_variation, model) {
+    function get_new_character(id, name, model_variation, faction) {
         let user = get_user_data(id);
         if (user.char_id != '@') {
             console.log('attempt to generate character for user who already owns one');
             return;
         }
         var character = undefined;
-        console.log(model);
-        switch (model) {
-            case "human":
+        console.log(faction);
+        // steppe_humans 9 9
+        // city 2 6
+        // rats 12 16
+        // graci 17 13
+        // elodino_free 24 20
+        // big_humans 10 28
+        let spawn_point = data_1.Data.World.get_faction(faction)?.spawn_point;
+        if (spawn_point == undefined)
+            return;
+        const [x, y] = data_1.Data.World.id_to_coordinate(spawn_point);
+        switch (faction) {
+            case "city":
                 {
-                    character = templates_1.Template.Character.HumanCity(0, 3, name);
+                    character = templates_1.Template.Character.HumanCity(x, y, name);
                     break;
                 }
                 ;
-            case "human_strong":
+            case "big_humans":
                 {
-                    character = templates_1.Template.Character.HumanStrong(9, 11, name);
+                    character = templates_1.Template.Character.HumanStrong(x, y, name);
                     break;
                 }
                 ;
-            case "rat": {
-                character = templates_1.Template.Character.BigRat(6, 7, name);
+            case "rats": {
+                character = templates_1.Template.Character.BigRat(x, y, name);
                 break;
             }
             case "graci": {
-                character = templates_1.Template.Character.Graci(14, 8, name);
+                character = templates_1.Template.Character.Graci(x, y, name);
                 break;
             }
-            case "elo": {
-                character = templates_1.Template.Character.MageElo(18, 8, name);
+            case "elodino_free": {
+                character = templates_1.Template.Character.MageElo(x, y, name);
                 break;
             }
-            case "test": {
-                character = templates_1.Template.Character.HumanCity(0, 3, name);
+            case "steppe_humans": {
+                character = templates_1.Template.Character.HumanSteppe(x, y, name);
                 break;
             }
         }

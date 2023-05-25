@@ -280,16 +280,17 @@ var SendUpdate;
                     let terrain = data_1.Data.World.id_to_terrain(cell.id);
                     let forestation = data_1.Data.Cells.forestation(cell.id);
                     let urbanisation = data_1.Data.Cells.urbanisation(cell.id);
+                    // console.log(forestation)
                     // let res1: {[_ in string]: CellDisplayData} = {}
-                    const diplay_data = {
+                    const display_data = {
                         terrain: (0, terrain_1.terrain_to_string)(terrain),
-                        forestaion: forestation,
+                        forestation: forestation,
                         urbanisation: urbanisation
                     };
                     // if (data != undefined) {
                     //     Alerts.generic_user_alert(user, 'map-data-cells', res1)
                     // }
-                    let res2 = { x: x, y: y, ter: diplay_data };
+                    let res2 = { x: x, y: y, ter: display_data };
                     alerts_1.Alerts.generic_user_alert(user, 'map-data-display', res2);
                 }
             }

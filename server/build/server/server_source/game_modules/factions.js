@@ -1,30 +1,31 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Factions = void 0;
-var Factions;
-(function (Factions) {
-    Factions.City = {
-        id: 1,
-        name: 'City'
-    };
-    Factions.Steppes = {
-        id: 2,
-        name: 'Humans of the Steppe'
-    };
-    Factions.Rats = {
-        id: 3,
-        name: "Rat Kingdom"
-    };
-    Factions.Elodinos = {
-        id: 4,
-        name: "Edge Territories"
-    };
-    Factions.Mages = {
-        id: 5,
-        name: 'Mages of the City'
-    };
-    Factions.Graci = {
-        id: 6,
-        name: 'Graci'
-    };
-})(Factions = exports.Factions || (exports.Factions = {}));
+// interface faction {
+//     id: number,
+//     name: string
+// }
+// export namespace Factions {
+//     export const City: faction = {
+//         id: 1,
+//         name: 'City'
+//     }
+//     export const Steppes: faction = {
+//         id: 2,
+//         name: 'Humans of the Steppe'
+//     }
+//     export const Rats: faction = {
+//         id: 3,
+//         name: "Rat Kingdom"
+//     }
+//     export const Elodinos: faction = {
+//         id: 4,
+//         name: "Edge Territories"
+//     }
+//     export const Mages: faction = {
+//         id: 5,
+//         name: 'Mages of the City'
+//     }
+//     export const Graci: faction = {
+//         id: 6,
+//         name: 'Graci'
+//     }
+// }

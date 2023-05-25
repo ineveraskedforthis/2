@@ -2,7 +2,7 @@ import { EloTemplate } from "../races/elo";
 import { BigRatTemplate, RatTemplate } from "../races/rat";
 import { Data } from "../data";
 import { Event } from "../events/events";
-import { Factions } from "../factions";
+// import { Factions } from "../factions";
 // import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
 import { cell_id, world_coordinates } from "../types";
 // import { Cell} from "./cell";

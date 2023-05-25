@@ -8,7 +8,7 @@ exports.Data = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const SAVE_GAME_PATH_1 = require("../SAVE_GAME_PATH");
-const factions_1 = require("./factions");
+// import { Factions } from "./factions"
 const classes_1 = require("./market/classes");
 const strings_management_1 = require("./strings_management");
 const terrain_1 = require("./map/terrain");
@@ -34,6 +34,7 @@ const empty_set_orders_bulk = new Set();
 const empty_set_orders_item = new Set();
 var last_id_bulk = 0;
 var last_id_item = 0;
+var factions = [];
 var reputation = {};
 //BUILDINGS 
 var last_id_building = 0;
@@ -57,7 +58,9 @@ const save_path = {
     WORLD_DIMENSIONS: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'description.txt'),
     TERRAIN: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'map_terrain.txt'),
     FORESTS: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'map_forest.txt'),
-    MARKETS: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'map_markets.txt')
+    MARKETS: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'map_markets.txt'),
+    FACTIONS: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'factions.txt'),
+    SPAWN_POINTS: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'map_spawn_points.txt'),
 };
 const save_path_bulk = path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'bulk_market.txt');
 const save_path_item = path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'item_market.txt');
@@ -74,6 +77,8 @@ function read_lines(file) {
 var Data;
 (function (Data) {
     function load() {
+        World.load_world_dimensions(save_path.WORLD_DIMENSIONS);
+        Cells.load(save_path.CELLS);
         World.load();
         CharacterDB.load(save_path.CHARACTERS);
         BulkOrders.load();
@@ -81,7 +86,6 @@ var Data;
         Reputation.load(save_path.REPUTATION);
         Buildings.load(save_path.BUILDINGS);
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP);
-        Cells.load(save_path.CELLS);
     }
     Data.load = load;
     function save() {
@@ -151,25 +155,31 @@ var Data;
         }
         World.load_world_dimensions = load_world_dimensions;
         function load_terrain(path) {
+            console.log('loading terrain');
             terrain = [];
             let lines = read_lines(path);
+            let stats = {};
             for (let line of lines) {
-                let terrains = line.split(' ');
+                let terrains = line.trim().split(' ');
                 let terrain_row = [];
-                for (let terrain in terrains) {
-                    terrain_row.push((0, terrain_1.string_to_terrain)(terrain));
+                for (let item of terrains) {
+                    stats[item] = stats[item] + 1 || 0;
+                    terrain_row.push((0, terrain_1.string_to_terrain)(item));
                 }
                 terrain.push(terrain_row);
             }
+            console.log(terrain.length);
+            console.log(terrain[0].length);
+            console.log(stats);
         }
         World.load_terrain = load_terrain;
         function load_markets(path) {
-            terrain = [];
+            // terrain = []
             let lines = read_lines(path);
             for (let line of lines) {
-                let row = line.split(' ');
+                let row = line.trim().split(' ');
                 let markets_row = [];
-                for (let market in row) {
+                for (let market of row) {
                     markets_row.push(Number(market) == 1);
                 }
                 is_market.push(markets_row);
@@ -177,33 +187,78 @@ var Data;
         }
         World.load_markets = load_markets;
         function load_forests(path) {
-            terrain = [];
+            // terrain = []
             let lines = read_lines(path);
             let x = 0;
             for (let line of lines) {
-                let row = line.split(' ');
-                let y = 0;
-                for (let forest_level in row) {
-                    let cell_id = coordinate_to_id([x, y]);
-                    for (let i = 0; i < Number(forest_level); i++) {
-                        let forest = {
-                            durability: 100,
-                            cell_id: cell_id,
-                            type: "forest_plot" /* LandPlotType.ForestPlot */,
-                            room_cost: 0
-                        };
-                        Buildings.create(forest);
-                    }
+                let row = line.trim().split(' ');
+                if (x >= world_size[0]) {
+                    continue;
                 }
+                let y = 0;
+                for (let forest_level of row) {
+                    let cell_id = coordinate_to_id([x, y]);
+                    const cell = Cells.from_id(cell_id);
+                    if ((!cell.loaded_forest)) {
+                        if ((Number(forest_level) > 0)) {
+                            let forest = {
+                                durability: Number(forest_level) * 100,
+                                cell_id: cell_id,
+                                type: "forest_plot" /* LandPlotType.ForestPlot */,
+                                room_cost: 0
+                            };
+                            Buildings.create(forest);
+                        }
+                        cell.loaded_forest = true;
+                    }
+                    y++;
+                }
+                x++;
             }
         }
         World.load_forests = load_forests;
+        function load_factions(path_factions, path_spawns) {
+            const lines_factions = read_lines(path_factions);
+            const lines_spawns = read_lines(path_spawns);
+            for (let line of lines_factions) {
+                let row = line.split(';');
+                let faction = {
+                    tag: row[0],
+                    name: row[1],
+                    spawn_point: 0,
+                };
+                factions.push(faction);
+            }
+            for (let line of lines_spawns) {
+                let row = line.split(' ');
+                let [tag, x, y] = [row[0], Number(row[1]), Number(row[2])];
+                // console.log(tag, x, y)
+                for (let item of factions) {
+                    if (item.tag == tag) {
+                        item.spawn_point = coordinate_to_id([x, y]);
+                        // console.log(id_to_coordinate(item.spawn_point))
+                    }
+                }
+            }
+            console.log(factions);
+        }
+        World.load_factions = load_factions;
+        function get_faction(tag) {
+            for (let item of factions) {
+                if (item.tag == tag) {
+                    return item;
+                }
+            }
+        }
+        World.get_faction = get_faction;
         function get_terrain() {
             return terrain;
         }
         World.get_terrain = get_terrain;
         function id_to_terrain(cell_id) {
             let [x, y] = id_to_coordinate(cell_id);
+            // console.log(terrain)
+            // console.log(x, y)
             return terrain[x][y];
         }
         World.id_to_terrain = id_to_terrain;
@@ -213,10 +268,10 @@ var Data;
         }
         World.id_to_market = id_to_market;
         function load() {
-            load_world_dimensions(save_path.WORLD_DIMENSIONS);
             load_terrain(save_path.TERRAIN);
             load_forests(save_path.FORESTS);
             load_markets(save_path.MARKETS);
+            load_factions(save_path.FACTIONS, save_path.SPAWN_POINTS);
         }
         World.load = load;
         function set_world_dimensions(size) {
@@ -251,6 +306,24 @@ var Data;
                 let { id, cell } = JSON.parse(line);
                 set_data(id, cell);
             }
+            const dims = World.get_world_dimensions();
+            for (let i = 0; i < dims[0]; i++) {
+                for (let j = 0; j < dims[1]; j++) {
+                    const id = World.coordinate_to_id([i, j]);
+                    let cell = from_id(id);
+                    if (cell == undefined) {
+                        const cell_data = {
+                            id: id,
+                            x: i,
+                            y: j,
+                            market_scent: 0,
+                            rat_scent: 0,
+                            loaded_forest: false
+                        };
+                        set_data(id, cell_data);
+                    }
+                }
+            }
         }
         Cells.load = load;
         function set_data(id, cell) {
@@ -279,6 +352,7 @@ var Data;
                 let character = Data.CharacterDB.from_id(item);
                 responce.push({ name: character.name, id: item });
             }
+            return responce;
         }
         Cells.get_characters_list_display = get_characters_list_display;
         function list() {
@@ -508,11 +582,11 @@ var Data;
         Reputation.from_id = from_id;
         function list_from_id(char_id) {
             let responce = [];
-            for (let faction of Object.values(factions_1.Factions)) {
+            for (let faction of factions) {
                 responce.push({
-                    id: faction.id,
+                    tag: faction.tag,
                     name: faction.name,
-                    reputation: from_id(faction.id, char_id)
+                    reputation: from_id(faction.tag, char_id)
                 });
             }
             return responce;

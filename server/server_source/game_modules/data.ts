@@ -6,15 +6,16 @@ import { DEFAULT_WORLD_PATH, SAVE_GAME_PATH } from "../SAVE_GAME_PATH"
 import { battle_id } from "../../../shared/battle_data"
 import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
-import { Factions } from "./factions"
+// import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
 import { cell_id, char_id, building_id, order_bulk_id, order_item_id, world_coordinates, money } from "./types"
 import { building_from_string, character_to_string, item_from_string, string_to_character } from "./strings_management"
 import { LandPlot } from "./DATA_LAYOUT_BUILDING"
 import { Cell } from "./map/DATA_LAYOUT_CELL"
-import { Terrain, string_to_terrain } from "./map/terrain"
+// import { Terrain, string_to_terrain } from "./map/terrain"
 import { CellType } from "./map/cell_type"
 import { LandPlotType } from "./DATA_LAYOUT_BUILDING"
+import { Terrain, string_to_terrain } from "./map/terrain"
 // import { Cell } from "./map/cell"
 
 
@@ -51,12 +52,19 @@ var last_id_item = 0 as order_item_id
 export type reputation_level = 'enemy'|'neutral'|'friend'|'member'
 
 interface reputation {
-    faction: number
+    faction: string
     level: reputation_level
 }
 
+interface Faction {
+    tag: string,
+    spawn_point: cell_id,
+    name: string,
+}
 
-var reputation: {[_ in char_id]: {[_ in number]: reputation}} = {}
+
+var factions: Faction[] = []
+var reputation: {[_ in char_id]: {[_ in string]: reputation}} = {}
 
 
 //BUILDINGS 
@@ -89,7 +97,9 @@ const save_path =
     WORLD_DIMENSIONS: path.join(DEFAULT_WORLD_PATH, 'description.txt'),
     TERRAIN: path.join(DEFAULT_WORLD_PATH, 'map_terrain.txt'),
     FORESTS: path.join(DEFAULT_WORLD_PATH, 'map_forest.txt'),
-    MARKETS: path.join(DEFAULT_WORLD_PATH, 'map_markets.txt')
+    MARKETS: path.join(DEFAULT_WORLD_PATH, 'map_markets.txt'),
+    FACTIONS: path.join(DEFAULT_WORLD_PATH, 'factions.txt'),
+    SPAWN_POINTS: path.join(DEFAULT_WORLD_PATH, 'map_spawn_points.txt'),
 }
 
 const save_path_bulk = path.join(SAVE_GAME_PATH, 'bulk_market.txt')
@@ -111,6 +121,8 @@ function read_lines(file: string) {
 
 export namespace Data {
     export function load() {
+        World.load_world_dimensions(save_path.WORLD_DIMENSIONS)
+        Cells.load(save_path.CELLS)
         World.load()
         CharacterDB.load(save_path.CHARACTERS)
         BulkOrders.load()
@@ -118,7 +130,6 @@ export namespace Data {
         Reputation.load(save_path.REPUTATION)
         Buildings.load(save_path.BUILDINGS)
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP)
-        Cells.load(save_path.CELLS)
     }
     export function save() {
         CharacterDB.save()
@@ -190,25 +201,32 @@ export namespace Data {
         }
 
         export function load_terrain(path: string) {
+            console.log('loading terrain')
             terrain = []
             let lines = read_lines(path)
+            let stats: {[_ in string]: number} = {}
             for (let line of lines) {
-                let terrains = line.split(' ')
+                let terrains = line.trim().split(' ')
                 let terrain_row = []
-                for (let terrain in terrains ) {
-                    terrain_row.push(string_to_terrain(terrain))
+                for (let item of terrains ) {
+                    stats[item] = stats[item] + 1||0
+                    terrain_row.push(string_to_terrain(item))
                 }
                 terrain.push(terrain_row)
             }
+            console.log(terrain.length)
+            console.log(terrain[0].length)
+            console.log(stats)
+
         }
 
         export function load_markets(path: string) {
-            terrain = []
+            // terrain = []
             let lines = read_lines(path)
             for (let line of lines) {
-                let row = line.split(' ')
+                let row = line.trim().split(' ')
                 let markets_row = []
-                for (let market in row ) {
+                for (let market of row ) {
                     markets_row.push(Number(market) == 1)
                 }
                 is_market.push(markets_row)
@@ -216,35 +234,82 @@ export namespace Data {
         }
 
         export function load_forests(path: string) {
-            terrain = []
+            // terrain = []
             let lines = read_lines(path)
             let x = 0
             for (let line of lines) {
-                let row = line.split(' ')
+                let row = line.trim().split(' ')
+                if (x >= world_size[0]) {
+                    continue
+                }
                 let y = 0
-                for (let forest_level in row ) {
+                for (let forest_level of row ) {
                     let cell_id = coordinate_to_id([x, y])
-
-                    for (let i = 0; i < Number(forest_level); i++) {
-                        let forest: LandPlot = {
-                            durability: 100,
+                    const cell = Cells.from_id(cell_id);
+                    if ((!cell.loaded_forest)) {
+                        if ((Number(forest_level) > 0)) {
+                            let forest: LandPlot = {
+                            durability: Number(forest_level) * 100,
                             cell_id: cell_id,
                             type: LandPlotType.ForestPlot,
                             room_cost: 0 as money
-                        }
-                        Buildings.create(forest)
+                            }
+                            Buildings.create(forest)
+                        }                        
+                        cell.loaded_forest = true
                     }
+                    y++;
                 }
+                x++
             }
         }
 
+        export function load_factions(path_factions: string, path_spawns: string){
+            const lines_factions = read_lines(path_factions)
+            const lines_spawns = read_lines(path_spawns)
+
+            for (let line of lines_factions) {
+                let row = line.split(';')
+                let faction: Faction = {
+                    tag: row[0],
+                    name: row[1],
+                    spawn_point: 0 as cell_id,
+                }
+                factions.push(faction)
+            }
+
+            
+            for (let line of lines_spawns) {
+                let row = line.split(' ')
+                let [tag, x, y] = [row[0], Number(row[1]), Number(row[2])]
+                // console.log(tag, x, y)
+
+                for (let item of factions) {
+                    if (item.tag == tag) {
+                        item.spawn_point = coordinate_to_id([x, y])
+                        // console.log(id_to_coordinate(item.spawn_point))
+                    }
+                }
+            }
+            console.log(factions)
+        }
+
+        export function get_faction(tag: string) {
+            for (let item of factions) {
+                if (item.tag == tag) {
+                    return item
+                }
+            }
+        }
 
         export function get_terrain() {
             return terrain
         }
 
-        export function id_to_terrain(cell_id: cell_id){
+        export function id_to_terrain(cell_id: cell_id):Terrain{
             let [x, y] = id_to_coordinate(cell_id)
+            // console.log(terrain)
+            // console.log(x, y)
             return terrain[x][y]
         }
         export function id_to_market(cell_id: cell_id){
@@ -253,10 +318,10 @@ export namespace Data {
         }
 
         export function load() {
-            load_world_dimensions(save_path.WORLD_DIMENSIONS)
             load_terrain(save_path.TERRAIN)
             load_forests(save_path.FORESTS)
             load_markets(save_path.MARKETS)
+            load_factions(save_path.FACTIONS, save_path.SPAWN_POINTS)
         }
 
         export function set_world_dimensions(size: world_coordinates) {
@@ -293,6 +358,25 @@ export namespace Data {
                 let {id, cell}:{id: cell_id, cell: Cell} = JSON.parse(line)
                 set_data(id, cell)
             }
+
+            const dims = World.get_world_dimensions()
+            for (let i = 0; i < dims[0]; i++) {
+                for (let j = 0; j < dims[1]; j++) {
+                    const id = World.coordinate_to_id([i,j])
+                    let cell = from_id(id)
+                    if (cell == undefined) {
+                        const cell_data: Cell = {
+                            id: id,
+                            x: i,
+                            y: j,
+                            market_scent: 0,
+                            rat_scent: 0,
+                            loaded_forest: false
+                        }
+                        set_data(id, cell_data)
+                    }
+                }
+            }
         }
 
         export function set_data(id: cell_id, cell: Cell) {
@@ -319,6 +403,8 @@ export namespace Data {
                 let character = Data.CharacterDB.from_id(item)
                 responce.push({name: character.name, id: item})
             }
+
+            return responce
         }
 
         export function list() {
@@ -500,7 +586,7 @@ export namespace Data {
             console.log('loading reputation')
             for (let line of read_lines(save_path)) {
                 if (line == '') {continue}
-                let reputation_line:{char: char_id, item: {[_ in number]: reputation}} = JSON.parse(line)
+                let reputation_line:{char: char_id, item: {[_ in string]: reputation}} = JSON.parse(line)
                 reputation[reputation_line.char] = reputation_line.item
             }
             console.log('reputation loaded')
@@ -516,20 +602,20 @@ export namespace Data {
             console.log('reputation saved')
         }
 
-        export function from_id(faction: number, char_id: char_id):reputation_level {
+        export function from_id(faction: string, char_id: char_id):reputation_level {
             if (reputation[char_id] == undefined) return 'neutral';
             let responce = reputation[char_id][faction]
             if (responce == undefined) { return 'neutral' }
             return responce.level
         }
 
-        export function list_from_id(char_id: char_id): { id: number; name: string; reputation: reputation_level }[] {
+        export function list_from_id(char_id: char_id): { tag: string; name: string; reputation: reputation_level }[] {
             let responce = []
-            for (let faction of Object.values(Factions)) {
+            for (let faction of factions) {
                 responce.push({
-                    id: faction.id,
+                    tag: faction.tag,
                     name: faction.name,
-                    reputation: from_id(faction.id, char_id)
+                    reputation: from_id(faction.tag, char_id)
                 })
             }
 
@@ -574,7 +660,7 @@ export namespace Data {
             return false
         }
 
-        export function set(faction: number, char_id: char_id, level: reputation_level) {
+        export function set(faction: string, char_id: char_id, level: reputation_level) {
             if (reputation[char_id] == undefined) reputation[char_id] = {}
             if (reputation[char_id][faction] == undefined) reputation[char_id][faction] = {faction: faction, level: level}
             else reputation[char_id][faction].level = level

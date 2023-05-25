@@ -200,6 +200,8 @@ export class Map {
 
         this.data = {}
         this.terrain = []
+        this.forest = []
+        this.urban = []
 
         this.visit_spotted = []
         this.x = 10;
@@ -362,12 +364,17 @@ export class Map {
     } 
     
     load_terrain(data) {
-        // console.log(data)
+        console.log('loading_terrain_data')
+        console.log(data)
         if (this.terrain[data.x] == undefined) {
             this.terrain[data.x] = []
+            this.forest[data.x] = []
+            this.urban[data.x] = []
         }
-        this.terrain[data.x][data.y] = data.ter
-    } 
+        this.terrain[data.x][data.y] = data.ter.terrain
+        this.forest[data.x][data.y] = data.ter.forestation
+        this.urban[data.x][data.y] = data.ter.urbanisation
+    }
 
     reset() {
         this.terrain = []
@@ -537,6 +544,8 @@ export class Map {
         //     return
         // }
 
+        
+
         var ctx = this.canvas.getContext('2d');
         var h = this.hex_h;
         var w = this.hex_w;
@@ -561,6 +570,7 @@ export class Map {
             return
         }
 
+        // draw terrain
         if (this.terrain[i][j] == 'sea') {
             ctx.drawImage(this.tiles[5], center_x - this.hex_side, center_y - h)
         } else if (this.terrain[i][j] == 'city') {
@@ -569,38 +579,54 @@ export class Map {
             ctx.drawImage(this.tiles[0], center_x - this.hex_side, center_y - h)
         } else if (this.terrain[i][j] == 'coast') {
             ctx.drawImage(this.tiles[6], center_x - this.hex_side, center_y - h)
-        } else{
+        } else if (this.terrain[i][j] == 'rupture') {
+            ctx.drawImage(this.tiles[10], center_x - this.hex_side, center_y - h)
+        } else {
+            // no terrain, abort immediately
             return
         }
         
-        if ((tag) in this.data) {
-            if (this.data[tag].urban >= 2) {
-                ctx.drawImage(this.tiles[3], center_x - this.hex_side, center_y - h)
-            } else if (this.data[tag].urban == 1) {
-                ctx.drawImage(this.tiles[2], center_x - this.hex_side, center_y - h)
-            } 
-            if (this.data[tag].wild == 1) {
-                ctx.drawImage(this.tiles[7], center_x - this.hex_side, center_y - h)
-            } else if (this.data[tag].wild == 2) {
-                ctx.drawImage(this.tiles[8], center_x - this.hex_side, center_y - h)
-            } else if (this.data[tag].wild == 3) {
-                ctx.drawImage(this.tiles[9], center_x - this.hex_side, center_y - h)
-            } 
-            if (this.data[tag].rupture == 1) {
-                ctx.drawImage(this.tiles[10], center_x - this.hex_side, center_y - h)
-            } 
-            if (this.data[tag].rural >= 1) {
-                ctx.drawImage(this.tiles[11], center_x - this.hex_side, center_y - h)
-            }
+        // draw features
 
-            if (this.data[tag].rats == 1) {
-                ctx.drawImage(this.tiles[12], center_x - this.hex_side, center_y - h)
-            }
+        let urbanisation = this.urban[i][j]
+        let forestation = this.forest[i][j]
+        ctx.strokeStyle = 'black';
+        // ctx.fillText(forestation, center_x - this.hex_side, center_y - h);
+        for (let iteration = 0; iteration < forestation / 100; iteration++) {
+            const noise_x = Math.cos(iteration + i + j) * 10
+            const noise_y = Math.cos(iteration * 10 + i * 5 + j * 3) * 10
 
-            if (this.data[tag].elodinos == 1) {
-                ctx.drawImage(this.tiles[13], center_x - this.hex_side, center_y - h)
-            }
+            ctx.drawImage(this.tiles[7], center_x - this.hex_side + noise_x, center_y - h + noise_y)
         }
+
+        // if ((tag) in this.data) {
+        //     if (this.data[tag].urban >= 2) {
+        //         ctx.drawImage(this.tiles[3], center_x - this.hex_side, center_y - h)
+        //     } else if (this.data[tag].urban == 1) {
+        //         ctx.drawImage(this.tiles[2], center_x - this.hex_side, center_y - h)
+        //     } 
+        //     if (this.data[tag].wild == 1) {
+        //         ctx.drawImage(this.tiles[7], center_x - this.hex_side, center_y - h)
+        //     } else if (this.data[tag].wild == 2) {
+        //         ctx.drawImage(this.tiles[8], center_x - this.hex_side, center_y - h)
+        //     } else if (this.data[tag].wild == 3) {
+        //         ctx.drawImage(this.tiles[9], center_x - this.hex_side, center_y - h)
+        //     } 
+        //     if (this.data[tag].rupture == 1) {
+        //         ctx.drawImage(this.tiles[10], center_x - this.hex_side, center_y - h)
+        //     } 
+        //     if (this.data[tag].rural >= 1) {
+        //         ctx.drawImage(this.tiles[11], center_x - this.hex_side, center_y - h)
+        //     }
+
+        //     if (this.data[tag].rats == 1) {
+        //         ctx.drawImage(this.tiles[12], center_x - this.hex_side, center_y - h)
+        //     }
+
+        //     if (this.data[tag].elodinos == 1) {
+        //         ctx.drawImage(this.tiles[13], center_x - this.hex_side, center_y - h)
+        //     }
+        // }
         
         
 
@@ -661,8 +687,8 @@ export class Map {
         if (this.fog_of_war[tag] == true) {
             tag = 'unknown'
         }
-        let section_tag = this.get_section(i, j)
-        this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag] + '<br>' + section_descriptions[section_tag];
+        // let section_tag = this.get_section(i, j)
+        // this.description.innerHTML = i + ' ' + j + ' ' + DESCRIPTIONS[tag] + '<br>' + section_descriptions[section_tag];
         this.local_description.innerHTML = '<img src="static/img/' + LOCAL_IMAGES[tag] +  '" width="300">'
         this.path = this.create_path()
         this.real_path = []
@@ -739,35 +765,26 @@ export class Map {
     }
 
     get_bg_tag(i, j) {
-        let tag = i + '_' + j
-
         if ((this.terrain[i] != undefined) && (this.terrain[i][j] == 'coast')) {
-            if (this.data[tag] == undefined) return 'coast'
-            if ((this.data[tag].urban == 1) || (this.data[tag].rural > 0)) {
+            if ((this.urban[i] != undefined) && (this.urban[i][j] >= 1)) {
                 return 'coast_rural'
             }
             return 'coast'
         }
         
-        if (this.data[tag] != undefined) {
-            if (this.data[tag].wild >= 1) {
-                return 'forest'
-            }
-
-            if (this.data[tag].urban >= 2) {
+        if (this.forest[i] != undefined) {
+            if (this.urban[i][j] >= 4) {
                 return 'colony'
-            } 
-
-            if (this.data[tag].urban >= 1) {
+            }
+            if (this.urban[i][j] >= 1) {
                 return 'urban_1'
             }
-            
-            if (this.data[tag].rural >= 1) {
-                return 'rural_1'
+            if (this.forest[i][j] >= 200) {
+                return 'forest'
             }
         }
 
-        return undefined
+        return 'red_steppe'
     }
 
     set_curr_pos(i, j, teleport_flag) {

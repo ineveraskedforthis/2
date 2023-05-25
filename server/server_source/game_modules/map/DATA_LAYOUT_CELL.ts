@@ -6,5 +6,5 @@ export interface Cell {
     y: number,
     market_scent: number,
     rat_scent: number,
-    rupture: boolean
+    loaded_forest: boolean
 }

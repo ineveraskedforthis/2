@@ -17,6 +17,7 @@ import { GraciTemplate } from "../races/graci";
 import { EloTemplate } from "../races/elo";
 import { Template } from "../templates";
 import { Character } from "../character/character";
+import { Data } from "../data";
 var path = require('path')
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
@@ -166,7 +167,7 @@ export namespace UserManagement {
         return users_data_dict[id]
     }
 
-    export function get_new_character(id: user_id, name: string, model_variation: ModelVariant, model: tagModel) {
+    export function get_new_character(id: user_id, name: string, model_variation: ModelVariant, faction: string) {
         let user = get_user_data(id)
         if (user.char_id != '@') {
             console.log('attempt to generate character for user who already owns one')
@@ -174,14 +175,24 @@ export namespace UserManagement {
         }
 
         var character:Character|undefined = undefined
-        console.log(model)
-        switch(model){
-            case "human":{character = Template.Character.HumanCity(0, 3, name);break};
-            case "human_strong":{character = Template.Character.HumanStrong(9, 11, name);break};
-            case "rat":{character = Template.Character.BigRat(6, 7, name);break;}
-            case "graci":{character = Template.Character.Graci(14, 8, name);break}
-            case "elo":{character = Template.Character.MageElo(18, 8, name);break}
-            case "test":{character = Template.Character.HumanCity(0, 3, name);break}
+        console.log(faction)
+
+// steppe_humans 9 9
+// city 2 6
+// rats 12 16
+// graci 17 13
+// elodino_free 24 20
+// big_humans 10 28
+        let spawn_point = Data.World.get_faction(faction)?.spawn_point
+        if (spawn_point == undefined) return
+        const [x, y] = Data.World.id_to_coordinate(spawn_point)
+        switch(faction){
+            case "city":{character = Template.Character.HumanCity(x, y, name);break};
+            case "big_humans":{character = Template.Character.HumanStrong(x, y, name);break};
+            case "rats":{character = Template.Character.BigRat(x, y, name);break;}
+            case "graci":{character = Template.Character.Graci(x, y, name);break}
+            case "elodino_free":{character = Template.Character.MageElo(x, y, name);break}
+            case "steppe_humans":{character = Template.Character.HumanSteppe(x, y, name);break}
         }
 
         if (character == undefined) return;

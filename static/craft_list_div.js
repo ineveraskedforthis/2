@@ -59,7 +59,7 @@ function construct_craft_div(data) {
 }
 function construct_craft_item_div(data) {
     let div = document.getElementById('c_' + data.tag);
-    if (div == undefined) {
+    if (div == null) {
         craft_items.push(data.id);
         var craft_div = new_craft_option(data.id)
     } else {

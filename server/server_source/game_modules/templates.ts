@@ -1,7 +1,7 @@
 import { CharacterTemplate } from "./character/templates"
 import { Data } from "./data"
 import { Event } from "./events/events"
-import { Factions } from "./factions"
+// import { Factions } from "./factions"
 import { BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "./items/items_set_up"
 import { ItemSystem } from "./items/system"
 import { ARROW_BONE, FOOD, RAT_BONE, WOOD, ZAZ } from "./manager_classes/materials_manager"
@@ -14,14 +14,14 @@ import { ModelVariant, money } from "./types"
 
 export namespace Template {
     export namespace Character {
-        function Base(template:CharacterTemplate, name: string|undefined, model: ModelVariant|undefined ,x: number, y: number, faction_id: number|undefined) {
+        function Base(template:CharacterTemplate, name: string|undefined, model: ModelVariant|undefined ,x: number, y: number, faction_id: string|undefined) {
             const cell = Data.World.coordinate_to_id([x, y])
             let character = Event.new_character(template, name, cell, model)
             if (faction_id != undefined) Data.Reputation.set(faction_id, character.id, "member")
             return character
         }
 
-        export function GenericHuman(x: number, y: number, name:string|undefined, faction: number) {
+        export function GenericHuman(x: number, y: number, name:string|undefined, faction: string) {
             let human = Base(HumanTemplate, name, undefined, x, y, faction)
             human.skills.woodwork += 10
             human.skills.cooking += 15
@@ -33,7 +33,7 @@ export namespace Template {
         }
 
         export function HumanSteppe(x: number, y: number, name:string|undefined) {
-            let human = GenericHuman(x, y, name, Factions.Steppes.id)
+            let human = GenericHuman(x, y, name, 'steppe_humans')
             human.skills.hunt += 20
             human.skills.skinning += 10
             human.skills.cooking += 10
@@ -49,7 +49,7 @@ export namespace Template {
         }
 
         export function HumanCity(x: number, y: number, name: string|undefined) {
-            let human = GenericHuman(x, y, name, Factions.City.id)
+            let human = GenericHuman(x, y, name, 'city')
             human.skills.fishing += 20
             human.skills.noweapon += 5
             return human
@@ -132,13 +132,13 @@ export namespace Template {
         }
 
         export function GenericRat(x: number, y: number, name:string|undefined) {
-            let rat = Base(RatTemplate, name, undefined, x, y, Factions.Rats.id)
+            let rat = Base(RatTemplate, name, undefined, x, y, 'rats')
             rat.perks.claws = true
             return rat
         }
 
         export function MageRat(x: number, y: number, name:string|undefined) {
-            let rat = Base(MageRatTemplate, name, undefined, x, y, Factions.Rats.id)
+            let rat = Base(MageRatTemplate, name, undefined, x, y, 'rats')
             rat.perks.claws = true
             rat.perks.magic_bolt = true
             rat.perks.mage_initiation = true            
@@ -147,7 +147,7 @@ export namespace Template {
         }
 
         export function BerserkRat(x: number, y: number, name:string|undefined) {
-            let rat = Base(BerserkRatTemplate, name, undefined, x, y, Factions.Rats.id)
+            let rat = Base(BerserkRatTemplate, name, undefined, x, y, 'rats')
             rat.perks.claws = true
             rat.perks.charge = true
             rat.skills.noweapon = 40
@@ -155,14 +155,14 @@ export namespace Template {
         }
 
         export function BigRat(x: number, y: number, name: string|undefined) {
-            let rat = Base(BigRatTemplate, name, undefined, x, y, Factions.Rats.id)
+            let rat = Base(BigRatTemplate, name, undefined, x, y, 'rats')
             rat.perks.claws = true
             rat.skills.noweapon = 40
             return rat
         }
 
         export function MageElo(x: number, y: number, name:string|undefined) {
-            let elo = Base(EloTemplate, name, undefined, x, y, Factions.Elodinos.id)
+            let elo = Base(EloTemplate, name, undefined, x, y, 'elodino_free')
             elo.perks.magic_bolt = true
             elo.perks.mage_initiation = true
             elo.skills.magic_mastery = 20
@@ -172,12 +172,12 @@ export namespace Template {
         }
 
         export function Elo(x: number, y: number, name:string|undefined) {
-            let elo = Base(EloTemplate, name, undefined, x, y, Factions.Elodinos.id)
+            let elo = Base(EloTemplate, name, undefined, x, y, 'elodino_free')
             return elo
         }
 
         export function Graci(x: number, y: number, name: string|undefined) {
-            let graci = Base(GraciTemplate, name, undefined, x, y, Factions.Graci.id)
+            let graci = Base(GraciTemplate, name, undefined, x, y, 'graci')
             graci.skills.travelling = 70
             return graci
         }

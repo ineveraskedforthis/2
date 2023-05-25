@@ -303,11 +303,13 @@ export namespace SendUpdate {
                     let forestation = Data.Cells.forestation(cell.id);
                     let urbanisation = Data.Cells.urbanisation(cell.id);
 
+                    // console.log(forestation)
+
                     // let res1: {[_ in string]: CellDisplayData} = {}
                     
-                    const diplay_data = {
+                    const display_data = {
                         terrain: terrain_to_string(terrain),
-                        forestaion: forestation,
+                        forestation: forestation,
                         urbanisation: urbanisation
                     }
 
@@ -315,7 +317,7 @@ export namespace SendUpdate {
                     //     Alerts.generic_user_alert(user, 'map-data-cells', res1)
                     // }
 
-                    let res2 = {x: x, y: y, ter: diplay_data}
+                    let res2 = {x: x, y: y, ter: display_data}
                     Alerts.generic_user_alert(user, 'map-data-display', res2)
                 }
             }            

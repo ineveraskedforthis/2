@@ -16,7 +16,7 @@ import { Terrain } from "../map/terrain";
 
 export interface CellDisplayData {
     terrain: string,
-    forestaion: number,
+    forestation: number,
     urbanisation: number
 }
 

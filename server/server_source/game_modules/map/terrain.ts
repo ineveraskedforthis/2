@@ -34,6 +34,5 @@ export function terrain_can_move(terrain: Terrain) {
     if (terrain == Terrain.sea) return false
     if (terrain == Terrain.rupture) return false
     if (terrain == Terrain.void) return false
-
     return true
 }
