@@ -427,6 +427,12 @@ export class Map {
             }
         }
 
+        for (var i = -2; i < 30; i++) {
+            for (var j = 0; j < 30; j++) {
+                this.draw_hex_features(i, j);
+            }
+        }
+
         this.draw_player_circle()
         this.draw_selected_circle()
 
@@ -585,9 +591,37 @@ export class Map {
             // no terrain, abort immediately
             return
         }
+
+        ctx.fillStyle = 'rgba' + color;
+        ctx.beginPath();
+        ctx.moveTo(center_x + this.hex_side, center_y);
+        ctx.lineTo(center_x + w, center_y - h);
+        ctx.lineTo(center_x - w, center_y - h);
+        ctx.lineTo(center_x - this.hex_side, center_y);
+        ctx.lineTo(center_x - w, center_y + h);
+        ctx.lineTo(center_x + w, center_y + h);
+        if (mode == 'fill') {
+            ctx.fill();
+        } else if (mode == 'stroke') {
+            ctx.lineTo(center_x + this.hex_side, center_y);
+            ctx.stroke()
+        }
+
+        // ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+        // ctx.font = '10px Times New Roman';
+        // ctx.fillText(`${i} ${j}`, center_x - w, center_y + h / 2);
+    }
+
+    draw_hex_features(i, j) {
+        var ctx = this.canvas.getContext('2d');
+        var h = this.hex_h;
+        var w = this.hex_w;
+        var center_x = (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
+        var center_y = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
         
         // draw features
-
+        if (this.urban[i] == undefined) return;
+        if (this.urban[i][j] == undefined) return;
         let urbanisation = this.urban[i][j]
         let forestation = this.forest[i][j]
         ctx.strokeStyle = 'black';
@@ -627,27 +661,6 @@ export class Map {
         //         ctx.drawImage(this.tiles[13], center_x - this.hex_side, center_y - h)
         //     }
         // }
-        
-        
-
-        ctx.fillStyle = 'rgba' + color;
-        ctx.beginPath();
-        ctx.moveTo(center_x + this.hex_side, center_y);
-        ctx.lineTo(center_x + w, center_y - h);
-        ctx.lineTo(center_x - w, center_y - h);
-        ctx.lineTo(center_x - this.hex_side, center_y);
-        ctx.lineTo(center_x - w, center_y + h);
-        ctx.lineTo(center_x + w, center_y + h);
-        if (mode == 'fill') {
-            ctx.fill();
-        } else if (mode == 'stroke') {
-            ctx.lineTo(center_x + this.hex_side, center_y);
-            ctx.stroke()
-        }
-
-        // ctx.fillStyle = 'rgba(0, 0, 0, 1)';
-        // ctx.font = '10px Times New Roman';
-        // ctx.fillText(`${i} ${j}`, center_x - w, center_y + h / 2);
     }
 
     move(dx, dy) {
