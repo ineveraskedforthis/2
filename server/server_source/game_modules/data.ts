@@ -371,7 +371,8 @@ export namespace Data {
                             y: j,
                             market_scent: 0,
                             rat_scent: 0,
-                            loaded_forest: false
+                            loaded_forest: false,
+                            loaded_spawn: false,
                         }
                         set_data(id, cell_data)
                     }

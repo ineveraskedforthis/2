@@ -121,7 +121,7 @@ export namespace Effect {
     }
 
     export function new_building(cell_id: cell_id, type: LandPlotType, durability: number) {        
-        Data.Buildings.create({
+        return Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
             type: type,
