@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync, existsSync } from "fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 
 // Always the first.
 import { Data } from "./game_modules/data";
@@ -24,7 +24,31 @@ import { BattleEvent } from "./game_modules/battle/events";
 import { convertTypeAcquisitionFromJson } from "typescript";
 
 import "./game_modules/craft/craft"
+import * as path from "path";
+import { SAVE_GAME_PATH } from "./SAVE_GAME_PATH";
+import { GameMaster } from "./game_modules/game_master";
 
+
+if (!existsSync(SAVE_GAME_PATH)){
+    mkdirSync(SAVE_GAME_PATH);
+}
+console.log(SAVE_GAME_PATH)
+const version_path = path.join(SAVE_GAME_PATH, 'version.txt')
+function get_version_raw():string {
+    if (!existsSync(version_path)) {
+        writeFileSync(version_path, '0')
+    }
+    return readFileSync(version_path).toString()
+}
+function set_version(n: number) {
+    console.log('set version ' + n)
+    writeFileSync(version_path, '' + n)
+    return n
+}
+function get_version():number {
+    let data = Number(get_version_raw())
+    return data
+}
 
 const gameloop = require('node-gameloop');
 var shutdown = false
@@ -47,13 +71,7 @@ export function launch(http_server: Server) {
 
         console.log('reading save files');
         console.log('connection ready');
-
-
-
         load()
-        
-
-
         console.log('systems are ready');
         gameloop.setGameLoop( (delta: number) => update(delta, http_server), 100 );
 
@@ -93,8 +111,15 @@ function load() {
                 BattleEvent.Leave(battle, unit)
             }
         }
+    }
 
-        
+    let version = get_version()
+    if (version == 0) {
+        const factions = Data.World.get_factions()
+        for (const item of factions) {
+            GameMaster.spawn_faction(item.spawn_point, item.tag)
+        }
+        set_version(1)
     }
 }
 

@@ -17,6 +17,7 @@ const TONS_OF_MONEY = 30000 as money
 
 export namespace GameMaster {
     export function spawn_faction(cell_id: cell_id, faction: string) {
+        console.log('spawn ' + faction)
         const [x, y] = Data.World.id_to_coordinate(cell_id)
         if (faction == 'city') {
             // creation of mayor
@@ -42,6 +43,11 @@ export namespace GameMaster {
             armourer.savings.inc(LUMP_OF_MONEY)
             const hunter_1 = Template.Character.HumanRatHunter(x, y, "Hunter 1")
             const hunter_2 = Template.Character.HumanRatHunter(x, y, "Hunter 2")
+
+            // innkeeper
+            const innkeeper = Template.Character.HumanCity(x, y, "Innkeeper")
+            const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200)
+            Data.Buildings.set_ownership(innkeeper.id, inn)
         }
     }
 }

@@ -180,6 +180,18 @@ export class Map {
         this.tiles.push(new Image)
         this.tiles[13].src = 'static/img/tiles/elodinos.png';
 
+        this.tiles.push(new Image)
+        this.tiles[14].src = 'static/img/tiles/new_urban_1.png'
+
+        this.tiles.push(new Image)
+        this.tiles[15].src = 'static/img/tiles/new_urban_2.png'
+
+        this.tiles.push(new Image)
+        this.tiles[16].src = 'static/img/tiles/new_urban_3.png'
+
+        this.tiles.push(new Image)
+        this.tiles[17].src = 'static/img/tiles/city_colour.png'
+
         this.canvas = canvas;
         this.socket = socket
         this.hex_side = 23;
@@ -622,15 +634,32 @@ export class Map {
         // draw features
         if (this.urban[i] == undefined) return;
         if (this.urban[i][j] == undefined) return;
-        let urbanisation = this.urban[i][j]
+        if (this.terrain[i][j] == 'rupture') return
+
         let forestation = this.forest[i][j]
+        let urbanisation = this.urban[i][j]
         ctx.strokeStyle = 'black';
-        // ctx.fillText(forestation, center_x - this.hex_side, center_y - h);
+        
+        ctx.fillText(forestation, center_x - this.hex_side, center_y - h);
         for (let iteration = 0; iteration < forestation / 100; iteration++) {
             const noise_x = Math.cos(iteration + i + j) * 10
             const noise_y = Math.cos(iteration * 10 + i * 5 + j * 3) * 10
 
             ctx.drawImage(this.tiles[7], center_x - this.hex_side + noise_x, center_y - h + noise_y)
+        }
+        
+        if ((urbanisation >= 8)) {
+            ctx.drawImage(this.tiles[17], center_x - this.hex_side, center_y - h)
+            ctx.drawImage(this.tiles[17], center_x - this.hex_side, center_y - h)
+            ctx.drawImage(this.tiles[17], center_x - this.hex_side, center_y - h)
+            ctx.drawImage(this.tiles[16], center_x - this.hex_side, center_y - h)
+        } else if ((urbanisation >= 4)) {
+            ctx.drawImage(this.tiles[17], center_x - this.hex_side, center_y - h)
+            ctx.drawImage(this.tiles[17], center_x - this.hex_side, center_y - h)
+            ctx.drawImage(this.tiles[15], center_x - this.hex_side, center_y - h)
+        } else if ((urbanisation >= 1)) {
+            ctx.drawImage(this.tiles[17], center_x - this.hex_side, center_y - h)
+            ctx.drawImage(this.tiles[14], center_x - this.hex_side, center_y - h)
         }
 
         // if ((tag) in this.data) {

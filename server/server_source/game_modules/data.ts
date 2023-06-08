@@ -65,7 +65,7 @@ interface Faction {
 
 var factions: Faction[] = []
 var reputation: {[_ in char_id]: {[_ in string]: reputation}} = {}
-
+var faction_to_leader: {[_ in string]: char_id} = {}
 
 //BUILDINGS 
 var last_id_building: building_id = 0 as building_id
@@ -156,7 +156,9 @@ export namespace Data {
                 set.add(character)
             }
 
-            cell_to_characters_set.get(old_cell)?.delete(character)
+            if (old_cell != cell) {
+                cell_to_characters_set.get(old_cell)?.delete(character)
+            }            
 
             return old_cell
         }
@@ -294,12 +296,20 @@ export namespace Data {
             console.log(factions)
         }
 
+        export function set_faction_leader(faction: string, character: char_id) {
+            faction_to_leader[faction] = character
+        }
+
         export function get_faction(tag: string) {
             for (let item of factions) {
                 if (item.tag == tag) {
                     return item
                 }
             }
+        }
+
+        export function get_factions() {
+            return factions
         }
 
         export function get_terrain() {
@@ -404,7 +414,6 @@ export namespace Data {
                 let character = Data.CharacterDB.from_id(item)
                 responce.push({name: character.name, id: item})
             }
-
             return responce
         }
 

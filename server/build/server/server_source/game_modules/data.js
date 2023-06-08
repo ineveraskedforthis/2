@@ -36,6 +36,7 @@ var last_id_bulk = 0;
 var last_id_item = 0;
 var factions = [];
 var reputation = {};
+var faction_to_leader = {};
 //BUILDINGS 
 var last_id_building = 0;
 //OWNERSHIP
@@ -111,7 +112,9 @@ var Data;
             else {
                 set.add(character);
             }
-            cell_to_characters_set.get(old_cell)?.delete(character);
+            if (old_cell != cell) {
+                cell_to_characters_set.get(old_cell)?.delete(character);
+            }
             return old_cell;
         }
         Connection.character_cell = character_cell;
@@ -243,6 +246,10 @@ var Data;
             console.log(factions);
         }
         World.load_factions = load_factions;
+        function set_faction_leader(faction, character) {
+            faction_to_leader[faction] = character;
+        }
+        World.set_faction_leader = set_faction_leader;
         function get_faction(tag) {
             for (let item of factions) {
                 if (item.tag == tag) {
@@ -251,6 +258,10 @@ var Data;
             }
         }
         World.get_faction = get_faction;
+        function get_factions() {
+            return factions;
+        }
+        World.get_factions = get_factions;
         function get_terrain() {
             return terrain;
         }
@@ -318,7 +329,8 @@ var Data;
                             y: j,
                             market_scent: 0,
                             rat_scent: 0,
-                            loaded_forest: false
+                            loaded_forest: false,
+                            loaded_spawn: false,
                         };
                         set_data(id, cell_data);
                     }

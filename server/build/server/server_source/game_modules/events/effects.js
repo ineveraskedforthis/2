@@ -119,7 +119,7 @@ var Effect;
     }
     Effect.leave_room = leave_room;
     function new_building(cell_id, type, durability) {
-        data_1.Data.Buildings.create({
+        return data_1.Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
             type: type,

@@ -25,27 +25,6 @@
 // import { Template } from "./game_modules/templates";
 // const LUMP_OF_MONEY = 1000 as money
 // const TONS_OF_MONEY = 30000 as money
-// var SAVE_GAME_PATH = path.join('save_1')
-// if (!existsSync(SAVE_GAME_PATH)){
-//     mkdirSync(SAVE_GAME_PATH);
-// }
-// console.log(SAVE_GAME_PATH)
-// const version_path = path.join(SAVE_GAME_PATH, 'version.txt')
-// function get_version_raw():string {
-//     if (!existsSync(version_path)) {
-//         writeFileSync(version_path, '')
-//     }
-//     return readFileSync(version_path).toString()
-// }
-// export function set_version(n: number) {
-//     console.log('set version ' + n)
-//     writeFileSync(version_path, '' + n)
-//     return n
-// }
-// function get_version():number {
-//     let data = Number(get_version_raw())
-//     return data
-// }
 // export function migrate(current_version:number, target_version:number) {
 //     MapSystem.load()
 //     Data.load()
