@@ -135,6 +135,10 @@ export namespace Effect {
     export function building_quality_reduction_roll(building: LandPlot) {
         if (building.type == LandPlotType.ForestPlot) return;
         if (building.type == LandPlotType.LandPlot) return
+        if (building.type == LandPlotType.RatLair) return 
+        if (building.type == LandPlotType.FarmPlot) return 
+        if (building.type == LandPlotType.CottonField) return
+        
         if (Math.random() > 0.9) {
             building.durability = trim(building.durability - 1, 0, 1000)
         }

@@ -154,19 +154,9 @@ function update(delta, http_server) {
         if (character.dead()) {
             events_1.Event.death(character);
         }
-        else {
-            if (character.archetype.race == 'rat') {
-                rats += 1;
-            }
-            if (character.race() == 'elo') {
-                elos += 1;
-            }
-            if ((character.race() == 'human') && (character.user_id == '#')) {
-                humans += 1;
-            }
-        }
     }
-    system_2.MapSystem.update(delta, rats, elos, humans);
+    system_2.MapSystem.update(delta);
+    game_master_1.GameMaster.update(delta);
     update_timer += delta;
     if (update_timer > 50000) {
         save();

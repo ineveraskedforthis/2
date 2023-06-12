@@ -9,21 +9,25 @@ const actions_1 = require("./actions");
 const constraints_1 = require("./constraints");
 const helpers_1 = require("./helpers");
 function RatRoutine(char) {
-    if ((char.get_fatigue() > 70) || (char.get_stress() > 30)) {
+    if ((char.get_fatigue() > 90) || (char.get_stress() > 90)) {
+        // console.log('rest')
         action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
         return;
     }
     else if (char.get_fatigue() > 30) {
-        (0, actions_1.rat_go_home)(char, constraints_1.steppe_constraints);
+        // console.log('go home')
+        (0, actions_1.rat_go_home)(char, constraints_1.simple_constraints);
         return;
     }
+    // console.log('check for enemies')
     let target = helpers_1.AIhelper.enemies_in_cell(char);
     const target_char = systems_communication_1.Convert.id_to_character(target);
     if (target_char != undefined) {
         events_1.Event.start_battle(char, target_char);
     }
     else {
-        (0, actions_1.rat_walk)(char, constraints_1.steppe_constraints);
+        // console.log('walk around')
+        (0, actions_1.rat_walk)(char, constraints_1.simple_constraints);
         return;
     }
 }

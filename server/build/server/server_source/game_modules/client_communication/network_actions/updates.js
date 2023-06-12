@@ -285,7 +285,8 @@ var SendUpdate;
                     const display_data = {
                         terrain: (0, terrain_1.terrain_to_string)(terrain),
                         forestation: forestation,
-                        urbanisation: urbanisation
+                        urbanisation: urbanisation,
+                        rat_lair: data_1.Data.Cells.rat_lair(cell.id)
                     };
                     // if (data != undefined) {
                     //     Alerts.generic_user_alert(user, 'map-data-cells', res1)

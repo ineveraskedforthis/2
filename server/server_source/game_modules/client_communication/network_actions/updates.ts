@@ -310,7 +310,8 @@ export namespace SendUpdate {
                     const display_data = {
                         terrain: terrain_to_string(terrain),
                         forestation: forestation,
-                        urbanisation: urbanisation
+                        urbanisation: urbanisation,
+                        rat_lair: Data.Cells.rat_lair(cell.id)
                     }
 
                     // if (data != undefined) {

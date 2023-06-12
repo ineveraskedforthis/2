@@ -135,7 +135,7 @@ function rat_walk(character, constraints) {
     let cell_ids = data_1.Data.World.neighbours(character.cell_id);
     let potential_moves = cell_ids.map((x) => {
         let cell = data_1.Data.Cells.from_id(x);
-        return { item: cell, weight: (0, basic_functions_1.trim)(cell.rat_scent, 0, 20) };
+        return { item: cell, weight: (0, basic_functions_1.trim)(cell.rat_scent, 0, 5) };
     });
     let target = (0, basic_functions_1.select_weighted)(potential_moves, constraints);
     action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target.x, target.y]);
@@ -161,10 +161,12 @@ function rat_go_home(character, constraints) {
     let target = (0, basic_functions_1.select_max)(potential_moves, constraints);
     if (target != undefined)
         if (cell.rat_scent > target.rat_scent) {
+            // console.log('at home')
             rest_building(character, character.savings.get());
             // ActionManager.start_action(CharacterAction.REST, character, [cell.x, cell.y])
         }
         else {
+            // console.log('keep moving')
             action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target.x, target.y]);
         }
 }
@@ -185,7 +187,7 @@ function rest_building(character, budget) {
         let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
         let fatigue_change = character.get_fatigue() - fatigue_target;
         let utility = fatigue_change * fatigue_utility - price * money_utility;
-        if ((utility > best_utility) && (price < budget) && (data_1.Data.Buildings.occupied_rooms(item) < (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type))) {
+        if ((utility > best_utility) && (price <= budget) && (data_1.Data.Buildings.occupied_rooms(item) < (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type))) {
             target = item;
             best_utility = utility;
         }

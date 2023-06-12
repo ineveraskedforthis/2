@@ -48,6 +48,7 @@ var cell_to_buildings = new Map();
 var id_to_building = new Map();
 var building_to_occupied_rooms = new Map();
 var cells = [];
+var cell_ids = [];
 var id_to_cell = new Map();
 var cell_to_characters_set = new Map();
 const save_path = {
@@ -341,6 +342,7 @@ var Data;
         function set_data(id, cell) {
             cells.push(cell);
             id_to_cell.set(id, cell);
+            cell_ids.push(id);
         }
         Cells.set_data = set_data;
         function get_characters_set_from_cell(cell) {
@@ -371,6 +373,10 @@ var Data;
             return cells;
         }
         Cells.list = list;
+        function list_ids() {
+            return cell_ids;
+        }
+        Cells.list_ids = list_ids;
         function from_id(cell) {
             return id_to_cell.get(cell);
         }
@@ -442,6 +448,20 @@ var Data;
             return result;
         }
         Cells.urbanisation = urbanisation;
+        function rat_lair(cell) {
+            let result = false;
+            let land_plots = Buildings.from_cell_id(cell);
+            if (land_plots == undefined)
+                return false;
+            for (let plot_id of land_plots) {
+                let plot = Buildings.from_id(plot_id);
+                if (plot.type == "rat_lair" /* LandPlotType.RatLair */) {
+                    result = true;
+                }
+            }
+            return result;
+        }
+        Cells.rat_lair = rat_lair;
     })(Cells = Data.Cells || (Data.Cells = {}));
     let Buildings;
     (function (Buildings) {

@@ -4,6 +4,7 @@ exports.MapSystem = void 0;
 const data_1 = require("../data");
 // import { Cell} from "./cell";
 const templates_1 = require("../templates");
+const basic_functions_1 = require("../calculations/basic_functions");
 const terrain_1 = require("./terrain");
 // var size:world_dimensions = [0, 0]
 // var max_direction:number = 30
@@ -68,50 +69,49 @@ var MapSystem;
     }
     MapSystem.has_wood = has_wood;
     const max_scent = 50;
-    function update(dt, rats_number, elodino_number, npc_humans) {
+    function update(dt) {
         // updating rat scent
-        // for (const cell of cells) {
-        //     if (cell == undefined) continue
-        //     // constant change by dt / 100
-        //     let base_d_scent = dt / 100
-        //     // constant decay
-        //     let d_scent = -1 * base_d_scent
-        //     // cell.rat_scent -=dt / 100
-        //     // then calculate base scent change
-        //     if (cell.development.rats == 1) {
-        //         // lairs always have 50 scent
-        //         cell.rat_scent = max_scent
-        //     } else {
-        //         // take an average of scent around
-        //         let total = 0
-        //         let neighbours = neighbours_cells(cell.id)
-        //         for (let neighbour of neighbours) {
-        //             total += neighbour.rat_scent 
-        //         }
-        //         const average = total / neighbours.length * 0.95
-        //         d_scent += base_d_scent * (average - cell.rat_scent) * 5
-        //         // cell.rat_scent = total
-        //     }
-        //     if (cell.development.urban > 0) {
-        //         d_scent -= 30 * base_d_scent
-        //     }
-        //     if (cell.development.rural > 0) {
-        //         d_scent -= 20 * base_d_scent
-        //     }
-        //     if (cell.development.wild > 0) {
-        //         d_scent -= 20 * base_d_scent
-        //     }
-        //     // add scent to cells with rats
-        //     // let guests = cell.characters_set
-        //     // let rats = 0
-        //     // for (let guest of guests) {
-        //     //     let character = Data.CharacterDB.from_id(guest)
-        //     //     if (character.race() == 'rat') rats += 1
-        //     // }
-        //     // cell.rat_scent += rats
-        //     // trim to avoid weirdness
-        //     cell.rat_scent = trim(cell.rat_scent + d_scent * 20, 0, 50)
-        // }
+        const cells = data_1.Data.Cells.list();
+        for (const cell of cells) {
+            if (cell == undefined)
+                continue;
+            // constant change by dt / 100
+            let base_d_scent = dt / 100;
+            // constant decay
+            let d_scent = -0.1 * base_d_scent;
+            // cell.rat_scent -=dt / 100            
+            {
+                // take an average of scent around
+                let total = 0;
+                let neighbours = data_1.Data.World.neighbours(cell.id);
+                for (let neighbour of neighbours) {
+                    const neigbour_cell = data_1.Data.Cells.from_id(neighbour);
+                    total += neigbour_cell.rat_scent;
+                }
+                const average = total / neighbours.length * 0.95;
+                d_scent += base_d_scent * (average - cell.rat_scent) * 5;
+                // cell.rat_scent = total
+            }
+            { //account for urbanisation
+                d_scent -= data_1.Data.Cells.urbanisation(cell.id) * base_d_scent;
+            }
+            // if (cell.development.rural > 0) {
+            //     d_scent -= 20 * base_d_scent
+            // }
+            { //account for forest
+                d_scent -= data_1.Data.Cells.forestation(cell.id) / 100 * base_d_scent;
+            }
+            // add scent to cells with rats
+            // let guests = cell.characters_set
+            // let rats = 0
+            // for (let guest of guests) {
+            //     let character = Data.CharacterDB.from_id(guest)
+            //     if (character.race() == 'rat') rats += 1
+            // }
+            // cell.rat_scent += rats
+            // trim to avoid weirdness
+            cell.rat_scent = (0, basic_functions_1.trim)(cell.rat_scent + d_scent * 20, 0, 50);
+        }
         // for (const cell of cells) {
         //     if (cell == undefined) continue
         //     let temp = 0
@@ -132,16 +132,6 @@ var MapSystem;
         // for (const cell of cells) {
         //     if (cell == undefined) continue
         //     cell.update(dt)
-        //     if ((rats_number < 120) && (cell.development.rats == 1)) {
-        //         let dice = Math.random()
-        //         if (dice < 0.6) {
-        //             Template.Character.GenericRat(cell.x, cell.y, undefined)
-        //         } else if (dice < 0.8) {
-        //             Template.Character.BigRat(cell.x, cell.y, undefined)
-        //         } else if (dice < 1) {
-        //             Template.Character.MageRat(cell.x, cell.y, undefined)
-        //         }                
-        //     }
         //     if ((elodino_number < 60) && (cell.development.elodinos == 1)) {
         //         let dice = Math.random()
         //         if (dice < 0.7) {

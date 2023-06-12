@@ -3,6 +3,7 @@ import { Data } from "./data";
 import { Effect } from "./events/effects";
 import { Event } from "./events/events";
 import { RAT_SKIN } from "./manager_classes/materials_manager";
+import { Cell } from "./map/DATA_LAYOUT_CELL";
 import { Template } from "./templates";
 import { cell_id, money } from "./types";
 
@@ -48,6 +49,48 @@ export namespace GameMaster {
             const innkeeper = Template.Character.HumanCity(x, y, "Innkeeper")
             const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200)
             Data.Buildings.set_ownership(innkeeper.id, inn)
+        }
+
+        if (faction == 'rats') {
+            const rat_lair = Effect.new_building(cell_id, LandPlotType.RatLair, 400)
+        }
+    }
+
+    export function update(dt: number) {
+        let rats = 0
+        for (const character of Data.CharacterDB.list()) {
+            if (character.race() == 'rat') {
+                rats += 1
+            }
+        }
+
+        for (const cell of Data.Cells.list_ids()) {
+            const buildings = Data.Buildings.from_cell_id(cell)
+            if (buildings == undefined) continue
+            for (const item of buildings) {
+                const building = Data.Buildings.from_id(item)
+                if (building.type == LandPlotType.RatLair) {
+                    let cell_object = Data.Cells.from_id(cell)
+                    cell_object.rat_scent = 50
+                    cell_object.rat_scent += 5 * dt / 100
+                    spawn_rat(rats, cell_object)
+                }
+            }
+        }
+    }
+
+    export function spawn_rat(rats_number: number, cell: Cell) {        
+        if (rats_number < 50) {
+            let dice_spawn = Math.random()
+            if (dice_spawn > 0.4) return            
+            let dice = Math.random()
+            if (dice < 0.6) {
+                Template.Character.GenericRat(cell.x, cell.y, undefined)
+            } else if (dice < 0.8) {
+                Template.Character.BigRat(cell.x, cell.y, undefined)
+            } else if (dice < 1) {
+                Template.Character.MageRat(cell.x, cell.y, undefined)
+            }                
         }
     }
 }

@@ -155,22 +155,11 @@ function update(delta: number, http_server: Server) {
     for (let character of Data.CharacterDB.list()) {
         if (character.dead()) {
             Event.death(character)
-        } else {
-            if (character.archetype.race == 'rat') {
-                rats += 1
-            }
-
-            if (character.race() == 'elo') {
-                elos += 1
-            }
-
-            if ((character.race() == 'human')&&(character.user_id == '#')) {
-                humans += 1
-            }
         }
     }
 
-    MapSystem.update(delta, rats, elos, humans)
+    MapSystem.update(delta)
+    GameMaster.update(delta)
     
     update_timer += delta
     if (update_timer > 50000) {
@@ -178,5 +167,3 @@ function update(delta: number, http_server: Server) {
         update_timer = 0
     }
 }
-
-

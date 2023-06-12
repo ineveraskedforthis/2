@@ -45,6 +45,50 @@ var GameMaster;
             const inn = effects_1.Effect.new_building(cell_id, "inn" /* LandPlotType.Inn */, 200);
             data_1.Data.Buildings.set_ownership(innkeeper.id, inn);
         }
+        if (faction == 'rats') {
+            const rat_lair = effects_1.Effect.new_building(cell_id, "rat_lair" /* LandPlotType.RatLair */, 400);
+        }
     }
     GameMaster.spawn_faction = spawn_faction;
+    function update(dt) {
+        let rats = 0;
+        for (const character of data_1.Data.CharacterDB.list()) {
+            if (character.race() == 'rat') {
+                rats += 1;
+            }
+        }
+        for (const cell of data_1.Data.Cells.list_ids()) {
+            const buildings = data_1.Data.Buildings.from_cell_id(cell);
+            if (buildings == undefined)
+                continue;
+            for (const item of buildings) {
+                const building = data_1.Data.Buildings.from_id(item);
+                if (building.type == "rat_lair" /* LandPlotType.RatLair */) {
+                    let cell_object = data_1.Data.Cells.from_id(cell);
+                    cell_object.rat_scent = 50;
+                    cell_object.rat_scent += 5 * dt / 100;
+                    spawn_rat(rats, cell_object);
+                }
+            }
+        }
+    }
+    GameMaster.update = update;
+    function spawn_rat(rats_number, cell) {
+        if (rats_number < 120) {
+            let dice_spawn = Math.random();
+            if (dice_spawn > 0.4)
+                return;
+            let dice = Math.random();
+            if (dice < 0.6) {
+                templates_1.Template.Character.GenericRat(cell.x, cell.y, undefined);
+            }
+            else if (dice < 0.8) {
+                templates_1.Template.Character.BigRat(cell.x, cell.y, undefined);
+            }
+            else if (dice < 1) {
+                templates_1.Template.Character.MageRat(cell.x, cell.y, undefined);
+            }
+        }
+    }
+    GameMaster.spawn_rat = spawn_rat;
 })(GameMaster = exports.GameMaster || (exports.GameMaster = {}));

@@ -214,6 +214,7 @@ export class Map {
         this.terrain = []
         this.forest = []
         this.urban = []
+        this.rat_lairs = []
 
         this.visit_spotted = []
         this.x = 10;
@@ -382,10 +383,12 @@ export class Map {
             this.terrain[data.x] = []
             this.forest[data.x] = []
             this.urban[data.x] = []
+            this.rat_lairs[data.x] = []
         }
         this.terrain[data.x][data.y] = data.ter.terrain
         this.forest[data.x][data.y] = data.ter.forestation
         this.urban[data.x][data.y] = data.ter.urbanisation
+        this.rat_lairs[data.x][data.y] = data.ter.rat_lair
     }
 
     reset() {
@@ -638,9 +641,14 @@ export class Map {
 
         let forestation = this.forest[i][j]
         let urbanisation = this.urban[i][j]
+        let rats = this.rat_lairs[i][j]
         ctx.strokeStyle = 'black';
         
-        ctx.fillText(forestation, center_x - this.hex_side, center_y - h);
+        if (rats) {
+            ctx.drawImage(this.tiles[12], center_x - this.hex_side, center_y - h)
+        }
+
+        // ctx.fillText(forestation, center_x - this.hex_side, center_y - h);
         for (let iteration = 0; iteration < forestation / 100; iteration++) {
             const noise_x = Math.cos(iteration + i + j) * 10
             const noise_y = Math.cos(iteration * 10 + i * 5 + j * 3) * 10

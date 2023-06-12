@@ -135,6 +135,12 @@ var Effect;
             return;
         if (building.type == "land_plot" /* LandPlotType.LandPlot */)
             return;
+        if (building.type == "rat_lair" /* LandPlotType.RatLair */)
+            return;
+        if (building.type == "farm_plot" /* LandPlotType.FarmPlot */)
+            return;
+        if (building.type == "cotton_field" /* LandPlotType.CottonField */)
+            return;
         if (Math.random() > 0.9) {
             building.durability = (0, basic_functions_1.trim)(building.durability - 1, 0, 1000);
         }

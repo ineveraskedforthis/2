@@ -152,7 +152,7 @@ export function rat_walk(character: Character, constraints: (cell: Cell) => bool
     let cell_ids = Data.World.neighbours(character.cell_id)
     let potential_moves = cell_ids.map((x) => {   
         let cell = Data.Cells.from_id(x)
-        return {item: cell, weight: trim(cell.rat_scent, 0, 20)}
+        return {item: cell, weight: trim(cell.rat_scent, 0, 5)}
     })
     let target = select_weighted(potential_moves, constraints)
     ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
@@ -179,9 +179,11 @@ export function rat_go_home(character: Character, constraints: (cell: Cell) => b
     let target = select_max(potential_moves, constraints)
     if (target != undefined)
     if (cell.rat_scent > target.rat_scent) {
+        // console.log('at home')
         rest_building(character, character.savings.get())
         // ActionManager.start_action(CharacterAction.REST, character, [cell.x, cell.y])
     } else {
+        // console.log('keep moving')
         ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
     }
 }
@@ -207,7 +209,7 @@ export function rest_building(character: Character, budget: money) {
 
         let utility = fatigue_change * fatigue_utility - price * money_utility
 
-        if ((utility > best_utility) && (price < budget) && (Data.Buildings.occupied_rooms(item) < rooms(building.type))) {
+        if ((utility > best_utility) && (price <= budget) && (Data.Buildings.occupied_rooms(item) < rooms(building.type))) {
             target = item
             best_utility = utility
         }

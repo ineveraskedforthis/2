@@ -82,6 +82,7 @@ var id_to_building: Map<building_id, LandPlot> = new Map()
 var building_to_occupied_rooms: Map<building_id, number> = new Map()
 
 var cells: Cell[] = []
+var cell_ids: cell_id[] = []
 var id_to_cell: Map<cell_id, Cell> = new Map()
 
 var cell_to_characters_set: Map<cell_id, Set<char_id>> = new Map()
@@ -393,6 +394,7 @@ export namespace Data {
         export function set_data(id: cell_id, cell: Cell) {
             cells.push(cell)
             id_to_cell.set(id, cell)
+            cell_ids.push(id)
         }
 
         export function get_characters_set_from_cell(cell: cell_id) {
@@ -419,6 +421,10 @@ export namespace Data {
 
         export function list() {
             return cells
+        }
+
+        export function list_ids(){
+            return cell_ids
         }
 
         export function from_id(cell: cell_id):Cell {
@@ -473,6 +479,19 @@ export namespace Data {
                 else if (plot.type == LandPlotType.ElodinoHouse) result += 1
                 // else if (plot.type == LandPlotType.Shack) result += 1
                 else if (plot.type == LandPlotType.Inn) result += 1
+            }
+            return result
+        }
+
+        export function rat_lair(cell: cell_id) {
+            let result = false
+            let land_plots = Buildings.from_cell_id(cell)
+            if (land_plots == undefined) return false
+            for (let plot_id of land_plots) {
+                let plot = Buildings.from_id(plot_id)
+                if (plot.type == LandPlotType.RatLair) {
+                    result = true
+                }
             }
             return result
         }
