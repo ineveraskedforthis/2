@@ -599,4 +599,16 @@ export namespace Event {
         change_stash(character, WOOD, -cost)
         Effect.building_repair(building, repair)        
     }
+
+    export function remove_tree(cell: cell_id) {
+        let land_plots = Data.Buildings.from_cell_id(cell)
+        if (land_plots == undefined) return;
+        for (let item of land_plots) {
+            const plot = Data.Buildings.from_id(item)
+            if (plot.type == LandPlotType.ForestPlot) {
+                plot.durability = plot.durability - 1
+                if (plot.durability < 0) plot.durability = 0
+            }
+        }
+    }
 }

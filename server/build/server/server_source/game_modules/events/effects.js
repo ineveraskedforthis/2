@@ -89,6 +89,9 @@ var Effect;
         if (character.current_building != undefined) {
             return "you are already somewhere";
         }
+        if (character.cell_id != building.cell_id) {
+            return "wrong cell";
+        }
         if (rooms_not_available >= (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type)) {
             return "no_rooms";
         }

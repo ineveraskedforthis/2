@@ -62,7 +62,7 @@ export namespace ScriptedValue {
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
         if (race == 'graci') multiplier = 0.1
-        return Math.floor((5 - tier) * 5 * (200 - quality) / 100 * multiplier)
+        return Math.floor((5 - tier) * 10 * multiplier)
     }
 
     export function rest_target_stress(tier: number, quality: number, race: tagRACE) {
@@ -70,6 +70,6 @@ export namespace ScriptedValue {
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
         if (race == 'graci') multiplier = 0.1
-        return Math.floor((5 - tier) * 15 * (200 - quality) / 100 * multiplier)
+        return Math.floor((5 - tier) * 30 * multiplier)
     }
 }

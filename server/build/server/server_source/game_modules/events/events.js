@@ -544,4 +544,18 @@ var Event;
         effects_1.Effect.building_repair(building, repair);
     }
     Event.repair_building = repair_building;
+    function remove_tree(cell) {
+        let land_plots = data_1.Data.Buildings.from_cell_id(cell);
+        if (land_plots == undefined)
+            return;
+        for (let item of land_plots) {
+            const plot = data_1.Data.Buildings.from_id(item);
+            if (plot.type == "forest_plot" /* LandPlotType.ForestPlot */) {
+                plot.durability = plot.durability - 1;
+                if (plot.durability < 0)
+                    plot.durability = 0;
+            }
+        }
+    }
+    Event.remove_tree = remove_tree;
 })(Event = exports.Event || (exports.Event = {}));

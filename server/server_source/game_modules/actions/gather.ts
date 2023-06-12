@@ -29,10 +29,14 @@ export const gather_wood: ActionTargeted = {
     },
 
     result: function(char:Character, data: map_position) {
-        Effect.Change.fatigue(char, 10)
-        Effect.Change.stress(char, 1)
-        char.change('blood', 1)
-        Event.change_stash(char, WOOD, 1)
+
+        if (Data.Cells.has_forest(char.cell_id)) {
+            Event.remove_tree(char.cell_id)
+            Effect.Change.fatigue(char, 10)
+            Effect.Change.stress(char, 1)
+            char.change('blood', 1)
+            Event.change_stash(char, WOOD, 1)
+        }
 
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STASH)

@@ -27,10 +27,13 @@ exports.gather_wood = {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        effects_1.Effect.Change.fatigue(char, 10);
-        effects_1.Effect.Change.stress(char, 1);
-        char.change('blood', 1);
-        events_1.Event.change_stash(char, materials_manager_1.WOOD, 1);
+        if (data_1.Data.Cells.has_forest(char.cell_id)) {
+            events_1.Event.remove_tree(char.cell_id);
+            effects_1.Effect.Change.fatigue(char, 10);
+            effects_1.Effect.Change.stress(char, 1);
+            char.change('blood', 1);
+            events_1.Event.change_stash(char, materials_manager_1.WOOD, 1);
+        }
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(char.user_id, 4 /* UI_Part.STASH */);
         return 1 /* CharacterActionResponce.OK */;
