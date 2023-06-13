@@ -38,6 +38,21 @@ function repair_building(id) {
         socket.emit('repair-building', { id: id });
     };
 }
+function build_house(id) {
+    return function () {
+        socket.emit('build-building', { id: id, type: "human_house" /* LandPlotType.HumanHouse */ });
+    };
+}
+function build_inn(id) {
+    return function () {
+        socket.emit('build-building', { id: id, type: "inn" /* LandPlotType.Inn */ });
+    };
+}
+function build_shack(id) {
+    return function () {
+        socket.emit('build-building', { id: id, type: "shack" /* LandPlotType.Shack */ });
+    };
+}
 function build_building(type) {
     return function () {
         socket.emit('build-building', type);
@@ -73,22 +88,34 @@ function building_div(b) {
     rooms_label.classList.add('align-center');
     div.appendChild(rooms_label);
     // if (b.is_inn) {
-    let rest_button = document.createElement('button');
-    rest_button.onclick = rent_room(b.id);
-    rest_button.innerHTML = 'rest cost: ' + b.room_cost.toString();
-    rest_button.classList.add('width-50');
-    div.appendChild(rest_button);
-    let repair_button = document.createElement('button');
-    repair_button.onclick = repair_building(b.id);
-    repair_button.innerHTML = 'repair';
-    repair_button.classList.add('width-50');
-    div.appendChild(repair_button);
+    // let rest_button = document.createElement('button')
+    // rest_button.onclick = rent_room(b.id)
+    // rest_button.innerHTML = 'rest cost: ' + b.room_cost.toString()
+    // rest_button.classList.add('width-50')
+    // div.appendChild(rest_button)
+    div.appendChild(building_button(rent_room, b.id, 'rest cost: ' + b.room_cost.toString()));
+    // let repair_button = document.createElement('button')
+    // repair_button.onclick = repair_building(b.id)
+    // repair_button.innerHTML = 'repair'
+    // repair_button.classList.add('width-50')
+    // div.appendChild(repair_button)
+    div.appendChild(building_button(repair_building, b.id, 'repair'));
     if (b.type == "land_plot" /* LandPlotType.LandPlot */) {
+        div.appendChild(building_button(build_house, b.id, 'build house'));
+        div.appendChild(building_button(build_inn, b.id, 'build inn'));
+        div.appendChild(building_button(build_shack, b.id, 'build shack'));
     }
     // }
     div.classList.add('border-white');
     div.classList.add('container-horizontal');
     return div;
+}
+function building_button(callback, id, inner_html) {
+    let button = document.createElement('button');
+    button.onclick = callback(id);
+    button.innerHTML = inner_html;
+    button.classList.add('width-50');
+    return button;
 }
 function build_div(array) {
     let div = document.getElementById('buildings_list');

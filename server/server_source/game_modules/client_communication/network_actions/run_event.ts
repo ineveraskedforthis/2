@@ -104,15 +104,15 @@ export namespace SocketCommand {
         return false
     }
 
-    export function build_building(sw: SocketWrapper, msg: unknown) {
-        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        if (character == undefined) return
+    // export function build_building(sw: SocketWrapper, msg: unknown) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) return
 
-        if (typeof msg != 'string') return
-        if (!validate_building_type(msg)) return true
+    //     if (typeof msg != 'string') return
+    //     if (!validate_building_type(msg)) return true
 
-        // Event.build_building(character, msg as LandPlotType)
-    }
+    //     // Event.build_building(character, msg as LandPlotType)
+    // }
 
     export function buy_plot(sw: SocketWrapper,  msg: undefined|{id: unknown}) {
         if (msg == undefined) return
@@ -128,7 +128,7 @@ export namespace SocketCommand {
         Event.buy_land_plot(character, target_character)
     }
 
-    export function develop_plot(sw: SocketWrapper, msg: undefined|{id: unknown, type: string}) {
+    export function develop_plot(sw: SocketWrapper, msg: undefined|{id: unknown, type: unknown}) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
 
@@ -141,9 +141,10 @@ export namespace SocketCommand {
         if (type == undefined) return
 
         let true_type = LandPlotType.Shack
-        if (type == 'house') true_type = LandPlotType.HumanHouse
-        if (type == 'inn') true_type = LandPlotType.Inn
-        if (type == 'cotton_farm') true_type = LandPlotType.CottonField
+        if (type == LandPlotType.HumanHouse) true_type = LandPlotType.HumanHouse
+        if (type == LandPlotType.Inn) true_type = LandPlotType.Inn
+        if (type == LandPlotType.CottonField) true_type = LandPlotType.CottonField
+
 
         Event.develop_land_plot(character, building_id as building_id, true_type)
     }

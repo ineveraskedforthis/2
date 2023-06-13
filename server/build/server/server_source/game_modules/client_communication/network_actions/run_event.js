@@ -99,17 +99,13 @@ var SocketCommand;
         }
         return false;
     }
-    function build_building(sw, msg) {
-        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
-        if (character == undefined)
-            return;
-        if (typeof msg != 'string')
-            return;
-        if (!validate_building_type(msg))
-            return true;
-        // Event.build_building(character, msg as LandPlotType)
-    }
-    SocketCommand.build_building = build_building;
+    // export function build_building(sw: SocketWrapper, msg: unknown) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) return
+    //     if (typeof msg != 'string') return
+    //     if (!validate_building_type(msg)) return true
+    //     // Event.build_building(character, msg as LandPlotType)
+    // }
     function buy_plot(sw, msg) {
         if (msg == undefined)
             return;
@@ -143,11 +139,11 @@ var SocketCommand;
         if (type == undefined)
             return;
         let true_type = "shack" /* LandPlotType.Shack */;
-        if (type == 'house')
+        if (type == "human_house" /* LandPlotType.HumanHouse */)
             true_type = "human_house" /* LandPlotType.HumanHouse */;
-        if (type == 'inn')
+        if (type == "inn" /* LandPlotType.Inn */)
             true_type = "inn" /* LandPlotType.Inn */;
-        if (type == 'cotton_farm')
+        if (type == "cotton_field" /* LandPlotType.CottonField */)
             true_type = "cotton_field" /* LandPlotType.CottonField */;
         events_1.Event.develop_land_plot(character, building_id, true_type);
     }

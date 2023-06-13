@@ -597,8 +597,12 @@ export namespace Event {
         let cost = ScriptedValue.building_price_wood(type)
         if (character.stash.get(WOOD) < cost) return
 
-        change_stash(character, WOOD, -cost)
+
+        
         let building = Data.Buildings.from_id(plot_id)
+        if (building.type != LandPlotType.LandPlot) return
+
+        change_stash(character, WOOD, -cost)
         building.type = type
         // Effect.new_building(character.cell_id, type, character.skills.woodwork)
     }
