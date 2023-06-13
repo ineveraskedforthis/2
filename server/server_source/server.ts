@@ -186,8 +186,6 @@ server.listen(port, () => {
 
 import { launch } from "./game_launch.js";
 import { SocketManager } from "./game_modules/client_communication/socket_manager.js";
-import { MapSystem } from './game_modules/map/system.js';
-import { cell_id } from './game_modules/types.js';
 import { Data } from './game_modules/data.js';
 
 export var io = require('socket.io')(server);

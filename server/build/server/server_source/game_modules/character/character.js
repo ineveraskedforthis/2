@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Character = void 0;
 const stash_1 = require("../inventories/stash");
+// import { PerksTable } from "./Perks";
 const equip_1 = require("../inventories/equip");
 const savings_1 = require("../inventories/savings");
 const types_1 = require("../types");

@@ -1,5 +1,5 @@
 import { materials, material_index } from "../manager_classes/materials_manager";
-import { cell_id, damage_type, money, weapon_attack_tag, weapon_tag } from "../types";
+import { damage_type, weapon_attack_tag, weapon_tag } from "../types";
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
@@ -13,6 +13,7 @@ import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
 import { ScriptedValue } from "../events/scripted_values";
+import { cell_id, money } from "@custom_types/common";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 

@@ -5,7 +5,7 @@ import { ActionTargeted, CharacterActionResponce } from "../../CharacterActionRe
 import { Battle } from "../../battle/classes/battle";
 import { BattleEvent } from "../../battle/events";
 import { BattleSystem } from "../../battle/system";
-import { Perks } from "../../character/Perks";
+// import { Perks } from "../../character/Perks";
 import { can_dodge } from "../../character/checks";
 import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";

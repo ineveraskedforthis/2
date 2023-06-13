@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.perk_price = void 0;
 const data_1 = require("../data");
+// import { Perks } from "../character/Perks";
 function perk_base_price(tag) {
     switch (tag) {
         case 'meat_master': return 100;

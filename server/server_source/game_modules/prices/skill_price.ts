@@ -1,7 +1,7 @@
 import { Data } from "../data";
-import { money } from "../types";
 import { Character } from "../character/character";
 import { skill } from "../character/SkillList";
+import { money } from "@custom_types/common";
 
 
 export function skill_price(tag: skill, student: Character, teacher: Character): money {

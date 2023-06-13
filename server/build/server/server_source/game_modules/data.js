@@ -37,6 +37,7 @@ var last_id_item = 0;
 var factions = [];
 var reputation = {};
 var faction_to_leader = {};
+var character_is_leader = {};
 //BUILDINGS 
 var last_id_building = 0;
 //OWNERSHIP
@@ -248,7 +249,9 @@ var Data;
         }
         World.load_factions = load_factions;
         function set_faction_leader(faction, character) {
-            faction_to_leader[faction] = character;
+            Data.Reputation.set(faction, character, 'leader');
+            // faction_to_leader[faction] = character
+            // character_is_leader[character] = true
         }
         World.set_faction_leader = set_faction_leader;
         function get_faction(tag) {
@@ -448,6 +451,13 @@ var Data;
             return result;
         }
         Cells.urbanisation = urbanisation;
+        function free_space(cell) {
+            let free_space = 30;
+            free_space = free_space - urbanisation(cell);
+            free_space = free_space - forestation(cell) / 100;
+            return free_space;
+        }
+        Cells.free_space = free_space;
         function rat_lair(cell) {
             let result = false;
             let land_plots = Buildings.from_cell_id(cell);

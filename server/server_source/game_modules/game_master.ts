@@ -1,11 +1,14 @@
-import { LandPlotType } from "./DATA_LAYOUT_BUILDING";
+// import { LandPlotType } from "./DATA_LAYOUT_BUILDING";
+import { LandPlotType } from "../../../shared/buildings";
+import { cell_id, money } from "../../../shared/common";
 import { Data } from "./data";
 import { Effect } from "./events/effects";
 import { Event } from "./events/events";
 import { RAT_SKIN } from "./manager_classes/materials_manager";
 import { Cell } from "./map/DATA_LAYOUT_CELL";
+import { GraciTemplate } from "./races/graci";
 import { Template } from "./templates";
-import { cell_id, money } from "./types";
+// import { cell_id, money } from "./types";
 
 // steppe_humans 9 9
 // city 2 6
@@ -26,7 +29,7 @@ export namespace GameMaster {
             mayor.savings.inc(TONS_OF_MONEY)
             Data.World.set_faction_leader(faction, mayor.id)
 
-            const mayor_house = Effect.new_building(cell_id, LandPlotType.HumanHouse, 200)
+            const mayor_house = Effect.new_building(cell_id, LandPlotType.HumanHouse, 200, 30 as money)
             Data.Buildings.set_ownership(mayor.id, mayor_house)
 
             // creation of first colonists
@@ -42,25 +45,40 @@ export namespace GameMaster {
             armourer.perks.shoemaker = true
             armourer.stash.inc(RAT_SKIN, 50)
             armourer.savings.inc(LUMP_OF_MONEY)
-            const hunter_1 = Template.Character.HumanRatHunter(x, y, "Hunter 1")
-            const hunter_2 = Template.Character.HumanRatHunter(x, y, "Hunter 2")
-
+            for (let i = 0; i <= 10; i++) {
+                const hunter = Template.Character.HumanRatHunter(x, y, "Hunter " + i)
+                hunter.savings.inc(500 as money)
+            }
             // innkeeper
             const innkeeper = Template.Character.HumanCity(x, y, "Innkeeper")
-            const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200)
+            const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200, 10 as money)
             Data.Buildings.set_ownership(innkeeper.id, inn)
         }
 
         if (faction == 'rats') {
-            const rat_lair = Effect.new_building(cell_id, LandPlotType.RatLair, 400)
+            const rat_lair = Effect.new_building(cell_id, LandPlotType.RatLair, 400, 0 as money)
+        }
+
+        if (faction == 'elodinos') {
+            const elodino_city = Effect.new_building(cell_id, LandPlotType.ElodinoHouse, 400, 0 as money)
+        }
+
+        if (faction == 'graci') {
+            for (let i = 1; i <= 30; i++) {
+                Template.Character.Graci(x, y, undefined)
+            }
         }
     }
 
     export function update(dt: number) {
         let rats = 0
+        let elos = 0
         for (const character of Data.CharacterDB.list()) {
             if (character.race() == 'rat') {
                 rats += 1
+            }
+            if (character.race() == 'elo') {
+                elos += 1
             }
         }
 
@@ -71,9 +89,14 @@ export namespace GameMaster {
                 const building = Data.Buildings.from_id(item)
                 if (building.type == LandPlotType.RatLair) {
                     let cell_object = Data.Cells.from_id(cell)
-                    cell_object.rat_scent = 50
+                    cell_object.rat_scent = 200
                     cell_object.rat_scent += 5 * dt / 100
                     spawn_rat(rats, cell_object)
+                }
+
+                if (building.type == LandPlotType.ElodinoHouse) {
+                    let cell_object = Data.Cells.from_id(cell)
+
                 }
             }
         }
@@ -91,6 +114,17 @@ export namespace GameMaster {
             } else if (dice < 1) {
                 Template.Character.MageRat(cell.x, cell.y, undefined)
             }                
+        }
+    }
+
+    export function spawn_elodino(elos_number: number, cell: Cell) {
+        if (elos_number < 60) {
+            let dice = Math.random()
+            if (dice < 0.7) {
+                Template.Character.Elo(cell.x, cell.y, undefined)
+            } else {
+                Template.Character.MageElo(cell.x, cell.y, undefined)
+            }
         }
     }
 }

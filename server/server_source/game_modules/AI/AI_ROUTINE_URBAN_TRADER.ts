@@ -1,3 +1,4 @@
+import { money } from "@custom_types/common";
 import { AIstate } from "../character/AIstate";
 import { Character } from "../character/character";
 import { Data } from "../data";
@@ -5,7 +6,7 @@ import { EventMarket } from "../events/market";
 import { MaterialsManager, materials } from "../manager_classes/materials_manager";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
-import { money } from "../types";
+// import { money } from "../types";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { market_walk, rest_building, rest_outside, sell_all_stash, update_price_beliefs, urban_walk } from "./actions";
 import { tired } from "./triggers";

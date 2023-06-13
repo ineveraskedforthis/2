@@ -1,4 +1,4 @@
-import { cell_id, char_id } from "../types";
+import { cell_id } from "@custom_types/common";
 
 export interface Cell {
     id: cell_id

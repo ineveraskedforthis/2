@@ -1,3 +1,4 @@
+import { money } from "@custom_types/common"
 import { roll_price_belief_sell_increase } from "../AI/actions"
 import { trim } from "../calculations/basic_functions"
 import { Character } from "../character/character"
@@ -7,7 +8,7 @@ import { Data } from "../data"
 import { material_index } from "../manager_classes/materials_manager"
 import { BulkOrders, ItemOrders } from "../market/system"
 import { Convert } from "../systems_communication"
-import { money, order_bulk_id } from "../types"
+import { order_bulk_id } from "../types"
 import { Effect } from "./effects"
 
 export namespace EventMarket {

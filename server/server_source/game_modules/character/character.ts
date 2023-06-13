@@ -1,13 +1,15 @@
 import {Stash} from "../inventories/stash"
-import { PerksTable } from "./Perks";
+// import { PerksTable } from "./Perks";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
-import { Archetype, building_id, cell_id, char_id, InnateStats, map_position, ModelVariant, money, Stats, Status, status_type, TEMP_USER_ID, user_id } from "../types";
+import { Archetype, building_id, char_id, InnateStats, map_position, ModelVariant, Stats, Status, status_type, TEMP_USER_ID, user_id } from "../types";
 import { ActionTargeted } from "../CharacterActionResponce";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
 import { AIstate } from "./AIstate";
 import { material_index } from "../manager_classes/materials_manager";
+import { PerksTable } from "../../../../shared/character";
+import { cell_id, money } from "../../../../shared/common";
 
 export class Character {
     id: char_id;

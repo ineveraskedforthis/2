@@ -1,4 +1,5 @@
-import { money, SavingsJson } from "../types";
+import { money } from "@custom_types/common";
+import { SavingsJson } from "../types";
 
 export class Savings {
     data: money

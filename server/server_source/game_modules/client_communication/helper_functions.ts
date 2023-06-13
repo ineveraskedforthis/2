@@ -1,7 +1,7 @@
+import { cell_id } from "@custom_types/common";
 import { JSONficate } from "../json";
 import { OrderBulkJson } from "../market/classes";
 import { Convert } from "../systems_communication";
-import { cell_id } from "../types";
 
 export function prepare_market_orders(cell_id: cell_id) {
     let data = Convert.cell_id_to_bulk_orders(cell_id);

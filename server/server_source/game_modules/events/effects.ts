@@ -1,18 +1,21 @@
 import { equip_slot } from "../../../../shared/inventory";
 import { Character } from "../character/character";
 import { skill } from "../character/SkillList";
-import { Perks } from "../character/Perks";
+// import { Perks } from "../character/Perks";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 import { Data} from "../data";
 // import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
 import { Request } from "../client_communication/network_actions/request";
-import { building_id, cell_id, char_id, money } from "../types";
+import { building_id, char_id} from "../types";
 import { ScriptedValue } from "./scripted_values";
-import { LandPlot, LandPlotType, rooms } from "../DATA_LAYOUT_BUILDING";
+import { rooms } from "../DATA_LAYOUT_BUILDING";
 import { trim } from "../calculations/basic_functions";
 import { Cell } from "../map/DATA_LAYOUT_CELL";
+import { Perks } from "../../../../shared/character";
+import { cell_id, money } from "@custom_types/common";
+import { LandPlot, LandPlotType } from "@custom_types/buildings";
 
 export namespace Effect {
     export namespace Update {
@@ -123,12 +126,12 @@ export namespace Effect {
         character.current_building = undefined
     }
 
-    export function new_building(cell_id: cell_id, type: LandPlotType, durability: number) {        
+    export function new_building(cell_id: cell_id, type: LandPlotType, durability: number, room_cost: money) {        
         return Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
             type: type,
-            room_cost: 5 as money
+            room_cost: room_cost
         })
     }
 

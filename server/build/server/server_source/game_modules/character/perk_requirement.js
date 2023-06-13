@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.perk_requirement = void 0;
+// import { Perks } from "./Perks";
 function perk_requirement(tag, character) {
     switch (tag) {
         case 'meat_master': {

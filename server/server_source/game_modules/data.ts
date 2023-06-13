@@ -4,18 +4,19 @@ import fs, { read } from "fs"
 import path from "path"
 import { DEFAULT_WORLD_PATH, SAVE_GAME_PATH } from "../SAVE_GAME_PATH"
 import { battle_id } from "../../../shared/battle_data"
+import { reputation_level } from "../../../shared/character"
 import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
 // import { Factions } from "./factions"
 import { OrderBulk, OrderItem } from "./market/classes"
-import { cell_id, char_id, building_id, order_bulk_id, order_item_id, world_coordinates, money } from "./types"
+import { char_id, building_id, order_bulk_id, order_item_id, world_coordinates } from "./types"
 import { building_from_string, character_to_string, item_from_string, string_to_character } from "./strings_management"
-import { LandPlot } from "./DATA_LAYOUT_BUILDING"
 import { Cell } from "./map/DATA_LAYOUT_CELL"
 // import { Terrain, string_to_terrain } from "./map/terrain"
 import { CellType } from "./map/cell_type"
-import { LandPlotType } from "./DATA_LAYOUT_BUILDING"
 import { Terrain, string_to_terrain } from "./map/terrain"
+import { cell_id, money } from "../../../shared/common"
+import { LandPlot, LandPlotType } from "../../../shared/buildings"
 // import { Cell } from "./map/cell"
 
 
@@ -49,7 +50,7 @@ const empty_set_orders_item: Set<order_item_id> = new Set()
 var last_id_bulk = 0 as order_bulk_id
 var last_id_item = 0 as order_item_id
 
-export type reputation_level = 'enemy'|'neutral'|'friend'|'member'
+
 
 interface reputation {
     faction: string
@@ -66,6 +67,7 @@ interface Faction {
 var factions: Faction[] = []
 var reputation: {[_ in char_id]: {[_ in string]: reputation}} = {}
 var faction_to_leader: {[_ in string]: char_id} = {}
+var character_is_leader: {[_ in char_id]: boolean|undefined} = {}
 
 //BUILDINGS 
 var last_id_building: building_id = 0 as building_id
@@ -298,7 +300,9 @@ export namespace Data {
         }
 
         export function set_faction_leader(faction: string, character: char_id) {
-            faction_to_leader[faction] = character
+            Data.Reputation.set(faction, character, 'leader')
+            // faction_to_leader[faction] = character
+            // character_is_leader[character] = true
         }
 
         export function get_faction(tag: string) {
@@ -481,6 +485,13 @@ export namespace Data {
                 else if (plot.type == LandPlotType.Inn) result += 1
             }
             return result
+        }
+
+        export function free_space(cell: cell_id) {
+            let free_space = 30
+            free_space = free_space - urbanisation(cell)
+            free_space = free_space - forestation(cell) / 100
+            return free_space
         }
 
         export function rat_lair(cell: cell_id) {

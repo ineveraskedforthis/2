@@ -114,9 +114,11 @@ export class SocketManager {
             socket.on('request-talk',   (msg:any) => Request.perks_and_skills(user, msg))
             socket.on('request-local-buildings', (msg:any) => Request.local_buildings(user))
             socket.on('learn-perk',     (msg: undefined|{id: unknown, tag: unknown}) =>
-                                         SocketCommand.learn_perk(user, msg))
+                                            SocketCommand.learn_perk(user, msg))
             socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) => 
-                                         SocketCommand.learn_skill(user, msg))
+                                            SocketCommand.learn_skill(user, msg))
+            socket.on('buy-plot',       (msg: undefined|{id: unknown}) => 
+                                            SocketCommand.buy_plot(user, msg))
 
             
             socket.on('build-building',     (msg: unknown) => SocketCommand.build_building(user, msg))

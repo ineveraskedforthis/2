@@ -1,11 +1,11 @@
 import { Attack } from "../../attack/system";
 import { Accuracy } from "../../battle/battle_calcs";
 import { BattleEvent } from "../../battle/events";
-import { Perks, perks_list } from "../../character/Perks";
+import { perks_list } from "../../character/Perks";
 import { perk_price } from "../../prices/perk_base_price";
 import { skill } from "../../character/SkillList";
 import { skill_price } from "../../prices/skill_price";
-import { Data, reputation_level } from "../../data";
+import { Data } from "../../data";
 import { DmgOps } from "../../damage_types";
 import { UNIT_ID_MESSAGE } from "../../static_data/constants";
 import { Convert } from "../../systems_communication";
@@ -15,6 +15,7 @@ import { Alerts } from "./alerts";
 import { SendUpdate } from "./updates";
 import { ScriptedValue } from "../../events/scripted_values";
 import { rooms } from "../../DATA_LAYOUT_BUILDING";
+import { PerksResponce } from "../../../../../shared/responces"
 
 
 export namespace Request {
@@ -59,13 +60,7 @@ export namespace Request {
         }
 
         let data = target_character.perks
-        let responce: {
-            name: string,
-            race: string,
-            factions: { tag: string; name: string; reputation: reputation_level }[]
-            perks: {[_ in Perks]?: number}
-            skills: {[_ in skill]?: [number, number]}
-        } = {
+        let responce: PerksResponce = {
             name: target_character.name,
             race: target_character.race(),
             factions: Data.Reputation.list_from_id(target_character.id),

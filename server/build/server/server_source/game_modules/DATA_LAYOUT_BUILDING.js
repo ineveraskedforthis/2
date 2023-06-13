@@ -1,4 +1,5 @@
 "use strict";
+// import { cell_id, money } from "./types";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.rooms = void 0;
 function rooms(type) {

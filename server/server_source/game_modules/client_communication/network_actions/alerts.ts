@@ -15,7 +15,7 @@ import { User } from "../user";
 import { UserManagement } from "../user_manager";
 import { Cell } from "../../map/DATA_LAYOUT_CELL";
 import { Data } from "../../data";
-import { cell_id } from "../../types";
+import { cell_id } from "../../../../../shared/common";
 
 export namespace Alerts {
     export function not_enough_to_user(user: User, tag: string, required: number, current: number) {

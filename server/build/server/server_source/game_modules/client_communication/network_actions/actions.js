@@ -5,6 +5,7 @@ const action_manager_1 = require("../../actions/action_manager");
 const action_types_1 = require("../../action_types");
 const events_1 = require("../../battle/events");
 const system_1 = require("../../battle/system");
+// import { Perks } from "../../character/Perks";
 const checks_1 = require("../../character/checks");
 const inventory_events_1 = require("../../events/inventory_events");
 const systems_communication_1 = require("../../systems_communication");

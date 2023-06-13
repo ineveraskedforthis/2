@@ -6,8 +6,9 @@ import { ItemSystem } from "../items/system"
 import { Data } from "../data";
 import { material_index } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
-import { cell_id, char_id, money, order_bulk_id, order_item_id } from "../types";
+import { char_id, order_bulk_id, order_item_id } from "../types";
 import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
+import { money } from "@custom_types/common";
 
 export enum AuctionResponce {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',

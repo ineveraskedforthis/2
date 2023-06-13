@@ -80,6 +80,7 @@ class SocketManager {
             socket.on('request-local-buildings', (msg) => request_1.Request.local_buildings(user));
             socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg));
             socket.on('learn-skill', (msg) => run_event_1.SocketCommand.learn_skill(user, msg));
+            socket.on('buy-plot', (msg) => run_event_1.SocketCommand.buy_plot(user, msg));
             socket.on('build-building', (msg) => run_event_1.SocketCommand.build_building(user, msg));
             socket.on('rent-room', (msg) => run_event_1.SocketCommand.rent_room(user, msg));
             socket.on('repair-building', (msg) => run_event_1.SocketCommand.repair_building(user, msg));

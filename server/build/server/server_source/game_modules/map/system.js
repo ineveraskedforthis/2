@@ -1,10 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MapSystem = void 0;
+// import { EloTemplate } from "../races/elo";
+// import { BigRatTemplate, RatTemplate } from "../races/rat";
 const data_1 = require("../data");
+// import { Event } from "../events/events";
+// import { Factions } from "../factions";
+// import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
+// import { cell_id, world_coordinates } from "../types";
 // import { Cell} from "./cell";
 const templates_1 = require("../templates");
 const basic_functions_1 = require("../calculations/basic_functions");
+// import { Convert } from "../systems_communication";
+// import { MEAT } from "../manager_classes/materials_manager";
+// import { Building } from "../DATA_LAYOUT_BUILDING";
+// import { Cell } from "./DATA_LAYOUT_CELL";
 const terrain_1 = require("./terrain");
 // var size:world_dimensions = [0, 0]
 // var max_direction:number = 30
@@ -132,14 +142,6 @@ var MapSystem;
         // for (const cell of cells) {
         //     if (cell == undefined) continue
         //     cell.update(dt)
-        //     if ((elodino_number < 60) && (cell.development.elodinos == 1)) {
-        //         let dice = Math.random()
-        //         if (dice < 0.7) {
-        //             Template.Character.Elo(cell.x, cell.y, undefined)
-        //         } else {
-        //             Template.Character.MageElo(cell.x, cell.y, undefined)
-        //         }
-        //     }
         // }
         // if (npc_humans <= 80) {
         //     roll_human()

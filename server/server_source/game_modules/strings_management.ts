@@ -1,10 +1,11 @@
 import { Item } from "./items/item";
 import { DmgOps } from "./damage_types";
-import { Archetype, cell_id, InnateStats, money, Stats, Status, user_id } from "./types";
+import { Archetype, InnateStats, Stats, Status, user_id } from "./types";
 import { Character } from "./character/character";
 import { SkillList, skill } from "./character/SkillList";
 import { Inventory } from "./inventories/inventory";
-import { LandPlot } from "./DATA_LAYOUT_BUILDING";
+import { cell_id, money } from "@custom_types/common";
+import { LandPlot } from "@custom_types/buildings";
 
 
 export function item_to_string(item: Item | undefined): string {

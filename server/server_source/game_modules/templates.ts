@@ -1,3 +1,4 @@
+import { money } from "@custom_types/common"
 import { CharacterTemplate } from "./character/templates"
 import { Data } from "./data"
 import { Event } from "./events/events"
@@ -10,7 +11,7 @@ import { EloTemplate } from "./races/elo"
 import { GraciTemplate } from "./races/graci"
 import { HumanStrongTemplate, HumanTemplate } from "./races/human"
 import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/rat"
-import { ModelVariant, money } from "./types"
+import { ModelVariant } from "./types"
 
 export namespace Template {
     export namespace Character {

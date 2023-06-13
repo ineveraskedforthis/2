@@ -1,4 +1,6 @@
 import { socket } from "./modules/globals.js";
+import { LandPlotType, LandPlotSocket } from "../shared/buildings.js"
+
 
 {
     let div = document.getElementById('local_buildings')
@@ -6,10 +8,10 @@ import { socket } from "./modules/globals.js";
     // for (let i = 1; i <= 4; i++) {
     
     // for (let i = 1)
-    let button = document.createElement('button')
-    button.onclick = build_building(BuildingType.Shack)
-    button.innerHTML = 'build  ' + type_to_name(BuildingType.Shack)
-    div?.appendChild(button)
+    // let button = document.createElement('button')
+    // button.onclick = build_building(LandPlotType.Shack)
+    // button.innerHTML = 'build  ' + type_to_name(LandPlotType.Shack)
+    // div?.appendChild(button)
 
     // }
 
@@ -35,23 +37,6 @@ function close_buildings() {
     big_div.classList.add('hidden');
 }
 
-export const enum BuildingType {
-    Shack = 'shack',
-    Inn = 'inn',
-    HumanHouse = 'human_house',
-    RatLair = 'rat_lair',
-    ElodinoHouse = 'elodino_house',
-}
-
-interface Building {
-    id: number
-    durability: number,
-    type: BuildingType,
-    rooms: number,
-    rooms_occupied: number,
-    room_cost: number
-}
-
 function request() {
     socket.emit('request-local-buildings')
 }
@@ -68,7 +53,7 @@ function repair_building(id: number) {
     }
 }
 
-function build_building(type: BuildingType) {
+function build_building(type: LandPlotType) {
     return function() {
         socket.emit('build-building', type)
     }
@@ -81,7 +66,7 @@ function quality_to_name(n: number) {
     return 'luxury' + '(' + n + ')'
 }
 
-function type_to_name(x: BuildingType) {
+function type_to_name(x: LandPlotType) {
     // if (n == 1) return 'shack'
     // if (n == 2) return 'house'
     // if (n == 3) return 'mansion'
@@ -89,7 +74,7 @@ function type_to_name(x: BuildingType) {
     return x
 }
 
-function building_div(b: Building) {
+function building_div(b: LandPlotSocket) {
     let div = document.createElement('div')
     let quality_label = document.createElement('div')
     console.log(b.durability, b.type)
@@ -117,6 +102,10 @@ function building_div(b: Building) {
     repair_button.innerHTML = 'repair'
     repair_button.classList.add('width-50')
     div.appendChild(repair_button)
+
+    if (b.type == LandPlotType.LandPlot) {
+
+    }
     // }
 
     div.classList.add('border-white')
@@ -125,16 +114,15 @@ function building_div(b: Building) {
     return div    
 }
 
-function build_div(array: Building[]) {
+function build_div(array: LandPlotSocket[]) {
     let div = document.getElementById('buildings_list')!
     div.innerHTML = ''
     array.forEach((value) => {
         div.appendChild(building_div(value))
     })
-    
 }
 
-socket.on('buildings-info', (data: Building[]) => {
+socket.on('buildings-info', (data: LandPlotSocket[]) => {
     console.log(data)
     build_div(data)
     document.getElementById('local_buildings')!.classList.remove('hidden');

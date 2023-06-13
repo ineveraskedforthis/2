@@ -13,10 +13,11 @@ import { Data } from "./data";
 // import { Cell } from "./map/cell";
 import { MapSystem } from "./map/system";
 import { OrderBulk, OrderItem, OrderItemJson } from "./market/classes";
-import { cell_id, char_id, order_bulk_id, order_item_id, user_online_id } from "./types";
+import { char_id, order_bulk_id, order_item_id, user_online_id } from "./types";
 import { Alerts } from "./client_communication/network_actions/alerts";
 import { BattleSystem } from "./battle/system";
 import { Cell } from "./map/DATA_LAYOUT_CELL";
+import { cell_id } from "@custom_types/common";
 
 
 export namespace Convert {

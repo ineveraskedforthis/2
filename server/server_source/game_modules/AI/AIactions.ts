@@ -2,12 +2,12 @@ import type { Character } from "../character/character";
 import { ActionManager } from "../actions/action_manager";
 import { RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
 import { AIhelper } from "./helpers";
-import { money } from "../types";
 import { BulkOrders } from "../market/system";
 import { EventMarket } from "../events/market";
 import { trim } from "../calculations/basic_functions";
 import { CraftBulk, craft_actions } from "../craft/crafts_storage";
 import { CraftItem } from "../craft/items";
+import { money } from "@custom_types/common";
 
 
 export namespace AIactions {

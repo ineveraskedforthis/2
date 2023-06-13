@@ -5,6 +5,7 @@ const data_1 = require("../data");
 const market_1 = require("../events/market");
 const system_1 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
+// import { money } from "../types";
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const actions_1 = require("./actions");
 const triggers_1 = require("./triggers");

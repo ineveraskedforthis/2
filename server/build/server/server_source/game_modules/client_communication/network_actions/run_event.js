@@ -107,9 +107,51 @@ var SocketCommand;
             return;
         if (!validate_building_type(msg))
             return true;
-        events_1.Event.build_building(character, msg);
+        // Event.build_building(character, msg as LandPlotType)
     }
     SocketCommand.build_building = build_building;
+    function buy_plot(sw, msg) {
+        if (msg == undefined)
+            return;
+        let character_id = msg.id;
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        const [valid_user, valid_character, target_character] = common_validations_1.Validator.valid_action_to_character(user, character, character_id);
+        if (character == undefined)
+            return;
+        if (target_character == undefined)
+            return;
+        if (valid_character.cell_id != target_character.cell_id) {
+            valid_user.socket.emit('alert', 'not in the same cell');
+            return;
+        }
+        events_1.Event.buy_land_plot(character, target_character);
+    }
+    SocketCommand.buy_plot = buy_plot;
+    function develop_plot(sw, msg) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        if (msg == undefined)
+            return;
+        let building_id = msg.id;
+        if (typeof building_id != 'number')
+            return;
+        let building = data_1.Data.Buildings.from_id(building_id);
+        if (building == undefined)
+            return;
+        let type = msg.type;
+        if (type == undefined)
+            return;
+        let true_type = "shack" /* LandPlotType.Shack */;
+        if (type == 'house')
+            true_type = "human_house" /* LandPlotType.HumanHouse */;
+        if (type == 'inn')
+            true_type = "inn" /* LandPlotType.Inn */;
+        if (type == 'cotton_farm')
+            true_type = "cotton_field" /* LandPlotType.CottonField */;
+        events_1.Event.develop_land_plot(character, building_id, true_type);
+    }
+    SocketCommand.develop_plot = develop_plot;
     function repair_building(sw, msg) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)

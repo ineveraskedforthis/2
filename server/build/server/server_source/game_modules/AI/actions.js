@@ -13,6 +13,7 @@ const materials_manager_1 = require("../manager_classes/materials_manager");
 // import { Cell } from "../map/cell";
 const system_1 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
+// import { money } from "../types";
 const AI_CONSTANTS_1 = require("./AI_CONSTANTS");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const constraints_1 = require("./constraints");

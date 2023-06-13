@@ -6,9 +6,10 @@ import { EventInventory } from "../../events/inventory_events";
 import { EventMarket } from "../../events/market";
 import { Data } from "../../data";
 import { AuctionResponce, } from "../../market/system";
-import { money, order_bulk_id } from "../../types";
+import { order_bulk_id } from "../../types";
 import { Character } from "../../character/character";
 import { slot } from "../../../../../shared/inventory";
+import { money } from "../../../../../shared/common";
 
 function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
     return (sw: SocketWrapper) => {

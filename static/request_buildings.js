@@ -3,10 +3,10 @@ import { socket } from "./modules/globals.js";
     let div = document.getElementById('local_buildings');
     // for (let i = 1; i <= 4; i++) {
     // for (let i = 1)
-    let button = document.createElement('button');
-    button.onclick = build_building("shack" /* BuildingType.Shack */);
-    button.innerHTML = 'build  ' + type_to_name("shack" /* BuildingType.Shack */);
-    div?.appendChild(button);
+    // let button = document.createElement('button')
+    // button.onclick = build_building(LandPlotType.Shack)
+    // button.innerHTML = 'build  ' + type_to_name(LandPlotType.Shack)
+    // div?.appendChild(button)
     // }
     let close_button = document.createElement('button');
     close_button.innerHTML = 'close';
@@ -83,6 +83,8 @@ function building_div(b) {
     repair_button.innerHTML = 'repair';
     repair_button.classList.add('width-50');
     div.appendChild(repair_button);
+    if (b.type == "land_plot" /* LandPlotType.LandPlot */) {
+    }
     // }
     div.classList.add('border-white');
     div.classList.add('container-horizontal');

@@ -1,4 +1,3 @@
-import { cell_id, money } from "./game_modules/types";
 import { MEAT, RAT_SKIN, WOOD } from "./game_modules/manager_classes/materials_manager";
 import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
 import { ItemSystem } from "./game_modules/items/system";
@@ -9,6 +8,7 @@ import { Inventory } from "./game_modules/inventories/inventory";
 import { MapSystem } from "./game_modules/map/system";
 import { Data } from "./game_modules/data";
 import { character_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/strings_management";
+import { cell_id, money } from "@custom_types/common";
 
 
 Data.World.load()

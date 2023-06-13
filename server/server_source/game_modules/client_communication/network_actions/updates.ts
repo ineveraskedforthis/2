@@ -3,7 +3,7 @@ import { SkillList } from "../../character/SkillList";
 import { MapSystem } from "../../map/system";
 import { CellDisplayData } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";
-import { cell_id, weapon_attack_tags, weapon_tag } from "../../types";
+import { weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
 import { Alerts } from "./alerts";
 import { BattleSystem } from "../../battle/system";
@@ -19,6 +19,8 @@ import { Request } from "./request";
 import { DmgOps } from "../../damage_types";
 import { Data } from "../../data";
 import { terrain_to_string } from "../../map/terrain";
+import { CharacterStatsResponce } from "../../../../../shared/responces";
+import { cell_id } from "../../../../../shared/common";
 
 
 
@@ -45,7 +47,7 @@ export namespace SendUpdate {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        const stats = {
+        const stats: CharacterStatsResponce = {
             phys_power: CharacterSystem.phys_power(character),
             magic_power: CharacterSystem.magic_power(character),
             enchant_rating: CharacterSystem.enchant_rating(character),

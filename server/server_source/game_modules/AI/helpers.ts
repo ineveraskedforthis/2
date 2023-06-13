@@ -4,7 +4,6 @@ import { Character } from "../character/character"
 import { hostile } from "../races/racial_hostility"
 import { Event } from "../events/events"
 import { Convert } from "../systems_communication"
-import { cell_id, money } from "../types"
 import { output_bulk } from "../craft/CraftBulk"
 import { ELODINO_FLESH, materials, material_index, RAT_BONE, RAT_SKIN, WOOD, MEAT, FOOD } from "../manager_classes/materials_manager"
 import { Stash } from "../inventories/stash"
@@ -15,6 +14,7 @@ import { BattleAI } from "../battle/battle_ai"
 import { MapSystem } from "../map/system"
 import { AItrade } from "./AI_SCRIPTED_VALUES"
 import { Data } from "../data"
+import { cell_id, money } from "@custom_types/common"
 
 export function base_price(cell_id: cell_id, material: material_index): money {
     switch(material) {

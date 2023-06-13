@@ -8,7 +8,7 @@ import { Attack } from "../attack/system";
 import { Character } from "../character/character";
 import { ModelVariant, building_id, char_id } from "../types";
 import { Loot } from "../races/generate_loot";
-import { Perks } from "../character/Perks";
+// import { Perks } from "../character/Perks";
 import { perk_requirement } from "../character/perk_requirement";
 import { perk_price } from "../prices/perk_base_price";
 import { CharacterSystem } from "../character/system";
@@ -21,7 +21,7 @@ import { ARROW_BONE, materials, material_index, RAT_SKIN, ZAZ, WOOD } from "../m
 // import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert, Link, Unlink } from "../systems_communication";
-import { cell_id, damage_type, weapon_attack_tag } from "../types";
+import { damage_type, weapon_attack_tag } from "../types";
 import { Effect } from "./effects";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
@@ -34,7 +34,9 @@ import { ScriptedValue } from "./scripted_values";
 // import { BuildingType } from "../DATA_LAYOUT_BUILDING";
 import { on_craft_update } from "../craft/helpers";
 import { Cell } from "../map/DATA_LAYOUT_CELL";
-import { LandPlotType } from "../DATA_LAYOUT_BUILDING";
+import { Perks } from "../../../../shared/character";
+import { cell_id, money } from "@custom_types/common";
+import { LandPlotType } from "@custom_types/buildings";
 
 const GRAVEYARD_CELL = 0 as cell_id
 
@@ -576,14 +578,29 @@ export namespace Event {
         }
     }
 
-    export function build_building(character: Character, type: LandPlotType) {
-        let cost = ScriptedValue.building_price_wood(type)
-        // let rooms = ScriptedValue.building_rooms(type)
+    // export function build_building(character: Character, type: LandPlotType) {
 
+    // }
+
+    export function buy_land_plot(character: Character, seller: Character) {
+        if (Data.Reputation.from_id('city', seller.id) != 'leader') return 'not_a_leader'
+        if (character.cell_id != seller.cell_id) return 'too_far'
+        if (character.savings.get() < 500) return 'not_enough_money'
+        if (Data.Cells.free_space(character.cell_id) < 1) return 'no_space'
+
+        Effect.Transfer.savings(character, seller, 500 as money)
+        const land_plot = Effect.new_building(character.cell_id, LandPlotType.LandPlot, 100, 1 as money)
+        Data.Buildings.set_ownership(character.id, land_plot)
+    }
+
+    export function develop_land_plot(character: Character, plot_id: building_id, type: LandPlotType) {
+        let cost = ScriptedValue.building_price_wood(type)
         if (character.stash.get(WOOD) < cost) return
 
         change_stash(character, WOOD, -cost)
-        Effect.new_building(character.cell_id, type, character.skills.woodwork)
+        let building = Data.Buildings.from_id(plot_id)
+        building.type = type
+        // Effect.new_building(character.cell_id, type, character.skills.woodwork)
     }
 
     export function repair_building(character: Character, builing_id: building_id) {

@@ -121,12 +121,12 @@ var Effect;
         character.current_building = undefined;
     }
     Effect.leave_room = leave_room;
-    function new_building(cell_id, type, durability) {
+    function new_building(cell_id, type, durability, room_cost) {
         return data_1.Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
             type: type,
-            room_cost: 5
+            room_cost: room_cost
         });
     }
     Effect.new_building = new_building;

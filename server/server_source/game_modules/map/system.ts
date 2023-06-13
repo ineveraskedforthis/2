@@ -1,18 +1,19 @@
-import { EloTemplate } from "../races/elo";
-import { BigRatTemplate, RatTemplate } from "../races/rat";
+// import { EloTemplate } from "../races/elo";
+// import { BigRatTemplate, RatTemplate } from "../races/rat";
 import { Data } from "../data";
-import { Event } from "../events/events";
+// import { Event } from "../events/events";
 // import { Factions } from "../factions";
 // import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
-import { cell_id, world_coordinates } from "../types";
+// import { cell_id, world_coordinates } from "../types";
 // import { Cell} from "./cell";
 import { Template } from "../templates";
 import { trim } from "../calculations/basic_functions";
-import { Convert } from "../systems_communication";
-import { MEAT } from "../manager_classes/materials_manager";
+// import { Convert } from "../systems_communication";
+// import { MEAT } from "../manager_classes/materials_manager";
 // import { Building } from "../DATA_LAYOUT_BUILDING";
-import { Cell } from "./DATA_LAYOUT_CELL";
+// import { Cell } from "./DATA_LAYOUT_CELL";
 import { Terrain, terrain_can_move } from "./terrain";
+import { cell_id } from "../../../../shared/common";
 
 // var size:world_dimensions = [0, 0]
 // var max_direction:number = 30
@@ -153,14 +154,7 @@ export namespace MapSystem {
         //     cell.update(dt)
 
 
-        //     if ((elodino_number < 60) && (cell.development.elodinos == 1)) {
-        //         let dice = Math.random()
-        //         if (dice < 0.7) {
-        //             Template.Character.Elo(cell.x, cell.y, undefined)
-        //         } else {
-        //             Template.Character.MageElo(cell.x, cell.y, undefined)
-        //         }
-        //     }
+
         // }
 
         // if (npc_humans <= 80) {

@@ -1,7 +1,8 @@
-import { LandPlotType } from "../DATA_LAYOUT_BUILDING";
+import { LandPlotType } from "@custom_types/buildings";
 import { Character } from "../character/character";
 import { Data } from "../data";
-import { building_id, char_id, money, tagRACE } from "../types";
+import { building_id, char_id, tagRACE } from "../types";
+import { money } from "@custom_types/common";
 
 export namespace ScriptedValue {
     export function building_rest_tier(type: LandPlotType, character: Character): number {
@@ -33,7 +34,7 @@ export namespace ScriptedValue {
         return building.room_cost as money
     }
 
-    export function building_price_wood(type: LandPlotType) {
+    export function building_price_wood(type: LandPlotType): number {
         switch(type){
             case LandPlotType.Shack:return 50
             case LandPlotType.Inn:return 400

@@ -1,6 +1,7 @@
+import { money } from "@custom_types/common";
 import { Character } from "../character/character";
 import { material_index } from "../manager_classes/materials_manager";
-import { money } from "../types";
+// import { money } from "../types";
 import { base_price } from "./helpers";
 
 export namespace AItrade {

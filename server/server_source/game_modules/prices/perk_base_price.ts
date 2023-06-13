@@ -1,7 +1,9 @@
-import { money } from "../types";
+// import { money } from "../types";
 import { Character } from "../character/character";
 import { Data } from "../data";
-import { Perks } from "../character/Perks";
+import { Perks } from "../../../../shared/character";
+import { money } from "../../../../shared/common";
+// import { Perks } from "../character/Perks";
 
 function perk_base_price(tag: Perks) {
     switch (tag) {

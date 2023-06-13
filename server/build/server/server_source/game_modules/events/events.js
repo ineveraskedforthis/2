@@ -7,6 +7,7 @@ const system_1 = require("../battle/system");
 const basic_functions_1 = require("../calculations/basic_functions");
 const system_2 = require("../attack/system");
 const generate_loot_1 = require("../races/generate_loot");
+// import { Perks } from "../character/Perks";
 const perk_requirement_1 = require("../character/perk_requirement");
 const perk_base_price_1 = require("../prices/perk_base_price");
 const system_3 = require("../character/system");
@@ -520,15 +521,32 @@ var Event;
         }
     }
     Event.stop_battle = stop_battle;
-    function build_building(character, type) {
+    // export function build_building(character: Character, type: LandPlotType) {
+    // }
+    function buy_land_plot(character, seller) {
+        if (data_1.Data.Reputation.from_id('city', seller.id) != 'leader')
+            return 'not_a_leader';
+        if (character.cell_id != seller.cell_id)
+            return 'too_far';
+        if (character.savings.get() < 500)
+            return 'not_enough_money';
+        if (data_1.Data.Cells.free_space(character.cell_id) < 1)
+            return 'no_space';
+        effects_1.Effect.Transfer.savings(character, seller, 500);
+        const land_plot = effects_1.Effect.new_building(character.cell_id, "land_plot" /* LandPlotType.LandPlot */, 100, 1);
+        data_1.Data.Buildings.set_ownership(character.id, land_plot);
+    }
+    Event.buy_land_plot = buy_land_plot;
+    function develop_land_plot(character, plot_id, type) {
         let cost = scripted_values_1.ScriptedValue.building_price_wood(type);
-        // let rooms = ScriptedValue.building_rooms(type)
         if (character.stash.get(materials_manager_1.WOOD) < cost)
             return;
         change_stash(character, materials_manager_1.WOOD, -cost);
-        effects_1.Effect.new_building(character.cell_id, type, character.skills.woodwork);
+        let building = data_1.Data.Buildings.from_id(plot_id);
+        building.type = type;
+        // Effect.new_building(character.cell_id, type, character.skills.woodwork)
     }
-    Event.build_building = build_building;
+    Event.develop_land_plot = develop_land_plot;
     function repair_building(character, builing_id) {
         let building = data_1.Data.Buildings.from_id(builing_id);
         let skill = character.skills.woodwork;

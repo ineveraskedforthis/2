@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.simple_constraints = exports.steppe_constraints = exports.urban_constraints = exports.forest_constraints = void 0;
 const data_1 = require("../data");
 const system_1 = require("../map/system");
+// import { cell_id } from "../types";
 function forest_constraints(cell) {
     if (!system_1.MapSystem.can_move([cell.x, cell.y]))
         return false;

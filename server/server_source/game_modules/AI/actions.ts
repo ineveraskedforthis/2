@@ -1,3 +1,4 @@
+import { money } from "@custom_types/common";
 import { rooms } from "../DATA_LAYOUT_BUILDING";
 import { CharacterAction } from "../action_types";
 import { ActionManager } from "../actions/action_manager";
@@ -12,7 +13,7 @@ import { Cell } from "../map/DATA_LAYOUT_CELL";
 // import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
-import { money } from "../types";
+// import { money } from "../types";
 import { dp } from "./AI_CONSTANTS";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { simple_constraints, urban_constraints } from "./constraints";

@@ -1,5 +1,5 @@
-import { LandPlotType } from "../../DATA_LAYOUT_BUILDING";
-import { Perks } from "../../character/Perks";
+import { Perks } from "../../../../../shared/character";
+// import { Perks } from "../../character/Perks";
 import { skill } from "../../character/SkillList";
 import { Data } from "../../data";
 import { Effect } from "../../events/effects";
@@ -8,6 +8,8 @@ import { Convert } from "../../systems_communication";
 import { building_id } from "../../types";
 import { SocketWrapper, User } from "../user";
 import { Validator } from "./common_validations";
+
+import { LandPlotType } from "../../../../../shared/buildings"
 
 export namespace SocketCommand {
     // data is a raw id of character
@@ -108,7 +110,42 @@ export namespace SocketCommand {
 
         if (typeof msg != 'string') return
         if (!validate_building_type(msg)) return true
-        Event.build_building(character, msg as LandPlotType)
+
+        // Event.build_building(character, msg as LandPlotType)
+    }
+
+    export function buy_plot(sw: SocketWrapper,  msg: undefined|{id: unknown}) {
+        if (msg == undefined) return
+        let character_id = msg.id
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
+        if (character == undefined) return
+        if (target_character == undefined) return
+        if (valid_character.cell_id != target_character.cell_id) {
+            valid_user.socket.emit('alert', 'not in the same cell')
+            return
+        }
+        Event.buy_land_plot(character, target_character)
+    }
+
+    export function develop_plot(sw: SocketWrapper, msg: undefined|{id: unknown, type: string}) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+
+        if (msg == undefined) return
+        let building_id = msg.id
+        if (typeof building_id != 'number') return
+        let building = Data.Buildings.from_id(building_id as building_id)
+        if (building == undefined) return
+        let type = msg.type
+        if (type == undefined) return
+
+        let true_type = LandPlotType.Shack
+        if (type == 'house') true_type = LandPlotType.HumanHouse
+        if (type == 'inn') true_type = LandPlotType.Inn
+        if (type == 'cotton_farm') true_type = LandPlotType.CottonField
+
+        Event.develop_land_plot(character, building_id as building_id, true_type)
     }
 
     export function repair_building(sw: SocketWrapper, msg: undefined|{id: unknown}) {

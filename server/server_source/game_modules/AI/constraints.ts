@@ -1,7 +1,7 @@
 import { Data } from "../data";
 import { Cell } from "../map/DATA_LAYOUT_CELL";
 import { MapSystem } from "../map/system";
-import { cell_id } from "../types";
+// import { cell_id } from "../types";
 
 
 export function forest_constraints(cell: Cell) {
