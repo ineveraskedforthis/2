@@ -537,10 +537,27 @@ var Event;
         data_1.Data.Buildings.set_ownership(character.id, land_plot);
     }
     Event.buy_land_plot = buy_land_plot;
+    function create_land_plot(character) {
+        let characters = data_1.Data.Cells.get_characters_list_from_cell(character.cell_id);
+        for (let local_character of characters) {
+            if (data_1.Data.Reputation.from_id('city', local_character) == 'leader')
+                return 'leader_here';
+        }
+        if (character.cell_id != character.cell_id)
+            return 'too_far';
+        if (data_1.Data.Cells.free_space(character.cell_id) < 1)
+            return 'no_space';
+        effects_1.Effect.new_building(character.cell_id, "land_plot" /* LandPlotType.LandPlot */, 100, 0);
+        // Data.Buildings.set_ownership(character.id, land_plot)
+    }
+    Event.create_land_plot = create_land_plot;
     function develop_land_plot(character, plot_id, type) {
         let cost = scripted_values_1.ScriptedValue.building_price_wood(type);
         if (character.stash.get(materials_manager_1.WOOD) < cost)
             return;
+        let owner = data_1.Data.Buildings.owner(plot_id);
+        if ((owner != undefined) && (owner != character.id))
+            return 'not_your_plot';
         let building = data_1.Data.Buildings.from_id(plot_id);
         if (building.type != "land_plot" /* LandPlotType.LandPlot */)
             return;

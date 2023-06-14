@@ -18,6 +18,11 @@ import { LandPlotType, LandPlotSocket } from "../shared/buildings.js"
     close_button.innerHTML = 'close'
     close_button.id = 'close_buildings'
 
+    let new_plot = document.createElement('button')
+    new_plot.innerHTML = 'New plot'
+    new_plot.id = 'new_plot'
+
+    div?.appendChild(new_plot)
     div?.appendChild(close_button)
 }
 
@@ -29,6 +34,16 @@ import { LandPlotType, LandPlotSocket } from "../shared/buildings.js"
 {
     let button = document.getElementById('close_buildings')!;
     button.onclick = () => close_buildings();
+}
+
+{
+    let button = document.getElementById('new_plot')!;
+    button.onclick = create_plot;
+}
+
+function create_plot() {
+    socket.emit('create-plot');
+    request()
 }
 
 function close_buildings() {
@@ -83,7 +98,7 @@ function quality_to_name(n: number) {
     if (n < 30) return 'crumbling ' + '(' + n + ')'
     if (n < 60) return '' + '(' + n + ')'
     if (n < 90) return 'fine' + '(' + n + ')'
-    return 'luxury' + '(' + n + ')'
+    return 'sturdy' + '(' + n + ')'
 }
 
 function type_to_name(x: LandPlotType) {

@@ -593,12 +593,24 @@ export namespace Event {
         Data.Buildings.set_ownership(character.id, land_plot)
     }
 
+    export function create_land_plot(character: Character) {
+        let characters = Data.Cells.get_characters_list_from_cell(character.cell_id)
+        for (let local_character of characters) {
+            if (Data.Reputation.from_id('city', local_character) == 'leader') return 'leader_here'
+        }
+        if (character.cell_id != character.cell_id) return 'too_far'
+        if (Data.Cells.free_space(character.cell_id) < 1) return 'no_space'
+
+        Effect.new_building(character.cell_id, LandPlotType.LandPlot, 100, 0 as money)
+        // Data.Buildings.set_ownership(character.id, land_plot)
+    }
+
     export function develop_land_plot(character: Character, plot_id: building_id, type: LandPlotType) {
         let cost = ScriptedValue.building_price_wood(type)
         if (character.stash.get(WOOD) < cost) return
+        let owner = Data.Buildings.owner(plot_id)
+        if ((owner != undefined) && (owner != character.id)) return 'not_your_plot';
 
-
-        
         let building = Data.Buildings.from_id(plot_id)
         if (building.type != LandPlotType.LandPlot) return
 

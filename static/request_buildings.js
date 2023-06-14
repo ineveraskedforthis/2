@@ -11,6 +11,10 @@ import { socket } from "./modules/globals.js";
     let close_button = document.createElement('button');
     close_button.innerHTML = 'close';
     close_button.id = 'close_buildings';
+    let new_plot = document.createElement('button');
+    new_plot.innerHTML = 'New plot';
+    new_plot.id = 'new_plot';
+    div?.appendChild(new_plot);
     div?.appendChild(close_button);
 }
 {
@@ -20,6 +24,14 @@ import { socket } from "./modules/globals.js";
 {
     let button = document.getElementById('close_buildings');
     button.onclick = () => close_buildings();
+}
+{
+    let button = document.getElementById('new_plot');
+    button.onclick = create_plot;
+}
+function create_plot() {
+    socket.emit('create-plot');
+    request();
 }
 function close_buildings() {
     let big_div = document.getElementById('local_buildings');

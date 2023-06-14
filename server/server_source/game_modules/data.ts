@@ -491,6 +491,12 @@ export namespace Data {
             let free_space = 30
             free_space = free_space - urbanisation(cell)
             free_space = free_space - forestation(cell) / 100
+            let plots = Buildings.from_cell_id(cell)
+            if (plots == undefined) return free_space
+            for (let item of plots) {
+                let plot = Buildings.from_id(item)
+                if (plot.type == LandPlotType.LandPlot) free_space -= 1
+            }
             return free_space
         }
 

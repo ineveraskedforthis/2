@@ -123,6 +123,13 @@ var SocketCommand;
         events_1.Event.buy_land_plot(character, target_character);
     }
     SocketCommand.buy_plot = buy_plot;
+    function create_plot(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        events_1.Event.create_land_plot(character);
+    }
+    SocketCommand.create_plot = create_plot;
     function develop_plot(sw, msg) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)

@@ -128,6 +128,13 @@ export namespace SocketCommand {
         Event.buy_land_plot(character, target_character)
     }
 
+    export function create_plot(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        
+        Event.create_land_plot(character)
+    }
+
     export function develop_plot(sw: SocketWrapper, msg: undefined|{id: unknown, type: unknown}) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return

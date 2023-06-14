@@ -119,6 +119,7 @@ export class SocketManager {
                                             SocketCommand.learn_skill(user, msg))
             socket.on('buy-plot',       (msg: undefined|{id: unknown}) => 
                                             SocketCommand.buy_plot(user, msg))
+            socket.on('create-plot',    () => SocketCommand.create_plot(user))
 
             
             socket.on('build-building',     (msg: undefined|{id: unknown, type: unknown}) => SocketCommand.develop_plot(user, msg))
