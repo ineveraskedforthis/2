@@ -7,7 +7,7 @@ const system_1 = require("../map/system");
 function forest_constraints(cell) {
     if (!system_1.MapSystem.can_move([cell.x, cell.y]))
         return false;
-    if (data_1.Data.Cells.forestation(cell.id) > 0) {
+    if (data_1.Data.Cells.forestation(cell.id) > 300) {
         return true;
     }
     return false;

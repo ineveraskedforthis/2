@@ -3,9 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameMaster = void 0;
 const data_1 = require("./data");
 const effects_1 = require("./events/effects");
-const materials_manager_1 = require("./manager_classes/materials_manager");
 const templates_1 = require("./templates");
-// import { cell_id, money } from "./types";
 // steppe_humans 9 9
 // city 2 6
 // rats 12 16
@@ -27,31 +25,43 @@ var GameMaster;
             const mayor_house = effects_1.Effect.new_building(cell_id, "human_house" /* LandPlotType.HumanHouse */, 200, 30);
             data_1.Data.Buildings.set_ownership(mayor.id, mayor_house);
             // creation of first colonists
-            const cook = templates_1.Template.Character.HumanCook(x, y, "Cook", 'city');
-            const shoemaker = templates_1.Template.Character.HumanCity(x, y, "Bootmaker");
-            shoemaker.skills.clothier = 100;
-            shoemaker.perks.shoemaker = true;
-            shoemaker.stash.inc(materials_manager_1.RAT_SKIN, 50);
-            shoemaker.savings.inc(LUMP_OF_MONEY);
-            const fletcher = templates_1.Template.Character.HumanFletcher(x, y, "Fletcher", 'city');
-            const armourer = templates_1.Template.Character.HumanCity(x, y, "Armourer");
-            armourer.skills.clothier = 100;
-            armourer.perks.shoemaker = true;
-            armourer.stash.inc(materials_manager_1.RAT_SKIN, 50);
-            armourer.savings.inc(LUMP_OF_MONEY);
+            templates_1.Template.Character.HumanCook(x, y, "Cook", 'city');
+            templates_1.Template.Character.Shoemaker(x, y);
+            templates_1.Template.Character.HumanFletcher(x, y, "Fletcher", 'city');
+            templates_1.Template.Character.ArmourMaster(x, y);
+            // colony mages
+            templates_1.Template.Character.Alchemist(x, y, 'city');
+            templates_1.Template.Character.Mage(x, y, 'city');
+            //hunters
             for (let i = 0; i <= 10; i++) {
                 const hunter = templates_1.Template.Character.HumanRatHunter(x, y, "Hunter " + i);
                 hunter.savings.inc(500);
+            }
+            //guards
+            for (let i = 0; i <= 5; i++) {
+                const guard = templates_1.Template.Character.HumanCityGuard(x, y, "Guard " + i);
+                guard.savings.inc(500);
             }
             // innkeeper
             const innkeeper = templates_1.Template.Character.HumanCity(x, y, "Innkeeper");
             const inn = effects_1.Effect.new_building(cell_id, "inn" /* LandPlotType.Inn */, 200, 10);
             data_1.Data.Buildings.set_ownership(innkeeper.id, inn);
         }
+        if (faction == 'steppe_humans') {
+            // innkeeper
+            const innkeeper = templates_1.Template.Character.HumanCity(x, y, "Innkeeper");
+            const inn = effects_1.Effect.new_building(cell_id, "inn" /* LandPlotType.Inn */, 200, 10);
+            data_1.Data.Buildings.set_ownership(innkeeper.id, inn);
+            // creation of local colonists
+            templates_1.Template.Character.HumanCook(x, y, "Cook", 'steppe');
+            templates_1.Template.Character.WeaponMasterBone(x, y, faction);
+            templates_1.Template.Character.BloodMage(x, y, faction);
+            templates_1.Template.Character.MasterUnarmed(x, y, faction);
+        }
         if (faction == 'rats') {
             const rat_lair = effects_1.Effect.new_building(cell_id, "rat_lair" /* LandPlotType.RatLair */, 400, 0);
         }
-        if (faction == 'elodinos') {
+        if (faction == 'elodino_free') {
             const elodino_city = effects_1.Effect.new_building(cell_id, "elodino_house" /* LandPlotType.ElodinoHouse */, 400, 0);
         }
         if (faction == 'graci') {
@@ -86,6 +96,7 @@ var GameMaster;
                 }
                 if (building.type == "elodino_house" /* LandPlotType.ElodinoHouse */) {
                     let cell_object = data_1.Data.Cells.from_id(cell);
+                    spawn_elodino(elos, cell_object);
                 }
             }
         }

@@ -1,17 +1,21 @@
-import { money } from "@custom_types/common"
+import { cell_id, money } from "@custom_types/common"
 import { CharacterTemplate } from "./character/templates"
 import { Data } from "./data"
 import { Event } from "./events/events"
 // import { Factions } from "./factions"
 import { BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "./items/items_set_up"
 import { ItemSystem } from "./items/system"
-import { ARROW_BONE, FOOD, RAT_BONE, WOOD, ZAZ } from "./manager_classes/materials_manager"
+import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
 import { EloTemplate } from "./races/elo"
 import { GraciTemplate } from "./races/graci"
 import { HumanStrongTemplate, HumanTemplate } from "./races/human"
 import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/rat"
 import { ModelVariant } from "./types"
+import { EventMarket } from "./events/market"
+
+const LUMP_OF_MONEY = 1000 as money
+const TONS_OF_MONEY = 30000 as money
 
 export namespace Template {
     export namespace Character {
@@ -181,6 +185,88 @@ export namespace Template {
             let graci = Base(GraciTemplate, name, undefined, x, y, 'graci')
             graci.skills.travelling = 70
             return graci
+        }
+
+
+        export function Mage(x: number, y: number, faction: string) {
+            let mage = GenericHuman(x, y, 'Mage', faction)
+            // let mage = Event.new_character(HumanTemplate, 'Mage', cell, dummy_model)
+
+            mage.skills.magic_mastery = 100
+            mage.perks.mage_initiation = true
+            mage.perks.magic_bolt = true
+
+            return mage
+        }
+
+        export function BloodMage(x: number, y: number, faction: string) {
+            const blood_mage = Mage(x, y, faction)
+            blood_mage.perks.blood_mage = true
+
+            return blood_mage
+        }
+
+        export function Alchemist(x: number, y: number, faction: string) {
+            let alchemist = GenericHuman(x, y, 'Alchemist', faction)
+
+            alchemist.skills.magic_mastery = 60
+            alchemist.perks.mage_initiation = true
+            alchemist.perks.alchemist = true
+
+            alchemist.stash.inc(ZAZ, 5)
+            alchemist.savings.inc(5000 as money)
+
+            return alchemist
+        }
+
+        export function ArmourMaster(x: number, y: number) {
+            let master = HumanCity(x, y, 'Armourer')
+            master.skills.clothier = 100
+            master.perks.skin_armour_master = true
+            master.stash.inc(RAT_SKIN, 50)
+            master.savings.inc(LUMP_OF_MONEY)            
+            return master
+        }
+
+        export function Shoemaker(x: number, y: number) {
+            let master = HumanCity(x, y, 'Shoemaker')
+            master.skills.clothier = 100
+            master.perks.shoemaker = true
+            master.stash.inc(RAT_SKIN, 50)
+            master.savings.inc(LUMP_OF_MONEY)            
+            return master
+        }
+
+        export function WeaponMasterWood(x: number, y: number, faction: string) {
+            let master = GenericHuman(x, y, 'Weapons maker', faction)
+
+            master.skills.woodwork = 100
+            master.perks.weapon_maker = true
+            master.stash.inc(WOOD, 15)
+            master.savings.inc(LUMP_OF_MONEY)
+            
+            return master
+        }
+
+        export function WeaponMasterBone(x: number, y: number, faction: string) {
+            let master = GenericHuman(x, y, 'Weapons maker', faction)
+
+            master.skills.bone_carving = 100
+            master.perks.weapon_maker = true
+            master.stash.inc(RAT_BONE, 40)
+            master.savings.inc(LUMP_OF_MONEY)
+            
+            return master
+        }
+
+        export function MasterUnarmed(x: number, y: number, faction: string) {
+            let master = GenericHuman(x, y, 'Monk', faction)
+            master.skills.noweapon = 100
+            master.perks.dodge = true
+            master.perks.advanced_unarmed = true
+            master.savings.inc(LUMP_OF_MONEY)
+
+            return master
         }
     }
 }

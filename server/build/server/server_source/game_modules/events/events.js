@@ -541,8 +541,10 @@ var Event;
         let cost = scripted_values_1.ScriptedValue.building_price_wood(type);
         if (character.stash.get(materials_manager_1.WOOD) < cost)
             return;
-        change_stash(character, materials_manager_1.WOOD, -cost);
         let building = data_1.Data.Buildings.from_id(plot_id);
+        if (building.type != "land_plot" /* LandPlotType.LandPlot */)
+            return;
+        change_stash(character, materials_manager_1.WOOD, -cost);
         building.type = type;
         // Effect.new_building(character.cell_id, type, character.skills.woodwork)
     }

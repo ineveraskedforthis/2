@@ -23,8 +23,6 @@
 // import { Stash } from "./game_modules/inventories/stash";
 // import { Savings } from "./game_modules/inventories/savings";
 // import { Template } from "./game_modules/templates";
-// const LUMP_OF_MONEY = 1000 as money
-// const TONS_OF_MONEY = 30000 as money
 // export function migrate(current_version:number, target_version:number) {
 //     MapSystem.load()
 //     Data.load()
@@ -168,86 +166,6 @@
 //     // monk.changed = true    
 // }
 // const dummy_model = {chin: 0, mouth: 0, eyes: 0}
-// function mage(x: number, y: number) {
-//     const cell = MapSystem.coordinate_to_id(x, y)
-//     let mage = Event.new_character(HumanTemplate, 'Mage', cell, dummy_model)
-//     mage.skills.magic_mastery = 100
-//     mage.perks.mage_initiation = true
-//     mage.perks.magic_bolt = true
-//     mage.stash.inc(ZAZ, 300)
-//     mage.savings.inc(TONS_OF_MONEY)
-//     EventMarket.sell(mage, ZAZ, 200, 50 as money)
-//     EventMarket.buy( mage, ELODINO_FLESH, 200, 20 as money )
-//     EventMarket.buy( mage, GRACI_HAIR, 10, 1000 as money)
-//     return mage
-// }
-// function blood_mage(x: number, y: number, faction_id: number) {
-//     const blood_mage = mage(x, y)
-//     blood_mage.perks.blood_mage = true
-//     Data.Reputation.set(faction_id, blood_mage.id, "member")
-//     return blood_mage
-// }
-// function alchemist(x: number, y: number, faction_id: number) {
-//     const cell = MapSystem.coordinate_to_id(x, y)
-//     let alchemist = Event.new_character(HumanTemplate, 'Alchemist', cell, dummy_model)
-//     alchemist.skills.magic_mastery = 60
-//     alchemist.perks.mage_initiation = true
-//     alchemist.perks.alchemist = true
-//     alchemist.stash.inc(ZAZ, 5)
-//     alchemist.savings.inc(TONS_OF_MONEY)
-//     Data.Reputation.set(faction_id, alchemist.id, "member")
-//     return alchemist
-// }
-// function armour_master(x: number, y: number, faction_id: number) {
-//     const cell = MapSystem.coordinate_to_id(x, y)
-//     let master = Event.new_character(HumanTemplate, 'Armourer', cell, dummy_model)
-//     master.skills.clothier = 100
-//     master.perks.skin_armour_master = true
-//     master.stash.inc(RAT_SKIN, 50)
-//     master.savings.inc(LUMP_OF_MONEY)
-//     Data.Reputation.set(faction_id, master.id, "member")
-//     return master
-// }
-// function shoemaker(x: number, y: number, faction_id: number) {
-//     const cell = MapSystem.coordinate_to_id(x, y)
-//     let master = Event.new_character(HumanTemplate, 'Shoemaker', cell, dummy_model)
-//     master.skills.clothier = 100
-//     master.perks.shoemaker = true
-//     master.stash.inc(RAT_SKIN, 50)
-//     master.savings.inc(LUMP_OF_MONEY)
-//     Data.Reputation.set(faction_id, master.id, "member")
-//     return master
-// }
-// function weapon_master_wood(x: number, y: number, faction_id: number) {
-//     const cell = MapSystem.coordinate_to_id(x, y)
-//     let master = Event.new_character(HumanTemplate, 'Weapons maker', cell, dummy_model)
-//     master.skills.woodwork = 100
-//     master.perks.weapon_maker = true
-//     master.stash.inc(WOOD, 15)
-//     master.savings.inc(LUMP_OF_MONEY)
-//     Data.Reputation.set(faction_id, master.id, "member")
-//     return master
-// }
-// function bone_carver_weapon(x: number, y: number, faction_id: number) {
-//     const cell = MapSystem.coordinate_to_id(x, y)
-//     let master = Event.new_character(HumanTemplate, 'Weapons maker', cell, dummy_model)
-//     master.skills.bone_carving = 100
-//     master.perks.weapon_maker = true
-//     master.stash.inc(RAT_BONE, 40)
-//     master.savings.inc(LUMP_OF_MONEY)
-//     Data.Reputation.set(faction_id, master.id, "member")
-//     return master
-// }
-// function unarmed_master(x: number, y: number, faction_id: number) {
-//     const cell = MapSystem.coordinate_to_id(x, y)
-//     let master = Event.new_character(HumanTemplate, 'Monk', cell, dummy_model)
-//     master.skills.noweapon = 100
-//     master.perks.dodge = true
-//     master.perks.advanced_unarmed = true
-//     master.savings.inc(LUMP_OF_MONEY)
-//     Data.Reputation.set(faction_id, master.id, "member")
-//     return master
-// }
 // function city_guard(x: number, y: number) {
 //     Template.Character.HumanCityGuard(x, y, 'Guard')
 // }

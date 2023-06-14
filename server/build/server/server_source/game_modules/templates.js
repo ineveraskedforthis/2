@@ -11,6 +11,8 @@ const elo_1 = require("./races/elo");
 const graci_1 = require("./races/graci");
 const human_1 = require("./races/human");
 const rat_1 = require("./races/rat");
+const LUMP_OF_MONEY = 1000;
+const TONS_OF_MONEY = 30000;
 var Template;
 (function (Template) {
     let Character;
@@ -201,5 +203,75 @@ var Template;
             return graci;
         }
         Character.Graci = Graci;
+        function Mage(x, y, faction) {
+            let mage = GenericHuman(x, y, 'Mage', faction);
+            // let mage = Event.new_character(HumanTemplate, 'Mage', cell, dummy_model)
+            mage.skills.magic_mastery = 100;
+            mage.perks.mage_initiation = true;
+            mage.perks.magic_bolt = true;
+            return mage;
+        }
+        Character.Mage = Mage;
+        function BloodMage(x, y, faction) {
+            const blood_mage = Mage(x, y, faction);
+            blood_mage.perks.blood_mage = true;
+            return blood_mage;
+        }
+        Character.BloodMage = BloodMage;
+        function Alchemist(x, y, faction) {
+            let alchemist = GenericHuman(x, y, 'Alchemist', faction);
+            alchemist.skills.magic_mastery = 60;
+            alchemist.perks.mage_initiation = true;
+            alchemist.perks.alchemist = true;
+            alchemist.stash.inc(materials_manager_1.ZAZ, 5);
+            alchemist.savings.inc(5000);
+            return alchemist;
+        }
+        Character.Alchemist = Alchemist;
+        function ArmourMaster(x, y) {
+            let master = HumanCity(x, y, 'Armourer');
+            master.skills.clothier = 100;
+            master.perks.skin_armour_master = true;
+            master.stash.inc(materials_manager_1.RAT_SKIN, 50);
+            master.savings.inc(LUMP_OF_MONEY);
+            return master;
+        }
+        Character.ArmourMaster = ArmourMaster;
+        function Shoemaker(x, y) {
+            let master = HumanCity(x, y, 'Shoemaker');
+            master.skills.clothier = 100;
+            master.perks.shoemaker = true;
+            master.stash.inc(materials_manager_1.RAT_SKIN, 50);
+            master.savings.inc(LUMP_OF_MONEY);
+            return master;
+        }
+        Character.Shoemaker = Shoemaker;
+        function WeaponMasterWood(x, y, faction) {
+            let master = GenericHuman(x, y, 'Weapons maker', faction);
+            master.skills.woodwork = 100;
+            master.perks.weapon_maker = true;
+            master.stash.inc(materials_manager_1.WOOD, 15);
+            master.savings.inc(LUMP_OF_MONEY);
+            return master;
+        }
+        Character.WeaponMasterWood = WeaponMasterWood;
+        function WeaponMasterBone(x, y, faction) {
+            let master = GenericHuman(x, y, 'Weapons maker', faction);
+            master.skills.bone_carving = 100;
+            master.perks.weapon_maker = true;
+            master.stash.inc(materials_manager_1.RAT_BONE, 40);
+            master.savings.inc(LUMP_OF_MONEY);
+            return master;
+        }
+        Character.WeaponMasterBone = WeaponMasterBone;
+        function MasterUnarmed(x, y, faction) {
+            let master = GenericHuman(x, y, 'Monk', faction);
+            master.skills.noweapon = 100;
+            master.perks.dodge = true;
+            master.perks.advanced_unarmed = true;
+            master.savings.inc(LUMP_OF_MONEY);
+            return master;
+        }
+        Character.MasterUnarmed = MasterUnarmed;
     })(Character = Template.Character || (Template.Character = {}));
 })(Template = exports.Template || (exports.Template = {}));

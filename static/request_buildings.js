@@ -31,33 +31,38 @@ function request() {
 function rent_room(id) {
     return function () {
         socket.emit('rent-room', { id: id });
+        request();
     };
 }
 function repair_building(id) {
     return function () {
         socket.emit('repair-building', { id: id });
+        request();
     };
 }
 function build_house(id) {
     return function () {
         socket.emit('build-building', { id: id, type: "human_house" /* LandPlotType.HumanHouse */ });
+        request();
     };
 }
 function build_inn(id) {
     return function () {
         socket.emit('build-building', { id: id, type: "inn" /* LandPlotType.Inn */ });
+        request();
     };
 }
 function build_shack(id) {
     return function () {
         socket.emit('build-building', { id: id, type: "shack" /* LandPlotType.Shack */ });
+        request();
     };
 }
-function build_building(type) {
-    return function () {
-        socket.emit('build-building', type);
-    };
-}
+// function build_building(type: LandPlotType) {
+//     return function() {
+//         socket.emit('build-building', type)
+//     }
+// }
 function quality_to_name(n) {
     if (n < 30)
         return 'crumbling ' + '(' + n + ')';

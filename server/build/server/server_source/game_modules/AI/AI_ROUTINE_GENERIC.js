@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ForestPassiveRoutine = exports.SteppePassiveRoutine = exports.SteppeAgressiveRoutine = void 0;
+exports.ForestPassiveRoutine = exports.PassiveRoutine = exports.SteppePassiveRoutine = exports.SteppeAgressiveRoutine = void 0;
 const events_1 = require("../events/events");
 const systems_communication_1 = require("../systems_communication");
 const actions_1 = require("./actions");
@@ -32,6 +32,15 @@ function SteppePassiveRoutine(character) {
     }
 }
 exports.SteppePassiveRoutine = SteppePassiveRoutine;
+function PassiveRoutine(character) {
+    if ((0, triggers_1.tired)(character)) {
+        (0, actions_1.rest_outside)(character);
+    }
+    else {
+        (0, actions_1.random_walk)(character, constraints_1.simple_constraints);
+    }
+}
+exports.PassiveRoutine = PassiveRoutine;
 function ForestPassiveRoutine(character) {
     if ((0, triggers_1.tired)(character)) {
         (0, actions_1.rest_outside)(character);

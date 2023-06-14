@@ -6,7 +6,7 @@ import { MapSystem } from "../map/system";
 
 export function forest_constraints(cell: Cell) {
     if (!MapSystem.can_move([cell.x, cell.y])) return false 
-    if (Data.Cells.forestation(cell.id) > 0) {
+    if (Data.Cells.forestation(cell.id) > 300) {
         return true
     }
     return false

@@ -1,10 +1,8 @@
-import { CharacterAction } from "../action_types";
-import { ActionManager } from "../actions/action_manager";
 import { Character } from "../character/character";
 import { Event } from "../events/events";
 import { Convert } from "../systems_communication";
 import { random_walk, rest_building, rest_outside } from "./actions";
-import { forest_constraints, steppe_constraints } from "./constraints";
+import { forest_constraints, simple_constraints, steppe_constraints } from "./constraints";
 import { AIhelper } from "./helpers";
 import { tired } from "./triggers";
 
@@ -27,6 +25,14 @@ export function SteppePassiveRoutine(character: Character) {
         rest_outside(character)
     } else {
         random_walk(character, steppe_constraints);
+    }
+}
+
+export function PassiveRoutine(character: Character) {
+        if (tired(character)) {
+        rest_outside(character)
+    } else {
+        random_walk(character, simple_constraints);
     }
 }
 

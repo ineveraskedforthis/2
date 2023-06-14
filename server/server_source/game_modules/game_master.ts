@@ -1,14 +1,9 @@
-// import { LandPlotType } from "./DATA_LAYOUT_BUILDING";
-import { LandPlotType } from "../../../shared/buildings";
-import { cell_id, money } from "../../../shared/common";
+import { cell_id, money } from "@custom_types/common";
 import { Data } from "./data";
 import { Effect } from "./events/effects";
-import { Event } from "./events/events";
-import { RAT_SKIN } from "./manager_classes/materials_manager";
 import { Cell } from "./map/DATA_LAYOUT_CELL";
-import { GraciTemplate } from "./races/graci";
 import { Template } from "./templates";
-// import { cell_id, money } from "./types";
+import { LandPlotType } from "@custom_types/buildings";
 
 // steppe_humans 9 9
 // city 2 6
@@ -18,6 +13,7 @@ import { Template } from "./templates";
 // big_humans 10 28
 const LUMP_OF_MONEY = 1000 as money
 const TONS_OF_MONEY = 30000 as money
+
 
 export namespace GameMaster {
     export function spawn_faction(cell_id: cell_id, faction: string) {
@@ -33,21 +29,25 @@ export namespace GameMaster {
             Data.Buildings.set_ownership(mayor.id, mayor_house)
 
             // creation of first colonists
-            const cook = Template.Character.HumanCook(x, y, "Cook", 'city')
-            const shoemaker = Template.Character.HumanCity(x, y, "Bootmaker")
-            shoemaker.skills.clothier = 100
-            shoemaker.perks.shoemaker = true
-            shoemaker.stash.inc(RAT_SKIN, 50)
-            shoemaker.savings.inc(LUMP_OF_MONEY)
-            const fletcher = Template.Character.HumanFletcher(x, y, "Fletcher", 'city')
-            const armourer = Template.Character.HumanCity(x, y, "Armourer")
-            armourer.skills.clothier = 100
-            armourer.perks.shoemaker = true
-            armourer.stash.inc(RAT_SKIN, 50)
-            armourer.savings.inc(LUMP_OF_MONEY)
+            Template.Character.HumanCook(x, y, "Cook", 'city')
+            Template.Character.Shoemaker(x, y)
+            Template.Character.HumanFletcher(x, y, "Fletcher", 'city')
+            Template.Character.ArmourMaster(x, y)
+
+            // colony mages
+            Template.Character.Alchemist(x, y, 'city')
+            Template.Character.Mage(x, y, 'city')
+
+
+            //hunters
             for (let i = 0; i <= 10; i++) {
                 const hunter = Template.Character.HumanRatHunter(x, y, "Hunter " + i)
                 hunter.savings.inc(500 as money)
+            }
+            //guards
+            for (let i = 0; i <= 5; i++) {
+                const guard = Template.Character.HumanCityGuard(x, y, "Guard " + i)
+                guard.savings.inc(500 as money)
             }
             // innkeeper
             const innkeeper = Template.Character.HumanCity(x, y, "Innkeeper")
@@ -55,11 +55,25 @@ export namespace GameMaster {
             Data.Buildings.set_ownership(innkeeper.id, inn)
         }
 
+
+        if (faction == 'steppe_humans') {
+            // innkeeper
+            const innkeeper = Template.Character.HumanCity(x, y, "Innkeeper")
+            const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200, 10 as money)
+            Data.Buildings.set_ownership(innkeeper.id, inn)
+
+            // creation of local colonists
+            Template.Character.HumanCook(x, y, "Cook", 'steppe')
+            Template.Character.WeaponMasterBone(x, y, faction)
+            Template.Character.BloodMage(x, y, faction)
+            Template.Character.MasterUnarmed(x, y, faction)
+        }        
+
         if (faction == 'rats') {
             const rat_lair = Effect.new_building(cell_id, LandPlotType.RatLair, 400, 0 as money)
         }
 
-        if (faction == 'elodinos') {
+        if (faction == 'elodino_free') {
             const elodino_city = Effect.new_building(cell_id, LandPlotType.ElodinoHouse, 400, 0 as money)
         }
 
@@ -96,7 +110,7 @@ export namespace GameMaster {
 
                 if (building.type == LandPlotType.ElodinoHouse) {
                     let cell_object = Data.Cells.from_id(cell)
-
+                    spawn_elodino(elos, cell_object)
                 }
             }
         }
