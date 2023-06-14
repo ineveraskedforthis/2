@@ -128,26 +128,27 @@ export namespace MapSystem {
             cell.rat_scent = trim(cell.rat_scent + d_scent * 20, 0, 50)
         }
 
-        // for (const cell of cells) {
-        //     if (cell == undefined) continue
-                        
-        //     let temp = 0
-        //     if (cell.is_market()) {
-        //         temp = 100
-        //     } else {
-        //         let neighbours = neighbours_cells(cell.id)
-        //         let max = 0
-        //         for (let item of neighbours) {
-        //             if (item.market_scent > max) {
-        //                 max = item.market_scent
-        //             }
-        //         }
 
-        //         temp = max - 1
-        //     }
-
-        //     cell.market_scent = temp
-        // }
+        // update market scent
+        for (const cell of cells) {
+            if (cell == undefined) continue                        
+            let temp = 0
+            if (Data.Cells.has_market(cell.id)) {
+                temp = 100
+            } else {
+                // let neighbours = neighbours_cells(cell.id)
+                let neighbours = Data.World.neighbours(cell.id)
+                let max = 0
+                for (let item of neighbours) {
+                    let cell_object = Data.Cells.from_id(cell.id)
+                    if (cell_object.market_scent > max) {
+                        max = cell_object.market_scent
+                    }
+                }
+                temp = max - 1
+            }
+            cell.market_scent = temp
+        }
 
         // for (const cell of cells) {
         //     if (cell == undefined) continue

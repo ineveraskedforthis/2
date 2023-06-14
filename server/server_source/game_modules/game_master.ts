@@ -33,6 +33,7 @@ export namespace GameMaster {
             Template.Character.Shoemaker(x, y)
             Template.Character.HumanFletcher(x, y, "Fletcher", 'city')
             Template.Character.ArmourMaster(x, y)
+            Template.Character.WeaponMasterWood(x, y, 'city')
 
             // colony mages
             Template.Character.Alchemist(x, y, 'city')

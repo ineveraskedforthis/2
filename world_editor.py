@@ -127,7 +127,7 @@ button_forest = tk.Button(data_frame,
 button_markets = tk.Button(data_frame,
                            text="Market",
                            command=show_layer(CurrentGameMap, 'markets'))
-button_markets = tk.Button(data_frame,
+button_factions = tk.Button(data_frame,
                            text="Factions",
                            command=show_layer(CurrentGameMap, 'factions'))
 
@@ -147,6 +147,7 @@ button.pack(padx=5,pady=5,)
 button_terrain.pack(padx=5,pady=5,)
 button_forest.pack(padx=5,pady=5,)
 button_markets.pack(padx=5,pady=5)
+button_factions.pack(padx=5,pady=5)
 world_size_label.pack(padx=5,pady=5,)
 
 brushes_frame.pack()
