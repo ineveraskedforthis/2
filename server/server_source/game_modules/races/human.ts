@@ -41,7 +41,7 @@ const HumanStats:Stats = {
 }
 
 const HumanStrongStats:Stats = {
-    phys_power: 40,
+    phys_power: 30,
     magic_power: 2,
     movement_speed: 2
 }

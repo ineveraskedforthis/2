@@ -29,6 +29,7 @@ var GameMaster;
             templates_1.Template.Character.Shoemaker(x, y);
             templates_1.Template.Character.HumanFletcher(x, y, "Fletcher", 'city');
             templates_1.Template.Character.ArmourMaster(x, y);
+            templates_1.Template.Character.WeaponMasterWood(x, y, 'city');
             // colony mages
             templates_1.Template.Character.Alchemist(x, y, 'city');
             templates_1.Template.Character.Mage(x, y, 'city');

@@ -36,9 +36,9 @@ const HumanStats = {
     movement_speed: 1
 };
 const HumanStrongStats = {
-    phys_power: 20,
+    phys_power: 30,
     magic_power: 2,
-    movement_speed: 1.5
+    movement_speed: 2
 };
 const HumanBaseResists = new Damage_1.Damage(0, 0, 0, 0);
 exports.HumanTemplate = new templates_1.CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists);
