@@ -41,9 +41,9 @@ const HumanStats:Stats = {
 }
 
 const HumanStrongStats:Stats = {
-    phys_power: 20,
+    phys_power: 40,
     magic_power: 2,
-    movement_speed: 1.5
+    movement_speed: 2
 }
 
 const HumanBaseResists = new Damage(0, 0, 0, 0)

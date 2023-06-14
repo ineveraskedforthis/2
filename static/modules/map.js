@@ -570,8 +570,9 @@ export class Map {
         var ctx = this.canvas.getContext('2d');
         var h = this.hex_h;
         var w = this.hex_w;
-        var center_x = (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
-        var center_y = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
+        var [center_x, center_y] = this.hex_center_camera_adjusted([i, j]) 
+        // var center_x = (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
+        // var center_y = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
 
         if (mode == 'pentagon') {
             ctx.strokeStyle = 'rgba' + color;
@@ -627,12 +628,27 @@ export class Map {
         // ctx.fillText(`${i} ${j}`, center_x - w, center_y + h / 2);
     }
 
+    hex_center([i, j]) {
+        var h = this.hex_h;
+        var w = this.hex_w;
+        var center_x = (this.hex_side + w) * i;
+        var center_y = 2 * h * j - h * i;
+        return [center_x, center_y]
+    }
+
+    hex_center_camera_adjusted([i, j]) {
+        // console.log(i, j)
+        var [center_x, center_y] = this.hex_center([i, j])
+        return [center_x - this.camera[0] - this.hex_shift[0], center_y - this.camera[1] - this.hex_shift[1]]
+    }
+
     draw_hex_features(i, j) {
         var ctx = this.canvas.getContext('2d');
         var h = this.hex_h;
         var w = this.hex_w;
-        var center_x = (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
-        var center_y = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
+        var [center_x, center_y] = this.hex_center_camera_adjusted([i, j]) 
+        // (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
+        // var center_y = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
         
         // draw features
         if (this.urban[i] == undefined) return;
@@ -853,6 +869,10 @@ export class Map {
             if ((this.real_path[this.real_path.length - 1][0] == this.curr_pos[0]) && (this.real_path[this.real_path.length - 1][1] == this.curr_pos[1])) {
                 this.move_flag = false
             }
+        } else {
+            let temp = this.hex_center([i, j])
+            this.camera[0] = temp[0] - 200
+            this.camera[1] = temp[1] + 400
         }
         console.log(this.move_flag)
 
