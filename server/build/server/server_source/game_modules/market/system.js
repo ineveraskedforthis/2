@@ -91,6 +91,8 @@ var BulkOrders;
     BulkOrders.execute_buy_order = execute_buy_order;
     function new_buy_order(material, amount, price, owner) {
         //validation of input
+        price = Math.floor(price);
+        amount = Math.floor(amount);
         if (price < 0)
             return 'invalid_price';
         if (amount <= 0)
@@ -104,6 +106,8 @@ var BulkOrders;
     BulkOrders.new_buy_order = new_buy_order;
     function new_sell_order(material, amount, price, owner) {
         //validation of input
+        price = Math.floor(price);
+        amount = Math.floor(amount);
         if (price < 0)
             return 'invalid_price';
         if (amount <= 0)

@@ -106,8 +106,10 @@ export namespace BulkOrders {
 
     export function new_buy_order(material: material_index, amount: number, price: money, owner: Character) {
         //validation of input
-        if (price < 0) return 'invalid_price'
-        if (amount <= 0) return 'invalid_amount'
+        price = Math.floor(price) as money
+        amount = Math.floor(amount)
+        if (price < 0) return 'invalid_price'        
+        if (amount <= 0) return 'invalid_amount'        
         if (owner.savings.get() < price * amount) return 'not_enough_savings'
 
         CharacterSystem.to_trade_savings(owner, amount * price as money)
@@ -117,6 +119,8 @@ export namespace BulkOrders {
 
     export function new_sell_order(material: material_index, amount: number, price: money, owner: Character) {
         //validation of input
+        price = Math.floor(price) as money
+        amount = Math.floor(amount)
         if (price < 0) return 'invalid_price'
         if (amount <= 0) return 'invalid_amount'
         if (owner.stash.get(material) < amount) return 'not_enough_material'

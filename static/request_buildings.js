@@ -82,7 +82,7 @@ function quality_to_name(n) {
         return '' + '(' + n + ')';
     if (n < 90)
         return 'fine' + '(' + n + ')';
-    return 'luxury' + '(' + n + ')';
+    return 'sturdy' + '(' + n + ')';
 }
 function type_to_name(x) {
     // if (n == 1) return 'shack'
