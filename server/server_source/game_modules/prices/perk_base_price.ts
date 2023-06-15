@@ -5,7 +5,7 @@ import { Perks } from "../../../../shared/character";
 import { money } from "../../../../shared/common";
 // import { Perks } from "../character/Perks";
 
-function perk_base_price(tag: Perks) {
+function perk_base_price(tag: Perks): number {
     switch (tag) {
         case 'meat_master': return 100;
         case 'advanced_unarmed': return 200;
@@ -15,6 +15,12 @@ function perk_base_price(tag: Perks) {
         case 'magic_bolt': return 100;
         case 'fletcher': return 200;
         case 'skin_armour_master': return 1000;
+        case 'alchemist': return 1000;
+        case "dodge": return 1000
+        case "claws": return 1000
+        case "charge": return 1000
+        case "shoemaker": return 1000
+        case "weapon_maker": return 1000
     }
 }
 

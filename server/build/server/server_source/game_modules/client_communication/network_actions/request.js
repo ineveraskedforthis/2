@@ -4,7 +4,6 @@ exports.Request = void 0;
 const system_1 = require("../../attack/system");
 const battle_calcs_1 = require("../../battle/battle_calcs");
 const events_1 = require("../../battle/events");
-const Perks_1 = require("../../character/Perks");
 const perk_base_price_1 = require("../../prices/perk_base_price");
 const skill_price_1 = require("../../prices/skill_price");
 const data_1 = require("../../data");
@@ -60,7 +59,7 @@ var Request;
             perks: {},
             skills: {}
         };
-        for (let perk of Perks_1.perks_list) {
+        for (let perk of Object.keys(data)) {
             if (data[perk] == true) {
                 responce.perks[perk] = (0, perk_base_price_1.perk_price)(perk, character, target_character);
             }

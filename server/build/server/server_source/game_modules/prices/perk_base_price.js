@@ -13,6 +13,12 @@ function perk_base_price(tag) {
         case 'magic_bolt': return 100;
         case 'fletcher': return 200;
         case 'skin_armour_master': return 1000;
+        case 'alchemist': return 1000;
+        case "dodge": return 1000;
+        case "claws": return 1000;
+        case "charge": return 1000;
+        case "shoemaker": return 1000;
+        case "weapon_maker": return 1000;
     }
 }
 function perk_price(tag, student, teacher) {

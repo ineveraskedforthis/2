@@ -1,7 +1,6 @@
 import { Attack } from "../../attack/system";
 import { Accuracy } from "../../battle/battle_calcs";
 import { BattleEvent } from "../../battle/events";
-import { perks_list } from "../../character/Perks";
 import { perk_price } from "../../prices/perk_base_price";
 import { skill } from "../../character/SkillList";
 import { skill_price } from "../../prices/skill_price";
@@ -16,6 +15,7 @@ import { SendUpdate } from "./updates";
 import { ScriptedValue } from "../../events/scripted_values";
 import { rooms } from "../../DATA_LAYOUT_BUILDING";
 import { PerksResponce } from "../../../../../shared/responces"
+import { Perks } from "@custom_types/character";
 
 
 export namespace Request {
@@ -68,9 +68,9 @@ export namespace Request {
             skills: {}
         }
 
-        for (let perk of perks_list) {
-            if (data[perk] == true) {
-                responce.perks[perk] = perk_price(perk, character, target_character)
+        for (let perk of Object.keys(data) ) {
+            if (data[perk as Perks] == true) {
+                responce.perks[perk as Perks] = perk_price(perk as Perks, character, target_character)
             }
         }
 
