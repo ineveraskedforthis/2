@@ -65,9 +65,24 @@
 
         <div id = "character_creation" class="game_scene">
             <div class="character_stats">
-                <div id="page_1" class="page">
+                <div id="page_0" class="page"> </div>
+
+                <div id="page_2" class="page">
+                    <div>TRAITS</div>
+                    
+                </div>
+
+                <div id="page_1" class="wide-page">
+
+                    <div id="minimap_character_creation">
+                        <div class="minimap"></div>
+                        <div id="minimap_overlay" class="overlay"></div>
+                    </div>
+
                     <div>YOUR NAME</div>
+
                     <div><input id='char_name' placeholder="name"></div>
+
                     <div><select id='char_race'>
                         <option value="city">Human from City</option>
                         <option value="steppe_humans">Human from Steppe</option>
@@ -76,38 +91,9 @@
                         <option value="graci">Graci</option>
                         <option value="elodino_free">Elodino</option>
                     </select></div>
-                    <div class="appearance">
-                        <!-- <div>
-                            <p>eyes</p>
-                            <div> 
-                                <button id="eyes_0" class="next">0</button>
-                                <button id="eyes_1" class="next">1</button>
-                                <button id="eyes_2" class="next">2</button>
-                            </div>
-                        </div>
-                        <div>
-                            <p>chin</p>
-                            <div>
-                                <button id="chin_0" class="next">0</button>
-                                <button id="chin_1" class="next">1</button>
-                                <button id="chin_2" class="next">2</button>
-                            </div>
-                        </div>
-                        <div>
-                            <p>mouth</p>
-                            <div>
-                                <button id="mouth_0" class="next">0</button>
-                                <button id="mouth_1" class="next">1</button>
-                                <button id="mouth_2" class="next">2</button>
-                            </div>    
-                        </div> -->
-                    </div>
-                    <!-- <button id="next_1" class="next">Next</button> -->
-                </div>
-                <div id="page_2" class="page">
-                    <div>TRAITS</div>
+                    
                     <button id="next_2" class="next">Create</button>
-                </div>
+                </div>                
             </div>
 
             <div id = "page_3" class="character_image_col noselect">

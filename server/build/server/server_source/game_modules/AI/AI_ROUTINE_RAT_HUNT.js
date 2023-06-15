@@ -54,7 +54,7 @@ function RatHunterRoutine(character) {
         return;
     }
     if ((0, actions_1.loot)(character) > 10) {
-        console.log('trying to get back to market');
+        // console.log('trying to get back to market')
         // let cell = Convert.character_to_cell(character)
         if (system_1.MapSystem.has_market(character.cell_id)) {
             (0, actions_1.update_price_beliefs)(character);
@@ -71,7 +71,7 @@ function RatHunterRoutine(character) {
         return;
     }
     // finding rats if nothing else is needed
-    console.log('looking for rats');
+    // console.log('looking for rats')
     let target = helpers_1.AIhelper.free_rats_in_cell(character);
     const target_char = systems_communication_1.Convert.id_to_character(target);
     if (target_char != undefined) {

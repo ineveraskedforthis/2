@@ -136,15 +136,8 @@ document.getElementById("next_2").onclick = (event) => {
     socket.emit('create_character', data)
 }
 
-document.getElementById('char_race').addEventListener('change', function() {
-    let faction = document.getElementById('char_race').value
-                        //     <option value="city">Human from City</option>
-                        // <option value="steppe_humans">Human from Steppe</option>
-                        // <option value="big_humans">Mutated human</option>
-                        // <option value="rats">Rat</option>
-                        // <option value="graci">Graci</option>
-                        // <option value="elodino_free">Elodino</option>
-    
+function set_faction(faction) {
+    document.getElementById('char_race').value = faction
     if (faction == 'city') var race = 'human' 
     if (faction == 'steppe_humans') var race = 'human' 
     if (faction == 'big_humans') var race = 'human_strong' 
@@ -153,12 +146,72 @@ document.getElementById('char_race').addEventListener('change', function() {
     if (faction == 'elodino_free') var race = 'elo' 
 
     set_body_type(race)
+    hover_faction(faction)
+}
+
+function hover_faction(faction) {
+    document.getElementById('minimap_overlay').style.backgroundImage = 'url(/static/img/minimap/' + faction + '.png)'
+}
+
+
+{
+    const width = document.getElementById('minimap_character_creation').clientWidth
+    const height = document.getElementById('minimap_character_creation').clientHeight
+    document.getElementById('minimap_character_creation').onclick = (event) => {
+        const x_position = event.offsetX;
+        const y_position = event.offsetY;
+        if ((y_position > height / 2) && (x_position < width / 3)) {
+            set_faction('city')
+        }
+        else if ((y_position > height / 2) && (x_position > width / 2)) {
+            set_faction('big_humans')
+        }
+        else if ((y_position > height / 2) && (x_position < width / 1.5)) {
+            set_faction('rats')
+        }
+        else if ((y_position < height / 3) && (x_position > width / 2)) {
+            set_faction('elodino_free')
+        }
+        else if ((y_position < 2 * height / 3) && (x_position > width / 3)) {
+            set_faction('graci')
+        }
+        else if ((y_position < height / 2) && (x_position < width / 3)) {
+            set_faction('steppe_humans')
+        }
+    }
+    document.getElementById('minimap_character_creation').onmousemove = (event) => {
+        const x_position = event.offsetX;
+        const y_position = event.offsetY;
+        if ((y_position > height / 2) && (x_position < width / 3)) {
+            hover_faction('city')
+        }
+        else if ((y_position > height / 2) && (x_position > width / 2)) {
+            hover_faction('big_humans')
+        }
+        else if ((y_position > height / 2) && (x_position < width / 1.5)) {
+            hover_faction('rats')
+        }
+        else if ((y_position < height / 3) && (x_position > width / 2)) {
+            hover_faction('elodino_free')
+        }
+        else if ((y_position < 2 * height / 3) && (x_position > width / 3)) {
+            hover_faction('graci')
+        }
+        else if ((y_position < height / 2) && (x_position < width / 3)) {
+            hover_faction('steppe_humans')
+        }
+    }
+}
+
+document.getElementById('char_race').addEventListener('change', function() {
+    let faction = document.getElementById('char_race').value
+    set_faction(faction)
 });
 
 var race_model = "human"
 
 function set_body_type(race) {
-    console.log(race)
+    // console.log(race)
     race_model = race
     document.getElementById('character_creation_image_body').src = `../static/img/character_image/${race}/pose.png`
     document.getElementById('character_image_body').src = `../static/img/character_image/${race}/pose.png`
