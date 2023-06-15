@@ -157,9 +157,10 @@ function update(delta, http_server) {
         }
     }
     map_update_timer += delta;
-    if (map_update_timer > 1000) {
+    if (map_update_timer > 1) {
         system_2.MapSystem.update(map_update_timer);
         game_master_1.GameMaster.update(map_update_timer);
+        map_update_timer = 0;
     }
     update_timer += delta;
     if (update_timer > 50000) {

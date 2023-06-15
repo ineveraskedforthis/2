@@ -86,10 +86,10 @@ var MapSystem;
             if (cell == undefined)
                 continue;
             // constant change by dt / 100
-            let base_d_scent = dt / 100;
+            let base_d_scent = dt / 10000;
             // constant decay
-            let d_scent = -0.1 * base_d_scent;
-            // cell.rat_scent -=dt / 100            
+            let d_scent = -1 * base_d_scent * cell.rat_scent;
+            // cell.rat_scent -=dt / 100
             {
                 // take an average of scent around
                 let total = 0;
@@ -98,7 +98,7 @@ var MapSystem;
                     const neigbour_cell = data_1.Data.Cells.from_id(neighbour);
                     total += neigbour_cell.rat_scent;
                 }
-                const average = total / neighbours.length * 0.95;
+                const average = total / neighbours.length * 1;
                 d_scent += base_d_scent * (average - cell.rat_scent) * 5;
                 // cell.rat_scent = total
             }
