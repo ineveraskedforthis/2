@@ -127,15 +127,18 @@ var MapSystem;
             if (cell == undefined)
                 continue;
             let temp = 0;
-            if (data_1.Data.Cells.has_market(cell.id)) {
-                temp = 100;
+            if (data_1.Data.World.id_to_terrain(cell.id) == terrain_1.Terrain.sea) {
+                temp = -999;
+            }
+            else if (data_1.Data.Cells.has_market(cell.id)) {
+                temp = 200;
             }
             else {
                 // let neighbours = neighbours_cells(cell.id)
                 let neighbours = data_1.Data.World.neighbours(cell.id);
                 let max = 0;
                 for (let item of neighbours) {
-                    let cell_object = data_1.Data.Cells.from_id(cell.id);
+                    let cell_object = data_1.Data.Cells.from_id(item);
                     if (cell_object.market_scent > max) {
                         max = cell_object.market_scent;
                     }

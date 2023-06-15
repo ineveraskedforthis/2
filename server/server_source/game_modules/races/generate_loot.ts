@@ -36,6 +36,14 @@ export namespace Loot {
                 ]
             }
             case 'graci': return [{material: GRACI_HAIR, amount: 3}, {material: MEAT, amount: 50}]
+            case "test": return []
+            case "berserkrat": return [  
+                    {material: MEAT,     amount: 6},
+                    {material: RAT_BONE, amount: 7},
+                    {material: RAT_SKIN, amount: 8}
+                ]
+            case "human_strong": return [{material: MEAT, amount: 20}]
+            case "ball": return [{material: MEAT, amount: 20}]
         }
         return []
     }

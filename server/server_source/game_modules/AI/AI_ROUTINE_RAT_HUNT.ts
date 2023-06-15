@@ -27,6 +27,7 @@ export function RatHunterRoutine(character: Character) {
     if (character.in_battle()) return
     if (character.action != undefined) return
     if (character.is_player()) return
+
     if (tired(character)) {
         if (!MapSystem.has_market(character.cell_id)) {
             market_walk(character)
@@ -57,6 +58,7 @@ export function RatHunterRoutine(character: Character) {
     }
     
     if (loot(character) > 10) {
+        console.log('trying to get back to market')
         // let cell = Convert.character_to_cell(character)
         if (MapSystem.has_market(character.cell_id)) {
             update_price_beliefs(character)
@@ -74,6 +76,7 @@ export function RatHunterRoutine(character: Character) {
     }
 
     // finding rats if nothing else is needed
+    console.log('looking for rats')
     let target = AIhelper.free_rats_in_cell(character)
     const target_char = Convert.id_to_character(target)
     if (target_char != undefined) {

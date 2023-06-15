@@ -35,6 +35,14 @@ var Loot;
                 ];
             }
             case 'graci': return [{ material: materials_manager_1.GRACI_HAIR, amount: 3 }, { material: materials_manager_1.MEAT, amount: 50 }];
+            case "test": return [];
+            case "berserkrat": return [
+                { material: materials_manager_1.MEAT, amount: 6 },
+                { material: materials_manager_1.RAT_BONE, amount: 7 },
+                { material: materials_manager_1.RAT_SKIN, amount: 8 }
+            ];
+            case "human_strong": return [{ material: materials_manager_1.MEAT, amount: 20 }];
+            case "ball": return [{ material: materials_manager_1.MEAT, amount: 20 }];
         }
         return [];
     }

@@ -793,8 +793,8 @@ export class Map {
                 let tmp = [curr[0] + d[0], curr[1] + d[1]]
                 if (this.terrain[tmp[0]] != undefined ) {
                     let ter = this.terrain[tmp[0]][tmp[1]]
-                    if (ter != 'sea' && ter != undefined) {
-                        if (this.data[tmp[0] + '_' + tmp[1]] == undefined || this.data[tmp[0] + '_' + tmp[1]].rupture != 1) {
+                    if (ter != 'sea' && ter != undefined && ter != 'rupture') {
+                        if (this.data[tmp[0] + '_' + tmp[1]] == undefined) {
                             let tmps = st(tmp)
                             if (!used[tmps]) {
                                 queue[right] = tmp;

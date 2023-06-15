@@ -20,4 +20,4 @@ const moraes = ['gu', 'bu', 'mu', 'zu', 'du'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(moraes, 5);
 }
-exports.BallTemplate = new templates_1.CharacterTemplate(BallArchetype, generate_name, 1000, BallStats, BallResists);
+exports.BallTemplate = new templates_1.CharacterTemplate(BallArchetype, generate_name, 300, BallStats, BallResists);

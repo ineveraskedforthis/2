@@ -133,14 +133,16 @@ export namespace MapSystem {
         for (const cell of cells) {
             if (cell == undefined) continue                        
             let temp = 0
-            if (Data.Cells.has_market(cell.id)) {
-                temp = 100
+            if (Data.World.id_to_terrain(cell.id) == Terrain.sea) {
+                temp = -999
+            } else if (Data.Cells.has_market(cell.id)) {
+                temp = 200
             } else {
                 // let neighbours = neighbours_cells(cell.id)
                 let neighbours = Data.World.neighbours(cell.id)
                 let max = 0
                 for (let item of neighbours) {
-                    let cell_object = Data.Cells.from_id(cell.id)
+                    let cell_object = Data.Cells.from_id(item)
                     if (cell_object.market_scent > max) {
                         max = cell_object.market_scent
                     }

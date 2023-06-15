@@ -23,4 +23,4 @@ function generate_name() {
     return gen_from_moraes(moraes, 5)
 }
 
-export const BallTemplate = new CharacterTemplate(BallArchetype, generate_name, 1000, BallStats, BallResists)
+export const BallTemplate = new CharacterTemplate(BallArchetype, generate_name, 300, BallStats, BallResists)
