@@ -11,16 +11,34 @@ import { AIhelper } from "./helpers";
 import { simple_constraints } from "./constraints";
 import { AIstate } from "../character/AIstate";
 import { tired, low_hp } from "./triggers";
-import { buy_food, loot, market_walk, random_walk, remove_orders, rest_building, sell_loot, update_price_beliefs } from "./actions";
+import { buy_food, loot, market_walk, random_walk, remove_orders, rest_building, rest_outside, sell_loot, update_price_beliefs } from "./actions";
 import { MapSystem } from "../map/system";
+import { money } from "@custom_types/common";
+
+function rat_hunter_rest_budget(character: Character) {
+    let budget = character.savings.get()
+    if (budget < 100) {
+        budget = 0 as money
+    }
+    return budget
+}
 
 export function RatHunterRoutine(character: Character) {
     if (character.in_battle()) return
     if (character.action != undefined) return
     if (character.is_player()) return
     if (tired(character)) {
-        ActionManager.start_action(CharacterAction.REST, character, [0, 0])
-        return
+        if (!MapSystem.has_market(character.cell_id)) {
+            market_walk(character)
+            return
+        } else {
+            let responce = rest_building(character, rat_hunter_rest_budget(character))
+            if (!responce) {
+                rest_outside(character)
+                return
+            }
+            return
+        }
     }
 
     // character at market

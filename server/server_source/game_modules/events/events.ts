@@ -79,36 +79,11 @@ export namespace Event {
     }
 
     export function move(character: Character, new_cell_id: cell_id) {
-        // console.log(`Character ${character.name} moves to ${new_cell.x} ${new_cell.y}`)
         const old_cell_id = character.cell_id
-        // Unlink.character_and_cell(character, old_cell)
         Link.character_and_cell(character.id, new_cell_id)
-
-        let probability = 0.5
-        let urbanisation = Data.Cells.urbanisation(old_cell_id)
-        let forestation = Data.Cells.forestation(old_cell_id)
-        if (forestation > 100) probability += 0.1
-        if (forestation > 300) probability += 0.1
-        if (urbanisation > 4) probability -= 0.2
-        if (urbanisation > 0) probability -= 0.1
-
-        // effect on fatigue depending on boots
-        if (character.equip.data.armour.foot == undefined) {
-            Effect.Change.fatigue(character, 5)
-        } else {
-            const durability = character.equip.data.armour.foot.durability
-            Effect.Change.fatigue(character, Math.round(trim(5 - 4 * (durability / 100), 1, 5)))
-        }
-
-        const dice = Math.random()
-        if (dice < probability) {
-            Effect.change_durability(character, 'foot', -1)
-            
-            let skill_dice = Math.random()
-            if (skill_dice * skill_dice * skill_dice > character.skills.travelling / 100) {
-                Effect.Change.skill(character, 'travelling', 1)
-            }
-        }
+        move_fatigue_change(character)
+        let probability = move_durability_roll_probability(old_cell_id)
+        move_durability_roll(character, probability)
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MAP)
@@ -117,6 +92,38 @@ export namespace Event {
         if (user == undefined) return
         let new_cell = Data.Cells.from_id(new_cell_id)
         Alerts.log_to_user(user, 'rat scent ' + new_cell.rat_scent)
+    }
+
+    export function move_durability_roll_probability(cell: cell_id) {
+        let probability = 0.5
+        let urbanisation = Data.Cells.urbanisation(cell)
+        let forestation = Data.Cells.forestation(cell)
+        if (forestation > 100) probability += 0.1
+        if (forestation > 300) probability += 0.1
+        if (urbanisation > 4) probability -= 0.2
+        if (urbanisation > 0) probability -= 0.1
+
+        return probability
+    }
+
+    export function move_fatigue_change(character: Character) {
+        if (character.equip.data.armour.foot == undefined) {
+            Effect.Change.fatigue(character, 3)
+        } else {
+            const durability = character.equip.data.armour.foot.durability
+            Effect.Change.fatigue(character, Math.round(trim(3 - 2 * (durability / 100), 1, 3)))
+        }
+    }
+
+    export function move_durability_roll(character: Character, probability: number){
+        const dice = Math.random()
+        if (dice < probability) {
+            Effect.change_durability(character, 'foot', -1)
+            let skill_dice = Math.random()
+            if (skill_dice * skill_dice * skill_dice > character.skills.travelling / 100) {
+                Effect.Change.skill(character, 'travelling', 1)
+            }
+        }
     }
 
     export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant|undefined) {

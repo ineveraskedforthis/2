@@ -12,6 +12,13 @@ const constraints_1 = require("./constraints");
 const triggers_1 = require("./triggers");
 const actions_1 = require("./actions");
 const system_1 = require("../map/system");
+function rat_hunter_rest_budget(character) {
+    let budget = character.savings.get();
+    if (budget < 100) {
+        budget = 0;
+    }
+    return budget;
+}
 function RatHunterRoutine(character) {
     if (character.in_battle())
         return;
@@ -20,8 +27,18 @@ function RatHunterRoutine(character) {
     if (character.is_player())
         return;
     if ((0, triggers_1.tired)(character)) {
-        action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, character, [0, 0]);
-        return;
+        if (!system_1.MapSystem.has_market(character.cell_id)) {
+            (0, actions_1.market_walk)(character);
+            return;
+        }
+        else {
+            let responce = (0, actions_1.rest_building)(character, rat_hunter_rest_budget(character));
+            if (!responce) {
+                (0, actions_1.rest_outside)(character);
+                return;
+            }
+            return;
+        }
     }
     // character at market
     if (!character.trade_stash.is_empty()) {
