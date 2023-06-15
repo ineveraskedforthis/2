@@ -47,6 +47,7 @@ export function loadImages(onAllLoaded) {
     load_animation_set('human', 1, 1, 6, 1, onload);
     load_animation_set('human_strong', 1, 1, 6, 1, onload);
     load_animation_set('graci', 1, 1, 5, 1, onload);
+    load_animation_set('ball', 1, 1, 1, 1, onload);
     // const images: ImagesDict = {};
     for (let i = 0; i < names.length; i++) {
         // console.log(i, names[i], files[i])

@@ -67,37 +67,42 @@ var GameMaster;
         }
         if (faction == 'graci') {
             for (let i = 1; i <= 30; i++) {
+                const cell_obj = data_1.Data.Cells.from_id(cell_id);
                 templates_1.Template.Character.Graci(x, y, undefined);
             }
         }
     }
     GameMaster.spawn_faction = spawn_faction;
     function update(dt) {
-        let rats = 0;
-        let elos = 0;
+        let num_rats = 0;
+        let num_elos = 0;
+        let num_balls = 0;
         for (const character of data_1.Data.CharacterDB.list()) {
             if (character.race() == 'rat') {
-                rats += 1;
+                num_rats += 1;
             }
             if (character.race() == 'elo') {
-                elos += 1;
+                num_elos += 1;
+            }
+            if (character.race() == 'ball') {
+                num_balls += 1;
             }
         }
         for (const cell of data_1.Data.Cells.list_ids()) {
             const buildings = data_1.Data.Buildings.from_cell_id(cell);
             if (buildings == undefined)
                 continue;
-            for (const item of buildings) {
-                const building = data_1.Data.Buildings.from_id(item);
+            for (const item_id of buildings) {
+                const building = data_1.Data.Buildings.from_id(item_id);
                 if (building.type == "rat_lair" /* LandPlotType.RatLair */) {
                     let cell_object = data_1.Data.Cells.from_id(cell);
                     cell_object.rat_scent = 200;
                     cell_object.rat_scent += 5 * dt / 100;
-                    spawn_rat(rats, cell_object);
+                    spawn_rat(num_rats, cell_object);
                 }
                 if (building.type == "elodino_house" /* LandPlotType.ElodinoHouse */) {
                     let cell_object = data_1.Data.Cells.from_id(cell);
-                    spawn_elodino(elos, cell_object);
+                    spawn_ball(num_balls, cell_object);
                 }
             }
         }
@@ -133,4 +138,10 @@ var GameMaster;
         }
     }
     GameMaster.spawn_elodino = spawn_elodino;
+    function spawn_ball(num_balls, cell) {
+        if (num_balls < 100) {
+            templates_1.Template.Character.Ball(cell.x, cell.y, undefined);
+        }
+    }
+    GameMaster.spawn_ball = spawn_ball;
 })(GameMaster = exports.GameMaster || (exports.GameMaster = {}));

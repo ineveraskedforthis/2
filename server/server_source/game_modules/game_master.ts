@@ -80,38 +80,43 @@ export namespace GameMaster {
 
         if (faction == 'graci') {
             for (let i = 1; i <= 30; i++) {
+                const cell_obj = Data.Cells.from_id(cell_id)
                 Template.Character.Graci(x, y, undefined)
             }
         }
     }
 
     export function update(dt: number) {
-        let rats = 0
-        let elos = 0
+        let num_rats = 0
+        let num_elos = 0
+        let num_balls = 0
         for (const character of Data.CharacterDB.list()) {
             if (character.race() == 'rat') {
-                rats += 1
+                num_rats += 1
             }
             if (character.race() == 'elo') {
-                elos += 1
+                num_elos += 1
+            }
+            if (character.race() == 'ball') {
+                num_balls += 1
             }
         }
 
         for (const cell of Data.Cells.list_ids()) {
             const buildings = Data.Buildings.from_cell_id(cell)
             if (buildings == undefined) continue
-            for (const item of buildings) {
-                const building = Data.Buildings.from_id(item)
+            for (const item_id of buildings) {
+                const building = Data.Buildings.from_id(item_id)
                 if (building.type == LandPlotType.RatLair) {
                     let cell_object = Data.Cells.from_id(cell)
                     cell_object.rat_scent = 200
                     cell_object.rat_scent += 5 * dt / 100
-                    spawn_rat(rats, cell_object)
+                    spawn_rat(num_rats, cell_object)
                 }
 
                 if (building.type == LandPlotType.ElodinoHouse) {
                     let cell_object = Data.Cells.from_id(cell)
-                    spawn_elodino(elos, cell_object)
+                    spawn_ball(num_balls, cell_object)
                 }
             }
         }
@@ -140,6 +145,12 @@ export namespace GameMaster {
             } else {
                 Template.Character.MageElo(cell.x, cell.y, undefined)
             }
+        }
+    }
+
+    export function spawn_ball(num_balls: number, cell: Cell) {
+        if (num_balls < 100) {
+            Template.Character.Ball(cell.x, cell.y, undefined)
         }
     }
 }

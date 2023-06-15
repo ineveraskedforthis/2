@@ -13,6 +13,7 @@ import { HumanStrongTemplate, HumanTemplate } from "./races/human"
 import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/rat"
 import { ModelVariant } from "./types"
 import { EventMarket } from "./events/market"
+import { BallTemplate } from "./races/others"
 
 const LUMP_OF_MONEY = 1000 as money
 const TONS_OF_MONEY = 30000 as money
@@ -267,6 +268,10 @@ export namespace Template {
             master.savings.inc(LUMP_OF_MONEY)
 
             return master
+        }
+
+        export function Ball(x: number, y: number, name: string | undefined) {
+            return Base(BallTemplate, name, undefined, x, y, undefined)
         }
     }
 }

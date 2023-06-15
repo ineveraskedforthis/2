@@ -11,6 +11,7 @@ const elo_1 = require("./races/elo");
 const graci_1 = require("./races/graci");
 const human_1 = require("./races/human");
 const rat_1 = require("./races/rat");
+const others_1 = require("./races/others");
 const LUMP_OF_MONEY = 1000;
 const TONS_OF_MONEY = 30000;
 var Template;
@@ -273,5 +274,9 @@ var Template;
             return master;
         }
         Character.MasterUnarmed = MasterUnarmed;
+        function Ball(x, y, name) {
+            return Base(others_1.BallTemplate, name, undefined, x, y, undefined);
+        }
+        Character.Ball = Ball;
     })(Character = Template.Character || (Template.Character = {}));
 })(Template = exports.Template || (exports.Template = {}));

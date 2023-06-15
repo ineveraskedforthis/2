@@ -3,19 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.hostile = void 0;
 function hostile(actor, target) {
     switch (actor) {
-        case 'test': if (target == 'rat') {
-            return true;
-        }
-        else {
-            return false;
-        }
         case 'human': if (target == 'rat') {
             return true;
         }
         else {
             return false;
         }
-        case 'rat': if ((target == 'test') || (target == 'human')) {
+        case 'rat': if (target == 'human') {
             return true;
         }
         else {
@@ -23,6 +17,7 @@ function hostile(actor, target) {
         }
         case 'elo': return false;
         case 'graci': return false;
+        case "ball": return false;
     }
 }
 exports.hostile = hostile;
