@@ -131,6 +131,7 @@ function save() {
 }
 
 var update_timer = 0
+var map_update_timer = 0
                     // seconds
 function update(delta: number, http_server: Server) {
     if (shutdown) {
@@ -158,8 +159,11 @@ function update(delta: number, http_server: Server) {
         }
     }
 
-    MapSystem.update(delta)
-    GameMaster.update(delta)
+    map_update_timer += delta
+    if (map_update_timer > 1000) {
+        MapSystem.update(map_update_timer)
+        GameMaster.update(map_update_timer)
+    }
     
     update_timer += delta
     if (update_timer > 50000) {

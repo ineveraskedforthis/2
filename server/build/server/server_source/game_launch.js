@@ -133,6 +133,7 @@ function save() {
     data_1.Data.save();
 }
 var update_timer = 0;
+var map_update_timer = 0;
 // seconds
 function update(delta, http_server) {
     if (shutdown) {
@@ -155,8 +156,11 @@ function update(delta, http_server) {
             events_1.Event.death(character);
         }
     }
-    system_2.MapSystem.update(delta);
-    game_master_1.GameMaster.update(delta);
+    map_update_timer += delta;
+    if (map_update_timer > 1000) {
+        system_2.MapSystem.update(map_update_timer);
+        game_master_1.GameMaster.update(map_update_timer);
+    }
     update_timer += delta;
     if (update_timer > 50000) {
         save();
