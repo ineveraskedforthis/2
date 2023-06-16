@@ -78,6 +78,7 @@ export namespace SocketCommand {
             return
         }
 
+        // console.log('validation passed')
         Event.buy_skill(valid_character, skill_tag as skill, target_character)
     }
 

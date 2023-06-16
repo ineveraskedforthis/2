@@ -69,7 +69,7 @@ var Validator;
         if (!Validator.can_act(user, character)) {
             return [undefined, undefined, undefined];
         }
-        console.log('user is valid');
+        // console.log('user is valid')
         const data = Number(target);
         if (isNaN(data))
             return [undefined, undefined, undefined];

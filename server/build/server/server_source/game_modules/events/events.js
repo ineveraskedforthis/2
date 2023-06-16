@@ -50,6 +50,7 @@ var Event;
             alerts_1.Alerts.not_enough_to_character(student, 'money', price, savings);
             return;
         }
+        // console.log(teacher.skills[skill], student.skills[skill])
         if (teacher.skills[skill] <= student.skills[skill] + 20)
             return;
         if (teacher.skills[skill] < 30)

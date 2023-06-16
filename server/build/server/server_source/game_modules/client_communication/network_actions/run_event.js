@@ -71,6 +71,7 @@ var SocketCommand;
         if (valid_character.skills[skill_tag] == undefined) {
             return;
         }
+        // console.log('validation passed')
         events_1.Event.buy_skill(valid_character, skill_tag, target_character);
     }
     SocketCommand.learn_skill = learn_skill;

@@ -58,7 +58,7 @@ export namespace Validator {
         if (user == undefined) return [undefined, undefined, undefined] 
         if (character == undefined) return [undefined, undefined, undefined] 
         if (!Validator.can_act(user, character)) {return [undefined, undefined, undefined] }
-        console.log('user is valid')
+        // console.log('user is valid')
         const data = Number(target)
         if (isNaN(data)) return [undefined, undefined, undefined] 
         const target_character = Convert.number_to_character(data)
