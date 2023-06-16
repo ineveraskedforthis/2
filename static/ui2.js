@@ -322,6 +322,15 @@ socket.on('map-pos', msg => {
     change_bg(location);
 });
 
+socket.on('enter-room', msg => {
+    console.log('enter-room')
+    change_bg('house_inside');
+})
+socket.on('leave-room', msg => {
+    console.log('leave-room')
+    update_background()
+})
+
 function update_background() {
     // console.log('update_background')
     let location = map.re_set_cur_pos();

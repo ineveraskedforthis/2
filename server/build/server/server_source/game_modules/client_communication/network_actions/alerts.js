@@ -207,4 +207,12 @@ var Alerts;
         Alerts.generic_user_alert(user, 'perks-update', character.perks);
     }
     Alerts.perks = perks;
+    function enter_room(character) {
+        Alerts.generic_character_alert(character, 'enter-room', character);
+    }
+    Alerts.enter_room = enter_room;
+    function leave_room(character) {
+        Alerts.generic_character_alert(character, 'leave-room', character);
+    }
+    Alerts.leave_room = leave_room;
 })(Alerts = exports.Alerts || (exports.Alerts = {}));

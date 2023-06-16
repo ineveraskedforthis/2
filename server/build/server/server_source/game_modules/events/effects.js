@@ -8,6 +8,7 @@ const systems_communication_1 = require("../systems_communication");
 const scripted_values_1 = require("./scripted_values");
 const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
 const basic_functions_1 = require("../calculations/basic_functions");
+const alerts_1 = require("../client_communication/network_actions/alerts");
 var Effect;
 (function (Effect) {
     let Update;
@@ -110,6 +111,7 @@ var Effect;
         Effect.Transfer.savings(character, owner, price);
         data_1.Data.Buildings.occupy_room(building_id);
         character.current_building = building_id;
+        alerts_1.Alerts.enter_room(character);
         return "ok";
     }
     Effect.rent_room = rent_room;
@@ -118,6 +120,7 @@ var Effect;
         if (character.current_building == undefined)
             return;
         data_1.Data.Buildings.free_room(character.current_building);
+        alerts_1.Alerts.leave_room(character);
         character.current_building = undefined;
     }
     Effect.leave_room = leave_room;

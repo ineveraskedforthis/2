@@ -209,4 +209,12 @@ export namespace Alerts {
     export function perks(user: User, character: Character) {
         Alerts.generic_user_alert(user, 'perks-update', character.perks)
     }
+
+    export function enter_room(character: Character) {
+        Alerts.generic_character_alert(character, 'enter-room', character)
+    }
+
+    export function leave_room(character: Character) {
+        Alerts.generic_character_alert(character, 'leave-room', character)
+    }
 }

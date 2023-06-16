@@ -16,6 +16,7 @@ import { Cell } from "../map/DATA_LAYOUT_CELL";
 import { Perks } from "../../../../shared/character";
 import { cell_id, money } from "@custom_types/common";
 import { LandPlot, LandPlotType } from "@custom_types/buildings";
+import { Alerts } from "../client_communication/network_actions/alerts";
 
 export namespace Effect {
     export namespace Update {
@@ -115,6 +116,8 @@ export namespace Effect {
         Effect.Transfer.savings(character, owner, price)
         Data.Buildings.occupy_room(building_id)
         character.current_building = building_id
+
+        Alerts.enter_room(character)
         return "ok"
     }
 
@@ -123,6 +126,7 @@ export namespace Effect {
         if (character.current_building == undefined) return
 
         Data.Buildings.free_room(character.current_building)
+        Alerts.leave_room(character)
         character.current_building = undefined
     }
 
