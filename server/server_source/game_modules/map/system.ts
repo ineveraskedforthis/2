@@ -160,7 +160,18 @@ export namespace MapSystem {
         for (const cell of cells) {
             update_rat_scent(dt, cell)
             update_market_scent(cell)
-            if (Math.random() < 0.0001) {
+            if (Math.random() < 0.001) {
+                update_cotton(cell)
+                update_game(cell)
+                update_fish(cell)
+            }            
+        }
+    }
+
+    export function initial_update() {
+        const cells = Data.Cells.list() 
+        for (const cell of cells) {
+            for (let i = 0; i < 20; i++) {
                 update_cotton(cell)
                 update_game(cell)
                 update_fish(cell)

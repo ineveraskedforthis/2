@@ -73,6 +73,7 @@ export function launch(http_server: Server) {
         console.log('connection ready');
         load()
         console.log('systems are ready');
+        MapSystem.initial_update()
         gameloop.setGameLoop( (delta: number) => update(delta, http_server), 100 );
 
     } catch (e) {

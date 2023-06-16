@@ -152,7 +152,7 @@ var MapSystem;
         for (const cell of cells) {
             update_rat_scent(dt, cell);
             update_market_scent(cell);
-            if (Math.random() < 0.0001) {
+            if (Math.random() < 0.001) {
                 update_cotton(cell);
                 update_game(cell);
                 update_fish(cell);
@@ -160,6 +160,17 @@ var MapSystem;
         }
     }
     MapSystem.update = update;
+    function initial_update() {
+        const cells = data_1.Data.Cells.list();
+        for (const cell of cells) {
+            for (let i = 0; i < 20; i++) {
+                update_cotton(cell);
+                update_game(cell);
+                update_fish(cell);
+            }
+        }
+    }
+    MapSystem.initial_update = initial_update;
     function roll_human() {
         let dice = Math.random();
         if (dice < 0.08) {

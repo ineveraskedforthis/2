@@ -82,6 +82,7 @@ function launch(http_server) {
         console.log('connection ready');
         load();
         console.log('systems are ready');
+        system_2.MapSystem.initial_update();
         gameloop.setGameLoop((delta) => update(delta, http_server), 100);
     }
     catch (e) {
