@@ -10,6 +10,6 @@ function skill_price(tag, student, teacher) {
         price = price * 1.5;
     if (!data_1.Data.Reputation.a_X_b(teacher.id, 'member', student.id))
         price = price * 1.5;
-    return Math.round(student.skills[tag] * price + 10);
+    return Math.round(student._skills[tag] * price + 10);
 }
 exports.skill_price = skill_price;

@@ -7,6 +7,7 @@ const generate_action_1 = require("./generate_action");
 const crafts_storage_1 = require("./crafts_storage");
 const helpers_1 = require("./helpers");
 const events_1 = require("../events/events");
+const system_1 = require("../character/system");
 function event_craft_bulk(character, craft) {
     (0, helpers_1.use_input)(craft.input, character);
     produce_output(output_bulk(character, craft), character);
@@ -28,7 +29,8 @@ function output_bulk(character, craft) {
     // choose minimum across all skills
     let ratio = helpers_1.MAX_SKILL_MULTIPLIER_BULK;
     for (let check of craft.difficulty) {
-        ratio = Math.min((0, helpers_1.skill_to_ratio)(character.skills[check.skill], check.difficulty), ratio);
+        const skill = system_1.CharacterSystem.skill(character, check.skill);
+        ratio = Math.min((0, helpers_1.skill_to_ratio)(skill, check.difficulty), ratio);
     }
     for (let item of craft.output) {
         //calculate bonus from perks

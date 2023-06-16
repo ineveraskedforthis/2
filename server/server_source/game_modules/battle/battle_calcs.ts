@@ -1,4 +1,5 @@
 import { Character } from "../character/character";
+import { CharacterSystem } from "../character/system";
 
 const AVERAGE_SKILL = 30
 const IDEAL_DIST = 20 // AVERAGE_SKILL archer can hit with 1 probability in ideal conditions
@@ -13,8 +14,9 @@ export namespace Accuracy {
         if (distance < EASY_DIST) return 1
 
         let skill_difficulty_multiplier = 60
-        if (character.skills.ranged > 0) {
-            skill_difficulty_multiplier = AVERAGE_SKILL / character.skills.ranged
+        const ranged_skill = CharacterSystem.skill(character, 'ranged')
+        if (ranged_skill > 0) {
+            skill_difficulty_multiplier = AVERAGE_SKILL / ranged_skill
         }
 
         const difficulty = (distance - EASY_DIST) * skill_difficulty_multiplier

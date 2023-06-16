@@ -29,23 +29,23 @@ export namespace Template {
 
         export function GenericHuman(x: number, y: number, name:string|undefined, faction: string) {
             let human = Base(HumanTemplate, name, undefined, x, y, faction)
-            human.skills.woodwork += 10
-            human.skills.cooking += 15
-            human.skills.hunt += 5
-            human.skills.fishing += 5
-            human.skills.travelling += 5
-            human.skills.noweapon += 10
+            human._skills.woodwork += 10
+            human._skills.cooking += 15
+            human._skills.hunt += 5
+            human._skills.fishing += 5
+            human._skills.travelling += 5
+            human._skills.noweapon += 10
             return human
         }
 
         export function HumanSteppe(x: number, y: number, name:string|undefined) {
             let human = GenericHuman(x, y, name, 'steppe_humans')
-            human.skills.hunt += 20
-            human.skills.skinning += 10
-            human.skills.cooking += 10
-            human.skills.travelling += 30
-            human.skills.ranged += 20
-            human.skills.noweapon += 10
+            human._skills.hunt += 20
+            human._skills.skinning += 10
+            human._skills.cooking += 10
+            human._skills.travelling += 30
+            human._skills.ranged += 20
+            human._skills.noweapon += 10
             return human
         }
 
@@ -56,8 +56,8 @@ export namespace Template {
 
         export function HumanCity(x: number, y: number, name: string|undefined) {
             let human = GenericHuman(x, y, name, 'city')
-            human.skills.fishing += 20
-            human.skills.noweapon += 5
+            human._skills.fishing += 20
+            human._skills.noweapon += 5
             return human
         }
 
@@ -67,9 +67,9 @@ export namespace Template {
                 case "city":{var human = HumanCity(x, y, name);break}
             }
             
-            human.skills.polearms = 60
-            human.skills.evasion += 10
-            human.skills.blocking += 10
+            human._skills.polearms = 60
+            human._skills.evasion += 10
+            human._skills.blocking += 10
             human.perks.advanced_polearm = true
             let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
             spear.durability = 200
@@ -84,8 +84,8 @@ export namespace Template {
         export function HumanRatHunter(x: number, y: number, name: string|undefined) {
             let human = HumanSpearman(x, y, name, 'steppe')
             human.archetype.ai_map = 'rat_hunter'
-            human.skills.skinning += 20
-            human.skills.hunt += 20
+            human._skills.skinning += 20
+            human._skills.hunt += 20
             return human
         }
 
@@ -97,7 +97,7 @@ export namespace Template {
 
             human.stash.inc(FOOD, 10)
             human.savings.inc(500 as money)
-            human.skills.cooking = 70
+            human._skills.cooking = 70
             human.perks.meat_master = true
             return human
         }
@@ -108,10 +108,10 @@ export namespace Template {
                 case "city":{var human = HumanCity(x, y, name);break}
             }
 
-            human.skills.woodwork = 80
-            human.skills.bone_carving = 30
+            human._skills.woodwork = 80
+            human._skills.bone_carving = 30
             human.perks.fletcher = true
-            human.skills.ranged = 30
+            human._skills.ranged = 30
 
             human.stash.inc(ARROW_BONE, 50)
             human.stash.inc(RAT_BONE, 3)
@@ -124,7 +124,7 @@ export namespace Template {
         export function HumanCityGuard(x: number, y: number, name: string|undefined) {
             let human = HumanSpearman(x, y, name, 'city')
             human.archetype.ai_map = 'urban_guard'
-            human.skills.polearms += 10
+            human._skills.polearms += 10
             return human
         }
 
@@ -157,14 +157,14 @@ export namespace Template {
             let rat = Base(BerserkRatTemplate, name, undefined, x, y, 'rats')
             rat.perks.claws = true
             rat.perks.charge = true
-            rat.skills.noweapon = 40
+            rat._skills.noweapon = 40
             return rat
         }
 
         export function BigRat(x: number, y: number, name: string|undefined) {
             let rat = Base(BigRatTemplate, name, undefined, x, y, 'rats')
             rat.perks.claws = true
-            rat.skills.noweapon = 40
+            rat._skills.noweapon = 40
             return rat
         }
 
@@ -172,8 +172,8 @@ export namespace Template {
             let elo = Base(EloTemplate, name, undefined, x, y, 'elodino_free')
             elo.perks.magic_bolt = true
             elo.perks.mage_initiation = true
-            elo.skills.magic_mastery = 20
-            elo.skills.cooking = 20
+            elo._skills.magic_mastery = 20
+            elo._skills.cooking = 20
             elo.stash.inc(ZAZ, 30)
             return elo
         }
@@ -185,7 +185,7 @@ export namespace Template {
 
         export function Graci(x: number, y: number, name: string|undefined) {
             let graci = Base(GraciTemplate, name, undefined, x, y, 'graci')
-            graci.skills.travelling = 70
+            graci._skills.travelling = 70
             return graci
         }
 
@@ -194,7 +194,7 @@ export namespace Template {
             let mage = GenericHuman(x, y, 'Mage', faction)
             // let mage = Event.new_character(HumanTemplate, 'Mage', cell, dummy_model)
 
-            mage.skills.magic_mastery = 100
+            mage._skills.magic_mastery = 100
             mage.perks.mage_initiation = true
             mage.perks.magic_bolt = true
 
@@ -211,7 +211,7 @@ export namespace Template {
         export function Alchemist(x: number, y: number, faction: string) {
             let alchemist = GenericHuman(x, y, 'Alchemist', faction)
 
-            alchemist.skills.magic_mastery = 60
+            alchemist._skills.magic_mastery = 60
             alchemist.perks.mage_initiation = true
             alchemist.perks.alchemist = true
 
@@ -223,7 +223,7 @@ export namespace Template {
 
         export function ArmourMaster(x: number, y: number) {
             let master = HumanCity(x, y, 'Armourer')
-            master.skills.clothier = 100
+            master._skills.clothier = 100
             master.perks.skin_armour_master = true
             master.stash.inc(RAT_SKIN, 50)
             master.savings.inc(LUMP_OF_MONEY)            
@@ -232,7 +232,7 @@ export namespace Template {
 
         export function Shoemaker(x: number, y: number) {
             let master = HumanCity(x, y, 'Shoemaker')
-            master.skills.clothier = 100
+            master._skills.clothier = 100
             master.perks.shoemaker = true
             master.stash.inc(RAT_SKIN, 50)
             master.savings.inc(LUMP_OF_MONEY)            
@@ -242,7 +242,7 @@ export namespace Template {
         export function WeaponMasterWood(x: number, y: number, faction: string) {
             let master = GenericHuman(x, y, 'Weapons maker', faction)
 
-            master.skills.woodwork = 100
+            master._skills.woodwork = 100
             master.perks.weapon_maker = true
             master.stash.inc(WOOD, 15)
             master.savings.inc(LUMP_OF_MONEY)
@@ -253,7 +253,7 @@ export namespace Template {
         export function WeaponMasterBone(x: number, y: number, faction: string) {
             let master = GenericHuman(x, y, 'Weapons maker', faction)
 
-            master.skills.bone_carving = 100
+            master._skills.bone_carving = 100
             master.perks.weapon_maker = true
             master.stash.inc(RAT_BONE, 40)
             master.savings.inc(LUMP_OF_MONEY)
@@ -263,7 +263,7 @@ export namespace Template {
 
         export function MasterUnarmed(x: number, y: number, faction: string) {
             let master = GenericHuman(x, y, 'Monk', faction)
-            master.skills.noweapon = 100
+            master._skills.noweapon = 100
             master.perks.dodge = true
             master.perks.advanced_unarmed = true
             master.savings.inc(LUMP_OF_MONEY)

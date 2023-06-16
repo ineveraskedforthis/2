@@ -20,10 +20,10 @@ const effects_1 = require("./effects");
 const inventory_events_1 = require("./inventory_events");
 const market_1 = require("./market");
 const damage_types_1 = require("../damage_types");
-const skill_price_1 = require("../prices/skill_price");
 const scripted_values_1 = require("./scripted_values");
 // import { BuildingType } from "../DATA_LAYOUT_BUILDING";
 const helpers_1 = require("../craft/helpers");
+const triggers_1 = require("./triggers");
 const GRAVEYARD_CELL = 0;
 var Event;
 (function (Event) {
@@ -31,7 +31,7 @@ var Event;
         let savings = student.savings.get();
         let price = (0, perk_base_price_1.perk_price)(perk, student, teacher);
         if (savings < price) {
-            alerts_1.Alerts.not_enough_to_character(student, 'money', price, savings);
+            alerts_1.Alerts.not_enough_to_character(student, 'money', savings, price, undefined);
             return;
         }
         let responce = (0, perk_requirement_1.perk_requirement)(perk, student);
@@ -44,19 +44,14 @@ var Event;
     }
     Event.buy_perk = buy_perk;
     function buy_skill(student, skill, teacher) {
-        let savings = student.savings.get();
-        let price = (0, skill_price_1.skill_price)(skill, student, teacher);
-        if (savings < price) {
-            alerts_1.Alerts.not_enough_to_character(student, 'money', price, savings);
-            return;
+        let response = triggers_1.Trigger.can_learn_from(student, teacher, skill);
+        if (response.response == 'ok') {
+            effects_1.Effect.Transfer.savings(student, teacher, response.price);
+            effects_1.Effect.Change.skill(student, skill, 1);
         }
-        // console.log(teacher.skills[skill], student.skills[skill])
-        if (teacher.skills[skill] <= student.skills[skill] + 20)
-            return;
-        if (teacher.skills[skill] < 30)
-            return;
-        effects_1.Effect.Transfer.savings(student, teacher, price);
-        effects_1.Effect.Change.skill(student, skill, 1);
+        else {
+            alerts_1.Alerts.not_enough_to_character(student, response.response, response.current_quantity, response.min_quantity, response.max_quantity);
+        }
     }
     Event.buy_skill = buy_skill;
     function move(character, new_cell_id) {
@@ -105,7 +100,7 @@ var Event;
         if (dice < probability) {
             effects_1.Effect.change_durability(character, 'foot', -1);
             let skill_dice = Math.random();
-            if (skill_dice * skill_dice * skill_dice > character.skills.travelling / 100) {
+            if (skill_dice * skill_dice * skill_dice > system_3.CharacterSystem.skill(character, 'travelling') / 100) {
                 effects_1.Effect.Change.skill(character, 'travelling', 1);
             }
         }
@@ -131,7 +126,7 @@ var Event;
         // it gives base 10% of arrows missing
         // and you rise your evasion if you are attacked
         const attack_skill = 2 * attack.attack_skill;
-        const evasion = defender.skills.evasion;
+        const evasion = system_3.CharacterSystem.skill(defender, 'evasion');
         let evasion_chance = evasion / (100 + attack_skill);
         if (flag_dodge)
             evasion_chance = evasion_chance + 0.1;
@@ -154,7 +149,7 @@ var Event;
         if (attacker.get_hp() == 0)
             return 'miss';
         if (attacker.stash.get(materials_manager_1.ARROW_BONE) < 1) {
-            alerts_1.Alerts.not_enough_to_character(attacker, 'arrow', 1, 0);
+            alerts_1.Alerts.not_enough_to_character(attacker, 'arrow', 0, 1, undefined);
             return 'no_ammo';
         }
         data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
@@ -163,15 +158,16 @@ var Event;
         //check missed attack because of lack of skill
         const acc = battle_calcs_1.Accuracy.ranged(attacker, distance);
         const dice_accuracy = Math.random();
+        const attacker_ranged_skill = system_3.CharacterSystem.skill(attacker, 'ranged');
         if (dice_accuracy > acc) {
             const dice_skill_up = Math.random();
-            if (dice_skill_up * 100 > attacker.skills.ranged) {
+            if (dice_skill_up * 100 > attacker_ranged_skill) {
                 effects_1.Effect.Change.skill(attacker, 'ranged', 1);
             }
             return 'miss';
         }
         const dice_skill_up = Math.random();
-        if (dice_skill_up * 50 > attacker.skills.ranged) {
+        if (dice_skill_up * 50 > attacker_ranged_skill) {
             effects_1.Effect.Change.skill(attacker, 'ranged', 1);
         }
         // create attack
@@ -202,7 +198,7 @@ var Event;
         attack.attacker_status_change.fatigue += 5;
         attack.defender_status_change.fatigue += 5;
         attack.defender_status_change.stress += 3;
-        attack.defence_skill += defender.skills.evasion;
+        attack.defence_skill += system_3.CharacterSystem.skill(defender, 'evasion');
         deal_damage(defender, attack, attacker);
         //if target is dead, loot it all
         if (defender.dead()) {
@@ -235,7 +231,7 @@ var Event;
             }
         }
         const dice = Math.random();
-        if (dice > attacker.skills.magic_mastery / 50) {
+        if (dice > system_3.CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
             effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1);
         }
         const attack = system_2.Attack.generate_magic_bolt(attacker, dist);
@@ -341,11 +337,11 @@ var Event;
     }
     function parry(defender, attack) {
         const weapon = system_3.CharacterSystem.melee_weapon_type(defender);
-        const skill = defender.skills[weapon] + Math.round(Math.random() * 5);
+        const skill = system_3.CharacterSystem.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
         // roll parry
         const parry_dice = Math.random();
-        if ((skill > attack.attack_skill)) {
+        if ((parry_dice * skill > attack.attack_skill)) {
             attack.defence_skill += 40;
             attack.flags.blocked = true;
         }
@@ -359,7 +355,7 @@ var Event;
         }
     }
     function block(defender, attack) {
-        const skill = defender.skills.blocking + Math.round(Math.random() * 10);
+        const skill = system_3.CharacterSystem.skill(defender, 'blocking') + Math.round(Math.random() * 10);
         attack.defence_skill += skill;
         // roll block
         const block_dice = Math.random();
@@ -377,7 +373,7 @@ var Event;
     }
     function evade(defender, attack, dodge_flag) {
         //this skill has quite wide deviation
-        const skill = (0, basic_functions_1.trim)(defender.skills.evasion + Math.round((Math.random() - 0.5) * 40), 0, 200);
+        const skill = (0, basic_functions_1.trim)(system_3.CharacterSystem.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
         //passive evasion
         attack.defence_skill += skill;
         //active dodge
@@ -422,7 +418,8 @@ var Event;
         const skin = generate_loot_1.Loot.skinning(victim.archetype.race);
         if (skin > 0) {
             const dice = Math.random();
-            if (dice < killer.skills.skinning / 100) {
+            const skinning_skill = system_3.CharacterSystem.skill(killer, 'skinning');
+            if (dice < skinning_skill / 100) {
                 Event.change_stash(killer, materials_manager_1.RAT_SKIN, skin);
             }
             else {
@@ -581,7 +578,7 @@ var Event;
     Event.develop_land_plot = develop_land_plot;
     function repair_building(character, builing_id) {
         let building = data_1.Data.Buildings.from_id(builing_id);
-        let skill = character.skills.woodwork;
+        let skill = system_3.CharacterSystem.skill(character, 'woodwork');
         let repair = Math.min(5, skill - building.durability);
         if (repair <= 0)
             return;

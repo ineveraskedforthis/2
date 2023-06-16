@@ -8,11 +8,13 @@ import { UI_Part } from "../client_communication/causality_graph";
 import { Event } from "../events/events";
 import { Effect } from "../events/effects";
 import { MapSystem } from "../map/system";
+import { CharacterSystem } from "../character/system";
 
 
 export const hunt = {
     duration(char: Character) {
-        return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
+        const skill = CharacterSystem.skill(char, 'hunt')
+        return 0.5 + char.get_fatigue() / 100 + (100 - skill) / 100;
     },
 
     check:  function(char:Character, data: map_position): CharacterActionResponce {
@@ -26,8 +28,8 @@ export const hunt = {
     },
 
     result:  function(char:Character, data: map_position) {
-        let skill = char.skills.hunt
-        let skinning = char.skills.skinning
+        const skill = CharacterSystem.skill(char, 'hunt')
+        const skinning_skill = CharacterSystem.skill(char, 'skinning')
         Effect.Change.fatigue(char, 10)
 
         let amount_meat = Math.floor(skill / 10) + 1
@@ -44,7 +46,7 @@ export const hunt = {
             Effect.Change.stress(char, 1)
         }
 
-        if (amount_skin * Math.random() > skinning / 20) {
+        if (amount_skin * Math.random() > skinning_skill / 20) {
             Effect.Change.skill(char, 'skinning', 1)
         }
 
@@ -58,7 +60,8 @@ export const hunt = {
 
 export const fish = {
     duration(char: Character) {
-        return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.fishing) / 100;
+        const skill = CharacterSystem.skill(char, 'fishing')
+        return 0.5 + char.get_fatigue() / 100 + (100 - skill) / 100;
     },
 
     check:  function(char:Character, data: map_position): CharacterActionResponce {
@@ -72,7 +75,7 @@ export const fish = {
     },
 
     result:  function(char:Character, data: map_position) {
-        let skill = char.skills.fishing
+        const skill = CharacterSystem.skill(char, 'fishing')
 
         Effect.Change.fatigue(char, 10)
 

@@ -16,6 +16,8 @@ import { ScriptedValue } from "../../events/scripted_values";
 import { rooms } from "../../DATA_LAYOUT_BUILDING";
 import { PerksResponce } from "../../../../../shared/responces"
 import { Perks } from "@custom_types/character";
+import { ResponceNegativeQuantified, Trigger } from "../../events/triggers";
+import { CharacterSystem } from "../../character/system";
 
 
 export namespace Request {
@@ -74,13 +76,14 @@ export namespace Request {
             }
         }
 
-        for (let skill of Object.keys(target_character.skills)) {
-            let teacher_skill = target_character.skills[skill as skill]
-            let user_skill = character.skills[skill as skill]
-            if ((teacher_skill >= 30) && (teacher_skill > user_skill + 20)) {
+        for (let skill of Object.keys(target_character._skills)) {
+            let response = Trigger.can_learn_from(character, target_character, skill as skill)
+            if (response.response == 'ok' || response.response == ResponceNegativeQuantified.TeacherSkill) {
+                const teacher_skill = CharacterSystem.skill(target_character, skill as skill)
                 responce.skills[skill as skill] = [
-                    target_character.skills[skill as skill],
-                    skill_price(skill as skill, character, target_character)]
+                    teacher_skill,
+                    skill_price(skill as skill, character, target_character)
+                ]
             }
         }
         

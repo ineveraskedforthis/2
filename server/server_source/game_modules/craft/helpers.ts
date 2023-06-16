@@ -4,6 +4,7 @@ import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
 import { skill_check, box } from "./crafts_storage";
 import { Event } from "../events/events";
+import { CharacterSystem } from "../character/system";
 
 export const MAX_SKILL_MULTIPLIER_BULK = 10
 export function skill_to_ratio(skill: number, difficulty: number) {
@@ -24,11 +25,12 @@ export function roll_skill_improvement(current: number, target: number) {
 export function on_craft_update(character: Character, difficulty: skill_check[]) {
     let fatigue = 5;
     for (let item of difficulty) {
-        const current = character.skills[item.skill];
-        if (roll_skill_improvement(current, item.difficulty)) {
+        const pure_skill = CharacterSystem.pure_skill(character, item.skill);
+        const total_skill = CharacterSystem.skill(character, item.skill);
+        if (roll_skill_improvement(pure_skill, item.difficulty)) {
             Effect.Change.skill(character, item.skill, 1);
         }
-        fatigue += trim(item.difficulty - current, 0, 20);
+        fatigue += trim(item.difficulty - total_skill, 0, 20);
     }
 
     Effect.Change.stress(character, 1);

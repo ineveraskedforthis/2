@@ -16,3 +16,31 @@ export function rooms(type: LandPlotType): number {
         case LandPlotType.CottonField:return 100
     }
 }
+
+export function has_cooking_tools(type: LandPlotType): boolean {
+    switch(type) {
+        case LandPlotType.Shack:return true
+        case LandPlotType.Inn:return true
+        case LandPlotType.HumanHouse:return true
+        case LandPlotType.RatLair:return false
+        case LandPlotType.ElodinoHouse:return false
+        case LandPlotType.LandPlot:return false
+        case LandPlotType.ForestPlot:return false
+        case LandPlotType.FarmPlot:return false
+        case LandPlotType.CottonField:return false
+    }
+}
+
+export function has_crafting_tools(type: LandPlotType): boolean {
+    switch(type) {
+        case LandPlotType.Shack:return true
+        case LandPlotType.Inn:return true
+        case LandPlotType.HumanHouse:return true
+        case LandPlotType.RatLair:return false
+        case LandPlotType.ElodinoHouse:return false
+        case LandPlotType.LandPlot:return false
+        case LandPlotType.ForestPlot:return false
+        case LandPlotType.FarmPlot:return false
+        case LandPlotType.CottonField:return false
+    }
+}

@@ -56,7 +56,7 @@ export namespace HandleAction {
         } else if (responce == CharacterActionResponce.IN_BATTLE) {
             Alerts.in_battle(user)
         } else if (responce == CharacterActionResponce.NO_RESOURCE) {
-            Alerts.not_enough_to_user(user, '???', 0, 0)
+            Alerts.not_enough_to_user(user, '???', 0, 0, 0)
         }
     }
 

@@ -55,7 +55,7 @@ export namespace Attack {
         character.equip.modify_attack(result)
 
         //account for own skill
-        const skill = CharacterSystem.ranged_skill(character)
+        const skill = CharacterSystem.skill(character, 'ranged')
         
         result.attack_skill += skill
 
@@ -66,7 +66,8 @@ export namespace Attack {
 
     export function magic_bolt_base_damage(character: Character): number {
         const base_damage = 10
-        return Math.round(base_damage * CharacterSystem.magic_power(character) / 10 * (1 + character.skills.magic_mastery / 10))
+        const skill = CharacterSystem.skill(character, 'magic_mastery')
+        return Math.round(base_damage * CharacterSystem.magic_power(character) / 10 * (1 + skill / 10))
     }   
 
     export function generate_magic_bolt(character: Character, dist: number): AttackObj {

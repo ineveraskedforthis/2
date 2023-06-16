@@ -52,11 +52,12 @@ var EventInventory;
         if (item == undefined)
             return;
         if (character.stash.get(materials_manager_1.ZAZ) < 1) {
-            alerts_1.Alerts.not_enough_to_character(character, 'ZAZ', 1, character.stash.get(materials_manager_1.ZAZ));
+            alerts_1.Alerts.not_enough_to_character(character, 'ZAZ', character.stash.get(materials_manager_1.ZAZ), 1, undefined);
             return;
         }
         events_1.Event.change_stash(character, materials_manager_1.ZAZ, -1);
-        if (character.skills.magic_mastery < 10)
+        const pure_skill = system_1.CharacterSystem.pure_skill(character, 'magic_mastery');
+        if (pure_skill < 10)
             effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
         if (item.is_weapon())
             (0, affix_1.roll_affix_weapon)(enchant_rating, item);
@@ -71,12 +72,13 @@ var EventInventory;
         if (item == undefined)
             return;
         if (character.stash.get(materials_manager_1.ZAZ) < 1) {
-            alerts_1.Alerts.not_enough_to_character(character, 'ZAZ', 1, character.stash.get(materials_manager_1.ZAZ));
+            alerts_1.Alerts.not_enough_to_character(character, 'ZAZ', character.stash.get(materials_manager_1.ZAZ), 1, undefined);
             return;
         }
         let rolls = item.affixes.length;
         events_1.Event.change_stash(character, materials_manager_1.ZAZ, -1);
-        if (character.skills.magic_mastery < 10 * rolls)
+        const pure_skill = system_1.CharacterSystem.pure_skill(character, 'magic_mastery');
+        if (pure_skill < 10 * rolls)
             effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
         item.affixes = [];
         for (let i = 0; i < rolls; i++) {

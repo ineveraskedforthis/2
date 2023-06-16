@@ -169,7 +169,7 @@ export namespace BattleEvent {
         }
 
         if (attacker.action_points_left < COST) {
-            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left)
+            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', attacker.action_points_left, 3, undefined)
             return 
         }
 
@@ -219,7 +219,7 @@ export namespace BattleEvent {
         }
 
         if (attacker.action_points_left < COST) {
-            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', COST, attacker.action_points_left)
+            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', attacker.action_points_left, COST, undefined)
             return
         }
 
@@ -230,7 +230,7 @@ export namespace BattleEvent {
         let responce = Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
         switch(responce) {
             case 'miss': Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST); break;
-            case 'no_ammo': Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 1, 0)
+            case 'no_ammo': Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 0, 1, undefined)
             case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST)
         }
         Alerts.battle_update_unit(battle, attacker)
@@ -256,7 +256,7 @@ export namespace BattleEvent {
                 return
             }            
         }
-        Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left)
+        Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left, undefined)
     } 
 
     export function MagicBolt(battle: Battle, attacker: Unit, defender: Unit) {

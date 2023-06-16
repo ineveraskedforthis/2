@@ -69,9 +69,9 @@ var Effect;
         }
         Change.rage = rage;
         function skill(character, skill, dx) {
-            character.skills[skill] += dx;
-            if (character.skills[skill] > 100)
-                character.skills[skill] = 100;
+            character._skills[skill] += dx;
+            if (character._skills[skill] > 100)
+                character._skills[skill] = 100;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 12 /* UI_Part.SKILLS */);
         }
         Change.skill = skill;

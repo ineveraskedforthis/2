@@ -55,7 +55,7 @@ const influence = {
     [12 /* UI_Part.SKILLS */]: [17 /* UI_Part.CRAFT */, 20 /* UI_Part.STATS */],
     [6 /* UI_Part.INVENTORY */]: [20 /* UI_Part.STATS */],
     [3 /* UI_Part.BELONGINGS */]: [20 /* UI_Part.STATS */],
-    [1 /* UI_Part.STATUS */]: [20 /* UI_Part.STATS */]
+    [1 /* UI_Part.STATUS */]: [20 /* UI_Part.STATS */, 12 /* UI_Part.SKILLS */]
     // [UI_Part.COOKING_SKILL]     : [UI_Part.COOKING_CRAFT],
 };
 // if node: ask to update node and leave

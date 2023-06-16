@@ -4,6 +4,7 @@ exports.use_input = exports.check_inputs = exports.on_craft_update = exports.rol
 const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../events/effects");
 const events_1 = require("../events/events");
+const system_1 = require("../character/system");
 exports.MAX_SKILL_MULTIPLIER_BULK = 10;
 function skill_to_ratio(skill, difficulty) {
     return (0, basic_functions_1.trim)(skill / difficulty, 0, exports.MAX_SKILL_MULTIPLIER_BULK);
@@ -22,11 +23,12 @@ exports.roll_skill_improvement = roll_skill_improvement;
 function on_craft_update(character, difficulty) {
     let fatigue = 5;
     for (let item of difficulty) {
-        const current = character.skills[item.skill];
-        if (roll_skill_improvement(current, item.difficulty)) {
+        const pure_skill = system_1.CharacterSystem.pure_skill(character, item.skill);
+        const total_skill = system_1.CharacterSystem.skill(character, item.skill);
+        if (roll_skill_improvement(pure_skill, item.difficulty)) {
             effects_1.Effect.Change.skill(character, item.skill, 1);
         }
-        fatigue += (0, basic_functions_1.trim)(item.difficulty - current, 0, 20);
+        fatigue += (0, basic_functions_1.trim)(item.difficulty - total_skill, 0, 20);
     }
     effects_1.Effect.Change.stress(character, 1);
     effects_1.Effect.Change.fatigue(character, fatigue);

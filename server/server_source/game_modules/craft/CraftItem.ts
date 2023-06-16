@@ -8,6 +8,7 @@ import { ELODINO_FLESH, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/mate
 import { craft_actions, crafts_items, box, CraftItem, skill_check } from "./crafts_storage";
 import { on_craft_update, use_input } from "./helpers";
 import { generate_craft_item_action } from "./generate_action";
+import { CharacterSystem } from "../character/system";
 
 
 
@@ -48,7 +49,7 @@ export function durability(character: Character, craft: CraftItem): number {
     // calculate base durability as average
     let durability = 0
     for (let item of craft.difficulty) {
-        durability += base_durability(character.skills[item.skill], item.difficulty)
+        durability += base_durability(CharacterSystem.skill(character, item.skill), item.difficulty)
     }
     durability = durability / craft.difficulty.length
     return Math.floor(durability + bonus_durability(character, craft))

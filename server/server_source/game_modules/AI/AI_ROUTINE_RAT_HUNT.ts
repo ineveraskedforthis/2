@@ -43,7 +43,7 @@ export function RatHunterRoutine(character: Character) {
     // character at market
     if (!character.trade_stash.is_empty()) {
         update_price_beliefs(character)
-        if (character.stash.get(FOOD) < 10) {
+        if (character.stash.get(FOOD) < 30) {
             buy_food(character)
         }
 

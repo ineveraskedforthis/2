@@ -35,7 +35,7 @@ class Character {
         this.ai_state = 0 /* AIstate.Idle */;
         this.ai_price_belief_buy = new Map();
         this.ai_price_belief_sell = new Map();
-        this.skills = new SkillList_1.SkillList();
+        this._skills = new SkillList_1.SkillList();
         this.perks = {};
         this.stats = new types_1.InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp);
         this.explored = [];

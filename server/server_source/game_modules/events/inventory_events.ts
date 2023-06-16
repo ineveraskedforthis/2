@@ -56,14 +56,13 @@ export namespace EventInventory {
         if (item == undefined) return 
 
         if (character.stash.get(ZAZ) < 1) {
-            Alerts.not_enough_to_character(character, 'ZAZ', 1, character.stash.get(ZAZ))
+            Alerts.not_enough_to_character(character, 'ZAZ', character.stash.get(ZAZ), 1, undefined)
             return
         }
         
         Event.change_stash(character, ZAZ, -1)
-
-        if (character.skills.magic_mastery < 10) Effect.Change.skill(character, 'magic_mastery', 1)
-
+        const pure_skill = CharacterSystem.pure_skill(character, 'magic_mastery')
+        if (pure_skill < 10) Effect.Change.skill(character, 'magic_mastery', 1)
         if (item.is_weapon()) roll_affix_weapon(enchant_rating, item)
         else roll_affix_armour(enchant_rating, item)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
@@ -76,14 +75,15 @@ export namespace EventInventory {
         if (item == undefined) return 
 
         if (character.stash.get(ZAZ) < 1) {
-            Alerts.not_enough_to_character(character, 'ZAZ', 1, character.stash.get(ZAZ))
+            Alerts.not_enough_to_character(character, 'ZAZ', character.stash.get(ZAZ), 1, undefined)
             return
         }
 
 
         let rolls = item.affixes.length
         Event.change_stash(character, ZAZ, -1)
-        if (character.skills.magic_mastery < 10 * rolls) Effect.Change.skill(character, 'magic_mastery', 1)
+        const pure_skill = CharacterSystem.pure_skill(character, 'magic_mastery')
+        if (pure_skill < 10 * rolls) Effect.Change.skill(character, 'magic_mastery', 1)
 
         
         item.affixes = []

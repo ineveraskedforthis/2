@@ -5,9 +5,11 @@ const materials_manager_1 = require("../manager_classes/materials_manager");
 const events_1 = require("../events/events");
 const effects_1 = require("../events/effects");
 const system_1 = require("../map/system");
+const system_2 = require("../character/system");
 exports.hunt = {
     duration(char) {
-        return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.hunt) / 100;
+        const skill = system_2.CharacterSystem.skill(char, 'hunt');
+        return 0.5 + char.get_fatigue() / 100 + (100 - skill) / 100;
     },
     check: function (char, data) {
         if (!char.in_battle()) {
@@ -22,8 +24,8 @@ exports.hunt = {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        let skill = char.skills.hunt;
-        let skinning = char.skills.skinning;
+        const skill = system_2.CharacterSystem.skill(char, 'hunt');
+        const skinning_skill = system_2.CharacterSystem.skill(char, 'skinning');
         effects_1.Effect.Change.fatigue(char, 10);
         let amount_meat = Math.floor(skill / 10) + 1;
         let amount_skin = Math.max(Math.floor(skill / 20));
@@ -35,7 +37,7 @@ exports.hunt = {
             effects_1.Effect.Change.skill(char, 'hunt', 1);
             effects_1.Effect.Change.stress(char, 1);
         }
-        if (amount_skin * Math.random() > skinning / 20) {
+        if (amount_skin * Math.random() > skinning_skill / 20) {
             effects_1.Effect.Change.skill(char, 'skinning', 1);
         }
         events_1.Event.change_stash(char, materials_manager_1.MEAT, amount_meat);
@@ -46,7 +48,8 @@ exports.hunt = {
 };
 exports.fish = {
     duration(char) {
-        return 0.5 + char.get_fatigue() / 100 + (100 - char.skills.fishing) / 100;
+        const skill = system_2.CharacterSystem.skill(char, 'fishing');
+        return 0.5 + char.get_fatigue() / 100 + (100 - skill) / 100;
     },
     check: function (char, data) {
         if (!char.in_battle()) {
@@ -61,7 +64,7 @@ exports.fish = {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
-        let skill = char.skills.fishing;
+        const skill = system_2.CharacterSystem.skill(char, 'fishing');
         effects_1.Effect.Change.fatigue(char, 10);
         let amount = Math.floor(skill / 20) + 1;
         if (Math.random() < 0.01) {

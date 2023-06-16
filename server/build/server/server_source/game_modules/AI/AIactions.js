@@ -11,8 +11,8 @@ const crafts_storage_1 = require("../craft/crafts_storage");
 const items_1 = require("../craft/items");
 var AIactions;
 (function (AIactions) {
-    function craft_bulk(character, craft) {
-        const buy = helpers_1.AIhelper.buy_craft_inputs(character, character.savings.get(), craft.input);
+    function craft_bulk(character, craft, budget) {
+        const buy = helpers_1.AIhelper.buy_craft_inputs(character, budget, craft.input);
         const sell_prices = helpers_1.AIhelper.sell_prices_craft_bulk(character, craft);
         for (let item of sell_prices) {
             const current = character.stash.get(item.material);

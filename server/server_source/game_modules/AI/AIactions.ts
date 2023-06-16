@@ -11,8 +11,8 @@ import { money } from "@custom_types/common";
 
 
 export namespace AIactions {
-    export function craft_bulk(character: Character, craft: CraftBulk) {
-        const buy = AIhelper.buy_craft_inputs(character, character.savings.get(), craft.input);
+    export function craft_bulk(character: Character, craft: CraftBulk, budget: money) {
+        const buy = AIhelper.buy_craft_inputs(character, budget, craft.input);
         const sell_prices = AIhelper.sell_prices_craft_bulk(character, craft);
 
         for (let item of sell_prices) {

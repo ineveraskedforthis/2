@@ -33,7 +33,7 @@ export class Character {
 
     cleared: boolean;
 
-    skills: SkillList;
+    _skills: SkillList;
     perks: PerksTable;
     stats: InnateStats;
 
@@ -90,7 +90,7 @@ export class Character {
         this.ai_price_belief_buy = new Map()
         this.ai_price_belief_sell = new Map()
 
-        this.skills = new SkillList()
+        this._skills = new SkillList()
         this.perks = {}
         this.stats = new InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp)
 

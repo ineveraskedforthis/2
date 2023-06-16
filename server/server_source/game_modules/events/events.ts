@@ -37,6 +37,8 @@ import { Cell } from "../map/DATA_LAYOUT_CELL";
 import { Perks } from "../../../../shared/character";
 import { cell_id, money } from "@custom_types/common";
 import { LandPlotType } from "@custom_types/buildings";
+import { Trigger } from "./triggers";
+import { response } from "express";
 
 const GRAVEYARD_CELL = 0 as cell_id
 
@@ -47,7 +49,7 @@ export namespace Event {
         let price = perk_price(perk, student, teacher)
 
         if (savings < price) {
-            Alerts.not_enough_to_character(student, 'money', price, savings)
+            Alerts.not_enough_to_character(student, 'money', savings, price, undefined)
             return
         }
         
@@ -63,19 +65,19 @@ export namespace Event {
     }
 
     export function buy_skill(student: Character, skill: skill, teacher: Character) {
-        let savings = student.savings.get()
-        let price = skill_price(skill, student, teacher)
-
-        if (savings < price) {
-            Alerts.not_enough_to_character(student, 'money', price, savings)
-            return
+        let response = Trigger.can_learn_from(student, teacher, skill)
+        if (response.response == 'ok') {
+            Effect.Transfer.savings(student, teacher, response.price)
+            Effect.Change.skill(student, skill, 1)
+        } else {
+            Alerts.not_enough_to_character(
+                student, 
+                response.response, 
+                response.current_quantity,
+                response.min_quantity,
+                response.max_quantity
+            )
         }
-        // console.log(teacher.skills[skill], student.skills[skill])
-        if (teacher.skills[skill] <= student.skills[skill] + 20) return
-        if (teacher.skills[skill] < 30) return
-
-        Effect.Transfer.savings(student, teacher, price)
-        Effect.Change.skill(student, skill, 1)
     }
 
     export function move(character: Character, new_cell_id: cell_id) {
@@ -121,7 +123,7 @@ export namespace Event {
         if (dice < probability) {
             Effect.change_durability(character, 'foot', -1)
             let skill_dice = Math.random()
-            if (skill_dice * skill_dice * skill_dice > character.skills.travelling / 100) {
+            if (skill_dice * skill_dice * skill_dice > CharacterSystem.skill(character, 'travelling') / 100) {
                 Effect.Change.skill(character, 'travelling', 1)
             }
         }
@@ -146,7 +148,7 @@ export namespace Event {
         // it gives base 10% of arrows missing
         // and you rise your evasion if you are attacked
         const attack_skill = 2 * attack.attack_skill
-        const evasion = defender.skills.evasion
+        const evasion = CharacterSystem.skill(defender, 'evasion')
 
         let evasion_chance = evasion / (100 + attack_skill)
         if (flag_dodge) evasion_chance = evasion_chance + 0.1
@@ -169,7 +171,7 @@ export namespace Event {
         // sanity checks
         if (defender.get_hp() == 0) return 'miss'
         if (attacker.get_hp() == 0) return 'miss'
-        if (attacker.stash.get(ARROW_BONE) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 1, 0); return 'no_ammo'}
+        if (attacker.stash.get(ARROW_BONE) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 0, 1, undefined); return 'no_ammo'}
 
         Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
         //remove arrow
@@ -178,16 +180,17 @@ export namespace Event {
         //check missed attack because of lack of skill
         const acc = Accuracy.ranged(attacker, distance)
         const dice_accuracy = Math.random()
+        const attacker_ranged_skill = CharacterSystem.skill(attacker, 'ranged')
         if (dice_accuracy > acc) { 
             const dice_skill_up = Math.random()
-            if (dice_skill_up * 100 > attacker.skills.ranged) {
+            if (dice_skill_up * 100 > attacker_ranged_skill) {
                 Effect.Change.skill(attacker, 'ranged', 1)
             }
             return 'miss' 
         }
 
         const dice_skill_up = Math.random()
-        if (dice_skill_up * 50 > attacker.skills.ranged) {
+        if (dice_skill_up * 50 > attacker_ranged_skill) {
             Effect.Change.skill(attacker, 'ranged', 1)
         }
 
@@ -218,8 +221,7 @@ export namespace Event {
         attack.defender_status_change.fatigue += 5
         attack.defender_status_change.stress += 3
 
-        attack.defence_skill += defender.skills.evasion
-        
+        attack.defence_skill += CharacterSystem.skill(defender, 'evasion')
         deal_damage(defender, attack, attacker)
 
         //if target is dead, loot it all
@@ -253,7 +255,7 @@ export namespace Event {
         }
 
         const dice = Math.random()
-        if (dice > attacker.skills.magic_mastery / 50) {
+        if (dice > CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
             Effect.Change.skill(attacker, 'magic_mastery', 1)
         }
 
@@ -376,12 +378,12 @@ export namespace Event {
 
     function parry(defender: Character, attack: AttackObj) {
         const weapon = CharacterSystem.melee_weapon_type(defender);
-        const skill = defender.skills[weapon] + Math.round(Math.random() * 5);
+        const skill = CharacterSystem.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
 
         // roll parry
         const parry_dice = Math.random()
-        if ((skill > attack.attack_skill)) {
+        if ((parry_dice * skill > attack.attack_skill)) {
             attack.defence_skill += 40
             attack.flags.blocked = true;
         }
@@ -398,7 +400,7 @@ export namespace Event {
     }
 
     function block(defender: Character, attack: AttackObj) {
-        const skill = defender.skills.blocking + Math.round(Math.random() * 10);
+        const skill = CharacterSystem.skill(defender, 'blocking') + Math.round(Math.random() * 10);
         attack.defence_skill += skill;
 
         // roll block
@@ -420,7 +422,7 @@ export namespace Event {
 
     function evade(defender: Character, attack: AttackObj, dodge_flag: boolean) {
         //this skill has quite wide deviation
-        const skill = trim(defender.skills.evasion + Math.round((Math.random() - 0.5) * 40), 0, 200);
+        const skill = trim(CharacterSystem.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
 
         //passive evasion
         attack.defence_skill += skill;
@@ -475,7 +477,8 @@ export namespace Event {
         const skin = Loot.skinning(victim.archetype.race)
         if (skin > 0) {
             const dice = Math.random()
-            if (dice < killer.skills.skinning / 100) {
+            const skinning_skill = CharacterSystem.skill(killer, 'skinning')
+            if (dice < skinning_skill / 100) {
                 Event.change_stash(killer, RAT_SKIN, skin)
             } else {
                 Effect.Change.skill(killer, 'skinning', 1)
@@ -630,7 +633,7 @@ export namespace Event {
 
     export function repair_building(character: Character, builing_id: building_id) {
         let building = Data.Buildings.from_id(builing_id)
-        let skill = character.skills.woodwork
+        let skill = CharacterSystem.skill(character, 'woodwork')
         let repair = Math.min(5, skill - building.durability)
         if (repair <= 0) return;
         let cost = Math.round(repair / 100 * ScriptedValue.building_price_wood(building.type) / 2 + 0.51)

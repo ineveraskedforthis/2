@@ -81,7 +81,7 @@ app.get('/api/:API_KEY/character/:charID', (req: Request, res: Response) => {
         savings: character.savings,
         stash: character.stash,
         equip: character.equip.get_data(),
-        skills: character.skills,
+        skills: character._skills,
         perks: character.perks,
         user_id: character.user_id,
     }    

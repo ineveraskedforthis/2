@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Accuracy = void 0;
+const system_1 = require("../character/system");
 const AVERAGE_SKILL = 30;
 const IDEAL_DIST = 20; // AVERAGE_SKILL archer can hit with 1 probability in ideal conditions
 const STRESS_HINDER = 0.2; // maximal reduction to accuracy
@@ -13,8 +14,9 @@ var Accuracy;
         if (distance < EASY_DIST)
             return 1;
         let skill_difficulty_multiplier = 60;
-        if (character.skills.ranged > 0) {
-            skill_difficulty_multiplier = AVERAGE_SKILL / character.skills.ranged;
+        const ranged_skill = system_1.CharacterSystem.skill(character, 'ranged');
+        if (ranged_skill > 0) {
+            skill_difficulty_multiplier = AVERAGE_SKILL / ranged_skill;
         }
         const difficulty = (distance - EASY_DIST) * skill_difficulty_multiplier;
         const ideal_difficulty = IDEAL_DIST - EASY_DIST;

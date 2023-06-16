@@ -384,8 +384,19 @@ var Data;
             return id_to_cell.get(cell);
         }
         Cells.from_id = from_id;
+        function sea_nearby(cell) {
+            let neigbours = World.neighbours(cell);
+            for (const item in neigbours) {
+                let terrain = World.id_to_terrain(neigbours[item]);
+                if (terrain == terrain_1.Terrain.sea) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        Cells.sea_nearby = sea_nearby;
         function can_clean(cell) {
-            return true;
+            return sea_nearby(cell);
         }
         Cells.can_clean = can_clean;
         function has_forest(cell) {

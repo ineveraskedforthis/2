@@ -435,8 +435,19 @@ export namespace Data {
             return id_to_cell.get(cell) as Cell
         }
 
+        export function sea_nearby(cell: cell_id) {
+            let neigbours = World.neighbours(cell)
+            for (const item in neigbours) {
+                let terrain = World.id_to_terrain(neigbours[item])
+                if (terrain == Terrain.sea) {
+                    return true
+                }
+            }
+            return false
+        }
+
         export function can_clean(cell: cell_id) {
-            return true
+            return sea_nearby(cell)
         }
 
         export function has_forest(cell: cell_id) {

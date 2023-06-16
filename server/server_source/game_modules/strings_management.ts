@@ -32,7 +32,7 @@ export function character_to_string(c: Character) {
     let trade_savings       = c.trade_savings.get()
 
     let status =            JSON.stringify(c.status)
-    let skills =            JSON.stringify(c.skills)
+    let skills =            JSON.stringify(c._skills)
     let perks  =            JSON.stringify(c.perks)
     let innate_stats  =            JSON.stringify(c.stats)
     
@@ -70,9 +70,9 @@ export function string_to_character(s: string) {
 
     character.set_status(JSON.parse(raw_status) as Status)
 
-    character.skills = new SkillList()
+    character._skills = new SkillList()
     for (let [_, item] of Object.entries(JSON.parse(raw_skills) as SkillList)) {
-        character.skills[_ as skill] = item
+        character._skills[_ as skill] = item
     }
 
     character.perks = JSON.parse(raw_perks)

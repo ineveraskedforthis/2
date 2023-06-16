@@ -164,58 +164,55 @@ var SendUpdate;
         attack_damage(user);
     }
     SendUpdate.equip = equip;
-    function skill_clothier(user) {
+    function skill(user, skill) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.skill(user, 'clothier', character.skills.clothier);
+        const current_skill = system_2.CharacterSystem.skill(character, skill);
+        const pure_skill = system_2.CharacterSystem.pure_skill(character, skill);
+        alerts_1.Alerts.skill(user, skill, pure_skill, current_skill);
+    }
+    SendUpdate.skill = skill;
+    function skills(user, skills) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        for (let skill of skills) {
+            const current_skill = system_2.CharacterSystem.skill(character, skill);
+            const pure_skill = system_2.CharacterSystem.pure_skill(character, skill);
+            alerts_1.Alerts.skill(user, skill, pure_skill, current_skill);
+        }
+    }
+    SendUpdate.skills = skills;
+    function skill_clothier(user) {
+        skill(user, 'clothier');
     }
     SendUpdate.skill_clothier = skill_clothier;
     function skill_cooking(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        alerts_1.Alerts.skill(user, 'cooking', character.skills.cooking);
+        skill(user, 'cooking');
     }
     SendUpdate.skill_cooking = skill_cooking;
     function skill_woodwork(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        alerts_1.Alerts.skill(user, 'woodwork', character.skills.woodwork);
+        skill(user, 'woodwork');
     }
     SendUpdate.skill_woodwork = skill_woodwork;
     function skill_skinning(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        alerts_1.Alerts.skill(user, 'woodwork', character.skills.woodwork);
+        skill(user, 'skinning');
     }
     SendUpdate.skill_skinning = skill_skinning;
     function skill_weapon(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        for (const tag of types_1.weapon_attack_tags) {
-            alerts_1.Alerts.skill(user, tag, character.skills[tag]);
-        }
+        skills(user, types_1.weapon_attack_tags);
     }
     SendUpdate.skill_weapon = skill_weapon;
     function skill_defence(user) {
-        let character = systems_communication_1.Convert.user_to_character(user);
-        if (character == undefined)
-            return;
-        alerts_1.Alerts.skill(user, 'evasion', character.skills.evasion);
-        alerts_1.Alerts.skill(user, 'blocking', character.skills.blocking);
+        skills(user, ['evasion', 'blocking']);
     }
     SendUpdate.skill_defence = skill_defence;
     function all_skills(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        for (let i in character.skills) {
-            alerts_1.Alerts.skill(user, i, character.skills[i]);
-        }
+        skills(user, Object.keys(character._skills));
         cell_probability(user);
         alerts_1.Alerts.perks(user, character);
     }

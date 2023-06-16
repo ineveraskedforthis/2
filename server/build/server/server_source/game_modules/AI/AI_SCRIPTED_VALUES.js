@@ -1,12 +1,43 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AItrade = void 0;
-// import { money } from "../types";
-const helpers_1 = require("./helpers");
+exports.AItrade = exports.base_price = void 0;
+const materials_manager_1 = require("../manager_classes/materials_manager");
+const system_1 = require("../map/system");
+const CraftBulk_1 = require("../craft/CraftBulk");
+function base_price(cell_id, material) {
+    switch (material) {
+        case materials_manager_1.WOOD: {
+            // let cell = MapSystem.id_to_cell(cell_id)
+            if (system_1.MapSystem.has_wood(cell_id))
+                return 3;
+            return 10;
+        }
+        case materials_manager_1.RAT_BONE:
+            return 3;
+        case materials_manager_1.RAT_SKIN:
+            return 10;
+        case materials_manager_1.WOOD:
+            return 10;
+        case materials_manager_1.ELODINO_FLESH:
+            return 50;
+        case materials_manager_1.MEAT:
+            return 8;
+        case materials_manager_1.FISH:
+            return 8;
+        case materials_manager_1.FOOD:
+            return 8;
+        case materials_manager_1.ZAZ:
+            return 30;
+        case materials_manager_1.ARROW_BONE:
+            return 10;
+    }
+    return 4;
+}
+exports.base_price = base_price;
 var AItrade;
 (function (AItrade) {
     function buy_price_bulk(character, material) {
-        let base = (0, helpers_1.base_price)(character.cell_id, material);
+        let base = base_price(character.cell_id, material);
         let belief = character.ai_price_belief_buy.get(material);
         if (belief != undefined)
             base = belief;
@@ -19,11 +50,53 @@ var AItrade;
     function sell_price_bulk(character, material) {
         let belief = character.ai_price_belief_sell.get(material);
         if (belief == undefined)
-            return 1;
+            return base_price(character.cell_id, material);
         // if (character.archetype.ai_map == 'urban_trader') {
         //     return Math.floor(belief * 1.2) as money
         // }
         return belief;
     }
     AItrade.sell_price_bulk = sell_price_bulk;
+    function price_norm(character, items_vector) {
+        let norm = 0;
+        for (let item of items_vector) {
+            norm += item.amount * item.price;
+        }
+        return norm;
+    }
+    AItrade.price_norm = price_norm;
+    function price_norm_box(character, items_vector, price_estimator) {
+        let norm = 0;
+        for (let item of items_vector) {
+            norm += item.amount * price_estimator(character, item.material);
+        }
+        return norm;
+    }
+    AItrade.price_norm_box = price_norm_box;
+    function craft_bulk_profitability(character, craft) {
+        const input_price = price_norm_box(character, craft.input, buy_price_bulk);
+        const output_price = price_norm_box(character, (0, CraftBulk_1.output_bulk)(character, craft), sell_price_bulk);
+        // console.log(character.name, craft.id)
+        // console.log(craft.input)
+        // for (let box of craft.input) {
+        //     console.log(`
+        //         i think i can buy 
+        //         ${box.amount} of ${materials.index_to_material(box.material).string_tag} 
+        //         for ${buy_price_bulk(character, box.material) * box.amount}`)
+        // }
+        // console.log(output_bulk(character, craft))
+        // for (let box of output_bulk(character, craft)) {
+        //     console.log(`
+        //         i think i can sell 
+        //         ${box.amount} of ${materials.index_to_material(box.material).string_tag} 
+        //         for ${sell_price_bulk(character, box.material) * box.amount}`)
+        // }
+        // console.log('price of inputs', input_price)
+        // console.log(craft.input)
+        // console.log('price of outputs', output_price)
+        // console.log(craft.input)
+        const profit = output_price - input_price;
+        return profit;
+    }
+    AItrade.craft_bulk_profitability = craft_bulk_profitability;
 })(AItrade = exports.AItrade || (exports.AItrade = {}));

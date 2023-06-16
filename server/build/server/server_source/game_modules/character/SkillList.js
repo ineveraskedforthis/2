@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SkillList = void 0;
+exports.is_melee_skill = exports.is_crafting_skill = exports.SkillList = void 0;
 class SkillList {
     constructor() {
         this.clothier = 0;
@@ -23,3 +23,41 @@ class SkillList {
     }
 }
 exports.SkillList = SkillList;
+function is_crafting_skill(skill) {
+    switch (skill) {
+        case "clothier": return true;
+        case "cooking": return false;
+        case "onehand": return false;
+        case "polearms": return false;
+        case "noweapon": return false;
+        case "twohanded": return false;
+        case "skinning": return false;
+        case "magic_mastery": return false;
+        case "blocking": return false;
+        case "evasion": return false;
+        case "woodwork": return true;
+        case "hunt": return false;
+        case "ranged": return false;
+        case "bone_carving": return true;
+        case "travelling": return false;
+        case "fishing": return false;
+        case "smith": return true;
+    }
+}
+exports.is_crafting_skill = is_crafting_skill;
+function is_melee_skill(skill) {
+    if (skill === 'blocking')
+        return true;
+    if (skill === 'noweapon')
+        return true;
+    if (skill === 'onehand')
+        return true;
+    if (skill === 'twohanded')
+        return true;
+    if (skill === 'polearms')
+        return true;
+    if (skill === 'evasion')
+        return true;
+    return false;
+}
+exports.is_melee_skill = is_melee_skill;

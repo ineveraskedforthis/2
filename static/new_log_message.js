@@ -74,3 +74,4 @@ socket.on('new-message', msg => new_message(msg));
 socket.on('alert', msg => {my_alert(msg); new_log_message(msg)});
 socket.on('is-reg-valid', msg => my_alert(msg));
 socket.on('is-login-valid', msg => my_alert(msg));
+socket.on('not_enough', msg => my_alert('not enough ' + JSON.stringify(msg)));

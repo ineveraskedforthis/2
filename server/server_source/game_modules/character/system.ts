@@ -14,6 +14,9 @@ import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
 import { ScriptedValue } from "../events/scripted_values";
 import { cell_id, money } from "@custom_types/common";
+import { is_crafting_skill, is_melee_skill, skill } from "./SkillList";
+import { LandPlotType } from "@custom_types/buildings";
+import { has_cooking_tools, has_crafting_tools } from "../DATA_LAYOUT_BUILDING";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 
@@ -93,6 +96,49 @@ export namespace CharacterSystem {
         return true
     }
 
+    export function pure_skill(character: Character, skill: skill) {
+        let result = character._skills[skill]
+        if (result == undefined) {
+            result = 0
+        }
+        return result
+    }
+
+    export function skill(character: Character, skill: skill) {
+        let result = character._skills[skill]
+        if (result == undefined) {
+            result = 0
+        }
+
+        if (character.current_building != undefined) {
+            let building = Data.Buildings.from_id(character.current_building)
+
+            if (has_cooking_tools(building.type) && skill == 'cooking') {
+                result = (result + 5) * 1.2
+            }
+
+            if (has_crafting_tools(building.type) && is_crafting_skill(skill)) {
+                result = (result + 5) * 1.2
+            }
+        }
+
+        if (skill == 'ranged') {
+            const rage_mod = (100 - character.get_rage()) / 100
+            const stress_mod = (100 - character.get_stress()) / 100
+            const fatigue_mod = (100 - character.get_fatigue()) / 100
+            result = result * rage_mod * stress_mod * fatigue_mod
+        }
+
+        if (is_melee_skill(skill)) {
+            const rage_mod = (100 - character.get_rage()) / 100
+            const stress_mod = (100 - character.get_stress()) / 100
+            const fatigue_mod = (100 - character.get_fatigue()) / 100
+            result = result * rage_mod * stress_mod * fatigue_mod
+        }
+
+        return trim(Math.round(result), 0, 100)
+    }
+
     export function melee_damage_raw(character: Character, type: damage_type) {
         const weapon_damage = character.equip.get_melee_damage(type)
         if (weapon_damage != undefined) {
@@ -122,21 +168,14 @@ export namespace CharacterSystem {
         return new Damage()
     }
 
-    export function ranged_skill(character: Character) {
-        let base = character.skills.ranged
-        const rage_mod = (100 - character.get_rage()) / 100
-        const stress_mod = (100 - character.get_stress()) / 100
-        return Math.round(base * rage_mod * stress_mod)
-    }
-
     export function phys_power(character: Character) {
         let base = character.stats.stats.phys_power
-        base += character.skills.travelling / 30
-        base += character.skills.noweapon / 50
-        base += character.skills.fishing / 50
-        base += character.skills.ranged / 60
-        base += character.skills.woodwork / 40
-        base += (character.skills.onehand + character.skills.polearms + character.skills.twohanded) / 50
+        base += skill(character, 'travelling') / 30
+        base += skill(character, 'noweapon') / 50
+        base += skill(character, 'fishing') / 50
+        base += skill(character, 'ranged') / 60
+        base += skill(character, 'woodwork') / 40
+        base += (skill(character, 'onehand') + skill(character, 'polearms') + skill(character, 'twohanded')) / 50
         return Math.floor(base * character.equip.get_phys_power_modifier())
     }
 
@@ -152,7 +191,7 @@ export namespace CharacterSystem {
     }
 
     export function enchant_rating(character: Character): number {
-        let enchant_rating = CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 100 )
+        let enchant_rating = CharacterSystem.magic_power(character) * (1 + skill(character, 'magic_mastery') / 100)
         // so it's ~15 at 50 magic mastery
         // and 1 at 20 magic mastery
         if (character.perks.mage_initiation) {
@@ -187,21 +226,13 @@ export namespace CharacterSystem {
         let duration = 1
         duration += character.get_fatigue() / 100
         duration = duration / boots_speed_multiplier(character)
-        duration = duration * (1 - character.skills.travelling / 200)
+        duration = duration * (1 - skill(character, 'travelling') / 200)
 
         return duration
     }
 
     export function attack_skill(character: Character) {
-        const weapon = character.equip.data.weapon
-        let skill = 0
-        if (weapon == undefined) skill = character.skills.noweapon
-        else skill = character.skills[weapon.weapon_tag]
-        
-        const rage_mod = (100 - character.get_rage()) / 100
-        const stress_mod = (100 - character.get_stress()) / 100
-
-        return Math.round(skill * rage_mod * stress_mod)
+        return skill(character, melee_weapon_type(character))
     }
 
     export function resistance(character: Character) {

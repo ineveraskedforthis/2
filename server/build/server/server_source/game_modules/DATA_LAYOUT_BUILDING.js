@@ -1,7 +1,7 @@
 "use strict";
 // import { cell_id, money } from "./types";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rooms = void 0;
+exports.has_crafting_tools = exports.has_cooking_tools = exports.rooms = void 0;
 function rooms(type) {
     switch (type) {
         case "shack" /* LandPlotType.Shack */: return 2;
@@ -16,3 +16,31 @@ function rooms(type) {
     }
 }
 exports.rooms = rooms;
+function has_cooking_tools(type) {
+    switch (type) {
+        case "shack" /* LandPlotType.Shack */: return true;
+        case "inn" /* LandPlotType.Inn */: return true;
+        case "human_house" /* LandPlotType.HumanHouse */: return true;
+        case "rat_lair" /* LandPlotType.RatLair */: return false;
+        case "elodino_house" /* LandPlotType.ElodinoHouse */: return false;
+        case "land_plot" /* LandPlotType.LandPlot */: return false;
+        case "forest_plot" /* LandPlotType.ForestPlot */: return false;
+        case "farm_plot" /* LandPlotType.FarmPlot */: return false;
+        case "cotton_field" /* LandPlotType.CottonField */: return false;
+    }
+}
+exports.has_cooking_tools = has_cooking_tools;
+function has_crafting_tools(type) {
+    switch (type) {
+        case "shack" /* LandPlotType.Shack */: return true;
+        case "inn" /* LandPlotType.Inn */: return true;
+        case "human_house" /* LandPlotType.HumanHouse */: return true;
+        case "rat_lair" /* LandPlotType.RatLair */: return false;
+        case "elodino_house" /* LandPlotType.ElodinoHouse */: return false;
+        case "land_plot" /* LandPlotType.LandPlot */: return false;
+        case "forest_plot" /* LandPlotType.ForestPlot */: return false;
+        case "farm_plot" /* LandPlotType.FarmPlot */: return false;
+        case "cotton_field" /* LandPlotType.CottonField */: return false;
+    }
+}
+exports.has_crafting_tools = has_crafting_tools;

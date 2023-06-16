@@ -198,7 +198,6 @@ function update_price_beliefs(character) {
             else {
                 character.ai_price_belief_sell.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10));
             }
-            // console.log(`i think i can sell ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_sell.get(order.tag)}`)
         }
         if (order.typ == "sell") {
             let belief = character.ai_price_belief_buy.get(order.tag);
@@ -208,7 +207,6 @@ function update_price_beliefs(character) {
             else {
                 character.ai_price_belief_buy.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10));
             }
-            // console.log(`i think i can buy ${materials.index_to_material(order.tag).string_tag} for ${order.tag, character.ai_price_belief_buy.get(order.tag)}`)
         }
     }
     //adding a bit of healthy noise

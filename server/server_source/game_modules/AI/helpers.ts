@@ -5,56 +5,17 @@ import { hostile } from "../races/racial_hostility"
 import { Event } from "../events/events"
 import { Convert } from "../systems_communication"
 import { output_bulk } from "../craft/CraftBulk"
-import { ELODINO_FLESH, materials, material_index, RAT_BONE, RAT_SKIN, WOOD, MEAT, FOOD } from "../manager_classes/materials_manager"
 import { Stash } from "../inventories/stash"
 import { trim } from "../calculations/basic_functions"
 import { durability } from "../craft/CraftItem"
 import { box, CraftBulk, CraftItem } from "../craft/crafts_storage"
 import { BattleAI } from "../battle/battle_ai"
 import { MapSystem } from "../map/system"
-import { AItrade } from "./AI_SCRIPTED_VALUES"
+import { AItrade, price, priced_box } from "./AI_SCRIPTED_VALUES"
 import { Data } from "../data"
 import { cell_id, money } from "@custom_types/common"
 
-export function base_price(cell_id: cell_id, material: material_index): money {
-    switch(material) {
-        case WOOD: {
-            // let cell = MapSystem.id_to_cell(cell_id)
-            if (MapSystem.has_wood(cell_id)) return 3 as money
-            return 10 as money
-        }
-        case RAT_BONE:
-            return 3 as money
 
-        case RAT_SKIN:
-            return 10 as money
-
-        case WOOD: 
-            return 10 as money
-
-        case ELODINO_FLESH:
-            return 50 as money
-        
-        case MEAT:
-            return 8 as money
-        
-        case FOOD: 
-            return 3 as money
-    }
-
-    return 9999 as money
-}
-
-interface price {
-    material: material_index,
-    price: money
-}
-
-interface priced_box {
-    material: material_index,
-    price: money
-    amount: number
-}
 
 export namespace AIhelper {
     export function enemies_in_cell(char: Character) {
@@ -127,21 +88,7 @@ export namespace AIhelper {
         return potential_team
     }
 
-    function price_norm(character: Character, items_vector: priced_box[]): number {
-        let norm = 0
-        for (let item of items_vector) {
-            norm += item.amount * item.price
-        }
-        return norm
-    }
 
-    function price_norm_box(character: Character, items_vector: box[]): number {
-        let norm = 0
-        for (let item of items_vector) {
-            norm += item.amount * AItrade.buy_price_bulk(character, item.material)
-        }
-        return norm
-    }
 
     export function buy_craft_inputs(character: Character, budget: money, input: box[]): priced_box[] {
         // solve
@@ -156,7 +103,7 @@ export namespace AIhelper {
         }
 
         // normalise (buy) with price metric down to budget
-        let norm = price_norm(character, buy)
+        let norm = AItrade.price_norm(character, buy)
         if (norm < 1) norm = 1
         const multiplier = budget / norm
         for (let item of buy) {
@@ -167,19 +114,22 @@ export namespace AIhelper {
     }
 
     export function sell_prices_craft_bulk(character: Character, craft: CraftBulk): price[] {
-        const input_price = price_norm_box(character, craft.input)
+        const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
         const estimated_output = output_bulk(character, craft)
 
         let prices: price[] = []
         for (let item of estimated_output) {
-            prices.push({material: item.material, price: Math.round(input_price * 2 / item.amount) as money})
+            const price = Math.round(Math.max(
+                input_price * 2 / item.amount, 
+                AItrade.sell_price_bulk(character, item.material)))
+            prices.push({material: item.material, price: price as money})
         }
 
         return prices
     }
 
     export function sell_price_craft_item(character: Character, craft: CraftItem): money {
-        const input_price = price_norm_box(character, craft.input)
+        const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
         const estimated_quality = durability(character, craft)
 
         return Math.floor(input_price * 2 * estimated_quality / 100 + Math.random() * 10) + 1 as money

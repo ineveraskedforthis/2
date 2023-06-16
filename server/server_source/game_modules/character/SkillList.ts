@@ -40,3 +40,36 @@ export class SkillList {
 }
 
 export type skill = keyof SkillList
+
+export function is_crafting_skill(skill: skill) {
+    switch (skill) {
+        case "clothier":return true
+        case "cooking":return false
+        case "onehand":return false
+        case "polearms":return false
+        case "noweapon":return false
+        case "twohanded":return false
+        case "skinning":return false
+        case "magic_mastery":return false
+        case "blocking":return false
+        case "evasion":return false
+        case "woodwork":return true
+        case "hunt":return false
+        case "ranged":return false
+        case "bone_carving":return true
+        case "travelling":return false
+        case "fishing":return false
+        case "smith":return true
+    }
+}
+
+export function is_melee_skill(skill: skill) {
+    if (skill === 'blocking') return true
+    if (skill === 'noweapon') return true
+    if (skill === 'onehand') return true
+    if (skill === 'twohanded') return true
+    if (skill === 'polearms') return true
+    if (skill === 'evasion') return true    
+
+    return false
+}

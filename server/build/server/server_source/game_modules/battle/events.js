@@ -144,7 +144,7 @@ var BattleEvent;
                 Move(battle, attacker, res.target);
         }
         if (attacker.action_points_left < COST) {
-            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', 3, attacker.action_points_left);
+            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', attacker.action_points_left, 3, undefined);
             return;
         }
         let dodge_flag = (defender.dodge_turns > 0);
@@ -189,7 +189,7 @@ var BattleEvent;
             return;
         }
         if (attacker.action_points_left < COST) {
-            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', COST, attacker.action_points_left);
+            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', attacker.action_points_left, COST, undefined);
             return;
         }
         let dist = geom_1.geom.dist(attacker.position, defender.position);
@@ -200,7 +200,7 @@ var BattleEvent;
             case 'miss':
                 alerts_1.Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST);
                 break;
-            case 'no_ammo': alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 1, 0);
+            case 'no_ammo': alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 0, 1, undefined);
             case 'ok': alerts_1.Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST);
         }
         alerts_1.Alerts.battle_update_unit(battle, attacker);
@@ -224,7 +224,7 @@ var BattleEvent;
                 return;
             }
         }
-        alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left);
+        alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left, undefined);
     }
     BattleEvent.Flee = Flee;
     function MagicBolt(battle, attacker, defender) {

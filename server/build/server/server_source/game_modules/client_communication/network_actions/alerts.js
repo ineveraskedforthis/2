@@ -7,8 +7,8 @@ const user_manager_1 = require("../user_manager");
 const data_1 = require("../../data");
 var Alerts;
 (function (Alerts) {
-    function not_enough_to_user(user, tag, required, current) {
-        generic_user_alert(user, 'not_enough', { tag: tag, req: required, cur: current });
+    function not_enough_to_user(user, tag, current, min, max) {
+        generic_user_alert(user, 'not_enough', { tag: tag, min: min, max: max, cur: current });
     }
     Alerts.not_enough_to_user = not_enough_to_user;
     function market_data(user, data) {
@@ -60,11 +60,11 @@ var Alerts;
         user.socket.emit('is-login-completed', 'ok');
     }
     Alerts.login_is_completed = login_is_completed;
-    function not_enough_to_character(character, tag, required, current) {
+    function not_enough_to_character(character, tag, current, min, max) {
         let user = systems_communication_1.Convert.character_to_user(character);
         if (user == undefined)
             return;
-        not_enough_to_user(user, tag, required, current);
+        not_enough_to_user(user, tag, current, min, max);
     }
     Alerts.not_enough_to_character = not_enough_to_character;
     function generic_user_alert(user, tag, msg) {
@@ -102,8 +102,8 @@ var Alerts;
         Alerts.generic_user_alert(user, 'craft-item-complete', { tag: tag, value: value });
     }
     Alerts.craft_item_complete = craft_item_complete;
-    function skill(user, tag, value) {
-        Alerts.generic_user_alert(user, 'skill', { tag: tag, value: value });
+    function skill(user, tag, pure_value, current_value) {
+        Alerts.generic_user_alert(user, 'skill', { tag: tag, pure_value: pure_value, current_value: current_value });
     }
     Alerts.skill = skill;
     function battle_action_chance(user, tag, value) {

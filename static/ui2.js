@@ -89,9 +89,11 @@ function build_skill_div(tag){
     return skill_div
 }
 
+// pure_value: pure_value, current_value: current_value
 function update_skill_data(data) {
     const tag = data.tag
-    const value = data.value
+    const value = data.current_value
+    const pure_value = data.pure_value
 
     const div = document.getElementById(tag + '_skill_div')
     if (div == undefined) {

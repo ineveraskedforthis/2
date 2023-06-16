@@ -86,7 +86,7 @@ const influence:{[_ in UI_Part]?: UI_Part[]} = {
     [UI_Part.SKILLS]            : [UI_Part.CRAFT, UI_Part.STATS],
     [UI_Part.INVENTORY]         : [UI_Part.STATS],
     [UI_Part.BELONGINGS]        : [UI_Part.STATS],
-    [UI_Part.STATUS]            : [UI_Part.STATS]
+    [UI_Part.STATUS]            : [UI_Part.STATS, UI_Part.SKILLS]
     // [UI_Part.COOKING_SKILL]     : [UI_Part.COOKING_CRAFT],
 }
 

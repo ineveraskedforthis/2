@@ -7,6 +7,7 @@ import { generate_bulk_craft_action } from "./generate_action";
 import { box, CraftBulk, crafts_bulk, craft_actions, skill_check } from "./crafts_storage";
 import { use_input, on_craft_update, skill_to_ratio, MAX_SKILL_MULTIPLIER_BULK } from "./helpers";
 import { Event } from "../events/events";
+import { CharacterSystem } from "../character/system";
 
 
 export function event_craft_bulk(character: Character, craft: CraftBulk) {
@@ -23,7 +24,6 @@ export function produce_output(output: box[], character: Character) {
 }
 
 
-
 export function output_bulk(character: Character, craft: CraftBulk) {
     let result: box[] = [];
     //calculating skill output
@@ -32,7 +32,8 @@ export function output_bulk(character: Character, craft: CraftBulk) {
     // choose minimum across all skills
     let ratio = MAX_SKILL_MULTIPLIER_BULK;
     for (let check of craft.difficulty) {
-        ratio = Math.min(skill_to_ratio(character.skills[check.skill], check.difficulty), ratio);
+        const skill = CharacterSystem.skill(character, check.skill);
+        ratio = Math.min(skill_to_ratio(skill, check.difficulty), ratio);
     }
 
     for (let item of craft.output) {

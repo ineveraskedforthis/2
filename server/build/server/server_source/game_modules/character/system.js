@@ -10,6 +10,8 @@ const data_1 = require("../data");
 const ai_manager_1 = require("../AI/ai_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../events/effects");
+const SkillList_1 = require("./SkillList");
+const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
@@ -87,6 +89,43 @@ var CharacterSystem;
         return true;
     }
     CharacterSystem.transaction = transaction;
+    function pure_skill(character, skill) {
+        let result = character._skills[skill];
+        if (result == undefined) {
+            result = 0;
+        }
+        return result;
+    }
+    CharacterSystem.pure_skill = pure_skill;
+    function skill(character, skill) {
+        let result = character._skills[skill];
+        if (result == undefined) {
+            result = 0;
+        }
+        if (character.current_building != undefined) {
+            let building = data_1.Data.Buildings.from_id(character.current_building);
+            if ((0, DATA_LAYOUT_BUILDING_1.has_cooking_tools)(building.type) && skill == 'cooking') {
+                result = (result + 5) * 1.2;
+            }
+            if ((0, DATA_LAYOUT_BUILDING_1.has_crafting_tools)(building.type) && (0, SkillList_1.is_crafting_skill)(skill)) {
+                result = (result + 5) * 1.2;
+            }
+        }
+        if (skill == 'ranged') {
+            const rage_mod = (100 - character.get_rage()) / 100;
+            const stress_mod = (100 - character.get_stress()) / 100;
+            const fatigue_mod = (100 - character.get_fatigue()) / 100;
+            result = result * rage_mod * stress_mod * fatigue_mod;
+        }
+        if ((0, SkillList_1.is_melee_skill)(skill)) {
+            const rage_mod = (100 - character.get_rage()) / 100;
+            const stress_mod = (100 - character.get_stress()) / 100;
+            const fatigue_mod = (100 - character.get_fatigue()) / 100;
+            result = result * rage_mod * stress_mod * fatigue_mod;
+        }
+        return (0, basic_functions_1.trim)(Math.round(result), 0, 100);
+    }
+    CharacterSystem.skill = skill;
     function melee_damage_raw(character, type) {
         const weapon_damage = character.equip.get_melee_damage(type);
         if (weapon_damage != undefined) {
@@ -128,21 +167,14 @@ var CharacterSystem;
         return new Damage_1.Damage();
     }
     CharacterSystem.ranged_damage_raw = ranged_damage_raw;
-    function ranged_skill(character) {
-        let base = character.skills.ranged;
-        const rage_mod = (100 - character.get_rage()) / 100;
-        const stress_mod = (100 - character.get_stress()) / 100;
-        return Math.round(base * rage_mod * stress_mod);
-    }
-    CharacterSystem.ranged_skill = ranged_skill;
     function phys_power(character) {
         let base = character.stats.stats.phys_power;
-        base += character.skills.travelling / 30;
-        base += character.skills.noweapon / 50;
-        base += character.skills.fishing / 50;
-        base += character.skills.ranged / 60;
-        base += character.skills.woodwork / 40;
-        base += (character.skills.onehand + character.skills.polearms + character.skills.twohanded) / 50;
+        base += skill(character, 'travelling') / 30;
+        base += skill(character, 'noweapon') / 50;
+        base += skill(character, 'fishing') / 50;
+        base += skill(character, 'ranged') / 60;
+        base += skill(character, 'woodwork') / 40;
+        base += (skill(character, 'onehand') + skill(character, 'polearms') + skill(character, 'twohanded')) / 50;
         return Math.floor(base * character.equip.get_phys_power_modifier());
     }
     CharacterSystem.phys_power = phys_power;
@@ -160,7 +192,7 @@ var CharacterSystem;
     }
     CharacterSystem.magic_power = magic_power;
     function enchant_rating(character) {
-        let enchant_rating = CharacterSystem.magic_power(character) * (1 + character.skills.magic_mastery / 100);
+        let enchant_rating = CharacterSystem.magic_power(character) * (1 + skill(character, 'magic_mastery') / 100);
         // so it's ~15 at 50 magic mastery
         // and 1 at 20 magic mastery
         if (character.perks.mage_initiation) {
@@ -190,20 +222,12 @@ var CharacterSystem;
         let duration = 1;
         duration += character.get_fatigue() / 100;
         duration = duration / boots_speed_multiplier(character);
-        duration = duration * (1 - character.skills.travelling / 200);
+        duration = duration * (1 - skill(character, 'travelling') / 200);
         return duration;
     }
     CharacterSystem.movement_duration_map = movement_duration_map;
     function attack_skill(character) {
-        const weapon = character.equip.data.weapon;
-        let skill = 0;
-        if (weapon == undefined)
-            skill = character.skills.noweapon;
-        else
-            skill = character.skills[weapon.weapon_tag];
-        const rage_mod = (100 - character.get_rage()) / 100;
-        const stress_mod = (100 - character.get_stress()) / 100;
-        return Math.round(skill * rage_mod * stress_mod);
+        return skill(character, melee_weapon_type(character));
     }
     CharacterSystem.attack_skill = attack_skill;
     function resistance(character) {

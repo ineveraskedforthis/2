@@ -48,7 +48,7 @@ var Attack;
         //account for items modifiers
         character.equip.modify_attack(result);
         //account for own skill
-        const skill = system_1.CharacterSystem.ranged_skill(character);
+        const skill = system_1.CharacterSystem.skill(character, 'ranged');
         result.attack_skill += skill;
         //modify current damage with skill
         damage_types_1.DmgOps.mult_ip(result.damage, 1 + skill / 20);
@@ -57,7 +57,8 @@ var Attack;
     Attack.generate_ranged = generate_ranged;
     function magic_bolt_base_damage(character) {
         const base_damage = 10;
-        return Math.round(base_damage * system_1.CharacterSystem.magic_power(character) / 10 * (1 + character.skills.magic_mastery / 10));
+        const skill = system_1.CharacterSystem.skill(character, 'magic_mastery');
+        return Math.round(base_damage * system_1.CharacterSystem.magic_power(character) / 10 * (1 + skill / 10));
     }
     Attack.magic_bolt_base_damage = magic_bolt_base_damage;
     function generate_magic_bolt(character, dist) {

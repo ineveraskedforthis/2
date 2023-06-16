@@ -4,9 +4,12 @@ import { Character } from "../character/character";
 import { Data } from "../data";
 import { building_id, char_id } from "../types";
 import { ScriptedValue } from "./scripted_values";
+import { skill_price } from "../prices/skill_price";
+import { skill } from "../character/SkillList";
+import { CharacterSystem } from "../character/system";
 
 
-enum BuildingResponceNegative {
+export enum ResponceNegative {
     current_building_is_not_undefined = "current_building_is_not_undefined",
     no_rooms = "no_rooms",
     wrong_cell = "wrong_cell",
@@ -15,8 +18,22 @@ enum BuildingResponceNegative {
     no_owner = "no_owner",
 }
 
+export enum ResponceNegativeQuantified { 
+    Money = "money",
+    TeacherSkill = "teacher_skill",
+    Skill = "skill",
+}
+
+type LearningAvailableResponce = {
+    response: ResponceNegativeQuantified, 
+    current_quantity: number,
+    max_quantity: number|undefined,
+    min_quantity: number|undefined} | 
+    { response: 'ok', price: money}
+
+
 type BuildingAvailableResponce = 
-     {response: BuildingResponceNegative}
+     {response: ResponceNegative}
     |{response: "ok", owner_id: char_id|undefined, price: money}
 
 export namespace Trigger {
@@ -33,13 +50,13 @@ export namespace Trigger {
         let owner_id = Data.Buildings.owner(building_id)
         let character = Data.CharacterDB.from_id(character_id)
         if (character.current_building != undefined) {
-            return { response: BuildingResponceNegative.current_building_is_not_undefined }
+            return { response: ResponceNegative.current_building_is_not_undefined }
         }
         if (character.cell_id != building.cell_id) {
-            return { response: BuildingResponceNegative.invalid_cell }
+            return { response: ResponceNegative.invalid_cell }
         }
         if (rooms_not_available >= rooms(building.type)) {
-            return { response: BuildingResponceNegative.no_rooms }
+            return { response: ResponceNegative.no_rooms }
         }
         if (owner_id == undefined) {
             return { response: "ok", owner_id: undefined, price: 0 as money }
@@ -47,12 +64,38 @@ export namespace Trigger {
 
         let price = ScriptedValue.room_price(building_id, character_id)
         if (character.savings.get() < price) {
-            return { response: BuildingResponceNegative.no_money }
+            return { response: ResponceNegative.no_money }
         }
         let owner = Data.CharacterDB.from_id(owner_id)
         if (owner.cell_id != character.cell_id)
-            return { response: BuildingResponceNegative.invalid_cell }
+            return { response: ResponceNegative.invalid_cell }
 
         return { response: "ok", owner_id: owner_id, price: price }
+    }
+
+    export function can_learn_from(student: Character, teacher: Character, skill: skill): LearningAvailableResponce {
+        let savings = student.savings.get()
+        let price = skill_price(skill, student, teacher)
+        if (savings < price) {
+            return { 
+                response: ResponceNegativeQuantified.Money, 
+                current_quantity: savings, 
+                max_quantity: undefined, 
+                min_quantity: price 
+            }
+        }
+
+        const teacher_skill = CharacterSystem.pure_skill(teacher, skill)
+        const student_skill = CharacterSystem.pure_skill(student, skill)
+        if ((teacher_skill <= student_skill + 20) || (teacher_skill < 30)) {
+            return { 
+                response: ResponceNegativeQuantified.TeacherSkill, 
+                current_quantity: teacher_skill, 
+                max_quantity: undefined, 
+                min_quantity: Math.max(student_skill + 20, 30) 
+            }
+        }
+
+        return { response: 'ok', price: price}
     }
 }

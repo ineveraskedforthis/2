@@ -64,6 +64,7 @@ export namespace MapSystem {
 
     export function can_fish(cell_id: cell_id) {
         if (Data.World.id_to_terrain(cell_id) == Terrain.coast) return true
+        if (Data.Cells.sea_nearby(cell_id)) return true
         return false
     }
 

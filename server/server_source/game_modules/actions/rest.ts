@@ -6,6 +6,7 @@ import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Data } from "../data";
 import { ScriptedValue } from "../events/scripted_values";
+import { CharacterSystem } from "../character/system";
 
 export const rest = {
     duration(char: Character) {
@@ -14,8 +15,9 @@ export const rest = {
 
     check:  function(char:Character, data: map_position): CharacterActionResponce {
         if (char.in_battle()) return CharacterActionResponce.IN_BATTLE
-        let target_fatigue = ScriptedValue.rest_target_fatigue(0, char.skills.travelling, char.race())
-        let target_stress = ScriptedValue.rest_target_stress(0, char.skills.travelling, char.race())
+        let skill = CharacterSystem.skill(char, 'travelling')
+        let target_fatigue = ScriptedValue.rest_target_fatigue(0, skill, char.race())
+        let target_stress = ScriptedValue.rest_target_stress(0, skill, char.race())
         if ((char.get_fatigue() <= target_fatigue) && (char.get_stress() <= target_stress)) {
             return CharacterActionResponce.NO_RESOURCE
         }
@@ -25,8 +27,9 @@ export const rest = {
     result:  function(char:Character, data: map_position) {
         const cell = Convert.character_to_cell(char)
         if (cell == undefined) return
-        let target_fatigue = ScriptedValue.rest_target_fatigue(0, char.skills.travelling, char.race())
-        let target_stress = ScriptedValue.rest_target_stress(0, char.skills.travelling, char.race())
+        let skill = CharacterSystem.skill(char, 'travelling')
+        let target_fatigue = ScriptedValue.rest_target_fatigue(0, skill, char.race())
+        let target_stress = ScriptedValue.rest_target_stress(0, skill, char.race())
         if (target_fatigue < char.get_fatigue()) char.set_fatigue(target_fatigue)
         if (target_stress < char.get_stress()) char.set('stress', target_stress)
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)

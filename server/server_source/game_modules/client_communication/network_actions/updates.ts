@@ -1,5 +1,5 @@
 import { Accuracy } from "../../battle/battle_calcs";
-import { SkillList } from "../../character/SkillList";
+import { SkillList, skill } from "../../character/SkillList";
 import { MapSystem } from "../../map/system";
 import { CellDisplayData } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";
@@ -184,59 +184,56 @@ export namespace SendUpdate {
         attack_damage(user)
     }
 
-    export function skill_clothier(user: User) {
+    export function skill(user: User, skill: skill) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
-        
-        Alerts.skill(user, 'clothier', character.skills.clothier)
+
+        const current_skill = CharacterSystem.skill(character, skill)
+        const pure_skill = CharacterSystem.pure_skill(character, skill)
+
+        Alerts.skill(user, skill, pure_skill, current_skill)
     }
 
-    export function skill_cooking(user: User) {
+    export function skills(user: User, skills: skill[]) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.skill(user, 'cooking', character.skills.cooking)        
-    }
-
-    export function skill_woodwork(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
-
-        Alerts.skill(user, 'woodwork', character.skills.woodwork)
-    }
-
-    export function skill_skinning(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
-
-        Alerts.skill(user, 'woodwork', character.skills.woodwork)
-    }
-
-    export function skill_weapon(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
-
-        for (const tag of weapon_attack_tags) {
-            Alerts.skill(user, tag, character.skills[tag])
+        for (let skill of skills) {
+            const current_skill = CharacterSystem.skill(character, skill)
+            const pure_skill = CharacterSystem.pure_skill(character, skill)
+            Alerts.skill(user, skill, pure_skill, current_skill)
         }
     }
 
-    export function skill_defence(user: User) {
-        let character = Convert.user_to_character(user)
-        if (character == undefined) return
+    export function skill_clothier(user: User) {
+        skill(user, 'clothier')
+    }
 
-        Alerts.skill(user, 'evasion', character.skills.evasion)
-        Alerts.skill(user, 'blocking', character.skills.blocking)
+    export function skill_cooking(user: User) {
+        skill(user, 'cooking')        
+    }
+
+    export function skill_woodwork(user: User) {
+        skill(user, 'woodwork')
+    }
+
+    export function skill_skinning(user: User) {
+        skill(user, 'skinning')
+    }
+
+    export function skill_weapon(user: User) {
+        skills(user, weapon_attack_tags)
+    }
+
+    export function skill_defence(user: User) {
+        skills(user, ['evasion', 'blocking'])
     }
 
     export function all_skills(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
-        for (let i in character.skills) {
-            Alerts.skill(user, i, character.skills[i as keyof SkillList])
-        }
+        skills(user, Object.keys(character._skills) as skill[])
         cell_probability(user)
-
         Alerts.perks(user, character)
     }
 

@@ -26,7 +26,7 @@ function character_to_string(c) {
     let savings = c.savings.get();
     let trade_savings = c.trade_savings.get();
     let status = JSON.stringify(c.status);
-    let skills = JSON.stringify(c.skills);
+    let skills = JSON.stringify(c._skills);
     let perks = JSON.stringify(c.perks);
     let innate_stats = JSON.stringify(c.stats);
     let explored = JSON.stringify({ data: c.explored });
@@ -53,9 +53,9 @@ function string_to_character(s) {
     character.savings.inc(Number(raw_savings));
     character.trade_savings.inc(Number(raw_trade_savings));
     character.set_status(JSON.parse(raw_status));
-    character.skills = new SkillList_1.SkillList();
+    character._skills = new SkillList_1.SkillList();
     for (let [_, item] of Object.entries(JSON.parse(raw_skills))) {
-        character.skills[_] = item;
+        character._skills[_] = item;
     }
     character.perks = JSON.parse(raw_perks);
     return character;

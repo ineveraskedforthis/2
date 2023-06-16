@@ -68,7 +68,7 @@ var SocketCommand;
             valid_user.socket.emit('alert', 'not in the same cell');
             return;
         }
-        if (valid_character.skills[skill_tag] == undefined) {
+        if (valid_character._skills[skill_tag] == undefined) {
             return;
         }
         // console.log('validation passed')

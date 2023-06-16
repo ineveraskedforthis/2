@@ -14,6 +14,8 @@ const alerts_1 = require("./alerts");
 const updates_1 = require("./updates");
 const scripted_values_1 = require("../../events/scripted_values");
 const DATA_LAYOUT_BUILDING_1 = require("../../DATA_LAYOUT_BUILDING");
+const triggers_1 = require("../../events/triggers");
+const system_2 = require("../../character/system");
 var Request;
 (function (Request) {
     function accuracy(sw, distance) {
@@ -64,12 +66,12 @@ var Request;
                 responce.perks[perk] = (0, perk_base_price_1.perk_price)(perk, character, target_character);
             }
         }
-        for (let skill of Object.keys(target_character.skills)) {
-            let teacher_skill = target_character.skills[skill];
-            let user_skill = character.skills[skill];
-            if ((teacher_skill >= 30) && (teacher_skill > user_skill + 20)) {
+        for (let skill of Object.keys(target_character._skills)) {
+            let response = triggers_1.Trigger.can_learn_from(character, target_character, skill);
+            if (response.response == 'ok' || response.response == triggers_1.ResponceNegativeQuantified.TeacherSkill) {
+                const teacher_skill = system_2.CharacterSystem.skill(target_character, skill);
                 responce.skills[skill] = [
-                    target_character.skills[skill],
+                    teacher_skill,
                     (0, skill_price_1.skill_price)(skill, character, target_character)
                 ];
             }

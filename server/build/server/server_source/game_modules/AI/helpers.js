@@ -1,41 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AIhelper = exports.base_price = void 0;
+exports.AIhelper = void 0;
 const racial_hostility_1 = require("../races/racial_hostility");
 const events_1 = require("../events/events");
 const systems_communication_1 = require("../systems_communication");
 const CraftBulk_1 = require("../craft/CraftBulk");
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const CraftItem_1 = require("../craft/CraftItem");
 const battle_ai_1 = require("../battle/battle_ai");
-const system_1 = require("../map/system");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const data_1 = require("../data");
-function base_price(cell_id, material) {
-    switch (material) {
-        case materials_manager_1.WOOD: {
-            // let cell = MapSystem.id_to_cell(cell_id)
-            if (system_1.MapSystem.has_wood(cell_id))
-                return 3;
-            return 10;
-        }
-        case materials_manager_1.RAT_BONE:
-            return 3;
-        case materials_manager_1.RAT_SKIN:
-            return 10;
-        case materials_manager_1.WOOD:
-            return 10;
-        case materials_manager_1.ELODINO_FLESH:
-            return 50;
-        case materials_manager_1.MEAT:
-            return 8;
-        case materials_manager_1.FOOD:
-            return 3;
-    }
-    return 9999;
-}
-exports.base_price = base_price;
 var AIhelper;
 (function (AIhelper) {
     function enemies_in_cell(char) {
@@ -114,20 +88,6 @@ var AIhelper;
         return potential_team;
     }
     AIhelper.check_team_to_join = check_team_to_join;
-    function price_norm(character, items_vector) {
-        let norm = 0;
-        for (let item of items_vector) {
-            norm += item.amount * item.price;
-        }
-        return norm;
-    }
-    function price_norm_box(character, items_vector) {
-        let norm = 0;
-        for (let item of items_vector) {
-            norm += item.amount * AI_SCRIPTED_VALUES_1.AItrade.buy_price_bulk(character, item.material);
-        }
-        return norm;
-    }
     function buy_craft_inputs(character, budget, input) {
         // solve
         // sum (buy * base_price) < budget
@@ -139,7 +99,7 @@ var AIhelper;
             buy.push({ material: item.material, amount: amount, price: AI_SCRIPTED_VALUES_1.AItrade.buy_price_bulk(character, item.material) });
         }
         // normalise (buy) with price metric down to budget
-        let norm = price_norm(character, buy);
+        let norm = AI_SCRIPTED_VALUES_1.AItrade.price_norm(character, buy);
         if (norm < 1)
             norm = 1;
         const multiplier = budget / norm;
@@ -150,17 +110,18 @@ var AIhelper;
     }
     AIhelper.buy_craft_inputs = buy_craft_inputs;
     function sell_prices_craft_bulk(character, craft) {
-        const input_price = price_norm_box(character, craft.input);
+        const input_price = AI_SCRIPTED_VALUES_1.AItrade.price_norm_box(character, craft.input, AI_SCRIPTED_VALUES_1.AItrade.buy_price_bulk);
         const estimated_output = (0, CraftBulk_1.output_bulk)(character, craft);
         let prices = [];
         for (let item of estimated_output) {
-            prices.push({ material: item.material, price: Math.round(input_price * 2 / item.amount) });
+            const price = Math.round(Math.max(input_price * 2 / item.amount, AI_SCRIPTED_VALUES_1.AItrade.sell_price_bulk(character, item.material)));
+            prices.push({ material: item.material, price: price });
         }
         return prices;
     }
     AIhelper.sell_prices_craft_bulk = sell_prices_craft_bulk;
     function sell_price_craft_item(character, craft) {
-        const input_price = price_norm_box(character, craft.input);
+        const input_price = AI_SCRIPTED_VALUES_1.AItrade.price_norm_box(character, craft.input, AI_SCRIPTED_VALUES_1.AItrade.buy_price_bulk);
         const estimated_quality = (0, CraftItem_1.durability)(character, craft);
         return Math.floor(input_price * 2 * estimated_quality / 100 + Math.random() * 10) + 1;
     }

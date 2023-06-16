@@ -8,6 +8,7 @@ const materials_manager_1 = require("../manager_classes/materials_manager");
 const crafts_storage_1 = require("./crafts_storage");
 const helpers_1 = require("./helpers");
 const generate_action_1 = require("./generate_action");
+const system_2 = require("../character/system");
 function base_durability(skill, difficulty) {
     const base = Math.round(skill / difficulty * 100);
     return (0, basic_functions_1.trim)(base, 5, 150);
@@ -45,7 +46,7 @@ function durability(character, craft) {
     // calculate base durability as average
     let durability = 0;
     for (let item of craft.difficulty) {
-        durability += base_durability(character.skills[item.skill], item.difficulty);
+        durability += base_durability(system_2.CharacterSystem.skill(character, item.skill), item.difficulty);
     }
     durability = durability / craft.difficulty.length;
     return Math.floor(durability + bonus_durability(character, craft));

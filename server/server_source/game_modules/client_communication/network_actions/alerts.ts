@@ -18,8 +18,14 @@ import { Data } from "../../data";
 import { cell_id } from "../../../../../shared/common";
 
 export namespace Alerts {
-    export function not_enough_to_user(user: User, tag: string, required: number, current: number) {
-        generic_user_alert(user, 'not_enough', {tag: tag, req: required, cur: current})
+    export function not_enough_to_user(
+        user: User, 
+        tag: string, 
+        current: number, 
+        min: number|undefined, 
+        max: number|undefined)
+    {
+        generic_user_alert(user, 'not_enough', {tag: tag, min: min, max: max, cur: current})
     }
 
     export function market_data(user: User, data: OrderBulkJson[]) {
@@ -71,10 +77,16 @@ export namespace Alerts {
         user.socket.emit('is-login-completed', 'ok');
     }
 
-    export function not_enough_to_character(character: Character, tag: string, required: number, current: number) {
+    export function not_enough_to_character(
+        character: Character, 
+        tag: string, 
+        current: number, 
+        min: number|undefined, 
+        max: number|undefined) 
+    {
         let user = Convert.character_to_user(character)
         if (user == undefined) return
-        not_enough_to_user(user, tag, required, current)
+        not_enough_to_user(user, tag, current, min, max)
     }
 
     export function generic_user_alert(user: User, tag:string, msg:any) {
@@ -107,8 +119,8 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'craft-item-complete', {tag: tag, value: value})
     }
 
-    export function skill(user: User, tag: string, value: number) {
-        Alerts.generic_user_alert(user, 'skill', {tag: tag, value: value})
+    export function skill(user: User, tag: string, pure_value: number, current_value: number) {
+        Alerts.generic_user_alert(user, 'skill', {tag: tag, pure_value: pure_value, current_value: current_value})
     }
 
     export function battle_action_chance(user: User, tag: string, value: number) {

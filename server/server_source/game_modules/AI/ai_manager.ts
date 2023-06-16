@@ -1,15 +1,8 @@
 import type { Character } from "../character/character"
-import { ActionManager } from "../actions/action_manager";
-import { CharacterAction } from "../action_types";
-import { RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
-import { AIhelper, base_price } from "./helpers";
-import { Cooking } from "../craft/cooking";
-import { AmmunitionCraft } from "../craft/ammunition";
+import { AIhelper } from "./helpers";
 import { RatHunterRoutine } from "./AI_ROUTINE_RAT_HUNT";
-import { AIactions } from "./AIactions";
 import { RatRoutine } from "./AI_ROUTINE_RAT";
 import { SteppeAgressiveRoutine, SteppePassiveRoutine, ForestPassiveRoutine } from "./AI_ROUTINE_GENERIC";
-import { tired } from "./triggers";
 import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
 import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 import { GuardUrbanRoutine } from "./AI_ROUTINE_GUARD";

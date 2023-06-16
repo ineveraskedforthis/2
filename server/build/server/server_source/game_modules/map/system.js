@@ -63,6 +63,8 @@ var MapSystem;
     function can_fish(cell_id) {
         if (data_1.Data.World.id_to_terrain(cell_id) == terrain_1.Terrain.coast)
             return true;
+        if (data_1.Data.Cells.sea_nearby(cell_id))
+            return true;
         return false;
     }
     MapSystem.can_fish = can_fish;
