@@ -28,6 +28,18 @@ export function RatHunterRoutine(character: Character) {
     if (character.action != undefined) return
     if (character.is_player()) return
 
+    {   
+        let target = AIhelper.enemies_in_cell(character)
+        const target_char = Convert.id_to_character(target)
+        // console.log(character.name)
+        // console.log('local enemy is', target_char?.name)
+        if (target_char != undefined) {
+            Event.start_battle(character, target_char)
+            return
+        }
+    }
+    
+
     if (tired(character)) {
         if (!MapSystem.has_market(character.cell_id)) {
             market_walk(character)

@@ -43,7 +43,7 @@ var AIhelper;
         for (let id of a) {
             let target_char = systems_communication_1.Convert.id_to_character(id);
             if ((0, racial_hostility_1.hostile)(char.race(), target_char.race())) {
-                if (!target_char.in_battle() && !target_char.dead()) {
+                if (!target_char.dead()) {
                     return target_char.id;
                 }
             }

@@ -201,6 +201,8 @@ document.addEventListener('keyup', HOTKEYS_HANDLER, false);
 export var BattleImage;
 (function (BattleImage) {
     function load(data) {
+        console.log('load battle');
+        console.log(data);
         reset();
         for (let [_, unit] of Object.entries(data)) {
             load_unit(unit);

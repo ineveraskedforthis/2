@@ -62,7 +62,7 @@ export namespace AIhelper {
         for (let id of a) {
             let target_char = Convert.id_to_character(id)
             if (hostile(char.race(), target_char.race())) {
-                if (!target_char.in_battle() && !target_char.dead()) {
+                if (!target_char.dead()) {
                     return target_char.id
                 }                
             }

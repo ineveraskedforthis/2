@@ -247,6 +247,8 @@ document.addEventListener('keyup', HOTKEYS_HANDLER, false);
 
 export namespace BattleImage {
     export function load(data: BattleData) {
+        console.log('load battle')
+        console.log(data)
         reset()
         for (let [_, unit] of Object.entries(data)) {
             load_unit(unit)

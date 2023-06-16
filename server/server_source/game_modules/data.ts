@@ -717,7 +717,7 @@ export namespace Data {
             if (reputation[b] == undefined) return false
             const rep = reputation[a]
             for (let [faction, reputation] of Object.entries(rep)) {
-                if (reputation.level == 'member') {
+                if ((reputation.level == 'member') || (reputation.level == 'leader')) {
                     if (from_id(reputation.faction, b) == 'enemy') return true
                 }
             }

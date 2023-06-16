@@ -480,7 +480,7 @@ var Event;
     }
     Event.support_in_battle = support_in_battle;
     function start_battle(attacker, defender) {
-        console.log('attempt to start battle');
+        console.log('attempt to start battle between ' + attacker.name + ' and ' + defender.name);
         if (attacker.id == defender.id)
             return undefined;
         if (attacker.in_battle())
@@ -488,21 +488,22 @@ var Event;
         if (attacker.cell_id != defender.cell_id) {
             return undefined;
         }
-        console.log('valid participants');
+        // console.log('valid participants')
         // two cases
         // if defender is in battle, attempt to join it against him as a new team
         // else create new battle
         const battle = systems_communication_1.Convert.character_to_battle(defender);
         const unit_def = systems_communication_1.Convert.character_to_unit(defender);
         if ((battle != undefined) && (unit_def != undefined)) {
-            // let team = AIhelper.check_team_to_join(attacker, battle, unit_def.team)
-            // if (team == 'no_interest') team = Math.random()
+            // console.log('attempt to join battle')
             let team = system_1.BattleSystem.get_empty_team(battle);
+            // console.log('team: ' + team)
             join_battle(attacker, battle, team);
         }
         else {
+            // console.log('create new battle')
             const battle_id = system_1.BattleSystem.create_battle();
-            console.log('new battle: ' + battle_id);
+            // console.log('new battle: ' + battle_id)
             const battle = systems_communication_1.Convert.id_to_battle(battle_id);
             join_battle(defender, battle, 0);
             join_battle(attacker, battle, 1);

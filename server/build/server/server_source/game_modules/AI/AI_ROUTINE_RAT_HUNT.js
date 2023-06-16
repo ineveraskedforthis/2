@@ -26,6 +26,16 @@ function RatHunterRoutine(character) {
         return;
     if (character.is_player())
         return;
+    {
+        let target = helpers_1.AIhelper.enemies_in_cell(character);
+        const target_char = systems_communication_1.Convert.id_to_character(target);
+        // console.log(character.name)
+        // console.log('local enemy is', target_char?.name)
+        if (target_char != undefined) {
+            events_1.Event.start_battle(character, target_char);
+            return;
+        }
+    }
     if ((0, triggers_1.tired)(character)) {
         if (!system_1.MapSystem.has_market(character.cell_id)) {
             (0, actions_1.market_walk)(character);
