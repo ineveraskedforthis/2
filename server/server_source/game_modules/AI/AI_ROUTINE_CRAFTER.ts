@@ -2,9 +2,10 @@ import { Character } from "../character/character";
 import { AmmunitionCraft } from "../craft/ammunition";
 import { Cooking } from "../craft/cooking";
 import { RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
+import { GenericRest } from "./AI_ROUTINE_GENERIC";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { AIactions } from "./AIactions";
-import { rest_building, rest_outside } from "./actions";
+import { rest_outside } from "./actions";
 import { base_price } from "./helpers";
 import { tired } from "./triggers";
 
@@ -14,14 +15,7 @@ export function crafter_routine(character: Character) {
     if (character.is_player()) return
     if (character.current_building != undefined) return
 
-    if (tired(character)) {
-        let responce = rest_building(character, character.savings.get())
-        if (!responce) {
-            rest_outside(character)
-            return
-        }
-        return
-    }
+    GenericRest(character);
 
     if ((character.skills.cooking > 40) || (character.perks.meat_master == true)) {
         AIactions.craft_bulk(character, Cooking.meat);

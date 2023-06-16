@@ -6,22 +6,13 @@ import { Character } from "../character/character";
 import { Event } from "../events/events";
 import { FOOD } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
-import { CampaignAI } from "./ai_manager";
 import { AIhelper } from "./helpers";
 import { simple_constraints } from "./constraints";
 import { AIstate } from "../character/AIstate";
 import { tired, low_hp } from "./triggers";
-import { buy_food, loot, market_walk, random_walk, remove_orders, rest_building, rest_outside, sell_loot, update_price_beliefs } from "./actions";
+import { buy_food, loot, market_walk, random_walk, remove_orders, sell_loot, update_price_beliefs } from "./actions";
 import { MapSystem } from "../map/system";
-import { money } from "@custom_types/common";
-
-function rat_hunter_rest_budget(character: Character) {
-    let budget = character.savings.get()
-    if (budget < 100) {
-        budget = 0 as money
-    }
-    return budget
-}
+import { GenericRest } from "./AI_ROUTINE_GENERIC";
 
 export function RatHunterRoutine(character: Character) {
     if (character.in_battle()) return
@@ -37,19 +28,14 @@ export function RatHunterRoutine(character: Character) {
             Event.start_battle(character, target_char)
             return
         }
-    }
-    
+    }    
 
     if (tired(character)) {
         if (!MapSystem.has_market(character.cell_id)) {
             market_walk(character)
             return
         } else {
-            let responce = rest_building(character, rat_hunter_rest_budget(character))
-            if (!responce) {
-                rest_outside(character)
-                return
-            }
+            GenericRest(character)
             return
         }
     }
@@ -60,7 +46,6 @@ export function RatHunterRoutine(character: Character) {
         if (character.stash.get(FOOD) < 10) {
             buy_food(character)
         }
-        rest_building(character, character.savings.get())
 
         if (Math.random() < 0.5) {
             remove_orders(character)

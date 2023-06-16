@@ -13,7 +13,7 @@ export function RatRoutine(char: Character) {
         // console.log('rest')
         ActionManager.start_action(CharacterAction.REST, char, [0, 0])
         return
-    } else if (char.get_fatigue() > 30) {
+    } else if (char.get_fatigue() > 50) {
         // console.log('go home')
         rat_go_home(char, simple_constraints)
         return

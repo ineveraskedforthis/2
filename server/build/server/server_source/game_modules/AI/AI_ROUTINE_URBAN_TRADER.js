@@ -5,10 +5,9 @@ const data_1 = require("../data");
 const market_1 = require("../events/market");
 const system_1 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
-// import { money } from "../types";
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const actions_1 = require("./actions");
-const triggers_1 = require("./triggers");
+const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 function TraderRoutine(character) {
     // console.log("???")
     if (character.in_battle())
@@ -19,14 +18,7 @@ function TraderRoutine(character) {
         return;
     if (character.current_building != undefined)
         return;
-    if ((0, triggers_1.tired)(character)) {
-        let responce = (0, actions_1.rest_building)(character, character.savings.get());
-        if (!responce) {
-            (0, actions_1.rest_outside)(character);
-            return;
-        }
-        return;
-    }
+    (0, AI_ROUTINE_GENERIC_1.GenericRest)(character);
     if (character.ai_state == 0 /* AIstate.Idle */) {
         // console.log('start')
         character.ai_state = 5 /* AIstate.PatrolPrices */;

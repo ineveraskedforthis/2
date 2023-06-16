@@ -1,22 +1,18 @@
 import { equip_slot } from "../../../../shared/inventory";
 import { Character } from "../character/character";
 import { skill } from "../character/SkillList";
-// import { Perks } from "../character/Perks";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 import { Data} from "../data";
-// import { Cell } from "../map/cell";
 import { Convert } from "../systems_communication";
-import { Request } from "../client_communication/network_actions/request";
 import { building_id, char_id} from "../types";
 import { ScriptedValue } from "./scripted_values";
-import { rooms } from "../DATA_LAYOUT_BUILDING";
 import { trim } from "../calculations/basic_functions";
-import { Cell } from "../map/DATA_LAYOUT_CELL";
 import { Perks } from "../../../../shared/character";
 import { cell_id, money } from "@custom_types/common";
 import { LandPlot, LandPlotType } from "@custom_types/buildings";
 import { Alerts } from "../client_communication/network_actions/alerts";
+import { Trigger } from "./triggers";
 
 export namespace Effect {
     export namespace Update {
@@ -87,44 +83,30 @@ export namespace Effect {
         UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SKILLS)
     }
 
-    export function rent_room(character_id: char_id, building_id: building_id) {
-        let building = Data.Buildings.from_id(building_id)
-        let rooms_not_available = Data.Buildings.occupied_rooms(building_id)
-        let owner_id = Data.Buildings.owner(building_id)
+    export function rent_room(character_id: char_id, building_id: building_id) {        
         let character = Data.CharacterDB.from_id(character_id)
-        if (character.current_building != undefined) {
-            return "you are already somewhere"
-        }
-        if (character.cell_id != building.cell_id) {
-            return "wrong cell"
-        }
-        if (rooms_not_available >= rooms(building.type)) {
-            return "no_rooms"
-        }
-        if (owner_id == undefined) {
-            character.current_building = building_id
-            Data.Buildings.occupy_room(building_id)
-            return "no_owner"
-        }
-        let price = ScriptedValue.room_price(building_id, character_id)
-        if (character.savings.get() < price) {
-            return "not_enough_money"
-        }
-        let owner = Data.CharacterDB.from_id(owner_id)
+        let response = Trigger.building_is_available(character_id, building_id)
+        if (response.response == 'ok') {
+            if (response.owner_id != undefined) {
+                const owner = Data.CharacterDB.from_id(response.owner_id)
+                Effect.Transfer.savings(character, owner, response.price)
+            }
+            enter_room(character_id, building_id)
+        }        
+        return response
+    }
 
-        if (owner.cell_id != character.cell_id) return "invalid_cell"
-        Effect.Transfer.savings(character, owner, price)
+    export function enter_room(character_id: char_id, building_id: building_id) {
+        Effect.leave_room(character_id)
+        let character = Data.CharacterDB.from_id(character_id)
         Data.Buildings.occupy_room(building_id)
         character.current_building = building_id
-
         Alerts.enter_room(character)
-        return "ok"
     }
 
     export function leave_room(character_id: char_id) {
         let character = Data.CharacterDB.from_id(character_id)
         if (character.current_building == undefined) return
-
         Data.Buildings.free_room(character.current_building)
         Alerts.leave_room(character)
         character.current_building = undefined
@@ -174,9 +156,5 @@ export namespace Effect {
         }
 
         building_quality_reduction_roll(building)
-
-        if ((fatigue_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
-            Effect.leave_room(character.id)
-        }
     }
 }

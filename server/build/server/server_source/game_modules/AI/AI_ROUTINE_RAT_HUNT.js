@@ -12,13 +12,7 @@ const constraints_1 = require("./constraints");
 const triggers_1 = require("./triggers");
 const actions_1 = require("./actions");
 const system_1 = require("../map/system");
-function rat_hunter_rest_budget(character) {
-    let budget = character.savings.get();
-    if (budget < 100) {
-        budget = 0;
-    }
-    return budget;
-}
+const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 function RatHunterRoutine(character) {
     if (character.in_battle())
         return;
@@ -42,11 +36,7 @@ function RatHunterRoutine(character) {
             return;
         }
         else {
-            let responce = (0, actions_1.rest_building)(character, rat_hunter_rest_budget(character));
-            if (!responce) {
-                (0, actions_1.rest_outside)(character);
-                return;
-            }
+            (0, AI_ROUTINE_GENERIC_1.GenericRest)(character);
             return;
         }
     }
@@ -56,7 +46,6 @@ function RatHunterRoutine(character) {
         if (character.stash.get(materials_manager_1.FOOD) < 10) {
             (0, actions_1.buy_food)(character);
         }
-        (0, actions_1.rest_building)(character, character.savings.get());
         if (Math.random() < 0.5) {
             (0, actions_1.remove_orders)(character);
             (0, actions_1.sell_loot)(character);

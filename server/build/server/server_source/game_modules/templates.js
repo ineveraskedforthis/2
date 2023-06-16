@@ -122,6 +122,7 @@ var Template;
                 }
             }
             human.skills.woodwork = 80;
+            human.skills.bone_carving = 30;
             human.perks.fletcher = true;
             human.skills.ranged = 30;
             human.stash.inc(materials_manager_1.ARROW_BONE, 50);

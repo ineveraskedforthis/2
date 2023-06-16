@@ -90,6 +90,13 @@ var SocketCommand;
         let responce = effects_1.Effect.rent_room(character.id, building_id);
     }
     SocketCommand.rent_room = rent_room;
+    function leave_room(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        effects_1.Effect.leave_room(character.id);
+    }
+    SocketCommand.leave_room = leave_room;
     function validate_building_type(msg) {
         switch (msg) {
             case ("elodino_house" /* LandPlotType.ElodinoHouse */): return true;

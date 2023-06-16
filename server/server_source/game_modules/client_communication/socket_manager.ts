@@ -124,6 +124,8 @@ export class SocketManager {
             
             socket.on('build-building',     (msg: undefined|{id: unknown, type: unknown}) => SocketCommand.develop_plot(user, msg))
             socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
+            socket.on('leave-room',         () => SocketCommand.leave_room(user))
+            
             socket.on('repair-building',    (msg: undefined|{id: unknown}) => SocketCommand.repair_building(user, msg))
         });
     }

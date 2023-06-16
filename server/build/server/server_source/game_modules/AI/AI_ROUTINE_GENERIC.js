@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ForestPassiveRoutine = exports.PassiveRoutine = exports.SteppePassiveRoutine = exports.SteppeAgressiveRoutine = void 0;
+exports.GenericRest = exports.ForestPassiveRoutine = exports.PassiveRoutine = exports.SteppePassiveRoutine = exports.SteppeAgressiveRoutine = void 0;
+const data_1 = require("../data");
 const events_1 = require("../events/events");
+const scripted_values_1 = require("../events/scripted_values");
 const systems_communication_1 = require("../systems_communication");
 const actions_1 = require("./actions");
 const constraints_1 = require("./constraints");
 const helpers_1 = require("./helpers");
 const triggers_1 = require("./triggers");
+const effects_1 = require("../events/effects");
+const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
 function SteppeAgressiveRoutine(character) {
     if ((0, triggers_1.tired)(character)) {
         (0, actions_1.rest_outside)(character);
@@ -50,3 +54,58 @@ function ForestPassiveRoutine(character) {
     }
 }
 exports.ForestPassiveRoutine = ForestPassiveRoutine;
+function find_building_to_rest(character, budget) {
+    let cell = character.cell_id;
+    let buildings = data_1.Data.Buildings.from_cell_id(cell);
+    if (buildings == undefined)
+        return undefined;
+    let fatigue_utility = 1;
+    let money_utility = 10;
+    let best_utility = 0;
+    let target = undefined;
+    for (let item of buildings) {
+        let price = scripted_values_1.ScriptedValue.room_price(item, character.id);
+        let building = data_1.Data.Buildings.from_id(item);
+        let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
+        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
+        let fatigue_change = character.get_fatigue() - fatigue_target;
+        let utility = fatigue_change * fatigue_utility - price * money_utility;
+        if ((utility > best_utility) && (price <= budget) && (data_1.Data.Buildings.occupied_rooms(item) < (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type))) {
+            target = item;
+            best_utility = utility;
+        }
+    }
+    return target;
+}
+function rest_budget(character) {
+    let budget = character.savings.get();
+    if (budget < 50) {
+        budget = 0;
+    }
+    return (budget - 50);
+}
+function GenericRest(character) {
+    if (character.action != undefined)
+        return;
+    if ((0, triggers_1.tired)(character)) {
+        if (character.current_building == undefined) {
+            let building_to_rest = find_building_to_rest(character, rest_budget(character));
+            if (building_to_rest == undefined) {
+                (0, actions_1.rest_outside)(character);
+            }
+            else {
+                effects_1.Effect.rent_room(character.id, building_to_rest);
+            }
+        }
+        else {
+            let building = data_1.Data.Buildings.from_id(character.current_building);
+            let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
+            let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
+            const stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race());
+            if ((fatigue_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
+                effects_1.Effect.leave_room(character.id);
+            }
+        }
+    }
+}
+exports.GenericRest = GenericRest;

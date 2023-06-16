@@ -3,12 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Effect = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
 const data_1 = require("../data");
-// import { Cell } from "../map/cell";
 const systems_communication_1 = require("../systems_communication");
 const scripted_values_1 = require("./scripted_values");
-const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
 const basic_functions_1 = require("../calculations/basic_functions");
 const alerts_1 = require("../client_communication/network_actions/alerts");
+const triggers_1 = require("./triggers");
 var Effect;
 (function (Effect) {
     let Update;
@@ -83,38 +82,26 @@ var Effect;
     }
     Effect.learn_perk = learn_perk;
     function rent_room(character_id, building_id) {
-        let building = data_1.Data.Buildings.from_id(building_id);
-        let rooms_not_available = data_1.Data.Buildings.occupied_rooms(building_id);
-        let owner_id = data_1.Data.Buildings.owner(building_id);
         let character = data_1.Data.CharacterDB.from_id(character_id);
-        if (character.current_building != undefined) {
-            return "you are already somewhere";
+        let response = triggers_1.Trigger.building_is_available(character_id, building_id);
+        if (response.response == 'ok') {
+            if (response.owner_id != undefined) {
+                const owner = data_1.Data.CharacterDB.from_id(response.owner_id);
+                Effect.Transfer.savings(character, owner, response.price);
+            }
+            enter_room(character_id, building_id);
         }
-        if (character.cell_id != building.cell_id) {
-            return "wrong cell";
-        }
-        if (rooms_not_available >= (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type)) {
-            return "no_rooms";
-        }
-        if (owner_id == undefined) {
-            character.current_building = building_id;
-            data_1.Data.Buildings.occupy_room(building_id);
-            return "no_owner";
-        }
-        let price = scripted_values_1.ScriptedValue.room_price(building_id, character_id);
-        if (character.savings.get() < price) {
-            return "not_enough_money";
-        }
-        let owner = data_1.Data.CharacterDB.from_id(owner_id);
-        if (owner.cell_id != character.cell_id)
-            return "invalid_cell";
-        Effect.Transfer.savings(character, owner, price);
+        return response;
+    }
+    Effect.rent_room = rent_room;
+    function enter_room(character_id, building_id) {
+        Effect.leave_room(character_id);
+        let character = data_1.Data.CharacterDB.from_id(character_id);
         data_1.Data.Buildings.occupy_room(building_id);
         character.current_building = building_id;
         alerts_1.Alerts.enter_room(character);
-        return "ok";
     }
-    Effect.rent_room = rent_room;
+    Effect.enter_room = enter_room;
     function leave_room(character_id) {
         let character = data_1.Data.CharacterDB.from_id(character_id);
         if (character.current_building == undefined)
@@ -170,9 +157,6 @@ var Effect;
             Effect.Change.stress(character, stress_change);
         }
         building_quality_reduction_roll(building);
-        if ((fatigue_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
-            Effect.leave_room(character.id);
-        }
     }
     Effect.rest_building_tick = rest_building_tick;
 })(Effect = exports.Effect || (exports.Effect = {}));

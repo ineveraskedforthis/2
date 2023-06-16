@@ -17,6 +17,7 @@ import { Convert } from "../systems_communication";
 import { dp } from "./AI_CONSTANTS";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { simple_constraints, urban_constraints } from "./constraints";
+import { GenericRest } from "./AI_ROUTINE_GENERIC";
 
 const LOOT = [MEAT, RAT_SKIN, RAT_BONE];
 export function loot(character: Character) {
@@ -181,7 +182,7 @@ export function rat_go_home(character: Character, constraints: (cell: Cell) => b
     if (target != undefined)
     if (cell.rat_scent > target.rat_scent) {
         // console.log('at home')
-        rest_building(character, character.savings.get())
+        GenericRest(character)
         // ActionManager.start_action(CharacterAction.REST, character, [cell.x, cell.y])
     } else {
         // console.log('keep moving')
@@ -189,38 +190,6 @@ export function rat_go_home(character: Character, constraints: (cell: Cell) => b
     }
 }
 
-export function rest_building(character: Character, budget: money) {
-    let cell = character.cell_id
-    let buildings = Data.Buildings.from_cell_id(cell)
-
-    if (buildings == undefined) return false
-
-    let fatigue_utility = 1
-    let money_utility = 10
-
-    let best_utility = 0
-    let target = undefined
-
-    for (let item of buildings) {
-        let price = ScriptedValue.room_price(item, character.id)
-        let building = Data.Buildings.from_id(item)
-        let tier = ScriptedValue.building_rest_tier(building.type, character)
-        let fatigue_target = ScriptedValue.rest_target_fatigue(tier, building.durability, character.race())
-        let fatigue_change = character.get_fatigue() - fatigue_target
-
-        let utility = fatigue_change * fatigue_utility - price * money_utility
-
-        if ((utility > best_utility) && (price <= budget) && (Data.Buildings.occupied_rooms(item) < rooms(building.type))) {
-            target = item
-            best_utility = utility
-        }
-    }
-
-    if (target == undefined) return false
-
-    Effect.rent_room(character.id, target)
-    return true
-}
 
 export function rest_outside(character: Character) {
     ActionManager.start_action(CharacterAction.REST, character, [0, 0]);

@@ -109,6 +109,7 @@ export namespace Template {
             }
 
             human.skills.woodwork = 80
+            human.skills.bone_carving = 30
             human.perks.fletcher = true
             human.skills.ranged = 30
 

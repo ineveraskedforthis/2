@@ -61,6 +61,7 @@ var Event;
     Event.buy_skill = buy_skill;
     function move(character, new_cell_id) {
         const old_cell_id = character.cell_id;
+        effects_1.Effect.leave_room(character.id);
         systems_communication_1.Link.character_and_cell(character.id, new_cell_id);
         move_fatigue_change(character);
         let probability = move_durability_roll_probability(old_cell_id);

@@ -14,7 +14,7 @@ function RatRoutine(char) {
         action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
         return;
     }
-    else if (char.get_fatigue() > 30) {
+    else if (char.get_fatigue() > 50) {
         // console.log('go home')
         (0, actions_1.rat_go_home)(char, constraints_1.simple_constraints);
         return;

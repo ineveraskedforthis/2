@@ -84,6 +84,7 @@ class SocketManager {
             socket.on('create-plot', () => run_event_1.SocketCommand.create_plot(user));
             socket.on('build-building', (msg) => run_event_1.SocketCommand.develop_plot(user, msg));
             socket.on('rent-room', (msg) => run_event_1.SocketCommand.rent_room(user, msg));
+            socket.on('leave-room', () => run_event_1.SocketCommand.leave_room(user));
             socket.on('repair-building', (msg) => run_event_1.SocketCommand.repair_building(user, msg));
         });
     }

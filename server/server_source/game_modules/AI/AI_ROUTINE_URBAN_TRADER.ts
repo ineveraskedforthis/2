@@ -3,13 +3,11 @@ import { AIstate } from "../character/AIstate";
 import { Character } from "../character/character";
 import { Data } from "../data";
 import { EventMarket } from "../events/market";
-import { MaterialsManager, materials } from "../manager_classes/materials_manager";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
-// import { money } from "../types";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
-import { market_walk, rest_building, rest_outside, sell_all_stash, update_price_beliefs, urban_walk } from "./actions";
-import { tired } from "./triggers";
+import { market_walk, sell_all_stash, update_price_beliefs, urban_walk } from "./actions";
+import { GenericRest } from "./AI_ROUTINE_GENERIC";
 
 export function TraderRoutine(character: Character) {
     // console.log("???")
@@ -18,14 +16,7 @@ export function TraderRoutine(character: Character) {
     if (character.is_player()) return
     if (character.current_building != undefined) return
 
-    if (tired(character)) {
-        let responce = rest_building(character, character.savings.get())
-        if (!responce) {
-            rest_outside(character)
-            return
-        }
-        return
-    }
+    GenericRest(character);
 
     if (character.ai_state == AIstate.Idle) {
         // console.log('start')

@@ -4,10 +4,9 @@ exports.crafter_routine = void 0;
 const ammunition_1 = require("../craft/ammunition");
 const cooking_1 = require("../craft/cooking");
 const materials_manager_1 = require("../manager_classes/materials_manager");
+const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const AIactions_1 = require("./AIactions");
-const actions_1 = require("./actions");
-const triggers_1 = require("./triggers");
 function crafter_routine(character) {
     if (character.in_battle())
         return;
@@ -17,14 +16,7 @@ function crafter_routine(character) {
         return;
     if (character.current_building != undefined)
         return;
-    if ((0, triggers_1.tired)(character)) {
-        let responce = (0, actions_1.rest_building)(character, character.savings.get());
-        if (!responce) {
-            (0, actions_1.rest_outside)(character);
-            return;
-        }
-        return;
-    }
+    (0, AI_ROUTINE_GENERIC_1.GenericRest)(character);
     if ((character.skills.cooking > 40) || (character.perks.meat_master == true)) {
         AIactions_1.AIactions.craft_bulk(character, cooking_1.Cooking.meat);
     }

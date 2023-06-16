@@ -80,6 +80,7 @@ export namespace Event {
 
     export function move(character: Character, new_cell_id: cell_id) {
         const old_cell_id = character.cell_id
+        Effect.leave_room(character.id)
         Link.character_and_cell(character.id, new_cell_id)
         move_fatigue_change(character)
         let probability = move_durability_roll_probability(old_cell_id)

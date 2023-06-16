@@ -93,6 +93,12 @@ export namespace SocketCommand {
         let responce = Effect.rent_room(character.id, building_id as building_id)
     }
 
+    export function leave_room(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        Effect.leave_room(character.id)
+    }
+
     function validate_building_type(msg: string) {
         switch(msg){
             case(LandPlotType.ElodinoHouse): return true;
