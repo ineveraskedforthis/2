@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fish = exports.hunt = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
+const systems_communication_1 = require("../systems_communication");
 const events_1 = require("../events/events");
 const effects_1 = require("../events/effects");
 const system_1 = require("../map/system");
@@ -27,6 +28,10 @@ exports.hunt = {
         const skill = system_2.CharacterSystem.skill(char, 'hunt');
         const skinning_skill = system_2.CharacterSystem.skill(char, 'skinning');
         effects_1.Effect.Change.fatigue(char, 10);
+        const cell = systems_communication_1.Convert.character_to_cell(char);
+        if (cell.game > 0) {
+            cell.game -= 1;
+        }
         let amount_meat = Math.floor(skill / 10) + 1;
         let amount_skin = Math.max(Math.floor(skill / 20));
         if (Math.random() < 0.1) {
@@ -66,6 +71,10 @@ exports.fish = {
     result: function (char, data) {
         const skill = system_2.CharacterSystem.skill(char, 'fishing');
         effects_1.Effect.Change.fatigue(char, 10);
+        const cell = systems_communication_1.Convert.character_to_cell(char);
+        if (cell.fish > 0) {
+            cell.fish -= 1;
+        }
         let amount = Math.floor(skill / 20) + 1;
         if (Math.random() < 0.01) {
             amount += 10;

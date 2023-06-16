@@ -69,6 +69,12 @@ export const gather_cotton: ActionTargeted = {
 
     result: function(char:Character, data: map_position) {
 
+        const cell = Convert.character_to_cell(char)
+
+        if (cell.cotton > 0) {
+            cell.cotton -= 1
+        }
+
         Effect.Change.fatigue(char, 10)
         Effect.Change.stress(char, 1)
         char.change('blood', 1)        

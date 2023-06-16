@@ -32,6 +32,12 @@ export const hunt = {
         const skinning_skill = CharacterSystem.skill(char, 'skinning')
         Effect.Change.fatigue(char, 10)
 
+        const cell = Convert.character_to_cell(char)
+        
+        if (cell.game > 0) {
+            cell.game -= 1
+        }
+
         let amount_meat = Math.floor(skill / 10) + 1
         let amount_skin = Math.max(Math.floor(skill / 20))
 
@@ -78,6 +84,11 @@ export const fish = {
         const skill = CharacterSystem.skill(char, 'fishing')
 
         Effect.Change.fatigue(char, 10)
+
+        const cell = Convert.character_to_cell(char)
+        if (cell.fish > 0) {
+            cell.fish -= 1
+        }
 
         let amount = Math.floor(skill / 20) + 1
 

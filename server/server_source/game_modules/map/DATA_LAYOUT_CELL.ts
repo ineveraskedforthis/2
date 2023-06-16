@@ -8,4 +8,8 @@ export interface Cell {
     rat_scent: number,
     loaded_forest: boolean,
     loaded_spawn: boolean,
+
+    game: number,
+    fish: number,
+    cotton: number,
 }

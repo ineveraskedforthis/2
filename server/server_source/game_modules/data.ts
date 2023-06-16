@@ -222,7 +222,6 @@ export namespace Data {
             console.log(terrain.length)
             console.log(terrain[0].length)
             console.log(stats)
-
         }
 
         export function load_markets(path: string) {
@@ -260,7 +259,9 @@ export namespace Data {
                             room_cost: 0 as money
                             }
                             Buildings.create(forest)
-                        }                        
+                        } 
+                        cell.game += Number(forest_level) * 3
+
                         cell.loaded_forest = true
                     }
                     y++;
@@ -388,6 +389,10 @@ export namespace Data {
                             rat_scent: 0,
                             loaded_forest: false,
                             loaded_spawn: false,
+
+                            game: 0,
+                            fish: 0,
+                            cotton: 0,
                         }
                         set_data(id, cell_data)
                     }
@@ -461,14 +466,27 @@ export namespace Data {
         }
 
         export function has_cotton(cell: cell_id) {
-            let land_plots = Buildings.from_cell_id(cell)
-            if (land_plots == undefined) return false
-            for (let plot_id of land_plots) {
-                let plot = Buildings.from_id(plot_id)
-                if (plot.type != LandPlotType.CottonField) continue
-                if (plot.durability > 0) return true
-            }
+            let cell_object = from_id(cell)
+            return cell_object.cotton > 0
+            // let land_plots = Buildings.from_cell_id(cell)
+            // if (land_plots == undefined) return false
+            // for (let plot_id of land_plots) {
+            //     let plot = Buildings.from_id(plot_id)
+            //     if (plot.type != LandPlotType.CottonField) continue
+            //     if (plot.durability > 0) return true
+            // }
         }
+
+        export function has_game(cell: cell_id) {
+            let cell_object = from_id(cell)
+            return cell_object.game > 0
+        }
+
+        export function has_fish(cell: cell_id) {
+            let cell_object = from_id(cell)
+            return cell_object.fish > 0
+        }
+
         export function has_market(cell: cell_id) {
             let [x, y] = World.id_to_coordinate(cell)
             return is_market[x][y]

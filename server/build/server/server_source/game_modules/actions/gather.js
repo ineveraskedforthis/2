@@ -5,6 +5,7 @@ const user_manager_1 = require("../client_communication/user_manager");
 const effects_1 = require("../events/effects");
 const events_1 = require("../events/events");
 const materials_manager_1 = require("../manager_classes/materials_manager");
+const systems_communication_1 = require("../systems_communication");
 const data_1 = require("../data");
 exports.gather_wood = {
     duration(char) {
@@ -62,6 +63,10 @@ exports.gather_cotton = {
             return 2 /* CharacterActionResponce.IN_BATTLE */;
     },
     result: function (char, data) {
+        const cell = systems_communication_1.Convert.character_to_cell(char);
+        if (cell.cotton > 0) {
+            cell.cotton -= 1;
+        }
         effects_1.Effect.Change.fatigue(char, 10);
         effects_1.Effect.Change.stress(char, 1);
         char.change('blood', 1);

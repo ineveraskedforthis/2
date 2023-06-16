@@ -14,6 +14,7 @@ import { trim } from "../calculations/basic_functions";
 // import { Cell } from "./DATA_LAYOUT_CELL";
 import { Terrain, terrain_can_move } from "./terrain";
 import { cell_id } from "../../../../shared/common";
+import { Cell } from "./DATA_LAYOUT_CELL";
 
 // var size:world_dimensions = [0, 0]
 // var max_direction:number = 30
@@ -56,16 +57,14 @@ export namespace MapSystem {
     }
 
     export function can_hunt(cell_id: cell_id) {
-        if (Data.Cells.forestation(cell_id) > 200) return true
-        if (Data.Cells.urbanisation(cell_id) < 5) return true
-
-        return false
+       return Data.Cells.has_game(cell_id)
     }
 
     export function can_fish(cell_id: cell_id) {
-        if (Data.World.id_to_terrain(cell_id) == Terrain.coast) return true
-        if (Data.Cells.sea_nearby(cell_id)) return true
-        return false
+        return Data.Cells.has_fish(cell_id)
+        // if (Data.World.id_to_terrain(cell_id) == Terrain.coast) return true
+        // if (Data.Cells.sea_nearby(cell_id)) return true
+        // return false
     }
 
     export function has_market(cell_id: cell_id) {
@@ -80,90 +79,93 @@ export namespace MapSystem {
 
     const max_scent = 50
 
+    function update_rat_scent(deltaTime: number, cell: Cell|undefined) {
+        if (cell == undefined) return
+        // constant change by dt / 100
+        let base_d_scent = deltaTime / 10000
+        // constant decay
+        let d_scent = -1 * base_d_scent * cell.rat_scent
+        // cell.rat_scent -=dt / 100
+        {
+            // take an average of scent around
+            let total = 0
+            let neighbours = Data.World.neighbours(cell.id)
+            for (let neighbour of neighbours) {
+                const neigbour_cell = Data.Cells.from_id(neighbour)
+                total += neigbour_cell.rat_scent 
+            }
+            const average = total / neighbours.length * 1
+            d_scent += base_d_scent * (average - cell.rat_scent) * 5
+        }
+
+        {   //account for urbanisation
+            d_scent -= Data.Cells.urbanisation(cell.id) * base_d_scent
+        }
+        {   //account for forest
+            d_scent -= Data.Cells.forestation(cell.id) / 100 * base_d_scent
+        }
+
+        // trim to avoid weirdness
+        cell.rat_scent = trim(cell.rat_scent + d_scent * 20, 0, 50)
+    }
+
+    function update_market_scent(cell: Cell) {
+        if (cell == undefined) return                        
+        let temp = 0
+        if (Data.World.id_to_terrain(cell.id) == Terrain.sea) {
+            temp = -999
+        } else if (Data.Cells.has_market(cell.id)) {
+            temp = 200
+        } else {
+            // let neighbours = neighbours_cells(cell.id)
+            let neighbours = Data.World.neighbours(cell.id)
+            let max = 0
+            for (let item of neighbours) {
+                let cell_object = Data.Cells.from_id(item)
+                if (cell_object.market_scent > max) {
+                    max = cell_object.market_scent
+                }
+            }
+            temp = max - 1
+        }
+        cell.market_scent = temp
+    }
+
+    function update_fish(cell: Cell) {
+        if (Data.Cells.sea_nearby(cell.id)) {
+            if (Math.random() < (10 - cell.fish) / 100) {
+                cell.fish = cell.fish + 1
+            }
+        }
+    }
+
+    function update_cotton(cell: Cell) {
+        const competition = Data.Cells.forestation(cell.id) + cell.cotton * 20
+
+        if (Math.random() < 1 - competition / 200) {
+            cell.cotton = cell.cotton + 1
+        }
+    }
+
+    function update_game(cell: Cell) {
+        const competition = cell.game * 50 - Data.Cells.forestation(cell.id)
+
+        if (Math.random() < 1 - competition / 200) {
+            cell.game = cell.game + 1
+        }
+    }
+
     export function update(dt: number) {
-        // updating rat scent
         const cells = Data.Cells.list() 
         for (const cell of cells) {
-            if (cell == undefined) continue
-            // constant change by dt / 100
-            let base_d_scent = dt / 10000
-            // constant decay
-            let d_scent = -1 * base_d_scent * cell.rat_scent
-            // cell.rat_scent -=dt / 100
-            {
-                // take an average of scent around
-                let total = 0
-                let neighbours = Data.World.neighbours(cell.id)
-                for (let neighbour of neighbours) {
-                    const neigbour_cell = Data.Cells.from_id(neighbour)
-                    total += neigbour_cell.rat_scent 
-                }
-                const average = total / neighbours.length * 1
-                d_scent += base_d_scent * (average - cell.rat_scent) * 5
-                // cell.rat_scent = total
-            }
-
-            {   //account for urbanisation
-                d_scent -= Data.Cells.urbanisation(cell.id) * base_d_scent
-            }
-
-            // if (cell.development.rural > 0) {
-            //     d_scent -= 20 * base_d_scent
-            // }
-
-            {   //account for forest
-                d_scent -= Data.Cells.forestation(cell.id) / 100 * base_d_scent
-            }
-
-            // add scent to cells with rats
-            // let guests = cell.characters_set
-            // let rats = 0
-            // for (let guest of guests) {
-            //     let character = Data.CharacterDB.from_id(guest)
-            //     if (character.race() == 'rat') rats += 1
-            // }
-
-            // cell.rat_scent += rats
-
-            // trim to avoid weirdness
-            cell.rat_scent = trim(cell.rat_scent + d_scent * 20, 0, 50)
+            update_rat_scent(dt, cell)
+            update_market_scent(cell)
+            if (Math.random() < 0.0001) {
+                update_cotton(cell)
+                update_game(cell)
+                update_fish(cell)
+            }            
         }
-
-
-        // update market scent
-        for (const cell of cells) {
-            if (cell == undefined) continue                        
-            let temp = 0
-            if (Data.World.id_to_terrain(cell.id) == Terrain.sea) {
-                temp = -999
-            } else if (Data.Cells.has_market(cell.id)) {
-                temp = 200
-            } else {
-                // let neighbours = neighbours_cells(cell.id)
-                let neighbours = Data.World.neighbours(cell.id)
-                let max = 0
-                for (let item of neighbours) {
-                    let cell_object = Data.Cells.from_id(item)
-                    if (cell_object.market_scent > max) {
-                        max = cell_object.market_scent
-                    }
-                }
-                temp = max - 1
-            }
-            cell.market_scent = temp
-        }
-
-        // for (const cell of cells) {
-        //     if (cell == undefined) continue
-        //     cell.update(dt)
-
-
-
-        // }
-
-        // if (npc_humans <= 80) {
-        //     roll_human()
-        // }
     }
 
     function roll_human() {

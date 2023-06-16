@@ -214,6 +214,7 @@ var Data;
                             };
                             Buildings.create(forest);
                         }
+                        cell.game += Number(forest_level) * 3;
                         cell.loaded_forest = true;
                     }
                     y++;
@@ -335,6 +336,9 @@ var Data;
                             rat_scent: 0,
                             loaded_forest: false,
                             loaded_spawn: false,
+                            game: 0,
+                            fish: 0,
+                            cotton: 0,
                         };
                         set_data(id, cell_data);
                     }
@@ -413,18 +417,27 @@ var Data;
         }
         Cells.has_forest = has_forest;
         function has_cotton(cell) {
-            let land_plots = Buildings.from_cell_id(cell);
-            if (land_plots == undefined)
-                return false;
-            for (let plot_id of land_plots) {
-                let plot = Buildings.from_id(plot_id);
-                if (plot.type != "cotton_field" /* LandPlotType.CottonField */)
-                    continue;
-                if (plot.durability > 0)
-                    return true;
-            }
+            let cell_object = from_id(cell);
+            return cell_object.cotton > 0;
+            // let land_plots = Buildings.from_cell_id(cell)
+            // if (land_plots == undefined) return false
+            // for (let plot_id of land_plots) {
+            //     let plot = Buildings.from_id(plot_id)
+            //     if (plot.type != LandPlotType.CottonField) continue
+            //     if (plot.durability > 0) return true
+            // }
         }
         Cells.has_cotton = has_cotton;
+        function has_game(cell) {
+            let cell_object = from_id(cell);
+            return cell_object.game > 0;
+        }
+        Cells.has_game = has_game;
+        function has_fish(cell) {
+            let cell_object = from_id(cell);
+            return cell_object.fish > 0;
+        }
+        Cells.has_fish = has_fish;
         function has_market(cell) {
             let [x, y] = World.id_to_coordinate(cell);
             return is_market[x][y];
