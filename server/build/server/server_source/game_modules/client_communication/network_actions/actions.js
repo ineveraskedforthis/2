@@ -54,7 +54,7 @@ var HandleAction;
             alerts_1.Alerts.in_battle(user);
         }
         else if (responce == 3 /* CharacterActionResponce.NO_RESOURCE */) {
-            alerts_1.Alerts.not_enough_to_user(user, 'Not enough local resources', 0, 0, 0);
+            // Alerts.not_enough_to_user(user, 'Not enough local resources', 0, 0, 0)
         }
     }
     HandleAction.act = act;
