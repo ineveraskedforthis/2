@@ -67,7 +67,7 @@ export function RatHunterRoutine(character: Character) {
         return
     }
 
-    if ((character.stash.get(FOOD) > 0) && low_hp(character)) {
+    if ((character.stash.get(FOOD) > 0) && (low_hp(character) || character.get_stress() > 50)) {
         ActionManager.start_action(CharacterAction.EAT, character, character.cell_id)
         return
     }

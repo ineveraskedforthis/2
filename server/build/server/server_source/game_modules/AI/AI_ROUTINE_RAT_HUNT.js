@@ -65,7 +65,7 @@ function RatHunterRoutine(character) {
         }
         return;
     }
-    if ((character.stash.get(materials_manager_1.FOOD) > 0) && (0, triggers_1.low_hp)(character)) {
+    if ((character.stash.get(materials_manager_1.FOOD) > 0) && ((0, triggers_1.low_hp)(character) || character.get_stress() > 50)) {
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.EAT, character, character.cell_id);
         return;
     }
