@@ -68,7 +68,7 @@ var Request;
         }
         for (let skill of Object.keys(target_character._skills)) {
             let response = triggers_1.Trigger.can_learn_from(character, target_character, skill);
-            if (response.response == 'ok' || response.response == triggers_1.ResponceNegativeQuantified.TeacherSkill) {
+            if (response.response == 'ok' || response.response == triggers_1.ResponceNegativeQuantified.Money) {
                 const teacher_skill = system_2.CharacterSystem.skill(target_character, skill);
                 responce.skills[skill] = [
                     teacher_skill,

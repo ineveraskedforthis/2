@@ -78,7 +78,7 @@ export namespace Request {
 
         for (let skill of Object.keys(target_character._skills)) {
             let response = Trigger.can_learn_from(character, target_character, skill as skill)
-            if (response.response == 'ok' || response.response == ResponceNegativeQuantified.TeacherSkill) {
+            if (response.response == 'ok' || response.response == ResponceNegativeQuantified.Money) {
                 const teacher_skill = CharacterSystem.skill(target_character, skill as skill)
                 responce.skills[skill as skill] = [
                     teacher_skill,

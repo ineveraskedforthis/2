@@ -18,7 +18,7 @@ function construct_craft_inputs(inputs) {
 
 function new_craft_option(id) {
     let div = document.getElementById('c_' + id);
-    if (div != null) {
+    if (!((div == null)||(div == undefined))) {
         return undefined;
     }
 
@@ -58,8 +58,8 @@ function construct_craft_div(data) {
     }))(data.id);
 }
 function construct_craft_item_div(data) {
-    let div = document.getElementById('c_' + data.tag);
-    if (div == null) {
+    let div = document.getElementById('c_' + data.id);
+    if ((div == null) || (div == undefined)) {
         craft_items.push(data.id);
         var craft_div = new_craft_option(data.id)
     } else {
@@ -131,7 +131,7 @@ document.getElementById("craft-tag-bulk").onclick = () => {
 //     div.innerHTML = Math.floor(data.value)
 // }
 // socket.on('craft-probability', msg => update_craft_probability(msg))
-socket.on('craft-bulk', (msg) => { console.log(msg); update_craft_div(msg); });
-socket.on('craft-bulk-complete', (msg) => { console.log(msg); construct_craft_div(msg.value); });
-socket.on('craft-item', (msg) => { console.log(msg); update_craft_item_div(msg); });
-socket.on('craft-item-complete', (msg) => { console.log(msg); construct_craft_item_div(msg.value); });
+socket.on('craft-bulk', (msg) => { update_craft_div(msg); });
+socket.on('craft-bulk-complete', (msg) => { construct_craft_div(msg.value); });
+socket.on('craft-item', (msg) => { update_craft_item_div(msg); });
+socket.on('craft-item-complete', (msg) => { construct_craft_item_div(msg.value); });

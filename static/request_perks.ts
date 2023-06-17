@@ -151,8 +151,8 @@ function build_perks_list(data: PerksResponce) {
 }
 
 function update_perks(data: Perks) {
-    console.log('PERKS!!!!');
-    console.log(data);
+    // console.log('PERKS!!!!');
+    // console.log(data);
     let div2 = document.getElementById('perks_tab')!;
     div2.innerHTML = '';
     for (let tag of Object.keys(data)) {
