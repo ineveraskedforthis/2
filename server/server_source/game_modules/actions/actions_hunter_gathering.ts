@@ -86,7 +86,7 @@ function hunt_effect(character: Character, cell: cell_id) {
     const skinning_skill = CharacterSystem.skill(character, 'skinning')
     
     let amount_meat = Math.floor(skill / 10) + 1
-    let amount_skin = Math.max(amount_meat * skinning_skill / 100)
+    let amount_skin = Math.floor(Math.max(amount_meat * skinning_skill / 100))
     if (Math.random() < 0.1) {
         amount_meat += 10
         amount_skin += 1
