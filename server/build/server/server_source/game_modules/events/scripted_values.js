@@ -2,22 +2,23 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScriptedValue = void 0;
 const data_1 = require("../data");
+const basic_functions_1 = require("../calculations/basic_functions");
 var ScriptedValue;
 (function (ScriptedValue) {
     function building_rest_tier(type, character) {
         switch (type) {
-            case "shack" /* LandPlotType.Shack */: return 2;
-            case "inn" /* LandPlotType.Inn */: return 3;
-            case "human_house" /* LandPlotType.HumanHouse */: return 4;
+            case "shack" /* LandPlotType.Shack */: return 4;
+            case "inn" /* LandPlotType.Inn */: return 8;
+            case "human_house" /* LandPlotType.HumanHouse */: return 10;
             case "rat_lair" /* LandPlotType.RatLair */: {
                 if (character.race() == 'rat')
-                    return 5;
-                return 2;
+                    return 10;
+                return 1;
             }
             case "elodino_house" /* LandPlotType.ElodinoHouse */: {
                 if (character.race() == 'elo')
-                    return 5;
-                return 2;
+                    return 10;
+                return 1;
             }
         }
         return 0;
@@ -56,6 +57,14 @@ var ScriptedValue;
     //         case BuildingType.ElodinoHouse:return 10
     //     }
     // }
+    /**
+     * Calculates the target fatigue for a given tier, quality, and race.
+     *
+     * @param {number} tier - The tier of the building. Number from 1 to 10.
+     * @param {number} quality - The quality of the building.
+     * @param {tagRACE} race - The race of the character.
+     * @return {number} The target fatigue.
+     */
     function rest_target_fatigue(tier, quality, race) {
         let multiplier = 1;
         if (race == 'rat')
@@ -64,18 +73,26 @@ var ScriptedValue;
             multiplier = 0.5;
         if (race == 'graci')
             multiplier = 0.1;
-        return Math.floor((5 - tier) * 10 * multiplier);
+        return (0, basic_functions_1.trim)(Math.floor((100 - tier * 20) * multiplier), 0, 100);
     }
     ScriptedValue.rest_target_fatigue = rest_target_fatigue;
+    /**
+     * Calculates the target stress for a given tier, quality, and race.
+     *
+     * @param {number} tier - The tier of the building. Number from 1 to 10.
+     * @param {number} quality - The quality of the building.
+     * @param {tagRACE} race - The race of the character.
+     * @return {number} The target stress.
+     */
     function rest_target_stress(tier, quality, race) {
-        let multiplier = 1;
+        let multiplier = (0, basic_functions_1.trim)(1 - quality / 500, 0.5, 1);
         if (race == 'rat')
             multiplier = 0.25;
         if (race == 'elo')
             multiplier = 0.5;
         if (race == 'graci')
             multiplier = 0.1;
-        return Math.floor((5 - tier) * 30 * multiplier);
+        return Math.floor((100 - tier * 10) * multiplier);
     }
     ScriptedValue.rest_target_stress = rest_target_stress;
 })(ScriptedValue = exports.ScriptedValue || (exports.ScriptedValue = {}));

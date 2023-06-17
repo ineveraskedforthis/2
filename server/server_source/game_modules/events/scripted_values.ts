@@ -3,20 +3,21 @@ import { Character } from "../character/character";
 import { Data } from "../data";
 import { building_id, char_id, tagRACE } from "../types";
 import { money } from "@custom_types/common";
+import { trim } from "../calculations/basic_functions";
 
 export namespace ScriptedValue {
     export function building_rest_tier(type: LandPlotType, character: Character): number {
         switch(type){
-            case LandPlotType.Shack:return 2
-            case LandPlotType.Inn:return 3
-            case LandPlotType.HumanHouse:return 4
+            case LandPlotType.Shack:return 4
+            case LandPlotType.Inn:return 8
+            case LandPlotType.HumanHouse:return 10
             case LandPlotType.RatLair: {
-                if (character.race() == 'rat') return 5
-                return 2
+                if (character.race() == 'rat') return 10
+                return 1
             }
             case LandPlotType.ElodinoHouse: {
-                if (character.race() == 'elo') return 5
-                return 2
+                if (character.race() == 'elo') return 10
+                return 1
             }
         }
 
@@ -58,19 +59,35 @@ export namespace ScriptedValue {
     //     }
     // }
 
+    /**
+     * Calculates the target fatigue for a given tier, quality, and race.
+     *
+     * @param {number} tier - The tier of the building. Number from 1 to 10.
+     * @param {number} quality - The quality of the building.
+     * @param {tagRACE} race - The race of the character.
+     * @return {number} The target fatigue.
+     */
     export function rest_target_fatigue(tier: number, quality: number, race: tagRACE) {
         let multiplier = 1
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
         if (race == 'graci') multiplier = 0.1
-        return Math.floor((5 - tier) * 10 * multiplier)
+        return trim(Math.floor((100 - tier * 20) * multiplier), 0, 100)
     }
 
+    /**
+     * Calculates the target stress for a given tier, quality, and race.
+     *
+     * @param {number} tier - The tier of the building. Number from 1 to 10.
+     * @param {number} quality - The quality of the building.
+     * @param {tagRACE} race - The race of the character.
+     * @return {number} The target stress.
+     */
     export function rest_target_stress(tier: number, quality: number, race: tagRACE) {
-        let multiplier = 1
+        let multiplier = trim(1 - quality / 500, 0.5, 1)
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
         if (race == 'graci') multiplier = 0.1
-        return Math.floor((5 - tier) * 30 * multiplier)
+        return Math.floor((100 - tier * 10) * multiplier)
     }
 }
