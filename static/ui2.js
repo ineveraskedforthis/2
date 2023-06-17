@@ -463,7 +463,7 @@ function draw(time) {
             // map.move_flag = false
         } else {
             let bar = div.querySelector('span')
-            bar.style.width = Math.floor(globals.action_time / globals.action_total_time * 10000)/ 100 + '%'
+            bar.style.width = Math.min(Math.floor(globals.action_time / globals.action_total_time * 10000)/ 100, 100) + '%'
             if (map.move_flag) {map.movement_progress = globals.action_ratio}
         }    
     }
