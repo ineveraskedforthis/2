@@ -460,9 +460,11 @@ export namespace Data {
             if (land_plots == undefined) return false
             for (let plot_id of land_plots) {
                 let plot = Buildings.from_id(plot_id)
+                // console.log(plot)
                 if (plot.type != LandPlotType.ForestPlot) continue
                 if (plot.durability > 0) return true
             }
+            return false
         }
 
         export function has_cotton(cell: cell_id) {

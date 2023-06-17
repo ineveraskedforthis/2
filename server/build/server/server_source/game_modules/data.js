@@ -409,11 +409,13 @@ var Data;
                 return false;
             for (let plot_id of land_plots) {
                 let plot = Buildings.from_id(plot_id);
+                // console.log(plot)
                 if (plot.type != "forest_plot" /* LandPlotType.ForestPlot */)
                     continue;
                 if (plot.durability > 0)
                     return true;
             }
+            return false;
         }
         Cells.has_forest = has_forest;
         function has_cotton(cell) {

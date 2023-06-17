@@ -15,7 +15,9 @@ const FATIGUE_COST_HUNT = 5
 const FATIGUE_COST_FISH = 3
 
 function gather_wood_duration_modifier(character: Character) {
-    return 10 / CharacterSystem.phys_power(character)
+    const slice_damage = CharacterSystem.melee_damage_raw(character, 'slice')
+    const damage_mod = (1 + slice_damage.slice / 50)
+    return 10 / CharacterSystem.phys_power(character) / damage_mod
 }
 
 function hunt_duration_modifier(character: Character) {
@@ -29,6 +31,7 @@ function fishing_duration_modifier(char: Character) {
 }
 
 function gather_wood_trigger(character: Character, cell: cell_id): TriggerResponse {
+    // console.log('gather_wood_trigger')
     if (Data.Cells.has_forest(cell)) {
         return { response: "OK" }
     } else {
@@ -58,6 +61,7 @@ function fishing_trigger(character: Character, cell: cell_id) : TriggerResponse 
 }
 
 function gather_wood_effect(character: Character, cell: cell_id) {
+    // console.log('gather_wood_effect')
     Event.remove_tree(cell)
     Event.change_stash(character, WOOD, 1)
 }

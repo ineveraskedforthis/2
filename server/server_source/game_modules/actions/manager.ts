@@ -8,14 +8,12 @@ import { CharacterMapAction, TriggerResponse } from "./types"
 
 
 export namespace ActionManager {
-    export function start_action(action: CharacterMapAction, char: Character, data: [number, number]): TriggerResponse {
+    export function start_action(action: CharacterMapAction, char: Character, cell: cell_id): TriggerResponse {
         if (char.action != undefined) {
             return { response: 'ALREADY_IN_AN_ACTION' }
         }
 
-        const cell_id = Data.World.coordinate_to_id(data)
-
-        let check = action.check(char, cell_id)
+        let check = action.check(char, cell)
         if (check.response != "OK") {
             return check
         }
@@ -23,9 +21,9 @@ export namespace ActionManager {
         let duration = action.duration(char)
         Alerts.action_ping(char, duration, action.is_move||false)
         if (action.immediate) {
-            call_action(action, char, cell_id)
+            call_action(action, char, cell)
         } else {
-            action.start(char, cell_id)
+            action.start(char, cell)
 
             char.action = action
             char.action_progress = 0
@@ -53,7 +51,7 @@ export namespace ActionManager {
             if (character.action != undefined) {
                 character.action_progress += dt
                 if (character.action_progress > character.action_duration) {
-                    call_action(character.action, character, character.next_cell)
+                    call_action(character.action, character, character.next_cell||character.cell_id)
                 }
             }
         }

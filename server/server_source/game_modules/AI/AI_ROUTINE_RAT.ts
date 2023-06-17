@@ -11,7 +11,7 @@ import { AIhelper } from "./helpers"
 export function RatRoutine(char: Character) {
     if ((char.get_fatigue() > 90) || (char.get_stress() > 90)) {
         // console.log('rest')
-        ActionManager.start_action(CharacterAction.REST, char, [0, 0])
+        ActionManager.start_action(CharacterAction.REST, char, char.cell_id)
         return
     } else if (char.get_fatigue() > 50) {
         // console.log('go home')

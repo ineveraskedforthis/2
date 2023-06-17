@@ -13,6 +13,7 @@ import { SocketWrapper, User } from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
 import { CharacterMapAction, TriggerResponse } from "../../actions/types";
+import { Data } from "../../data";
 
 export namespace HandleAction {
     function response_to_alert(user: User, response: TriggerResponse) {
@@ -42,7 +43,8 @@ export namespace HandleAction {
         }
 
         const destination: [number, number] = [x, y]
-        let response = ActionManager.start_action(CharacterAction.MOVE, character, destination)
+        const cell = Data.World.coordinate_to_id(destination)
+        let response = ActionManager.start_action(CharacterAction.MOVE, character, cell)
         response_to_alert(user, response)
     }
 
@@ -53,7 +55,7 @@ export namespace HandleAction {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        const destination: [number, number] = [0, 0]
+        const destination = character.cell_id
         let response = ActionManager.start_action(action, character, destination)
         response_to_alert(user, response)
     }

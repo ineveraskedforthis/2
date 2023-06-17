@@ -126,7 +126,7 @@ function random_walk(char, constraints) {
     }
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
-        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, char, move_direction);
+        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, char, data_1.Data.World.coordinate_to_id(move_direction));
     }
 }
 exports.random_walk = random_walk;
@@ -137,7 +137,7 @@ function rat_walk(character, constraints) {
         return { item: cell, weight: (0, basic_functions_1.trim)(cell.rat_scent, 0, 5) };
     });
     let target = (0, basic_functions_1.select_weighted)(potential_moves, constraints);
-    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, [target.x, target.y]);
+    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, target.id);
 }
 exports.rat_walk = rat_walk;
 function market_walk(character) {
@@ -147,7 +147,7 @@ function market_walk(character) {
         return { item: cell, weight: cell.market_scent };
     });
     let target = (0, basic_functions_1.select_max)(potential_moves, constraints_1.simple_constraints);
-    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, [target?.x, target?.y]);
+    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, target.id);
 }
 exports.market_walk = market_walk;
 function urban_walk(character) {
@@ -166,12 +166,12 @@ function rat_go_home(character, constraints) {
         }
         else {
             // console.log('keep moving')
-            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, [target.x, target.y]);
+            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, target.id);
         }
 }
 exports.rat_go_home = rat_go_home;
 function rest_outside(character) {
-    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.REST, character, [0, 0]);
+    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.REST, character, character.cell_id);
 }
 exports.rest_outside = rest_outside;
 function roll_price_belief_sell_increase(character, material, probability) {

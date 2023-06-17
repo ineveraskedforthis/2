@@ -11,6 +11,7 @@ const inventory_events_1 = require("../../events/inventory_events");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
+const data_1 = require("../../data");
 var HandleAction;
 (function (HandleAction) {
     function response_to_alert(user, response) {
@@ -40,7 +41,8 @@ var HandleAction;
             return;
         }
         const destination = [x, y];
-        let response = manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, destination);
+        const cell = data_1.Data.World.coordinate_to_id(destination);
+        let response = manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, cell);
         response_to_alert(user, response);
     }
     HandleAction.move = move;
@@ -52,7 +54,7 @@ var HandleAction;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        const destination = [0, 0];
+        const destination = character.cell_id;
         let response = manager_1.ActionManager.start_action(action, character, destination);
         response_to_alert(user, response);
     }

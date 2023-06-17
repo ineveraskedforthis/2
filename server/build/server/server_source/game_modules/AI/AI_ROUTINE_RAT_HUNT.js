@@ -66,7 +66,7 @@ function RatHunterRoutine(character) {
         return;
     }
     if ((character.stash.get(materials_manager_1.FOOD) > 0) && (0, triggers_1.low_hp)(character)) {
-        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.EAT, character, [0, 0]);
+        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.EAT, character, character.cell_id);
         return;
     }
     // finding rats if nothing else is needed

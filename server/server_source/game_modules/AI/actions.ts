@@ -146,7 +146,10 @@ export function random_walk(char: Character, constraints: (cell: Cell) => boolea
     }
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)]
-        ActionManager.start_action(CharacterAction.MOVE, char, move_direction)  
+        ActionManager.start_action(
+            CharacterAction.MOVE, 
+            char, 
+            Data.World.coordinate_to_id(move_direction))  
     }
 }
 
@@ -157,7 +160,7 @@ export function rat_walk(character: Character, constraints: (cell: Cell) => bool
         return {item: cell, weight: trim(cell.rat_scent, 0, 5)}
     })
     let target = select_weighted(potential_moves, constraints)
-    ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
+    ActionManager.start_action(CharacterAction.MOVE, character, target.id)
 }
 
 export function market_walk(character: Character) {
@@ -167,7 +170,7 @@ export function market_walk(character: Character) {
         return {item: cell, weight: cell.market_scent}
     })
     let target = select_max(potential_moves, simple_constraints)
-    ActionManager.start_action(CharacterAction.MOVE, character, [target?.x, target?.y])
+    ActionManager.start_action(CharacterAction.MOVE, character, target.id)
 }
 
 export function urban_walk(character: Character) {
@@ -186,13 +189,13 @@ export function rat_go_home(character: Character, constraints: (cell: Cell) => b
         // ActionManager.start_action(CharacterAction.REST, character, [cell.x, cell.y])
     } else {
         // console.log('keep moving')
-        ActionManager.start_action(CharacterAction.MOVE, character, [target.x, target.y])
+        ActionManager.start_action(CharacterAction.MOVE, character, target.id)
     }
 }
 
 
 export function rest_outside(character: Character) {
-    ActionManager.start_action(CharacterAction.REST, character, [0, 0]);
+    ActionManager.start_action(CharacterAction.REST, character, character.cell_id);
 }
 
 export function roll_price_belief_sell_increase(character: Character, material: material_index, probability: number) {

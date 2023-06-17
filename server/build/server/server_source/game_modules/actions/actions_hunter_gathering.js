@@ -14,7 +14,9 @@ const FATIGUE_COST_COTTON = 1;
 const FATIGUE_COST_HUNT = 5;
 const FATIGUE_COST_FISH = 3;
 function gather_wood_duration_modifier(character) {
-    return 10 / system_1.CharacterSystem.phys_power(character);
+    const slice_damage = system_1.CharacterSystem.melee_damage_raw(character, 'slice');
+    const damage_mod = (1 + slice_damage.slice / 50);
+    return 10 / system_1.CharacterSystem.phys_power(character) / damage_mod;
 }
 function hunt_duration_modifier(character) {
     const skill = system_1.CharacterSystem.skill(character, 'hunt');
@@ -25,6 +27,7 @@ function fishing_duration_modifier(char) {
     return (150 - skill) / 100;
 }
 function gather_wood_trigger(character, cell) {
+    // console.log('gather_wood_trigger')
     if (data_1.Data.Cells.has_forest(cell)) {
         return { response: "OK" };
     }
@@ -57,6 +60,7 @@ function fishing_trigger(character, cell) {
     }
 }
 function gather_wood_effect(character, cell) {
+    // console.log('gather_wood_effect')
     events_1.Event.remove_tree(cell);
     events_1.Event.change_stash(character, materials_manager_1.WOOD, 1);
 }

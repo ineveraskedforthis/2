@@ -6,22 +6,21 @@ const alerts_1 = require("../client_communication/network_actions/alerts");
 const data_1 = require("../data");
 var ActionManager;
 (function (ActionManager) {
-    function start_action(action, char, data) {
+    function start_action(action, char, cell) {
         if (char.action != undefined) {
             return { response: 'ALREADY_IN_AN_ACTION' };
         }
-        const cell_id = data_1.Data.World.coordinate_to_id(data);
-        let check = action.check(char, cell_id);
+        let check = action.check(char, cell);
         if (check.response != "OK") {
             return check;
         }
         let duration = action.duration(char);
         alerts_1.Alerts.action_ping(char, duration, action.is_move || false);
         if (action.immediate) {
-            call_action(action, char, cell_id);
+            call_action(action, char, cell);
         }
         else {
-            action.start(char, cell_id);
+            action.start(char, cell);
             char.action = action;
             char.action_progress = 0;
             char.action_duration = duration;
@@ -47,7 +46,7 @@ var ActionManager;
             if (character.action != undefined) {
                 character.action_progress += dt;
                 if (character.action_progress > character.action_duration) {
-                    call_action(character.action, character, character.next_cell);
+                    call_action(character.action, character, character.next_cell || character.cell_id);
                 }
             }
         }

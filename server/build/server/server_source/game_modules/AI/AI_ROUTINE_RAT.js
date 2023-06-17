@@ -11,7 +11,7 @@ const helpers_1 = require("./helpers");
 function RatRoutine(char) {
     if ((char.get_fatigue() > 90) || (char.get_stress() > 90)) {
         // console.log('rest')
-        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.REST, char, [0, 0]);
+        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.REST, char, char.cell_id);
         return;
     }
     else if (char.get_fatigue() > 50) {

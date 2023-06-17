@@ -34,7 +34,7 @@ export namespace AIactions {
             EventMarket.buy(character, item.material, item.amount, item.price);
         }
 
-        ActionManager.start_action(craft_actions[craft.id], character, [0, 0]);
+        ActionManager.start_action(craft_actions[craft.id], character, character.cell_id);
     }
 
     export function make_armour(character: Character, price_skin: money) {
@@ -54,11 +54,11 @@ export namespace AIactions {
         if (resource > 10) {
             const flags = check_if_set_is_ready(character);
             if (!flags.body)
-                ActionManager.start_action(craft_actions[CraftItem.RatSkin.armour.id], character, [0, 0]);
+                ActionManager.start_action(craft_actions[CraftItem.RatSkin.armour.id], character, character.cell_id);
             else if (!flags.legs)
-                ActionManager.start_action(craft_actions[CraftItem.RatSkin.pants.id], character, [0, 0]);
+                ActionManager.start_action(craft_actions[CraftItem.RatSkin.pants.id], character, character.cell_id);
             else if (!flags.foot)
-                ActionManager.start_action(craft_actions[CraftItem.RatSkin.boots.id], character, [0, 0]);
+                ActionManager.start_action(craft_actions[CraftItem.RatSkin.boots.id], character, character.cell_id);
             else
                 sell_armour_set(character, price_skin);
         }
@@ -129,11 +129,11 @@ export namespace AIactions {
         if (resource > 20) {
             const dice = Math.random();
             if (dice < 0.5)
-                ActionManager.start_action(craft_actions[CraftItem.Wood.spear.id], character, [0, 0]);
+                ActionManager.start_action(craft_actions[CraftItem.Wood.spear.id], character, character.cell_id);
             else if (dice < 0.8)
-                ActionManager.start_action(craft_actions[CraftItem.Wood.mace.id], character, [0, 0]);
+                ActionManager.start_action(craft_actions[CraftItem.Wood.mace.id], character, character.cell_id);
             else
-                ActionManager.start_action(craft_actions[CraftItem.Wood.bow.id], character, [0, 0]);
+                ActionManager.start_action(craft_actions[CraftItem.Wood.bow.id], character, character.cell_id);
         }
 
         sell_weapons(character);
@@ -154,7 +154,7 @@ export namespace AIactions {
         if (resource > 20) {
             const dice = Math.random();
             if (dice < 1)
-                ActionManager.start_action(craft_actions[CraftItem.Bone.dagger.id], character, [0, 0]);
+                ActionManager.start_action(craft_actions[CraftItem.Bone.dagger.id], character, character.cell_id);
         }
 
         sell_weapons(character);
@@ -174,7 +174,7 @@ export namespace AIactions {
         if (resource > 10) {
             const dice = Math.random();
             if (dice < 1)
-                ActionManager.start_action(craft_actions[CraftItem.RatSkin.boots.id], character, [0, 0]);
+                ActionManager.start_action(craft_actions[CraftItem.RatSkin.boots.id], character, character.cell_id);
         }
 
         sell_armour_set(character, skin_price);
