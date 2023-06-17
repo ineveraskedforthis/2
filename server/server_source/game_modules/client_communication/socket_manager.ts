@@ -9,7 +9,7 @@ import { Validator } from "./network_actions/common_validations";
 import { Alerts } from "./network_actions/alerts";
 import { MapSystem } from "../map/system";
 import { HandleAction } from "./network_actions/actions";
-import { CharacterAction } from "../action_types";
+import { CharacterAction } from "../actions/actions_00";
 import { SocketCommand } from "./network_actions/run_event";
 import { Convert } from "../systems_communication";
 import { ModelVariant, tagModel, tagRACE } from "../types";

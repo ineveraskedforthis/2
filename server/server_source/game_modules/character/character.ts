@@ -3,13 +3,13 @@ import {Stash} from "../inventories/stash"
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { Archetype, building_id, char_id, InnateStats, map_position, ModelVariant, Stats, Status, status_type, TEMP_USER_ID, user_id } from "../types";
-import { ActionTargeted } from "../CharacterActionResponce";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
 import { AIstate } from "./AIstate";
 import { material_index } from "../manager_classes/materials_manager";
 import { PerksTable } from "../../../../shared/character";
 import { cell_id, money } from "../../../../shared/common";
+import { CharacterMapAction } from "../actions/types";
 
 export class Character {
     id: char_id;
@@ -39,13 +39,13 @@ export class Character {
 
     archetype: Archetype
     explored: boolean[];
-    next_cell: map_position
+    next_cell: cell_id
 
     ai_state: AIstate;
     ai_price_belief_sell: Map<material_index, money>;
     ai_price_belief_buy: Map<material_index, money>;
 
-    action: ActionTargeted|undefined
+    action: CharacterMapAction|undefined
     action_progress: number
     action_duration: number
 
@@ -60,7 +60,7 @@ export class Character {
         this.battle_unit_id = battle_unit_id as unit_id
         this.user_id = user_id
         this.cell_id = cell_id
-        this.next_cell = [0, 0]
+        this.next_cell = 0 as cell_id
 
         this.name = name
 

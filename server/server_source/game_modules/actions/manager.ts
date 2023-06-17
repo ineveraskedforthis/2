@@ -1,32 +1,31 @@
+import { cell_id } from "@custom_types/common"
 import { Character } from "../character/character"
 // import { attack } from "./attack"
 import { Alerts } from "../client_communication/network_actions/alerts"
 import { Data } from "../data"
-import { ActionTargeted, CharacterActionResponce } from "../CharacterActionResponce";
+import { CharacterMapAction, TriggerResponse } from "./types"
 
-export function dummy_duration(char: Character) {
-    return 0.5;
-}
-
-export function dummy_start(char: Character) {}
 
 
 export namespace ActionManager {
-    export function start_action(action: ActionTargeted, char: Character, data: [number, number]) {
+    export function start_action(action: CharacterMapAction, char: Character, data: [number, number]): TriggerResponse {
         if (char.action != undefined) {
-            return CharacterActionResponce.ALREADY_IN_ACTION
+            return { response: 'ALREADY_IN_AN_ACTION' }
         }
-        let check = action.check(char, data)
-        if (check != CharacterActionResponce.OK) {
+
+        const cell_id = Data.World.coordinate_to_id(data)
+
+        let check = action.check(char, cell_id)
+        if (check.response != "OK") {
             return check
         }
         
         let duration = action.duration(char)
         Alerts.action_ping(char, duration, action.is_move||false)
         if (action.immediate) {
-            call_action(action, char, data)
+            call_action(action, char, cell_id)
         } else {
-            action.start(char, data)
+            action.start(char, cell_id)
 
             char.action = action
             char.action_progress = 0
@@ -35,14 +34,14 @@ export namespace ActionManager {
         return check
     }
 
-    export function call_action(action: ActionTargeted, char: Character, data: [number, number]): CharacterActionResponce {
+    export function call_action(action: CharacterMapAction, char: Character, cell_id: cell_id): TriggerResponse {
         char.action = undefined
         char.action_duration = 0
         char.action_progress = 0
 
-        let check = action.check(char, data)
-        if (check == CharacterActionResponce.OK) {
-            return action.result(char, data)
+        let check = action.check(char, cell_id)
+        if (check.response == "OK") {
+            action.result(char, cell_id)
         }
         return check
     }

@@ -1,4 +1,4 @@
-import { ActionTargeted } from "../CharacterActionResponce";
+import { CharacterMapAction } from "../actions/types";
 import { skill } from "../character/SkillList";
 import { ItemJson } from "../items/item";
 import { material_index } from "../manager_classes/materials_manager";
@@ -26,4 +26,4 @@ export interface CraftItem {
 
 export let crafts_bulk: { [_: string]: CraftBulk; } = {};
 export let crafts_items: { [_: string]: CraftItem; } = {};
-export let craft_actions: { [_: string]: ActionTargeted; } = {};
+export let craft_actions: { [_: string]: CharacterMapAction; } = {};

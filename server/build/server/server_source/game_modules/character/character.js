@@ -14,7 +14,7 @@ class Character {
         this.battle_unit_id = battle_unit_id;
         this.user_id = user_id;
         this.cell_id = cell_id;
-        this.next_cell = [0, 0];
+        this.next_cell = 0;
         this.name = name;
         this.archetype = Object.assign({}, archetype);
         this.current_building = undefined;

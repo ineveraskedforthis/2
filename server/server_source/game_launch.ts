@@ -11,7 +11,7 @@ import { UserManagement } from "./game_modules/client_communication/user_manager
 
 
 // import { http, io_type } from "./server";
-import { ActionManager } from "./game_modules/actions/action_manager";
+import { ActionManager } from "./game_modules/actions/manager";
 import { Auth } from "./game_modules/client_communication/network_actions/auth";
 import { Event } from "./game_modules/events/events";
 import { Convert, Link } from "./game_modules/systems_communication";

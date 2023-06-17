@@ -1,7 +1,6 @@
 import { battle_position, unit_id } from "../../../../../shared/battle_data";
-import { ActionManager } from "../../actions/action_manager";
-import { CharacterAction } from "../../action_types";
-import { ActionTargeted, CharacterActionResponce } from "../../CharacterActionResponce";
+import { ActionManager } from "../../actions/manager";
+import { CharacterAction } from "../../actions/actions_00";
 import { Battle } from "../../battle/classes/battle";
 import { BattleEvent } from "../../battle/events";
 import { BattleSystem } from "../../battle/system";
@@ -10,11 +9,24 @@ import { can_dodge } from "../../character/checks";
 import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
 import { Convert } from "../../systems_communication";
-import { SocketWrapper } from "../user";
+import { SocketWrapper, User } from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
+import { CharacterMapAction, TriggerResponse } from "../../actions/types";
 
 export namespace HandleAction {
+    function response_to_alert(user: User, response: TriggerResponse) {
+        switch(response.response) {
+            case "TIRED": return 
+            case "NO_RESOURCE": return Alerts.not_enough_to_user(user, 'something', undefined, undefined, undefined)
+            case "IN_BATTLE": return Alerts.in_battle(user)
+            case "OK": return
+            case "ZERO_MOTION": return Alerts.impossible_move(user)
+            case "INVALID_MOTION": return Alerts.impossible_move(user)
+            case "IMPOSSIBLE_ACTION":return 
+            case "ALREADY_IN_AN_ACTION": return 
+        }
+    }
     export function move(sw: SocketWrapper, data: {x: unknown, y: unknown}) {
         // do not handle unlogged or characterless
         if (sw.user_id == '#') return
@@ -30,17 +42,11 @@ export namespace HandleAction {
         }
 
         const destination: [number, number] = [x, y]
-
-        let responce = ActionManager.start_action(CharacterAction.MOVE, character, destination)
-
-        if (responce == CharacterActionResponce.CANNOT_MOVE_THERE) {
-            Alerts.impossible_move(user)
-        } else if (responce == CharacterActionResponce.IN_BATTLE) {
-            Alerts.in_battle(user)
-        }
+        let response = ActionManager.start_action(CharacterAction.MOVE, character, destination)
+        response_to_alert(user, response)
     }
 
-    export function act(sw: SocketWrapper, action: ActionTargeted) {
+    export function act(sw: SocketWrapper, action: CharacterMapAction) {
         // do not handle unlogged or characterless
         if (sw.user_id == '#') return
         const user = UserManagement.get_user(sw.user_id)
@@ -48,16 +54,8 @@ export namespace HandleAction {
         if (character == undefined) return
 
         const destination: [number, number] = [0, 0]
-
-        let responce = ActionManager.start_action(action, character, destination)
-
-        if (responce == CharacterActionResponce.CANNOT_MOVE_THERE) {
-            Alerts.impossible_move(user)
-        } else if (responce == CharacterActionResponce.IN_BATTLE) {
-            Alerts.in_battle(user)
-        } else if (responce == CharacterActionResponce.NO_RESOURCE) {
-            // Alerts.not_enough_to_user(user, 'Not enough local resources', 0, 0, 0)
-        }
+        let response = ActionManager.start_action(action, character, destination)
+        response_to_alert(user, response)
     }
 
     export function battle(sw:SocketWrapper, input: {action: unknown, target: unknown}) {

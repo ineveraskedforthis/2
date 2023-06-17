@@ -47,6 +47,11 @@ var Effect;
     })(Transfer = Effect.Transfer || (Effect.Transfer = {}));
     let Change;
     (function (Change) {
+        function hp(character, dx) {
+            character.change_hp(dx);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+        }
+        Change.hp = hp;
         function fatigue(character, dx) {
             let prev = character.get_fatigue();
             character.change_fatigue(dx);
@@ -68,6 +73,11 @@ var Effect;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.rage = rage;
+        function blood(character, dx) {
+            character.change_blood(dx);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+        }
+        Change.blood = blood;
         function skill(character, skill, dx) {
             character._skills[skill] += dx;
             if (character._skills[skill] > 100)

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIactions = void 0;
-const action_manager_1 = require("../actions/action_manager");
+const manager_1 = require("../actions/manager");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const helpers_1 = require("./helpers");
 const system_1 = require("../market/system");
@@ -30,7 +30,7 @@ var AIactions;
             system_1.BulkOrders.remove_by_condition(character, item.material);
             market_1.EventMarket.buy(character, item.material, item.amount, item.price);
         }
-        action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[craft.id], character, [0, 0]);
+        manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[craft.id], character, [0, 0]);
     }
     AIactions.craft_bulk = craft_bulk;
     function make_armour(character, price_skin) {
@@ -47,11 +47,11 @@ var AIactions;
         if (resource > 10) {
             const flags = check_if_set_is_ready(character);
             if (!flags.body)
-                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.armour.id], character, [0, 0]);
+                manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.armour.id], character, [0, 0]);
             else if (!flags.legs)
-                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.pants.id], character, [0, 0]);
+                manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.pants.id], character, [0, 0]);
             else if (!flags.foot)
-                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.boots.id], character, [0, 0]);
+                manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.boots.id], character, [0, 0]);
             else
                 sell_armour_set(character, price_skin);
         }
@@ -113,11 +113,11 @@ var AIactions;
         if (resource > 20) {
             const dice = Math.random();
             if (dice < 0.5)
-                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.spear.id], character, [0, 0]);
+                manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.spear.id], character, [0, 0]);
             else if (dice < 0.8)
-                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.mace.id], character, [0, 0]);
+                manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.mace.id], character, [0, 0]);
             else
-                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.bow.id], character, [0, 0]);
+                manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Wood.bow.id], character, [0, 0]);
         }
         sell_weapons(character);
     }
@@ -134,7 +134,7 @@ var AIactions;
         if (resource > 20) {
             const dice = Math.random();
             if (dice < 1)
-                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Bone.dagger.id], character, [0, 0]);
+                manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.Bone.dagger.id], character, [0, 0]);
         }
         sell_weapons(character);
     }
@@ -151,7 +151,7 @@ var AIactions;
         if (resource > 10) {
             const dice = Math.random();
             if (dice < 1)
-                action_manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.boots.id], character, [0, 0]);
+                manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[items_1.CraftItem.RatSkin.boots.id], character, [0, 0]);
         }
         sell_armour_set(character, skin_price);
     }

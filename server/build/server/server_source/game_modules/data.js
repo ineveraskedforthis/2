@@ -435,6 +435,7 @@ var Data;
         Cells.has_game = has_game;
         function has_fish(cell) {
             let cell_object = from_id(cell);
+            // console.log(cell_object.fish)
             return cell_object.fish > 0;
         }
         Cells.has_fish = has_fish;

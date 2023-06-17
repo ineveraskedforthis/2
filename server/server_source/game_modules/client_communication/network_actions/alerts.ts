@@ -21,7 +21,7 @@ export namespace Alerts {
     export function not_enough_to_user(
         user: User, 
         tag: string, 
-        current: number, 
+        current: number|undefined, 
         min: number|undefined, 
         max: number|undefined)
     {

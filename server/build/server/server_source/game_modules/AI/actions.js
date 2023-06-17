@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.update_price_beliefs = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.urban_walk = exports.market_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy_food = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
-const action_types_1 = require("../action_types");
-const action_manager_1 = require("../actions/action_manager");
+const actions_00_1 = require("../actions/actions_00");
+const manager_1 = require("../actions/manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const data_1 = require("../data");
 const market_1 = require("../events/market");
@@ -126,7 +126,7 @@ function random_walk(char, constraints) {
     }
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
-        action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, char, move_direction);
+        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, char, move_direction);
     }
 }
 exports.random_walk = random_walk;
@@ -137,7 +137,7 @@ function rat_walk(character, constraints) {
         return { item: cell, weight: (0, basic_functions_1.trim)(cell.rat_scent, 0, 5) };
     });
     let target = (0, basic_functions_1.select_weighted)(potential_moves, constraints);
-    action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target.x, target.y]);
+    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, [target.x, target.y]);
 }
 exports.rat_walk = rat_walk;
 function market_walk(character) {
@@ -147,7 +147,7 @@ function market_walk(character) {
         return { item: cell, weight: cell.market_scent };
     });
     let target = (0, basic_functions_1.select_max)(potential_moves, constraints_1.simple_constraints);
-    action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target?.x, target?.y]);
+    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, [target?.x, target?.y]);
 }
 exports.market_walk = market_walk;
 function urban_walk(character) {
@@ -166,12 +166,12 @@ function rat_go_home(character, constraints) {
         }
         else {
             // console.log('keep moving')
-            action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, [target.x, target.y]);
+            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, [target.x, target.y]);
         }
 }
 exports.rat_go_home = rat_go_home;
 function rest_outside(character) {
-    action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, character, [0, 0]);
+    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.REST, character, [0, 0]);
 }
 exports.rest_outside = rest_outside;
 function roll_price_belief_sell_increase(character, material, probability) {

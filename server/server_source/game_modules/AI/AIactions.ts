@@ -1,5 +1,5 @@
 import type { Character } from "../character/character";
-import { ActionManager } from "../actions/action_manager";
+import { ActionManager } from "../actions/manager";
 import { RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
 import { AIhelper } from "./helpers";
 import { BulkOrders } from "../market/system";

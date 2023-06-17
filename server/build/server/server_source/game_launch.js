@@ -32,7 +32,7 @@ const system_1 = require("./game_modules/character/system");
 const system_2 = require("./game_modules/map/system");
 const user_manager_1 = require("./game_modules/client_communication/user_manager");
 // import { http, io_type } from "./server";
-const action_manager_1 = require("./game_modules/actions/action_manager");
+const manager_1 = require("./game_modules/actions/manager");
 const auth_1 = require("./game_modules/client_communication/network_actions/auth");
 const events_1 = require("./game_modules/events/events");
 const systems_communication_1 = require("./game_modules/systems_communication");
@@ -146,7 +146,7 @@ function update(delta, http_server) {
         process.exit(0);
     }
     system_1.CharacterSystem.update(delta);
-    action_manager_1.ActionManager.update_characters(delta);
+    manager_1.ActionManager.update_characters(delta);
     user_manager_1.UserManagement.update_users();
     system_3.BattleSystem.update(delta * 1000);
     let rats = 0;

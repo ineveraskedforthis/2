@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HandleAction = void 0;
-const action_manager_1 = require("../../actions/action_manager");
-const action_types_1 = require("../../action_types");
+const manager_1 = require("../../actions/manager");
+const actions_00_1 = require("../../actions/actions_00");
 const events_1 = require("../../battle/events");
 const system_1 = require("../../battle/system");
 // import { Perks } from "../../character/Perks";
@@ -13,6 +13,18 @@ const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
 var HandleAction;
 (function (HandleAction) {
+    function response_to_alert(user, response) {
+        switch (response.response) {
+            case "TIRED": return;
+            case "NO_RESOURCE": return alerts_1.Alerts.not_enough_to_user(user, 'something', undefined, undefined, undefined);
+            case "IN_BATTLE": return alerts_1.Alerts.in_battle(user);
+            case "OK": return;
+            case "ZERO_MOTION": return alerts_1.Alerts.impossible_move(user);
+            case "INVALID_MOTION": return alerts_1.Alerts.impossible_move(user);
+            case "IMPOSSIBLE_ACTION": return;
+            case "ALREADY_IN_AN_ACTION": return;
+        }
+    }
     function move(sw, data) {
         // do not handle unlogged or characterless
         if (sw.user_id == '#')
@@ -28,13 +40,8 @@ var HandleAction;
             return;
         }
         const destination = [x, y];
-        let responce = action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.MOVE, character, destination);
-        if (responce == 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */) {
-            alerts_1.Alerts.impossible_move(user);
-        }
-        else if (responce == 2 /* CharacterActionResponce.IN_BATTLE */) {
-            alerts_1.Alerts.in_battle(user);
-        }
+        let response = manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, destination);
+        response_to_alert(user, response);
     }
     HandleAction.move = move;
     function act(sw, action) {
@@ -46,16 +53,8 @@ var HandleAction;
         if (character == undefined)
             return;
         const destination = [0, 0];
-        let responce = action_manager_1.ActionManager.start_action(action, character, destination);
-        if (responce == 0 /* CharacterActionResponce.CANNOT_MOVE_THERE */) {
-            alerts_1.Alerts.impossible_move(user);
-        }
-        else if (responce == 2 /* CharacterActionResponce.IN_BATTLE */) {
-            alerts_1.Alerts.in_battle(user);
-        }
-        else if (responce == 3 /* CharacterActionResponce.NO_RESOURCE */) {
-            // Alerts.not_enough_to_user(user, 'Not enough local resources', 0, 0, 0)
-        }
+        let response = manager_1.ActionManager.start_action(action, character, destination);
+        response_to_alert(user, response);
     }
     HandleAction.act = act;
     function battle(sw, input) {

@@ -484,6 +484,7 @@ export namespace Data {
 
         export function has_fish(cell: cell_id) {
             let cell_object = from_id(cell)
+            // console.log(cell_object.fish)
             return cell_object.fish > 0
         }
 

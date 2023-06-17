@@ -1,11 +1,6 @@
-import { move } from './actions/move';
-import { eat } from "./actions/eat";
-import { clean } from './actions/clean';
-import { proper_rest, rest } from "./actions/rest";
-import { fish, hunt } from "./actions/hunt";
-import { gather_cotton, gather_wood } from "./actions/gather";
-
-
+import { move } from './actions_move';
+import { fish, gather_cotton, gather_wood, hunt } from './actions_hunter_gathering';
+import { clean, eat, rest } from './actions_self';
 
 export namespace CharacterAction {
     export const MOVE = move;

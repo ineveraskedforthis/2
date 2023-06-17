@@ -1,5 +1,5 @@
-import { CharacterAction } from "../action_types"
-import { ActionManager } from "../actions/action_manager"
+import { CharacterAction } from "../actions/actions_00"
+import { ActionManager } from "../actions/manager"
 import { Character } from "../character/character"
 import { Event } from "../events/events"
 import { Convert } from "../systems_communication"

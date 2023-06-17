@@ -1,7 +1,7 @@
 import { money } from "@custom_types/common";
 import { rooms } from "../DATA_LAYOUT_BUILDING";
-import { CharacterAction } from "../action_types";
-import { ActionManager } from "../actions/action_manager";
+import { CharacterAction } from "../actions/actions_00";
+import { ActionManager } from "../actions/manager";
 import { select_max, select_weighted, trim } from "../calculations/basic_functions";
 import { Character } from "../character/character";
 import { Data } from "../data";

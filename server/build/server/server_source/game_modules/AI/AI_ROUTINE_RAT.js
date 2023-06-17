@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RatRoutine = void 0;
-const action_types_1 = require("../action_types");
-const action_manager_1 = require("../actions/action_manager");
+const actions_00_1 = require("../actions/actions_00");
+const manager_1 = require("../actions/manager");
 const events_1 = require("../events/events");
 const systems_communication_1 = require("../systems_communication");
 const actions_1 = require("./actions");
@@ -11,7 +11,7 @@ const helpers_1 = require("./helpers");
 function RatRoutine(char) {
     if ((char.get_fatigue() > 90) || (char.get_stress() > 90)) {
         // console.log('rest')
-        action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.REST, char, [0, 0]);
+        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.REST, char, [0, 0]);
         return;
     }
     else if (char.get_fatigue() > 50) {

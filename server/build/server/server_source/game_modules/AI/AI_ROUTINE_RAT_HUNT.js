@@ -2,8 +2,8 @@
 // This file is an attempt to make a simple instruction for agents
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RatHunterRoutine = void 0;
-const action_manager_1 = require("../actions/action_manager");
-const action_types_1 = require("../action_types");
+const manager_1 = require("../actions/manager");
+const actions_00_1 = require("../actions/actions_00");
 const events_1 = require("../events/events");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
@@ -66,7 +66,7 @@ function RatHunterRoutine(character) {
         return;
     }
     if ((character.stash.get(materials_manager_1.FOOD) > 0) && (0, triggers_1.low_hp)(character)) {
-        action_manager_1.ActionManager.start_action(action_types_1.CharacterAction.EAT, character, [0, 0]);
+        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.EAT, character, [0, 0]);
         return;
     }
     // finding rats if nothing else is needed

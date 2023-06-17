@@ -1,7 +1,7 @@
 // This file is an attempt to make a simple instruction for agents
 
-import { ActionManager } from "../actions/action_manager";
-import { CharacterAction } from "../action_types";
+import { ActionManager } from "../actions/manager";
+import { CharacterAction } from "../actions/actions_00";
 import { Character } from "../character/character";
 import { Event } from "../events/events";
 import { FOOD } from "../manager_classes/materials_manager";
