@@ -43,6 +43,13 @@ class Character {
     set_model_variation(data) {
         this.model_variation = data;
     }
+    /**
+     * Changes the status of a given type by a specified amount and returns a boolean indicating success.
+     *
+     * @param {status_type} type - the type of status to change
+     * @param {number} x - the amount to change the status by
+     * @return {boolean} true if the status was successfully changed, false if the new value is the same as the old value
+     */
     change(type, x) {
         let tmp = this.status[type];
         let new_status = tmp + x;
@@ -59,12 +66,31 @@ class Character {
     change_blood(x) {
         return this.change('blood', x);
     }
+    /**
+     * Changes the fatigue level by the given amount.
+     *
+     * @param {number} x - The amount to change the fatigue level by.
+     * @return {boolean} - False if fatigue was not changed, true if it was.
+     */
     change_fatigue(x) {
         return this.change('fatigue', x);
     }
+    /**
+     * Changes the stress level by the given amount.
+     *
+     * @param {number} x - The amount to change the stress level by.
+     * @return {boolean} - False if stress was not changed, true if it was.
+     */
     change_stress(x) {
         return this.change('stress', x);
     }
+    /**
+    * Sets the value of a status type to a given number.
+    *
+    * @param {status_type} type - The type of status to set.
+    * @param {number} x - The value to set the status to.
+    * @return {boolean} Returns true if the value was set successfully, false if the value had not changed.
+    */
     set(type, x) {
         if (this.status[type] == x)
             return false;

@@ -50,33 +50,34 @@ export namespace Effect {
 
     export namespace Change {
         export function hp(character: Character, dx: number) {
-            character.change_hp(dx)
+            if (character.change_hp(dx)) return;
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
         export function fatigue(character: Character, dx: number) {
             let prev = character.get_fatigue()
-            character.change_fatigue(dx)
+            let flag = character.change_fatigue(dx)
             let current = character.get_fatigue()
             let change = current - prev
             if ((dx - change > 0)) {
                 stress(character, dx - change)
             }
-            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            
+            if (!flag) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
         export function stress(character: Character, dx: number) {
-            character.change_stress(dx)
+            if (character.change_stress(dx)) return;
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
         export function rage(character: Character, dx: number) {
-            character.change_rage(dx)
+            if (character.change_rage(dx)) return;
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
         export function blood(character: Character, dx: number) {
-            character.change_blood(dx)
+            if (character.change_blood(dx)) return;
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 

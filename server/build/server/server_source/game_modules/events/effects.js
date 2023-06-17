@@ -48,33 +48,38 @@ var Effect;
     let Change;
     (function (Change) {
         function hp(character, dx) {
-            character.change_hp(dx);
+            if (character.change_hp(dx))
+                return;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.hp = hp;
         function fatigue(character, dx) {
             let prev = character.get_fatigue();
-            character.change_fatigue(dx);
+            let flag = character.change_fatigue(dx);
             let current = character.get_fatigue();
             let change = current - prev;
             if ((dx - change > 0)) {
                 stress(character, dx - change);
             }
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+            if (!flag)
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.fatigue = fatigue;
         function stress(character, dx) {
-            character.change_stress(dx);
+            if (character.change_stress(dx))
+                return;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.stress = stress;
         function rage(character, dx) {
-            character.change_rage(dx);
+            if (character.change_rage(dx))
+                return;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.rage = rage;
         function blood(character, dx) {
-            character.change_blood(dx);
+            if (character.change_blood(dx))
+                return;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.blood = blood;
