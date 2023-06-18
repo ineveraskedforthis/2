@@ -716,6 +716,7 @@ export namespace BattleImage {
 
     export function draw(dt: number) {
         battle_canvas_context.clearRect(0, 0, w, h);
+        draw_background()
         
         UnitsQueueManagement.draw(battle_canvas_context)
         //handle_events
@@ -728,7 +729,7 @@ export namespace BattleImage {
             background_flag = true;
         } 
 
-        draw_background()    
+         
         draw_units(dt)
         draw_anchor()
     }

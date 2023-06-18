@@ -72,9 +72,7 @@ exports.new_craft_bulk = new_craft_bulk;
 function get_crafts_bulk_list(character) {
     let list = [];
     for (let item of Object.values(crafts_storage_1.crafts_bulk)) {
-        if (output_bulk(character, item).length > 0) {
-            list.push(item);
-        }
+        list.push(item);
     }
     return list;
 }

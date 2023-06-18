@@ -252,7 +252,7 @@ export class RangedAttackEvent extends BattleImageEvent {
         const projy = A.y * (1 - t) + B.y * (t);
         battle_canvas_context.beginPath();
         battle_canvas_context.fillStyle = "rgba(200, 0, 0, 0.5)";
-        battle_canvas_context.arc(projx, projy, 10, 0, 2 * Math.PI);
+        battle_canvas_context.arc(projx, projy, 50, 0, 2 * Math.PI);
         battle_canvas_context.fill();
         if (this.time_passed <= STAND_UNTIL) {
             attacker.a_image.set_action('idle');

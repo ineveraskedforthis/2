@@ -656,6 +656,7 @@ export var BattleImage;
     BattleImage.draw_units = draw_units;
     function draw(dt) {
         battle_canvas_context.clearRect(0, 0, w, h);
+        draw_background();
         UnitsQueueManagement.draw(battle_canvas_context);
         //handle_events
         update(dt);
@@ -665,7 +666,6 @@ export var BattleImage;
             ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
             background_flag = true;
         }
-        draw_background();
         draw_units(dt);
         draw_anchor();
     }
