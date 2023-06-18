@@ -302,17 +302,22 @@ div {
 
 #goods_stash {
     display: flex;
-    flex-direction: row;
-    padding: 20px;
+    flex-wrap: wrap;
+    padding: 5px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    height: 100%;
 }
 
+.overflow-y {
+    overflow-y: scroll;
+}
 
 .goods_type_stash {
     position: relative;
-    width: auto;
-    height: auto;
-    padding: 5px;
-    margin: 2px;
+    width: 50px;
+    height: 50px;
+    margin: 5px;
     border: white 1px solid;
     background-color: rgb(206, 156, 164);
     color: rgb(60, 7, 7);
@@ -468,9 +473,21 @@ div {
 }
 
 .goods_icon {
-    width: 50px;
-    height: 30px;
     background-repeat: no-repeat;
+    background-position: center;
+    background-size: initial;
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    /* padding: 10px; */
+}
+
+.small_square {
+    width:30px;
+    height:30px;
+}
+.fill_container {
+    width: 100%;
+    height: 100%;
 }
 
 

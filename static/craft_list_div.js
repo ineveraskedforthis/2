@@ -8,8 +8,8 @@ function construct_craft_inputs(inputs) {
     const inputs_div = document.createElement('div');
     for (let input of inputs) {
         const input_div = document.createElement('div');
-        input_div.classList.add('goods_icon');
-        input_div.style = `background: no-repeat left/contain url(/static/img/stash_${stash_id_to_tag[input.material]}.png);`;
+        input_div.classList.add(... ['goods_icon', 'small_square']);
+        input_div.style.backgroundImage = `url(/static/img/stash_${stash_id_to_tag[input.material]}.png`;
         input_div.innerHTML = input.amount;
         inputs_div.appendChild(input_div);
     }
@@ -46,7 +46,7 @@ function construct_craft_div(data) {
     for (let output of data.output) {
         const output_div = document.createElement('div');
         output_div.classList.add('material_id' + output.material);
-        output_div.classList.add('goods_icon');
+        output_div.classList.add(... ['goods_icon', 'small_square']);
         output_div.style = `background: no-repeat left/contain url(/static/img/stash_${stash_id_to_tag[output.material]}.png);`;
         outputs_div.appendChild(output_div);
     }

@@ -1,16 +1,33 @@
 import { stash_id_to_tag } from "../../bulk_tags.js";
 import { socket } from "../../modules/globals.js";
-import { edit_ItemBulkLine, new_ItemBulkLine, new_ItemBulkLineHeader, sort_market } from "../ItemBulkLine/line_bulk.js";
+import { edit_ItemBulkLine, new_ItemBulkLine, new_ItemBulkLineHeader } from "../ItemBulkLine/line_bulk.js";
+import { ListField, generate_header } from "../List/header.js";
+import { new_list, sort_number, sort_string} from "../List/list.js";
 
-let market_div = document.querySelector('.goods_list')!;
+const fields: ListField[] = [
+    {name: 'Icon',          field: 'goods_icon',                sortable: false, type: 'image'},
+    {name: 'Good',          field: 'goods_name',                sortable: true,  type: 'text'},
+    {name: 'Buy Price',     field: 'goods_avg_buy_price',       sortable: true,  type: 'number'},
+    {name: 'Sell Price',    field: 'goods_avg_sell_price',      sortable: true,  type: 'number'},
+    {name: 'Amount',        field: 'goods_amount_in_inventory', sortable: true,  type: 'number'},
+    {name: 'Action',        field: 'order_actions',             sortable: false, type: 'button'}
+]
+
+
+let market_div = document.querySelector('.goods_list')! as HTMLDivElement;
 let market_div_header = document.querySelector('.goods_list_header')!;
 let clear_orders_button = document.getElementById('clear_orders_button')!;
 let clear_auction_orders_button = document.getElementById('clear_auction_orders_button')!;
-let current_sort_var: { field: string, direction: 'asc' | 'desc' } = { field: 'goods_name', direction: 'asc' };
+// let current_sort_var: { field: string, direction: 'asc' | 'desc' } = { field: 'goods_name', direction: 'asc' };
+const market_list = new_list(market_div)
+
 
 clear_orders_button.onclick = () => socket.emit('clear-orders');
 clear_auction_orders_button.onclick = () => socket.emit('clear-item-orders');
-market_div_header.appendChild(new_ItemBulkLineHeader(<HTMLElement>market_div, current_sort_var))
+market_div_header.appendChild(new_ItemBulkLineHeader(market_list))
+// market_div_header.appendChild(generate_header(market_list, fields))
+
+
 
 
 export function update_market(
@@ -50,7 +67,13 @@ export function update_market(
         market_div.appendChild(new_ItemBulkLine(tag, item.price, item.price, item.amount, item.id));
     }
 
-    sort_market(<HTMLElement>market_div, 'keep', current_sort_var, 'keep');
+    if (market_list.sorted_field == 'goods_name') {
+        sort_string(market_list)
+    } else {
+        sort_number(market_list)
+    }
+
+    // sort_market(<HTMLElement>market_div, 'keep', current_sort_var, 'keep');
 }
 
 {

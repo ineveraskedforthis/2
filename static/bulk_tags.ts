@@ -41,8 +41,8 @@ export function update_tags(msg: {[key: string]: number}) {
 
             {
                 let div_image = document.createElement('div') as HTMLDivElement;
-                div_image.classList.add('goods_icon');
-                div_image.style.background = "no-repeat right/contain url(/static/img/stash_" + tag + ".png)";
+                div_image.classList.add(... ['goods_icon', 'fill_container']);
+                div_image.style.backgroundImage = `url(/static/img/stash_${tag}.png)`;
                 div_cell.appendChild(div_image);
             }
 
