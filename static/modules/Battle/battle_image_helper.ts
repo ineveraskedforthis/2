@@ -36,10 +36,10 @@ export namespace position_c {
         return {x: x * a.x, y: x * a.y} as Type
     }
 
-    export function battle_to_canvas(pos: battle_position) {
+    export function battle_to_canvas(pos: battle_position, camera: canvas_position) {
         let centre = {x: pos.y, y: pos.x};
-        centre.x = -centre.x * BATTLE_SCALE + w / 2;
-        centre.y = centre.y * BATTLE_SCALE + h / 2;
+        centre.x = -centre.x * BATTLE_SCALE + w / 2 + camera.x;
+        centre.y = centre.y * BATTLE_SCALE + h / 2 + camera.y;
         return raw_to_canvas(centre)
     }
 

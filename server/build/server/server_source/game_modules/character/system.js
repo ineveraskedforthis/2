@@ -20,7 +20,7 @@ var CharacterSystem;
         data_1.Data.CharacterDB.increase_id();
         if (name == undefined)
             name = template.name_generator();
-        let character = new character_1.Character(data_1.Data.CharacterDB.id(), -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
+        let character = new character_1.Character(data_1.Data.CharacterDB.id(), undefined, undefined, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
         character.stats.base_resists = damage_types_1.DmgOps.add(character.stats.base_resists, template.base_resists);
         data_1.Data.CharacterDB.set(data_1.Data.CharacterDB.id(), character);
         character.explored[cell_id] = true;

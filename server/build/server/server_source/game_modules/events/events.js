@@ -442,11 +442,15 @@ var Event;
         market_1.EventMarket.clear_orders(character);
         const user_data = systems_communication_1.Convert.character_to_user_data(character);
         systems_communication_1.Unlink.user_data_and_character(user_data, character);
-        const battle = systems_communication_1.Convert.character_to_battle(character);
-        systems_communication_1.Unlink.character_and_battle(character, battle);
+        // const battle = Convert.character_to_battle(character)
+        // if (battle != undefined) {
+        //     let unit = Convert.character_to_unit(character)
+        //     // BattleEvent.Leave(battle, unit)
+        // }
+        // Unlink.character_and_battle(character)
         // const cell = Convert.character_to_cell(character)
         // cell.changed_characters = true
-        systems_communication_1.Link.character_and_cell(character.id, GRAVEYARD_CELL);
+        // Link.character_and_cell(character.id, GRAVEYARD_CELL)
         character.cleared = true;
     }
     Event.death = death;
@@ -494,15 +498,11 @@ var Event;
         const battle = systems_communication_1.Convert.character_to_battle(defender);
         const unit_def = systems_communication_1.Convert.character_to_unit(defender);
         if ((battle != undefined) && (unit_def != undefined)) {
-            // console.log('attempt to join battle')
             let team = system_1.BattleSystem.get_empty_team(battle);
-            // console.log('team: ' + team)
             join_battle(attacker, battle, team);
         }
         else {
-            // console.log('create new battle')
             const battle_id = system_1.BattleSystem.create_battle();
-            // console.log('new battle: ' + battle_id)
             const battle = systems_communication_1.Convert.id_to_battle(battle_id);
             join_battle(defender, battle, 0);
             join_battle(attacker, battle, 1);
@@ -525,8 +525,8 @@ var Event;
         for (let unit of Object.values(battle.heap.data)) {
             const character = systems_communication_1.Convert.unit_to_character(unit);
             if (character != undefined) {
-                character.battle_id = -1;
-                character.battle_unit_id = -1;
+                character.battle_id = undefined;
+                character.battle_unit_id = undefined;
             }
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
         }

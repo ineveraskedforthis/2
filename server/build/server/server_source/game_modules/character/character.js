@@ -156,6 +156,6 @@ class Character {
     ai_map() { return this.archetype.ai_map; }
     is_player() { return this.user_id != '#'; }
     dead() { return this.get_hp() == 0; }
-    in_battle() { return (this.battle_id != -1); }
+    in_battle() { return (this.battle_id != undefined); }
 }
 exports.Character = Character;

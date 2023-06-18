@@ -110,13 +110,13 @@ export class BattleUnitView {
             ctx.stroke();
         }
     }
-    draw(dt, selected, hovered, player_id, current_turn) {
+    draw(dt, camera, selected, hovered, player_id, current_turn) {
         if (this.killed) {
             return;
         }
         this.timer += dt;
         // let unit = this.unit
-        let pos = position_c.battle_to_canvas(this.position);
+        let pos = position_c.battle_to_canvas(this.position, camera);
         let ctx = battle_canvas_context;
         this.draw_circles(dt, ctx, pos, selected, hovered, player_id, current_turn);
         //draw nameplates

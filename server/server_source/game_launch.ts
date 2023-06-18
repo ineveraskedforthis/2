@@ -97,8 +97,8 @@ function load() {
         Link.character_and_cell(character, object.cell_id)
         const battle = Convert.character_to_battle(object)
         if (battle == undefined) {
-            object.battle_id = -1 as battle_id
-            object.battle_unit_id = -1 as unit_id
+            object.battle_id = undefined
+            object.battle_unit_id = undefined
         }
         // EventMarket.clear_orders(character)
     }

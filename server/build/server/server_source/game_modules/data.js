@@ -371,7 +371,7 @@ var Data;
             let responce = [];
             for (const item of array) {
                 let character = Data.CharacterDB.from_id(item);
-                responce.push({ name: character.name, id: item });
+                responce.push({ name: character.name, id: item, dead: character.dead() });
             }
             return responce;
         }

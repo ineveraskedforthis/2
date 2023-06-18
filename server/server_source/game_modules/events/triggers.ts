@@ -75,16 +75,6 @@ export namespace Trigger {
 
     export function can_learn_from(student: Character, teacher: Character, skill: skill): LearningAvailableResponce {
         let savings = student.savings.get()
-        let price = skill_price(skill, student, teacher)
-        if (savings < price) {
-            return { 
-                response: ResponceNegativeQuantified.Money, 
-                current_quantity: savings, 
-                max_quantity: undefined, 
-                min_quantity: price 
-            }
-        }
-
         const teacher_skill = CharacterSystem.pure_skill(teacher, skill)
         const student_skill = CharacterSystem.pure_skill(student, skill)
         if ((teacher_skill <= student_skill + 20) || (teacher_skill < 30)) {
@@ -95,7 +85,16 @@ export namespace Trigger {
                 min_quantity: Math.max(student_skill + 20, 30) 
             }
         }
-
+        
+        let price = skill_price(skill, student, teacher)
+        if (savings < price) {
+            return { 
+                response: ResponceNegativeQuantified.Money, 
+                current_quantity: savings, 
+                max_quantity: undefined, 
+                min_quantity: price 
+            }
+        }
         return { response: 'ok', price: price}
     }
 }

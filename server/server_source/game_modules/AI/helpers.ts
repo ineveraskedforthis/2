@@ -52,14 +52,16 @@ export namespace AIhelper {
         let a = Data.Cells.get_characters_list_from_cell(char.cell_id)
         for (let id of a) {
             let target_char = Convert.id_to_character(id)
-            if (target_char.in_battle() && !target_char.dead()) {
-                battles.push(target_char.battle_id)
+            const battle_id = target_char.battle_id
+            if ((battle_id != undefined) && !target_char.dead()) {
+                battles.push(battle_id)
             }        
         } 
         return battles
     }
     export function check_battles_to_join(agent: Character) {
         let battles = battles_in_cell(agent)
+        // console.log(battles)
         for (let item of battles) {
             let battle = Convert.id_to_battle(item)
             if (!(battle.ended)) {

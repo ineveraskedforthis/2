@@ -377,8 +377,6 @@ export class Map {
     } 
     
     load_terrain(data) {
-        console.log('loading_terrain_data')
-        console.log(data)
         if (this.terrain[data.x] == undefined) {
             this.terrain[data.x] = []
             this.forest[data.x] = []

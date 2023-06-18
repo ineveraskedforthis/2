@@ -63,6 +63,8 @@ export const enemy_list_div = document.querySelector('.enemy_list')!
 export const w = battle_canvas.width
 export const h = battle_canvas.height
 
+export let camera: canvas_position = {x: 0, y: 0} as canvas_position
+
 
 let hovered: unit_id|undefined                  = undefined
 let selected: unit_id|undefined                 = undefined
@@ -340,7 +342,10 @@ export namespace BattleImage {
     export function unload_unit_by_id(unit: unit_id) {
         const div = unit_div(unit)
         if (div != undefined) div.parentElement?.removeChild(div)
-        units_views[unit].killed = true
+        if (units_views[unit] != undefined) {
+            units_views[unit].killed = true
+        }
+        
         had_left[unit] = true
 
         UnitsQueueManagement.end_turn()
@@ -398,7 +403,7 @@ export namespace BattleImage {
             if (unit_view == undefined) continue;
             if (unit_view.killed) continue;
 
-            let centre = position_c.battle_to_canvas(unit_view.position)
+            let centre = position_c.battle_to_canvas(unit_view.position, camera)
             if (d2([centre.x, centre.y], [pos.x, pos.y]) < selection_magnet) {
                 hovered_flag = true;
                 set_hover(Number(unit_id) as unit_id)
@@ -431,7 +436,7 @@ export namespace BattleImage {
             let unit = units_views[i]
             if (unit == undefined) continue;
             if (unit.hp == 0) continue
-            let centre = position_c.battle_to_canvas(unit.position)
+            let centre = position_c.battle_to_canvas(unit.position, camera)
             let dx = centre.x - pos.x;
             let dy = centre.y - pos.y;
             dx = dx * dx;
@@ -637,7 +642,8 @@ export namespace BattleImage {
         // tiles
         for (let i = left; i < right; i++) {
             for (let j = top; j < bottom; j++) {
-                const start_point = position_c.battle_to_canvas({x: i, y: j + 1} as battle_position)
+                let start_point = position_c.battle_to_canvas({x: i, y: j + 1} as battle_position, camera)
+
                 const colour = get_tile(i, j)
                 if (colour == undefined) continue
                 const rgba = `rgba(${Math.floor(colour * 255)}, 0, 0, 1)`
@@ -661,14 +667,13 @@ export namespace BattleImage {
         }
 
         // grid
-
         battle_canvas_context.strokeStyle = 'rgba(0, 0, 0, 1)';
         battle_canvas_context.beginPath();
         battle_canvas_context.setLineDash([]);
-        const c1 = position_c.battle_to_canvas(corners[0] as battle_position)
+        const c1 = position_c.battle_to_canvas(corners[0] as battle_position, camera)
         battle_canvas_context.moveTo(c1.x, c1.y);
         for (let c of corners) {
-            const next = position_c.battle_to_canvas(c as battle_position)
+            const next = position_c.battle_to_canvas(c as battle_position, camera)
             battle_canvas_context.lineTo(next.x, next.y)
         }
         battle_canvas_context.stroke()
@@ -710,7 +715,7 @@ export namespace BattleImage {
             let view = units_views[Number(unit_id) as unit_id]
             if (view == undefined) continue
             if (view.hp == 0) continue
-            view.draw(dt, selected, hovered, player_unit_id, current_turn)
+            view.draw(dt, camera, selected, hovered, player_unit_id, current_turn)
         }
     }
 
@@ -748,7 +753,7 @@ export namespace BattleImage {
             if (player_unit_id != undefined) {
                 let player = units_views[player_unit_id]
                 if (player == undefined) return
-                let centre = position_c.battle_to_canvas(player.position);
+                let centre = position_c.battle_to_canvas(player.position, camera);
 
                 ctx.beginPath()
                 ctx.moveTo(centre.x, centre.y);
@@ -763,8 +768,8 @@ export namespace BattleImage {
             if (player == undefined) return
             if (target == undefined) return
 
-            let centre1 = position_c.battle_to_canvas(player.position);
-            let centre2 = position_c.battle_to_canvas(target.position);
+            let centre1 = position_c.battle_to_canvas(player.position, camera);
+            let centre2 = position_c.battle_to_canvas(target.position, camera);
 
             ctx.beginPath()
             ctx.moveTo(centre1.x, centre1.y);

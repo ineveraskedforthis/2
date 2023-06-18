@@ -122,14 +122,14 @@ export namespace Convert {
     }
 
     export function character_to_battle(character: Character): Battle|undefined {
-        if (character.battle_id == -1) return undefined
-
+        if (character.battle_id == undefined) return undefined
         return Convert.id_to_battle(character.battle_id)
     }
 
     export function character_to_unit(character: Character): Unit|undefined {
         const battle = character_to_battle(character)
-        if (battle == undefined)    return
+        if (battle == undefined) return undefined
+        if (character.battle_unit_id == undefined) return undefined
         return battle.heap.get_unit(character.battle_unit_id)
     }
 
@@ -247,12 +247,12 @@ export namespace Unlink {
     //     Alerts.cell_locals(cell)
     // }
 
-    export function character_and_battle(character: Character, battle: Battle|undefined) {
-        if (battle == undefined) return
-        const unit = Convert.character_to_unit(character)
+    export function character_and_battle(character: Character) {
+        // if (battle == undefined) return
+        // const unit = Convert.character_to_unit(character)
         // BattleEvent.Leave(battle, unit)
-        character.battle_id = -1 as battle_id
-        character.battle_unit_id = -1 as unit_id
+        character.battle_id = undefined
+        character.battle_unit_id = undefined
     }
 }
 

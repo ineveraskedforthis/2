@@ -54,7 +54,7 @@ var Request;
             return;
         }
         let data = target_character.perks;
-        let responce = {
+        let response = {
             name: target_character.name,
             race: target_character.race(),
             factions: data_1.Data.Reputation.list_from_id(target_character.id),
@@ -63,20 +63,21 @@ var Request;
         };
         for (let perk of Object.keys(data)) {
             if (data[perk] == true) {
-                responce.perks[perk] = (0, perk_base_price_1.perk_price)(perk, character, target_character);
+                response.perks[perk] = (0, perk_base_price_1.perk_price)(perk, character, target_character);
             }
         }
         for (let skill of Object.keys(target_character._skills)) {
-            let response = triggers_1.Trigger.can_learn_from(character, target_character, skill);
-            if (response.response == 'ok' || response.response == triggers_1.ResponceNegativeQuantified.Money) {
+            let teaching_response = triggers_1.Trigger.can_learn_from(character, target_character, skill);
+            // console.log(skill, teaching_response)
+            if (teaching_response.response == 'ok' || teaching_response.response == triggers_1.ResponceNegativeQuantified.Money) {
                 const teacher_skill = system_2.CharacterSystem.skill(target_character, skill);
-                responce.skills[skill] = [
+                response.skills[skill] = [
                     teacher_skill,
                     (0, skill_price_1.skill_price)(skill, character, target_character)
                 ];
             }
         }
-        sw.socket.emit('perks-info', responce);
+        sw.socket.emit('perks-info', response);
     }
     Request.perks_and_skills = perks_and_skills;
     function local_buildings(sw) {

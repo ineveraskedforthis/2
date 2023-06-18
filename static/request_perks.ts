@@ -1,6 +1,6 @@
 import { socket, globals } from './modules/globals.js';
 import { SKILL_NAMES } from './SKILL_NAMES.js';
-import { CharacterStatsResponce, PerksResponce } from './../shared/responces.js'
+import { CharacterStatsResponse, PerksResponse } from '../shared/responses.js'
 import { Perks } from '../shared/character.js'
 
 // tmp.typ = this.typ;
@@ -54,7 +54,7 @@ function epitet(number: number) {
     }
 }
 
-function build_perks_list(data: PerksResponce) {
+function build_perks_list(data: PerksResponse) {
     console.log('build perks');
     console.log(data);
     let big_div = document.getElementById('available_perks')!;
@@ -181,7 +181,7 @@ function flex_something(s: string, w: string) {
     return item
 }
 
-function update_stats(data: CharacterStatsResponce) {
+function update_stats(data: CharacterStatsResponse) {
     const stats_tab = document.getElementById('stats_tab')!
     stats_tab.innerHTML = ''
 

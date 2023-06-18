@@ -138,30 +138,6 @@ var BattleSystem;
         return unit;
     }
     BattleSystem.create_unit = create_unit;
-    //     add_fighter(agent:Character, team:number, position:{x:number, y: number}|undefined) {
-    //         console.log('add fighter')
-    //         if (position == undefined) {
-    //             
-    //             if (team == 1) {
-    //                 position = {x: 0 + dx, y: 8 + dy}
-    //             } else {
-    //                 position = {x: 0 + dx, y: 0 + dy}
-    //             }
-    //         }
-    //         let unit = new Unit();
-    //         unit.init(agent, position, team)
-    //         this.heap.add_unit(unit)
-    //         agent.set_flag('in_battle', true)
-    //         agent.set_in_battle_id(this.heap.data.length - 1)
-    //         agent.set_battle_id(this.id)
-    //         this.changed = true;
-    //     }
-    //     // agent joins battle on a side of team
-    //     join(agent: Character, team: number) {
-    //         console.log(agent.name + ' joins battle on a side ' + team)
-    //         this.add_fighter(agent, team, undefined)
-    //         this.send_data_start()
-    //     }
     function add_figther(battle_id, character, team) {
         const battle = systems_communication_1.Convert.id_to_battle(battle_id);
         if (battle == undefined)

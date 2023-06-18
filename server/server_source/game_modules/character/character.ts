@@ -13,8 +13,10 @@ import { CharacterMapAction } from "../actions/types";
 
 export class Character {
     id: char_id;
-    battle_id: battle_id;
-    battle_unit_id: unit_id;
+
+    battle_id: battle_id|undefined;
+    battle_unit_id: unit_id|undefined;
+
     user_id: user_id|TEMP_USER_ID;
     cell_id: cell_id;
     current_building: building_id|undefined;
@@ -51,13 +53,13 @@ export class Character {
 
     model_variation: any;
 
-    constructor(id: number, battle_id: number, battle_unit_id: number, user_id: user_id|TEMP_USER_ID, cell_id: cell_id,
+    constructor(id: number, battle_id: battle_id|undefined, battle_unit_id: unit_id|undefined, user_id: user_id|TEMP_USER_ID, cell_id: cell_id,
                  name: string, archetype: Archetype, 
                  stats: Stats, max_hp: number) {
         
         this.id = id as char_id
-        this.battle_id = battle_id as battle_id
-        this.battle_unit_id = battle_unit_id as unit_id
+        this.battle_id = battle_id
+        this.battle_unit_id = battle_unit_id
         this.user_id = user_id
         this.cell_id = cell_id
         this.next_cell = 0 as cell_id
@@ -226,5 +228,5 @@ export class Character {
 
     is_player()     { return this.user_id != '#' }
     dead()          { return this.get_hp() == 0 }
-    in_battle()     { return (this.battle_id != -1) }
+    in_battle()     { return (this.battle_id != undefined) }
 }

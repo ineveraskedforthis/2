@@ -19,7 +19,7 @@ import { Request } from "./request";
 import { DmgOps } from "../../damage_types";
 import { Data } from "../../data";
 import { terrain_to_string } from "../../map/terrain";
-import { CharacterStatsResponce } from "../../../../../shared/responces";
+import { CharacterStatsResponse } from "../../../../../shared/responses";
 import { cell_id } from "../../../../../shared/common";
 
 
@@ -47,7 +47,7 @@ export namespace SendUpdate {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        const stats: CharacterStatsResponce = {
+        const stats: CharacterStatsResponse = {
             phys_power: CharacterSystem.phys_power(character),
             magic_power: CharacterSystem.magic_power(character),
             enchant_rating: CharacterSystem.enchant_rating(character),
@@ -63,8 +63,9 @@ export namespace SendUpdate {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        if (character.in_battle()) {
-            const battle = Convert.id_to_battle(character.battle_id);
+        const battle_id = character.battle_id
+        if (battle_id != undefined) {
+            const battle = Convert.id_to_battle(battle_id);
             let unit_id = character.battle_unit_id
             Alerts.battle_progress(user, true)
             Alerts.generic_user_alert(user, BATTLE_DATA_MESSAGE, BattleSystem.data(battle));

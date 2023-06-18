@@ -37,6 +37,9 @@ export function update_characters_list(data) {
         character_div.appendChild(character_name);
         character_div.id = 'ListCharacterId_' + item.id;
         character_div.classList.add('list_item');
+        if (item.dead) {
+            character_div.classList.add('red-text');
+        }
 
         ((id) => character_div.onclick = () => {
             select_character(id);

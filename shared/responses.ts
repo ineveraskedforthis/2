@@ -1,6 +1,6 @@
 import { Perks, reputation_level } from "./character";
 
-export type PerksResponce = {
+export type PerksResponse = {
     name: string,
     race: string,
     factions: { tag: string; name: string; reputation: reputation_level }[]
@@ -8,7 +8,7 @@ export type PerksResponce = {
     skills: {[_ in string]?: [number, number]}
 }
 
-export type CharacterStatsResponce = {
+export type CharacterStatsResponse = {
     phys_power: number,
     magic_power: number,
     enchant_rating: number,

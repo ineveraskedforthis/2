@@ -14,10 +14,10 @@ import { Alerts } from "./alerts";
 import { SendUpdate } from "./updates";
 import { ScriptedValue } from "../../events/scripted_values";
 import { rooms } from "../../DATA_LAYOUT_BUILDING";
-import { PerksResponce } from "../../../../../shared/responces"
 import { Perks } from "@custom_types/character";
 import { ResponceNegativeQuantified, Trigger } from "../../events/triggers";
 import { CharacterSystem } from "../../character/system";
+import { PerksResponse } from "@custom_types/responses";
 
 
 export namespace Request {
@@ -62,7 +62,7 @@ export namespace Request {
         }
 
         let data = target_character.perks
-        let responce: PerksResponce = {
+        let response: PerksResponse = {
             name: target_character.name,
             race: target_character.race(),
             factions: Data.Reputation.list_from_id(target_character.id),
@@ -72,22 +72,23 @@ export namespace Request {
 
         for (let perk of Object.keys(data) ) {
             if (data[perk as Perks] == true) {
-                responce.perks[perk as Perks] = perk_price(perk as Perks, character, target_character)
+                response.perks[perk as Perks] = perk_price(perk as Perks, character, target_character)
             }
         }
 
         for (let skill of Object.keys(target_character._skills)) {
-            let response = Trigger.can_learn_from(character, target_character, skill as skill)
-            if (response.response == 'ok' || response.response == ResponceNegativeQuantified.Money) {
+            let teaching_response = Trigger.can_learn_from(character, target_character, skill as skill)
+            // console.log(skill, teaching_response)
+            if (teaching_response.response == 'ok' || teaching_response.response == ResponceNegativeQuantified.Money) {
                 const teacher_skill = CharacterSystem.skill(target_character, skill as skill)
-                responce.skills[skill as skill] = [
+                response.skills[skill as skill] = [
                     teacher_skill,
                     skill_price(skill as skill, character, target_character)
                 ]
             }
         }
         
-        sw.socket.emit('perks-info', responce)
+        sw.socket.emit('perks-info', response)
     }
 
     export function local_buildings(sw: SocketWrapper) {

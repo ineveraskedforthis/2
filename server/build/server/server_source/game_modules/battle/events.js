@@ -39,7 +39,7 @@ var BattleEvent;
         alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 0);
         const character = systems_communication_1.Convert.unit_to_character(unit);
         // console.log(character.name)
-        systems_communication_1.Unlink.character_and_battle(character, battle);
+        systems_communication_1.Unlink.character_and_battle(character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
         alerts_1.Alerts.battle_event(battle, 'unit_left', unit.id, unit.position, unit.id, 0);
         if (battle.heap.get_units_amount() == 0) {

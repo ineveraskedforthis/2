@@ -103,8 +103,8 @@ function load() {
         systems_communication_1.Link.character_and_cell(character, object.cell_id);
         const battle = systems_communication_1.Convert.character_to_battle(object);
         if (battle == undefined) {
-            object.battle_id = -1;
-            object.battle_unit_id = -1;
+            object.battle_id = undefined;
+            object.battle_unit_id = undefined;
         }
         // EventMarket.clear_orders(character)
     }

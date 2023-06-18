@@ -141,6 +141,9 @@ export namespace Alerts {
             index: battle.last_event_index,
             cost: cost,
         }
+
+        battle.battle_history[Event.index] = Event
+
         if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
             let unit_data = Convert.unit_to_unit_socket(battle.heap.get_unit(unit_id))
             Event.data = unit_data
@@ -151,6 +154,8 @@ export namespace Alerts {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-event', Event)
         }
+
+        
     }
 
     export function battle_update_data(battle: Battle) {

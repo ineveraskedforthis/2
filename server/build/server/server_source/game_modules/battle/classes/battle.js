@@ -10,6 +10,7 @@ class Battle {
         this.ended = false;
         this.last_event_index = 0;
         this.grace_period = 0;
+        this.battle_history = [];
     }
 }
 exports.Battle = Battle;

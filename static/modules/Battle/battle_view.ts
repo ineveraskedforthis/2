@@ -164,7 +164,7 @@ export class BattleUnitView {
     }
 
 
-    draw(dt: number, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined, current_turn: unit_id|undefined) {
+    draw(dt: number, camera: canvas_position, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined, current_turn: unit_id|undefined) {
         if (this.killed) {
             return
         }
@@ -174,7 +174,7 @@ export class BattleUnitView {
 
         // let unit = this.unit
 
-        let pos = position_c.battle_to_canvas(this.position)
+        let pos = position_c.battle_to_canvas(this.position, camera)
         let ctx = battle_canvas_context
 
         

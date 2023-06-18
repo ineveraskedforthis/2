@@ -101,7 +101,7 @@ var Convert;
     }
     Convert.user_to_character = user_to_character;
     function character_to_battle(character) {
-        if (character.battle_id == -1)
+        if (character.battle_id == undefined)
             return undefined;
         return Convert.id_to_battle(character.battle_id);
     }
@@ -109,7 +109,9 @@ var Convert;
     function character_to_unit(character) {
         const battle = character_to_battle(character);
         if (battle == undefined)
-            return;
+            return undefined;
+        if (character.battle_unit_id == undefined)
+            return undefined;
         return battle.heap.get_unit(character.battle_unit_id);
     }
     Convert.character_to_unit = character_to_unit;
@@ -230,13 +232,12 @@ var Unlink;
     //     cell.exit(character.id)
     //     Alerts.cell_locals(cell)
     // }
-    function character_and_battle(character, battle) {
-        if (battle == undefined)
-            return;
-        const unit = Convert.character_to_unit(character);
+    function character_and_battle(character) {
+        // if (battle == undefined) return
+        // const unit = Convert.character_to_unit(character)
         // BattleEvent.Leave(battle, unit)
-        character.battle_id = -1;
-        character.battle_unit_id = -1;
+        character.battle_id = undefined;
+        character.battle_unit_id = undefined;
     }
     Unlink.character_and_battle = character_and_battle;
 })(Unlink = exports.Unlink || (exports.Unlink = {}));

@@ -59,15 +59,6 @@ var Trigger;
     Trigger.building_is_available = building_is_available;
     function can_learn_from(student, teacher, skill) {
         let savings = student.savings.get();
-        let price = (0, skill_price_1.skill_price)(skill, student, teacher);
-        if (savings < price) {
-            return {
-                response: ResponceNegativeQuantified.Money,
-                current_quantity: savings,
-                max_quantity: undefined,
-                min_quantity: price
-            };
-        }
         const teacher_skill = system_1.CharacterSystem.pure_skill(teacher, skill);
         const student_skill = system_1.CharacterSystem.pure_skill(student, skill);
         if ((teacher_skill <= student_skill + 20) || (teacher_skill < 30)) {
@@ -76,6 +67,15 @@ var Trigger;
                 current_quantity: teacher_skill,
                 max_quantity: undefined,
                 min_quantity: Math.max(student_skill + 20, 30)
+            };
+        }
+        let price = (0, skill_price_1.skill_price)(skill, student, teacher);
+        if (savings < price) {
+            return {
+                response: ResponceNegativeQuantified.Money,
+                current_quantity: savings,
+                max_quantity: undefined,
+                min_quantity: price
             };
         }
         return { response: 'ok', price: price };

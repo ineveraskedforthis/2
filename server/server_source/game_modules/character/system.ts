@@ -24,7 +24,7 @@ export namespace CharacterSystem {
     export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
         Data.CharacterDB.increase_id()
         if (name == undefined) name = template.name_generator();
-        let character = new Character(Data.CharacterDB.id(), -1, -1, '#', cell_id, name, template.archetype, template.stats, template.max_hp)
+        let character = new Character(Data.CharacterDB.id(), undefined, undefined, '#', cell_id, name, template.archetype, template.stats, template.max_hp)
         character.stats.base_resists = DmgOps.add(character.stats.base_resists, template.base_resists);
         Data.CharacterDB.set(Data.CharacterDB.id(), character)
         character.explored[cell_id] = true

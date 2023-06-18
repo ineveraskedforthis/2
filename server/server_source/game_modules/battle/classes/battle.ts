@@ -1,4 +1,4 @@
-import { battle_id, ms } from "../../../../../shared/battle_data";
+import { BattleEventSocket, battle_id, ms } from "../../../../../shared/battle_data";
 import { UnitsHeap } from "./heap";
 
 export class Battle {
@@ -10,6 +10,8 @@ export class Battle {
     last_event_index: number
     grace_period: number
 
+    battle_history: BattleEventSocket[]
+
     ai_timer?: ms
 
     constructor(id: battle_id, heap: UnitsHeap) {
@@ -20,5 +22,7 @@ export class Battle {
         this.ended = false
         this.last_event_index = 0
         this.grace_period = 0
+
+        this.battle_history = []
     }
 }

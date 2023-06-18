@@ -44,7 +44,7 @@ export namespace BattleEvent {
         
         const character = Convert.unit_to_character(unit)
         // console.log(character.name)
-        Unlink.character_and_battle(character, battle)
+        Unlink.character_and_battle(character)
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         Alerts.battle_event(battle, 'unit_left', unit.id, unit.position, unit.id, 0)

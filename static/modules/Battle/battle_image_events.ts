@@ -1,7 +1,7 @@
 import { battle_position, UnitSocket, unit_id } from "../../../shared/battle_data"
 import { socket } from "../globals.js";
 import { IMAGES } from "../load_images.js";
-import { BattleImage, battle_canvas, battle_canvas_context, player_unit_id, units_views } from "./battle_image.js";
+import { BattleImage, battle_canvas, battle_canvas_context, camera, player_unit_id, units_views } from "./battle_image.js";
 import { position_c } from "./battle_image_helper.js";
 import { BattleUnitView } from "./battle_view.js";
 import { BATTLE_MOVEMENT_SPEED } from "./constants.js";
@@ -84,6 +84,8 @@ export class BattleImageEvent {
         let unit = units_views[this.unit]
         unit.ap_change = this.ap_change_left
         unit.hp_change = this.hp_change_left
+
+        camera.x = Math.sin(this.hp_change_left / 4) * 30
 
         return false
     }
@@ -289,7 +291,7 @@ export class AttackEvent extends BattleImageEvent {
             attacker.a_image.set_action('prepare')
         } else if (this.time_passed <= HIT_UNTIL) {
             attacker.a_image.set_action('attack')
-            let position = position_c.battle_to_canvas(defender.position)
+            let position = position_c.battle_to_canvas(defender.position, camera)
             battle_canvas_context.drawImage(IMAGES['attack_' + 0], position.x - 50, position.y - 80, 100, 100)
         }
     }
@@ -326,8 +328,8 @@ export class RangedAttackEvent extends BattleImageEvent {
 
         const t = this.time_passed / this.duration
 
-        const A = position_c.battle_to_canvas(attacker.position)
-        const B = position_c.battle_to_canvas(defender.position)
+        const A = position_c.battle_to_canvas(attacker.position, camera)
+        const B = position_c.battle_to_canvas(defender.position, camera)
 
         const projx = A.x * (1 - t) + B.x * (t)
         const projy = A.y * (1 - t) + B.y * (t)
@@ -343,7 +345,7 @@ export class RangedAttackEvent extends BattleImageEvent {
             attacker.a_image.set_action('prepare')
         } else if (this.time_passed <= HIT_UNTIL) {
             attacker.a_image.set_action('attack')
-            let position = position_c.battle_to_canvas(defender.position)
+            let position = position_c.battle_to_canvas(defender.position, camera)
             battle_canvas_context.drawImage(IMAGES['attack_' + 0], position.x - 50, position.y - 80, 100, 100)
         } else {
             attacker.a_image.set_action('idle')

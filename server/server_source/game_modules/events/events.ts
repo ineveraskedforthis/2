@@ -507,12 +507,16 @@ export namespace Event {
         const user_data = Convert.character_to_user_data(character)
         Unlink.user_data_and_character(user_data, character);
 
-        const battle = Convert.character_to_battle(character)
-        Unlink.character_and_battle(character, battle)
+        // const battle = Convert.character_to_battle(character)
+        // if (battle != undefined) {
+        //     let unit = Convert.character_to_unit(character)
+        //     // BattleEvent.Leave(battle, unit)
+        // }
+        // Unlink.character_and_battle(character)
 
         // const cell = Convert.character_to_cell(character)
         // cell.changed_characters = true
-        Link.character_and_cell(character.id, GRAVEYARD_CELL)
+        // Link.character_and_cell(character.id, GRAVEYARD_CELL)
         character.cleared = true
     }
 
@@ -544,7 +548,6 @@ export namespace Event {
         console.log('attempt to start battle between ' + attacker.name + ' and ' + defender.name)
         if (attacker.id == defender.id) return undefined
         if (attacker.in_battle()) return undefined
-
         if (attacker.cell_id != defender.cell_id) {return undefined}
         // console.log('valid participants')
 
@@ -554,14 +557,10 @@ export namespace Event {
         const battle = Convert.character_to_battle(defender)
         const unit_def = Convert.character_to_unit(defender)
         if ((battle != undefined) && (unit_def != undefined)) {
-            // console.log('attempt to join battle')
             let team = BattleSystem.get_empty_team(battle)
-            // console.log('team: ' + team)
             join_battle(attacker, battle, team)
         } else {
-            // console.log('create new battle')
             const battle_id = BattleSystem.create_battle()
-            // console.log('new battle: ' + battle_id)
             const battle = Convert.id_to_battle(battle_id)
             join_battle(defender, battle, 0)
             join_battle(attacker, battle, 1)
@@ -570,6 +569,7 @@ export namespace Event {
 
     export function join_battle(agent: Character, battle: Battle, team: number) {
         if (agent.in_battle()) {return}
+
         const unit = BattleSystem.create_unit(agent, team, battle)
         BattleEvent.NewUnit(battle, unit)
         Link.character_battle_unit(agent, battle, unit)
@@ -583,8 +583,8 @@ export namespace Event {
             const character = Convert.unit_to_character(unit)
             
             if (character != undefined) {
-                character.battle_id = -1 as battle_id
-                character.battle_unit_id = -1 as unit_id
+                character.battle_id = undefined
+                character.battle_unit_id = undefined
             }
 
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)

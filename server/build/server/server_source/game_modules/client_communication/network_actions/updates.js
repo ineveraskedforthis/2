@@ -55,8 +55,9 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        if (character.in_battle()) {
-            const battle = systems_communication_1.Convert.id_to_battle(character.battle_id);
+        const battle_id = character.battle_id;
+        if (battle_id != undefined) {
+            const battle = systems_communication_1.Convert.id_to_battle(battle_id);
             let unit_id = character.battle_unit_id;
             alerts_1.Alerts.battle_progress(user, true);
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_1.BattleSystem.data(battle));

@@ -6,6 +6,7 @@ import { SkillList, skill } from "./character/SkillList";
 import { Inventory } from "./inventories/inventory";
 import { cell_id, money } from "@custom_types/common";
 import { LandPlot } from "@custom_types/buildings";
+import { battle_id, unit_id } from "@custom_types/battle_data";
 
 
 export function item_to_string(item: Item | undefined): string {
@@ -51,7 +52,7 @@ export function string_to_character(s: string) {
     const stats:Stats = innate_stats.stats
 
     const character = new Character(Number(raw_id), 
-                                    Number(raw_battle_id), Number(raw_battle_unit_id), 
+                                    Number(raw_battle_id) as battle_id, Number(raw_battle_unit_id) as unit_id, 
                                     user_id, Number(raw_cell_id) as cell_id, 
                                         name, 
                                         JSON.parse(raw_archetype) as Archetype, 
