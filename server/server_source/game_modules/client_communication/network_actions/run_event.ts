@@ -17,8 +17,8 @@ export namespace SocketCommand {
         console.log('attack_character ' + raw_data)
         const [user, character] = Convert.socket_wrapper_to_user_character(socket_wrapper)
         const [valid_user, valid_character, target] = Validator.valid_action_to_character(user, character, raw_data)
-        if (target == undefined) return        
-
+        if (target == undefined) return
+        if (target.dead()) return
         Event.start_battle(valid_character, target)
     }
 
@@ -27,7 +27,7 @@ export namespace SocketCommand {
         const [user, character] = Convert.socket_wrapper_to_user_character(socket_wrapper)
         const [valid_user, valid_character, target] = Validator.valid_action_to_character(user, character, raw_data)
         if (target == undefined) return
-
+        if (target.dead()) return
         Event.support_in_battle(valid_character, target)
     }
 

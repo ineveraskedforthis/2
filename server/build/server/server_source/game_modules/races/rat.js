@@ -29,12 +29,12 @@ const MageRatArchetype = {
     race: 'rat'
 };
 const RatStats = {
-    phys_power: 15,
+    phys_power: 10,
     magic_power: 10,
     movement_speed: 2
 };
 const BigRatStats = {
-    phys_power: 30,
+    phys_power: 25,
     magic_power: 10,
     movement_speed: 1
 };

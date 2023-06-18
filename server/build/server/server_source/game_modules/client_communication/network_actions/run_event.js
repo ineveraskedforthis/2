@@ -15,6 +15,8 @@ var SocketCommand;
         const [valid_user, valid_character, target] = common_validations_1.Validator.valid_action_to_character(user, character, raw_data);
         if (target == undefined)
             return;
+        if (target.dead())
+            return;
         events_1.Event.start_battle(valid_character, target);
     }
     SocketCommand.attack_character = attack_character;
@@ -23,6 +25,8 @@ var SocketCommand;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(socket_wrapper);
         const [valid_user, valid_character, target] = common_validations_1.Validator.valid_action_to_character(user, character, raw_data);
         if (target == undefined)
+            return;
+        if (target.dead())
             return;
         events_1.Event.support_in_battle(valid_character, target);
     }
