@@ -290,6 +290,7 @@ export namespace Event {
         if (attacker.dead()) return
         if (defender.dead()) return
         const attack = Attack.generate_melee(attacker, attack_type)
+        // console.log(attack)
 
         //status changes for melee attack
         attack.attacker_status_change.rage += 5
@@ -311,7 +312,7 @@ export namespace Event {
         attack_affect_durability(attacker, defender, attack);   
 
         //applying defense and attack skill
-        let damage_modifier = (40 + attack.attack_skill) / (40 + attack.defence_skill)
+        let damage_modifier = (100 + attack.attack_skill) / (100 + attack.defence_skill)
         DmgOps.mult_ip(attack.damage, damage_modifier)
 
         // console.log('attack after modification')

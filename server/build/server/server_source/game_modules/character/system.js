@@ -131,7 +131,7 @@ var CharacterSystem;
         if (weapon_damage != undefined) {
             if (character.perks.advanced_polearm) {
                 if (CharacterSystem.weapon_type(character) == 'polearms') {
-                    damage_types_1.DmgOps.mult_ip(weapon_damage, 1.5);
+                    damage_types_1.DmgOps.mult_ip(weapon_damage, 1.2);
                 }
             }
             return weapon_damage;

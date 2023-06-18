@@ -1,5 +1,5 @@
 import { set_up_header_with_strings } from './headers.js';
-import { socket } from './modules/globals.js';
+import { globals, socket } from './modules/globals.js';
 
 // MESSAGES STUFF
 
@@ -74,4 +74,7 @@ socket.on('new-message', msg => new_message(msg));
 socket.on('alert', msg => {my_alert(msg); new_log_message(msg)});
 socket.on('is-reg-valid', msg => my_alert(msg));
 socket.on('is-login-valid', msg => my_alert(msg));
-socket.on('not_enough', msg => my_alert('not enough ' + JSON.stringify(msg)));
+socket.on('not_enough', msg => {
+    my_alert('not enough ' + JSON.stringify(msg))
+    globals.keep_doing = false
+});

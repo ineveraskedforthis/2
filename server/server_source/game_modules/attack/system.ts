@@ -9,10 +9,9 @@ export namespace Attack {
         const result = new AttackObj(CharacterSystem.melee_weapon_type(character))
         //add base item damage
         DmgOps.add_ip(result.damage, CharacterSystem.melee_damage_raw(character, type))
-
         //account for strength
-        const physical_modifier = CharacterSystem.phys_power(character)
-        DmgOps.mult_ip(result.damage, physical_modifier / 10)
+        const physical_modifier = 1 + CharacterSystem.phys_power(character) / 30
+        DmgOps.mult_ip(result.damage, physical_modifier)
 
         //account for character own skill
         result.attack_skill += CharacterSystem.attack_skill(character)
@@ -22,7 +21,7 @@ export namespace Attack {
         character.equip.modify_attack(result)
 
         //modify base damage with skill
-        DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 50)
+        DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 100)
         // console.log(result)
 
         return result

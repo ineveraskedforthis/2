@@ -17,6 +17,7 @@ import { Data } from "../../data";
 
 export namespace HandleAction {
     function response_to_alert(user: User, response: TriggerResponse) {
+        // console.log(response.response)
         switch(response.response) {
             case "TIRED": return 
             case "NO_RESOURCE": return Alerts.not_enough_to_user(user, 'something', undefined, undefined, undefined)
@@ -57,6 +58,7 @@ export namespace HandleAction {
 
         const destination = character.cell_id
         let response = ActionManager.start_action(action, character, destination)
+        // console.log(response)
         response_to_alert(user, response)
     }
 

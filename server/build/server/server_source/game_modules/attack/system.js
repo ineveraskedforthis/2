@@ -11,15 +11,15 @@ var Attack;
         //add base item damage
         damage_types_1.DmgOps.add_ip(result.damage, system_1.CharacterSystem.melee_damage_raw(character, type));
         //account for strength
-        const physical_modifier = system_1.CharacterSystem.phys_power(character);
-        damage_types_1.DmgOps.mult_ip(result.damage, physical_modifier / 10);
+        const physical_modifier = 1 + system_1.CharacterSystem.phys_power(character) / 30;
+        damage_types_1.DmgOps.mult_ip(result.damage, physical_modifier);
         //account for character own skill
         result.attack_skill += system_1.CharacterSystem.attack_skill(character);
         //account for items modifiers
         // may change skill and everything
         character.equip.modify_attack(result);
         //modify base damage with skill
-        damage_types_1.DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 50);
+        damage_types_1.DmgOps.mult_ip(result.damage, 1 + result.attack_skill / 100);
         // console.log(result)
         return result;
     }
