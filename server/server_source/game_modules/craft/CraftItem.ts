@@ -89,9 +89,7 @@ export function new_craft_item(id: string, input: box[], output: ItemJson, diffi
 export function get_crafts_item_list(character: Character) {
     let list = []
     for (let item of Object.values(crafts_items)) {
-        if (durability(character, item) > 9) {
-            list.push(item)
-        }
+        list.push(item)
     }
     return list
 }

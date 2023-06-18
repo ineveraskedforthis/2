@@ -62,30 +62,23 @@ function construct_craft_item_div(data) {
     if ((div == null) || (div == undefined)) {
         craft_items.push(data.id);
         var craft_div = new_craft_option(data.id)
-    } else {
-        var craft_div = div
-        craft_div.innerHTML = ''
+        craft_div.appendChild(construct_craft_inputs(data.input));
+        const output_div = document.createElement('div');
+        if (data.output.slot != 'weapon')
+            output_div.innerHTML = data.output.slot;
+        else
+            output_div.innerHTML = data.output.model_tag;
+
+        craft_div.appendChild(output_div);
+        const durability = document.createElement('div');
+        durability.classList.add('durability');
+        craft_div.appendChild(durability);
+
+        ((tag) => (craft_div.onclick = () => {
+            socket.emit('craft', tag);
+            console.log('emit craft' + tag);
+        }))(data.id);
     }
-
-    craft_div.appendChild(construct_craft_inputs(data.input));
-
-    const output_div = document.createElement('div');
-    if (data.output.slot != 'weapon')
-        output_div.innerHTML = data.output.slot;
-
-    else
-        output_div.innerHTML = data.output.model_tag;
-
-    craft_div.appendChild(output_div);
-
-    const durability = document.createElement('div');
-    durability.classList.add('durability');
-    craft_div.appendChild(durability);
-
-    ((tag) => (craft_div.onclick = () => {
-        socket.emit('craft', tag);
-        console.log('emit craft' + tag);
-    }))(data.id);
 }
 function update_craft_div(message) {
     let div = document.getElementById('c_' + message.tag);
@@ -105,7 +98,9 @@ function update_craft_item_div(message) {
     }
 
     const div_output = div.querySelector('.durability');
-    div_output.innerHTML = message.value;
+    if (div_output.innerHTML != message.value){
+        div_output.innerHTML = message.value;
+    }
 }
 document.getElementById("craft-tag-item").onclick = () => {
     for (let tag of craft_items) {

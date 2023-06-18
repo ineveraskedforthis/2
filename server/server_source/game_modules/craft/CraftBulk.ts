@@ -79,9 +79,7 @@ export function new_craft_bulk(id: string, input: box[], output: box[], difficul
 export function get_crafts_bulk_list(character: Character) {
     let list = []
     for (let item of Object.values(crafts_bulk)) {
-        if (output_bulk(character, item).length > 0) {
-            list.push(item)
-        }
+        list.push(item)
     }
     return list
 }
