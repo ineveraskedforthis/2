@@ -15,7 +15,7 @@ const data_1 = require("../../data");
 var HandleAction;
 (function (HandleAction) {
     function response_to_alert(user, response) {
-        console.log(response.response);
+        // console.log(response.response)
         switch (response.response) {
             case "TIRED": return;
             case "NO_RESOURCE": return alerts_1.Alerts.not_enough_to_user(user, 'something', undefined, undefined, undefined);
@@ -57,7 +57,7 @@ var HandleAction;
             return;
         const destination = character.cell_id;
         let response = manager_1.ActionManager.start_action(action, character, destination);
-        console.log(response);
+        // console.log(response)
         response_to_alert(user, response);
     }
     HandleAction.act = act;

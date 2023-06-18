@@ -63,6 +63,10 @@ export function sort_market(market_div, field, current_sort_var, flag) {
     }
     const order_modifier = current_sort_var.direction == 'asc' ? 1 : -1;
     const sorted = unsorted.sort((a, b) => {
+        if (a.classList.contains('hidden'))
+            return 1;
+        if (b.classList.contains('hidden'))
+            return -1;
         if (current_sort_var.field == 'goods_name') {
             const name_a = a.querySelector(`.${current_sort_var.field}`);
             const name_b = b.querySelector(`.${current_sort_var.field}`);
