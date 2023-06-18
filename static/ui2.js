@@ -14,13 +14,13 @@ import './request_perks.js'
 import './request_buildings.js'
 import './craft_list_div.js'
 import './login.js'
+import './widgets/Market/market.js'
 import { stash_tag_to_id, stash_id_to_tag, update_savings, update_savings_trade, update_stash, update_tags } from './bulk_tags.js';
-import { update_market } from './update_market.js';
+
 import { update_characters_list } from './update_characters_list.js';
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { goods_market } from './goods_market.js'
 import { set_up_header_with_strings } from './headers.js';
-
 
 const char_info_monster = new CharInfoMonster();
 const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket, globals);
@@ -349,9 +349,6 @@ socket.on('skill', msg => update_skill_data(msg));
 // socket.on('local-skills', msg => update_local_skills(msg))
 
 // socket.on('market-data', data => goods_market.update_data(data));
-
-socket.on('market-data', data => update_market(data));
-
 
 socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
 
