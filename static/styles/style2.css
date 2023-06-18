@@ -500,13 +500,15 @@ div {
 
 
 .active {
-    background-color: brown;
+    background-color: rgba(165, 42, 42, 0.048);
 }
 .active:hover {
     background-color: yellow;
+    color: black;
 }
 .active:active {
     background-color: aquamarine;
+    color: black;
 }
 
 .border-white {

@@ -43,13 +43,40 @@ export function new_ItemBulkLine(good_tag, buy_price, sell_price, amount, order_
 export function edit_ItemBulkLine(line, good_tag, buy_price, sell_price, amount, order_id) {
     line.replaceWith(new_ItemBulkLine(good_tag, buy_price, sell_price, amount, order_id));
 }
-export function new_ItemBulkLineHeader() {
+export function new_ItemBulkLineHeader(market, current_sort_var) {
     return div(undefined, '', ['goods_type', 'header'], undefined, undefined, [
         div(undefined, 'Icon', ['goods_icon'], undefined, undefined, []),
-        div(undefined, 'Good', ['goods_name'], undefined, undefined, []),
-        div(undefined, 'Buy Price', ['goods_avg_buy_price'], undefined, undefined, []),
-        div(undefined, 'Sell Price', ['goods_avg_sell_price'], undefined, undefined, []),
-        div(undefined, 'Amount', ['goods_amount_in_inventory'], undefined, undefined, []),
+        div(undefined, 'Good', ['goods_name', 'active'], undefined, () => sort_market(market, 'goods_name', current_sort_var, 'invert'), []),
+        div(undefined, 'Buy Price', ['goods_avg_buy_price', 'active'], undefined, () => sort_market(market, 'goods_avg_buy_price', current_sort_var, 'invert'), []),
+        div(undefined, 'Sell Price', ['goods_avg_sell_price', 'active'], undefined, () => sort_market(market, 'goods_avg_sell_price', current_sort_var, 'invert'), []),
+        div(undefined, 'Amount', ['goods_amount_in_inventory', 'active'], undefined, () => sort_market(market, 'goods_amount_in_inventory', current_sort_var, 'invert'), []),
         div(undefined, 'Action', [], undefined, undefined, [])
     ]);
+}
+export function sort_market(market_div, field, current_sort_var, flag) {
+    const unsorted = [...market_div.children];
+    if (flag == 'invert') {
+        current_sort_var.direction = current_sort_var.direction == 'asc' ? 'desc' : 'asc';
+    }
+    if (field != 'keep') {
+        current_sort_var.field = field;
+    }
+    const order_modifier = current_sort_var.direction == 'asc' ? 1 : -1;
+    const sorted = unsorted.sort((a, b) => {
+        if (current_sort_var.field == 'goods_name') {
+            const name_a = a.querySelector(`.${current_sort_var.field}`);
+            const name_b = b.querySelector(`.${current_sort_var.field}`);
+            return name_a.innerHTML.localeCompare(name_b.innerHTML) * order_modifier;
+        }
+        else {
+            let value_a = a.querySelector(`.${current_sort_var.field}`).innerHTML;
+            let value_b = b.querySelector(`.${current_sort_var.field}`).innerHTML;
+            if (value_a == '')
+                value_a = '0';
+            if (value_b == '')
+                value_b = '0';
+            return (parseInt(value_a) - parseInt(value_b)) * order_modifier;
+        }
+    });
+    market_div.replaceChildren(...sorted);
 }

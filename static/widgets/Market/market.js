@@ -1,12 +1,14 @@
 import { stash_id_to_tag } from "../../bulk_tags.js";
 import { socket } from "../../modules/globals.js";
-import { edit_ItemBulkLine, new_ItemBulkLine, new_ItemBulkLineHeader } from "../ItemBulkLine/line_bulk.js";
+import { edit_ItemBulkLine, new_ItemBulkLine, new_ItemBulkLineHeader, sort_market } from "../ItemBulkLine/line_bulk.js";
 let market_div = document.querySelector('.goods_list');
+let market_div_header = document.querySelector('.goods_list_header');
 let clear_orders_button = document.getElementById('clear_orders_button');
 let clear_auction_orders_button = document.getElementById('clear_auction_orders_button');
+let current_sort_var = { field: 'goods_name', direction: 'asc' };
 clear_orders_button.onclick = () => socket.emit('clear-orders');
 clear_auction_orders_button.onclick = () => socket.emit('clear-item-orders');
-market_div.appendChild(new_ItemBulkLineHeader());
+market_div_header.appendChild(new_ItemBulkLineHeader(market_div, current_sort_var));
 export function update_market(data) {
     console.log('update market');
     // console.log(data)
@@ -40,6 +42,7 @@ export function update_market(data) {
         // market_div.appendChild(new_ItemBulkLine(data[remaining_line].tag, data[remaining_line].price, data[remaining_line].price, data[remaining_line].amount, data[remaining_line].id));
         market_div.appendChild(new_ItemBulkLine(tag, item.price, item.price, item.amount, item.id));
     }
+    sort_market(market_div, 'keep', current_sort_var, 'keep');
 }
 {
     let order_button = document.getElementById('create_order_button');
