@@ -84,7 +84,7 @@ export const BattleActionsBasicAI: {[_ in string]: BattleActionAI} = {
             battle_action_self('EndTurn', battle, character, unit)
         },
         utility: (battle: Battle, character: Character, unit: Unit) => {
-            return 0.001
+            return 1.1 - unit.action_points_left / 10
         }
     }
 }

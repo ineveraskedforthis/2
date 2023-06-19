@@ -66,7 +66,7 @@ exports.BattleActionsBasicAI = {
             (0, actions_1.battle_action_self)('EndTurn', battle, character, unit);
         },
         utility: (battle, character, unit) => {
-            return 0.001;
+            return 1.1 - unit.action_points_left / 10;
         }
     }
 };

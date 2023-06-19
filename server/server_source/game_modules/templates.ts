@@ -3,7 +3,7 @@ import { CharacterTemplate } from "./character/templates"
 import { Data } from "./data"
 import { Event } from "./events/events"
 // import { Factions } from "./factions"
-import { BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "./items/items_set_up"
+import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "./items/items_set_up"
 import { ItemSystem } from "./items/system"
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
@@ -70,14 +70,22 @@ export namespace Template {
             human._skills.polearms = 60
             human._skills.evasion += 10
             human._skills.blocking += 10
+            human._skills.ranged += 20
             human.perks.advanced_polearm = true
             let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
-            spear.durability = 150
+            spear.durability = 200
+            let bow = ItemSystem.create(BASIC_BOW_ARGUMENT)
             let armour = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
             let pants = ItemSystem.create(RAT_SKIN_PANTS_ARGUMENT)
+            let boots = ItemSystem.create(RAT_SKIN_BOOTS_ARGUMENT)
+            let hat = ItemSystem.create(RAT_SKIN_HELMET_ARGUMENT)
             human.equip.data.weapon = spear
             human.equip.data.armour.body = armour
             human.equip.data.armour.legs = pants
+            human.equip.data.armour.foot = boots
+            human.equip.data.armour.head = hat
+            human.equip.data.secondary = bow
+            human.stash.inc(ARROW_BONE, 60)
             return human
         }
 
