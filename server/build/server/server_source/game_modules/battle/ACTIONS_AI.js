@@ -33,7 +33,7 @@ exports.BattleActionsBasicAI = {
                 let target = systems_communication_1.Convert.unit_to_character(item);
                 if (target.dead())
                     continue;
-                if (distance < RANDOM_STEP_LENGTH)
+                if (distance < 0.2)
                     total_utility += 1;
             }
             return total_utility;
@@ -81,7 +81,7 @@ exports.BattleActionsPerUnitAI = {
             return ACTIONS_1.ActionsUnit.Pierce.ap_cost(battle, character, unit, target_character, target_unit);
         },
         execute: (battle, character, unit, target_character, target_unit) => {
-            ACTIONS_1.ActionsUnit.Pierce.execute(battle, character, unit, target_character, target_unit);
+            (0, ACTIONS_1.battle_action_unit)('Pierce', battle, character, unit, target_character, target_unit);
         },
         utility: (battle, character, unit, target_character, target_unit) => {
             if (target_character.dead())
@@ -101,7 +101,8 @@ exports.BattleActionsPerUnitAI = {
             return ACTIONS_1.ActionsUnit.Slash.ap_cost(battle, character, unit, target_character, target_unit);
         },
         execute: (battle, character, unit, target_character, target_unit) => {
-            ACTIONS_1.ActionsUnit.Slash.execute(battle, character, unit, target_character, target_unit);
+            (0, ACTIONS_1.battle_action_unit)('Slash', battle, character, unit, target_character, target_unit);
+            // ActionsUnit.Slash.execute(battle, character, unit, target_character, target_unit)
         },
         utility: (battle, character, unit, target_character, target_unit) => {
             if (target_character.dead())
@@ -121,7 +122,7 @@ exports.BattleActionsPerUnitAI = {
             return ACTIONS_1.ActionsUnit.Knock.ap_cost(battle, character, unit, target_character, target_unit);
         },
         execute: (battle, character, unit, target_character, target_unit) => {
-            ACTIONS_1.ActionsUnit.Knock.execute(battle, character, unit, target_character, target_unit);
+            (0, ACTIONS_1.battle_action_unit)('Knock', battle, character, unit, target_character, target_unit);
         },
         utility: (battle, character, unit, target_character, target_unit) => {
             if (target_character.dead())
@@ -141,7 +142,7 @@ exports.BattleActionsPerUnitAI = {
             const delta = geom_1.geom.minus(target_unit.position, unit.position);
             const dist = geom_1.geom.norm(delta);
             const range = character.range();
-            const max_move = unit.action_points_left / VALUES_1.BattleValues.move_cost(unit, character); // potential movement
+            const max_move = 1; // potential movement
             if (dist < range) {
                 return 0;
             }

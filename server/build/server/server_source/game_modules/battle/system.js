@@ -155,38 +155,6 @@ var BattleSystem;
         for (let battle of data_1.Data.Battle.list()) {
             if (battle.ended)
                 continue;
-            // if turn lasts longer than 60 seconds, it ends automatically
-            if (battle.waiting_for_input) {
-                if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {
-                    const unit = battle.heap.get_selected_unit();
-                    if (unit != undefined)
-                        events_1.BattleEvent.EndTurn(battle, unit);
-                }
-            }
-            // if turn is still running, then do nothing
-            if (battle.waiting_for_input) {
-                continue;
-            }
-            // if ai is waiting, continue countdown
-            if (battle.ai_timer != undefined) {
-                if ((battle.ai_timer < 500)) {
-                    battle.ai_timer = battle.ai_timer + dt;
-                    continue;
-                }
-                else {
-                    // and finally finish the turn and turn timer off
-                    const unit = battle.heap.get_selected_unit();
-                    if (unit == undefined) {
-                        battle.ended = true;
-                        continue;
-                    }
-                    events_1.BattleEvent.EndTurn(battle, unit);
-                    battle.ai_timer = undefined;
-                    continue;
-                }
-            }
-            // if battle is not waiting for input, then we need to start new turn
-            events_1.BattleEvent.NewTurn(battle);
             // get information about current unit
             const unit = battle.heap.get_selected_unit();
             if (unit == undefined) {
@@ -194,39 +162,48 @@ var BattleSystem;
                 continue;
             }
             let character = systems_communication_1.Convert.unit_to_character(unit);
-            // if (character.dead()) {
-            //     BattleEvent.Leave(battle, unit)
-            //     continue
-            // }
-            system_1.CharacterSystem.battle_update(character);
+            if (character.dead()) {
+                events_1.BattleEvent.Leave(battle, unit);
+                continue;
+            }
+            // if turn lasts longer than 60 seconds, it ends automatically
+            if (battle.waiting_for_input) {
+                if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {
+                    events_1.BattleEvent.EndTurn(battle, unit);
+                }
+                continue;
+            }
+            if (battle.turn_ended) {
+                events_1.BattleEvent.NewTurn(battle);
+                system_1.CharacterSystem.battle_update(character);
+                continue;
+            }
             //processing cases of player and ai separately for a now
             // if character is player, then wait for input
             if (character.is_player()) {
                 battle.waiting_for_input = true;
                 continue;
             }
-            // give AI 2 seconds before ending a turn to imitate spending time to a turn
-            // wait 2 seconds for an AI turn
-            // if ai timer for ending a turn is not set, make turns as usual
-            if (battle.ai_timer == undefined) {
-                AI_turn(battle);
+            // give AI 1 seconds before ending a turn to imitate spending time to a turn
+            // wait 1 seconds for an AI turn
+            if (battle.ai_timer != undefined) {
+                battle.ai_timer = battle.ai_timer + dt;
+                if (battle.ai_timer < 500) {
+                    continue;
+                }
+                else {
+                    battle.ai_timer = undefined;
+                    continue;
+                }
+            }
+            else {
+                (0, ACTIONS_AI_DECISION_1.decide_AI_battle_action)(battle, character, unit);
                 // launch the timer
                 battle.ai_timer = 0;
             }
         }
     }
     BattleSystem.update = update;
-    /**  Makes moves for currently selected character depending on his battle_ai
-    */
-    function AI_turn(battle) {
-        const unit = battle.heap.get_selected_unit();
-        if (unit == undefined)
-            return;
-        const character = systems_communication_1.Convert.unit_to_character(unit);
-        if (character.dead())
-            return;
-        (0, ACTIONS_AI_DECISION_1.decide_AI_battle_action)(battle, character, unit);
-    }
     function data(battle) {
         let data = {};
         for (let unit of Object.values(battle.heap.data)) {

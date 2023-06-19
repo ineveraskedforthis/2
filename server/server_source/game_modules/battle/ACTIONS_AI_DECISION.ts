@@ -20,7 +20,6 @@ export function decide_AI_battle_action(battle: Battle, character: Character, un
             max_utility_basic = utility
             best_action_basic = action
         }
-
         console.log(character.name, key, utility)
     }
 
@@ -28,6 +27,8 @@ export function decide_AI_battle_action(battle: Battle, character: Character, un
     let best_action_targeted = undefined
     let best_action_target = undefined
     let best_action_target_character = undefined
+    let best_key = undefined
+
 
     for (let [key, action] of Object.entries(BattleActionsPerUnitAI)) {
         for (let target of Object.values(battle.heap.data)) {
@@ -45,11 +46,14 @@ export function decide_AI_battle_action(battle: Battle, character: Character, un
                 best_action_targeted = action 
                 best_action_target = target
                 best_action_target_character = target_character
+                best_key = key
             }
 
-            console.log(character.name, key, utility, target_character.name)
+            console.log(key, utility, unit.action_points_left, action.ap_cost(battle, character, unit, target_character, target))
         }
     }
+
+    console.log(character.name, best_key, max_utility_targeted, best_action_target_character?.name)
 
     if ((max_utility_basic < max_utility_targeted)&&(best_action_target_character != undefined)&&(best_action_target != undefined)) {
         best_action_targeted?.execute(battle, character, unit, best_action_target_character, best_action_target)

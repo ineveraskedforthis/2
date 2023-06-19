@@ -5,7 +5,7 @@ import { geom } from "../geom";
 import { Battle } from "./classes/battle";
 import { Unit } from "./classes/unit";
 import { BattleEvent } from "./events";
-import { ActionsSelf, ActionsUnit, battle_action_self } from "./ACTIONS";
+import { ActionsSelf, ActionsUnit, battle_action_self, battle_action_unit } from "./ACTIONS";
 import { BattleActionExecution, BattleActionExecutionTarget, BattleApCost, BattleApCostTarget, BattleNumber, BattleNumberTarget } from "./TYPES";
 import { BattleValues } from "./VALUES";
 import { BattleTriggers } from "./TRIGGERS";
@@ -51,7 +51,7 @@ export const BattleActionsBasicAI: {[_ in string]: BattleActionAI} = {
                 if (item.id == unit.id) continue
                 let target = Convert.unit_to_character(item)
                 if (target.dead()) continue
-                if (distance < RANDOM_STEP_LENGTH) total_utility += 1
+                if (distance < 0.2) total_utility += 1
             }
             return total_utility
         }
@@ -100,7 +100,7 @@ export const BattleActionsPerUnitAI: {[_ in string]: BattleActionUnitAI} = {
             return ActionsUnit.Pierce.ap_cost(battle, character, unit, target_character, target_unit)
         },
         execute: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            ActionsUnit.Pierce.execute(battle, character, unit, target_character, target_unit)
+            battle_action_unit('Pierce', battle, character, unit, target_character, target_unit)
         },
         utility: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit): number => {
             if (target_character.dead()) return 0
@@ -120,7 +120,8 @@ export const BattleActionsPerUnitAI: {[_ in string]: BattleActionUnitAI} = {
             return ActionsUnit.Slash.ap_cost(battle, character, unit, target_character, target_unit)
         },
         execute: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            ActionsUnit.Slash.execute(battle, character, unit, target_character, target_unit)
+            battle_action_unit('Slash', battle, character, unit, target_character, target_unit)
+            // ActionsUnit.Slash.execute(battle, character, unit, target_character, target_unit)
         },
         utility: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit): number => {
             if (target_character.dead()) return 0
@@ -140,7 +141,7 @@ export const BattleActionsPerUnitAI: {[_ in string]: BattleActionUnitAI} = {
             return ActionsUnit.Knock.ap_cost(battle, character, unit, target_character, target_unit)
         },
         execute: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            ActionsUnit.Knock.execute(battle, character, unit, target_character, target_unit)
+            battle_action_unit('Knock', battle, character, unit, target_character, target_unit)
         },
         utility: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit): number => {
             if (target_character.dead()) return 0
@@ -160,7 +161,7 @@ export const BattleActionsPerUnitAI: {[_ in string]: BattleActionUnitAI} = {
             const delta = geom.minus(target_unit.position, unit.position);
             const dist = geom.norm(delta)
             const range = character.range()
-            const max_move = unit.action_points_left / BattleValues.move_cost(unit, character) // potential movement
+            const max_move = 1 // potential movement
             
             if (dist < range) {
                 return 0 as action_points

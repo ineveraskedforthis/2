@@ -70,6 +70,7 @@ export namespace BattleEvent {
         battle.waiting_for_input = false
 
         //updating unit and heap
+        battle.turn_ended = true
         battle.heap.pop()
         unit.next_turn_after = battle.heap.get_max() + 1
 
@@ -110,6 +111,7 @@ export namespace BattleEvent {
         Alerts.battle_event_simple(battle, 'new_turn', unit, 0)
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
+        battle.turn_ended = false
 
         // Alerts.battle_update_data(battle)
         // Alerts.battle_update_units(battle)

@@ -172,49 +172,30 @@ export namespace BattleSystem {
         for (let battle of Data.Battle.list()) {
             if (battle.ended) continue;
 
+            // get information about current unit
+            const unit = battle.heap.get_selected_unit()
+            if (unit == undefined) {
+                battle.ended = true; continue
+            }
+            let character:Character = Convert.unit_to_character(unit)           
+            if (character.dead()) {
+                BattleEvent.Leave(battle, unit)
+                continue
+            }
+
             // if turn lasts longer than 60 seconds, it ends automatically
             if (battle.waiting_for_input) {
                 if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {
-                    const unit = battle.heap.get_selected_unit()
-                    if (unit != undefined) BattleEvent.EndTurn(battle, unit)
+                    BattleEvent.EndTurn(battle, unit)
                 }
-            }
-
-            // if turn is still running, then do nothing
-            if (battle.waiting_for_input) {
                 continue
             }
-            // if ai is waiting, continue countdown
-            if (battle.ai_timer != undefined) {
-                if ((battle.ai_timer < 500)) {
-                    battle.ai_timer = battle.ai_timer + dt as ms
-                    continue
-                } else {
-                    // and finally finish the turn and turn timer off
-                    const unit = battle.heap.get_selected_unit()
-                    if (unit == undefined) {
-                        battle.ended =  true; continue
-                    }
-                    BattleEvent.EndTurn(battle, unit)
-                    battle.ai_timer = undefined
-                    continue
-                }
+
+            if (battle.turn_ended) {
+                BattleEvent.NewTurn(battle)
+                CharacterSystem.battle_update(character)
+                continue
             }
-
-            // if battle is not waiting for input, then we need to start new turn
-            BattleEvent.NewTurn(battle)
-
-            // get information about current unit
-            const unit = battle.heap.get_selected_unit()
-            if (unit == undefined) {battle.ended =  true; continue}
-            let character:Character = Convert.unit_to_character(unit)
-
-            // if (character.dead()) {
-            //     BattleEvent.Leave(battle, unit)
-            //     continue
-            // }
-
-            CharacterSystem.battle_update(character)
 
             //processing cases of player and ai separately for a now
             // if character is player, then wait for input
@@ -223,29 +204,22 @@ export namespace BattleSystem {
                 continue
             } 
             
-            // give AI 2 seconds before ending a turn to imitate spending time to a turn
-            // wait 2 seconds for an AI turn
-
-            // if ai timer for ending a turn is not set, make turns as usual
-            if (battle.ai_timer == undefined) {
-                AI_turn(battle)
+            // give AI 1 seconds before ending a turn to imitate spending time to a turn
+            // wait 1 seconds for an AI turn
+            if (battle.ai_timer != undefined) {
+                battle.ai_timer = battle.ai_timer + dt as ms                
+                if (battle.ai_timer < 500) {
+                    continue
+                } else {
+                    battle.ai_timer = undefined
+                    continue
+                }
+            } else {
+                decide_AI_battle_action(battle, character, unit)
                 // launch the timer
                 battle.ai_timer = 0 as ms
             }
         }
-    }
-
-
-
-    /**  Makes moves for currently selected character depending on his battle_ai
-    */
-    function AI_turn(battle: Battle){
-        const unit = battle.heap.get_selected_unit()
-        if (unit == undefined) return
-        const character = Convert.unit_to_character(unit)
-        if (character.dead()) return
-
-        decide_AI_battle_action(battle, character, unit)
     }
 
     export function data(battle: Battle):BattleData {
