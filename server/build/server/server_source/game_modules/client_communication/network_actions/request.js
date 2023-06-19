@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Request = void 0;
 const system_1 = require("../../attack/system");
 const battle_calcs_1 = require("../../battle/battle_calcs");
-const events_1 = require("../../battle/events");
 const perk_base_price_1 = require("../../prices/perk_base_price");
 const skill_price_1 = require("../../prices/skill_price");
 const data_1 = require("../../data");
@@ -16,6 +15,7 @@ const scripted_values_1 = require("../../events/scripted_values");
 const DATA_LAYOUT_BUILDING_1 = require("../../DATA_LAYOUT_BUILDING");
 const triggers_1 = require("../../events/triggers");
 const system_2 = require("../../character/system");
+const VALUES_1 = require("../../battle/VALUES");
 var Request;
 (function (Request) {
     function accuracy(sw, distance) {
@@ -134,7 +134,7 @@ var Request;
         const unit = systems_communication_1.Convert.character_to_unit(character);
         if (unit == undefined)
             return;
-        alerts_1.Alerts.battle_action_chance(user, 'flee', events_1.BattleEvent.flee_chance(unit.position));
+        alerts_1.Alerts.battle_action_chance(user, 'flee', VALUES_1.BattleValues.flee_chance(unit.position));
     }
     Request.flee_chance = flee_chance;
     function attack_damage(sw) {

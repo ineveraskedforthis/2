@@ -18,6 +18,7 @@ import { Alerts } from "./client_communication/network_actions/alerts";
 import { BattleSystem } from "./battle/system";
 import { Cell } from "./map/DATA_LAYOUT_CELL";
 import { cell_id } from "@custom_types/common";
+import { BattleValues } from "./battle/VALUES";
 
 
 export namespace Convert {
@@ -151,7 +152,7 @@ export namespace Convert {
             id: unit.id,
             next_turn: unit.next_turn_after,
             dead: character.dead(),
-            move_cost: BattleSystem.move_cost(unit)
+            move_cost: BattleValues.move_cost(unit, character)
         }
     }
 

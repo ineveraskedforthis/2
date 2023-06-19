@@ -14,6 +14,7 @@ import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
 import { CharacterMapAction, TriggerResponse } from "../../actions/types";
 import { Data } from "../../data";
+import { battle_action_self, battle_action_unit } from "../../battle/ACTIONS";
 
 export namespace HandleAction {
     function response_to_alert(user: User, response: TriggerResponse) {
@@ -90,28 +91,31 @@ export namespace HandleAction {
             if (target.y == undefined) return;
             if (isNaN(target.y)) return;
 
-            BattleEvent.Move(battle, unit, target)
+            BattleEvent.Move(battle, unit, character, target)
         } else if (input.action == 'attack_slice') {
             if (input.target == undefined) return
             const defender_id = input.target as unit_id
             const defender = BattleSystem.id_to_unit(defender_id, battle)
             if (defender == undefined) return undefined
-
-            BattleEvent.Attack(battle, unit, defender, 'slice')
+            const character_defender = Convert.unit_to_character(defender)
+            battle_action_unit('Slash', battle, character, unit,character_defender, defender)
+            // BattleEvent.Attack(battle, unit, defender, 'slice')
         } else if (input.action == 'attack_blunt') {
             if (input.target == undefined) return
             const defender_id = input.target as unit_id
             const defender = BattleSystem.id_to_unit(defender_id, battle)
             if (defender == undefined) return undefined
             
-            BattleEvent.Attack(battle, unit, defender, 'blunt')
+            const character_defender = Convert.unit_to_character(defender)
+            battle_action_unit('Knock', battle, character, unit,character_defender, defender)
         } else if (input.action == 'attack_pierce') {
             if (input.target == undefined) return
             const defender_id = input.target as unit_id
             const defender = BattleSystem.id_to_unit(defender_id, battle)
             if (defender == undefined) return undefined
             
-            BattleEvent.Attack(battle, unit, defender, 'pierce')
+            const character_defender = Convert.unit_to_character(defender)
+            battle_action_unit('Pierce', battle, character, unit,character_defender, defender)
         } else if (input.action == 'end_turn') {
             BattleEvent.EndTurn(battle, unit)
         // else if (input.action == 'fast_attack') {
@@ -140,7 +144,8 @@ export namespace HandleAction {
             const defender = BattleSystem.id_to_unit(defender_id, battle)
             BattleEvent.Shoot(battle, unit, defender)
         } else if (input.action == 'flee') {
-            BattleEvent.Flee(battle, unit)
+            battle_action_self('Flee', battle, character, unit)
+            // BattleEvent.Flee(battle, unit)
         } else if (input.action == 'switch_weapon') {
             EventInventory.switch_weapon(character)
             BattleEvent.Update(battle, unit)

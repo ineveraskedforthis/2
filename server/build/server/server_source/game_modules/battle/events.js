@@ -1,23 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BattleEvent = exports.HALFHEIGHT = exports.HALFWIDTH = void 0;
+exports.BattleEvent = void 0;
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const events_1 = require("../events/events");
 const geom_1 = require("../geom");
 const systems_communication_1 = require("../systems_communication");
-const battle_ai_1 = require("./battle_ai");
-const system_1 = require("./system");
 const checks_1 = require("../character/checks");
 const basic_functions_1 = require("../calculations/basic_functions");
-const system_2 = require("../character/system");
 const user_manager_1 = require("../client_communication/user_manager");
+const VALUES_1 = require("./VALUES");
 // export const MOVE_COST = 3
 const COST = {
     ATTACK: 3,
     CHARGE: 1,
 };
-exports.HALFWIDTH = 7;
-exports.HALFHEIGHT = 15;
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
@@ -26,22 +22,23 @@ var BattleEvent;
         alerts_1.Alerts.new_unit(battle, unit);
         if (battle.grace_period > 0)
             battle.grace_period += 6;
-        alerts_1.Alerts.battle_event(battle, 'unit_join', unit.id, unit.position, unit.id, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'unit_join', unit, 0);
     }
     BattleEvent.NewUnit = NewUnit;
     function Leave(battle, unit) {
         if (unit == undefined)
             return;
         // console.log('leave' + unit.id)
+        alerts_1.Alerts.battle_event_simple(battle, 'update', unit, 0);
         EndTurn(battle, unit);
-        battle.heap.delete(unit);
         alerts_1.Alerts.remove_unit(battle, unit);
-        alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'flee', unit, 0);
         const character = systems_communication_1.Convert.unit_to_character(unit);
         // console.log(character.name)
-        systems_communication_1.Unlink.character_and_battle(character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
-        alerts_1.Alerts.battle_event(battle, 'unit_left', unit.id, unit.position, unit.id, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'unit_left', unit, 0);
+        battle.heap.delete(unit);
+        systems_communication_1.Unlink.character_and_battle(character);
         if (battle.heap.get_units_amount() == 0) {
             events_1.Event.stop_battle(battle);
             return;
@@ -70,7 +67,7 @@ var BattleEvent;
         battle.heap.push(unit.id);
         battle.grace_period = Math.max(battle.grace_period - 1, 0);
         // send updates
-        alerts_1.Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, -ap_increase);
+        alerts_1.Alerts.battle_event_simple(battle, 'end_turn', unit, -ap_increase);
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.EndTurn = EndTurn;
@@ -89,30 +86,30 @@ var BattleEvent;
             return { responce: 'no_units_left' };
         }
         // console.log(unit.id + ' current unit')
-        alerts_1.Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'new_turn', unit, 0);
         let time_passed = unit.next_turn_after;
         battle.heap.update(time_passed);
         // Alerts.battle_update_data(battle)
         // Alerts.battle_update_units(battle)
     }
     BattleEvent.NewTurn = NewTurn;
-    function Move(battle, unit, target) {
+    function Move(battle, unit, character, target) {
         let tmp = geom_1.geom.minus(target, unit.position);
-        var points_spent = geom_1.geom.norm(tmp) * system_1.BattleSystem.move_cost(unit);
+        var points_spent = geom_1.geom.norm(tmp) * VALUES_1.BattleValues.move_cost(unit, character);
         if (points_spent > unit.action_points_left) {
-            tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / system_1.BattleSystem.move_cost(unit));
+            tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / VALUES_1.BattleValues.move_cost(unit, character));
             points_spent = unit.action_points_left;
         }
         const result = { x: tmp.x + unit.position.x, y: tmp.y + unit.position.y };
         SetCoord(battle, unit, result);
         unit.action_points_left = unit.action_points_left - points_spent;
-        alerts_1.Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, points_spent);
+        alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position, points_spent);
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }
     BattleEvent.Move = Move;
     function SetCoord(battle, unit, target) {
-        unit.position.x = (0, basic_functions_1.trim)(target.x, -exports.HALFWIDTH, exports.HALFWIDTH);
-        unit.position.y = (0, basic_functions_1.trim)(target.y, -exports.HALFHEIGHT, exports.HALFHEIGHT);
+        unit.position.x = (0, basic_functions_1.trim)(target.x, -VALUES_1.BattleValues.HALFWIDTH, VALUES_1.BattleValues.HALFWIDTH);
+        unit.position.y = (0, basic_functions_1.trim)(target.y, -VALUES_1.BattleValues.HALFHEIGHT, VALUES_1.BattleValues.HALFHEIGHT);
     }
     BattleEvent.SetCoord = SetCoord;
     function Charge(battle, unit, target) {
@@ -128,60 +125,9 @@ var BattleEvent;
             direction = geom_1.geom.minus(direction, stop_before);
             SetCoord(battle, unit, direction);
         }
-        alerts_1.Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, COST.CHARGE);
+        alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position, COST.CHARGE);
     }
     BattleEvent.Charge = Charge;
-    function Attack(battle, attacker, defender, attack_type) {
-        if (attacker.id == defender.id)
-            return;
-        const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
-        const COST = 3;
-        let dist = geom_1.geom.dist(attacker.position, defender.position);
-        const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
-        if (dist > AttackerCharacter.range()) {
-            const res = battle_ai_1.BattleAI.convert_attack_to_action(battle, attacker.id, defender.id, 'usual');
-            if (res.action == 'move')
-                Move(battle, attacker, res.target);
-        }
-        if (attacker.action_points_left < COST) {
-            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', attacker.action_points_left, 3, undefined);
-            return;
-        }
-        let dodge_flag = (defender.dodge_turns > 0);
-        attacker.action_points_left = attacker.action_points_left - COST;
-        if (attack_type == 'pierce') {
-            let a = attacker.position;
-            let b = defender.position;
-            let c = { x: b.x - a.x, y: b.y - a.y };
-            let norm = Math.sqrt(c.x * c.x + c.y * c.y);
-            let power_ratio = system_2.CharacterSystem.phys_power(AttackerCharacter) / system_2.CharacterSystem.phys_power(DefenderCharacter);
-            let scale = AttackerCharacter.range() * power_ratio / norm;
-            c = { x: c.x * scale, y: c.y * scale };
-            SetCoord(battle, defender, { x: b.x + c.x, y: b.y + c.y });
-        }
-        if (attack_type == 'slice') {
-            let a = attacker.position;
-            let b = defender.position;
-            let range = AttackerCharacter.range();
-            for (let unit of Object.values(battle.heap.data)) {
-                if (unit.id == attacker.id)
-                    continue;
-                if (geom_1.geom.dist(unit.position, attacker.position) > range)
-                    continue;
-                let damaged_character = systems_communication_1.Convert.unit_to_character(unit);
-                if (unit.team == attacker.team)
-                    continue;
-                events_1.Event.attack(AttackerCharacter, damaged_character, false, attack_type);
-                alerts_1.Alerts.battle_event(battle, 'attack', attacker.id, unit.position, unit.id, 0);
-                alerts_1.Alerts.battle_update_unit(battle, unit);
-            }
-        }
-        events_1.Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type);
-        alerts_1.Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id, COST);
-        alerts_1.Alerts.battle_update_unit(battle, attacker);
-        alerts_1.Alerts.battle_update_unit(battle, defender);
-    }
-    BattleEvent.Attack = Attack;
     function Shoot(battle, attacker, defender) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const COST = 3;
@@ -198,35 +144,15 @@ var BattleEvent;
         let responce = events_1.Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0);
         switch (responce) {
             case 'miss':
-                alerts_1.Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST);
+                alerts_1.Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST);
                 break;
             case 'no_ammo': alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 0, 1, undefined);
-            case 'ok': alerts_1.Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST);
+            case 'ok': alerts_1.Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST);
         }
         alerts_1.Alerts.battle_update_unit(battle, attacker);
         alerts_1.Alerts.battle_update_unit(battle, defender);
     }
     BattleEvent.Shoot = Shoot;
-    function Flee(battle, unit) {
-        const character = systems_communication_1.Convert.unit_to_character(unit);
-        if (unit.action_points_left >= 3) {
-            unit.action_points_left = unit.action_points_left - 3;
-            let dice = Math.random();
-            if (system_1.BattleSystem.safe(battle)) {
-                alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
-                Leave(battle, unit);
-                return;
-            }
-            if (dice <= flee_chance(unit.position)) { // success
-                alerts_1.Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3);
-                alerts_1.Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0);
-                Leave(battle, unit);
-                return;
-            }
-        }
-        alerts_1.Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left, undefined);
-    }
-    BattleEvent.Flee = Flee;
     function MagicBolt(battle, attacker, defender) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const COST = 3;
@@ -241,18 +167,14 @@ var BattleEvent;
         let responce = events_1.Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0);
         switch (responce) {
             case 'miss':
-                alerts_1.Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST);
+                alerts_1.Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST);
                 break;
-            case 'ok': alerts_1.Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST);
+            case 'ok': alerts_1.Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST);
         }
         alerts_1.Alerts.battle_update_unit(battle, attacker);
         alerts_1.Alerts.battle_update_unit(battle, defender);
     }
     BattleEvent.MagicBolt = MagicBolt;
-    function flee_chance(position) {
-        return 0.6 + Math.max(Math.abs(position.x) / exports.HALFWIDTH, Math.abs(position.y) / exports.HALFHEIGHT) / 2;
-    }
-    BattleEvent.flee_chance = flee_chance;
     function Update(battle, unit) {
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }

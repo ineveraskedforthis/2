@@ -6,12 +6,14 @@ import { BattleAI } from "./battle_ai"
 import { Battle } from "./classes/battle"
 import { UnitsHeap } from "./classes/heap"
 import { Unit } from "./classes/unit"
-import { BattleEvent, HALFHEIGHT, HALFWIDTH } from "./events"
+import { BattleEvent } from "./events"
 import fs from "fs"
 import { Event } from "../events/events"
 import { Data } from "../data"
 import path from "path"
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH"
+import { BattleValues } from "./VALUES"
+import { decide_AI_battle_action } from "./ACTIONS_AI_DECISION"
 
 var last_unit_id = 0 as unit_id
 
@@ -131,8 +133,8 @@ export namespace BattleSystem {
             let dx = Math.random() * 2 - 1
             let dy = Math.random() * 2 - 1
             const norm = Math.sqrt((dx * dx + dy * dy))
-            dx = dx + dx / norm * HALFWIDTH / 2
-            dy = dy + dy / norm * HALFHEIGHT / 2
+            dx = dx + dx / norm * BattleValues.HALFWIDTH / 2
+            dy = dy + dy / norm * BattleValues.HALFHEIGHT / 2
             // console.log(dx, dy)
             var position = {x: 0 + dx, y: 0 + dy} as battle_position
         }
@@ -207,10 +209,10 @@ export namespace BattleSystem {
             if (unit == undefined) {battle.ended =  true; continue}
             let character:Character = Convert.unit_to_character(unit)
 
-            if (character.dead()) {
-                BattleEvent.Leave(battle, unit)
-                continue
-            }
+            // if (character.dead()) {
+            //     BattleEvent.Leave(battle, unit)
+            //     continue
+            // }
 
             CharacterSystem.battle_update(character)
 
@@ -226,31 +228,14 @@ export namespace BattleSystem {
 
             // if ai timer for ending a turn is not set, make turns as usual
             if (battle.ai_timer == undefined) {
-                const responce = AI_turn(battle)
-                // console.log(responce)
-                // when ai wants to leave, launch the timer
-                if (responce == 'end') {
-                    battle.ai_timer = 0 as ms
-                }
-                if (responce == 'leave') BattleEvent.Leave(battle, unit);  
+                AI_turn(battle)
+                // launch the timer
+                battle.ai_timer = 0 as ms
             }
         }
     }
 
-    /** Checks if there is only one team left */
-    export function safe(battle: Battle) {
-        const teams:{[_ in number]:number} = {}
-        for (const unit of Object.values(battle.heap.data)) {
-            const character = Convert.unit_to_character(unit)
-            if (character == undefined) continue
-            if (character.dead()) continue
-            if (teams[unit.team] == undefined) teams[unit.team] = 1
-            else teams[unit.team] += 1
-        }
-        const total = Object.values(teams)
-        if (total.length > 1) return false
-        return true 
-    }
+
 
     /**  Makes moves for currently selected character depending on his battle_ai
     */
@@ -258,11 +243,9 @@ export namespace BattleSystem {
         const unit = battle.heap.get_selected_unit()
         if (unit == undefined) return
         const character = Convert.unit_to_character(unit)
-        if (character.dead()) return 'leave'
-        do {
-            var action = BattleAI.action(battle, unit, character);
-        } while (action == 'again')
-        return action
+        if (character.dead()) return
+
+        decide_AI_battle_action(battle, character, unit)
     }
 
     export function data(battle: Battle):BattleData {
@@ -272,10 +255,5 @@ export namespace BattleSystem {
             if (!character.dead()) data[unit.id] = (Convert.unit_to_unit_socket(unit))
         }
         return data
-    }
-
-    export function move_cost(unit: Unit): number {
-        const character = Convert.unit_to_character(unit)
-        return CharacterSystem.movement_cost_battle(character) 
     }
 }

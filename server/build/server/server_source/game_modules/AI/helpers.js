@@ -7,9 +7,9 @@ const systems_communication_1 = require("../systems_communication");
 const CraftBulk_1 = require("../craft/CraftBulk");
 const basic_functions_1 = require("../calculations/basic_functions");
 const CraftItem_1 = require("../craft/CraftItem");
-const battle_ai_1 = require("../battle/battle_ai");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const data_1 = require("../data");
+const TRIGGERS_1 = require("../battle/TRIGGERS");
 var AIhelper;
 (function (AIhelper) {
     function enemies_in_cell(char) {
@@ -78,7 +78,7 @@ var AIhelper;
         let potential_team = -1;
         for (let item of data) {
             const target = systems_communication_1.Convert.unit_to_character(item);
-            if (battle_ai_1.BattleAI.is_friend(agent, target) && (item.team != exclude)) {
+            if (TRIGGERS_1.BattleTriggers.is_friend(agent, target) && (item.team != exclude)) {
                 if (potential_team == 0)
                     continue;
                 else

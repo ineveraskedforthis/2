@@ -131,13 +131,13 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'b-action-damage', {tag: tag, value: value})
     }
 
-    export function battle_event(battle: Battle, tag:BattleEventTag, unit_id:unit_id, position: battle_position, target:unit_id, cost: number) {
+    export function battle_event_target_unit(battle: Battle, tag: BattleEventTag, unit: Unit, target: Unit, cost: number) {
         battle.last_event_index += 1
         const Event:BattleEventSocket = {
             tag: tag,
-            creator: unit_id,
-            target_position: position,
-            target_unit: target,
+            creator: unit.id,
+            target_position: target.position,
+            target_unit: target.id,
             index: battle.last_event_index,
             cost: cost,
         }
@@ -145,7 +145,7 @@ export namespace Alerts {
         battle.battle_history[Event.index] = Event
 
         if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
-            let unit_data = Convert.unit_to_unit_socket(battle.heap.get_unit(unit_id))
+            let unit_data = Convert.unit_to_unit_socket(unit)
             Event.data = unit_data
         }
 
@@ -154,9 +154,82 @@ export namespace Alerts {
             const character = Convert.unit_to_character(unit)
             generic_character_alert(character, 'battle-event', Event)
         }
-
-        
     }
+
+    export function battle_event_simple(battle: Battle, tag: BattleEventTag, unit: Unit, cost: number) {
+        battle.last_event_index += 1
+        const Event:BattleEventSocket = {
+            tag: tag,
+            creator: unit.id,
+            target_position: unit.position,
+            target_unit: unit.id,
+            index: battle.last_event_index,
+            cost: cost,
+        }
+
+        battle.battle_history[Event.index] = Event
+
+        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
+            let unit_data = Convert.unit_to_unit_socket(unit)
+            Event.data = unit_data
+        }
+
+        for (let unit of Object.values(battle.heap.data)) {
+            if (unit == undefined) continue
+            const character = Convert.unit_to_character(unit)
+            generic_character_alert(character, 'battle-event', Event)
+        }
+    }
+
+    export function battle_event_target_position(battle: Battle, tag: BattleEventTag, unit: Unit, position: battle_position, cost: number) {
+        battle.last_event_index += 1
+        const Event:BattleEventSocket = {
+            tag: tag,
+            creator: unit.id,
+            target_position: position,
+            target_unit: unit.id,
+            index: battle.last_event_index,
+            cost: cost,
+        }
+
+        battle.battle_history[Event.index] = Event
+
+        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
+            let unit_data = Convert.unit_to_unit_socket(unit)
+            Event.data = unit_data
+        }
+
+        for (let unit of Object.values(battle.heap.data)) {
+            if (unit == undefined) continue
+            const character = Convert.unit_to_character(unit)
+            generic_character_alert(character, 'battle-event', Event)
+        }
+    }
+
+    // export function battle_event(battle: Battle, tag:BattleEventTag, unit: Unit, target:Unit, cost: number) {
+    //     battle.last_event_index += 1
+    //     const Event:BattleEventSocket = {
+    //         tag: tag,
+    //         creator: unit.id,
+    //         target_position: target.position,
+    //         target_unit: target.id,
+    //         index: battle.last_event_index,
+    //         cost: cost,
+    //     }
+
+    //     battle.battle_history[Event.index] = Event
+
+    //     if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
+    //         let unit_data = Convert.unit_to_unit_socket(unit)
+    //         Event.data = unit_data
+    //     }
+
+    //     for (let unit of Object.values(battle.heap.data)) {
+    //         if (unit == undefined) continue
+    //         const character = Convert.unit_to_character(unit)
+    //         generic_character_alert(character, 'battle-event', Event)
+    //     }
+    // }
 
     export function battle_update_data(battle: Battle) {
         const data = BattleSystem.data(battle)
@@ -168,17 +241,12 @@ export namespace Alerts {
 
     export function battle_update_units(battle: Battle) {
         for (let unit of Object.values(battle.heap.data)) {
-            Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
+            Alerts.battle_event_simple(battle, 'update', unit, 0)
         }
     }
 
     export function battle_update_unit(battle: Battle, unit: Unit) {
-        Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
-        // const data = Convert.unit_to_unit_socket(unit)
-        // for (let unit of battle.heap.raw_data) {
-        //     const character = Convert.unit_to_character(unit)
-        //     generic_character_alert(character, 'battle-update-unit', data)
-        // }
+        Alerts.battle_event_simple(battle, 'update', unit, 0)
     }
 
     export function battle_to_character(battle: Battle, character: Character) {

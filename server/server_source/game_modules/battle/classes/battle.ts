@@ -1,6 +1,7 @@
 import { BattleEventSocket, battle_id, ms } from "../../../../../shared/battle_data";
 import { UnitsHeap } from "./heap";
 
+
 export class Battle {
     heap: UnitsHeap;
     id: battle_id;

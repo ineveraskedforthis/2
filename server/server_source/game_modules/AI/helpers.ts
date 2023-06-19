@@ -14,6 +14,7 @@ import { MapSystem } from "../map/system"
 import { AItrade, price, priced_box } from "./AI_SCRIPTED_VALUES"
 import { Data } from "../data"
 import { cell_id, money } from "@custom_types/common"
+import { BattleTriggers } from "../battle/TRIGGERS"
 
 
 
@@ -80,7 +81,7 @@ export namespace AIhelper {
         let potential_team = -1
         for (let item of data) {
             const target = Convert.unit_to_character(item)
-            if (BattleAI.is_friend(agent, target) && (item.team != exclude)) {
+            if (BattleTriggers.is_friend(agent, target) && (item.team != exclude)) {
                 if (potential_team == 0) continue
                 else potential_team = item.team
             }

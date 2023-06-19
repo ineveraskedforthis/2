@@ -18,6 +18,7 @@ import { Perks } from "@custom_types/character";
 import { ResponceNegativeQuantified, Trigger } from "../../events/triggers";
 import { CharacterSystem } from "../../character/system";
 import { PerksResponse } from "@custom_types/responses";
+import { BattleValues } from "../../battle/VALUES";
 
 
 export namespace Request {
@@ -148,7 +149,7 @@ export namespace Request {
         }
         const unit = Convert.character_to_unit(character)
         if (unit == undefined) return
-        Alerts.battle_action_chance(user, 'flee', BattleEvent.flee_chance(unit.position))
+        Alerts.battle_action_chance(user, 'flee', BattleValues.flee_chance(unit.position))
     }
 
     export function attack_damage(sw: SocketWrapper) {

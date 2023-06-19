@@ -14,6 +14,7 @@ import { trim } from "../calculations/basic_functions"
 import { CharacterSystem } from "../character/system"
 import { UserManagement } from "../client_communication/user_manager"
 import { UI_Part } from "../client_communication/causality_graph"
+import { BattleValues } from "./VALUES"
 
 // export const MOVE_COST = 3
 
@@ -22,8 +23,7 @@ const COST = {
     CHARGE: 1,
 }
 
-export const HALFWIDTH = 7
-export const HALFHEIGHT = 15 
+
 
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
@@ -31,23 +31,26 @@ export namespace BattleEvent {
         battle.heap.add_unit(unit)
         Alerts.new_unit(battle, unit)
         if (battle.grace_period > 0) battle.grace_period += 6
-        Alerts.battle_event(battle, 'unit_join', unit.id, unit.position, unit.id, 0)
+        Alerts.battle_event_simple(battle, 'unit_join', unit, 0)
     }
 
     export function Leave(battle: Battle, unit: Unit|undefined) {
         if (unit == undefined) return
         // console.log('leave' + unit.id)
+        Alerts.battle_event_simple(battle, 'update', unit, 0)
         EndTurn(battle, unit)
-        battle.heap.delete(unit)
+        
         Alerts.remove_unit(battle, unit)
-        Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 0)
+        Alerts.battle_event_simple(battle, 'flee', unit, 0)
         
         const character = Convert.unit_to_character(unit)
         // console.log(character.name)
-        Unlink.character_and_battle(character)
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
-        Alerts.battle_event(battle, 'unit_left', unit.id, unit.position, unit.id, 0)
+        Alerts.battle_event_simple(battle, 'unit_left', unit, 0)
+
+        battle.heap.delete(unit)
+        Unlink.character_and_battle(character)
 
         if (battle.heap.get_units_amount() == 0) {
             Event.stop_battle(battle)
@@ -83,7 +86,7 @@ export namespace BattleEvent {
         battle.grace_period = Math.max(battle.grace_period - 1, 0)
 
         // send updates
-        Alerts.battle_event(battle, 'end_turn', unit.id, unit.position, unit.id, -ap_increase)
+        Alerts.battle_event_simple(battle, 'end_turn', unit, -ap_increase)
         Alerts.battle_update_unit(battle, unit)
     }
 
@@ -104,7 +107,7 @@ export namespace BattleEvent {
         }
 
         // console.log(unit.id + ' current unit')
-        Alerts.battle_event(battle, 'new_turn', unit.id, unit.position, unit.id, 0)
+        Alerts.battle_event_simple(battle, 'new_turn', unit, 0)
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
 
@@ -112,14 +115,14 @@ export namespace BattleEvent {
         // Alerts.battle_update_units(battle)
     }
 
-    export function Move(battle: Battle, unit: Unit, target: battle_position) {
+    export function Move(battle: Battle, unit: Unit, character: Character, target: battle_position) {
 
         let tmp = geom.minus(target, unit.position)
 
-        var points_spent = geom.norm(tmp) * BattleSystem.move_cost(unit)
+        var points_spent = geom.norm(tmp) * BattleValues.move_cost(unit, character)
 
         if (points_spent > unit.action_points_left) {
-            tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / BattleSystem.move_cost(unit)) as battle_position
+            tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / BattleValues.move_cost(unit, character)) as battle_position
             points_spent = unit.action_points_left
         }
         const result = {x: tmp.x + unit.position.x, y: tmp.y + unit.position.y} as battle_position
@@ -127,13 +130,13 @@ export namespace BattleEvent {
 
         unit.action_points_left =  unit.action_points_left - points_spent as action_points
         
-        Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, points_spent)
+        Alerts.battle_event_target_position(battle, 'move', unit, unit.position, points_spent)
         Alerts.battle_update_unit(battle, unit)
     }
 
     export function SetCoord(battle: Battle, unit: Unit, target: battle_position) {
-        unit.position.x = trim(target.x, -HALFWIDTH, HALFWIDTH)
-        unit.position.y = trim(target.y, -HALFHEIGHT, HALFHEIGHT)
+        unit.position.x = trim(target.x, -BattleValues.HALFWIDTH, BattleValues.HALFWIDTH)
+        unit.position.y = trim(target.y, -BattleValues.HALFHEIGHT, BattleValues.HALFHEIGHT)
     }
 
     export function Charge(battle: Battle, unit: Unit, target: Unit) {
@@ -152,61 +155,7 @@ export namespace BattleEvent {
             SetCoord(battle, unit, direction)
         }
 
-        Alerts.battle_event(battle, 'move', unit.id, unit.position, unit.id, COST.CHARGE)
-    }
-
-    export function Attack(battle: Battle, attacker: Unit, defender:Unit, attack_type: melee_attack_type) {
-        if (attacker.id == defender.id) return
-        const AttackerCharacter = Convert.unit_to_character(attacker)
-        const COST = 3
-
-        let dist = geom.dist(attacker.position, defender.position)
-        
-        const DefenderCharacter = Convert.unit_to_character(defender)
-        if (dist > AttackerCharacter.range()) {
-            const res = BattleAI.convert_attack_to_action(battle, attacker.id, defender.id, 'usual')
-            if (res.action == 'move') Move(battle, attacker, res.target)
-        }
-
-        if (attacker.action_points_left < COST) {
-            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', attacker.action_points_left, 3, undefined)
-            return 
-        }
-
-        let dodge_flag = (defender.dodge_turns > 0)
-        attacker.action_points_left = attacker.action_points_left - COST as action_points
-        if (attack_type == 'pierce') {
-            let a = attacker.position
-            let b = defender.position
-            let c = {x: b.x - a.x, y: b.y - a.y}
-            let norm = Math.sqrt(c.x * c.x + c.y * c.y)
-            let power_ratio = CharacterSystem.phys_power(AttackerCharacter) / CharacterSystem.phys_power(DefenderCharacter)
-            let scale = AttackerCharacter.range() * power_ratio / norm
-            c = {x: c.x * scale, y: c.y * scale}
-            SetCoord(battle, defender, {x: b.x + c.x, y: b.y + c.y} as battle_position)
-        }
-
-        if (attack_type == 'slice') {
-            let a = attacker.position
-            let b = defender.position
-            let range = AttackerCharacter.range()
-
-            for (let unit of Object.values(battle.heap.data)) {
-                if (unit.id == attacker.id) continue
-                if (geom.dist(unit.position, attacker.position) > range) continue
-                let damaged_character = Convert.unit_to_character(unit)
-
-                if (unit.team == attacker.team) continue
-
-                Event.attack(AttackerCharacter, damaged_character, false, attack_type)
-                Alerts.battle_event(battle, 'attack', attacker.id, unit.position, unit.id, 0)
-                Alerts.battle_update_unit(battle, unit)
-            }
-        }
-        Event.attack(AttackerCharacter, DefenderCharacter, dodge_flag, attack_type)
-        Alerts.battle_event(battle, 'attack', attacker.id, defender.position, defender.id, COST)
-        Alerts.battle_update_unit(battle, attacker)
-        Alerts.battle_update_unit(battle, defender)
+        Alerts.battle_event_target_position(battle, 'move', unit, unit.position, COST.CHARGE)
     }
 
     export function Shoot(battle: Battle, attacker: Unit, defender: Unit) {
@@ -229,35 +178,13 @@ export namespace BattleEvent {
         attacker.action_points_left = attacker.action_points_left - COST as action_points
         let responce = Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
         switch(responce) {
-            case 'miss': Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST); break;
+            case 'miss': Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST); break;
             case 'no_ammo': Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 0, 1, undefined)
-            case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST)
+            case 'ok': Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST)
         }
         Alerts.battle_update_unit(battle, attacker)
         Alerts.battle_update_unit(battle, defender)
     }
-    
-    export function Flee(battle: Battle, unit: Unit) {
-        const character = Convert.unit_to_character(unit)
-        if (unit.action_points_left >= 3) {
-            unit.action_points_left = unit.action_points_left - 3 as action_points
-            let dice = Math.random();
-
-            if (BattleSystem.safe(battle)) {
-                Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
-                Leave(battle, unit)
-                return
-            }
-
-            if (dice <= flee_chance(unit.position)) { // success
-                Alerts.battle_event(battle, 'flee', unit.id, unit.position, unit.id, 3)
-                Alerts.battle_event(battle, 'update', unit.id, unit.position, unit.id, 0)
-                Leave(battle, unit)
-                return
-            }            
-        }
-        Alerts.not_enough_to_character(character, 'action_points', 3, unit.action_points_left, undefined)
-    } 
 
     export function MagicBolt(battle: Battle, attacker: Unit, defender: Unit) {
         const AttackerCharacter = Convert.unit_to_character(attacker)
@@ -273,15 +200,11 @@ export namespace BattleEvent {
         let responce = Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
 
         switch(responce) {
-            case 'miss': Alerts.battle_event(battle, 'miss', attacker.id, defender.position, defender.id, COST); break;
-            case 'ok': Alerts.battle_event(battle, 'ranged_attack', attacker.id, defender.position, defender.id, COST)
+            case 'miss': Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST); break;
+            case 'ok': Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST)
         }
         Alerts.battle_update_unit(battle, attacker)
         Alerts.battle_update_unit(battle, defender)
-    }
-
-    export function flee_chance(position: battle_position){
-        return 0.6 + Math.max(Math.abs(position.x) / HALFWIDTH, Math.abs(position.y) / HALFHEIGHT) / 2
     }
 
     export function Update(battle: Battle, unit: Unit) {

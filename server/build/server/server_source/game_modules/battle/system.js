@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleSystem = void 0;
 const systems_communication_1 = require("../systems_communication");
 const system_1 = require("../character/system");
-const battle_ai_1 = require("./battle_ai");
 const battle_1 = require("./classes/battle");
 const heap_1 = require("./classes/heap");
 const unit_1 = require("./classes/unit");
@@ -15,6 +14,8 @@ const fs_1 = __importDefault(require("fs"));
 const data_1 = require("../data");
 const path_1 = __importDefault(require("path"));
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
+const VALUES_1 = require("./VALUES");
+const ACTIONS_AI_DECISION_1 = require("./ACTIONS_AI_DECISION");
 var last_unit_id = 0;
 function time_distance(a, b) {
     return b - a;
@@ -129,8 +130,8 @@ var BattleSystem;
             let dx = Math.random() * 2 - 1;
             let dy = Math.random() * 2 - 1;
             const norm = Math.sqrt((dx * dx + dy * dy));
-            dx = dx + dx / norm * events_1.HALFWIDTH / 2;
-            dy = dy + dy / norm * events_1.HALFHEIGHT / 2;
+            dx = dx + dx / norm * VALUES_1.BattleValues.HALFWIDTH / 2;
+            dy = dy + dy / norm * VALUES_1.BattleValues.HALFHEIGHT / 2;
             // console.log(dx, dy)
             var position = { x: 0 + dx, y: 0 + dy };
         }
@@ -193,10 +194,10 @@ var BattleSystem;
                 continue;
             }
             let character = systems_communication_1.Convert.unit_to_character(unit);
-            if (character.dead()) {
-                events_1.BattleEvent.Leave(battle, unit);
-                continue;
-            }
+            // if (character.dead()) {
+            //     BattleEvent.Leave(battle, unit)
+            //     continue
+            // }
             system_1.CharacterSystem.battle_update(character);
             //processing cases of player and ai separately for a now
             // if character is player, then wait for input
@@ -208,38 +209,13 @@ var BattleSystem;
             // wait 2 seconds for an AI turn
             // if ai timer for ending a turn is not set, make turns as usual
             if (battle.ai_timer == undefined) {
-                const responce = AI_turn(battle);
-                // console.log(responce)
-                // when ai wants to leave, launch the timer
-                if (responce == 'end') {
-                    battle.ai_timer = 0;
-                }
-                if (responce == 'leave')
-                    events_1.BattleEvent.Leave(battle, unit);
+                AI_turn(battle);
+                // launch the timer
+                battle.ai_timer = 0;
             }
         }
     }
     BattleSystem.update = update;
-    /** Checks if there is only one team left */
-    function safe(battle) {
-        const teams = {};
-        for (const unit of Object.values(battle.heap.data)) {
-            const character = systems_communication_1.Convert.unit_to_character(unit);
-            if (character == undefined)
-                continue;
-            if (character.dead())
-                continue;
-            if (teams[unit.team] == undefined)
-                teams[unit.team] = 1;
-            else
-                teams[unit.team] += 1;
-        }
-        const total = Object.values(teams);
-        if (total.length > 1)
-            return false;
-        return true;
-    }
-    BattleSystem.safe = safe;
     /**  Makes moves for currently selected character depending on his battle_ai
     */
     function AI_turn(battle) {
@@ -248,11 +224,8 @@ var BattleSystem;
             return;
         const character = systems_communication_1.Convert.unit_to_character(unit);
         if (character.dead())
-            return 'leave';
-        do {
-            var action = battle_ai_1.BattleAI.action(battle, unit, character);
-        } while (action == 'again');
-        return action;
+            return;
+        (0, ACTIONS_AI_DECISION_1.decide_AI_battle_action)(battle, character, unit);
     }
     function data(battle) {
         let data = {};
@@ -264,9 +237,4 @@ var BattleSystem;
         return data;
     }
     BattleSystem.data = data;
-    function move_cost(unit) {
-        const character = systems_communication_1.Convert.unit_to_character(unit);
-        return system_1.CharacterSystem.movement_cost_battle(character);
-    }
-    BattleSystem.move_cost = move_cost;
 })(BattleSystem = exports.BattleSystem || (exports.BattleSystem = {}));

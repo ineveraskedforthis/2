@@ -5,7 +5,7 @@ const system_1 = require("./items/system");
 const user_manager_1 = require("./client_communication/user_manager");
 const data_1 = require("./data");
 const classes_1 = require("./market/classes");
-const system_2 = require("./battle/system");
+const VALUES_1 = require("./battle/VALUES");
 var Convert;
 (function (Convert) {
     function number_to_order_item_id(id) {
@@ -134,7 +134,7 @@ var Convert;
             id: unit.id,
             next_turn: unit.next_turn_after,
             dead: character.dead(),
-            move_cost: system_2.BattleSystem.move_cost(unit)
+            move_cost: VALUES_1.BattleValues.move_cost(unit, character)
         };
     }
     Convert.unit_to_unit_socket = unit_to_unit_socket;

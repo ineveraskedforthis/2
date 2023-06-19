@@ -21,6 +21,9 @@ class geom {
     static minus(a, b) {
         return { x: a.x - b.x, y: a.y - b.y };
     }
+    static sum(a, b) {
+        return { x: a.x + b.x, y: a.y + b.y };
+    }
     static dist(a, b) {
         let c = geom.minus(a, b);
         return geom.norm(c);
@@ -30,6 +33,9 @@ class geom {
     }
     static intify(a) {
         return { x: Math.floor(a.x), y: Math.floor(a.y) };
+    }
+    static copy(a) {
+        return { x: a.x, y: a.y };
     }
 }
 exports.geom = geom;

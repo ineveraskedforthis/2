@@ -12,6 +12,7 @@ const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
 const data_1 = require("../../data");
+const ACTIONS_1 = require("../../battle/ACTIONS");
 var HandleAction;
 (function (HandleAction) {
     function response_to_alert(user, response) {
@@ -95,7 +96,7 @@ var HandleAction;
                 return;
             if (isNaN(target.y))
                 return;
-            events_1.BattleEvent.Move(battle, unit, target);
+            events_1.BattleEvent.Move(battle, unit, character, target);
         }
         else if (input.action == 'attack_slice') {
             if (input.target == undefined)
@@ -104,7 +105,9 @@ var HandleAction;
             const defender = system_1.BattleSystem.id_to_unit(defender_id, battle);
             if (defender == undefined)
                 return undefined;
-            events_1.BattleEvent.Attack(battle, unit, defender, 'slice');
+            const character_defender = systems_communication_1.Convert.unit_to_character(defender);
+            (0, ACTIONS_1.battle_action_unit)('Slash', battle, character, unit, character_defender, defender);
+            // BattleEvent.Attack(battle, unit, defender, 'slice')
         }
         else if (input.action == 'attack_blunt') {
             if (input.target == undefined)
@@ -113,7 +116,8 @@ var HandleAction;
             const defender = system_1.BattleSystem.id_to_unit(defender_id, battle);
             if (defender == undefined)
                 return undefined;
-            events_1.BattleEvent.Attack(battle, unit, defender, 'blunt');
+            const character_defender = systems_communication_1.Convert.unit_to_character(defender);
+            (0, ACTIONS_1.battle_action_unit)('Knock', battle, character, unit, character_defender, defender);
         }
         else if (input.action == 'attack_pierce') {
             if (input.target == undefined)
@@ -122,7 +126,8 @@ var HandleAction;
             const defender = system_1.BattleSystem.id_to_unit(defender_id, battle);
             if (defender == undefined)
                 return undefined;
-            events_1.BattleEvent.Attack(battle, unit, defender, 'pierce');
+            const character_defender = systems_communication_1.Convert.unit_to_character(defender);
+            (0, ACTIONS_1.battle_action_unit)('Pierce', battle, character, unit, character_defender, defender);
         }
         else if (input.action == 'end_turn') {
             events_1.BattleEvent.EndTurn(battle, unit);
@@ -158,7 +163,8 @@ var HandleAction;
             events_1.BattleEvent.Shoot(battle, unit, defender);
         }
         else if (input.action == 'flee') {
-            events_1.BattleEvent.Flee(battle, unit);
+            (0, ACTIONS_1.battle_action_self)('Flee', battle, character, unit);
+            // BattleEvent.Flee(battle, unit)
         }
         else if (input.action == 'switch_weapon') {
             inventory_events_1.EventInventory.switch_weapon(character);
