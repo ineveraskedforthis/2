@@ -3,8 +3,10 @@ import { CharacterSystem } from "../character/system";
 import { Unit } from "./classes/unit";
 
 interface BattleActionServer {
-    ap_cost: (character: Character, unit: Unit, distance: number) => number
-    unlocked: (character: Character) => boolean
+    ap_cost: (character: Character, unit: Unit, distance: number) => number;
+
+    unlocked: (character: Character) => boolean;
+    utility: (character: Character) => number;
 }
 
 function always(character: Character): boolean {
@@ -17,6 +19,9 @@ const ActionsList: {[_ in string]: BattleActionServer} = {
             return CharacterSystem.movement_cost_battle(character) * distance
         },
 
-        unlocked: always
+        unlocked: always,
+        utility: (character: Character) => {
+            return 1
+        }
     }
 }
