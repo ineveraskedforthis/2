@@ -6,7 +6,6 @@ import { BattleEvent } from "../../battle/events";
 import { BattleSystem } from "../../battle/system";
 // import { Perks } from "../../character/Perks";
 import { can_dodge } from "../../character/checks";
-import { Event } from "../../events/events";
 import { EventInventory } from "../../events/inventory_events";
 import { Convert } from "../../systems_communication";
 import { SocketWrapper, User } from "../user";
@@ -14,7 +13,7 @@ import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
 import { CharacterMapAction, TriggerResponse } from "../../actions/types";
 import { Data } from "../../data";
-import { battle_action_self, battle_action_unit } from "../../battle/ACTIONS";
+import { battle_action_self, battle_action_unit } from "../../battle/actions";
 
 export namespace HandleAction {
     function response_to_alert(user: User, response: TriggerResponse) {

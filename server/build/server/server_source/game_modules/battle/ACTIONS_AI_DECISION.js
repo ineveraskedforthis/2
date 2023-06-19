@@ -42,7 +42,7 @@ function decide_AI_battle_action(battle, character, unit) {
                 best_action_target_character = target_character;
                 best_key = key;
             }
-            console.log(key, utility, unit.action_points_left, action.ap_cost(battle, character, unit, target_character, target));
+            // console.log(key, utility, unit.action_points_left, action.ap_cost(battle, character, unit, target_character, target))
         }
     }
     console.log(character.name, best_key, max_utility_targeted, best_action_target_character?.name);

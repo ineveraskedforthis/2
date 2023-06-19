@@ -22,6 +22,16 @@ export namespace BattleTriggers {
         return true 
     }
 
+    export function safe_for_unit(battle: Battle, unit: Unit, character: Character): boolean {
+        for (const item of Object.values(battle.heap.data)) {
+            if (is_enemy(unit, character, item, Convert.unit_to_character(item))) {
+                return false
+            }
+        }
+
+        return true
+    }
+
     /**
      * Checks if unit should consider other unit as a target.
      * @param unit 

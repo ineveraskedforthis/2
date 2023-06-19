@@ -49,7 +49,7 @@ export function decide_AI_battle_action(battle: Battle, character: Character, un
                 best_key = key
             }
 
-            console.log(key, utility, unit.action_points_left, action.ap_cost(battle, character, unit, target_character, target))
+            // console.log(key, utility, unit.action_points_left, action.ap_cost(battle, character, unit, target_character, target))
         }
     }
 

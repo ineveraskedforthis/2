@@ -12,7 +12,7 @@ const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
 const alerts_1 = require("./alerts");
 const data_1 = require("../../data");
-const ACTIONS_1 = require("../../battle/ACTIONS");
+const actions_1 = require("../../battle/actions");
 var HandleAction;
 (function (HandleAction) {
     function response_to_alert(user, response) {
@@ -106,7 +106,7 @@ var HandleAction;
             if (defender == undefined)
                 return undefined;
             const character_defender = systems_communication_1.Convert.unit_to_character(defender);
-            (0, ACTIONS_1.battle_action_unit)('Slash', battle, character, unit, character_defender, defender);
+            (0, actions_1.battle_action_unit)('Slash', battle, character, unit, character_defender, defender);
             // BattleEvent.Attack(battle, unit, defender, 'slice')
         }
         else if (input.action == 'attack_blunt') {
@@ -117,7 +117,7 @@ var HandleAction;
             if (defender == undefined)
                 return undefined;
             const character_defender = systems_communication_1.Convert.unit_to_character(defender);
-            (0, ACTIONS_1.battle_action_unit)('Knock', battle, character, unit, character_defender, defender);
+            (0, actions_1.battle_action_unit)('Knock', battle, character, unit, character_defender, defender);
         }
         else if (input.action == 'attack_pierce') {
             if (input.target == undefined)
@@ -127,7 +127,7 @@ var HandleAction;
             if (defender == undefined)
                 return undefined;
             const character_defender = systems_communication_1.Convert.unit_to_character(defender);
-            (0, ACTIONS_1.battle_action_unit)('Pierce', battle, character, unit, character_defender, defender);
+            (0, actions_1.battle_action_unit)('Pierce', battle, character, unit, character_defender, defender);
         }
         else if (input.action == 'end_turn') {
             events_1.BattleEvent.EndTurn(battle, unit);
@@ -163,7 +163,7 @@ var HandleAction;
             events_1.BattleEvent.Shoot(battle, unit, defender);
         }
         else if (input.action == 'flee') {
-            (0, ACTIONS_1.battle_action_self)('Flee', battle, character, unit);
+            (0, actions_1.battle_action_self)('Flee', battle, character, unit);
             // BattleEvent.Flee(battle, unit)
         }
         else if (input.action == 'switch_weapon') {

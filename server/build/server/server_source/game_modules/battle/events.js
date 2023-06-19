@@ -57,6 +57,7 @@ var BattleEvent;
         battle.waiting_for_input = false;
         //updating unit and heap
         battle.turn_ended = true;
+        console.log(battle.heap.heap, battle.heap.last);
         battle.heap.pop();
         unit.next_turn_after = battle.heap.get_max() + 1;
         const character = systems_communication_1.Convert.unit_to_character(unit);

@@ -7,6 +7,7 @@ const alerts_1 = require("../client_communication/network_actions/alerts");
 const damage_types_1 = require("../damage_types");
 const events_1 = require("../events/events");
 const geom_1 = require("../geom");
+const system_3 = require("../items/system");
 const systems_communication_1 = require("../systems_communication");
 const events_2 = require("./events");
 const TRIGGERS_1 = require("./TRIGGERS");
@@ -42,7 +43,12 @@ exports.ActionsSelf = {
 exports.ActionsUnit = {
     'Pierce': {
         ap_cost: (battle, character, unit, target_character, target_unit) => {
-            return 2;
+            let weapon = character.equip.data.weapon;
+            if (weapon == undefined)
+                return 1;
+            else {
+                return system_3.ItemSystem.weight(weapon);
+            }
         },
         range: (battle, character, unit) => {
             return character.range();
@@ -65,7 +71,12 @@ exports.ActionsUnit = {
     },
     'Slash': {
         ap_cost: (battle, character, unit, target_character, target_unit) => {
-            return 3;
+            let weapon = character.equip.data.weapon;
+            if (weapon == undefined)
+                return 1;
+            else {
+                return system_3.ItemSystem.weight(weapon);
+            }
         },
         range: (battle, character, unit) => {
             return character.range();
@@ -92,7 +103,12 @@ exports.ActionsUnit = {
     },
     'Knock': {
         ap_cost: (battle, character, unit, target_character, target_unit) => {
-            return 3;
+            let weapon = character.equip.data.weapon;
+            if (weapon == undefined)
+                return 1;
+            else {
+                return system_3.ItemSystem.weight(weapon);
+            }
         },
         range: (battle, character, unit) => {
             return character.range();

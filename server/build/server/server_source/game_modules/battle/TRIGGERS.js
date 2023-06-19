@@ -26,6 +26,15 @@ var BattleTriggers;
         return true;
     }
     BattleTriggers.safe = safe;
+    function safe_for_unit(battle, unit, character) {
+        for (const item of Object.values(battle.heap.data)) {
+            if (is_enemy(unit, character, item, systems_communication_1.Convert.unit_to_character(item))) {
+                return false;
+            }
+        }
+        return true;
+    }
+    BattleTriggers.safe_for_unit = safe_for_unit;
     /**
      * Checks if unit should consider other unit as a target.
      * @param unit

@@ -5,7 +5,7 @@ import { geom } from "../geom";
 import { Battle } from "./classes/battle";
 import { Unit } from "./classes/unit";
 import { BattleEvent } from "./events";
-import { ActionsSelf, ActionsUnit, battle_action_self, battle_action_unit } from "./ACTIONS";
+import { ActionsSelf, ActionsUnit, battle_action_self, battle_action_unit } from "./actions";
 import { BattleActionExecution, BattleActionExecutionTarget, BattleApCost, BattleApCostTarget, BattleNumber, BattleNumberTarget } from "./TYPES";
 import { BattleValues } from "./VALUES";
 import { BattleTriggers } from "./TRIGGERS";
@@ -68,8 +68,7 @@ export const BattleActionsBasicAI: {[_ in string]: BattleActionAI} = {
             if (battle.grace_period > 0) {
                 return 0
             }
-            if (BattleTriggers.safe(battle)) {
-                BattleEvent.Leave(battle, unit)
+            if (BattleTriggers.safe_for_unit(battle, unit, character)) {
                 return 1 as action_points
             }
             return (character.get_max_hp() - character.get_hp()) / character.get_max_hp() * BattleValues.flee_chance(unit.position)
@@ -105,7 +104,7 @@ export const BattleActionsPerUnitAI: {[_ in string]: BattleActionUnitAI} = {
         utility: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit): number => {
             if (target_character.dead()) return 0
             if (BattleTriggers.is_enemy(unit, character, target_unit, target_character)){
-                return 1/geom.dist(unit.position, target_unit.position) * ActionsUnit.Pierce.damage(battle, character, unit)
+                return 1/geom.dist(unit.position, target_unit.position) * ActionsUnit.Pierce.damage(battle, character, unit) / target_character.get_hp()
             }
             return 0
         },
@@ -126,7 +125,7 @@ export const BattleActionsPerUnitAI: {[_ in string]: BattleActionUnitAI} = {
         utility: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit): number => {
             if (target_character.dead()) return 0
             if (BattleTriggers.is_enemy(unit, character, target_unit, target_character)){
-                return 1/geom.dist(unit.position, target_unit.position) * ActionsUnit.Slash.damage(battle, character, unit)
+                return 1/geom.dist(unit.position, target_unit.position) * ActionsUnit.Slash.damage(battle, character, unit) / target_character.get_hp()
             }
             return 0
         },
@@ -146,7 +145,7 @@ export const BattleActionsPerUnitAI: {[_ in string]: BattleActionUnitAI} = {
         utility: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit): number => {
             if (target_character.dead()) return 0
             if (BattleTriggers.is_enemy(unit, character, target_unit, target_character)){
-                return 1/geom.dist(unit.position, target_unit.position) * ActionsUnit.Knock.damage(battle, character, unit)
+                return 1/geom.dist(unit.position, target_unit.position) * ActionsUnit.Knock.damage(battle, character, unit) / target_character.get_hp()
             }
             return 0
         },

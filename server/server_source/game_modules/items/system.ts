@@ -22,13 +22,13 @@ export namespace ItemSystem {
         if (item.slot == 'weapon') {
             switch(item.weapon_tag) {
                 case 'onehand':
-                    return 1
-                case 'polearms':
                     return 2
-                case 'ranged':
-                    return 1
-                case 'twohanded':
+                case 'polearms':
                     return 3
+                case 'ranged':
+                    return 2
+                case 'twohanded':
+                    return 4
             }
         }
         
@@ -55,7 +55,7 @@ export namespace ItemSystem {
         let modifier = 0
         for (let affix of item.affixes) {
             if (affix.tag == 'heavy') {
-                modifier += 5
+                modifier += 0.5
             }
         } 
         return item.material.density * size(item) + modifier
@@ -104,10 +104,10 @@ export namespace ItemSystem {
             case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice + affix_damage.slice; break}
         }
 
-        const durability_mod = 0.3 + 0.7 * item.durability / 100
+        const durability_mod = 0.5 + 0.5 * item.durability / 100
         DmgOps.mult_ip(damage, durability_mod)
 
-        // fire damage is alwasys added
+        // fire damage is always added
         damage.fire = item.damage.fire + affix_damage.fire
 
         // console.log(damage)

@@ -75,7 +75,7 @@ var Template;
             human._skills.blocking += 10;
             human.perks.advanced_polearm = true;
             let spear = system_1.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
-            spear.durability = 200;
+            spear.durability = 150;
             let armour = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
             let pants = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_PANTS_ARGUMENT);
             human.equip.data.weapon = spear;

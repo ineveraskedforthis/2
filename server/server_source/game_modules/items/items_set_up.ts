@@ -40,7 +40,7 @@ export const SPEAR_ARGUMENT: ItemJson = {
     weapon_tag: 'polearms',
     model_tag: 'spear',
     resists: empty_resists,
-    damage: new Damage(2, 5, 1),
+    damage: new Damage(2, 6, 1),
     range: 2
 }
 
@@ -52,7 +52,7 @@ export const BONE_SPEAR_ARGUMENT: ItemJson = {
     weapon_tag: 'polearms',
     model_tag: 'bone_spear',
     resists: empty_resists,
-    damage: new Damage(2, 8, 3),
+    damage: new Damage(2, 9, 3),
     range: 2
 }
 

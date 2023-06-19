@@ -5,6 +5,7 @@ import { Alerts } from "../client_communication/network_actions/alerts"
 import { DmgOps } from "../damage_types"
 import { Event } from "../events/events"
 import { geom } from "../geom"
+import { ItemSystem } from "../items/system"
 import { Convert } from "../systems_communication"
 import { Battle } from "./classes/battle"
 import { Unit } from "./classes/unit"
@@ -62,7 +63,12 @@ type ActionUnitKeys = 'Pierce'|'Slash'|'Knock'
 export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
     'Pierce': {
         ap_cost: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            return 2 as action_points
+            let weapon = character.equip.data.weapon
+            if (weapon == undefined)
+                return 1 as action_points
+            else {
+                return ItemSystem.weight(weapon) as action_points
+            }
         },
         range: (battle: Battle, character: Character, unit: Unit) => {
             return character.range()
@@ -86,7 +92,12 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
 
     'Slash': {
         ap_cost: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            return 3 as action_points
+            let weapon = character.equip.data.weapon
+            if (weapon == undefined)
+                return 1 as action_points
+            else {
+                return ItemSystem.weight(weapon) as action_points
+            }
         },
         range: (battle: Battle, character: Character, unit: Unit) => {
             return character.range()
@@ -113,7 +124,12 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
 
     'Knock': {
         ap_cost: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            return 3 as action_points
+            let weapon = character.equip.data.weapon
+            if (weapon == undefined)
+                return 1 as action_points
+            else {
+                return ItemSystem.weight(weapon) as action_points
+            }
         },
         range: (battle: Battle, character: Character, unit: Unit) => {
             return character.range()

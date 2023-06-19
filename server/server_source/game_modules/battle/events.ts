@@ -71,6 +71,7 @@ export namespace BattleEvent {
 
         //updating unit and heap
         battle.turn_ended = true
+        console.log(battle.heap.heap, battle.heap.last)
         battle.heap.pop()
         unit.next_turn_after = battle.heap.get_max() + 1
 
