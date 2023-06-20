@@ -186,12 +186,13 @@ function update_stats(data: CharacterStatsResponse) {
     const stats_tab = document.getElementById('stats_tab')!
     stats_tab.innerHTML = ''
 
-    stats_tab.appendChild(flex_something(`Physical power: `,             `${data.phys_power}`))
-    stats_tab.appendChild(flex_something(`Magic power: `,                `${data.magic_power}`))
-    stats_tab.appendChild(flex_something(`Enchant rating: `,             `${data.enchant_rating.toFixed(2)}`))
-    stats_tab.appendChild(flex_something(`Cost of battle movement: `,    `${data.movement_cost.toFixed(2)}`))
-    stats_tab.appendChild(flex_something(`Movement duration: `,          `${data.move_duration_map.toFixed(2)}`))
-    stats_tab.appendChild(flex_something(`Magic bolt base damage `,      `${data.base_damage_magic_bolt.toFixed(2)}`))
+    stats_tab.appendChild(flex_something(`Physical power: `,                `${data.phys_power}`))
+    stats_tab.appendChild(flex_something(`Magic power: `,                   `${data.magic_power}`))
+    stats_tab.appendChild(flex_something(`Enchant rating: `,                `${data.enchant_rating.toFixed(2)}`))
+    stats_tab.appendChild(flex_something(`Cost of battle movement: `,       `${data.movement_cost.toFixed(2)}`))
+    stats_tab.appendChild(flex_something(`Movement duration: `,             `${data.move_duration_map.toFixed(2)}`))
+    stats_tab.appendChild(flex_something(`Magic bolt base damage `,         `${data.base_damage_magic_bolt.toFixed(2)}`))
+    stats_tab.appendChild(flex_something('Charged magic bolt base damage',  `${data.base_damage_magic_bolt_charged.toFixed(2)}`))
 }
 
 socket.on('perks-info',     build_perks_list);

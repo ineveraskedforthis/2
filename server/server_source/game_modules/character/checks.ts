@@ -41,13 +41,18 @@ export function can_push_back(character: Character): boolean {
 }
 
 export function can_cast_magic_bolt(character: Character): boolean {
-    if (character.perks.magic_bolt) {
-        return true;
+    return (character.perks.magic_bolt == true)
+}
+
+export function can_cast_magic_bolt_blood(character:Character): boolean {
+    if (character.get_hp() + character.get_blood() + 1 < 10) {
+        return false;
     }
-    if (character.stash.get(ZAZ) > 0) {
-        return true;
-    }
-    return false;
+    return (character.perks.magic_bolt == true) && (character.perks.blood_mage == true)
+}
+
+export function has_zaz(character: Character): boolean {
+    return character.stash.get(ZAZ) > 0;
 }
 
 export function can_shoot(character: Character): boolean {

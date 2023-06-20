@@ -59,9 +59,9 @@ export class BattleUnitView {
     }
     
     update(hp_change: number, ap_change: number) {
-        if (player_unit_id == this.id) {
-            BattleImage.update_player_actions_availability()
-        }
+        // if (player_unit_id == this.id) {
+        //     BattleImage.update_player_actions_availability()
+        // }
         this.hp_change = hp_change
         this.ap_change = ap_change
         

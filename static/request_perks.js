@@ -155,6 +155,7 @@ function update_stats(data) {
     stats_tab.appendChild(flex_something(`Cost of battle movement: `, `${data.movement_cost.toFixed(2)}`));
     stats_tab.appendChild(flex_something(`Movement duration: `, `${data.move_duration_map.toFixed(2)}`));
     stats_tab.appendChild(flex_something(`Magic bolt base damage `, `${data.base_damage_magic_bolt.toFixed(2)}`));
+    stats_tab.appendChild(flex_something('Charged magic bolt base damage', `${data.base_damage_magic_bolt_charged.toFixed(2)}`));
 }
 socket.on('perks-info', build_perks_list);
 socket.on('perks-update', update_perks);

@@ -1,3 +1,4 @@
+import { ActionUnitKeys } from "@custom_types/battle_data";
 import { trim } from "../calculations/basic_functions";
 import { Character } from "../character/character";
 import { EventInventory } from "../events/inventory_events";
@@ -5,7 +6,7 @@ import { geom } from "../geom";
 import { Convert } from "../systems_communication";
 import { BattleTriggers } from "./TRIGGERS";
 import { BattleValues } from "./VALUES";
-import { ActionUnit, ActionUnitKeys, ActionsSelf, ActionsUnit, battle_action_position, battle_action_self, battle_action_unit, battle_action_unit_check } from "./actions";
+import { ActionUnit, ActionsSelf, ActionsUnit, battle_action_position, battle_action_self, battle_action_self_check, battle_action_unit, battle_action_unit_check } from "./actions";
 import { Battle } from "./classes/battle";
 import { Unit } from "./classes/unit";
 
@@ -49,7 +50,7 @@ function generic_utility_unit(
     let dist = geom.dist(unit.position, target_unit.position)
     if (action.range(battle, character, unit) < dist - d_distance) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     if (action.ap_cost(battle, character, unit, target_character, target_unit) > unit.action_points_left + d_ap) return {action_key: 'None', utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
-    if (!battle_action_unit_check(key, battle, character, unit, target_character, target_unit)) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
+    if (battle_action_unit_check(key, battle, character, unit, target_character, target_unit).response != 'OK') return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     if (action.move_closer) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     if (action.switch_weapon) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
 
@@ -90,14 +91,22 @@ function utility_move_closer(battle: Battle, character: Character, unit: Unit, t
     if (dist < range) {
         return {action_key: 'None', utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     }
-    let distance_to_walk = Math.min(dist - range + 0.01, max_move)
-    let cost = distance_to_walk * BattleValues.move_cost(unit, character)
+    let distance_to_walk = dist - range + 0.01
 
-    let result =  best_utility_unit(battle, character, unit, target_character, target_unit, distance_to_walk, 0)
-    result.ap_cost += cost
-    result.action_key = 'MoveCloser'
+    let cost = ActionsUnit.MoveTowards.ap_cost(battle, character, unit, target_character, target_unit)
 
-    return result
+    let result_1 =  best_utility_unit(battle, character, unit, target_character, target_unit, distance_to_walk, 0)
+    EventInventory.switch_weapon(character)
+    let result_2 = best_utility_unit(battle, character, unit, target_character, target_unit, distance_to_walk, 0)
+    EventInventory.switch_weapon(character)
+
+    result_1.ap_cost = cost
+    result_1.action_key = 'MoveTowards'
+
+    result_2.ap_cost = cost
+    result_2.action_key = 'MoveTowards'
+
+    return best_utility_from_array([result_1, result_2])
 }
 
 function select_targeted_action(battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit): UtilityObjectTargeted {
@@ -108,10 +117,12 @@ function select_targeted_action(battle: Battle, character: Character, unit: Unit
 }
 
 function calculate_utility_end_turn(battle: Battle, character: Character, unit: Unit): UtilityObjectTargeted {
-    return {action_key: 'EndTurn', utility: 1.1 - unit.action_points_left / 10, ap_cost: 0, target: {character: character, unit: unit}}
+    return {action_key: 'EndTurn', utility: 0.51 - unit.action_points_left / 20, ap_cost: 0, target: {character: character, unit: unit}}
 }
 
 function calculate_utility_flee(battle: Battle, character: Character, unit: Unit): UtilityObjectTargeted {
+    if (battle_action_self_check('Flee', battle, character, unit).response != 'OK') return {action_key: 'None', utility: 0, ap_cost: 0, target: {character: character, unit: unit}}
+    
     let utility = (character.get_hp()) / character.get_max_hp()
     utility = 1 - utility * utility
     if (BattleTriggers.safe_for_unit(battle, unit, character)) {
@@ -123,10 +134,11 @@ function calculate_utility_flee(battle: Battle, character: Character, unit: Unit
         }
     }
     
-    return {action_key: 'Flee', utility: utility , ap_cost: 0, target: {character: character, unit: unit}}
+    return {action_key: 'Flee', utility: utility , ap_cost: ActionsSelf.Flee.ap_cost(battle, character, unit), target: {character: character, unit: unit}}
 }
 
 function calculate_utility_random_step(battle: Battle, character: Character, unit: Unit): UtilityObjectTargeted {
+    if (battle_action_self_check('RandomStep', battle, character, unit).response != 'OK') return {action_key: 'None', utility: 0, ap_cost: 0, target: {character: character, unit: unit}}
     let total_utility = 0
     for (const item of Object.values(battle.heap.data)) {
         let distance = geom.dist(unit.position, item.position)
@@ -135,7 +147,7 @@ function calculate_utility_random_step(battle: Battle, character: Character, uni
         if (target.dead()) continue
         if (distance < 0.2) total_utility += 0.7
     }    
-    return {action_key: 'RandomStep', utility: total_utility, ap_cost: 0, target: {character: character, unit: unit}}
+    return {action_key: 'RandomStep', utility: total_utility, ap_cost: ActionsSelf.RandomStep.ap_cost(battle, character, unit), target: {character: character, unit: unit}}
 }
 
 function decide_best_action_self(battle: Battle, character: Character, unit: Unit): UtilityObjectTargeted {
@@ -172,9 +184,9 @@ export function decide_AI_battle_action(battle: Battle, character: Character, un
     })
 
     const best_targeted = best_utility_from_array(targeted_actions)
-    console.log(character.name, best_targeted?.action_key, best_targeted?.utility, best_targeted?.ap_cost, best_targeted?.target.character.name)
-    console.log(character.name, best_action_self?.action_key, best_action_self?.utility, best_action_self?.ap_cost)
-
+    // console.log(character.name, unit.action_points_left, best_targeted?.action_key, best_targeted?.utility, best_targeted?.ap_cost, best_targeted?.target.character.name)
+    // console.log(character.name, unit.action_points_left, best_action_self?.action_key, best_action_self?.utility, best_action_self?.ap_cost)
+    // console.log(battle_action_unit_check(best_targeted.action_key, battle, character, unit, best_targeted.target.character, best_targeted.target.unit))
     if (utility_targeted_value(best_targeted) > utility_targeted_value(best_action_self)) {
         battle_action_unit(best_targeted.action_key as ActionUnitKeys, battle, character, unit, best_targeted.target.character, best_targeted.target.unit)
     } else {

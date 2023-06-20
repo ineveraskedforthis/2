@@ -61,15 +61,21 @@ export namespace Attack {
         return result
     }
 
-    export function magic_bolt_base_damage(character: Character): number {
-        const base_damage = 10
+    export function magic_bolt_base_damage(character: Character, charge_flag: boolean): number {
+        let base_damage = 10
+        if (charge_flag) {
+            base_damage += 5
+        }
         const skill = CharacterSystem.skill(character, 'magic_mastery')
         return Math.round(base_damage * CharacterSystem.magic_power(character) / 10 * (1 + skill / 10))
     }   
 
-    export function generate_magic_bolt(character: Character, dist: number): AttackObj {
+    export function generate_magic_bolt(character: Character, dist: number, charge_flag: boolean): AttackObj {
         const result = new AttackObj('ranged')
-        result.damage.fire = magic_bolt_base_damage(character)
+        result.damage.fire = magic_bolt_base_damage(character, charge_flag)
+
+        
+
         if (dist > 1) {
             result.damage.fire = Math.round(result.damage.fire / 7 + (result.damage.fire * 6 / 7) / dist)
         }

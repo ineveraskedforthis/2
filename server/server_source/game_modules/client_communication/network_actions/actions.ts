@@ -1,4 +1,4 @@
-import { battle_position, unit_id } from "../../../../../shared/battle_data";
+import { ActionPositionKeys, ActionUnitKeys, battle_position, unit_id } from "../../../../../shared/battle_data";
 import { ActionManager } from "../../actions/manager";
 import { CharacterAction } from "../../actions/actions_00";
 import { Battle } from "../../battle/classes/battle";
@@ -13,7 +13,7 @@ import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
 import { CharacterMapAction, TriggerResponse } from "../../actions/types";
 import { Data } from "../../data";
-import { ActionPositionKeys, ActionUnitKeys, battle_action_position, battle_action_self, battle_action_unit } from "../../battle/actions";
+import { battle_action_position, battle_action_self, battle_action_unit } from "../../battle/actions";
 import { Validator } from "./common_validations";
 
 export namespace HandleAction {
@@ -138,7 +138,7 @@ export namespace HandleAction {
         const target = action.target as battle_position
 
         battle_action_position(action.tag as ActionPositionKeys, battle, character, unit, target)
-    }       
+    }
 
 
 

@@ -207,43 +207,61 @@ var Event;
         return 'ok';
     }
     Event.shoot = shoot;
-    function magic_bolt(attacker, defender, dist, flag_dodge) {
-        if (defender.dead())
-            return 'miss';
-        if (attacker.dead())
-            return 'miss';
+    function unconditional_magic_bolt(attacker, defender, dist, flag_dodge, flag_charged) {
         data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
-        const BLOOD_COST = 10;
-        // managing costs
-        if (attacker.stash.get(materials_manager_1.ZAZ) > 0)
-            Event.change_stash(attacker, materials_manager_1.ZAZ, -1);
-        else if (attacker.status.blood >= BLOOD_COST)
-            attacker.status.blood -= BLOOD_COST;
-        else {
-            const blood = attacker.status.blood;
-            const hp = attacker.status.hp;
-            if (blood + hp > BLOOD_COST) {
-                attacker.status.blood = 0;
-                attacker.status.hp -= (BLOOD_COST - blood);
-            }
-            else {
-                attacker.status.hp = 1;
-            }
-        }
         const dice = Math.random();
         if (dice > system_3.CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
             effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1);
         }
-        const attack = system_2.Attack.generate_magic_bolt(attacker, dist);
+        const attack = system_2.Attack.generate_magic_bolt(attacker, dist, flag_charged);
         attack.defender_status_change.stress += 5;
         deal_damage(defender, attack, attacker);
-        //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender);
         }
         return 'ok';
     }
-    Event.magic_bolt = magic_bolt;
+    Event.unconditional_magic_bolt = unconditional_magic_bolt;
+    function magic_bolt_mage(attacker, defender, dist, flag_dodge) {
+        if (defender.dead())
+            return 'miss';
+        if (attacker.dead())
+            return 'miss';
+        unconditional_magic_bolt(attacker, defender, dist, flag_dodge, false);
+    }
+    Event.magic_bolt_mage = magic_bolt_mage;
+    function magic_bolt_zaz(attacker, defender, dist, flag_dodge) {
+        if (defender.dead())
+            return 'miss';
+        if (attacker.dead())
+            return 'miss';
+        if (attacker.stash.get(materials_manager_1.ZAZ) == 0)
+            return;
+        Event.change_stash(attacker, materials_manager_1.ZAZ, -1);
+        unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true);
+    }
+    Event.magic_bolt_zaz = magic_bolt_zaz;
+    function magic_bolt_blood(attacker, defender, dist, flag_dodge) {
+        if (defender.dead())
+            return 'miss';
+        if (attacker.dead())
+            return 'miss';
+        const BLOOD_COST = 10;
+        if (attacker.status.blood >= BLOOD_COST) {
+            effects_1.Effect.Change.blood(attacker, -BLOOD_COST);
+        }
+        else {
+            const blood = attacker.status.blood;
+            const hp = attacker.status.hp;
+            if (blood + hp > BLOOD_COST) {
+                attacker.status.blood = 0;
+                effects_1.Effect.Change.blood(attacker, -attacker.status.blood);
+                effects_1.Effect.Change.hp(attacker, BLOOD_COST - blood);
+            }
+        }
+        unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true);
+    }
+    Event.magic_bolt_blood = magic_bolt_blood;
     function deal_damage(defender, attack, attacker) {
         const total = system_3.CharacterSystem.damage(defender, attack.damage);
         defender.change_status(attack.defender_status_change);

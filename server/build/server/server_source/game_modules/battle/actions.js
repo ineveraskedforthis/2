@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.battle_action_position = exports.battle_action_unit = exports.battle_action_self = exports.battle_action_unit_check = exports.ActionsPosition = exports.ActionsUnit = exports.ActionsSelf = void 0;
+exports.battle_action_position = exports.battle_action_unit = exports.battle_action_self = exports.battle_action_position_check = exports.battle_action_unit_check = exports.battle_action_self_check = exports.ActionsPosition = exports.ActionsUnit = exports.ActionsSelf = void 0;
 const system_1 = require("../attack/system");
 const checks_1 = require("../character/checks");
 const system_2 = require("../character/system");
@@ -189,6 +189,66 @@ exports.ActionsUnit = {
             return acc;
         }
     },
+    "MagicBolt": {
+        valid: checks_1.can_cast_magic_bolt,
+        range: (battle, character, unit) => {
+            return 999;
+        },
+        execute: (battle, character, unit, target_character, target_unit) => {
+            let distance = geom_1.geom.dist(unit.position, target_unit.position);
+            events_1.Event.magic_bolt_mage(character, target_character, distance, target_unit.dodge_turns > 0);
+        },
+        damage: (battle, character, unit, target_character, target_unit) => {
+            let distance = geom_1.geom.dist(unit.position, target_unit.position);
+            return damage_types_1.DmgOps.total(system_1.Attack.generate_magic_bolt(character, distance, false).damage);
+        },
+        chance: (battle, character, unit, target_character, target_unit) => {
+            return 1;
+        },
+        ap_cost: (battle, character, unit, target_character, target_unit) => {
+            return 1.5;
+        }
+    },
+    "MagicBoltBlood": {
+        valid: checks_1.can_cast_magic_bolt_blood,
+        range: (battle, character, unit) => {
+            return 999;
+        },
+        execute: (battle, character, unit, target_character, target_unit) => {
+            let distance = geom_1.geom.dist(unit.position, target_unit.position);
+            events_1.Event.magic_bolt_blood(character, target_character, distance, target_unit.dodge_turns > 0);
+        },
+        damage: (battle, character, unit, target_character, target_unit) => {
+            let distance = geom_1.geom.dist(unit.position, target_unit.position);
+            return damage_types_1.DmgOps.total(system_1.Attack.generate_magic_bolt(character, distance, true).damage);
+        },
+        chance: (battle, character, unit, target_character, target_unit) => {
+            return 1;
+        },
+        ap_cost: (battle, character, unit, target_character, target_unit) => {
+            return 2;
+        }
+    },
+    "MagicBoltZAZ": {
+        valid: checks_1.has_zaz,
+        range: (battle, character, unit) => {
+            return 999;
+        },
+        execute: (battle, character, unit, target_character, target_unit) => {
+            let distance = geom_1.geom.dist(unit.position, target_unit.position);
+            events_1.Event.magic_bolt_zaz(character, target_character, distance, target_unit.dodge_turns > 0);
+        },
+        damage: (battle, character, unit, target_character, target_unit) => {
+            let distance = geom_1.geom.dist(unit.position, target_unit.position);
+            return damage_types_1.DmgOps.total(system_1.Attack.generate_magic_bolt(character, distance, true).damage);
+        },
+        chance: (battle, character, unit, target_character, target_unit) => {
+            return 1;
+        },
+        ap_cost: (battle, character, unit, target_character, target_unit) => {
+            return 3;
+        }
+    },
     "MoveTowards": {
         valid: always,
         range: (battle, character, unit) => {
@@ -201,11 +261,13 @@ exports.ActionsUnit = {
             const delta = geom_1.geom.minus(target_unit.position, unit.position);
             const dist = geom_1.geom.norm(delta);
             const range = character.range();
-            const max_move = 1; // potential movement
+            const max_move = unit.action_points_left / VALUES_1.BattleValues.move_cost(unit, character); // potential movement
             if (dist < range) {
                 return 0;
             }
             let distance_to_walk = Math.min(dist - range + 0.01, max_move);
+            // console.log('ap cost to move close is ' + distance_to_walk * BattleValues.move_cost(unit, character))
+            // console.log('current ap:' + unit.action_points_left)
             return distance_to_walk * VALUES_1.BattleValues.move_cost(unit, character);
         },
         execute: (battle, character, unit, target_character, target_unit, ignore_flag) => {
@@ -223,7 +285,8 @@ exports.ActionsUnit = {
         },
         chance: (battle, character, unit, target_character, target_unit) => {
             return 1;
-        }
+        },
+        move_closer: true
     },
     "SwitchWeapon": {
         valid: always,
@@ -241,7 +304,8 @@ exports.ActionsUnit = {
         },
         chance: (battle, character, unit, target_character, target_unit) => {
             return 1;
-        }
+        },
+        switch_weapon: true
     }
 };
 exports.ActionsPosition = {
@@ -267,6 +331,7 @@ function battle_action_self_check(tag, battle, character, unit) {
     }
     return { response: "OK", ap_cost: ap_cost, action: action };
 }
+exports.battle_action_self_check = battle_action_self_check;
 function battle_action_unit_check(tag, battle, character, unit, target_character, target_unit) {
     const action = exports.ActionsUnit[tag];
     if (action == undefined) {
@@ -293,11 +358,12 @@ function battle_action_position_check(tag, battle, character, unit, target) {
         return { response: "INVALID_ACTION" };
     }
     const ap_cost = action.ap_cost(battle, character, unit, target);
-    if (unit.action_points_left < ap_cost) {
+    if ((unit.action_points_left < ap_cost - 0.01) || (unit.action_points_left == 0)) {
         return { response: "NOT_ENOUGH_AP", needed: ap_cost, current: unit.action_points_left };
     }
     return { response: "OK", ap_cost: ap_cost, action: action };
 }
+exports.battle_action_position_check = battle_action_position_check;
 function battle_action_self(tag, battle, character, unit) {
     let result = battle_action_self_check(tag, battle, character, unit);
     if (result.response == "OK") {
@@ -309,12 +375,14 @@ function battle_action_self(tag, battle, character, unit) {
 exports.battle_action_self = battle_action_self;
 function battle_action_unit(tag, battle, character, unit, target_character, target_unit) {
     let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit);
+    // console.log(result)
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target_character, target_unit);
         unit.action_points_left = unit.action_points_left - result.ap_cost;
         // Alerts.battle_event(battle, tag, unit.id, target_unit.position, target_unit.id, result.ap_cost)
         alerts_1.Alerts.battle_update_unit(battle, unit);
         alerts_1.Alerts.battle_update_unit(battle, target_unit);
+        // Alerts.battle_event_simple(battle, tag, unit, result.ap_cost)
     }
     return result;
 }
@@ -322,8 +390,11 @@ exports.battle_action_unit = battle_action_unit;
 function battle_action_position(tag, battle, character, unit, target) {
     let result = battle_action_position_check(tag, battle, character, unit, target);
     if (result.response == "OK") {
-        unit.action_points_left = unit.action_points_left - result.ap_cost;
         result.action.execute(battle, character, unit, target);
+        unit.action_points_left = unit.action_points_left - result.ap_cost;
+        if (unit.action_points_left < 0) {
+            unit.action_points_left = 0;
+        }
     }
     return result;
 }

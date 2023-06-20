@@ -106,7 +106,7 @@ export class SocketManager {
             })
             
             // socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
-            socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))
+            // socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))
             socket.on('req-player-index',   () =>  Request.player_index(user))
             socket.on('req-flee-chance',    () => Request.flee_chance(user))
             socket.on('req-attacks-damage', () => Request.attack_damage(user))

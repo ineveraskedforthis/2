@@ -15,4 +15,5 @@ export type CharacterStatsResponse = {
     movement_cost: number,
     move_duration_map: number,
     base_damage_magic_bolt: number
+    base_damage_magic_bolt_charged: number
 }

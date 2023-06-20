@@ -1,5 +1,5 @@
 import { AnimatedImage } from "./animation.js";
-import { BattleImage, battle_canvas_context, player_unit_id } from "./battle_image.js";
+import { battle_canvas_context } from "./battle_image.js";
 import { position_c, } from "./battle_image_helper.js";
 import { BATTLE_SCALE } from "./constants.js";
 export class BattleUnitView {
@@ -24,9 +24,9 @@ export class BattleUnitView {
         this.timer = 0;
     }
     update(hp_change, ap_change) {
-        if (player_unit_id == this.id) {
-            BattleImage.update_player_actions_availability();
-        }
+        // if (player_unit_id == this.id) {
+        //     BattleImage.update_player_actions_availability()
+        // }
         this.hp_change = hp_change;
         this.ap_change = ap_change;
         // this.hp = this.unit.hp

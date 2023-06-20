@@ -159,26 +159,26 @@ export namespace BattleEvent {
         Alerts.battle_event_target_position(battle, 'move', unit, unit.position, COST.CHARGE)
     }
 
-    export function MagicBolt(battle: Battle, attacker: Unit, defender: Unit) {
-        const AttackerCharacter = Convert.unit_to_character(attacker)
-        const COST = 3
-        if (!can_cast_magic_bolt(AttackerCharacter)) {
-            return
-        }
-        if (attacker.action_points_left < COST) return 
+    // export function MagicBolt(battle: Battle, attacker: Unit, defender: Unit) {
+    //     const AttackerCharacter = Convert.unit_to_character(attacker)
+    //     const COST = 3
+    //     if (!can_cast_magic_bolt(AttackerCharacter)) {
+    //         return
+    //     }
+    //     if (attacker.action_points_left < COST) return 
 
-        const DefenderCharacter = Convert.unit_to_character(defender)        
-        attacker.action_points_left = attacker.action_points_left - COST as action_points
-        let dist = geom.dist(attacker.position, defender.position)
-        let responce = Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
+    //     const DefenderCharacter = Convert.unit_to_character(defender)        
+    //     attacker.action_points_left = attacker.action_points_left - COST as action_points
+    //     let dist = geom.dist(attacker.position, defender.position)
+    //     let responce = Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
 
-        switch(responce) {
-            case 'miss': Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST); break;
-            case 'ok': Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST)
-        }
-        Alerts.battle_update_unit(battle, attacker)
-        Alerts.battle_update_unit(battle, defender)
-    }
+    //     switch(responce) {
+    //         case 'miss': Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST); break;
+    //         case 'ok': Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST)
+    //     }
+    //     Alerts.battle_update_unit(battle, attacker)
+    //     Alerts.battle_update_unit(battle, defender)
+    // }
 
     export function Update(battle: Battle, unit: Unit) {
         Alerts.battle_update_unit(battle, unit)

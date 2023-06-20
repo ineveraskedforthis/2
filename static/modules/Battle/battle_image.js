@@ -490,6 +490,13 @@ export var BattleImage;
                 update_action_cost(data.tag, data.cost);
                 update_action_probability(data.tag, data.probability);
                 update_action_damage(data.tag, data.damage);
+                let div = document.querySelector('.battle_control>.' + data.tag);
+                if (!data.possible) {
+                    div.classList.add('disabled');
+                }
+                else {
+                    div.classList.remove('disabled');
+                }
             }
         }
         if (!flag)
@@ -585,32 +592,28 @@ export var BattleImage;
         console.log('set_player_position');
         console.log(unit_id);
         player_unit_id = unit_id;
-        update_player_actions_availability();
+        // update_player_actions_availability()
     }
     BattleImage.set_player = set_player;
-    function update_player_actions_availability() {
-        if (player_unit_id == undefined) {
-            return;
-        }
-        if (units_views[player_unit_id] == undefined) {
-            return;
-        }
-        let player = units_views[player_unit_id];
-        if (player == undefined)
-            return;
-        for (let i of actions) {
-            let div = document.querySelector('.battle_control>.' + i.tag);
-            if (div == undefined)
-                continue;
-            if ((i.cost != undefined) && (player.ap < i.cost)) {
-                div.classList.add('disabled');
-            }
-            else {
-                div.classList.remove('disabled');
-            }
-        }
-    }
-    BattleImage.update_player_actions_availability = update_player_actions_availability;
+    // export function update_player_actions_availability() {
+    //     if (player_unit_id == undefined) {
+    //         return
+    //     }
+    //     if (units_views[player_unit_id] == undefined) {
+    //         return
+    //     }
+    //     let player = units_views[player_unit_id]
+    //     if (player == undefined) return
+    //     for (let i of actions) {
+    //         let div = document.querySelector('.battle_control>.' + i.tag)
+    //         if (div == undefined) continue;
+    //         if ((i.cost != undefined) && (player.ap < i.cost)) {
+    //             div.classList.add('disabled')
+    //         } else {
+    //             div.classList.remove('disabled')
+    //         }
+    //     } 
+    // }
     function update_action_display(tag, flag) {
         console.log(tag);
         console.log(flag);

@@ -56,7 +56,8 @@ export namespace SendUpdate {
             enchant_rating: CharacterSystem.enchant_rating(character),
             movement_cost: CharacterSystem.movement_cost_battle(character),
             move_duration_map: CharacterSystem.movement_duration_map(character),
-            base_damage_magic_bolt: Attack.magic_bolt_base_damage(character)
+            base_damage_magic_bolt: Attack.magic_bolt_base_damage(character, false),
+            base_damage_magic_bolt_charged: Attack.magic_bolt_base_damage(character, true),
         }
 
         Alerts.generic_user_alert(user, 'stats', stats);

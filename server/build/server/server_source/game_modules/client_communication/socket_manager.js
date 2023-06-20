@@ -72,7 +72,7 @@ class SocketManager {
                 actions_1.HandleAction.act(user, crafts_storage_1.craft_actions[msg]);
             });
             // socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
-            socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
+            // socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))
             socket.on('req-player-index', () => request_1.Request.player_index(user));
             socket.on('req-flee-chance', () => request_1.Request.flee_chance(user));
             socket.on('req-attacks-damage', () => request_1.Request.attack_damage(user));

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.can_shoot = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = void 0;
+exports.can_shoot = exports.has_zaz = exports.can_cast_magic_bolt_blood = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 function weapon_type(weapon) {
     if (weapon == undefined) {
@@ -39,15 +39,20 @@ function can_push_back(character) {
 }
 exports.can_push_back = can_push_back;
 function can_cast_magic_bolt(character) {
-    if (character.perks.magic_bolt) {
-        return true;
-    }
-    if (character.stash.get(materials_manager_1.ZAZ) > 0) {
-        return true;
-    }
-    return false;
+    return (character.perks.magic_bolt == true);
 }
 exports.can_cast_magic_bolt = can_cast_magic_bolt;
+function can_cast_magic_bolt_blood(character) {
+    if (character.get_hp() + character.get_blood() + 1 < 10) {
+        return false;
+    }
+    return (character.perks.magic_bolt == true) && (character.perks.blood_mage == true);
+}
+exports.can_cast_magic_bolt_blood = can_cast_magic_bolt_blood;
+function has_zaz(character) {
+    return character.stash.get(materials_manager_1.ZAZ) > 0;
+}
+exports.has_zaz = has_zaz;
 function can_shoot(character) {
     if (character.equip.data.weapon == undefined) {
         return false;

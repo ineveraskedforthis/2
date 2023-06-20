@@ -78,4 +78,18 @@ export interface BattleActionData {
     probability: number,
     damage: number,
     target: 'self'|'unit'|'position',
+    possible: boolean
 }
+
+export type ActionSelfKeys = 'Flee'|'EndTurn'|'RandomStep'
+export type ActionUnitKeys = 
+    'Pierce'
+    |'Slash'
+    |'Knock'
+    |'Ranged'
+    |'MoveTowards'
+    |'SwitchWeapon'
+    |'MagicBoltZAZ'
+    |'MagicBoltBlood'
+    |'MagicBolt';
+export type ActionPositionKeys = 'Move'

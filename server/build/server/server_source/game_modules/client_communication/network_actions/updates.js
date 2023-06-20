@@ -46,7 +46,8 @@ var SendUpdate;
             enchant_rating: system_2.CharacterSystem.enchant_rating(character),
             movement_cost: system_2.CharacterSystem.movement_cost_battle(character),
             move_duration_map: system_2.CharacterSystem.movement_duration_map(character),
-            base_damage_magic_bolt: system_3.Attack.magic_bolt_base_damage(character)
+            base_damage_magic_bolt: system_3.Attack.magic_bolt_base_damage(character, false),
+            base_damage_magic_bolt_charged: system_3.Attack.magic_bolt_base_damage(character, true),
         };
         alerts_1.Alerts.generic_user_alert(user, 'stats', stats);
     }

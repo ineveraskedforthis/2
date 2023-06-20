@@ -55,15 +55,18 @@ var Attack;
         return result;
     }
     Attack.generate_ranged = generate_ranged;
-    function magic_bolt_base_damage(character) {
-        const base_damage = 10;
+    function magic_bolt_base_damage(character, charge_flag) {
+        let base_damage = 10;
+        if (charge_flag) {
+            base_damage += 5;
+        }
         const skill = system_1.CharacterSystem.skill(character, 'magic_mastery');
         return Math.round(base_damage * system_1.CharacterSystem.magic_power(character) / 10 * (1 + skill / 10));
     }
     Attack.magic_bolt_base_damage = magic_bolt_base_damage;
-    function generate_magic_bolt(character, dist) {
+    function generate_magic_bolt(character, dist, charge_flag) {
         const result = new class_1.AttackObj('ranged');
-        result.damage.fire = magic_bolt_base_damage(character);
+        result.damage.fire = magic_bolt_base_damage(character, charge_flag);
         if (dist > 1) {
             result.damage.fire = Math.round(result.damage.fire / 7 + (result.damage.fire * 6 / 7) / dist);
         }

@@ -232,44 +232,51 @@ export namespace Event {
         return 'ok'
     }
 
-    export function magic_bolt(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
-        if (defender.dead()) return 'miss'
-        if (attacker.dead()) return 'miss'
-
+    export function unconditional_magic_bolt(attacker: Character, defender: Character, dist: number, flag_dodge: boolean, flag_charged: boolean) {
         Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
-
-        const BLOOD_COST = 10
-
-        // managing costs
-        if (attacker.stash.get(ZAZ) > 0) Event.change_stash(attacker, ZAZ, -1)
-        else if (attacker.status.blood >= BLOOD_COST) attacker.status.blood -= BLOOD_COST
-        else {
-            const blood = attacker.status.blood;
-            const hp = attacker.status.hp;
-            if (blood + hp > BLOOD_COST) {
-                attacker.status.blood = 0
-                attacker.status.hp -= (BLOOD_COST - blood)
-            } else {
-                attacker.status.hp = 1
-            }
-        }
-
         const dice = Math.random()
         if (dice > CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
             Effect.Change.skill(attacker, 'magic_mastery', 1)
         }
-
-        const attack = Attack.generate_magic_bolt(attacker, dist)
+        const attack = Attack.generate_magic_bolt(attacker, dist, flag_charged)
         attack.defender_status_change.stress += 5
-
         deal_damage(defender, attack, attacker);
-
-        //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender)
         }
-
         return 'ok'
+    }
+
+    export function magic_bolt_mage(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
+        if (defender.dead()) return 'miss'
+        if (attacker.dead()) return 'miss'
+        unconditional_magic_bolt(attacker, defender, dist, flag_dodge, false)    
+    }
+
+    export function magic_bolt_zaz(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
+        if (defender.dead()) return 'miss'
+        if (attacker.dead()) return 'miss'
+        if (attacker.stash.get(ZAZ) == 0) return  
+        Event.change_stash(attacker, ZAZ, -1)
+        unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true)
+    }
+
+    export function magic_bolt_blood(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
+        if (defender.dead()) return 'miss'
+        if (attacker.dead()) return 'miss'
+        const BLOOD_COST = 10
+        if (attacker.status.blood >= BLOOD_COST) {
+            Effect.Change.blood(attacker, -BLOOD_COST)
+        } else{
+            const blood = attacker.status.blood;
+            const hp = attacker.status.hp;
+            if (blood + hp > BLOOD_COST) {
+                attacker.status.blood = 0
+                Effect.Change.blood(attacker, -attacker.status.blood)
+                Effect.Change.hp(attacker, BLOOD_COST - blood)
+            } 
+        }
+        unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true)
     }
 
     function deal_damage(defender: Character, attack: AttackObj, attacker: Character) {

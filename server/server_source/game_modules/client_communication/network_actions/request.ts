@@ -19,29 +19,29 @@ import { ResponceNegativeQuantified, Trigger } from "../../events/triggers";
 import { CharacterSystem } from "../../character/system";
 import { PerksResponse } from "@custom_types/responses";
 import { BattleValues } from "../../battle/VALUES";
-import { ActionsPosition, ActionsSelf, ActionsUnit } from "../../battle/actions";
+import { ActionsPosition, ActionsSelf, ActionsUnit, battle_action_position_check, battle_action_self_check, battle_action_unit_check } from "../../battle/actions";
 import { BattleActionData, battle_position, unit_id } from "@custom_types/battle_data";
 import { type } from "os";
 import { Validator } from "./common_validations";
 
 
 export namespace Request {
-    export function accuracy(sw: SocketWrapper, distance: number) {
-        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        if (character == undefined) return;
-        if (!user.logged_in) {
-            return 
-        }
-        if (isNaN(distance)) {
-            return 
-        }
+    // export function accuracy(sw: SocketWrapper, distance: number) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) return;
+    //     if (!user.logged_in) {
+    //         return 
+    //     }
+    //     if (isNaN(distance)) {
+    //         return 
+    //     }
         
-        const acc = Accuracy.ranged(character, distance)
-        Alerts.battle_action_chance(user, 'shoot', acc)
+    //     const acc = Accuracy.ranged(character, distance)
+    //     Alerts.battle_action_chance(user, 'shoot', acc)
 
-        let magic_bolt = DmgOps.total(Attack.generate_magic_bolt(character, distance).damage)
-        Alerts.battle_action_damage(user, 'magic_bolt', magic_bolt)
-    }
+    //     let magic_bolt = DmgOps.total(Attack.generate_magic_bolt(character, distance).damage)
+    //     Alerts.battle_action_damage(user, 'magic_bolt', magic_bolt)
+    // }
 
     export function perks_and_skills(sw: SocketWrapper, character_id: number) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
@@ -211,7 +211,8 @@ export namespace Request {
                 cost: item.ap_cost(battle, character, unit),
                 damage: 0,
                 probability: item.chance(battle, character, unit),
-                target: 'self'
+                target: 'self',
+                possible: battle_action_self_check(key, battle, character, unit).response == 'OK'
             }
             sw.socket.emit('battle-action-update', result)
         }
@@ -244,7 +245,8 @@ export namespace Request {
                 cost: item.ap_cost(battle, character, unit, target_character, target_unit),
                 damage: item.damage(battle, character, unit, target_character, target_unit),
                 probability: item.chance(battle, character, unit, target_character, target_unit),
-                target: 'unit'
+                target: 'unit',
+                possible: battle_action_unit_check(key, battle, character, unit, target_character, target_unit).response == 'OK'
             }
             sw.socket.emit('battle-action-update', result)
         }
@@ -272,7 +274,8 @@ export namespace Request {
                 cost: item.ap_cost(battle, character, unit, target as battle_position),
                 damage: 0,
                 probability: 1, //item.chance(battle, character, unit, target),
-                target: 'position'
+                target: 'position',
+                possible: battle_action_position_check(key, battle, character, unit, target as battle_position).response == 'OK'
             }
             sw.socket.emit('battle-action-update', result)
         }

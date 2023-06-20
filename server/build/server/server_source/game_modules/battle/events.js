@@ -133,28 +133,24 @@ var BattleEvent;
         alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position, COST.CHARGE);
     }
     BattleEvent.Charge = Charge;
-    function MagicBolt(battle, attacker, defender) {
-        const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
-        const COST = 3;
-        if (!(0, checks_1.can_cast_magic_bolt)(AttackerCharacter)) {
-            return;
-        }
-        if (attacker.action_points_left < COST)
-            return;
-        const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
-        attacker.action_points_left = attacker.action_points_left - COST;
-        let dist = geom_1.geom.dist(attacker.position, defender.position);
-        let responce = events_1.Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0);
-        switch (responce) {
-            case 'miss':
-                alerts_1.Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST);
-                break;
-            case 'ok': alerts_1.Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST);
-        }
-        alerts_1.Alerts.battle_update_unit(battle, attacker);
-        alerts_1.Alerts.battle_update_unit(battle, defender);
-    }
-    BattleEvent.MagicBolt = MagicBolt;
+    // export function MagicBolt(battle: Battle, attacker: Unit, defender: Unit) {
+    //     const AttackerCharacter = Convert.unit_to_character(attacker)
+    //     const COST = 3
+    //     if (!can_cast_magic_bolt(AttackerCharacter)) {
+    //         return
+    //     }
+    //     if (attacker.action_points_left < COST) return 
+    //     const DefenderCharacter = Convert.unit_to_character(defender)        
+    //     attacker.action_points_left = attacker.action_points_left - COST as action_points
+    //     let dist = geom.dist(attacker.position, defender.position)
+    //     let responce = Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
+    //     switch(responce) {
+    //         case 'miss': Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST); break;
+    //         case 'ok': Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST)
+    //     }
+    //     Alerts.battle_update_unit(battle, attacker)
+    //     Alerts.battle_update_unit(battle, defender)
+    // }
     function Update(battle, unit) {
         alerts_1.Alerts.battle_update_unit(battle, unit);
     }

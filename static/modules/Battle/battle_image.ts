@@ -563,6 +563,13 @@ export namespace BattleImage {
                 update_action_cost(data.tag, data.cost)
                 update_action_probability(data.tag, data.probability)
                 update_action_damage(data.tag, data.damage)
+
+                let div = document.querySelector('.battle_control>.' + data.tag)!
+                if (!data.possible) {
+                    div.classList.add('disabled')
+                } else {
+                    div.classList.remove('disabled')
+                }
             }
         }
         
@@ -661,32 +668,32 @@ export namespace BattleImage {
         console.log('set_player_position')
         console.log(unit_id)
         player_unit_id = unit_id
-        update_player_actions_availability()
+        // update_player_actions_availability()
     }
 
-    export function update_player_actions_availability() {
-        if (player_unit_id == undefined) {
-            return
-        }
+    // export function update_player_actions_availability() {
+    //     if (player_unit_id == undefined) {
+    //         return
+    //     }
 
-        if (units_views[player_unit_id] == undefined) {
-            return
-        }
+    //     if (units_views[player_unit_id] == undefined) {
+    //         return
+    //     }
 
-        let player = units_views[player_unit_id]
-        if (player == undefined) return
+    //     let player = units_views[player_unit_id]
+    //     if (player == undefined) return
 
-        for (let i of actions) {
-            let div = document.querySelector('.battle_control>.' + i.tag)
-            if (div == undefined) continue;
+    //     for (let i of actions) {
+    //         let div = document.querySelector('.battle_control>.' + i.tag)
+    //         if (div == undefined) continue;
 
-            if ((i.cost != undefined) && (player.ap < i.cost)) {
-                div.classList.add('disabled')
-            } else {
-                div.classList.remove('disabled')
-            }
-        } 
-    }
+    //         if ((i.cost != undefined) && (player.ap < i.cost)) {
+    //             div.classList.add('disabled')
+    //         } else {
+    //             div.classList.remove('disabled')
+    //         }
+    //     } 
+    // }
     export function update_action_display(tag: string, flag: boolean) {
         console.log(tag)
         console.log(flag)

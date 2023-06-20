@@ -1,12 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Request = void 0;
-const system_1 = require("../../attack/system");
-const battle_calcs_1 = require("../../battle/battle_calcs");
 const perk_base_price_1 = require("../../prices/perk_base_price");
 const skill_price_1 = require("../../prices/skill_price");
 const data_1 = require("../../data");
-const damage_types_1 = require("../../damage_types");
 const constants_1 = require("../../static_data/constants");
 const systems_communication_1 = require("../../systems_communication");
 const alerts_1 = require("./alerts");
@@ -14,28 +11,26 @@ const updates_1 = require("./updates");
 const scripted_values_1 = require("../../events/scripted_values");
 const DATA_LAYOUT_BUILDING_1 = require("../../DATA_LAYOUT_BUILDING");
 const triggers_1 = require("../../events/triggers");
-const system_2 = require("../../character/system");
+const system_1 = require("../../character/system");
 const VALUES_1 = require("../../battle/VALUES");
 const actions_1 = require("../../battle/actions");
 const common_validations_1 = require("./common_validations");
 var Request;
 (function (Request) {
-    function accuracy(sw, distance) {
-        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
-        if (character == undefined)
-            return;
-        if (!user.logged_in) {
-            return;
-        }
-        if (isNaN(distance)) {
-            return;
-        }
-        const acc = battle_calcs_1.Accuracy.ranged(character, distance);
-        alerts_1.Alerts.battle_action_chance(user, 'shoot', acc);
-        let magic_bolt = damage_types_1.DmgOps.total(system_1.Attack.generate_magic_bolt(character, distance).damage);
-        alerts_1.Alerts.battle_action_damage(user, 'magic_bolt', magic_bolt);
-    }
-    Request.accuracy = accuracy;
+    // export function accuracy(sw: SocketWrapper, distance: number) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) return;
+    //     if (!user.logged_in) {
+    //         return 
+    //     }
+    //     if (isNaN(distance)) {
+    //         return 
+    //     }
+    //     const acc = Accuracy.ranged(character, distance)
+    //     Alerts.battle_action_chance(user, 'shoot', acc)
+    //     let magic_bolt = DmgOps.total(Attack.generate_magic_bolt(character, distance).damage)
+    //     Alerts.battle_action_damage(user, 'magic_bolt', magic_bolt)
+    // }
     function perks_and_skills(sw, character_id) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined) {
@@ -72,7 +67,7 @@ var Request;
             let teaching_response = triggers_1.Trigger.can_learn_from(character, target_character, skill);
             // console.log(skill, teaching_response)
             if (teaching_response.response == 'ok' || teaching_response.response == triggers_1.ResponceNegativeQuantified.Money) {
-                const teacher_skill = system_2.CharacterSystem.skill(target_character, skill);
+                const teacher_skill = system_1.CharacterSystem.skill(target_character, skill);
                 response.skills[skill] = [
                     teacher_skill,
                     (0, skill_price_1.skill_price)(skill, character, target_character)
@@ -193,7 +188,8 @@ var Request;
                 cost: item.ap_cost(battle, character, unit),
                 damage: 0,
                 probability: item.chance(battle, character, unit),
-                target: 'self'
+                target: 'self',
+                possible: (0, actions_1.battle_action_self_check)(key, battle, character, unit).response == 'OK'
             };
             sw.socket.emit('battle-action-update', result);
         }
@@ -229,7 +225,8 @@ var Request;
                 cost: item.ap_cost(battle, character, unit, target_character, target_unit),
                 damage: item.damage(battle, character, unit, target_character, target_unit),
                 probability: item.chance(battle, character, unit, target_character, target_unit),
-                target: 'unit'
+                target: 'unit',
+                possible: (0, actions_1.battle_action_unit_check)(key, battle, character, unit, target_character, target_unit).response == 'OK'
             };
             sw.socket.emit('battle-action-update', result);
         }
@@ -261,7 +258,8 @@ var Request;
                 cost: item.ap_cost(battle, character, unit, target),
                 damage: 0,
                 probability: 1,
-                target: 'position'
+                target: 'position',
+                possible: (0, actions_1.battle_action_position_check)(key, battle, character, unit, target).response == 'OK'
             };
             sw.socket.emit('battle-action-update', result);
         }
