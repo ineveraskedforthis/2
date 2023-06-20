@@ -189,7 +189,7 @@ import { SocketManager } from "./game_modules/client_communication/socket_manage
 import { Data } from './game_modules/data.js';
 import { cell_id } from '@custom_types/common.js';
 
-export var io = require('socket.io')(server);
+export var io = require('socket.io')(server, { path: '/socket.io' });
 export var socket_manager = new SocketManager(io)
 
 launch(server)
