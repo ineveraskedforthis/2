@@ -192,15 +192,28 @@ console.log(tiles);
 const tilemap = new Image();
 tilemap.src = 'static/img/battle_tiles.png';
 let key_to_action = {};
+let key_to_action_type = {};
 function HOTKEYS_HANDLER(e) {
     let action = key_to_action[e.key];
     if (action != undefined) {
-        BattleImage.send_action(action);
+        BattleImage.send_action(action, key_to_action_type[e.key]);
     }
 }
 document.addEventListener('keyup', HOTKEYS_HANDLER, false);
 export var BattleImage;
 (function (BattleImage) {
+    function request_actions_self() {
+        console.log('request actions self');
+        socket.emit('req-battle-actions-self');
+    }
+    function request_actions_unit(target) {
+        console.log('request actions unit');
+        socket.emit('req-battle-actions-unit', target);
+    }
+    function request_actions_position(target) {
+        console.log('request actions position');
+        socket.emit('req-battle-actions-position', target);
+    }
     function load(data) {
         console.log('load battle');
         console.log(data);
@@ -209,7 +222,9 @@ export var BattleImage;
             load_unit(unit);
         }
         socket.emit('req-player-index');
-        socket.emit('req-flee-chance');
+        // socket.emit('req-flee-chance')
+        request_actions_self();
+        socket.emit('req-battle-actions');
     }
     BattleImage.load = load;
     function reset() {
@@ -317,8 +332,9 @@ export var BattleImage;
         let a = player_data.position;
         let b = target_data.position;
         let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
-        update_move_ap_cost(dist, player_data.move_cost);
-        socket.emit('req-ranged-accuracy', dist);
+        // update_move_ap_cost(dist, player_data.move_cost)
+        // socket.emit('req-ranged-accuracy', dist)
+        request_actions_unit(target_data.id);
     }
     BattleImage.update_selection_data = update_selection_data;
     function select(index) {
@@ -403,25 +419,28 @@ export var BattleImage;
                 let a = player_data.position;
                 let b = position_c.canvas_to_battle(anchor_position);
                 let dist = Math.floor(position_c.dist(a, b) * 100) / 100;
-                update_move_ap_cost(dist, player_data.move_cost);
+                // update_move_ap_cost(dist, player_data.move_cost)
+                request_actions_position(b);
             }
             else {
                 socket.emit('req-player-index');
-                socket.emit('req-flee-chance');
+                request_actions_self();
             }
         }
     }
     BattleImage.press = press;
-    function update_move_ap_cost(dist, move_cost) {
-        let move_ap_div = document.getElementById('move' + '_ap_cost');
-        move_ap_div.innerHTML = 'ap: ' + (dist * move_cost).toFixed(2);
-    }
+    // function update_move_ap_cost(dist: number, move_cost: number) {
+    //     let move_ap_div = document.getElementById('move'+'_ap_cost')!
+    //     move_ap_div.innerHTML = 'ap: ' + (dist * move_cost).toFixed(2)
+    // }
     function change_bg(bg) {
         background = bg;
         let ctx = canvas_background.getContext('2d');
         ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
     }
     function add_action(action_type, hotkey) {
+        console.log('new action');
+        console.log(action_type);
         actions.push(action_type);
         console.log(action_type);
         let action_div = document.createElement('div');
@@ -430,7 +449,7 @@ export var BattleImage;
         action_div.id = "battle_action_" + action_type.tag;
         {
             let label = document.createElement('div');
-            label.innerHTML = `(${hotkey}) ${action_type.name}`;
+            label.innerHTML = `(${hotkey || ''}) ${action_type.name}`;
             action_div.appendChild(label);
         }
         {
@@ -438,44 +457,61 @@ export var BattleImage;
             label.id = action_type.tag + '_ap_cost';
             action_div.appendChild(label);
             if (action_type.cost != undefined) {
-                label.innerHTML = 'ap: ' + action_type.cost;
+                label.innerHTML = 'ap: ' + action_type.cost.toFixed(2);
             }
         }
-        if (action_type.probabilistic) {
+        {
             let label = document.createElement('div');
             label.id = action_type.tag + '_chance_b';
             label.innerHTML = '???%';
             action_div.appendChild(label);
         }
-        if (action_type.damaging) {
+        {
             let label = document.createElement('div');
             label.id = action_type.tag + '_damage_b';
             label.innerHTML = '???';
             action_div.appendChild(label);
         }
-        key_to_action[hotkey] = action_type.tag;
-        action_div.onclick = () => send_action(action_type.tag);
+        if (hotkey != undefined) {
+            key_to_action[hotkey] = action_type.tag;
+            key_to_action_type[hotkey] = action_type.target;
+        }
+        action_div.onclick = () => send_action(action_type.tag, action_type.target);
         // action_divs[action_type.name] = action_div
         let div = document.querySelector('.battle_control');
         div.appendChild(action_div);
     }
     BattleImage.add_action = add_action;
+    function update_action(data, hotkey) {
+        let flag = false;
+        for (let item of actions) {
+            if (item.tag == data.tag) {
+                flag = true;
+                update_action_cost(data.tag, data.cost);
+                update_action_probability(data.tag, data.probability);
+                update_action_damage(data.tag, data.damage);
+            }
+        }
+        if (!flag)
+            add_action(data, hotkey);
+    }
+    BattleImage.update_action = update_action;
     function update_action_probability(tag, value) {
         console.log(tag, value);
         let label = document.getElementById(tag + '_chance_b');
-        label.innerHTML = Math.floor(value * 100) + '%';
+        label.innerHTML = Math.floor(value * 100).toFixed(1) + '%';
     }
     BattleImage.update_action_probability = update_action_probability;
     function update_action_damage(tag, value) {
         console.log(tag, value);
         let label = document.getElementById(tag + '_damage_b');
-        label.innerHTML = '~' + value.toString();
+        label.innerHTML = '~' + value.toFixed(2);
     }
     BattleImage.update_action_damage = update_action_damage;
     function update_action_cost(tag, value) {
         console.log(tag, value);
         let label = document.getElementById(tag + '_ap_cost');
-        label.innerHTML = value.toString();
+        label.innerHTML = value.toFixed(2);
     }
     BattleImage.update_action_cost = update_action_cost;
     function set_current_turn(index, time_passed) {
@@ -492,55 +528,57 @@ export var BattleImage;
         current_turn = index;
     }
     BattleImage.set_current_turn = set_current_turn;
-    function send_action(tag) {
-        console.log('send action ' + tag);
-        if (tag.startsWith('spell')) {
-            if (selected != undefined) {
-                socket.emit('battle-action', { action: tag, target: selected });
-            }
+    function send_action(tag, target_type) {
+        console.log('send action ' + tag, selected, position_c.canvas_to_battle(anchor_position || { x: 0, y: 0 }));
+        if (target_type == 'self') {
+            socket.emit('battle-action-self', tag);
         }
-        else if (tag == 'move') {
+        if (target_type == 'unit') {
+            socket.emit('battle-action-unit', { tag: tag, target: selected });
+        }
+        if (target_type == 'position') {
             if (anchor_position != undefined) {
-                socket.emit('battle-action', { action: 'move', target: position_c.canvas_to_battle(anchor_position) });
+                socket.emit('battle-action-position', { tag: tag, target: position_c.canvas_to_battle(anchor_position) });
             }
         }
-        else if (tag.startsWith('attack')) {
-            if (selected != undefined) {
-                socket.emit('battle-action', { action: tag, target: selected });
-            }
-        }
-        else if (tag == 'fast_attack') {
-            if (selected != undefined) {
-                socket.emit('battle-action', { action: 'fast_attack', target: selected });
-            }
-        }
-        else if (tag == 'magic_bolt') {
-            if (selected != undefined) {
-                socket.emit('battle-action', { action: 'magic_bolt', target: selected });
-            }
-        }
-        else if (tag == 'push_back') {
-            if (selected != undefined) {
-                socket.emit('battle-action', { action: 'push_back', target: selected });
-            }
-        }
-        else if (tag == 'shoot') {
-            if (selected != undefined) {
-                socket.emit('battle-action', { action: 'shoot', target: selected });
-            }
-        }
-        else if (tag == 'switch_weapon') {
-            socket.emit('battle-action', { action: 'switch_weapon' });
-        }
-        else if (tag == 'flee') {
-            socket.emit('battle-action', { action: 'flee' });
-        }
-        else if (tag == 'dodge') {
-            socket.emit('battle-action', { action: 'dodge' });
-        }
-        else if (tag == 'end_turn') {
-            socket.emit('battle-action', { action: 'end_turn' });
-        }
+        // socket.emit()
+        // if (tag.startsWith('spell')) {
+        //     if (selected != undefined) {
+        //         socket.emit('battle-action', {action: tag, target: selected})
+        //     }
+        // } else if (tag == 'move') {
+        //     if (anchor_position != undefined) {
+        //         socket.emit('battle-action', {action: 'move', target: position_c.canvas_to_battle(anchor_position)})
+        //     }
+        // } else if (tag.startsWith('attack')) {
+        //     if (selected != undefined) {
+        //         socket.emit('battle-action', {action: tag, target: selected})
+        //     }
+        // } else if (tag == 'fast_attack') {
+        //     if (selected != undefined) {
+        //         socket.emit('battle-action', {action: 'fast_attack', target: selected})
+        //     }
+        // } else if (tag == 'magic_bolt') {
+        //     if (selected != undefined) {
+        //         socket.emit('battle-action', {action: 'magic_bolt', target: selected})
+        //     }
+        // } else if (tag == 'push_back') {
+        //     if (selected != undefined) {
+        //         socket.emit('battle-action', {action: 'push_back', target: selected})
+        //     }
+        // } else if (tag == 'shoot') {
+        //     if (selected != undefined) {
+        //         socket.emit('battle-action', {action: 'shoot', target: selected})
+        //     }
+        // }else if (tag == 'switch_weapon') {
+        //     socket.emit('battle-action', {action: 'switch_weapon'})
+        // } else if (tag == 'flee') {
+        //     socket.emit('battle-action', {action: 'flee'})
+        // } else if (tag == 'dodge') {
+        //     socket.emit('battle-action', {action: 'dodge'})
+        // }else if (tag == 'end_turn') {
+        //     socket.emit('battle-action', {action: 'end_turn'})
+        // }
     }
     BattleImage.send_action = send_action;
     function set_player(unit_id) {

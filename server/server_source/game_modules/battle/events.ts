@@ -30,7 +30,7 @@ export namespace BattleEvent {
         unit.next_turn_after = battle.heap.get_max() + 1
         battle.heap.add_unit(unit)
         Alerts.new_unit(battle, unit)
-        if (battle.grace_period > 0) battle.grace_period += 6
+        if (battle.grace_period > 0) battle.grace_period = 5
         Alerts.battle_event_simple(battle, 'unit_join', unit, 0)
     }
 
@@ -71,7 +71,7 @@ export namespace BattleEvent {
 
         //updating unit and heap
         battle.turn_ended = true
-        console.log(battle.heap.heap, battle.heap.last)
+        // console.log(battle.heap.heap, battle.heap.last)
         battle.heap.pop()
         unit.next_turn_after = battle.heap.get_max() + 1
 
@@ -118,12 +118,9 @@ export namespace BattleEvent {
         // Alerts.battle_update_units(battle)
     }
 
-    export function Move(battle: Battle, unit: Unit, character: Character, target: battle_position) {
-
+    export function Move(battle: Battle, unit: Unit, character: Character, target: battle_position, ignore_flag: boolean) {
         let tmp = geom.minus(target, unit.position)
-
         var points_spent = geom.norm(tmp) * BattleValues.move_cost(unit, character)
-
         if (points_spent > unit.action_points_left) {
             tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / BattleValues.move_cost(unit, character)) as battle_position
             points_spent = unit.action_points_left
@@ -131,10 +128,11 @@ export namespace BattleEvent {
         const result = {x: tmp.x + unit.position.x, y: tmp.y + unit.position.y} as battle_position
         SetCoord(battle, unit, result)
 
-        unit.action_points_left =  unit.action_points_left - points_spent as action_points
-        
-        Alerts.battle_event_target_position(battle, 'move', unit, unit.position, points_spent)
-        Alerts.battle_update_unit(battle, unit)
+        if (!ignore_flag) {
+            // unit.action_points_left =  unit.action_points_left - points_spent as action_points
+            Alerts.battle_event_target_position(battle, 'move', unit, unit.position, points_spent)
+            Alerts.battle_update_unit(battle, unit)
+        }        
     }
 
     export function SetCoord(battle: Battle, unit: Unit, target: battle_position) {
@@ -159,34 +157,6 @@ export namespace BattleEvent {
         }
 
         Alerts.battle_event_target_position(battle, 'move', unit, unit.position, COST.CHARGE)
-    }
-
-    export function Shoot(battle: Battle, attacker: Unit, defender: Unit) {
-        const AttackerCharacter = Convert.unit_to_character(attacker)
-
-        const COST = 3
-
-        if (!can_shoot(AttackerCharacter)) {
-            return 
-        }
-
-        if (attacker.action_points_left < COST) {
-            Alerts.not_enough_to_character(AttackerCharacter, 'action_points', attacker.action_points_left, COST, undefined)
-            return
-        }
-
-        let dist = geom.dist(attacker.position, defender.position)
-        const DefenderCharacter = Convert.unit_to_character(defender)
-
-        attacker.action_points_left = attacker.action_points_left - COST as action_points
-        let responce = Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
-        switch(responce) {
-            case 'miss': Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST); break;
-            case 'no_ammo': Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 0, 1, undefined)
-            case 'ok': Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST)
-        }
-        Alerts.battle_update_unit(battle, attacker)
-        Alerts.battle_update_unit(battle, defender)
     }
 
     export function MagicBolt(battle: Battle, attacker: Unit, defender: Unit) {

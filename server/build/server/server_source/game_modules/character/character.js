@@ -32,7 +32,8 @@ class Character {
         this.cleared = false;
         this.action_progress = 0;
         this.action_duration = 0;
-        this.ai_state = 0 /* AIstate.Idle */;
+        this.ai_state = "idle" /* AIstate.Idle */;
+        this.ai_memories = [];
         this.ai_price_belief_buy = new Map();
         this.ai_price_belief_sell = new Map();
         this._skills = new SkillList_1.SkillList();

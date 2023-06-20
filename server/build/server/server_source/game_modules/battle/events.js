@@ -21,7 +21,7 @@ var BattleEvent;
         battle.heap.add_unit(unit);
         alerts_1.Alerts.new_unit(battle, unit);
         if (battle.grace_period > 0)
-            battle.grace_period += 6;
+            battle.grace_period = 5;
         alerts_1.Alerts.battle_event_simple(battle, 'unit_join', unit, 0);
     }
     BattleEvent.NewUnit = NewUnit;
@@ -57,7 +57,7 @@ var BattleEvent;
         battle.waiting_for_input = false;
         //updating unit and heap
         battle.turn_ended = true;
-        console.log(battle.heap.heap, battle.heap.last);
+        // console.log(battle.heap.heap, battle.heap.last)
         battle.heap.pop();
         unit.next_turn_after = battle.heap.get_max() + 1;
         const character = systems_communication_1.Convert.unit_to_character(unit);
@@ -96,7 +96,7 @@ var BattleEvent;
         // Alerts.battle_update_units(battle)
     }
     BattleEvent.NewTurn = NewTurn;
-    function Move(battle, unit, character, target) {
+    function Move(battle, unit, character, target, ignore_flag) {
         let tmp = geom_1.geom.minus(target, unit.position);
         var points_spent = geom_1.geom.norm(tmp) * VALUES_1.BattleValues.move_cost(unit, character);
         if (points_spent > unit.action_points_left) {
@@ -105,9 +105,11 @@ var BattleEvent;
         }
         const result = { x: tmp.x + unit.position.x, y: tmp.y + unit.position.y };
         SetCoord(battle, unit, result);
-        unit.action_points_left = unit.action_points_left - points_spent;
-        alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position, points_spent);
-        alerts_1.Alerts.battle_update_unit(battle, unit);
+        if (!ignore_flag) {
+            // unit.action_points_left =  unit.action_points_left - points_spent as action_points
+            alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position, points_spent);
+            alerts_1.Alerts.battle_update_unit(battle, unit);
+        }
     }
     BattleEvent.Move = Move;
     function SetCoord(battle, unit, target) {
@@ -131,31 +133,6 @@ var BattleEvent;
         alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position, COST.CHARGE);
     }
     BattleEvent.Charge = Charge;
-    function Shoot(battle, attacker, defender) {
-        const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
-        const COST = 3;
-        if (!(0, checks_1.can_shoot)(AttackerCharacter)) {
-            return;
-        }
-        if (attacker.action_points_left < COST) {
-            alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'action_points', attacker.action_points_left, COST, undefined);
-            return;
-        }
-        let dist = geom_1.geom.dist(attacker.position, defender.position);
-        const DefenderCharacter = systems_communication_1.Convert.unit_to_character(defender);
-        attacker.action_points_left = attacker.action_points_left - COST;
-        let responce = events_1.Event.shoot(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0);
-        switch (responce) {
-            case 'miss':
-                alerts_1.Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST);
-                break;
-            case 'no_ammo': alerts_1.Alerts.not_enough_to_character(AttackerCharacter, 'arrow', 0, 1, undefined);
-            case 'ok': alerts_1.Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST);
-        }
-        alerts_1.Alerts.battle_update_unit(battle, attacker);
-        alerts_1.Alerts.battle_update_unit(battle, defender);
-    }
-    BattleEvent.Shoot = Shoot;
     function MagicBolt(battle, attacker, defender) {
         const AttackerCharacter = systems_communication_1.Convert.unit_to_character(attacker);
         const COST = 3;

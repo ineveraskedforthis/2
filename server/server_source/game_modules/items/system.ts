@@ -126,7 +126,7 @@ export namespace ItemSystem {
 
         let damage = new Damage()
         if (weapon?.weapon_tag == 'ranged') {
-            damage.pierce = Math.floor(50 * weapon.durability / 100)
+            damage.pierce = Math.floor(20 + weapon.durability / 10)
             damage = DmgOps.add(damage, affix_damage)
             return damage
         }

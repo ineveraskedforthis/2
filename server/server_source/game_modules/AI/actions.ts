@@ -78,7 +78,7 @@ export function sell_material(character: Character, material: material_index) {
     return true;
 }
 
-export function buy_food(character: Character) {
+export function buy(character: Character, material_index: material_index) {
     let orders = Convert.cell_id_to_bulk_orders(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
@@ -86,7 +86,7 @@ export function buy_food(character: Character) {
         let order = Convert.id_to_bulk_order(item);
         if (order.typ == 'buy')
             continue;
-        if (order.tag != FOOD)
+        if (order.tag != material_index)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -139,11 +139,13 @@ export function random_walk(char: Character, constraints: (cell: Cell) => boolea
         let target_id = Data.World.coordinate_to_id(tmp)
         let target_cell = Data.Cells.from_id(target_id)
         if (target_cell != undefined) {
-            if (MapSystem.can_move(tmp) && constraints(cell)) {
+            if (MapSystem.can_move(tmp) && constraints(target_cell)) {
                 possible_moves.push(tmp)
             }
         } 
     }
+    // console.log(cell.x, cell.y)
+    // console.log(possible_moves)
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)]
         ActionManager.start_action(

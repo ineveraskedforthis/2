@@ -67,4 +67,30 @@ export namespace Validator {
         
         return [user, character, target_character]
     }
+
+    export function is_point(value: unknown): value is { x: number, y: number } {
+        if (!(typeof value === 'object') || value === null) return false
+        if (!('x' in value) || !('y' in value)) return false
+        if (typeof (value as { x: unknown, y: unknown })['x'] !== 'number' || typeof (value as { x: unknown, y: unknown })['y'] !== 'number') return false
+
+        return true
+    }
+
+    export function is_tag_value(value: unknown): value is { tag: string, target: number } {
+        if (!(typeof value === 'object') || value === null) return false
+        if (!('tag' in value)) return false
+        if (!('target' in value)) return false
+        if (!(typeof (value as { tag: unknown, target: unknown }).tag === 'string') || !(typeof (value as { tag: unknown, target: unknown }).target === 'number')) return false
+        return true;
+    }
+
+    export function is_tag_point(value: unknown): value is { tag: string, target: { x: number, y: number } } {
+        if (!(typeof value === 'object') || value === null) return false
+        if (!('tag' in value)) return false
+        if (!('target' in value)) return false
+        if (!(typeof (value as { tag: unknown, target: unknown }).tag === 'string')) return false
+        if (!is_point((value as { tag: unknown, target: unknown }).target)) return false
+        
+        return true
+    }
 }

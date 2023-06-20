@@ -71,11 +71,18 @@ class SocketManager {
                     return;
                 actions_1.HandleAction.act(user, crafts_storage_1.craft_actions[msg]);
             });
-            socket.on('battle-action', (msg) => actions_1.HandleAction.battle(user, msg));
+            // socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance) => request_1.Request.accuracy(user, distance));
             socket.on('req-player-index', () => request_1.Request.player_index(user));
             socket.on('req-flee-chance', () => request_1.Request.flee_chance(user));
             socket.on('req-attacks-damage', () => request_1.Request.attack_damage(user));
+            // socket.on('req-battle-actions', () => Request.battle_actions(user))
+            socket.on('req-battle-actions-self', () => request_1.Request.battle_actions_self(user));
+            socket.on('req-battle-actions-unit', (data) => request_1.Request.battle_actions_unit(user, data));
+            socket.on('req-battle-actions-position', (data) => request_1.Request.battle_actions_position(user, data));
+            socket.on('battle-action-self', (msg) => actions_1.HandleAction.battle_self(user, msg));
+            socket.on('battle-action-unit', (msg) => actions_1.HandleAction.battle_unit(user, msg));
+            socket.on('battle-action-position', (msg) => actions_1.HandleAction.battle_position(user, msg));
             socket.on('request-talk', (msg) => request_1.Request.perks_and_skills(user, msg));
             socket.on('request-local-buildings', (msg) => request_1.Request.local_buildings(user));
             socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg));

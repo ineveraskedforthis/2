@@ -48,6 +48,7 @@ function epitet(number) {
     if (number >= 30) {
         return 'mediocre';
     }
+    return 'novice';
 }
 function build_perks_list(data) {
     console.log('build perks');

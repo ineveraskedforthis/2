@@ -26,6 +26,7 @@ export const enum UI_Part {
         CRAFT,
             // COOKING_CRAFT, 
         BATTLE,
+        // BATTLE_ACTIONS,
         MARKET,
         STATS,
 }
@@ -37,6 +38,7 @@ const children:{[_ in UI_Part]?: UI_Part[]} = {
                                             UI_Part.SKILLS, 
                                             UI_Part.CRAFT, 
                                             UI_Part.BATTLE,
+                                            // UI_Part.BATTLE_ACTIONS,
                                             UI_Part.MARKET,
                                             UI_Part.STATS],
         [UI_Part.STATUS]                : [ UI_Part.HP],
@@ -78,6 +80,7 @@ const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
         [UI_Part.CRAFT]                 : SendUpdate.all_craft,
             // [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
         [UI_Part.BATTLE]                : SendUpdate.battle,
+            // [UI_Part.BATTLE_ACTIONS]    : SendUpdate.battle_actions,
         [UI_Part.MARKET]                : SendUpdate.market,
         [UI_Part.STATS]                 : SendUpdate.stats,
 }

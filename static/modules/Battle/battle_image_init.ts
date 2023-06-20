@@ -1,35 +1,51 @@
 import { BattleImage, battle_in_progress, events_list, player_unit_id } from "./battle_image.js";
-import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, UnitSocket } from "../../../shared/battle_data.js"
+import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, UnitSocket, BattleActionData } from "../../../shared/battle_data.js"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../globals.js"
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
-import { SocketAddress } from "net";
+
 
 // export const battle_image = new BattleImageNext();
 const events_queue: BattleEventSocket[] = []
 
+const keybinds: { [key: string]: string } = {
+    'Move': 'q',
+    'MoveTowards': 'w',
+    'Slash': 'e',
+    'Pierce': 'r',
+    'Knock': 't',
+    'MagicBolt': 'a',
+    'Shoot': 's',
+    'Retreat': 'd',
+    'EndTurn': 'f',  
+} 
 
 
 
+socket.on('battle-action-set-up', (data: BattleActionData) => {
+    BattleImage.add_action(data, keybinds[data.tag])
+})
+
+socket.on('battle-action-update', (data: BattleActionData) => {
+    BattleImage.update_action(data, keybinds[data.tag])
+})
 
 
 
+// BattleImage.add_action({name: 'Move', tag: 'move'}, 'q')
 
+// BattleImage.add_action({name: 'Slash',  tag: 'attack_slice',    cost: 3, damaging: true}, 'w')
+// BattleImage.add_action({name: 'Pierce', tag: 'attack_pierce',   cost: 3, damaging: true}, 'e')
+// BattleImage.add_action({name: 'Knock',  tag: 'attack_blunt',    cost: 3, damaging: true}, 'r')
 
-BattleImage.add_action({name: 'Move', tag: 'move'}, 'q')
+// BattleImage.add_action({name: 'Magic Bolt', tag: 'magic_bolt', cost: 3, damaging: true}, 'a')
+// BattleImage.add_action({name: 'Shoot', tag: 'shoot', cost: 3, probabilistic: true, damaging: true}, 's')
 
-BattleImage.add_action({name: 'Slash',  tag: 'attack_slice',    cost: 3, damaging: true}, 'w')
-BattleImage.add_action({name: 'Pierce', tag: 'attack_pierce',   cost: 3, damaging: true}, 'e')
-BattleImage.add_action({name: 'Knock',  tag: 'attack_blunt',    cost: 3, damaging: true}, 'r')
+// BattleImage.add_action({name: 'Dodge', tag: 'dodge', cost: 4}, 'd')
 
-BattleImage.add_action({name: 'Magic Bolt', tag: 'magic_bolt', cost: 3, damaging: true}, 'a')
-BattleImage.add_action({name: 'Shoot', tag: 'shoot', cost: 3, probabilistic: true, damaging: true}, 's')
-
-BattleImage.add_action({name: 'Dodge', tag: 'dodge', cost: 4}, 'd')
-
-BattleImage.add_action({name: 'Retreat', tag: 'flee', cost: 3, probabilistic: true}, 'f')
-BattleImage.add_action({name: 'Switch Weapon', tag: 'switch_weapon', cost: 3}, 'z')
-BattleImage.add_action({name: 'End Turn', tag: 'end_turn', cost: 0}, 'x')
+// BattleImage.add_action({name: 'Retreat', tag: 'flee', cost: 3, probabilistic: true}, 'f')
+// BattleImage.add_action({name: 'Switch Weapon', tag: 'switch_weapon', cost: 3}, 'z')
+// BattleImage.add_action({name: 'End Turn', tag: 'end_turn', cost: 0}, 'x')
 
 
 
@@ -133,11 +149,11 @@ function end_battle() {
 
 
 // non events
-socket.on('action-display', data =>     {BattleImage.update_action_display(data.tag, data.value)})
+// socket.on('action-display', data =>     {BattleImage.update_action_display(data.tag, data.value)})
 // socket.on('new-action',                 msg => BattleImage.add_action({name: msg, tag:msg}, undefined));
-socket.on('b-action-chance',            msg => BattleImage.update_action_probability(msg.tag, msg.value))
-socket.on('b-action-damage',            msg => BattleImage.update_action_damage(msg.tag, msg.value))
-socket.on('b-action-cost',              msg => BattleImage.update_action_cost(msg.tag, msg.value))
+// socket.on('b-action-chance',            msg => BattleImage.update_action_probability(msg.tag, msg.value))
+// socket.on('b-action-damage',            msg => BattleImage.update_action_damage(msg.tag, msg.value))
+// socket.on('b-action-cost',              msg => BattleImage.update_action_cost(msg.tag, msg.value))
 socket.on('battle-in-process',          bCallback.update_battle_process)
 // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
 socket.on('battle-update-units',        data => BattleImage.load(data))

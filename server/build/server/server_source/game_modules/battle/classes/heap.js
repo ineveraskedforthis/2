@@ -17,6 +17,9 @@ class UnitsHeap {
         }
     }
     get_value(i) {
+        if (this.data[this.heap[i]] == undefined) {
+            return 99999;
+        }
         return this.data[this.heap[i]].next_turn_after;
     }
     get_max() {

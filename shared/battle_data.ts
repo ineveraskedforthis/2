@@ -70,3 +70,12 @@ export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTur
 export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'|'push_back'|'magic_bolt'|'switch_weapon'|'shoot'
 
 export type ActionLog = Action[]
+
+export interface BattleActionData {
+    name: string,
+    tag: string,
+    cost: number,
+    probability: number,
+    damage: number,
+    target: 'self'|'unit'|'position',
+}

@@ -5,7 +5,7 @@ import { Savings} from "../inventories/savings";
 import { Archetype, building_id, char_id, InnateStats, map_position, ModelVariant, Stats, Status, status_type, TEMP_USER_ID, user_id } from "../types";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
-import { AIstate } from "./AIstate";
+import { AImemory, AIstate } from "./AIstate";
 import { material_index } from "../manager_classes/materials_manager";
 import { PerksTable } from "../../../../shared/character";
 import { cell_id, money } from "../../../../shared/common";
@@ -44,6 +44,7 @@ export class Character {
     next_cell: cell_id
 
     ai_state: AIstate;
+    ai_memories: AImemory[];
     ai_price_belief_sell: Map<material_index, money>;
     ai_price_belief_buy: Map<material_index, money>;
 
@@ -89,6 +90,7 @@ export class Character {
         this.action_duration = 0
 
         this.ai_state = AIstate.Idle;
+        this.ai_memories = []
         this.ai_price_belief_buy = new Map()
         this.ai_price_belief_sell = new Map()
 

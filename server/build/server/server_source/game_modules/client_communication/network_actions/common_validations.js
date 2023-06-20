@@ -80,4 +80,40 @@ var Validator;
         return [user, character, target_character];
     }
     Validator.valid_action_to_character = valid_action_to_character;
+    function is_point(value) {
+        if (!(typeof value === 'object') || value === null)
+            return false;
+        if (!('x' in value) || !('y' in value))
+            return false;
+        if (typeof value['x'] !== 'number' || typeof value['y'] !== 'number')
+            return false;
+        return true;
+    }
+    Validator.is_point = is_point;
+    function is_tag_value(value) {
+        if (!(typeof value === 'object') || value === null)
+            return false;
+        if (!('tag' in value))
+            return false;
+        if (!('target' in value))
+            return false;
+        if (!(typeof value.tag === 'string') || !(typeof value.target === 'number'))
+            return false;
+        return true;
+    }
+    Validator.is_tag_value = is_tag_value;
+    function is_tag_point(value) {
+        if (!(typeof value === 'object') || value === null)
+            return false;
+        if (!('tag' in value))
+            return false;
+        if (!('target' in value))
+            return false;
+        if (!(typeof value.tag === 'string'))
+            return false;
+        if (!is_point(value.target))
+            return false;
+        return true;
+    }
+    Validator.is_tag_point = is_tag_point;
 })(Validator = exports.Validator || (exports.Validator = {}));

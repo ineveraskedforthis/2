@@ -34,6 +34,7 @@ export namespace GameMaster {
             Template.Character.HumanFletcher(x, y, "Fletcher", 'city')
             Template.Character.ArmourMaster(x, y)
             Template.Character.WeaponMasterWood(x, y, 'city')
+            Template.Character.HumanLocalTrader(x, y, "Local Trader", 'city')
 
             // colony mages
             Template.Character.Alchemist(x, y, 'city')
@@ -91,13 +92,13 @@ export namespace GameMaster {
         let num_elos = 0
         let num_balls = 0
         for (const character of Data.CharacterDB.list()) {
-            if (character.race() == 'rat') {
+            if ((character.race() == 'rat') && (!character.dead())) {
                 num_rats += 1
             }
-            if (character.race() == 'elo') {
+            if ((character.race() == 'elo') && (!character.dead())) {
                 num_elos += 1
             }
-            if (character.race() == 'ball') {
+            if ((character.race() == 'ball') && (!character.dead())) {
                 num_balls += 1
             }
         }

@@ -30,6 +30,7 @@ var GameMaster;
             templates_1.Template.Character.HumanFletcher(x, y, "Fletcher", 'city');
             templates_1.Template.Character.ArmourMaster(x, y);
             templates_1.Template.Character.WeaponMasterWood(x, y, 'city');
+            templates_1.Template.Character.HumanLocalTrader(x, y, "Local Trader", 'city');
             // colony mages
             templates_1.Template.Character.Alchemist(x, y, 'city');
             templates_1.Template.Character.Mage(x, y, 'city');
@@ -78,13 +79,13 @@ var GameMaster;
         let num_elos = 0;
         let num_balls = 0;
         for (const character of data_1.Data.CharacterDB.list()) {
-            if (character.race() == 'rat') {
+            if ((character.race() == 'rat') && (!character.dead())) {
                 num_rats += 1;
             }
-            if (character.race() == 'elo') {
+            if ((character.race() == 'elo') && (!character.dead())) {
                 num_elos += 1;
             }
-            if (character.race() == 'ball') {
+            if ((character.race() == 'ball') && (!character.dead())) {
                 num_balls += 1;
             }
         }

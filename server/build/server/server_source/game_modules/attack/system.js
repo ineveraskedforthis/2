@@ -51,7 +51,7 @@ var Attack;
         const skill = system_1.CharacterSystem.skill(character, 'ranged');
         result.attack_skill += skill;
         //modify current damage with skill
-        damage_types_1.DmgOps.mult_ip(result.damage, 1 + skill / 20);
+        damage_types_1.DmgOps.mult_ip(result.damage, 1 + skill / 50);
         return result;
     }
     Attack.generate_ranged = generate_ranged;

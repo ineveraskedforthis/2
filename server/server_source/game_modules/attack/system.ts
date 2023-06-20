@@ -45,11 +45,9 @@ export namespace Attack {
         const result = new AttackObj('ranged')
         //raw items damage
         DmgOps.add_ip(result.damage, CharacterSystem.ranged_damage_raw(character))
-
         //account for strength
         const physical_modifier = CharacterSystem.phys_power(character)
         DmgOps.mult_ip(result.damage, physical_modifier / 10)
-
         //account for items modifiers
         character.equip.modify_attack(result)
 
@@ -59,7 +57,7 @@ export namespace Attack {
         result.attack_skill += skill
 
         //modify current damage with skill
-        DmgOps.mult_ip(result.damage, 1 + skill / 20)
+        DmgOps.mult_ip(result.damage, 1 + skill / 50)
         return result
     }
 

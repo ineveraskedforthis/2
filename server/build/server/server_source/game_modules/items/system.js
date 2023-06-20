@@ -124,7 +124,7 @@ var ItemSystem;
         }
         let damage = new Damage_1.Damage();
         if (weapon?.weapon_tag == 'ranged') {
-            damage.pierce = Math.floor(50 * weapon.durability / 100);
+            damage.pierce = Math.floor(20 + weapon.durability / 10);
             damage = damage_types_1.DmgOps.add(damage, affix_damage);
             return damage;
         }

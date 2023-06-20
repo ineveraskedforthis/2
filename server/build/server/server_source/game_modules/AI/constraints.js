@@ -14,8 +14,9 @@ function forest_constraints(cell) {
 }
 exports.forest_constraints = forest_constraints;
 function urban_constraints(cell) {
-    return (data_1.Data.Cells.urbanisation(cell.id) > 0)
-        && (system_1.MapSystem.can_move([cell.x, cell.y]));
+    // console.log(cell.x, cell.y)
+    // console.log(Data.Cells.urbanisation(cell.id))
+    return (data_1.Data.Cells.urbanisation(cell.id) > 0) && (system_1.MapSystem.can_move([cell.x, cell.y]));
 }
 exports.urban_constraints = urban_constraints;
 function steppe_constraints(cell) {

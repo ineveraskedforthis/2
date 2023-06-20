@@ -512,18 +512,12 @@ export class Map {
         var ctx = this.canvas.getContext('2d');
         if (this.move_flag) {
             let c = this.get_hex_centre(this.curr_pos[0], this.curr_pos[1])
-            let b = this.get_hex_centre(this.move_target[0], this.move_target[1])
+            if (this.move_target != undefined) {
+                let b = this.get_hex_centre(this.move_target[0], this.move_target[1])
+                ctx.strokeStyle = 'rgba' + '(200, 200, 0, 1)';
+                this.draw_pentagon(ctx, c[0] * (1 - this.movement_progress) + b[0] * this.movement_progress, c[1] * (1 - this.movement_progress) + b[1] * this.movement_progress, 10)
 
-            ctx.strokeStyle = 'rgba' + '(200, 200, 0, 1)';
-            // ctx.beginPath();
-            // ctx.arc(c[0] * (1 - this.movement_progress) + b[0] * this.movement_progress, 
-            //         c[1] * (1 - this.movement_progress) + b[1] * this.movement_progress, 
-            //         5, 0, Math.PI * 2, true);
-            // ctx.stroke();
-
-            this.draw_pentagon(ctx, c[0] * (1 - this.movement_progress) + b[0] * this.movement_progress, c[1] * (1 - this.movement_progress) + b[1] * this.movement_progress, 10)
-
-            // this.draw_hex(this.curr_pos[0], this.curr_pos[1], 'circle', '(0, 255, 0, 1)');
+            }
         } else {
             this.draw_hex(this.curr_pos[0], this.curr_pos[1], 'pentagon', '(200, 200, 0, 1)', 10);
         }        

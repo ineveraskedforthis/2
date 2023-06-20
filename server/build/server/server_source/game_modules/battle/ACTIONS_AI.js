@@ -8,6 +8,8 @@ const actions_1 = require("./actions");
 const VALUES_1 = require("./VALUES");
 const TRIGGERS_1 = require("./TRIGGERS");
 const systems_communication_1 = require("../systems_communication");
+const inventory_events_1 = require("../events/inventory_events");
+const checks_1 = require("../character/checks");
 const RANDOM_STEP_LENGTH = 2;
 function always(character) {
     return true;
@@ -73,6 +75,7 @@ exports.BattleActionsBasicAI = {
 exports.BattleActionsPerUnitAI = {
     "AttackPierce": {
         max_utility: 1,
+        valid: always,
         range: (battle, character, unit) => {
             return actions_1.ActionsUnit.Pierce.range(battle, character, unit);
         },
@@ -85,13 +88,20 @@ exports.BattleActionsPerUnitAI = {
         utility: (battle, character, unit, target_character, target_unit) => {
             if (target_character.dead())
                 return 0;
+            if (unit.action_points_left < actions_1.ActionsUnit.Pierce.ap_cost(battle, character, unit, target_character, target_unit)) {
+                return 0;
+            }
+            if (geom_1.geom.dist(unit.position, target_unit.position) > actions_1.ActionsUnit.Pierce.range(battle, character, unit)) {
+                return 0;
+            }
             if (TRIGGERS_1.BattleTriggers.is_enemy(unit, character, target_unit, target_character)) {
-                return 1 / geom_1.geom.dist(unit.position, target_unit.position) * actions_1.ActionsUnit.Pierce.damage(battle, character, unit) / target_character.get_hp();
+                return 1 / geom_1.geom.dist(unit.position, target_unit.position) * actions_1.ActionsUnit.Pierce.damage(battle, character, unit, target_character, target_unit) / target_character.get_hp();
             }
             return 0;
         },
     },
     "AttackSlash": {
+        valid: always,
         max_utility: 1,
         range: (battle, character, unit) => {
             return actions_1.ActionsUnit.Slash.range(battle, character, unit);
@@ -106,13 +116,20 @@ exports.BattleActionsPerUnitAI = {
         utility: (battle, character, unit, target_character, target_unit) => {
             if (target_character.dead())
                 return 0;
+            if (unit.action_points_left < actions_1.ActionsUnit.Slash.ap_cost(battle, character, unit, target_character, target_unit)) {
+                return 0;
+            }
+            if (geom_1.geom.dist(unit.position, target_unit.position) > actions_1.ActionsUnit.Slash.range(battle, character, unit)) {
+                return 0;
+            }
             if (TRIGGERS_1.BattleTriggers.is_enemy(unit, character, target_unit, target_character)) {
-                return 1 / geom_1.geom.dist(unit.position, target_unit.position) * actions_1.ActionsUnit.Slash.damage(battle, character, unit) / target_character.get_hp();
+                return 1 / geom_1.geom.dist(unit.position, target_unit.position) * actions_1.ActionsUnit.Slash.damage(battle, character, unit, target_character, target_unit) / target_character.get_hp();
             }
             return 0;
         },
     },
     "AttackKnock": {
+        valid: always,
         max_utility: 1,
         range: (battle, character, unit) => {
             return actions_1.ActionsUnit.Knock.range(battle, character, unit);
@@ -126,13 +143,20 @@ exports.BattleActionsPerUnitAI = {
         utility: (battle, character, unit, target_character, target_unit) => {
             if (target_character.dead())
                 return 0;
+            if (unit.action_points_left < actions_1.ActionsUnit.Knock.ap_cost(battle, character, unit, target_character, target_unit)) {
+                return 0;
+            }
+            if (geom_1.geom.dist(unit.position, target_unit.position) > actions_1.ActionsUnit.Knock.range(battle, character, unit)) {
+                return 0;
+            }
             if (TRIGGERS_1.BattleTriggers.is_enemy(unit, character, target_unit, target_character)) {
-                return 1 / geom_1.geom.dist(unit.position, target_unit.position) * actions_1.ActionsUnit.Knock.damage(battle, character, unit) / target_character.get_hp();
+                return 1 / geom_1.geom.dist(unit.position, target_unit.position) * actions_1.ActionsUnit.Knock.damage(battle, character, unit, target_character, target_unit) / target_character.get_hp();
             }
             return 0;
         },
     },
     "MoveTowards": {
+        valid: always,
         max_utility: 1,
         range: (battle, character, unit) => {
             return 100;
@@ -164,16 +188,66 @@ exports.BattleActionsPerUnitAI = {
         utility: (battle, character, unit, target_character, target_unit) => {
             if (target_character.dead())
                 return 0;
+            if (!TRIGGERS_1.BattleTriggers.is_enemy(unit, character, target_unit, target_character)) {
+                return 0;
+            }
             const delta = geom_1.geom.minus(target_unit.position, unit.position);
             const dist = geom_1.geom.norm(delta);
             const range = character.range();
             if (dist < range) {
                 return 0;
             }
+            return 1 / dist;
+        },
+    },
+    "AttackRanged": {
+        valid: checks_1.can_shoot,
+        max_utility: 1,
+        range: (battle, character, unit) => {
+            return 9999;
+        },
+        ap_cost: (battle, character, unit, target_character, target_unit) => {
+            return 3;
+        },
+        execute: (battle, character, unit, target_character, target_unit) => {
+            (0, actions_1.battle_action_unit)('Ranged', battle, character, unit, target_character, target_unit);
+        },
+        utility: (battle, character, unit, target_character, target_unit) => {
+            if (target_character.dead())
+                return 0;
             if (!TRIGGERS_1.BattleTriggers.is_enemy(unit, character, target_unit, target_character)) {
                 return 0;
             }
-            return 1 / dist;
+            let damage = actions_1.ActionsUnit.Ranged.damage(battle, character, unit, target_character, target_unit);
+            return damage / target_character.get_hp();
+        }
+    },
+    "SwitchWeapon": {
+        valid: always,
+        max_utility: 1,
+        range: (battle, character, unit) => {
+            return 9999;
+        },
+        ap_cost: (battle, character, unit) => {
+            return 0;
+        },
+        execute: (battle, character, unit, target_character, target_unit) => {
+            inventory_events_1.EventInventory.switch_weapon(character);
+        },
+        utility: (battle, character, unit, target_character, target_unit) => {
+            if (target_character.dead())
+                return 0;
+            if (!TRIGGERS_1.BattleTriggers.is_enemy(unit, character, target_unit, target_character)) {
+                return 0;
+            }
+            inventory_events_1.EventInventory.switch_weapon(character);
+            let tmp_1 = exports.BattleActionsPerUnitAI['AttackPierce'].utility(battle, character, unit, target_character, target_unit);
+            let tmp_2 = exports.BattleActionsPerUnitAI['AttackSlash'].utility(battle, character, unit, target_character, target_unit);
+            let tmp_3 = exports.BattleActionsPerUnitAI['AttackKnock'].utility(battle, character, unit, target_character, target_unit);
+            let tmp_4 = exports.BattleActionsPerUnitAI['AttackRanged'].utility(battle, character, unit, target_character, target_unit);
+            inventory_events_1.EventInventory.switch_weapon(character);
+            const max = Math.max(tmp_1, Math.max(tmp_2, Math.max(tmp_3, tmp_4)));
+            return max;
         },
     }
 };

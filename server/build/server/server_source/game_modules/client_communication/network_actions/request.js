@@ -16,6 +16,8 @@ const DATA_LAYOUT_BUILDING_1 = require("../../DATA_LAYOUT_BUILDING");
 const triggers_1 = require("../../events/triggers");
 const system_2 = require("../../character/system");
 const VALUES_1 = require("../../battle/VALUES");
+const actions_1 = require("../../battle/actions");
+const common_validations_1 = require("./common_validations");
 var Request;
 (function (Request) {
     function accuracy(sw, distance) {
@@ -146,4 +148,123 @@ var Request;
         updates_1.SendUpdate.attack_damage(user);
     }
     Request.attack_damage = attack_damage;
+    // export function battle_actions(sw: SocketWrapper) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) {
+    //         sw.socket.emit('alert', 'your character does not exist')
+    //         return
+    //     }
+    //     const battle_id = character.battle_id
+    //     if (battle_id == undefined) return 
+    //     const battle = Convert.id_to_battle(battle_id);
+    //     const unit = Convert.character_to_unit(character)
+    //     if (unit == undefined) {return}
+    //     for (let [key, item] of Object.entries(ActionsSelf)) {
+    //         const result: BattleActionData = {
+    //             name: key,
+    //             tag: key,
+    //             cost: item.ap_cost(battle, character, unit),
+    //             damage: 0,
+    //             probability: item.chance(battle, character, unit),
+    //             target: 'self'
+    //         }
+    //         sw.socket.emit('battle-action-update', result)
+    //     }
+    // }
+    function battle_actions_self(sw) {
+        // console.log('requested self actions')
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        const battle_id = character.battle_id;
+        if (battle_id == undefined)
+            return;
+        const battle = systems_communication_1.Convert.id_to_battle(battle_id);
+        const unit = systems_communication_1.Convert.character_to_unit(character);
+        if (unit == undefined) {
+            return;
+        }
+        for (let [key, item] of Object.entries(actions_1.ActionsSelf)) {
+            const result = {
+                name: key,
+                tag: key,
+                cost: item.ap_cost(battle, character, unit),
+                damage: 0,
+                probability: item.chance(battle, character, unit),
+                target: 'self'
+            };
+            sw.socket.emit('battle-action-update', result);
+        }
+    }
+    Request.battle_actions_self = battle_actions_self;
+    function battle_actions_unit(sw, target_id) {
+        // console.log('requested unit actions')
+        if (target_id == undefined)
+            return;
+        if (typeof target_id !== 'number')
+            return;
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        const battle_id = character.battle_id;
+        if (battle_id == undefined)
+            return;
+        const battle = systems_communication_1.Convert.id_to_battle(battle_id);
+        const unit = systems_communication_1.Convert.character_to_unit(character);
+        if (unit == undefined) {
+            return;
+        }
+        const target_unit = battle.heap.get_unit(target_id);
+        if (target_unit == undefined)
+            return;
+        const target_character = systems_communication_1.Convert.unit_to_character(target_unit);
+        for (let [key, item] of Object.entries(actions_1.ActionsUnit)) {
+            const result = {
+                name: key,
+                tag: key,
+                cost: item.ap_cost(battle, character, unit, target_character, target_unit),
+                damage: item.damage(battle, character, unit, target_character, target_unit),
+                probability: item.chance(battle, character, unit, target_character, target_unit),
+                target: 'unit'
+            };
+            sw.socket.emit('battle-action-update', result);
+        }
+    }
+    Request.battle_actions_unit = battle_actions_unit;
+    function battle_actions_position(sw, target) {
+        // console.log('requested position actions')
+        if (target == undefined)
+            return;
+        if (!common_validations_1.Validator.is_point(target))
+            return;
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        const battle_id = character.battle_id;
+        if (battle_id == undefined)
+            return;
+        const battle = systems_communication_1.Convert.id_to_battle(battle_id);
+        const unit = systems_communication_1.Convert.character_to_unit(character);
+        if (unit == undefined) {
+            return;
+        }
+        for (let [key, item] of Object.entries(actions_1.ActionsPosition)) {
+            const result = {
+                name: key,
+                tag: key,
+                cost: item.ap_cost(battle, character, unit, target),
+                damage: 0,
+                probability: 1,
+                target: 'position'
+            };
+            sw.socket.emit('battle-action-update', result);
+        }
+    }
+    Request.battle_actions_position = battle_actions_position;
 })(Request = exports.Request || (exports.Request = {}));

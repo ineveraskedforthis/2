@@ -19,6 +19,10 @@ import { ResponceNegativeQuantified, Trigger } from "../../events/triggers";
 import { CharacterSystem } from "../../character/system";
 import { PerksResponse } from "@custom_types/responses";
 import { BattleValues } from "../../battle/VALUES";
+import { ActionsPosition, ActionsSelf, ActionsUnit } from "../../battle/actions";
+import { BattleActionData, battle_position, unit_id } from "@custom_types/battle_data";
+import { type } from "os";
+import { Validator } from "./common_validations";
 
 
 export namespace Request {
@@ -161,4 +165,118 @@ export namespace Request {
         
         SendUpdate.attack_damage(user)
     }
+
+    // export function battle_actions(sw: SocketWrapper) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) {
+    //         sw.socket.emit('alert', 'your character does not exist')
+    //         return
+    //     }
+    //     const battle_id = character.battle_id
+    //     if (battle_id == undefined) return 
+    //     const battle = Convert.id_to_battle(battle_id);
+    //     const unit = Convert.character_to_unit(character)
+    //     if (unit == undefined) {return}
+
+    //     for (let [key, item] of Object.entries(ActionsSelf)) {
+    //         const result: BattleActionData = {
+    //             name: key,
+    //             tag: key,
+    //             cost: item.ap_cost(battle, character, unit),
+    //             damage: 0,
+    //             probability: item.chance(battle, character, unit),
+    //             target: 'self'
+    //         }
+    //         sw.socket.emit('battle-action-update', result)
+    //     }
+    // }
+
+    export function battle_actions_self(sw: SocketWrapper) {
+        // console.log('requested self actions')
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+        const battle_id = character.battle_id
+        if (battle_id == undefined) return 
+        const battle = Convert.id_to_battle(battle_id);
+        const unit = Convert.character_to_unit(character)
+        if (unit == undefined) {return}
+
+        for (let [key, item] of Object.entries(ActionsSelf)) {
+            const result: BattleActionData = {
+                name: key,
+                tag: key,
+                cost: item.ap_cost(battle, character, unit),
+                damage: 0,
+                probability: item.chance(battle, character, unit),
+                target: 'self'
+            }
+            sw.socket.emit('battle-action-update', result)
+        }
+    }
+
+    export function battle_actions_unit(sw: SocketWrapper, target_id: unknown) {
+        // console.log('requested unit actions')
+        if (target_id == undefined) return
+        if (typeof target_id !== 'number') return
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+        const battle_id = character.battle_id
+        if (battle_id == undefined) return
+        const battle = Convert.id_to_battle(battle_id);
+        const unit = Convert.character_to_unit(character)
+        if (unit == undefined) {return}
+
+        const target_unit = battle.heap.get_unit(target_id as unit_id)
+        if (target_unit == undefined) return 
+
+        const target_character = Convert.unit_to_character(target_unit)
+
+        for (let [key, item] of Object.entries(ActionsUnit)) {
+            const result: BattleActionData = {
+                name: key,
+                tag: key,
+                cost: item.ap_cost(battle, character, unit, target_character, target_unit),
+                damage: item.damage(battle, character, unit, target_character, target_unit),
+                probability: item.chance(battle, character, unit, target_character, target_unit),
+                target: 'unit'
+            }
+            sw.socket.emit('battle-action-update', result)
+        }
+    }
+
+    export function battle_actions_position(sw: SocketWrapper, target: unknown) {
+        // console.log('requested position actions')
+        if (target == undefined) return
+        if (!Validator.is_point(target)) return 
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+        const battle_id = character.battle_id
+        if (battle_id == undefined) return
+        const battle = Convert.id_to_battle(battle_id);
+        const unit = Convert.character_to_unit(character)
+        if (unit == undefined) {return}
+
+        for (let [key, item] of Object.entries(ActionsPosition)) {
+            const result: BattleActionData = {
+                name: key,
+                tag: key,
+                cost: item.ap_cost(battle, character, unit, target as battle_position),
+                damage: 0,
+                probability: 1, //item.chance(battle, character, unit, target),
+                target: 'position'
+            }
+            sw.socket.emit('battle-action-update', result)
+        }
+    }
+
+
 }

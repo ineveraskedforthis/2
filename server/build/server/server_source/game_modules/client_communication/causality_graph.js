@@ -48,6 +48,7 @@ const update_function = {
     [17 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
     // [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
     [18 /* UI_Part.BATTLE */]: updates_1.SendUpdate.battle,
+    // [UI_Part.BATTLE_ACTIONS]    : SendUpdate.battle_actions,
     [19 /* UI_Part.MARKET */]: updates_1.SendUpdate.market,
     [20 /* UI_Part.STATS */]: updates_1.SendUpdate.stats,
 };

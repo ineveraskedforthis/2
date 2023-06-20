@@ -14,8 +14,10 @@ export function forest_constraints(cell: Cell) {
 
 
 export function urban_constraints(cell: Cell) {
-    return (Data.Cells.urbanisation(cell.id) > 0)
-        && (MapSystem.can_move([cell.x, cell.y]));
+
+    // console.log(cell.x, cell.y)
+    // console.log(Data.Cells.urbanisation(cell.id))
+    return (Data.Cells.urbanisation(cell.id) > 0) && (MapSystem.can_move([cell.x, cell.y]));
 }
 
 export function steppe_constraints(cell: Cell) {

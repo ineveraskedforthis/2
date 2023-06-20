@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_price_beliefs = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.urban_walk = exports.market_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy_food = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
+exports.update_price_beliefs = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.urban_walk = exports.market_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
 const actions_00_1 = require("../actions/actions_00");
 const manager_1 = require("../actions/manager");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -63,7 +63,7 @@ function sell_material(character, material) {
     return true;
 }
 exports.sell_material = sell_material;
-function buy_food(character) {
+function buy(character, material_index) {
     let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
@@ -71,7 +71,7 @@ function buy_food(character) {
         let order = systems_communication_1.Convert.id_to_bulk_order(item);
         if (order.typ == 'buy')
             continue;
-        if (order.tag != materials_manager_1.FOOD)
+        if (order.tag != material_index)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -86,7 +86,7 @@ function buy_food(character) {
     }
     return false;
 }
-exports.buy_food = buy_food;
+exports.buy = buy;
 function buy_random(character) {
     let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
     let best_order = undefined;
@@ -119,11 +119,13 @@ function random_walk(char, constraints) {
         let target_id = data_1.Data.World.coordinate_to_id(tmp);
         let target_cell = data_1.Data.Cells.from_id(target_id);
         if (target_cell != undefined) {
-            if (system_1.MapSystem.can_move(tmp) && constraints(cell)) {
+            if (system_1.MapSystem.can_move(tmp) && constraints(target_cell)) {
                 possible_moves.push(tmp);
             }
         }
     }
+    // console.log(cell.x, cell.y)
+    // console.log(possible_moves)
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, char, data_1.Data.World.coordinate_to_id(move_direction));

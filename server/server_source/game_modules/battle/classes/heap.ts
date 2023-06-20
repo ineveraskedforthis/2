@@ -25,6 +25,9 @@ export class UnitsHeap {
     }
 
     get_value(i: number) {
+        if (this.data[this.heap[i]] == undefined) {
+            return 99999
+        }
         return this.data[this.heap[i]].next_turn_after;
     }
 

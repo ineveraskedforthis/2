@@ -105,11 +105,19 @@ export class SocketManager {
                 HandleAction.act(user, craft_actions[msg])
             })
             
-            socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
+            // socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
             socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))
             socket.on('req-player-index',   () =>  Request.player_index(user))
             socket.on('req-flee-chance',    () => Request.flee_chance(user))
             socket.on('req-attacks-damage', () => Request.attack_damage(user))
+            // socket.on('req-battle-actions', () => Request.battle_actions(user))
+            socket.on('req-battle-actions-self', ()=> Request.battle_actions_self(user))
+            socket.on('req-battle-actions-unit', (data) => Request.battle_actions_unit(user, data))
+            socket.on('req-battle-actions-position', (data) => Request.battle_actions_position(user, data))
+
+            socket.on('battle-action-self',  (msg: any) => HandleAction.battle_self(user, msg))
+            socket.on('battle-action-unit',  (msg: any) => HandleAction.battle_unit(user, msg))
+            socket.on('battle-action-position', (msg: any) => HandleAction.battle_position(user, msg))
 
             socket.on('request-talk',   (msg:any) => Request.perks_and_skills(user, msg))
             socket.on('request-local-buildings', (msg:any) => Request.local_buildings(user))

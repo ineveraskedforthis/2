@@ -20,7 +20,10 @@ import { DmgOps } from "../../damage_types";
 import { Data } from "../../data";
 import { terrain_to_string } from "../../map/terrain";
 import { CharacterStatsResponse } from "../../../../../shared/responses";
-import { cell_id } from "../../../../../shared/common";
+// import { cell_id } from "../../../../../shared/common";
+import { ActionsPosition, ActionsUnit } from "../../battle/actions";
+import { cell_id } from "@custom_types/common";
+import { BattleActionData } from '@custom_types/battle_data';
 
 
 
@@ -75,9 +78,6 @@ export namespace SendUpdate {
             Alerts.battle_progress(user, false)
         }
     }
-
-
-    
 // send_data_start() {
 //         this.world.socket_manager.send_battle_data_start(this)
 //         if (this.waiting_for_input) {

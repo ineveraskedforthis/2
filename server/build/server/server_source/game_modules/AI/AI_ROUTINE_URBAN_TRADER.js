@@ -19,47 +19,47 @@ function TraderRoutine(character) {
     if (character.current_building != undefined)
         return;
     (0, AI_ROUTINE_GENERIC_1.GenericRest)(character);
-    if (character.ai_state == 0 /* AIstate.Idle */) {
+    if (character.ai_state == "idle" /* AIstate.Idle */) {
         // console.log('start')
-        character.ai_state = 5 /* AIstate.PatrolPrices */;
+        character.ai_state = "patrol_prices" /* AIstate.PatrolPrices */;
     }
-    if (character.ai_state == 4 /* AIstate.GoToMarket */) {
+    if (character.ai_state == "go_to_market" /* AIstate.GoToMarket */) {
         // console.log('going to market')
         if (system_1.MapSystem.has_market(character.cell_id)) {
             (0, actions_1.sell_all_stash)(character);
-            character.ai_state = 1 /* AIstate.WaitSale */;
+            character.ai_state = "wait_sale" /* AIstate.WaitSale */;
         }
         else {
             (0, actions_1.market_walk)(character);
         }
     }
     // wait until you earn enough money or sell out
-    if (character.ai_state == 1 /* AIstate.WaitSale */) {
+    if (character.ai_state == "wait_sale" /* AIstate.WaitSale */) {
         // console.log('wait for sales')
         if ((character.savings.get() > 1000) || character.trade_stash.is_empty()) {
-            character.ai_state = 3 /* AIstate.Patrol */;
+            character.ai_state = "patrol" /* AIstate.Patrol */;
         }
         else
             return;
     }
-    if (character.ai_state == 5 /* AIstate.PatrolPrices */) {
+    if (character.ai_state == "patrol_prices" /* AIstate.PatrolPrices */) {
         if (Math.random() < 0.1) {
             // console.log('switch to buying')
-            character.ai_state = 3 /* AIstate.Patrol */;
+            character.ai_state = "patrol" /* AIstate.Patrol */;
         }
         (0, actions_1.update_price_beliefs)(character);
         (0, actions_1.urban_walk)(character);
     }
     //wander aimlessly and buy random stuff
-    if (character.ai_state == 3 /* AIstate.Patrol */) {
+    if (character.ai_state == "patrol" /* AIstate.Patrol */) {
         // if we had spent most of our money -> go back to market and sell stuff
         if ((character.savings.get() < 100)) {
-            character.ai_state = 4 /* AIstate.GoToMarket */;
+            character.ai_state = "go_to_market" /* AIstate.GoToMarket */;
             return;
         }
         //sometimes switch to checking prices again
         if ((Math.random() < 0.1)) {
-            character.ai_state = 5 /* AIstate.PatrolPrices */;
+            character.ai_state = "patrol_prices" /* AIstate.PatrolPrices */;
             return;
         }
         let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
