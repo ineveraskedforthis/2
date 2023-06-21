@@ -26,6 +26,15 @@ var BattleTriggers;
         return true;
     }
     BattleTriggers.safe = safe;
+    function safe_expensive(battle) {
+        for (const unit of Object.values(battle.heap.data)) {
+            const character = systems_communication_1.Convert.unit_to_character(unit);
+            if (!safe_for_unit(battle, unit, character))
+                return false;
+        }
+        return true;
+    }
+    BattleTriggers.safe_expensive = safe_expensive;
     function safe_for_unit(battle, unit, character) {
         for (const item of Object.values(battle.heap.data)) {
             if (is_enemy(unit, character, item, systems_communication_1.Convert.unit_to_character(item))) {

@@ -22,6 +22,15 @@ export namespace BattleTriggers {
         return true 
     }
 
+    export function safe_expensive(battle: Battle): boolean {
+        for (const unit of Object.values(battle.heap.data)) {
+            const character = Convert.unit_to_character(unit)
+            if (!safe_for_unit(battle, unit, character)) return false
+        }
+
+        return true
+    }
+
     export function safe_for_unit(battle: Battle, unit: Unit, character: Character): boolean {
         for (const item of Object.values(battle.heap.data)) {
             if (is_enemy(unit, character, item, Convert.unit_to_character(item))) {

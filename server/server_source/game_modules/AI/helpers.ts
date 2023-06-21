@@ -87,6 +87,7 @@ export namespace AIhelper {
             }
         }
         if (potential_team == -1) return 'no_interest'
+        if (BattleTriggers.safe_expensive(battle)) return 'no_interest'
 
         return potential_team
     }

@@ -87,6 +87,8 @@ var AIhelper;
         }
         if (potential_team == -1)
             return 'no_interest';
+        if (TRIGGERS_1.BattleTriggers.safe_expensive(battle))
+            return 'no_interest';
         return potential_team;
     }
     AIhelper.check_team_to_join = check_team_to_join;
