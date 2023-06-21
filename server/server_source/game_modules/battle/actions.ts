@@ -359,8 +359,7 @@ export const ActionsPosition: { [key in ActionPositionKeys]: ActionPosition} = {
     'Move': {
         ap_cost: (battle: Battle, character: Character, unit: Unit, target: battle_position) => {
             const distance = geom.dist(unit.position, target)
-
-            return Math.min(distance * BattleValues.move_cost(unit, character), unit.action_points_max) as action_points
+            return Math.min(distance * BattleValues.move_cost(unit, character), unit.action_points_left) as action_points
         },
         execute: (battle: Battle, character: Character, unit: Unit, target: battle_position) => {
             BattleEvent.Move(battle, unit, character, target, false)
@@ -388,14 +387,14 @@ type BattleActionPositionResponse =
     | {response: "INVALID_ACTION"}
     | {response: "OK", ap_cost: action_points, action: ActionPosition};
 
-export function battle_action_self_check(tag: string, battle: Battle, character: Character, unit: Unit):BattleActionResponse {
+export function battle_action_self_check(tag: string, battle: Battle, character: Character, unit: Unit, d_ap: action_points):BattleActionResponse {
     const action = ActionsSelf[tag as ActionSelfKeys]
     if (action == undefined) {
         return {response: "INVALID_ACTION"}
     }
 
     const ap_cost = action.ap_cost(battle, character, unit)
-    if (unit.action_points_left < ap_cost) {
+    if (unit.action_points_left + d_ap < ap_cost) {
         return {response: "NOT_ENOUGH_AP", needed: ap_cost, current: unit.action_points_left}
     }
 
@@ -406,25 +405,30 @@ export function battle_action_unit_check(
     tag: string, 
     battle: Battle, 
     character: Character, unit: Unit, 
-    target_character: Character, target_unit: Unit) : BattleActionUnitResponse
+    target_character: Character, target_unit: Unit, 
+    d_distance: number, d_ap: number) : BattleActionUnitResponse
 {
     const action = ActionsUnit[tag as ActionUnitKeys]
     if (action == undefined) {
+        // console.log('no such key')
         return {response: "INVALID_ACTION"}
     }
 
     const ap_cost = action.ap_cost(battle, character, unit, target_character, target_unit)
-    if (unit.action_points_left < ap_cost) {
+    if (unit.action_points_left + d_ap < ap_cost) {
+        // console.log('not enough ap', ap_cost, unit.action_points_left, d_ap)
         return {response: "NOT_ENOUGH_AP", needed: ap_cost, current: unit.action_points_left}
     }
 
     const range = action.range(battle, character, unit)
     const dist = geom.dist(unit.position, target_unit.position)
-    if (range < dist) {
+    if (range + d_distance < dist) {
+        // console.log('not enough range', range, dist, d_distance)
         return {response: "NOT_ENOUGH_RANGE"}
     }
 
     if (!action.valid(character)) {
+        // console.log('character is not valid')
         return {response: "INVALID_ACTION"}
     }
 
@@ -446,7 +450,7 @@ export function battle_action_position_check(tag: string, battle: Battle, charac
 }
 
 export function battle_action_self(tag: string, battle: Battle, character: Character, unit: Unit): BattleActionResponse {
-    let result = battle_action_self_check(tag, battle, character, unit)
+    let result = battle_action_self_check(tag, battle, character, unit, 0 as action_points)
     if (result.response == "OK") {
         unit.action_points_left = unit.action_points_left - result.ap_cost as action_points
         result.action.execute(battle, character, unit)
@@ -455,7 +459,8 @@ export function battle_action_self(tag: string, battle: Battle, character: Chara
 }
 
 export function battle_action_unit(tag: ActionUnitKeys, battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) {
-    let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit)
+    let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit, 0, 0)
+    // console.log('attempt to ', tag, 'to', target_character.name)
     // console.log(result)
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target_character, target_unit)

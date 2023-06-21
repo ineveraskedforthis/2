@@ -190,7 +190,10 @@ export namespace BattleSystem {
             }
 
             if (battle.turn_ended) {
-                BattleEvent.NewTurn(battle)
+                let response = BattleEvent.NewTurn(battle)
+                // if (response == 'no_units_left') {
+                //     battle.ended = true
+                // }
                 CharacterSystem.battle_update(character)
                 continue
             }

@@ -713,6 +713,7 @@ var Data;
         }
         Reputation.set_a_X_b = set_a_X_b;
         function set(faction, char_id, level) {
+            console.log(char_id, 'is now a', level, 'of', faction);
             if (reputation[char_id] == undefined)
                 reputation[char_id] = {};
             if (reputation[char_id][faction] == undefined)
@@ -726,10 +727,12 @@ var Data;
                 return false;
             if (reputation[b] == undefined)
                 return false;
-            const rep = reputation[a];
+            const rep = reputation[b];
             for (let [faction, reputation] of Object.entries(rep)) {
+                // console.log('b', faction, reputation)
+                // console.log('a', from_id(reputation.faction, a))
                 if ((reputation.level == 'member') || (reputation.level == 'leader')) {
-                    if (from_id(reputation.faction, b) == 'enemy')
+                    if (from_id(reputation.faction, a) == 'enemy')
                         return true;
                 }
             }

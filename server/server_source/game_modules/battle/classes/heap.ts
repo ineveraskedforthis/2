@@ -51,8 +51,8 @@ export class UnitsHeap {
     }
 
     get_selected_unit(): Unit|undefined {
+        if (this.last == 0) return undefined
         const current = this.heap[0]
-        if (current == undefined) return undefined
         return this.get_unit(current)
     }
 

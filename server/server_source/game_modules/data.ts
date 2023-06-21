@@ -739,6 +739,7 @@ export namespace Data {
         }
 
         export function set(faction: string, char_id: char_id, level: reputation_level) {
+            console.log(char_id, 'is now a', level, 'of', faction)
             if (reputation[char_id] == undefined) reputation[char_id] = {}
             if (reputation[char_id][faction] == undefined) reputation[char_id][faction] = {faction: faction, level: level}
             else reputation[char_id][faction].level = level
@@ -747,10 +748,12 @@ export namespace Data {
         export function a_is_enemy_of_b(a: char_id, b: char_id) {
             if (reputation[a] == undefined) return false
             if (reputation[b] == undefined) return false
-            const rep = reputation[a]
+            const rep = reputation[b]
             for (let [faction, reputation] of Object.entries(rep)) {
+                // console.log('b', faction, reputation)
+                // console.log('a', from_id(reputation.faction, a))
                 if ((reputation.level == 'member') || (reputation.level == 'leader')) {
-                    if (from_id(reputation.faction, b) == 'enemy') return true
+                    if (from_id(reputation.faction, a) == 'enemy') return true
                 }
             }
             return false

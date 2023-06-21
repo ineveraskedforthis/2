@@ -312,7 +312,7 @@ exports.ActionsPosition = {
     'Move': {
         ap_cost: (battle, character, unit, target) => {
             const distance = geom_1.geom.dist(unit.position, target);
-            return Math.min(distance * VALUES_1.BattleValues.move_cost(unit, character), unit.action_points_max);
+            return Math.min(distance * VALUES_1.BattleValues.move_cost(unit, character), unit.action_points_left);
         },
         execute: (battle, character, unit, target) => {
             events_2.BattleEvent.Move(battle, unit, character, target, false);
@@ -320,33 +320,37 @@ exports.ActionsPosition = {
     }
 };
 const action_currrent = exports.ActionsSelf.Flee;
-function battle_action_self_check(tag, battle, character, unit) {
+function battle_action_self_check(tag, battle, character, unit, d_ap) {
     const action = exports.ActionsSelf[tag];
     if (action == undefined) {
         return { response: "INVALID_ACTION" };
     }
     const ap_cost = action.ap_cost(battle, character, unit);
-    if (unit.action_points_left < ap_cost) {
+    if (unit.action_points_left + d_ap < ap_cost) {
         return { response: "NOT_ENOUGH_AP", needed: ap_cost, current: unit.action_points_left };
     }
     return { response: "OK", ap_cost: ap_cost, action: action };
 }
 exports.battle_action_self_check = battle_action_self_check;
-function battle_action_unit_check(tag, battle, character, unit, target_character, target_unit) {
+function battle_action_unit_check(tag, battle, character, unit, target_character, target_unit, d_distance, d_ap) {
     const action = exports.ActionsUnit[tag];
     if (action == undefined) {
+        // console.log('no such key')
         return { response: "INVALID_ACTION" };
     }
     const ap_cost = action.ap_cost(battle, character, unit, target_character, target_unit);
-    if (unit.action_points_left < ap_cost) {
+    if (unit.action_points_left + d_ap < ap_cost) {
+        // console.log('not enough ap', ap_cost, unit.action_points_left, d_ap)
         return { response: "NOT_ENOUGH_AP", needed: ap_cost, current: unit.action_points_left };
     }
     const range = action.range(battle, character, unit);
     const dist = geom_1.geom.dist(unit.position, target_unit.position);
-    if (range < dist) {
+    if (range + d_distance < dist) {
+        // console.log('not enough range', range, dist, d_distance)
         return { response: "NOT_ENOUGH_RANGE" };
     }
     if (!action.valid(character)) {
+        // console.log('character is not valid')
         return { response: "INVALID_ACTION" };
     }
     return { response: "OK", ap_cost: ap_cost, action: action };
@@ -365,7 +369,7 @@ function battle_action_position_check(tag, battle, character, unit, target) {
 }
 exports.battle_action_position_check = battle_action_position_check;
 function battle_action_self(tag, battle, character, unit) {
-    let result = battle_action_self_check(tag, battle, character, unit);
+    let result = battle_action_self_check(tag, battle, character, unit, 0);
     if (result.response == "OK") {
         unit.action_points_left = unit.action_points_left - result.ap_cost;
         result.action.execute(battle, character, unit);
@@ -374,7 +378,8 @@ function battle_action_self(tag, battle, character, unit) {
 }
 exports.battle_action_self = battle_action_self;
 function battle_action_unit(tag, battle, character, unit, target_character, target_unit) {
-    let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit);
+    let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit, 0, 0);
+    // console.log('attempt to ', tag, 'to', target_character.name)
     // console.log(result)
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target_character, target_unit);

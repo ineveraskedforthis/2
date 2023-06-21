@@ -189,7 +189,7 @@ var Request;
                 damage: 0,
                 probability: item.chance(battle, character, unit),
                 target: 'self',
-                possible: (0, actions_1.battle_action_self_check)(key, battle, character, unit).response == 'OK'
+                possible: (0, actions_1.battle_action_self_check)(key, battle, character, unit, 0).response == 'OK'
             };
             sw.socket.emit('battle-action-update', result);
         }
@@ -226,7 +226,7 @@ var Request;
                 damage: item.damage(battle, character, unit, target_character, target_unit),
                 probability: item.chance(battle, character, unit, target_character, target_unit),
                 target: 'unit',
-                possible: (0, actions_1.battle_action_unit_check)(key, battle, character, unit, target_character, target_unit).response == 'OK'
+                possible: (0, actions_1.battle_action_unit_check)(key, battle, character, unit, target_character, target_unit, 0, 0).response == 'OK'
             };
             sw.socket.emit('battle-action-update', result);
         }

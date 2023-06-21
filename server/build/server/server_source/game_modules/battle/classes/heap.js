@@ -38,9 +38,9 @@ class UnitsHeap {
         return this.data[i];
     }
     get_selected_unit() {
-        const current = this.heap[0];
-        if (current == undefined)
+        if (this.last == 0)
             return undefined;
+        const current = this.heap[0];
         return this.get_unit(current);
     }
     delete(x) {

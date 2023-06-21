@@ -56,9 +56,9 @@ var Attack;
     }
     Attack.generate_ranged = generate_ranged;
     function magic_bolt_base_damage(character, charge_flag) {
-        let base_damage = 10;
+        let base_damage = 15;
         if (charge_flag) {
-            base_damage += 5;
+            base_damage += 10;
         }
         const skill = system_1.CharacterSystem.skill(character, 'magic_mastery');
         return Math.round(base_damage * system_1.CharacterSystem.magic_power(character) / 10 * (1 + skill / 10));

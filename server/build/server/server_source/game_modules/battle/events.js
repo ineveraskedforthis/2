@@ -86,13 +86,14 @@ var BattleEvent;
         battle.date_of_last_turn = current_time;
         let unit = battle.heap.get_selected_unit();
         if (unit == undefined) {
-            return { responce: 'no_units_left' };
+            return 'no_units_left';
         }
         // console.log(unit.id + ' current unit')
         alerts_1.Alerts.battle_event_simple(battle, 'new_turn', unit, 0);
         let time_passed = unit.next_turn_after;
         battle.heap.update(time_passed);
         battle.turn_ended = false;
+        return 'ok';
         // Alerts.battle_update_data(battle)
         // Alerts.battle_update_units(battle)
     }

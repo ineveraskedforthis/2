@@ -106,7 +106,7 @@ export namespace BattleEvent {
 
         let unit = battle.heap.get_selected_unit()
         if (unit == undefined) {
-            return {responce: 'no_units_left'}
+            return 'no_units_left'
         }
 
         // console.log(unit.id + ' current unit')
@@ -114,7 +114,7 @@ export namespace BattleEvent {
         let time_passed = unit.next_turn_after
         battle.heap.update(time_passed)
         battle.turn_ended = false
-
+        return 'ok'
         // Alerts.battle_update_data(battle)
         // Alerts.battle_update_units(battle)
     }

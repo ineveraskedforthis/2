@@ -20,7 +20,7 @@ import { CharacterSystem } from "../../character/system";
 import { PerksResponse } from "@custom_types/responses";
 import { BattleValues } from "../../battle/VALUES";
 import { ActionsPosition, ActionsSelf, ActionsUnit, battle_action_position_check, battle_action_self_check, battle_action_unit_check } from "../../battle/actions";
-import { BattleActionData, battle_position, unit_id } from "@custom_types/battle_data";
+import { BattleActionData, action_points, battle_position, unit_id } from "@custom_types/battle_data";
 import { type } from "os";
 import { Validator } from "./common_validations";
 
@@ -212,7 +212,7 @@ export namespace Request {
                 damage: 0,
                 probability: item.chance(battle, character, unit),
                 target: 'self',
-                possible: battle_action_self_check(key, battle, character, unit).response == 'OK'
+                possible: battle_action_self_check(key, battle, character, unit, 0 as action_points).response == 'OK'
             }
             sw.socket.emit('battle-action-update', result)
         }
@@ -246,7 +246,7 @@ export namespace Request {
                 damage: item.damage(battle, character, unit, target_character, target_unit),
                 probability: item.chance(battle, character, unit, target_character, target_unit),
                 target: 'unit',
-                possible: battle_action_unit_check(key, battle, character, unit, target_character, target_unit).response == 'OK'
+                possible: battle_action_unit_check(key, battle, character, unit, target_character, target_unit, 0, 0).response == 'OK'
             }
             sw.socket.emit('battle-action-update', result)
         }

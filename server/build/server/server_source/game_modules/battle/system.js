@@ -174,7 +174,10 @@ var BattleSystem;
                 continue;
             }
             if (battle.turn_ended) {
-                events_1.BattleEvent.NewTurn(battle);
+                let response = events_1.BattleEvent.NewTurn(battle);
+                // if (response == 'no_units_left') {
+                //     battle.ended = true
+                // }
                 system_1.CharacterSystem.battle_update(character);
                 continue;
             }

@@ -53,22 +53,33 @@ var BattleTriggers;
      * @returns
      */
     function is_enemy(unit, character, target, target_character) {
-        if (target == undefined)
+        if (target == undefined) {
+            // console.log('undefined target')
             return false;
+        }
         // team check
-        if (unit.team == target.team)
+        if (unit.team == target.team) {
+            // console.log('same team')
             return false;
+        }
         // death check
-        if (target_character.dead())
+        if (target_character.dead()) {
+            // console.log('dead target')
             return false;
-        if (character.dead())
+        }
+        if (character.dead()) {
+            // console.log('i am dead')
             return false;
+        }
         // hostility check:
         // if there is no racial hostility, then check for reputational hostility
         if (!(0, racial_hostility_1.hostile)(character.race(), target_character.race())) {
+            // console.log('no racial hostility')
             // we know that they are not hostile because of race.
-            // so we check if there b has bad reputation with a's faction
-            if (!data_1.Data.Reputation.a_is_enemy_of_b(character.id, target_character.id)) {
+            // so we check if there target_character has bad reputation with character's faction
+            // console.log('target is enemy of me', Data.Reputation.a_is_enemy_of_b(target_character.id, character.id))
+            // console.log('me is enemy of target', Data.Reputation.a_is_enemy_of_b(character.id, target_character.id))
+            if (!data_1.Data.Reputation.a_is_enemy_of_b(target_character.id, character.id) && !data_1.Data.Reputation.a_is_enemy_of_b(character.id, target_character.id)) {
                 // if he is not a racial enemy and not an reputational enemy, then he is not an enemy
                 // being in separate teams must be just an accident
                 // i should consider tracking personal relationships
