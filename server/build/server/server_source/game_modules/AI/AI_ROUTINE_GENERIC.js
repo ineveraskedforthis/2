@@ -11,6 +11,7 @@ const helpers_1 = require("./helpers");
 const triggers_1 = require("./triggers");
 const effects_1 = require("../events/effects");
 const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
+const triggers_2 = require("../events/triggers");
 function SteppeAgressiveRoutine(character) {
     if ((0, triggers_1.tired)(character)) {
         (0, actions_1.rest_outside)(character);
@@ -94,7 +95,10 @@ function GenericRest(character) {
                 (0, actions_1.rest_outside)(character);
             }
             else {
-                effects_1.Effect.rent_room(character.id, building_to_rest);
+                let result = effects_1.Effect.rent_room(character.id, building_to_rest);
+                if (result.response == triggers_2.ResponceNegative.no_money) {
+                    character.ai_memories.push("no_money" /* AImemory.NO_MONEY */);
+                }
             }
         }
         else {

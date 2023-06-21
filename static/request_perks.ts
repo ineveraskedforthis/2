@@ -60,8 +60,7 @@ function build_perks_list(data: PerksResponse) {
     console.log(data);
     let big_div = document.getElementById('available_perks')!;
 
-
-    let greeting_line = `Hello, I am ${data.name} of ${data.race} race. `
+    let greeting_line = `Hello, I am ${data.name} of ${data.race} race. I am currently ${data.current_goal}.`
 
     let flag = true
     for (let faction_block of data.factions) {

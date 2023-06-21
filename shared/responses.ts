@@ -5,7 +5,8 @@ export type PerksResponse = {
     race: string,
     factions: { tag: string; name: string; reputation: reputation_level }[]
     perks: {[_ in Perks]?: number}
-    skills: {[_ in string]?: [number, number]}
+    skills: {[_ in string]?: [number, number]},
+    current_goal: string
 }
 
 export type CharacterStatsResponse = {

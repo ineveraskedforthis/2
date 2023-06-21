@@ -10,6 +10,8 @@ import { AIhelper } from "./helpers";
 import { tired } from "./triggers";
 import { Effect } from "../events/effects";
 import { rooms } from "../DATA_LAYOUT_BUILDING";
+import { ResponceNegative } from "../events/triggers";
+import { AImemory } from "../character/AIstate";
 
 export function SteppeAgressiveRoutine(character: Character) {
     if (tired(character)) {
@@ -89,7 +91,10 @@ export function GenericRest(character: Character) {
             if (building_to_rest == undefined) {
                 rest_outside(character)
             } else {
-                Effect.rent_room(character.id, building_to_rest)
+                let result = Effect.rent_room(character.id, building_to_rest)
+                if (result.response == ResponceNegative.no_money) {
+                    character.ai_memories.push(AImemory.NO_MONEY)
+                }
             }
         } else {
             let building = Data.Buildings.from_id(character.current_building)

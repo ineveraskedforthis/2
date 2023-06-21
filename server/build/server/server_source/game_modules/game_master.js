@@ -78,6 +78,7 @@ var GameMaster;
         let num_rats = 0;
         let num_elos = 0;
         let num_balls = 0;
+        let num_hunters = 0;
         for (const character of data_1.Data.CharacterDB.list()) {
             if ((character.race() == 'rat') && (!character.dead())) {
                 num_rats += 1;
@@ -87,6 +88,16 @@ var GameMaster;
             }
             if ((character.race() == 'ball') && (!character.dead())) {
                 num_balls += 1;
+            }
+            if ((character.ai_map() == 'rat_hunter') && (!character.dead())) {
+                num_hunters += 1;
+            }
+        }
+        let spawn = data_1.Data.World.get_faction('city')?.spawn_point;
+        if (spawn != undefined) {
+            let cell = data_1.Data.Cells.from_id(spawn);
+            if (num_hunters < 4) {
+                templates_1.Template.Character.HumanRatHunter(cell.x, cell.y, "Hunter");
             }
         }
         for (const cell of data_1.Data.Cells.list_ids()) {
@@ -110,7 +121,7 @@ var GameMaster;
     }
     GameMaster.update = update;
     function spawn_rat(rats_number, cell) {
-        if (rats_number < 50) {
+        if (rats_number < 30) {
             let dice_spawn = Math.random();
             if (dice_spawn > 0.4)
                 return;
@@ -128,7 +139,7 @@ var GameMaster;
     }
     GameMaster.spawn_rat = spawn_rat;
     function spawn_elodino(elos_number, cell) {
-        if (elos_number < 60) {
+        if (elos_number < 50) {
             let dice = Math.random();
             if (dice < 0.7) {
                 templates_1.Template.Character.Elo(cell.x, cell.y, undefined);

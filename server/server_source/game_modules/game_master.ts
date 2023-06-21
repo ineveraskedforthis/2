@@ -91,6 +91,7 @@ export namespace GameMaster {
         let num_rats = 0
         let num_elos = 0
         let num_balls = 0
+        let num_hunters = 0
         for (const character of Data.CharacterDB.list()) {
             if ((character.race() == 'rat') && (!character.dead())) {
                 num_rats += 1
@@ -101,7 +102,18 @@ export namespace GameMaster {
             if ((character.race() == 'ball') && (!character.dead())) {
                 num_balls += 1
             }
+            if ((character.ai_map() == 'rat_hunter') && (!character.dead())) {
+                num_hunters += 1
+            }
         }
+
+        let spawn = Data.World.get_faction('city')?.spawn_point
+        if (spawn != undefined) {
+            let cell = Data.Cells.from_id(spawn)
+            if (num_hunters < 4) {
+                Template.Character.HumanRatHunter(cell.x, cell.y, "Hunter")
+            }
+        } 
 
         for (const cell of Data.Cells.list_ids()) {
             const buildings = Data.Buildings.from_cell_id(cell)
@@ -124,9 +136,9 @@ export namespace GameMaster {
     }
 
     export function spawn_rat(rats_number: number, cell: Cell) {        
-        if (rats_number < 50) {
+        if (rats_number < 30) {
             let dice_spawn = Math.random()
-            if (dice_spawn > 0.4) return            
+            if (dice_spawn > 0.4) return
             let dice = Math.random()
             if (dice < 0.6) {
                 Template.Character.GenericRat(cell.x, cell.y, undefined)
@@ -134,12 +146,12 @@ export namespace GameMaster {
                 Template.Character.BigRat(cell.x, cell.y, undefined)
             } else if (dice < 1) {
                 Template.Character.MageRat(cell.x, cell.y, undefined)
-            }                
+            }
         }
     }
 
     export function spawn_elodino(elos_number: number, cell: Cell) {
-        if (elos_number < 60) {
+        if (elos_number < 50) {
             let dice = Math.random()
             if (dice < 0.7) {
                 Template.Character.Elo(cell.x, cell.y, undefined)

@@ -55,6 +55,7 @@ var Request;
             name: target_character.name,
             race: target_character.race(),
             factions: data_1.Data.Reputation.list_from_id(target_character.id),
+            current_goal: target_character.ai_state,
             perks: {},
             skills: {}
         };

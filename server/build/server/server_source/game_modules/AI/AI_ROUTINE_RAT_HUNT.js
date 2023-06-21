@@ -42,6 +42,9 @@ function buy_stuff(character) {
     character.ai_memories.push("was_on_market" /* AImemory.WAS_ON_MARKET */);
 }
 function rest_at_home(character) {
+    if (character.ai_memories.indexOf("no_money" /* AImemory.NO_MONEY */) >= 0) {
+        character.ai_state = "patrol" /* AIstate.Patrol */;
+    }
     if (!(0, triggers_1.tired)(character)) {
         character.ai_state = "idle" /* AIstate.Idle */;
         return;
@@ -66,9 +69,18 @@ function patrol(character) {
     }
     if ((0, actions_1.loot)(character) > 10) {
         character.ai_state = "go_to_market" /* AIstate.GoToMarket */;
+        return;
+    }
+    if (character.ai_memories.indexOf("no_money" /* AImemory.NO_MONEY */) >= 0) {
+        return;
     }
     if ((0, triggers_1.low_hp)(character)) {
         character.ai_state = "go_to_market" /* AIstate.GoToMarket */;
+        return;
+    }
+    if ((0, triggers_1.tired)(character)) {
+        character.ai_state = "go_to_rest" /* AIstate.GoToRest */;
+        return;
     }
 }
 function sell_at_market(character) {

@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.low_hp = exports.tired = void 0;
-const scripted_values_1 = require("../events/scripted_values");
 function tired(character) {
-    return (character.get_fatigue() > scripted_values_1.ScriptedValue.rest_target_fatigue(3, 0, character.race()) + 10)
-        || (character.get_stress() > scripted_values_1.ScriptedValue.rest_target_stress(3, 0, character.race()) + 10);
+    return (character.get_fatigue() > 50)
+        || (character.get_stress() > 50);
 }
 exports.tired = tired;
 function low_hp(character) {

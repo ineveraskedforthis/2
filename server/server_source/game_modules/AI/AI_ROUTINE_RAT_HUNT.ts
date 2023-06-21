@@ -47,11 +47,13 @@ function buy_stuff(character: Character) {
 }
 
 function rest_at_home(character: Character) {
+    if (character.ai_memories.indexOf(AImemory.NO_MONEY) >= 0) {
+        character.ai_state = AIstate.Patrol
+    }
     if (!tired(character)) {
         character.ai_state = AIstate.Idle
         return
     }
-
     if (!MapSystem.has_market(character.cell_id)) {
         market_walk(character)
         return
@@ -72,9 +74,18 @@ function patrol(character: Character) {
 
     if (loot(character) > 10) {
         character.ai_state = AIstate.GoToMarket
+        return
+    }
+    if (character.ai_memories.indexOf(AImemory.NO_MONEY) >= 0) {
+        return
     }
     if (low_hp(character)) {
         character.ai_state = AIstate.GoToMarket
+        return
+    }
+    if (tired(character)) {
+        character.ai_state = AIstate.GoToRest
+        return
     }
 }
 
