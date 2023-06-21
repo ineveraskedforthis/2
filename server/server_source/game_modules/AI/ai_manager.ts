@@ -13,11 +13,9 @@ export namespace CampaignAI {
         if (character.is_player()) {
             return
         }
-
         if (character.in_battle()) {
             return
         }
-
         if (character.action != undefined) {
             return
         }

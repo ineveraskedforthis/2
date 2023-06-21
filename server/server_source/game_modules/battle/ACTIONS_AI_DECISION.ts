@@ -184,8 +184,8 @@ export function decide_AI_battle_action(battle: Battle, character: Character, un
     })
 
     const best_targeted = best_utility_from_array(targeted_actions)
-    // console.log(character.name, unit.action_points_left, best_targeted?.action_key, best_targeted?.utility, best_targeted?.ap_cost, best_targeted?.target.character.name)
-    // console.log(character.name, unit.action_points_left, best_action_self?.action_key, best_action_self?.utility, best_action_self?.ap_cost)
+    console.log(character.name, unit.action_points_left, best_targeted?.action_key, best_targeted?.utility, best_targeted?.ap_cost, best_targeted?.target.character.name)
+    console.log(character.name, unit.action_points_left, best_action_self?.action_key, best_action_self?.utility, best_action_self?.ap_cost)
     // console.log(battle_action_unit_check(best_targeted.action_key, battle, character, unit, best_targeted.target.character, best_targeted.target.unit))
     if (utility_targeted_value(best_targeted) > utility_targeted_value(best_action_self)) {
         battle_action_unit(best_targeted.action_key as ActionUnitKeys, battle, character, unit, best_targeted.target.character, best_targeted.target.unit)
