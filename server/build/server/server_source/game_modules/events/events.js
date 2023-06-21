@@ -536,6 +536,7 @@ var Event;
         if (agent.in_battle()) {
             return;
         }
+        console.log(`${agent.name} joins battle ${battle.id}`);
         const unit = system_1.BattleSystem.create_unit(agent, team, battle);
         events_1.BattleEvent.NewUnit(battle, unit);
         systems_communication_1.Link.character_battle_unit(agent, battle, unit);

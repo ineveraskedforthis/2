@@ -577,6 +577,8 @@ export namespace Event {
     export function join_battle(agent: Character, battle: Battle, team: number) {
         if (agent.in_battle()) {return}
 
+        console.log(`${agent.name} joins battle ${battle.id}`)
+
         const unit = BattleSystem.create_unit(agent, team, battle)
         BattleEvent.NewUnit(battle, unit)
         Link.character_battle_unit(agent, battle, unit)
