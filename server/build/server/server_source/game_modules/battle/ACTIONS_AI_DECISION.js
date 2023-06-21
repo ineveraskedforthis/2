@@ -69,6 +69,8 @@ function utility_move_closer(battle, character, unit, target_character, target_u
     inventory_events_1.EventInventory.switch_weapon(character);
     let result_2 = best_utility_unit(battle, character, unit, target_character, target_unit, distance_to_walk, 0);
     inventory_events_1.EventInventory.switch_weapon(character);
+    console.log('best utility 1 from moving closer', result_1.action_key, result_1.utility, result_1.ap_cost);
+    console.log('best utility 2 from moving closer', result_2.action_key, result_2.utility, result_2.ap_cost);
     result_1.ap_cost = cost;
     result_1.action_key = 'MoveTowards';
     result_2.ap_cost = cost;
