@@ -351,7 +351,7 @@ function battle_action_unit_check(tag, battle, character, unit, target_character
     }
     if (!action.valid(character)) {
         // console.log('character is not valid')
-        return { response: "INVALID_ACTION" };
+        return { response: "ATTEMPT_IS_INVALID" };
     }
     return { response: "OK", ap_cost: ap_cost, action: action };
 }
@@ -379,8 +379,8 @@ function battle_action_self(tag, battle, character, unit) {
 exports.battle_action_self = battle_action_self;
 function battle_action_unit(tag, battle, character, unit, target_character, target_unit) {
     let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit, 0, 0);
-    // console.log('attempt to ', tag, 'to', target_character.name)
-    // console.log(result)
+    console.log(character.name, 'attempts to ', tag, 'to', target_character.name);
+    console.log(result.response);
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target_character, target_unit);
         unit.action_points_left = unit.action_points_left - result.ap_cost;

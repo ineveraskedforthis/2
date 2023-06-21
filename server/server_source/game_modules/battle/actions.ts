@@ -381,6 +381,7 @@ type BattleActionUnitResponse =
     | {response: "INVALID_ACTION"}
     | {response: "OK", ap_cost: action_points, action: ActionUnit}
     | {response: "NOT_ENOUGH_RANGE"}
+    | {response: "ATTEMPT_IS_INVALID"}
 
 type BattleActionPositionResponse = 
     {response: "NOT_ENOUGH_AP", current: number, needed: number}
@@ -429,7 +430,7 @@ export function battle_action_unit_check(
 
     if (!action.valid(character)) {
         // console.log('character is not valid')
-        return {response: "INVALID_ACTION"}
+        return {response: "ATTEMPT_IS_INVALID"}
     }
 
     return {response: "OK", ap_cost: ap_cost, action: action}
@@ -460,8 +461,8 @@ export function battle_action_self(tag: string, battle: Battle, character: Chara
 
 export function battle_action_unit(tag: ActionUnitKeys, battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) {
     let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit, 0, 0)
-    // console.log('attempt to ', tag, 'to', target_character.name)
-    // console.log(result)
+    console.log(character.name, 'attempts to ', tag, 'to', target_character.name)
+    console.log(result.response)
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target_character, target_unit)
         unit.action_points_left = unit.action_points_left - result.ap_cost as action_points
