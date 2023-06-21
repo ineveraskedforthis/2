@@ -326,6 +326,7 @@ export class Map {
     }
 
     send_cell_action(action) {
+        console.log(action)
         let adj_flag = this.check_move(this.selected[0] - this.curr_pos[0], this.selected[1] - this.curr_pos[1])
         if ((action == 'move') && (adj_flag)) {
             this.move_target = this.selected
@@ -348,6 +349,7 @@ export class Map {
     }
 
     send_local_cell_action(action) {
+        console.log(action)
         this.socket.emit(action, {x: this.curr_pos[0], y: this.curr_pos[1]})
         this.last_action = action
     }

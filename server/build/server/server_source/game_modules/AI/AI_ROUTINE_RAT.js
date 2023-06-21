@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RatRoutine = void 0;
 const actions_00_1 = require("../actions/actions_00");
 const manager_1 = require("../actions/manager");
-const events_1 = require("../events/events");
+const system_1 = require("../battle/system");
 const systems_communication_1 = require("../systems_communication");
 const actions_1 = require("./actions");
 const constraints_1 = require("./constraints");
@@ -23,7 +23,7 @@ function RatRoutine(char) {
     let target = helpers_1.AIhelper.enemies_in_cell(char);
     const target_char = systems_communication_1.Convert.id_to_character(target);
     if (target_char != undefined) {
-        events_1.Event.start_battle(char, target_char);
+        system_1.BattleSystem.start_battle(char, target_char);
     }
     else {
         // console.log('walk around')

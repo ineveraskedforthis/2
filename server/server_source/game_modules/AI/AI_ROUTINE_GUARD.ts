@@ -1,3 +1,4 @@
+import { BattleSystem } from "../battle/system";
 import { Character } from "../character/character";
 import { Event } from "../events/events";
 import { Convert } from "../systems_communication";
@@ -11,7 +12,7 @@ export function GuardUrbanRoutine(character: Character) {
     let target = AIhelper.enemies_in_cell(character)
     const target_char = Convert.id_to_character(target)
     if (target_char != undefined) {
-        Event.start_battle(character, target_char)
+        BattleSystem.start_battle(character, target_char)
     } else {
         urban_walk(character)
         return

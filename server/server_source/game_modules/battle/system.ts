@@ -1,7 +1,6 @@
 import { action_points, BattleData, battle_id, battle_position, ms, unit_id } from "../../../../shared/battle_data"
-import { Convert } from "../systems_communication"
+import { Convert, Link, Unlink } from "../systems_communication"
 import { Character } from "../character/character"
-import { CharacterSystem } from "../character/system"
 import { Battle } from "./classes/battle"
 import { UnitsHeap } from "./classes/heap"
 import { Unit } from "./classes/unit"
@@ -12,6 +11,9 @@ import path from "path"
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH"
 import { BattleValues } from "./VALUES"
 import { decide_AI_battle_action } from "./ACTIONS_AI_DECISION"
+import { Alerts } from "../client_communication/network_actions/alerts"
+import { UserManagement } from "../client_communication/user_manager"
+import { UI_Part } from "../client_communication/causality_graph"
 
 var last_unit_id = 0 as unit_id
 
@@ -54,7 +56,9 @@ export namespace BattleSystem {
         console.log('saving battles')
         let str:string = ''
         for (let item of Data.Battle.list()) {
-            if (item.ended) continue;
+            if (battle_finished(item)) {
+                stop_battle(item)
+            }
             str = str + battle_to_string(item) + '\n' 
         }
         fs.writeFileSync(save_path, str)
@@ -80,7 +84,7 @@ export namespace BattleSystem {
         } else {
             battle.waiting_for_input = false
         }
-        battle.ended = json.ended
+        // battle.ended = json.ended
         battle.last_event_index = json.last_event_index
         battle.grace_period = json.grace_period||0
         return battle
@@ -143,64 +147,77 @@ export namespace BattleSystem {
             team,
             3 as action_points,
             10 as action_points,
-            10 as action_points,
+            100,
             4 as action_points, 
             character.id,
-            battle.heap.get_max()
+            battle.heap.get_max() + Math.floor((Math.random() * 50))
             )
         
         return unit
     }
 
-    export function add_figther(battle_id: battle_id, character: Character, team: number) {
-        const battle = Convert.id_to_battle(battle_id)
-        if (battle == undefined) return
-        
+    export function add_figther(battle: Battle, character: Character, team: number) {
+        if (character.in_battle()) return 
+
         const unit = create_unit(character, team, battle)
         BattleEvent.NewUnit(battle, unit)
+        Link.character_battle_unit(character, battle, unit)
+
+        console.log(`${character.name} joins battle ${battle.id}`)
+        Alerts.battle_update_data(battle)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
+        return unit
     }
 
-    export function process_turn_ai() {
+    export function battle_finished(battle: Battle) {
+        const current_unit = battle.heap.get_selected_unit()
+        if (current_unit == undefined) {
+            return true
+        }
 
+        for (const unit of Object.values(battle.heap.data)) {
+            const character = Convert.unit_to_character(unit)
+
+            if (!character.dead()) {
+                return current_unit
+            }
+        }
+
+        return true
     }
 
     export function update(dt:ms) {
         const current_date = Date.now() as ms
 
         for (let battle of Data.Battle.list()) {
-            if (battle.ended) continue;
-
-            // get information about current unit
-            const unit = battle.heap.get_selected_unit()
-            if (unit == undefined) {
-                battle.ended = true; continue
+            const unit = battle_finished(battle)
+            if (unit === true) {
+                stop_battle(battle)
+                continue
             }
-            let character:Character = Convert.unit_to_character(unit)           
+            
+
+            let character:Character = Convert.unit_to_character(unit)    
+            // console.log('turn of ', character.name)       
             if (character.dead()) {
-                BattleEvent.Leave(battle, unit)
+                BattleEvent.EndTurn(battle, unit)
                 continue
             }
 
             // if turn lasts longer than 60 seconds, it ends automatically
             if (battle.waiting_for_input) {
+                // console.log('waiting')
                 if ((battle.date_of_last_turn != '%') && (time_distance(battle.date_of_last_turn, current_date) > 60 * 1000)) {
+                    // console.log('too long, end turn')
                     BattleEvent.EndTurn(battle, unit)
                 }
-                continue
-            }
-
-            if (battle.turn_ended) {
-                let response = BattleEvent.NewTurn(battle)
-                // if (response == 'no_units_left') {
-                //     battle.ended = true
-                // }
-                CharacterSystem.battle_update(character)
                 continue
             }
 
             //processing cases of player and ai separately for a now
             // if character is player, then wait for input
             if (character.is_player()) {
+                // console.log('player turn, wait for input')
                 battle.waiting_for_input = true
                 continue
             } 
@@ -216,6 +233,7 @@ export namespace BattleSystem {
                     continue
                 }
             } else {
+                // console.log('decision AI', character.name)
                 decide_AI_battle_action(battle, character, unit)
                 // launch the timer
                 battle.ai_timer = 0 as ms
@@ -230,5 +248,51 @@ export namespace BattleSystem {
             if (!character.dead()) data[unit.id] = (Convert.unit_to_unit_socket(unit))
         }
         return data
+    }
+    export function support_in_battle(character: Character, target: Character) {
+        console.log('attempt to support in battle')
+
+        if (character.id == target.id) return undefined
+        if (!target.in_battle()) return
+        if (character.cell_id != target.cell_id) {return undefined}
+        console.log('validated')
+
+        const battle = Convert.character_to_battle(target)
+        if (battle == undefined) return
+        const unit_target = Convert.character_to_unit(target)
+        if (unit_target == undefined) return
+
+        add_figther(battle, character, unit_target.team)
+    }
+
+    export function start_battle(attacker: Character, defender: Character) {
+        console.log('attempt to start battle between ' + attacker.name + ' and ' + defender.name)
+        if (attacker.id == defender.id) {console.log('wrong_cell'); return undefined}
+        if (attacker.in_battle()) {console.log('attacker is alread in battle'); return undefined}
+        if (attacker.cell_id != defender.cell_id) {console.log('different cells'); return undefined}
+        console.log('valid participants')
+
+        // two cases
+        // if defender is in battle, attempt to join it against him as a new team
+        // else create new battle
+        const battle = Convert.character_to_battle(defender)
+        const unit_def = Convert.character_to_unit(defender)
+        if ((battle != undefined) && (unit_def != undefined)) {
+            let team = BattleSystem.get_empty_team(battle)
+            add_figther(battle, attacker, team)
+        } else {
+            const battle_id = BattleSystem.create_battle()
+            const battle = Convert.id_to_battle(battle_id)
+            add_figther(battle, defender, 0)
+            add_figther(battle, attacker, 1)
+        }
+    }
+
+    export function stop_battle(battle: Battle) {
+        for (let unit of Object.values(battle.heap.data)) {
+            const character = Convert.unit_to_character(unit)   
+            Unlink.character_and_battle(character)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
+        }
     }
 }

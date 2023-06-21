@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIhelper = void 0;
 const racial_hostility_1 = require("../races/racial_hostility");
-const events_1 = require("../events/events");
 const systems_communication_1 = require("../systems_communication");
 const CraftBulk_1 = require("../craft/CraftBulk");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -10,6 +9,7 @@ const CraftItem_1 = require("../craft/CraftItem");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const data_1 = require("../data");
 const TRIGGERS_1 = require("../battle/TRIGGERS");
+const system_1 = require("../battle/system");
 var AIhelper;
 (function (AIhelper) {
     function enemies_in_cell(char) {
@@ -60,12 +60,12 @@ var AIhelper;
         // console.log(battles)
         for (let item of battles) {
             let battle = systems_communication_1.Convert.id_to_battle(item);
-            if (!(battle.ended)) {
+            if (!(system_1.BattleSystem.battle_finished(battle))) {
                 let team = check_team_to_join(agent, battle);
                 if (team == 'no_interest')
                     continue;
                 else {
-                    events_1.Event.join_battle(agent, battle, team);
+                    system_1.BattleSystem.add_figther(battle, agent, team);
                     return true;
                 }
             }

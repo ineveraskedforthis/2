@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleEvent = void 0;
 const alerts_1 = require("../client_communication/network_actions/alerts");
-const events_1 = require("../events/events");
 const geom_1 = require("../geom");
 const systems_communication_1 = require("../systems_communication");
+const system_1 = require("./system");
 const checks_1 = require("../character/checks");
 const basic_functions_1 = require("../calculations/basic_functions");
 const user_manager_1 = require("../client_communication/user_manager");
@@ -17,7 +17,7 @@ const COST = {
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
-        unit.next_turn_after = battle.heap.get_max() + 1;
+        unit.next_turn_after = battle.heap.get_max() + 1 + Math.floor(Math.random() * 50);
         battle.heap.add_unit(unit);
         alerts_1.Alerts.new_unit(battle, unit);
         if (battle.grace_period > 0)
@@ -41,63 +41,54 @@ var BattleEvent;
         battle.heap.delete(unit);
         systems_communication_1.Unlink.character_and_battle(character);
         if (battle.heap.get_units_amount() == 0) {
-            events_1.Event.stop_battle(battle);
+            system_1.BattleSystem.stop_battle(battle);
             return;
         }
     }
     BattleEvent.Leave = Leave;
+    function update_unit_after_turn(battle, unit, character) {
+        battle.heap.pop();
+        unit.next_turn_after = unit.slowness + 1 + Math.floor(Math.random() * 50);
+        const rage_mod = (100 + character.get_rage()) / 100;
+        let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn * rage_mod), unit.action_points_max);
+        unit.action_points_left = new_ap;
+        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1);
+        battle.heap.push(unit.id);
+    }
+    BattleEvent.update_unit_after_turn = update_unit_after_turn;
     function EndTurn(battle, unit) {
-        // console.log(battle.id + ' end turn')
-        // console.log(unit.id + 'unit id')
+        console.log('end turn');
         // invalid battle
         if (battle.heap.get_selected_unit() == undefined)
             return false;
         // not unit's turn
         if (battle.heap.get_selected_unit()?.id != unit.id)
             return false;
+        let current_time = Date.now();
         battle.waiting_for_input = false;
+        battle.date_of_last_turn = current_time;
         //updating unit and heap
-        battle.turn_ended = true;
-        // console.log(battle.heap.heap, battle.heap.last)
-        battle.heap.pop();
-        unit.next_turn_after = battle.heap.get_max() + 1;
         const character = systems_communication_1.Convert.unit_to_character(unit);
-        const rage_mod = (100 + character.get_rage()) / 100;
-        let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn * rage_mod), unit.action_points_max);
-        let ap_increase = new_ap - unit.action_points_left;
-        unit.action_points_left = new_ap;
-        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1);
-        battle.heap.push(unit.id);
+        const current_ap = unit.action_points_left;
+        update_unit_after_turn(battle, unit, character);
+        const new_ap = unit.action_points_left;
+        // update grace period
         battle.grace_period = Math.max(battle.grace_period - 1, 0);
+        // get next unit
+        let next_unit = battle.heap.get_selected_unit();
+        if (next_unit == undefined) {
+            console.log('something is very very wrong');
+            return false;
+        }
+        let time_passed = next_unit.next_turn_after;
+        battle.heap.update(time_passed);
         // send updates
-        alerts_1.Alerts.battle_event_simple(battle, 'end_turn', unit, -ap_increase);
+        alerts_1.Alerts.battle_event_simple(battle, 'end_turn', unit, current_ap - new_ap);
         alerts_1.Alerts.battle_update_unit(battle, unit);
+        alerts_1.Alerts.battle_event_simple(battle, 'new_turn', next_unit, 0);
+        return true;
     }
     BattleEvent.EndTurn = EndTurn;
-    /**
-     * This events starts a new turn in provided battle
-     * It sets new date_of_last_turn and updates priorities in heap accordingly
-     * @param battle Battle
-     * @returns
-     */
-    function NewTurn(battle) {
-        // console.log(battle.id + ' new turn')
-        let current_time = Date.now();
-        battle.date_of_last_turn = current_time;
-        let unit = battle.heap.get_selected_unit();
-        if (unit == undefined) {
-            return 'no_units_left';
-        }
-        // console.log(unit.id + ' current unit')
-        alerts_1.Alerts.battle_event_simple(battle, 'new_turn', unit, 0);
-        let time_passed = unit.next_turn_after;
-        battle.heap.update(time_passed);
-        battle.turn_ended = false;
-        return 'ok';
-        // Alerts.battle_update_data(battle)
-        // Alerts.battle_update_units(battle)
-    }
-    BattleEvent.NewTurn = NewTurn;
     function Move(battle, unit, character, target, ignore_flag) {
         let tmp = geom_1.geom.minus(target, unit.position);
         var points_spent = geom_1.geom.norm(tmp) * VALUES_1.BattleValues.move_cost(unit, character);

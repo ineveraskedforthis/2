@@ -74,11 +74,14 @@ var HandleAction;
         if (unit == undefined)
             return;
         if (!battle.waiting_for_input) {
+            console.log('not waiting for input');
             return;
         }
         if (battle.heap.get_selected_unit()?.id != unit.id) {
+            console.log('not selected unit');
             return;
         }
+        console.log('action is validated');
         (0, actions_1.battle_action_self)(tag, battle, character, unit);
     }
     HandleAction.battle_self = battle_self;

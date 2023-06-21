@@ -10,6 +10,7 @@ import { SocketWrapper, User } from "../user";
 import { Validator } from "./common_validations";
 
 import { LandPlotType } from "../../../../../shared/buildings"
+import { BattleSystem } from "../../battle/system";
 
 export namespace SocketCommand {
     // data is a raw id of character
@@ -19,7 +20,7 @@ export namespace SocketCommand {
         const [valid_user, valid_character, target] = Validator.valid_action_to_character(user, character, raw_data)
         if (target == undefined) return
         if (target.dead()) return
-        Event.start_battle(valid_character, target)
+        BattleSystem.start_battle(valid_character, target)
     }
 
     export function support_character(socket_wrapper: SocketWrapper, raw_data: unknown) {
@@ -28,7 +29,7 @@ export namespace SocketCommand {
         const [valid_user, valid_character, target] = Validator.valid_action_to_character(user, character, raw_data)
         if (target == undefined) return
         if (target.dead()) return
-        Event.support_in_battle(valid_character, target)
+        BattleSystem.support_in_battle(valid_character, target)
     }
 
     export function learn_perk(sw: SocketWrapper, msg: undefined|{id: unknown, tag: unknown}) {

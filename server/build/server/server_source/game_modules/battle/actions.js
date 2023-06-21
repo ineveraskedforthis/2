@@ -394,6 +394,8 @@ function battle_action_unit(tag, battle, character, unit, target_character, targ
 exports.battle_action_unit = battle_action_unit;
 function battle_action_position(tag, battle, character, unit, target) {
     let result = battle_action_position_check(tag, battle, character, unit, target);
+    console.log(character.name, 'attempts to ', tag);
+    console.log(result.response);
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target);
         unit.action_points_left = unit.action_points_left - result.ap_cost;

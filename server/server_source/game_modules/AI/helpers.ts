@@ -15,6 +15,7 @@ import { AItrade, price, priced_box } from "./AI_SCRIPTED_VALUES"
 import { Data } from "../data"
 import { cell_id, money } from "@custom_types/common"
 import { BattleTriggers } from "../battle/TRIGGERS"
+import { BattleSystem } from "../battle/system"
 
 
 
@@ -65,11 +66,11 @@ export namespace AIhelper {
         // console.log(battles)
         for (let item of battles) {
             let battle = Convert.id_to_battle(item)
-            if (!(battle.ended)) {
+            if (!(BattleSystem.battle_finished(battle))) {
                 let team = check_team_to_join(agent, battle)
                 if (team == 'no_interest') continue
                 else {
-                    Event.join_battle(agent, battle, team)
+                    BattleSystem.add_figther(battle, agent, team)
                     return true
                 }
             }

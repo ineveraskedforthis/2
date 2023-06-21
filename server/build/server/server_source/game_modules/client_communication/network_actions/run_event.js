@@ -6,6 +6,7 @@ const effects_1 = require("../../events/effects");
 const events_1 = require("../../events/events");
 const systems_communication_1 = require("../../systems_communication");
 const common_validations_1 = require("./common_validations");
+const system_1 = require("../../battle/system");
 var SocketCommand;
 (function (SocketCommand) {
     // data is a raw id of character
@@ -17,7 +18,7 @@ var SocketCommand;
             return;
         if (target.dead())
             return;
-        events_1.Event.start_battle(valid_character, target);
+        system_1.BattleSystem.start_battle(valid_character, target);
     }
     SocketCommand.attack_character = attack_character;
     function support_character(socket_wrapper, raw_data) {
@@ -28,7 +29,7 @@ var SocketCommand;
             return;
         if (target.dead())
             return;
-        events_1.Event.support_in_battle(valid_character, target);
+        system_1.BattleSystem.support_in_battle(valid_character, target);
     }
     SocketCommand.support_character = support_character;
     function learn_perk(sw, msg) {

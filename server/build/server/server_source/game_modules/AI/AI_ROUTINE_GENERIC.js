@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenericRest = exports.ForestPassiveRoutine = exports.PassiveRoutine = exports.SteppePassiveRoutine = exports.SteppeAgressiveRoutine = void 0;
 const data_1 = require("../data");
-const events_1 = require("../events/events");
 const scripted_values_1 = require("../events/scripted_values");
 const systems_communication_1 = require("../systems_communication");
 const actions_1 = require("./actions");
@@ -12,6 +11,7 @@ const triggers_1 = require("./triggers");
 const effects_1 = require("../events/effects");
 const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
 const triggers_2 = require("../events/triggers");
+const system_1 = require("../battle/system");
 function SteppeAgressiveRoutine(character) {
     if ((0, triggers_1.tired)(character)) {
         (0, actions_1.rest_outside)(character);
@@ -20,7 +20,7 @@ function SteppeAgressiveRoutine(character) {
         let target = helpers_1.AIhelper.enemies_in_cell(character);
         const target_char = systems_communication_1.Convert.id_to_character(target);
         if (target_char != undefined) {
-            events_1.Event.start_battle(character, target_char);
+            system_1.BattleSystem.start_battle(character, target_char);
         }
         else {
             (0, actions_1.random_walk)(character, constraints_1.steppe_constraints);

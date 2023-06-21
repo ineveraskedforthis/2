@@ -12,6 +12,7 @@ import { Effect } from "../events/effects";
 import { rooms } from "../DATA_LAYOUT_BUILDING";
 import { ResponceNegative } from "../events/triggers";
 import { AImemory } from "../character/AIstate";
+import { BattleSystem } from "../battle/system";
 
 export function SteppeAgressiveRoutine(character: Character) {
     if (tired(character)) {
@@ -20,7 +21,7 @@ export function SteppeAgressiveRoutine(character: Character) {
         let target = AIhelper.enemies_in_cell(character);
         const target_char = Convert.id_to_character(target);
         if (target_char != undefined) {
-            Event.start_battle(character, target_char);
+            BattleSystem.start_battle(character, target_char);
         } else {
             random_walk(character, steppe_constraints);
         }

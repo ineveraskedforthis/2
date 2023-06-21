@@ -27,7 +27,7 @@ const COST = {
 
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Unit) {
-        unit.next_turn_after = battle.heap.get_max() + 1
+        unit.next_turn_after = battle.heap.get_max() + 1 + Math.floor(Math.random() * 50)
         battle.heap.add_unit(unit)
         Alerts.new_unit(battle, unit)
         if (battle.grace_period > 0) battle.grace_period = 5
@@ -54,69 +54,56 @@ export namespace BattleEvent {
         Unlink.character_and_battle(character)
 
         if (battle.heap.get_units_amount() == 0) {
-            Event.stop_battle(battle)
+            BattleSystem.stop_battle(battle)
             return
         }
     }
 
+    export function update_unit_after_turn(battle: Battle, unit: Unit, character: Character) {
+        battle.heap.pop()
+        unit.next_turn_after = unit.slowness + 1 + Math.floor(Math.random() * 50)
+        const rage_mod = (100 + character.get_rage()) / 100
+        let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn * rage_mod), unit.action_points_max) as action_points;
+        unit.action_points_left = new_ap
+        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1)
+        battle.heap.push(unit.id)
+    }
+
     export function EndTurn(battle: Battle, unit: Unit) {
-        // console.log(battle.id + ' end turn')
-        // console.log(unit.id + 'unit id')
+        console.log('end turn')
 
         // invalid battle
         if (battle.heap.get_selected_unit() == undefined) return false
         // not unit's turn
         if (battle.heap.get_selected_unit()?.id != unit.id) return false;
 
-        battle.waiting_for_input = false
-
-        //updating unit and heap
-        battle.turn_ended = true
-        // console.log(battle.heap.heap, battle.heap.last)
-        battle.heap.pop()
-        unit.next_turn_after = battle.heap.get_max() + 1
-
-        const character = Convert.unit_to_character(unit)
-        const rage_mod = (100 + character.get_rage()) / 100
-
-        let new_ap = Math.min((unit.action_points_left + unit.action_units_per_turn * rage_mod), unit.action_points_max) as action_points;
-        let ap_increase = new_ap - unit.action_points_left
-
-        unit.action_points_left = new_ap
-        unit.dodge_turns = Math.max(0, unit.dodge_turns - 1)
-        battle.heap.push(unit.id)
-
-        battle.grace_period = Math.max(battle.grace_period - 1, 0)
-
-        // send updates
-        Alerts.battle_event_simple(battle, 'end_turn', unit, -ap_increase)
-        Alerts.battle_update_unit(battle, unit)
-    }
-
-    /**
-     * This events starts a new turn in provided battle  
-     * It sets new date_of_last_turn and updates priorities in heap accordingly
-     * @param battle Battle
-     * @returns 
-     */
-    export function NewTurn(battle: Battle) {
-        // console.log(battle.id + ' new turn')
         let current_time = Date.now() as ms
+        battle.waiting_for_input = false
         battle.date_of_last_turn = current_time
 
-        let unit = battle.heap.get_selected_unit()
-        if (unit == undefined) {
-            return 'no_units_left'
-        }
+        //updating unit and heap
+        const character = Convert.unit_to_character(unit)
+        const current_ap = unit.action_points_left
+        update_unit_after_turn(battle, unit, character)
+        const new_ap = unit.action_points_left
+        
+        // update grace period
+        battle.grace_period = Math.max(battle.grace_period - 1, 0)
 
-        // console.log(unit.id + ' current unit')
-        Alerts.battle_event_simple(battle, 'new_turn', unit, 0)
-        let time_passed = unit.next_turn_after
+        // get next unit
+        let next_unit = battle.heap.get_selected_unit()
+        if (next_unit == undefined) {
+            console.log('something is very very wrong')
+            return false
+        }        
+        let time_passed = next_unit.next_turn_after
         battle.heap.update(time_passed)
-        battle.turn_ended = false
-        return 'ok'
-        // Alerts.battle_update_data(battle)
-        // Alerts.battle_update_units(battle)
+
+        // send updates
+        Alerts.battle_event_simple(battle, 'end_turn', unit, current_ap - new_ap)
+        Alerts.battle_update_unit(battle, unit)
+        Alerts.battle_event_simple(battle, 'new_turn', next_unit, 0)
+        return true
     }
 
     export function Move(battle: Battle, unit: Unit, character: Character, target: battle_position, ignore_flag: boolean) {

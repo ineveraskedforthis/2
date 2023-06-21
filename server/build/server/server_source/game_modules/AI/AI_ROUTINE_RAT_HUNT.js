@@ -4,7 +4,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RatHunterRoutine = void 0;
 const manager_1 = require("../actions/manager");
 const actions_00_1 = require("../actions/actions_00");
-const events_1 = require("../events/events");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
 const helpers_1 = require("./helpers");
@@ -13,11 +12,12 @@ const triggers_1 = require("./triggers");
 const actions_1 = require("./actions");
 const system_1 = require("../map/system");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
+const system_2 = require("../battle/system");
 function fight(character) {
     let target = helpers_1.AIhelper.enemies_in_cell(character);
     const target_char = systems_communication_1.Convert.id_to_character(target);
     if (target_char != undefined) {
-        events_1.Event.start_battle(character, target_char);
+        system_2.BattleSystem.start_battle(character, target_char);
         return;
     }
 }
@@ -62,7 +62,7 @@ function patrol(character) {
     let target = helpers_1.AIhelper.free_rats_in_cell(character);
     const target_char = systems_communication_1.Convert.id_to_character(target);
     if (target_char != undefined) {
-        events_1.Event.start_battle(character, target_char);
+        system_2.BattleSystem.start_battle(character, target_char);
     }
     else {
         (0, actions_1.random_walk)(character, constraints_1.simple_constraints);

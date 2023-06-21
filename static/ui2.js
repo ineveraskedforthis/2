@@ -1,9 +1,9 @@
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
+import { socket, globals } from './modules/globals.js';
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {CharacterScreen, EQUIPMENT_TAGS} from './modules/CharacterScreen/character_screen.js'
-import { socket, globals } from './modules/globals.js';
 import { reg, login } from './modules/ViewManagement/scene.js'
 import './modules/Battle/battle_image_init.js'
 import './modules/Market/items_market.js'
@@ -450,7 +450,7 @@ function draw(time) {
             //check repeat action flags
             console.log('keep doing?')
             console.log(globals.keep_doing)
-            if (globals.keep_doing != undefined) {
+            if ((globals.keep_doing != undefined)&&(globals.keep_doing != false)) {
                 map.send_local_cell_action(globals.keep_doing)
             }
             //do the movement again if you are not at destination already

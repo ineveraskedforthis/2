@@ -476,6 +476,8 @@ export function battle_action_unit(tag: ActionUnitKeys, battle: Battle, characte
 
 export function battle_action_position(tag: ActionPositionKeys, battle: Battle, character: Character, unit: Unit, target: battle_position) {
     let result = battle_action_position_check(tag, battle, character, unit, target)
+    console.log(character.name, 'attempts to ', tag)
+    console.log(result.response)
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target)
         unit.action_points_left = unit.action_points_left - result.ap_cost as action_points

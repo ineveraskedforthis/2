@@ -13,12 +13,13 @@ import { tired, low_hp } from "./triggers";
 import { buy, loot, market_walk, random_walk, remove_orders, sell_loot, update_price_beliefs } from "./actions";
 import { MapSystem } from "../map/system";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
+import { BattleSystem } from "../battle/system";
 
 function fight(character: Character) {
     let target = AIhelper.enemies_in_cell(character)
     const target_char = Convert.id_to_character(target)
     if (target_char != undefined) {
-        Event.start_battle(character, target_char)
+        BattleSystem.start_battle(character, target_char)
         return
     }
 }
@@ -67,7 +68,7 @@ function patrol(character: Character) {
     let target = AIhelper.free_rats_in_cell(character)
     const target_char = Convert.id_to_character(target)
     if (target_char != undefined) {
-        Event.start_battle(character, target_char)
+        BattleSystem.start_battle(character, target_char)
     } else {
         random_walk(character, simple_constraints) 
     }

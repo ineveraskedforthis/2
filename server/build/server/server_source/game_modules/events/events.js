@@ -2,15 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Event = void 0;
 const battle_calcs_1 = require("../battle/battle_calcs");
-const events_1 = require("../battle/events");
-const system_1 = require("../battle/system");
 const basic_functions_1 = require("../calculations/basic_functions");
-const system_2 = require("../attack/system");
+const system_1 = require("../attack/system");
 const generate_loot_1 = require("../races/generate_loot");
 // import { Perks } from "../character/Perks";
 const perk_requirement_1 = require("../character/perk_requirement");
 const perk_base_price_1 = require("../prices/perk_base_price");
-const system_3 = require("../character/system");
+const system_2 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
 const data_1 = require("../data");
@@ -100,7 +98,7 @@ var Event;
         if (dice < probability) {
             effects_1.Effect.change_durability(character, 'foot', -1);
             let skill_dice = Math.random();
-            if (skill_dice * skill_dice * skill_dice > system_3.CharacterSystem.skill(character, 'travelling') / 100) {
+            if (skill_dice * skill_dice * skill_dice > system_2.CharacterSystem.skill(character, 'travelling') / 100) {
                 effects_1.Effect.Change.skill(character, 'travelling', 1);
             }
         }
@@ -108,7 +106,7 @@ var Event;
     Event.move_durability_roll = move_durability_roll;
     function new_character(template, name, starting_cell, model) {
         // console.log('creating new character')
-        let character = system_3.CharacterSystem.template_to_character(template, name, starting_cell);
+        let character = system_2.CharacterSystem.template_to_character(template, name, starting_cell);
         if (model == undefined)
             model = { chin: 0, mouth: 0, eyes: 0 };
         character.set_model_variation(model);
@@ -126,7 +124,7 @@ var Event;
         // it gives base 10% of arrows missing
         // and you rise your evasion if you are attacked
         const attack_skill = 2 * attack.attack_skill;
-        const evasion = system_3.CharacterSystem.skill(defender, 'evasion');
+        const evasion = system_2.CharacterSystem.skill(defender, 'evasion');
         let evasion_chance = evasion / (100 + attack_skill);
         if (flag_dodge)
             evasion_chance = evasion_chance + 0.1;
@@ -158,7 +156,7 @@ var Event;
         //check missed attack because of lack of skill
         const acc = battle_calcs_1.Accuracy.ranged(attacker, distance);
         const dice_accuracy = Math.random();
-        const attacker_ranged_skill = system_3.CharacterSystem.skill(attacker, 'ranged');
+        const attacker_ranged_skill = system_2.CharacterSystem.skill(attacker, 'ranged');
         if (dice_accuracy > acc) {
             const dice_skill_up = Math.random();
             if (dice_skill_up * 100 > attacker_ranged_skill) {
@@ -171,7 +169,7 @@ var Event;
             effects_1.Effect.Change.skill(attacker, 'ranged', 1);
         }
         // create attack
-        const attack = system_2.Attack.generate_ranged(attacker);
+        const attack = system_1.Attack.generate_ranged(attacker);
         // durability changes weapon
         const roll_weapon = Math.random();
         if (roll_weapon < 0.2) {
@@ -198,7 +196,7 @@ var Event;
         attack.attacker_status_change.fatigue += 5;
         attack.defender_status_change.fatigue += 5;
         attack.defender_status_change.stress += 3;
-        attack.defence_skill += system_3.CharacterSystem.skill(defender, 'evasion');
+        attack.defence_skill += system_2.CharacterSystem.skill(defender, 'evasion');
         deal_damage(defender, attack, attacker);
         //if target is dead, loot it all
         if (defender.dead()) {
@@ -210,10 +208,10 @@ var Event;
     function unconditional_magic_bolt(attacker, defender, dist, flag_dodge, flag_charged) {
         data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
         const dice = Math.random();
-        if (dice > system_3.CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
+        if (dice > system_2.CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
             effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1);
         }
-        const attack = system_2.Attack.generate_magic_bolt(attacker, dist, flag_charged);
+        const attack = system_1.Attack.generate_magic_bolt(attacker, dist, flag_charged);
         attack.defender_status_change.stress += 5;
         deal_damage(defender, attack, attacker);
         if (defender.dead()) {
@@ -263,10 +261,10 @@ var Event;
     }
     Event.magic_bolt_blood = magic_bolt_blood;
     function deal_damage(defender, attack, attacker) {
-        const total = system_3.CharacterSystem.damage(defender, attack.damage);
+        const total = system_2.CharacterSystem.damage(defender, attack.damage);
         defender.change_status(attack.defender_status_change);
         attacker.change_status(attack.attacker_status_change);
-        const resistance = system_3.CharacterSystem.resistance(defender);
+        const resistance = system_2.CharacterSystem.resistance(defender);
         alerts_1.Alerts.log_attack(defender, attack, resistance, total, 'defender');
         alerts_1.Alerts.log_attack(attacker, attack, resistance, total, 'attacker');
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
@@ -277,7 +275,7 @@ var Event;
             return;
         if (defender.dead())
             return;
-        const attack = system_2.Attack.generate_melee(attacker, attack_type);
+        const attack = system_1.Attack.generate_melee(attacker, attack_type);
         // console.log(attack)
         //status changes for melee attack
         attack.attacker_status_change.rage += 5;
@@ -346,7 +344,7 @@ var Event;
         //for defender
         const dice = Math.random();
         if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-            effects_1.Effect.Change.skill(defender, system_3.CharacterSystem.melee_weapon_type(defender), 1);
+            effects_1.Effect.Change.skill(defender, system_2.CharacterSystem.melee_weapon_type(defender), 1);
         }
         //for attacker
         const dice2 = Math.random();
@@ -355,8 +353,8 @@ var Event;
         }
     }
     function parry(defender, attack) {
-        const weapon = system_3.CharacterSystem.melee_weapon_type(defender);
-        const skill = system_3.CharacterSystem.attack_skill(defender) + Math.round(Math.random() * 5);
+        const weapon = system_2.CharacterSystem.melee_weapon_type(defender);
+        const skill = system_2.CharacterSystem.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
         // roll parry
         const parry_dice = Math.random();
@@ -374,7 +372,7 @@ var Event;
         }
     }
     function block(defender, attack) {
-        const skill = system_3.CharacterSystem.skill(defender, 'blocking') + Math.round(Math.random() * 10);
+        const skill = system_2.CharacterSystem.skill(defender, 'blocking') + Math.round(Math.random() * 10);
         attack.defence_skill += skill;
         // roll block
         const block_dice = Math.random();
@@ -392,7 +390,7 @@ var Event;
     }
     function evade(defender, attack, dodge_flag) {
         //this skill has quite wide deviation
-        const skill = (0, basic_functions_1.trim)(system_3.CharacterSystem.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
+        const skill = (0, basic_functions_1.trim)(system_2.CharacterSystem.skill(defender, 'evasion') + Math.round((Math.random() - 0.5) * 40), 0, 200);
         //passive evasion
         attack.defence_skill += skill;
         //active dodge
@@ -421,8 +419,8 @@ var Event;
         if (killer.id == victim.id) {
             return;
         }
-        const loot = system_3.CharacterSystem.rgo_check(victim);
-        system_3.CharacterSystem.transfer_all(victim, killer);
+        const loot = system_2.CharacterSystem.rgo_check(victim);
+        system_2.CharacterSystem.transfer_all(victim, killer);
         for (const item of loot) {
             Event.change_stash(killer, item.material, item.amount);
         }
@@ -437,7 +435,7 @@ var Event;
         const skin = generate_loot_1.Loot.skinning(victim.archetype.race);
         if (skin > 0) {
             const dice = Math.random();
-            const skinning_skill = system_3.CharacterSystem.skill(killer, 'skinning');
+            const skinning_skill = system_2.CharacterSystem.skill(killer, 'skinning');
             if (dice < skinning_skill / 100) {
                 Event.change_stash(killer, materials_manager_1.RAT_SKIN, skin);
             }
@@ -481,81 +479,6 @@ var Event;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
     }
     Event.change_stash = change_stash;
-    function support_in_battle(character, target) {
-        console.log('attempt to support in battle');
-        if (character.id == target.id)
-            return undefined;
-        if (!target.in_battle())
-            return;
-        if (character.cell_id != target.cell_id) {
-            return undefined;
-        }
-        console.log('validated');
-        const battle = systems_communication_1.Convert.character_to_battle(target);
-        if (battle == undefined)
-            return;
-        const unit_target = systems_communication_1.Convert.character_to_unit(target);
-        if (unit_target == undefined)
-            return;
-        join_battle(character, battle, unit_target.team);
-    }
-    Event.support_in_battle = support_in_battle;
-    function start_battle(attacker, defender) {
-        console.log('attempt to start battle between ' + attacker.name + ' and ' + defender.name);
-        if (attacker.id == defender.id) {
-            console.log('wrong_cell');
-            return undefined;
-        }
-        if (attacker.in_battle()) {
-            console.log('attacker is alread in battle');
-            return undefined;
-        }
-        if (attacker.cell_id != defender.cell_id) {
-            console.log('different cells');
-            return undefined;
-        }
-        console.log('valid participants');
-        // two cases
-        // if defender is in battle, attempt to join it against him as a new team
-        // else create new battle
-        const battle = systems_communication_1.Convert.character_to_battle(defender);
-        const unit_def = systems_communication_1.Convert.character_to_unit(defender);
-        if ((battle != undefined) && (unit_def != undefined)) {
-            let team = system_1.BattleSystem.get_empty_team(battle);
-            join_battle(attacker, battle, team);
-        }
-        else {
-            const battle_id = system_1.BattleSystem.create_battle();
-            const battle = systems_communication_1.Convert.id_to_battle(battle_id);
-            join_battle(defender, battle, 0);
-            join_battle(attacker, battle, 1);
-        }
-    }
-    Event.start_battle = start_battle;
-    function join_battle(agent, battle, team) {
-        if (agent.in_battle()) {
-            return;
-        }
-        console.log(`${agent.name} joins battle ${battle.id}`);
-        const unit = system_1.BattleSystem.create_unit(agent, team, battle);
-        events_1.BattleEvent.NewUnit(battle, unit);
-        systems_communication_1.Link.character_battle_unit(agent, battle, unit);
-        alerts_1.Alerts.battle_update_data(battle);
-        user_manager_1.UserManagement.add_user_to_update_queue(agent.user_id, 18 /* UI_Part.BATTLE */);
-    }
-    Event.join_battle = join_battle;
-    function stop_battle(battle) {
-        battle.ended = true;
-        for (let unit of Object.values(battle.heap.data)) {
-            const character = systems_communication_1.Convert.unit_to_character(unit);
-            if (character != undefined) {
-                character.battle_id = undefined;
-                character.battle_unit_id = undefined;
-            }
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
-        }
-    }
-    Event.stop_battle = stop_battle;
     // export function build_building(character: Character, type: LandPlotType) {
     // }
     function buy_land_plot(character, seller) {
@@ -603,7 +526,7 @@ var Event;
     Event.develop_land_plot = develop_land_plot;
     function repair_building(character, builing_id) {
         let building = data_1.Data.Buildings.from_id(builing_id);
-        let skill = system_3.CharacterSystem.skill(character, 'woodwork');
+        let skill = system_2.CharacterSystem.skill(character, 'woodwork');
         let repair = Math.min(5, skill - building.durability);
         if (repair <= 0)
             return;

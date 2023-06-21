@@ -1,5 +1,6 @@
 import { CharacterAction } from "../actions/actions_00"
 import { ActionManager } from "../actions/manager"
+import { BattleSystem } from "../battle/system"
 import { Character } from "../character/character"
 import { Event } from "../events/events"
 import { Convert } from "../systems_communication"
@@ -23,7 +24,7 @@ export function RatRoutine(char: Character) {
     let target = AIhelper.enemies_in_cell(char)
     const target_char = Convert.id_to_character(target)
     if (target_char != undefined) {
-        Event.start_battle(char, target_char)
+        BattleSystem.start_battle(char, target_char)
     } else {
         // console.log('walk around')
         rat_walk(char, simple_constraints)

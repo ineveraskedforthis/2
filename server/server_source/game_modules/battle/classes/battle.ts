@@ -7,8 +7,8 @@ export class Battle {
     id: battle_id;
     waiting_for_input: boolean;
     date_of_last_turn: ms|'%';
-    ended: boolean
-    turn_ended: boolean
+    // ended: boolean
+    // turn_ended: boolean
     last_event_index: number
     grace_period: number
 
@@ -21,8 +21,8 @@ export class Battle {
         this.id = id
         this.date_of_last_turn = '%'
         this.waiting_for_input = false
-        this.ended = false
-        this.turn_ended = true
+        // this.ended = false
+        // this.turn_ended = true
         this.last_event_index = 0
         this.grace_period = 0
 
