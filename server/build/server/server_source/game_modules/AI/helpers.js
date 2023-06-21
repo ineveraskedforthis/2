@@ -22,7 +22,7 @@ var AIhelper;
                 }
             }
         }
-        return -1;
+        return undefined;
     }
     AIhelper.enemies_in_cell = enemies_in_cell;
     function free_rats_in_cell(char) {

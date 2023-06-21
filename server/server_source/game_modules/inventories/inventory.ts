@@ -35,7 +35,6 @@ export class Inventory{
     transfer_all(target: Inventory) {
         for (let i = 0; i < this.items.length; i++) {
             let item = this.items[i]
-            console.log('transfer', item)
             if (item != undefined) {target.add(item)}            
             this.remove(i)
         }

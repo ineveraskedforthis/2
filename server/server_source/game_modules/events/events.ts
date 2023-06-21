@@ -553,10 +553,10 @@ export namespace Event {
 
     export function start_battle(attacker: Character, defender: Character) {
         console.log('attempt to start battle between ' + attacker.name + ' and ' + defender.name)
-        if (attacker.id == defender.id) return undefined
-        if (attacker.in_battle()) return undefined
-        if (attacker.cell_id != defender.cell_id) {return undefined}
-        // console.log('valid participants')
+        if (attacker.id == defender.id) {console.log('wrong_cell'); return undefined}
+        if (attacker.in_battle()) {console.log('attacker is alread in battle'); return undefined}
+        if (attacker.cell_id != defender.cell_id) {console.log('different cells'); return undefined}
+        console.log('valid participants')
 
         // two cases
         // if defender is in battle, attempt to join it against him as a new team

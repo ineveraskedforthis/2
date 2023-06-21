@@ -502,14 +502,19 @@ var Event;
     Event.support_in_battle = support_in_battle;
     function start_battle(attacker, defender) {
         console.log('attempt to start battle between ' + attacker.name + ' and ' + defender.name);
-        if (attacker.id == defender.id)
-            return undefined;
-        if (attacker.in_battle())
-            return undefined;
-        if (attacker.cell_id != defender.cell_id) {
+        if (attacker.id == defender.id) {
+            console.log('wrong_cell');
             return undefined;
         }
-        // console.log('valid participants')
+        if (attacker.in_battle()) {
+            console.log('attacker is alread in battle');
+            return undefined;
+        }
+        if (attacker.cell_id != defender.cell_id) {
+            console.log('different cells');
+            return undefined;
+        }
+        console.log('valid participants');
         // two cases
         // if defender is in battle, attempt to join it against him as a new team
         // else create new battle

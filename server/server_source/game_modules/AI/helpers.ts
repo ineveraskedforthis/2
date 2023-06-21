@@ -29,7 +29,7 @@ export namespace AIhelper {
                 }                
             }
         } 
-        return -1
+        return undefined
     }
 
     export function free_rats_in_cell(char: Character) {
