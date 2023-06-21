@@ -303,7 +303,7 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
             const delta = geom.minus(target_unit.position, unit.position);
             const dist = geom.norm(delta)
             const range = character.range()
-            const max_move = unit.action_points_left / BattleValues.move_cost(unit, character) // potential movement
+            const max_move = unit.action_points_left / BattleValues.move_cost(unit, character) - 0.01 // potential movement
             
             if (dist < range) {
                 return 0 as action_points

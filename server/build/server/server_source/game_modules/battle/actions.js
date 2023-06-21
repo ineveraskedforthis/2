@@ -261,7 +261,7 @@ exports.ActionsUnit = {
             const delta = geom_1.geom.minus(target_unit.position, unit.position);
             const dist = geom_1.geom.norm(delta);
             const range = character.range();
-            const max_move = unit.action_points_left / VALUES_1.BattleValues.move_cost(unit, character); // potential movement
+            const max_move = unit.action_points_left / VALUES_1.BattleValues.move_cost(unit, character) - 0.01; // potential movement
             if (dist < range) {
                 return 0;
             }
