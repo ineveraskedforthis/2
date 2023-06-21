@@ -49,7 +49,7 @@ function generic_utility_unit(
     if (target_character.dead()) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     let dist = geom.dist(unit.position, target_unit.position)
     if (action.range(battle, character, unit) < dist - d_distance) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
-    if (action.ap_cost(battle, character, unit, target_character, target_unit) > unit.action_points_left + d_ap) return {action_key: 'None', utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
+    if (action.ap_cost(battle, character, unit, target_character, target_unit) > unit.action_points_left + d_ap) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     if (battle_action_unit_check(key, battle, character, unit, target_character, target_unit).response != 'OK') return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     if (action.move_closer) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     if (action.switch_weapon) return {action_key: key, utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
@@ -89,9 +89,9 @@ function utility_move_closer(battle: Battle, character: Character, unit: Unit, t
     const range = character.range()
     const max_move = 1 // potential movement
     if (dist < range) {
-        return {action_key: 'None', utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
+        return {action_key: 'MoveCloser', utility: 0, ap_cost: 0, target: {character: target_character, unit: target_unit}}
     }
-    let distance_to_walk = dist - range + 0.01
+    let distance_to_walk = dist
 
     let cost = ActionsUnit.MoveTowards.ap_cost(battle, character, unit, target_character, target_unit)
 
@@ -121,7 +121,7 @@ function calculate_utility_end_turn(battle: Battle, character: Character, unit: 
 }
 
 function calculate_utility_flee(battle: Battle, character: Character, unit: Unit): UtilityObjectTargeted {
-    if (battle_action_self_check('Flee', battle, character, unit).response != 'OK') return {action_key: 'None', utility: 0, ap_cost: 0, target: {character: character, unit: unit}}
+    if (battle_action_self_check('Flee', battle, character, unit).response != 'OK') return {action_key: 'Flee', utility: 0, ap_cost: 0, target: {character: character, unit: unit}}
     
     let utility = (character.get_hp()) / character.get_max_hp()
     utility = 1 - utility * utility
@@ -138,7 +138,7 @@ function calculate_utility_flee(battle: Battle, character: Character, unit: Unit
 }
 
 function calculate_utility_random_step(battle: Battle, character: Character, unit: Unit): UtilityObjectTargeted {
-    if (battle_action_self_check('RandomStep', battle, character, unit).response != 'OK') return {action_key: 'None', utility: 0, ap_cost: 0, target: {character: character, unit: unit}}
+    if (battle_action_self_check('RandomStep', battle, character, unit).response != 'OK') return {action_key: 'RandomStep', utility: 0, ap_cost: 0, target: {character: character, unit: unit}}
     let total_utility = 0
     for (const item of Object.values(battle.heap.data)) {
         let distance = geom.dist(unit.position, item.position)

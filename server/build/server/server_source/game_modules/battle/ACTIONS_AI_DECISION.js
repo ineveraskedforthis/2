@@ -24,7 +24,7 @@ function generic_utility_unit(key, action, battle, character, unit, target_chara
     if (action.range(battle, character, unit) < dist - d_distance)
         return { action_key: key, utility: 0, ap_cost: 0, target: { character: target_character, unit: target_unit } };
     if (action.ap_cost(battle, character, unit, target_character, target_unit) > unit.action_points_left + d_ap)
-        return { action_key: 'None', utility: 0, ap_cost: 0, target: { character: target_character, unit: target_unit } };
+        return { action_key: key, utility: 0, ap_cost: 0, target: { character: target_character, unit: target_unit } };
     if ((0, actions_1.battle_action_unit_check)(key, battle, character, unit, target_character, target_unit).response != 'OK')
         return { action_key: key, utility: 0, ap_cost: 0, target: { character: target_character, unit: target_unit } };
     if (action.move_closer)
@@ -61,9 +61,9 @@ function utility_move_closer(battle, character, unit, target_character, target_u
     const range = character.range();
     const max_move = 1; // potential movement
     if (dist < range) {
-        return { action_key: 'None', utility: 0, ap_cost: 0, target: { character: target_character, unit: target_unit } };
+        return { action_key: 'MoveCloser', utility: 0, ap_cost: 0, target: { character: target_character, unit: target_unit } };
     }
-    let distance_to_walk = dist - range + 0.01;
+    let distance_to_walk = dist;
     let cost = actions_1.ActionsUnit.MoveTowards.ap_cost(battle, character, unit, target_character, target_unit);
     let result_1 = best_utility_unit(battle, character, unit, target_character, target_unit, distance_to_walk, 0);
     inventory_events_1.EventInventory.switch_weapon(character);
@@ -86,7 +86,7 @@ function calculate_utility_end_turn(battle, character, unit) {
 }
 function calculate_utility_flee(battle, character, unit) {
     if ((0, actions_1.battle_action_self_check)('Flee', battle, character, unit).response != 'OK')
-        return { action_key: 'None', utility: 0, ap_cost: 0, target: { character: character, unit: unit } };
+        return { action_key: 'Flee', utility: 0, ap_cost: 0, target: { character: character, unit: unit } };
     let utility = (character.get_hp()) / character.get_max_hp();
     utility = 1 - utility * utility;
     if (TRIGGERS_1.BattleTriggers.safe_for_unit(battle, unit, character)) {
@@ -101,7 +101,7 @@ function calculate_utility_flee(battle, character, unit) {
 }
 function calculate_utility_random_step(battle, character, unit) {
     if ((0, actions_1.battle_action_self_check)('RandomStep', battle, character, unit).response != 'OK')
-        return { action_key: 'None', utility: 0, ap_cost: 0, target: { character: character, unit: unit } };
+        return { action_key: 'RandomStep', utility: 0, ap_cost: 0, target: { character: character, unit: unit } };
     let total_utility = 0;
     for (const item of Object.values(battle.heap.data)) {
         let distance = geom_1.geom.dist(unit.position, item.position);
