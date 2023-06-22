@@ -61,7 +61,7 @@ export namespace tab {
         }
     }
     
-    export function load_all(socket: Socket) {
+    export function load_all(socket: Socket|undefined) {
         tabs_properties = JSON.parse(localStorage.getItem('tabs_properties')!)
 
         if (tabs_properties == null) {
@@ -93,7 +93,9 @@ export namespace tab {
         init_corners_bottom()
         init_corners_top()
         init_resize()
-        init_buttons(socket)
+        if (socket != undefined) {
+            init_buttons(socket)
+        }
 
         let tab = document.getElementById('battle_tab')!;
         tab.classList.add('hidden');

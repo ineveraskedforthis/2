@@ -1,4 +1,5 @@
 import { set_up_header_with_strings } from './headers.js';
+import { tab } from './modules/ViewManagement/tab.js';
 import { socket } from './modules/globals.js';
 
 //CREDENTIALS STUFF

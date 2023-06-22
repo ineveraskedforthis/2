@@ -92,6 +92,14 @@ div {
     position: absolute;
     top: 5px;
     left: 5px;
+    width: 100px;
+}
+
+#reset_tabs {
+    position: absolute;
+    top: 5px;
+    left: 110px;
+    width: 100px;
 }
 
 #base_background {

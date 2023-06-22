@@ -1,6 +1,22 @@
 import { socket } from "../globals.js";
 import { tab } from "./tab.js";
 
+function reloadCss()
+{
+    var links = document.getElementsByTagName("link");
+    for (var cl in links)
+    {
+        var link = links[cl];
+        if (link.rel === "stylesheet")
+            link.href += "";
+    }
+}
+
+{
+    let button = document.getElementById('reset_tabs')!;
+    button.onclick = () => { localStorage.setItem('tabs_properties', 'null'); location.reload() };
+}
+
 //CHANGE SCENES STUFF
 function show_char_creation() {
     show_scene("character_creation")

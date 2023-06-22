@@ -74,7 +74,9 @@ export var tab;
         init_corners_bottom();
         init_corners_top();
         init_resize();
-        init_buttons(socket);
+        if (socket != undefined) {
+            init_buttons(socket);
+        }
         let tab = document.getElementById('battle_tab');
         tab.classList.add('hidden');
     }
