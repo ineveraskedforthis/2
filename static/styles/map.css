@@ -5,6 +5,28 @@
     overflow: hidden;
 }
 
+#characters_list {
+    overflow-y: scroll;
+    width: 100%;
+    flex: auto;
+    height: 90%;
+}
+
+#characters_list > div {
+    height: 20px;
+    width: 100%;
+}
+
+#characters_list > div:hover {
+    background-color: yellow;
+    color: blue;
+}
+
+#characters_list > div.selected {
+    background-color: greenyellow;
+    color: blue;
+}
+
 #local_description{
     position: absolute;
     left: 30%;
