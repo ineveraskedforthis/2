@@ -58,9 +58,30 @@ set_up_header_with_strings([
 
 document.getElementById('send_message_button').onclick = (event) => {
     event.preventDefault();
-    let message = document.getElementById('message_field').value;
+    let message_field = document.getElementById('message_field')
+    let message = message_field.value;
+    message_field.value = '';
     socket.emit('new-message', message);
 };
+
+
+document.getElementById('hide_chat_button').onclick = (event) => {
+    let chat_box = document.getElementById('messages_frame');
+    let msg_box = document.getElementById('list_of_messages');
+    let send_box = document.getElementById('send_message_frame');
+
+    if (chat_box.classList.contains('chat_display_true')) {
+        chat_box.classList.toggle('chat_display_true');
+        chat_box.style.height = "40px";
+        msg_box.style.visibility = "hidden";
+        send_box.style.visibility = "hidden";
+    } else {
+        chat_box.classList.toggle('chat_display_true');
+        chat_box.style.height = "300px";
+        msg_box.style.visibility = "visible";
+        send_box.style.visibility = "visible";
+    }
+}
 
 function my_alert(msg) {
     if (msg != 'ok') {

@@ -177,14 +177,19 @@
                 </div>
             </div>
 
-            <div id="messages_frame" class="game_frame">
+            <div id="messages_frame" class="game_frame chat_display_true">
+                <div id="hide_chat_button" class="hide_chat_button">X</div>
                 <div class="container">
                     <div class="header noselect">
-                        <div id="open_chat_button" class="selected">Chat</div>
-                        <div id="open_log_button" >Logs</div>
-                        <div id="open_log-attack_button" >Attacks</div>
-                        <div id="open_4_button" >4</div>
-                        <div id="open_5_button" >5</div>
+                        <div id="open_chat_button" class="selected chat_button">Chat</div>
+                        <div class="border_sep"></div>
+                        <div id="open_log_button" class="chat_button">Logs</div>
+                        <div class="border_sep"></div>
+                        <div id="open_log-attack_button" class="chat_button">Attacks</div>
+                        <div class="border_sep"></div>
+                        <div id="open_4_button" class="chat_button">Chat 4</div>
+                        <div class="border_sep"></div>
+                        <div id="open_5_button" class="chat_button">Chat 51</div>
                     </div>
                     <div id='list_of_messages'> 
                         <div id='log' class="messages_display hidden">
@@ -194,10 +199,10 @@
                         <div id="log-attack"class="messages_display hidden">
                         </div>
                     </div>                    
-                    <div id='send_message_frame'>
+                    <form id='send_message_frame' class="send_message_frame">
                         <input id='message_field', type="text", placeholder='New message'>
                         <input type='submit', id='send_message_button', value= 'Send' >
-                    </div>
+                    </form>
                 </div>
             </div>
 
