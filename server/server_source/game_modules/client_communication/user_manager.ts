@@ -18,6 +18,9 @@ import { EloTemplate } from "../races/elo";
 import { Template } from "../templates";
 import { Character } from "../character/character";
 import { Data } from "../data";
+import { ItemSystem } from "../items/system";
+import { SWORD_ARGUMENT } from "../items/items_set_up";
+import { EventInventory } from "../events/inventory_events";
 var path = require('path')
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
@@ -57,7 +60,7 @@ export namespace UserManagement {
                 char_id = Number(data[1]) as char_id
             }
 
-            let user = new UserData(Number(data[0]), char_id, data[2], data[3])            
+            let user = new UserData(Number(data[0]), char_id, data[2], data[3], data[4] == 'true')            
             users_data_dict[user.id] = user
             login_to_user_data[user.login] = user
             users_data_list.push(user)
@@ -73,7 +76,7 @@ export namespace UserManagement {
         console.log('saving users')
         let str:string = ''
         for (let item of users_data_list) {
-            str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + '\n'
+            str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + ' ' + item.tester_account + '\n'
         }
         fs.writeFileSync(save_path, str)
         console.log('users saved')
@@ -99,9 +102,9 @@ export namespace UserManagement {
         return user
     }
 
-    function construct_user_data(char_id: char_id|TEMP_CHAR_ID, login: string, hash: string) {
+    function construct_user_data(char_id: char_id|TEMP_CHAR_ID, login: string, hash: string, tester_flag: boolean) {
         last_id = (last_id + 1)
-        let user_data = new UserData(last_id, char_id, login, hash)
+        let user_data = new UserData(last_id, char_id, login, hash, tester_flag)
         users_data_dict[last_id as user_id] = user_data
         login_to_user_data[login] = user_data
         users_data_list.push(user_data)
@@ -127,13 +130,17 @@ export namespace UserManagement {
         return {login_prompt: 'wrong-password', user: undefined};
     }
 
-    export function register_user(sw: SocketWrapper, data: {login: string, password: string}):RegResponce {
+    export function register_user(sw: SocketWrapper, data: {login: string, password: string, code?: string}):RegResponce {
         if (login_to_user_data[data.login] != undefined) {
             return {reg_prompt: 'login-is-not-available', user: undefined};
         }
 
+        console.log(data)
+        console.log(data.code)
+        console.log(process.env.TESTER_CODE)
+
         let hash = bcrypt.hashSync(data.password, salt) 
-        let user_data = construct_user_data('@', data.login, hash)
+        let user_data = construct_user_data('@', data.login, hash, (data.code == process.env.TESTER_CODE)&&(data.code != undefined))
         let user = construct_user(sw, user_data)
         user.logged_in = true
         return({reg_prompt: 'ok', user: user});
@@ -187,7 +194,14 @@ export namespace UserManagement {
         if (spawn_point == undefined) return
         const [x, y] = Data.World.id_to_coordinate(spawn_point)
         switch(faction){
-            case "city":{character = Template.Character.HumanCity(x, y, name);break};
+            case "city":{
+                character = Template.Character.HumanCity(x, y, name);
+                if (user.tester_account) {
+                    let item = ItemSystem.create(SWORD_ARGUMENT);
+                    EventInventory.add_item(character, item)
+                }                
+                break
+            };
             case "big_humans":{character = Template.Character.HumanStrong(x, y, name);break};
             case "rats":{character = Template.Character.BigRat(x, y, name);break;}
             case "graci":{character = Template.Character.Graci(x, y, name);break}

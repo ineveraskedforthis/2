@@ -15,6 +15,9 @@ const causality_graph_1 = require("./causality_graph");
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const templates_1 = require("../templates");
 const data_1 = require("../data");
+const system_1 = require("../items/system");
+const items_set_up_1 = require("../items/items_set_up");
+const inventory_events_1 = require("../events/inventory_events");
 var path = require('path');
 exports.users_data_dict = {};
 var users_data_list = [];
@@ -42,7 +45,7 @@ var UserManagement;
             if (data[1] != '@') {
                 char_id = Number(data[1]);
             }
-            let user = new user_1.UserData(Number(data[0]), char_id, data[2], data[3]);
+            let user = new user_1.UserData(Number(data[0]), char_id, data[2], data[3], data[4] == 'true');
             exports.users_data_dict[user.id] = user;
             login_to_user_data[user.login] = user;
             users_data_list.push(user);
@@ -57,7 +60,7 @@ var UserManagement;
         console.log('saving users');
         let str = '';
         for (let item of users_data_list) {
-            str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + '\n';
+            str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + ' ' + item.tester_account + '\n';
         }
         fs_1.default.writeFileSync(save_path, str);
         console.log('users saved');
@@ -84,9 +87,9 @@ var UserManagement;
         return user;
     }
     UserManagement.construct_user = construct_user;
-    function construct_user_data(char_id, login, hash) {
+    function construct_user_data(char_id, login, hash, tester_flag) {
         last_id = (last_id + 1);
-        let user_data = new user_1.UserData(last_id, char_id, login, hash);
+        let user_data = new user_1.UserData(last_id, char_id, login, hash, tester_flag);
         exports.users_data_dict[last_id] = user_data;
         login_to_user_data[login] = user_data;
         users_data_list.push(user_data);
@@ -113,8 +116,11 @@ var UserManagement;
         if (login_to_user_data[data.login] != undefined) {
             return { reg_prompt: 'login-is-not-available', user: undefined };
         }
+        console.log(data);
+        console.log(data.code);
+        console.log(process.env.TESTER_CODE);
         let hash = bcrypt.hashSync(data.password, salt);
-        let user_data = construct_user_data('@', data.login, hash);
+        let user_data = construct_user_data('@', data.login, hash, (data.code == process.env.TESTER_CODE) && (data.code != undefined));
         let user = construct_user(sw, user_data);
         user.logged_in = true;
         return ({ reg_prompt: 'ok', user: user });
@@ -173,6 +179,11 @@ var UserManagement;
             case "city":
                 {
                     character = templates_1.Template.Character.HumanCity(x, y, name);
+                    if (user.tester_account) {
+                        let item = system_1.ItemSystem.create(items_set_up_1.SWORD_ARGUMENT);
+                        inventory_events_1.EventInventory.add_item(character, item);
+                        character.equip.data.backpack.add(item);
+                    }
                     break;
                 }
                 ;

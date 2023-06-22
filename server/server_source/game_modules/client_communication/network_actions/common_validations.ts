@@ -10,6 +10,12 @@ const zero  = '0'.charCodeAt(0)
 const ku    = '9'.charCodeAt(0)
 
 
+export type UserCredentials = {
+    login: string,
+    password: string,
+    tester_code?: string
+}
+
 export namespace Validator {
     export function valid_user(user: User) {
         if (!user.logged_in) return false
@@ -30,7 +36,7 @@ export namespace Validator {
         return true
     }
 
-    export function validate_creds(data: {login: string, password: string}) {
+    export function validate_creds(data: UserCredentials) {
         if (data.login.length == 0) {
             return 'empty-login';
         }

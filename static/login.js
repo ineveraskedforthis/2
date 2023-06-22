@@ -25,7 +25,8 @@ document.getElementById('reg-frame').onsubmit = (event) => {
     event.preventDefault();
     let login = document.getElementById('login-r').value;
     let password = document.getElementById('password-r').value;
-    socket.emit('reg', { login: login, password: password });
+    let code = document.getElementById('code-r').value;
+    socket.emit('reg', { login: login, password: password, code: code });
 };
 document.getElementById('login-frame').onsubmit = (event) => {
     event.preventDefault();

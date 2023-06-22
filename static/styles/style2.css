@@ -2,6 +2,8 @@ body {
 
     background-image: url(/static/img/background_1.png);
     background-repeat: repeat;
+    font-family: "Arial", sans-serif;
+    font-size: small;
     /* overflow: hidden; */
 }
 

@@ -7,12 +7,14 @@ export class UserData {
     login: string
     password_hash: string
     char_id: char_id|TEMP_CHAR_ID
+    tester_account: boolean|undefined
     
-    constructor(id: number, char_id:char_id|TEMP_CHAR_ID, login:string, password_hash:string) {
+    constructor(id: number, char_id:char_id|TEMP_CHAR_ID, login:string, password_hash:string, tester_flag:boolean) {
         this.id = id as user_id
         this.char_id = char_id
         this.login = login
         this.password_hash = password_hash
+        this.tester_account = tester_flag
     }
 }
 

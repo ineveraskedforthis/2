@@ -2,7 +2,7 @@ import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "..
 import { SocketWrapper} from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
-import { Validator } from "./common_validations";
+import { UserCredentials, Validator } from "./common_validations";
 import fs from "fs"
 var path = require('path')
 import { SAVE_GAME_PATH } from "../../../SAVE_GAME_PATH";
@@ -120,7 +120,7 @@ export namespace Auth {
         }
     }
 
-    export function register(sw: SocketWrapper, data: {login: string, password: string}) {
+    export function register(sw: SocketWrapper, data: UserCredentials) {
         // check that user doesn't try to register while being logged in
         if (sw.user_id != '#') {
             sw.socket.emit('is-login-valid', 'you-are-logged-in');

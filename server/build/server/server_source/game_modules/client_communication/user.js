@@ -3,11 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.User = exports.SocketWrapper = exports.UserData = void 0;
 const causality_graph_1 = require("./causality_graph");
 class UserData {
-    constructor(id, char_id, login, password_hash) {
+    constructor(id, char_id, login, password_hash, tester_flag) {
         this.id = id;
         this.char_id = char_id;
         this.login = login;
         this.password_hash = password_hash;
+        this.tester_account = tester_flag;
     }
 }
 exports.UserData = UserData;
