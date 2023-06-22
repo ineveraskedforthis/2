@@ -20,15 +20,20 @@ import { BattleSystem } from "../battle/system"
 
 
 export namespace AIhelper {
-    export function enemies_in_cell(char: Character) {
-        let a = Data.Cells.get_characters_list_from_cell(char.cell_id)
+    export function enemies_in_cell(character: Character) {
+        let a = Data.Cells.get_characters_list_from_cell(character.cell_id)
         for (let id of a) {
             let target_char = Convert.id_to_character(id)
-            if (hostile(char.race(), target_char.race())) {
+            if (BattleTriggers.is_enemy_characters(character, target_char)) {
                 if (!target_char.dead()) {
                     return target_char.id
                 }                
             }
+            // if (hostile(char.race(), target_char.race())) {
+            //     if (!target_char.dead()) {
+            //         return target_char.id
+            //     }                
+            // }
         } 
         return undefined
     }

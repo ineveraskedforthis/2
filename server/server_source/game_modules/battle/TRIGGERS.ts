@@ -60,8 +60,11 @@ export namespace BattleTriggers {
             // console.log('same team')
             return false
         }
-            
 
+        return is_enemy_characters(character, target_character)
+    }
+
+    export function is_enemy_characters(character: Character, target_character: Character) {
         // death check
         if (target_character.dead()) {
             // console.log('dead target')
@@ -71,8 +74,7 @@ export namespace BattleTriggers {
         if (character.dead()){
             // console.log('i am dead')
             return false
-        }
-            
+        }            
 
         // hostility check:
         // if there is no racial hostility, then check for reputational hostility

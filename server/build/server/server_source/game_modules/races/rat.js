@@ -33,6 +33,11 @@ const RatStats = {
     magic_power: 10,
     movement_speed: 2
 };
+const MageRatStats = {
+    phys_power: 4,
+    magic_power: 20,
+    movement_speed: 1.5
+};
 const BigRatStats = {
     phys_power: 25,
     magic_power: 10,
@@ -46,5 +51,5 @@ function generate_name() {
 }
 exports.RatTemplate = new templates_1.CharacterTemplate(RatArchetype, generate_name, 50, RatStats, RatResists);
 exports.BigRatTemplate = new templates_1.CharacterTemplate(BigRatArchetype, generate_name, 150, BigRatStats, RatResists);
-exports.MageRatTemplate = new templates_1.CharacterTemplate(MageRatArchetype, generate_name, 20, RatStats, RatResists);
+exports.MageRatTemplate = new templates_1.CharacterTemplate(MageRatArchetype, generate_name, 20, MageRatStats, RatResists);
 exports.BerserkRatTemplate = new templates_1.CharacterTemplate(BerserkRatArchetype, generate_name, 100, BigRatStats, BerserkResists);

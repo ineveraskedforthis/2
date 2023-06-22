@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIhelper = void 0;
-const racial_hostility_1 = require("../races/racial_hostility");
 const systems_communication_1 = require("../systems_communication");
 const CraftBulk_1 = require("../craft/CraftBulk");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -12,15 +11,20 @@ const TRIGGERS_1 = require("../battle/TRIGGERS");
 const system_1 = require("../battle/system");
 var AIhelper;
 (function (AIhelper) {
-    function enemies_in_cell(char) {
-        let a = data_1.Data.Cells.get_characters_list_from_cell(char.cell_id);
+    function enemies_in_cell(character) {
+        let a = data_1.Data.Cells.get_characters_list_from_cell(character.cell_id);
         for (let id of a) {
             let target_char = systems_communication_1.Convert.id_to_character(id);
-            if ((0, racial_hostility_1.hostile)(char.race(), target_char.race())) {
+            if (TRIGGERS_1.BattleTriggers.is_enemy_characters(character, target_char)) {
                 if (!target_char.dead()) {
                     return target_char.id;
                 }
             }
+            // if (hostile(char.race(), target_char.race())) {
+            //     if (!target_char.dead()) {
+            //         return target_char.id
+            //     }                
+            // }
         }
         return undefined;
     }

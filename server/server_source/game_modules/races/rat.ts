@@ -37,6 +37,12 @@ const RatStats: Stats = {
     movement_speed: 2
 }
 
+const MageRatStats: Stats = {
+    phys_power: 4,
+    magic_power: 20,
+    movement_speed: 1.5
+}
+
 const BigRatStats: Stats = {
     phys_power: 25,
     magic_power: 10,
@@ -53,5 +59,5 @@ function generate_name() {
 
 export const RatTemplate = new CharacterTemplate(RatArchetype, generate_name, 50, RatStats, RatResists)
 export const BigRatTemplate = new CharacterTemplate(BigRatArchetype, generate_name, 150, BigRatStats, RatResists)
-export const MageRatTemplate = new CharacterTemplate(MageRatArchetype, generate_name, 20, RatStats, RatResists)
+export const MageRatTemplate = new CharacterTemplate(MageRatArchetype, generate_name, 20, MageRatStats, RatResists)
 export const BerserkRatTemplate = new CharacterTemplate(BerserkRatArchetype, generate_name, 100, BigRatStats, BerserkResists)

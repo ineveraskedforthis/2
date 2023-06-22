@@ -62,6 +62,10 @@ var BattleTriggers;
             // console.log('same team')
             return false;
         }
+        return is_enemy_characters(character, target_character);
+    }
+    BattleTriggers.is_enemy = is_enemy;
+    function is_enemy_characters(character, target_character) {
         // death check
         if (target_character.dead()) {
             // console.log('dead target')
@@ -89,7 +93,7 @@ var BattleTriggers;
         // otherwise, he is an enemy
         return true;
     }
-    BattleTriggers.is_enemy = is_enemy;
+    BattleTriggers.is_enemy_characters = is_enemy_characters;
     function is_friend(character, potential_friend_of_character) {
         if (potential_friend_of_character.dead()) {
             return false;

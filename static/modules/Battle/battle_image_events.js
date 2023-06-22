@@ -203,6 +203,8 @@ export class AttackEvent extends BattleImageEvent {
     on_start() {
         let unit_view_attacker = units_views[this.unit];
         let unit_view_defender = units_views[this.target];
+        if (unit_view_attacker == undefined || unit_view_defender == undefined)
+            return;
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position);
         direction_vec = position_c.scalar_mult(1 / position_c.norm(direction_vec), direction_vec);
         unit_view_defender.current_animation = { type: 'attacked', data: { direction: direction_vec, dodge: false } };
@@ -212,6 +214,8 @@ export class AttackEvent extends BattleImageEvent {
     update(dt) {
         let attacker = units_views[this.unit];
         let defender = units_views[this.target];
+        if (attacker == undefined || defender == undefined)
+            return;
         if (this.time_passed <= STAND_UNTIL) {
             attacker.a_image.set_action('idle');
         }
