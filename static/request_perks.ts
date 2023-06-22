@@ -2,6 +2,7 @@ import { socket, globals } from './modules/globals.js';
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { CharacterStatsResponse, PerksResponse } from '../shared/responses.js'
 import { Perks } from '../shared/character.js'
+import { equip_slot } from '../shared/inventory.js';
 
 // tmp.typ = this.typ;
 // tmp.tag = this.tag;
@@ -26,7 +27,7 @@ function request_perks() {
     button.onclick = () => close_perks();
 }
 function close_perks() {
-    let big_div = document.getElementById('available_perks')!;
+    let big_div = document.getElementById('backdrop')!;
     big_div.classList.add('hidden');
 }
 function send_perk_learning_request(i: string) {
@@ -55,13 +56,24 @@ function epitet(number: number) {
     return 'novice'
 }
 
-function build_perks_list(data: PerksResponse) {
-    console.log('build perks');
-    console.log(data);
-    let big_div = document.getElementById('available_perks')!;
 
+function clear_dialog_options() {
+    let dialog_options_div = document.getElementById('dialog-options')!;
+    dialog_options_div.innerHTML = '';
+}
+
+function add_dialog_option(i: string, onclick: () => void) {
+    let dialog_options_div = document.getElementById('dialog-options')!;
+
+    let div = document.createElement('div');
+    div.innerHTML = i;
+    div.onclick = onclick;
+    div.classList.add(... ["dialog-content", "dialog-option"])
+    dialog_options_div.appendChild(div);    
+}
+
+function generate_greeting(data: PerksResponse) {
     let greeting_line = `Hello, I am ${data.name} of ${data.race} race. I am currently ${data.current_goal}.`
-
     let flag = true
     for (let faction_block of data.factions) {
         if (faction_block.reputation != 'neutral') {
@@ -69,6 +81,7 @@ function build_perks_list(data: PerksResponse) {
             greeting_line += `I am ${faction_block.reputation} of ${faction_block.name}. `
         }             
     }
+
     if (flag) {
         greeting_line += ('I am not related to any local faction. ')
     }
@@ -85,68 +98,63 @@ function build_perks_list(data: PerksResponse) {
         }
         greeting_line += `I can teach you for a price. `
     }
-
-    document.getElementById('character_greeting')!.innerHTML = greeting_line
-
-    let perks_div = document.getElementById('perks_for_learning')!;
-    perks_div.innerHTML = '';
+    return greeting_line
+}
 
 
-    for (let [i, value] of Object.entries(data.perks)) {
-        let list_entry = document.createElement('div');
 
-        let label = document.createElement('div');
-        label.innerHTML = i;
-        
+                // <img class="character_image equip body"></img>
+                // <img class="character_image equip legs"></img>
+                // <img class="character_image equip foot"></img>
+                // <img class="character_image equip head"></img>
+                // <img class="character_image equip arms"></img>
+                // <img class="character_image equip weapon"></img>
 
-        let button = document.createElement('button');
-        button.onclick = send_perk_learning_request(i);
-        button.innerHTML = 'learn (' + value + ')';
+function build_portrait(div: Element, data: {[tag in equip_slot]: string|undefined}, model: string) {
+    let string = ''
 
-        label.classList.add('flex-3')
-        button.classList.add('flex-1')
-
-        list_entry.appendChild(label);
-        list_entry.appendChild(button);
-
-        list_entry.classList.add('container-horizontal')
-        list_entry.classList.add('height-50')
-
-        perks_div.appendChild(list_entry);
+    for (let tag of ['weapon', 'arms', 'head', 'foot', 'legs', 'body']) {
+        if (tag != 'body') {
+            if (data[tag as equip_slot] != undefined)
+                string += `no-repeat url(/static/img/character_image/${model}/${data[tag as equip_slot]}_big.png) top center, `
+        } else {
+            string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center`
+        }
     }
+    console.log(string);
+    (<HTMLElement>div).style.background = string;
+}
 
-    let buy_plot_button = document.getElementById('buy_land_plot')!;
-    buy_plot_button.onclick = buy_land_plot_request()
+function is_leader(data: PerksResponse) {
+    for (let faction of data.factions) {
+        if (faction.reputation == 'leader') {
+            return true
+        }
+    }
+    return false
+}
 
-    let skills_div = document.getElementById('skills_for_learning')!;
-    skills_div.innerHTML = '';
+function build_dialog(data: PerksResponse) {
+    console.log('build perks');
+    console.log(data);
+    let big_div = document.getElementById('backdrop')!;
+    let portrait_div = big_div.querySelector('.character-display')!
+    document.getElementById('dialog-message')!.innerHTML = generate_greeting(data);
+    clear_dialog_options();
+    build_portrait(portrait_div, data.equip, data.model)
+    add_dialog_option('Goodbye', close_perks)
 
+    if (is_leader(data)) add_dialog_option('I want to buy a land plot for 500.', buy_land_plot_request)
+    
+    for (let [i, value] of Object.entries(data.perks)) {
+        add_dialog_option(`Teach me ${i} for ${value}`, send_perk_learning_request(i))
+    }
     for (let skill of Object.keys(data.skills)) {
         let tmp = data.skills[skill]
         if (tmp == undefined) continue
         let [level, price] = tmp
-
-        let list_entry = document.createElement('div');
-        let label = document.createElement('div')
-        let button = document.createElement('button')
-        
-        label.innerHTML = SKILL_NAMES[skill]
-        button.innerHTML = `learn (${price})`
-
-        label.classList.add('flex-3')
-        button.classList.add('flex-1')
-
-        button.onclick = send_skill_learning_request(skill)
-
-        list_entry.append(label)
-        list_entry.append(button)
-
-        list_entry.classList.add('container-horizontal')
-        list_entry.classList.add('height-50')
-
-        skills_div.appendChild(list_entry)
+        add_dialog_option(`Teach me ${SKILL_NAMES[skill]} for ${price}`, send_skill_learning_request(skill))
     }
-
     big_div.classList.remove('hidden');
 }
 
@@ -194,6 +202,6 @@ function update_stats(data: CharacterStatsResponse) {
     stats_tab.appendChild(flex_something('Charged magic bolt base damage',  `${data.base_damage_magic_bolt_charged.toFixed(2)}`))
 }
 
-socket.on('perks-info',     build_perks_list);
+socket.on('perks-info',     build_dialog);
 socket.on('perks-update',   update_perks);
 socket.on('stats',          update_stats)

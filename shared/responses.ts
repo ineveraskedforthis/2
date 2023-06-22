@@ -1,4 +1,5 @@
 import { Perks, reputation_level } from "./character";
+import { armour_slot, equip_slot } from "./inventory";
 
 export type PerksResponse = {
     name: string,
@@ -6,7 +7,9 @@ export type PerksResponse = {
     factions: { tag: string; name: string; reputation: reputation_level }[]
     perks: {[_ in Perks]?: number}
     skills: {[_ in string]?: [number, number]},
-    current_goal: string
+    current_goal: string,
+    model: string,
+    equip: {[_ in equip_slot]: string|undefined}
 }
 
 export type CharacterStatsResponse = {

@@ -21,6 +21,8 @@
     <link rel="stylesheet" type="text/css" href="static/styles/battle.css">
     <link rel="stylesheet" type="text/css" href="static/styles/quests.css">
     <link rel="stylesheet" type="text/css" href="static/styles/equiped_items.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/backdrop.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/dialog.css">
 </head>
 <body>
     <!-- <script>var exports = {};</script> -->
@@ -517,7 +519,41 @@
                 <!-- <div class="corner top"></div> -->
                 <div class="corner bottom"></div>
             </div>
-        </div>  
+
+
+
+            <div id="backdrop" class="background-backdrop hidden">
+
+                <div id="dialog-scene" class="dialog-scene">
+                    <div class="character-display">
+                    </div>
+
+                    <div id="dialog-options" class="options-container">
+                        <div class="dialog-content dialog-option">
+                            HEEEEEELOOOOO
+                        </div>
+                        
+                        <div class="dialog-content dialog-option">
+                            LET'S TRADE!!!!
+                        </div>
+
+                        <div class="dialog-content dialog-option">
+                            LET'S LEARN MODEL CATEGORIES
+                        </div>
+                        <div class="dialog-content dialog-option">
+                            LET'S LEARN MODEL CATEGORIES
+                        </div>
+                        <div class="dialog-content dialog-option">
+                            LET'S LEARN MODEL CATEGORIES
+                        </div>
+
+                    </div>
+                    <div id="dialog-message" class="dialog-message dialog-content">
+                        HELLOOOOOOOOOOOO
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src='/socket.io/socket.io.js'></script>

@@ -135,9 +135,9 @@ export namespace UserManagement {
             return {reg_prompt: 'login-is-not-available', user: undefined};
         }
 
-        console.log(data)
-        console.log(data.code)
-        console.log(process.env.TESTER_CODE)
+        // console.log(data)
+        // console.log(data.code)
+        // console.log(process.env.TESTER_CODE)
 
         let hash = bcrypt.hashSync(data.password, salt) 
         let user_data = construct_user_data('@', data.login, hash, (data.code == process.env.TESTER_CODE)&&(data.code != undefined))

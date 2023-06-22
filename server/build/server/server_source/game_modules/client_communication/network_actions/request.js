@@ -57,7 +57,9 @@ var Request;
             factions: data_1.Data.Reputation.list_from_id(target_character.id),
             current_goal: target_character.ai_state,
             perks: {},
-            skills: {}
+            skills: {},
+            model: target_character.model(),
+            equip: target_character.equip_models()
         };
         for (let perk of Object.keys(data)) {
             if (data[perk] == true) {

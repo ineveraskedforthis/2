@@ -10,6 +10,7 @@ import { material_index } from "../manager_classes/materials_manager";
 import { PerksTable } from "../../../../shared/character";
 import { cell_id, money } from "../../../../shared/common";
 import { CharacterMapAction } from "../actions/types";
+import { armour_slot, equip_slot } from "@custom_types/inventory";
 
 export class Character {
     id: char_id;
@@ -225,6 +226,14 @@ export class Character {
         return 0.5
     }
     model()         { return this.archetype.model }
+    equip_models():{[_ in equip_slot]: string|undefined}  { return {
+        weapon: this.equip.data.weapon?.model_tag,
+        head: this.equip.data.armour.head?.model_tag,
+        body: this.equip.data.armour.body?.model_tag,
+        legs: this.equip.data.armour.legs?.model_tag,
+        foot: this.equip.data.armour.foot?.model_tag,
+        arms: this.equip.data.armour.arms?.model_tag
+    }}
     race()          { return this.archetype.race }
     ai_map()            { return this.archetype.ai_map }
 
