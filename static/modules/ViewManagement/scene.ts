@@ -14,7 +14,7 @@ function reloadCss()
 
 {
     let button = document.getElementById('reset_tabs')!;
-    button.onclick = () => { localStorage.setItem('tabs_properties', 'null'); location.reload() };
+    button.onclick = () => { localStorage.setItem('tabs_properties', 'null'); tab.reset_style_all(); };
 }
 
 //CHANGE SCENES STUFF

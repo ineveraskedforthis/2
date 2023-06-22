@@ -182,6 +182,21 @@ export namespace tab {
         }
     }
 
+    function reset_style(tab_tag:string) {
+        if (tab_tag == 'battle') { return }
+        let tab = document.getElementById(tab_tag + '_tab')!
+        tab.style.top = ''
+        tab.style.left = ''
+        tab.style.width = ''
+        tab.style.height = ''
+    }
+
+    export function reset_style_all() {
+        for (let tag of game_tabs) {
+            reset_style(tag)
+        }
+    }
+
     function init_resize() {
         let game_scene = document.getElementById('actual_game_scene')!
         game_scene.onmousemove = event => {
