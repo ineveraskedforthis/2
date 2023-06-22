@@ -182,7 +182,6 @@ var UserManagement;
                     if (user.tester_account) {
                         let item = system_1.ItemSystem.create(items_set_up_1.SWORD_ARGUMENT);
                         inventory_events_1.EventInventory.add_item(character, item);
-                        character.equip.data.backpack.add(item);
                     }
                     break;
                 }

@@ -15,6 +15,18 @@ const battle_calcs_1 = require("./battle_calcs");
 const events_2 = require("./events");
 const TRIGGERS_1 = require("./TRIGGERS");
 const VALUES_1 = require("./VALUES");
+function attack_ap_cost(base, character) {
+    let result = base;
+    let weapon = character.equip.data.weapon;
+    if (weapon != undefined) {
+        result = base * system_3.ItemSystem.weight(weapon) / 4;
+    }
+    const skill = system_2.CharacterSystem.attack_skill(character);
+    result = result * (1 - skill / 200);
+    const power = system_2.CharacterSystem.phys_power(character);
+    result = result * (0.5 + 10 / power);
+    return result;
+}
 function always(character) {
     return true;
 }
@@ -72,12 +84,7 @@ exports.ActionsUnit = {
     'Pierce': {
         valid: always,
         ap_cost: (battle, character, unit, target_character, target_unit) => {
-            let weapon = character.equip.data.weapon;
-            if (weapon == undefined)
-                return 1;
-            else {
-                return system_3.ItemSystem.weight(weapon);
-            }
+            return attack_ap_cost(2, character);
         },
         range: (battle, character, unit) => {
             return character.range();
@@ -104,12 +111,7 @@ exports.ActionsUnit = {
     'Slash': {
         valid: always,
         ap_cost: (battle, character, unit, target_character, target_unit) => {
-            let weapon = character.equip.data.weapon;
-            if (weapon == undefined)
-                return 1;
-            else {
-                return system_3.ItemSystem.weight(weapon);
-            }
+            return attack_ap_cost(3, character);
         },
         range: (battle, character, unit) => {
             return character.range();
@@ -140,12 +142,7 @@ exports.ActionsUnit = {
     'Knock': {
         valid: always,
         ap_cost: (battle, character, unit, target_character, target_unit) => {
-            let weapon = character.equip.data.weapon;
-            if (weapon == undefined)
-                return 1;
-            else {
-                return system_3.ItemSystem.weight(weapon);
-            }
+            return attack_ap_cost(2, character);
         },
         range: (battle, character, unit) => {
             return character.range();

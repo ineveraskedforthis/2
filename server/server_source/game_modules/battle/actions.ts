@@ -18,6 +18,22 @@ import { BattleActionExecution, BattleActionExecutionPosition, BattleActionExecu
 import { BattleValues } from "./VALUES"
 import { action_points, ActionPositionKeys, ActionSelfKeys, ActionUnitKeys, battle_position } from "@custom_types/battle_data"
 
+function attack_ap_cost(base: number, character: Character) {
+    let result = base
+
+    let weapon = character.equip.data.weapon
+    if (weapon != undefined) {
+        result = base * ItemSystem.weight(weapon) / 4
+    }
+
+    const skill = CharacterSystem.attack_skill(character)
+    result = result * (1 - skill / 200)
+    const power = CharacterSystem.phys_power(character)
+    result = result * (0.5 + 10 / power)
+    
+    return result as action_points
+}
+
 export type ActionSelf = {
     ap_cost: BattleApCost,
     execute: BattleActionExecution,
@@ -107,12 +123,7 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
     'Pierce': {
         valid: always,
         ap_cost: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            let weapon = character.equip.data.weapon
-            if (weapon == undefined)
-                return 1 as action_points
-            else {
-                return ItemSystem.weight(weapon) as action_points
-            }
+            return attack_ap_cost(2, character)
         },
         range: (battle: Battle, character: Character, unit: Unit) => {
             return character.range()
@@ -140,12 +151,7 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
     'Slash': {
         valid: always,
         ap_cost: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            let weapon = character.equip.data.weapon
-            if (weapon == undefined)
-                return 1 as action_points
-            else {
-                return ItemSystem.weight(weapon) as action_points
-            }
+            return attack_ap_cost(3, character)
         },
         range: (battle: Battle, character: Character, unit: Unit) => {
             return character.range()
@@ -176,12 +182,7 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
     'Knock': {
         valid: always,
         ap_cost: (battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) => {
-            let weapon = character.equip.data.weapon
-            if (weapon == undefined)
-                return 1 as action_points
-            else {
-                return ItemSystem.weight(weapon) as action_points
-            }
+            return attack_ap_cost(2, character)
         },
         range: (battle: Battle, character: Character, unit: Unit) => {
             return character.range()

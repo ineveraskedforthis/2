@@ -167,6 +167,10 @@ var CharacterSystem;
         return new Damage_1.Damage();
     }
     CharacterSystem.ranged_damage_raw = ranged_damage_raw;
+    function base_phys_power(character) {
+        return character.stats.stats.phys_power;
+    }
+    CharacterSystem.base_phys_power = base_phys_power;
     function phys_power(character) {
         let base = character.stats.stats.phys_power;
         base += skill(character, 'travelling') / 30;

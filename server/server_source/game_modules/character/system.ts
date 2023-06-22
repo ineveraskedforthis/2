@@ -168,6 +168,10 @@ export namespace CharacterSystem {
         return new Damage()
     }
 
+    export function base_phys_power(character: Character) {
+        return character.stats.stats.phys_power
+    }
+
     export function phys_power(character: Character) {
         let base = character.stats.stats.phys_power
         base += skill(character, 'travelling') / 30

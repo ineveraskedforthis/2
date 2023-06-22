@@ -77,8 +77,13 @@
 .goods_market > .goods_list > .goods_type {
     display: flex;
     flex-direction: row;
+    flex-shrink: 0;
     border: #590000 1px solid;
     background-color: rgba(80, 21, 11, 0.479);
+}
+
+.goods_market > .goods_list > .goods_type > div {
+    flex-shrink: 0;
 }
 
 .goods_market > .goods_list > .goods_type:hover {
