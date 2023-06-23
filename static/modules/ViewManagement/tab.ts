@@ -197,6 +197,12 @@ export namespace tab {
         }
     }
 
+    export function save_tabs_all() {
+        for (let tag of game_tabs) {
+            save(tag)
+        }
+    }
+
     function init_resize() {
         let game_scene = document.getElementById('actual_game_scene')!
         game_scene.onmousemove = event => {

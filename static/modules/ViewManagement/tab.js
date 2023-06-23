@@ -174,6 +174,12 @@ export var tab;
         }
     }
     tab_1.reset_style_all = reset_style_all;
+    function save_tabs_all() {
+        for (let tag of game_tabs) {
+            save(tag);
+        }
+    }
+    tab_1.save_tabs_all = save_tabs_all;
     function init_resize() {
         let game_scene = document.getElementById('actual_game_scene');
         game_scene.onmousemove = event => {

@@ -63,7 +63,7 @@ function add_dialog_option(i, onclick) {
     dialog_options_div.appendChild(div);
 }
 function generate_greeting(data) {
-    let greeting_line = `Hello, I am ${data.name} of ${data.race} race. I am currently ${data.current_goal}.`;
+    let greeting_line = `Hello, I am ${data.name} of ${data.race} race. I am currently ${data.current_goal}. `;
     let flag = true;
     for (let faction_block of data.factions) {
         if (faction_block.reputation != 'neutral') {

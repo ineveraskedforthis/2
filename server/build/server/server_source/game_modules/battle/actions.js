@@ -99,7 +99,7 @@ exports.ActionsUnit = {
             let scale = character.range() * power_ratio / norm;
             c = geom_1.geom.mult(c, scale);
             events_2.BattleEvent.SetCoord(battle, target_unit, geom_1.geom.sum(b, c));
-            events_1.Event.attack(character, target_character, dodge_flag, 'pierce');
+            events_1.Event.attack(character, target_character, dodge_flag, 'pierce', false);
         },
         damage: (battle, character, unit) => {
             return damage_types_1.DmgOps.total(system_1.Attack.generate_melee(character, 'pierce').damage);
@@ -127,7 +127,12 @@ exports.ActionsUnit = {
                 let damaged_character = systems_communication_1.Convert.unit_to_character(aoe_target);
                 if (unit.team == aoe_target.team)
                     continue;
-                events_1.Event.attack(character, damaged_character, dodge_flag, 'slice');
+                if (target_unit.id != aoe_target.id) {
+                    events_1.Event.attack(character, damaged_character, dodge_flag, 'slice', true);
+                }
+                else {
+                    events_1.Event.attack(character, damaged_character, dodge_flag, 'slice', false);
+                }
                 alerts_1.Alerts.battle_event_target_unit(battle, 'attack', unit, aoe_target, 0);
                 alerts_1.Alerts.battle_update_unit(battle, aoe_target);
             }
@@ -150,7 +155,7 @@ exports.ActionsUnit = {
         execute: (battle, character, unit, target_character, target_unit) => {
             let dodge_flag = (target_unit.dodge_turns > 0);
             let range = character.range();
-            events_1.Event.attack(character, target_character, dodge_flag, 'blunt');
+            events_1.Event.attack(character, target_character, dodge_flag, 'blunt', false);
             alerts_1.Alerts.battle_event_target_unit(battle, 'attack', unit, target_unit, 0);
             alerts_1.Alerts.battle_update_unit(battle, unit);
             alerts_1.Alerts.battle_update_unit(battle, target_unit);

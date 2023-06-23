@@ -22,6 +22,7 @@ const scripted_values_1 = require("./scripted_values");
 // import { BuildingType } from "../DATA_LAYOUT_BUILDING";
 const helpers_1 = require("../craft/helpers");
 const triggers_1 = require("./triggers");
+const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
 const GRAVEYARD_CELL = 0;
 var Event;
 (function (Event) {
@@ -150,7 +151,6 @@ var Event;
             alerts_1.Alerts.not_enough_to_character(attacker, 'arrow', 0, 1, undefined);
             return 'no_ammo';
         }
-        data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
         //remove arrow
         change_stash(attacker, materials_manager_1.ARROW_BONE, -1);
         //check missed attack because of lack of skill
@@ -197,7 +197,7 @@ var Event;
         attack.defender_status_change.fatigue += 5;
         attack.defender_status_change.stress += 3;
         attack.defence_skill += system_2.CharacterSystem.skill(defender, 'evasion');
-        deal_damage(defender, attack, attacker);
+        deal_damage(defender, attack, attacker, false);
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender);
@@ -206,14 +206,13 @@ var Event;
     }
     Event.shoot = shoot;
     function unconditional_magic_bolt(attacker, defender, dist, flag_dodge, flag_charged) {
-        data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
         const dice = Math.random();
         if (dice > system_2.CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
             effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1);
         }
         const attack = system_1.Attack.generate_magic_bolt(attacker, dist, flag_charged);
         attack.defender_status_change.stress += 5;
-        deal_damage(defender, attack, attacker);
+        deal_damage(defender, attack, attacker, false);
         if (defender.dead()) {
             kill(attacker, defender);
         }
@@ -260,17 +259,18 @@ var Event;
         unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true);
     }
     Event.magic_bolt_blood = magic_bolt_blood;
-    function deal_damage(defender, attack, attacker) {
+    function deal_damage(defender, attack, attacker, AOE_flag) {
         const total = system_2.CharacterSystem.damage(defender, attack.damage);
         defender.change_status(attack.defender_status_change);
         attacker.change_status(attack.attacker_status_change);
         const resistance = system_2.CharacterSystem.resistance(defender);
         alerts_1.Alerts.log_attack(defender, attack, resistance, total, 'defender');
         alerts_1.Alerts.log_attack(attacker, attack, resistance, total, 'attacker');
+        (0, SYSTEM_REPUTATION_1.handle_attack_reputation_change)(attacker, defender, AOE_flag);
         user_manager_1.UserManagement.add_user_to_update_queue(defender.user_id, 1 /* UI_Part.STATUS */);
         user_manager_1.UserManagement.add_user_to_update_queue(attacker.user_id, 1 /* UI_Part.STATUS */);
     }
-    function attack(attacker, defender, dodge_flag, attack_type) {
+    function attack(attacker, defender, dodge_flag, attack_type, AOE_flag) {
         if (attacker.dead())
             return;
         if (defender.dead())
@@ -282,7 +282,6 @@ var Event;
         attack.attacker_status_change.fatigue += 5;
         attack.defender_status_change.rage += 3;
         attack.defender_status_change.stress += 1;
-        data_1.Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id);
         //calculating defense skill
         evade(defender, attack, dodge_flag);
         block(defender, attack);
@@ -297,7 +296,7 @@ var Event;
         // console.log('attack after modification')
         // console.log(attack)
         //apply damage and status effect after all modifiers
-        deal_damage(defender, attack, attacker);
+        deal_damage(defender, attack, attacker, AOE_flag);
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender);

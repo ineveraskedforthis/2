@@ -138,7 +138,7 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
             let scale = character.range() * power_ratio / norm
             c = geom.mult(c, scale)
             BattleEvent.SetCoord(battle, target_unit, geom.sum(b, c))
-            Event.attack(character, target_character, dodge_flag, 'pierce')            
+            Event.attack(character, target_character, dodge_flag, 'pierce', false)            
         },
         damage: (battle: Battle, character: Character, unit: Unit) => {
             return DmgOps.total(Attack.generate_melee(character, 'pierce').damage)
@@ -166,7 +166,12 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
                 let damaged_character = Convert.unit_to_character(aoe_target)
                 if (unit.team == aoe_target.team) continue
 
-                Event.attack(character, damaged_character, dodge_flag, 'slice')
+                if (target_unit.id != aoe_target.id) {
+                    Event.attack(character, damaged_character, dodge_flag, 'slice', true)
+                } else {
+                    Event.attack(character, damaged_character, dodge_flag, 'slice', false)
+                }
+                
                 Alerts.battle_event_target_unit(battle, 'attack', unit, aoe_target, 0)
                 Alerts.battle_update_unit(battle, aoe_target)
             }
@@ -191,7 +196,7 @@ export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
             let dodge_flag = (target_unit.dodge_turns > 0)
             let range = character.range()
 
-            Event.attack(character, target_character, dodge_flag, 'blunt')
+            Event.attack(character, target_character, dodge_flag, 'blunt', false)
             Alerts.battle_event_target_unit(battle, 'attack', unit, target_unit, 0)
             Alerts.battle_update_unit(battle, unit)
             Alerts.battle_update_unit(battle, target_unit)    

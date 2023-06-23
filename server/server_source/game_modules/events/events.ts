@@ -39,6 +39,7 @@ import { cell_id, money } from "@custom_types/common";
 import { LandPlotType } from "@custom_types/buildings";
 import { Trigger } from "./triggers";
 import { response } from "express";
+import { handle_attack_reputation_change } from "../SYSTEM_REPUTATION";
 
 const GRAVEYARD_CELL = 0 as cell_id
 
@@ -173,7 +174,6 @@ export namespace Event {
         if (attacker.get_hp() == 0) return 'miss'
         if (attacker.stash.get(ARROW_BONE) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 0, 1, undefined); return 'no_ammo'}
 
-        Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
         //remove arrow
         change_stash(attacker, ARROW_BONE, -1)
 
@@ -222,7 +222,7 @@ export namespace Event {
         attack.defender_status_change.stress += 3
 
         attack.defence_skill += CharacterSystem.skill(defender, 'evasion')
-        deal_damage(defender, attack, attacker)
+        deal_damage(defender, attack, attacker, false)
 
         //if target is dead, loot it all
         if (defender.dead()) {
@@ -233,14 +233,14 @@ export namespace Event {
     }
 
     export function unconditional_magic_bolt(attacker: Character, defender: Character, dist: number, flag_dodge: boolean, flag_charged: boolean) {
-        Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
+
         const dice = Math.random()
         if (dice > CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
             Effect.Change.skill(attacker, 'magic_mastery', 1)
         }
         const attack = Attack.generate_magic_bolt(attacker, dist, flag_charged)
         attack.defender_status_change.stress += 5
-        deal_damage(defender, attack, attacker);
+        deal_damage(defender, attack, attacker, false);
         if (defender.dead()) {
             kill(attacker, defender)
         }
@@ -279,7 +279,7 @@ export namespace Event {
         unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true)
     }
 
-    function deal_damage(defender: Character, attack: AttackObj, attacker: Character) {
+    function deal_damage(defender: Character, attack: AttackObj, attacker: Character, AOE_flag: boolean) {
         const total = CharacterSystem.damage(defender, attack.damage);
         defender.change_status(attack.defender_status_change);
         attacker.change_status(attack.attacker_status_change);
@@ -289,11 +289,13 @@ export namespace Event {
         Alerts.log_attack(defender, attack, resistance, total, 'defender')
         Alerts.log_attack(attacker, attack, resistance, total, 'attacker')
 
+        handle_attack_reputation_change(attacker, defender, AOE_flag)
+
         UserManagement.add_user_to_update_queue(defender.user_id, UI_Part.STATUS);
         UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS);
     }
 
-    export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: damage_type) {
+    export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: damage_type, AOE_flag:boolean) {
         if (attacker.dead()) return
         if (defender.dead()) return
         const attack = Attack.generate_melee(attacker, attack_type)
@@ -305,7 +307,6 @@ export namespace Event {
         attack.defender_status_change.rage += 3
         attack.defender_status_change.stress += 1
 
-        Data.Reputation.set_a_X_b(defender.id, 'enemy', attacker.id)
         
         //calculating defense skill
         evade(defender, attack, dodge_flag);
@@ -326,7 +327,7 @@ export namespace Event {
         // console.log(attack)
 
         //apply damage and status effect after all modifiers
-        deal_damage(defender, attack, attacker)
+        deal_damage(defender, attack, attacker, AOE_flag)
 
         //if target is dead, loot it all
         if (defender.dead()) {

@@ -73,7 +73,7 @@ function add_dialog_option(i: string, onclick: () => void) {
 }
 
 function generate_greeting(data: PerksResponse) {
-    let greeting_line = `Hello, I am ${data.name} of ${data.race} race. I am currently ${data.current_goal}.`
+    let greeting_line = `Hello, I am ${data.name} of ${data.race} race. I am currently ${data.current_goal}. `
     let flag = true
     for (let faction_block of data.factions) {
         if (faction_block.reputation != 'neutral') {

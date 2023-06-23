@@ -10,7 +10,7 @@ function reloadCss() {
 }
 {
     let button = document.getElementById('reset_tabs');
-    button.onclick = () => { localStorage.setItem('tabs_properties', 'null'); tab.reset_style_all(); };
+    button.onclick = () => { localStorage.setItem('tabs_properties', 'null'); tab.reset_style_all(); tab.save_tabs_all(); };
 }
 //CHANGE SCENES STUFF
 function show_char_creation() {
