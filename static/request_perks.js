@@ -100,10 +100,10 @@ function build_portrait(div, data, model) {
     for (let tag of ['weapon', 'arms', 'head', 'foot', 'legs', 'body']) {
         if (tag != 'body') {
             if (data[tag] != undefined)
-                string += `no-repeat url(/static/img/character_image/${model}/${data[tag]}_big.png) top center, `;
+                string += `no-repeat url(/static/img/character_image/${model}/${data[tag]}_big.png) top center/cover, `;
         }
         else {
-            string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center`;
+            string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center/cover`;
         }
     }
     console.log(string);
