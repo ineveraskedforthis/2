@@ -9,13 +9,15 @@ const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const data_1 = require("../data");
 const TRIGGERS_1 = require("../battle/TRIGGERS");
 const system_1 = require("../battle/system");
+const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
+const damage_types_1 = require("../damage_types");
 var AIhelper;
 (function (AIhelper) {
     function enemies_in_cell(character) {
         let a = data_1.Data.Cells.get_characters_list_from_cell(character.cell_id);
         for (let id of a) {
             let target_char = systems_communication_1.Convert.id_to_character(id);
-            if (TRIGGERS_1.BattleTriggers.is_enemy_characters(character, target_char)) {
+            if ((0, SYSTEM_REPUTATION_1.is_enemy_characters)(character, target_char)) {
                 if (!target_char.dead()) {
                     return target_char.id;
                 }
@@ -129,9 +131,16 @@ var AIhelper;
     }
     AIhelper.sell_prices_craft_bulk = sell_prices_craft_bulk;
     function sell_price_craft_item(character, craft) {
-        const input_price = AI_SCRIPTED_VALUES_1.AItrade.price_norm_box(character, craft.input, AI_SCRIPTED_VALUES_1.AItrade.buy_price_bulk);
+        // const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
         const estimated_quality = (0, CraftItem_1.durability)(character, craft);
-        return Math.floor(input_price * 2 * estimated_quality / 100 + Math.random() * 10) + 1;
+        return sell_price_item(character, craft.output, estimated_quality);
     }
     AIhelper.sell_price_craft_item = sell_price_craft_item;
+    function sell_price_item(character, item, durability) {
+        let resists = damage_types_1.DmgOps.total(item.resists);
+        let damage = damage_types_1.DmgOps.total(item.damage);
+        // let min_price = AItrade.price_norm_box(character, crafts_items[tag].input, AItrade.buy_price_bulk)
+        return Math.floor(5 * ((resists + damage) * durability / 100 + Math.random() * 50)) + 1;
+    }
+    AIhelper.sell_price_item = sell_price_item;
 })(AIhelper = exports.AIhelper || (exports.AIhelper = {}));

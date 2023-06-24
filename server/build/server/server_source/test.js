@@ -49,7 +49,7 @@ function character_serialisation_test_advanced() {
     character.change('rage', 11);
     add_testing_items_to_equip(character.equip);
     character._skills.cooking = 40;
-    character.perks.meat_master = true;
+    character._perks.meat_master = true;
     character.explored[2] = true;
     character.explored[10] = true;
     const string = (0, strings_management_1.character_to_string)(character);

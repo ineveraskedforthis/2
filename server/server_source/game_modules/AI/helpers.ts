@@ -1,21 +1,20 @@
 import { battle_id } from "../../../../shared/battle_data"
 import { Battle } from "../battle/classes/battle"
 import { Character } from "../character/character"
-import { hostile } from "../races/racial_hostility"
-import { Event } from "../events/events"
 import { Convert } from "../systems_communication"
 import { output_bulk } from "../craft/CraftBulk"
-import { Stash } from "../inventories/stash"
 import { trim } from "../calculations/basic_functions"
 import { durability } from "../craft/CraftItem"
-import { box, CraftBulk, CraftItem } from "../craft/crafts_storage"
-import { BattleAI } from "../battle/battle_ai"
-import { MapSystem } from "../map/system"
+import { box, CraftBulkTemplate, CraftItemTemplate, crafts_items } from "../craft/crafts_storage"
 import { AItrade, price, priced_box } from "./AI_SCRIPTED_VALUES"
 import { Data } from "../data"
 import { cell_id, money } from "@custom_types/common"
 import { BattleTriggers } from "../battle/TRIGGERS"
 import { BattleSystem } from "../battle/system"
+import { is_enemy_characters } from "../SYSTEM_REPUTATION"
+import { Item } from "../items/item"
+import { DmgOps } from "../damage_types"
+import { Damage } from "../Damage"
 
 
 
@@ -24,7 +23,7 @@ export namespace AIhelper {
         let a = Data.Cells.get_characters_list_from_cell(character.cell_id)
         for (let id of a) {
             let target_char = Convert.id_to_character(id)
-            if (BattleTriggers.is_enemy_characters(character, target_char)) {
+            if (is_enemy_characters(character, target_char)) {
                 if (!target_char.dead()) {
                     return target_char.id
                 }                
@@ -123,7 +122,7 @@ export namespace AIhelper {
         return buy
     }
 
-    export function sell_prices_craft_bulk(character: Character, craft: CraftBulk): price[] {
+    export function sell_prices_craft_bulk(character: Character, craft: CraftBulkTemplate): price[] {
         const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
         const estimated_output = output_bulk(character, craft)
 
@@ -138,10 +137,17 @@ export namespace AIhelper {
         return prices
     }
 
-    export function sell_price_craft_item(character: Character, craft: CraftItem): money {
-        const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
+    export function sell_price_craft_item(character: Character, craft: CraftItemTemplate): money {
+        // const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
         const estimated_quality = durability(character, craft)
+        return sell_price_item(character, craft.output, estimated_quality)
+    }
 
-        return Math.floor(input_price * 2 * estimated_quality / 100 + Math.random() * 10) + 1 as money
+    export function sell_price_item(character: Character, item: { resists: Damage, damage: Damage}, durability: number): money {
+        let resists = DmgOps.total(item.resists)
+        let damage = DmgOps.total(item.damage)
+
+        // let min_price = AItrade.price_norm_box(character, crafts_items[tag].input, AItrade.buy_price_bulk)
+        return Math.floor(5 * ((resists + damage) * durability / 100 + Math.random() * 50)) + 1 as money
     }
 }

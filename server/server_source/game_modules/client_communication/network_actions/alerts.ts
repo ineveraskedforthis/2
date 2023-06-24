@@ -5,7 +5,7 @@ import { Battle } from "../../battle/classes/battle";
 import { Unit } from "../../battle/classes/unit";
 import { BattleSystem } from "../../battle/system";
 import { Character } from "../../character/character";
-import { box, CraftBulk, CraftItem } from "../../craft/crafts_storage";
+import { CraftBulkTemplate, CraftItemTemplate, box,   } from "../../craft/crafts_storage";
 // import { Cell } from "../../map/cell";
 import { OrderBulkJson } from "../../market/classes";
 import { Damage } from "../../Damage";
@@ -108,14 +108,14 @@ export namespace Alerts {
     export function craft_bulk(user: User, tag: string, value: box[]) {
         Alerts.generic_user_alert(user, 'craft-bulk', {tag: tag, value: value})
     }
-    export function craft_bulk_complete(user: User, tag: string, value: CraftBulk) {
+    export function craft_bulk_complete(user: User, tag: string, value: CraftBulkTemplate) {
         Alerts.generic_user_alert(user, 'craft-bulk-complete', {tag: tag, value: value})
     }
 
     export function craft_item(user: User, tag: string, value: number) {
         Alerts.generic_user_alert(user, 'craft-item', {tag: tag, value: value})
     }
-    export function craft_item_complete(user: User, tag: string, value: CraftItem) {
+    export function craft_item_complete(user: User, tag: string, value: CraftItemTemplate) {
         Alerts.generic_user_alert(user, 'craft-item-complete', {tag: tag, value: value})
     }
 
@@ -292,7 +292,11 @@ export namespace Alerts {
     }    
 
     export function perks(user: User, character: Character) {
-        Alerts.generic_user_alert(user, 'perks-update', character.perks)
+        Alerts.generic_user_alert(user, 'perks-update', character._perks)
+    }
+
+    export function traits(user: User, character: Character) {
+        Alerts.generic_user_alert(user, 'traits-update', character._traits)
     }
 
     export function enter_room(character: Character) {

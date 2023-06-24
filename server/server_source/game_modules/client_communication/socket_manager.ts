@@ -17,6 +17,7 @@ import { InventoryCommands } from "./network_actions/inventory_management";
 import { Request } from "./network_actions/request";
 import { SKILLS } from "../static_data/skills";
 import { craft_actions } from "../craft/crafts_storage";
+import { Dialog } from "./network_actions/dialog";
 
 interface Message {
     id: number
@@ -119,7 +120,7 @@ export class SocketManager {
             socket.on('battle-action-unit',  (msg: any) => HandleAction.battle_unit(user, msg))
             socket.on('battle-action-position', (msg: any) => HandleAction.battle_position(user, msg))
 
-            socket.on('request-talk',   (msg:any) => Request.perks_and_skills(user, msg))
+            socket.on('request-talk',   (msg:any) => Dialog.request_greeting(user, msg))
             socket.on('request-local-buildings', (msg:any) => Request.local_buildings(user))
             socket.on('learn-perk',     (msg: undefined|{id: unknown, tag: unknown}) =>
                                             SocketCommand.learn_perk(user, msg))

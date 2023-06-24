@@ -90,7 +90,7 @@ export namespace Effect {
     }
 
     export function learn_perk(student: Character, perk: Perks){
-        student.perks[perk] = true
+        student._perks[perk] = true
         UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SKILLS)
     }
 

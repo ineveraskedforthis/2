@@ -5,7 +5,7 @@ import { UserManagement } from "../client_communication/user_manager";
 import { ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
 import { ELODINO_FLESH, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
-import { craft_actions, crafts_items, box, CraftItem, skill_check } from "./crafts_storage";
+import { craft_actions, crafts_items, box, skill_check, CraftItemTemplate } from "./crafts_storage";
 import { on_craft_update, use_input } from "./helpers";
 import { generate_craft_item_action } from "./generate_action";
 import { CharacterSystem } from "../character/system";
@@ -17,7 +17,7 @@ function base_durability(skill: number, difficulty: number) {
     const base = Math.round(skill / difficulty * 100)
     return trim(base, 5, 150)
 }
-function bonus_durability(character: Character, craft: CraftItem) {
+function bonus_durability(character: Character, craft: CraftItemTemplate) {
     let durability = 0
     let skin_flag = false
     let bone_flag = false
@@ -32,12 +32,12 @@ function bonus_durability(character: Character, craft: CraftItem) {
 
     const template = craft.output
     if (template.slot == 'weapon') {
-        if (character.perks.weapon_maker)
+        if (character._perks.weapon_maker)
             durability += 10;
     } else {
-        if (character.perks.skin_armour_master && skin_flag)
+        if (character._perks.skin_armour_master && skin_flag)
             durability += 20
-        if (character.perks.shoemaker && (template.slot == 'foot')) {
+        if (character._perks.shoemaker && (template.slot == 'foot')) {
             durability += 10;
         }
     }
@@ -45,7 +45,7 @@ function bonus_durability(character: Character, craft: CraftItem) {
     return durability
 }
 
-export function durability(character: Character, craft: CraftItem): number {
+export function durability(character: Character, craft: CraftItemTemplate): number {
     // calculate base durability as average
     let durability = 0
     for (let item of craft.difficulty) {
@@ -64,7 +64,7 @@ export function create_item(template: ItemJson, durability: number) {
     return result
 }
 
-export function event_craft_item(character: Character, craft: CraftItem) {
+export function event_craft_item(character: Character, craft: CraftItemTemplate) {
     use_input(craft.input, character);
     let result = create_item(craft.output, durability(character, craft))
     character.equip.data.backpack.add(result);

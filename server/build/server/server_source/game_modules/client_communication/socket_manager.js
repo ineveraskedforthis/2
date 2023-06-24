@@ -16,6 +16,7 @@ const inventory_management_1 = require("./network_actions/inventory_management")
 const request_1 = require("./network_actions/request");
 const skills_1 = require("../static_data/skills");
 const crafts_storage_1 = require("../craft/crafts_storage");
+const dialog_1 = require("./network_actions/dialog");
 class SocketManager {
     // sessions: {[_ in string]: number}
     constructor(io) {
@@ -83,7 +84,7 @@ class SocketManager {
             socket.on('battle-action-self', (msg) => actions_1.HandleAction.battle_self(user, msg));
             socket.on('battle-action-unit', (msg) => actions_1.HandleAction.battle_unit(user, msg));
             socket.on('battle-action-position', (msg) => actions_1.HandleAction.battle_position(user, msg));
-            socket.on('request-talk', (msg) => request_1.Request.perks_and_skills(user, msg));
+            socket.on('request-talk', (msg) => dialog_1.Dialog.request_greeting(user, msg));
             socket.on('request-local-buildings', (msg) => request_1.Request.local_buildings(user));
             socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg));
             socket.on('learn-skill', (msg) => run_event_1.SocketCommand.learn_skill(user, msg));

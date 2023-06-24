@@ -7,6 +7,7 @@ const events_1 = require("../../events/events");
 const systems_communication_1 = require("../../systems_communication");
 const common_validations_1 = require("./common_validations");
 const system_1 = require("../../battle/system");
+const system_2 = require("../../character/system");
 var SocketCommand;
 (function (SocketCommand) {
     // data is a raw id of character
@@ -47,11 +48,11 @@ var SocketCommand;
             valid_user.socket.emit('alert', 'not in the same cell');
             return;
         }
-        if (target_character.perks[perk_tag] != true) {
+        if (!system_2.CharacterSystem.perk(target_character, perk_tag)) {
             valid_user.socket.emit('alert', "target doesn't know this perk");
             return;
         }
-        if (valid_character.perks[perk_tag] == true) {
+        if (system_2.CharacterSystem.perk(valid_character, perk_tag)) {
             valid_user.socket.emit('alert', "you already know it");
             return;
         }

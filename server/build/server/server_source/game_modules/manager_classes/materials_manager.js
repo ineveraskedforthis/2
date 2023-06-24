@@ -45,11 +45,11 @@ class MaterialsManager {
 }
 exports.MaterialsManager = MaterialsManager;
 exports.materials = new MaterialsManager();
-exports.RAT_SKIN = exports.materials.create_material(0.2, 2, 'rat_skin');
-exports.RAT_BONE = exports.materials.create_material(0.3, 5, 'rat_bone');
+exports.RAT_SKIN = exports.materials.create_material(0.2, 4, 'rat_skin');
+exports.RAT_BONE = exports.materials.create_material(0.3, 6, 'rat_bone');
 exports.ELODINO_FLESH = exports.materials.create_material(0.1, 1, 'elodino_flesh');
 exports.GRACI_HAIR = exports.materials.create_material(0.5, 20, 'graci_hair');
-exports.WOOD = exports.materials.create_material(0.5, 3, 'wood');
+exports.WOOD = exports.materials.create_material(0.5, 6, 'wood');
 exports.STEEL = exports.materials.create_material(3, 20, 'steel');
 exports.FOOD = exports.materials.create_material(0.2, 1, 'food');
 exports.ZAZ = exports.materials.create_material(1, 10, 'zaz');
@@ -57,5 +57,5 @@ exports.MEAT = exports.materials.create_material(0.3, 1, 'meat');
 exports.WATER = exports.materials.create_material(0.2, 1, 'water');
 exports.ARROW_BONE = exports.materials.create_material(0.5, 3, 'arrow_bone');
 exports.FISH = exports.materials.create_material(0.3, 1, 'fish');
-exports.COTTON = exports.materials.create_material(0.1, 1, 'cotton');
-exports.TEXTILE = exports.materials.create_material(0.1, 3, 'textile');
+exports.COTTON = exports.materials.create_material(0.1, 0.5, 'cotton');
+exports.TEXTILE = exports.materials.create_material(0.1, 1.5, 'textile');

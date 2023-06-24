@@ -11,19 +11,19 @@ export interface skill_check {
     skill: skill;
     difficulty: number;
 }
-export interface CraftBulk {
+export interface CraftBulkTemplate {
     id: string;
     input: box[];
     output: box[];
     difficulty: skill_check[];
 }
-export interface CraftItem {
+export interface CraftItemTemplate {
     id: string;
     input: box[];
     output: ItemJson;
     difficulty: skill_check[];
 }
 
-export let crafts_bulk: { [_: string]: CraftBulk; } = {};
-export let crafts_items: { [_: string]: CraftItem; } = {};
+export let crafts_bulk: { [_: string]: CraftBulkTemplate; } = {};
+export let crafts_items: { [_: string]: CraftItemTemplate; } = {};
 export let craft_actions: { [_: string]: CharacterMapAction; } = {};

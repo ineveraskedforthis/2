@@ -3,7 +3,7 @@ import { Character } from "../character/character";
 import { map_position } from "../types";
 import { event_craft_bulk } from "./CraftBulk";
 import { event_craft_item } from "./CraftItem";
-import { box, CraftItem, CraftBulk } from "./crafts_storage";
+import { CraftBulkTemplate, CraftItemTemplate, box,} from "./crafts_storage";
 import { check_inputs } from "./helpers";
 import { CharacterMapAction, MapActionTriggerTargeted } from "../actions/types";
 import { dummy_duration, dummy_start } from "../actions/generic_functions";
@@ -18,7 +18,7 @@ export function generate_check_funtion(inputs: box[]): MapActionTriggerTargeted 
     }
 }
 
-export function generate_craft_item_action(craft: CraftItem): CharacterMapAction {
+export function generate_craft_item_action(craft: CraftItemTemplate): CharacterMapAction {
     return {
         duration: dummy_duration,
         check: generate_check_funtion(craft.input),
@@ -33,7 +33,7 @@ export function generate_craft_item_action(craft: CraftItem): CharacterMapAction
     };
 }
 
-export function generate_bulk_craft_action(craft: CraftBulk): CharacterMapAction {
+export function generate_bulk_craft_action(craft: CraftBulkTemplate): CharacterMapAction {
     return {
         duration: dummy_duration,
         check: generate_check_funtion(craft.input),

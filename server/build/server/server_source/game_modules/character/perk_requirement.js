@@ -35,7 +35,7 @@ function perk_requirement(tag, character) {
             return 'ok';
         }
         case 'magic_bolt': {
-            if (!character.perks.mage_initiation) {
+            if (!character._perks.mage_initiation) {
                 return 'not_initiated';
             }
             if (character._skills.magic_mastery < 15) {
@@ -44,7 +44,7 @@ function perk_requirement(tag, character) {
             return 'ok';
         }
         case 'blood_mage': {
-            if (!character.perks.mage_initiation) {
+            if (!character._perks.mage_initiation) {
                 return 'not_initiated';
             }
             if (character._skills.magic_mastery < 30) {

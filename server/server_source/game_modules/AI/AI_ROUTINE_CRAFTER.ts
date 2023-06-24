@@ -1,12 +1,15 @@
 import { money } from "@custom_types/common";
 import { Character } from "../character/character";
 import { CharacterSystem } from "../character/system";
-import { crafts_bulk } from "../craft/crafts_storage";
+import { craft_actions, crafts_bulk, crafts_items } from "../craft/crafts_storage";
 import { RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { AIactions } from "./AIactions";
 import { update_price_beliefs } from "./actions";
+import { durability } from "../craft/CraftItem";
+import { check_inputs } from "../craft/helpers";
+import { AIhelper } from "./helpers";
 // import { rest_outside } from "./actions";
 // import { base_price } from "./helpers";
 // import { tired } from "./triggers";
@@ -36,6 +39,42 @@ function bulk_crafter_routine(character: Character, budget: money) {
     }
 }
 
+function decide_item_buy_inputs(character: Character) {
+    let result = []
+    for (const item of Object.values(crafts_items)) {
+        // let cost =  item.output, durability(character, item))
+        // let price = AIhelper.sell_price_item(item.output, durability(character, item))
+        if (durability(character, item) > 120) {
+            result.push(item)
+        }
+    }
+
+    let index = Math.floor(Math.random() * result.length);
+    return result[index]
+}
+
+function decide_item_craft(character: Character) {
+    let result = []
+    for (const item of Object.values(crafts_items)) {
+        if ((durability(character, item) > 120)&&(check_inputs(item.input, character.stash))){
+            result.push(item)
+        }
+    }
+
+    let index = Math.floor(Math.random() * result.length);
+    return result[index]
+}
+
+function item_crafter_routine(character: Character, budget: money) {
+    let item = decide_item_buy_inputs(character)
+    if (item == undefined) return
+    AIactions.buy_inputs_to_craft_item(character, item, budget)
+
+    let item_craft = decide_item_craft(character)
+    if (item_craft == undefined) return
+    AIactions.craft_item(character, item_craft)
+}
+
 export function crafter_routine(character: Character) {
     if (character.in_battle()) return
     if (character.action != undefined) return
@@ -46,21 +85,11 @@ export function crafter_routine(character: Character) {
 
     // bulk crafting
     const total_crafting_budget = Math.min(400, character.savings.get() / 4) as money
-    bulk_crafter_routine(character, total_crafting_budget)
 
-    if ((CharacterSystem.skill(character, 'woodwork') > 40) && (character.perks.weapon_maker == true)) {
-        AIactions.make_wooden_weapon(character, AItrade.buy_price_bulk(character, WOOD));
+    if (Math.random() < 0.5) {
+        bulk_crafter_routine(character, total_crafting_budget)
+    } else {
+        item_crafter_routine(character, total_crafting_budget)
     }
-
-    if ((CharacterSystem.skill(character, 'bone_carving') > 40) && (character.perks.weapon_maker == true)) {
-        AIactions.make_bone_weapon(character, AItrade.buy_price_bulk(character, RAT_BONE));
-    }
-
-    if ((CharacterSystem.skill(character, 'clothier') > 40) && (character.perks.skin_armour_master == true)) {
-        AIactions.make_armour(character, AItrade.buy_price_bulk(character, RAT_SKIN));
-    }
-
-    if ((CharacterSystem.skill(character, 'clothier') > 40) && (character.perks.shoemaker == true)) {
-        AIactions.make_boots(character, AItrade.buy_price_bulk(character, RAT_SKIN));
-    }
+    AIactions.sell_items(character)
 }

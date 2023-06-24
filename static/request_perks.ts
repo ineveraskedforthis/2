@@ -114,13 +114,10 @@ function build_portrait(div: Element, data: {[tag in equip_slot]: string|undefin
     let string = ''
 
     for (let tag of ['weapon', 'arms', 'head', 'foot', 'legs', 'body']) {
-        if (tag != 'body') {
-            if (data[tag as equip_slot] != undefined)
-                string += `no-repeat url(/static/img/character_image/${model}/${data[tag as equip_slot]}_big.png) top center/cover, `
-        } else {
-            string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center/cover`
-        }
+        if (data[tag as equip_slot] != undefined)
+            string += `no-repeat url(/static/img/character_image/${model}/${data[tag as equip_slot]}_big.png) top center/cover, `
     }
+    string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center/cover`
     console.log(string);
     (<HTMLElement>div).style.background = string;
 }

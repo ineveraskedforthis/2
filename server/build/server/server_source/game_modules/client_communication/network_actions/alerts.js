@@ -267,9 +267,13 @@ var Alerts;
     }
     Alerts.action_ping = action_ping;
     function perks(user, character) {
-        Alerts.generic_user_alert(user, 'perks-update', character.perks);
+        Alerts.generic_user_alert(user, 'perks-update', character._perks);
     }
     Alerts.perks = perks;
+    function traits(user, character) {
+        Alerts.generic_user_alert(user, 'traits-update', character._traits);
+    }
+    Alerts.traits = traits;
     function enter_room(character) {
         Alerts.generic_character_alert(character, 'enter-room', character);
     }

@@ -27,14 +27,15 @@ function character_to_string(c) {
     let trade_savings = c.trade_savings.get();
     let status = JSON.stringify(c.status);
     let skills = JSON.stringify(c._skills);
-    let perks = JSON.stringify(c.perks);
+    let perks = JSON.stringify(c._perks);
+    let traits = JSON.stringify(c._traits);
     let innate_stats = JSON.stringify(c.stats);
     let explored = JSON.stringify({ data: c.explored });
-    return [ids, name, archetype, equip, stash, trade_stash, savings, trade_savings, status, skills, perks, innate_stats, explored].join(';');
+    return [ids, name, archetype, equip, stash, trade_stash, savings, trade_savings, status, skills, perks, traits, innate_stats, explored].join(';');
 }
 exports.character_to_string = character_to_string;
 function string_to_character(s) {
-    const [ids, name, raw_archetype, raw_equip, raw_stash, raw_trade_stash, raw_savings, raw_trade_savings, raw_status, raw_skills, raw_perks, raw_innate_stats, raw_explored] = s.split(';');
+    const [ids, name, raw_archetype, raw_equip, raw_stash, raw_trade_stash, raw_savings, raw_trade_savings, raw_status, raw_skills, raw_perks, raw_traits, raw_innate_stats, raw_explored] = s.split(';');
     let [raw_id, raw_battle_id, raw_battle_unit_id, raw_user_id, raw_cell_id] = ids.split('&');
     if (raw_user_id != '#') {
         var user_id = Number(raw_user_id);
@@ -57,7 +58,8 @@ function string_to_character(s) {
     for (let [_, item] of Object.entries(JSON.parse(raw_skills))) {
         character._skills[_] = item;
     }
-    character.perks = JSON.parse(raw_perks);
+    character._perks = JSON.parse(raw_perks);
+    character._traits = JSON.parse(raw_traits);
     return character;
 }
 exports.string_to_character = string_to_character;

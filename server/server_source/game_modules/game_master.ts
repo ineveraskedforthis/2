@@ -21,7 +21,7 @@ export namespace GameMaster {
         const [x, y] = Data.World.id_to_coordinate(cell_id)
         if (faction == 'city') {
             // creation of mayor
-            const mayor = Template.Character.HumanCity(x, y, 'Mayor')
+            const mayor = Template.Character.EquipClothesBasic(Template.Character.HumanCity(x, y, 'Mayor'))
             mayor.savings.inc(TONS_OF_MONEY)
             Data.World.set_faction_leader(faction, mayor.id)
 
@@ -29,16 +29,16 @@ export namespace GameMaster {
             Data.Buildings.set_ownership(mayor.id, mayor_house)
 
             // creation of first colonists
-            Template.Character.HumanCook(x, y, "Cook", 'city')
-            Template.Character.Shoemaker(x, y)
-            Template.Character.HumanFletcher(x, y, "Fletcher", 'city')
-            Template.Character.ArmourMaster(x, y)
-            Template.Character.WeaponMasterWood(x, y, 'city')
-            Template.Character.HumanLocalTrader(x, y, "Local Trader", 'city')
+            Template.Character.EquipClothesBasic(Template.Character.HumanCook(x, y, "Cook", 'city'))
+            Template.Character.EquipClothesBasic(Template.Character.Shoemaker(x, y))
+            Template.Character.EquipClothesBasic(Template.Character.HumanFletcher(x, y, "Fletcher", 'city'))
+            Template.Character.EquipClothesBasic(Template.Character.ArmourMaster(x, y))
+            Template.Character.EquipClothesBasic(Template.Character.WeaponMasterWood(x, y, 'city'))
+            Template.Character.EquipClothesBasic(Template.Character.HumanLocalTrader(x, y, "Local Trader", 'city'))
 
             // colony mages
-            Template.Character.Alchemist(x, y, 'city')
-            Template.Character.Mage(x, y, 'city')
+            Template.Character.EquipClothesBasic(Template.Character.Alchemist(x, y, 'city'))
+            Template.Character.EquipClothesBasic(Template.Character.Mage(x, y, 'city'))
 
 
             //hunters
@@ -52,7 +52,7 @@ export namespace GameMaster {
                 guard.savings.inc(500 as money)
             }
             // innkeeper
-            const innkeeper = Template.Character.HumanCity(x, y, "Innkeeper")
+            const innkeeper = Template.Character.EquipClothesBasic(Template.Character.HumanCity(x, y, "Innkeeper"))
             const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200, 10 as money)
             Data.Buildings.set_ownership(innkeeper.id, inn)
         }
@@ -60,15 +60,15 @@ export namespace GameMaster {
 
         if (faction == 'steppe_humans') {
             // innkeeper
-            const innkeeper = Template.Character.HumanCity(x, y, "Innkeeper")
+            const innkeeper = Template.Character.EquipClothesBasic(Template.Character.HumanCity(x, y, "Innkeeper"))
             const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200, 10 as money)
             Data.Buildings.set_ownership(innkeeper.id, inn)
 
             // creation of local colonists
-            Template.Character.HumanCook(x, y, "Cook", 'steppe')
-            Template.Character.WeaponMasterBone(x, y, faction)
-            Template.Character.BloodMage(x, y, faction)
-            Template.Character.MasterUnarmed(x, y, faction)
+            Template.Character.EquipClothesBasic(Template.Character.HumanCook(x, y, "Cook", 'steppe'))
+            Template.Character.EquipClothesBasic(Template.Character.WeaponMasterBone(x, y, faction))
+            Template.Character.EquipClothesBasic(Template.Character.BloodMage(x, y, faction))
+            Template.Character.EquipClothesBasic(Template.Character.MasterUnarmed(x, y, faction))
         }        
 
         if (faction == 'rats') {

@@ -13,6 +13,7 @@ const actions_1 = require("./actions");
 const system_1 = require("../map/system");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const system_2 = require("../battle/system");
+const actions_hunter_gathering_1 = require("../actions/actions_hunter_gathering");
 function fight(character) {
     let target = helpers_1.AIhelper.enemies_in_cell(character);
     const target_char = systems_communication_1.Convert.id_to_character(target);
@@ -65,6 +66,7 @@ function patrol(character) {
         system_2.BattleSystem.start_battle(character, target_char);
     }
     else {
+        manager_1.ActionManager.start_action(actions_hunter_gathering_1.hunt, character, character.cell_id);
         (0, actions_1.random_walk)(character, constraints_1.simple_constraints);
     }
     if ((0, actions_1.loot)(character) > 10) {

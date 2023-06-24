@@ -76,25 +76,6 @@ var AItrade;
     function craft_bulk_profitability(character, craft) {
         const input_price = price_norm_box(character, craft.input, buy_price_bulk);
         const output_price = price_norm_box(character, (0, CraftBulk_1.output_bulk)(character, craft), sell_price_bulk);
-        // console.log(character.name, craft.id)
-        // console.log(craft.input)
-        // for (let box of craft.input) {
-        //     console.log(`
-        //         i think i can buy 
-        //         ${box.amount} of ${materials.index_to_material(box.material).string_tag} 
-        //         for ${buy_price_bulk(character, box.material) * box.amount}`)
-        // }
-        // console.log(output_bulk(character, craft))
-        // for (let box of output_bulk(character, craft)) {
-        //     console.log(`
-        //         i think i can sell 
-        //         ${box.amount} of ${materials.index_to_material(box.material).string_tag} 
-        //         for ${sell_price_bulk(character, box.material) * box.amount}`)
-        // }
-        // console.log('price of inputs', input_price)
-        // console.log(craft.input)
-        // console.log('price of outputs', output_price)
-        // console.log(craft.input)
         const profit = output_price - input_price;
         return profit;
     }

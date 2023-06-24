@@ -14,6 +14,7 @@ import { buy, loot, market_walk, random_walk, remove_orders, sell_loot, update_p
 import { MapSystem } from "../map/system";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
 import { BattleSystem } from "../battle/system";
+import { hunt } from "../actions/actions_hunter_gathering";
 
 function fight(character: Character) {
     let target = AIhelper.enemies_in_cell(character)
@@ -70,8 +71,9 @@ function patrol(character: Character) {
     if (target_char != undefined) {
         BattleSystem.start_battle(character, target_char)
     } else {
+        ActionManager.start_action(hunt, character, character.cell_id)
         random_walk(character, simple_constraints) 
-    }
+    }    
 
     if (loot(character) > 10) {
         character.ai_state = AIstate.GoToMarket

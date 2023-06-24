@@ -2,6 +2,7 @@ import { ARROW_BONE, ZAZ } from "../manager_classes/materials_manager";
 import { weapon_attack_tag, WEAPON_TYPE } from "../types";
 import { Item } from "../items/item";
 import { Character } from "./character";
+import { CharacterSystem } from "./system";
 
 function weapon_type(weapon: Item | undefined): weapon_attack_tag {
     if (weapon == undefined) {
@@ -11,19 +12,19 @@ function weapon_type(weapon: Item | undefined): weapon_attack_tag {
 }
 
 export function can_dodge(character: Character): boolean {
-    if (character.perks.advanced_unarmed == true) {
+    if (CharacterSystem.perk(character, 'advanced_unarmed')) {
         if (weapon_type(character.equip.data.weapon) == 'noweapon') {
             return true;
         }
     }
-    if (character.perks.dodge == true) {
+    if (CharacterSystem.perk(character, 'dodge')) {
         return true;
     }
     return false;
 }
 
 export function can_fast_attack(character: Character): boolean {
-    if (character.perks.advanced_unarmed == true) {
+    if (CharacterSystem.perk(character, 'advanced_unarmed')) {
         if (weapon_type(character.equip.data.weapon) == 'noweapon') {
             return true;
         }
@@ -32,7 +33,7 @@ export function can_fast_attack(character: Character): boolean {
 }
 
 export function can_push_back(character: Character): boolean {
-    if (character.perks.advanced_polearm == true) {
+    if (CharacterSystem.perk(character, 'advanced_polearm')) {
         if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.POLEARMS) {
             return true;
         }
@@ -41,14 +42,14 @@ export function can_push_back(character: Character): boolean {
 }
 
 export function can_cast_magic_bolt(character: Character): boolean {
-    return (character.perks.magic_bolt == true)
+    return CharacterSystem.perk(character, 'magic_bolt')
 }
 
 export function can_cast_magic_bolt_blood(character:Character): boolean {
     if (character.get_hp() + character.get_blood() + 1 < 10) {
         return false;
     }
-    return (character.perks.magic_bolt == true) && (character.perks.blood_mage == true)
+    return CharacterSystem.perk(character, 'magic_bolt') && CharacterSystem.perk(character, 'blood_mage')
 }
 
 export function has_zaz(character: Character): boolean {

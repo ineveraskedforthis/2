@@ -12,11 +12,10 @@ import { Data } from "../data";
 import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
-import { ScriptedValue } from "../events/scripted_values";
 import { cell_id, money } from "@custom_types/common";
 import { is_crafting_skill, is_melee_skill, skill } from "./SkillList";
-import { LandPlotType } from "@custom_types/buildings";
 import { has_cooking_tools, has_crafting_tools } from "../DATA_LAYOUT_BUILDING";
+import { Perks } from "@custom_types/character";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 
@@ -142,7 +141,7 @@ export namespace CharacterSystem {
     export function melee_damage_raw(character: Character, type: damage_type) {
         const weapon_damage = character.equip.get_melee_damage(type)
         if (weapon_damage != undefined) {
-            if (character.perks.advanced_polearm) {
+            if (character._perks.advanced_polearm) {
                 if (CharacterSystem.weapon_type(character) == 'polearms') {
                     DmgOps.mult_ip(weapon_damage, 1.2)
                 }
@@ -153,10 +152,10 @@ export namespace CharacterSystem {
         //handle case of unarmed
         const damage = new Damage()
         if (type == 'blunt')    {
-            if (character.perks.advanced_unarmed) {damage.blunt = 40} else {damage.blunt = 15}
+            if (character._perks.advanced_unarmed) {damage.blunt = 40} else {damage.blunt = 15}
         }
         if (type == 'slice')    {
-            if (character.perks.claws) {damage.slice = 20} else {damage.slice = 2}
+            if (character._traits.claws) {damage.slice = 20} else {damage.slice = 2}
         }
         if (type == 'pierce')   {damage.pierce  = 0}
         return damage
@@ -185,20 +184,24 @@ export namespace CharacterSystem {
 
     export function magic_power(character: Character) {
         let result = character.stats.stats.magic_power + character.equip.get_magic_power()
-        if (character.perks.mage_initiation) result += 5
-        if (character.perks.magic_bolt) result += 3
-        if (character.perks.blood_mage) {
+        if (character._perks.mage_initiation) result += 5
+        if (character._perks.magic_bolt) result += 3
+        if (character._perks.blood_mage) {
             const blood_mod = character.status.blood / 50
             result = Math.round(result * (1 + blood_mod))
         }
         return result
     }
 
+    export function perk(character: Character, tag: Perks) {
+        return character._perks[tag] == true
+    }
+
     export function enchant_rating(character: Character): number {
         let enchant_rating = CharacterSystem.magic_power(character) * (1 + skill(character, 'magic_mastery') / 100)
         // so it's ~15 at 50 magic mastery
         // and 1 at 20 magic mastery
-        if (character.perks.mage_initiation) {
+        if (character._perks.mage_initiation) {
             enchant_rating = enchant_rating * 2
         }
 

@@ -7,7 +7,7 @@ import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
 import { AImemory, AIstate } from "./AIstate";
 import { material_index } from "../manager_classes/materials_manager";
-import { PerksTable } from "../../../../shared/character";
+import { PerksTable, TraitsTable } from "../../../../shared/character";
 import { cell_id, money } from "../../../../shared/common";
 import { CharacterMapAction } from "../actions/types";
 import { armour_slot, equip_slot } from "@custom_types/inventory";
@@ -37,7 +37,8 @@ export class Character {
     cleared: boolean;
 
     _skills: SkillList;
-    perks: PerksTable;
+    _perks: PerksTable;
+    _traits: TraitsTable;
     stats: InnateStats;
 
     archetype: Archetype
@@ -96,7 +97,8 @@ export class Character {
         this.ai_price_belief_sell = new Map()
 
         this._skills = new SkillList()
-        this.perks = {}
+        this._perks = {}
+        this._traits = {}
         this.stats = new InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp)
 
         this.explored = []
@@ -212,7 +214,7 @@ export class Character {
         if (result != undefined) {
             let weapon = this.equip.data.weapon
             if (weapon?.weapon_tag == 'polearms') {
-                if (this.perks.advanced_polearm) {
+                if (this._perks.advanced_polearm) {
                     result += 0.5
                 }
             }

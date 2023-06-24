@@ -37,7 +37,8 @@ class Character {
         this.ai_price_belief_buy = new Map();
         this.ai_price_belief_sell = new Map();
         this._skills = new SkillList_1.SkillList();
-        this.perks = {};
+        this._perks = {};
+        this._traits = {};
         this.stats = new types_1.InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp);
         this.explored = [];
     }
@@ -138,7 +139,7 @@ class Character {
         if (result != undefined) {
             let weapon = this.equip.data.weapon;
             if (weapon?.weapon_tag == 'polearms') {
-                if (this.perks.advanced_polearm) {
+                if (this._perks.advanced_polearm) {
                     result += 0.5;
                 }
             }

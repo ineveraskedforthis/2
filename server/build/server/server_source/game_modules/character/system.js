@@ -129,7 +129,7 @@ var CharacterSystem;
     function melee_damage_raw(character, type) {
         const weapon_damage = character.equip.get_melee_damage(type);
         if (weapon_damage != undefined) {
-            if (character.perks.advanced_polearm) {
+            if (character._perks.advanced_polearm) {
                 if (CharacterSystem.weapon_type(character) == 'polearms') {
                     damage_types_1.DmgOps.mult_ip(weapon_damage, 1.2);
                 }
@@ -139,7 +139,7 @@ var CharacterSystem;
         //handle case of unarmed
         const damage = new Damage_1.Damage();
         if (type == 'blunt') {
-            if (character.perks.advanced_unarmed) {
+            if (character._perks.advanced_unarmed) {
                 damage.blunt = 40;
             }
             else {
@@ -147,7 +147,7 @@ var CharacterSystem;
             }
         }
         if (type == 'slice') {
-            if (character.perks.claws) {
+            if (character._traits.claws) {
                 damage.slice = 20;
             }
             else {
@@ -184,22 +184,26 @@ var CharacterSystem;
     CharacterSystem.phys_power = phys_power;
     function magic_power(character) {
         let result = character.stats.stats.magic_power + character.equip.get_magic_power();
-        if (character.perks.mage_initiation)
+        if (character._perks.mage_initiation)
             result += 5;
-        if (character.perks.magic_bolt)
+        if (character._perks.magic_bolt)
             result += 3;
-        if (character.perks.blood_mage) {
+        if (character._perks.blood_mage) {
             const blood_mod = character.status.blood / 50;
             result = Math.round(result * (1 + blood_mod));
         }
         return result;
     }
     CharacterSystem.magic_power = magic_power;
+    function perk(character, tag) {
+        return character._perks[tag] == true;
+    }
+    CharacterSystem.perk = perk;
     function enchant_rating(character) {
         let enchant_rating = CharacterSystem.magic_power(character) * (1 + skill(character, 'magic_mastery') / 100);
         // so it's ~15 at 50 magic mastery
         // and 1 at 20 magic mastery
-        if (character.perks.mage_initiation) {
+        if (character._perks.mage_initiation) {
             enchant_rating = enchant_rating * 2;
         }
         return enchant_rating;

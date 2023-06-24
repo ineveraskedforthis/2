@@ -36,17 +36,17 @@ function output_bulk(character, craft) {
         //calculate bonus from perks
         let bonus = 0;
         if (item.material == materials_manager_1.FOOD) {
-            if (character.perks.meat_master)
+            if (character._perks.meat_master)
                 bonus += 1;
         }
         if (item.material == materials_manager_1.ZAZ) {
-            if (character.perks.alchemist)
+            if (character._perks.alchemist)
                 bonus += 2;
-            if (character.perks.mage_initiation)
+            if (character._perks.mage_initiation)
                 bonus += 1;
         }
         if (item.material == materials_manager_1.ARROW_BONE) {
-            if (character.perks.fletcher)
+            if (character._perks.fletcher)
                 bonus += 5;
         }
         let amount = Math.round(item.amount * ratio + bonus);

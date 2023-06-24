@@ -11,6 +11,7 @@ import { Validator } from "./common_validations";
 
 import { LandPlotType } from "../../../../../shared/buildings"
 import { BattleSystem } from "../../battle/system";
+import { CharacterSystem } from "../../character/system";
 
 export namespace SocketCommand {
     // data is a raw id of character
@@ -47,11 +48,11 @@ export namespace SocketCommand {
             valid_user.socket.emit('alert', 'not in the same cell')
             return
         } 
-        if (target_character.perks[perk_tag as Perks] != true) {
+        if (!CharacterSystem.perk(target_character, perk_tag as Perks)) {
             valid_user.socket.emit('alert', "target doesn't know this perk")
             return
         }
-        if (valid_character.perks[perk_tag as Perks] == true) {
+        if (CharacterSystem.perk(valid_character, perk_tag as Perks)) {
             valid_user.socket.emit('alert', "you already know it")
             return
         }

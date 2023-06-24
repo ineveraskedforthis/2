@@ -98,14 +98,10 @@ function generate_greeting(data) {
 function build_portrait(div, data, model) {
     let string = '';
     for (let tag of ['weapon', 'arms', 'head', 'foot', 'legs', 'body']) {
-        if (tag != 'body') {
-            if (data[tag] != undefined)
-                string += `no-repeat url(/static/img/character_image/${model}/${data[tag]}_big.png) top center/cover, `;
-        }
-        else {
-            string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center/cover`;
-        }
+        if (data[tag] != undefined)
+            string += `no-repeat url(/static/img/character_image/${model}/${data[tag]}_big.png) top center/cover, `;
     }
+    string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center/cover`;
     console.log(string);
     div.style.background = string;
 }

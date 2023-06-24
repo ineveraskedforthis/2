@@ -1,7 +1,7 @@
 import { cell_id, money } from "@custom_types/common";
 import { Character } from "../character/character";
 import { ELODINO_FLESH, materials, material_index, RAT_BONE, RAT_SKIN, WOOD, MEAT, FOOD, FISH, ZAZ, ARROW_BONE } from "../manager_classes/materials_manager"
-import { box, CraftBulk, CraftItem } from "../craft/crafts_storage"
+import { box, CraftBulkTemplate, CraftItemTemplate } from "../craft/crafts_storage"
 import { MapSystem } from "../map/system";
 import { output_bulk } from "../craft/CraftBulk";
 
@@ -96,34 +96,11 @@ export namespace AItrade {
         return norm
     }
 
-    export function craft_bulk_profitability(character: Character, craft: CraftBulk) {
+    export function craft_bulk_profitability(character: Character, craft: CraftBulkTemplate) {
         const input_price = price_norm_box(character, craft.input, buy_price_bulk)
         const output_price = price_norm_box(character, output_bulk(character, craft), sell_price_bulk)
-
-        // console.log(character.name, craft.id)
-        // console.log(craft.input)
-        // for (let box of craft.input) {
-        //     console.log(`
-        //         i think i can buy 
-        //         ${box.amount} of ${materials.index_to_material(box.material).string_tag} 
-        //         for ${buy_price_bulk(character, box.material) * box.amount}`)
-        // }
-
-        // console.log(output_bulk(character, craft))
-        // for (let box of output_bulk(character, craft)) {
-        //     console.log(`
-        //         i think i can sell 
-        //         ${box.amount} of ${materials.index_to_material(box.material).string_tag} 
-        //         for ${sell_price_bulk(character, box.material) * box.amount}`)
-        // }
-
-        // console.log('price of inputs', input_price)
-        // console.log(craft.input)
-        // console.log('price of outputs', output_price)
-        // console.log(craft.input)
-
         const profit = output_price - input_price;
-
         return profit
     }
+
 }

@@ -3,7 +3,7 @@ import { CharacterTemplate } from "./character/templates"
 import { Data } from "./data"
 import { Event } from "./events/events"
 // import { Factions } from "./factions"
-import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT } from "./items/items_set_up"
+import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT, CLOTH_ARMOUR_ARGUMENT, CLOTH_GLOVES_ARGUMENT, CLOTH_HELMET_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT, SPEAR_ARGUMENT } from "./items/items_set_up"
 import { ItemSystem } from "./items/system"
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
@@ -14,6 +14,8 @@ import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from
 import { ModelVariant } from "./types"
 import { EventMarket } from "./events/market"
 import { BallTemplate } from "./races/others"
+import { Character } from "./character/character"
+import { roll_affix_weapon } from "./base_game_classes/affix"
 
 const LUMP_OF_MONEY = 1000 as money
 const TONS_OF_MONEY = 30000 as money
@@ -71,7 +73,7 @@ export namespace Template {
             human._skills.evasion += 10
             human._skills.blocking += 10
             human._skills.ranged += 20
-            human.perks.advanced_polearm = true
+            human._perks.advanced_polearm = true
             let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
             spear.durability = 200
             let bow = ItemSystem.create(BASIC_BOW_ARGUMENT)
@@ -87,6 +89,15 @@ export namespace Template {
             human.equip.data.secondary = bow
             human.stash.inc(ARROW_BONE, 60)
             return human
+        }
+
+        export function EquipClothesBasic(character: Character) {
+            character.equip.data.armour.body = ItemSystem.create(CLOTH_ARMOUR_ARGUMENT)
+            character.equip.data.armour.legs = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
+            character.equip.data.armour.foot = ItemSystem.create(RAT_SKIN_BOOTS_ARGUMENT)
+            character.equip.data.armour.head = ItemSystem.create(CLOTH_HELMET_ARGUMENT)
+
+            return character
         }
 
         export function HumanRatHunter(x: number, y: number, name: string|undefined) {
@@ -106,7 +117,7 @@ export namespace Template {
             human.stash.inc(FOOD, 10)
             human.savings.inc(500 as money)
             human._skills.cooking = 70
-            human.perks.meat_master = true
+            human._perks.meat_master = true
             return human
         }
 
@@ -118,7 +129,7 @@ export namespace Template {
 
             human._skills.woodwork = 80
             human._skills.bone_carving = 30
-            human.perks.fletcher = true
+            human._perks.fletcher = true
             human._skills.ranged = 30
 
             human.stash.inc(ARROW_BONE, 50)
@@ -144,42 +155,43 @@ export namespace Template {
 
             human.archetype.ai_map = 'urban_trader'
             human.savings.inc(800 as money)
+            return human
         }
 
         export function GenericRat(x: number, y: number, name:string|undefined) {
             let rat = Base(RatTemplate, name, undefined, x, y, 'rats')
-            rat.perks.claws = true
+            rat._traits.claws = true
             return rat
         }
 
         export function MageRat(x: number, y: number, name:string|undefined) {
             let rat = Base(MageRatTemplate, name, undefined, x, y, 'rats')
-            rat.perks.claws = true
-            rat.perks.magic_bolt = true
-            rat.perks.mage_initiation = true            
+            rat._traits.claws = true
+            rat._perks.magic_bolt = true
+            rat._perks.mage_initiation = true 
             rat.stash.inc(ZAZ, 5)
             return rat
         }
 
         export function BerserkRat(x: number, y: number, name:string|undefined) {
             let rat = Base(BerserkRatTemplate, name, undefined, x, y, 'rats')
-            rat.perks.claws = true
-            rat.perks.charge = true
+            rat._traits.claws = true
+            rat._perks.charge = true
             rat._skills.noweapon = 40
             return rat
         }
 
         export function BigRat(x: number, y: number, name: string|undefined) {
             let rat = Base(BigRatTemplate, name, undefined, x, y, 'rats')
-            rat.perks.claws = true
+            rat._traits.claws = true
             rat._skills.noweapon = 40
             return rat
         }
 
         export function MageElo(x: number, y: number, name:string|undefined) {
             let elo = Base(EloTemplate, name, undefined, x, y, 'elodino_free')
-            elo.perks.magic_bolt = true
-            elo.perks.mage_initiation = true
+            elo._perks.magic_bolt = true
+            elo._perks.mage_initiation = true
             elo._skills.magic_mastery = 20
             elo._skills.cooking = 20
             elo.stash.inc(ZAZ, 30)
@@ -203,15 +215,20 @@ export namespace Template {
             // let mage = Event.new_character(HumanTemplate, 'Mage', cell, dummy_model)
 
             mage._skills.magic_mastery = 100
-            mage.perks.mage_initiation = true
-            mage.perks.magic_bolt = true
+            mage._perks.mage_initiation = true
+            mage._perks.magic_bolt = true
+
+            let item = ItemSystem.create(SPEAR_ARGUMENT)
+            item.affixes.push({tag: 'of_power'})
+            item.affixes.push({tag: 'of_power'})
+            mage.equip.data.weapon = item
 
             return mage
         }
 
         export function BloodMage(x: number, y: number, faction: string) {
             const blood_mage = Mage(x, y, faction)
-            blood_mage.perks.blood_mage = true
+            blood_mage._perks.blood_mage = true
 
             return blood_mage
         }
@@ -220,8 +237,8 @@ export namespace Template {
             let alchemist = GenericHuman(x, y, 'Alchemist', faction)
 
             alchemist._skills.magic_mastery = 60
-            alchemist.perks.mage_initiation = true
-            alchemist.perks.alchemist = true
+            alchemist._perks.mage_initiation = true
+            alchemist._perks.alchemist = true
 
             alchemist.stash.inc(ZAZ, 5)
             alchemist.savings.inc(5000 as money)
@@ -232,7 +249,7 @@ export namespace Template {
         export function ArmourMaster(x: number, y: number) {
             let master = HumanCity(x, y, 'Armourer')
             master._skills.clothier = 100
-            master.perks.skin_armour_master = true
+            master._perks.skin_armour_master = true
             master.stash.inc(RAT_SKIN, 50)
             master.savings.inc(LUMP_OF_MONEY)            
             return master
@@ -241,7 +258,7 @@ export namespace Template {
         export function Shoemaker(x: number, y: number) {
             let master = HumanCity(x, y, 'Shoemaker')
             master._skills.clothier = 100
-            master.perks.shoemaker = true
+            master._perks.shoemaker = true
             master.stash.inc(RAT_SKIN, 50)
             master.savings.inc(LUMP_OF_MONEY)            
             return master
@@ -251,7 +268,7 @@ export namespace Template {
             let master = GenericHuman(x, y, 'Weapons maker', faction)
 
             master._skills.woodwork = 100
-            master.perks.weapon_maker = true
+            master._perks.weapon_maker = true
             master.stash.inc(WOOD, 15)
             master.savings.inc(LUMP_OF_MONEY)
             
@@ -262,7 +279,7 @@ export namespace Template {
             let master = GenericHuman(x, y, 'Weapons maker', faction)
 
             master._skills.bone_carving = 100
-            master.perks.weapon_maker = true
+            master._perks.weapon_maker = true
             master.stash.inc(RAT_BONE, 40)
             master.savings.inc(LUMP_OF_MONEY)
             
@@ -272,8 +289,8 @@ export namespace Template {
         export function MasterUnarmed(x: number, y: number, faction: string) {
             let master = GenericHuman(x, y, 'Monk', faction)
             master._skills.noweapon = 100
-            master.perks.dodge = true
-            master.perks.advanced_unarmed = true
+            master._perks.dodge = true
+            master._perks.advanced_unarmed = true
             master.savings.inc(LUMP_OF_MONEY)
 
             return master
