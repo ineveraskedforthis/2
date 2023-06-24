@@ -263,6 +263,7 @@ export class Map {
             {
                 let label = document.createElement('div');
                 label.innerHTML = action_tag;
+                label.classList.add('label_button');
                 desktop_button.appendChild(label);
             }
 
@@ -276,10 +277,8 @@ export class Map {
 
             if (action_tag == 'hunt' || action_tag == 'gather_wood' || action_tag == 'gather_cotton' || action_tag == 'fish') {
                 let repeat_button = document.createElement('div');
-                repeat_button.innerHTML = 'repeat';
-                repeat_button.classList.add('active');
-                repeat_button.classList.add('bordered');
-                repeat_button.classList.add('height-25');
+                repeat_button.innerHTML = '&#8635;';
+                repeat_button.classList.add('repeat_button');
                 ((button, map_manager, action_tag, global_blob) => button.onclick = () => {
                     console.log(global_blob);
                     if (global_blob.keep_doing == action_tag) {

@@ -247,37 +247,46 @@ div {
 
 #desktop_actions {
     position: absolute;
-    bottom: 0%;
-    height:50px;
+    bottom: 0%;    
     left: 0%;
-    width: 70%;
-
-    background-color: darkred;
-
-    display: flex;
-
-    justify-content: space-around;
-    /* flex-flow: row wrap; */
-    align-items: stretch;
+    height: auto;
+    width: auto;
+    padding: 5px;
+    padding-bottom: 2px;
+    background-color: rgba(78, 11, 11, 0.7);    
 }
 
-#desktop_actions > div {
-    text-align: center;
-    padding-top: 8px;
-    flex-grow: 1;
-    /* width:max-content; */
-    border: 3px solid crimson;
+.desktop_action_button {
+    padding: 4px;
+    background-color: rgba(51, 7, 7, 0.7);
+    margin-bottom: 3px;
+    cursor: default;    
+}
+
+.desktop_action_button > div {
+    display: inline-block;
 }
 
 #desktop_actions > div:hover {
-    background-color: yellow;
-    color: blue;
+    background: linear-gradient(177deg, rgba(110, 26, 26, 0.7) 0%, rgba(51, 7, 7, 0.7) 55%);
 }
 
 #desktop_actions > div:active {
-    background-color: greenyellow;
-    color: blue;
+    background: linear-gradient(rgb(163, 102, 102) 0%, rgba(51, 7, 7, 0.7) 15%);
 }
+
+.label_button {
+    width: 8em;
+}
+
+.repeat_button { 
+    margin-left: 8px;
+}
+
+.repeat_button:hover {
+    background: linear-gradient(rgb(163, 102, 102, 1) 0%, rgba(51, 7, 7, 0.7) 50%);
+}
+
 
 
 

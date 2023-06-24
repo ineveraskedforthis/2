@@ -69,17 +69,20 @@ document.getElementById('hide_chat_button').onclick = (event) => {
     let chat_box = document.getElementById('messages_frame');
     let msg_box = document.getElementById('list_of_messages');
     let send_box = document.getElementById('send_message_frame');
+    let but = document.getElementById('hide_chat_button');
 
     if (chat_box.classList.contains('chat_display_true')) {
         chat_box.classList.toggle('chat_display_true');
         chat_box.style.height = "40px";
         msg_box.style.visibility = "hidden";
         send_box.style.visibility = "hidden";
+        but.innerHTML = "&#9650;"
     } else {
         chat_box.classList.toggle('chat_display_true');
         chat_box.style.height = "300px";
         msg_box.style.visibility = "visible";
         send_box.style.visibility = "visible";
+        but.innerHTML = "&#9660;"
     }
 }
 

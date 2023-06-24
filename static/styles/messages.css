@@ -131,8 +131,14 @@
 }
 
 #hide_chat_button{
-    left: 97%;
-    top: -20px;
+    background: rgba(78, 11, 11, 0.7);
+    padding: 2px;
+    left: 96%;
+    top: -22px;
     position: absolute;
     cursor: default;
+}
+
+#hide_chat_button:hover {
+    background: linear-gradient(177deg, rgba(110, 26, 26, 0.7) 0%, rgba(51, 7, 7, 0.7) 55%);
 }
