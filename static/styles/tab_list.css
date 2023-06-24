@@ -183,25 +183,24 @@
 }
 
 #stash_tab {
+    left: 310px;
     top: 5px;
-    left: 5px;
-    top: 535px;
-    width: 220px;
-    height: 300px;
+    width: 170px;
+    height: 500px;
 }
 
 #market_tab {
-    width: 560px;
+    width: 685px;
     height: 300px;
-    left: 230px;
-    top: 535px;
+    left: 180px;
+    top: 595px;
 }
 
 #craft_tab {
-    top: 535px;
-    left: 795px;
+    top: 595px;
+    left: 870px;
     height:300px;
-    width:440px;
+    width: 385px;
 }
 
 #skilltree_tab {
@@ -214,8 +213,8 @@
 
 
 #map_tab {
-    left: 480px;
-    top: 50px;
+    left: 490px;
+    top: 5px;
     width: 800px;
     height: auto;
 }
