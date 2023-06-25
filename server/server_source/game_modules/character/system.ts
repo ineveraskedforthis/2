@@ -1,5 +1,5 @@
 import { materials, material_index } from "../manager_classes/materials_manager";
-import { damage_type, weapon_attack_tag, weapon_tag } from "../types";
+import { CharacterTemplate, damage_type, weapon_attack_tag, weapon_tag } from "../types";
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
@@ -7,7 +7,6 @@ import { damage_types, DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
 import { Character } from "./character";
 import { Loot } from "../races/generate_loot";
-import { CharacterTemplate } from "./templates";
 import { Data } from "../data";
 import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
@@ -16,6 +15,8 @@ import { cell_id, money } from "@custom_types/common";
 import { is_crafting_skill, is_melee_skill, skill } from "./SkillList";
 import { has_cooking_tools, has_crafting_tools } from "../DATA_LAYOUT_BUILDING";
 import { Perks } from "@custom_types/character";
+import { BaseStats } from "../races/stats";
+import { BaseResists } from "../races/resists";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 
@@ -23,8 +24,7 @@ export namespace CharacterSystem {
     export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
         Data.CharacterDB.increase_id()
         if (name == undefined) name = template.name_generator();
-        let character = new Character(Data.CharacterDB.id(), undefined, undefined, '#', cell_id, name, template.archetype, template.stats, template.max_hp)
-        character.stats.base_resists = DmgOps.add(character.stats.base_resists, template.base_resists);
+        let character = new Character(Data.CharacterDB.id(), undefined, undefined, '#', cell_id, name, template)
         Data.CharacterDB.set(Data.CharacterDB.id(), character)
         character.explored[cell_id] = true
         return character
@@ -168,11 +168,11 @@ export namespace CharacterSystem {
     }
 
     export function base_phys_power(character: Character) {
-        return character.stats.stats.phys_power
+        return BaseStats[character.stats].phys_power
     }
 
     export function phys_power(character: Character) {
-        let base = character.stats.stats.phys_power
+        let base = base_phys_power(character)
         base += skill(character, 'travelling') / 30
         base += skill(character, 'noweapon') / 50
         base += skill(character, 'fishing') / 50
@@ -182,8 +182,12 @@ export namespace CharacterSystem {
         return Math.floor(base * character.equip.get_phys_power_modifier())
     }
 
+    export function base_magic_power(character: Character) {
+        return BaseStats[character.stats].magic_power
+    }
+
     export function magic_power(character: Character) {
-        let result = character.stats.stats.magic_power + character.equip.get_magic_power()
+        let result = base_magic_power(character) + character.equip.get_magic_power()
         if (character._perks.mage_initiation) result += 5
         if (character._perks.magic_bolt) result += 3
         if (character._perks.blood_mage) {
@@ -209,7 +213,7 @@ export namespace CharacterSystem {
     }
 
     function movement_speed_battle(character: Character): number {
-        let speed = character.stats.stats.movement_speed
+        let speed = BaseStats[character.stats].movement_speed
         speed = speed * (2 - character.get_fatigue() / 100) * boots_speed_multiplier(character)
 
         return speed
@@ -243,7 +247,7 @@ export namespace CharacterSystem {
     }
 
     export function resistance(character: Character) {
-        let result = character.stats.base_resists
+        let result = BaseResists[character.resists]
         result = DmgOps.add(result, character.equip.resists())
         return result
     }
@@ -286,7 +290,7 @@ export namespace CharacterSystem {
     }
 
     export function rgo_check(character: Character):{material: material_index, amount: number}[] {
-        const loot = Loot.base(character.archetype.model)
+        const loot = Loot.base(character.model)
         return loot
     }
 

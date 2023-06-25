@@ -3,7 +3,7 @@ var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 
 import fs from "fs"
-import { HumanTemplate } from "../races/human";
+import { HumanTemplate } from "../races/TEMPLATE_HUMANS";
 import { Convert, Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
@@ -12,9 +12,9 @@ import { char_id, tagModel, tagRACE, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_o
 import { Event } from "../events/events";
 import { ModelVariant } from "../types";
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
-import { BigRatTemplate, RatTemplate } from "../races/rat";
-import { GraciTemplate } from "../races/graci";
-import { EloTemplate } from "../races/elo";
+import { BigRatTemplate, RatTemplate } from "../races/TEMPLATE_RATS";
+import { GraciTemplate } from "../races/TEMPLATE_GRACI";
+import { ElodinoTemplate } from "../races/TEMPLATE_ELO";
 import { Template } from "../templates";
 import { Character } from "../character/character";
 import { Data } from "../data";

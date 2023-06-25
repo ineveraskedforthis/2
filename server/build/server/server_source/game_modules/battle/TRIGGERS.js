@@ -70,7 +70,7 @@ var BattleTriggers;
         if (potential_friend_of_character.dead()) {
             return false;
         }
-        if ((0, racial_hostility_1.hostile)(character.race(), potential_friend_of_character.race())) {
+        if ((0, racial_hostility_1.hostile)(character.race, potential_friend_of_character.race)) {
             return false;
         }
         if (data_1.Data.Reputation.a_X_b(character.id, 'friend', potential_friend_of_character.id)) {

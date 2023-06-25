@@ -13,8 +13,8 @@ exports.rest = {
         if (char.in_battle())
             return 2 /* CharacterActionResponce.IN_BATTLE */;
         let skill = system_1.CharacterSystem.skill(char, 'travelling');
-        let target_fatigue = scripted_values_1.ScriptedValue.rest_target_fatigue(0, skill, char.race());
-        let target_stress = scripted_values_1.ScriptedValue.rest_target_stress(0, skill, char.race());
+        let target_fatigue = scripted_values_1.ScriptedValue.rest_target_fatigue(0, skill, char.race);
+        let target_stress = scripted_values_1.ScriptedValue.rest_target_stress(0, skill, char.race);
         if ((char.get_fatigue() <= target_fatigue) && (char.get_stress() <= target_stress)) {
             return 3 /* CharacterActionResponce.NO_RESOURCE */;
         }
@@ -25,8 +25,8 @@ exports.rest = {
         if (cell == undefined)
             return;
         let skill = system_1.CharacterSystem.skill(char, 'travelling');
-        let target_fatigue = scripted_values_1.ScriptedValue.rest_target_fatigue(0, skill, char.race());
-        let target_stress = scripted_values_1.ScriptedValue.rest_target_stress(0, skill, char.race());
+        let target_fatigue = scripted_values_1.ScriptedValue.rest_target_fatigue(0, skill, char.race);
+        let target_stress = scripted_values_1.ScriptedValue.rest_target_stress(0, skill, char.race);
         if (target_fatigue < char.get_fatigue())
             char.set_fatigue(target_fatigue);
         if (target_stress < char.get_stress())

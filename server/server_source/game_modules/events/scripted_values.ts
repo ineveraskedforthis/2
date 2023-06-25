@@ -12,11 +12,11 @@ export namespace ScriptedValue {
             case LandPlotType.Inn:return 8
             case LandPlotType.HumanHouse:return 10
             case LandPlotType.RatLair: {
-                if (character.race() == 'rat') return 10
+                if (character.race == 'rat') return 10
                 return 1
             }
             case LandPlotType.ElodinoHouse: {
-                if (character.race() == 'elo') return 10
+                if (character.race == 'elo') return 10
                 return 1
             }
         }

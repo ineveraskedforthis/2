@@ -24,12 +24,12 @@ var CampaignAI;
         let responce = helpers_1.AIhelper.check_battles_to_join(character);
         if (responce)
             return;
-        if (character.race() == 'rat') {
+        if (character.race == 'rat') {
             (0, AI_ROUTINE_RAT_1.RatRoutine)(character);
             return;
         }
         // console.log(character.archetype.ai_map)
-        switch (character.archetype.ai_map) {
+        switch (character.ai_map) {
             case "steppe_walker_agressive": {
                 (0, AI_ROUTINE_GENERIC_1.SteppeAgressiveRoutine)(character);
                 break;
@@ -58,7 +58,7 @@ var CampaignAI;
                 break;
             }
         }
-        if (character.archetype.ai_map == 'dummy') {
+        if (character.ai_map == 'dummy') {
             (0, AI_ROUTINE_CRAFTER_1.crafter_routine)(character);
         }
     }

@@ -89,7 +89,7 @@ var id_to_cell: Map<cell_id, Cell> = new Map()
 
 var cell_to_characters_set: Map<cell_id, Set<char_id>> = new Map()
 
-const save_path = 
+export const save_path = 
 {
     REPUTATION: path.join(SAVE_GAME_PATH, 'reputation.txt'),
     BUILDINGS: path.join(SAVE_GAME_PATH, 'housing.txt'),

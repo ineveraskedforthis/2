@@ -33,12 +33,14 @@ function HumanNamesGen() {
 const HumanStats = {
     phys_power: 10,
     magic_power: 10,
-    movement_speed: 1
+    movement_speed: 1,
+    learning: 10
 };
 const HumanStrongStats = {
     phys_power: 30,
     magic_power: 2,
-    movement_speed: 2
+    movement_speed: 2,
+    learning: 10
 };
 const HumanBaseResists = new Damage_1.Damage(0, 0, 0, 0);
 exports.HumanTemplate = new templates_1.CharacterTemplate(HumanArchetype, HumanNamesGen, 100, HumanStats, HumanBaseResists);

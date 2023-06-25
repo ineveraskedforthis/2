@@ -3,9 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stash = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 class Stash {
+    // changed: boolean;
     constructor() {
         this.data = [];
-        this.changed = false;
+        for (let material of materials_manager_1.materials.get_materials_list()) {
+            this.data[material] = 0;
+        }
     }
     is_empty() {
         for (let material of materials_manager_1.materials.get_materials_list()) {
@@ -48,7 +51,6 @@ class Stash {
             tmp = x;
             this.set(tag, tag_stash + x);
         }
-        this.changed = true;
         return tmp;
     }
     set(tag, x) {
@@ -58,7 +60,6 @@ class Stash {
         else {
             this.data[tag] = x;
         }
-        this.changed = true;
     }
     get(tag) {
         let tmp = this.data[tag];

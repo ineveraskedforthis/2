@@ -80,16 +80,16 @@ var GameMaster;
         let num_balls = 0;
         let num_hunters = 0;
         for (const character of data_1.Data.CharacterDB.list()) {
-            if ((character.race() == 'rat') && (!character.dead())) {
+            if ((character.race == 'rat') && (!character.dead())) {
                 num_rats += 1;
             }
-            if ((character.race() == 'elo') && (!character.dead())) {
+            if ((character.race == 'elo') && (!character.dead())) {
                 num_elos += 1;
             }
-            if ((character.race() == 'ball') && (!character.dead())) {
+            if ((character.race == 'ball') && (!character.dead())) {
                 num_balls += 1;
             }
-            if ((character.ai_map() == 'rat_hunter') && (!character.dead())) {
+            if ((character.ai_map == 'rat_hunter') && (!character.dead())) {
                 num_hunters += 1;
             }
         }

@@ -7,8 +7,10 @@ const equip_1 = require("../inventories/equip");
 const savings_1 = require("../inventories/savings");
 const types_1 = require("../types");
 const SkillList_1 = require("./SkillList");
+const max_hp_1 = require("../races/max_hp");
+const basic_functions_1 = require("../calculations/basic_functions");
 class Character {
-    constructor(id, battle_id, battle_unit_id, user_id, cell_id, name, archetype, stats, max_hp) {
+    constructor(id, battle_id, battle_unit_id, user_id, cell_id, name, template) {
         this.id = id;
         this.battle_id = battle_id;
         this.battle_unit_id = battle_unit_id;
@@ -16,7 +18,22 @@ class Character {
         this.cell_id = cell_id;
         this.next_cell = 0;
         this.name = name;
-        this.archetype = Object.assign({}, archetype);
+        // this.archetype = Object.assign({}, archetype)
+        // model: tagModel;
+        // ai_map: tagAI;
+        // ai_battle: tagTactic;
+        // race: tagRACE;
+        // stats: StatsTag;
+        // resists: BaseResistTag;
+        // max_hp: MaxHPTag;
+        this.model = template.model;
+        this.ai_map = template.ai_map;
+        this.ai_battle = template.ai_battle;
+        this.race = template.race;
+        this.stats = template.stats;
+        this.resists = template.resists;
+        this.max_hp = template.max_hp;
+        // let max_hp = MaxHP[template.max_hp]
         this.current_building = undefined;
         this.equip = new equip_1.Equip();
         this.stash = new stash_1.Stash();
@@ -27,7 +44,7 @@ class Character {
         this.status.blood = 0;
         this.status.fatigue = 0;
         this.status.rage = 0;
-        this.status.hp = max_hp;
+        this.status.hp = max_hp_1.MaxHP[template.max_hp];
         this.status.stress = 0;
         this.cleared = false;
         this.action_progress = 0;
@@ -39,7 +56,6 @@ class Character {
         this._skills = new SkillList_1.SkillList();
         this._perks = {};
         this._traits = {};
-        this.stats = new types_1.InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp);
         this.explored = [];
     }
     set_model_variation(data) {
@@ -55,8 +71,11 @@ class Character {
     change(type, x) {
         let tmp = this.status[type];
         let new_status = tmp + x;
-        new_status = Math.min(this.stats.max[type], new_status);
-        new_status = Math.max(new_status, 0);
+        let max = 100;
+        if (type == 'hp') {
+            max = max_hp_1.MaxHP[this.max_hp];
+        }
+        new_status = (0, basic_functions_1.trim)(new_status, 0, max);
         return this.set(type, new_status);
     }
     change_hp(x) {
@@ -120,7 +139,7 @@ class Character {
         return this.status.hp;
     }
     get_max_hp() {
-        return this.stats.max.hp;
+        return max_hp_1.MaxHP[this.max_hp];
     }
     get_blood() {
         return this.status.blood;
@@ -145,15 +164,14 @@ class Character {
             }
             return result;
         }
-        if (this.archetype.race == 'graci')
+        if (this.race == 'graci')
             return 2;
-        if (this.archetype.model == 'bigrat')
+        if (this.model == 'bigrat')
             return 1;
-        if (this.archetype.model == 'elo')
+        if (this.model == 'elo')
             return 1;
         return 0.5;
     }
-    model() { return this.archetype.model; }
     equip_models() {
         return {
             weapon: this.equip.data.weapon?.model_tag,
@@ -164,8 +182,6 @@ class Character {
             arms: this.equip.data.armour.arms?.model_tag
         };
     }
-    race() { return this.archetype.race; }
-    ai_map() { return this.archetype.ai_map; }
     is_player() { return this.user_id != '#'; }
     dead() { return this.get_hp() == 0; }
     in_battle() { return (this.battle_id != undefined); }

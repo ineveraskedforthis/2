@@ -30,7 +30,7 @@ exports.rest = {
         const cell = systems_communication_1.Convert.character_to_cell(char);
         if (cell == undefined)
             return;
-        if (cell.can_rest() || (char.archetype.race == 'rat') || (char.race() == 'elo')) {
+        if (cell.can_rest() || (char.archetype.race == 'rat') || (char.race == 'elo')) {
             char.set_fatigue(0);
             char.change_stress(-4);
         }

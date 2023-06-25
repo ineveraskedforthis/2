@@ -7,11 +7,11 @@ const events_1 = require("./events/events");
 const items_set_up_1 = require("./items/items_set_up");
 const system_1 = require("./items/system");
 const materials_manager_1 = require("./manager_classes/materials_manager");
-const elo_1 = require("./races/elo");
-const graci_1 = require("./races/graci");
-const human_1 = require("./races/human");
-const rat_1 = require("./races/rat");
-const others_1 = require("./races/others");
+const TEMPLATE_ELO_1 = require("./races/TEMPLATE_ELO");
+const TEMPLATE_GRACI_1 = require("./races/TEMPLATE_GRACI");
+const TEMPLATE_HUMANS_1 = require("./races/TEMPLATE_HUMANS");
+const TEMPLATE_RATS_1 = require("./races/TEMPLATE_RATS");
+const TEMPLATE_OTHERS_1 = require("./races/TEMPLATE_OTHERS");
 const LUMP_OF_MONEY = 1000;
 const TONS_OF_MONEY = 30000;
 var Template;
@@ -26,7 +26,7 @@ var Template;
             return character;
         }
         function GenericHuman(x, y, name, faction) {
-            let human = Base(human_1.HumanTemplate, name, undefined, x, y, faction);
+            let human = Base(TEMPLATE_HUMANS_1.HumanTemplate, name, undefined, x, y, faction);
             human._skills.woodwork += 10;
             human._skills.cooking += 15;
             human._skills.hunt += 5;
@@ -48,7 +48,7 @@ var Template;
         }
         Character.HumanSteppe = HumanSteppe;
         function HumanStrong(x, y, name) {
-            let human = Base(human_1.HumanStrongTemplate, name, undefined, x, y, undefined);
+            let human = Base(TEMPLATE_HUMANS_1.HumanStrongTemplate, name, undefined, x, y, undefined);
             return human;
         }
         Character.HumanStrong = HumanStrong;
@@ -102,7 +102,7 @@ var Template;
         Character.EquipClothesBasic = EquipClothesBasic;
         function HumanRatHunter(x, y, name) {
             let human = HumanSpearman(x, y, name, 'steppe');
-            human.archetype.ai_map = 'rat_hunter';
+            human.ai_map = 'rat_hunter';
             human._skills.skinning += 20;
             human._skills.hunt += 20;
             return human;
@@ -150,7 +150,7 @@ var Template;
         Character.HumanFletcher = HumanFletcher;
         function HumanCityGuard(x, y, name) {
             let human = HumanSpearman(x, y, name, 'city');
-            human.archetype.ai_map = 'urban_guard';
+            human.ai_map = 'urban_guard';
             human._skills.polearms += 10;
             return human;
         }
@@ -166,19 +166,19 @@ var Template;
                     break;
                 }
             }
-            human.archetype.ai_map = 'urban_trader';
+            human.ai_map = 'urban_trader';
             human.savings.inc(800);
             return human;
         }
         Character.HumanLocalTrader = HumanLocalTrader;
         function GenericRat(x, y, name) {
-            let rat = Base(rat_1.RatTemplate, name, undefined, x, y, 'rats');
+            let rat = Base(TEMPLATE_RATS_1.RatTemplate, name, undefined, x, y, 'rats');
             rat._traits.claws = true;
             return rat;
         }
         Character.GenericRat = GenericRat;
         function MageRat(x, y, name) {
-            let rat = Base(rat_1.MageRatTemplate, name, undefined, x, y, 'rats');
+            let rat = Base(TEMPLATE_RATS_1.MageRatTemplate, name, undefined, x, y, 'rats');
             rat._traits.claws = true;
             rat._perks.magic_bolt = true;
             rat._perks.mage_initiation = true;
@@ -187,7 +187,7 @@ var Template;
         }
         Character.MageRat = MageRat;
         function BerserkRat(x, y, name) {
-            let rat = Base(rat_1.BerserkRatTemplate, name, undefined, x, y, 'rats');
+            let rat = Base(TEMPLATE_RATS_1.BerserkRatTemplate, name, undefined, x, y, 'rats');
             rat._traits.claws = true;
             rat._perks.charge = true;
             rat._skills.noweapon = 40;
@@ -195,14 +195,14 @@ var Template;
         }
         Character.BerserkRat = BerserkRat;
         function BigRat(x, y, name) {
-            let rat = Base(rat_1.BigRatTemplate, name, undefined, x, y, 'rats');
+            let rat = Base(TEMPLATE_RATS_1.BigRatTemplate, name, undefined, x, y, 'rats');
             rat._traits.claws = true;
             rat._skills.noweapon = 40;
             return rat;
         }
         Character.BigRat = BigRat;
         function MageElo(x, y, name) {
-            let elo = Base(elo_1.EloTemplate, name, undefined, x, y, 'elodino_free');
+            let elo = Base(TEMPLATE_ELO_1.ElodinoTemplate, name, undefined, x, y, 'elodino_free');
             elo._perks.magic_bolt = true;
             elo._perks.mage_initiation = true;
             elo._skills.magic_mastery = 20;
@@ -212,12 +212,12 @@ var Template;
         }
         Character.MageElo = MageElo;
         function Elo(x, y, name) {
-            let elo = Base(elo_1.EloTemplate, name, undefined, x, y, 'elodino_free');
+            let elo = Base(TEMPLATE_ELO_1.ElodinoTemplate, name, undefined, x, y, 'elodino_free');
             return elo;
         }
         Character.Elo = Elo;
         function Graci(x, y, name) {
-            let graci = Base(graci_1.GraciTemplate, name, undefined, x, y, 'graci');
+            let graci = Base(TEMPLATE_GRACI_1.GraciTemplate, name, undefined, x, y, 'graci');
             graci._skills.travelling = 70;
             return graci;
         }
@@ -297,7 +297,7 @@ var Template;
         }
         Character.MasterUnarmed = MasterUnarmed;
         function Ball(x, y, name) {
-            return Base(others_1.BallTemplate, name, undefined, x, y, undefined);
+            return Base(TEMPLATE_OTHERS_1.BallTemplate, name, undefined, x, y, undefined);
         }
         Character.Ball = Ball;
     })(Character = Template.Character || (Template.Character = {}));

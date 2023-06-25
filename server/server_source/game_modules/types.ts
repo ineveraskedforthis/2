@@ -1,6 +1,9 @@
 import { armour_slot } from "../../../shared/inventory"
 import { money } from "../../../shared/common"
 import { Damage } from "./Damage"
+import { StatsTag } from "./races/stats"
+import { BaseResistTag } from "./races/resists"
+import { MaxHPTag } from "./races/max_hp"
 
 export type char_id = number                    & {__brand:  "character_id"}
 export type TEMP_CHAR_ID = '@' 
@@ -61,27 +64,29 @@ export class Status {
 
 export type status_type = 'hp'|'rage'|'blood'|'stress'|'fatigue'
 
-export interface Stats {
-    phys_power: number
-    magic_power: number
-    movement_speed: number
-}
+// export interface Stats {
+//     phys_power: number
+//     magic_power: number
+//     learning: number
+//     movement_speed: number
+// }
 
-export class InnateStats {
-    max: Status;
-    stats: Stats
-    base_resists: Damage;
-    constructor(speed: number, phys: number, magic: number, max_hp: number) {
-        this.max = new Status();
-        this.max.hp = max_hp
-        this.stats = {
-            movement_speed: speed,
-            phys_power: phys,
-            magic_power: magic,
-        }
-        this.base_resists = new Damage();
-    }
-}
+// export class InnateStats {
+//     max: Status;
+//     stats: StatsTag
+//     base_resists: Damage;
+//     constructor(stats_tag: StatsTag, hp_tag: MaxHPTag) {
+//         this.max = new Status();
+//         this.max.hp = max_hp
+//         this.stats = {
+//             movement_speed: speed,
+//             phys_power: phys,
+//             magic_power: magic,
+//             learning: learning,
+//         }
+//         this.base_resists = new Damage();
+//     }
+// }
 
 export type tagAI = 
     'steppe_walker_agressive'
@@ -110,13 +115,17 @@ export type tagModel =
     |'human_strong'
     |'ball'
 
-type tagTactic = 'basic'
+export type tagTactic = 'basic'
 
-export interface Archetype {
+export interface CharacterTemplate {
     model: tagModel;
     ai_map: tagAI;
     ai_battle: tagTactic;
     race: tagRACE;
+    stats: StatsTag;
+    resists: BaseResistTag;
+    max_hp: MaxHPTag;
+    name_generator: () => string;
 }
 
 export interface ModelVariant {

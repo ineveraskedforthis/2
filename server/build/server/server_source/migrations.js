@@ -206,13 +206,13 @@
 // function fix_factions() {
 //     const EloStartingCell = MapSystem.coordinate_to_id([18, 4])
 //     for (let character of Data.CharacterDB.list()) {
-//         if (character.race() == 'elo') {
+//         if (character.race == 'elo') {
 //             Data.Reputation.set(Factions.Elodinos.id, character.id, "member")
 //             // if (Convert.character_to_cell(character).development.wild == 0) {
 //                 Event.move(character, EloStartingCell as Cell)
 //             // }
 //         }
-//         if (character.race() == 'graci') {
+//         if (character.race == 'graci') {
 //             Data.Reputation.set(Factions.Graci.id, character.id, "member")
 //         }
 //     }

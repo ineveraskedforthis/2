@@ -124,12 +124,12 @@ var Convert;
     function unit_to_unit_socket(unit) {
         const character = unit_to_character(unit);
         return {
-            tag: character.model(),
+            tag: character.model,
             position: unit.position,
             range: character.range(),
             name: character.name,
             hp: character.get_hp(),
-            max_hp: character.stats.max.hp,
+            max_hp: character.get_max_hp(),
             ap: unit.action_points_left,
             id: unit.id,
             next_turn: unit.next_turn_after,

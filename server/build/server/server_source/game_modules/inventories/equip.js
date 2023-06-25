@@ -6,7 +6,6 @@ const system_1 = require("../items/system");
 const damage_types_1 = require("../damage_types");
 const Damage_1 = require("../Damage");
 const inventory_1 = require("./inventory");
-const strings_management_1 = require("../strings_management");
 class EquipData {
     constructor() {
         // explicitly setting to undefined
@@ -42,39 +41,12 @@ class EquipData {
         }
         this.backpack.load_from_json(json.backpack);
     }
-    to_string() {
-        let result = {
-            weapon: (0, strings_management_1.item_to_string)(this.weapon),
-            secondary: (0, strings_management_1.item_to_string)(this.secondary),
-            armour: {},
-            backpack: (0, strings_management_1.inventory_to_string)(this.backpack)
-        };
-        for (let tag of types_1.armour_slots) {
-            result.armour[tag] = (0, strings_management_1.item_to_string)(this.armour[tag]);
-        }
-        return JSON.stringify(result);
-    }
-    from_string(s) {
-        const json = JSON.parse(s);
-        if (json.weapon != undefined) {
-            this.weapon = (0, strings_management_1.item_from_string)(json.weapon);
-        }
-        if (json.secondary != undefined) {
-            this.secondary = (0, strings_management_1.item_from_string)(json.secondary);
-        }
-        for (let tag of types_1.armour_slots) {
-            const tmp = json.armour[tag];
-            if (tmp != undefined) {
-                this.armour[tag] = (0, strings_management_1.item_from_string)(tmp);
-            }
-        }
-        (0, strings_management_1.inventory_from_string)(this.backpack, json.backpack);
-    }
 }
 class Equip {
+    // changed: boolean;
     constructor() {
         this.data = new EquipData();
-        this.changed = false;
+        // this.changed = false
     }
     transfer_all(target) {
         this.unequip('weapon');
@@ -157,7 +129,7 @@ class Equip {
             let tmp = this.data.armour[slot];
             this.data.armour[slot] = item;
             backpack.items[index] = tmp;
-            this.changed = true;
+            // this.changed = true
         }
     }
     equip_weapon(index, model) {
@@ -209,7 +181,7 @@ class Equip {
                 backpack.items[index] = tmp;
             }
         }
-        this.changed = true;
+        // this.changed = true
     }
     switch_weapon() {
         let tmp = this.data.weapon;
@@ -219,10 +191,10 @@ class Equip {
     unequip_secondary() {
         this.data.backpack.add(this.data.secondary);
         this.data.secondary = undefined;
-        this.changed = true;
+        // this.changed = true
     }
     unequip(tag) {
-        this.changed = true;
+        // this.changed = true
         if (tag == 'weapon') {
             this.data.backpack.add(this.data.weapon);
             this.data.weapon = undefined;
@@ -277,13 +249,7 @@ class Equip {
         return this.data.get_json();
     }
     load_from_json(json) {
-        this.data.load_json(json);
-    }
-    to_string() {
-        return this.data.to_string();
-    }
-    from_string(s) {
-        this.data.from_string(s);
+        this.data.load_json(json.data);
     }
 }
 exports.Equip = Equip;

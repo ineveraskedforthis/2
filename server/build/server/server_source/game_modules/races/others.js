@@ -13,7 +13,8 @@ const BallArchetype = {
 const BallStats = {
     phys_power: 5,
     magic_power: 5,
-    movement_speed: 0.5
+    movement_speed: 0.5,
+    learning: 0,
 };
 const BallResists = new Damage_1.Damage(0, 0, 0, 0);
 const moraes = ['gu', 'bu', 'mu', 'zu', 'du'];

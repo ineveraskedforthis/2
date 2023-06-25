@@ -154,8 +154,8 @@ export namespace Effect {
         }
         let building = Data.Buildings.from_id(character.current_building)
         let tier = ScriptedValue.building_rest_tier(building.type, character)
-        let fatigue_target = ScriptedValue.rest_target_fatigue(tier, building.durability, character.race())
-        let stress_target = ScriptedValue.rest_target_stress(tier, building.durability, character.race())
+        let fatigue_target = ScriptedValue.rest_target_fatigue(tier, building.durability, character.race)
+        let stress_target = ScriptedValue.rest_target_stress(tier, building.durability, character.race)
         if (fatigue_target < character.get_fatigue()) {
             let fatigue_change = trim(-5, fatigue_target - character.get_fatigue(), 0)
             Effect.Change.fatigue(character, fatigue_change)

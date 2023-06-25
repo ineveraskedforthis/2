@@ -50,12 +50,12 @@ export namespace Dialog {
         let data = target_character._perks
         let response: PerksResponse = {
             name: target_character.name,
-            race: target_character.race(),
+            race: target_character.race,
             factions: Data.Reputation.list_from_id(target_character.id),
             current_goal: target_character.ai_state,
             perks: {}, 
             skills: {},
-            model: target_character.model(),
+            model: target_character.model,
             equip: target_character.equip_models()
         }
         for (let perk of Object.keys(data) ) {

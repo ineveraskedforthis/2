@@ -161,8 +161,8 @@ var Effect;
         }
         let building = data_1.Data.Buildings.from_id(character.current_building);
         let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
-        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
-        let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race());
+        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race);
+        let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race);
         if (fatigue_target < character.get_fatigue()) {
             let fatigue_change = (0, basic_functions_1.trim)(-5, fatigue_target - character.get_fatigue(), 0);
             Effect.Change.fatigue(character, fatigue_change);

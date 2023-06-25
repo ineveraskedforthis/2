@@ -70,7 +70,7 @@ export namespace BattleTriggers {
             return false
         }
 
-        if (hostile(character.race(), potential_friend_of_character.race())) {
+        if (hostile(character.race, potential_friend_of_character.race)) {
             return false
         }
 

@@ -426,12 +426,12 @@ var Event;
         // console.log(killer.stash.data)
         //loot items rgo
         // console.log('check items drop')
-        const dropped_items = generate_loot_1.Loot.items(victim.race());
+        const dropped_items = generate_loot_1.Loot.items(victim.race);
         for (let item of dropped_items) {
             inventory_events_1.EventInventory.add_item(killer, item);
         }
         // skinning check
-        const skin = generate_loot_1.Loot.skinning(victim.archetype.race);
+        const skin = generate_loot_1.Loot.skinning(victim.race);
         if (skin > 0) {
             const dice = Math.random();
             const skinning_skill = system_2.CharacterSystem.skill(killer, 'skinning');

@@ -6,13 +6,12 @@ import { BattleSystem } from "../battle/system";
 import { trim } from "../calculations/basic_functions";
 import { Attack } from "../attack/system";
 import { Character } from "../character/character";
-import { ModelVariant, building_id, char_id } from "../types";
+import { CharacterTemplate, ModelVariant, building_id, char_id } from "../types";
 import { Loot } from "../races/generate_loot";
 // import { Perks } from "../character/Perks";
 import { perk_requirement } from "../character/perk_requirement";
 import { perk_price } from "../prices/perk_base_price";
 import { CharacterSystem } from "../character/system";
-import { CharacterTemplate } from "../character/templates";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { UserManagement } from "../client_communication/user_manager";
@@ -477,13 +476,13 @@ export namespace Event {
 
         //loot items rgo
         // console.log('check items drop')
-        const dropped_items = Loot.items(victim.race())
+        const dropped_items = Loot.items(victim.race)
         for (let item of dropped_items) {
             EventInventory.add_item(killer, item)
         } 
 
         // skinning check
-        const skin = Loot.skinning(victim.archetype.race)
+        const skin = Loot.skinning(victim.race)
         if (skin > 0) {
             const dice = Math.random()
             const skinning_skill = CharacterSystem.skill(killer, 'skinning')

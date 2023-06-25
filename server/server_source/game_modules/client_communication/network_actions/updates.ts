@@ -43,7 +43,7 @@ export namespace SendUpdate {
     export function race_model(user: User) {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
-        Alerts.generic_user_alert(user, 'model', character.model())
+        Alerts.generic_user_alert(user, 'model', character.model)
     }
 
     export function stats(user: User) {
@@ -168,7 +168,7 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.generic_user_alert(user, 'status', {c: character.status, m: character.stats.max})
+        Alerts.generic_user_alert(user, 'status', {c: character.status, max_hp: character.get_max_hp()})
     }
 
     export function stash(user: User) {
@@ -275,7 +275,7 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.generic_user_alert(user, 'hp', {c: character.status.hp, m: character.stats.max.hp})
+        Alerts.generic_user_alert(user, 'hp', {c: character.status.hp, m: character.get_max_hp()})
     }
 
     export function market(user: User) {

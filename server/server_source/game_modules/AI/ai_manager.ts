@@ -23,14 +23,14 @@ export namespace CampaignAI {
         let responce = AIhelper.check_battles_to_join(character)
         if (responce) return;
 
-        if (character.race() == 'rat') {
+        if (character.race == 'rat') {
             RatRoutine(character)
             return
         } 
 
         // console.log(character.archetype.ai_map)
 
-        switch(character.archetype.ai_map) {
+        switch(character.ai_map) {
             case "steppe_walker_agressive":{SteppeAgressiveRoutine(character);break}
             case "dummy":{break}
             case "steppe_walker_passive":{SteppePassiveRoutine(character);break}
@@ -40,7 +40,7 @@ export namespace CampaignAI {
             case "urban_guard":{GuardUrbanRoutine(character);break}
         }
 
-        if (character.archetype.ai_map == 'dummy') {
+        if (character.ai_map == 'dummy') {
             crafter_routine(character)
         }
     }

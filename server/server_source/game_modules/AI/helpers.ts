@@ -28,7 +28,7 @@ export namespace AIhelper {
                     return target_char.id
                 }                
             }
-            // if (hostile(char.race(), target_char.race())) {
+            // if (hostile(char.race, target_char.race)) {
             //     if (!target_char.dead()) {
             //         return target_char.id
             //     }                
@@ -42,7 +42,7 @@ export namespace AIhelper {
         let a = Data.Cells.get_characters_list_from_cell(char.cell_id)
         for (let id of a) {
             let target_char = Convert.id_to_character(id)
-            if (target_char.race() == 'rat') {
+            if (target_char.race == 'rat') {
                 if (!target_char.in_battle() && !target_char.dead()) {
                     return target_char.id
                 }                

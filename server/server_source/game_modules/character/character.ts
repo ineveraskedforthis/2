@@ -2,7 +2,7 @@ import {Stash} from "../inventories/stash"
 // import { PerksTable } from "./Perks";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
-import { Archetype, building_id, char_id, InnateStats, map_position, ModelVariant, Stats, Status, status_type, TEMP_USER_ID, user_id } from "../types";
+import { building_id, char_id, CharacterTemplate, ModelVariant, Status, status_type, tagAI, tagModel, tagRACE, tagTactic, TEMP_USER_ID, user_id } from "../types";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
 import { AImemory, AIstate } from "./AIstate";
@@ -11,6 +11,10 @@ import { PerksTable, TraitsTable } from "../../../../shared/character";
 import { cell_id, money } from "../../../../shared/common";
 import { CharacterMapAction } from "../actions/types";
 import { armour_slot, equip_slot } from "@custom_types/inventory";
+import { MaxHP, MaxHPTag } from "../races/max_hp";
+import { BaseResistTag } from "../races/resists";
+import { BaseStats, StatsTag } from "../races/stats";
+import { trim } from "../calculations/basic_functions";
 
 export class Character {
     id: char_id;
@@ -39,9 +43,16 @@ export class Character {
     _skills: SkillList;
     _perks: PerksTable;
     _traits: TraitsTable;
-    stats: InnateStats;
+    // stats: InnateStats;
 
-    archetype: Archetype
+    model: tagModel;
+    ai_map: tagAI;
+    ai_battle: tagTactic;
+    race: tagRACE;
+    stats: StatsTag;
+    resists: BaseResistTag;
+    max_hp: MaxHPTag;
+    
     explored: boolean[];
     next_cell: cell_id
 
@@ -57,8 +68,7 @@ export class Character {
     model_variation: any;
 
     constructor(id: number, battle_id: battle_id|undefined, battle_unit_id: unit_id|undefined, user_id: user_id|TEMP_USER_ID, cell_id: cell_id,
-                 name: string, archetype: Archetype, 
-                 stats: Stats, max_hp: number) {
+                 name: string, template: CharacterTemplate) {
         
         this.id = id as char_id
         this.battle_id = battle_id
@@ -69,7 +79,26 @@ export class Character {
 
         this.name = name
 
-        this.archetype = Object.assign({}, archetype)
+        // this.archetype = Object.assign({}, archetype)
+
+        // model: tagModel;
+        // ai_map: tagAI;
+        // ai_battle: tagTactic;
+        // race: tagRACE;
+        // stats: StatsTag;
+        // resists: BaseResistTag;
+        // max_hp: MaxHPTag;
+
+        this.model = template.model
+        this.ai_map = template.ai_map
+        this.ai_battle = template.ai_battle
+        this.race = template.race
+        this.stats = template.stats
+        this.resists = template.resists
+        this.max_hp = template.max_hp
+
+
+        // let max_hp = MaxHP[template.max_hp]
         
         this.current_building = undefined
 
@@ -83,7 +112,7 @@ export class Character {
         this.status.blood = 0
         this.status.fatigue = 0
         this.status.rage = 0
-        this.status.hp = max_hp
+        this.status.hp = MaxHP[template.max_hp]
         this.status.stress = 0
 
         this.cleared = false
@@ -99,7 +128,6 @@ export class Character {
         this._skills = new SkillList()
         this._perks = {}
         this._traits = {}
-        this.stats = new InnateStats(stats.movement_speed, stats.phys_power, stats.magic_power, max_hp)
 
         this.explored = []
     }
@@ -118,9 +146,11 @@ export class Character {
     change(type: status_type, x: number):boolean {
         let tmp = this.status[type];
         let new_status = tmp + x 
-        new_status = Math.min(this.stats.max[type], new_status)
-        new_status = Math.max(new_status, 0)
-
+        let max = 100
+        if (type == 'hp') {
+            max = MaxHP[this.max_hp]
+        }
+        new_status = trim(new_status, 0, max)
         return this.set(type, new_status)
     }
 
@@ -193,7 +223,7 @@ export class Character {
         return this.status.hp
     }
     get_max_hp() {
-        return this.stats.max.hp
+        return MaxHP[this.max_hp]
     }
     get_blood() {
         return this.status.blood
@@ -210,7 +240,6 @@ export class Character {
 
     range() {
         let result = this.equip.get_weapon_range()
-
         if (result != undefined) {
             let weapon = this.equip.data.weapon
             if (weapon?.weapon_tag == 'polearms') {
@@ -220,14 +249,12 @@ export class Character {
             }
             return result
         }
-        
-        
-        if (this.archetype.race == 'graci') return 2;
-        if (this.archetype.model == 'bigrat') return 1
-        if (this.archetype.model == 'elo') return 1
+        if (this.race == 'graci') return 2;
+        if (this.model == 'bigrat') return 1
+        if (this.model == 'elo') return 1
         return 0.5
     }
-    model()         { return this.archetype.model }
+
     equip_models():{[_ in equip_slot]: string|undefined}  { return {
         weapon: this.equip.data.weapon?.model_tag,
         head: this.equip.data.armour.head?.model_tag,
@@ -236,8 +263,6 @@ export class Character {
         foot: this.equip.data.armour.foot?.model_tag,
         arms: this.equip.data.armour.arms?.model_tag
     }}
-    race()          { return this.archetype.race }
-    ai_map()            { return this.archetype.ai_map }
 
     is_player()     { return this.user_id != '#' }
     dead()          { return this.get_hp() == 0 }

@@ -3,14 +3,16 @@ import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } fro
 import { ItemSystem } from "./game_modules/items/system";
 import { Equip } from "./game_modules/inventories/equip";
 import { CharacterSystem } from "./game_modules/character/system";
-import { HumanTemplate } from "./game_modules/races/human";
+import { HumanTemplate } from "./game_modules/races/TEMPLATE_HUMANS";
 import { Inventory } from "./game_modules/inventories/inventory";
 import { MapSystem } from "./game_modules/map/system";
-import { Data } from "./game_modules/data";
-import { character_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/strings_management";
+import { Data, save_path } from "./game_modules/data";
+import { character_to_string, equip_from_string, equip_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/strings_management";
 import { cell_id, money } from "@custom_types/common";
 
 
+Data.World.load_world_dimensions(save_path.WORLD_DIMENSIONS)
+Data.Cells.load(save_path.CELLS)
 Data.World.load()
 
 
@@ -44,6 +46,7 @@ function character_serialization_test_simple() {
     const character2 = string_to_character(string)
     const string2 = character_to_string(character2)
 
+    // console.log(string_difference([string, string2]))
     console.log(string == string2)
 }
 
@@ -64,6 +67,7 @@ function character_serialisation_test_advanced() {
 
     character._skills.cooking = 40
     character._perks.meat_master = true
+    character._traits.bipolar_disorder_high = true
 
     character.explored[2] = true
     character.explored[10] = true
@@ -72,6 +76,9 @@ function character_serialisation_test_advanced() {
     const character2 = string_to_character(string)
     const string2 = character_to_string(character2)
 
+    // console.log(string)
+    // console.log(string2)
+    // console.log(string_difference([string, string2]))
     console.log(string==string2)
 }
 
@@ -80,11 +87,15 @@ function equip_string_test() {
     const equip = new Equip()
     add_testing_items_to_equip(equip)
 
-    const s1 = equip.to_string()
+    const s1 = equip_to_string(equip)
     const equip2 = new Equip
-    equip2.from_string(s1)
-    const s2 = equip2.to_string()
+    equip_from_string(s1, equip2)
+    // equip2.from_string(s1)
+    const s2 = equip_to_string(equip2)
 
+    // console.log(string_difference([s1, s2]))
+    // console.log(s1)
+    // console.log(s2)
     console.log(s1 == s2)
 }
 
@@ -112,7 +123,7 @@ function map_coords_test() {
         for (let j = 0; j <= 10; j++) {
             let [x, y] = Data.World.id_to_coordinate(Data.World.coordinate_to_id([i, j]))
             if ((x != i) || (y != j)) {
-                console.log(i, j, x, y)
+                // console.log(i, j, x, y)
                 flag = false
             }
         }
@@ -123,7 +134,7 @@ function map_coords_test() {
         let tmp = Data.World.id_to_coordinate(i as cell_id)
         let x = Data.World.coordinate_to_id([tmp[0], tmp[1]])
         if (i != x) {
-            console.log(i, x)
+            // console.log(i, x)
             flag = false
         }
     }

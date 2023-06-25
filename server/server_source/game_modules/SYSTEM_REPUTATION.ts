@@ -9,7 +9,7 @@ export function handle_attack_reputation_change(attacker: Character, defender: C
 }
 
 export function can_talk(character_A: Character, character_B: Character) : boolean {
-    if (character_A.race() != character_B.race()) return false
+    if (character_A.race != character_B.race) return false
     if (is_enemy_characters(character_A, character_B)) return false
 
     return true
@@ -29,7 +29,7 @@ export function is_enemy_characters(character: Character, target_character: Char
 
     // hostility check:
     // if there is no racial hostility, then check for reputational hostility
-    if (!hostile(character.race(), target_character.race())) {
+    if (!hostile(character.race, target_character.race)) {
         // console.log('no racial hostility')
         // we know that they are not hostile because of race.
         // so we check if there target_character has bad reputation with character's faction

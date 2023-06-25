@@ -13,7 +13,8 @@ const GraciArchetype = {
 const GraciStats = {
     phys_power: 50,
     magic_power: 5,
-    movement_speed: 3
+    movement_speed: 3,
+    learning: 15
 };
 const GraciResists = new Damage_1.Damage(0, 0, 0, 0);
 const graci_moraes = ['O', 'u', 'La', 'Ma', 'a', 'A', 'Ou'];

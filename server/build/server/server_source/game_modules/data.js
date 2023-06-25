@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Data = void 0;
+exports.Data = exports.save_path = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const SAVE_GAME_PATH_1 = require("../SAVE_GAME_PATH");
@@ -52,7 +52,7 @@ var cells = [];
 var cell_ids = [];
 var id_to_cell = new Map();
 var cell_to_characters_set = new Map();
-const save_path = {
+exports.save_path = {
     REPUTATION: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'reputation.txt'),
     BUILDINGS: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'housing.txt'),
     BUILDINGS_OWNERSHIP: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'housing_ownership.txt'),
@@ -80,25 +80,25 @@ function read_lines(file) {
 var Data;
 (function (Data) {
     function load() {
-        World.load_world_dimensions(save_path.WORLD_DIMENSIONS);
-        Cells.load(save_path.CELLS);
+        World.load_world_dimensions(exports.save_path.WORLD_DIMENSIONS);
+        Cells.load(exports.save_path.CELLS);
         World.load();
-        CharacterDB.load(save_path.CHARACTERS);
+        CharacterDB.load(exports.save_path.CHARACTERS);
         BulkOrders.load();
         ItemOrders.load();
-        Reputation.load(save_path.REPUTATION);
-        Buildings.load(save_path.BUILDINGS);
-        Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP);
+        Reputation.load(exports.save_path.REPUTATION);
+        Buildings.load(exports.save_path.BUILDINGS);
+        Buildings.load_ownership(exports.save_path.BUILDINGS_OWNERSHIP);
     }
     Data.load = load;
     function save() {
         CharacterDB.save();
         BulkOrders.save();
         ItemOrders.save();
-        Reputation.save(save_path.REPUTATION);
-        Buildings.save(save_path.BUILDINGS);
-        Buildings.save_ownership(save_path.BUILDINGS_OWNERSHIP);
-        Cells.save(save_path.CELLS);
+        Reputation.save(exports.save_path.REPUTATION);
+        Buildings.save(exports.save_path.BUILDINGS);
+        Buildings.save_ownership(exports.save_path.BUILDINGS_OWNERSHIP);
+        Cells.save(exports.save_path.CELLS);
     }
     Data.save = save;
     let Connection;
@@ -284,10 +284,10 @@ var Data;
         }
         World.id_to_market = id_to_market;
         function load() {
-            load_terrain(save_path.TERRAIN);
-            load_forests(save_path.FORESTS);
-            load_markets(save_path.MARKETS);
-            load_factions(save_path.FACTIONS, save_path.SPAWN_POINTS);
+            load_terrain(exports.save_path.TERRAIN);
+            load_forests(exports.save_path.FORESTS);
+            load_markets(exports.save_path.MARKETS);
+            load_factions(exports.save_path.FACTIONS, exports.save_path.SPAWN_POINTS);
         }
         World.load = load;
         function set_world_dimensions(size) {
@@ -801,7 +801,7 @@ var Data;
                     continue;
                 str = str + (0, strings_management_1.character_to_string)(item) + '\n';
             }
-            fs_1.default.writeFileSync(save_path.CHARACTERS, str);
+            fs_1.default.writeFileSync(exports.save_path.CHARACTERS, str);
             console.log('characters saved');
         }
         CharacterDB.save = save;

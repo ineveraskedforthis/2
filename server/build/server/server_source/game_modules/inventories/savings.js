@@ -2,9 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Savings = void 0;
 class Savings {
+    // changed: boolean
     constructor() {
         this.data = 0;
-        this.changed = false;
+        // this.changed = false
     }
     json() {
         var tmp = {
@@ -22,7 +23,7 @@ class Savings {
         if (this.data == x)
             return;
         this.data = x;
-        this.changed = true;
+        // this.changed = true;
     }
     get() {
         return this.data;
@@ -35,7 +36,7 @@ class Savings {
         else {
             this.set(a + x);
         }
-        this.changed = true;
+        // this.changed = true
     }
     transfer(target, x) {
         var a = this.get();

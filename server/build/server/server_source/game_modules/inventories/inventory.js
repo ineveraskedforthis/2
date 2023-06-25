@@ -3,9 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Inventory = void 0;
 const system_1 = require("../items/system");
 class Inventory {
+    // changed: boolean
     constructor() {
         this.items = [];
-        this.changed = false;
+        // this.changed = false
     }
     add(item) {
         if (item == undefined)
@@ -14,7 +15,7 @@ class Inventory {
         if (item != undefined) {
             responce = this.items.push(item) - 1;
         }
-        this.changed = true;
+        // this.changed = true
         return responce;
     }
     transfer_all(target) {
@@ -31,7 +32,7 @@ class Inventory {
         if (item != undefined) {
             this.items[i] = undefined;
         }
-        this.changed = true;
+        // this.changed = true
     }
     get_json() {
         const array = [];
@@ -56,12 +57,12 @@ class Inventory {
         return { items: array };
     }
     load_from_json(data) {
-        for (let i = 0; i <= 100; i++) {
-            const tmp = data.items_array[i];
-            if (tmp == undefined)
-                return;
-            this.items.push(system_1.ItemSystem.create(tmp));
-        }
+        this.items = data.items;
+        // for (let i = 0; i <= 100; i++) {
+        //     const tmp = data.items_array[i]
+        //     if (tmp == undefined) return
+        //     this.items.push(ItemSystem.create(tmp))
+        // }
     }
 }
 exports.Inventory = Inventory;

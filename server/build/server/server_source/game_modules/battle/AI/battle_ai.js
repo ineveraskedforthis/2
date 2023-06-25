@@ -31,7 +31,7 @@ var BattleAI;
             return false;
         // hostility check:
         // if there is no racial hostility, then check for reputational hostility
-        if (!(0, racial_hostility_1.hostile)(unit_char.race(), potential_enemy_char.race())) {
+        if (!(0, racial_hostility_1.hostile)(unit_char.race, potential_enemy_char.race)) {
             // we know that they are not hostile because of race.
             // so we check if there b has bad reputation with a's faction
             if (!data_1.Data.Reputation.a_is_enemy_of_b(unit_char.id, potential_enemy_char.id)) {

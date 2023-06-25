@@ -42,8 +42,8 @@ export class CharInfoMonster {
     update_status(data) {
         // console.log(data)
 
-        this.hp.innerHTML = `${data.c.hp}/${data.m.hp}`
-        this.hp_display.style.width = `${Math.floor(data.c.hp/data.m.hp * 100)}%`;
+        this.hp.innerHTML = `${data.c.hp}/${data.max_hp}`
+        this.hp_display.style.width = `${Math.floor(data.c.hp/data.max_hp * 100)}%`;
 
         this.rage.innerHTML = data.c.rage;
         this.rage_display.style.width = `${Math.floor(data.c.rage)}%`;

@@ -31,17 +31,20 @@ const MageRatArchetype = {
 const RatStats = {
     phys_power: 10,
     magic_power: 10,
-    movement_speed: 2
+    movement_speed: 2,
+    learning: 10
 };
 const MageRatStats = {
     phys_power: 4,
     magic_power: 20,
-    movement_speed: 1.5
+    movement_speed: 1.5,
+    learning: 30
 };
 const BigRatStats = {
     phys_power: 25,
     magic_power: 10,
-    movement_speed: 1
+    movement_speed: 1,
+    learning: 15
 };
 const RatResists = new Damage_1.Damage(5, 5, 5, 20);
 const BerserkResists = new Damage_1.Damage(0, 0, 0, 0);

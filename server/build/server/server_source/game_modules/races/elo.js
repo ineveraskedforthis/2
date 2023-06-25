@@ -13,7 +13,8 @@ const ElodinoArchetype = {
 const ElodinoStats = {
     phys_power: 15,
     magic_power: 20,
-    movement_speed: 2
+    movement_speed: 2,
+    learning: 10
 };
 const ElodinoResists = new Damage_1.Damage(30, 50, 0, 20);
 const elo_moraes = ['xi', 'lo', 'mi', 'ki', 'a', 'i', 'ku'];

@@ -11,12 +11,12 @@ var ScriptedValue;
             case "inn" /* LandPlotType.Inn */: return 8;
             case "human_house" /* LandPlotType.HumanHouse */: return 10;
             case "rat_lair" /* LandPlotType.RatLair */: {
-                if (character.race() == 'rat')
+                if (character.race == 'rat')
                     return 10;
                 return 1;
             }
             case "elodino_house" /* LandPlotType.ElodinoHouse */: {
-                if (character.race() == 'elo')
+                if (character.race == 'elo')
                     return 10;
                 return 1;
             }

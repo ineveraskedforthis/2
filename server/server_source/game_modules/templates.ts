@@ -1,5 +1,4 @@
 import { cell_id, money } from "@custom_types/common"
-import { CharacterTemplate } from "./character/templates"
 import { Data } from "./data"
 import { Event } from "./events/events"
 // import { Factions } from "./factions"
@@ -7,13 +6,13 @@ import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT, CLOTH_ARMOUR_ARGUMENT, CLOTH_G
 import { ItemSystem } from "./items/system"
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
-import { EloTemplate } from "./races/elo"
-import { GraciTemplate } from "./races/graci"
-import { HumanStrongTemplate, HumanTemplate } from "./races/human"
-import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/rat"
-import { ModelVariant } from "./types"
+import { ElodinoTemplate } from "./races/TEMPLATE_ELO"
+import { GraciTemplate } from "./races/TEMPLATE_GRACI"
+import { HumanStrongTemplate, HumanTemplate } from "./races/TEMPLATE_HUMANS"
+import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/TEMPLATE_RATS"
+import { CharacterTemplate, ModelVariant } from "./types"
 import { EventMarket } from "./events/market"
-import { BallTemplate } from "./races/others"
+import { BallTemplate } from "./races/TEMPLATE_OTHERS"
 import { Character } from "./character/character"
 import { roll_affix_weapon } from "./base_game_classes/affix"
 
@@ -102,7 +101,7 @@ export namespace Template {
 
         export function HumanRatHunter(x: number, y: number, name: string|undefined) {
             let human = HumanSpearman(x, y, name, 'steppe')
-            human.archetype.ai_map = 'rat_hunter'
+            human.ai_map = 'rat_hunter'
             human._skills.skinning += 20
             human._skills.hunt += 20
             return human
@@ -142,7 +141,7 @@ export namespace Template {
 
         export function HumanCityGuard(x: number, y: number, name: string|undefined) {
             let human = HumanSpearman(x, y, name, 'city')
-            human.archetype.ai_map = 'urban_guard'
+            human.ai_map = 'urban_guard'
             human._skills.polearms += 10
             return human
         }
@@ -153,7 +152,7 @@ export namespace Template {
                 case "city":{var human = HumanCity(x, y, name);break}
             }
 
-            human.archetype.ai_map = 'urban_trader'
+            human.ai_map = 'urban_trader'
             human.savings.inc(800 as money)
             return human
         }
@@ -189,7 +188,7 @@ export namespace Template {
         }
 
         export function MageElo(x: number, y: number, name:string|undefined) {
-            let elo = Base(EloTemplate, name, undefined, x, y, 'elodino_free')
+            let elo = Base(ElodinoTemplate, name, undefined, x, y, 'elodino_free')
             elo._perks.magic_bolt = true
             elo._perks.mage_initiation = true
             elo._skills.magic_mastery = 20
@@ -199,7 +198,7 @@ export namespace Template {
         }
 
         export function Elo(x: number, y: number, name:string|undefined) {
-            let elo = Base(EloTemplate, name, undefined, x, y, 'elodino_free')
+            let elo = Base(ElodinoTemplate, name, undefined, x, y, 'elodino_free')
             return elo
         }
 

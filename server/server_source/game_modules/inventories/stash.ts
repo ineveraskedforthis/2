@@ -4,11 +4,13 @@ import { StashData } from "../types";
 export class Stash {
     // data: {[key: material_index]: number};
     data: number[]
-    changed: boolean;
+    // changed: boolean;
 
     constructor() {
         this.data = [];
-        this.changed = false;
+        for (let material of materials.get_materials_list()) {
+            this.data[material] = 0;
+        }
     }
 
     is_empty() {
@@ -52,7 +54,6 @@ export class Stash {
             tmp = x;
             this.set(tag, tag_stash + x)
         }
-        this.changed = true;
         return tmp;
     }
 
@@ -62,7 +63,6 @@ export class Stash {
         } else {
             this.data[tag] = x;
         }
-        this.changed = true;
     }
 
     get(tag: material_index):number {

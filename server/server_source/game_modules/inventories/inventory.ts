@@ -4,7 +4,7 @@ import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
 
 export interface InventoryJson {
-    items_array: ItemJson[]
+    items_array: (ItemJson|undefined)[]
 }
 export interface InventoryStrings {
     items_array: string[]
@@ -12,11 +12,11 @@ export interface InventoryStrings {
 
 export class Inventory{
     items: (Item|undefined)[]
-    changed: boolean
+    // changed: boolean
 
     constructor() {
         this.items = [];
-        this.changed = false
+        // this.changed = false
     }
 
     add(item:Item):number
@@ -28,7 +28,7 @@ export class Inventory{
         if (item != undefined) {
             responce = this.items.push(item) - 1;
         }
-        this.changed = true
+        // this.changed = true
         return responce
     }
 
@@ -45,7 +45,7 @@ export class Inventory{
         if (item != undefined) {
             this.items[i] = undefined
         }
-        this.changed = true
+        // this.changed = true
     }
 
 
@@ -72,11 +72,12 @@ export class Inventory{
         return {items: array}
     }
 
-    load_from_json(data:InventoryJson) {
-        for (let i = 0; i <= 100; i++) {
-            const tmp = data.items_array[i]
-            if (tmp == undefined) return
-            this.items.push(ItemSystem.create(tmp))
-        }
+    load_from_json(data:Inventory) {
+        this.items = data.items
+        // for (let i = 0; i <= 100; i++) {
+        //     const tmp = data.items_array[i]
+        //     if (tmp == undefined) return
+        //     this.items.push(ItemSystem.create(tmp))
+        // }
     }
 }

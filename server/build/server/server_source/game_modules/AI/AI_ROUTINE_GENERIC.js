@@ -68,7 +68,7 @@ function find_building_to_rest(character, budget) {
         let price = scripted_values_1.ScriptedValue.room_price(item, character.id);
         let building = data_1.Data.Buildings.from_id(item);
         let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
-        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
+        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race);
         let fatigue_change = character.get_fatigue() - fatigue_target;
         let utility = fatigue_change * fatigue_utility - price * money_utility;
         if ((utility > best_utility) && (price <= budget) && (data_1.Data.Buildings.occupied_rooms(item) < (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type))) {
@@ -104,8 +104,8 @@ function GenericRest(character) {
         else {
             let building = data_1.Data.Buildings.from_id(character.current_building);
             let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
-            let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race());
-            const stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race());
+            let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race);
+            const stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race);
             if ((fatigue_target >= character.get_fatigue()) && (stress_target >= character.get_stress())) {
                 effects_1.Effect.leave_room(character.id);
             }

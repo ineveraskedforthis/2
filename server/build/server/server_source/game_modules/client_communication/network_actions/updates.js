@@ -33,7 +33,7 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.generic_user_alert(user, 'model', character.model());
+        alerts_1.Alerts.generic_user_alert(user, 'model', character.model);
     }
     SendUpdate.race_model = race_model;
     function stats(user) {
@@ -148,7 +148,7 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.generic_user_alert(user, 'status', { c: character.status, m: character.stats.max });
+        alerts_1.Alerts.generic_user_alert(user, 'status', { c: character.status, max_hp: character.get_max_hp() });
     }
     SendUpdate.status = status;
     function stash(user) {
@@ -251,7 +251,7 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.generic_user_alert(user, 'hp', { c: character.status.hp, m: character.stats.max.hp });
+        alerts_1.Alerts.generic_user_alert(user, 'hp', { c: character.status.hp, m: character.get_max_hp() });
     }
     SendUpdate.hp = hp;
     function market(user) {

@@ -12,6 +12,8 @@ const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../events/effects");
 const SkillList_1 = require("./SkillList");
 const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
+const stats_1 = require("../races/stats");
+const resists_1 = require("../races/resists");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
@@ -20,8 +22,7 @@ var CharacterSystem;
         data_1.Data.CharacterDB.increase_id();
         if (name == undefined)
             name = template.name_generator();
-        let character = new character_1.Character(data_1.Data.CharacterDB.id(), undefined, undefined, '#', cell_id, name, template.archetype, template.stats, template.max_hp);
-        character.stats.base_resists = damage_types_1.DmgOps.add(character.stats.base_resists, template.base_resists);
+        let character = new character_1.Character(data_1.Data.CharacterDB.id(), undefined, undefined, '#', cell_id, name, template);
         data_1.Data.CharacterDB.set(data_1.Data.CharacterDB.id(), character);
         character.explored[cell_id] = true;
         return character;
@@ -168,11 +169,11 @@ var CharacterSystem;
     }
     CharacterSystem.ranged_damage_raw = ranged_damage_raw;
     function base_phys_power(character) {
-        return character.stats.stats.phys_power;
+        return stats_1.BaseStats[character.stats].phys_power;
     }
     CharacterSystem.base_phys_power = base_phys_power;
     function phys_power(character) {
-        let base = character.stats.stats.phys_power;
+        let base = base_phys_power(character);
         base += skill(character, 'travelling') / 30;
         base += skill(character, 'noweapon') / 50;
         base += skill(character, 'fishing') / 50;
@@ -182,8 +183,12 @@ var CharacterSystem;
         return Math.floor(base * character.equip.get_phys_power_modifier());
     }
     CharacterSystem.phys_power = phys_power;
+    function base_magic_power(character) {
+        return stats_1.BaseStats[character.stats].magic_power;
+    }
+    CharacterSystem.base_magic_power = base_magic_power;
     function magic_power(character) {
-        let result = character.stats.stats.magic_power + character.equip.get_magic_power();
+        let result = base_magic_power(character) + character.equip.get_magic_power();
         if (character._perks.mage_initiation)
             result += 5;
         if (character._perks.magic_bolt)
@@ -210,7 +215,7 @@ var CharacterSystem;
     }
     CharacterSystem.enchant_rating = enchant_rating;
     function movement_speed_battle(character) {
-        let speed = character.stats.stats.movement_speed;
+        let speed = stats_1.BaseStats[character.stats].movement_speed;
         speed = speed * (2 - character.get_fatigue() / 100) * boots_speed_multiplier(character);
         return speed;
     }
@@ -239,7 +244,7 @@ var CharacterSystem;
     }
     CharacterSystem.attack_skill = attack_skill;
     function resistance(character) {
-        let result = character.stats.base_resists;
+        let result = resists_1.BaseResists[character.resists];
         result = damage_types_1.DmgOps.add(result, character.equip.resists());
         return result;
     }
@@ -284,7 +289,7 @@ var CharacterSystem;
     }
     CharacterSystem.transfer_all = transfer_all;
     function rgo_check(character) {
-        const loot = generate_loot_1.Loot.base(character.archetype.model);
+        const loot = generate_loot_1.Loot.base(character.model);
         return loot;
     }
     CharacterSystem.rgo_check = rgo_check;

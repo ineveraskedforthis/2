@@ -66,8 +66,8 @@ export const rest = {
     check:  function(char:Character, cell: cell_id): TriggerResponse {
         if (char.in_battle()) return { response: 'IN_BATTLE' }
         let skill = CharacterSystem.skill(char, 'travelling')
-        let target_fatigue = ScriptedValue.rest_target_fatigue(0, skill, char.race())
-        let target_stress = ScriptedValue.rest_target_stress(0, skill, char.race())
+        let target_fatigue = ScriptedValue.rest_target_fatigue(0, skill, char.race)
+        let target_stress = ScriptedValue.rest_target_stress(0, skill, char.race)
         if ((char.get_fatigue() <= target_fatigue) && (char.get_stress() <= target_stress)) {
             return { response : 'IMPOSSIBLE_ACTION' }
         }
@@ -76,8 +76,8 @@ export const rest = {
 
     result:  function(char:Character, cell: cell_id) {
         let skill = CharacterSystem.skill(char, 'travelling')
-        let target_fatigue = ScriptedValue.rest_target_fatigue(0, skill, char.race())
-        let target_stress = ScriptedValue.rest_target_stress(0, skill, char.race())
+        let target_fatigue = ScriptedValue.rest_target_fatigue(0, skill, char.race)
+        let target_stress = ScriptedValue.rest_target_stress(0, skill, char.race)
         if (target_fatigue < char.get_fatigue()) char.set_fatigue(target_fatigue)
         if (target_stress < char.get_stress()) char.set('stress', target_stress)
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
