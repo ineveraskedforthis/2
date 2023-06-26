@@ -64,10 +64,8 @@ function construct_craft_item_div(data) {
         var craft_div = new_craft_option(data.id)
         craft_div.appendChild(construct_craft_inputs(data.input));
         const output_div = document.createElement('div');
-        if (data.output.slot != 'weapon')
-            output_div.innerHTML = data.output.slot;
-        else
-            output_div.innerHTML = data.output.model_tag;
+
+        output_div.innerHTML = data.output.model_tag;
 
         craft_div.appendChild(output_div);
         const durability = document.createElement('div');

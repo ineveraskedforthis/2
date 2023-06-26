@@ -172,6 +172,10 @@ export namespace ItemSystem {
         return result;
     }
 
+    export function is_weapon(item: Item) {
+        return slot(item) == 'weapon'
+    }
+
     export function modify_attack(item: Item|undefined, attack: AttackObj) {
         if (item == undefined) return attack
 
@@ -193,7 +197,7 @@ export namespace ItemSystem {
     {
         if (item == undefined) return undefined
         return {
-            name: item.tag(),
+            name: item.model_tag,
             affixes: item.affixes.length, 
             affixes_list: item.affixes, 
             durability: item.durability,
@@ -202,7 +206,7 @@ export namespace ItemSystem {
             ranged_damage: DmgOps.total(ranged_damage(item)),
             resists: resists(item),
             // ranged_damage: ranged_damage(item)
-            is_weapon: item.is_weapon()
+            is_weapon: slot(item) == 'weapon'
         }
     }
 }

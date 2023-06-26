@@ -165,6 +165,10 @@ var ItemSystem;
         return result;
     }
     ItemSystem.resists = resists;
+    function is_weapon(item) {
+        return slot(item) == 'weapon';
+    }
+    ItemSystem.is_weapon = is_weapon;
     function modify_attack(item, attack) {
         if (item == undefined)
             return attack;
@@ -182,7 +186,7 @@ var ItemSystem;
         if (item == undefined)
             return undefined;
         return {
-            name: item.tag(),
+            name: item.model_tag,
             affixes: item.affixes.length,
             affixes_list: item.affixes,
             durability: item.durability,
@@ -191,7 +195,7 @@ var ItemSystem;
             ranged_damage: damage_types_1.DmgOps.total(ranged_damage(item)),
             resists: resists(item),
             // ranged_damage: ranged_damage(item)
-            is_weapon: item.is_weapon()
+            is_weapon: slot(item) == 'weapon'
         };
     }
     ItemSystem.item_data = item_data;

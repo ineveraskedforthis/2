@@ -60,7 +60,7 @@ var EventInventory;
         const pure_skill = system_2.CharacterSystem.pure_skill(character, 'magic_mastery');
         if (pure_skill < 10)
             effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
-        if (item.is_weapon())
+        if (system_1.ItemSystem.is_weapon(item))
             (0, affix_1.roll_affix_weapon)(enchant_rating, item);
         else
             (0, affix_1.roll_affix_armour)(enchant_rating, item);
@@ -83,7 +83,7 @@ var EventInventory;
             effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
         item.affixes = [];
         for (let i = 0; i < rolls; i++) {
-            if (item.is_weapon())
+            if (system_1.ItemSystem.is_weapon(item))
                 (0, affix_1.roll_affix_weapon)(enchant_rating, item);
             else
                 (0, affix_1.roll_affix_armour)(enchant_rating, item);

@@ -63,7 +63,7 @@ export namespace EventInventory {
         Event.change_stash(character, ZAZ, -1)
         const pure_skill = CharacterSystem.pure_skill(character, 'magic_mastery')
         if (pure_skill < 10) Effect.Change.skill(character, 'magic_mastery', 1)
-        if (item.is_weapon()) roll_affix_weapon(enchant_rating, item)
+        if (ItemSystem.is_weapon(item)) roll_affix_weapon(enchant_rating, item)
         else roll_affix_armour(enchant_rating, item)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
     }
@@ -88,7 +88,7 @@ export namespace EventInventory {
         
         item.affixes = []
         for (let i = 0; i < rolls; i++) {
-            if (item.is_weapon()) roll_affix_weapon(enchant_rating, item)
+            if (ItemSystem.is_weapon(item)) roll_affix_weapon(enchant_rating, item)
             else roll_affix_armour(enchant_rating, item)
         }
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)

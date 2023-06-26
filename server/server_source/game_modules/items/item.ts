@@ -16,9 +16,9 @@ export class Item {
         this.model_tag = model_tag
     }
 
-    tag():string {
-        return this.model_tag
-    }
+    // tag():string {
+    //     return this.model_tag
+    // }
 
     json():ItemJson {
         return {
@@ -35,9 +35,9 @@ export class Item {
         }
     }
 
-    is_weapon() {
-        return ModelToEquipSlot[this.model_tag] == 'weapon'
-    }
+    // is_weapon() {
+    //     return ModelToEquipSlot[this.model_tag] == 'weapon'
+    // }
 }
 
 

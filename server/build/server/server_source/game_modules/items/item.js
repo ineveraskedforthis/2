@@ -1,16 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Item = void 0;
-const base_values_1 = require("./base_values");
 class Item {
     constructor(durability, affixes, model_tag) {
         this.durability = durability;
         this.affixes = affixes;
         this.model_tag = model_tag;
     }
-    tag() {
-        return this.model_tag;
-    }
+    // tag():string {
+    //     return this.model_tag
+    // }
     json() {
         return {
             durability: this.durability,
@@ -23,9 +22,6 @@ class Item {
             // resists: this.resists,
             // damage: this.damage
         };
-    }
-    is_weapon() {
-        return base_values_1.ModelToEquipSlot[this.model_tag] == 'weapon';
     }
 }
 exports.Item = Item;
