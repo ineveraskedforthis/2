@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.building_from_string = exports.building_to_string = exports.inventory_from_string = exports.inventory_to_string = exports.equip_from_string = exports.equip_to_string = exports.string_to_character = exports.character_to_string = exports.item_from_string = exports.item_to_string = void 0;
 const item_1 = require("./items/item");
-const damage_types_1 = require("./damage_types");
 const character_1 = require("./character/character");
 function item_to_string(item) {
     return (JSON.stringify(item));
@@ -10,9 +9,9 @@ function item_to_string(item) {
 exports.item_to_string = item_to_string;
 function item_from_string(s) {
     const item_data = JSON.parse(s);
-    let damage = damage_types_1.DmgOps.copy(item_data.damage);
-    let resistance = damage_types_1.DmgOps.copy(item_data.resists);
-    return new item_1.Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage);
+    // let damage = DmgOps.copy(item_data.damage);
+    // let resistance = DmgOps.copy(item_data.resists);
+    return new item_1.Item(item_data.durability, item_data.affixes, item_data.model_tag);
 }
 exports.item_from_string = item_from_string;
 function character_to_string(character) {

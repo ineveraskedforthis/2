@@ -15,6 +15,8 @@ import { is_enemy_characters } from "../SYSTEM_REPUTATION"
 import { Item } from "../items/item"
 import { DmgOps } from "../damage_types"
 import { Damage } from "../Damage"
+import { item_model_tag } from "../items/model_tags"
+import { BaseDamage, BaseResist } from "../items/base_values"
 
 
 
@@ -143,9 +145,9 @@ export namespace AIhelper {
         return sell_price_item(character, craft.output, estimated_quality)
     }
 
-    export function sell_price_item(character: Character, item: { resists: Damage, damage: Damage}, durability: number): money {
-        let resists = DmgOps.total(item.resists)
-        let damage = DmgOps.total(item.damage)
+    export function sell_price_item(character: Character, item: { model_tag: item_model_tag }, durability: number): money {
+        let resists = DmgOps.total( BaseDamage[item.model_tag] )
+        let damage =  DmgOps.total( BaseResist[item.model_tag] )
 
         // let min_price = AItrade.price_norm_box(character, crafts_items[tag].input, AItrade.buy_price_bulk)
         return Math.floor(5 * ((resists + damage) * durability / 100 + Math.random() * 50)) + 1 as money

@@ -2,14 +2,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.attack_affixes_effects = exports.roll_affix_armour = exports.roll_affix_weapon = exports.enchant_item = exports.get_potential_affix_armour = exports.get_potential_affix_weapon = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
+const base_values_1 = require("../items/base_values");
 function get_potential_affix_weapon(enchant_rating, item) {
     let potential_affix = [];
     // checking for phys damage mods
-    if ((item.damage.pierce > 0) || (item.damage.slice > 0)) {
+    if ((base_values_1.BaseDamage[item.model_tag].pierce > 0) || (base_values_1.BaseDamage[item.model_tag].slice > 0)) {
         potential_affix.push({ tag: 'sharp', weight: 20 });
         potential_affix.push({ tag: 'notched', weight: 2 });
     }
-    if ((item.damage.slice > 0) || (item.damage.blunt > 0)) {
+    if ((base_values_1.BaseDamage[item.model_tag].slice > 0) || (base_values_1.BaseDamage[item.model_tag].blunt > 0)) {
         potential_affix.push({ tag: 'heavy', weight: 10 });
     }
     // adding universal mods
@@ -41,7 +42,7 @@ function get_potential_affix_armour(enchant_rating, item) {
     // for local creatures you have better chances for special affixes
     // if your enchanting rating is high
     if (enchant_rating > 60) {
-        if (item.material.string_tag == materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH).string_tag) {
+        if (base_values_1.ModelToMaterial[item.model_tag].string_tag == materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH).string_tag) {
             potential_affix.push({ tag: 'of_heat', weight: 5 });
             potential_affix.push({ tag: 'of_power', weight: 5 });
             potential_affix.push({ tag: 'of_protection', weight: 5 });
@@ -51,7 +52,7 @@ function get_potential_affix_armour(enchant_rating, item) {
         }
     }
     if (enchant_rating > 100) {
-        if (item.material.string_tag == materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR).string_tag) {
+        if (base_values_1.ModelToMaterial[item.model_tag].string_tag == materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR).string_tag) {
             potential_affix.push({ tag: 'of_heat', weight: 5 });
             potential_affix.push({ tag: 'of_power', weight: 5 });
             potential_affix.push({ tag: 'of_protection', weight: 5 });

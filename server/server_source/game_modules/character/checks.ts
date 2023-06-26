@@ -3,12 +3,13 @@ import { weapon_attack_tag, WEAPON_TYPE } from "../types";
 import { Item } from "../items/item";
 import { Character } from "./character";
 import { CharacterSystem } from "./system";
+import { ItemSystem } from "../items/system";
 
 function weapon_type(weapon: Item | undefined): weapon_attack_tag {
     if (weapon == undefined) {
         return 'noweapon';
     }
-    return weapon.weapon_tag;
+    return ItemSystem.weapon_tag(weapon);
 }
 
 export function can_dodge(character: Character): boolean {
@@ -57,10 +58,7 @@ export function has_zaz(character: Character): boolean {
 }
 
 export function can_shoot(character: Character): boolean {
-    if (character.equip.data.weapon == undefined) {
-        return false;
-    }
-    if (character.equip.data.weapon.weapon_tag != 'ranged') {
+    if (CharacterSystem.weapon_type(character) != 'ranged') {
         return false;
     }
     if (character.stash.get(ARROW_BONE) >= 1) {

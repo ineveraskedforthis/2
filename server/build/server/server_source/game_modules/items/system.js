@@ -6,6 +6,7 @@ const damage_types_1 = require("../damage_types");
 const Damage_1 = require("../Damage");
 const item_1 = require("./item");
 const materials_manager_1 = require("../manager_classes/materials_manager");
+const base_values_1 = require("./base_values");
 const empty_resists = new Damage_1.Damage();
 const empty_status = {
     fatigue: 0,
@@ -16,37 +17,34 @@ const empty_status = {
 };
 var ItemSystem;
 (function (ItemSystem) {
-    function size(item) {
-        if (item.slot == 'weapon') {
-            switch (item.weapon_tag) {
-                case 'onehand':
-                    return 2;
-                case 'polearms':
-                    return 3;
-                case 'ranged':
-                    return 2;
-                case 'twohanded':
-                    return 4;
-            }
-        }
-        switch (item.slot) {
-            case 'arms': return 1;
-            case 'foot': return 1;
-            case 'head': return 1;
-            case 'legs': return 3;
-            case 'body': return 5;
-        }
-        // return 1
-    }
-    ItemSystem.size = size;
     function create(item_desc) {
-        let item = new item_1.Item(item_desc.durability, [], item_desc.slot, item_desc.range, item_desc.material, item_desc.weapon_tag, item_desc.model_tag, item_desc.resists, item_desc.damage);
+        let item = new item_1.Item(item_desc.durability, [], item_desc.model_tag);
         for (let aff of item_desc.affixes) {
             item.affixes.push(aff);
         }
         return item;
     }
     ItemSystem.create = create;
+    function range(item) {
+        return base_values_1.BaseRange[item.model_tag];
+    }
+    ItemSystem.range = range;
+    function material(item) {
+        return base_values_1.ModelToMaterial[item.model_tag];
+    }
+    ItemSystem.material = material;
+    function slot(item) {
+        return base_values_1.ModelToEquipSlot[item.model_tag];
+    }
+    ItemSystem.slot = slot;
+    function weapon_tag(item) {
+        return base_values_1.ModelToWeaponTag[item.model_tag];
+    }
+    ItemSystem.weapon_tag = weapon_tag;
+    function size(item) {
+        return (0, base_values_1.item_size)({ slot: base_values_1.ModelToEquipSlot[item.model_tag], weapon_tag: base_values_1.ModelToWeaponTag[item.model_tag] });
+    }
+    ItemSystem.size = size;
     function weight(item) {
         let modifier = 0;
         for (let affix of item.affixes) {
@@ -54,7 +52,7 @@ var ItemSystem;
                 modifier += 0.5;
             }
         }
-        return item.material.density * size(item) + modifier;
+        return material(item).density * size(item) + modifier;
     }
     ItemSystem.weight = weight;
     function power(item) {
@@ -68,10 +66,10 @@ var ItemSystem;
                 result = f(result);
             }
         }
-        if (materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH).string_tag == (item.material.string_tag)) {
+        if (materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH).string_tag == (material(item).string_tag)) {
             result += 5;
         }
-        if (materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR).string_tag == (item.material.string_tag)) {
+        if (materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR).string_tag == (material(item).string_tag)) {
             result += 5;
         }
         return result;
@@ -89,25 +87,26 @@ var ItemSystem;
         }
         // calculating base damage of item and adding affix
         let damage = new Damage_1.Damage();
+        let base_damage = base_values_1.BaseDamage[item.model_tag];
         switch (type) {
             case 'blunt': {
-                damage.blunt = ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt;
+                damage.blunt = ItemSystem.weight(item) * base_damage.blunt + affix_damage.blunt;
                 break;
             }
             case 'pierce': {
-                damage.pierce = ItemSystem.weight(item) * item.damage.pierce + affix_damage.pierce;
-                damage.blunt = Math.floor(ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt) / 10;
+                damage.pierce = ItemSystem.weight(item) * base_damage.pierce + affix_damage.pierce;
+                damage.blunt = Math.floor(ItemSystem.weight(item) * base_damage.blunt + affix_damage.blunt) / 10;
                 break;
             }
             case 'slice': {
-                damage.slice = ItemSystem.weight(item) * item.damage.slice + affix_damage.slice;
+                damage.slice = ItemSystem.weight(item) * base_damage.slice + affix_damage.slice;
                 break;
             }
         }
         const durability_mod = 0.5 + 0.5 * item.durability / 100;
         damage_types_1.DmgOps.mult_ip(damage, durability_mod);
         // fire damage is always added
-        damage.fire = item.damage.fire + affix_damage.fire;
+        damage.fire = base_damage.fire + affix_damage.fire;
         // console.log(damage)
         return damage;
     }
@@ -123,22 +122,19 @@ var ItemSystem;
             affix_damage = (affix_damage);
         }
         let damage = new Damage_1.Damage();
-        if (weapon?.weapon_tag == 'ranged') {
+        let tag = base_values_1.ModelToWeaponTag[weapon.model_tag];
+        if (tag == 'ranged') {
             damage.pierce = Math.floor(20 + weapon.durability / 10);
             damage = damage_types_1.DmgOps.add(damage, affix_damage);
             return damage;
         }
         return damage;
-        damage.blunt = weight(weapon) * weapon.damage.blunt;
-        damage.pierce = weight(weapon) * weapon.damage.pierce;
-        damage.slice = weight(weapon) * weapon.damage.slice;
-        return damage;
     }
     ItemSystem.ranged_damage = ranged_damage;
     function damage_breakdown(item) {
-        let damage = damage_types_1.DmgOps.copy(item.damage);
+        let damage = damage_types_1.DmgOps.copy(base_values_1.BaseDamage[item.model_tag]);
         damage_types_1.DmgOps.mult_ip(damage, ItemSystem.weight(item));
-        damage.fire = item.damage.fire;
+        damage.fire = base_values_1.BaseDamage[item.model_tag].fire;
         for (let aff of item.affixes) {
             let effect = affix_1.damage_affixes_effects[aff.tag];
             if (effect == undefined)
@@ -156,7 +152,7 @@ var ItemSystem;
         if (item == undefined) {
             return empty_resists;
         }
-        let result = damage_types_1.DmgOps.copy(item.resists);
+        let result = damage_types_1.DmgOps.copy(base_values_1.BaseResist[item.model_tag]);
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = affix_1.protection_affixes_effects[affix.tag];
@@ -190,7 +186,7 @@ var ItemSystem;
             affixes: item.affixes.length,
             affixes_list: item.affixes,
             durability: item.durability,
-            item_type: item.slot,
+            item_type: base_values_1.ModelToEquipSlot[item.model_tag],
             damage: damage_breakdown(item),
             ranged_damage: damage_types_1.DmgOps.total(ranged_damage(item)),
             resists: resists(item),

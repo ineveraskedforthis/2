@@ -11,6 +11,7 @@ const TRIGGERS_1 = require("../battle/TRIGGERS");
 const system_1 = require("../battle/system");
 const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
 const damage_types_1 = require("../damage_types");
+const base_values_1 = require("../items/base_values");
 var AIhelper;
 (function (AIhelper) {
     function enemies_in_cell(character) {
@@ -137,8 +138,8 @@ var AIhelper;
     }
     AIhelper.sell_price_craft_item = sell_price_craft_item;
     function sell_price_item(character, item, durability) {
-        let resists = damage_types_1.DmgOps.total(item.resists);
-        let damage = damage_types_1.DmgOps.total(item.damage);
+        let resists = damage_types_1.DmgOps.total(base_values_1.BaseDamage[item.model_tag]);
+        let damage = damage_types_1.DmgOps.total(base_values_1.BaseResist[item.model_tag]);
         // let min_price = AItrade.price_norm_box(character, crafts_items[tag].input, AItrade.buy_price_bulk)
         return Math.floor(5 * ((resists + damage) * durability / 100 + Math.random() * 50)) + 1;
     }

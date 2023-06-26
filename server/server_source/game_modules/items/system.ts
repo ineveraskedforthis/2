@@ -3,10 +3,12 @@ import { damage_type } from "../types";
 import { attack_affixes_effects, damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
 import { DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
-import { Item, ItemJson, Itemlette } from "./item";
+import { Item, ItemJson } from "./item";
 import { ELODINO_FLESH, GRACI_HAIR, materials, MaterialsManager } from "../manager_classes/materials_manager";
 import { Status } from "../types";
 import { AttackObj } from "../attack/class";
+import { BaseDamage, BaseRange, BaseResist, ModelToEquipSlot, ModelToMaterial, ModelToWeaponTag, item_size } from "./base_values";
+import { item_model_tag } from "./model_tags";
 
 const empty_resists = new Damage()
 const empty_status : Status = {
@@ -18,37 +20,32 @@ const empty_status : Status = {
 }
 
 export namespace ItemSystem {
-    export function size (item: Itemlette): number {
-        if (item.slot == 'weapon') {
-            switch(item.weapon_tag) {
-                case 'onehand':
-                    return 2
-                case 'polearms':
-                    return 3
-                case 'ranged':
-                    return 2
-                case 'twohanded':
-                    return 4
-            }
-        }
-        
-        switch(item.slot) {
-            case 'arms': return 1
-            case 'foot': return 1
-            case 'head': return 1
-            case 'legs': return 3
-            case 'body': return 5
-        }
-
-        // return 1
-    }
-
     export function create (item_desc: ItemJson) {
-        let item = new Item(item_desc.durability, [], item_desc.slot, item_desc.range, item_desc.material, item_desc.weapon_tag, item_desc.model_tag, item_desc.resists, item_desc.damage)
+        let item = new Item(item_desc.durability, [], item_desc.model_tag)
         for (let aff of item_desc.affixes) {
             item.affixes.push(aff)
         }
         return item
+    }
+
+    export function range(item: {model_tag: item_model_tag}) {
+        return BaseRange[item.model_tag]
+    }
+
+    export function material(item: {model_tag: item_model_tag}) {
+        return ModelToMaterial[item.model_tag]
+    }
+
+    export function slot(item: {model_tag: item_model_tag}) {
+        return ModelToEquipSlot[item.model_tag]
+    }
+
+    export function weapon_tag(item: Item) {
+        return ModelToWeaponTag[item.model_tag]
+    }
+
+    export function size(item: Item) {
+        return item_size({slot: ModelToEquipSlot[item.model_tag], weapon_tag: ModelToWeaponTag[item.model_tag]})
     }
 
     export function weight(item: Item) {
@@ -57,8 +54,8 @@ export namespace ItemSystem {
             if (affix.tag == 'heavy') {
                 modifier += 0.5
             }
-        } 
-        return item.material.density * size(item) + modifier
+        }
+        return material(item).density * size(item) + modifier
     }
 
     export function power(item:Item|undefined) {
@@ -73,10 +70,10 @@ export namespace ItemSystem {
             }
         }
 
-        if (materials.index_to_material(ELODINO_FLESH).string_tag == (item.material.string_tag)) {
+        if (materials.index_to_material(ELODINO_FLESH).string_tag == (material(item).string_tag)) {
             result += 5
         }
-        if (materials.index_to_material(GRACI_HAIR).string_tag == (item.material.string_tag)) {
+        if (materials.index_to_material(GRACI_HAIR).string_tag == (material(item).string_tag)) {
             result += 5
         }
 
@@ -95,20 +92,21 @@ export namespace ItemSystem {
 
         // calculating base damage of item and adding affix
         let damage = new Damage()
+        let base_damage = BaseDamage[item.model_tag]
         switch(type) {
-            case 'blunt': {damage.blunt = ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt; break}
+            case 'blunt': {damage.blunt = ItemSystem.weight(item) * base_damage.blunt + affix_damage.blunt; break}
             case 'pierce': {
-                damage.pierce = ItemSystem.weight(item) * item.damage.pierce + affix_damage.pierce;
-                damage.blunt = Math.floor(ItemSystem.weight(item) * item.damage.blunt + affix_damage.blunt) / 10; break
+                damage.pierce = ItemSystem.weight(item) * base_damage.pierce + affix_damage.pierce;
+                damage.blunt = Math.floor(ItemSystem.weight(item) * base_damage.blunt + affix_damage.blunt) / 10; break
             }
-            case 'slice': {damage.slice = ItemSystem.weight(item) * item.damage.slice + affix_damage.slice; break}
+            case 'slice': {damage.slice = ItemSystem.weight(item) * base_damage.slice + affix_damage.slice; break}
         }
 
         const durability_mod = 0.5 + 0.5 * item.durability / 100
         DmgOps.mult_ip(damage, durability_mod)
 
         // fire damage is always added
-        damage.fire = item.damage.fire + affix_damage.fire
+        damage.fire = base_damage.fire + affix_damage.fire
 
         // console.log(damage)
         return damage
@@ -125,25 +123,20 @@ export namespace ItemSystem {
         }
 
         let damage = new Damage()
-        if (weapon?.weapon_tag == 'ranged') {
+        let tag = ModelToWeaponTag[weapon.model_tag]
+        if (tag == 'ranged') {
             damage.pierce = Math.floor(20 + weapon.durability / 10)
             damage = DmgOps.add(damage, affix_damage)
             return damage
         }
-
-        return damage
-
-        damage.blunt = weight(weapon) * weapon.damage.blunt
-        damage.pierce = weight(weapon) * weapon.damage.pierce
-        damage.slice = weight(weapon) * weapon.damage.slice
         return damage
     }
 
     export function damage_breakdown(item: Item): Damage {
-        let damage = DmgOps.copy(item.damage)
+        let damage = DmgOps.copy(BaseDamage[item.model_tag])
 
         DmgOps.mult_ip(damage, ItemSystem.weight(item))
-        damage.fire = item.damage.fire
+        damage.fire = BaseDamage[item.model_tag].fire
 
         for (let aff of item.affixes) {
             let effect = damage_affixes_effects[aff.tag]
@@ -164,7 +157,7 @@ export namespace ItemSystem {
     export function resists(item:Item|undefined) {
         if (item == undefined) {return empty_resists}
 
-        let result = DmgOps.copy(item.resists)     
+        let result = DmgOps.copy(BaseResist[item.model_tag])     
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = protection_affixes_effects[affix.tag];
@@ -204,7 +197,7 @@ export namespace ItemSystem {
             affixes: item.affixes.length, 
             affixes_list: item.affixes, 
             durability: item.durability,
-            item_type: item.slot,
+            item_type: ModelToEquipSlot[item.model_tag],
             damage: damage_breakdown(item),
             ranged_damage: DmgOps.total(ranged_damage(item)),
             resists: resists(item),

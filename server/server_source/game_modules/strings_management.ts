@@ -16,9 +16,9 @@ export function item_to_string(item: Item | undefined): string {
 
 export function item_from_string(s: string): Item {
     const item_data: Item = JSON.parse(s);
-    let damage = DmgOps.copy(item_data.damage);
-    let resistance = DmgOps.copy(item_data.resists);
-    return new Item(item_data.durability, item_data.affixes, item_data.slot, item_data.range, item_data.material, item_data.weapon_tag, item_data.model_tag, resistance, damage);
+    // let damage = DmgOps.copy(item_data.damage);
+    // let resistance = DmgOps.copy(item_data.resists);
+    return new Item(item_data.durability, item_data.affixes, item_data.model_tag);
 }
 
 export function character_to_string(character: Character) {

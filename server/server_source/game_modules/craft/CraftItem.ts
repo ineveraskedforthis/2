@@ -31,14 +31,14 @@ function bonus_durability(character: Character, craft: CraftItemTemplate) {
     }
 
     const template = craft.output
-    if (template.slot == 'weapon') {
+    if (ItemSystem.slot(template) == 'weapon') {
         if (character._perks.weapon_maker)
             durability += 10;
     } else {
         if (character._perks.skin_armour_master && skin_flag)
             durability += 20
-        if (character._perks.shoemaker && (template.slot == 'foot')) {
-            durability += 10;
+        if (character._perks.shoemaker && (ItemSystem.slot(template) == 'foot')) {
+            durability += 20;
         }
     }
 

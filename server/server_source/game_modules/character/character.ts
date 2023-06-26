@@ -15,6 +15,7 @@ import { MaxHP, MaxHPTag } from "../races/max_hp";
 import { BaseResistTag } from "../races/resists";
 import { BaseStats, StatsTag } from "../races/stats";
 import { trim } from "../calculations/basic_functions";
+import { ItemSystem } from "../items/system";
 
 export class Character {
     id: char_id;
@@ -239,10 +240,10 @@ export class Character {
     }
 
     range() {
-        let result = this.equip.get_weapon_range()
-        if (result != undefined) {
-            let weapon = this.equip.data.weapon
-            if (weapon?.weapon_tag == 'polearms') {
+        let weapon = this.equip.data.weapon
+        if (weapon != undefined) {
+            let result = ItemSystem.range(weapon)
+            if (ItemSystem.weapon_tag(weapon) == 'polearms') {
                 if (this._perks.advanced_polearm) {
                     result += 0.5
                 }

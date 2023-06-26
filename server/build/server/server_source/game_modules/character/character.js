@@ -9,6 +9,7 @@ const types_1 = require("../types");
 const SkillList_1 = require("./SkillList");
 const max_hp_1 = require("../races/max_hp");
 const basic_functions_1 = require("../calculations/basic_functions");
+const system_1 = require("../items/system");
 class Character {
     constructor(id, battle_id, battle_unit_id, user_id, cell_id, name, template) {
         this.id = id;
@@ -154,10 +155,10 @@ class Character {
         return this.status.stress;
     }
     range() {
-        let result = this.equip.get_weapon_range();
-        if (result != undefined) {
-            let weapon = this.equip.data.weapon;
-            if (weapon?.weapon_tag == 'polearms') {
+        let weapon = this.equip.data.weapon;
+        if (weapon != undefined) {
+            let result = system_1.ItemSystem.range(weapon);
+            if (system_1.ItemSystem.weapon_tag(weapon) == 'polearms') {
                 if (this._perks.advanced_polearm) {
                     result += 0.5;
                 }

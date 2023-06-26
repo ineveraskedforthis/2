@@ -14,6 +14,7 @@ const SkillList_1 = require("./SkillList");
 const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
 const stats_1 = require("../races/stats");
 const resists_1 = require("../races/resists");
+const system_1 = require("../items/system");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
@@ -253,16 +254,16 @@ var CharacterSystem;
         const weapon = character.equip.data.weapon;
         if (weapon == undefined)
             return 'noweapon';
-        return weapon.weapon_tag;
+        return system_1.ItemSystem.weapon_tag(weapon);
     }
     CharacterSystem.weapon_type = weapon_type;
     function melee_weapon_type(character) {
         const weapon = character.equip.data.weapon;
         if (weapon == undefined)
             return 'noweapon';
-        if (weapon.weapon_tag == 'ranged')
+        if (system_1.ItemSystem.weapon_tag(weapon) == 'ranged')
             return 'polearms';
-        return weapon.weapon_tag;
+        return system_1.ItemSystem.weapon_tag(weapon);
     }
     CharacterSystem.melee_weapon_type = melee_weapon_type;
     /**

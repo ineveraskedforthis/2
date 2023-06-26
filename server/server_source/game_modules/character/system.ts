@@ -17,6 +17,7 @@ import { has_cooking_tools, has_crafting_tools } from "../DATA_LAYOUT_BUILDING";
 import { Perks } from "@custom_types/character";
 import { BaseStats } from "../races/stats";
 import { BaseResists } from "../races/resists";
+import { ItemSystem } from "../items/system";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 
@@ -255,14 +256,14 @@ export namespace CharacterSystem {
     export function weapon_type(character: Character):weapon_attack_tag {
         const weapon = character.equip.data.weapon
         if (weapon == undefined) return 'noweapon'
-        return weapon.weapon_tag
+        return ItemSystem.weapon_tag(weapon)
     }
 
     export function melee_weapon_type(character: Character):weapon_attack_tag {
         const weapon = character.equip.data.weapon
         if (weapon == undefined) return 'noweapon'
-        if (weapon.weapon_tag == 'ranged') return 'polearms'
-        return weapon.weapon_tag
+        if (ItemSystem.weapon_tag(weapon) == 'ranged') return 'polearms'
+        return ItemSystem.weapon_tag(weapon)
     }
 
 

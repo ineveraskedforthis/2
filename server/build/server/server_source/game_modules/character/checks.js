@@ -3,11 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.can_shoot = exports.has_zaz = exports.can_cast_magic_bolt_blood = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_1 = require("./system");
+const system_2 = require("../items/system");
 function weapon_type(weapon) {
     if (weapon == undefined) {
         return 'noweapon';
     }
-    return weapon.weapon_tag;
+    return system_2.ItemSystem.weapon_tag(weapon);
 }
 function can_dodge(character) {
     if (system_1.CharacterSystem.perk(character, 'advanced_unarmed')) {
@@ -55,10 +56,7 @@ function has_zaz(character) {
 }
 exports.has_zaz = has_zaz;
 function can_shoot(character) {
-    if (character.equip.data.weapon == undefined) {
-        return false;
-    }
-    if (character.equip.data.weapon.weapon_tag != 'ranged') {
+    if (system_1.CharacterSystem.weapon_type(character) != 'ranged') {
         return false;
     }
     if (character.stash.get(materials_manager_1.ARROW_BONE) >= 1) {

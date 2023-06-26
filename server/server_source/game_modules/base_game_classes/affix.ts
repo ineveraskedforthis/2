@@ -5,16 +5,17 @@ import { Character } from "../character/character";
 import { Item } from "../items/item";
 import { ELODINO_FLESH, GRACI_HAIR, materials } from "../manager_classes/materials_manager";
 import { Damage } from "../Damage";
+import { BaseDamage, ModelToMaterial } from "../items/base_values";
 
 export function get_potential_affix_weapon(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []
     
     // checking for phys damage mods
-    if ((item.damage.pierce > 0) || (item.damage.slice > 0)) {
+    if ((BaseDamage[item.model_tag].pierce > 0) || (BaseDamage[item.model_tag].slice > 0)) {
         potential_affix.push({tag: 'sharp', weight: 20})
         potential_affix.push({tag: 'notched', weight: 2})
     }
-    if ((item.damage.slice > 0) || (item.damage.blunt > 0)){
+    if ((BaseDamage[item.model_tag].slice > 0) || (BaseDamage[item.model_tag].blunt > 0)){
         potential_affix.push({tag: 'heavy', weight: 10})
     }
 
@@ -52,7 +53,7 @@ export function get_potential_affix_armour(enchant_rating:number, item:Item):{ta
     // for local creatures you have better chances for special affixes
     // if your enchanting rating is high
     if (enchant_rating > 60) {
-        if (item.material.string_tag == materials.index_to_material(ELODINO_FLESH).string_tag) {
+        if (ModelToMaterial[item.model_tag].string_tag == materials.index_to_material(ELODINO_FLESH).string_tag) {
             potential_affix.push({tag: 'of_heat', weight: 5})
             potential_affix.push({tag: 'of_power', weight: 5})
             potential_affix.push({tag: 'of_protection', weight: 5})
@@ -63,7 +64,7 @@ export function get_potential_affix_armour(enchant_rating:number, item:Item):{ta
     }
     
     if (enchant_rating > 100) {
-        if (item.material.string_tag == materials.index_to_material(GRACI_HAIR).string_tag) {
+        if (ModelToMaterial[item.model_tag].string_tag == materials.index_to_material(GRACI_HAIR).string_tag) {
             potential_affix.push({tag: 'of_heat', weight: 5})
             potential_affix.push({tag: 'of_power', weight: 5})
             potential_affix.push({tag: 'of_protection', weight: 5})

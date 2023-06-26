@@ -125,7 +125,7 @@ export class Equip {
     get_weapon_range(): undefined|number {
         let right_hand = this.data.weapon;
         if (right_hand == undefined) {return undefined}
-        return right_hand.range;
+        return ItemSystem.range(right_hand);
     }
 
     get_melee_damage(type: damage_type): Damage|undefined {
@@ -183,7 +183,7 @@ export class Equip {
         let item = backpack.items[index]
         if (item == undefined) return
 
-        if (item.slot == 'weapon') {this.equip_weapon(index, model)}
+        if (ItemSystem.slot(item) == 'weapon') {this.equip_weapon(index, model)}
         else {this.equip_armour(index, model)}
     }
 
@@ -195,7 +195,7 @@ export class Equip {
         let backpack = this.data.backpack;
         let item = backpack.items[index]
         if (item != undefined) {
-            let slot = item.slot;
+            let slot = ItemSystem.slot(item);
             let tmp = this.data.armour[slot as armour_slot];
             this.data.armour[slot as armour_slot] = item
             backpack.items[index] = tmp
@@ -208,7 +208,7 @@ export class Equip {
         if (index == undefined) return
         let item = backpack.items[index]
         if (item == undefined) return
-        if (item.slot != 'weapon') {return}
+        if (ItemSystem.slot(item) != 'weapon') {return}
         let tmp = this.data.weapon;
 
         if (model == 'graci') {

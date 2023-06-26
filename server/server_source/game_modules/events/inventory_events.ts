@@ -27,7 +27,7 @@ export namespace EventInventory {
         const item = character.equip.data.backpack.items[index]
         if (item == undefined) return
 
-        const material = materials.tag_to_index(item.material.string_tag)
+        const material = materials.tag_to_index(ItemSystem.material(item).string_tag)
         Event.change_stash(character, material, 1)
         character.equip.data.backpack.remove(index)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)

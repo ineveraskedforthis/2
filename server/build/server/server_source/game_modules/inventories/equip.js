@@ -61,7 +61,7 @@ class Equip {
         if (right_hand == undefined) {
             return undefined;
         }
-        return right_hand.range;
+        return system_1.ItemSystem.range(right_hand);
     }
     get_melee_damage(type) {
         // let damage = new Damage()
@@ -111,7 +111,7 @@ class Equip {
         let item = backpack.items[index];
         if (item == undefined)
             return;
-        if (item.slot == 'weapon') {
+        if (system_1.ItemSystem.slot(item) == 'weapon') {
             this.equip_weapon(index, model);
         }
         else {
@@ -125,7 +125,7 @@ class Equip {
         let backpack = this.data.backpack;
         let item = backpack.items[index];
         if (item != undefined) {
-            let slot = item.slot;
+            let slot = system_1.ItemSystem.slot(item);
             let tmp = this.data.armour[slot];
             this.data.armour[slot] = item;
             backpack.items[index] = tmp;
@@ -139,7 +139,7 @@ class Equip {
         let item = backpack.items[index];
         if (item == undefined)
             return;
-        if (item.slot != 'weapon') {
+        if (system_1.ItemSystem.slot(item) != 'weapon') {
             return;
         }
         let tmp = this.data.weapon;
