@@ -4,7 +4,7 @@ body {
     background-repeat: repeat;
     font-family: "Arial", sans-serif;
     font-size: small;
-    /* overflow: hidden; */
+    overflow: hidden;
 }
 
 div {
@@ -92,16 +92,18 @@ div {
 
 #logout {
     position: absolute;
-    top: 5px;
-    left: 5px;
+    top: 95%;
+    left: 200px;
     width: 100px;
+    z-index: 10;
 }
 
 #reset_tabs {
     position: absolute;
-    top: 5px;
-    left: 110px;
+    top: 95%;
+    left: 350px;
     width: 100px;
+    z-index: 10;
 }
 
 #base_background {
@@ -164,10 +166,12 @@ div {
 
 #game_container {
     position: absolute;
-    width: 1800px;
-    height: 900px;
-    margin-left: 50px;
-    margin-top: 30px;
+    /* width: 1800px; */
+    /* height: 900px; */
+    width: 100%;
+    height: 100%;
+    /* margin-left: 50px; */
+    /* margin-top: 30px; */
 }
 
 .game_scene {
@@ -181,6 +185,7 @@ div {
     background-image: url(/static/img/bg_colony.png);
     background-position: center;
     background-repeat: no-repeat;
+    background-size: cover;
 }
 
 #login_scene {

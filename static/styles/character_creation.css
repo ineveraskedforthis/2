@@ -16,7 +16,7 @@
 .character_image {
     position: absolute;
     /* width: 300px; */
-    width: 30%;
+    width: 40%;
     left: 10%;
     bottom: 5%;
     /* height: 525px; */
@@ -24,7 +24,7 @@
     /* height: 200%; */
     object-position: left bottom;
     object-fit: none;
-    transform: scale(0.8, 0.8);
+    transform: scale(0.9, 0.9);
     transform-origin: bottom left;
     /* background-position: bottom center; */
     /* background-repeat: no-repeat; */

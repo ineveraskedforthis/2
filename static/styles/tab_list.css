@@ -182,48 +182,52 @@
     -o-user-select: none;
 }
 
-#stash_tab {
-    left: 310px;
-    top: 5px;
-    width: 170px;
-    height: 500px;
-}
-
-#market_tab {
-    width: 685px;
-    height: 300px;
-    left: 180px;
-    top: 595px;
-}
-
-#craft_tab {
-    top: 595px;
-    left: 870px;
-    height:300px;
-    width: 385px;
-}
-
 #skilltree_tab {
-  left: 5px;
-  top: 135px;
-  width: 270px;
-  height: 390px;
+  left: 1%;
+  top: 20%;
+  width: 15%;
+  height: 25%;
 }
 
-
+#stash_tab {
+    left: 17%;
+    top: 1%;
+    width: 10%;
+    height: 44%;
+}
 
 #map_tab {
-    left: 490px;
-    top: 5px;
+    left: 28%;
+    top: 1%;
     width: 800px;
     height: 430px;
 }
 
+#market_tab {
+    width: 40%;
+    height: 20%;
+    left: 1%;
+    top: 46%;
+}
+
+#craft_tab {
+    top: 67%;
+    left: 21%;
+    height: 25%;
+    width: 20%;
+}
+
+
+
+
+
+
+
 #equip_tab {
-    top: 5px;
-    height: 580px;
-    left: 1295px;
-    width: 410px;
+    top: 46%;
+    height: 46%;
+    left: 42%;
+    width: 26%;
 }
 
 
