@@ -6,6 +6,7 @@ import { SteppeAgressiveRoutine, SteppePassiveRoutine, ForestPassiveRoutine } fr
 import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
 import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 import { GuardUrbanRoutine } from "./AI_ROUTINE_GUARD";
+import { low_hp } from "./triggers";
 
 export namespace CampaignAI {
     export function decision(character: Character) {
@@ -20,8 +21,11 @@ export namespace CampaignAI {
             return
         }
 
-        let responce = AIhelper.check_battles_to_join(character)
-        if (responce) return;
+        if (!low_hp(character)) {
+            let responce = AIhelper.check_battles_to_join(character)
+            if (responce) return;
+        }
+        
 
         if (character.race == 'rat') {
             RatRoutine(character)

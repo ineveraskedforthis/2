@@ -238,15 +238,15 @@ export function update_price_beliefs(character: Character) {
     character.ai_price_belief_buy.forEach((value, key, map) => {
         if (value > 1) {
             let dice = Math.random()
-            if (dice < 0.1) {
+            if (dice < 0.2) {
                 map.set(key, value - 1 as money)
             }
-            if (dice > 0.9) {
+            if (dice > 0.8) {
                 map.set(key, value + 1 as money)
             }
         } else {
             let dice = Math.random()
-            if (dice > 0.9) {
+            if (dice > 0.8) {
                 map.set(key, value + 1 as money)
             }
         }

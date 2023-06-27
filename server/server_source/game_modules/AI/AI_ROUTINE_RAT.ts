@@ -20,14 +20,5 @@ export function RatRoutine(char: Character) {
         return
     }
 
-    // console.log('check for enemies')
-    let target = AIhelper.enemies_in_cell(char)
-    const target_char = Convert.id_to_character(target)
-    if (target_char != undefined) {
-        BattleSystem.start_battle(char, target_char)
-    } else {
-        // console.log('walk around')
-        rat_walk(char, simple_constraints)
-        return
-    }
+    rat_walk(char, simple_constraints)
 }
