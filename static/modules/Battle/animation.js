@@ -1,5 +1,6 @@
 import { ANIMATIONS } from "../load_images.js";
 import { BATTLE_ANIMATION_TICK } from "./constants.js";
+let global_tick = 0;
 export class AnimatedImage {
     constructor(image_name) {
         this.tag = image_name;
@@ -14,7 +15,7 @@ export class AnimatedImage {
         this.animation_tick += dt;
         while (this.animation_tick > BATTLE_ANIMATION_TICK) {
             this.animation_tick = this.animation_tick - BATTLE_ANIMATION_TICK;
-            if ((ANIMATIONS[this.get_image_name()].length <= this.current + 1) && ((this.action == 'move') || (this.action == 'idle'))) {
+            if ((ANIMATIONS[this.get_image_name()].length <= this.current + 1) && ((this.action == 'move') || (this.action == 'idle') || (this.action == 'attacked'))) {
                 this.current = 0;
             }
             else if (ANIMATIONS[this.get_image_name()].length <= this.current + 1) {
@@ -23,6 +24,7 @@ export class AnimatedImage {
             else {
                 this.current += 1;
             }
+            global_tick += 1;
         }
     }
     set_action(tag) {
@@ -40,12 +42,28 @@ export class AnimatedImage {
         return ANIMATIONS[this.get_image_name()].data.height;
     }
     // data is [x, y, w, h]
-    draw(ctx, data) {
+    draw(ctx, data, orientation) {
         const w = this.get_w();
         const h = this.get_h();
         const x = w * this.current;
         const y = 0;
         const image = ANIMATIONS[this.get_image_name()].data;
-        ctx.drawImage(image, x, y, w, h, Math.floor(data[0]), Math.floor(data[1]), Math.floor(data[2]), Math.floor(data[3]));
+        if (this.action == 'attacked') {
+            if (global_tick % 5 == 0) {
+                return;
+            }
+        }
+        // ctx.translate(canvas.width, 0);
+        let orientation_mult = 1;
+        if (orientation == 'left') {
+            // ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+            orientation_mult = -1;
+        }
+        ctx.drawImage(image, x, y, w, h, orientation_mult * Math.floor(data[0]), Math.floor(data[1]), orientation_mult * Math.floor(data[2]), Math.floor(data[3]));
+        if (orientation == 'left') {
+            // ctx.translate(canvas.width, 0);
+            ctx.scale(-1, 1);
+        }
     }
 }

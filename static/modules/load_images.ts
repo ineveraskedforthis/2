@@ -44,11 +44,24 @@ function load_animation(tag_thing: string, tag_animation: string, count: number,
     ANIMATIONS[tag_thing + '_' + tag_animation].data.onload = on_image_load
 }
 
-function load_animation_set(tag: string, attack: number, idle: number, move: number, prepare: number, on_image_load: () => void) {
-    load_animation(tag, 'idle', idle, on_image_load)
+// function load_transparent(tag_thing: string, tag_animation: string, count: number, on_image_load: () => void) {
+//     numLoading += 1
+//     ANIMATIONS[tag_thing + '_' + tag_animation] = {
+//         length: count,
+//         data: new Image()
+//     }
+
+//     ANIMATIONS[tag_thing + '_' + tag_animation].data.src = ['static', 'img', 'animation', tag_thing, tag_animation + '.png'].join('/')
+//     ANIMATIONS[tag_thing + '_' + tag_animation].data.onload = on_image_load
+// }
+
+function load_animation_set(tag: string, attack: number, idle: number, move: number, prepare: number, attacked: number, on_image_load: () => void) {
+    load_animation(tag, 'idle', idle, on_image_load)    
     load_animation(tag, 'move', move, on_image_load)
     load_animation(tag, 'prepare', prepare, on_image_load)
     load_animation(tag, 'attack', attack, on_image_load)
+    load_animation(tag, 'attacked', idle, on_image_load)
+    // load_transparent(tag, 'idle', idle, on_image_load)
 }
 
 
@@ -69,14 +82,14 @@ export function loadImages(onAllLoaded: () => void) {
         }
     }
 
-    load_animation_set('rat',       1, 2, 1, 1, onload)
-    load_animation_set('bigrat',    1, 1, 1, 1, onload)
-    load_animation_set('magerat',   1, 1, 1, 1, onload)
-    load_animation_set('elo',       1, 1, 5, 1, onload)
-    load_animation_set('human',     1, 1, 6, 1, onload)
-    load_animation_set('human_strong',     1, 1, 6, 1, onload)
-    load_animation_set('graci',     1, 1, 5, 1, onload)
-    load_animation_set('ball',      1, 1, 1, 1, onload)
+    load_animation_set('rat',               1, 2, 1, 1, 1, onload)
+    load_animation_set('bigrat',            1, 1, 1, 1, 1,  onload)
+    load_animation_set('magerat',           1, 1, 1, 1, 1,  onload)
+    load_animation_set('elo',               1, 1, 5, 1, 1,  onload)
+    load_animation_set('human',             1, 1, 6, 1, 1,  onload)
+    load_animation_set('human_strong',      1, 1, 6, 1, 1,  onload)
+    load_animation_set('graci',             1, 1, 5, 1, 1,  onload)
+    load_animation_set('ball',              1, 1, 1, 1, 1,  onload)
 
     // const images: ImagesDict = {};
     for (let i = 0; i < names.length; i++) {

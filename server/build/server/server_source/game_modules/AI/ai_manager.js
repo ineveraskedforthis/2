@@ -8,6 +8,7 @@ const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
 const AI_ROUTINE_URBAN_TRADER_1 = require("./AI_ROUTINE_URBAN_TRADER");
 const AI_ROUTINE_GUARD_1 = require("./AI_ROUTINE_GUARD");
+const triggers_1 = require("./triggers");
 var CampaignAI;
 (function (CampaignAI) {
     function decision(character) {
@@ -21,9 +22,11 @@ var CampaignAI;
         if (character.action != undefined) {
             return;
         }
-        let responce = helpers_1.AIhelper.check_battles_to_join(character);
-        if (responce)
-            return;
+        if (!(0, triggers_1.low_hp)(character)) {
+            let responce = helpers_1.AIhelper.check_battles_to_join(character);
+            if (responce)
+                return;
+        }
         if (character.race == 'rat') {
             (0, AI_ROUTINE_RAT_1.RatRoutine)(character);
             return;

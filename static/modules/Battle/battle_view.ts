@@ -33,6 +33,8 @@ export class BattleUnitView {
     next_turn: number
 
     timer: number
+
+    orientation: 'left'|'right'
     
     constructor(unit: UnitSocket) {
         this.id = unit.id
@@ -54,6 +56,8 @@ export class BattleUnitView {
         this.next_turn = unit.next_turn
 
         this.a_image = new AnimatedImage(unit.tag)
+
+        this.orientation = 'right'
 
         this.timer = 0
     }
@@ -202,7 +206,7 @@ export class BattleUnitView {
 
         // draw character's image
         let image_pos = position_c.image_to_canvas(pos, this.a_image.get_w(), this.a_image.get_h())
-        this.a_image.draw(battle_canvas_context, image_pos)
+        this.a_image.draw(battle_canvas_context, image_pos, this.orientation)
         this.a_image.update(dt)
 
         // draw hp bar:

@@ -80,8 +80,17 @@ export class BattleImageEvent {
         
         this.ap_change_left = this.ap_change * (this.duration - this.time_passed) / this.duration
         this.hp_change_left = this.hp_change * (this.duration - this.time_passed) / this.duration
-        
+
+
         let unit = units_views[this.unit]
+
+
+        if (this.hp_change_left < -1) {
+            unit.a_image.set_action('attacked')
+        } else {
+            unit.a_image.set_action('idle')
+        }
+                
         unit.ap_change = this.ap_change_left
         unit.hp_change = this.hp_change_left
 
@@ -131,6 +140,16 @@ export class MoveEvent extends BattleImageEvent {
     on_start(): void {
         let unit = units_views[this.unit]
         let message = unit.name + ' moved (' + this.target_position.x + ' ' + this.target_position.y + ')'
+        
+        // let unit= units_views[this.unit]
+        let direction_vec = position_c.diff(this.target_position, unit.position) 
+
+        if (direction_vec.x < 0) {
+            unit.orientation = 'left'
+        } else {
+            unit.orientation = 'right'
+        }
+
         new_log_message(message)
     }
 
@@ -215,6 +234,13 @@ export class UpdateDataEvent extends BattleImageEvent {
 
         unit.range = this.data.range
 
+        let direction_vec = position_c.diff(this.data.position, unit.position) 
+        if (direction_vec.x < 0) {
+            unit.orientation = 'left'
+        } else if (direction_vec.x > 0) {
+            unit.orientation = 'right'
+        }
+
         unit.position = this.data.position
         unit.next_turn = this.data.next_turn
 
@@ -277,6 +303,12 @@ export class AttackEvent extends BattleImageEvent {
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
 
+        if (direction_vec.x < 0) {
+            unit_view_attacker.orientation = 'left'
+        } else {
+            unit_view_attacker.orientation = 'right'
+        }
+
         unit_view_defender.current_animation = {type: 'attacked', data: {direction: direction_vec, dodge: false}}
         unit_view_attacker.current_animation = {type: 'attack', data: direction_vec}
         new_log_message(unit_view_attacker.name + ' attacks ' + unit_view_defender.name)
@@ -319,6 +351,12 @@ export class RangedAttackEvent extends BattleImageEvent {
 
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+
+        if (direction_vec.x < 0) {
+            unit_view_attacker.orientation = 'left'
+        } else {
+            unit_view_attacker.orientation = 'right'
+        }
 
         unit_view_defender.current_animation = {type: 'attacked', data: {direction: direction_vec, dodge: false}}
         unit_view_attacker.current_animation = {type: 'attack', data: direction_vec}
