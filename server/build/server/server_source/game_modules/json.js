@@ -10,7 +10,7 @@ var JSONficate;
             typ: order.typ,
             tag: order.tag,
             owner_id: order.owner_id,
-            owner_name: owner.name,
+            owner_name: owner.get_name(),
             amount: order.amount,
             price: order.price,
             id: order.id,

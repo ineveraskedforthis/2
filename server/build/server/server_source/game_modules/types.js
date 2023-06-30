@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Status = exports.weapon_attack_tags = exports.armour_slots = void 0;
+exports.skeleton = exports.model_interface_name = exports.Status = exports.weapon_attack_tags = exports.armour_slots = void 0;
 exports.armour_slots = ['body', 'legs', 'arms', 'head', 'foot'];
 exports.weapon_attack_tags = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded'];
 class Status {
@@ -13,3 +13,33 @@ class Status {
     }
 }
 exports.Status = Status;
+function model_interface_name(model) {
+    switch (model) {
+        case "human": return 'human';
+        case "rat": return 'rat';
+        case "graci": return 'graci';
+        case "elo": return 'elodino';
+        case "test": return 'test character';
+        case "bigrat": return 'giant rat';
+        case "magerat": return 'mage rat';
+        case "berserkrat": return 'berserk rat';
+        case "human_strong": return 'mutated human';
+        case "ball": return 'meat ball';
+    }
+}
+exports.model_interface_name = model_interface_name;
+function skeleton(model) {
+    switch (model) {
+        case "human": return true;
+        case "rat": return true;
+        case "graci": return true;
+        case "elo": return false;
+        case "test": return false;
+        case "bigrat": return true;
+        case "magerat": return true;
+        case "berserkrat": return true;
+        case "human_strong": return true;
+        case "ball": return false;
+    }
+}
+exports.skeleton = skeleton;

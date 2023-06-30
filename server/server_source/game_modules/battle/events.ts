@@ -1,17 +1,13 @@
 import { action_points, battle_position, ms, unit_id } from "../../../../shared/battle_data"
 import { Alerts } from "../client_communication/network_actions/alerts"
-import { Event } from "../events/events"
 import { geom } from "../geom"
 import { Convert, Unlink } from "../systems_communication"
-import { melee_attack_type } from "../types"
 import { Character } from "../character/character"
-import { BattleAI } from "./battle_ai"
 import { Battle } from "./classes/battle"
 import { Unit } from "./classes/unit"
 import { BattleSystem } from "./system"
 import { can_cast_magic_bolt, can_dodge, can_shoot } from "../character/checks"
 import { trim } from "../calculations/basic_functions"
-import { CharacterSystem } from "../character/system"
 import { UserManagement } from "../client_communication/user_manager"
 import { UI_Part } from "../client_communication/causality_graph"
 import { BattleValues } from "./VALUES"
@@ -44,12 +40,12 @@ export namespace BattleEvent {
         Alerts.battle_event_simple(battle, 'flee', unit, 0)
         
         const character = Convert.unit_to_character(unit)
-        // console.log(character.name)
+        // console.log(character.get_name())
 
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         Alerts.battle_event_simple(battle, 'unit_left', unit, 0)
 
-        console.log(`${character.name} left battle`)
+        console.log(`${character.get_name()} left battle`)
         battle.heap.delete(unit)
         Unlink.character_and_battle(character)
 
@@ -228,7 +224,7 @@ export namespace BattleEvent {
 //                     unit2.position = {x: b.x + c.x, y: b.y + c.y}
 //                 }
 
-//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
+//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.get_name()};
 //             }
 
 //             return { action: 'no_target_selected' };
@@ -258,7 +254,7 @@ export namespace BattleEvent {
 //                 let result =  character.attack(target_char, 'fast', dodge_flag, dist);
 //                 unit.action_points_left -= 1
 //                 this.changed = true
-//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
+//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.get_name()};
 //             }
 
 //             return { action: 'no_target_selected' };

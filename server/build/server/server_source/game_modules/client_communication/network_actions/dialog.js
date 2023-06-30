@@ -42,7 +42,7 @@ var Dialog;
         }
         let data = target_character._perks;
         let response = {
-            name: target_character.name,
+            name: target_character.get_name(),
             race: target_character.race,
             factions: data_1.Data.Reputation.list_from_id(target_character.id),
             current_goal: target_character.ai_state,

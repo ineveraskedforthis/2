@@ -34,10 +34,10 @@ var BattleEvent;
         alerts_1.Alerts.remove_unit(battle, unit);
         alerts_1.Alerts.battle_event_simple(battle, 'flee', unit, 0);
         const character = systems_communication_1.Convert.unit_to_character(unit);
-        // console.log(character.name)
+        // console.log(character.get_name())
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
         alerts_1.Alerts.battle_event_simple(battle, 'unit_left', unit, 0);
-        console.log(`${character.name} left battle`);
+        console.log(`${character.get_name()} left battle`);
         battle.heap.delete(unit);
         systems_communication_1.Unlink.character_and_battle(character);
         if (battle.heap.get_units_amount() == 0) {
@@ -191,7 +191,7 @@ var BattleEvent;
 //                     c = {x: c.x * scale, y: c.y * scale}
 //                     unit2.position = {x: b.x + c.x, y: b.y + c.y}
 //                 }
-//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
+//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.get_name()};
 //             }
 //             return { action: 'no_target_selected' };
 //         }
@@ -214,7 +214,7 @@ var BattleEvent;
 //                 let result =  character.attack(target_char, 'fast', dodge_flag, dist);
 //                 unit.action_points_left -= 1
 //                 this.changed = true
-//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.name};
+//                 return {action: 'attack', attacker: unit_index, target: action.target, result: result, actor_name: character.get_name()};
 //             }
 //             return { action: 'no_target_selected' };
 //         }

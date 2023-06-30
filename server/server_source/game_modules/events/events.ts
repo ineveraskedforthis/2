@@ -512,12 +512,14 @@ export namespace Event {
 
         if (character.cleared) return
 
-        console.log('death of ' + character.name)
+        console.log('death of ' + character.get_name())
 
         EventMarket.clear_orders(character)
 
         const user_data = Convert.character_to_user_data(character)
         Unlink.user_data_and_character(user_data, character);
+
+        // character.get_name() = `Corpse of ${character.race}`
 
         // const battle = Convert.character_to_battle(character)
         // if (battle != undefined) {

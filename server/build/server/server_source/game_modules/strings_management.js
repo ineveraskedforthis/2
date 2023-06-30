@@ -27,7 +27,7 @@ function string_to_character(s) {
         race: data.race,
         stats: data.stats,
         resists: data.resists,
-        name_generator: (() => { return data.name; }),
+        name_generator: (() => { return data.get_name(); }),
         max_hp: data.max_hp
     };
     const character = new character_1.Character(data.id, data.battle_id, data.battle_unit_id, data.user_id, data.cell_id, data.name, template);

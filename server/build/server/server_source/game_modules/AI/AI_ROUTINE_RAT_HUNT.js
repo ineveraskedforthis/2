@@ -118,7 +118,7 @@ function RatHunterRoutine(character) {
         character.ai_memories.shift();
     }
     if ((character.stash.get(materials_manager_1.FOOD) > 0) && ((0, triggers_1.low_hp)(character) || character.get_stress() > 20)) {
-        console.log(character.name, " I AM EEEAATING FOOD");
+        console.log(character.get_name(), " I AM EEEAATING FOOD");
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.EAT, character, character.cell_id);
     }
     fight(character);

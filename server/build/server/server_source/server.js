@@ -79,7 +79,7 @@ app.get('/api/:API_KEY/character/:charID', (req, res) => {
     }
     const response = {
         valid: true,
-        name: character.name,
+        name: character.get_name(),
         status: character.status,
         stats: character.stats,
         cell: character.cell_id,

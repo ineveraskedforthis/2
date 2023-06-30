@@ -381,7 +381,7 @@ function battle_action_self(tag, battle, character, unit) {
 exports.battle_action_self = battle_action_self;
 function battle_action_unit(tag, battle, character, unit, target_character, target_unit) {
     let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit, 0, 0);
-    console.log(character.name, 'attempts to ', tag, 'to', target_character.name);
+    console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name());
     console.log(result.response);
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target_character, target_unit);
@@ -396,7 +396,7 @@ function battle_action_unit(tag, battle, character, unit, target_character, targ
 exports.battle_action_unit = battle_action_unit;
 function battle_action_position(tag, battle, character, unit, target) {
     let result = battle_action_position_check(tag, battle, character, unit, target);
-    console.log(character.name, 'attempts to ', tag);
+    console.log(character.get_name(), 'attempts to ', tag);
     console.log(result.response);
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target);

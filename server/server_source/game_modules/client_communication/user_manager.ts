@@ -210,7 +210,7 @@ export namespace UserManagement {
         }
 
         if (character == undefined) return;
-        console.log('user ' + user.login + ' gets new character: ' + character.name + '(id:' + character.id + ')')
+        console.log('user ' + user.login + ' gets new character: ' + character.get_name() + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
         
         const real_user = get_user(id as user_online_id)

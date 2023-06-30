@@ -64,30 +64,6 @@ export class Status {
 
 export type status_type = 'hp'|'rage'|'blood'|'stress'|'fatigue'
 
-// export interface Stats {
-//     phys_power: number
-//     magic_power: number
-//     learning: number
-//     movement_speed: number
-// }
-
-// export class InnateStats {
-//     max: Status;
-//     stats: StatsTag
-//     base_resists: Damage;
-//     constructor(stats_tag: StatsTag, hp_tag: MaxHPTag) {
-//         this.max = new Status();
-//         this.max.hp = max_hp
-//         this.stats = {
-//             movement_speed: speed,
-//             phys_power: phys,
-//             magic_power: magic,
-//             learning: learning,
-//         }
-//         this.base_resists = new Damage();
-//     }
-// }
-
 export type tagAI = 
     'steppe_walker_agressive'
     |'dummy'
@@ -114,6 +90,36 @@ export type tagModel =
     |'berserkrat'
     |'human_strong'
     |'ball'
+
+export function model_interface_name(model: tagModel): string {
+    switch (model) {
+        case "human":return 'human'
+        case "rat":return 'rat'
+        case "graci":return 'graci'
+        case "elo":return 'elodino'
+        case "test":return 'test character'
+        case "bigrat":return 'giant rat'
+        case "magerat":return 'mage rat'
+        case "berserkrat":return 'berserk rat'
+        case "human_strong":return 'mutated human'
+        case "ball":return 'meat ball'
+    }
+}
+
+export function skeleton(model: tagModel): boolean {
+    switch (model) {
+        case "human":return true
+        case "rat":return true
+        case "graci":return true
+        case "elo":return false
+        case "test":return false
+        case "bigrat":return true
+        case "magerat":return true
+        case "berserkrat":return true
+        case "human_strong":return true
+        case "ball":return false
+    }
+}
 
 export type tagTactic = 'basic'
 

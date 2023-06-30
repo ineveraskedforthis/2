@@ -19,7 +19,7 @@ export function decide_bulk_craft(character: Character) {
     update_price_beliefs(character)
     for (const craft of Object.values(crafts_bulk)) {
         let profit = AItrade.craft_bulk_profitability(character, craft)
-        // console.log(`character ${character.name} has profitability of ${profit} for craft ${craft.id}`)
+        // console.log(`character ${character.get_name()} has profitability of ${profit} for craft ${craft.id}`)
         if (profit > 0) {
             result.push({craft: craft, profit: profit})
         }

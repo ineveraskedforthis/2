@@ -125,7 +125,7 @@ export function RatHunterRoutine(character: Character) {
     }
 
     if ((character.stash.get(FOOD) > 0) && (low_hp(character) || character.get_stress() > 20)) {
-        console.log(character.name, " I AM EEEAATING FOOD")
+        console.log(character.get_name(), " I AM EEEAATING FOOD")
         ActionManager.start_action(CharacterAction.EAT, character, character.cell_id)
     }
 

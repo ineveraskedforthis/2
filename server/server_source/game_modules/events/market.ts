@@ -90,7 +90,7 @@ export namespace EventMarket {
      * @param character 
      */
     export function clear_orders(character: Character) {
-        // console.log('clear all orders of ' + character.name)
+        // console.log('clear all orders of ' + character.get_name())
         remove_bulk_orders(character)
         remove_item_orders(character)
         character.trade_savings.transfer_all(character.savings)

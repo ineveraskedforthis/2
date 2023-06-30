@@ -51,7 +51,7 @@ export namespace AIactions {
     }
 
     export function craft_item(character: Character, item: CraftItemTemplate) {
-        console.log(character.name, ' crafts ', item.id)
+        console.log(character.get_name(), ' crafts ', item.id)
         ActionManager.start_action(craft_actions[item.id], character, character.cell_id)
     }
 

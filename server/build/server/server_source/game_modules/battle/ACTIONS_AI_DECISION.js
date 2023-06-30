@@ -150,7 +150,7 @@ function best_utility_from_array(array) {
     return current;
 }
 function print_utility(name, utility) {
-    console.log(name, utility?.action_key, utility?.utility, utility?.ap_cost, utility?.target.character.name);
+    console.log(name, utility?.action_key, utility?.utility, utility?.ap_cost, utility?.target.character.get_name());
 }
 function decide_AI_battle_action(battle, character, unit) {
     // console.log('without end_turn')
@@ -158,7 +158,7 @@ function decide_AI_battle_action(battle, character, unit) {
     const best_targeted = best_utility_from_array(Object.values(battle.heap.data).map(item => {
         let target_character = systems_communication_1.Convert.unit_to_character(item);
         const utility = select_targeted_action(battle, character, unit, target_character, item, 0, 0);
-        // print_utility(character.name, utility)
+        // print_utility(character.get_name(), utility)
         return utility;
     }));
     // console.log('with end turn')
@@ -166,13 +166,13 @@ function decide_AI_battle_action(battle, character, unit) {
     const best_targeted_later = best_utility_from_array(Object.values(battle.heap.data).map(item => {
         let target_character = systems_communication_1.Convert.unit_to_character(item);
         const utility = select_targeted_action(battle, character, unit, target_character, item, 0, 10);
-        // print_utility(character.name, utility)
+        // print_utility(character.get_name(), utility)
         return utility;
     }));
     let end_turn = calculate_utility_end_turn(battle, character, unit, [best_self_later, best_targeted_later]);
-    print_utility(character.name, best_self);
-    print_utility(character.name, best_targeted);
-    print_utility(character.name, end_turn);
+    print_utility(character.get_name(), best_self);
+    print_utility(character.get_name(), best_targeted);
+    print_utility(character.get_name(), end_turn);
     best_self = best_utility_from_array([best_self, end_turn]);
     // print_utility('best self', best_self)
     // console.log(battle_action_unit_check(best_targeted.action_key, battle, character, unit, best_targeted.target.character, best_targeted.target.unit))

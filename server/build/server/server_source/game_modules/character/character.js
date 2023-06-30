@@ -79,6 +79,17 @@ class Character {
         new_status = (0, basic_functions_1.trim)(new_status, 0, max);
         return this.set(type, new_status);
     }
+    get_name() {
+        if (!this.dead())
+            return this.name;
+        if (this.skinned != true) {
+            return `Corpse of ${(0, types_1.model_interface_name)(this.model)}`;
+        }
+        if ((0, types_1.skeleton)(this.model) && (this.bones_removed != true)) {
+            return `Skeleton of ${(0, types_1.model_interface_name)(this.model)}`;
+        }
+        return `Traces of something`;
+    }
     change_hp(x) {
         return this.change('hp', x);
     }
