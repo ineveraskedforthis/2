@@ -28,7 +28,8 @@ function add_testing_items_to_equip(equip) {
     const item2 = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
     const id1 = equip.data.backpack.add(item);
     const id2 = equip.data.backpack.add(item2);
-    equip.equip_weapon(id1, 'human');
+    if (id1 != false)
+        equip.equip_weapon(id1, 'human');
 }
 function character_serialization_test_simple() {
     console.log('basic character serialisation test');
@@ -80,13 +81,13 @@ function equip_string_test() {
 }
 function backpack_string_test() {
     console.log('backpack ser test');
-    const backpack = new inventory_1.Inventory();
+    const backpack = new inventory_1.Inventory(10);
     const item = system_1.ItemSystem.create(items_set_up_1.SPEAR_ARGUMENT);
     const item2 = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_BOOTS_ARGUMENT);
     backpack.add(item);
     backpack.add(item2);
     const j1 = (0, strings_management_1.inventory_to_string)(backpack);
-    const b2 = new inventory_1.Inventory();
+    const b2 = new inventory_1.Inventory(10);
     (0, strings_management_1.inventory_from_string)(b2, j1);
     const j2 = (0, strings_management_1.inventory_to_string)(b2);
     console.log(j1 == j2);

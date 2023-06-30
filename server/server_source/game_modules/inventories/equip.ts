@@ -30,27 +30,27 @@ class EquipData {
     armour: {[_ in armour_slot]?: Item};
     backpack: Inventory
 
-    constructor() {
+    constructor(backpack_limit: number) {
         // explicitly setting to undefined
         this.weapon = undefined
         this.secondary = undefined
         this.armour = {}
-        this.backpack = new Inventory()
+        this.backpack = new Inventory(backpack_limit)
     }
 
-    get_json(): EquipJson{
-        let result:EquipJson = {
-            weapon: this.weapon?.json(),
-            secondary: this.secondary?.json(),
-            armour: {},
-            backpack: this.backpack.get_json()
-        }
-        for (let tag of armour_slots) {
-            result.armour[tag] = this.armour[tag]?.json()
-        }
+    // get_json(): EquipJson{
+    //     let result:EquipJson = {
+    //         weapon: this.weapon?.json(),
+    //         secondary: this.secondary?.json(),
+    //         armour: {},
+    //         backpack: this.backpack.get_json()
+    //     }
+    //     for (let tag of armour_slots) {
+    //         result.armour[tag] = this.armour[tag]?.json()
+    //     }
 
-        return result
-    }
+    //     return result
+    // }
 
     load_json(json:EquipData){
         if (json.weapon != undefined) {
@@ -108,7 +108,7 @@ export class Equip {
     // changed: boolean;
 
     constructor() {
-        this.data = new EquipData()
+        this.data = new EquipData(10)
         // this.changed = false
     }
 
@@ -258,23 +258,31 @@ export class Equip {
 
 
     unequip_secondary() {
-        this.data.backpack.add(this.data.secondary)
-        this.data.secondary = undefined
-        // this.changed = true
+        if (this.data.secondary == undefined) return
+        let response = this.data.backpack.add(this.data.secondary)
+        if (response != false) this.data.secondary = undefined
     }
 
     unequip(tag:equip_slot) {
         // this.changed = true
 
         if (tag == 'weapon') {
-            this.data.backpack.add(this.data.weapon)
-            this.data.weapon = undefined
+            if (this.data.weapon == undefined) {
+                return
+            }
+            let response = this.data.backpack.add(this.data.weapon)
+            if (response != false) {
+                this.data.weapon = undefined
+            }
+
             return
         }
         
         let item = this.data.armour[tag]
-        this.data.backpack.add(item);
-        this.data.armour[tag] = undefined
+        if (item == undefined) return
+
+        let responce = this.data.backpack.add(item);
+        if (responce != false) this.data.armour[tag] = undefined
     }
 
     destroy_slot(tag: equip_slot) {
@@ -324,9 +332,9 @@ export class Equip {
         ItemSystem.modify_attack(this.data.weapon, attack)
     }
 
-    get_json() {
-        return this.data.get_json();
-    }
+    // get_json() {
+    //     return this.data.get_json();
+    // }
 
     load_from_json(json:Equip) {
         this.data.load_json(json.data);

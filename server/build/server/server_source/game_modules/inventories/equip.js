@@ -7,25 +7,25 @@ const damage_types_1 = require("../damage_types");
 const Damage_1 = require("../Damage");
 const inventory_1 = require("./inventory");
 class EquipData {
-    constructor() {
+    constructor(backpack_limit) {
         // explicitly setting to undefined
         this.weapon = undefined;
         this.secondary = undefined;
         this.armour = {};
-        this.backpack = new inventory_1.Inventory();
+        this.backpack = new inventory_1.Inventory(backpack_limit);
     }
-    get_json() {
-        let result = {
-            weapon: this.weapon?.json(),
-            secondary: this.secondary?.json(),
-            armour: {},
-            backpack: this.backpack.get_json()
-        };
-        for (let tag of types_1.armour_slots) {
-            result.armour[tag] = this.armour[tag]?.json();
-        }
-        return result;
-    }
+    // get_json(): EquipJson{
+    //     let result:EquipJson = {
+    //         weapon: this.weapon?.json(),
+    //         secondary: this.secondary?.json(),
+    //         armour: {},
+    //         backpack: this.backpack.get_json()
+    //     }
+    //     for (let tag of armour_slots) {
+    //         result.armour[tag] = this.armour[tag]?.json()
+    //     }
+    //     return result
+    // }
     load_json(json) {
         if (json.weapon != undefined) {
             this.weapon = system_1.ItemSystem.create(json.weapon);
@@ -45,7 +45,7 @@ class EquipData {
 class Equip {
     // changed: boolean;
     constructor() {
-        this.data = new EquipData();
+        this.data = new EquipData(10);
         // this.changed = false
     }
     transfer_all(target) {
@@ -189,20 +189,30 @@ class Equip {
         this.data.secondary = tmp;
     }
     unequip_secondary() {
-        this.data.backpack.add(this.data.secondary);
-        this.data.secondary = undefined;
-        // this.changed = true
+        if (this.data.secondary == undefined)
+            return;
+        let response = this.data.backpack.add(this.data.secondary);
+        if (response != false)
+            this.data.secondary = undefined;
     }
     unequip(tag) {
         // this.changed = true
         if (tag == 'weapon') {
-            this.data.backpack.add(this.data.weapon);
-            this.data.weapon = undefined;
+            if (this.data.weapon == undefined) {
+                return;
+            }
+            let response = this.data.backpack.add(this.data.weapon);
+            if (response != false) {
+                this.data.weapon = undefined;
+            }
             return;
         }
         let item = this.data.armour[tag];
-        this.data.backpack.add(item);
-        this.data.armour[tag] = undefined;
+        if (item == undefined)
+            return;
+        let responce = this.data.backpack.add(item);
+        if (responce != false)
+            this.data.armour[tag] = undefined;
     }
     destroy_slot(tag) {
         if (tag == 'weapon') {
@@ -245,9 +255,9 @@ class Equip {
         }
         system_1.ItemSystem.modify_attack(this.data.weapon, attack);
     }
-    get_json() {
-        return this.data.get_json();
-    }
+    // get_json() {
+    //     return this.data.get_json();
+    // }
     load_from_json(json) {
         this.data.load_json(json.data);
     }

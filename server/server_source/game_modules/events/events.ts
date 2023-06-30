@@ -464,6 +464,7 @@ export namespace Event {
 
         CharacterSystem.transfer_all(target, robber)
         UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.STASH)
+        UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.INVENTORY)
     }
 
     export function kill(killer: Character, victim: Character) {
@@ -501,9 +502,7 @@ export namespace Event {
         if (victim.current_building != undefined) {
             Effect.leave_room(victim.id)
         }
-
         Data.Buildings.remove_ownership_character(victim.id)
-
         UserManagement.add_user_to_update_queue(killer.user_id, UI_Part.STASH)
     }
 

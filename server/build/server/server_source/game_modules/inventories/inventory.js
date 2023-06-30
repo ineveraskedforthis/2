@@ -4,45 +4,41 @@ exports.Inventory = void 0;
 const system_1 = require("../items/system");
 class Inventory {
     // changed: boolean
-    constructor() {
+    constructor(limit) {
         this.items = [];
+        this.limit = limit;
         // this.changed = false
     }
+    // add(item:Item):number
+    // add(item:undefined):undefined
+    // add(item:Item|undefined):number|undefined
     add(item) {
-        if (item == undefined)
-            return undefined;
-        let responce = -1;
-        if (item != undefined) {
-            responce = this.items.push(item) - 1;
-        }
-        // this.changed = true
-        return responce;
+        if (this.items.length >= this.limit)
+            return false;
+        return this.items.push(item) - 1;
     }
     transfer_all(target) {
         for (let i = 0; i < this.items.length; i++) {
             let item = this.items[i];
             if (item != undefined) {
-                target.add(item);
+                let response = target.add(item);
+                if (response != false)
+                    this.remove(i);
             }
-            this.remove(i);
         }
     }
     remove(i) {
-        let item = this.items[i];
-        if (item != undefined) {
-            this.items[i] = undefined;
-        }
-        // this.changed = true
+        this.items.splice(i, 1);
     }
-    get_json() {
-        const array = [];
-        for (let i of this.items) {
-            if (i != undefined) {
-                array.push(i.json());
-            }
-        }
-        return { items_array: array };
-    }
+    // get_json():InventoryJson  {
+    //     const array:ItemJson[] = []
+    //     for (let i of this.items) {
+    //         if (i != undefined) {
+    //             array.push(i.json())
+    //         }
+    //     }
+    //     return {items_array: array}
+    // }
     get_data() {
         const array = [];
         for (let [key, value] of Object.entries(this.items)) {
@@ -58,6 +54,7 @@ class Inventory {
     }
     load_from_json(data) {
         this.items = data.items;
+        this.limit = data.limit;
         // for (let i = 0; i <= 100; i++) {
         //     const tmp = data.items_array[i]
         //     if (tmp == undefined) return

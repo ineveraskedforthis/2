@@ -12,52 +12,46 @@ export interface InventoryStrings {
 
 export class Inventory{
     items: (Item|undefined)[]
+    limit: number
     // changed: boolean
 
-    constructor() {
+    constructor(limit: number) {
         this.items = [];
+        this.limit = limit
         // this.changed = false
     }
 
-    add(item:Item):number
-    add(item:undefined):undefined
-    add(item:Item|undefined):number|undefined
-    add(item:Item|undefined):number|undefined {
-        if (item == undefined) return undefined
-        let responce = -1
-        if (item != undefined) {
-            responce = this.items.push(item) - 1;
-        }
-        // this.changed = true
-        return responce
+    // add(item:Item):number
+    // add(item:undefined):undefined
+    // add(item:Item|undefined):number|undefined
+    add(item:Item):number|false {
+        if (this.items.length >= this.limit) return false
+        return this.items.push(item) - 1;
     }
 
     transfer_all(target: Inventory) {
         for (let i = 0; i < this.items.length; i++) {
             let item = this.items[i]
-            if (item != undefined) {target.add(item)}            
-            this.remove(i)
+            if (item != undefined) {
+                let response = target.add(item)
+                if (response != false) this.remove(i)
+            } 
         }
     }
 
     remove(i: number) {
-        let item = this.items[i]
-        if (item != undefined) {
-            this.items[i] = undefined
-        }
-        // this.changed = true
+        this.items.splice(i, 1)
     }
 
-
-    get_json():InventoryJson  {
-        const array:ItemJson[] = []
-        for (let i of this.items) {
-            if (i != undefined) {
-                array.push(i.json())
-            }
-        }
-        return {items_array: array}
-    }
+    // get_json():InventoryJson  {
+    //     const array:ItemJson[] = []
+    //     for (let i of this.items) {
+    //         if (i != undefined) {
+    //             array.push(i.json())
+    //         }
+    //     }
+    //     return {items_array: array}
+    // }
 
     get_data():{items: ItemData[]} {
         const array:ItemData[] = []
@@ -74,6 +68,7 @@ export class Inventory{
 
     load_from_json(data:Inventory) {
         this.items = data.items
+        this.limit = data.limit
         // for (let i = 0; i <= 100; i++) {
         //     const tmp = data.items_array[i]
         //     if (tmp == undefined) return

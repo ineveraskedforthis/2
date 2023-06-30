@@ -36,7 +36,7 @@ function add_testing_items_to_equip(equip: Equip) {
     const item2 = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
     const id1 = equip.data.backpack.add(item)
     const id2 = equip.data.backpack.add(item2)
-    equip.equip_weapon(id1, 'human')
+    if (id1 != false) equip.equip_weapon(id1, 'human')
 }
 
 function character_serialization_test_simple() {
@@ -101,14 +101,14 @@ function equip_string_test() {
 
 function backpack_string_test() {
     console.log('backpack ser test')
-    const backpack = new Inventory()
+    const backpack = new Inventory(10)
     const item = ItemSystem.create(SPEAR_ARGUMENT)
     const item2 = ItemSystem.create(RAT_SKIN_BOOTS_ARGUMENT)
     backpack.add(item)
     backpack.add(item2)
 
     const j1 = inventory_to_string(backpack)
-    const b2 = new Inventory()
+    const b2 = new Inventory(10)
     inventory_from_string(b2, j1)
     const j2 = inventory_to_string(b2)
     console.log(j1 == j2)

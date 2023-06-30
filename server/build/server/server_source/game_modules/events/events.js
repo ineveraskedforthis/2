@@ -418,6 +418,7 @@ var Event;
             return;
         system_2.CharacterSystem.transfer_all(target, robber);
         user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 4 /* UI_Part.STASH */);
+        user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 6 /* UI_Part.INVENTORY */);
     }
     Event.rob_the_dead = rob_the_dead;
     function kill(killer, victim) {
