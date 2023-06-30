@@ -65,9 +65,9 @@ export function create_item(template: ItemJson, durability: number) {
 }
 
 export function event_craft_item(character: Character, craft: CraftItemTemplate) {
-    use_input(craft.input, character);
     let result = create_item(craft.output, durability(character, craft))
-    character.equip.data.backpack.add(result);
+    let response = character.equip.data.backpack.add(result);
+    if (response != false) use_input(craft.input, character);
 
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY);
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH);

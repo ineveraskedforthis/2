@@ -61,9 +61,10 @@ function create_item(template, durability) {
 }
 exports.create_item = create_item;
 function event_craft_item(character, craft) {
-    (0, helpers_1.use_input)(craft.input, character);
     let result = create_item(craft.output, durability(character, craft));
-    character.equip.data.backpack.add(result);
+    let response = character.equip.data.backpack.add(result);
+    if (response != false)
+        (0, helpers_1.use_input)(craft.input, character);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
     (0, helpers_1.on_craft_update)(character, craft.difficulty);
