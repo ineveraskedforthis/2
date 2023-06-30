@@ -40,6 +40,7 @@ var Dialog;
         if ((character == undefined || target_character == undefined)) {
             return;
         }
+        // if (target_character.dead()) return
         let data = target_character._perks;
         let response = {
             name: target_character.get_name(),

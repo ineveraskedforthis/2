@@ -14,6 +14,10 @@ function can_talk(character_A, character_B) {
         return false;
     if (is_enemy_characters(character_A, character_B))
         return false;
+    if (character_B.dead())
+        return false;
+    if (character_A.dead())
+        return false;
     return true;
 }
 exports.can_talk = can_talk;

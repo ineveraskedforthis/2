@@ -36,6 +36,7 @@ export namespace Dialog {
             user.socket.emit('alert', "can't talk with enemies or creatures of different race")
             return  [undefined, undefined]
         }
+        
 
         return [character, target_character]
     }
@@ -46,6 +47,8 @@ export namespace Dialog {
         if ((character == undefined || target_character == undefined)) {
             return
         }
+
+        // if (target_character.dead()) return
 
         let data = target_character._perks
         let response: PerksResponse = {
