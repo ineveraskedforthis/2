@@ -460,7 +460,7 @@ export namespace Event {
 
     export function rob_the_dead(robber: Character, target: Character) {
         if (robber.cell_id != target.cell_id) return
-        // if (!target.dead()) return
+        if (!target.dead()) return
 
         CharacterSystem.transfer_all(target, robber)
         UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.STASH)

@@ -414,7 +414,8 @@ var Event;
     function rob_the_dead(robber, target) {
         if (robber.cell_id != target.cell_id)
             return;
-        // if (!target.dead()) return
+        if (!target.dead())
+            return;
         system_2.CharacterSystem.transfer_all(target, robber);
         user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 4 /* UI_Part.STASH */);
     }
