@@ -85,7 +85,7 @@ function patrol(character: Character) {
     }    
 
     if (loot(character) > 10) {
-        console.log('character goes to market now')
+        // console.log('character goes to market now')
         character.ai_state = AIstate.GoToMarket
         return
     }

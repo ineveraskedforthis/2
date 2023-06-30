@@ -79,7 +79,7 @@ function patrol(character) {
         (0, actions_1.random_walk)(character, constraints_1.simple_constraints);
     }
     if ((0, actions_1.loot)(character) > 10) {
-        console.log('character goes to market now');
+        // console.log('character goes to market now')
         character.ai_state = "go_to_market" /* AIstate.GoToMarket */;
         return;
     }
