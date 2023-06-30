@@ -199,16 +199,33 @@ var InventoryCommands;
         user.socket.emit('alert', responce);
     }
     InventoryCommands.execute_bulk_order = execute_bulk_order;
+    function validate_item_buyout(msg) {
+        if (msg == undefined)
+            return false;
+        if (typeof msg != 'object')
+            return false;
+        if (!('char_id' in msg))
+            return false;
+        if (!('item_id' in msg))
+            return false;
+        return true;
+    }
     function buyout(sw, msg) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;
-        // validate that user input is safe
-        let id = parseInt(msg);
-        if (isNaN(id)) {
+        if (!validate_item_buyout(msg))
             return;
-        }
-        market_1.EventMarket.buyout_item(character, Number(msg));
+        const character_id = msg.char_id;
+        const item_id = msg.item_id;
+        if (typeof character_id !== 'number')
+            return;
+        if (typeof item_id !== 'number')
+            return;
+        let seller = systems_communication_1.Convert.id_to_character(character_id);
+        if (seller == undefined)
+            return;
+        market_1.EventMarket.buyout_item(seller, character, item_id);
     }
     InventoryCommands.buyout = buyout;
     function clear_bulk_order(sw, data) {

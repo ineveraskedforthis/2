@@ -59,14 +59,10 @@ var EventMarket;
         effects_1.Effect.Update.cell_market(seller.cell_id);
     }
     EventMarket.execute_buy_order = execute_buy_order;
-    function buyout_item(buyer, order_id) {
-        const order = systems_communication_1.Convert.id_to_order_item(order_id);
-        if (order == undefined)
-            return;
-        const seller = systems_communication_1.Convert.id_to_character(order.owner_id);
-        system_1.ItemOrders.buy_unsafe(order_id, buyer);
+    function buyout_item(seller, buyer, item_index) {
+        system_1.ItemOrders.buy(item_index, buyer, seller);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 3 /* UI_Part.BELONGINGS */);
-        user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 5 /* UI_Part.SAVINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 3 /* UI_Part.BELONGINGS */);
         effects_1.Effect.Update.cell_market(buyer.cell_id);
     }
     EventMarket.buyout_item = buyout_item;

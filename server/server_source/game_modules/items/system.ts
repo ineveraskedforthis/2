@@ -205,6 +205,7 @@ export namespace ItemSystem {
             damage: damage_breakdown(item),
             ranged_damage: DmgOps.total(ranged_damage(item)),
             resists: resists(item),
+            price: item.price,
             // ranged_damage: ranged_damage(item)
             is_weapon: slot(item) == 'weapon'
         }

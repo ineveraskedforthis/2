@@ -12,46 +12,47 @@ import { UserManagement } from "./client_communication/user_manager";
 import { Data } from "./data";
 // import { Cell } from "./map/cell";
 import { MapSystem } from "./map/system";
-import { OrderBulk, OrderItem, OrderItemJson } from "./market/classes";
-import { char_id, order_bulk_id, order_item_id, user_online_id } from "./types";
+import { OrderBulk } from "./market/classes";
+import { char_id, order_bulk_id, user_online_id } from "./types";
 import { Alerts } from "./client_communication/network_actions/alerts";
 import { BattleSystem } from "./battle/system";
 import { Cell } from "./map/DATA_LAYOUT_CELL";
 import { cell_id } from "@custom_types/common";
 import { BattleValues } from "./battle/VALUES";
+import { Item } from "./items/item";
 
 
 export namespace Convert {
 
-    export function number_to_order_item_id(id: number): order_item_id|undefined {
-        const temp = Data.ItemOrders.from_id(id as order_item_id)
-        if (temp == undefined) return undefined
-        return temp.id
-    }
+    // export function number_to_order_item_id(id: number): order_item_id|undefined {
+    //     const temp = Data.ItemOrders.from_id(id as order_item_id)
+    //     if (temp == undefined) return undefined
+    //     return temp.id
+    // }
 
     
-    export function id_to_order_item(id: order_item_id):OrderItem
-    export function id_to_order_item(id: number):OrderItem|undefined
-    export function id_to_order_item(id: order_item_id|number):OrderItem|undefined {
-        return Data.ItemOrders.from_id(id as order_item_id)
-    }
+    // export function id_to_order_item(id: order_item_id):OrderItem
+    // export function id_to_order_item(id: number):OrderItem|undefined
+    // export function id_to_order_item(id: order_item_id|number):OrderItem|undefined {
+    //     return Data.ItemOrders.from_id(id as order_item_id)
+    // }
 
-    export function order_to_socket_data(order: OrderItem):ItemData {
-        let owner = Convert.id_to_character(order.owner_id)
-        let responce = ItemSystem.item_data(order.item)
-
-        responce.price = order.price
-        responce.id = order.id
+    export function order_to_socket_data(index: number, order: Item, owner: Character):ItemData {
+        // let owner = Convert.id_to_character(order.owner_id)
+        let responce = ItemSystem.item_data(order)
+        // responce.price = order.price
+        responce.id = index
         responce.seller = owner.get_name()
+        responce.seller_id = owner.id
         return responce
     }
     
 
-    export function json_to_order(data: OrderItemJson) {
-        let item = ItemSystem.create(data.item)
-        let order = new OrderItem(data.id, item, data.price, data.owner_id, data.finished)
-        return order
-    }
+    // export function json_to_order(data: OrderItemJson) {
+    //     let item = ItemSystem.create(data.item)
+    //     let order = new OrderItem(data.id, item, data.price, data.owner_id, data.finished)
+    //     return order
+    // }
 
     export function id_to_bulk_order(id: order_bulk_id): OrderBulk;
     export function id_to_bulk_order(id: number): OrderBulk|undefined;
@@ -85,10 +86,12 @@ export namespace Convert {
         }
         for (let char_id of chars) {
             const char_orders = Data.CharacterItemOrders(char_id)
-            for (let order_id of char_orders) {
-                const order = Data.ItemOrders.from_id(order_id)
-                if (order.finished) continue;
-                result.push(order_to_socket_data(order))
+            for (let order_id = 0; order_id < char_orders.length; order_id++) {
+                const order = char_orders[order_id]
+                if (order == undefined) continue;
+                if (order.price == undefined) continue;
+                let character = Data.CharacterDB.from_id(char_id)
+                result.push(order_to_socket_data(order_id, order, character))
             }
         }
         return result

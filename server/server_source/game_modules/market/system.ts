@@ -6,8 +6,8 @@ import { ItemSystem } from "../items/system"
 import { Data } from "../data";
 import { material_index } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
-import { char_id, order_bulk_id, order_item_id } from "../types";
-import { OrderBulk, OrderBulkJson, OrderItem, OrderItemJson } from "./classes";
+import { char_id, order_bulk_id } from "../types";
+import { OrderBulk, OrderBulkJson } from "./classes";
 import { money } from "@custom_types/common";
 
 export enum AuctionResponce {
@@ -133,40 +133,25 @@ export namespace BulkOrders {
 
 export namespace ItemOrders {
     export function create(owner: Character, item: Item, price: money, finished: boolean) {
-        Data.ItemOrders.increase_id()
-        let order = new OrderItem(Data.ItemOrders.id() as order_item_id, item, price as money, owner.id, finished)
-        Data.ItemOrders.set(Data.ItemOrders.id(), owner.id, order)
-        return order
+        item.price = price
     }
 
-    export function remove(id: order_item_id, who: Character) {
-        const order = Data.ItemOrders.from_id(id)
-
-        if (order.owner_id != who.id) {
-            return AuctionResponce.INVALID_ORDER
-        }
-
-        const owner = Convert.id_to_character(order.owner_id)
-
-        order.finished = true
-        owner.equip.data.backpack.add(order.item)
+    export function remove(item: Item, who: Character) {
+        item.price = undefined
         return AuctionResponce.OK
     }
 
-    export function remove_unsafe(id: number, who: Character) {
-        const true_id = Convert.number_to_order_item_id(id)
-        if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER    
-        return remove(true_id, who)
-    }
+    // export function remove_unsafe(id: number, who: Character) {
+    //     const true_id = Convert.number_to_order_item_id(id)
+    //     if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER    
+    //     return remove(true_id, who)
+    // }
 
     export function remove_all_character(who:Character) {
         // console.log('attempt to remove item orders')
-        for (let order of Data.ItemOrders.list()) {
-            if (order == undefined) continue;
-            if (order.finished) continue;
-            if (order.owner_id != who.id) continue;
-            // console.log(order.owner_id, who.id)
-            remove(order.id, who)
+        for (let order of Data.CharacterItemOrders(who.id)) {
+            if (order == undefined) return;
+            remove(order, who)
         }
     }
     
@@ -181,72 +166,35 @@ export namespace ItemOrders {
     //         finished: order.finished
     //     }
     //     return responce
-    // }
-
-    
+    // }    
 
     export function sell(seller: Character, backpack_id: number, price: money){
         const item = seller.equip.data.backpack.items[backpack_id]
         if (item == undefined) {
             return {responce: AuctionResponce.EMPTY_BACKPACK_SLOT}
         }
-        const order = create(seller, item, price, false)
-        seller.equip.data.backpack.remove(backpack_id)
+        create(seller, item, price, false)
+        // seller.equip.data.backpack.remove(backpack_id)
         return {responce: AuctionResponce.OK}
     }
 
-    export function buy(id: order_item_id, buyer: Character) {
-        const order = Data.ItemOrders.from_id(id) 
-        const owner = Convert.id_to_character(order.owner_id)
+    export function buy(id: number, buyer: Character, seller: Character) {
+        let item = seller.equip.data.backpack.items[id]
+        if (item == undefined) return AuctionResponce.INVALID_ORDER
+        if (item.price == undefined) return AuctionResponce.INVALID_ORDER
 
         // make sure that they are in the same cell
-        if (owner.cell_id != buyer.cell_id) {return AuctionResponce.NOT_IN_THE_SAME_CELL}
+        if (seller.cell_id != buyer.cell_id) {return AuctionResponce.NOT_IN_THE_SAME_CELL}
         
         // make sure that buyer has enough money
         // but owner can buy it from himself
-        if ((buyer.id != order.owner_id)&&(buyer.savings.get() < order.price)) {return AuctionResponce.NOT_ENOUGH_MONEY}
-        
-        // make sure that this order is still available to avoid duplication
-        if (order.finished) {return AuctionResponce.INVALID_ORDER}
+        if ((buyer.id != seller.id)&&(buyer.savings.get() < item.price)) {return AuctionResponce.NOT_ENOUGH_MONEY}
 
-        
-        order.finished = true
-        buyer.savings.transfer(owner.savings, order.price)
-        buyer.equip.data.backpack.add(order.item)
+        buyer.savings.transfer(seller.savings, item.price)
+        seller.equip.data.backpack.remove(id)
+        buyer.equip.data.backpack.add(item)
+        item.price = undefined
 
         return AuctionResponce.OK
     }
-
-    export function buy_unsafe(id: number, buyer: Character) {
-        let true_id = Convert.number_to_order_item_id(id)
-        if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER
-        return buy(true_id, buyer)
-    }
 }
-
-
-// export function cell_id_to_orders_list(manager: EntityManager, cell_id: number): OrderItem[] {
-//     let tmp = []
-//     for (let order of manager.item_orders) {
-//         if (order == undefined) continue;
-//         if (order.flags.finished) continue;
-//         if (order.owner.cell_id == cell_id) {
-//             tmp.push(order)
-//         }
-//     }
-//     return tmp
-// }
-
-
-
-// export function cell_id_to_orders_json_list(manager: EntityManager, cell_id: number): OrderItemJson[] {
-//     let tmp = []
-//     for (let order of manager.item_orders) {
-//         if (order == undefined) continue;
-//         if (order.flags.finished) continue;
-//         if (order.owner.cell_id == cell_id) {
-//             tmp.push(AuctionOrderManagement.order_to_json(order))
-//         }
-//     }
-//     return tmp
-// }

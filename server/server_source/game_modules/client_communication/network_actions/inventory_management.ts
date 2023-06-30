@@ -200,17 +200,29 @@ export namespace InventoryCommands {
         user.socket.emit('alert', responce)
     }
 
-    export function buyout(sw: SocketWrapper, msg: string) {
+    function validate_item_buyout(msg: unknown): msg is {char_id: number, item_id: number} {
+        if (msg == undefined) return false
+        if (typeof msg != 'object') return false
+        if (!('char_id' in msg)) return false
+        if (!('item_id' in msg)) return false
+        return true
+    }
+
+    export function buyout(sw: SocketWrapper, msg: unknown) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
+        if (!validate_item_buyout(msg)) return
 
-        // validate that user input is safe
-        let id = parseInt(msg);
-        if (isNaN(id)) {
-            return
-        }
+        const character_id = msg.char_id
+        const item_id = msg.item_id
 
-        EventMarket.buyout_item(character, Number(msg))
+        if (typeof character_id !== 'number') return
+        if (typeof item_id !== 'number') return
+
+        let seller = Convert.id_to_character(character_id)
+        if (seller == undefined) return
+
+        EventMarket.buyout_item(seller, character, item_id)
     }
 
     export function clear_bulk_order(sw: SocketWrapper, data: number) {

@@ -31,7 +31,6 @@ export namespace EventMarket {
         // console.log('sell item index ' + index)
         const responce = ItemOrders.sell(character, index, price)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
-
         Effect.Update.cell_market(character.cell_id)
         return responce
     }
@@ -70,18 +69,10 @@ export namespace EventMarket {
         Effect.Update.cell_market(seller.cell_id)
     }
 
-    export function buyout_item(buyer: Character, order_id: number) {
-        
-
-        const order = Convert.id_to_order_item(order_id)
-        if (order == undefined) return 
-
-        const seller = Convert.id_to_character(order.owner_id)
-        ItemOrders.buy_unsafe(order_id, buyer)
-
+    export function buyout_item(seller: Character, buyer: Character, item_index: number) {
+        ItemOrders.buy(item_index, buyer, seller)
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.BELONGINGS)
-        UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.SAVINGS)
-
+        UserManagement.add_user_to_update_queue(seller.user_id, UI_Part.BELONGINGS)
         Effect.Update.cell_market(buyer.cell_id)
     }
 

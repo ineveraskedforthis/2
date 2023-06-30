@@ -1,7 +1,7 @@
 import { money } from "@custom_types/common.js";
 import { Item, ItemJson } from "../items/item.js";
 import { material_index } from "../manager_classes/materials_manager.js";
-import { char_id, order_bulk_id, order_item_id } from "../types.js";
+import { char_id, order_bulk_id } from "../types.js";
 
 // cell_id is commented as i decided to tie orders directly to location of character
 
@@ -37,31 +37,31 @@ export class OrderBulk {
     }
 }
 
-export interface OrderItemJson {
-    id: order_item_id
-    owner_id: char_id
-    item: ItemJson
-    price: money
-    finished: boolean
-} 
+// export interface OrderItemJson {
+//     id: order_item_id
+//     owner_id: char_id
+//     item: ItemJson
+//     price: money
+//     finished: boolean
+// } 
 
-export class OrderItem {
-    id: order_item_id
-    owner_id: char_id;
-    // cell_id: cell_id
+// export class OrderItem {
+//     id: order_item_id
+//     owner_id: char_id;
+//     // cell_id: cell_id
     
-    item: Item;
-    price: money
+//     item: Item;
+//     price: money
     
-    finished: boolean
+//     finished: boolean
 
-    constructor(id: order_item_id, item: Item, price: money, owner_id: char_id, finished: boolean) {
-        this.id = id;
-        this.owner_id = owner_id;
-        // this.cell_id = cell_id;
+//     constructor(id: order_item_id, item: Item, price: money, owner_id: char_id, finished: boolean) {
+//         this.id = id;
+//         this.owner_id = owner_id;
+//         // this.cell_id = cell_id;
 
-        this.item = item;
-        this.price = price;
-        this.finished = finished        
-    }
-}
+//         this.item = item;
+//         this.price = price;
+//         this.finished = finished        
+//     }
+// }

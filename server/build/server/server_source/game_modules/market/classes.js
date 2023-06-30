@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderItem = exports.OrderBulk = void 0;
+exports.OrderBulk = void 0;
 class OrderBulk {
     constructor(id, amount, price, typ, tag, owner_id) {
         this.id = id;
@@ -13,14 +13,26 @@ class OrderBulk {
     }
 }
 exports.OrderBulk = OrderBulk;
-class OrderItem {
-    constructor(id, item, price, owner_id, finished) {
-        this.id = id;
-        this.owner_id = owner_id;
-        // this.cell_id = cell_id;
-        this.item = item;
-        this.price = price;
-        this.finished = finished;
-    }
-}
-exports.OrderItem = OrderItem;
+// export interface OrderItemJson {
+//     id: order_item_id
+//     owner_id: char_id
+//     item: ItemJson
+//     price: money
+//     finished: boolean
+// } 
+// export class OrderItem {
+//     id: order_item_id
+//     owner_id: char_id;
+//     // cell_id: cell_id
+//     item: Item;
+//     price: money
+//     finished: boolean
+//     constructor(id: order_item_id, item: Item, price: money, owner_id: char_id, finished: boolean) {
+//         this.id = id;
+//         this.owner_id = owner_id;
+//         // this.cell_id = cell_id;
+//         this.item = item;
+//         this.price = price;
+//         this.finished = finished        
+//     }
+// }

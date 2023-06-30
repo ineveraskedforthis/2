@@ -8,8 +8,6 @@ exports.Data = exports.save_path = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const SAVE_GAME_PATH_1 = require("../SAVE_GAME_PATH");
-// import { Factions } from "./factions"
-const classes_1 = require("./market/classes");
 const strings_management_1 = require("./strings_management");
 const terrain_1 = require("./map/terrain");
 // import { Cell } from "./map/cell"
@@ -25,15 +23,14 @@ var character_list = [];
 var character_id_list = [];
 var characters_dict = {};
 var orders_bulk = [];
-var orders_item = [];
+// var orders_item:OrderItem[] = []
 var bulk_dict = {};
-var item_dict = {};
+// var item_dict: {[_ in order_item_id]: OrderItem} = {}
 var char_id_to_orders_bulk = {};
-var char_id_to_orders_item = {};
+// var char_id_to_orders_item: {[_ in char_id]: Set<order_item_id>|undefined} = {}
 const empty_set_orders_bulk = new Set();
-const empty_set_orders_item = new Set();
+// const empty_set_orders_item: Set<order_item_id> = new Set()
 var last_id_bulk = 0;
-var last_id_item = 0;
 var factions = [];
 var reputation = {};
 var faction_to_leader = {};
@@ -85,7 +82,7 @@ var Data;
         World.load();
         CharacterDB.load(exports.save_path.CHARACTERS);
         BulkOrders.load();
-        ItemOrders.load();
+        // ItemOrders.load()
         Reputation.load(exports.save_path.REPUTATION);
         Buildings.load(exports.save_path.BUILDINGS);
         Buildings.load_ownership(exports.save_path.BUILDINGS_OWNERSHIP);
@@ -94,7 +91,7 @@ var Data;
     function save() {
         CharacterDB.save();
         BulkOrders.save();
-        ItemOrders.save();
+        // ItemOrders.save()
         Reputation.save(exports.save_path.REPUTATION);
         Buildings.save(exports.save_path.BUILDINGS);
         Buildings.save_ownership(exports.save_path.BUILDINGS_OWNERSHIP);
@@ -904,72 +901,6 @@ var Data;
         }
         BulkOrders.from_char_id = from_char_id;
     })(BulkOrders = Data.BulkOrders || (Data.BulkOrders = {}));
-    let ItemOrders;
-    (function (ItemOrders) {
-        function save() {
-            console.log('saving item market orders');
-            let str = '';
-            for (let item of Data.ItemOrders.list()) {
-                if (item.finished)
-                    continue;
-                str = str + JSON.stringify(item) + '\n';
-            }
-            fs_1.default.writeFileSync(save_path_item, str);
-            console.log('item market orders saved');
-        }
-        ItemOrders.save = save;
-        function load() {
-            console.log('loading item market orders');
-            if (!fs_1.default.existsSync(save_path_item)) {
-                fs_1.default.writeFileSync(save_path_item, '');
-            }
-            let data = fs_1.default.readFileSync(save_path_item).toString();
-            let lines = data.split('\n');
-            for (let line of lines) {
-                if (line == '') {
-                    continue;
-                }
-                const order_raw = JSON.parse(line);
-                const item = (0, strings_management_1.item_from_string)(JSON.stringify(order_raw.item));
-                const order = new classes_1.OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished);
-                Data.ItemOrders.set(order.id, order.owner_id, order);
-                const last_id = Data.ItemOrders.id();
-                Data.ItemOrders.set_id(Math.max(order.id, last_id));
-            }
-            console.log('item market orders loaded');
-        }
-        ItemOrders.load = load;
-        function increase_id() {
-            last_id_item = last_id_item + 1;
-        }
-        ItemOrders.increase_id = increase_id;
-        function id() {
-            return last_id_item;
-        }
-        ItemOrders.id = id;
-        function set_id(x) {
-            last_id_item = x;
-        }
-        ItemOrders.set_id = set_id;
-        function set(id, owner_id, data) {
-            orders_item.push(data);
-            item_dict[id] = data;
-            const set = char_id_to_orders_item[owner_id];
-            if (set == undefined)
-                char_id_to_orders_item[owner_id] = new Set([id]);
-            else
-                set.add(id);
-        }
-        ItemOrders.set = set;
-        function from_id(id) {
-            return item_dict[id];
-        }
-        ItemOrders.from_id = from_id;
-        function list() {
-            return orders_item;
-        }
-        ItemOrders.list = list;
-    })(ItemOrders = Data.ItemOrders || (Data.ItemOrders = {}));
     function CharacterBulkOrders(char_id) {
         const set = char_id_to_orders_bulk[char_id];
         if (set == undefined)
@@ -979,11 +910,8 @@ var Data;
     }
     Data.CharacterBulkOrders = CharacterBulkOrders;
     function CharacterItemOrders(char_id) {
-        const set = char_id_to_orders_item[char_id];
-        if (set == undefined)
-            return empty_set_orders_item;
-        else
-            return set;
+        let character = CharacterDB.from_id(char_id);
+        return character.equip.data.backpack.items;
     }
     Data.CharacterItemOrders = CharacterItemOrders;
 })(Data = exports.Data || (exports.Data = {}));

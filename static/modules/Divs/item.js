@@ -144,6 +144,7 @@ export function generate_dummy_item_backpack_div() {
     return div;
 }
 export function generate_item_market_div(item) {
+    console.log(item);
     const div = document.createElement('div');
     if (item.seller != undefined) {
         const seller = document.createElement('div');
@@ -160,6 +161,7 @@ export function generate_item_market_div(item) {
     div.appendChild(generate_item_backpack_div(item));
     div.classList.add('row');
     div.classList.add('item');
+    console.log(div);
     return div;
 }
 export function generate_market_header() {

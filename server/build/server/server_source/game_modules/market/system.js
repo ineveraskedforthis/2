@@ -123,41 +123,25 @@ var BulkOrders;
 var ItemOrders;
 (function (ItemOrders) {
     function create(owner, item, price, finished) {
-        data_1.Data.ItemOrders.increase_id();
-        let order = new classes_1.OrderItem(data_1.Data.ItemOrders.id(), item, price, owner.id, finished);
-        data_1.Data.ItemOrders.set(data_1.Data.ItemOrders.id(), owner.id, order);
-        return order;
+        item.price = price;
     }
     ItemOrders.create = create;
-    function remove(id, who) {
-        const order = data_1.Data.ItemOrders.from_id(id);
-        if (order.owner_id != who.id) {
-            return AuctionResponce.INVALID_ORDER;
-        }
-        const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
-        order.finished = true;
-        owner.equip.data.backpack.add(order.item);
+    function remove(item, who) {
+        item.price = undefined;
         return AuctionResponce.OK;
     }
     ItemOrders.remove = remove;
-    function remove_unsafe(id, who) {
-        const true_id = systems_communication_1.Convert.number_to_order_item_id(id);
-        if (true_id == undefined)
-            return AuctionResponce.NO_SUCH_ORDER;
-        return remove(true_id, who);
-    }
-    ItemOrders.remove_unsafe = remove_unsafe;
+    // export function remove_unsafe(id: number, who: Character) {
+    //     const true_id = Convert.number_to_order_item_id(id)
+    //     if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER    
+    //     return remove(true_id, who)
+    // }
     function remove_all_character(who) {
         // console.log('attempt to remove item orders')
-        for (let order of data_1.Data.ItemOrders.list()) {
+        for (let order of data_1.Data.CharacterItemOrders(who.id)) {
             if (order == undefined)
-                continue;
-            if (order.finished)
-                continue;
-            if (order.owner_id != who.id)
-                continue;
-            // console.log(order.owner_id, who.id)
-            remove(order.id, who);
+                return;
+            remove(order, who);
         }
     }
     ItemOrders.remove_all_character = remove_all_character;
@@ -172,66 +156,37 @@ var ItemOrders;
     //         finished: order.finished
     //     }
     //     return responce
-    // }
+    // }    
     function sell(seller, backpack_id, price) {
         const item = seller.equip.data.backpack.items[backpack_id];
         if (item == undefined) {
             return { responce: AuctionResponce.EMPTY_BACKPACK_SLOT };
         }
-        const order = create(seller, item, price, false);
-        seller.equip.data.backpack.remove(backpack_id);
+        create(seller, item, price, false);
+        // seller.equip.data.backpack.remove(backpack_id)
         return { responce: AuctionResponce.OK };
     }
     ItemOrders.sell = sell;
-    function buy(id, buyer) {
-        const order = data_1.Data.ItemOrders.from_id(id);
-        const owner = systems_communication_1.Convert.id_to_character(order.owner_id);
+    function buy(id, buyer, seller) {
+        let item = seller.equip.data.backpack.items[id];
+        if (item == undefined)
+            return AuctionResponce.INVALID_ORDER;
+        if (item.price == undefined)
+            return AuctionResponce.INVALID_ORDER;
         // make sure that they are in the same cell
-        if (owner.cell_id != buyer.cell_id) {
+        if (seller.cell_id != buyer.cell_id) {
             return AuctionResponce.NOT_IN_THE_SAME_CELL;
         }
         // make sure that buyer has enough money
         // but owner can buy it from himself
-        if ((buyer.id != order.owner_id) && (buyer.savings.get() < order.price)) {
+        if ((buyer.id != seller.id) && (buyer.savings.get() < item.price)) {
             return AuctionResponce.NOT_ENOUGH_MONEY;
         }
-        // make sure that this order is still available to avoid duplication
-        if (order.finished) {
-            return AuctionResponce.INVALID_ORDER;
-        }
-        order.finished = true;
-        buyer.savings.transfer(owner.savings, order.price);
-        buyer.equip.data.backpack.add(order.item);
+        buyer.savings.transfer(seller.savings, item.price);
+        seller.equip.data.backpack.remove(id);
+        buyer.equip.data.backpack.add(item);
+        item.price = undefined;
         return AuctionResponce.OK;
     }
     ItemOrders.buy = buy;
-    function buy_unsafe(id, buyer) {
-        let true_id = systems_communication_1.Convert.number_to_order_item_id(id);
-        if (true_id == undefined)
-            return AuctionResponce.NO_SUCH_ORDER;
-        return buy(true_id, buyer);
-    }
-    ItemOrders.buy_unsafe = buy_unsafe;
 })(ItemOrders = exports.ItemOrders || (exports.ItemOrders = {}));
-// export function cell_id_to_orders_list(manager: EntityManager, cell_id: number): OrderItem[] {
-//     let tmp = []
-//     for (let order of manager.item_orders) {
-//         if (order == undefined) continue;
-//         if (order.flags.finished) continue;
-//         if (order.owner.cell_id == cell_id) {
-//             tmp.push(order)
-//         }
-//     }
-//     return tmp
-// }
-// export function cell_id_to_orders_json_list(manager: EntityManager, cell_id: number): OrderItemJson[] {
-//     let tmp = []
-//     for (let order of manager.item_orders) {
-//         if (order == undefined) continue;
-//         if (order.flags.finished) continue;
-//         if (order.owner.cell_id == cell_id) {
-//             tmp.push(AuctionOrderManagement.order_to_json(order))
-//         }
-//     }
-//     return tmp
-// }

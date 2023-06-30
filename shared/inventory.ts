@@ -30,6 +30,7 @@ export interface ItemData {
     backpack_index?: number
     price?: number
     seller?: string
+    seller_id?: number
     id?: number
     is_weapon: boolean
 }

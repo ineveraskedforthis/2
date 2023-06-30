@@ -4,36 +4,29 @@ exports.Unlink = exports.Link = exports.Convert = void 0;
 const system_1 = require("./items/system");
 const user_manager_1 = require("./client_communication/user_manager");
 const data_1 = require("./data");
-const classes_1 = require("./market/classes");
 const VALUES_1 = require("./battle/VALUES");
 var Convert;
 (function (Convert) {
-    function number_to_order_item_id(id) {
-        const temp = data_1.Data.ItemOrders.from_id(id);
-        if (temp == undefined)
-            return undefined;
-        return temp.id;
-    }
-    Convert.number_to_order_item_id = number_to_order_item_id;
-    function id_to_order_item(id) {
-        return data_1.Data.ItemOrders.from_id(id);
-    }
-    Convert.id_to_order_item = id_to_order_item;
-    function order_to_socket_data(order) {
-        let owner = Convert.id_to_character(order.owner_id);
-        let responce = system_1.ItemSystem.item_data(order.item);
-        responce.price = order.price;
-        responce.id = order.id;
+    // export function number_to_order_item_id(id: number): order_item_id|undefined {
+    //     const temp = Data.ItemOrders.from_id(id as order_item_id)
+    //     if (temp == undefined) return undefined
+    //     return temp.id
+    // }
+    // export function id_to_order_item(id: order_item_id):OrderItem
+    // export function id_to_order_item(id: number):OrderItem|undefined
+    // export function id_to_order_item(id: order_item_id|number):OrderItem|undefined {
+    //     return Data.ItemOrders.from_id(id as order_item_id)
+    // }
+    function order_to_socket_data(index, order, owner) {
+        // let owner = Convert.id_to_character(order.owner_id)
+        let responce = system_1.ItemSystem.item_data(order);
+        // responce.price = order.price
+        responce.id = index;
         responce.seller = owner.get_name();
+        responce.seller_id = owner.id;
         return responce;
     }
     Convert.order_to_socket_data = order_to_socket_data;
-    function json_to_order(data) {
-        let item = system_1.ItemSystem.create(data.item);
-        let order = new classes_1.OrderItem(data.id, item, data.price, data.owner_id, data.finished);
-        return order;
-    }
-    Convert.json_to_order = json_to_order;
     function id_to_bulk_order(id) {
         return data_1.Data.BulkOrders.from_id(id);
     }
@@ -64,11 +57,14 @@ var Convert;
         }
         for (let char_id of chars) {
             const char_orders = data_1.Data.CharacterItemOrders(char_id);
-            for (let order_id of char_orders) {
-                const order = data_1.Data.ItemOrders.from_id(order_id);
-                if (order.finished)
+            for (let order_id = 0; order_id < char_orders.length; order_id++) {
+                const order = char_orders[order_id];
+                if (order == undefined)
                     continue;
-                result.push(order_to_socket_data(order));
+                if (order.price == undefined)
+                    continue;
+                let character = data_1.Data.CharacterDB.from_id(char_id);
+                result.push(order_to_socket_data(order_id, order, character));
             }
         }
         return result;

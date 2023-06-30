@@ -11,7 +11,7 @@ export type user_id = number                    & {__brand:  "user_id"}
 export type user_online_id = user_id            & {__brand2: "online"}
 export type TEMP_USER_ID = '#'
 export type order_bulk_id = number              & { __brand: "bulk_order"}
-export type order_item_id = number              & { __brand: "auction_order_id"}
+// export type order_item_id = number              & { __brand: "auction_order_id"}
 export type order_item_id_raw = number          & { __brand: "auction_order_id", __brand2: "raw"}
 export type building_id = number                & { __brand: "building_id"}
 

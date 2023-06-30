@@ -5,6 +5,7 @@ const item_market_data = [];
 const control_container = document.querySelector('.auction_control');
 const market_header = generate_market_header();
 var selected = undefined;
+var selecter_owner = undefined;
 var selected_div = undefined;
 socket.on('item-market-data', data => { update_item_market(data); });
 function send_buyout_request() {
@@ -14,8 +15,8 @@ function send_buyout_request() {
     //     if(items[i].checked)
     //         index = parseInt(items[i].value);
     //     }
-    console.log('buyout ' + selected);
-    socket.emit('buyout', selected);
+    // console.log('buyout', {char_id: selecter_owner, item_id: selected})
+    socket.emit('buyout', { char_id: selecter_owner, item_id: selected });
 }
 export function build() {
     {
@@ -25,31 +26,28 @@ export function build() {
         control_container.appendChild(buyout_button);
     }
 }
-export function select_item(id, div) {
+export function select_item(id, owner_id, div) {
     return () => {
-        if (selected != id) {
-            selected = id;
-            selected_div?.classList.remove('selected');
-            div.classList.add('selected');
-            selected_div = div;
-        }
-        else {
-            selected_div?.classList.remove('selected');
-            selected = undefined;
-            selected_div = undefined;
-        }
+        selected = id;
+        selecter_owner = owner_id;
+        selected_div?.classList.remove('selected');
+        div.classList.add('selected');
+        selected_div = div;
     };
 }
 export function update_item_market(data) {
+    // console.log(data)
     item_market_container.innerHTML = '';
     item_market_container.appendChild(market_header);
     for (let order of data) {
         const div = generate_item_market_div(order);
-        if (order.id != undefined) {
-            div.onclick = select_item(order.id, div);
-            if (order.id == selected) {
-                div.classList.add('selected');
-            }
+        if (order.id == undefined)
+            continue;
+        if (order.seller_id == undefined)
+            continue;
+        div.onclick = select_item(order.id, order.seller_id, div);
+        if (order.id == selected && order.seller_id == selecter_owner) {
+            div.classList.add('selected');
         }
         item_market_container.appendChild(div);
     }

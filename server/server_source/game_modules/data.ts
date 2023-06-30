@@ -8,8 +8,8 @@ import { reputation_level } from "../../../shared/character"
 import { Battle } from "./battle/classes/battle"
 import { Character } from "./character/character"
 // import { Factions } from "./factions"
-import { OrderBulk, OrderItem } from "./market/classes"
-import { char_id, building_id, order_bulk_id, order_item_id, world_coordinates } from "./types"
+import { OrderBulk } from "./market/classes"
+import { char_id, building_id, order_bulk_id, world_coordinates } from "./types"
 import { building_from_string, character_to_string, item_from_string, string_to_character } from "./strings_management"
 import { Cell } from "./map/DATA_LAYOUT_CELL"
 // import { Terrain, string_to_terrain } from "./map/terrain"
@@ -36,19 +36,19 @@ var character_id_list:char_id[] = []
 var characters_dict:{[_ in char_id]: Character} = {}
 
 var orders_bulk:OrderBulk[] = []
-var orders_item:OrderItem[] = []
+// var orders_item:OrderItem[] = []
 
 var bulk_dict: {[_ in order_bulk_id]: OrderBulk} = {}
-var item_dict: {[_ in order_item_id]: OrderItem} = {}
+// var item_dict: {[_ in order_item_id]: OrderItem} = {}
 
 var char_id_to_orders_bulk: {[_ in char_id]: Set<order_bulk_id>|undefined} = {}
-var char_id_to_orders_item: {[_ in char_id]: Set<order_item_id>|undefined} = {}
+// var char_id_to_orders_item: {[_ in char_id]: Set<order_item_id>|undefined} = {}
 
 const empty_set_orders_bulk: Set<order_bulk_id> = new Set()
-const empty_set_orders_item: Set<order_item_id> = new Set()
+// const empty_set_orders_item: Set<order_item_id> = new Set()
 
 var last_id_bulk = 0 as order_bulk_id
-var last_id_item = 0 as order_item_id
+// var last_id_item = 0 as order_item_id
 
 
 
@@ -129,7 +129,7 @@ export namespace Data {
         World.load()
         CharacterDB.load(save_path.CHARACTERS)
         BulkOrders.load()
-        ItemOrders.load()
+        // ItemOrders.load()
         Reputation.load(save_path.REPUTATION)
         Buildings.load(save_path.BUILDINGS)
         Buildings.load_ownership(save_path.BUILDINGS_OWNERSHIP)
@@ -137,7 +137,7 @@ export namespace Data {
     export function save() {
         CharacterDB.save()
         BulkOrders.save()
-        ItemOrders.save()
+        // ItemOrders.save()
         Reputation.save(save_path.REPUTATION)
         Buildings.save(save_path.BUILDINGS)
         Buildings.save_ownership(save_path.BUILDINGS_OWNERSHIP)
@@ -920,65 +920,65 @@ export namespace Data {
         }
     }
     export namespace ItemOrders {
-        export function save() {
-            console.log('saving item market orders')
-            let str:string = ''
-            for (let item of Data.ItemOrders.list()) {
-                if (item.finished) continue;
-                str = str + JSON.stringify(item) + '\n' 
+        // export function save() {
+        //     console.log('saving item market orders')
+        //     let str:string = ''
+        //     for (let item of Data.ItemOrders.list()) {
+        //         if (item.finished) continue;
+        //         str = str + JSON.stringify(item) + '\n' 
                 
-            }
-            fs.writeFileSync(save_path_item, str)
-            console.log('item market orders saved')
-        }
+        //     }
+        //     fs.writeFileSync(save_path_item, str)
+        //     console.log('item market orders saved')
+        // }
     
-        export function load() {
-            console.log('loading item market orders')
-            if (!fs.existsSync(save_path_item)) {
-                fs.writeFileSync(save_path_item, '')
-            }
-            let data = fs.readFileSync(save_path_item).toString()
-            let lines = data.split('\n')
-            for (let line of lines) {
-                if (line == '') {continue}
-                const order_raw: OrderItem = JSON.parse(line)
-                const item = item_from_string(JSON.stringify(order_raw.item))
-                const order = new OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished)
+        // export function load() {
+        //     console.log('loading item market orders')
+        //     if (!fs.existsSync(save_path_item)) {
+        //         fs.writeFileSync(save_path_item, '')
+        //     }
+        //     let data = fs.readFileSync(save_path_item).toString()
+        //     let lines = data.split('\n')
+        //     for (let line of lines) {
+        //         if (line == '') {continue}
+        //         const order_raw: OrderItem = JSON.parse(line)
+        //         const item = item_from_string(JSON.stringify(order_raw.item))
+        //         const order = new OrderItem(order_raw.id, item, order_raw.price, order_raw.owner_id, order_raw.finished)
                 
-                Data.ItemOrders.set(order.id, order.owner_id, order)
-                const last_id = Data.ItemOrders.id()
-                Data.ItemOrders.set_id(Math.max(order.id, last_id) as order_item_id)            
-            }
-            console.log('item market orders loaded')
-        }
+        //         Data.ItemOrders.set(order.id, order.owner_id, order)
+        //         const last_id = Data.ItemOrders.id()
+        //         Data.ItemOrders.set_id(Math.max(order.id, last_id) as order_item_id)            
+        //     }
+        //     console.log('item market orders loaded')
+        // }
 
-        export function increase_id() {
-            last_id_item = last_id_item + 1 as order_item_id
-        }
+        // export function increase_id() {
+        //     last_id_item = last_id_item + 1 as order_item_id
+        // }
 
-        export function id() {
-            return last_id_item
-        }
+        // export function id() {
+        //     return last_id_item
+        // }
 
-        export function set_id(x: order_item_id) {
-            last_id_item = x as order_item_id
-        }
+        // export function set_id(x: order_item_id) {
+        //     last_id_item = x as order_item_id
+        // }
 
-        export function set(id: order_item_id, owner_id: char_id, data: OrderItem) {
-            orders_item.push(data)
-            item_dict[id] = data
-            const set = char_id_to_orders_item[owner_id]
-            if (set == undefined) char_id_to_orders_item[owner_id] = new Set([id])
-            else set.add(id)
-        }
+        // export function set(id: order_item_id, owner_id: char_id, data: OrderItem) {
+        //     orders_item.push(data)
+        //     item_dict[id] = data
+        //     const set = char_id_to_orders_item[owner_id]
+        //     if (set == undefined) char_id_to_orders_item[owner_id] = new Set([id])
+        //     else set.add(id)
+        // }
 
-        export function from_id(id: order_item_id) {
-            return item_dict[id]
-        }
+        // export function from_id(id: order_item_id) {
+        //     return item_dict[id]
+        // }
 
-        export function list() {
-            return orders_item
-        }
+        // export function list() {
+        //     return orders_item
+        // }
     }
 
     export function CharacterBulkOrders(char_id: char_id) {
@@ -988,9 +988,8 @@ export namespace Data {
     }
 
     export function CharacterItemOrders(char_id: char_id) {
-        const set = char_id_to_orders_item[char_id]
-        if (set == undefined) return empty_set_orders_item
-        else return set
+        let character = CharacterDB.from_id(char_id)
+        return character.equip.data.backpack.items
     }
 
 }
