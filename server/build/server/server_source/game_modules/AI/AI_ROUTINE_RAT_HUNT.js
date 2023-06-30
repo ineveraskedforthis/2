@@ -24,7 +24,7 @@ function fight(character) {
     }
 }
 function buy_stuff(character) {
-    console.log(character.name, character.id, 'buys stuff');
+    // console.log(character.name, character.id, 'buys stuff')
     if (!system_1.MapSystem.has_market(character.cell_id)) {
         (0, actions_1.market_walk)(character);
         return;
@@ -45,7 +45,7 @@ function buy_stuff(character) {
     character.ai_memories.push("was_on_market" /* AImemory.WAS_ON_MARKET */);
 }
 function rest_at_home(character) {
-    console.log(character.name, character.id, 'rests');
+    // console.log(character.name, character.id, 'rests')
     if (character.ai_memories.indexOf("no_money" /* AImemory.NO_MONEY */) >= 0) {
         character.ai_state = "patrol" /* AIstate.Patrol */;
     }
@@ -63,12 +63,12 @@ function rest_at_home(character) {
     }
 }
 function patrol(character) {
-    console.log(character.name, character.id, 'patrols');
-    console.log(character.ai_state);
-    console.log('loot:', (0, actions_1.loot)(character));
-    console.log('tired:', (0, triggers_1.tired)(character));
-    console.log('low_hp:', (0, triggers_1.low_hp)(character));
-    console.log('memories:', character.ai_memories);
+    // console.log(character.name, character.id, 'patrols')
+    // console.log(character.ai_state)
+    // console.log('loot:', loot(character))
+    // console.log('tired:', tired(character))
+    // console.log('low_hp:', low_hp(character))
+    // console.log('memories:', character.ai_memories)
     let target = helpers_1.AIhelper.free_rats_in_cell(character);
     const target_char = systems_communication_1.Convert.id_to_character(target);
     if (target_char != undefined) {
@@ -96,7 +96,7 @@ function patrol(character) {
     }
 }
 function sell_at_market(character) {
-    console.log(character.name, character.id, 'sells goods');
+    // console.log(character.name, character.id, 'sells goods')
     if (system_1.MapSystem.has_market(character.cell_id)) {
         (0, actions_1.update_price_beliefs)(character);
         (0, actions_1.sell_loot)(character);

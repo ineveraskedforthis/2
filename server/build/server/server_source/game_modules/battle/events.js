@@ -57,7 +57,7 @@ var BattleEvent;
     }
     BattleEvent.update_unit_after_turn = update_unit_after_turn;
     function EndTurn(battle, unit) {
-        console.log('end turn');
+        // console.log('end turn')
         // invalid battle
         if (battle.heap.get_selected_unit() == undefined)
             return false;
