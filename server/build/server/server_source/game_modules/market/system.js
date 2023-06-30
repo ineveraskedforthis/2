@@ -39,6 +39,15 @@ var BulkOrders;
         order.amount = 0;
     }
     BulkOrders.remove = remove;
+    function destroy_item(id, x) {
+        const order = data_1.Data.BulkOrders.from_id(id);
+        if (order.typ == 'sell') {
+            const character = data_1.Data.CharacterDB.from_id(order.owner_id);
+            order.amount -= x;
+            character.trade_stash.inc(order.tag, -x);
+        }
+    }
+    BulkOrders.destroy_item = destroy_item;
     function remove_by_condition(character, tag) {
         const set = data_1.Data.BulkOrders.from_char_id(character.id);
         if (set == undefined)

@@ -316,6 +316,7 @@ var CharacterSystem;
                 if (!character.in_battle()) {
                     effects_1.Effect.Change.rage(character, -1);
                     effects_1.Effect.rest_building_tick(character);
+                    effects_1.Effect.meat_spoilage(character);
                 }
             }
             character_state_update_timer = 0;

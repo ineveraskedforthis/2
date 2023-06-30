@@ -13,6 +13,8 @@ import { cell_id, money } from "@custom_types/common";
 import { LandPlot, LandPlotType } from "@custom_types/buildings";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { Trigger } from "./triggers";
+import { MEAT } from "../manager_classes/materials_manager";
+import { BulkOrders } from "../market/system";
 
 export namespace Effect {
     export namespace Update {
@@ -167,5 +169,31 @@ export namespace Effect {
         }
 
         building_quality_reduction_roll(building)
+    }
+
+    export function meat_spoilage(character: Character) {
+        let dice = Math.random()
+
+        if (dice < 0.01) {
+            let current_amount = character.stash.get(MEAT)
+            let integer = (Math.random() < 0.5) ? 1 : 0
+            let spoiled_amount = Math.max(integer, Math.floor(current_amount * 0.01))
+            character.stash.set(MEAT, current_amount - spoiled_amount)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
+
+            let orders = Data.BulkOrders.from_char_id(character.id)
+
+            if (orders == undefined) return
+
+            for (let order of orders) {
+                let order_item = Data.BulkOrders.from_id(order)
+                const current_amount = order_item.amount
+
+                let spoiled_amount = Math.min(current_amount, Math.max(integer, Math.floor(current_amount * 0.01)))
+                BulkOrders.destroy_item(order, spoiled_amount)
+            }
+
+            Update.cell_market(character.cell_id)
+        }
     }
 }

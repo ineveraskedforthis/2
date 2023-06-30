@@ -46,6 +46,16 @@ export namespace BulkOrders {
         }
         order.amount = 0
     }
+
+    export function destroy_item(id: order_bulk_id, x: number) {
+        const order = Data.BulkOrders.from_id(id)
+        
+        if (order.typ == 'sell') {
+            const character = Data.CharacterDB.from_id(order.owner_id)
+            order.amount -= x
+            character.trade_stash.inc(order.tag, -x)
+        }
+    }
     
     export function remove_by_condition(character: Character, tag: material_index) {
         const set = Data.BulkOrders.from_char_id(character.id)

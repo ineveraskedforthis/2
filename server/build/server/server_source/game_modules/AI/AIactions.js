@@ -47,7 +47,7 @@ var AIactions;
     }
     AIactions.buy_inputs_to_craft_item = buy_inputs_to_craft_item;
     function craft_item(character, item) {
-        console.log(character.get_name(), ' crafts ', item.id);
+        // console.log(character.get_name(), ' crafts ', item.id)
         manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[item.id], character, character.cell_id);
     }
     AIactions.craft_item = craft_item;
