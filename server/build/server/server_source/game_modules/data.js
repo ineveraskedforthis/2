@@ -797,8 +797,7 @@ var Data;
             console.log('saving characters');
             let str = '';
             for (let item of Data.CharacterDB.list()) {
-                if (item.dead())
-                    continue;
+                // if (item.dead()) continue
                 str = str + (0, strings_management_1.character_to_string)(item) + '\n';
             }
             fs_1.default.writeFileSync(exports.save_path.CHARACTERS, str);

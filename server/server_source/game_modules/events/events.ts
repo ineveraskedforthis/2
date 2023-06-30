@@ -458,23 +458,28 @@ export namespace Event {
         }
     }
 
+    export function rob_the_dead(robber: Character, target: Character) {
+        if (robber.cell_id != target.cell_id) return
+        // if (!target.dead()) return
+
+        CharacterSystem.transfer_all(target, robber)
+        UserManagement.add_user_to_update_queue(robber.user_id, UI_Part.STASH)
+    }
+
     export function kill(killer: Character, victim: Character) {
         let cell = Data.Cells.from_id(killer.cell_id)
         console.log(killer.name + ' kills ' + victim.name + ' at ' + `(${cell?.x}, ${cell?.y})`)
         death(victim)
-
         if (killer.id == victim.id) {
             return
         }
 
+        // loot bulk
         const loot = CharacterSystem.rgo_check(victim)
-        CharacterSystem.transfer_all(victim, killer)
         for (const item of loot) {
             Event.change_stash(killer, item.material, item.amount)
         }
-        // console.log(killer.stash.data)
-
-        //loot items rgo
+        // loot items rgo
         // console.log('check items drop')
         const dropped_items = Loot.items(victim.race)
         for (let item of dropped_items) {

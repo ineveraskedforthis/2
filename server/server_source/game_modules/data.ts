@@ -814,7 +814,7 @@ export namespace Data {
             console.log('saving characters')
             let str:string = ''
             for (let item of Data.CharacterDB.list()) {
-                if (item.dead()) continue
+                // if (item.dead()) continue
                 str = str + character_to_string(item) + '\n' 
             }
             fs.writeFileSync(save_path.CHARACTERS, str)

@@ -16,12 +16,21 @@ import { CharacterSystem } from "../../character/system";
 export namespace SocketCommand {
     // data is a raw id of character
     export function attack_character(socket_wrapper: SocketWrapper, raw_data: unknown) {
-        console.log('attack_character ' + raw_data)
         const [user, character] = Convert.socket_wrapper_to_user_character(socket_wrapper)
         const [valid_user, valid_character, target] = Validator.valid_action_to_character(user, character, raw_data)
         if (target == undefined) return
         if (target.dead()) return
+        console.log('attack_character ' + raw_data)
         BattleSystem.start_battle(valid_character, target)
+    }
+
+    export function rob_character(socket_wrapper: SocketWrapper, raw_data: unknown) {
+        console.log('rob_character ' + raw_data)
+        const [user, character] = Convert.socket_wrapper_to_user_character(socket_wrapper)
+        const [valid_user, valid_character, target] = Validator.valid_action_to_character(user, character, raw_data)
+        if (target == undefined) return        
+
+        Event.rob_the_dead(valid_character, target)
     }
 
     export function support_character(socket_wrapper: SocketWrapper, raw_data: unknown) {

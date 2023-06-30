@@ -411,6 +411,14 @@ var Event;
             effects_1.Effect.Change.skill(defender, 'evasion', 1);
         }
     }
+    function rob_the_dead(robber, target) {
+        if (robber.cell_id != target.cell_id)
+            return;
+        // if (!target.dead()) return
+        system_2.CharacterSystem.transfer_all(target, robber);
+        user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 4 /* UI_Part.STASH */);
+    }
+    Event.rob_the_dead = rob_the_dead;
     function kill(killer, victim) {
         let cell = data_1.Data.Cells.from_id(killer.cell_id);
         console.log(killer.name + ' kills ' + victim.name + ' at ' + `(${cell?.x}, ${cell?.y})`);
@@ -418,13 +426,12 @@ var Event;
         if (killer.id == victim.id) {
             return;
         }
+        // loot bulk
         const loot = system_2.CharacterSystem.rgo_check(victim);
-        system_2.CharacterSystem.transfer_all(victim, killer);
         for (const item of loot) {
             Event.change_stash(killer, item.material, item.amount);
         }
-        // console.log(killer.stash.data)
-        //loot items rgo
+        // loot items rgo
         // console.log('check items drop')
         const dropped_items = generate_loot_1.Loot.items(victim.race);
         for (let item of dropped_items) {

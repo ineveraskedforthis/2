@@ -58,6 +58,7 @@ export class SocketManager {
             // socket.on('attack',  (msg: any) => this.attack(user, msg));
             socket.on('attack-character',  (msg: any) => SocketCommand.attack_character(user, msg));
             socket.on('support-character',  (msg: any) => SocketCommand.support_character(user, msg));
+            socket.on('rob-character',  (msg: any) => SocketCommand.rob_character(user, msg));
 
             socket.on('buy',  (msg: any)    =>      InventoryCommands.buy(user, msg));
             socket.on('sell',  (msg: any)   =>      InventoryCommands.sell(user, msg));

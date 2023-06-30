@@ -13,11 +13,19 @@ function support_selected_character() {
     }
     socket.emit('support-character', globals.selected_character);
 }
+function rob_selected_charater() {
+    if (globals.selected_character == undefined) {
+        return;
+    }
+    socket.emit('rob-character', globals.selected_character);
+}
 {
-    let attack_button = document.getElementById("attack_selected_charater");
+    let attack_button = document.getElementById("attack_selected_character");
     attack_button.onclick = attack_selected_character;
-    let support_button = document.getElementById("support_selected_charater");
+    let support_button = document.getElementById("support_selected_character");
     support_button.onclick = support_selected_character;
+    let rob_button = document.getElementById("rob_selected_character");
+    rob_button.onclick = rob_selected_charater
 }
 export function update_characters_list(data) {
     console.log('update characters_list');
