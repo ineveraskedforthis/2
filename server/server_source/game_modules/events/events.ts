@@ -512,7 +512,7 @@ export namespace Event {
 
         if (character.cleared) return
 
-        console.log('death of ' + character.get_name())
+        // console.log('death of ' + character.get_name())
 
         EventMarket.clear_orders(character)
 

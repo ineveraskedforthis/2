@@ -66,7 +66,7 @@ export namespace BattleEvent {
     }
 
     export function EndTurn(battle: Battle, unit: Unit) {
-        console.log('end turn')
+        // console.log('end turn')
 
         // invalid battle
         if (battle.heap.get_selected_unit() == undefined) return false

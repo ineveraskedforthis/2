@@ -17,6 +17,7 @@ import { BattleSystem } from "../battle/system";
 import { hunt } from "../actions/actions_hunter_gathering";
 
 function fight(character: Character) {
+    // console.log(character.name, character.id, 'looking for a fight')
     let target = AIhelper.enemies_in_cell(character)
     const target_char = Convert.id_to_character(target)
     if (target_char != undefined) {
@@ -27,6 +28,7 @@ function fight(character: Character) {
 
 
 function buy_stuff(character: Character) {
+    // console.log(character.name, character.id, 'buys stuff')
     if (!MapSystem.has_market(character.cell_id)) {
         market_walk(character)
         return
@@ -49,6 +51,7 @@ function buy_stuff(character: Character) {
 }
 
 function rest_at_home(character: Character) {
+    // console.log(character.name, character.id, 'rests')
     if (character.ai_memories.indexOf(AImemory.NO_MONEY) >= 0) {
         character.ai_state = AIstate.Patrol
     }
@@ -66,6 +69,12 @@ function rest_at_home(character: Character) {
 }
 
 function patrol(character: Character) {
+    // console.log(character.name, character.id, 'patrols')
+    // console.log(character.ai_state)
+    // console.log('loot:', loot(character))
+    // console.log('tired:', tired(character))
+    // console.log('low_hp:', low_hp(character))
+    // console.log('memories:', character.ai_memories)
     let target = AIhelper.free_rats_in_cell(character)
     const target_char = Convert.id_to_character(target)
     if (target_char != undefined) {
@@ -76,6 +85,7 @@ function patrol(character: Character) {
     }    
 
     if (loot(character) > 10) {
+        console.log('character goes to market now')
         character.ai_state = AIstate.GoToMarket
         return
     }
@@ -93,6 +103,7 @@ function patrol(character: Character) {
 }
 
 function sell_at_market(character: Character) {
+    // console.log(character.name, character.id, 'sells goods')
     if (MapSystem.has_market(character.cell_id)) {
         update_price_beliefs(character)
         sell_loot(character)
@@ -134,7 +145,7 @@ export function RatHunterRoutine(character: Character) {
         rest_at_home(character)
         return
     }
-    if (character.ai_state = AIstate.Patrol) {
+    if (character.ai_state == AIstate.Patrol) {
         patrol(character)
         return
     }
