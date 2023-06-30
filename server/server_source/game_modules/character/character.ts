@@ -2,7 +2,7 @@ import {Stash} from "../inventories/stash"
 // import { PerksTable } from "./Perks";
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
-import { building_id, char_id, CharacterTemplate, ModelVariant, Status, status_type, tagAI, tagModel, tagRACE, tagTactic, TEMP_USER_ID, user_id } from "../types";
+import { building_id, char_id, CharacterTemplate, model_interface_name, ModelVariant, skeleton, Status, status_type, tagAI, tagModel, tagRACE, tagTactic, TEMP_USER_ID, user_id } from "../types";
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
 import { AImemory, AIstate } from "./AIstate";
@@ -40,6 +40,8 @@ export class Character {
     status: Status;
 
     cleared: boolean;
+    skinned?: boolean;
+    bones_removed?: boolean;
 
     _skills: SkillList;
     _perks: PerksTable;
@@ -153,6 +155,18 @@ export class Character {
         }
         new_status = trim(new_status, 0, max)
         return this.set(type, new_status)
+    }
+
+    
+    get_name() {
+        if (!this.dead()) return this.name
+        if (this.skinned != true) {
+            return `Corpse of ${model_interface_name(this.model)}`
+        }
+        if (skeleton(this.model) && (this.bones_removed != true)) {
+            return `Skeleton of ${model_interface_name(this.model)}`
+        }
+        return `Traces of something`
     }
 
     change_hp(x: number) {

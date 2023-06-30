@@ -163,7 +163,7 @@ export namespace BattleSystem {
         BattleEvent.NewUnit(battle, unit)
         Link.character_battle_unit(character, battle, unit)
 
-        console.log(`${character.name} joins battle ${battle.id}`)
+        console.log(`${character.get_name()} joins battle ${battle.id}`)
         Alerts.battle_update_data(battle)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         return unit
@@ -198,7 +198,7 @@ export namespace BattleSystem {
             
 
             let character:Character = Convert.unit_to_character(unit)    
-            // console.log('turn of ', character.name)       
+            // console.log('turn of ', character.get_name())       
             if (character.dead()) {
                 BattleEvent.EndTurn(battle, unit)
                 continue
@@ -233,7 +233,7 @@ export namespace BattleSystem {
                     continue
                 }
             } else {
-                // console.log('decision AI', character.name)
+                // console.log('decision AI', character.get_name())
                 decide_AI_battle_action(battle, character, unit)
                 // launch the timer
                 battle.ai_timer = 0 as ms

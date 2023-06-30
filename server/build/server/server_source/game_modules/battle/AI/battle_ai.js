@@ -61,7 +61,7 @@ var BattleAI;
             if (target_character.dead())
                 continue;
             const d = geom_1.geom.dist(unit.position, target_unit.position);
-            // console.log(target_character.name)
+            // console.log(target_character.get_name())
             // console.log(Math.abs(d) <= Math.abs(min_distance), is_enemy(unit, character, target_unit, target_character))
             if (((Math.abs(d) <= Math.abs(min_distance)) || (closest_enemy == undefined))
                 && is_enemy(unit, character, target_unit, target_character)) {

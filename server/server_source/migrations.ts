@@ -239,7 +239,7 @@
 //     console.log('cancelling orders of cooks')
 
 //     for (let character of Data.CharacterDB.list()) {
-//         if (character.name != 'Trader') {
+//         if (character.get_name() != 'Trader') {
 //             EventMarket.clear_orders(character)
 //         }        
 //     }

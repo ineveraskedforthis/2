@@ -104,7 +104,7 @@ function load() {
     }
 
     for (const battle of Data.Battle.list()) {
-        console.log('test battle for shadow units')
+        // console.log('test battle for shadow units')
         for (let unit of Object.values(battle.heap.data)) {
             let id = unit.char_id
             let character = Data.CharacterDB.from_id(id)

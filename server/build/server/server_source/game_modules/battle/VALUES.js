@@ -7,7 +7,7 @@ var BattleValues;
     BattleValues.HALFWIDTH = 7;
     BattleValues.HALFHEIGHT = 15;
     function flee_chance(position) {
-        return 0.6 + Math.max(Math.abs(position.x) / BattleValues.HALFWIDTH, Math.abs(position.y) / BattleValues.HALFHEIGHT) / 2;
+        return 0.1 + Math.max(Math.abs(position.x) / BattleValues.HALFWIDTH, Math.abs(position.y) / BattleValues.HALFHEIGHT) / 2;
     }
     BattleValues.flee_chance = flee_chance;
     function move_cost(unit, character) {

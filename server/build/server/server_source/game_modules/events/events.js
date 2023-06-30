@@ -461,10 +461,11 @@ var Event;
         // UserManagement.add_user_to_update_queue(character.user_id, "death");
         if (character.cleared)
             return;
-        console.log('death of ' + character.name);
+        // console.log('death of ' + character.get_name())
         market_1.EventMarket.clear_orders(character);
         const user_data = systems_communication_1.Convert.character_to_user_data(character);
         systems_communication_1.Unlink.user_data_and_character(user_data, character);
+        // character.get_name() = `Corpse of ${character.race}`
         // const battle = Convert.character_to_battle(character)
         // if (battle != undefined) {
         //     let unit = Convert.character_to_unit(character)

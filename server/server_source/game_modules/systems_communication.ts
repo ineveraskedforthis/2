@@ -42,7 +42,7 @@ export namespace Convert {
 
         responce.price = order.price
         responce.id = order.id
-        responce.seller = owner.name
+        responce.seller = owner.get_name()
         return responce
     }
     
@@ -145,7 +145,7 @@ export namespace Convert {
             tag: character.model,
             position: unit.position,
             range: character.range(),
-            name: character.name,
+            name: character.get_name(),
             hp: character.get_hp(),
             max_hp: character.get_max_hp(),
             ap: unit.action_points_left,

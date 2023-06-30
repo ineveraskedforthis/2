@@ -11,6 +11,8 @@ export function handle_attack_reputation_change(attacker: Character, defender: C
 export function can_talk(character_A: Character, character_B: Character) : boolean {
     if (character_A.race != character_B.race) return false
     if (is_enemy_characters(character_A, character_B)) return false
+    if (character_B.dead()) return false
+    if (character_A.dead()) return false
 
     return true
 }

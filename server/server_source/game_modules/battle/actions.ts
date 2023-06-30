@@ -467,8 +467,8 @@ export function battle_action_self(tag: string, battle: Battle, character: Chara
 
 export function battle_action_unit(tag: ActionUnitKeys, battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit) {
     let result = battle_action_unit_check(tag, battle, character, unit, target_character, target_unit, 0, 0)
-    console.log(character.name, 'attempts to ', tag, 'to', target_character.name)
-    console.log(result.response)
+    // console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name())
+    // console.log(result.response)
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target_character, target_unit)
         unit.action_points_left = unit.action_points_left - result.ap_cost as action_points
@@ -482,7 +482,7 @@ export function battle_action_unit(tag: ActionUnitKeys, battle: Battle, characte
 
 export function battle_action_position(tag: ActionPositionKeys, battle: Battle, character: Character, unit: Unit, target: battle_position) {
     let result = battle_action_position_check(tag, battle, character, unit, target)
-    console.log(character.name, 'attempts to ', tag)
+    console.log(character.get_name(), 'attempts to ', tag)
     console.log(result.response)
     if (result.response == "OK") {
         result.action.execute(battle, character, unit, target)

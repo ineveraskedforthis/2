@@ -147,7 +147,7 @@ var BattleSystem;
         const unit = create_unit(character, team, battle);
         events_1.BattleEvent.NewUnit(battle, unit);
         systems_communication_1.Link.character_battle_unit(character, battle, unit);
-        console.log(`${character.name} joins battle ${battle.id}`);
+        console.log(`${character.get_name()} joins battle ${battle.id}`);
         alerts_1.Alerts.battle_update_data(battle);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
         return unit;
@@ -176,7 +176,7 @@ var BattleSystem;
                 continue;
             }
             let character = systems_communication_1.Convert.unit_to_character(unit);
-            // console.log('turn of ', character.name)       
+            // console.log('turn of ', character.get_name())       
             if (character.dead()) {
                 events_1.BattleEvent.EndTurn(battle, unit);
                 continue;
@@ -210,7 +210,7 @@ var BattleSystem;
                 }
             }
             else {
-                // console.log('decision AI', character.name)
+                // console.log('decision AI', character.get_name())
                 (0, ACTIONS_AI_DECISION_1.decide_AI_battle_action)(battle, character, unit);
                 // launch the timer
                 battle.ai_timer = 0;

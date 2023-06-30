@@ -109,7 +109,7 @@ function load() {
         // EventMarket.clear_orders(character)
     }
     for (const battle of data_1.Data.Battle.list()) {
-        console.log('test battle for shadow units');
+        // console.log('test battle for shadow units')
         for (let unit of Object.values(battle.heap.data)) {
             let id = unit.char_id;
             let character = data_1.Data.CharacterDB.from_id(id);

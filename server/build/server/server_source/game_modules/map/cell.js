@@ -58,7 +58,7 @@ class Cell {
             for (let item of this.characters_set.values()) {
                 let character = systems_communication_js_1.Convert.id_to_character(item);
                 if (!character.dead()) {
-                    let return_item = { id: item, name: character.name };
+                    let return_item = { id: item, name: character.get_name() };
                     result.push(return_item);
                 }
             }
