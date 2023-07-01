@@ -36,9 +36,9 @@ var ScriptedValue;
     ScriptedValue.room_price = room_price;
     function building_price_wood(type) {
         switch (type) {
-            case "shack" /* LandPlotType.Shack */: return 50;
-            case "inn" /* LandPlotType.Inn */: return 400;
-            case "human_house" /* LandPlotType.HumanHouse */: return 200;
+            case "shack" /* LandPlotType.Shack */: return 30;
+            case "inn" /* LandPlotType.Inn */: return 200;
+            case "human_house" /* LandPlotType.HumanHouse */: return 100;
             case "rat_lair" /* LandPlotType.RatLair */: return 0;
             case "elodino_house" /* LandPlotType.ElodinoHouse */: return 600;
             case "cotton_field" /* LandPlotType.CottonField */: return 800;

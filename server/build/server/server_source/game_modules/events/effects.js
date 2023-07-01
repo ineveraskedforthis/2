@@ -114,7 +114,7 @@ var Effect;
     function enter_room(character_id, building_id) {
         Effect.leave_room(character_id);
         let character = data_1.Data.CharacterDB.from_id(character_id);
-        data_1.Data.Buildings.occupy_room(building_id);
+        data_1.Data.Buildings.occupy_room(building_id, character_id);
         character.current_building = building_id;
         alerts_1.Alerts.enter_room(character);
     }
@@ -123,7 +123,7 @@ var Effect;
         let character = data_1.Data.CharacterDB.from_id(character_id);
         if (character.current_building == undefined)
             return;
-        data_1.Data.Buildings.free_room(character.current_building);
+        data_1.Data.Buildings.free_room(character.current_building, character_id);
         alerts_1.Alerts.leave_room(character);
         character.current_building = undefined;
     }

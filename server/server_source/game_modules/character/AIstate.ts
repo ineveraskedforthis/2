@@ -11,5 +11,7 @@ export const enum AIstate {
 
 export const enum AImemory {
     WAS_ON_MARKET = 'was_on_market',
-    NO_MONEY = 'no_money'
+    NO_MONEY = 'no_money',
+    RESTED = 'rested',
+    NO_FOOD = 'no_food',
 }

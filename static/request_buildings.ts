@@ -120,6 +120,8 @@ function display_building_data(b: LandPlotSocket) {
         const owner_div = document.getElementById('building-owner')!;
         owner_div.innerHTML = 'Owner: ' + b.owner_name + `(${b.owner_id})`;
 
+        document.getElementById('building-guests')!.innerHTML = 'Guests: ' + b.guests.join(', ');
+
         document.getElementById('rent-building-room')!.onclick = rent_room(b.id);
         document.getElementById('rent-building-price')!.innerHTML = 'Rent price (for you): ' + b.room_cost.toString();
         document.getElementById('rent-building-price-true')!.innerHTML = 'Rent price: ' + b.room_cost_true.toString();

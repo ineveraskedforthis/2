@@ -15,6 +15,7 @@ import { Alerts } from "../client_communication/network_actions/alerts";
 import { Trigger } from "./triggers";
 import { MEAT } from "../manager_classes/materials_manager";
 import { BulkOrders } from "../market/system";
+import { character_to_string } from "../strings_management";
 
 export namespace Effect {
     export namespace Update {
@@ -112,7 +113,7 @@ export namespace Effect {
     export function enter_room(character_id: char_id, building_id: building_id) {
         Effect.leave_room(character_id)
         let character = Data.CharacterDB.from_id(character_id)
-        Data.Buildings.occupy_room(building_id)
+        Data.Buildings.occupy_room(building_id, character_id)
         character.current_building = building_id
         Alerts.enter_room(character)
     }
@@ -120,7 +121,7 @@ export namespace Effect {
     export function leave_room(character_id: char_id) {
         let character = Data.CharacterDB.from_id(character_id)
         if (character.current_building == undefined) return
-        Data.Buildings.free_room(character.current_building)
+        Data.Buildings.free_room(character.current_building, character_id)
         Alerts.leave_room(character)
         character.current_building = undefined
     }

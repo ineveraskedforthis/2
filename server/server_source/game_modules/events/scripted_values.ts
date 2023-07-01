@@ -37,9 +37,9 @@ export namespace ScriptedValue {
 
     export function building_price_wood(type: LandPlotType): number {
         switch(type){
-            case LandPlotType.Shack:return 50
-            case LandPlotType.Inn:return 400
-            case LandPlotType.HumanHouse:return 200
+            case LandPlotType.Shack:return 30
+            case LandPlotType.Inn:return 200
+            case LandPlotType.HumanHouse:return 100
             case LandPlotType.RatLair:return 0
             case LandPlotType.ElodinoHouse:return 600
             case LandPlotType.CottonField: return 800

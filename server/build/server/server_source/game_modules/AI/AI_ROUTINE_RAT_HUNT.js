@@ -1,7 +1,7 @@
 "use strict";
 // This file is an attempt to make a simple instruction for agents
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RatHunterRoutine = void 0;
+exports.RatHunterRoutine = exports.sell_at_market = exports.rat_patrol = exports.rest_at_home = exports.buy_food_arrows = void 0;
 const manager_1 = require("../actions/manager");
 const actions_00_1 = require("../actions/actions_00");
 const materials_manager_1 = require("../manager_classes/materials_manager");
@@ -14,6 +14,7 @@ const system_1 = require("../map/system");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const system_2 = require("../battle/system");
 const actions_hunter_gathering_1 = require("../actions/actions_hunter_gathering");
+const effects_1 = require("../events/effects");
 function fight(character) {
     // console.log(character.name, character.id, 'looking for a fight')
     let target = helpers_1.AIhelper.enemies_in_cell(character);
@@ -23,7 +24,7 @@ function fight(character) {
         return;
     }
 }
-function buy_stuff(character) {
+function buy_food_arrows(character) {
     // console.log(character.name, character.id, 'buys stuff')
     if (!system_1.MapSystem.has_market(character.cell_id)) {
         (0, actions_1.market_walk)(character);
@@ -35,7 +36,7 @@ function buy_stuff(character) {
         flag_food = (0, actions_1.buy)(character, materials_manager_1.FOOD);
     }
     let flag_arrow = false;
-    if ((character.stash.get(materials_manager_1.ARROW_BONE) < 100) && (character.savings.get() > 100)) {
+    if ((character.stash.get(materials_manager_1.ARROW_BONE) < 50) && (character.savings.get() > 100)) {
         flag_arrow = (0, actions_1.buy)(character, materials_manager_1.ARROW_BONE);
     }
     if (flag_food || flag_arrow) {
@@ -44,25 +45,18 @@ function buy_stuff(character) {
     character.ai_state = "idle" /* AIstate.Idle */;
     character.ai_memories.push("was_on_market" /* AImemory.WAS_ON_MARKET */);
 }
+exports.buy_food_arrows = buy_food_arrows;
 function rest_at_home(character) {
     // console.log(character.name, character.id, 'rests')
-    if (character.ai_memories.indexOf("no_money" /* AImemory.NO_MONEY */) >= 0) {
-        character.ai_state = "patrol" /* AIstate.Patrol */;
-    }
-    if (!(0, triggers_1.tired)(character)) {
-        character.ai_state = "idle" /* AIstate.Idle */;
-        return;
-    }
     if (!system_1.MapSystem.has_market(character.cell_id)) {
         (0, actions_1.market_walk)(character);
         return;
     }
-    else {
-        (0, AI_ROUTINE_GENERIC_1.GenericRest)(character);
-        return;
-    }
+    if (!(0, AI_ROUTINE_GENERIC_1.GenericRest)(character))
+        character.ai_memories.push("rested" /* AImemory.RESTED */);
 }
-function patrol(character) {
+exports.rest_at_home = rest_at_home;
+function rat_patrol(character) {
     // console.log(character.name, character.id, 'patrols')
     // console.log(character.ai_state)
     // console.log('loot:', loot(character))
@@ -95,11 +89,12 @@ function patrol(character) {
         return;
     }
 }
+exports.rat_patrol = rat_patrol;
 function sell_at_market(character) {
+    effects_1.Effect.leave_room(character.id);
     // console.log(character.name, character.id, 'sells goods')
     if (system_1.MapSystem.has_market(character.cell_id)) {
-        (0, actions_1.update_price_beliefs)(character);
-        (0, actions_1.sell_loot)(character);
+        waiting_sells(character);
         character.ai_state = "wait_sale" /* AIstate.WaitSale */;
     }
     else {
@@ -107,6 +102,7 @@ function sell_at_market(character) {
     }
     return;
 }
+exports.sell_at_market = sell_at_market;
 function waiting_sells(character) {
     {
         (0, actions_1.update_price_beliefs)(character);
@@ -125,9 +121,6 @@ function RatHunterRoutine(character) {
         return;
     if (character.is_player())
         return;
-    if (Math.random() < 0.1) {
-        character.ai_memories.shift();
-    }
     if ((character.stash.get(materials_manager_1.FOOD) > 0) && ((0, triggers_1.low_hp)(character) || character.get_stress() > 20)) {
         console.log(character.get_name(), " I AM EEEAATING FOOD");
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.EAT, character, character.cell_id);
@@ -138,7 +131,7 @@ function RatHunterRoutine(character) {
         return;
     }
     if (character.ai_state == "patrol" /* AIstate.Patrol */) {
-        patrol(character);
+        rat_patrol(character);
         return;
     }
     if (character.ai_state == "go_to_market" /* AIstate.GoToMarket */) {
@@ -150,7 +143,7 @@ function RatHunterRoutine(character) {
         return;
     }
     if ((character.ai_state == "idle" /* AIstate.Idle */) && (character.ai_memories.indexOf("was_on_market" /* AImemory.WAS_ON_MARKET */) < 0)) {
-        buy_stuff(character);
+        buy_food_arrows(character);
         return;
     }
     else if (character.ai_state == "idle" /* AIstate.Idle */) {

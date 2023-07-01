@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CampaignAI = void 0;
 const helpers_1 = require("./helpers");
-const AI_ROUTINE_RAT_HUNT_1 = require("./AI_ROUTINE_RAT_HUNT");
 const AI_ROUTINE_RAT_1 = require("./AI_ROUTINE_RAT");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
 const AI_ROUTINE_URBAN_TRADER_1 = require("./AI_ROUTINE_URBAN_TRADER");
 const AI_ROUTINE_GUARD_1 = require("./AI_ROUTINE_GUARD");
 const triggers_1 = require("./triggers");
+const AI_ROUTINE_UTILITY_1 = require("./AI_ROUTINE_UTILITY");
 var CampaignAI;
 (function (CampaignAI) {
     function decision(character) {
@@ -21,6 +21,9 @@ var CampaignAI;
         }
         if (character.action != undefined) {
             return;
+        }
+        if (Math.random() < 0.1) {
+            character.ai_memories.shift();
         }
         if (!(0, triggers_1.low_hp)(character)) {
             let responce = helpers_1.AIhelper.check_battles_to_join(character);
@@ -49,7 +52,7 @@ var CampaignAI;
                 break;
             }
             case "rat_hunter": {
-                (0, AI_ROUTINE_RAT_HUNT_1.RatHunterRoutine)(character);
+                (0, AI_ROUTINE_UTILITY_1.rat_hunter_decision)(character);
                 break;
             }
             case "urban_trader": {

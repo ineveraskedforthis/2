@@ -45,6 +45,7 @@ var building_to_cell = new Map();
 var cell_to_buildings = new Map();
 var id_to_building = new Map();
 var building_to_occupied_rooms = new Map();
+var building_to_guests = new Map();
 var cells = [];
 var cell_ids = [];
 var id_to_cell = new Map();
@@ -597,14 +598,32 @@ var Data;
             return building_to_occupied_rooms.get(id);
         }
         Buildings.occupied_rooms = occupied_rooms;
-        function free_room(id) {
+        function guests(id) {
+            return building_to_guests.get(id);
+        }
+        Buildings.guests = guests;
+        function free_room(id, guest) {
             let rooms = occupied_rooms(id);
             building_to_occupied_rooms.set(id, rooms - 1);
+            let set = building_to_guests.get(id);
+            if (set == undefined) {
+                building_to_guests.set(id, new Set([]));
+            }
+            else {
+                set.delete(guest);
+            }
         }
         Buildings.free_room = free_room;
-        function occupy_room(id) {
+        function occupy_room(id, guest) {
             let rooms = occupied_rooms(id);
             building_to_occupied_rooms.set(id, rooms + 1);
+            let set = building_to_guests.get(id);
+            if (set == undefined) {
+                building_to_guests.set(id, new Set([guest]));
+            }
+            else {
+                set.add(guest);
+            }
         }
         Buildings.occupy_room = occupy_room;
         function from_id(id) {

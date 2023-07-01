@@ -82,6 +82,7 @@ var cell_to_buildings: Map<cell_id, Set<building_id>> = new Map()
 
 var id_to_building: Map<building_id, LandPlot> = new Map()
 var building_to_occupied_rooms: Map<building_id, number> = new Map()
+var building_to_guests: Map<building_id, Set<char_id>> = new Map()
 
 var cells: Cell[] = []
 var cell_ids: cell_id[] = []
@@ -635,14 +636,30 @@ export namespace Data {
             return building_to_occupied_rooms.get(id) as number
         }
 
-        export function free_room(id:building_id) {
-            let rooms = occupied_rooms(id)
-            building_to_occupied_rooms.set(id, rooms - 1)
+        export function guests(id: building_id) {
+            return building_to_guests.get(id)
         }
 
-        export function occupy_room(id:building_id) {
+        export function free_room(id:building_id, guest: char_id) {
+            let rooms = occupied_rooms(id)
+            building_to_occupied_rooms.set(id, rooms - 1)
+            let set = building_to_guests.get(id)
+            if (set == undefined) {
+                building_to_guests.set(id, new Set([]))
+            } else {
+                set.delete(guest)
+            }
+        }
+
+        export function occupy_room(id:building_id, guest: char_id) {
             let rooms = occupied_rooms(id)
             building_to_occupied_rooms.set(id, rooms + 1)
+            let set = building_to_guests.get(id)
+            if (set == undefined) {
+                building_to_guests.set(id, new Set([guest]))
+            } else {
+                set.add(guest)
+            }
         }
 
 

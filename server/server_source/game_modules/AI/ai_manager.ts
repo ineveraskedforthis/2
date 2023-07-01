@@ -7,6 +7,7 @@ import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
 import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 import { GuardUrbanRoutine } from "./AI_ROUTINE_GUARD";
 import { low_hp } from "./triggers";
+import { rat_hunter_decision } from "./AI_ROUTINE_UTILITY";
 
 export namespace CampaignAI {
     export function decision(character: Character) {
@@ -20,6 +21,11 @@ export namespace CampaignAI {
         if (character.action != undefined) {
             return
         }
+        
+        
+        if (Math.random() < 0.1) {
+            character.ai_memories.shift()
+        }   
 
         if (!low_hp(character)) {
             let responce = AIhelper.check_battles_to_join(character)
@@ -39,7 +45,7 @@ export namespace CampaignAI {
             case "dummy":{break}
             case "steppe_walker_passive":{SteppePassiveRoutine(character);break}
             case "forest_walker":{ForestPassiveRoutine(character);break;}
-            case "rat_hunter":{RatHunterRoutine(character);break}
+            case "rat_hunter":{rat_hunter_decision(character);break}
             case "urban_trader":{TraderRoutine(character);break}
             case "urban_guard":{GuardUrbanRoutine(character);break}
         }

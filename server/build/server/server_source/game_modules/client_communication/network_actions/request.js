@@ -27,6 +27,11 @@ var Request;
         let buildings = Array.from(ids).map((id) => {
             let building = data_1.Data.Buildings.from_id(id);
             let rooms_occupied = data_1.Data.Buildings.occupied_rooms(id);
+            let guests = data_1.Data.Buildings.guests(id);
+            let guest_names = [];
+            if (guests != undefined) {
+                guest_names = Array.from(guests).map((g) => data_1.Data.CharacterDB.from_id(g).name);
+            }
             let owner = data_1.Data.Buildings.owner(id);
             let name = 'None';
             if (owner != undefined) {
@@ -40,6 +45,7 @@ var Request;
                 room_cost: scripted_values_1.ScriptedValue.room_price(id, character.id),
                 room_cost_true: building.room_cost,
                 rooms: (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type),
+                guests: guest_names,
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,
                 type: building.type,

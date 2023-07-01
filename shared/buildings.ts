@@ -14,6 +14,7 @@ export interface LandPlotSocket {
     durability: number,
     rooms: number,
     rooms_occupied: number,
+    guests: string[],
     type: LandPlotType,
     room_cost: money,
     room_cost_true: money,

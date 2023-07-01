@@ -45,6 +45,11 @@ export namespace Request {
         let buildings:LandPlotSocket[] = Array.from(ids).map((id) => {
             let building = Data.Buildings.from_id(id)
             let rooms_occupied = Data.Buildings.occupied_rooms(id)
+            let guests = Data.Buildings.guests(id)
+            let guest_names: string[] = []
+            if (guests != undefined) {
+                guest_names = Array.from(guests).map((g) => Data.CharacterDB.from_id(g).name)
+            }
             let owner = Data.Buildings.owner(id)
             let name = 'None'
             if (owner != undefined) {
@@ -57,6 +62,7 @@ export namespace Request {
                 room_cost: ScriptedValue.room_price(id, character.id),
                 room_cost_true: building.room_cost,
                 rooms: rooms(building.type),
+                guests: guest_names,
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,
                 type: building.type,

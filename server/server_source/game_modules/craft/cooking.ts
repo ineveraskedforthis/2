@@ -5,17 +5,17 @@ export namespace Cooking {
     export const meat =
         new_craft_bulk(
             'meat_to_food',
-            [{material: MEAT, amount: 1}],
+            [{material: MEAT, amount: 2}],
             [{material: FOOD, amount: 1}],
-            [{skill: 'cooking', difficulty: 10}]
+            [{skill: 'cooking', difficulty: 20}]
         )
 
     export const fish =
         new_craft_bulk(
             'fish_to_food',
-            [{material: FISH, amount: 1}],
+            [{material: FISH, amount: 2}],
             [{material: FOOD, amount: 1}],
-            [{skill: 'cooking', difficulty: 10}]
+            [{skill: 'cooking', difficulty: 20}]
         )
 
     export const elodino =

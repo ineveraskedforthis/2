@@ -15,6 +15,7 @@ import { MapSystem } from "../map/system";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
 import { BattleSystem } from "../battle/system";
 import { hunt } from "../actions/actions_hunter_gathering";
+import { Effect } from "../events/effects";
 
 function fight(character: Character) {
     // console.log(character.name, character.id, 'looking for a fight')
@@ -27,7 +28,7 @@ function fight(character: Character) {
 }
 
 
-function buy_stuff(character: Character) {
+export function buy_food_arrows(character: Character) {
     // console.log(character.name, character.id, 'buys stuff')
     if (!MapSystem.has_market(character.cell_id)) {
         market_walk(character)
@@ -39,7 +40,7 @@ function buy_stuff(character: Character) {
         flag_food = buy(character, FOOD)
     }
     let flag_arrow = false
-    if ((character.stash.get(ARROW_BONE) < 100) && (character.savings.get() > 100)) {
+    if ((character.stash.get(ARROW_BONE) < 50) && (character.savings.get() > 100)) {
         flag_arrow = buy(character, ARROW_BONE)
     }
     if (flag_food || flag_arrow) {
@@ -50,25 +51,18 @@ function buy_stuff(character: Character) {
     character.ai_memories.push(AImemory.WAS_ON_MARKET)
 }
 
-function rest_at_home(character: Character) {
+export function rest_at_home(character: Character) {
+
     // console.log(character.name, character.id, 'rests')
-    if (character.ai_memories.indexOf(AImemory.NO_MONEY) >= 0) {
-        character.ai_state = AIstate.Patrol
-    }
-    if (!tired(character)) {
-        character.ai_state = AIstate.Idle
-        return
-    }
     if (!MapSystem.has_market(character.cell_id)) {
         market_walk(character)
         return
-    } else {
-        GenericRest(character)
-        return
     }
+    
+    if (!GenericRest(character)) character.ai_memories.push(AImemory.RESTED)
 }
 
-function patrol(character: Character) {
+export function rat_patrol(character: Character) {
     // console.log(character.name, character.id, 'patrols')
     // console.log(character.ai_state)
     // console.log('loot:', loot(character))
@@ -102,11 +96,11 @@ function patrol(character: Character) {
     }
 }
 
-function sell_at_market(character: Character) {
+export function sell_at_market(character: Character) {
+    Effect.leave_room(character.id)
     // console.log(character.name, character.id, 'sells goods')
     if (MapSystem.has_market(character.cell_id)) {
-        update_price_beliefs(character)
-        sell_loot(character)
+        waiting_sells(character)
         character.ai_state = AIstate.WaitSale
     } else {
         market_walk(character)
@@ -131,9 +125,7 @@ export function RatHunterRoutine(character: Character) {
     if (character.action != undefined) return
     if (character.is_player()) return
 
-    if (Math.random() < 0.1) {
-        character.ai_memories.shift()
-    }
+
 
     if ((character.stash.get(FOOD) > 0) && (low_hp(character) || character.get_stress() > 20)) {
         console.log(character.get_name(), " I AM EEEAATING FOOD")
@@ -146,7 +138,7 @@ export function RatHunterRoutine(character: Character) {
         return
     }
     if (character.ai_state == AIstate.Patrol) {
-        patrol(character)
+        rat_patrol(character)
         return
     }
     if (character.ai_state == AIstate.GoToMarket) {
@@ -158,7 +150,7 @@ export function RatHunterRoutine(character: Character) {
         return
     }
     if ((character.ai_state == AIstate.Idle) && (character.ai_memories.indexOf(AImemory.WAS_ON_MARKET) < 0) ){
-        buy_stuff(character)
+        buy_food_arrows(character)
         return
     } else if (character.ai_state == AIstate.Idle) {
         character.ai_state = AIstate.Patrol
