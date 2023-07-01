@@ -93,10 +93,12 @@ function GenericRest(character) {
             let building_to_rest = find_building_to_rest(character, rest_budget(character));
             if (building_to_rest == undefined) {
                 (0, actions_1.rest_outside)(character);
+                character.ai_memories.push("no_money" /* AImemory.NO_MONEY */);
             }
             else {
                 let result = effects_1.Effect.rent_room(character.id, building_to_rest);
                 if (result.response == triggers_2.ResponceNegative.no_money) {
+                    (0, actions_1.rest_outside)(character);
                     character.ai_memories.push("no_money" /* AImemory.NO_MONEY */);
                 }
             }

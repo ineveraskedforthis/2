@@ -533,6 +533,15 @@ var Event;
         // Effect.new_building(character.cell_id, type, character.skills.woodwork)
     }
     Event.develop_land_plot = develop_land_plot;
+    function change_rent_price(character, plot_id, price) {
+        let building = data_1.Data.Buildings.from_id(plot_id);
+        // console.log()
+        let owner = data_1.Data.Buildings.owner(plot_id);
+        if ((owner != character.id))
+            return;
+        building.room_cost = price;
+    }
+    Event.change_rent_price = change_rent_price;
     function repair_building(character, builing_id) {
         let building = data_1.Data.Buildings.from_id(builing_id);
         let skill = system_2.CharacterSystem.skill(character, 'woodwork');

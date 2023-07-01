@@ -12,6 +12,7 @@ import { Validator } from "./common_validations";
 import { LandPlotType } from "../../../../../shared/buildings"
 import { BattleSystem } from "../../battle/system";
 import { CharacterSystem } from "../../character/system";
+import { money } from "@custom_types/common";
 
 export namespace SocketCommand {
     // data is a raw id of character
@@ -137,13 +138,16 @@ export namespace SocketCommand {
         let character_id = msg.id
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
+        console.log('attempt to buy plot', character?.id, target_character?.id)
+        
         if (character == undefined) return
         if (target_character == undefined) return
         if (valid_character.cell_id != target_character.cell_id) {
             valid_user.socket.emit('alert', 'not in the same cell')
             return
         }
-        Event.buy_land_plot(character, target_character)
+        let response = Event.buy_land_plot(character, target_character)
+        console.log(response)
     }
 
     export function create_plot(sw: SocketWrapper) {
@@ -172,6 +176,23 @@ export namespace SocketCommand {
 
 
         Event.develop_land_plot(character, building_id as building_id, true_type)
+    }
+
+    export function change_rent_price(sw: SocketWrapper, msg: undefined|{id: unknown, price: unknown}) {
+        console.log('change rent price', msg)
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        if (msg == undefined) return
+        let building_id = msg.id
+        if (typeof building_id != 'number') return
+        let building = Data.Buildings.from_id(building_id as building_id)
+        if (building == undefined) return
+        let price = msg.price
+        if (typeof price != 'number') return
+
+        console.log('change rent price', character.name, building, price)
+
+        Event.change_rent_price(character, building_id as building_id, price as money)
     }
 
     export function repair_building(sw: SocketWrapper, msg: undefined|{id: unknown}) {

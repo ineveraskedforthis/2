@@ -135,6 +135,7 @@ var SocketCommand;
         let character_id = msg.id;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         const [valid_user, valid_character, target_character] = common_validations_1.Validator.valid_action_to_character(user, character, character_id);
+        console.log('attempt to buy plot', character?.id, target_character?.id);
         if (character == undefined)
             return;
         if (target_character == undefined)
@@ -143,7 +144,8 @@ var SocketCommand;
             valid_user.socket.emit('alert', 'not in the same cell');
             return;
         }
-        events_1.Event.buy_land_plot(character, target_character);
+        let response = events_1.Event.buy_land_plot(character, target_character);
+        console.log(response);
     }
     SocketCommand.buy_plot = buy_plot;
     function create_plot(sw) {
@@ -178,6 +180,26 @@ var SocketCommand;
         events_1.Event.develop_land_plot(character, building_id, true_type);
     }
     SocketCommand.develop_plot = develop_plot;
+    function change_rent_price(sw, msg) {
+        console.log('change rent price', msg);
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined)
+            return;
+        if (msg == undefined)
+            return;
+        let building_id = msg.id;
+        if (typeof building_id != 'number')
+            return;
+        let building = data_1.Data.Buildings.from_id(building_id);
+        if (building == undefined)
+            return;
+        let price = msg.price;
+        if (typeof price != 'number')
+            return;
+        console.log('change rent price', character.name, building, price);
+        events_1.Event.change_rent_price(character, building_id, price);
+    }
+    SocketCommand.change_rent_price = change_rent_price;
     function repair_building(sw, msg) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)

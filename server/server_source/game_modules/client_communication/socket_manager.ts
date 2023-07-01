@@ -133,6 +133,7 @@ export class SocketManager {
 
             
             socket.on('build-building',     (msg: undefined|{id: unknown, type: unknown}) => SocketCommand.develop_plot(user, msg))
+            socket.on('change-rent-price',  (msg: undefined|{id: unknown, price: unknown}) => SocketCommand.change_rent_price(user, msg))
             socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
             socket.on('leave-room',         () => SocketCommand.leave_room(user))
             

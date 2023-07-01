@@ -55,6 +55,7 @@ export namespace Request {
             return {
                 id: id,
                 room_cost: ScriptedValue.room_price(id, character.id),
+                room_cost_true: building.room_cost,
                 rooms: rooms(building.type),
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,

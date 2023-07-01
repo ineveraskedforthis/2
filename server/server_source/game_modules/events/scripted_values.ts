@@ -88,6 +88,6 @@ export namespace ScriptedValue {
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
         if (race == 'graci') multiplier = 0.1
-        return Math.floor((100 - tier * 10) * multiplier)
+        return trim(Math.floor((100 - tier * 10) * multiplier), 0, 100)
     }
 }

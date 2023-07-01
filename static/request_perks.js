@@ -34,7 +34,10 @@ function send_skill_learning_request(i) {
     return () => socket.emit('learn-skill', { tag: i, id: globals.selected_character });
 }
 function buy_land_plot_request() {
-    return () => socket.emit('buy-plot', { id: globals.selected_character });
+    return () => {
+        console.log('buy plot', globals.selected_character);
+        socket.emit('buy-plot', { id: globals.selected_character });
+    };
 }
 function epitet(number) {
     if (number >= 90) {
@@ -124,7 +127,7 @@ function build_dialog(data) {
     build_portrait(portrait_div, data.equip, data.model);
     add_dialog_option('Goodbye', close_perks);
     if (is_leader(data))
-        add_dialog_option('I want to buy a land plot for 500.', buy_land_plot_request);
+        add_dialog_option('I want to buy a land plot for 500.', buy_land_plot_request());
     for (let [i, value] of Object.entries(data.perks)) {
         add_dialog_option(`Teach me ${i} for ${value}`, send_perk_learning_request(i));
     }

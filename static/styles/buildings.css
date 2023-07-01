@@ -16,3 +16,9 @@
     height: 100%;
     width: 40%
 }
+
+.buildings-actions > div {
+    margin-bottom: 10px;
+    height: 40px;
+    
+}

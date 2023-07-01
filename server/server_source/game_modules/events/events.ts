@@ -582,6 +582,15 @@ export namespace Event {
         // Effect.new_building(character.cell_id, type, character.skills.woodwork)
     }
 
+    export function change_rent_price(character: Character, plot_id: building_id, price: money) {
+        let building = Data.Buildings.from_id(plot_id)
+        // console.log()
+        let owner = Data.Buildings.owner(plot_id)
+        if ((owner != character.id)) return
+
+        building.room_cost = price
+    }
+
     export function repair_building(character: Character, builing_id: building_id) {
         let building = Data.Buildings.from_id(builing_id)
         let skill = CharacterSystem.skill(character, 'woodwork')

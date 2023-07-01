@@ -38,6 +38,7 @@ var Request;
             return {
                 id: id,
                 room_cost: scripted_values_1.ScriptedValue.room_price(id, character.id),
+                room_cost_true: building.room_cost,
                 rooms: (0, DATA_LAYOUT_BUILDING_1.rooms)(building.type),
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,

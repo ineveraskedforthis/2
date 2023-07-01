@@ -92,7 +92,7 @@ var ScriptedValue;
             multiplier = 0.5;
         if (race == 'graci')
             multiplier = 0.1;
-        return Math.floor((100 - tier * 10) * multiplier);
+        return (0, basic_functions_1.trim)(Math.floor((100 - tier * 10) * multiplier), 0, 100);
     }
     ScriptedValue.rest_target_stress = rest_target_stress;
 })(ScriptedValue = exports.ScriptedValue || (exports.ScriptedValue = {}));

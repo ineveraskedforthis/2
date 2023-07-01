@@ -30,8 +30,10 @@ import { LandPlotType, LandPlotSocket } from "../shared/buildings.js"
 {
     document.getElementById('request_buildings')!.onclick = request;
     document.getElementById('claim-land-plot')!.onclick = create_plot;
+    // document.getElementById('change-price-room')!.onclick
     // document.getElementById('build-shack')
 }
+
 
 
 function create_plot() {
@@ -52,6 +54,16 @@ function request() {
 function rent_room(id: number) {
     return function() {
         socket.emit('rent-room', {id: id})
+        request()
+    }
+}
+
+function change_price(id: number) {
+    return function() {
+        const price = parseInt((document.getElementById('building-rent-price-input')! as HTMLInputElement).value)
+        if (price == undefined) return
+        console.log('change-rent-price', {id: id, price: price})
+        socket.emit('change-rent-price', {id: id, price: price})
         request()
     }
 }
@@ -109,11 +121,13 @@ function display_building_data(b: LandPlotSocket) {
         owner_div.innerHTML = 'Owner: ' + b.owner_name + `(${b.owner_id})`;
 
         document.getElementById('rent-building-room')!.onclick = rent_room(b.id);
-        document.getElementById('rent-building-price')!.innerHTML = 'Rent price: ' + b.room_cost.toString();
+        document.getElementById('rent-building-price')!.innerHTML = 'Rent price (for you): ' + b.room_cost.toString();
+        document.getElementById('rent-building-price-true')!.innerHTML = 'Rent price: ' + b.room_cost_true.toString();
         document.getElementById('repair-building')!.onclick = repair_building(b.id);
         document.getElementById('building-description')!.innerHTML = b.type;
         document.getElementById('building-rooms')!.innerHTML = 'Rooms: ' + b.rooms_occupied + '/' + b.rooms;
         document.getElementById('building-durability')!.innerHTML = 'Durability: ' + b.durability;
+        document.getElementById('change-price-room')!.onclick = change_price(b.id);
 
         if (b.type == LandPlotType.LandPlot) {
             document.getElementById('build-shack')!.classList.remove('hidden')

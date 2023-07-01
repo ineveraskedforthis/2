@@ -91,9 +91,11 @@ export function GenericRest(character: Character) {
             let building_to_rest = find_building_to_rest(character, rest_budget(character))
             if (building_to_rest == undefined) {
                 rest_outside(character)
+                character.ai_memories.push(AImemory.NO_MONEY)
             } else {
                 let result = Effect.rent_room(character.id, building_to_rest)
                 if (result.response == ResponceNegative.no_money) {
+                    rest_outside(character)
                     character.ai_memories.push(AImemory.NO_MONEY)
                 }
             }

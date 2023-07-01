@@ -16,6 +16,7 @@ export interface LandPlotSocket {
     rooms_occupied: number,
     type: LandPlotType,
     room_cost: money,
+    room_cost_true: money,
     owner_id: number,
     owner_name: string;
 }
