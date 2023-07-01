@@ -23,6 +23,8 @@ import { ActionsPosition, ActionsSelf, ActionsUnit, battle_action_position_check
 import { BattleActionData, action_points, battle_position, unit_id } from "@custom_types/battle_data";
 import { type } from "os";
 import { Validator } from "./common_validations";
+import { LandPlotSocket } from "@custom_types/buildings";
+import { char_id } from "../../types";
 
 
 export namespace Request {
@@ -40,10 +42,16 @@ export namespace Request {
             Alerts.generic_user_alert(user, 'buildings-info', [])
             return
         }
-        let buildings = Array.from(ids).map((id) => {
+        let buildings:LandPlotSocket[] = Array.from(ids).map((id) => {
             let building = Data.Buildings.from_id(id)
             let rooms_occupied = Data.Buildings.occupied_rooms(id)
-            // let owner = Data.Buildings.owner(id)
+            let owner = Data.Buildings.owner(id)
+            let name = 'None'
+            if (owner != undefined) {
+                name = Data.CharacterDB.from_id(owner).name
+            } else {
+                owner = -1 as char_id
+            }
             return {
                 id: id,
                 room_cost: ScriptedValue.room_price(id, character.id),
@@ -51,6 +59,9 @@ export namespace Request {
                 rooms_occupied: rooms_occupied,
                 durability: building.durability,
                 type: building.type,
+                owner_id: owner,
+                owner_name: name,
+                cell_id: building.cell_id
             }
         })
 

@@ -25,6 +25,7 @@ function request_perks() {
 function close_perks() {
     let big_div = document.getElementById('backdrop');
     big_div.classList.add('hidden');
+    document.getElementById('dialog-scene')?.classList.add('hidden');
 }
 function send_perk_learning_request(i) {
     return () => socket.emit('learn-perk', { tag: i, id: globals.selected_character });
@@ -135,6 +136,7 @@ function build_dialog(data) {
         add_dialog_option(`Teach me ${SKILL_NAMES[skill]} for ${price}`, send_skill_learning_request(skill));
     }
     big_div.classList.remove('hidden');
+    document.getElementById('dialog-scene')?.classList.remove('hidden');
 }
 function update_perks(data) {
     // console.log('PERKS!!!!');

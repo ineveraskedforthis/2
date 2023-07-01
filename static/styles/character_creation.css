@@ -16,7 +16,7 @@
 .character_image {
     position: absolute;
     /* width: 300px; */
-    width: 40%;
+    /* width: 40%; */
     left: 10%;
     bottom: 5%;
     /* height: 525px; */
@@ -26,6 +26,7 @@
     object-fit: none;
     transform: scale(0.9, 0.9);
     transform-origin: bottom left;
+    overflow:visible;
     /* background-position: bottom center; */
     /* background-repeat: no-repeat; */
     /* background-size:contain; */
@@ -56,6 +57,14 @@
     background-image: url(/static/img/character_image/eyes_1.png);
 } */
 
+.character_image_col {
+    position: absolute;
+    bottom: 0%;
+    left: 10%;
+    width: 40%;
+    height: 100%;
+    overflow: visible;
+}
 
 #character_creation > .character_image_col {
     position: relative;

@@ -1,0 +1,18 @@
+.buildings-list {
+    width: 60%;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.buildings-list > div {
+    height: 100px;
+    width: 100px;
+    margin: 5px;
+
+    background-size: contain;
+}
+
+.buildings-actions {
+    height: 100%;
+    width: 40%
+}

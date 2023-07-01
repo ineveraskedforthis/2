@@ -14,32 +14,25 @@ import { LandPlotType, LandPlotSocket } from "../shared/buildings.js"
 
     // }
 
-    let close_button = document.createElement('button')
-    close_button.innerHTML = 'close'
-    close_button.id = 'close_buildings'
+    let close_button = document.getElementById('buildings-close-button')!;
+    close_button.onclick = () => close_buildings();
+    // close_button.innerHTML = 'close'
+    // close_button.id = 'close_buildings'
 
-    let new_plot = document.createElement('button')
-    new_plot.innerHTML = 'New plot'
-    new_plot.id = 'new_plot'
+    // let new_plot = document.createElement('button')
+    // new_plot.innerHTML = 'New plot'
+    // new_plot.id = 'new_plot'
 
-    div?.appendChild(new_plot)
-    div?.appendChild(close_button)
+    // div?.appendChild(new_plot)
+    // div?.appendChild(close_button)
 }
 
 {
-    let button = document.getElementById('request_buildings')!;
-    button.onclick = request;
+    document.getElementById('request_buildings')!.onclick = request;
+    document.getElementById('claim-land-plot')!.onclick = create_plot;
+    // document.getElementById('build-shack')
 }
 
-{
-    let button = document.getElementById('close_buildings')!;
-    button.onclick = () => close_buildings();
-}
-
-{
-    let button = document.getElementById('new_plot')!;
-    button.onclick = create_plot;
-}
 
 function create_plot() {
     socket.emit('create-plot');
@@ -49,6 +42,7 @@ function create_plot() {
 function close_buildings() {
     let big_div = document.getElementById('local_buildings')!;
     big_div.classList.add('hidden');
+    document.getElementById('backdrop')!.classList.add('hidden');
 }
 
 function request() {
@@ -109,50 +103,69 @@ function type_to_name(x: LandPlotType) {
     return x
 }
 
+function display_building_data(b: LandPlotSocket) {
+    return () => {
+        const owner_div = document.getElementById('building-owner')!;
+        owner_div.innerHTML = 'Owner: ' + b.owner_name + `(${b.owner_id})`;
+
+        document.getElementById('rent-building-room')!.onclick = rent_room(b.id);
+        document.getElementById('rent-building-price')!.innerHTML = 'Rent price: ' + b.room_cost.toString();
+        document.getElementById('repair-building')!.onclick = repair_building(b.id);
+        document.getElementById('building-description')!.innerHTML = b.type;
+        document.getElementById('building-rooms')!.innerHTML = 'Rooms: ' + b.rooms_occupied + '/' + b.rooms;
+        document.getElementById('building-durability')!.innerHTML = 'Durability: ' + b.durability;
+
+        if (b.type == LandPlotType.LandPlot) {
+            document.getElementById('build-shack')!.classList.remove('hidden')
+            document.getElementById('build-house')!.classList.remove('hidden')
+            document.getElementById('build-inn')!.classList.remove('hidden')
+
+            document.getElementById('build-shack')!.onclick = build_shack(b.id);
+            document.getElementById('build-house')!.onclick = build_house(b.id);
+            document.getElementById('build-inn')!.onclick = build_inn(b.id);
+        } else {
+            document.getElementById('build-shack')!.classList.add('hidden')
+            document.getElementById('build-house')!.classList.add('hidden')
+            document.getElementById('build-inn')!.classList.add('hidden')
+        }
+    }
+}
+
 function building_div(b: LandPlotSocket) {
-    let div = document.createElement('div')
-    let quality_label = document.createElement('div')
-    console.log(b.durability, b.type)
-    console.log(quality_to_name(b.durability) + ' ' + type_to_name(b.type))
-    quality_label.innerHTML = quality_to_name(b.durability) + ' ' + type_to_name(b.type)   
-    quality_label.classList.add('width-200')
-    div.appendChild(quality_label)
+    let building_slot = document.createElement('div')    
+    building_slot.classList.add('active')
+    if (b.type == LandPlotType.HumanHouse) {
+        building_slot.style.backgroundImage = 'url("/static/img/buildings/house.png")'
+    } else if (b.type == LandPlotType.Inn) {
+        building_slot.style.backgroundImage = 'url("/static/img/buildings/house.png")'
+    } else if (b.type == LandPlotType.ForestPlot) {
+        building_slot.style.backgroundImage = 'url("/static/img/buildings/forest.png")'
+    } else {
+        building_slot.innerHTML = type_to_name(b.type)   
+    }
+    building_slot.onclick = display_building_data(b)
+
+    // building_slot.classList.add('width-50')
+    // building_slot.classList.add('height-50')
+    // div.appendChild(building_slot)
     
 
-    let rooms_label = document.createElement('div')
-    rooms_label.innerHTML = b.rooms_occupied + '/' + b.rooms
-    rooms_label.classList.add('width-50')
-    rooms_label.classList.add('align-center')
-    div.appendChild(rooms_label)
+    // let rooms_label = document.createElement('div')
+    // rooms_label.innerHTML = b.rooms_occupied + '/' + b.rooms
+    // rooms_label.classList.add('width-50')
+    // rooms_label.classList.add('align-center')
+    // div.appendChild(rooms_label)
 
-    // if (b.is_inn) {
-    // let rest_button = document.createElement('button')
-    // rest_button.onclick = rent_room(b.id)
-    // rest_button.innerHTML = 'rest cost: ' + b.room_cost.toString()
-    // rest_button.classList.add('width-50')
-    // div.appendChild(rest_button)
-
-    div.appendChild(building_button(rent_room, b.id, 'rest cost: ' + b.room_cost.toString()))
-
-    // let repair_button = document.createElement('button')
-    // repair_button.onclick = repair_building(b.id)
-    // repair_button.innerHTML = 'repair'
-    // repair_button.classList.add('width-50')
-    // div.appendChild(repair_button)
-
-    div.appendChild(building_button(repair_building, b.id, 'repair'))
-
-    if (b.type == LandPlotType.LandPlot) {
-        div.appendChild(building_button(build_house, b.id, 'build house'))
-        div.appendChild(building_button(build_inn, b.id, 'build inn'))
-        div.appendChild(building_button(build_shack, b.id, 'build shack'))
-    }
+    // div.appendChild(building_button(rent_room, b.id, 'rest cost: ' + b.room_cost.toString()))
+    // div.appendChild(building_button(repair_building, b.id, 'repair'))
+    // if (b.type == LandPlotType.LandPlot) {
+    //     div.appendChild(building_button(build_house, b.id, 'build house'))
+    //     div.appendChild(building_button(build_inn, b.id, 'build inn'))
+    //     div.appendChild(building_button(build_shack, b.id, 'build shack'))
     // }
 
-    div.classList.add('border-white')
-    div.classList.add('container-horizontal')
-
-    return div    
+    building_slot.classList.add('border-white')
+    return building_slot    
 }
 
 
@@ -165,7 +178,7 @@ function building_button(callback: (id: number) => (() => void), id: number, inn
 }
 
 function build_div(array: LandPlotSocket[]) {
-    let div = document.getElementById('buildings_list')!
+    let div = document.getElementById('buildings-list')!
     div.innerHTML = ''
     array.forEach((value) => {
         div.appendChild(building_div(value))
@@ -176,6 +189,7 @@ socket.on('buildings-info', (data: LandPlotSocket[]) => {
     console.log(data)
     build_div(data)
     document.getElementById('local_buildings')!.classList.remove('hidden');
+    document.getElementById('backdrop')!.classList.remove('hidden');
 })
 
 

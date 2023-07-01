@@ -253,10 +253,10 @@
 }
 
 .pop-up {
-    top: 50px;
-    left: 500px;
-    height: 500px;
-    width: 500px;
+    top: 25%;
+    left: 20%;
+    height: 50%;
+    width: 60%;
     z-index: 10;
     overflow-y: scroll;
     border-color: bisque;
