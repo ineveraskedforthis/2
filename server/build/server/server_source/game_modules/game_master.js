@@ -22,7 +22,7 @@ var GameMaster;
             const mayor = templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCity(x, y, 'Mayor'));
             mayor.savings.inc(TONS_OF_MONEY);
             data_1.Data.World.set_faction_leader(faction, mayor.id);
-            const mayor_house = effects_1.Effect.new_building(cell_id, "human_house" /* LandPlotType.HumanHouse */, 200, 30);
+            const mayor_house = effects_1.Effect.new_building(cell_id, "human_house" /* LandPlotType.HumanHouse */, 200, 50);
             data_1.Data.Buildings.set_ownership(mayor.id, mayor_house);
             // creation of first colonists
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCook(x, y, "Cook", 'city'));

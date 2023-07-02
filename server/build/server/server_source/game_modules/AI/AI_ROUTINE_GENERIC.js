@@ -1,20 +1,20 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GenericRest = exports.ForestPassiveRoutine = exports.PassiveRoutine = exports.SteppePassiveRoutine = exports.SteppeAgressiveRoutine = void 0;
+exports.GenericRest = exports.find_building_to_rest = exports.ForestPassiveRoutine = exports.PassiveRoutine = exports.SteppePassiveRoutine = exports.SteppeAgressiveRoutine = void 0;
 const data_1 = require("../data");
 const scripted_values_1 = require("../events/scripted_values");
 const systems_communication_1 = require("../systems_communication");
-const actions_1 = require("./actions");
+const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const constraints_1 = require("./constraints");
 const helpers_1 = require("./helpers");
-const triggers_1 = require("./triggers");
 const effects_1 = require("../events/effects");
 const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
-const triggers_2 = require("../events/triggers");
+const triggers_1 = require("../events/triggers");
 const system_1 = require("../battle/system");
+const AI_TRIGGERS_1 = require("./AI_TRIGGERS");
 function SteppeAgressiveRoutine(character) {
-    if ((0, triggers_1.tired)(character)) {
-        (0, actions_1.rest_outside)(character);
+    if (AI_TRIGGERS_1.AI_TRIGGER.tired(character)) {
+        (0, ACTIONS_BASIC_1.rest_outside)(character);
     }
     else {
         let target = helpers_1.AIhelper.enemies_in_cell(character);
@@ -23,35 +23,35 @@ function SteppeAgressiveRoutine(character) {
             system_1.BattleSystem.start_battle(character, target_char);
         }
         else {
-            (0, actions_1.random_walk)(character, constraints_1.steppe_constraints);
+            (0, ACTIONS_BASIC_1.random_walk)(character, constraints_1.steppe_constraints);
         }
     }
 }
 exports.SteppeAgressiveRoutine = SteppeAgressiveRoutine;
 function SteppePassiveRoutine(character) {
-    if ((0, triggers_1.tired)(character)) {
-        (0, actions_1.rest_outside)(character);
+    if (AI_TRIGGERS_1.AI_TRIGGER.tired(character)) {
+        (0, ACTIONS_BASIC_1.rest_outside)(character);
     }
     else {
-        (0, actions_1.random_walk)(character, constraints_1.steppe_constraints);
+        (0, ACTIONS_BASIC_1.random_walk)(character, constraints_1.steppe_constraints);
     }
 }
 exports.SteppePassiveRoutine = SteppePassiveRoutine;
 function PassiveRoutine(character) {
-    if ((0, triggers_1.tired)(character)) {
-        (0, actions_1.rest_outside)(character);
+    if (AI_TRIGGERS_1.AI_TRIGGER.tired(character)) {
+        (0, ACTIONS_BASIC_1.rest_outside)(character);
     }
     else {
-        (0, actions_1.random_walk)(character, constraints_1.simple_constraints);
+        (0, ACTIONS_BASIC_1.random_walk)(character, constraints_1.simple_constraints);
     }
 }
 exports.PassiveRoutine = PassiveRoutine;
 function ForestPassiveRoutine(character) {
-    if ((0, triggers_1.tired)(character)) {
-        (0, actions_1.rest_outside)(character);
+    if (AI_TRIGGERS_1.AI_TRIGGER.tired(character)) {
+        (0, ACTIONS_BASIC_1.rest_outside)(character);
     }
     else {
-        (0, actions_1.random_walk)(character, constraints_1.forest_constraints);
+        (0, ACTIONS_BASIC_1.random_walk)(character, constraints_1.forest_constraints);
     }
 }
 exports.ForestPassiveRoutine = ForestPassiveRoutine;
@@ -78,6 +78,7 @@ function find_building_to_rest(character, budget) {
     }
     return target;
 }
+exports.find_building_to_rest = find_building_to_rest;
 function rest_budget(character) {
     let budget = character.savings.get();
     if (budget < 50) {
@@ -88,17 +89,17 @@ function rest_budget(character) {
 function GenericRest(character) {
     if (character.action != undefined)
         return undefined;
-    if ((0, triggers_1.tired)(character)) {
+    if (AI_TRIGGERS_1.AI_TRIGGER.tired(character)) {
         if (character.current_building == undefined) {
             let building_to_rest = find_building_to_rest(character, rest_budget(character));
             if (building_to_rest == undefined) {
-                (0, actions_1.rest_outside)(character);
+                (0, ACTIONS_BASIC_1.rest_outside)(character);
                 character.ai_memories.push("no_money" /* AImemory.NO_MONEY */);
             }
             else {
                 let result = effects_1.Effect.rent_room(character.id, building_to_rest);
-                if (result.response == triggers_2.ResponceNegative.no_money) {
-                    (0, actions_1.rest_outside)(character);
+                if (result.response == triggers_1.ResponceNegative.no_money) {
+                    (0, ACTIONS_BASIC_1.rest_outside)(character);
                     character.ai_memories.push("no_money" /* AImemory.NO_MONEY */);
                 }
             }

@@ -4,18 +4,13 @@ exports.MapSystem = void 0;
 // import { EloTemplate } from "../races/elo";
 // import { BigRatTemplate, RatTemplate } from "../races/rat";
 const data_1 = require("../data");
-// import { Event } from "../events/events";
-// import { Factions } from "../factions";
-// import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
-// import { cell_id, world_coordinates } from "../types";
-// import { Cell} from "./cell";
-const templates_1 = require("../templates");
 const basic_functions_1 = require("../calculations/basic_functions");
 // import { Convert } from "../systems_communication";
 // import { MEAT } from "../manager_classes/materials_manager";
 // import { Building } from "../DATA_LAYOUT_BUILDING";
 // import { Cell } from "./DATA_LAYOUT_CELL";
 const terrain_1 = require("./terrain");
+const geom_1 = require("../geom");
 // var size:world_dimensions = [0, 0]
 // var max_direction:number = 30
 // const dp = 
@@ -27,25 +22,6 @@ var MapSystem;
     MapSystem.cells = cells;
     function initial_load() {
         console.log('loading map');
-        // const development = STARTING_DEVELOPMENT
-        // const resources = STARTING_RESOURCES
-        // const terrain = STARTING_TERRAIN
-        // let size = Data.World.get_world_dimensions()
-        // for (let x = 0; x < size[0]; x++) {
-        //     for (let y = 0; y < size[1]; y++) {
-        //         const id = coordinate_to_id(x, y)
-        //         const cell: Cell =  {
-        //             id: id,
-        //             x: x,
-        //             y: y,
-        //             market_scent: 0,
-        //             rat_scent: 0,
-        //             rupture: false
-        //         }
-        //         Data.Cells.set_data(id, cell)
-        //     }
-        // }
-        // console.log('map is initialised')
     }
     MapSystem.initial_load = initial_load;
     function get_size() {
@@ -171,18 +147,6 @@ var MapSystem;
         }
     }
     MapSystem.initial_update = initial_update;
-    function roll_human() {
-        let dice = Math.random();
-        if (dice < 0.08) {
-            templates_1.Template.Character.HumanRatHunter(0, 3, "Rat Hunter");
-        }
-        else if (dice < 0.16) {
-            templates_1.Template.Character.HumanCityGuard(0, 3, "Guard");
-        }
-        else if (dice < 0.32) {
-            templates_1.Template.Character.HumanLocalTrader(0, 3, "Local Trader", 'city');
-        }
-    }
     function can_move(pos) {
         if (!data_1.Data.World.validate_coordinates(pos))
             return false;
@@ -199,4 +163,81 @@ var MapSystem;
         return ((dx == 0 && dy == 1) || (dx == 0 && dy == -1) || (dx == 1 && dy == 0) || (dx == -1 && dy == 0) || (dx == 1 && dy == 1) || (dx == -1 && dy == -1));
     }
     MapSystem.is_valid_move = is_valid_move;
+    function extract_path(prev, start, end) {
+        let path = [];
+        let current = end;
+        while (current != start) {
+            path.push(current);
+            let previous = prev[current];
+            if (previous == undefined) {
+                return undefined;
+            }
+            else {
+                current = previous;
+            }
+        }
+        path.push(start);
+        return path.reverse();
+    }
+    function find_path_full(start, end) {
+        let current = start;
+        let queue = [current];
+        let prev = {};
+        prev[current] = undefined;
+        let used = {};
+        let right = 1;
+        let next = 0;
+        while ((next != -1) && (right < 400)) {
+            current = queue[next];
+            used[current] = true;
+            for (let neighbour of data_1.Data.World.neighbours(current)) {
+                if (data_1.Data.World.id_to_terrain(neighbour) == terrain_1.Terrain.sea)
+                    continue;
+                if (data_1.Data.World.id_to_terrain(neighbour) == terrain_1.Terrain.rupture)
+                    continue;
+                if (data_1.Data.World.id_to_terrain(neighbour) == terrain_1.Terrain.void)
+                    continue;
+                if (used[neighbour])
+                    continue;
+                queue[right] = neighbour;
+                prev[neighbour] = current;
+                right++;
+                if (neighbour == end) {
+                    return extract_path(prev, start, end);
+                }
+            }
+            let heur_score = 9999;
+            next = -1;
+            for (let i = 0; i < right; i++) {
+                let tmp = dist(queue[i], start) / 100000;
+                if ((tmp < heur_score) && (!used[queue[i]])) {
+                    next = i;
+                    heur_score = tmp;
+                }
+            }
+        }
+        return extract_path(prev, start, end);
+    }
+    MapSystem.find_path_full = find_path_full;
+    function find_path(start, end) {
+        let path = find_path_full(start, end);
+        if (path == undefined)
+            return undefined;
+        return path[0];
+    }
+    MapSystem.find_path = find_path;
+    function dist(a, b) {
+        const a_coord = data_1.Data.World.id_to_coordinate(a);
+        const b_coord = data_1.Data.World.id_to_coordinate(b);
+        let a_center = get_hex_centre(a_coord);
+        let b_center = get_hex_centre(b_coord);
+        return geom_1.geom.dist(a_center, b_center);
+    }
+    function get_hex_centre([x, y]) {
+        var h = Math.sqrt(3) / 2;
+        var w = 1 / 2;
+        var tx = (1 + w) * x;
+        var ty = 2 * h * y - h * x;
+        return { x: tx, y: ty };
+    }
 })(MapSystem = exports.MapSystem || (exports.MapSystem = {}));

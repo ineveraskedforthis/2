@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TraderRoutine = void 0;
 const data_1 = require("../data");
 const market_1 = require("../events/market");
-const system_1 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
-const actions_1 = require("./actions");
+const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
+const AI_TRIGGERS_1 = require("./AI_TRIGGERS");
 function TraderRoutine(character) {
     // console.log("???")
     if (character.in_battle())
@@ -25,12 +25,12 @@ function TraderRoutine(character) {
     }
     if (character.ai_state == "go_to_market" /* AIstate.GoToMarket */) {
         // console.log('going to market')
-        if (system_1.MapSystem.has_market(character.cell_id)) {
-            (0, actions_1.sell_all_stash)(character);
+        if (AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
+            (0, ACTIONS_BASIC_1.sell_all_stash)(character);
             character.ai_state = "wait_sale" /* AIstate.WaitSale */;
         }
         else {
-            (0, actions_1.market_walk)(character);
+            (0, ACTIONS_BASIC_1.home_walk)(character);
         }
     }
     // wait until you earn enough money or sell out
@@ -47,8 +47,8 @@ function TraderRoutine(character) {
             // console.log('switch to buying')
             character.ai_state = "patrol" /* AIstate.Patrol */;
         }
-        (0, actions_1.update_price_beliefs)(character);
-        (0, actions_1.urban_walk)(character);
+        (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
+        (0, ACTIONS_BASIC_1.urban_walk)(character);
     }
     //wander aimlessly and buy random stuff
     if (character.ai_state == "patrol" /* AIstate.Patrol */) {
@@ -76,7 +76,7 @@ function TraderRoutine(character) {
         }
         if (target == undefined) {
             // console.log("searching for best deals")
-            (0, actions_1.urban_walk)(character);
+            (0, ACTIONS_BASIC_1.urban_walk)(character);
         }
         else {
             // console.log(`buy ${materials.index_to_material(target.tag).string_tag} for ${target.price} with intention to make ${best_profit} profit`)

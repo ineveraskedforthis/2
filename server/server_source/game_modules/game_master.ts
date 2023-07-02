@@ -25,7 +25,7 @@ export namespace GameMaster {
             mayor.savings.inc(TONS_OF_MONEY)
             Data.World.set_faction_leader(faction, mayor.id)
 
-            const mayor_house = Effect.new_building(cell_id, LandPlotType.HumanHouse, 200, 30 as money)
+            const mayor_house = Effect.new_building(cell_id, LandPlotType.HumanHouse, 200, 50 as money)
             Data.Buildings.set_ownership(mayor.id, mayor_house)
 
             // creation of first colonists

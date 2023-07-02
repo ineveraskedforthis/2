@@ -6,8 +6,9 @@ import { EventMarket } from "../events/market";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
-import { market_walk, sell_all_stash, update_price_beliefs, urban_walk } from "./actions";
+import { home_walk, sell_all_stash, update_price_beliefs, urban_walk } from "./ACTIONS_BASIC";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
+import { AI_TRIGGER } from "./AI_TRIGGERS";
 
 export function TraderRoutine(character: Character) {
     // console.log("???")
@@ -25,11 +26,11 @@ export function TraderRoutine(character: Character) {
 
     if (character.ai_state == AIstate.GoToMarket) {
         // console.log('going to market')
-        if (MapSystem.has_market(character.cell_id)) {
+        if (AI_TRIGGER.at_home(character)) {
             sell_all_stash(character)
             character.ai_state = AIstate.WaitSale
         } else {
-            market_walk(character)
+            home_walk(character)
         }
     }
 

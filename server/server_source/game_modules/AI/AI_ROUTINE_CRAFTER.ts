@@ -6,7 +6,7 @@ import { RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { AIactions } from "./AIactions";
-import { update_price_beliefs } from "./actions";
+import { update_price_beliefs } from "./ACTIONS_BASIC";
 import { durability } from "../craft/CraftItem";
 import { check_inputs } from "../craft/helpers";
 import { AIhelper } from "./helpers";

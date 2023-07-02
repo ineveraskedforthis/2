@@ -21,6 +21,7 @@ var Template;
         function Base(template, name, model, x, y, faction_id) {
             const cell = data_1.Data.World.coordinate_to_id([x, y]);
             let character = events_1.Event.new_character(template, name, cell, model);
+            character.home_cell_id = cell;
             if (faction_id != undefined)
                 data_1.Data.Reputation.set(faction_id, character.id, "member");
             return character;

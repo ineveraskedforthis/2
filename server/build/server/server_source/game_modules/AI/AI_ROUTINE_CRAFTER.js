@@ -5,7 +5,7 @@ const crafts_storage_1 = require("../craft/crafts_storage");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const AIactions_1 = require("./AIactions");
-const actions_1 = require("./actions");
+const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const CraftItem_1 = require("../craft/CraftItem");
 const helpers_1 = require("../craft/helpers");
 // import { rest_outside } from "./actions";
@@ -13,7 +13,7 @@ const helpers_1 = require("../craft/helpers");
 // import { tired } from "./triggers";
 function decide_bulk_craft(character) {
     let result = [];
-    (0, actions_1.update_price_beliefs)(character);
+    (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
     for (const craft of Object.values(crafts_storage_1.crafts_bulk)) {
         let profit = AI_SCRIPTED_VALUES_1.AItrade.craft_bulk_profitability(character, craft);
         // console.log(`character ${character.get_name()} has profitability of ${profit} for craft ${craft.id}`)

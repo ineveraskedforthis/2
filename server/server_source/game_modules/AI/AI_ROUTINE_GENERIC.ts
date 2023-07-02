@@ -4,18 +4,18 @@ import { Data } from "../data";
 import { Event } from "../events/events";
 import { ScriptedValue } from "../events/scripted_values";
 import { Convert } from "../systems_communication";
-import { random_walk, rest_outside } from "./actions";
+import { random_walk, rest_outside } from "./ACTIONS_BASIC";
 import { forest_constraints, simple_constraints, steppe_constraints } from "./constraints";
 import { AIhelper } from "./helpers";
-import { tired } from "./triggers";
 import { Effect } from "../events/effects";
 import { rooms } from "../DATA_LAYOUT_BUILDING";
 import { ResponceNegative } from "../events/triggers";
 import { AImemory } from "../character/AIstate";
 import { BattleSystem } from "../battle/system";
+import { AI_TRIGGER } from "./AI_TRIGGERS";
 
 export function SteppeAgressiveRoutine(character: Character) {
-    if (tired(character)) {
+    if (AI_TRIGGER.tired(character)) {
         rest_outside(character)
     } else {
         let target = AIhelper.enemies_in_cell(character);
@@ -29,7 +29,7 @@ export function SteppeAgressiveRoutine(character: Character) {
 }
 
 export function SteppePassiveRoutine(character: Character) {
-    if (tired(character)) {
+    if (AI_TRIGGER.tired(character)) {
         rest_outside(character)
     } else {
         random_walk(character, steppe_constraints);
@@ -37,7 +37,7 @@ export function SteppePassiveRoutine(character: Character) {
 }
 
 export function PassiveRoutine(character: Character) {
-        if (tired(character)) {
+        if (AI_TRIGGER.tired(character)) {
         rest_outside(character)
     } else {
         random_walk(character, simple_constraints);
@@ -45,14 +45,14 @@ export function PassiveRoutine(character: Character) {
 }
 
 export function ForestPassiveRoutine(character: Character) {
-    if (tired(character)) {
+    if (AI_TRIGGER.tired(character)) {
         rest_outside(character)
     } else {
         random_walk(character, forest_constraints);
     }
 }
 
-function find_building_to_rest(character: Character, budget: money) {
+export function find_building_to_rest(character: Character, budget: money) {
     let cell = character.cell_id
     let buildings = Data.Buildings.from_cell_id(cell)
     if (buildings == undefined) return undefined
@@ -86,7 +86,7 @@ function rest_budget(character: Character) {
 export function GenericRest(character: Character) {
     if (character.action != undefined) return undefined
 
-    if (tired(character)) {
+    if (AI_TRIGGER.tired(character)) {
         if (character.current_building == undefined) {
             let building_to_rest = find_building_to_rest(character, rest_budget(character))
             if (building_to_rest == undefined) {

@@ -1,5 +1,5 @@
 import { money } from "@custom_types/common"
-import { roll_price_belief_sell_increase } from "../AI/actions"
+import { roll_price_belief_sell_increase } from "../AI/ACTIONS_BASIC"
 import { trim } from "../calculations/basic_functions"
 import { Character } from "../character/character"
 import { UI_Part } from "../client_communication/causality_graph"

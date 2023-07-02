@@ -25,6 +25,7 @@ export class Character {
 
     user_id: user_id|TEMP_USER_ID;
     cell_id: cell_id;
+    home_cell_id?: cell_id;
     current_building: building_id|undefined;
 
     name: string;

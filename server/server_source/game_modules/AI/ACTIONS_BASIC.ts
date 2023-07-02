@@ -165,14 +165,23 @@ export function rat_walk(character: Character, constraints: (cell: Cell) => bool
     ActionManager.start_action(CharacterAction.MOVE, character, target.id)
 }
 
-export function market_walk(character: Character) {
-    let cell_ids = Data.World.neighbours(character.cell_id)
-    let potential_moves = cell_ids.map((x) => {   
-        let cell = Data.Cells.from_id(x)
-        return {item: cell, weight: cell.market_scent}
-    })
-    let target = select_max(potential_moves, simple_constraints)
-    ActionManager.start_action(CharacterAction.MOVE, character, target.id)
+export function home_walk(character: Character) {
+    if (character.home_cell_id == undefined) {
+        let cell_ids = Data.World.neighbours(character.cell_id)
+        let potential_moves = cell_ids.map((x) => {   
+            let cell = Data.Cells.from_id(x)
+            return {item: cell, weight: cell.market_scent}
+        })
+        let target = select_max(potential_moves, simple_constraints)
+        ActionManager.start_action(CharacterAction.MOVE, character, target.id)
+    } else {
+        let next_cell = MapSystem.find_path(character.cell_id, character.home_cell_id)
+        if (next_cell != undefined) {
+            ActionManager.start_action(CharacterAction.MOVE, character, next_cell);
+        } else {
+            console.log('character tries to move home to sell loot but can\'t')
+        }
+    }
 }
 
 export function urban_walk(character: Character) {
@@ -237,6 +246,13 @@ export function update_price_beliefs(character: Character) {
     //adding a bit of healthy noise
     character.ai_price_belief_buy.forEach((value, key, map) => {
         if (value > 1) {
+            if (character.trade_stash.get(key) > 0) {
+                let amount = character.trade_stash.get(key) - 20
+                let dice = Math.random()
+                if (dice < amount / 100) {
+                    map.set(key, value - 1 as money)
+                }
+            }
             let dice = Math.random()
             if (dice < 0.2) {
                 map.set(key, value - 1 as money)

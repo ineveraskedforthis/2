@@ -24,6 +24,7 @@ export namespace Template {
         function Base(template:CharacterTemplate, name: string|undefined, model: ModelVariant|undefined ,x: number, y: number, faction_id: string|undefined) {
             const cell = Data.World.coordinate_to_id([x, y])
             let character = Event.new_character(template, name, cell, model)
+            character.home_cell_id = cell
             if (faction_id != undefined) Data.Reputation.set(faction_id, character.id, "member")
             return character
         }
