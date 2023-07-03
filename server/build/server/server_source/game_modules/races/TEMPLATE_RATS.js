@@ -4,7 +4,7 @@ exports.MageRatTemplate = exports.BerserkRatTemplate = exports.BigRatTemplate = 
 const generate_name_moraes_1 = require("./generate_name_moraes");
 exports.RatTemplate = {
     model: 'rat',
-    ai_map: 'steppe_walker_agressive',
+    ai_map: 'rat',
     ai_battle: 'basic',
     race: 'rat',
     stats: "Rat",
@@ -14,7 +14,7 @@ exports.RatTemplate = {
 };
 exports.BigRatTemplate = {
     model: 'bigrat',
-    ai_map: 'steppe_walker_agressive',
+    ai_map: 'rat',
     ai_battle: 'basic',
     race: 'rat',
     stats: "BigRat",
@@ -24,7 +24,7 @@ exports.BigRatTemplate = {
 };
 exports.BerserkRatTemplate = {
     model: 'berserkrat',
-    ai_map: 'steppe_walker_agressive',
+    ai_map: 'rat',
     ai_battle: 'basic',
     race: 'rat',
     stats: "BerserkRat",
@@ -34,7 +34,7 @@ exports.BerserkRatTemplate = {
 };
 exports.MageRatTemplate = {
     model: 'magerat',
-    ai_map: 'steppe_walker_agressive',
+    ai_map: 'rat',
     ai_battle: 'basic',
     race: 'rat',
     stats: "MageRat",

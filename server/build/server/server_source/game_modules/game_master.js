@@ -31,6 +31,8 @@ var GameMaster;
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.ArmourMaster(x, y));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.WeaponMasterWood(x, y, 'city'));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanLocalTrader(x, y, "Local Trader", 'city'));
+            templates_1.Template.Character.Fisherman(x, y, "Fisherman 1");
+            templates_1.Template.Character.Fisherman(x, y, "Fisherman 2");
             // colony mages
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Alchemist(x, y, 'city'));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Mage(x, y, 'city'));
@@ -59,6 +61,8 @@ var GameMaster;
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.WeaponMasterBone(x, y, faction));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.BloodMage(x, y, faction));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.MasterUnarmed(x, y, faction));
+            templates_1.Template.Character.Lumberjack(x, y, "Lumberjack 1");
+            templates_1.Template.Character.Lumberjack(x, y, "Lumberjack 2");
         }
         if (faction == 'rats') {
             const rat_lair = effects_1.Effect.new_building(cell_id, "rat_lair" /* LandPlotType.RatLair */, 400, 0);

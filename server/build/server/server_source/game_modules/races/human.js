@@ -5,13 +5,13 @@ const Damage_1 = require("../Damage");
 const templates_1 = require("../character/templates");
 const HumanArchetype = {
     model: 'human',
-    ai_map: 'dummy',
+    ai_map: 'crafter',
     ai_battle: 'basic',
     race: 'human'
 };
 const HumanStrongArchetype = {
     model: 'human_strong',
-    ai_map: 'dummy',
+    ai_map: 'crafter',
     ai_battle: 'basic',
     race: 'human'
 };

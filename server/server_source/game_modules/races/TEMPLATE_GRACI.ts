@@ -3,7 +3,7 @@ import { gen_from_moraes } from "./generate_name_moraes";
 
 export const GraciTemplate: CharacterTemplate = {
     model: 'graci',
-    ai_map: 'steppe_walker_passive',
+    ai_map: 'nomad',
     ai_battle: 'basic',
     race: 'graci',
     stats: 'Graci',

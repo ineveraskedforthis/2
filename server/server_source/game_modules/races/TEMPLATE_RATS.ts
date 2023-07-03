@@ -3,7 +3,7 @@ import { gen_from_moraes } from "./generate_name_moraes";
 
 export const RatTemplate: CharacterTemplate = {
     model: 'rat',
-    ai_map: 'steppe_walker_agressive',
+    ai_map: 'rat',
     ai_battle: 'basic',
     race: 'rat',
     stats: "Rat",
@@ -14,7 +14,7 @@ export const RatTemplate: CharacterTemplate = {
 
 export const BigRatTemplate: CharacterTemplate = {
     model: 'bigrat',
-    ai_map: 'steppe_walker_agressive',
+    ai_map: 'rat',
     ai_battle: 'basic',
     race: 'rat',
     stats: "BigRat",
@@ -25,7 +25,7 @@ export const BigRatTemplate: CharacterTemplate = {
 
 export const BerserkRatTemplate: CharacterTemplate = {
     model: 'berserkrat',
-    ai_map: 'steppe_walker_agressive',
+    ai_map: 'rat',
     ai_battle: 'basic',
     race: 'rat',
     stats: "BerserkRat",
@@ -36,7 +36,7 @@ export const BerserkRatTemplate: CharacterTemplate = {
 
 export const MageRatTemplate: CharacterTemplate = {
     model: 'magerat',
-    ai_map: 'steppe_walker_agressive',
+    ai_map: 'rat',
     ai_battle: 'basic',
     race: 'rat',
     stats: "MageRat",

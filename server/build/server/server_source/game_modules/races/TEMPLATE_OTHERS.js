@@ -4,7 +4,7 @@ exports.BallTemplate = void 0;
 const generate_name_moraes_1 = require("./generate_name_moraes");
 exports.BallTemplate = {
     model: 'ball',
-    ai_map: 'forest_walker',
+    ai_map: 'forest_dweller',
     ai_battle: 'basic',
     race: 'ball',
     stats: "Ball",

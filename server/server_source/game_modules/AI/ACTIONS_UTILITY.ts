@@ -11,12 +11,11 @@ import { Effect } from "../events/effects";
 import { Data } from "../data";
 import { ScriptedValue } from "../events/scripted_values";
 import { MapSystem } from "../map/system";
-import { buy, home_walk, loot, random_walk, rat_walk, remove_orders, sell_loot, update_price_beliefs, urban_walk } from "./ACTIONS_BASIC";
+import { buy, coast_walk, home_walk, loot, random_walk, rat_walk, remove_orders, sell_loot, sell_material, update_price_beliefs, urban_walk } from "./ACTIONS_BASIC";
 import { simple_constraints } from "./constraints";
-import { ARROW_BONE, FOOD } from "../manager_classes/materials_manager";
+import { ARROW_BONE, FISH, FOOD, WOOD } from "../manager_classes/materials_manager";
 import { AI_TRIGGER } from "./AI_TRIGGERS";
 import { AI_RESERVE } from "./AI_CONSTANTS";
-import { utimes } from "fs";
 import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
 import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 
@@ -52,6 +51,10 @@ type ActionKeys =
     | 'TRADE'
     | 'STEPPE_WALK'
     | 'FOREST_WALK'
+    | 'FISH'
+    | 'SELL_FISH'
+    | 'CUT_WOOD'
+    | 'SELL_WOOD'
 
 
 export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
@@ -142,7 +145,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
         },
 
         utility: (character: Character) => {
-            if (character.ai_map == 'dummy') return 0
+            if (character.ai_map == 'crafter') return 0
             return loot(character) / 20
         }
     },
@@ -226,7 +229,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
         },
 
         utility(character) {
-            if (character.ai_map == 'dummy') return 0.8
+            if (character.ai_map == 'crafter') return 0.8
             return 0
         }
     },
@@ -251,7 +254,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
         },
 
         utility(character) {
-            if (character.ai_map == 'steppe_walker_passive') {
+            if (character.ai_map == 'nomad') {
                 return 0.8
             }
             return 0
@@ -264,10 +267,70 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
         },
 
         utility(character) {
-            if (character.ai_map == 'forest_walker') {
+            if (character.ai_map == 'forest_dweller') {
                 return 0.8
             }
             return 0
+        }
+    },
+
+    FISH: {
+        action(character) {
+            if (MapSystem.can_fish(character.cell_id)) {
+                ActionManager.start_action(CharacterAction.FISH, character, character.cell_id)
+            } else {
+                coast_walk(character)
+            }            
+        },
+
+        utility(character) {
+            if (character.ai_map == 'fisherman') return 0.5
+            return 0
+        }
+    },
+
+    SELL_FISH: {
+        action(character) {
+            if (AI_TRIGGER.at_home(character)) {
+                sell_material(character, FISH)
+            } else {
+                home_walk(character)
+            }
+        },
+
+        utility(character) {
+            if (character.ai_map == 'crafter') return 0
+            return character.stash.get(FISH) / 20
+        }
+    },
+
+    CUT_WOOD: {
+        action(character) {
+            if (!MapSystem.has_wood(character.cell_id)) {
+                random_walk(character, simple_constraints)
+                return
+            }
+            ActionManager.start_action(CharacterAction.GATHER_WOOD, character, character.cell_id)
+        },
+
+        utility(character) {
+            if (character.ai_map == 'lumberjack') return 0.7
+            return 0
+        }
+    },
+
+    SELL_WOOD: {
+        action(character) {
+            if (AI_TRIGGER.at_home(character)) {
+                sell_material(character, WOOD)
+            } else {
+                home_walk(character)
+            }
+        },
+
+        utility(character) {
+            if (character.ai_map == 'crafter') return 0
+            return character.stash.get(WOOD) / 40
         }
     }
 }

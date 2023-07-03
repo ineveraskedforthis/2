@@ -8,7 +8,7 @@ function generate_name() {
 }
 exports.ElodinoTemplate = {
     model: 'elo',
-    ai_map: 'forest_walker',
+    ai_map: 'forest_dweller',
     ai_battle: 'basic',
     race: 'elo',
     stats: "Elodino",

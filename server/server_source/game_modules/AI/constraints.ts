@@ -29,3 +29,7 @@ export function steppe_constraints(cell: Cell) {
 export function simple_constraints(cell: Cell) {
     return MapSystem.can_move([cell.x, cell.y]);
 }
+
+export function coastal_constraints(cell: Cell) {
+    return Data.Cells.sea_nearby(cell.id);
+}

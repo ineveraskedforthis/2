@@ -10,6 +10,7 @@ const helpers_1 = require("./helpers");
 const effects_1 = require("../events/effects");
 const data_1 = require("../data");
 const scripted_values_1 = require("../events/scripted_values");
+const system_2 = require("../map/system");
 const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const constraints_1 = require("./constraints");
 const materials_manager_1 = require("../manager_classes/materials_manager");
@@ -112,7 +113,7 @@ exports.AI_ACTIONS = {
             }
         },
         utility: (character) => {
-            if (character.ai_map == 'dummy')
+            if (character.ai_map == 'crafter')
                 return 0;
             return (0, ACTIONS_BASIC_1.loot)(character) / 20;
         }
@@ -187,7 +188,7 @@ exports.AI_ACTIONS = {
             (0, AI_ROUTINE_CRAFTER_1.crafter_routine)(character);
         },
         utility(character) {
-            if (character.ai_map == 'dummy')
+            if (character.ai_map == 'crafter')
                 return 0.8;
             return 0;
         }
@@ -208,7 +209,7 @@ exports.AI_ACTIONS = {
             (0, AI_ROUTINE_GENERIC_1.SteppePassiveRoutine)(character);
         },
         utility(character) {
-            if (character.ai_map == 'steppe_walker_passive') {
+            if (character.ai_map == 'nomad') {
                 return 0.8;
             }
             return 0;
@@ -219,10 +220,69 @@ exports.AI_ACTIONS = {
             (0, AI_ROUTINE_GENERIC_1.ForestPassiveRoutine)(character);
         },
         utility(character) {
-            if (character.ai_map == 'forest_walker') {
+            if (character.ai_map == 'forest_dweller') {
                 return 0.8;
             }
             return 0;
+        }
+    },
+    FISH: {
+        action(character) {
+            if (system_2.MapSystem.can_fish(character.cell_id)) {
+                manager_1.ActionManager.start_action(actions_00_1.CharacterAction.FISH, character, character.cell_id);
+            }
+            else {
+                (0, ACTIONS_BASIC_1.coast_walk)(character);
+            }
+        },
+        utility(character) {
+            if (character.ai_map == 'fisherman')
+                return 0.5;
+            return 0;
+        }
+    },
+    SELL_FISH: {
+        action(character) {
+            if (AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
+                (0, ACTIONS_BASIC_1.sell_material)(character, materials_manager_1.FISH);
+            }
+            else {
+                (0, ACTIONS_BASIC_1.home_walk)(character);
+            }
+        },
+        utility(character) {
+            if (character.ai_map == 'crafter')
+                return 0;
+            return character.stash.get(materials_manager_1.FISH) / 20;
+        }
+    },
+    CUT_WOOD: {
+        action(character) {
+            if (!system_2.MapSystem.has_wood(character.cell_id)) {
+                (0, ACTIONS_BASIC_1.random_walk)(character, constraints_1.simple_constraints);
+                return;
+            }
+            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.GATHER_WOOD, character, character.cell_id);
+        },
+        utility(character) {
+            if (character.ai_map == 'lumberjack')
+                return 0.7;
+            return 0;
+        }
+    },
+    SELL_WOOD: {
+        action(character) {
+            if (AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
+                (0, ACTIONS_BASIC_1.sell_material)(character, materials_manager_1.WOOD);
+            }
+            else {
+                (0, ACTIONS_BASIC_1.home_walk)(character);
+            }
+        },
+        utility(character) {
+            if (character.ai_map == 'crafter')
+                return 0;
+            return character.stash.get(materials_manager_1.WOOD) / 40;
         }
     }
 };

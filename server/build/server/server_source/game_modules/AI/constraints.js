@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.simple_constraints = exports.steppe_constraints = exports.urban_constraints = exports.forest_constraints = void 0;
+exports.coastal_constraints = exports.simple_constraints = exports.steppe_constraints = exports.urban_constraints = exports.forest_constraints = void 0;
 const data_1 = require("../data");
 const system_1 = require("../map/system");
 // import { cell_id } from "../types";
@@ -33,3 +33,7 @@ function simple_constraints(cell) {
     return system_1.MapSystem.can_move([cell.x, cell.y]);
 }
 exports.simple_constraints = simple_constraints;
+function coastal_constraints(cell) {
+    return data_1.Data.Cells.sea_nearby(cell.id);
+}
+exports.coastal_constraints = coastal_constraints;

@@ -2,7 +2,7 @@ import { CharacterTemplate } from "../types"
 
 export const HumanTemplate:CharacterTemplate = {
     model: 'human',
-    ai_map: 'dummy',
+    ai_map: 'crafter',
     ai_battle: 'basic',
     race: 'human',
     stats: 'Human',
@@ -13,7 +13,7 @@ export const HumanTemplate:CharacterTemplate = {
 
 export const HumanStrongTemplate:CharacterTemplate = {
     model: 'human_strong',
-    ai_map: 'dummy',
+    ai_map: 'crafter',
     ai_battle: 'basic',
     race: 'human',
     stats: 'HumanStrong',

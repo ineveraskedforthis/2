@@ -5,7 +5,7 @@ const damage_types_1 = require("../../misc/damage_types");
 const templates_1 = require("../templates");
 const HumanArchetype = {
     model: 'human',
-    ai_map: 'dummy',
+    ai_map: 'crafter',
     ai_battle: 'basic',
     race: 'human'
 };

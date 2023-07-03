@@ -4,7 +4,7 @@ exports.GraciTemplate = void 0;
 const generate_name_moraes_1 = require("./generate_name_moraes");
 exports.GraciTemplate = {
     model: 'graci',
-    ai_map: 'steppe_walker_passive',
+    ai_map: 'nomad',
     ai_battle: 'basic',
     race: 'graci',
     stats: 'Graci',

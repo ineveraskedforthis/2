@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TraderTemplate = exports.RatHunterTemplate = exports.HumanStrongTemplate = exports.HumanTemplate = void 0;
 exports.HumanTemplate = {
     model: 'human',
-    ai_map: 'dummy',
+    ai_map: 'crafter',
     ai_battle: 'basic',
     race: 'human',
     stats: 'Human',
@@ -13,7 +13,7 @@ exports.HumanTemplate = {
 };
 exports.HumanStrongTemplate = {
     model: 'human_strong',
-    ai_map: 'dummy',
+    ai_map: 'crafter',
     ai_battle: 'basic',
     race: 'human',
     stats: 'HumanStrong',

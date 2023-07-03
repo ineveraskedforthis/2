@@ -65,13 +65,16 @@ export class Status {
 export type status_type = 'hp'|'rage'|'blood'|'stress'|'fatigue'
 
 export type tagAI = 
-    'steppe_walker_agressive'
-    |'dummy'
-    |'steppe_walker_passive'
-    |'forest_walker'
-    |'rat_hunter'
-    |'urban_trader'
-    |'urban_guard'
+    'rat'
+    | 'urban_guard'
+    | 'rat_hunter'
+    | 'rat'
+    | 'crafter'
+    | 'fisherman'
+    | 'nomad'
+    | 'forest_dweller'
+    | 'urban_trader'
+    | 'lumberjack'
 
 export type tagRACE = 
     'human'

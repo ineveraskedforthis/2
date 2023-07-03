@@ -2,7 +2,7 @@ import { cell_id, money } from "@custom_types/common"
 import { Data } from "./data"
 import { Event } from "./events/events"
 // import { Factions } from "./factions"
-import { BASIC_BOW_ARGUMENT, BONE_SPEAR_ARGUMENT, CLOTH_ARMOUR_ARGUMENT, CLOTH_GLOVES_ARGUMENT, CLOTH_HELMET_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT, SPEAR_ARGUMENT } from "./items/items_set_up"
+import { BASIC_BOW_ARGUMENT, BONE_DAGGER_ARGUMENT, BONE_SPEAR_ARGUMENT, CLOTH_ARMOUR_ARGUMENT, CLOTH_GLOVES_ARGUMENT, CLOTH_HELMET_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT, SPEAR_ARGUMENT } from "./items/items_set_up"
 import { ItemSystem } from "./items/system"
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager"
 import { MapSystem } from "./map/system"
@@ -48,6 +48,27 @@ export namespace Template {
             human._skills.travelling += 30
             human._skills.ranged += 20
             human._skills.noweapon += 10
+            return human
+        }
+
+        export function Lumberjack(x: number, y: number, name: string) {
+            let human = HumanSteppe(x, y, name)
+            human._skills.travelling += 20
+            human.ai_map = 'lumberjack'
+
+            let cutting_tool = ItemSystem.create(BONE_DAGGER_ARGUMENT)
+            cutting_tool.durability = 200
+            human.equip.data.weapon = cutting_tool
+
+            return human
+        }
+
+        export function Fisherman(x: number, y: number, name: string) {
+            let human = HumanSteppe(x, y, name)
+            human._skills.travelling += 20
+            human._skills.fishing += 40
+            human.ai_map = 'fisherman'
+
             return human
         }
 

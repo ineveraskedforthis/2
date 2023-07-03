@@ -48,6 +48,24 @@ var Template;
             return human;
         }
         Character.HumanSteppe = HumanSteppe;
+        function Lumberjack(x, y, name) {
+            let human = HumanSteppe(x, y, name);
+            human._skills.travelling += 20;
+            human.ai_map = 'lumberjack';
+            let cutting_tool = system_1.ItemSystem.create(items_set_up_1.BONE_DAGGER_ARGUMENT);
+            cutting_tool.durability = 200;
+            human.equip.data.weapon = cutting_tool;
+            return human;
+        }
+        Character.Lumberjack = Lumberjack;
+        function Fisherman(x, y, name) {
+            let human = HumanSteppe(x, y, name);
+            human._skills.travelling += 20;
+            human._skills.fishing += 40;
+            human.ai_map = 'fisherman';
+            return human;
+        }
+        Character.Fisherman = Fisherman;
         function HumanStrong(x, y, name) {
             let human = Base(TEMPLATE_HUMANS_1.HumanStrongTemplate, name, undefined, x, y, undefined);
             return human;

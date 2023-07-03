@@ -3,7 +3,7 @@ import { gen_from_moraes } from "./generate_name_moraes";
 
 export const BallTemplate: CharacterTemplate = {
     model: 'ball',
-    ai_map: 'forest_walker',
+    ai_map: 'forest_dweller',
     ai_battle: 'basic',
     race: 'ball',
     stats: "Ball",

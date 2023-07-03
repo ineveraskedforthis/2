@@ -16,7 +16,7 @@ import { Convert } from "../systems_communication";
 // import { money } from "../types";
 import { dp } from "./AI_CONSTANTS";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
-import { simple_constraints, urban_constraints } from "./constraints";
+import { coastal_constraints, simple_constraints, urban_constraints } from "./constraints";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
 
 const LOOT = [MEAT, RAT_SKIN, RAT_BONE];
@@ -186,6 +186,10 @@ export function home_walk(character: Character) {
 
 export function urban_walk(character: Character) {
     random_walk(character, urban_constraints)
+}
+
+export function coast_walk(character: Character) {
+    random_walk(character, coastal_constraints)
 }
 
 export function rat_go_home(character: Character, constraints: (cell: Cell) => boolean) {

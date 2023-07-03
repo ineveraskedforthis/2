@@ -36,6 +36,9 @@ export namespace GameMaster {
             Template.Character.EquipClothesBasic(Template.Character.WeaponMasterWood(x, y, 'city'))
             Template.Character.EquipClothesBasic(Template.Character.HumanLocalTrader(x, y, "Local Trader", 'city'))
 
+            Template.Character.Fisherman(x, y, "Fisherman 1")
+            Template.Character.Fisherman(x, y, "Fisherman 2")
+
             // colony mages
             Template.Character.EquipClothesBasic(Template.Character.Alchemist(x, y, 'city'))
             Template.Character.EquipClothesBasic(Template.Character.Mage(x, y, 'city'))
@@ -69,6 +72,9 @@ export namespace GameMaster {
             Template.Character.EquipClothesBasic(Template.Character.WeaponMasterBone(x, y, faction))
             Template.Character.EquipClothesBasic(Template.Character.BloodMage(x, y, faction))
             Template.Character.EquipClothesBasic(Template.Character.MasterUnarmed(x, y, faction))
+
+            Template.Character.Lumberjack(x, y, "Lumberjack 1")
+            Template.Character.Lumberjack(x, y, "Lumberjack 2")
         }        
 
         if (faction == 'rats') {

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_price_beliefs = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.urban_walk = exports.home_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
+exports.update_price_beliefs = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.coast_walk = exports.urban_walk = exports.home_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
 const actions_00_1 = require("../actions/actions_00");
 const manager_1 = require("../actions/manager");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -167,6 +167,10 @@ function urban_walk(character) {
     random_walk(character, constraints_1.urban_constraints);
 }
 exports.urban_walk = urban_walk;
+function coast_walk(character) {
+    random_walk(character, constraints_1.coastal_constraints);
+}
+exports.coast_walk = coast_walk;
 function rat_go_home(character, constraints) {
     let cell = systems_communication_1.Convert.character_to_cell(character);
     let potential_moves = data_1.Data.World.neighbours(character.cell_id).map((x) => { return data_1.Data.Cells.from_id(x); }).map((x) => { return { item: x, weight: x.rat_scent }; });
