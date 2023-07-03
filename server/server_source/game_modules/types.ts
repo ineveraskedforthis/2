@@ -1,6 +1,4 @@
-import { armour_slot } from "../../../shared/inventory"
 import { money } from "../../../shared/common"
-import { Damage } from "./Damage"
 import { StatsTag } from "./races/stats"
 import { BaseResistTag } from "./races/resists"
 import { MaxHPTag } from "./races/max_hp"
@@ -27,7 +25,7 @@ export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'
 export type weapon_attack_tag = weapon_tag | 'noweapon'
 
 
-export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
+// export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
 export const weapon_attack_tags: weapon_attack_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']
 
 export type world_coordinates = [number, number]

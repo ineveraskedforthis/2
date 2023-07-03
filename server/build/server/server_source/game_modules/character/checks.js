@@ -12,7 +12,7 @@ function weapon_type(weapon) {
 }
 function can_dodge(character) {
     if (system_1.CharacterSystem.perk(character, 'advanced_unarmed')) {
-        if (weapon_type(character.equip.data.weapon) == 'noweapon') {
+        if (weapon_type(character.equip.data.slots.weapon) == 'noweapon') {
             return true;
         }
     }
@@ -24,7 +24,7 @@ function can_dodge(character) {
 exports.can_dodge = can_dodge;
 function can_fast_attack(character) {
     if (system_1.CharacterSystem.perk(character, 'advanced_unarmed')) {
-        if (weapon_type(character.equip.data.weapon) == 'noweapon') {
+        if (weapon_type(character.equip.data.slots.weapon) == 'noweapon') {
             return true;
         }
     }
@@ -33,7 +33,7 @@ function can_fast_attack(character) {
 exports.can_fast_attack = can_fast_attack;
 function can_push_back(character) {
     if (system_1.CharacterSystem.perk(character, 'advanced_polearm')) {
-        if (weapon_type(character.equip.data.weapon) == "polearms" /* WEAPON_TYPE.POLEARMS */) {
+        if (weapon_type(character.equip.data.slots.weapon) == "polearms" /* WEAPON_TYPE.POLEARMS */) {
             return true;
         }
     }

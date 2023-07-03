@@ -19,7 +19,7 @@ import { Template } from "../templates";
 import { Character } from "../character/character";
 import { Data } from "../data";
 import { ItemSystem } from "../items/system";
-import { SWORD_ARGUMENT } from "../items/items_set_up";
+// import { SWORD_ARGUMENT } from "../items/items_set_up";
 import { EventInventory } from "../events/inventory_events";
 var path = require('path')
 
@@ -197,7 +197,7 @@ export namespace UserManagement {
             case "city":{
                 character = Template.Character.HumanCity(x, y, name);
                 if (user.tester_account) {
-                    let item = ItemSystem.create(SWORD_ARGUMENT);
+                    let item = ItemSystem.create('sword', [], 100);
                     EventInventory.add_item(character, item)
                 }                
                 break

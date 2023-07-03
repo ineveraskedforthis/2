@@ -5,17 +5,17 @@ import { Character } from "../character/character";
 import { Item } from "../items/item";
 import { ELODINO_FLESH, GRACI_HAIR, materials } from "../manager_classes/materials_manager";
 import { Damage } from "../Damage";
-import { BaseDamage, ModelToMaterial } from "../items/base_values";
+import { BaseDamage, ModelToMaterial, base_damage } from "../items/base_values";
 
 export function get_potential_affix_weapon(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []
     
     // checking for phys damage mods
-    if ((BaseDamage[item.model_tag].pierce > 0) || (BaseDamage[item.model_tag].slice > 0)) {
+    if ((base_damage(item.model_tag).pierce > 0) || (base_damage(item.model_tag).slice > 0)) {
         potential_affix.push({tag: 'sharp', weight: 20})
         potential_affix.push({tag: 'notched', weight: 2})
     }
-    if ((BaseDamage[item.model_tag].slice > 0) || (BaseDamage[item.model_tag].blunt > 0)){
+    if ((base_damage(item.model_tag).slice > 0) || (base_damage(item.model_tag).blunt > 0)){
         potential_affix.push({tag: 'heavy', weight: 10})
     }
 

@@ -8,8 +8,9 @@ import { Data } from "../../data";
 import { AuctionResponce, } from "../../market/system";
 import { order_bulk_id } from "../../types";
 import { Character } from "../../character/character";
-import { slot } from "../../../../../shared/inventory";
+// import { slot } from "../../../../../shared/inventory";
 import { money } from "../../../../../shared/common";
+import { equip_slot } from "@custom_types/inventory";
 
 function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
     return (sw: SocketWrapper) => {
@@ -38,23 +39,11 @@ export namespace InventoryCommands {
     }
 
     // expected inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
-    export function unequip(sw: SocketWrapper, msg: slot) {
+    export function unequip(sw: SocketWrapper, msg: equip_slot) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
         if (character.in_battle()) { return }
-
-
-        if (msg == "weapon")    {EventInventory.unequip(character, 'weapon')}
-        else if (msg == 'secondary'){EventInventory.unequip_secondary(character)}
-        else {
-            switch(msg) {
-                case 'body':        {EventInventory.unequip(character, 'body');break;}
-                case 'legs':        {EventInventory.unequip(character, 'legs');break;}
-                case 'foot':        {EventInventory.unequip(character, 'foot');break;}
-                case 'head':        {EventInventory.unequip(character, 'head');break;}
-                case 'arms':        {EventInventory.unequip(character, 'arms');break;}
-            }
-        }
+        EventInventory.unequip(character, msg)
     }
     
     export function buy(sw: SocketWrapper, msg: any) {

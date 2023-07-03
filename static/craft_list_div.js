@@ -65,7 +65,7 @@ function construct_craft_item_div(data) {
         craft_div.appendChild(construct_craft_inputs(data.input));
         const output_div = document.createElement('div');
 
-        output_div.innerHTML = data.output.model_tag;
+        output_div.innerHTML = data.output_model;
 
         craft_div.appendChild(output_div);
         const durability = document.createElement('div');

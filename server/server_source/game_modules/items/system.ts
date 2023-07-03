@@ -1,4 +1,4 @@
-import { ItemData } from "../../../../shared/inventory";
+import { ItemData, affix } from "../../../../shared/inventory";
 import { damage_type } from "../types";
 import { attack_affixes_effects, damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
 import { DmgOps } from "../damage_types";
@@ -20,16 +20,16 @@ const empty_status : Status = {
 }
 
 export namespace ItemSystem {
-    export function create (item_desc: ItemJson) {
-        let item = new Item(item_desc.durability, [], item_desc.model_tag)
-        for (let aff of item_desc.affixes) {
+    export function create (item_desc: item_model_tag, affixes: affix[], durability: number) {
+        let item = new Item(durability, [], item_desc)
+        for (let aff of affixes) {
             item.affixes.push(aff)
         }
         return item
     }
 
     export function range(item: {model_tag: item_model_tag}) {
-        return BaseRange[item.model_tag]
+        return BaseRange[item.model_tag] || 1
     }
 
     export function material(item: {model_tag: item_model_tag}) {
@@ -41,7 +41,7 @@ export namespace ItemSystem {
     }
 
     export function weapon_tag(item: Item) {
-        return ModelToWeaponTag[item.model_tag]
+        return ModelToWeaponTag[item.model_tag]||'noweapon'
     }
 
     export function size(item: Item) {
@@ -93,6 +93,9 @@ export namespace ItemSystem {
         // calculating base damage of item and adding affix
         let damage = new Damage()
         let base_damage = BaseDamage[item.model_tag]
+        if (base_damage == undefined) {
+            base_damage = new Damage()
+        }
         switch(type) {
             case 'blunt': {damage.blunt = ItemSystem.weight(item) * base_damage.blunt + affix_damage.blunt; break}
             case 'pierce': {
@@ -133,10 +136,14 @@ export namespace ItemSystem {
     }
 
     export function damage_breakdown(item: Item): Damage {
-        let damage = DmgOps.copy(BaseDamage[item.model_tag])
+        let base = BaseDamage[item.model_tag]
+        if (base == undefined) {
+            base = new Damage()
+        }
+        let damage = DmgOps.copy(base)
 
         DmgOps.mult_ip(damage, ItemSystem.weight(item))
-        damage.fire = BaseDamage[item.model_tag].fire
+        damage.fire = base.fire
 
         for (let aff of item.affixes) {
             let effect = damage_affixes_effects[aff.tag]
@@ -156,8 +163,11 @@ export namespace ItemSystem {
 
     export function resists(item:Item|undefined) {
         if (item == undefined) {return empty_resists}
-
-        let result = DmgOps.copy(BaseResist[item.model_tag])     
+        let base = BaseResist[item.model_tag]
+        if (base == undefined) {
+            base = new Damage()
+        }
+        let result = DmgOps.copy(base)     
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = protection_affixes_effects[affix.tag];

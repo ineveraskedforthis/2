@@ -166,7 +166,7 @@ class Character {
         return this.status.stress;
     }
     range() {
-        let weapon = this.equip.data.weapon;
+        let weapon = this.equip.data.slots.weapon;
         if (weapon != undefined) {
             let result = system_1.ItemSystem.range(weapon);
             if (system_1.ItemSystem.weapon_tag(weapon) == 'polearms') {
@@ -185,14 +185,11 @@ class Character {
         return 0.5;
     }
     equip_models() {
-        return {
-            weapon: this.equip.data.weapon?.model_tag,
-            head: this.equip.data.armour.head?.model_tag,
-            body: this.equip.data.armour.body?.model_tag,
-            legs: this.equip.data.armour.legs?.model_tag,
-            foot: this.equip.data.armour.foot?.model_tag,
-            arms: this.equip.data.armour.arms?.model_tag
-        };
+        let response = {};
+        for (let [k, v] of Object.entries(this.equip.data.slots)) {
+            response[k] = v?.model_tag;
+        }
+        return response;
     }
     is_player() { return this.user_id != '#'; }
     dead() { return this.get_hp() == 0; }

@@ -17,16 +17,16 @@ const empty_status = {
 };
 var ItemSystem;
 (function (ItemSystem) {
-    function create(item_desc) {
-        let item = new item_1.Item(item_desc.durability, [], item_desc.model_tag);
-        for (let aff of item_desc.affixes) {
+    function create(item_desc, affixes, durability) {
+        let item = new item_1.Item(durability, [], item_desc);
+        for (let aff of affixes) {
             item.affixes.push(aff);
         }
         return item;
     }
     ItemSystem.create = create;
     function range(item) {
-        return base_values_1.BaseRange[item.model_tag];
+        return base_values_1.BaseRange[item.model_tag] || 1;
     }
     ItemSystem.range = range;
     function material(item) {
@@ -38,7 +38,7 @@ var ItemSystem;
     }
     ItemSystem.slot = slot;
     function weapon_tag(item) {
-        return base_values_1.ModelToWeaponTag[item.model_tag];
+        return base_values_1.ModelToWeaponTag[item.model_tag] || 'noweapon';
     }
     ItemSystem.weapon_tag = weapon_tag;
     function size(item) {
@@ -88,6 +88,9 @@ var ItemSystem;
         // calculating base damage of item and adding affix
         let damage = new Damage_1.Damage();
         let base_damage = base_values_1.BaseDamage[item.model_tag];
+        if (base_damage == undefined) {
+            base_damage = new Damage_1.Damage();
+        }
         switch (type) {
             case 'blunt': {
                 damage.blunt = ItemSystem.weight(item) * base_damage.blunt + affix_damage.blunt;
@@ -132,9 +135,13 @@ var ItemSystem;
     }
     ItemSystem.ranged_damage = ranged_damage;
     function damage_breakdown(item) {
-        let damage = damage_types_1.DmgOps.copy(base_values_1.BaseDamage[item.model_tag]);
+        let base = base_values_1.BaseDamage[item.model_tag];
+        if (base == undefined) {
+            base = new Damage_1.Damage();
+        }
+        let damage = damage_types_1.DmgOps.copy(base);
         damage_types_1.DmgOps.mult_ip(damage, ItemSystem.weight(item));
-        damage.fire = base_values_1.BaseDamage[item.model_tag].fire;
+        damage.fire = base.fire;
         for (let aff of item.affixes) {
             let effect = affix_1.damage_affixes_effects[aff.tag];
             if (effect == undefined)
@@ -152,7 +159,11 @@ var ItemSystem;
         if (item == undefined) {
             return empty_resists;
         }
-        let result = damage_types_1.DmgOps.copy(base_values_1.BaseResist[item.model_tag]);
+        let base = base_values_1.BaseResist[item.model_tag];
+        if (base == undefined) {
+            base = new Damage_1.Damage();
+        }
+        let result = damage_types_1.DmgOps.copy(base);
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = affix_1.protection_affixes_effects[affix.tag];

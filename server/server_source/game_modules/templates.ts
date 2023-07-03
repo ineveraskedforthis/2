@@ -1,20 +1,15 @@
 import { cell_id, money } from "@custom_types/common"
 import { Data } from "./data"
 import { Event } from "./events/events"
-// import { Factions } from "./factions"
-import { BASIC_BOW_ARGUMENT, BONE_DAGGER_ARGUMENT, BONE_SPEAR_ARGUMENT, CLOTH_ARMOUR_ARGUMENT, CLOTH_GLOVES_ARGUMENT, CLOTH_HELMET_ARGUMENT, RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, RAT_SKIN_HELMET_ARGUMENT, RAT_SKIN_PANTS_ARGUMENT, SPEAR_ARGUMENT } from "./items/items_set_up"
 import { ItemSystem } from "./items/system"
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager"
-import { MapSystem } from "./map/system"
 import { ElodinoTemplate } from "./races/TEMPLATE_ELO"
 import { GraciTemplate } from "./races/TEMPLATE_GRACI"
 import { HumanStrongTemplate, HumanTemplate } from "./races/TEMPLATE_HUMANS"
 import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from "./races/TEMPLATE_RATS"
 import { CharacterTemplate, ModelVariant } from "./types"
-import { EventMarket } from "./events/market"
 import { BallTemplate } from "./races/TEMPLATE_OTHERS"
 import { Character } from "./character/character"
-import { roll_affix_weapon } from "./base_game_classes/affix"
 
 const LUMP_OF_MONEY = 1000 as money
 const TONS_OF_MONEY = 30000 as money
@@ -56,9 +51,9 @@ export namespace Template {
             human._skills.travelling += 20
             human.ai_map = 'lumberjack'
 
-            let cutting_tool = ItemSystem.create(BONE_DAGGER_ARGUMENT)
+            let cutting_tool = ItemSystem.create('bone_dagger', [], 100)
             cutting_tool.durability = 200
-            human.equip.data.weapon = cutting_tool
+            human.equip.data.slots.weapon = cutting_tool
 
             return human
         }
@@ -95,28 +90,29 @@ export namespace Template {
             human._skills.blocking += 10
             human._skills.ranged += 20
             human._perks.advanced_polearm = true
-            let spear = ItemSystem.create(BONE_SPEAR_ARGUMENT)
+            let spear = ItemSystem.create('bone_spear', [], 100)
             spear.durability = 200
-            let bow = ItemSystem.create(BASIC_BOW_ARGUMENT)
-            let armour = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
-            let pants = ItemSystem.create(RAT_SKIN_PANTS_ARGUMENT)
-            let boots = ItemSystem.create(RAT_SKIN_BOOTS_ARGUMENT)
-            let hat = ItemSystem.create(RAT_SKIN_HELMET_ARGUMENT)
-            human.equip.data.weapon = spear
-            human.equip.data.armour.body = armour
-            human.equip.data.armour.legs = pants
-            human.equip.data.armour.foot = boots
-            human.equip.data.armour.head = hat
-            human.equip.data.secondary = bow
+            let bow = ItemSystem.create('bow', [], 100)
+            let armour = ItemSystem.create('rat_skin_armour', [], 100)
+            let pants = ItemSystem.create('rat_skin_pants', [], 100)
+            let boots = ItemSystem.create('rat_skin_boots', [], 100)
+            let hat = ItemSystem.create('rat_skin_helmet', [], 100)
+            human.equip.data.slots.weapon = spear
+            human.equip.data.slots.mail = armour
+            human.equip.data.slots.pants = pants
+            human.equip.data.slots.boots = boots
+            human.equip.data.slots.helmet = hat
+            human.equip.data.slots.secondary = bow
             human.stash.inc(ARROW_BONE, 60)
             return human
         }
 
         export function EquipClothesBasic(character: Character) {
-            character.equip.data.armour.body = ItemSystem.create(CLOTH_ARMOUR_ARGUMENT)
-            character.equip.data.armour.legs = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
-            character.equip.data.armour.foot = ItemSystem.create(RAT_SKIN_BOOTS_ARGUMENT)
-            character.equip.data.armour.head = ItemSystem.create(CLOTH_HELMET_ARGUMENT)
+            character.equip.data.slots.mail = ItemSystem.create('cloth_mail', [], 100)
+            // character.equip.data.slots.left_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
+            // character.equip.data.slots.right_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
+            character.equip.data.slots.boots = ItemSystem.create('rat_skin_boots', [], 100)
+            character.equip.data.slots.helmet = ItemSystem.create('cloth_helmet', [], 100)
 
             return character
         }
@@ -239,10 +235,10 @@ export namespace Template {
             mage._perks.mage_initiation = true
             mage._perks.magic_bolt = true
 
-            let item = ItemSystem.create(SPEAR_ARGUMENT)
+            let item = ItemSystem.create('spear', [], 100)
             item.affixes.push({tag: 'of_power'})
             item.affixes.push({tag: 'of_power'})
-            mage.equip.data.weapon = item
+            mage.equip.data.slots.weapon = item
 
             return mage
         }

@@ -1,6 +1,8 @@
+import { affix } from "@custom_types/inventory";
 import { CharacterMapAction } from "../actions/types";
 import { skill } from "../character/SkillList";
 import { ItemJson } from "../items/item";
+import { item_model_tag } from "../items/model_tags";
 import { material_index } from "../manager_classes/materials_manager";
 
 export interface box {
@@ -20,7 +22,8 @@ export interface CraftBulkTemplate {
 export interface CraftItemTemplate {
     id: string;
     input: box[];
-    output: ItemJson;
+    output_model: item_model_tag;
+    output_affixes: affix[]
     difficulty: skill_check[];
 }
 

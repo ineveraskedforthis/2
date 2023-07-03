@@ -134,12 +134,12 @@ var AIhelper;
     function sell_price_craft_item(character, craft) {
         // const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
         const estimated_quality = (0, CraftItem_1.durability)(character, craft);
-        return sell_price_item(character, craft.output, estimated_quality);
+        return sell_price_item(character, (0, CraftItem_1.create_item)(craft.output_model, craft.output_affixes, estimated_quality), estimated_quality);
     }
     AIhelper.sell_price_craft_item = sell_price_craft_item;
     function sell_price_item(character, item, durability) {
-        let resists = damage_types_1.DmgOps.total(base_values_1.BaseDamage[item.model_tag]);
-        let damage = damage_types_1.DmgOps.total(base_values_1.BaseResist[item.model_tag]);
+        let resists = damage_types_1.DmgOps.total((0, base_values_1.base_resists)(item.model_tag));
+        let damage = damage_types_1.DmgOps.total((0, base_values_1.base_damage)(item.model_tag));
         // let min_price = AItrade.price_norm_box(character, crafts_items[tag].input, AItrade.buy_price_bulk)
         return Math.floor(5 * ((resists + damage) * durability / 100 + Math.random() * 50)) + 1;
     }

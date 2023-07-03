@@ -16,7 +16,7 @@ const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const templates_1 = require("../templates");
 const data_1 = require("../data");
 const system_1 = require("../items/system");
-const items_set_up_1 = require("../items/items_set_up");
+// import { SWORD_ARGUMENT } from "../items/items_set_up";
 const inventory_events_1 = require("../events/inventory_events");
 var path = require('path');
 exports.users_data_dict = {};
@@ -180,7 +180,7 @@ var UserManagement;
                 {
                     character = templates_1.Template.Character.HumanCity(x, y, name);
                     if (user.tester_account) {
-                        let item = system_1.ItemSystem.create(items_set_up_1.SWORD_ARGUMENT);
+                        let item = system_1.ItemSystem.create('sword', [], 100);
                         inventory_events_1.EventInventory.add_item(character, item);
                     }
                     break;

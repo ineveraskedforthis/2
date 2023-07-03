@@ -21,7 +21,7 @@ import { action_points, ActionPositionKeys, ActionSelfKeys, ActionUnitKeys, batt
 function attack_ap_cost(base: number, character: Character) {
     let result = base
 
-    let weapon = character.equip.data.weapon
+    let weapon = character.equip.data.slots.weapon
     if (weapon != undefined) {
         result = base * ItemSystem.weight(weapon) / 4
     }

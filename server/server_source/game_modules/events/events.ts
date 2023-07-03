@@ -39,6 +39,7 @@ import { LandPlotType } from "@custom_types/buildings";
 import { Trigger } from "./triggers";
 import { response } from "express";
 import { handle_attack_reputation_change } from "../SYSTEM_REPUTATION";
+import { equip_slot } from "@custom_types/inventory";
 
 const GRAVEYARD_CELL = 0 as cell_id
 
@@ -111,10 +112,10 @@ export namespace Event {
     }
 
     export function move_fatigue_change(character: Character) {
-        if (character.equip.data.armour.foot == undefined) {
+        if (character.equip.data.slots.boots== undefined) {
             Effect.Change.fatigue(character, 3)
         } else {
-            const durability = character.equip.data.armour.foot.durability
+            const durability = character.equip.data.slots.boots.durability
             Effect.Change.fatigue(character, Math.round(trim(3 - 2 * (durability / 100), 1, 3)))
         }
     }
@@ -122,7 +123,7 @@ export namespace Event {
     export function move_durability_roll(character: Character, probability: number){
         const dice = Math.random()
         if (dice < probability) {
-            Effect.change_durability(character, 'foot', -1)
+            Effect.change_durability(character, 'boots', -1)
             let skill_dice = Math.random()
             if (skill_dice * skill_dice * skill_dice > CharacterSystem.skill(character, 'travelling') / 100) {
                 Effect.Change.skill(character, 'travelling', 1)
@@ -208,12 +209,7 @@ export namespace Event {
         if (responce == 'miss') {
             DmgOps.mult_ip(attack.damage, 0)
         } else {
-            const roll = Math.random()
-            if (roll < 0.5) Effect.change_durability(defender, 'body', -1);
-            else if (roll < 0.7) Effect.change_durability(defender, 'legs', -1)
-            else if (roll < 0.8) Effect.change_durability(defender, 'foot', -1)
-            else if (roll < 0.9) Effect.change_durability(defender, 'head', -1)
-            else Effect.change_durability(defender, 'arms', -1)
+            attack_affect_durability(attacker, defender, attack)
         }
 
         //apply status to attack
@@ -340,21 +336,14 @@ export namespace Event {
             const durability_roll = Math.random();
             if (durability_roll < 0.5)
                 Effect.change_durability(attacker, 'weapon', -1);
-
             if (attack.flags.blocked) {
                 Effect.change_durability(defender, 'weapon', -1);
             } else {
-                const roll = Math.random();
-                if (roll < 0.5)
-                    Effect.change_durability(defender, 'body', -1);
-                else if (roll < 0.7)
-                    Effect.change_durability(defender, 'legs', -1);
-                else if (roll < 0.8)
-                    Effect.change_durability(defender, 'foot', -1);
-                else if (roll < 0.9)
-                    Effect.change_durability(defender, 'head', -1);
-                else
-                    Effect.change_durability(defender, 'arms', -1);
+                for (let k of Object.keys(defender.equip.data.slots)) {
+                    if (Math.random() > 0.5) {
+                        Effect.change_durability(defender, k as equip_slot, -1)
+                    }
+                }
             }
         }
     }

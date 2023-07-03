@@ -226,8 +226,8 @@ var CharacterSystem;
     CharacterSystem.movement_cost_battle = movement_cost_battle;
     function boots_speed_multiplier(character) {
         let base = 0.75;
-        if (character.equip.data.armour.foot != undefined) {
-            base = base + character.equip.data.armour.foot.durability / 200;
+        if (character.equip.data.slots.boots != undefined) {
+            base = base + character.equip.data.slots.boots.durability / 200;
         }
         return base;
     }
@@ -251,19 +251,19 @@ var CharacterSystem;
     }
     CharacterSystem.resistance = resistance;
     function weapon_type(character) {
-        const weapon = character.equip.data.weapon;
+        const weapon = character.equip.data.slots.weapon;
         if (weapon == undefined)
             return 'noweapon';
-        return system_1.ItemSystem.weapon_tag(weapon);
+        return system_1.ItemSystem.weapon_tag(weapon) || 'noweapon';
     }
     CharacterSystem.weapon_type = weapon_type;
     function melee_weapon_type(character) {
-        const weapon = character.equip.data.weapon;
+        const weapon = character.equip.data.slots.weapon;
         if (weapon == undefined)
             return 'noweapon';
         if (system_1.ItemSystem.weapon_tag(weapon) == 'ranged')
             return 'polearms';
-        return system_1.ItemSystem.weapon_tag(weapon);
+        return system_1.ItemSystem.weapon_tag(weapon) || 'noweapon';
     }
     CharacterSystem.melee_weapon_type = melee_weapon_type;
     /**

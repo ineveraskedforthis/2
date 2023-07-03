@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.skeleton = exports.model_interface_name = exports.Status = exports.weapon_attack_tags = exports.armour_slots = void 0;
-exports.armour_slots = ['body', 'legs', 'arms', 'head', 'foot'];
+exports.skeleton = exports.model_interface_name = exports.Status = exports.weapon_attack_tags = void 0;
+// export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
 exports.weapon_attack_tags = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded'];
 class Status {
     constructor() {

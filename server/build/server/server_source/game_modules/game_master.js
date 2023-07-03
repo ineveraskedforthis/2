@@ -118,6 +118,7 @@ var GameMaster;
                     }
                     if (building.type == "elodino_house" /* LandPlotType.ElodinoHouse */) {
                         let cell_object = data_1.Data.Cells.from_id(cell);
+                        spawn_elodino(num_elos, cell_object);
                         spawn_ball(num_balls, cell_object);
                     }
                 }

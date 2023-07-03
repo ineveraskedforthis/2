@@ -6,6 +6,9 @@ import { equip_slot } from '../shared/inventory.js';
 import { money } from '../shared/common.js';
 import { stash_id_to_tag } from './bulk_tags.js';
 
+export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
+
+
 // tmp.typ = this.typ;
 // tmp.tag = this.tag;
 // tmp.owner_id = this.owner_id;
@@ -113,19 +116,10 @@ function generate_greeting(data: PerksResponse) {
     return greeting_line
 }
 
-
-
-                // <img class="character_image equip body"></img>
-                // <img class="character_image equip legs"></img>
-                // <img class="character_image equip foot"></img>
-                // <img class="character_image equip head"></img>
-                // <img class="character_image equip arms"></img>
-                // <img class="character_image equip weapon"></img>
-
-function build_portrait(div: Element, data: {[tag in equip_slot]: string|undefined}, model: string) {
+function build_portrait(div: Element, data: {[tag in equip_slot]?: string}, model: string) {
     let string = ''
 
-    for (let tag of ['weapon', 'arms', 'head', 'foot', 'legs', 'body']) {
+    for (let tag of slots_front_end) {
         if (data[tag as equip_slot] != undefined)
             string += `no-repeat url(/static/img/character_image/${model}/${data[tag as equip_slot]}_big.png) top center/cover, `
     }

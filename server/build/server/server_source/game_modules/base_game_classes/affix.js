@@ -6,11 +6,11 @@ const base_values_1 = require("../items/base_values");
 function get_potential_affix_weapon(enchant_rating, item) {
     let potential_affix = [];
     // checking for phys damage mods
-    if ((base_values_1.BaseDamage[item.model_tag].pierce > 0) || (base_values_1.BaseDamage[item.model_tag].slice > 0)) {
+    if (((0, base_values_1.base_damage)(item.model_tag).pierce > 0) || ((0, base_values_1.base_damage)(item.model_tag).slice > 0)) {
         potential_affix.push({ tag: 'sharp', weight: 20 });
         potential_affix.push({ tag: 'notched', weight: 2 });
     }
-    if ((base_values_1.BaseDamage[item.model_tag].slice > 0) || (base_values_1.BaseDamage[item.model_tag].blunt > 0)) {
+    if (((0, base_values_1.base_damage)(item.model_tag).slice > 0) || ((0, base_values_1.base_damage)(item.model_tag).blunt > 0)) {
         potential_affix.push({ tag: 'heavy', weight: 10 });
     }
     // adding universal mods

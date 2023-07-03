@@ -1,6 +1,6 @@
 import { equip_slot } from "@custom_types/inventory";
 import { Damage } from "../Damage";
-import { item_model_tag } from "./model_tags";
+import { item_model_tag, item_model_tags } from "./model_tags";
 import { weapon_tag } from "../types";
 import { ITEM_MATERIAL } from "./ITEM_MATERIAL";
 import { ELODINO_FLESH, GRACI_HAIR, materials, RAT_BONE, RAT_SKIN, STEEL, TEXTILE, WOOD } from "../manager_classes/materials_manager";
@@ -8,45 +8,49 @@ import { ELODINO_FLESH, GRACI_HAIR, materials, RAT_BONE, RAT_SKIN, STEEL, TEXTIL
 
 export interface Itemlette {
     slot: equip_slot
-    weapon_tag: weapon_tag
+    weapon_tag: undefined | weapon_tag
 }
 
+export function weapon_size(type: weapon_tag) {
+    switch(type) {
+        case 'onehand':
+            return 2
+        case 'polearms':
+            return 3
+        case 'ranged':
+            return 2
+        case 'twohanded':
+            return 4
+    }
+}
 
 export function item_size (item: Itemlette): number {
-    if (item.slot == 'weapon') {
-        switch(item.weapon_tag) {
-            case 'onehand':
-                return 2
-            case 'polearms':
-                return 3
-            case 'ranged':
-                return 2
-            case 'twohanded':
-                return 4
-        }
+    let size = 1
+    if (item.weapon_tag != undefined) {
+        size = weapon_size(item.weapon_tag)
     }
     switch(item.slot) {
-        case 'arms': return 1
-        case 'foot': return 1
-        case 'head': return 1
-        case 'legs': return 3
-        case 'body': return 5
+        case "weapon": return size
+        case "secondary": return size
+        case "amulet": return 1
+        case "mail": return 15
+        case "greaves": return 4
+        case "left_pauldron": return 4
+        case "right_pauldron": return 4
+        case "left_gauntlet": return 4
+        case "right_gauntlet": return 4
+        case "boots": return 6
+        case "helmet": return 4
+        case "belt": return 2
+        case "robe": return 25
+        case "shirt": return 10
+        case "pants": return 15
+        case "dress": return 10
+        case "socks": return 6
     }
 }
 
-export const BaseDamage: {[_ in item_model_tag]: Damage} = {
-    'graci_hair':                   new Damage(),
-    'elodino_dress':                new Damage(),
-    'rat_skin_pants':               new Damage(),
-    'rat_skin_armour':              new Damage(),
-    'rat_skin_boots':               new Damage(),
-    'rat_skin_gloves':              new Damage(),
-    'rat_skin_helmet':              new Damage(),
-    'cloth_gloves':                 new Damage(),
-    'cloth_armour':                 new Damage(),
-    'cloth_helmet':                 new Damage(),
-    'rat_skull_helmet':             new Damage(),
-    'bone_armour':                  new Damage(),
+export const BaseDamage: {[_ in item_model_tag]?: Damage} = {
     'bone_dagger':                  new Damage(1, 6, 12),
     'spear':                        new Damage(2, 6,  1),
     'bow':                          new Damage(5, 0,  0),
@@ -55,54 +59,20 @@ export const BaseDamage: {[_ in item_model_tag]: Damage} = {
     'wooden_mace':                  new Damage(8, 0,  0)
 }
 
-function base_resists(material: ITEM_MATERIAL, slot: equip_slot) {
+export function base_damage(model: item_model_tag) {
+    let response = BaseDamage[model]
+    if (response == undefined) return new Damage()
+    return response
+}
+
+function generic_resists(material: ITEM_MATERIAL, slot: equip_slot) {
     const size = item_size({slot: slot, weapon_tag: 'twohanded'})
-    const resists = new Damage(material.density, material.hardness * 2 * size, material.hardness * size, material.density)
+    if (slot == 'weapon') return new Damage()
+    const resists = new Damage(material.density * size, material.hardness * size, Math.round(material.hardness * 0.5) * size, material.density)
     return resists
 }
 
-const wood = materials.index_to_material(WOOD)
-const skin = materials.index_to_material(RAT_SKIN)
-const bone = materials.index_to_material(RAT_BONE)
-const elodino = materials.index_to_material(ELODINO_FLESH)
-const steel = materials.index_to_material(STEEL)
-const graci_hair = materials.index_to_material(GRACI_HAIR)
-const cloth = materials.index_to_material(TEXTILE)
-
-export const BaseResist: {[_ in item_model_tag]: Damage} = {
-    'graci_hair':                   base_resists(graci_hair, 'head'),
-    'elodino_dress':                base_resists(elodino, 'body'),
-    'rat_skin_pants':               base_resists(skin, 'legs'),
-    'rat_skin_armour':              base_resists(skin, 'body'),
-    'rat_skin_boots':               base_resists(skin, 'foot'),
-    'rat_skin_gloves':              base_resists(skin, 'arms'),
-    'rat_skin_helmet':              base_resists(skin, 'head'),
-    'cloth_gloves':                 base_resists(cloth, 'arms'),
-    'cloth_armour':                 base_resists(cloth, 'body'),
-    'cloth_helmet':                 base_resists(cloth, 'head'),
-    'rat_skull_helmet':             base_resists(bone, 'head'),
-    'bone_armour':                  base_resists(bone, 'body'),
-    'bone_dagger':                  new Damage(),
-    'spear':                        new Damage(),
-    'bow':                          new Damage(),
-    'bone_spear':                   new Damage(),
-    'sword':                        new Damage(),
-    'wooden_mace':                  new Damage()
-}
-
-export const BaseRange: {[_ in item_model_tag]: number} = {
-    'graci_hair':                   1,
-    'elodino_dress':                1,
-    'rat_skin_pants':               1,
-    'rat_skin_armour':              1,
-    'rat_skin_boots':               1,
-    'rat_skin_gloves':              1,
-    'rat_skin_helmet':              1,
-    'cloth_gloves':                 1,
-    'cloth_armour':                 1,
-    'cloth_helmet':                 1,
-    'rat_skull_helmet':             1,
-    'bone_armour':                  1,
+export const BaseRange: {[_ in item_model_tag]?: number} = {
     'bone_dagger':                  0.8,
     'spear':                        2.0,
     'bow':                          0.9,
@@ -111,19 +81,7 @@ export const BaseRange: {[_ in item_model_tag]: number} = {
     'wooden_mace':                  1.3
 }
 
-export const ModelToWeaponTag: {[_ in item_model_tag]: weapon_tag} = {
-    'graci_hair':                   'twohanded',
-    'elodino_dress':                'twohanded',
-    'rat_skin_pants':               'twohanded',
-    'rat_skin_armour':              'twohanded',
-    'rat_skin_boots':               'twohanded',
-    'rat_skin_gloves':              'twohanded',
-    'rat_skin_helmet':              'twohanded',
-    'cloth_gloves':                 'twohanded',
-    'cloth_armour':                 'twohanded',
-    'cloth_helmet':                 'twohanded',
-    'rat_skull_helmet':             'twohanded',
-    'bone_armour':                  'twohanded',
+export const ModelToWeaponTag: {[_ in item_model_tag]?: weapon_tag} = {
     'bone_dagger':                  'onehand',
     'spear':                        'polearms',
     'bow':                          'ranged',
@@ -133,18 +91,21 @@ export const ModelToWeaponTag: {[_ in item_model_tag]: weapon_tag} = {
 }
 
 export const ModelToEquipSlot: {[_ in item_model_tag]: equip_slot} = {
-    'graci_hair':                   'head',
-    'elodino_dress':                'body',
-    'rat_skin_pants':               'legs',
-    'rat_skin_armour':              'body',
-    'rat_skin_boots':               'foot',
-    'rat_skin_gloves':              'arms',
-    'rat_skin_helmet':              'head',
-    'cloth_gloves':                 'arms',
-    'cloth_armour':                 'body',
-    'cloth_helmet':                 'head',
-    'rat_skull_helmet':             'head',
-    'bone_armour':                  'body',
+    'graci_hair':                   'helmet',
+    'elodino_dress':                'dress',
+    'rat_skin_pants':               'pants',
+    'rat_skin_armour':              'mail',
+    'rat_skin_boots':               'boots',
+    'rat_skin_glove_left':          'left_gauntlet',
+    'rat_skin_glove_right':         'right_gauntlet',
+    'rat_skin_helmet':              'helmet',
+    'cloth_glove_left':             'left_gauntlet',
+    'cloth_glove_right':            'right_gauntlet',
+    'cloth_mail':                   'mail',
+    'cloth_socks':                  'socks',
+    'cloth_helmet':                 'helmet',
+    'rat_skull_helmet':             'helmet',
+    'bone_armour':                  'mail',
     'bone_dagger':                  'weapon',
     'spear':                        'weapon',
     'bow':                          'weapon',
@@ -159,10 +120,13 @@ export const ModelToMaterial: {[_ in item_model_tag]: ITEM_MATERIAL} = {
     'rat_skin_pants':               materials.index_to_material(RAT_SKIN),
     'rat_skin_armour':              materials.index_to_material(RAT_SKIN),
     'rat_skin_boots':               materials.index_to_material(RAT_SKIN),
-    'rat_skin_gloves':              materials.index_to_material(RAT_SKIN),
+    'rat_skin_glove_left':          materials.index_to_material(RAT_SKIN),
+    'rat_skin_glove_right':         materials.index_to_material(RAT_SKIN),
     'rat_skin_helmet':              materials.index_to_material(RAT_SKIN),
-    'cloth_gloves':                 materials.index_to_material(TEXTILE),
-    'cloth_armour':                 materials.index_to_material(TEXTILE),
+    'cloth_glove_left':             materials.index_to_material(TEXTILE),
+    'cloth_glove_right':            materials.index_to_material(TEXTILE),
+    'cloth_mail':                   materials.index_to_material(TEXTILE),
+    'cloth_socks':                  materials.index_to_material(TEXTILE),
     'cloth_helmet':                 materials.index_to_material(TEXTILE),
     'rat_skull_helmet':             materials.index_to_material(RAT_BONE),
     'bone_armour':                  materials.index_to_material(RAT_BONE),
@@ -172,4 +136,13 @@ export const ModelToMaterial: {[_ in item_model_tag]: ITEM_MATERIAL} = {
     'bone_spear':                   materials.index_to_material(RAT_BONE),
     'sword':                        materials.index_to_material(STEEL),
     'wooden_mace':                  materials.index_to_material(WOOD),
+}
+
+export const BaseResist: {[_ in item_model_tag]?: Damage} = {}
+for (let model of item_model_tags) {
+    BaseResist[model] = generic_resists(ModelToMaterial[model], ModelToEquipSlot[model])
+}
+
+export function base_resists(model: item_model_tag) {
+    return BaseResist[model] || new Damage()
 }

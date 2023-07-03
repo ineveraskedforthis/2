@@ -9,6 +9,8 @@ import { craft_actions, crafts_items, box, skill_check, CraftItemTemplate } from
 import { on_craft_update, use_input } from "./helpers";
 import { generate_craft_item_action } from "./generate_action";
 import { CharacterSystem } from "../character/system";
+import { item_model_tag } from "../items/model_tags";
+import { affix } from "@custom_types/inventory";
 
 
 
@@ -30,14 +32,17 @@ function bonus_durability(character: Character, craft: CraftItemTemplate) {
         if (item.material == ELODINO_FLESH) flesh_flag = true
     }
 
-    const template = craft.output
+    const template = {
+        model_tag: craft.output_model,
+        affixes: craft.output_affixes
+    }
     if (ItemSystem.slot(template) == 'weapon') {
         if (character._perks.weapon_maker)
             durability += 10;
     } else {
         if (character._perks.skin_armour_master && skin_flag)
             durability += 20
-        if (character._perks.shoemaker && (ItemSystem.slot(template) == 'foot')) {
+        if (character._perks.shoemaker && (ItemSystem.slot(template) == 'boots')) {
             durability += 20;
         }
     }
@@ -55,8 +60,8 @@ export function durability(character: Character, craft: CraftItemTemplate): numb
     return Math.floor(durability + bonus_durability(character, craft))
 }
 
-export function create_item(template: ItemJson, durability: number) {
-    let result = ItemSystem.create(template);
+export function create_item(model_tag: item_model_tag, affixes: affix[], durability: number) {
+    let result = ItemSystem.create(model_tag, affixes, durability);
     // introduce some luck
     result.durability = durability
     result.durability += Math.round(Math.random() * 10);
@@ -65,7 +70,7 @@ export function create_item(template: ItemJson, durability: number) {
 }
 
 export function event_craft_item(character: Character, craft: CraftItemTemplate) {
-    let result = create_item(craft.output, durability(character, craft))
+    let result = create_item(craft.output_model, craft.output_affixes, durability(character, craft))
     let response = character.equip.data.backpack.add(result);
     if (response != false) use_input(craft.input, character);
 
@@ -74,11 +79,12 @@ export function event_craft_item(character: Character, craft: CraftItemTemplate)
     on_craft_update(character, craft.difficulty);
 }
 
-export function new_craft_item(id: string, input: box[], output: ItemJson, difficulty: skill_check[]) {
+export function new_craft_item(id: string, input: box[], output: item_model_tag, output_affixes: affix[], difficulty: skill_check[]) {
     crafts_items[id] = {
         id: id,
         input: input,
-        output: output,
+        output_model: output,
+        output_affixes: output_affixes,
         difficulty: difficulty,
     };
     craft_actions[id] = generate_craft_item_action(crafts_items[id]);

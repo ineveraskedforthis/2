@@ -3,7 +3,8 @@ import { socket, globals } from './modules/globals.js';
 
 import {init_map_control, Map} from './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
-import {CharacterScreen, EQUIPMENT_TAGS} from './modules/CharacterScreen/character_screen.js'
+import {CharacterScreen} from './modules/CharacterScreen/character_screen.js'
+import {EQUIPMENT_TAGS} from './modules/CharacterScreen/update.js'
 import { reg, login } from './modules/ViewManagement/scene.js'
 import './modules/Battle/battle_image_init.js'
 import './modules/Market/items_market.js'
@@ -223,35 +224,16 @@ socket.on('model', (race) => {
     set_body_type(race)
 })
 
-// for (let i = 0; i<3; i++) {
-//     document.getElementById("eyes_"+ i).onclick = (event) => {
-//         event.preventDefault();
-//         character_display.eyes = i
-//         document.getElementById("character_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
-//         document.getElementById("character_creation_image_eyes").style.backgroundImage = 'url(/static/img/character_image/eyes_'+ i + '.png)'
-        
-//     }
-// }
-// for (let i = 0; i<3; i++) {
-//     document.getElementById("chin_"+ i).onclick = (event) => {
-//         event.preventDefault();
-//         character_display.chin = i
-//         document.getElementById("character_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
-//         document.getElementById("character_creation_image_chin").style.backgroundImage = 'url(/static/img/character_image/chin_'+ i + '.png)'
-//     }
-// }
-// for (let i = 0; i<3; i++) {
-//     document.getElementById("mouth_"+ i).onclick = (event) => {
-//         event.preventDefault();
-//         character_display.mouth = i
-//         document.getElementById("character_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
-//         document.getElementById("character_creation_image_mouth").style.backgroundImage = 'url(/static/img/character_image/mouth_'+ i + '.png)'
-//     }
-// }
-//CHARACTER CREATION STUFF ENDS
-
-
 //EQUIP 2D IMAGE DISPLAY
+
+let character_image_collection = document.getElementById('character_image_display')
+for (let tag of EQUIPMENT_TAGS) {
+    let equip_piece = document.createElement('img') 
+    equip_piece.classList.add('equip')
+    equip_piece.classList.add(tag)
+    equip_piece.classList.add('character_image')
+    character_image_collection.appendChild(equip_piece)
+}
 
 function update_equip(data) {
     console.log('equip update')
@@ -265,11 +247,10 @@ function update_equip(data) {
             continue
         }
 
-        console.log(`/static/img/character_image/${race_model}/${item_tag}_big.png`)
-        div.src = `../static/img/character_image/${race_model}/${item_tag}_big.png`
+        console.log(`/static/img/character_image/${race_model}/${item_tag}.png`)
+        div.src = `../static/img/character_image/${race_model}/${item_tag}.png`
     }
 }
-
 //
 
 function send_switch_weapon_request() {

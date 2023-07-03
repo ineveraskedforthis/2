@@ -46,36 +46,7 @@ var InventoryCommands;
         if (character.in_battle()) {
             return;
         }
-        if (msg == "weapon") {
-            inventory_events_1.EventInventory.unequip(character, 'weapon');
-        }
-        else if (msg == 'secondary') {
-            inventory_events_1.EventInventory.unequip_secondary(character);
-        }
-        else {
-            switch (msg) {
-                case 'body': {
-                    inventory_events_1.EventInventory.unequip(character, 'body');
-                    break;
-                }
-                case 'legs': {
-                    inventory_events_1.EventInventory.unequip(character, 'legs');
-                    break;
-                }
-                case 'foot': {
-                    inventory_events_1.EventInventory.unequip(character, 'foot');
-                    break;
-                }
-                case 'head': {
-                    inventory_events_1.EventInventory.unequip(character, 'head');
-                    break;
-                }
-                case 'arms': {
-                    inventory_events_1.EventInventory.unequip(character, 'arms');
-                    break;
-                }
-            }
-        }
+        inventory_events_1.EventInventory.unequip(character, msg);
     }
     InventoryCommands.unequip = unequip;
     function buy(sw, msg) {

@@ -3,8 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Template = void 0;
 const data_1 = require("./data");
 const events_1 = require("./events/events");
-// import { Factions } from "./factions"
-const items_set_up_1 = require("./items/items_set_up");
 const system_1 = require("./items/system");
 const materials_manager_1 = require("./manager_classes/materials_manager");
 const TEMPLATE_ELO_1 = require("./races/TEMPLATE_ELO");
@@ -52,9 +50,9 @@ var Template;
             let human = HumanSteppe(x, y, name);
             human._skills.travelling += 20;
             human.ai_map = 'lumberjack';
-            let cutting_tool = system_1.ItemSystem.create(items_set_up_1.BONE_DAGGER_ARGUMENT);
+            let cutting_tool = system_1.ItemSystem.create('bone_dagger', [], 100);
             cutting_tool.durability = 200;
-            human.equip.data.weapon = cutting_tool;
+            human.equip.data.slots.weapon = cutting_tool;
             return human;
         }
         Character.Lumberjack = Lumberjack;
@@ -94,28 +92,29 @@ var Template;
             human._skills.blocking += 10;
             human._skills.ranged += 20;
             human._perks.advanced_polearm = true;
-            let spear = system_1.ItemSystem.create(items_set_up_1.BONE_SPEAR_ARGUMENT);
+            let spear = system_1.ItemSystem.create('bone_spear', [], 100);
             spear.durability = 200;
-            let bow = system_1.ItemSystem.create(items_set_up_1.BASIC_BOW_ARGUMENT);
-            let armour = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
-            let pants = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_PANTS_ARGUMENT);
-            let boots = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_BOOTS_ARGUMENT);
-            let hat = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_HELMET_ARGUMENT);
-            human.equip.data.weapon = spear;
-            human.equip.data.armour.body = armour;
-            human.equip.data.armour.legs = pants;
-            human.equip.data.armour.foot = boots;
-            human.equip.data.armour.head = hat;
-            human.equip.data.secondary = bow;
+            let bow = system_1.ItemSystem.create('bow', [], 100);
+            let armour = system_1.ItemSystem.create('rat_skin_armour', [], 100);
+            let pants = system_1.ItemSystem.create('rat_skin_pants', [], 100);
+            let boots = system_1.ItemSystem.create('rat_skin_boots', [], 100);
+            let hat = system_1.ItemSystem.create('rat_skin_helmet', [], 100);
+            human.equip.data.slots.weapon = spear;
+            human.equip.data.slots.mail = armour;
+            human.equip.data.slots.pants = pants;
+            human.equip.data.slots.boots = boots;
+            human.equip.data.slots.helmet = hat;
+            human.equip.data.slots.secondary = bow;
             human.stash.inc(materials_manager_1.ARROW_BONE, 60);
             return human;
         }
         Character.HumanSpearman = HumanSpearman;
         function EquipClothesBasic(character) {
-            character.equip.data.armour.body = system_1.ItemSystem.create(items_set_up_1.CLOTH_ARMOUR_ARGUMENT);
-            character.equip.data.armour.legs = system_1.ItemSystem.create(items_set_up_1.CLOTH_GLOVES_ARGUMENT);
-            character.equip.data.armour.foot = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_BOOTS_ARGUMENT);
-            character.equip.data.armour.head = system_1.ItemSystem.create(items_set_up_1.CLOTH_HELMET_ARGUMENT);
+            character.equip.data.slots.mail = system_1.ItemSystem.create('cloth_mail', [], 100);
+            // character.equip.data.slots.left_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
+            // character.equip.data.slots.right_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
+            character.equip.data.slots.boots = system_1.ItemSystem.create('rat_skin_boots', [], 100);
+            character.equip.data.slots.helmet = system_1.ItemSystem.create('cloth_helmet', [], 100);
             return character;
         }
         Character.EquipClothesBasic = EquipClothesBasic;
@@ -247,10 +246,10 @@ var Template;
             mage._skills.magic_mastery = 100;
             mage._perks.mage_initiation = true;
             mage._perks.magic_bolt = true;
-            let item = system_1.ItemSystem.create(items_set_up_1.SPEAR_ARGUMENT);
+            let item = system_1.ItemSystem.create('spear', [], 100);
             item.affixes.push({ tag: 'of_power' });
             item.affixes.push({ tag: 'of_power' });
-            mage.equip.data.weapon = item;
+            mage.equip.data.slots.weapon = item;
             return mage;
         }
         Character.Mage = Mage;

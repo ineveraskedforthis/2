@@ -1,5 +1,5 @@
-import { armour_slot, EquipSocket, equip_slot } from "../../../../shared/inventory";
-import { armour_slots, damage_type, tagModel, tagRACE } from "../types";
+import { EquipSocket, ItemData, equip, equip_slot, slots } from "../../../../shared/inventory";
+import { damage_type, tagModel, tagRACE } from "../types";
 // import { update_character } from "../base_game_classes/affix";
 // import { Character } from "../character/character";
 import { Item, ItemJson } from "../items/item";
@@ -25,16 +25,11 @@ interface EquipStrings {
 }
 
 class EquipData {
-    weapon?: Item;
-    secondary?: Item;
-    armour: {[_ in armour_slot]?: Item};
+    slots: {[_ in equip_slot]?: Item}
     backpack: Inventory
 
     constructor(backpack_limit: number) {
-        // explicitly setting to undefined
-        this.weapon = undefined
-        this.secondary = undefined
-        this.armour = {}
+        this.slots = {}
         this.backpack = new Inventory(backpack_limit)
     }
 
@@ -53,19 +48,13 @@ class EquipData {
     // }
 
     load_json(json:EquipData){
-        if (json.weapon != undefined) {
-                this.weapon                 = ItemSystem.create(json.weapon)
+        for (let slot of slots) {
+            const item_data = json.slots[slot]
+            if (item_data == undefined) continue
+            const item = ItemSystem.create(item_data.model_tag, item_data.affixes, item_data.durability)
+            item.price = item_data.price
+            this.slots[slot] = item
         }
-        if (json.secondary != undefined) {
-                this.secondary              = ItemSystem.create(json.secondary)
-        }
-        for (let tag of armour_slots) {
-            const tmp = json.armour[tag]
-            if (tmp != undefined) {
-                this.armour[tag] = ItemSystem.create(tmp)
-            }            
-        }
-
         this.backpack.load_from_json(json.backpack)
     }
 
@@ -113,9 +102,7 @@ export class Equip {
     }
 
     transfer_all(target: {equip: Equip}) {
-        this.unequip('weapon')
-        this.unequip_secondary()
-        for (let tag of armour_slots) {
+        for (let tag of slots) {
             this.unequip(tag);
         }
         this.data.backpack.transfer_all(target.equip.data.backpack)
@@ -123,31 +110,31 @@ export class Equip {
 
 
     get_weapon_range(): undefined|number {
-        let right_hand = this.data.weapon;
+        let right_hand = this.data.slots.weapon;
         if (right_hand == undefined) {return undefined}
         return ItemSystem.range(right_hand);
     }
 
     get_melee_damage(type: damage_type): Damage|undefined {
         // let damage = new Damage()
-        const item = this.data.weapon;
+        const item = this.data.slots.weapon;
         if (item == undefined) return undefined
         return ItemSystem.melee_damage(item, type)
     }
 
     get_ranged_damage(): Damage|undefined {
-        let weapon = this.data.weapon
+        let weapon = this.data.slots.weapon
         if (weapon == undefined) return undefined
         return ItemSystem.ranged_damage(weapon)
     }
 
     get_magic_power() {
         let result = 0;
-        result += ItemSystem.power(this.data.weapon)
-        result += ItemSystem.power(this.data.secondary)
+        result += ItemSystem.power(this.data.slots.weapon)
+        result += ItemSystem.power(this.data.slots.secondary)
 
-        for (let tag of armour_slots) {
-            result += ItemSystem.power(this.data.armour[tag])
+        for (let tag of slots) {
+            result += ItemSystem.power(this.data.slots[tag])
         }
         return result
     }
@@ -196,10 +183,10 @@ export class Equip {
         let item = backpack.items[index]
         if (item != undefined) {
             let slot = ItemSystem.slot(item);
-            let tmp = this.data.armour[slot as armour_slot];
-            this.data.armour[slot as armour_slot] = item
-            backpack.items[index] = tmp
-            // this.changed = true
+            let tmp = this.data.slots[slot];
+            this.data.slots[slot] = item
+            backpack.remove(index)
+            if (tmp != undefined) backpack.add(tmp)
         }
     }
 
@@ -209,7 +196,7 @@ export class Equip {
         let item = backpack.items[index]
         if (item == undefined) return
         if (ItemSystem.slot(item) != 'weapon') {return}
-        let tmp = this.data.weapon;
+        let tmp = this.data.slots.weapon;
 
         if (model == 'graci') {
             if (item.model_tag == 'spear') {
@@ -235,101 +222,74 @@ export class Equip {
 
         
         if (tmp == undefined) {
-            this.data.weapon = backpack.items[index];
-            backpack.items[index] = undefined
+            this.data.slots.weapon = backpack.items[index];
+            backpack.remove(index)
         } else {
-            let tmp2 = this.data.secondary
+            let tmp2 = this.data.slots.secondary
             if (tmp2 == undefined) {
-                this.data.secondary = backpack.items[index];
-                backpack.items[index] = undefined
+                this.data.slots.secondary = backpack.items[index];
+                backpack.remove(index)
             } else {
-                this.data.weapon = backpack.items[index];
-                backpack.items[index] = tmp
+                this.data.slots.weapon = backpack.items[index];
+                backpack.remove(index)
+                backpack.add(tmp)
             }
         }
         // this.changed = true
     }
 
     switch_weapon() {
-        let tmp = this.data.weapon
-        this.data.weapon = this.data.secondary
-        this.data.secondary = tmp
+        let tmp = this.data.slots.weapon
+        this.data.slots.weapon = this.data.slots.secondary
+        this.data.slots.secondary = tmp
     }
 
 
     unequip_secondary() {
-        if (this.data.secondary == undefined) return
-        let response = this.data.backpack.add(this.data.secondary)
-        if (response != false) this.data.secondary = undefined
+        if (this.data.slots.secondary == undefined) return
+        let response = this.data.backpack.add(this.data.slots.secondary)
+        if (response != false) this.data.slots.secondary = undefined
     }
 
     unequip(tag:equip_slot) {
-        // this.changed = true
-
-        if (tag == 'weapon') {
-            if (this.data.weapon == undefined) {
-                return
-            }
-            let response = this.data.backpack.add(this.data.weapon)
-            if (response != false) {
-                this.data.weapon = undefined
-            }
-
-            return
-        }
-        
-        let item = this.data.armour[tag]
+        let item = this.data.slots[tag]
         if (item == undefined) return
-
         let responce = this.data.backpack.add(item);
-        if (responce != false) this.data.armour[tag] = undefined
+        if (responce != false) this.data.slots[tag] = undefined
     }
 
     destroy_slot(tag: equip_slot) {
-        if (tag == 'weapon') {
-            this.data.weapon = undefined
-            return
-        }
-        
-        this.data.armour[tag] = undefined
+        this.data.slots[tag] = undefined
         return
     }
 
     slot_to_item(tag: equip_slot) {
         if (tag == 'weapon') {
-            return this.data.weapon
+            return this.data.slots.weapon
         }
-        return this.data.armour[tag]
+        return this.data.slots[tag]
     }
 
     get_data():EquipSocket {
-        return {
-            equip: {
-                weapon: ItemSystem.item_data(this.data.weapon),
-                secondary: ItemSystem.item_data(this.data.secondary),
-                body: ItemSystem.item_data(this.data.armour['body']),
-                legs: ItemSystem.item_data(this.data.armour['legs']),
-                foot: ItemSystem.item_data(this.data.armour['foot']),
-                head: ItemSystem.item_data(this.data.armour['head']),
-                arms: ItemSystem.item_data(this.data.armour['arms']),
-            },            
+        let response = {
+            equip: Object.fromEntries(Object.entries(this.data.slots).map(([slot, item]) => [slot, ItemSystem.item_data(item)])),   
             backpack: this.data.backpack.get_data()
         }
+        return response
     }
 
     resists() {
         let resists = new Damage;
-        for (let i of armour_slots) {
-            DmgOps.add_ip(resists, ItemSystem.resists(this.data.armour[i]))
+        for (let i of slots) {
+            DmgOps.add_ip(resists, ItemSystem.resists(this.data.slots[i]))
         }
         return resists
     }
 
     modify_attack(attack: AttackObj) {
-        for (let i of armour_slots) {
-            ItemSystem.modify_attack(this.data.armour[i], attack)
+        for (let i of slots) {
+            ItemSystem.modify_attack(this.data.slots[i], attack)
         }
-        ItemSystem.modify_attack(this.data.weapon, attack)
     }
 
     // get_json() {

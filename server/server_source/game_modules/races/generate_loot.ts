@@ -1,6 +1,5 @@
 import { trim } from "../calculations/basic_functions";
 import { Item } from "../items/item";
-import { RAT_SKULL_HELMET_ARGUMENT } from "../items/items_set_up";
 import { ItemSystem } from "../items/system";
 import { ELODINO_FLESH, GRACI_HAIR, material_index, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
 import { Character} from "../character/character";
@@ -55,7 +54,7 @@ export namespace Loot {
             let dice_drop = Math.random()
             console.log('drop dice ' + dice_drop)
             if (dice_drop > 0.5) {
-                let item = ItemSystem.create(RAT_SKULL_HELMET_ARGUMENT)
+                let item = ItemSystem.create('rat_skull_helmet', [], 100)
                 let dice_quality = trim(Math.random() * Math.random(), 0.1, 1)
                 item.durability = Math.floor(dice_quality * 100)
                 responce.push(item)

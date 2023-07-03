@@ -17,7 +17,7 @@ const TRIGGERS_1 = require("./TRIGGERS");
 const VALUES_1 = require("./VALUES");
 function attack_ap_cost(base, character) {
     let result = base;
-    let weapon = character.equip.data.weapon;
+    let weapon = character.equip.data.slots.weapon;
     if (weapon != undefined) {
         result = base * system_3.ItemSystem.weight(weapon) / 4;
     }

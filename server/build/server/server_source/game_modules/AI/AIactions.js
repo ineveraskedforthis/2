@@ -56,23 +56,12 @@ var AIactions;
             if (item == undefined)
                 continue;
             let slot = system_2.ItemSystem.slot(item);
-            if (slot == 'weapon') {
-                if (character.equip.data.weapon == undefined) {
-                    inventory_events_1.EventInventory.equip_from_backpack(character, Number(index));
-                }
-                else {
-                    let price = helpers_1.AIhelper.sell_price_item(character, item, item.durability);
-                    market_1.EventMarket.sell_item(character, Number(index), price);
-                }
+            if (character.equip.data.slots[slot] == undefined) {
+                inventory_events_1.EventInventory.equip_from_backpack(character, Number(index));
             }
             else {
-                if (character.equip.data.armour[slot] == undefined) {
-                    inventory_events_1.EventInventory.equip_from_backpack(character, Number(index));
-                }
-                else {
-                    let price = helpers_1.AIhelper.sell_price_item(character, item, item.durability);
-                    market_1.EventMarket.sell_item(character, Number(index), price);
-                }
+                let price = helpers_1.AIhelper.sell_price_item(character, item, item.durability);
+                market_1.EventMarket.sell_item(character, Number(index), price);
             }
         }
     }

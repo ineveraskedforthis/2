@@ -137,6 +137,7 @@ export namespace GameMaster {
 
                     if (building.type == LandPlotType.ElodinoHouse) {
                         let cell_object = Data.Cells.from_id(cell)
+                        spawn_elodino(num_elos, cell_object)
                         spawn_ball(num_balls, cell_object)
                     }
                 }

@@ -227,8 +227,8 @@ export namespace CharacterSystem {
     export function boots_speed_multiplier(character: Character): number {
         let base = 0.75
 
-        if (character.equip.data.armour.foot != undefined) {
-            base = base + character.equip.data.armour.foot.durability / 200
+        if (character.equip.data.slots.boots != undefined) {
+            base = base + character.equip.data.slots.boots.durability / 200
         }
 
         return base
@@ -254,16 +254,16 @@ export namespace CharacterSystem {
     }
 
     export function weapon_type(character: Character):weapon_attack_tag {
-        const weapon = character.equip.data.weapon
+        const weapon = character.equip.data.slots.weapon
         if (weapon == undefined) return 'noweapon'
-        return ItemSystem.weapon_tag(weapon)
+        return ItemSystem.weapon_tag(weapon) || 'noweapon'
     }
 
     export function melee_weapon_type(character: Character):weapon_attack_tag {
-        const weapon = character.equip.data.weapon
+        const weapon = character.equip.data.slots.weapon
         if (weapon == undefined) return 'noweapon'
         if (ItemSystem.weapon_tag(weapon) == 'ranged') return 'polearms'
-        return ItemSystem.weapon_tag(weapon)
+        return ItemSystem.weapon_tag(weapon) || 'noweapon'
     }
 
 

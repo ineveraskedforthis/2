@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const materials_manager_1 = require("./game_modules/manager_classes/materials_manager");
-const items_set_up_1 = require("./game_modules/items/items_set_up");
+// import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
 const system_1 = require("./game_modules/items/system");
 const equip_1 = require("./game_modules/inventories/equip");
 const system_2 = require("./game_modules/character/system");
@@ -24,8 +24,8 @@ function string_difference([a, b]) {
     return [resulta, resultb];
 }
 function add_testing_items_to_equip(equip) {
-    const item = system_1.ItemSystem.create(items_set_up_1.SPEAR_ARGUMENT);
-    const item2 = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_ARMOUR_ARGUMENT);
+    const item = system_1.ItemSystem.create('spear', [], 100);
+    const item2 = system_1.ItemSystem.create('rat_skin_armour', [], 100);
     const id1 = equip.data.backpack.add(item);
     const id2 = equip.data.backpack.add(item2);
     if (id1 != false)
@@ -82,8 +82,8 @@ function equip_string_test() {
 function backpack_string_test() {
     console.log('backpack ser test');
     const backpack = new inventory_1.Inventory(10);
-    const item = system_1.ItemSystem.create(items_set_up_1.SPEAR_ARGUMENT);
-    const item2 = system_1.ItemSystem.create(items_set_up_1.RAT_SKIN_BOOTS_ARGUMENT);
+    const item = system_1.ItemSystem.create('spear', [], 100);
+    const item2 = system_1.ItemSystem.create('rat_skin_boots', [], 100);
     backpack.add(item);
     backpack.add(item2);
     const j1 = (0, strings_management_1.inventory_to_string)(backpack);

@@ -86,11 +86,11 @@ var Event;
     }
     Event.move_durability_roll_probability = move_durability_roll_probability;
     function move_fatigue_change(character) {
-        if (character.equip.data.armour.foot == undefined) {
+        if (character.equip.data.slots.boots == undefined) {
             effects_1.Effect.Change.fatigue(character, 3);
         }
         else {
-            const durability = character.equip.data.armour.foot.durability;
+            const durability = character.equip.data.slots.boots.durability;
             effects_1.Effect.Change.fatigue(character, Math.round((0, basic_functions_1.trim)(3 - 2 * (durability / 100), 1, 3)));
         }
     }
@@ -98,7 +98,7 @@ var Event;
     function move_durability_roll(character, probability) {
         const dice = Math.random();
         if (dice < probability) {
-            effects_1.Effect.change_durability(character, 'foot', -1);
+            effects_1.Effect.change_durability(character, 'boots', -1);
             let skill_dice = Math.random();
             if (skill_dice * skill_dice * skill_dice > system_2.CharacterSystem.skill(character, 'travelling') / 100) {
                 effects_1.Effect.Change.skill(character, 'travelling', 1);
@@ -181,17 +181,7 @@ var Event;
             damage_types_1.DmgOps.mult_ip(attack.damage, 0);
         }
         else {
-            const roll = Math.random();
-            if (roll < 0.5)
-                effects_1.Effect.change_durability(defender, 'body', -1);
-            else if (roll < 0.7)
-                effects_1.Effect.change_durability(defender, 'legs', -1);
-            else if (roll < 0.8)
-                effects_1.Effect.change_durability(defender, 'foot', -1);
-            else if (roll < 0.9)
-                effects_1.Effect.change_durability(defender, 'head', -1);
-            else
-                effects_1.Effect.change_durability(defender, 'arms', -1);
+            attack_affect_durability(attacker, defender, attack);
         }
         //apply status to attack
         attack.attacker_status_change.fatigue += 5;
@@ -313,17 +303,11 @@ var Event;
                 effects_1.Effect.change_durability(defender, 'weapon', -1);
             }
             else {
-                const roll = Math.random();
-                if (roll < 0.5)
-                    effects_1.Effect.change_durability(defender, 'body', -1);
-                else if (roll < 0.7)
-                    effects_1.Effect.change_durability(defender, 'legs', -1);
-                else if (roll < 0.8)
-                    effects_1.Effect.change_durability(defender, 'foot', -1);
-                else if (roll < 0.9)
-                    effects_1.Effect.change_durability(defender, 'head', -1);
-                else
-                    effects_1.Effect.change_durability(defender, 'arms', -1);
+                for (let k of Object.keys(defender.equip.data.slots)) {
+                    if (Math.random() > 0.5) {
+                        effects_1.Effect.change_durability(defender, k, -1);
+                    }
+                }
             }
         }
     }

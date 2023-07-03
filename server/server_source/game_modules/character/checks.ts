@@ -14,7 +14,7 @@ function weapon_type(weapon: Item | undefined): weapon_attack_tag {
 
 export function can_dodge(character: Character): boolean {
     if (CharacterSystem.perk(character, 'advanced_unarmed')) {
-        if (weapon_type(character.equip.data.weapon) == 'noweapon') {
+        if (weapon_type(character.equip.data.slots.weapon) == 'noweapon') {
             return true;
         }
     }
@@ -26,7 +26,7 @@ export function can_dodge(character: Character): boolean {
 
 export function can_fast_attack(character: Character): boolean {
     if (CharacterSystem.perk(character, 'advanced_unarmed')) {
-        if (weapon_type(character.equip.data.weapon) == 'noweapon') {
+        if (weapon_type(character.equip.data.slots.weapon) == 'noweapon') {
             return true;
         }
     }
@@ -35,7 +35,7 @@ export function can_fast_attack(character: Character): boolean {
 
 export function can_push_back(character: Character): boolean {
     if (CharacterSystem.perk(character, 'advanced_polearm')) {
-        if (weapon_type(character.equip.data.weapon) == WEAPON_TYPE.POLEARMS) {
+        if (weapon_type(character.equip.data.slots.weapon) == WEAPON_TYPE.POLEARMS) {
             return true;
         }
     }

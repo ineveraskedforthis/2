@@ -28,7 +28,10 @@ function bonus_durability(character, craft) {
         if (item.material == materials_manager_1.ELODINO_FLESH)
             flesh_flag = true;
     }
-    const template = craft.output;
+    const template = {
+        model_tag: craft.output_model,
+        affixes: craft.output_affixes
+    };
     if (system_1.ItemSystem.slot(template) == 'weapon') {
         if (character._perks.weapon_maker)
             durability += 10;
@@ -36,7 +39,7 @@ function bonus_durability(character, craft) {
     else {
         if (character._perks.skin_armour_master && skin_flag)
             durability += 20;
-        if (character._perks.shoemaker && (system_1.ItemSystem.slot(template) == 'foot')) {
+        if (character._perks.shoemaker && (system_1.ItemSystem.slot(template) == 'boots')) {
             durability += 20;
         }
     }
@@ -52,8 +55,8 @@ function durability(character, craft) {
     return Math.floor(durability + bonus_durability(character, craft));
 }
 exports.durability = durability;
-function create_item(template, durability) {
-    let result = system_1.ItemSystem.create(template);
+function create_item(model_tag, affixes, durability) {
+    let result = system_1.ItemSystem.create(model_tag, affixes, durability);
     // introduce some luck
     result.durability = durability;
     result.durability += Math.round(Math.random() * 10);
@@ -61,7 +64,7 @@ function create_item(template, durability) {
 }
 exports.create_item = create_item;
 function event_craft_item(character, craft) {
-    let result = create_item(craft.output, durability(character, craft));
+    let result = create_item(craft.output_model, craft.output_affixes, durability(character, craft));
     let response = character.equip.data.backpack.add(result);
     if (response != false)
         (0, helpers_1.use_input)(craft.input, character);
@@ -70,11 +73,12 @@ function event_craft_item(character, craft) {
     (0, helpers_1.on_craft_update)(character, craft.difficulty);
 }
 exports.event_craft_item = event_craft_item;
-function new_craft_item(id, input, output, difficulty) {
+function new_craft_item(id, input, output, output_affixes, difficulty) {
     crafts_storage_1.crafts_items[id] = {
         id: id,
         input: input,
-        output: output,
+        output_model: output,
+        output_affixes: output_affixes,
         difficulty: difficulty,
     };
     crafts_storage_1.craft_actions[id] = (0, generate_action_1.generate_craft_item_action)(crafts_storage_1.crafts_items[id]);

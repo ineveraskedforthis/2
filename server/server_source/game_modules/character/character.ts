@@ -10,7 +10,7 @@ import { material_index } from "../manager_classes/materials_manager";
 import { PerksTable, TraitsTable } from "../../../../shared/character";
 import { cell_id, money } from "../../../../shared/common";
 import { CharacterMapAction } from "../actions/types";
-import { armour_slot, equip_slot } from "@custom_types/inventory";
+import { equip_slot } from "@custom_types/inventory";
 import { MaxHP, MaxHPTag } from "../races/max_hp";
 import { BaseResistTag } from "../races/resists";
 import { BaseStats, StatsTag } from "../races/stats";
@@ -255,7 +255,7 @@ export class Character {
     }
 
     range() {
-        let weapon = this.equip.data.weapon
+        let weapon = this.equip.data.slots.weapon
         if (weapon != undefined) {
             let result = ItemSystem.range(weapon)
             if (ItemSystem.weapon_tag(weapon) == 'polearms') {
@@ -271,14 +271,13 @@ export class Character {
         return 0.5
     }
 
-    equip_models():{[_ in equip_slot]: string|undefined}  { return {
-        weapon: this.equip.data.weapon?.model_tag,
-        head: this.equip.data.armour.head?.model_tag,
-        body: this.equip.data.armour.body?.model_tag,
-        legs: this.equip.data.armour.legs?.model_tag,
-        foot: this.equip.data.armour.foot?.model_tag,
-        arms: this.equip.data.armour.arms?.model_tag
-    }}
+    equip_models():{[_ in equip_slot]?: string}  {
+        let response:{[_ in equip_slot]?: string} = {}
+        for (let [k, v] of Object.entries(this.equip.data.slots)) {
+            response[k as equip_slot] = v?.model_tag
+        }
+        return response
+    }
 
     is_player()     { return this.user_id != '#' }
     dead()          { return this.get_hp() == 0 }

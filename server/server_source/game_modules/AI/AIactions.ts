@@ -59,20 +59,11 @@ export namespace AIactions {
         for (let [index, item] of Object.entries(character.equip.data.backpack.items)) {
             if (item == undefined) continue
             let slot = ItemSystem.slot(item)
-            if (slot == 'weapon') {
-                if (character.equip.data.weapon == undefined) {
-                    EventInventory.equip_from_backpack(character, Number(index))
-                } else {
-                    let price = AIhelper.sell_price_item(character, item, item.durability);
-                    EventMarket.sell_item(character, Number(index), price);
-                }
+            if (character.equip.data.slots[slot] == undefined) {
+                EventInventory.equip_from_backpack(character, Number(index))
             } else {
-                if (character.equip.data.armour[slot] == undefined) {
-                    EventInventory.equip_from_backpack(character, Number(index))
-                } else {
-                    let price = AIhelper.sell_price_item(character, item, item.durability);
-                    EventMarket.sell_item(character, Number(index), price);
-                }
+                let price = AIhelper.sell_price_item(character, item, item.durability);
+                EventMarket.sell_item(character, Number(index), price);
             }
         }
     }

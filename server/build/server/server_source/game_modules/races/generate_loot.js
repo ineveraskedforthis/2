@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Loot = void 0;
 const basic_functions_1 = require("../calculations/basic_functions");
-const items_set_up_1 = require("../items/items_set_up");
 const system_1 = require("../items/system");
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const SKIN_RAT_DIFFICULTY = 10;
@@ -54,7 +53,7 @@ var Loot;
             let dice_drop = Math.random();
             console.log('drop dice ' + dice_drop);
             if (dice_drop > 0.5) {
-                let item = system_1.ItemSystem.create(items_set_up_1.RAT_SKULL_HELMET_ARGUMENT);
+                let item = system_1.ItemSystem.create('rat_skull_helmet', [], 100);
                 let dice_quality = (0, basic_functions_1.trim)(Math.random() * Math.random(), 0.1, 1);
                 item.durability = Math.floor(dice_quality * 100);
                 responce.push(item);

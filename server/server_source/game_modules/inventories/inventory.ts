@@ -11,7 +11,7 @@ export interface InventoryStrings {
 }
 
 export class Inventory{
-    items: (Item|undefined)[]
+    items: (Item)[]
     limit: number
     // changed: boolean
 
@@ -25,6 +25,7 @@ export class Inventory{
     // add(item:undefined):undefined
     // add(item:Item|undefined):number|undefined
     add(item:Item):number|false {
+        console.log(item, this.items, this.limit, this.items.length)
         if (this.items.length >= this.limit) return false
         return this.items.push(item) - 1;
     }
@@ -54,20 +55,20 @@ export class Inventory{
     // }
 
     get_data():{items: ItemData[]} {
-        const array:ItemData[] = []
-        for (let [key, value] of Object.entries(this.items)) {
-            if (value != undefined) {
-                let data = ItemSystem.item_data(value)
-                if (data == undefined) continue
-                data.backpack_index = Number(key)
-                array.push(data)
-            }
-        } 
-        return {items: array}
+        // const array:ItemData[] = []
+        // for (let [key, value] of Object.entries(this.items)) {
+        //     if (value != undefined) {
+        //         let data = ItemSystem.item_data(value)
+        //         if (data == undefined) continue
+        //         data.backpack_index = Number(key)
+        //         array.push(data)
+        //     }
+        // } 
+        return {items: this.items.map(item => ItemSystem.item_data(item))}
     }
 
     load_from_json(data:Inventory) {
-        this.items = data.items
+        this.items = data.items.filter(item => item != null)
         this.limit = data.limit
         // for (let i = 0; i <= 100; i++) {
         //     const tmp = data.items_array[i]

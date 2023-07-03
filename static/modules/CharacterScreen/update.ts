@@ -1,12 +1,33 @@
-import { EquipSocket, equip_slot, secondary_slot, slot } from "../../../shared/inventory";
+import { EquipSocket, equip_slot } from "../../../shared/inventory";
 import { generate_dummy_item_backpack_div, generate_item_backpack_div, generate_name } from "../Divs/item.js";
+import { socket } from "../globals.js";
 
 const table_items = document.getElementById('backpack_weapon_tab')!
 const item_select_div = document.getElementById('create_auction_order_item') as HTMLSelectElement
 
 const header_div = generate_dummy_item_backpack_div()
 
-const EQUIPMENT_TAGS: (slot)[] = ['weapon', 'secondary', 'body', 'legs', 'foot', 'head', 'arms'];
+export const EQUIPMENT_TAGS: (equip_slot)[] = ['weapon', 'socks', 'secondary', 'amulet', 'greaves', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants', 'dress'];
+
+
+const equip_block = document.getElementById('equip')!
+for (let i of EQUIPMENT_TAGS) {
+    const tmp = document.createElement('div');
+    tmp.classList.add(... ['item_frame']);
+    tmp.id = 'eq_' + i;    
+    ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
+    let name_label = document.createElement('div')
+    name_label.innerHTML = i
+    name_label.classList.add('slot_label')
+    tmp.appendChild(name_label)
+
+    let item_label = document.createElement('div')
+    item_label.classList.add('item')
+    item_label.innerHTML = "???"
+    tmp.appendChild(item_label)
+
+    equip_block.appendChild(tmp)
+}
 
 function add_option(name: string, id: number) {
     let option = document.createElement('option')
@@ -25,11 +46,13 @@ export function update_backpack(data: EquipSocket) {
 
     for (let i = 0; i < inv.items.length; i++) {
         const weapon = inv.items[i]
-        if ((weapon != null) && (weapon != undefined) && (weapon.backpack_index != undefined)) {            
+        console.log(weapon)
+
+        if ((weapon != null) && (weapon != undefined)) {            
             const item = generate_item_backpack_div(weapon)
             item.classList.add('item');      
             table_items.appendChild(item)
-            add_option(generate_name(weapon), weapon.backpack_index)
+            add_option(generate_name(weapon), i)
         }
     } 
 }

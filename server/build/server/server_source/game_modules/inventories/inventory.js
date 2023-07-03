@@ -13,6 +13,7 @@ class Inventory {
     // add(item:undefined):undefined
     // add(item:Item|undefined):number|undefined
     add(item) {
+        console.log(item, this.items, this.limit, this.items.length);
         if (this.items.length >= this.limit)
             return false;
         return this.items.push(item) - 1;
@@ -40,20 +41,19 @@ class Inventory {
     //     return {items_array: array}
     // }
     get_data() {
-        const array = [];
-        for (let [key, value] of Object.entries(this.items)) {
-            if (value != undefined) {
-                let data = system_1.ItemSystem.item_data(value);
-                if (data == undefined)
-                    continue;
-                data.backpack_index = Number(key);
-                array.push(data);
-            }
-        }
-        return { items: array };
+        // const array:ItemData[] = []
+        // for (let [key, value] of Object.entries(this.items)) {
+        //     if (value != undefined) {
+        //         let data = ItemSystem.item_data(value)
+        //         if (data == undefined) continue
+        //         data.backpack_index = Number(key)
+        //         array.push(data)
+        //     }
+        // } 
+        return { items: this.items.map(item => system_1.ItemSystem.item_data(item)) };
     }
     load_from_json(data) {
-        this.items = data.items;
+        this.items = data.items.filter(item => item != null);
         this.limit = data.limit;
         // for (let i = 0; i <= 100; i++) {
         //     const tmp = data.items_array[i]

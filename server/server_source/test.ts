@@ -1,5 +1,5 @@
 import { MEAT, RAT_SKIN, WOOD } from "./game_modules/manager_classes/materials_manager";
-import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
+// import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
 import { ItemSystem } from "./game_modules/items/system";
 import { Equip } from "./game_modules/inventories/equip";
 import { CharacterSystem } from "./game_modules/character/system";
@@ -32,8 +32,8 @@ function string_difference([a, b]: [string, string]): [string, string] {
 
 
 function add_testing_items_to_equip(equip: Equip) {
-    const item = ItemSystem.create(SPEAR_ARGUMENT)
-    const item2 = ItemSystem.create(RAT_SKIN_ARMOUR_ARGUMENT)
+    const item = ItemSystem.create('spear', [], 100)
+    const item2 = ItemSystem.create('rat_skin_armour', [], 100)
     const id1 = equip.data.backpack.add(item)
     const id2 = equip.data.backpack.add(item2)
     if (id1 != false) equip.equip_weapon(id1, 'human')
@@ -102,8 +102,8 @@ function equip_string_test() {
 function backpack_string_test() {
     console.log('backpack ser test')
     const backpack = new Inventory(10)
-    const item = ItemSystem.create(SPEAR_ARGUMENT)
-    const item2 = ItemSystem.create(RAT_SKIN_BOOTS_ARGUMENT)
+    const item = ItemSystem.create('spear', [], 100)
+    const item2 = ItemSystem.create('rat_skin_boots', [], 100)
     backpack.add(item)
     backpack.add(item2)
 

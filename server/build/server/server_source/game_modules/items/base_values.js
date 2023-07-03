@@ -1,43 +1,49 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ModelToMaterial = exports.ModelToEquipSlot = exports.ModelToWeaponTag = exports.BaseRange = exports.BaseResist = exports.BaseDamage = exports.item_size = void 0;
+exports.base_resists = exports.BaseResist = exports.ModelToMaterial = exports.ModelToEquipSlot = exports.ModelToWeaponTag = exports.BaseRange = exports.base_damage = exports.BaseDamage = exports.item_size = exports.weapon_size = void 0;
 const Damage_1 = require("../Damage");
+const model_tags_1 = require("./model_tags");
 const materials_manager_1 = require("../manager_classes/materials_manager");
+function weapon_size(type) {
+    switch (type) {
+        case 'onehand':
+            return 2;
+        case 'polearms':
+            return 3;
+        case 'ranged':
+            return 2;
+        case 'twohanded':
+            return 4;
+    }
+}
+exports.weapon_size = weapon_size;
 function item_size(item) {
-    if (item.slot == 'weapon') {
-        switch (item.weapon_tag) {
-            case 'onehand':
-                return 2;
-            case 'polearms':
-                return 3;
-            case 'ranged':
-                return 2;
-            case 'twohanded':
-                return 4;
-        }
+    let size = 1;
+    if (item.weapon_tag != undefined) {
+        size = weapon_size(item.weapon_tag);
     }
     switch (item.slot) {
-        case 'arms': return 1;
-        case 'foot': return 1;
-        case 'head': return 1;
-        case 'legs': return 3;
-        case 'body': return 5;
+        case "weapon": return size;
+        case "secondary": return size;
+        case "amulet": return 1;
+        case "mail": return 15;
+        case "greaves": return 4;
+        case "left_pauldron": return 4;
+        case "right_pauldron": return 4;
+        case "left_gauntlet": return 4;
+        case "right_gauntlet": return 4;
+        case "boots": return 6;
+        case "helmet": return 4;
+        case "belt": return 2;
+        case "robe": return 25;
+        case "shirt": return 10;
+        case "pants": return 15;
+        case "dress": return 10;
+        case "socks": return 6;
     }
 }
 exports.item_size = item_size;
 exports.BaseDamage = {
-    'graci_hair': new Damage_1.Damage(),
-    'elodino_dress': new Damage_1.Damage(),
-    'rat_skin_pants': new Damage_1.Damage(),
-    'rat_skin_armour': new Damage_1.Damage(),
-    'rat_skin_boots': new Damage_1.Damage(),
-    'rat_skin_gloves': new Damage_1.Damage(),
-    'rat_skin_helmet': new Damage_1.Damage(),
-    'cloth_gloves': new Damage_1.Damage(),
-    'cloth_armour': new Damage_1.Damage(),
-    'cloth_helmet': new Damage_1.Damage(),
-    'rat_skull_helmet': new Damage_1.Damage(),
-    'bone_armour': new Damage_1.Damage(),
     'bone_dagger': new Damage_1.Damage(1, 6, 12),
     'spear': new Damage_1.Damage(2, 6, 1),
     'bow': new Damage_1.Damage(5, 0, 0),
@@ -45,51 +51,21 @@ exports.BaseDamage = {
     'sword': new Damage_1.Damage(5, 5, 20),
     'wooden_mace': new Damage_1.Damage(8, 0, 0)
 };
-function base_resists(material, slot) {
+function base_damage(model) {
+    let response = exports.BaseDamage[model];
+    if (response == undefined)
+        return new Damage_1.Damage();
+    return response;
+}
+exports.base_damage = base_damage;
+function generic_resists(material, slot) {
     const size = item_size({ slot: slot, weapon_tag: 'twohanded' });
-    const resists = new Damage_1.Damage(material.density, material.hardness * 2 * size, material.hardness * size, material.density);
+    if (slot == 'weapon')
+        return new Damage_1.Damage();
+    const resists = new Damage_1.Damage(material.density * size, material.hardness * size, Math.round(material.hardness * 0.5) * size, material.density);
     return resists;
 }
-const wood = materials_manager_1.materials.index_to_material(materials_manager_1.WOOD);
-const skin = materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN);
-const bone = materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE);
-const elodino = materials_manager_1.materials.index_to_material(materials_manager_1.ELODINO_FLESH);
-const steel = materials_manager_1.materials.index_to_material(materials_manager_1.STEEL);
-const graci_hair = materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR);
-const cloth = materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE);
-exports.BaseResist = {
-    'graci_hair': base_resists(graci_hair, 'head'),
-    'elodino_dress': base_resists(elodino, 'body'),
-    'rat_skin_pants': base_resists(skin, 'legs'),
-    'rat_skin_armour': base_resists(skin, 'body'),
-    'rat_skin_boots': base_resists(skin, 'foot'),
-    'rat_skin_gloves': base_resists(skin, 'arms'),
-    'rat_skin_helmet': base_resists(skin, 'head'),
-    'cloth_gloves': base_resists(cloth, 'arms'),
-    'cloth_armour': base_resists(cloth, 'body'),
-    'cloth_helmet': base_resists(cloth, 'head'),
-    'rat_skull_helmet': base_resists(bone, 'head'),
-    'bone_armour': base_resists(bone, 'body'),
-    'bone_dagger': new Damage_1.Damage(),
-    'spear': new Damage_1.Damage(),
-    'bow': new Damage_1.Damage(),
-    'bone_spear': new Damage_1.Damage(),
-    'sword': new Damage_1.Damage(),
-    'wooden_mace': new Damage_1.Damage()
-};
 exports.BaseRange = {
-    'graci_hair': 1,
-    'elodino_dress': 1,
-    'rat_skin_pants': 1,
-    'rat_skin_armour': 1,
-    'rat_skin_boots': 1,
-    'rat_skin_gloves': 1,
-    'rat_skin_helmet': 1,
-    'cloth_gloves': 1,
-    'cloth_armour': 1,
-    'cloth_helmet': 1,
-    'rat_skull_helmet': 1,
-    'bone_armour': 1,
     'bone_dagger': 0.8,
     'spear': 2.0,
     'bow': 0.9,
@@ -98,18 +74,6 @@ exports.BaseRange = {
     'wooden_mace': 1.3
 };
 exports.ModelToWeaponTag = {
-    'graci_hair': 'twohanded',
-    'elodino_dress': 'twohanded',
-    'rat_skin_pants': 'twohanded',
-    'rat_skin_armour': 'twohanded',
-    'rat_skin_boots': 'twohanded',
-    'rat_skin_gloves': 'twohanded',
-    'rat_skin_helmet': 'twohanded',
-    'cloth_gloves': 'twohanded',
-    'cloth_armour': 'twohanded',
-    'cloth_helmet': 'twohanded',
-    'rat_skull_helmet': 'twohanded',
-    'bone_armour': 'twohanded',
     'bone_dagger': 'onehand',
     'spear': 'polearms',
     'bow': 'ranged',
@@ -118,18 +82,21 @@ exports.ModelToWeaponTag = {
     'wooden_mace': 'twohanded'
 };
 exports.ModelToEquipSlot = {
-    'graci_hair': 'head',
-    'elodino_dress': 'body',
-    'rat_skin_pants': 'legs',
-    'rat_skin_armour': 'body',
-    'rat_skin_boots': 'foot',
-    'rat_skin_gloves': 'arms',
-    'rat_skin_helmet': 'head',
-    'cloth_gloves': 'arms',
-    'cloth_armour': 'body',
-    'cloth_helmet': 'head',
-    'rat_skull_helmet': 'head',
-    'bone_armour': 'body',
+    'graci_hair': 'helmet',
+    'elodino_dress': 'dress',
+    'rat_skin_pants': 'pants',
+    'rat_skin_armour': 'mail',
+    'rat_skin_boots': 'boots',
+    'rat_skin_glove_left': 'left_gauntlet',
+    'rat_skin_glove_right': 'right_gauntlet',
+    'rat_skin_helmet': 'helmet',
+    'cloth_glove_left': 'left_gauntlet',
+    'cloth_glove_right': 'right_gauntlet',
+    'cloth_mail': 'mail',
+    'cloth_socks': 'socks',
+    'cloth_helmet': 'helmet',
+    'rat_skull_helmet': 'helmet',
+    'bone_armour': 'mail',
     'bone_dagger': 'weapon',
     'spear': 'weapon',
     'bow': 'weapon',
@@ -143,10 +110,13 @@ exports.ModelToMaterial = {
     'rat_skin_pants': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
     'rat_skin_armour': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
     'rat_skin_boots': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-    'rat_skin_gloves': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
+    'rat_skin_glove_left': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
+    'rat_skin_glove_right': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
     'rat_skin_helmet': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
-    'cloth_gloves': materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE),
-    'cloth_armour': materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE),
+    'cloth_glove_left': materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE),
+    'cloth_glove_right': materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE),
+    'cloth_mail': materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE),
+    'cloth_socks': materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE),
     'cloth_helmet': materials_manager_1.materials.index_to_material(materials_manager_1.TEXTILE),
     'rat_skull_helmet': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE),
     'bone_armour': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE),
@@ -157,3 +127,11 @@ exports.ModelToMaterial = {
     'sword': materials_manager_1.materials.index_to_material(materials_manager_1.STEEL),
     'wooden_mace': materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
 };
+exports.BaseResist = {};
+for (let model of model_tags_1.item_model_tags) {
+    exports.BaseResist[model] = generic_resists(exports.ModelToMaterial[model], exports.ModelToEquipSlot[model]);
+}
+function base_resists(model) {
+    return exports.BaseResist[model] || new Damage_1.Damage();
+}
+exports.base_resists = base_resists;
