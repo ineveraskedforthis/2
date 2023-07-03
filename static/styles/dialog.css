@@ -75,6 +75,6 @@
     width: 60%;
     height: 20%;
 
-
+    overflow-y: scroll;
     text-align: right;
 }

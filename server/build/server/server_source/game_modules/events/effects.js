@@ -8,7 +8,6 @@ const scripted_values_1 = require("./scripted_values");
 const basic_functions_1 = require("../calculations/basic_functions");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const triggers_1 = require("./triggers");
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_1 = require("../market/system");
 var Effect;
 (function (Effect) {
@@ -176,13 +175,13 @@ var Effect;
         building_quality_reduction_roll(building);
     }
     Effect.rest_building_tick = rest_building_tick;
-    function meat_spoilage(character) {
+    function spoilage(character, good, rate) {
         let dice = Math.random();
-        if (dice < 0.01) {
-            let current_amount = character.stash.get(materials_manager_1.MEAT);
+        if (dice < rate) {
+            let current_amount = character.stash.get(good);
             let integer = (Math.random() < 0.5) ? 1 : 0;
-            let spoiled_amount = Math.max(integer, Math.floor(current_amount * 0.01));
-            character.stash.set(materials_manager_1.MEAT, current_amount - spoiled_amount);
+            let spoiled_amount = Math.max(integer, Math.floor(current_amount * rate));
+            character.stash.set(good, current_amount - spoiled_amount);
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
             let orders = data_1.Data.BulkOrders.from_char_id(character.id);
             if (orders == undefined)
@@ -190,11 +189,13 @@ var Effect;
             for (let order of orders) {
                 let order_item = data_1.Data.BulkOrders.from_id(order);
                 const current_amount = order_item.amount;
+                if (order_item.tag != good)
+                    continue;
                 let spoiled_amount = Math.min(current_amount, Math.max(integer, Math.floor(current_amount * 0.01)));
                 system_1.BulkOrders.destroy_item(order, spoiled_amount);
             }
             Update.cell_market(character.cell_id);
         }
     }
-    Effect.meat_spoilage = meat_spoilage;
+    Effect.spoilage = spoilage;
 })(Effect = exports.Effect || (exports.Effect = {}));

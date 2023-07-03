@@ -220,9 +220,9 @@ export namespace Data {
                 }
                 terrain.push(terrain_row)
             }
-            console.log(terrain.length)
-            console.log(terrain[0].length)
-            console.log(stats)
+            // console.log(terrain.length)
+            // console.log(terrain[0].length)
+            // console.log(stats)
         }
 
         export function load_markets(path: string) {
@@ -396,6 +396,8 @@ export namespace Data {
                             cotton: 0,
                         }
                         set_data(id, cell_data)
+                    } else {
+                        set_data(id, cell)
                     }
                 }
             }
@@ -405,6 +407,8 @@ export namespace Data {
             cells.push(cell)
             id_to_cell.set(id, cell)
             cell_ids.push(id)
+
+            // if (id < 200) console.log(id)
         }
 
         export function get_characters_set_from_cell(cell: cell_id) {

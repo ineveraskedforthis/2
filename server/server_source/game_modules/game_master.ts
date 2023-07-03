@@ -4,6 +4,7 @@ import { Effect } from "./events/effects";
 import { Cell } from "./map/DATA_LAYOUT_CELL";
 import { Template } from "./templates";
 import { LandPlotType } from "@custom_types/buildings";
+import { character_to_string } from "./strings_management";
 
 // steppe_humans 9 9
 // city 2 6
@@ -121,21 +122,33 @@ export namespace GameMaster {
             }
         } 
 
+        // console.log('Game master update')
         for (const cell of Data.Cells.list_ids()) {
+            let cell_object = Data.Cells.from_id(cell)
             const buildings = Data.Buildings.from_cell_id(cell)
-            if (buildings == undefined) continue
-            for (const item_id of buildings) {
-                const building = Data.Buildings.from_id(item_id)
-                if (building.type == LandPlotType.RatLair) {
-                    let cell_object = Data.Cells.from_id(cell)
-                    cell_object.rat_scent = 200
-                    cell_object.rat_scent += 5 * dt / 100
-                    spawn_rat(num_rats, cell_object)
-                }
+            if (buildings != undefined) {
+                for (const item_id of buildings) {
+                    const building = Data.Buildings.from_id(item_id)
+                    if (building.type == LandPlotType.RatLair) {
+                        cell_object.rat_scent = 200
+                        cell_object.rat_scent += 5 * dt / 100
+                        spawn_rat(num_rats, cell_object)
+                    }
 
-                if (building.type == LandPlotType.ElodinoHouse) {
-                    let cell_object = Data.Cells.from_id(cell)
-                    spawn_ball(num_balls, cell_object)
+                    if (building.type == LandPlotType.ElodinoHouse) {
+                        let cell_object = Data.Cells.from_id(cell)
+                        spawn_ball(num_balls, cell_object)
+                    }
+                }
+            }
+
+            let set = Data.Cells.get_characters_set_from_cell(cell)
+            if (set != undefined) {
+                for (const character_id of set) {
+                    let character = Data.CharacterDB.from_id(character_id) 
+                    if ((character.race == 'rat') && (character.dead())) {
+                        cell_object.rat_scent -= 1 * dt / 10
+                    }
                 }
             }
         }

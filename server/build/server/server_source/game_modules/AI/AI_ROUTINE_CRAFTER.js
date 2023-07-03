@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.crafter_routine = exports.decide_bulk_craft = void 0;
 const crafts_storage_1 = require("../craft/crafts_storage");
-const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const AIactions_1 = require("./AIactions");
 const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
@@ -76,8 +75,6 @@ function crafter_routine(character) {
         return;
     if (character.current_building != undefined)
         return;
-    (0, AI_ROUTINE_GENERIC_1.GenericRest)(character);
-    // bulk crafting
     const total_crafting_budget = Math.min(400, character.savings.get() / 4);
     if (Math.random() < 0.5) {
         bulk_crafter_routine(character, total_crafting_budget);

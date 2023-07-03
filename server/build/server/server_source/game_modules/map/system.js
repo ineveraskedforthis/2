@@ -46,7 +46,7 @@ var MapSystem;
     }
     MapSystem.has_market = has_market;
     function has_wood(cell_id) {
-        if (data_1.Data.Cells.forestation(cell_id) > 100)
+        if (data_1.Data.Cells.forestation(cell_id) > 0)
             return true;
         return false;
     }
@@ -78,7 +78,7 @@ var MapSystem;
             d_scent -= data_1.Data.Cells.forestation(cell.id) / 100 * base_d_scent;
         }
         // trim to avoid weirdness
-        cell.rat_scent = (0, basic_functions_1.trim)(cell.rat_scent + d_scent * 20, 0, 50);
+        cell.rat_scent = (0, basic_functions_1.trim)(cell.rat_scent + d_scent * 20, -50, 50);
     }
     function update_market_scent(cell) {
         if (cell == undefined)

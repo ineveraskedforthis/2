@@ -106,6 +106,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
         utility: (character: Character) => {
             if (has_memory(character, AImemory.RESTED)) return 0
+            if (character.ai_state == AIstate.GoToRest) return 1
             return (character.get_stress() + character.get_fatigue()) / 200
         }
     },
@@ -225,6 +226,8 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     CRAFT: {
         action(character) {
+            character.ai_state = AIstate.Craft
+            Effect.leave_room(character.id)
             crafter_routine(character)
         },
 
@@ -236,6 +239,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     TRADE: {
         action(character) {
+            // character.ai_state = AIstate.Trading
             TraderRoutine(character)
         },
 
@@ -250,6 +254,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     STEPPE_WALK: {
         action(character) {
+            character.ai_state = AIstate.Patrol
             SteppePassiveRoutine(character)
         },
 
@@ -263,6 +268,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     FOREST_WALK: {
         action(character) {
+            character.ai_state = AIstate.Patrol
             ForestPassiveRoutine(character)
         },
 
@@ -276,6 +282,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     FISH: {
         action(character) {
+            character.ai_state = AIstate.Patrol
             if (MapSystem.can_fish(character.cell_id)) {
                 ActionManager.start_action(CharacterAction.FISH, character, character.cell_id)
             } else {
@@ -291,7 +298,10 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     SELL_FISH: {
         action(character) {
+            character.ai_state = AIstate.GoToMarket
             if (AI_TRIGGER.at_home(character)) {
+                remove_orders(character)
+                update_price_beliefs(character)
                 sell_material(character, FISH)
             } else {
                 home_walk(character)
@@ -300,12 +310,14 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
         utility(character) {
             if (character.ai_map == 'crafter') return 0
+            if (character.trade_stash.get(FISH) > 0) return 1
             return character.stash.get(FISH) / 20
         }
     },
 
     CUT_WOOD: {
         action(character) {
+            character.ai_state = AIstate.Patrol
             if (!MapSystem.has_wood(character.cell_id)) {
                 random_walk(character, simple_constraints)
                 return
@@ -321,7 +333,10 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     SELL_WOOD: {
         action(character) {
+            character.ai_state = AIstate.GoToMarket
             if (AI_TRIGGER.at_home(character)) {
+                remove_orders(character)
+                update_price_beliefs(character)                
                 sell_material(character, WOOD)
             } else {
                 home_walk(character)
@@ -330,6 +345,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
         utility(character) {
             if (character.ai_map == 'crafter') return 0
+            if (character.trade_stash.get(WOOD) > 0) return 1
             return character.stash.get(WOOD) / 40
         }
     }

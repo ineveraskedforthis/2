@@ -104,21 +104,31 @@ var GameMaster;
                 templates_1.Template.Character.HumanRatHunter(cell.x, cell.y, "Hunter");
             }
         }
+        // console.log('Game master update')
         for (const cell of data_1.Data.Cells.list_ids()) {
+            let cell_object = data_1.Data.Cells.from_id(cell);
             const buildings = data_1.Data.Buildings.from_cell_id(cell);
-            if (buildings == undefined)
-                continue;
-            for (const item_id of buildings) {
-                const building = data_1.Data.Buildings.from_id(item_id);
-                if (building.type == "rat_lair" /* LandPlotType.RatLair */) {
-                    let cell_object = data_1.Data.Cells.from_id(cell);
-                    cell_object.rat_scent = 200;
-                    cell_object.rat_scent += 5 * dt / 100;
-                    spawn_rat(num_rats, cell_object);
+            if (buildings != undefined) {
+                for (const item_id of buildings) {
+                    const building = data_1.Data.Buildings.from_id(item_id);
+                    if (building.type == "rat_lair" /* LandPlotType.RatLair */) {
+                        cell_object.rat_scent = 200;
+                        cell_object.rat_scent += 5 * dt / 100;
+                        spawn_rat(num_rats, cell_object);
+                    }
+                    if (building.type == "elodino_house" /* LandPlotType.ElodinoHouse */) {
+                        let cell_object = data_1.Data.Cells.from_id(cell);
+                        spawn_ball(num_balls, cell_object);
+                    }
                 }
-                if (building.type == "elodino_house" /* LandPlotType.ElodinoHouse */) {
-                    let cell_object = data_1.Data.Cells.from_id(cell);
-                    spawn_ball(num_balls, cell_object);
+            }
+            let set = data_1.Data.Cells.get_characters_set_from_cell(cell);
+            if (set != undefined) {
+                for (const character_id of set) {
+                    let character = data_1.Data.CharacterDB.from_id(character_id);
+                    if ((character.race == 'rat') && (character.dead())) {
+                        cell_object.rat_scent -= 1 * dt / 10;
+                    }
                 }
             }
         }

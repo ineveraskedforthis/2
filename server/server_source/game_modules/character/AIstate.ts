@@ -7,6 +7,8 @@ export const enum AIstate {
     PatrolPrices = 'patrol_prices',
     Talking = 'talking',
     GoToRest = 'go_to_rest',
+    Craft = 'craft',
+    Trading = 'trading'
 }
 
 export const enum AImemory {

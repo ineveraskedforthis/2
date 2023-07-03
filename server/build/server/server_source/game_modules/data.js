@@ -171,9 +171,9 @@ var Data;
                 }
                 terrain.push(terrain_row);
             }
-            console.log(terrain.length);
-            console.log(terrain[0].length);
-            console.log(stats);
+            // console.log(terrain.length)
+            // console.log(terrain[0].length)
+            // console.log(stats)
         }
         World.load_terrain = load_terrain;
         function load_markets(path) {
@@ -340,6 +340,9 @@ var Data;
                         };
                         set_data(id, cell_data);
                     }
+                    else {
+                        set_data(id, cell);
+                    }
                 }
             }
         }
@@ -348,6 +351,7 @@ var Data;
             cells.push(cell);
             id_to_cell.set(id, cell);
             cell_ids.push(id);
+            // if (id < 200) console.log(id)
         }
         Cells.set_data = set_data;
         function get_characters_set_from_cell(cell) {

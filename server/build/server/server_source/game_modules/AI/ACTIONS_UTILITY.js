@@ -76,6 +76,8 @@ exports.AI_ACTIONS = {
         utility: (character) => {
             if (has_memory(character, "rested" /* AImemory.RESTED */))
                 return 0;
+            if (character.ai_state == "go_to_rest" /* AIstate.GoToRest */)
+                return 1;
             return (character.get_stress() + character.get_fatigue()) / 200;
         }
     },
@@ -185,6 +187,8 @@ exports.AI_ACTIONS = {
     },
     CRAFT: {
         action(character) {
+            character.ai_state = "craft" /* AIstate.Craft */;
+            effects_1.Effect.leave_room(character.id);
             (0, AI_ROUTINE_CRAFTER_1.crafter_routine)(character);
         },
         utility(character) {
@@ -195,6 +199,7 @@ exports.AI_ACTIONS = {
     },
     TRADE: {
         action(character) {
+            // character.ai_state = AIstate.Trading
             (0, AI_ROUTINE_URBAN_TRADER_1.TraderRoutine)(character);
         },
         utility(character) {
@@ -206,6 +211,7 @@ exports.AI_ACTIONS = {
     },
     STEPPE_WALK: {
         action(character) {
+            character.ai_state = "patrol" /* AIstate.Patrol */;
             (0, AI_ROUTINE_GENERIC_1.SteppePassiveRoutine)(character);
         },
         utility(character) {
@@ -217,6 +223,7 @@ exports.AI_ACTIONS = {
     },
     FOREST_WALK: {
         action(character) {
+            character.ai_state = "patrol" /* AIstate.Patrol */;
             (0, AI_ROUTINE_GENERIC_1.ForestPassiveRoutine)(character);
         },
         utility(character) {
@@ -228,6 +235,7 @@ exports.AI_ACTIONS = {
     },
     FISH: {
         action(character) {
+            character.ai_state = "patrol" /* AIstate.Patrol */;
             if (system_2.MapSystem.can_fish(character.cell_id)) {
                 manager_1.ActionManager.start_action(actions_00_1.CharacterAction.FISH, character, character.cell_id);
             }
@@ -243,7 +251,10 @@ exports.AI_ACTIONS = {
     },
     SELL_FISH: {
         action(character) {
+            character.ai_state = "go_to_market" /* AIstate.GoToMarket */;
             if (AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
+                (0, ACTIONS_BASIC_1.remove_orders)(character);
+                (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
                 (0, ACTIONS_BASIC_1.sell_material)(character, materials_manager_1.FISH);
             }
             else {
@@ -253,11 +264,14 @@ exports.AI_ACTIONS = {
         utility(character) {
             if (character.ai_map == 'crafter')
                 return 0;
+            if (character.trade_stash.get(materials_manager_1.FISH) > 0)
+                return 1;
             return character.stash.get(materials_manager_1.FISH) / 20;
         }
     },
     CUT_WOOD: {
         action(character) {
+            character.ai_state = "patrol" /* AIstate.Patrol */;
             if (!system_2.MapSystem.has_wood(character.cell_id)) {
                 (0, ACTIONS_BASIC_1.random_walk)(character, constraints_1.simple_constraints);
                 return;
@@ -272,7 +286,10 @@ exports.AI_ACTIONS = {
     },
     SELL_WOOD: {
         action(character) {
+            character.ai_state = "go_to_market" /* AIstate.GoToMarket */;
             if (AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
+                (0, ACTIONS_BASIC_1.remove_orders)(character);
+                (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
                 (0, ACTIONS_BASIC_1.sell_material)(character, materials_manager_1.WOOD);
             }
             else {
@@ -282,6 +299,8 @@ exports.AI_ACTIONS = {
         utility(character) {
             if (character.ai_map == 'crafter')
                 return 0;
+            if (character.trade_stash.get(materials_manager_1.WOOD) > 0)
+                return 1;
             return character.stash.get(materials_manager_1.WOOD) / 40;
         }
     }

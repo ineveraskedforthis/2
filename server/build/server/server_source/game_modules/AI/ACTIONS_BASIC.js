@@ -19,7 +19,7 @@ const LOOT = [materials_manager_1.MEAT, materials_manager_1.RAT_SKIN, materials_
 function loot(character) {
     let tmp = 0;
     for (let tag of LOOT) {
-        tmp += character.stash.get(tag);
+        tmp += character.stash.get(tag) + character.trade_stash.get(tag);
     }
     return tmp;
 }
@@ -204,6 +204,17 @@ function roll_price_belief_sell_increase(character, material, probability) {
 exports.roll_price_belief_sell_increase = roll_price_belief_sell_increase;
 function update_price_beliefs(character) {
     let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
+    // initialisation
+    for (let material of materials_manager_1.materials.list_of_indices) {
+        let value_buy = character.ai_price_belief_buy.get(material);
+        let value_sell = character.ai_price_belief_sell.get(material);
+        if (value_buy == undefined) {
+            character.ai_price_belief_buy.set(material, (0, AI_SCRIPTED_VALUES_1.base_price)(character.cell_id, material));
+        }
+        if (value_sell == undefined) {
+            character.ai_price_belief_sell.set(material, (0, AI_SCRIPTED_VALUES_1.base_price)(character.cell_id, material));
+        }
+    }
     // updating price beliefs as you go
     for (let item of orders) {
         let order = data_1.Data.BulkOrders.from_id(item);
@@ -230,9 +241,9 @@ function update_price_beliefs(character) {
     character.ai_price_belief_buy.forEach((value, key, map) => {
         if (value > 1) {
             if (character.trade_stash.get(key) > 0) {
-                let amount = character.trade_stash.get(key) - 20;
+                let amount = character.trade_stash.get(key) + character.stash.get(key) - 10;
                 let dice = Math.random();
-                if (dice < amount / 100) {
+                if (dice < amount / 30) {
                     map.set(key, value - 1);
                 }
             }
@@ -254,16 +265,16 @@ function update_price_beliefs(character) {
     character.ai_price_belief_sell.forEach((value, key, map) => {
         if (value > 1) {
             let dice = Math.random();
-            if (dice < 0.1) {
+            if (dice < 0.2) {
                 map.set(key, value - 1);
             }
-            if (dice > 0.9) {
+            if (dice > 0.8) {
                 map.set(key, value + 1);
             }
         }
         else {
             let dice = Math.random();
-            if (dice > 0.9) {
+            if (dice > 0.8) {
                 map.set(key, value + 1);
             }
         }

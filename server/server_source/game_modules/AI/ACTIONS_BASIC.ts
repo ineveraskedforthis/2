@@ -15,7 +15,7 @@ import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
 // import { money } from "../types";
 import { dp } from "./AI_CONSTANTS";
-import { AItrade } from "./AI_SCRIPTED_VALUES";
+import { AItrade, base_price } from "./AI_SCRIPTED_VALUES";
 import { coastal_constraints, simple_constraints, urban_constraints } from "./constraints";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
 
@@ -23,7 +23,7 @@ const LOOT = [MEAT, RAT_SKIN, RAT_BONE];
 export function loot(character: Character) {
     let tmp = 0;
     for (let tag of LOOT) {
-        tmp += character.stash.get(tag);
+        tmp += character.stash.get(tag) + character.trade_stash.get(tag);
     }
     return tmp;
 }
@@ -225,6 +225,20 @@ export function roll_price_belief_sell_increase(character: Character, material: 
 
 export function update_price_beliefs(character: Character) {
     let orders = Convert.cell_id_to_bulk_orders(character.cell_id)
+    // initialisation
+    
+    for (let material of materials.list_of_indices) {
+        let value_buy = character.ai_price_belief_buy.get(material)
+        let value_sell = character.ai_price_belief_sell.get(material)
+
+        if (value_buy == undefined) {
+            character.ai_price_belief_buy.set(material, base_price(character.cell_id, material))
+        }
+        if (value_sell == undefined) {
+            character.ai_price_belief_sell.set(material, base_price(character.cell_id, material))
+        }
+    }
+    
     // updating price beliefs as you go
     for (let item of orders) {
         let order = Data.BulkOrders.from_id(item)
@@ -251,9 +265,9 @@ export function update_price_beliefs(character: Character) {
     character.ai_price_belief_buy.forEach((value, key, map) => {
         if (value > 1) {
             if (character.trade_stash.get(key) > 0) {
-                let amount = character.trade_stash.get(key) - 20
+                let amount = character.trade_stash.get(key) + character.stash.get(key) - 10
                 let dice = Math.random()
-                if (dice < amount / 100) {
+                if (dice < amount / 30) {
                     map.set(key, value - 1 as money)
                 }
             }
@@ -275,15 +289,15 @@ export function update_price_beliefs(character: Character) {
     character.ai_price_belief_sell.forEach((value, key, map) => {
         if (value > 1) {
             let dice = Math.random()
-            if (dice < 0.1) {
+            if (dice < 0.2) {
                 map.set(key, value - 1 as money)
             }
-            if (dice > 0.9) {
+            if (dice > 0.8) {
                 map.set(key, value + 1 as money)
             }
         } else {
             let dice = Math.random()
-            if (dice > 0.9) {
+            if (dice > 0.8) {
                 map.set(key, value + 1 as money)
             }
         }

@@ -12,6 +12,10 @@ var Dialog;
 (function (Dialog) {
     function talking_check(sw, character_id) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (typeof character_id != 'number') {
+            sw.socket.emit('alert', 'invalid character id');
+            return [undefined, undefined];
+        }
         if (character == undefined) {
             sw.socket.emit('alert', 'your character does not exist');
             return [undefined, undefined];
@@ -35,6 +39,17 @@ var Dialog;
         }
         return [character, target_character];
     }
+    function request_prices(sw, character_id) {
+        const [character, target_character] = talking_check(sw, character_id);
+        if ((character == undefined || target_character == undefined)) {
+            return;
+        }
+        let data_buy = Object.fromEntries(target_character.ai_price_belief_buy);
+        let data_sell = Object.fromEntries(target_character.ai_price_belief_sell);
+        // console.log(data_buy, data_sell)
+        sw.socket.emit('character-prices', { buy: data_buy, sell: data_sell });
+    }
+    Dialog.request_prices = request_prices;
     function request_greeting(sw, character_id) {
         const [character, target_character] = talking_check(sw, character_id);
         if ((character == undefined || target_character == undefined)) {

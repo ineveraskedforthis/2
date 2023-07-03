@@ -53,7 +53,7 @@ export namespace MapSystem {
     }
 
     export function has_wood(cell_id: cell_id) {
-        if (Data.Cells.forestation(cell_id) > 100) return true
+        if (Data.Cells.forestation(cell_id) > 0) return true
         return false
     }
 
@@ -86,7 +86,7 @@ export namespace MapSystem {
         }
 
         // trim to avoid weirdness
-        cell.rat_scent = trim(cell.rat_scent + d_scent * 20, 0, 50)
+        cell.rat_scent = trim(cell.rat_scent + d_scent * 20, -50, 50)
     }
 
     function update_market_scent(cell: Cell) {

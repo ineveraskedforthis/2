@@ -81,11 +81,7 @@ export function crafter_routine(character: Character) {
     if (character.is_player()) return
     if (character.current_building != undefined) return
 
-    GenericRest(character);
-
-    // bulk crafting
     const total_crafting_budget = Math.min(400, character.savings.get() / 4) as money
-
     if (Math.random() < 0.5) {
         bulk_crafter_routine(character, total_crafting_budget)
     } else {

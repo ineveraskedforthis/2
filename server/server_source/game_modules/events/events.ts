@@ -95,6 +95,7 @@ export namespace Event {
         if (user == undefined) return
         let new_cell = Data.Cells.from_id(new_cell_id)
         Alerts.log_to_user(user, 'rat scent ' + new_cell.rat_scent)
+        Alerts.log_to_user(user, 'cell_id ' + new_cell.id)
     }
 
     export function move_durability_roll_probability(cell: cell_id) {

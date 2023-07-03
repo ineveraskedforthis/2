@@ -10,11 +10,14 @@ import { skill } from "../../character/SkillList"
 import { skill_price } from "../../prices/skill_price"
 import { can_talk, is_enemy_characters } from "../../SYSTEM_REPUTATION"
 import { Character } from "../../character/character"
-import { char_id } from "../../types"
 
 export namespace Dialog {
-    function talking_check(sw: SocketWrapper, character_id: number): [undefined, undefined]|[Character, Character]  {
+    function talking_check(sw: SocketWrapper, character_id: unknown): [undefined, undefined]|[Character, Character]  {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (typeof character_id != 'number') {
+            sw.socket.emit('alert', 'invalid character id')
+            return [undefined, undefined]
+        }
         if (character == undefined) {
             sw.socket.emit('alert', 'your character does not exist')
             return [undefined, undefined]
@@ -41,8 +44,22 @@ export namespace Dialog {
         return [character, target_character]
     }
 
+    export function request_prices(sw: SocketWrapper, character_id: unknown) {
+        const [character, target_character] = talking_check(sw, character_id)
+        if ((character == undefined || target_character == undefined)) {
+            return
+        }
 
-    export function request_greeting(sw: SocketWrapper, character_id: number) {
+        let data_buy = Object.fromEntries(target_character.ai_price_belief_buy)
+        let data_sell = Object.fromEntries(target_character.ai_price_belief_sell)
+
+        // console.log(data_buy, data_sell)
+
+        sw.socket.emit('character-prices', {buy: data_buy, sell: data_sell})
+    }
+
+
+    export function request_greeting(sw: SocketWrapper, character_id: unknown) {
         const [character, target_character] = talking_check(sw, character_id)
         if ((character == undefined || target_character == undefined)) {
             return

@@ -1,4 +1,4 @@
-import { materials, material_index } from "../manager_classes/materials_manager";
+import { materials, material_index, MEAT, FISH, FOOD } from "../manager_classes/materials_manager";
 import { CharacterTemplate, damage_type, weapon_attack_tag, weapon_tag } from "../types";
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
@@ -320,7 +320,9 @@ export namespace CharacterSystem {
                 if (!character.in_battle()) {
                     Effect.Change.rage(character, -1)
                     Effect.rest_building_tick(character)
-                    Effect.meat_spoilage(character)
+                    Effect.spoilage(character, MEAT, 0.03)
+                    Effect.spoilage(character, FISH, 0.03)
+                    Effect.spoilage(character, FOOD, 0.005)
                 }
             }
 

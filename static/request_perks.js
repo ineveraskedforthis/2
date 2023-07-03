@@ -1,5 +1,6 @@
 import { socket, globals } from './modules/globals.js';
 import { SKILL_NAMES } from './SKILL_NAMES.js';
+import { stash_id_to_tag } from './bulk_tags.js';
 // tmp.typ = this.typ;
 // tmp.tag = this.tag;
 // tmp.owner_id = this.owner_id;
@@ -29,6 +30,9 @@ function close_perks() {
 }
 function send_perk_learning_request(i) {
     return () => socket.emit('learn-perk', { tag: i, id: globals.selected_character });
+}
+function request_prices() {
+    return () => socket.emit('request-prices-character', globals.selected_character);
 }
 function send_skill_learning_request(i) {
     return () => socket.emit('learn-skill', { tag: i, id: globals.selected_character });
@@ -126,6 +130,7 @@ function build_dialog(data) {
     clear_dialog_options();
     build_portrait(portrait_div, data.equip, data.model);
     add_dialog_option('Goodbye', close_perks);
+    add_dialog_option('What do you think about current prices?', request_prices());
     if (is_leader(data))
         add_dialog_option('I want to buy a land plot for 500.', buy_land_plot_request());
     for (let [i, value] of Object.entries(data.perks)) {
@@ -140,6 +145,25 @@ function build_dialog(data) {
     }
     big_div.classList.remove('hidden');
     document.getElementById('dialog-scene')?.classList.remove('hidden');
+}
+function convert_prices_data_to_string(data) {
+    let buy_string = "I think one could buy the following goods with these prices: <br>";
+    for (let [k, v] of Object.entries(data.buy)) {
+        buy_string += stash_id_to_tag[k] + ': ' + v + '<br>';
+    }
+    let sell_string = "I think one could sell the following goods with these prices: <br>";
+    for (let [k, v] of Object.entries(data.sell)) {
+        sell_string += stash_id_to_tag[k] + ': ' + v + '<br>';
+    }
+    return buy_string + sell_string;
+}
+function build_prices(data) {
+    console.log('prices_data');
+    console.log(data);
+    clear_dialog_options();
+    document.getElementById('dialog-message').innerHTML = convert_prices_data_to_string(data);
+    add_dialog_option('Thanks you, let\'s talk about something else', request_perks);
+    add_dialog_option('Goodbye', close_perks);
 }
 function update_perks(data) {
     // console.log('PERKS!!!!');
@@ -178,5 +202,6 @@ function update_stats(data) {
     stats_tab.appendChild(flex_something('Charged magic bolt base damage', `${data.base_damage_magic_bolt_charged.toFixed(2)}`));
 }
 socket.on('perks-info', build_dialog);
+socket.on('character-prices', build_prices);
 socket.on('perks-update', update_perks);
 socket.on('stats', update_stats);

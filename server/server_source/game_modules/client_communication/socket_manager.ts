@@ -121,7 +121,9 @@ export class SocketManager {
             socket.on('battle-action-unit',  (msg: any) => HandleAction.battle_unit(user, msg))
             socket.on('battle-action-position', (msg: any) => HandleAction.battle_position(user, msg))
 
-            socket.on('request-talk',   (msg:any) => Dialog.request_greeting(user, msg))
+            socket.on('request-talk',   (msg:unknown) => Dialog.request_greeting(user, msg))
+            socket.on('request-prices-character',  (msg:unknown) => Dialog.request_prices(user, msg))
+            
             socket.on('request-local-buildings', (msg:any) => Request.local_buildings(user))
             socket.on('learn-perk',     (msg: undefined|{id: unknown, tag: unknown}) =>
                                             SocketCommand.learn_perk(user, msg))

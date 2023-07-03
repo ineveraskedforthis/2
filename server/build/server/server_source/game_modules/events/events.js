@@ -67,6 +67,7 @@ var Event;
             return;
         let new_cell = data_1.Data.Cells.from_id(new_cell_id);
         alerts_1.Alerts.log_to_user(user, 'rat scent ' + new_cell.rat_scent);
+        alerts_1.Alerts.log_to_user(user, 'cell_id ' + new_cell.id);
     }
     Event.move = move;
     function move_durability_roll_probability(cell) {
