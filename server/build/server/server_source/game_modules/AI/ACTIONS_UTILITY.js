@@ -56,6 +56,7 @@ exports.AI_ACTIONS = {
                     effects_1.Effect.leave_room(character.id);
                     character.ai_memories.push("rested" /* AImemory.RESTED */);
                 }
+                return;
             }
             if (!AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
                 (0, ACTIONS_BASIC_1.home_walk)(character);
@@ -160,6 +161,7 @@ exports.AI_ACTIONS = {
     },
     RAT_WALK: {
         action: (character) => {
+            character.ai_state = "patrol" /* AIstate.Patrol */;
             (0, ACTIONS_BASIC_1.rat_walk)(character, constraints_1.simple_constraints);
         },
         utility(character) {

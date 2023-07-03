@@ -223,7 +223,7 @@ var MapSystem;
         let path = find_path_full(start, end);
         if (path == undefined)
             return undefined;
-        return path[0];
+        return path[1];
     }
     MapSystem.find_path = find_path;
     function dist(a, b) {

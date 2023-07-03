@@ -229,7 +229,7 @@ export namespace MapSystem {
     export function find_path(start: cell_id, end: cell_id): cell_id|undefined {
         let path = find_path_full(start, end)
         if (path == undefined) return undefined
-        return path[0]
+        return path[1]
     }
 
     function dist(a: cell_id, b: cell_id) {

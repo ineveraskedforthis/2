@@ -33,6 +33,7 @@ function string_to_character(s) {
     const character = new character_1.Character(data.id, data.battle_id, data.battle_unit_id, data.user_id, data.cell_id, data.name, template);
     character.explored = data.explored;
     character.equip.load_from_json(data.equip);
+    character.home_cell_id = data.home_cell_id;
     // equip_from_string(data.equip.data, character.equip)
     character.stash.load_from_json(data.stash.data);
     character.trade_stash.load_from_json(data.trade_stash.data);

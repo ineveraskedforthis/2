@@ -85,6 +85,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
                     Effect.leave_room(character.id)
                     character.ai_memories.push(AImemory.RESTED)
                 }
+                return
             }
             if (!AI_TRIGGER.at_home(character)) {
                 home_walk(character)
@@ -195,6 +196,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     RAT_WALK: {
         action: (character: Character) => {
+            character.ai_state = AIstate.Patrol
             rat_walk(character, simple_constraints)
         },
         utility(character) {
