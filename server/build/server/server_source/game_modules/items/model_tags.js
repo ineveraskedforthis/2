@@ -22,5 +22,9 @@ exports.item_model_tags = [
     'cloth_glove_right',
     'cloth_mail',
     'cloth_socks',
-    'cloth_helmet'
+    'cloth_helmet',
+    'bone_pauldron_left',
+    'bone_pauldron_right',
+    'rat_skin_pauldron_left',
+    'rat_robe',
 ];

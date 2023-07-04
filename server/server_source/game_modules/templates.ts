@@ -112,6 +112,18 @@ export namespace Template {
             // character.equip.data.slots.left_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
             // character.equip.data.slots.right_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
             character.equip.data.slots.boots = ItemSystem.create('rat_skin_boots', [], 100)
+            // character.equip.data.slots.helmet = ItemSystem.create('cloth_helmet', [], 100)
+            character.equip.data.slots.pants = ItemSystem.create('rat_skin_pants', [], 100)
+
+            return character
+        }
+
+        export function EquipClothesRich(character: Character) {
+            EquipClothesBasic(character)
+
+            character.equip.data.slots.robe = ItemSystem.create('rat_robe', [], 100)
+            character.equip.data.slots.right_gauntlet = ItemSystem.create('cloth_glove_right', [], 100)
+            character.equip.data.slots.left_gauntlet = ItemSystem.create('cloth_glove_left', [], 100)
             character.equip.data.slots.helmet = ItemSystem.create('cloth_helmet', [], 100)
 
             return character
@@ -268,7 +280,7 @@ export namespace Template {
             master._skills.clothier = 100
             master._perks.skin_armour_master = true
             master.stash.inc(RAT_SKIN, 50)
-            master.savings.inc(LUMP_OF_MONEY)            
+            master.savings.inc(TONS_OF_MONEY)            
             return master
         }
 
@@ -277,7 +289,7 @@ export namespace Template {
             master._skills.clothier = 100
             master._perks.shoemaker = true
             master.stash.inc(RAT_SKIN, 50)
-            master.savings.inc(LUMP_OF_MONEY)            
+            master.savings.inc(TONS_OF_MONEY)            
             return master
         }
 
@@ -287,7 +299,7 @@ export namespace Template {
             master._skills.woodwork = 100
             master._perks.weapon_maker = true
             master.stash.inc(WOOD, 15)
-            master.savings.inc(LUMP_OF_MONEY)
+            master.savings.inc(TONS_OF_MONEY)
             
             return master
         }
@@ -298,7 +310,7 @@ export namespace Template {
             master._skills.bone_carving = 100
             master._perks.weapon_maker = true
             master.stash.inc(RAT_BONE, 40)
-            master.savings.inc(LUMP_OF_MONEY)
+            master.savings.inc(TONS_OF_MONEY)
             
             return master
         }

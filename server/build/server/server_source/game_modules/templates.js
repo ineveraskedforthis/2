@@ -114,10 +114,20 @@ var Template;
             // character.equip.data.slots.left_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
             // character.equip.data.slots.right_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
             character.equip.data.slots.boots = system_1.ItemSystem.create('rat_skin_boots', [], 100);
-            character.equip.data.slots.helmet = system_1.ItemSystem.create('cloth_helmet', [], 100);
+            // character.equip.data.slots.helmet = ItemSystem.create('cloth_helmet', [], 100)
+            character.equip.data.slots.pants = system_1.ItemSystem.create('rat_skin_pants', [], 100);
             return character;
         }
         Character.EquipClothesBasic = EquipClothesBasic;
+        function EquipClothesRich(character) {
+            EquipClothesBasic(character);
+            character.equip.data.slots.robe = system_1.ItemSystem.create('rat_robe', [], 100);
+            character.equip.data.slots.right_gauntlet = system_1.ItemSystem.create('cloth_glove_right', [], 100);
+            character.equip.data.slots.left_gauntlet = system_1.ItemSystem.create('cloth_glove_left', [], 100);
+            character.equip.data.slots.helmet = system_1.ItemSystem.create('cloth_helmet', [], 100);
+            return character;
+        }
+        Character.EquipClothesRich = EquipClothesRich;
         function HumanRatHunter(x, y, name) {
             let human = HumanSpearman(x, y, name, 'steppe');
             human.ai_map = 'rat_hunter';
@@ -274,7 +284,7 @@ var Template;
             master._skills.clothier = 100;
             master._perks.skin_armour_master = true;
             master.stash.inc(materials_manager_1.RAT_SKIN, 50);
-            master.savings.inc(LUMP_OF_MONEY);
+            master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.ArmourMaster = ArmourMaster;
@@ -283,7 +293,7 @@ var Template;
             master._skills.clothier = 100;
             master._perks.shoemaker = true;
             master.stash.inc(materials_manager_1.RAT_SKIN, 50);
-            master.savings.inc(LUMP_OF_MONEY);
+            master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.Shoemaker = Shoemaker;
@@ -292,7 +302,7 @@ var Template;
             master._skills.woodwork = 100;
             master._perks.weapon_maker = true;
             master.stash.inc(materials_manager_1.WOOD, 15);
-            master.savings.inc(LUMP_OF_MONEY);
+            master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.WeaponMasterWood = WeaponMasterWood;
@@ -301,7 +311,7 @@ var Template;
             master._skills.bone_carving = 100;
             master._perks.weapon_maker = true;
             master.stash.inc(materials_manager_1.RAT_BONE, 40);
-            master.savings.inc(LUMP_OF_MONEY);
+            master.savings.inc(TONS_OF_MONEY);
             return master;
         }
         Character.WeaponMasterBone = WeaponMasterBone;

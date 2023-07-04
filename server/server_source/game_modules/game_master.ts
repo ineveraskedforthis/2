@@ -22,7 +22,7 @@ export namespace GameMaster {
         const [x, y] = Data.World.id_to_coordinate(cell_id)
         if (faction == 'city') {
             // creation of mayor
-            const mayor = Template.Character.EquipClothesBasic(Template.Character.HumanCity(x, y, 'Mayor'))
+            const mayor = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, 'Mayor'))
             mayor.savings.inc(TONS_OF_MONEY)
             Data.World.set_faction_leader(faction, mayor.id)
 
@@ -41,8 +41,8 @@ export namespace GameMaster {
             Template.Character.Fisherman(x, y, "Fisherman 2")
 
             // colony mages
-            Template.Character.EquipClothesBasic(Template.Character.Alchemist(x, y, 'city'))
-            Template.Character.EquipClothesBasic(Template.Character.Mage(x, y, 'city'))
+            Template.Character.EquipClothesRich(Template.Character.Alchemist(x, y, 'city'))
+            Template.Character.EquipClothesRich(Template.Character.Mage(x, y, 'city'))
 
 
             //hunters
@@ -56,7 +56,7 @@ export namespace GameMaster {
                 guard.savings.inc(500 as money)
             }
             // innkeeper
-            const innkeeper = Template.Character.EquipClothesBasic(Template.Character.HumanCity(x, y, "Innkeeper"))
+            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, "Innkeeper"))
             const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200, 10 as money)
             Data.Buildings.set_ownership(innkeeper.id, inn)
         }
@@ -64,7 +64,7 @@ export namespace GameMaster {
 
         if (faction == 'steppe_humans') {
             // innkeeper
-            const innkeeper = Template.Character.EquipClothesBasic(Template.Character.HumanCity(x, y, "Innkeeper"))
+            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, "Innkeeper"))
             const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200, 10 as money)
             Data.Buildings.set_ownership(innkeeper.id, inn)
 

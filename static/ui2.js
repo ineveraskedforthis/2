@@ -211,44 +211,119 @@ document.getElementById('char_race').addEventListener('change', function() {
     set_faction(faction)
 });
 
+
+
+//CHARACTER 2D IMAGE DISPLAY
+
 var race_model = "human"
 
 function set_body_type(race) {
     // console.log(race)
     race_model = race
-    document.getElementById('character_creation_image_body').src = `../static/img/character_image/${race}/pose.png`
-    document.getElementById('character_image_body').src = `../static/img/character_image/${race}/pose.png`
+    if (race != 'human') {
+        document.getElementById('character_creation_image_body').src = `../static/img/character_image/${race}/pose.png`
+        document.getElementById('character_image_body').src = `../static/img/character_image/${race}/pose.png`
+        document.querySelector(`.only_body.character_image`).src = ''
+        document.querySelector(`.left_arm.character_image`).src = ''
+        document.querySelector(`.right_arm.character_image`).src = ''
+    } else {
+        document.getElementById('character_creation_image_body').src = `../static/img/character_image/${race}/pose.png`
+        document.getElementById('character_image_body').src = ``
+        document.querySelector(`.only_body.character_image`).src = '../static/img/character_image/human/body.png'
+        document.querySelector(`.left_arm.character_image`).src = '../static/img/character_image/human/left_arm.png'
+        document.querySelector(`.right_arm.character_image`).src = '../static/img/character_image/human/right_arm.png'
+    }
 }
 
 socket.on('model', (race) => {
     set_body_type(race)
 })
 
-//EQUIP 2D IMAGE DISPLAY
+const body_left_arm = document.createElement('img')
+body_left_arm.classList.add('character_image')
+body_left_arm.classList.add('left_arm')
+const body_body = document.createElement('img')
+body_body.classList.add('character_image')
+body_body.classList.add('only_body')
+const body_right_arm = document.createElement('img')
+body_right_arm.classList.add('character_image')
+body_right_arm.classList.add('right_arm')
+
 
 let character_image_collection = document.getElementById('character_image_display')
+for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
+    let equip_piece = document.createElement('img') 
+    equip_piece.classList.add('equip')
+    equip_piece.classList.add(tag)
+    equip_piece.classList.add('character_image')
+    equip_piece.classList.add('behind_all')
+    equip_piece.alt = ``
+    character_image_collection.appendChild(equip_piece)
+}
+
+character_image_collection.appendChild(body_left_arm)
+
 for (let tag of EQUIPMENT_TAGS) {
     let equip_piece = document.createElement('img') 
     equip_piece.classList.add('equip')
     equip_piece.classList.add(tag)
     equip_piece.classList.add('character_image')
+    equip_piece.classList.add('behind_body')
+    equip_piece.alt = ``
     character_image_collection.appendChild(equip_piece)
 }
+
+character_image_collection.appendChild(body_body)
+
+for (let tag of EQUIPMENT_TAGS) {
+    let equip_piece = document.createElement('img') 
+    equip_piece.classList.add('equip')
+    equip_piece.classList.add(tag)
+    equip_piece.classList.add('character_image')
+    equip_piece.classList.add('behind_right_arm')
+    equip_piece.alt = ``
+    character_image_collection.appendChild(equip_piece)
+}
+
+character_image_collection.appendChild(body_right_arm)
+
+for (let tag of EQUIPMENT_TAGS) {
+    let equip_piece = document.createElement('img') 
+    equip_piece.classList.add('equip')
+    equip_piece.classList.add(tag)
+    equip_piece.classList.add('character_image')
+    equip_piece.classList.add('on_top')
+    equip_piece.alt = ``
+    character_image_collection.appendChild(equip_piece)
+}
+
+const display_layers = ['behind_all', 'behind_body', 'behind_right_arm', 'on_top']
 
 function update_equip(data) {
     console.log('equip update')
     console.log(data)
-    for (let tag of EQUIPMENT_TAGS) {
-        let div = document.querySelector('.character_image.equip.' + tag);
-        console.log(tag, data.equip[tag])
-        let item_tag = data.equip[tag]?.name||'empty';
+    for (let layer of display_layers){
+        if ((layer != 'on_top') && (race_model != 'human')) {continue}
+        for (let tag of EQUIPMENT_TAGS) {
+            let div = document.querySelector('.character_image.equip.' + tag + '.' + layer);
+            console.log(tag, data.equip[tag])
+            let item_tag = data.equip[tag]?.name||'empty';
+            if (tag == 'secondary') {
+                continue
+            }
 
-        if (tag == 'secondary') {
-            continue
+            if (item_tag == 'empty') {
+                div.src = `../static/img/character_image/${race_model}/${item_tag}.png`
+            }
+            if (race_model == 'human') {
+                console.log(`/static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.png`)
+                div.src = `../static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.png`
+            } else {
+                console.log(`/static/img/character_image/${race_model}/${item_tag}.png`)
+                div.src = `../static/img/character_image/${race_model}/${item_tag}.png`
+            }
+            
         }
-
-        console.log(`/static/img/character_image/${race_model}/${item_tag}.png`)
-        div.src = `../static/img/character_image/${race_model}/${item_tag}.png`
     }
 }
 //

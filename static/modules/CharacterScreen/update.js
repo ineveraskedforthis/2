@@ -3,7 +3,7 @@ import { socket } from "../globals.js";
 const table_items = document.getElementById('backpack_weapon_tab');
 const item_select_div = document.getElementById('create_auction_order_item');
 const header_div = generate_dummy_item_backpack_div();
-export const EQUIPMENT_TAGS = ['weapon', 'socks', 'secondary', 'amulet', 'greaves', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants', 'dress'];
+export const EQUIPMENT_TAGS = ['weapon', 'socks', 'shirt', 'secondary', 'amulet', 'greaves', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'pants', 'dress', 'robe'];
 const equip_block = document.getElementById('equip');
 for (let i of EQUIPMENT_TAGS) {
     const tmp = document.createElement('div');
@@ -36,7 +36,7 @@ export function update_backpack(data) {
         const weapon = inv.items[i];
         console.log(weapon);
         if ((weapon != null) && (weapon != undefined)) {
-            const item = generate_item_backpack_div(weapon);
+            const item = generate_item_backpack_div(weapon, i);
             item.classList.add('item');
             table_items.appendChild(item);
             add_option(generate_name(weapon), i);
@@ -55,7 +55,7 @@ export function update_equip(data) {
             row.classList.add('item');
         }
         else {
-            let tmp = generate_item_backpack_div(item);
+            let tmp = generate_item_backpack_div(item, i);
             row.innerHTML = tmp.innerHTML;
             row.classList.add(...tmp.classList);
             row.classList.add('item');

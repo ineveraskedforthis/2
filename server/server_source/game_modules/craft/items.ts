@@ -69,6 +69,24 @@ export namespace CraftItem {
                 [],
                 [{skill: 'clothier', difficulty: 20}]
             )
+        export const left_pauldron = 
+            new_craft_item(
+                'rat_skin_pauldron_left',
+                [{material: RAT_SKIN, amount: 3}],
+                'rat_skin_pauldron_left',
+                [],
+                [{skill: 'clothier', difficulty: 20}]
+            )
+
+        export const robe = 
+            new_craft_item(
+                'rat_robe',
+                [{material: RAT_SKIN, amount: 30}],
+                'rat_robe',
+                [],
+                [{skill: 'clothier', difficulty: 50}]
+            )
+        
     }
 
     export namespace Cloth {
@@ -156,6 +174,24 @@ export namespace CraftItem {
             'bone_spear',
             [],
             [{skill: 'woodwork', difficulty: 10}, {skill: 'bone_carving', difficulty: 5}]
+        )
+
+        export const pauldron_left = 
+        new_craft_item(
+            'bone_pauldron_left',
+            [{material: RAT_BONE, amount: 20}],
+            'bone_pauldron_left',
+            [],
+            [{skill: 'bone_carving', difficulty: 20}]
+        )
+
+        export const pauldron_right = 
+        new_craft_item(
+            'bone_pauldron_right',
+            [{material: RAT_BONE, amount: 20}],
+            'bone_pauldron_right',
+            [],
+            [{skill: 'bone_carving', difficulty: 20}]
         )
     }
 

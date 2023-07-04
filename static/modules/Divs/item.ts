@@ -58,7 +58,7 @@ export function generate_name(item: ItemData) {
     return name_string
 }
 
-export function generate_item_backpack_div(item: ItemData) {
+export function generate_item_backpack_div(item: ItemData, index: number) {
     const div = document.createElement('div')
     {
         const name = document.createElement('div')
@@ -121,10 +121,10 @@ export function generate_item_backpack_div(item: ItemData) {
         div.appendChild(equip_slot)
     }
 
-    if (item.backpack_index != undefined) {
-        ((index) => 
+    if (index != undefined) {
+        ((index: number) => 
             div.onclick = () => send_equip_weapon_message(index)
-        )(item.backpack_index)
+        )(index)
     }
 
     div.classList.add('row')
@@ -172,7 +172,7 @@ export function generate_dummy_item_backpack_div() {
     return div    
 }
 
-export function generate_item_market_div (item: ItemData) {
+export function generate_item_market_div (item: ItemData, index: number) {
     // console.log(item)
     const div = document.createElement('div')
     if (item.seller != undefined) {
@@ -189,7 +189,7 @@ export function generate_item_market_div (item: ItemData) {
         div.appendChild(price)
     }
 
-    div.appendChild(generate_item_backpack_div(item))
+    div.appendChild(generate_item_backpack_div(item, index))
     div.classList.add('row')
     div.classList.add('item')
 

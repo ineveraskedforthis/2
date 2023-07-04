@@ -41,7 +41,23 @@ export interface affix{
     tag: affix_tag;
 }
 
-export const slots = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants', 'dress', 'socks'] as const
+export const slots = [
+    'weapon', 
+    'secondary', 
+    'amulet', 
+    'mail', 
+    'greaves', 
+    'left_pauldron', 
+    'right_pauldron', 
+    'left_gauntlet', 
+    'right_gauntlet', 
+    'boots', 'helmet', 
+    'belt', 
+    'robe', 
+    'shirt', 
+    'pants', 
+    'dress', 
+    'socks'] as const
 export type equip_slot = typeof slots[number]
 
 // export type equip_slot = armour_slot|'weapon'

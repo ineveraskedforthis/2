@@ -13,7 +13,7 @@ class Inventory {
     // add(item:undefined):undefined
     // add(item:Item|undefined):number|undefined
     add(item) {
-        console.log(item, this.items, this.limit, this.items.length);
+        // console.log(item, this.items, this.limit, this.items.length)
         if (this.items.length >= this.limit)
             return false;
         return this.items.push(item) - 1;
@@ -50,7 +50,11 @@ class Inventory {
         //         array.push(data)
         //     }
         // } 
-        return { items: this.items.map(item => system_1.ItemSystem.item_data(item)) };
+        return { items: this.items.map((item, index) => {
+                let new_item = system_1.ItemSystem.item_data(item);
+                new_item.backpack_index = index;
+                return new_item;
+            }) };
     }
     load_from_json(data) {
         this.items = data.items.filter(item => item != null);

@@ -102,7 +102,11 @@ exports.ModelToEquipSlot = {
     'bow': 'weapon',
     'bone_spear': 'weapon',
     'sword': 'weapon',
-    'wooden_mace': 'weapon'
+    'wooden_mace': 'weapon',
+    'rat_skin_pauldron_left': 'left_pauldron',
+    'bone_pauldron_right': 'right_pauldron',
+    'bone_pauldron_left': 'left_pauldron',
+    'rat_robe': 'robe',
 };
 exports.ModelToMaterial = {
     'graci_hair': materials_manager_1.materials.index_to_material(materials_manager_1.GRACI_HAIR),
@@ -126,6 +130,10 @@ exports.ModelToMaterial = {
     'bone_spear': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE),
     'sword': materials_manager_1.materials.index_to_material(materials_manager_1.STEEL),
     'wooden_mace': materials_manager_1.materials.index_to_material(materials_manager_1.WOOD),
+    'bone_pauldron_left': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE),
+    'bone_pauldron_right': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_BONE),
+    'rat_skin_pauldron_left': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
+    'rat_robe': materials_manager_1.materials.index_to_material(materials_manager_1.RAT_SKIN),
 };
 exports.BaseResist = {};
 for (let model of model_tags_1.item_model_tags) {

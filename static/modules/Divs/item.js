@@ -49,7 +49,7 @@ export function generate_name(item) {
     }
     return name_string;
 }
-export function generate_item_backpack_div(item) {
+export function generate_item_backpack_div(item, index) {
     const div = document.createElement('div');
     {
         const name = document.createElement('div');
@@ -104,8 +104,8 @@ export function generate_item_backpack_div(item) {
         equip_slot.classList.add('align-right');
         div.appendChild(equip_slot);
     }
-    if (item.backpack_index != undefined) {
-        ((index) => div.onclick = () => send_equip_weapon_message(index))(item.backpack_index);
+    if (index != undefined) {
+        ((index) => div.onclick = () => send_equip_weapon_message(index))(index);
     }
     div.classList.add('row');
     return div;
@@ -143,7 +143,7 @@ export function generate_dummy_item_backpack_div() {
     div.classList.add('height-25');
     return div;
 }
-export function generate_item_market_div(item) {
+export function generate_item_market_div(item, index) {
     // console.log(item)
     const div = document.createElement('div');
     if (item.seller != undefined) {
@@ -158,7 +158,7 @@ export function generate_item_market_div(item) {
         price.classList.add('width-100');
         div.appendChild(price);
     }
-    div.appendChild(generate_item_backpack_div(item));
+    div.appendChild(generate_item_backpack_div(item, index));
     div.classList.add('row');
     div.classList.add('item');
     // console.log(div)

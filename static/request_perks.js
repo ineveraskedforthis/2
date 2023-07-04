@@ -1,7 +1,8 @@
 import { socket, globals } from './modules/globals.js';
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { stash_id_to_tag } from './bulk_tags.js';
-export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'];
+import { EQUIPMENT_TAGS } from './modules/CharacterScreen/update.js';
+// export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
 // tmp.typ = this.typ;
 // tmp.tag = this.tag;
 // tmp.owner_id = this.owner_id;
@@ -98,11 +99,33 @@ function generate_greeting(data) {
     }
     return greeting_line;
 }
+function url(layer, tag_slot, tag_item, race) {
+    return `url(/static/img/character_image/${race}/${tag_slot}/${tag_item}_${layer}.png)`;
+}
 function build_portrait(div, data, model) {
     let string = '';
-    for (let tag of slots_front_end) {
-        if (data[tag] != undefined)
-            string += `no-repeat url(/static/img/character_image/${model}/${data[tag]}_big.png) top center/cover, `;
+    for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
+        let item_tag = data[tag];
+        if (item_tag != undefined)
+            string += `no-repeat ${url('on_top', tag, item_tag, model)} top center/cover, `;
+    }
+    string += `no-repeat url(/static/img/character_image/${model}/right_arm.png) top center/cover, `;
+    for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
+        let item_tag = data[tag];
+        if (item_tag != undefined)
+            string += `no-repeat ${url('behind_right_arm', tag, item_tag, model)} top center/cover, `;
+    }
+    string += `no-repeat url(/static/img/character_image/${model}/body.png) top center/cover, `;
+    for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
+        let item_tag = data[tag];
+        if (item_tag != undefined)
+            string += `no-repeat ${url('behind_body', tag, item_tag, model)} top center/cover, `;
+    }
+    string += `no-repeat url(/static/img/character_image/${model}/left_arm.png) top center/cover, `;
+    for (let tag of EQUIPMENT_TAGS) {
+        let item_tag = data[tag];
+        if (item_tag != undefined)
+            string += `no-repeat ${url('behind_all', tag, item_tag, model)} top center/cover, `;
     }
     string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center/cover`;
     console.log(string);

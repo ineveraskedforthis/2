@@ -25,7 +25,7 @@ export class Inventory{
     // add(item:undefined):undefined
     // add(item:Item|undefined):number|undefined
     add(item:Item):number|false {
-        console.log(item, this.items, this.limit, this.items.length)
+        // console.log(item, this.items, this.limit, this.items.length)
         if (this.items.length >= this.limit) return false
         return this.items.push(item) - 1;
     }
@@ -64,7 +64,10 @@ export class Inventory{
         //         array.push(data)
         //     }
         // } 
-        return {items: this.items.map(item => ItemSystem.item_data(item))}
+        return {items: this.items.map((item, index) => {
+            let new_item = ItemSystem.item_data(item); 
+            new_item.backpack_index = index; 
+            return new_item})}
     }
 
     load_from_json(data:Inventory) {

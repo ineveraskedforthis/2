@@ -5,8 +5,9 @@ import { Perks } from '../shared/character.js'
 import { equip_slot } from '../shared/inventory.js';
 import { money } from '../shared/common.js';
 import { stash_id_to_tag } from './bulk_tags.js';
+import { EQUIPMENT_TAGS } from './modules/CharacterScreen/update.js';
 
-export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
+// export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
 
 
 // tmp.typ = this.typ;
@@ -116,12 +117,35 @@ function generate_greeting(data: PerksResponse) {
     return greeting_line
 }
 
+function url(layer: string, tag_slot: string, tag_item: string, race: string) {
+    return `url(/static/img/character_image/${race}/${tag_slot}/${tag_item}_${layer}.png)`
+}
+
 function build_portrait(div: Element, data: {[tag in equip_slot]?: string}, model: string) {
     let string = ''
 
-    for (let tag of slots_front_end) {
-        if (data[tag as equip_slot] != undefined)
-            string += `no-repeat url(/static/img/character_image/${model}/${data[tag as equip_slot]}_big.png) top center/cover, `
+    for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
+        let item_tag = data[tag as equip_slot]
+        if (item_tag != undefined)
+            string += `no-repeat ${url('on_top', tag, item_tag, model)} top center/cover, `
+    }
+    string += `no-repeat url(/static/img/character_image/${model}/right_arm.png) top center/cover, `
+    for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
+        let item_tag = data[tag as equip_slot]
+        if (item_tag != undefined)
+            string += `no-repeat ${url('behind_right_arm', tag, item_tag, model)} top center/cover, `
+    }
+    string += `no-repeat url(/static/img/character_image/${model}/body.png) top center/cover, `
+    for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
+        let item_tag = data[tag as equip_slot]
+        if (item_tag != undefined)
+            string += `no-repeat ${url('behind_body', tag, item_tag, model)} top center/cover, `
+    }
+    string += `no-repeat url(/static/img/character_image/${model}/left_arm.png) top center/cover, `
+    for (let tag of EQUIPMENT_TAGS) {
+        let item_tag = data[tag as equip_slot]
+        if (item_tag != undefined)
+            string += `no-repeat ${url('behind_all', tag, item_tag, model)} top center/cover, `
     }
     string += `no-repeat url(/static/img/character_image/${model}/pose.png) top center/cover`
     console.log(string);

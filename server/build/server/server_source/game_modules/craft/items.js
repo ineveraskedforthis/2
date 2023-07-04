@@ -31,6 +31,8 @@ var CraftItem;
         RatSkin.armour = (0, CraftItem_1.new_craft_item)('rat_skin_armour', [{ material: materials_manager_1.RAT_SKIN, amount: 10 }], 'rat_skin_armour', [], [{ skill: 'clothier', difficulty: 20 }]);
         RatSkin.pants = (0, CraftItem_1.new_craft_item)('rat_skin_pants', [{ material: materials_manager_1.RAT_SKIN, amount: 8 }], 'rat_skin_pants', [], [{ skill: 'clothier', difficulty: 20 }]);
         RatSkin.boots = (0, CraftItem_1.new_craft_item)('rat_skin_boots', [{ material: materials_manager_1.RAT_SKIN, amount: 8 }], 'rat_skin_boots', [], [{ skill: 'clothier', difficulty: 20 }]);
+        RatSkin.left_pauldron = (0, CraftItem_1.new_craft_item)('rat_skin_pauldron_left', [{ material: materials_manager_1.RAT_SKIN, amount: 3 }], 'rat_skin_pauldron_left', [], [{ skill: 'clothier', difficulty: 20 }]);
+        RatSkin.robe = (0, CraftItem_1.new_craft_item)('rat_robe', [{ material: materials_manager_1.RAT_SKIN, amount: 30 }], 'rat_robe', [], [{ skill: 'clothier', difficulty: 50 }]);
     })(RatSkin = CraftItem.RatSkin || (CraftItem.RatSkin = {}));
     let Cloth;
     (function (Cloth) {
@@ -47,6 +49,8 @@ var CraftItem;
         Bone.armour = (0, CraftItem_1.new_craft_item)('bone_armour', [{ material: materials_manager_1.RAT_BONE, amount: 50 }], 'bone_armour', [], [{ skill: 'bone_carving', difficulty: 50 }]);
         Bone.dagger = (0, CraftItem_1.new_craft_item)('bone_dagger', [{ material: materials_manager_1.RAT_BONE, amount: 15 }], 'bone_dagger', [], [{ skill: 'bone_carving', difficulty: 30 }]);
         Bone.spear = (0, CraftItem_1.new_craft_item)('spear_wood_bone', [{ material: materials_manager_1.WOOD, amount: 2 }, { material: materials_manager_1.RAT_BONE, amount: 4 }], 'bone_spear', [], [{ skill: 'woodwork', difficulty: 10 }, { skill: 'bone_carving', difficulty: 5 }]);
+        Bone.pauldron_left = (0, CraftItem_1.new_craft_item)('bone_pauldron_left', [{ material: materials_manager_1.RAT_BONE, amount: 20 }], 'bone_pauldron_left', [], [{ skill: 'bone_carving', difficulty: 20 }]);
+        Bone.pauldron_right = (0, CraftItem_1.new_craft_item)('bone_pauldron_right', [{ material: materials_manager_1.RAT_BONE, amount: 20 }], 'bone_pauldron_right', [], [{ skill: 'bone_carving', difficulty: 20 }]);
     })(Bone = CraftItem.Bone || (CraftItem.Bone = {}));
     let Wood;
     (function (Wood) {

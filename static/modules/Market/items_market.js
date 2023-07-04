@@ -40,7 +40,9 @@ export function update_item_market(data) {
     item_market_container.innerHTML = '';
     item_market_container.appendChild(market_header);
     for (let order of data) {
-        const div = generate_item_market_div(order);
+        if (order.backpack_index == undefined)
+            continue;
+        const div = generate_item_market_div(order, order.backpack_index);
         if (order.id == undefined)
             continue;
         if (order.seller_id == undefined)

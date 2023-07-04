@@ -19,7 +19,7 @@ var GameMaster;
         const [x, y] = data_1.Data.World.id_to_coordinate(cell_id);
         if (faction == 'city') {
             // creation of mayor
-            const mayor = templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCity(x, y, 'Mayor'));
+            const mayor = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(x, y, 'Mayor'));
             mayor.savings.inc(TONS_OF_MONEY);
             data_1.Data.World.set_faction_leader(faction, mayor.id);
             const mayor_house = effects_1.Effect.new_building(cell_id, "human_house" /* LandPlotType.HumanHouse */, 200, 50);
@@ -34,8 +34,8 @@ var GameMaster;
             templates_1.Template.Character.Fisherman(x, y, "Fisherman 1");
             templates_1.Template.Character.Fisherman(x, y, "Fisherman 2");
             // colony mages
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Alchemist(x, y, 'city'));
-            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Mage(x, y, 'city'));
+            templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.Alchemist(x, y, 'city'));
+            templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.Mage(x, y, 'city'));
             //hunters
             for (let i = 0; i <= 10; i++) {
                 const hunter = templates_1.Template.Character.HumanRatHunter(x, y, "Hunter " + i);
@@ -47,13 +47,13 @@ var GameMaster;
                 guard.savings.inc(500);
             }
             // innkeeper
-            const innkeeper = templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCity(x, y, "Innkeeper"));
+            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(x, y, "Innkeeper"));
             const inn = effects_1.Effect.new_building(cell_id, "inn" /* LandPlotType.Inn */, 200, 10);
             data_1.Data.Buildings.set_ownership(innkeeper.id, inn);
         }
         if (faction == 'steppe_humans') {
             // innkeeper
-            const innkeeper = templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCity(x, y, "Innkeeper"));
+            const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(x, y, "Innkeeper"));
             const inn = effects_1.Effect.new_building(cell_id, "inn" /* LandPlotType.Inn */, 200, 10);
             data_1.Data.Buildings.set_ownership(innkeeper.id, inn);
             // creation of local colonists
