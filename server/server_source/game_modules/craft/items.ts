@@ -130,7 +130,31 @@ export namespace CraftItem {
                 [],
                 [{skill: 'clothier', difficulty: 50}]
             )
-    }    
+        export const belt = 
+            new_craft_item(
+                'cloth_belt',
+                [{material: TEXTILE, amount: 5}],
+                'cloth_belt',
+                [],
+                [{skill: 'clothier', difficulty: 10}]
+            )
+        export const shirt =
+            new_craft_item(
+                'cloth_shirt',
+                [{material: TEXTILE, amount: 10}],
+                'cloth_shirt',
+                [],
+                [{skill: 'clothier', difficulty: 20}]
+            )
+        export const pants =
+            new_craft_item(
+                'cloth_pants',
+                [{material: TEXTILE, amount: 10}],
+                'cloth_pants',
+                [],
+                [{skill: 'clothier', difficulty: 20}]
+            )
+    }
 
     export const elodino_dress = 
         new_craft_item(

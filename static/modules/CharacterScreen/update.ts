@@ -7,7 +7,7 @@ const item_select_div = document.getElementById('create_auction_order_item') as 
 
 const header_div = generate_dummy_item_backpack_div()
 
-export const EQUIPMENT_TAGS: (equip_slot)[] = ['weapon', 'socks', 'shirt', 'secondary', 'amulet', 'greaves', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'pants', 'dress', 'robe'];
+export const EQUIPMENT_TAGS: (equip_slot)[] = ['weapon', 'socks', 'shirt', 'secondary', 'greaves', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'pants', 'belt', 'dress', 'amulet', 'robe'];
 
 
 const equip_block = document.getElementById('equip')!

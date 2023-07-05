@@ -116,6 +116,9 @@ export const ModelToEquipSlot: {[_ in item_model_tag]: equip_slot} = {
     'bone_pauldron_right':          'right_pauldron',
     'bone_pauldron_left':          'left_pauldron',
     'rat_robe':                     'robe',
+    'cloth_belt':                   'belt',
+    'cloth_shirt':                  'shirt',
+    'cloth_pants':                  'pants'
 }
 
 export const ModelToMaterial: {[_ in item_model_tag]: ITEM_MATERIAL} = {
@@ -144,6 +147,9 @@ export const ModelToMaterial: {[_ in item_model_tag]: ITEM_MATERIAL} = {
     'bone_pauldron_right':          materials.index_to_material(RAT_BONE),
     'rat_skin_pauldron_left':       materials.index_to_material(RAT_SKIN),
     'rat_robe':                     materials.index_to_material(RAT_SKIN),
+    'cloth_belt':                   materials.index_to_material(TEXTILE),
+    'cloth_shirt':                  materials.index_to_material(TEXTILE),
+    'cloth_pants':                  materials.index_to_material(TEXTILE)
 }
 
 export const BaseResist: {[_ in item_model_tag]?: Damage} = {}

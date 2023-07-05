@@ -24,6 +24,9 @@ export const item_model_tags = [
     'bone_pauldron_right',
     'rat_skin_pauldron_left',
     'rat_robe',
+    'cloth_belt',
+    'cloth_shirt',
+    'cloth_pants'
 ] as const
 
 export type item_model_tag = typeof item_model_tags[number]
