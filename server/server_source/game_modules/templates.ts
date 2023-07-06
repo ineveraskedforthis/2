@@ -113,7 +113,8 @@ export namespace Template {
             // character.equip.data.slots.right_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
             character.equip.data.slots.boots = ItemSystem.create('rat_skin_boots', [], 100)
             // character.equip.data.slots.helmet = ItemSystem.create('cloth_helmet', [], 100)
-            character.equip.data.slots.pants = ItemSystem.create('rat_skin_pants', [], 100)
+            character.equip.data.slots.pants = ItemSystem.create('cloth_pants', [], 100)
+            character.equip.data.slots.shirt = ItemSystem.create('cloth_shirt', [], 100)
 
             return character
         }

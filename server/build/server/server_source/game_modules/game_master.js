@@ -33,6 +33,7 @@ var GameMaster;
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanLocalTrader(x, y, "Local Trader", 'city'));
             templates_1.Template.Character.Fisherman(x, y, "Fisherman 1");
             templates_1.Template.Character.Fisherman(x, y, "Fisherman 2");
+            templates_1.Template.Character.Fisherman(x, y, "Fisherman 3");
             // colony mages
             templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.Alchemist(x, y, 'city'));
             templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.Mage(x, y, 'city'));
@@ -128,7 +129,7 @@ var GameMaster;
                 for (const character_id of set) {
                     let character = data_1.Data.CharacterDB.from_id(character_id);
                     if ((character.race == 'rat') && (character.dead())) {
-                        cell_object.rat_scent -= 1 * dt / 10;
+                        cell_object.rat_scent -= 1 * dt / 50;
                     }
                 }
             }

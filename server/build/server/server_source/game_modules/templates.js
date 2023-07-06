@@ -115,7 +115,8 @@ var Template;
             // character.equip.data.slots.right_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
             character.equip.data.slots.boots = system_1.ItemSystem.create('rat_skin_boots', [], 100);
             // character.equip.data.slots.helmet = ItemSystem.create('cloth_helmet', [], 100)
-            character.equip.data.slots.pants = system_1.ItemSystem.create('rat_skin_pants', [], 100);
+            character.equip.data.slots.pants = system_1.ItemSystem.create('cloth_pants', [], 100);
+            character.equip.data.slots.shirt = system_1.ItemSystem.create('cloth_shirt', [], 100);
             return character;
         }
         Character.EquipClothesBasic = EquipClothesBasic;

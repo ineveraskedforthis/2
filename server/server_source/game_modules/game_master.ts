@@ -39,6 +39,7 @@ export namespace GameMaster {
 
             Template.Character.Fisherman(x, y, "Fisherman 1")
             Template.Character.Fisherman(x, y, "Fisherman 2")
+            Template.Character.Fisherman(x, y, "Fisherman 3")
 
             // colony mages
             Template.Character.EquipClothesRich(Template.Character.Alchemist(x, y, 'city'))
@@ -148,7 +149,7 @@ export namespace GameMaster {
                 for (const character_id of set) {
                     let character = Data.CharacterDB.from_id(character_id) 
                     if ((character.race == 'rat') && (character.dead())) {
-                        cell_object.rat_scent -= 1 * dt / 10
+                        cell_object.rat_scent -= 1 * dt / 50
                     }
                 }
             }
