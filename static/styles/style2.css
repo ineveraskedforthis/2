@@ -268,6 +268,7 @@ div {
     background-color: rgba(51, 7, 7, 0.7);
     margin-bottom: 3px;
     cursor: default;    
+    height: 30px;
 }
 
 .desktop_action_button > div {
