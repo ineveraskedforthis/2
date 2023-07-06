@@ -267,6 +267,8 @@ var UserManagement;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
+        if (character.current_building != undefined)
+            alerts_1.Alerts.enter_room(character);
         const battle = systems_communication_1.Convert.character_to_battle(character);
         if (battle != undefined) {
             alerts_1.Alerts.battle_to_character(battle, character);

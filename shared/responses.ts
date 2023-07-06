@@ -21,3 +21,10 @@ export type CharacterStatsResponse = {
     base_damage_magic_bolt: number
     base_damage_magic_bolt_charged: number
 }
+
+export type CellDisplay = {
+    terrain: string,
+    forestation: number,
+    urbanisation: number,
+    rat_lair: boolean
+}

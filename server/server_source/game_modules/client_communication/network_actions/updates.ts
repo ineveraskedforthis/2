@@ -1,7 +1,5 @@
 import { Accuracy } from "../../battle/battle_calcs";
 import { SkillList, skill } from "../../character/SkillList";
-import { MapSystem } from "../../map/system";
-import { CellDisplayData } from "../../static_data/map_definitions";
 import { Convert } from "../../systems_communication";
 import { weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
@@ -10,20 +8,14 @@ import { BattleSystem } from "../../battle/system";
 import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
 import { prepare_market_orders } from "../helper_functions";
 import { durability, get_crafts_item_list } from "../../craft/CraftItem";
-import { CraftItem } from "../../craft/items";
-import { crafts_bulk, crafts_items } from "../../craft/crafts_storage";
 import { get_crafts_bulk_list, output_bulk } from "../../craft/CraftBulk";
 import { CharacterSystem } from "../../character/system";
 import { Attack } from "../../attack/system";
-import { Request } from "./request";
 import { DmgOps } from "../../damage_types";
 import { Data } from "../../data";
 import { terrain_to_string } from "../../map/terrain";
-import { CharacterStatsResponse } from "../../../../../shared/responses";
-// import { cell_id } from "../../../../../shared/common";
-import { ActionsPosition, ActionsUnit } from "../../battle/actions";
 import { cell_id } from "@custom_types/common";
-import { BattleActionData } from '@custom_types/battle_data';
+import { CellDisplay, CharacterStatsResponse } from "@custom_types/responses";
 
 
 
@@ -38,6 +30,7 @@ export namespace SendUpdate {
         market(user)   
         stats(user)
         race_model(user)
+        
     }
 
     export function race_model(user: User) {
@@ -308,16 +301,13 @@ export namespace SendUpdate {
 
                     // let res1: {[_ in string]: CellDisplayData} = {}
                     
-                    const display_data = {
+                    const display_data: CellDisplay = {
                         terrain: terrain_to_string(terrain),
                         forestation: forestation,
                         urbanisation: urbanisation,
                         rat_lair: Data.Cells.rat_lair(cell.id)
                     }
 
-                    // if (data != undefined) {
-                    //     Alerts.generic_user_alert(user, 'map-data-cells', res1)
-                    // }
 
                     let res2 = {x: x, y: y, ter: display_data}
                     Alerts.generic_user_alert(user, 'map-data-display', res2)
@@ -387,9 +377,6 @@ export namespace SendUpdate {
         let ranged = DmgOps.total(Attack.generate_ranged(character).damage)
         Alerts.battle_action_damage(user, 'shoot', ranged)
     }
-        
-    //     // user.socket.emit('map-data-cells', this.world.constants.development)
-    //     // user.socket.emit('map-data-terrain', this.world.constants.terrain)
 
     export function cell_probability(user: User) {
         const character = Convert.user_to_character(user)

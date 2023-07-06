@@ -1,7 +1,7 @@
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
 import { socket, globals } from './modules/globals.js';
 
-import {init_map_control, Map} from './modules/map.js';
+// import './modules/map.js';
 import {CharInfoMonster} from './modules/char_info_monster.js';
 import {CharacterScreen} from './modules/CharacterScreen/character_screen.js'
 import {EQUIPMENT_TAGS} from './modules/CharacterScreen/update.js'
@@ -22,10 +22,10 @@ import { update_characters_list } from './update_characters_list.js';
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { goods_market } from './goods_market.js'
 import { set_up_header_with_strings } from './headers.js';
+import { draw_map_related_stuff } from './modules/map.js';
 
 const char_info_monster = new CharInfoMonster();
-const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'), socket, globals);
-init_map_control(map, globals);
+
 
 const character_screen = new CharacterScreen(socket);
 
@@ -348,10 +348,6 @@ socket.on('tags', msg => {
 
 
 
-
-socket.on('sections', msg => map.load_sections(msg));
-
-
 socket.on('is-reg-completed', msg => reg(msg));
 socket.on('is-login-completed', msg => login(msg));
 
@@ -373,51 +369,11 @@ socket.on('equip-update', msg => {character_screen.update_equip(msg); update_equ
 
 
 
-socket.on('map-pos', msg => {
-    console.log('map-pos')
-    let location = map.set_curr_pos(msg.x, msg.y, msg.teleport_flag);
-    console.log(location)
-    change_bg(location);
-});
 
-socket.on('enter-room', msg => {
-    console.log('enter-room')
-    change_bg('house_inside');
-})
-socket.on('leave-room', msg => {
-    console.log('leave-room')
-    update_background()
-})
-
-function update_background() {
-    // console.log('update_background')
-    let location = map.re_set_cur_pos();
-    // console.log(location)
-    change_bg(location);
-}
-
-
-socket.on('explore', msg => {map.explore(msg)});
 
 
 socket.on('skill-tags', data => load_skill_tags(data));
 socket.on('skill', msg => update_skill_data(msg));
-// socket.on('local-skills', msg => update_local_skills(msg))
-
-// socket.on('market-data', data => goods_market.update_data(data));
-
-socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
-
-
-socket.on('cell-visited', data => map.mark_visited(data))
-socket.on('map-data-cells', data => { 
-    map.load_data(data)
-    update_background()
-})
-socket.on('map-data-display', data => {map.load_terrain(data)})
-socket.on('map-data-reset', data => {map.reset()})
-socket.on('map-action-status', data => map.update_action_status(data))
-socket.on('cell-action-chance', msg => map.update_probability(msg))
 
 
 {
@@ -426,8 +382,6 @@ socket.on('cell-action-chance', msg => map.update_probability(msg))
         {name: 'Noone', id: 200},
         {name: 'Who?', id: 300},
         {name: "He", id: 400}]
-    
-    
     update_characters_list(test_data)
 }
 
@@ -442,33 +396,6 @@ socket.on('cell-action-chance', msg => map.update_probability(msg))
 
     const affected_div = document.getElementById('equip_tab')
     destroy_button.onclick = generate_toggle(affected_div)
-}
-
-
-function change_bg(tag) {
-    let div = document.getElementById('actual_game_scene');
-    div.style.backgroundImage = "url(/static/img/bg_" + tag + ".png)"
-}
-
-
-
-function restart_action_bar(time, is_move) {
-    // console.log('???')
-    globals.action_total_time = time
-    globals.action_in_progress = true
-    globals.action_time = 0
-    let div = document.getElementById('action_progress_bar')
-    div.classList.remove('hidden')
-    let bar = div.querySelector('span')
-    bar.style.width = '0%'
-
-    if (is_move) {
-        map.move_flag = true
-        map.movement_progress = 0
-        globals.action_total_time += 0.1
-        globals.action_total_time *= 1.1
-    }
-    
 }
 
 // var currentTime = (new Date()).getTime(); 
@@ -493,49 +420,11 @@ function draw(time) {
 
     // console.log('draw_main')
 
-    if (globals.action_in_progress) {
-        globals.action_time += delta
-        globals.action_ratio = globals.action_time / globals.action_total_time
-        let div = document.getElementById('action_progress_bar')
-        if (globals.action_total_time * 1.2 <= globals.action_time ) {
-            // if current action_time >= total_time * 1.2
-            // so if action had ended with a little overshoot
-            // then stop action
-            globals.action_in_progress = false
-            div.classList.add('hidden')
-            //check repeat action flags
-            console.log('keep doing?')
-            console.log(globals.keep_doing)
-            if ((globals.keep_doing != undefined)&&(globals.keep_doing != false)) {
-                map.send_local_cell_action(globals.keep_doing)
-            }
-            //do the movement again if you are not at destination already
-            if (map.move_flag) {
-                map.send_cell_action('continue_move')
-            }            
-            // map.move_flag = false
-        } else {
-            let bar = div.querySelector('span')
-            bar.style.width = Math.min(Math.floor(globals.action_time / globals.action_total_time * 10000)/ 100, 100) + '%'
-            if (map.move_flag) {map.movement_progress = globals.action_ratio}
-        }    
-    }
-
-    if (globals.map_context_dissapear_time != undefined) {
-        if ((globals.map_context_dissapear_time > 0) && (!globals.mouse_over_map_context)) {
-            globals.map_context_dissapear_time = Math.max(0, globals.map_context_dissapear_time - delta)
-            if (globals.map_context_dissapear_time == 0) {
-                document.getElementById('map_context').classList.add('hidden')
-            }
-        }
-    }
+    draw_map_related_stuff(delta)
 
     if (document.getElementById('actual_game_scene').style.visibility == 'visible') {
         if (!document.getElementById('battle_tab').classList.contains('hidden')) {
             BattleImage.draw(delta);
-        }
-        if (!document.getElementById('map_tab').classList.contains('hidden')){
-            map.draw(images, delta);
         }
     }
     window.requestAnimationFrame(draw);

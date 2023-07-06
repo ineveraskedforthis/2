@@ -259,6 +259,7 @@ export namespace UserManagement {
         const character = Convert.user_to_character(user)
 
         if (character == undefined) return
+        if (character.current_building != undefined) Alerts.enter_room(character)
         const battle = Convert.character_to_battle(character)
         if (battle != undefined) {
             Alerts.battle_to_character(battle, character)

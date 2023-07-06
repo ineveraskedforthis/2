@@ -3,7 +3,7 @@ import { socket } from "../globals.js";
 const table_items = document.getElementById('backpack_weapon_tab');
 const item_select_div = document.getElementById('create_auction_order_item');
 const header_div = generate_dummy_item_backpack_div();
-export const EQUIPMENT_TAGS = ['weapon', 'socks', 'shirt', 'secondary', 'greaves', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'pants', 'belt', 'dress', 'amulet', 'robe'];
+export const EQUIPMENT_TAGS = ['weapon', 'socks', 'shirt', 'secondary', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'pants', 'belt', 'dress', 'amulet', 'robe'];
 const equip_block = document.getElementById('equip');
 for (let i of EQUIPMENT_TAGS) {
     const tmp = document.createElement('div');

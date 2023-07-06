@@ -254,14 +254,12 @@ var Alerts;
         }
     }
     Alerts.cell_locals = cell_locals;
-    function map_action(user, tag, data) {
-        Alerts.generic_user_alert(user, 'map-action-status', { tag: tag, value: data });
-    }
-    Alerts.map_action = map_action;
-    function cell_action(user, tag, data) {
-        generic_user_alert(user, 'cell-action-chance', { tag: tag, value: data });
-    }
-    Alerts.cell_action = cell_action;
+    // export function map_action(user: User, tag: string, data: boolean) {
+    //     Alerts.generic_user_alert(user, 'map-action-status', {tag: tag, value: data})
+    // }
+    // export function cell_action(user: User, tag: string, data: number) {
+    //     generic_user_alert(user, 'cell-action-chance', {tag: tag, value: data})
+    // }
     function action_ping(character, duration, is_move) {
         generic_character_alert(character, 'action-ping', { tag: 'start', time: duration, is_move: is_move });
     }

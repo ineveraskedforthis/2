@@ -287,9 +287,6 @@ var SendUpdate;
                         urbanisation: urbanisation,
                         rat_lair: data_1.Data.Cells.rat_lair(cell.id)
                     };
-                    // if (data != undefined) {
-                    //     Alerts.generic_user_alert(user, 'map-data-cells', res1)
-                    // }
                     let res2 = { x: x, y: y, ter: display_data };
                     alerts_1.Alerts.generic_user_alert(user, 'map-data-display', res2);
                 }
@@ -360,8 +357,6 @@ var SendUpdate;
         alerts_1.Alerts.battle_action_damage(user, 'shoot', ranged);
     }
     SendUpdate.attack_damage = attack_damage;
-    //     // user.socket.emit('map-data-cells', this.world.constants.development)
-    //     // user.socket.emit('map-data-terrain', this.world.constants.terrain)
     function cell_probability(user) {
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)

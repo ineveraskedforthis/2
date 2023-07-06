@@ -27,7 +27,7 @@ function item_size(item) {
         case "secondary": return size;
         case "amulet": return 1;
         case "mail": return 15;
-        case "greaves": return 4;
+        // case "greaves": return 4
         case "left_pauldron": return 4;
         case "right_pauldron": return 4;
         case "left_gauntlet": return 4;

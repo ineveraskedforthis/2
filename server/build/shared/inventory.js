@@ -6,7 +6,7 @@ exports.slots = [
     'secondary',
     'amulet',
     'mail',
-    'greaves',
+    // 'greaves', 
     'left_pauldron',
     'right_pauldron',
     'left_gauntlet',
