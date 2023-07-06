@@ -316,9 +316,9 @@ var CharacterSystem;
                 if (!character.in_battle()) {
                     effects_1.Effect.Change.rage(character, -1);
                     effects_1.Effect.rest_building_tick(character);
-                    effects_1.Effect.spoilage(character, materials_manager_1.MEAT, 0.03);
-                    effects_1.Effect.spoilage(character, materials_manager_1.FISH, 0.03);
-                    effects_1.Effect.spoilage(character, materials_manager_1.FOOD, 0.005);
+                    effects_1.Effect.spoilage(character, materials_manager_1.MEAT, 0.01);
+                    effects_1.Effect.spoilage(character, materials_manager_1.FISH, 0.01);
+                    effects_1.Effect.spoilage(character, materials_manager_1.FOOD, 0.001);
                 }
             }
             character_state_update_timer = 0;

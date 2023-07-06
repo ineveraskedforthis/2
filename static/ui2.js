@@ -229,9 +229,9 @@ function set_body_type(race) {
     } else {
         document.getElementById('character_creation_image_body').src = `../static/img/character_image/${race}/pose.png`
         document.getElementById('character_image_body').src = ``
-        document.querySelector(`.only_body.character_image`).src = '../static/img/character_image/human/body.png'
-        document.querySelector(`.left_arm.character_image`).src = '../static/img/character_image/human/left_arm.png'
-        document.querySelector(`.right_arm.character_image`).src = '../static/img/character_image/human/right_arm.png'
+        document.querySelector(`.only_body.character_image`).src = '../static/img/character_image/human/body.PNG'
+        document.querySelector(`.left_arm.character_image`).src = '../static/img/character_image/human/left_arm.PNG'
+        document.querySelector(`.right_arm.character_image`).src = '../static/img/character_image/human/right_arm.PNG'
     }
 }
 
@@ -316,8 +316,8 @@ function update_equip(data) {
                 div.src = `../static/img/character_image/${race_model}/${item_tag}.png`
             }
             if (race_model == 'human') {
-                console.log(`/static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.png`)
-                div.src = `../static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.png`
+                console.log(`/static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.PNG`)
+                div.src = `../static/img/character_image/${race_model}/${tag}/${item_tag}_${layer}.PNG`
             } else {
                 console.log(`/static/img/character_image/${race_model}/${item_tag}.png`)
                 div.src = `../static/img/character_image/${race_model}/${item_tag}.png`

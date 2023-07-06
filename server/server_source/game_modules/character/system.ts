@@ -320,9 +320,9 @@ export namespace CharacterSystem {
                 if (!character.in_battle()) {
                     Effect.Change.rage(character, -1)
                     Effect.rest_building_tick(character)
-                    Effect.spoilage(character, MEAT, 0.03)
-                    Effect.spoilage(character, FISH, 0.03)
-                    Effect.spoilage(character, FOOD, 0.005)
+                    Effect.spoilage(character, MEAT, 0.01)
+                    Effect.spoilage(character, FISH, 0.01)
+                    Effect.spoilage(character, FOOD, 0.001)
                 }
             }
 
