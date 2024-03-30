@@ -59,7 +59,7 @@ var HandleAction;
     }
     HandleAction.act = act;
     function battle_self(sw, tag) {
-        console.log('action self', tag);
+        // console.log('action self', tag)
         if (typeof tag != 'string')
             return;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
@@ -86,7 +86,7 @@ var HandleAction;
     }
     HandleAction.battle_self = battle_self;
     function battle_unit(sw, action) {
-        console.log('action unit', action);
+        // console.log('action unit', action)
         if (!common_validations_1.Validator.is_tag_value(action)) {
             return;
         }
@@ -115,7 +115,7 @@ var HandleAction;
     }
     HandleAction.battle_unit = battle_unit;
     function battle_position(sw, action) {
-        console.log('action position', action);
+        // console.log('action position', action)
         if (!common_validations_1.Validator.is_tag_point(action))
             return;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);

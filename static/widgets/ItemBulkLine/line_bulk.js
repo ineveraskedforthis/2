@@ -10,30 +10,28 @@ export function buy_sell_callback(order_id, amount) {
 export function clear_callback(order_id) {
     return () => socket.emit('clear-order', order_id);
 }
-export function new_ItemBulkLine(good_tag, buy_price, sell_price, amount, order_id) {
+export function new_ItemBulkLine(good_tag, price, amount, order_id) {
     const background_string = 'no-repeat left/contain url(/static/img/stash_' + good_tag + '.png)';
-    return div(undefined, '', ['goods_type', good_tag], undefined, undefined, [
-        div(undefined, '', ['goods_icon', 'small_square'], background_string, undefined, []),
-        div(undefined, good_tag, ['goods_name'], undefined, undefined, []),
-        div(undefined, buy_price.toString(), ['goods_avg_buy_price'], undefined, undefined, []),
-        div(undefined, sell_price.toString(), ['goods_avg_sell_price'], undefined, undefined, []),
-        div(undefined, amount.toString(), ['goods_amount_in_inventory'], undefined, undefined, []),
-        div(undefined, 'Buy/Sell 1', ['market_button'], undefined, buy_sell_callback(order_id, 1), []),
-        div(undefined, 'Buy/Sell 10', ['market_button'], undefined, buy_sell_callback(order_id, 10), []),
-        div(undefined, 'Buy/Sell 50', ['market_button'], undefined, buy_sell_callback(order_id, 50), []),
-        div(undefined, 'Remove', ['market_button'], undefined, clear_callback(order_id), [])
+    return div(undefined, '', ['market_goods_type', good_tag], undefined, undefined, [
+        div(undefined, '', ['market_goods_icon', 'small_square'], background_string, undefined, []),
+        div(undefined, good_tag, ['market_goods_name'], undefined, undefined, []),
+        div(undefined, price.toString(), ['market_goods_price'], undefined, undefined, []),
+        div(undefined, amount.toString(), ['market_goods_amount'], undefined, undefined, []),
+        div(undefined, '1', ['generic_button'], undefined, buy_sell_callback(order_id, 1), []),
+        div(undefined, '10', ['generic_button'], undefined, buy_sell_callback(order_id, 10), []),
+        div(undefined, '50', ['generic_button'], undefined, buy_sell_callback(order_id, 50), []),
+        div(undefined, 'X', ['generic_button'], undefined, clear_callback(order_id), [])
     ]);
 }
-export function edit_ItemBulkLine(line, good_tag, buy_price, sell_price, amount, order_id) {
-    line.replaceWith(new_ItemBulkLine(good_tag, buy_price, sell_price, amount, order_id));
+export function edit_ItemBulkLine(line, good_tag, price, amount, order_id) {
+    line.replaceWith(new_ItemBulkLine(good_tag, price, amount, order_id));
 }
 export function new_ItemBulkLineHeader(market_list) {
-    return div(undefined, '', ['goods_type', 'header'], undefined, undefined, [
-        div(undefined, 'Icon', ['goods_icon', 'small_square'], undefined, undefined, []),
-        div(undefined, 'Good', ['goods_name', 'active'], undefined, sort_callback_string_reverse_order(market_list, 'goods_name'), []),
-        div(undefined, 'Buy Price', ['goods_avg_buy_price', 'active'], undefined, sort_callback_number_reverse_order(market_list, 'goods_avg_buy_price'), []),
-        div(undefined, 'Sell Price', ['goods_avg_sell_price', 'active'], undefined, sort_callback_number_reverse_order(market_list, 'goods_avg_sell_price'), []),
-        div(undefined, 'Amount', ['goods_amount_in_inventory', 'active'], undefined, sort_callback_number_reverse_order(market_list, 'goods_amount_in_inventory'), []),
+    return div(undefined, '', ['market_goods_type', 'header'], undefined, undefined, [
+        div(undefined, 'Icon', ['market_goods_icon', 'small_square'], undefined, undefined, []),
+        div(undefined, 'Good', ['market_goods_name', 'active'], undefined, sort_callback_string_reverse_order(market_list, 'market_goods_name'), []),
+        div(undefined, 'Price', ['market_goods_price', 'active'], undefined, sort_callback_number_reverse_order(market_list, 'market_goods_price'), []),
+        div(undefined, 'Amount', ['market_goods_amount', 'active'], undefined, sort_callback_number_reverse_order(market_list, 'market_goods_amount'), []),
         div(undefined, 'Action', [], undefined, undefined, [])
     ]);
 }
@@ -45,7 +43,7 @@ export function new_ItemBulkLineHeader(market_list) {
 //     if (field != 'keep') {
 //         current_sort_var.field = field;
 //     }
-//     const order_modifier = current_sort_var.direction == 'asc' ? 1 : -1;    
+//     const order_modifier = current_sort_var.direction == 'asc' ? 1 : -1;
 //     const sorted = unsorted.sort((a, b) => {
 //         if (a.classList.contains('hidden')) return 1
 //         if (b.classList.contains('hidden')) return -1

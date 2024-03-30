@@ -37,7 +37,7 @@
     flex: 1;
 }
 
-#market > .market_body > div > .market_tab {
+#market > .market_body > div > .auction_body.market_tab {
     /* position: absolute; */
     height: 100%;
     width: 100%;
@@ -55,135 +55,6 @@
     height: 100%;
 }
 
-.goods_market > .goods_list {
-    height: 100%;
-    width: 100%;
-    overflow-y: scroll;
-}
-
-.goods_list_header {
-    width: 100%;
-    height: 20px;
-}
-
-.goods_list_header > .goods_type {
-    display: flex;
-    flex-direction: row;
-    border: #fdf1f1fd 1px solid;
-    background-color: rgba(118, 35, 21, 0.479);
-    height: 20px;
-}
-
-.goods_market > .goods_list > .goods_type {
-    display: flex;
-    flex-direction: row;
-    flex-shrink: 0;
-    border: #590000 1px solid;
-    background-color: rgba(80, 21, 11, 0.479);
-}
-
-.goods_market > .goods_list > .goods_type > div {
-    flex-shrink: 0;
-}
-
-.goods_market > .goods_list > .goods_type:hover {
-    background-color: rgba(148, 156, 36, 0.425);
-}
-
-.goods_market > .goods_list > .goods_type.selected {
-    background-color: rgba(145, 148, 102, 0.671);
-}
-
-.goods_market > .goods_list > .goods_type > .goods_name {
-    width: 100px;
-    background-color: #2a050519;
-}
-
-.goods_market > .goods_list > .goods_type > .goods_avg_sell_price {
-    width: 100px;
-    text-align: right;
-}
-
-.goods_market > .goods_list > .goods_type > .goods_avg_buy_price {
-    width: 100px;
-    text-align: right;
-}
-
-.goods_market > .goods_list > .goods_type > .goods_amount_in_inventory {
-    width: 100px;
-    background-color: rgba(152, 244, 180, 0.072);
-    text-align: right;
-}
-
-.goods_market > .goods_list_header > .goods_type > .goods_name {
-    width: 100px;
-}
-
-.goods_market > .goods_list_header > .goods_type > .goods_avg_sell_price {
-    width: 100px;
-    text-align: center;
-}
-
-.goods_market > .goods_list_header > .goods_type > .goods_avg_buy_price {
-    width: 100px;
-    text-align: center;
-}
-
-.goods_market > .goods_list_header > .goods_type > .goods_amount_in_inventory {
-    width: 100px;
-    text-align: center;
-}
-
-.goods_market > .goods_list > .goods_type.selected {
-    background-color: rgba(187, 197, 45, 0.575);
-}
-
-.goods_market > .market_control {
-    height: 20px;
-    /* width: 39%; */
-    /* height: 95%; */
-    /* border: #590000 1px solid; */
-}
-
-.goods_market > .market_control > .header {
-    width: 100%;
-    height: 20px;
-    text-align: center;
-}
-
-.goods_market > .market_control > .description {
-    text-align: center;
-    top: 10%;
-    width: 100%;
-    height: 20px;
-}
-
-.goods_market > .market_control > .buy_panel {
-    text-align: center;
-    top: 40%;
-    width: 100%;
-    height: 35%;
-}
-
-.goods_market > .market_control > .sell_panel {
-    text-align: center;
-    top: 60%;
-    width: 100%;
-    height: 35%;
-}
-
-
-.goods_market > .market_control > .control_panel > div {
-    height: 25%;
-}
-
-.goods_market > .market_control > .buy_panel {
-    background-color: rgba(0, 0, 255, 0.10);
-}
-
-.goods_market > .market_control > .sell_panel {
-    background-color: rgba(0, 255, 0, 0.10);
-}
 
 .market_button {
     background-color: rgba(80, 21, 11, 0.123);
@@ -274,7 +145,7 @@
 }
 .auction_tab{
     border: #590000 3px solid;
-    color: white; 
+    color: white;
     position: absolute;
     width: 795px;
     height: 450px;

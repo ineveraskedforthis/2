@@ -8,6 +8,7 @@ export class GoodsMarket {
         this.sell_amount = 0;
         this.buy_amount = 0;
         this.socket = socket;
+        this.mode = "buy"
     }
 
     inc_buy() {
@@ -44,41 +45,45 @@ export class GoodsMarket {
         console.log('update_data')
         console.log(data)
         this.data = data;
-        for (let tag in data.buy) {
-            let total_price = 0;
-            let total_amount = 0;
+        if (self.mode == "buy") {
+            for (let tag in data.buy) {
+                let total_price = 0;
+                let total_amount = 0;
 
-            for (let order of data.buy[tag]) {
-                total_price += order.price * order.amount
-                total_amount += order.amount
+                for (let order of data.buy[tag]) {
+                    total_price += order.price * order.amount
+                    total_amount += order.amount
+                }
+
+                let div = this.container.querySelector('.' + tag + ' > .goods_avg_buy_price')
+                if (total_amount > 0) {
+                    div.innerHTML = total_price / total_amount
+                } else {
+                    div.innerHTML = 'undefined'
+                }
             }
-
-            let div = this.container.querySelector('.' + tag + ' > .goods_avg_buy_price')
-            if (total_amount > 0) {
-                div.innerHTML = total_price / total_amount
-            } else {
-                div.innerHTML = 'undefined'
-            }     
-            
         }
 
-        for (let tag in data.sell) {
-            let total_price = 0;
-            let total_amount = 0;
+        if (self.mode == "sell") {
+            for (let tag in data.sell) {
+                let total_price = 0;
+                let total_amount = 0;
 
-            for (let order of data.sell[tag]) {
-                total_price += order.price * order.amount
-                total_amount += order.amount
-            }   
+                for (let order of data.sell[tag]) {
+                    total_price += order.price * order.amount
+                    total_amount += order.amount
+                }
 
-            let div = this.container.querySelector('.' + tag + ' > .goods_avg_sell_price')
-            if (total_amount > 0) {
-                div.innerHTML = total_price / total_amount
-            } else {
-                div.innerHTML = 'undefined'
-            }  
-            
+                let div = this.container.querySelector('.' + tag + ' > .goods_avg_sell_price')
+                if (total_amount > 0) {
+                    div.innerHTML = total_price / total_amount
+                } else {
+                    div.innerHTML = 'undefined'
+                }
+
+            }
         }
+
         if (this.selected_tag != undefined) {
             this.update_estimation(this.selected_tag)
             this.update_sell_estimation(this.selected_tag)
@@ -165,23 +170,32 @@ export class GoodsMarket {
 
     buy() {
         if (this.selected_tag == undefined) {
-            return 
+            return
         }
         let tmp = this.check_tag_cost(this.selected_tag, this.buy_amount)
-        this.socket.emit('buy', {tag: this.selected_tag,
-                            amount: this.buy_amount - tmp[1],
-                            money: tmp[0],
-                            max_price: 99999});
+        this.socket.emit(
+            'buy',
+            {
+                tag: this.selected_tag,
+                amount: this.buy_amount - tmp[1],
+                money: tmp[0],
+                max_price: 99999
+            }
+        );
     }
 
     sell() {
         if (this.selected_tag == undefined) {
-            return 
+            return
         }
         let tmp = this.check_tag_sell_profits(this.selected_tag, this.sell_amount)
-        this.socket.emit('sell', {tag: this.selected_tag ,
-                             amount: this.sell_amount - tmp[1],
-                             price: 1});
+        this.socket.emit(
+            'sell',
+            {
+                tag: this.selected_tag ,
+                amount: this.sell_amount - tmp[1],
+                price: 1
+            });
     }
 
     update_inventory(data) {

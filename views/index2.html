@@ -19,16 +19,18 @@
     <link rel="stylesheet" type="text/css" href="static/styles/map.css">
     <link rel="stylesheet" type="text/css" href="static/styles/skills.css">
     <link rel="stylesheet" type="text/css" href="static/styles/market.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/goods_market.css">
     <link rel="stylesheet" type="text/css" href="static/styles/char_screen.css">
     <link rel="stylesheet" type="text/css" href="static/styles/battle.css">
     <link rel="stylesheet" type="text/css" href="static/styles/quests.css">
     <link rel="stylesheet" type="text/css" href="static/styles/equiped_items.css">
     <link rel="stylesheet" type="text/css" href="static/styles/backdrop.css">
     <link rel="stylesheet" type="text/css" href="static/styles/dialog.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/buttons.css">
 </head>
 <body>
     <!-- <script>var exports = {};</script> -->
-    
+
     <div id="bg_fade"></div>
 
     <button id='logout'>
@@ -77,7 +79,7 @@
 
                 <div id="page_2" class="page">
                     <div>TRAITS</div>
-                    
+
                 </div>
 
                 <div id="page_1" class="wide-page">
@@ -99,14 +101,14 @@
                         <option value="graci">Graci</option>
                         <option value="elodino_free">Elodino</option>
                     </select></div>
-                    
+
                     <button id="next_2" class="next">Create</button>
-                </div>                
+                </div>
             </div>
 
             <div id = "page_3" class="character_image_col noselect">
                 <img id="character_creation_image_body" class="character_creation_image image_body"></img>
-            </div> 
+            </div>
         </div>
 
         <div id="actual_game_scene" class="game_scene">
@@ -190,14 +192,14 @@
                         <div class="border_sep"></div>
                         <div id="open_5_button" class="chat_button">Chat 51</div>
                     </div>
-                    <div id='list_of_messages'> 
+                    <div id='list_of_messages'>
                         <div id='log' class="messages_display hidden">
                         </div>
                         <div id="chat" class="messages_display">
                         </div>
                         <div id="log-attack"class="messages_display hidden">
                         </div>
-                    </div>                    
+                    </div>
                     <form id='send_message_frame' class="send_message_frame">
                         <input id='message_field', type="text", placeholder='New message'>
                         <input type='submit', id='send_message_button', value= 'Send' >
@@ -234,17 +236,17 @@
                 <div id="skills_for_learning" class="container-vertical"></div>
                 <div id="perks_for_learning" class="container-vertical"></div>
                 <button id="close_perks"> Close </button>
-            </div> 
+            </div>
 
-            
+
 
             <div id="craft_tab" class="game_tab hidden movable noselect container-vertical">
-                <div class="game_tab_header container-horizontal"> 
+                <div class="game_tab_header container-horizontal">
                     <div class="game_tab_label">
                     Craft
-                    </div> 
+                    </div>
                 </div>
-                <div id="craft_management" class="container-horizontal tab_content"> 
+                <div id="craft_management" class="container-horizontal tab_content">
                     <div class="container-vertical flex-1">
                         <div id = "craft-tag-item" class="height-50 align-center highlight hover press">Items</div>
                         <div id = "craft-tag-bulk" class="height-50 align-center highlight hover press">Bulk</div>
@@ -256,25 +258,25 @@
             </div>
 
             <div id="stash_tab" class="game_tab hidden movable noselect container-vertical">
-                <div class="game_tab_header container-horizontal"> 
+                <div class="game_tab_header container-horizontal">
                     <div class="game_tab_label">
                         Stash
-                    </div> 
+                    </div>
                 </div>
 
                 <div id = 'stash_container' class = 'container-vertical tab_content'>
                     <div id = "goods_stash"></div>
                     <div id = "savings"></div>
-                    <div id = "savings_trade"></div>        
-                </div>      
-                <div class="corner bottom"></div>          
+                    <div id = "savings_trade"></div>
+                </div>
+                <div class="corner bottom"></div>
             </div>
 
             <div id = 'map_tab' class="game_tab hidden movable noselect container-vertical">
-                <div class="game_tab_header container-horizontal"> 
+                <div class="game_tab_header container-horizontal">
                     <div class="game_tab_label">
                     Map
-                    </div> 
+                    </div>
                 </div>
                 <div class="game_tab_content">
                     <div class="container-horizontal height-full">
@@ -293,14 +295,14 @@
                                 <div id='map_control'>
                                     <div id = 'map_buttons'>
                                         Press right click mouse button to move.
-                                    </div>                             
+                                    </div>
                                     <div id='local_description'></div>
                                 </div>
                             </div>
                             <canvas id='map_canvas' width=800 height=400 oncontextmenu="return false;"></canvas>
                         </div>
-                        <div id = 'description_column'> 
-                        </div> 
+                        <div id = 'description_column'>
+                        </div>
                     </div>
                 </div>
                 <!-- <div class="corner bottom"></div> -->
@@ -313,7 +315,7 @@
                 </div>
 
                 <div class = 'battle_control'>
-                
+
                 </div>
 
                 <div class="enemy_list">
@@ -321,14 +323,14 @@
                 </div>
             </div>
 
-            
+
             <div id = 'skilltree_tab', class="game_tab hidden movable noselect container-vertical">
-                <div class="game_tab_header container-horizontal"> 
+                <div class="game_tab_header container-horizontal">
                     <div class="game_tab_label">
                         Character
-                    </div> 
+                    </div>
                 </div>
-                <div id = 'skills'> 
+                <div id = 'skills'>
                     <div id = 'skills_header_container'>
                         <div id = 'skills_header' class="header">
                             Skills
@@ -352,43 +354,57 @@
 
                         <div class = 'selected_description'>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
                 <div class="corner bottom"></div>
             </div>
 
             <div id = 'market_tab', class="game_tab hidden movable noselect container-vertical">
-                <div class="game_tab_header container-horizontal"> 
+                <div class="game_tab_header container-horizontal">
                     <div class="game_tab_label">
                         Market
-                    </div> 
+                    </div>
                 </div>
-                <div id = 'market' class="tab_content container-vertical"> 
+                <div id = 'market' class="tab_content container-vertical">
                     <div class="header">
                         <div id="open_market" class="selected">Common goods</div>
                         <div id="open_auction">Equipment</div>
                     </div>
                     <div class="market_body">
+
                         <div id="market_wrapper">
+                            <div class="generic_header_buttons_container">
+                                <div id="market_buy_header" class="selected">Sell goods</div>
+                                <div id="market_sell_header">Buy goods</div>
+                            </div>
                             <div class="goods_market market_tab" >
-                                <div class="goods_list_header">
 
+                                <div id="goods_buy_wrapper" class="goods_list_wrapper">
+                                    <div id="goods_list_buy_header" class="goods_list_header">
+                                    </div>
+                                    <div id="goods_list_buy" class="market_goods_list">
+                                    </div>
                                 </div>
-                                <div class="goods_list">
 
+                                <div id="goods_sell_wrapper" class="goods_list_wrapper">
+                                    <div id="goods_list_sell_header" class="goods_list_header">
+                                    </div>
+                                    <div id="goods_list_sell" class="market_goods_list">
+                                    </div>
                                 </div>
 
                                 <p>
 
-                                <div class="market_control"> 
-                                
+                                <div class="market_control">
+
                                     <select name="order_material" id="create_order_material"></select>
                                     <select name="order_type" id="create_order_type">
                                         <option value="sell">Sell</option>
                                         <option value="buy">Buy</option>
                                     </select>
-                                    <input type="text" id="create_order_amount" placeholder="Amount">
-                                    <input type="text" id="create_order_price" placeholder="Price">
+                                    <input type="text" id="create_order_amount" class="market_input_field" placeholder="Amount">
+                                    <input type="text" id="create_order_price" class="market_input_field" placeholder="Price">
+                                    <p></p>
                                     <button id="create_order_button"> Send </button>
 
                                     <button id="clear_orders_button"> Clear all. </button>
@@ -397,14 +413,14 @@
 
                             </div>
                         </div>
-                    
+
                         <div id="auction_wrapper">
                             <div class="auction_body market_tab">
                                 <div id="auction_house_tab">
                                 </div>
 
                                 <p></p>
-                                <div class="auction_control">                             
+                                <div class="auction_control">
                                     <select name="auction_order_item" id="create_auction_order_item"></select>
                                     <input type="text" id="create_auction_order_price" placeholder="Price">
                                     <button id="create_auction_order_button"> Sell </button>
@@ -428,10 +444,10 @@
             </div>
 
             <div id="equip_tab" class="game_tab hidden movable noselect container-vertical">
-                <div class="game_tab_header container-horizontal"> 
+                <div class="game_tab_header container-horizontal">
                     <div class="game_tab_label">
                         Equip
-                    </div> 
+                    </div>
                 </div>
 
                 <div class="tab_content scrollable">
@@ -442,15 +458,15 @@
                             <div id="open_all_header" class="header">All</div>
                         </div> -->
 
-                        <div id="backpacks_collection"> 
-        
+                        <div id="backpacks_collection">
+
                             <!-- <div id="backpack_armour_tab" class = "backpack_tab"></div>     -->
                             <div id="backpack_weapon_tab" class = "backpack_tab"></div>
 
                         </div>
-        
+
                     </div>
-        
+
                     <div id = 'equip', class = 'character_screen_frame'>
                         <p class = "tab_label"> Equipment: </p>
                         <button id="send_switch_weapon_request">Switch weapon</button>
@@ -471,7 +487,7 @@
 
                 </div>
 
-                
+
                 <div class="corner bottom"></div>
             </div>
 
@@ -496,10 +512,10 @@
             <div id="backdrop" class="background-backdrop hidden">
                 <div id="local_buildings", class="game_tab hidden container-horizontal pop-up">
                     <div id="buildings-list" class="buildings-list">
-                    
+
                     </div>
 
-                    <div id="buildings-actions" class="buildings-actions"> 
+                    <div id="buildings-actions" class="buildings-actions">
                         <div class="building_thumbnail"></div>
                         <div class="details_list">
                             <div id="building-description" class="details_content"></div>
@@ -533,7 +549,7 @@
                         <div class="dialog-content dialog-option">
                             HEEEEEELOOOOO
                         </div>
-                        
+
                         <div class="dialog-content dialog-option">
                             LET'S TRADE!!!!
                         </div>
@@ -558,6 +574,6 @@
     </div>
 
     <script src='/socket.io/socket.io.js'></script>
-    <script type="module" src="/static/modules/load_images.js"></script>    
+    <script type="module" src="/static/modules/load_images.js"></script>
     <script type="module" src="/static/ui2.js"></script>
 </body>

@@ -56,6 +56,7 @@ export function sort_callback_number_keep_order(list: List, field: string) {
 
 export function sort_callback_string_reverse_order(list: List, field: string) {
     return () => {
+        console.log("sort " + field)
         list.sorted_field = field;
         list.sorted_order = list.sorted_order == 'asc' ? 'desc' : 'asc';
         sort_string(list);

@@ -16,9 +16,9 @@ export class geom {
 
     /**
      * a minus b
-     * @param a 
-     * @param b 
-     * @returns 
+     * @param a
+     * @param b
+     * @returns
      */
     static minus<T extends point>(a: T, b: T): T {
         return {x: a.x - b.x, y: a.y - b.y} as T

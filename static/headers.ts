@@ -4,14 +4,14 @@ export interface raw_header_tab {
 }
 
 export interface header_tab {
-    element: HTMLDivElement,
-    connected_element: HTMLDivElement
+    element: HTMLElement,
+    connected_element: HTMLElement
 }
 
 function raw_header_to_header(input: raw_header_tab) : header_tab {
     return {
-        element: document.getElementById(input.element) as HTMLDivElement,
-        connected_element: document.getElementById(input.connected_element) as HTMLDivElement
+        element: document.getElementById(input.element) as HTMLElement,
+        connected_element: document.getElementById(input.connected_element) as HTMLElement
     }
 }
 

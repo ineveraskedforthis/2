@@ -1,4 +1,5 @@
 import { stash_id_to_tag } from "../../bulk_tags.js";
+import { set_up_header_tab_choice, set_up_header_with_strings } from "../../headers.js";
 import { socket } from "../../modules/globals.js";
 import { edit_ItemBulkLine, new_ItemBulkLine, new_ItemBulkLineHeader } from "../ItemBulkLine/line_bulk.js";
 import { ListField, generate_header } from "../List/header.js";
@@ -14,66 +15,72 @@ const fields: ListField[] = [
 ]
 
 
-let market_div = document.querySelector('.goods_list')! as HTMLDivElement;
-let market_div_header = document.querySelector('.goods_list_header')!;
+let market_div_buy = document.getElementById('goods_list_buy')! as HTMLDivElement;
+let market_div_sell = document.getElementById('goods_list_sell')! as HTMLDivElement;
+
 let clear_orders_button = document.getElementById('clear_orders_button')!;
 let clear_auction_orders_button = document.getElementById('clear_auction_orders_button')!;
-// let current_sort_var: { field: string, direction: 'asc' | 'desc' } = { field: 'goods_name', direction: 'asc' };
-const market_list = new_list(market_div)
 
+const market_list_buy = new_list(market_div_buy);
+const market_list_sell = new_list(market_div_sell);
+
+set_up_header_with_strings([
+    {
+        element: "market_sell_header",
+        connected_element: "goods_sell_wrapper"
+    },
+    {
+        element: "market_buy_header",
+        connected_element: "goods_buy_wrapper"
+    }
+]);
 
 clear_orders_button.onclick = () => socket.emit('clear-orders');
 clear_auction_orders_button.onclick = () => socket.emit('clear-item-orders');
-market_div_header.appendChild(new_ItemBulkLineHeader(market_list))
-// market_div_header.appendChild(generate_header(market_list, fields))
 
+let market_buy_div_header = document.getElementById('goods_list_buy_header')!;
+market_buy_div_header.appendChild(new_ItemBulkLineHeader(market_list_buy));
 
-
+let market_sell_div_header = document.getElementById('goods_list_sell_header')!;
+market_sell_div_header.appendChild(new_ItemBulkLineHeader(market_list_sell));
 
 export function update_market(
-    data: { 
-        tag: number, 
-        amount: number, 
-        price: number, 
-        id: number, 
-        typ: string }[]) 
+    data: {
+        tag: number,
+        amount: number,
+        price: number,
+        id: number,
+        typ: string
+    }[]
+)
 {
     console.log('update market');
     // console.log(data)
 
-    let current_line = 0
-    for (let child of market_div.children) {
-        if (child.classList.contains('header')) {
-            continue
-        }
-        if (current_line >= data.length) {
-            child.classList.add('hidden');
-        } else {
-            const item = data[current_line];
-            let sell_price:''|number = '';
-            let buy_price:''|number = '';
-            if (item.typ == 'sell') { sell_price = item.price; }
-            if (item.typ == 'buy') { buy_price = item.price; }
-            let tag = stash_id_to_tag[item.tag];
-            edit_ItemBulkLine(child, tag, buy_price, sell_price, item.amount, item.id);        
-            child.classList.remove('hidden');
-            current_line++;
-        }        
-    }
-    for (let remaining_line = current_line; remaining_line < data.length; remaining_line++) {
+    market_div_sell.innerHTML = ""
+    market_div_buy.innerHTML = ""
+
+    for (let remaining_line = 0; remaining_line < data.length; remaining_line++) {
         const item = data[remaining_line];
         const tag = stash_id_to_tag[item.tag];
-        // market_div.appendChild(new_ItemBulkLine(data[remaining_line].tag, data[remaining_line].price, data[remaining_line].price, data[remaining_line].amount, data[remaining_line].id));
-        market_div.appendChild(new_ItemBulkLine(tag, item.price, item.price, item.amount, item.id));
+        if (item.typ == "sell") {
+            market_div_sell.appendChild(new_ItemBulkLine(tag, item.price, item.amount, item.id));
+        } else {
+            market_div_buy.appendChild(new_ItemBulkLine(tag, item.price, item.amount, item.id));
+        }
     }
 
-    if (market_list.sorted_field == 'goods_name') {
-        sort_string(market_list)
+    if (market_list_buy.sorted_field == 'goods_name') {
+        sort_string(market_list_buy)
     } else {
-        sort_number(market_list)
+        sort_number(market_list_buy)
     }
 
-    // sort_market(<HTMLElement>market_div, 'keep', current_sort_var, 'keep');
+    if (market_list_sell.sorted_field == 'goods_name') {
+        sort_string(market_list_sell)
+    } else {
+        sort_number(market_list_sell)
+    }
 }
 
 {

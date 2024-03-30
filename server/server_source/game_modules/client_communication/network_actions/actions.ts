@@ -64,7 +64,7 @@ export namespace HandleAction {
     }
 
     export function battle_self(sw: SocketWrapper, tag: unknown) {
-        console.log('action self', tag)
+        // console.log('action self', tag)
         if (typeof tag != 'string') return
 
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
@@ -90,7 +90,7 @@ export namespace HandleAction {
     }
 
     export function battle_unit(sw: SocketWrapper, action: unknown) {
-        console.log('action unit', action)
+        // console.log('action unit', action)
         if (!Validator.is_tag_value(action)) {
             return
         }  
@@ -119,7 +119,7 @@ export namespace HandleAction {
     }
 
     export function battle_position(sw: SocketWrapper, action: unknown) {
-        console.log('action position', action)
+        // console.log('action position', action)
         if (!Validator.is_tag_point(action)) return;
 
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)

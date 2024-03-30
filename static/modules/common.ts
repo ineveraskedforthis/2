@@ -24,8 +24,8 @@ function change_alpha(l: pixel, a: number) {
 export function get_pos_in_canvas(canvas: HTMLCanvasElement, event: MouseEvent) {
     var rect = canvas.getBoundingClientRect();
     let tmp = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
     };
     return tmp
 }

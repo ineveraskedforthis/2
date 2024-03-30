@@ -14,14 +14,14 @@ export namespace CampaignAI {
         }
         if (character.action != undefined) {
             return
-        }        
+        }
         if (Math.random() < 0.1) {
             character.ai_memories.shift()
         }
         if (!AI_TRIGGER.low_hp(character)) {
             let responce = AIhelper.check_battles_to_join(character)
             if (responce) return;
-        }        
+        }
         decide_ai_action_campaign(character)
     }
 }
