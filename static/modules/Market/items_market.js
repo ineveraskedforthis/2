@@ -31,6 +31,7 @@ export function build() {
 }
 export function select_item(id, owner_id, div) {
     return () => {
+        console.log('select order ' + id);
         selected = id;
         selecter_owner = owner_id;
         selected_div?.classList.remove('selected');

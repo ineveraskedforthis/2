@@ -73,7 +73,7 @@ var ScriptedValue;
             multiplier = 0.5;
         if (race == 'graci')
             multiplier = 0.1;
-        return (0, basic_functions_1.trim)(Math.floor((100 - tier * 20) * multiplier), 0, 100);
+        return (0, basic_functions_1.trim)(Math.floor((50 - tier * 20) * multiplier), 0, 100);
     }
     ScriptedValue.rest_target_fatigue = rest_target_fatigue;
     /**
@@ -92,7 +92,7 @@ var ScriptedValue;
             multiplier = 0.5;
         if (race == 'graci')
             multiplier = 0.1;
-        return (0, basic_functions_1.trim)(Math.floor((100 - tier * 10) * multiplier), 0, 100);
+        return (0, basic_functions_1.trim)(Math.floor((75 - tier * 10) * multiplier), 0, 100);
     }
     ScriptedValue.rest_target_stress = rest_target_stress;
 })(ScriptedValue = exports.ScriptedValue || (exports.ScriptedValue = {}));

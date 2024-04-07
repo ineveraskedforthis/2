@@ -144,7 +144,6 @@ export function generate_dummy_item_backpack_div() {
     return div;
 }
 export function generate_item_market_div(item) {
-    console.log(item);
     const div = document.createElement('div');
     {
         const seller = document.createElement('div');
@@ -152,18 +151,15 @@ export function generate_item_market_div(item) {
         seller.classList.add('width-100');
         div.appendChild(seller);
     }
-    console.log("seller is okay");
     {
         const price = document.createElement('div');
         price.innerHTML = item.price.toString();
         price.classList.add('width-100');
         div.appendChild(price);
     }
-    console.log("price is defined");
     div.appendChild(generate_item_backpack_div(item, undefined));
     div.classList.add('row');
     div.classList.add('item');
-    console.log("return freshly baked div");
     // console.log(div)
     return div;
 }

@@ -31,7 +31,7 @@ export namespace ScriptedValue {
 
         if (owner_id == undefined) return 0 as money;
         if (owner_id == character) return 0 as money;
-        
+
         return building.room_cost as money
     }
 
@@ -67,12 +67,12 @@ export namespace ScriptedValue {
      * @param {tagRACE} race - The race of the character.
      * @return {number} The target fatigue.
      */
-    export function rest_target_fatigue(tier: number, quality: number, race: tagRACE) {
+    export function rest_target_fatigue(tier: number, quality: number, race: tagRACE): number {
         let multiplier = 1
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
         if (race == 'graci') multiplier = 0.1
-        return trim(Math.floor((100 - tier * 20) * multiplier), 0, 100)
+        return trim(Math.floor((50 - tier * 20) * multiplier), 0, 100)
     }
 
     /**
@@ -83,11 +83,11 @@ export namespace ScriptedValue {
      * @param {tagRACE} race - The race of the character.
      * @return {number} The target stress.
      */
-    export function rest_target_stress(tier: number, quality: number, race: tagRACE) {
+    export function rest_target_stress(tier: number, quality: number, race: tagRACE): number {
         let multiplier = trim(1 - quality / 500, 0.5, 1)
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
         if (race == 'graci') multiplier = 0.1
-        return trim(Math.floor((100 - tier * 10) * multiplier), 0, 100)
+        return trim(Math.floor((75 - tier * 10) * multiplier), 0, 100)
     }
 }
