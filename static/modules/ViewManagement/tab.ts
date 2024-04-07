@@ -27,7 +27,7 @@ let MOVE_TAB_OFFSET: [number, number] = [0, 0]
 
 export namespace tab {
 
-     export function save(tag: string) {
+    export function save(tag: string) {
         let tab = document.getElementById(tag + '_tab')
         if (tab == undefined) {return}
         tabs_properties[tag] = {
@@ -49,18 +49,18 @@ export namespace tab {
         if (tabs_properties[tag] == undefined) {
             save(tag)
         }
-        if (tag != 'battle') {            
+        if (tag != 'battle') {
             tab.style.top = tabs_properties[tag].top
             tab.style.left = tabs_properties[tag].left
             tab.style.width = tabs_properties[tag].width
             tab.style.height = tabs_properties[tag].height
-            tab.style.zIndex = tabs_properties[tag].zIndex 
+            tab.style.zIndex = tabs_properties[tag].zIndex
         }
         if (tabs_properties[tag].active) {
             toogle(tag)
         }
     }
-    
+
     export function load_all(socket: Socket|undefined) {
         tabs_properties = JSON.parse(localStorage.getItem('tabs_properties')!)
 
@@ -108,8 +108,14 @@ export namespace tab {
             }
             let button = document.getElementById(tag + '_button')!;
             button.onclick = () => {
+                for(let item of game_tabs) {
+                    if ((item == 'battle') || (item == tag)){
+                        continue
+                    }
+                    turn_off(item)
+                }
                 let res = toogle(tag);
-                
+
                 // console.log(tag, res)
                 if ((tag == 'market') && (res == 'on')) {
                     socket.emit('send-market-data', true)
@@ -126,7 +132,7 @@ export namespace tab {
                     div.classList.add('close_tab')
                     div.onclick = tag_to_turn_off_f(tag)
                     header.appendChild(div)
-                }                
+                }
             }
         }
     }
@@ -176,7 +182,7 @@ export namespace tab {
                 } else {
                     MOVE_TAB_PRESS = false
                     let tag = header.parentElement!.parentElement!.id.split('_')[0]
-                    tab.save(tag)    
+                    tab.save(tag)
                 }
             }})(header as HTMLElement)
         }
@@ -215,14 +221,14 @@ export namespace tab {
 
                 const new_left = x - MOVE_TAB_OFFSET[0] - rect.left
                 const new_top  = y - MOVE_TAB_OFFSET[1] - rect.top
-                
+
 
                 // console.log(x, y, new_left, new_top)
 
                 if (MOVE_TAB_ELEMENT != null) {
                     MOVE_TAB_ELEMENT.style.left = new_left + 'px'
                     MOVE_TAB_ELEMENT.style.top  = new_top  + 'px'
-                }                
+                }
             }
 
             if ((RESIZE_ELEMENT == null)) return
@@ -288,7 +294,7 @@ export namespace tab {
             tab.classList.add('hidden');
             pop(tag)
             return 'off'
-        }    
+        }
     }
 
     export function turn_on(tag: string) {
@@ -296,8 +302,8 @@ export namespace tab {
         tab.classList.remove('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button')!
-            button.classList.toggle('active')
-        }    
+            button.classList.add('active')
+        }
 
         push(tag)
     }
@@ -307,8 +313,8 @@ export namespace tab {
         tab.classList.add('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button')!
-            button.classList.toggle('active')
-        }   
+            button.classList.remove('active')
+        }
 
         pop(tag)
     }
@@ -324,6 +330,6 @@ export namespace tab {
             let tab = document.getElementById(tab_tag + '_tab')!;
             tab.style.zIndex = tabs_position[tab_tag].toString()
             save(tab_tag)
-        } 
+        }
     }
 }

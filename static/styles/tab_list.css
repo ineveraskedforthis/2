@@ -2,8 +2,8 @@
     position: absolute;
     top:0%;
     right: 0%;
-    height: 630;
-    width: 100px;
+    height: 100px;
+    width: calc(100% - 500px);
 }
 
 #tab_list_frame > .control_button {
@@ -124,13 +124,13 @@
 #craft_button {
     background-image: url(/static/img/tab_buttons/craft_button.png);
 }
- #craft_button:hover {
+#craft_button:hover {
         background-image: url(/static/img/tab_buttons/craft_button_hovered.png);
     }
- #craft_button:active {
+#craft_button:active {
         background-image: url(/static/img/tab_buttons/craft_button_pressed.png);
     }
-  #craft_button.active {
+#craft_button.active {
         background-image: url(/static/img/tab_buttons/craft_button_pressed.png);
     }
 
@@ -181,12 +181,12 @@
     -webkit-user-select: none;
     -o-user-select: none;
 }
-
+/*
 #skilltree_tab {
-  left: 1%;
-  top: 20%;
-  width: 15%;
-  height: 25%;
+    left: 1%;
+    top: 20%;
+    width: 15%;
+    height: 25%;
 }
 
 #stash_tab {
@@ -218,11 +218,6 @@
 }
 
 
-
-
-
-
-
 #equip_tab {
     top: 46%;
     height: 46%;
@@ -237,13 +232,7 @@
     width: 100%;
     height: 100%;
 }
-
-
-
-
-
-
-
+ */
 
 
 
@@ -268,7 +257,7 @@
 
 #character_greeting {
     display: contents;
-    
+
     border-color: bisque;
     border-width: 1px;
     border-style: solid;

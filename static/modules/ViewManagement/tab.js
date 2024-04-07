@@ -88,6 +88,12 @@ export var tab;
             }
             let button = document.getElementById(tag + '_button');
             button.onclick = () => {
+                for (let item of game_tabs) {
+                    if ((item == 'battle') || (item == tag)) {
+                        continue;
+                    }
+                    turn_off(item);
+                }
                 let res = toogle(tag);
                 // console.log(tag, res)
                 if ((tag == 'market') && (res == 'on')) {
@@ -263,7 +269,7 @@ export var tab;
         tab.classList.remove('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button');
-            button.classList.toggle('active');
+            button.classList.add('active');
         }
         push(tag);
     }
@@ -273,7 +279,7 @@ export var tab;
         tab.classList.add('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button');
-            button.classList.toggle('active');
+            button.classList.remove('active');
         }
         pop(tag);
     }

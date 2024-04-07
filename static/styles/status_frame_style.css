@@ -5,7 +5,7 @@
     position: absolute;
     top:0%;
     left:0%;
-    color: rgb(13, 228, 77);  
+    color: rgb(13, 228, 77);
     display: flex;
     flex-direction: column;
     height: auto;
@@ -15,7 +15,7 @@
 
 div#status_frame>div{
     /* border: rgb(168, 9, 9) solid 1px; */
-    display: flex;    
+    display: flex;
     width: 100%;
 }
 
@@ -50,7 +50,7 @@ div#status_frame>div{
 
 #bars_row>div{
     width: 200px;
-    height: 25px;
+    height: 20px;
 }
 
 div#bars_row>div>.hbar{

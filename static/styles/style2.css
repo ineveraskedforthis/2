@@ -92,16 +92,16 @@ div {
 
 #logout {
     position: absolute;
-    top: 95%;
-    left: 200px;
+    top: 25px;
+    right: 25px;
     width: 100px;
     z-index: 10;
 }
 
 #reset_tabs {
     position: absolute;
-    top: 95%;
-    left: 350px;
+    top: 50px;
+    right: 25px;
     width: 100px;
     z-index: 10;
 }
@@ -124,7 +124,7 @@ div {
     z-index: 2;
     left: 50%;
     margin-left: -210px;
-    margin-top: 5%; 
+    margin-top: 5%;
     box-shadow: 5px 10px rgb(56, 56, 70, .56);;
 }
 #login-frame > form > p, #reg-frame > form > p{
@@ -195,7 +195,6 @@ div {
 
 
 .game_frame {
-    background: rgba(136, 62, 62, 0.527);;
     color: whitesmoke;
 }
 
@@ -254,20 +253,20 @@ div {
 
 #desktop_actions {
     position: absolute;
-    bottom: 0%;    
+    bottom: 0%;
     left: 0%;
     height: auto;
     width: auto;
     padding: 5px;
     padding-bottom: 2px;
-    background-color: rgba(78, 11, 11, 0.7);    
+    background-color: rgba(78, 11, 11, 0.7);
 }
 
 .desktop_action_button {
     padding: 4px;
     background-color: rgba(51, 7, 7, 0.7);
     margin-bottom: 3px;
-    cursor: default;    
+    cursor: default;
     height: 30px;
 }
 
@@ -287,7 +286,7 @@ div {
     width: 8em;
 }
 
-.repeat_button { 
+.repeat_button {
     margin-left: 8px;
 }
 
@@ -305,10 +304,9 @@ div {
 
 .game_tab {
     position: absolute;
-    left: 17%;
-    top: 10%;
-    width: 50%;
-    height: 70%;
+    top: 100px;
+    width: 100%;
+    height: calc(100% - 100px);
     background: rgba(91, 33, 33, 0.91);
     /* color: rgb(13, 228, 77); */
     color: whitesmoke;
