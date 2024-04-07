@@ -67,7 +67,7 @@ export class SocketManager {
             socket.on('clear-orders',  () =>        InventoryCommands.clear_bulk_orders(user));
             socket.on('clear-item-orders',  () =>   InventoryCommands.clear_item_orders(user))
             socket.on('clear-order',  (msg: any) => InventoryCommands.clear_bulk_order(user, msg));
-            // 
+            //
             socket.on('buyout',  (msg: any) =>        InventoryCommands.buyout(user, msg));
             socket.on('execute-order',  (msg: any) => InventoryCommands.execute_bulk_order(user, msg.amount, msg.order))
 
@@ -98,15 +98,15 @@ export class SocketManager {
             socket.on('move', (msg: any) =>     HandleAction.move(user, msg));
             socket.on('hunt',  () =>            HandleAction.act(user, CharacterAction.HUNT))
             socket.on('fish',  () =>            HandleAction.act(user, CharacterAction.FISH))
-            socket.on('gather_wood', () =>      HandleAction.act(user, CharacterAction.GATHER_WOOD))            
-            socket.on('gather_cotton', () =>    HandleAction.act(user, CharacterAction.GATHER_COTTON)) 
+            socket.on('gather_wood', () =>      HandleAction.act(user, CharacterAction.GATHER_WOOD))
+            socket.on('gather_cotton', () =>    HandleAction.act(user, CharacterAction.GATHER_COTTON))
 
-            
+
             socket.on('craft', (msg) => {
                 if (typeof(msg) != 'string') return
                 HandleAction.act(user, craft_actions[msg])
             })
-            
+
             // socket.on('battle-action',  (msg: any) => HandleAction.battle(user, msg));
             // socket.on('req-ranged-accuracy', (distance: any) => Request.accuracy(user, distance))
             socket.on('req-player-index',   () =>  Request.player_index(user))
@@ -123,27 +123,27 @@ export class SocketManager {
 
             socket.on('request-talk',   (msg:unknown) => Dialog.request_greeting(user, msg))
             socket.on('request-prices-character',  (msg:unknown) => Dialog.request_prices(user, msg))
-            
+
             socket.on('request-local-buildings', (msg:any) => Request.local_buildings(user))
             socket.on('learn-perk',     (msg: undefined|{id: unknown, tag: unknown}) =>
                                             SocketCommand.learn_perk(user, msg))
-            socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) => 
+            socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) =>
                                             SocketCommand.learn_skill(user, msg))
-            socket.on('buy-plot',       (msg: undefined|{id: unknown}) => 
+            socket.on('buy-plot',       (msg: undefined|{id: unknown}) =>
                                             SocketCommand.buy_plot(user, msg))
             socket.on('create-plot',    () => SocketCommand.create_plot(user))
 
-            
+
             socket.on('build-building',     (msg: undefined|{id: unknown, type: unknown}) => SocketCommand.develop_plot(user, msg))
             socket.on('change-rent-price',  (msg: undefined|{id: unknown, price: unknown}) => SocketCommand.change_rent_price(user, msg))
             socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
             socket.on('leave-room',         () => SocketCommand.leave_room(user))
-            
+
             socket.on('repair-building',    (msg: undefined|{id: unknown}) => SocketCommand.repair_building(user, msg))
         });
     }
 
-    
+
 
     disconnect(user: SocketWrapper) {
         console.log('user disconnected');
@@ -152,11 +152,11 @@ export class SocketManager {
 
     connection(socket: Socket) {
         console.log('a user connected');
-        
+
         socket.emit('tags', materials.get_materials_json());
-        socket.emit('skill-tags', SKILLS);        
+        socket.emit('skill-tags', SKILLS);
         // socket.emit('sections', SECTIONS);
-        
+
         var messages = this.MESSAGES
         for (let message of messages) {
             socket.emit('new-message', {id: message.id, msg: message.content, user: message.sender})
@@ -176,13 +176,13 @@ export class SocketManager {
             Alerts.generic_user_alert(user, 'alert', 'character name is not allowed')
             return
         }
-        
+
         let model_variation:ModelVariant = {
             eyes: data.eyes,
             chin: data.chin,
             mouth: data.mouth
         }
-        
+
         console.log(data)
         UserManagement.get_new_character(sw.user_id, data.name, model_variation, data.faction)
         UserManagement.update_users()
@@ -214,7 +214,7 @@ export class SocketManager {
     //     this.send_explored(character);
     //     this.send_teacher_info(character);
     //     let user = character.get_user();
-        
+
 
     //     this.send_char_info(user);
 
@@ -223,7 +223,7 @@ export class SocketManager {
     //         this.send_cell_updates(cell)
     //         this.send_market_info_character(cell, character)
     //     }
-        
+
 
 
 
@@ -258,7 +258,7 @@ export class SocketManager {
     //     }
     // }
 
-    // 
+    //
 
     // //  attack_local_outpost(socket, user_data, data) {
     // //     if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
@@ -408,7 +408,7 @@ export class SocketManager {
     //     let user = this.world.user_manager.get_user_from_character(character);
     //     if (user != undefined) {
     //         this.send_message_to_user(user, msg);
-    //     }       
+    //     }
     // }
 
     // send_to_character_user(character:Character, tag: string, msg: any) {
@@ -501,7 +501,7 @@ export class SocketManager {
     //     if (cell != undefined) {
     //         let res = this.world.get_cell_teacher(cell.i, cell.j);
     //         this.send_to_character_user(character, 'local-skills', res)
-    //     }        
+    //     }
     // }
 
 
@@ -513,14 +513,14 @@ export class SocketManager {
     //             if (users_online[user.id]) {
     //                 tmp.push(user.id);
     //             }
-    //         }            
+    //         }
     //     }
     //     this.io.emit('users-online', tmp);
     // }
-    
+
     send_message(sw: SocketWrapper, msg: string) {
         if (msg.length > 1000) {
-            sw.socket.emit('new-message', 'message-too-long')
+            sw.socket.emit('alert', 'message-too-long')
             return
         }
         // msg = validator.escape(msg)

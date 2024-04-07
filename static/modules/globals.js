@@ -24,5 +24,6 @@ export var globals = {
     action_in_progress: false,
     action_time: 0,
     action_ratio: 0,
-    action_total_time: 1
+    action_total_time: 1,
+    local_characters: [],
 };

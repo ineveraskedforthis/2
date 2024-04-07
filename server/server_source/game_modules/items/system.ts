@@ -167,7 +167,7 @@ export namespace ItemSystem {
         if (base == undefined) {
             base = new Damage()
         }
-        let result = DmgOps.copy(base)     
+        let result = DmgOps.copy(base)
         for (let i = 0; i < item.affixes.length; i++) {
             let affix = item.affixes[i];
             let f = protection_affixes_effects[affix.tag];
@@ -193,23 +193,23 @@ export namespace ItemSystem {
             let affix = item.affixes[i];
             let f = attack_affixes_effects[affix.tag];
             if (f == undefined) continue
-            
+
             f(attack);
         }
 
         return attack
     }
 
-    export function item_data(item: Item):ItemData 
-    export function item_data(item: undefined):undefined 
-    export function item_data(item: Item|undefined):ItemData|undefined 
-    export function item_data(item: Item|undefined):ItemData|undefined 
+    export function item_data(item: Item):ItemData
+    export function item_data(item: undefined):undefined
+    export function item_data(item: Item|undefined):ItemData|undefined
+    export function item_data(item: Item|undefined):ItemData|undefined
     {
         if (item == undefined) return undefined
         return {
             name: item.model_tag,
-            affixes: item.affixes.length, 
-            affixes_list: item.affixes, 
+            affixes: item.affixes.length,
+            affixes_list: item.affixes,
             durability: item.durability,
             item_type: ModelToEquipSlot[item.model_tag],
             damage: damage_breakdown(item),

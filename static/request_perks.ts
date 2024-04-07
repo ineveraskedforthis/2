@@ -5,7 +5,9 @@ import { Perks } from '../shared/character.js'
 import { equip_slot } from '../shared/inventory.js';
 import { money } from '../shared/common.js';
 import { stash_id_to_tag } from './bulk_tags.js';
-import { EQUIPMENT_TAGS } from './modules/CharacterScreen/update.js';
+import { EQUIPMENT_TAGS } from './modules/Constants/inventory.js';
+import { elementById } from './modules/HTMLwrappers/common.js';
+
 
 // export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
 
@@ -24,14 +26,7 @@ import { EQUIPMENT_TAGS } from './modules/CharacterScreen/update.js';
 function request_perks() {
     socket.emit('request-talk', globals.selected_character);
 }
-{
-    let button = document.getElementById('request_perks_selected_charater')!;
-    button.onclick = request_perks;
-}
-{
-    let button = document.getElementById('close_perks')!;
-    button.onclick = () => close_perks();
-}
+
 function close_perks() {
     let big_div = document.getElementById('backdrop')!;
     big_div.classList.add('hidden');
@@ -85,7 +80,7 @@ function add_dialog_option(i: string, onclick: () => void) {
     div.innerHTML = i;
     div.onclick = onclick;
     div.classList.add(... ["dialog-content", "dialog-option"])
-    dialog_options_div.appendChild(div);    
+    dialog_options_div.appendChild(div);
 }
 
 function generate_greeting(data: PerksResponse) {
@@ -95,7 +90,7 @@ function generate_greeting(data: PerksResponse) {
         if (faction_block.reputation != 'neutral') {
             flag = false
             greeting_line += `I am ${faction_block.reputation} of ${faction_block.name}. `
-        }             
+        }
     }
 
     if (flag) {
@@ -173,7 +168,7 @@ function build_dialog(data: PerksResponse) {
     add_dialog_option('What do you think about current prices?', request_prices())
 
     if (is_leader(data)) add_dialog_option('I want to buy a land plot for 500.', buy_land_plot_request())
-    
+
     for (let [i, value] of Object.entries(data.perks)) {
         add_dialog_option(`Teach me ${i} for ${value}`, send_perk_learning_request(i))
     }
@@ -234,7 +229,7 @@ function flex_something(s: string, w: string) {
 
     const label = document.createElement('div')
     label.classList.add('flex-2')
-    label.innerHTML = s 
+    label.innerHTML = s
 
     const data = document.createElement('div')
     data.classList.add('flex-1')
@@ -259,9 +254,12 @@ function update_stats(data: CharacterStatsResponse) {
     stats_tab.appendChild(flex_something('Charged magic bolt base damage',  `${data.base_damage_magic_bolt_charged.toFixed(2)}`))
 }
 
+export function init_detailed_character_statistics() {
+    elementById('request_perks_selected_charater').onclick = request_perks;
+    elementById('close_perks').onclick = () => close_perks();
 
-
-socket.on('perks-info',     build_dialog);
-socket.on('character-prices', build_prices);
-socket.on('perks-update',   update_perks);
-socket.on('stats',          update_stats)
+    socket.on('perks-info',     build_dialog);
+    socket.on('character-prices', build_prices);
+    socket.on('perks-update',   update_perks);
+    socket.on('stats',          update_stats)
+}

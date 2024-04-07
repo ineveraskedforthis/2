@@ -35,7 +35,7 @@ export namespace InventoryCommands {
         if (character.in_battle()) { return }
 
         EventInventory.switch_weapon(character)
-        
+
     }
 
     // expected inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
@@ -45,7 +45,7 @@ export namespace InventoryCommands {
         if (character.in_battle()) { return }
         EventInventory.unequip(character, msg)
     }
-    
+
     export function buy(sw: SocketWrapper, msg: any) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
@@ -60,7 +60,7 @@ export namespace InventoryCommands {
         if (msg.price < 0) {
             user.socket.emit('alert', 'invalid_price')
         }
-        
+
 
         if (isNaN(msg.amount)) {
             user.socket.emit('alert', 'invalid_amount')
@@ -84,9 +84,9 @@ export namespace InventoryCommands {
         }
 
         let responce = EventMarket.buy(
-            character, 
-            msg.material as material_index, 
-            msg.amount, 
+            character,
+            msg.material as material_index,
+            msg.amount,
             msg.price)
         if (responce != 'ok') {
             Alerts.generic_user_alert(user, 'alert', responce)
@@ -109,7 +109,7 @@ export namespace InventoryCommands {
             user.socket.emit('alert', 'invalid_price')
             return
         }
-        
+
 
         if (isNaN(msg.amount)) {
             user.socket.emit('alert', 'invalid_amount')
@@ -140,11 +140,11 @@ export namespace InventoryCommands {
         console.log('sell is valid')
 
         let responce = EventMarket.sell(
-            character, 
-            msg.material as material_index, 
-            msg.amount, 
+            character,
+            msg.material as material_index,
+            msg.amount,
             msg.price)
-            
+
         if (responce != 'ok') {
             Alerts.generic_user_alert(user, 'alert', responce)
         }
@@ -163,6 +163,8 @@ export namespace InventoryCommands {
         const responce = EventMarket.sell_item(character, index, price as money)
 
         if (responce.responce != AuctionResponce.OK) {
+            console.log("impossible sale")
+            console.log(responce.responce)
             Alerts.generic_user_alert(user, 'alert', responce.responce)
         }
     }
@@ -170,7 +172,7 @@ export namespace InventoryCommands {
     export function execute_bulk_order(sw: SocketWrapper, amount: number, order_id: number) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
-        
+
         const order = Convert.id_to_bulk_order(order_id)
         if (order == undefined) return
         const seller = Convert.id_to_character(order.owner_id)

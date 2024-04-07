@@ -62,11 +62,11 @@
     margin: 5px;
     /* border: gray 1px solid; */
     height: auto;
-    width: 230px;
-    
+    width: 300px;
+
 
     text-shadow:
-     -1px -1px 0 rgb(139, 80, 80),  
+     -1px -1px 0 rgb(139, 80, 80),
       1px -1px 0 rgb(139, 80, 80),
       -1px 1px 0 rgb(139, 80, 80),
        1px 1px 0 rgb(139, 80, 80);
@@ -133,7 +133,7 @@
 
 .current_level{
     width: 20%;
-    
+
     text-align: center;
 }
 

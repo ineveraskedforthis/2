@@ -1,9 +1,9 @@
+import { EQUIPMENT_TAGS } from "../Constants/inventory.js";
 import { generate_dummy_item_backpack_div, generate_item_backpack_div, generate_name } from "../Divs/item.js";
 import { socket } from "../globals.js";
 const table_items = document.getElementById('backpack_weapon_tab');
 const item_select_div = document.getElementById('create_auction_order_item');
 const header_div = generate_dummy_item_backpack_div();
-export const EQUIPMENT_TAGS = ['weapon', 'socks', 'shirt', 'secondary', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'pants', 'belt', 'dress', 'amulet', 'robe'];
 const equip_block = document.getElementById('equip');
 for (let i of EQUIPMENT_TAGS) {
     const tmp = document.createElement('div');
@@ -43,7 +43,7 @@ export function update_backpack(data) {
         }
     }
 }
-export function update_equip(data) {
+export function update_equip_list(data) {
     for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
         let tag = EQUIPMENT_TAGS[i];
         let item = data.equip[tag];
@@ -55,7 +55,7 @@ export function update_equip(data) {
             row.classList.add('item');
         }
         else {
-            let tmp = generate_item_backpack_div(item, i);
+            let tmp = generate_item_backpack_div(item, undefined);
             row.innerHTML = tmp.innerHTML;
             row.classList.add(...tmp.classList);
             row.classList.add('item');

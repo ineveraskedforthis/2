@@ -10,7 +10,7 @@ export type backpack = {
 }
 
 export type equip = {
-    [index in equip_slot]?: ItemData; 
+    [index in equip_slot]?: ItemData;
 }
 
 export type EquipSocket = {
@@ -27,11 +27,20 @@ export interface ItemData {
     affixes_list: affix[],
     item_type: equip_slot
     durability: number
-    backpack_index?: number
+    is_weapon: boolean
     price?: number
-    seller?: string
-    seller_id?: number
-    id?: number
+    backpack_index?: number
+}
+
+export interface ItemBackpackData extends ItemData {
+    backpack_index: number
+}
+
+export interface ItemOrderData extends ItemData {
+    price: number
+    seller: string
+    seller_id: number
+    id: number
     is_weapon: boolean
 }
 
@@ -42,27 +51,27 @@ export interface affix{
 }
 
 export const slots = [
-    'weapon', 
-    'secondary', 
-    'amulet', 
-    'mail', 
-    // 'greaves', 
-    'left_pauldron', 
-    'right_pauldron', 
-    'left_gauntlet', 
-    'right_gauntlet', 
-    'boots', 'helmet', 
-    'belt', 
-    'robe', 
-    'shirt', 
-    'pants', 
-    'dress', 
+    'weapon',
+    'secondary',
+    'amulet',
+    'mail',
+    // 'greaves',
+    'left_pauldron',
+    'right_pauldron',
+    'left_gauntlet',
+    'right_gauntlet',
+    'boots', 'helmet',
+    'belt',
+    'robe',
+    'shirt',
+    'pants',
+    'dress',
     'socks'] as const
 export type equip_slot = typeof slots[number]
 
 // export type equip_slot = armour_slot|'weapon'
 // export type armour_slot = 'skirt'|'amulet'|'mail'|'greaves'|'left_pauldron'|'right_pauldron'|'left_gauntlet'|'right_gauntlet'|'boots'|'helmet'|'belt'|'robe'
-// export type secondary_slot = 'secondary' 
+// export type secondary_slot = 'secondary'
 // export type slot = secondary_slot | equip_slot
 
 export type damage_type = 'blunt'|'pierce'|'slice'|'fire'

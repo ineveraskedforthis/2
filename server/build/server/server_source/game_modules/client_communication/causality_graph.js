@@ -63,7 +63,7 @@ const influence = {
 // else: try updating children
 // NOTE: node updates are expected to send relevant data of their children
 // because sometimes it's simpler to send data as a whole than by parts
-// 
+//
 // i could force update of all children on all affected nodes instead, but will check how current setup will play out
 var Update;
 (function (Update) {

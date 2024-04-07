@@ -31,30 +31,14 @@ class Inventory {
     remove(i) {
         this.items.splice(i, 1);
     }
-    // get_json():InventoryJson  {
-    //     const array:ItemJson[] = []
-    //     for (let i of this.items) {
-    //         if (i != undefined) {
-    //             array.push(i.json())
-    //         }
-    //     }
-    //     return {items_array: array}
-    // }
     get_data() {
-        // const array:ItemData[] = []
-        // for (let [key, value] of Object.entries(this.items)) {
-        //     if (value != undefined) {
-        //         let data = ItemSystem.item_data(value)
-        //         if (data == undefined) continue
-        //         data.backpack_index = Number(key)
-        //         array.push(data)
-        //     }
-        // } 
-        return { items: this.items.map((item, index) => {
+        return {
+            items: this.items.map((item, index) => {
                 let new_item = system_1.ItemSystem.item_data(item);
                 new_item.backpack_index = index;
                 return new_item;
-            }) };
+            })
+        };
     }
     load_from_json(data) {
         this.items = data.items.filter(item => item != null);

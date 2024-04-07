@@ -19,10 +19,10 @@ import { cell_id } from "../../../../../shared/common";
 
 export namespace Alerts {
     export function not_enough_to_user(
-        user: User, 
-        tag: string, 
-        current: number|undefined, 
-        min: number|undefined, 
+        user: User,
+        tag: string,
+        current: number|undefined,
+        min: number|undefined,
         max: number|undefined)
     {
         generic_user_alert(user, 'not_enough', {tag: tag, min: min, max: max, cur: current})
@@ -78,11 +78,11 @@ export namespace Alerts {
     }
 
     export function not_enough_to_character(
-        character: Character, 
-        tag: string, 
-        current: number, 
-        min: number|undefined, 
-        max: number|undefined) 
+        character: Character,
+        tag: string,
+        current: number,
+        min: number|undefined,
+        max: number|undefined)
     {
         let user = Convert.character_to_user(character)
         if (user == undefined) return
@@ -120,7 +120,7 @@ export namespace Alerts {
     }
 
     export function skill(user: User, tag: string, pure_value: number, current_value: number) {
-        Alerts.generic_user_alert(user, 'skill', {tag: tag, pure_value: pure_value, current_value: current_value})
+        Alerts.generic_user_alert(user, `val_${tag}_c`, current_value)
     }
 
     export function battle_action_chance(user: User, tag: string, value: number) {
@@ -278,7 +278,7 @@ export namespace Alerts {
             UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
         }
     }
-    
+
     // export function map_action(user: User, tag: string, data: boolean) {
     //     Alerts.generic_user_alert(user, 'map-action-status', {tag: tag, value: data})
     // }
@@ -289,7 +289,7 @@ export namespace Alerts {
 
     export function action_ping(character: Character, duration: number, is_move:boolean) {
         generic_character_alert(character, 'action-ping', {tag: 'start', time: duration, is_move: is_move})
-    }    
+    }
 
     export function perks(user: User, character: Character) {
         Alerts.generic_user_alert(user, 'perks-update', character._perks)

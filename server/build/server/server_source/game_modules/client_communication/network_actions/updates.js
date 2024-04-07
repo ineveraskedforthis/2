@@ -99,7 +99,7 @@ var SendUpdate;
     //             this.send_to_character_user(char, 'enemy-update', status)
     //             this.send_to_character_user(char, 'player-position', position)
     //         }
-    //     } 
+    //     }
     // }
     // send_battle_update(battle: BattleReworked2) {
     //     let units = battle.get_units()
@@ -112,7 +112,7 @@ var SendUpdate;
     //             this.send_to_character_user(char, 'battle-update', data)
     //             // this.send_to_character_user(char, 'player-position', position)
     //         }
-    //     } 
+    //     }
     // }
     // send_battle_action(battle: BattleReworked2, a: any) {
     //     let units = battle.get_units()
@@ -148,7 +148,13 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.generic_user_alert(user, 'status', { c: character.status, max_hp: character.get_max_hp() });
+        const status = character.status;
+        alerts_1.Alerts.generic_user_alert(user, 'val_hp_c', status.hp);
+        alerts_1.Alerts.generic_user_alert(user, 'val_rage_c', status.rage);
+        alerts_1.Alerts.generic_user_alert(user, 'val_fatigue_c', status.fatigue);
+        alerts_1.Alerts.generic_user_alert(user, 'val_stress_c', status.stress);
+        alerts_1.Alerts.generic_user_alert(user, 'val_blood_c', status.blood);
+        alerts_1.Alerts.generic_user_alert(user, 'val_hp_m', character.get_max_hp());
     }
     SendUpdate.status = status;
     function stash(user) {
@@ -251,7 +257,8 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.generic_user_alert(user, 'hp', { c: character.status.hp, m: character.get_max_hp() });
+        alerts_1.Alerts.generic_user_alert(user, 'val_hp_c', character.status.hp);
+        alerts_1.Alerts.generic_user_alert(user, 'val_hp_m', character.get_max_hp());
     }
     SendUpdate.hp = hp;
     function market(user) {
@@ -365,8 +372,8 @@ var SendUpdate;
     SendUpdate.cell_probability = cell_probability;
     function update_player_actions_availability() {
         // send_skills_info(character: Character) {
-        //     
-        //     
+        //
+        //
         //     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
         //     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
         //     this.send_perk_related_skills_update(character)
@@ -384,7 +391,7 @@ var SendUpdate;
     SendUpdate.update_player_actions_availability = update_player_actions_availability;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
 // update_market_info(market: Cell) {
-//     let responce = this.prepare_market_orders(market)     
+//     let responce = this.prepare_market_orders(market)
 //     for (let i of this.sockets) {
 //         if (i.current_user != null) {
 //             let char = i.current_user.character;

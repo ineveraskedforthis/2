@@ -1,0 +1,101 @@
+// const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
+import { update_tags } from './bulk_tags.js';
+import { init_authentication_control } from './modules/Auth/login.js';
+import { BattleImage } from './modules/Battle/battle_image.js';
+import { init_battle_control } from './modules/Battle/battle_image_init.js';
+import { init_buildings } from './modules/Buildings/request_buildings.js';
+import { set_up_character_creation_UI } from './modules/CharacterCreation/main.js';
+import { set_up_character_model, update_equip_image } from './modules/CharacterImage/main.js';
+import { CharacterInfoCorner } from './modules/CharacterInfo/main.js';
+import { CharacterScreen } from './modules/CharacterScreen/character_screen.js';
+import { update_backpack, update_equip_list } from './modules/CharacterScreen/update.js';
+import { init_character_list_interactions, update_characters_list } from './modules/CharactersList/main.js';
+import { init_craft_table } from './modules/Craft/craft_list_div.js';
+import { init_equipment_screen } from './modules/Equipment/main.js';
+import { elementById } from './modules/HTMLwrappers/common.js';
+import { init_market_items } from './modules/Market/items_market.js';
+import { init_market_bulk } from './modules/Market/market.js';
+import { set_up_market_headers } from './modules/Market/market_header.js';
+import { init_messages_interactions, new_log_message } from './modules/MessageBox/new_log_message.js';
+import { init_skills } from './modules/Skills/main.js';
+import { login, reg } from './modules/ViewManagement/scene.js';
+import { tab } from './modules/ViewManagement/tab.js';
+import { socket } from './modules/globals.js';
+import { loadImages } from './modules/load_images.js';
+import { draw_map_related_stuff } from './modules/map.js';
+import { init_detailed_character_statistics } from './request_perks.js';
+// noselect tabs
+[...document.querySelectorAll(".noselect")].forEach(el => el.addEventListener('contextmenu', e => e.preventDefault()));
+socket.on('connect', () => {
+    console.log('connected');
+    let tmp = localStorage.getItem('session');
+    if ((tmp != null) && (tmp != 'null')) {
+        socket.emit('session', tmp);
+    }
+});
+init_authentication_control();
+init_messages_interactions();
+const informationCorner = new CharacterInfoCorner(socket);
+const character_screen = new CharacterScreen(socket);
+set_up_character_model(socket);
+init_skills(socket);
+set_up_character_creation_UI(socket);
+init_equipment_screen(socket);
+set_up_market_headers();
+init_detailed_character_statistics();
+init_craft_table();
+init_character_list_interactions();
+init_market_bulk();
+init_market_items();
+init_buildings();
+init_battle_control();
+socket.on('log-message', msg => {
+    if (msg == null) {
+        return;
+    }
+    if (msg == 'you_are_dead') {
+        tab.turn_off('battle');
+    }
+    new_log_message(msg);
+});
+socket.on('tags', msg => update_tags(msg));
+socket.on('is-reg-completed', msg => reg(msg));
+socket.on('is-login-completed', msg => login(msg));
+socket.on('session', msg => { localStorage.setItem('session', msg); });
+socket.on('reset_session', () => { localStorage.setItem('session', 'null'); });
+socket.on('char-info-detailed', msg => character_screen.update(msg));
+socket.on('equip-update', msg => {
+    update_equip_list(msg);
+    update_equip_image(msg.equip);
+    update_backpack(msg);
+});
+{
+    let test_data = [
+        { name: 'Someone', id: 100, dead: false },
+        { name: 'Noone', id: 200, dead: true },
+        { name: 'Who?', id: 300, dead: true },
+        { name: "He", id: 400, dead: false }
+    ];
+    update_characters_list(test_data);
+}
+// UI animations update loop
+var delta = 0;
+var previous = undefined;
+function draw(time) {
+    if (previous == undefined) {
+        previous = time;
+    }
+    delta = (time - previous) / 1000;
+    previous = time;
+    draw_map_related_stuff(delta);
+    if (elementById('actual_game_scene').style.visibility == 'visible') {
+        if (!elementById('battle_tab').classList.contains('hidden')) {
+            BattleImage.draw(delta);
+        }
+    }
+    window.requestAnimationFrame(draw);
+}
+const images = loadImages(() => {
+    console.log(images);
+    window.requestAnimationFrame(draw);
+});

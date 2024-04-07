@@ -1,4 +1,4 @@
-import { ItemData } from "../../../shared/inventory.js";
+import { ItemData, ItemOrderData } from "../../../shared/inventory.js";
 import { generate_item_market_div, generate_market_header } from "../Divs/item.js";
 import { socket } from "../globals.js"
 
@@ -13,8 +13,10 @@ var selected:undefined|number = undefined
 var selecter_owner: undefined|number = undefined
 var selected_div: undefined|HTMLElement = undefined
 
-
-socket.on('item-market-data', data => {update_item_market(data)});
+export function init_market_items() {
+    socket.on('item-market-data', data => {update_item_market(data)});
+    build()
+}
 
 function send_buyout_request() {
     // let items = document.getElementsByName('market_item_list_radio') as NodeListOf<HTMLInputElement>;
@@ -41,6 +43,7 @@ export function build() {
 
 export function select_item(id: number, owner_id: number, div: HTMLElement) {
     return () => {
+        console.log('select order ' + id)
         selected = id
         selecter_owner = owner_id
         selected_div?.classList.remove('selected')
@@ -49,8 +52,9 @@ export function select_item(id: number, owner_id: number, div: HTMLElement) {
     }
 }
 
-export function update_item_market(data: ItemData[]) {
-    // console.log(data)
+export function update_item_market(data: ItemOrderData[]) {
+    console.log("updating market")
+    console.log(data)
 
 
     item_market_container.innerHTML = ''
@@ -58,8 +62,7 @@ export function update_item_market(data: ItemData[]) {
     item_market_container.appendChild(market_header)
 
     for (let order of data) {
-        if (order.backpack_index == undefined) continue
-        const div = generate_item_market_div(order, order.backpack_index);
+        const div = generate_item_market_div(order);
         if (order.id == undefined) continue
         if (order.seller_id == undefined) continue
 
@@ -70,5 +73,3 @@ export function update_item_market(data: ItemData[]) {
         item_market_container.appendChild(div)
     }
 }
-
-build()

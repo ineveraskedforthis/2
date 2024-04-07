@@ -1,4 +1,5 @@
-import { EquipSocket, equip_slot } from "../../../shared/inventory";
+import { EquipSocket, equip_slot } from "../../../shared/inventory.js";
+import { EQUIPMENT_TAGS } from "../Constants/inventory.js";
 import { generate_dummy_item_backpack_div, generate_item_backpack_div, generate_name } from "../Divs/item.js";
 import { socket } from "../globals.js";
 
@@ -7,14 +8,11 @@ const item_select_div = document.getElementById('create_auction_order_item') as 
 
 const header_div = generate_dummy_item_backpack_div()
 
-export const EQUIPMENT_TAGS: (equip_slot)[] = ['weapon', 'socks', 'shirt', 'secondary', 'left_pauldron', 'mail', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'pants', 'belt', 'dress', 'amulet', 'robe'];
-
-
 const equip_block = document.getElementById('equip')!
 for (let i of EQUIPMENT_TAGS) {
     const tmp = document.createElement('div');
     tmp.classList.add(... ['item_frame']);
-    tmp.id = 'eq_' + i;    
+    tmp.id = 'eq_' + i;
     ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
     let name_label = document.createElement('div')
     name_label.innerHTML = i
@@ -37,7 +35,7 @@ function add_option(name: string, id: number) {
 }
 
 export function update_backpack(data: EquipSocket) {
-    let inv = data.backpack;  
+    let inv = data.backpack;
     table_items.innerHTML = '';
     item_select_div.innerHTML = ''
 
@@ -48,18 +46,18 @@ export function update_backpack(data: EquipSocket) {
         const weapon = inv.items[i]
         console.log(weapon)
 
-        if ((weapon != null) && (weapon != undefined)) {            
+        if ((weapon != null) && (weapon != undefined)) {
             const item = generate_item_backpack_div(weapon, i)
-            item.classList.add('item');      
+            item.classList.add('item');
             table_items.appendChild(item)
             add_option(generate_name(weapon), i)
         }
-    } 
+    }
 }
 
-export function update_equip(data: EquipSocket) {
+export function update_equip_list(data: EquipSocket) {
     for (let i = 0; i < EQUIPMENT_TAGS.length; i++) {
-        
+
         let tag = EQUIPMENT_TAGS[i]
         let item = data.equip[tag]
 
@@ -69,10 +67,10 @@ export function update_equip(data: EquipSocket) {
 
         row.classList.remove(... row.classList);
         if (item == undefined) {
-            row.innerHTML = 'empty'            
+            row.innerHTML = 'empty'
             row.classList.add('item')
         } else {
-            let tmp = generate_item_backpack_div(item, i)
+            let tmp = generate_item_backpack_div(item, undefined)
             row.innerHTML = tmp.innerHTML
             row.classList.add(... tmp.classList)
             row.classList.add('item')

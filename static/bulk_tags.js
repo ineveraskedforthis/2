@@ -51,6 +51,9 @@ export function update_tags(msg) {
             material_select.appendChild(option);
         }
     }
+    socket.on('savings', msg => update_savings(msg));
+    socket.on('savings-trade', msg => update_savings_trade(msg));
+    socket.on('stash-update', msg => { console.log('stash-update'); update_stash(msg); });
 }
 export function update_savings(msg) {
     document.getElementById('savings').innerHTML = 'Money: ' + msg;

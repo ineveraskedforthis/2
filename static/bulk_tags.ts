@@ -69,6 +69,11 @@ export function update_tags(msg: {[key: string]: number}) {
 
         }
     }
+
+
+    socket.on('savings', msg => update_savings(msg));
+    socket.on('savings-trade', msg => update_savings_trade(msg));
+    socket.on('stash-update', msg => {console.log('stash-update'); update_stash(msg)});
 }
 
 export function update_savings(msg: number) {

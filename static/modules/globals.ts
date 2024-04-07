@@ -24,7 +24,7 @@ type globals = {
     prev_mouse_x: number | null,
     prev_mouse_y: number | null,
     pressed: boolean,
-    selected_character: string | undefined,
+    selected_character: number | undefined,
     map_zoom: number,
     keep_doing: undefined|local_action
     map_context_dissapear_time: number|undefined
@@ -34,6 +34,7 @@ type globals = {
     action_time: number
     action_ratio: number
     action_total_time: number
+    local_characters: CharacterView[]
 }
 
 export var globals: globals = {
@@ -49,5 +50,6 @@ export var globals: globals = {
     action_in_progress: false,
     action_time: 0,
     action_ratio: 0,
-    action_total_time: 1
+    action_total_time: 1,
+    local_characters: [],
 }

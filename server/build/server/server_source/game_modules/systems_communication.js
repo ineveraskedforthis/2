@@ -20,11 +20,21 @@ var Convert;
     function order_to_socket_data(index, order, owner) {
         // let owner = Convert.id_to_character(order.owner_id)
         let responce = system_1.ItemSystem.item_data(order);
-        // responce.price = order.price
-        responce.id = index;
-        responce.seller = owner.get_name();
-        responce.seller_id = owner.id;
-        return responce;
+        return {
+            price: responce.price,
+            is_weapon: responce.is_weapon,
+            name: responce.name,
+            affixes: responce.affixes,
+            damage: responce.damage,
+            ranged_damage: responce.ranged_damage,
+            affixes_list: responce.affixes_list,
+            resists: responce.resists,
+            durability: responce.durability,
+            item_type: responce.item_type,
+            id: index,
+            seller: owner.get_name(),
+            seller_id: owner.id
+        };
     }
     Convert.order_to_socket_data = order_to_socket_data;
     function id_to_bulk_order(id) {

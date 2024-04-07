@@ -15,23 +15,32 @@ const keybinds = {
     'Retreat': 'd',
     'EndTurn': 'f',
 };
-socket.on('battle-action-set-up', (data) => {
-    BattleImage.add_action(data, keybinds[data.tag]);
-});
-socket.on('battle-action-update', (data) => {
-    BattleImage.update_action(data, keybinds[data.tag]);
-});
-// BattleImage.add_action({name: 'Move', tag: 'move'}, 'q')
-// BattleImage.add_action({name: 'Slash',  tag: 'attack_slice',    cost: 3, damaging: true}, 'w')
-// BattleImage.add_action({name: 'Pierce', tag: 'attack_pierce',   cost: 3, damaging: true}, 'e')
-// BattleImage.add_action({name: 'Knock',  tag: 'attack_blunt',    cost: 3, damaging: true}, 'r')
-// BattleImage.add_action({name: 'Magic Bolt', tag: 'magic_bolt', cost: 3, damaging: true}, 'a')
-// BattleImage.add_action({name: 'Shoot', tag: 'shoot', cost: 3, probabilistic: true, damaging: true}, 's')
-// BattleImage.add_action({name: 'Dodge', tag: 'dodge', cost: 4}, 'd')
-// BattleImage.add_action({name: 'Retreat', tag: 'flee', cost: 3, probabilistic: true}, 'f')
-// BattleImage.add_action({name: 'Switch Weapon', tag: 'switch_weapon', cost: 3}, 'z')
-// BattleImage.add_action({name: 'End Turn', tag: 'end_turn', cost: 0}, 'x')
-//              BATTLES 
+export function init_battle_control() {
+    socket.on('battle-action-set-up', (data) => {
+        BattleImage.add_action(data, keybinds[data.tag]);
+    });
+    socket.on('battle-action-update', (data) => {
+        BattleImage.update_action(data, keybinds[data.tag]);
+    });
+    // non events
+    // socket.on('action-display', data =>     {BattleImage.update_action_display(data.tag, data.value)})
+    // socket.on('new-action',                 msg => BattleImage.add_action({name: msg, tag:msg}, undefined));
+    // socket.on('b-action-chance',            msg => BattleImage.update_action_probability(msg.tag, msg.value))
+    // socket.on('b-action-damage',            msg => BattleImage.update_action_damage(msg.tag, msg.value))
+    // socket.on('b-action-cost',              msg => BattleImage.update_action_cost(msg.tag, msg.value))
+    socket.on('battle-in-process', bCallback.update_battle_process);
+    // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
+    socket.on('battle-update-units', data => BattleImage.load(data));
+    socket.on(UNIT_ID_MESSAGE, bCallback.link_player_to_unit);
+    socket.on('current-unit-turn', bCallback.link_current_turn);
+    // socket.on('battle-update-unit',         data => .update_unit(data))
+    // socket.on('battle-new-unit',                bCallback.new_unit)
+    // socket.on('battle-remove-unit',             bCallback.remove_unit)
+    // socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
+    socket.on('battle-event', bCallback.event);
+    console.log('battle callbacks are loaded');
+}
+//              BATTLES
 const UNIT_ID_MESSAGE = 'unit_id';
 const BATTLE_DATA_MESSAGE = 'battle_data';
 const BATTLE_CURRENT_UNIT = 'current_unit_turn';
@@ -117,20 +126,3 @@ function end_battle() {
     tab.turn_off('battle');
     BattleImage.reset();
 }
-// non events
-// socket.on('action-display', data =>     {BattleImage.update_action_display(data.tag, data.value)})
-// socket.on('new-action',                 msg => BattleImage.add_action({name: msg, tag:msg}, undefined));
-// socket.on('b-action-chance',            msg => BattleImage.update_action_probability(msg.tag, msg.value))
-// socket.on('b-action-damage',            msg => BattleImage.update_action_damage(msg.tag, msg.value))
-// socket.on('b-action-cost',              msg => BattleImage.update_action_cost(msg.tag, msg.value))
-socket.on('battle-in-process', bCallback.update_battle_process);
-// socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
-socket.on('battle-update-units', data => BattleImage.load(data));
-socket.on(UNIT_ID_MESSAGE, bCallback.link_player_to_unit);
-socket.on('current-unit-turn', bCallback.link_current_turn);
-// socket.on('battle-update-unit',         data => .update_unit(data))
-// socket.on('battle-new-unit',                bCallback.new_unit)
-// socket.on('battle-remove-unit',             bCallback.remove_unit)
-// socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
-socket.on('battle-event', bCallback.event);
-console.log('battle callbacks are loaded');

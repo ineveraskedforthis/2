@@ -27,10 +27,10 @@ export namespace SendUpdate {
         all_craft(user)
         map_related(user)
         battle(user)
-        market(user)   
+        market(user)
         stats(user)
         race_model(user)
-        
+
     }
 
     export function race_model(user: User) {
@@ -67,7 +67,7 @@ export namespace SendUpdate {
             Alerts.battle_progress(user, true)
             Alerts.generic_user_alert(user, BATTLE_DATA_MESSAGE, BattleSystem.data(battle));
             Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);
-            Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)  
+            Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)
         } else {
             Alerts.battle_progress(user, false)
         }
@@ -106,7 +106,7 @@ export namespace SendUpdate {
     //             this.send_to_character_user(char, 'enemy-update', status)
     //             this.send_to_character_user(char, 'player-position', position)
     //         }
-    //     } 
+    //     }
     // }
 
     // send_battle_update(battle: BattleReworked2) {
@@ -120,7 +120,7 @@ export namespace SendUpdate {
     //             this.send_to_character_user(char, 'battle-update', data)
     //             // this.send_to_character_user(char, 'player-position', position)
     //         }
-    //     } 
+    //     }
     // }
 
 
@@ -154,14 +154,21 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
         Alerts.generic_user_alert(user, 'savings', character.savings.get())
-        Alerts.generic_user_alert(user, 'savings-trade', character.trade_savings.get()) 
+        Alerts.generic_user_alert(user, 'savings-trade', character.trade_savings.get())
     }
- 
+
     export function status(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.generic_user_alert(user, 'status', {c: character.status, max_hp: character.get_max_hp()})
+        const status = character.status
+
+        Alerts.generic_user_alert(user, 'val_hp_c', status.hp);
+        Alerts.generic_user_alert(user, 'val_rage_c', status.rage);
+        Alerts.generic_user_alert(user, 'val_fatigue_c', status.fatigue);
+        Alerts.generic_user_alert(user, 'val_stress_c', status.stress);
+        Alerts.generic_user_alert(user, 'val_blood_c', status.blood);
+        Alerts.generic_user_alert(user, 'val_hp_m', character.get_max_hp());
     }
 
     export function stash(user: User) {
@@ -205,7 +212,7 @@ export namespace SendUpdate {
     }
 
     export function skill_cooking(user: User) {
-        skill(user, 'cooking')        
+        skill(user, 'cooking')
     }
 
     export function skill_woodwork(user: User) {
@@ -258,7 +265,7 @@ export namespace SendUpdate {
         if (character == undefined) return
 
         if (isNaN(distance)) {
-            return 
+            return
         }
 
         Alerts.battle_action_chance(user, 'shoot', Accuracy.ranged(character, distance))
@@ -268,14 +275,15 @@ export namespace SendUpdate {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
 
-        Alerts.generic_user_alert(user, 'hp', {c: character.status.hp, m: character.get_max_hp()})
+        Alerts.generic_user_alert(user, 'val_hp_c', character.status.hp)
+        Alerts.generic_user_alert(user, 'val_hp_m', character.get_max_hp())
     }
 
     export function market(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
         const bulk_data = prepare_market_orders(character.cell_id)
-        const items_data = Convert.cell_id_to_item_orders_socket(character.cell_id)    
+        const items_data = Convert.cell_id_to_item_orders_socket(character.cell_id)
         Alerts.item_market_data(user, items_data)
         Alerts.market_data(user, bulk_data)
     }
@@ -300,7 +308,7 @@ export namespace SendUpdate {
                     // console.log(forestation)
 
                     // let res1: {[_ in string]: CellDisplayData} = {}
-                    
+
                     const display_data: CellDisplay = {
                         terrain: terrain_to_string(terrain),
                         forestation: forestation,
@@ -312,7 +320,7 @@ export namespace SendUpdate {
                     let res2 = {x: x, y: y, ter: display_data}
                     Alerts.generic_user_alert(user, 'map-data-display', res2)
                 }
-            }            
+            }
         }
     }
 
@@ -385,10 +393,10 @@ export namespace SendUpdate {
 
     export function update_player_actions_availability() {
             // send_skills_info(character: Character) {
-    //     
-       
+    //
 
-    //     
+
+    //
     //     this.send_to_character_user(character, 'b-action-chance', {tag: 'flee', value: flee_chance(character)})
     //     this.send_to_character_user(character, 'b-action-chance', {tag: 'attack', value: character.get_attack_chance('usual')})
     //     this.send_perk_related_skills_update(character)
@@ -413,7 +421,7 @@ export namespace SendUpdate {
 
 
     // update_market_info(market: Cell) {
-    //     let responce = this.prepare_market_orders(market)     
+    //     let responce = this.prepare_market_orders(market)
 
     //     for (let i of this.sockets) {
     //         if (i.current_user != null) {

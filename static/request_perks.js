@@ -1,7 +1,8 @@
 import { socket, globals } from './modules/globals.js';
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { stash_id_to_tag } from './bulk_tags.js';
-import { EQUIPMENT_TAGS } from './modules/CharacterScreen/update.js';
+import { EQUIPMENT_TAGS } from './modules/Constants/inventory.js';
+import { elementById } from './modules/HTMLwrappers/common.js';
 // export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
 // tmp.typ = this.typ;
 // tmp.tag = this.tag;
@@ -16,14 +17,6 @@ import { EQUIPMENT_TAGS } from './modules/CharacterScreen/update.js';
 // perks related
 function request_perks() {
     socket.emit('request-talk', globals.selected_character);
-}
-{
-    let button = document.getElementById('request_perks_selected_charater');
-    button.onclick = request_perks;
-}
-{
-    let button = document.getElementById('close_perks');
-    button.onclick = () => close_perks();
 }
 function close_perks() {
     let big_div = document.getElementById('backdrop');
@@ -219,7 +212,11 @@ function update_stats(data) {
     stats_tab.appendChild(flex_something(`Magic bolt base damage `, `${data.base_damage_magic_bolt.toFixed(2)}`));
     stats_tab.appendChild(flex_something('Charged magic bolt base damage', `${data.base_damage_magic_bolt_charged.toFixed(2)}`));
 }
-socket.on('perks-info', build_dialog);
-socket.on('character-prices', build_prices);
-socket.on('perks-update', update_perks);
-socket.on('stats', update_stats);
+export function init_detailed_character_statistics() {
+    elementById('request_perks_selected_charater').onclick = request_perks;
+    elementById('close_perks').onclick = () => close_perks();
+    socket.on('perks-info', build_dialog);
+    socket.on('character-prices', build_prices);
+    socket.on('perks-update', update_perks);
+    socket.on('stats', update_stats);
+}

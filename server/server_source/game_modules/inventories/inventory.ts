@@ -1,4 +1,4 @@
-import { ItemData } from "../../../../shared/inventory";
+import { ItemBackpackData, ItemData } from "../../../../shared/inventory";
 import { item_from_string, item_to_string } from "../strings_management";
 import { Item, ItemJson } from "../items/item";
 import { ItemSystem } from "../items/system";
@@ -36,7 +36,7 @@ export class Inventory{
             if (item != undefined) {
                 let response = target.add(item)
                 if (response != false) this.remove(i)
-            } 
+            }
         }
     }
 
@@ -44,30 +44,14 @@ export class Inventory{
         this.items.splice(i, 1)
     }
 
-    // get_json():InventoryJson  {
-    //     const array:ItemJson[] = []
-    //     for (let i of this.items) {
-    //         if (i != undefined) {
-    //             array.push(i.json())
-    //         }
-    //     }
-    //     return {items_array: array}
-    // }
-
-    get_data():{items: ItemData[]} {
-        // const array:ItemData[] = []
-        // for (let [key, value] of Object.entries(this.items)) {
-        //     if (value != undefined) {
-        //         let data = ItemSystem.item_data(value)
-        //         if (data == undefined) continue
-        //         data.backpack_index = Number(key)
-        //         array.push(data)
-        //     }
-        // } 
-        return {items: this.items.map((item, index) => {
-            let new_item = ItemSystem.item_data(item); 
-            new_item.backpack_index = index; 
-            return new_item})}
+    get_data():{items: ItemBackpackData[]} {
+        return {
+            items: this.items.map((item, index) => {
+                let new_item = ItemSystem.item_data(item) ;
+                new_item.backpack_index = index;
+                return new_item as ItemBackpackData
+            })
+        }
     }
 
     load_from_json(data:Inventory) {

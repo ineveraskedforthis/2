@@ -131,9 +131,9 @@
                             At 0 you are <i class="red">dead</i>
                         </span>
                         <div id = "hp_bar" class = "hbar">
-                            <span id="hp_value_display"></span>
+                            <span class="hp_value_bar"></span>
                         </div>
-                        <div id = "hp_data" class = "bar_data"></div>
+                        <div class = "bar_data hp_value"></div>
                     </div>
                     <div id = "rage_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
@@ -141,9 +141,9 @@
                         <i class="red">Lowers</i> your accuracy.
                         </span>
                         <div id = "rage_bar" class = "hbar">
-                            <span id="rage_value_display"></span>
+                            <span class="rage_value_bar"></span>
                         </div>
-                        <div id = "rage_data" class = "bar_data"></div>
+                        <div class = "bar_data rage_value"></div>
                     </div>
                     <div id = "blood_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
@@ -151,9 +151,9 @@
                         <i class="red">Harms</i> your movement and accuracy
                         </span>
                         <div id = "blood_bar" class = "hbar">
-                            <span id="blood_value_display"></span>
+                            <span class="blood_value_bar"></span>
                         </div>
-                        <div id = "blood_data" class = "bar_data"></div>
+                        <div class = "bar_data blood_value"></div>
                     </div>
                     <div id = "stress_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
@@ -161,9 +161,9 @@
                         <i class="red">Rises</i> when you are fighting, crafting, etc. at 100 you will <i class="red">die</i>.
                         </span>
                         <div id = "stress_bar" class = "hbar">
-                            <span id="stress_value_display"></span>
+                            <span class="stress_value_bar"></span>
                         </div>
-                        <div id = "stress_data" class = "bar_data"></div>
+                        <div class = "bar_data stress_value"></div>
                     </div>
                     <div id = "fatigue_column" class = "bar_column tooltip">
                         <span class="tooltiptext">
@@ -171,9 +171,9 @@
                         <i class="red">Rises</i> when you are doing stuff. <i class="red">Reduces</i> your ability to do actions.
                         </span>
                         <div id = "fatigue_bar" class = "hbar">
-                            <span id="fatigue_value_display"></span>
+                            <span class="fatigue_value_bar"></span>
                         </div>
-                        <div id = "fatigue_data" class = "bar_data"></div>
+                        <div class = "bar_data fatigue_value"></div>
                     </div>
                 </div>
             </div>
@@ -575,5 +575,5 @@
 
     <script src='/socket.io/socket.io.js'></script>
     <script type="module" src="/static/modules/load_images.js"></script>
-    <script type="module" src="/static/ui2.js"></script>
+    <script type="module" src="/static/main.js"></script>
 </body>

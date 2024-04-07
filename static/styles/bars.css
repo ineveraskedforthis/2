@@ -61,6 +61,7 @@
 .bar_data{
 	position: absolute;
 	height: 100%;
+	width: 50%;
 	left: 105%;
 	text-align: left;
 	color: rgb(0, 0, 0);

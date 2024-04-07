@@ -44,7 +44,7 @@ class SocketManager {
             socket.on('clear-orders', () => inventory_management_1.InventoryCommands.clear_bulk_orders(user));
             socket.on('clear-item-orders', () => inventory_management_1.InventoryCommands.clear_item_orders(user));
             socket.on('clear-order', (msg) => inventory_management_1.InventoryCommands.clear_bulk_order(user, msg));
-            // 
+            //
             socket.on('buyout', (msg) => inventory_management_1.InventoryCommands.buyout(user, msg));
             socket.on('execute-order', (msg) => inventory_management_1.InventoryCommands.execute_bulk_order(user, msg.amount, msg.order));
             socket.on('new-message', (msg) => this.send_message(user, msg + ''));
@@ -188,7 +188,7 @@ class SocketManager {
     //         }
     //     }
     // }
-    // 
+    //
     // //  attack_local_outpost(socket, user_data, data) {
     // //     if (user_data.current_user != null && !user_data.current_user.character.in_battle()) {
     // //         let char = user_data.current_user.character;
@@ -311,7 +311,7 @@ class SocketManager {
     //     let user = this.world.user_manager.get_user_from_character(character);
     //     if (user != undefined) {
     //         this.send_message_to_user(user, msg);
-    //     }       
+    //     }
     // }
     // send_to_character_user(character:Character, tag: string, msg: any) {
     //     let user = this.world.user_manager.get_user_from_character(character);
@@ -386,7 +386,7 @@ class SocketManager {
     //     if (cell != undefined) {
     //         let res = this.world.get_cell_teacher(cell.i, cell.j);
     //         this.send_to_character_user(character, 'local-skills', res)
-    //     }        
+    //     }
     // }
     // update_user_list(){
     //     var tmp: number[] = [];
@@ -396,13 +396,13 @@ class SocketManager {
     //             if (users_online[user.id]) {
     //                 tmp.push(user.id);
     //             }
-    //         }            
+    //         }
     //     }
     //     this.io.emit('users-online', tmp);
     // }
     send_message(sw, msg) {
         if (msg.length > 1000) {
-            sw.socket.emit('new-message', 'message-too-long');
+            sw.socket.emit('alert', 'message-too-long');
             return;
         }
         // msg = validator.escape(msg)

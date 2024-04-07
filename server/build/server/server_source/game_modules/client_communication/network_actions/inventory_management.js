@@ -144,6 +144,8 @@ var InventoryCommands;
         console.log('validated');
         const responce = market_1.EventMarket.sell_item(character, index, price);
         if (responce.responce != system_1.AuctionResponce.OK) {
+            console.log("impossible sale");
+            console.log(responce.responce);
             alerts_1.Alerts.generic_user_alert(user, 'alert', responce.responce);
         }
     }

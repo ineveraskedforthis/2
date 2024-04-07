@@ -103,7 +103,7 @@ var Alerts;
     }
     Alerts.craft_item_complete = craft_item_complete;
     function skill(user, tag, pure_value, current_value) {
-        Alerts.generic_user_alert(user, 'skill', { tag: tag, pure_value: pure_value, current_value: current_value });
+        Alerts.generic_user_alert(user, `val_${tag}_c`, current_value);
     }
     Alerts.skill = skill;
     function battle_action_chance(user, tag, value) {

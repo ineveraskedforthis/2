@@ -1,28 +1,36 @@
-import { socket } from "./modules/globals.js";
-{
-    let div = document.getElementById('local_buildings');
-    // for (let i = 1; i <= 4; i++) {
-    // for (let i = 1)
-    // let button = document.createElement('button')
-    // button.onclick = build_building(LandPlotType.Shack)
-    // button.innerHTML = 'build  ' + type_to_name(LandPlotType.Shack)
-    // div?.appendChild(button)
-    // }
-    let close_button = document.getElementById('buildings-close-button');
-    close_button.onclick = () => close_buildings();
-    // close_button.innerHTML = 'close'
-    // close_button.id = 'close_buildings'
-    // let new_plot = document.createElement('button')
-    // new_plot.innerHTML = 'New plot'
-    // new_plot.id = 'new_plot'
-    // div?.appendChild(new_plot)
-    // div?.appendChild(close_button)
-}
-{
-    document.getElementById('request_buildings').onclick = request;
-    document.getElementById('claim-land-plot').onclick = create_plot;
-    // document.getElementById('change-price-room')!.onclick
-    // document.getElementById('build-shack')
+import { socket } from "../globals.js";
+export function init_buildings() {
+    {
+        let div = document.getElementById('local_buildings');
+        // for (let i = 1; i <= 4; i++) {
+        // for (let i = 1)
+        // let button = document.createElement('button')
+        // button.onclick = build_building(LandPlotType.Shack)
+        // button.innerHTML = 'build  ' + type_to_name(LandPlotType.Shack)
+        // div?.appendChild(button)
+        // }
+        let close_button = document.getElementById('buildings-close-button');
+        close_button.onclick = () => close_buildings();
+        // close_button.innerHTML = 'close'
+        // close_button.id = 'close_buildings'
+        // let new_plot = document.createElement('button')
+        // new_plot.innerHTML = 'New plot'
+        // new_plot.id = 'new_plot'
+        // div?.appendChild(new_plot)
+        // div?.appendChild(close_button)
+    }
+    {
+        document.getElementById('request_buildings').onclick = request;
+        document.getElementById('claim-land-plot').onclick = create_plot;
+        // document.getElementById('change-price-room')!.onclick
+        // document.getElementById('build-shack')
+    }
+    socket.on('buildings-info', (data) => {
+        console.log(data);
+        build_div(data);
+        document.getElementById('local_buildings').classList.remove('hidden');
+        document.getElementById('backdrop').classList.remove('hidden');
+    });
 }
 function create_plot() {
     socket.emit('create-plot');
@@ -173,9 +181,3 @@ function build_div(array) {
         div.appendChild(building_div(value));
     });
 }
-socket.on('buildings-info', (data) => {
-    console.log(data);
-    build_div(data);
-    document.getElementById('local_buildings').classList.remove('hidden');
-    document.getElementById('backdrop').classList.remove('hidden');
-});

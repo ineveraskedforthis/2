@@ -7,7 +7,10 @@ const market_header = generate_market_header();
 var selected = undefined;
 var selecter_owner = undefined;
 var selected_div = undefined;
-socket.on('item-market-data', data => { update_item_market(data); });
+export function init_market_items() {
+    socket.on('item-market-data', data => { update_item_market(data); });
+    build();
+}
 function send_buyout_request() {
     // let items = document.getElementsByName('market_item_list_radio') as NodeListOf<HTMLInputElement>;
     // let index = undefined;
@@ -36,13 +39,12 @@ export function select_item(id, owner_id, div) {
     };
 }
 export function update_item_market(data) {
-    // console.log(data)
+    console.log("updating market");
+    console.log(data);
     item_market_container.innerHTML = '';
     item_market_container.appendChild(market_header);
     for (let order of data) {
-        if (order.backpack_index == undefined)
-            continue;
-        const div = generate_item_market_div(order, order.backpack_index);
+        const div = generate_item_market_div(order);
         if (order.id == undefined)
             continue;
         if (order.seller_id == undefined)
@@ -54,4 +56,3 @@ export function update_item_market(data) {
         item_market_container.appendChild(div);
     }
 }
-build();

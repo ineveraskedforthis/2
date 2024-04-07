@@ -1,21 +1,15 @@
 import { battle_id, UnitSocket, unit_id } from "../../../shared/battle_data";
-import { ItemData } from "../../../shared/inventory";
+import { ItemData, ItemOrderData } from "../../../shared/inventory";
 import { Battle } from "./battle/classes/battle";
 import { Unit } from "./battle/classes/unit";
-import { BattleEvent } from "./battle/events";
 import { Character } from "./character/character";
-import { CharacterSystem } from "./character/system";
 import { ItemSystem } from "./items/system";
 import { UI_Part } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { Data } from "./data";
-// import { Cell } from "./map/cell";
-import { MapSystem } from "./map/system";
 import { OrderBulk } from "./market/classes";
 import { char_id, order_bulk_id, user_online_id } from "./types";
-import { Alerts } from "./client_communication/network_actions/alerts";
-import { BattleSystem } from "./battle/system";
 import { Cell } from "./map/DATA_LAYOUT_CELL";
 import { cell_id } from "@custom_types/common";
 import { BattleValues } from "./battle/VALUES";
@@ -30,29 +24,35 @@ export namespace Convert {
     //     return temp.id
     // }
 
-    
+
     // export function id_to_order_item(id: order_item_id):OrderItem
     // export function id_to_order_item(id: number):OrderItem|undefined
     // export function id_to_order_item(id: order_item_id|number):OrderItem|undefined {
     //     return Data.ItemOrders.from_id(id as order_item_id)
     // }
 
-    export function order_to_socket_data(index: number, order: Item, owner: Character):ItemData {
+
+
+    export function order_to_socket_data(index: number, order: Item, owner: Character):ItemOrderData {
         // let owner = Convert.id_to_character(order.owner_id)
         let responce = ItemSystem.item_data(order)
-        // responce.price = order.price
-        responce.id = index
-        responce.seller = owner.get_name()
-        responce.seller_id = owner.id
-        return responce
-    }
-    
 
-    // export function json_to_order(data: OrderItemJson) {
-    //     let item = ItemSystem.create(data.item)
-    //     let order = new OrderItem(data.id, item, data.price, data.owner_id, data.finished)
-    //     return order
-    // }
+        return {
+            price: responce.price as number,
+            is_weapon: responce.is_weapon,
+            name: responce.name,
+            affixes: responce.affixes,
+            damage: responce.damage,
+            ranged_damage: responce.ranged_damage,
+            affixes_list: responce.affixes_list,
+            resists: responce.resists,
+            durability: responce.durability,
+            item_type: responce.item_type,
+            id: index,
+            seller: owner.get_name(),
+            seller_id: owner.id
+        }
+    }
 
     export function id_to_bulk_order(id: order_bulk_id): OrderBulk;
     export function id_to_bulk_order(id: number): OrderBulk|undefined;
@@ -78,9 +78,9 @@ export namespace Convert {
         return result
     }
 
-    export function cell_id_to_item_orders_socket(cell_id: cell_id): ItemData[] {
+    export function cell_id_to_item_orders_socket(cell_id: cell_id): ItemOrderData[] {
         const chars = Data.Cells.get_characters_set_from_cell(cell_id)
-        const result:ItemData[] = []
+        const result:ItemOrderData[] = []
         if (chars == undefined) {
             return result
         }
@@ -217,7 +217,7 @@ export namespace Link {
         //       and send list immediately only to entering user
         // above is not needed
         const old_cell = Data.Connection.character_cell(character, new_cell)
-        
+
         send_local_characters_info(old_cell)
         send_local_characters_info(new_cell)
 
@@ -225,7 +225,7 @@ export namespace Link {
         const character_object = Data.CharacterDB.from_id(character)
         character_object.explored[new_cell] = true
         let neighbours = Data.World.neighbours(new_cell)
-        
+
         for (let item of neighbours) {
             character_object.explored[item] = true
         }
@@ -263,7 +263,7 @@ export namespace Unlink {
     // enter(char: Character) {
     //     this.characters_set.add(char.id)
     //     this.world.socket_manager.send_market_info_character(this, char)
-        
+
     //     this.world.socket_manager.send_cell_updates(this)
     // }
 
