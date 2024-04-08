@@ -241,7 +241,7 @@ var UserManagement;
     function update_users() {
         // console.log('update loop')
         for (let item of users_to_update) {
-            // console.log('send_update to ' + item.data.login)          
+            // console.log('send_update to ' + item.data.login)
             if (item.character_created) {
                 send_character_to_user(item);
                 item.character_created = false;
@@ -267,6 +267,7 @@ var UserManagement;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
+        alerts_1.Alerts.generic_user_alert(user, "character_data", { name: character.name, id: character.id });
         if (character.current_building != undefined)
             alerts_1.Alerts.enter_room(character);
         const battle = systems_communication_1.Convert.character_to_battle(character);

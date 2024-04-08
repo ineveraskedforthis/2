@@ -46,7 +46,12 @@ const columns = [
     },
     {
         header_text: "You have:",
-        value: (item) => globals.stash[item.tag].value,
+        value: (item) => {
+            const character = globals.character_data;
+            if (character == undefined)
+                return 0;
+            return character.stash[item.tag].value;
+        },
         type: "number",
         //width_style: "50px"
         custom_style: ["flex-1-0-5"]
@@ -54,6 +59,14 @@ const columns = [
     {
         value: (item) => "1",
         onclick: (item) => buy_sell_callback(item.id, 1),
+        viable: (item) => {
+            const character = globals.character_data;
+            if (character == undefined)
+                return false;
+            if (FILTER_STATE.type == "sell")
+                return (1 * item.price <= character.savings.value);
+            return (character.stash[item.tag].value >= 1);
+        },
         type: "string",
         //width_style: "50px"
         custom_style: ["flex-1-0-5"]
@@ -61,6 +74,14 @@ const columns = [
     {
         value: (item) => "10",
         onclick: (item) => buy_sell_callback(item.id, 10),
+        viable: (item) => {
+            const character = globals.character_data;
+            if (character == undefined)
+                return false;
+            if (FILTER_STATE.type == "sell")
+                return (1 * item.price <= character.savings.value);
+            return (character.stash[item.tag].value >= 1);
+        },
         type: "string",
         //width_style: "50px"
         custom_style: ["flex-1-0-5"]
@@ -68,6 +89,14 @@ const columns = [
     {
         value: (item) => "50",
         onclick: (item) => buy_sell_callback(item.id, 50),
+        viable: (item) => {
+            const character = globals.character_data;
+            if (character == undefined)
+                return false;
+            if (FILTER_STATE.type == "sell")
+                return (item.price <= character.savings.value);
+            return (character.stash[item.tag].value >= 1);
+        },
         type: "string",
         //width_style: "50px"
         custom_style: ["flex-1-0-5"]
@@ -76,6 +105,7 @@ const columns = [
         header_text: "Remove order",
         value: (item) => "X",
         onclick: (item) => clear_callback(item.id),
+        viable: (item) => (globals.character_data?.id == item.owner_id),
         type: "string",
         //width_style: "100px"
         custom_style: ["flex-1-0-5"]

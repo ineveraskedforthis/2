@@ -19,7 +19,7 @@ exports.OrderBulk = OrderBulk;
 //     item: ItemJson
 //     price: money
 //     finished: boolean
-// } 
+// }
 // export class OrderItem {
 //     id: order_item_id
 //     owner_id: char_id;
@@ -33,6 +33,6 @@ exports.OrderBulk = OrderBulk;
 //         // this.cell_id = cell_id;
 //         this.item = item;
 //         this.price = price;
-//         this.finished = finished        
+//         this.finished = finished
 //     }
 // }

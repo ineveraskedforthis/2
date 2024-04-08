@@ -1,5 +1,3 @@
-import { socket } from "./Socket/socket.js";
-import { Value } from "./Values/collection.js";
 export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest'];
 export function is_action_repeatable(action) {
     switch (action) {
@@ -27,7 +25,5 @@ export var globals = {
     action_ratio: 0,
     action_total_time: 1,
     local_characters: [],
-    stash: [],
-    savings: new Value(socket, "savings"),
-    savings_trade: new Value(socket, "savings_trade")
+    character_data: undefined
 };

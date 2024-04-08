@@ -1,4 +1,4 @@
-import { equip_slot } from "../../../shared/inventory";
+import { damage_type, equip_slot } from "../../../shared/inventory";
 
 export const EQUIPMENT_TAGS: (equip_slot)[] = [
     'weapon',
@@ -18,3 +18,5 @@ export const EQUIPMENT_TAGS: (equip_slot)[] = [
     'amulet',
     'robe'
 ];
+
+export const damage_types: damage_type[] = ['fire', 'slice', 'pierce', 'blunt']

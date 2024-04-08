@@ -1,4 +1,5 @@
 import { elementById } from "../HTMLwrappers/common.js";
+import { market_bulk } from "../Market/market.js";
 import { socket } from "../Socket/socket.js";
 import { StashValue, value_class_name, value_indicator_class_name } from "../Values/collection.js";
 import { globals } from "../globals.js";
@@ -11,7 +12,7 @@ export function material_icon_url(material_tag: string): string {
     return `url(/static/img/stash_${material_tag}.png)`;
 }
 
-export function update_tags(msg: { [key: string]: number; }, dependencies: DependencyUI[]) {
+export function update_tags(msg: { [key: string]: number; }) {
     console.log("TAAAAAAGS");
     console.log(msg);
 
@@ -63,25 +64,29 @@ export function update_tags(msg: { [key: string]: number; }, dependencies: Depen
         option.value = msg[tag].toString();
         option.innerHTML = tag;
         material_select.appendChild(option);
-
-        globals.stash.push(new StashValue(socket, tag, msg[tag]))
     }
 
+    const character = globals.character_data;
+    if (character == undefined) return;
+    for (var tag in msg) {
+        character.stash.push(new StashValue(socket, tag, msg[tag], [market_bulk]))
+    }
 
     socket.on('stash-update', msg => {
         console.log('stash-update');
         console.log(msg);
-        update_stash(msg, dependencies);
+        update_stash(msg);
+
+        socket.emit('request-belongings')
     });
 }
 
-export function update_stash(data: number[], dependencies: DependencyUI[]) {
-    for (let i = 0; i < data.length; i++) {
-        globals.stash[i].value = data[i];
-    }
+export function update_stash(data: number[]) {
+    const character = globals.character_data;
+    if (character == undefined) return;
 
-    for (let item of dependencies) {
-        item.update_display()
+    for (let i = 0; i < data.length; i++) {
+        character.stash[i].value = data[i];
     }
 }
 

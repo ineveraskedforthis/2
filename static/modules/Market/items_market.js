@@ -1,59 +1,115 @@
-import { generate_item_market_div, generate_market_header } from "../Divs/item.js";
+import { List } from "../../widgets/List/list.js";
+import { damage_types } from "../Constants/inventory.js";
+import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
-const item_market_container = document.getElementById('auction_house_tab');
-const item_market_data = [];
-const control_container = document.querySelector('.auction_control');
-const market_header = generate_market_header();
-var selected = undefined;
-var selecter_owner = undefined;
-var selected_div = undefined;
+import { generate_item_name } from "../StringGeneration/string_generation.js";
+import { globals } from "../globals.js";
+const columns = [
+    {
+        header_text: "Owner name",
+        value: (item) => item.seller,
+        type: "string",
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        header_text: "Name",
+        value: (item) => {
+            const name = document.createElement('div');
+            const name_string = generate_item_name(item);
+            name.innerHTML = name_string;
+            name.classList.add('item_tier_' + Math.min(item.affixes, 4));
+            name.classList.add('item_label');
+            name.classList.add('width-125');
+            return name;
+        },
+        type: "html",
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        header_text: "Price",
+        value: (item) => item.price,
+        type: "number",
+        custom_style: ["flex-0-0-5"]
+    },
+    {
+        value: (item) => "buyout",
+        onclick: (item) => () => { socket.emit('buyout', { char_id: item.seller_id, item_id: item.id }); },
+        viable: (item) => {
+            const character = globals.character_data;
+            if (character == undefined)
+                return false;
+            return (1 * item.price <= character.savings.value);
+        },
+        type: "string",
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        header_text: "Durability",
+        value: (item) => item.durability,
+        type: "number",
+        custom_style: ["flex-0-0-5"]
+    },
+    {
+        header_text: "Item type",
+        value: (item) => item.item_type,
+        type: "string",
+        custom_style: ["flex-1-0-5"]
+    },
+    {
+        header_background: 'url(/static/img/small_icons/bow.png)',
+        value: (item) => item.is_weapon ? item.ranged_damage : 0,
+        type: "number",
+        custom_style: ["flex-0-0-30px", "centered_background"]
+    },
+];
+columns.push({
+    header_text: "Dmg:",
+    value: (item) => {
+        let total = 0;
+        for (let d of damage_types) {
+            total += item.is_weapon ? item.damage[d] : 0;
+        }
+        return total;
+    },
+    type: "number",
+    custom_style: ["flex-0-0-5"]
+});
+for (let d of damage_types) {
+    columns.push({
+        header_background: 'url(/static/img/small_icons/' + d + '.png)',
+        value: (item) => item.is_weapon ? item.damage[d] : 0,
+        type: "number",
+        custom_style: ["flex-0-0-30px", "centered_background"]
+    });
+}
+columns.push({
+    header_text: "Res:",
+    value: (item) => {
+        let total = 0;
+        for (let d of damage_types) {
+            total += item.resists[d];
+        }
+        return total;
+    },
+    type: "number",
+    custom_style: ["flex-0-0-5"]
+});
+for (let d of damage_types) {
+    columns.push({
+        header_background: 'url(/static/img/small_icons/' + d + '.png)',
+        value: (item) => item.resists[d],
+        type: "number",
+        custom_style: ["flex-0-0-30px", "centered_background"]
+    });
+}
+const item_market_container = elementById('auction_house_tab');
+export const market_items = new List(item_market_container);
+market_items.columns = columns;
 export function init_market_items() {
     socket.on('item-market-data', data => { update_item_market(data); });
-    build();
-}
-function send_buyout_request() {
-    // let items = document.getElementsByName('market_item_list_radio') as NodeListOf<HTMLInputElement>;
-    // let index = undefined;
-    // for(let i = 0; i < items.length; i++) {
-    //     if(items[i].checked)
-    //         index = parseInt(items[i].value);
-    //     }
-    // console.log('buyout', {char_id: selecter_owner, item_id: selected})
-    socket.emit('buyout', { char_id: selecter_owner, item_id: selected });
-}
-export function build() {
-    {
-        let buyout_button = document.createElement('button');
-        buyout_button.onclick = (() => send_buyout_request());
-        buyout_button.innerHTML = 'buyout';
-        control_container.appendChild(buyout_button);
-    }
-}
-export function select_item(id, owner_id, div) {
-    return () => {
-        console.log('select order ' + id);
-        selected = id;
-        selecter_owner = owner_id;
-        selected_div?.classList.remove('selected');
-        div.classList.add('selected');
-        selected_div = div;
-    };
 }
 export function update_item_market(data) {
     console.log("updating market");
     console.log(data);
-    item_market_container.innerHTML = '';
-    item_market_container.appendChild(market_header);
-    for (let order of data) {
-        const div = generate_item_market_div(order);
-        if (order.id == undefined)
-            continue;
-        if (order.seller_id == undefined)
-            continue;
-        div.onclick = select_item(order.id, order.seller_id, div);
-        if (order.id == selected && order.seller_id == selecter_owner) {
-            div.classList.add('selected');
-        }
-        item_market_container.appendChild(div);
-    }
+    market_items.data = data;
 }

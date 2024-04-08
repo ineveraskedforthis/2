@@ -140,6 +140,10 @@ export class SocketManager {
             socket.on('leave-room',         () => SocketCommand.leave_room(user))
 
             socket.on('repair-building',    (msg: undefined|{id: unknown}) => SocketCommand.repair_building(user, msg))
+
+            socket.on('request-tags', () => {socket.emit('tags', materials.get_materials_json());})
+
+            socket.on('request-belonging', () => Request.belongings(user))
         });
     }
 
@@ -152,8 +156,6 @@ export class SocketManager {
 
     connection(socket: Socket) {
         console.log('a user connected');
-
-        socket.emit('tags', materials.get_materials_json());
         socket.emit('skill-tags', SKILLS);
         // socket.emit('sections', SECTIONS);
 

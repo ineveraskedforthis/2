@@ -1,6 +1,7 @@
 import { EquipSocket, equip_slot } from "../../../shared/inventory.js";
 import { EQUIPMENT_TAGS } from "../Constants/inventory.js";
-import { generate_dummy_item_backpack_div, generate_item_backpack_div, generate_name } from "../Divs/item.js";
+import { generate_dummy_item_backpack_div, generate_item_backpack_div } from "../Divs/item.js";
+import { generate_item_name } from "../StringGeneration/string_generation.js";
 import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
 
@@ -54,7 +55,7 @@ export function update_backpack(data: EquipSocket) {
             const item = generate_item_backpack_div(weapon, i)
             item.classList.add('item');
             table_items.appendChild(item)
-            add_option(generate_name(weapon), i)
+            add_option(generate_item_name(weapon), i)
         }
     }
 }

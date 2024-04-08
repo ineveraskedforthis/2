@@ -15,6 +15,12 @@ interface NumberColumn<Item> extends ColumnBase<Item> {
     type: "number"
 }
 
+interface HTMLElementColumn<Item> extends ColumnBase<Item> {
+    value: (item: Item) => HTMLElement
+
+    type: "html"
+}
+
 interface StringColumn<Item> extends ColumnBase<Item> {
     value: (item: Item) => string
 
@@ -23,6 +29,7 @@ interface StringColumn<Item> extends ColumnBase<Item> {
 
 interface ActiveStringColumn<Item> extends StringColumn<Item> {
     onclick: (item:Item) => ((ev: MouseEvent) => void)
+    viable: (item:Item) => boolean
 }
 
 interface IconColumn<Item> extends StringColumn<Item>{
@@ -32,10 +39,18 @@ interface IconColumn<Item> extends StringColumn<Item>{
     type: "string"
 }
 
-export type Column<Item> = IconColumn<Item>|NumberColumn<Item>|StringColumn<Item>|ActiveStringColumn<Item>
+export type Column<Item> = IconColumn<Item>|NumberColumn<Item>|StringColumn<Item>|ActiveStringColumn<Item>|HTMLElementColumn<Item>
 
 function is_string_column<Item>(column: Column<Item>): column is StringColumn<Item> {
     return column.type == "string"
+}
+
+function is_number_column<Item>(column: Column<Item>): column is NumberColumn<Item> {
+    return column.type == "number"
+}
+
+function is_html_column<Item>(column: Column<Item>): column is HTMLElementColumn<Item> {
+    return column.type == "html"
 }
 
 function is_icon_column<Item>(column: Column<Item>): column is IconColumn<Item> {
@@ -117,12 +132,19 @@ export class List<Item> implements ListInterface<Item> {
                     const B = column.value(b)
 
                     return A.localeCompare(B) * order
-                } else {
+                } else if (is_number_column(column)) {
                     const A = column.value(a)
                     const B = column.value(b)
 
                     return (A - B) * order
+                } else if (is_html_column(column)) {
+                    const A = column.value(a)
+                    const B = column.value(b)
+
+                    return (A.innerHTML).localeCompare(B.innerHTML) * order
                 }
+
+                return 0
             })
         }
 
@@ -172,11 +194,15 @@ export class List<Item> implements ListInterface<Item> {
             line.classList.add("table-row");
             line.classList.add("line_" + item_index);
 
-            ((table: List<Item>, item_index: number) => {
+            ((table: List<Item>, item_index: number, line) => {
                 line.onmouseenter = () => { table.hovered_item_index = item_index }
                 line.onmouseleave = () => { table.hovered_item_index = undefined }
-                line.onclick = () => { table.selected_item_index = item_index }
-            })(this, item_index)
+                line.onclick = () => {
+
+                    table.selected_item_index = item_index
+                    line.classList.add("selected")
+                }
+            })(this, item_index, line)
 
             let index = 0
             for (let col of this.columns) {
@@ -187,19 +213,25 @@ export class List<Item> implements ListInterface<Item> {
 
                 if (col.custom_style != undefined) div.classList.add(... col.custom_style);
 
-                if (!is_string_column(col)) {
+                if (is_number_column(col)) {
                     div.classList.add('align-right')
                 }
 
                 if (is_icon_column(col)) {
                     div.style.backgroundImage = col.image_path(item)
+                } else if (is_html_column(col)) {
+                    div.appendChild(col.value(item))
                 } else {
                     div.innerText = col.value(item).toString()
                 }
 
                 if (is_active_column(col)) {
                     div.classList.add("generic-button")
-                    div.onclick = col.onclick(item)
+                    if (col.viable(item)) {
+                        div.onclick = col.onclick(item)
+                    } else {
+                        div.classList.add("disabled")
+                    }
                 }
 
                 line.appendChild(div)
@@ -268,7 +300,7 @@ export class List<Item> implements ListInterface<Item> {
         for (let i = 0; i < columns.length; i++) {
             this._sorting_sequence.push(
                 {
-                    order: 1,
+                    order: -1,
                     column: i
                 }
             )
@@ -294,6 +326,14 @@ export class List<Item> implements ListInterface<Item> {
 
     set selected_item_index(x: number|undefined) {
         this._selected_item_index = x
+    }
+
+    get selected_item(): Item|undefined {
+        const selected_index = this.selected_item_index
+        if (selected_index == undefined) {
+            return undefined
+        }
+        return this._data[selected_index]
     }
 
     set filter(f: ((item: Item) => boolean)|undefined) {

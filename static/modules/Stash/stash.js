@@ -1,4 +1,5 @@
 import { elementById } from "../HTMLwrappers/common.js";
+import { market_bulk } from "../Market/market.js";
 import { socket } from "../Socket/socket.js";
 import { StashValue, value_class_name, value_indicator_class_name } from "../Values/collection.js";
 import { globals } from "../globals.js";
@@ -8,7 +9,7 @@ export var material_ids = [];
 export function material_icon_url(material_tag) {
     return `url(/static/img/stash_${material_tag}.png)`;
 }
-export function update_tags(msg, dependencies) {
+export function update_tags(msg) {
     console.log("TAAAAAAGS");
     console.log(msg);
     let inventory_div = elementById('goods_stash');
@@ -50,20 +51,26 @@ export function update_tags(msg, dependencies) {
         option.value = msg[tag].toString();
         option.innerHTML = tag;
         material_select.appendChild(option);
-        globals.stash.push(new StashValue(socket, tag, msg[tag]));
+    }
+    const character = globals.character_data;
+    if (character == undefined)
+        return;
+    for (var tag in msg) {
+        character.stash.push(new StashValue(socket, tag, msg[tag], [market_bulk]));
     }
     socket.on('stash-update', msg => {
         console.log('stash-update');
         console.log(msg);
-        update_stash(msg, dependencies);
+        update_stash(msg);
+        socket.emit('request-belongings');
     });
 }
-export function update_stash(data, dependencies) {
+export function update_stash(data) {
+    const character = globals.character_data;
+    if (character == undefined)
+        return;
     for (let i = 0; i < data.length; i++) {
-        globals.stash[i].value = data[i];
-    }
-    for (let item of dependencies) {
-        item.update_display();
+        character.stash[i].value = data[i];
     }
 }
 export function process_stash_click(tag) {

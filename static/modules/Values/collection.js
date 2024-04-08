@@ -9,13 +9,16 @@ export function value_indicator_class_name(tag) {
     return tag + "_value_indicator";
 }
 export class Value {
-    constructor(socket, id) {
+    constructor(socket, id, dependents) {
         this._id = id;
         this._value = 0;
         this._update(0);
         ((display) => socket.on(`val_${id}_c`, (data) => {
             console.log("update value " + id);
             display.value = data;
+            for (let item of dependents) {
+                item.update_display();
+            }
         }))(this);
     }
     _update(difference) {
@@ -33,8 +36,8 @@ export class Value {
     }
 }
 export class LimitedValue extends Value {
-    constructor(socket, id) {
-        super(socket, id);
+    constructor(socket, id, dependents) {
+        super(socket, id, dependents);
         this._max_value = 100;
         ((display) => socket.on(`val_${id}_m`, (data) => {
             display.max_value = data;
@@ -64,8 +67,8 @@ export class BarValue extends LimitedValue {
     }
 }
 export class StashValue extends Value {
-    constructor(socket, id, material_index) {
-        super(socket, id);
+    constructor(socket, id, material_index, dependents) {
+        super(socket, id, dependents);
         this.material_index = material_index;
         let indicators = select(`.${value_indicator_class_name(this._id)}`);
         for (let item of indicators) {

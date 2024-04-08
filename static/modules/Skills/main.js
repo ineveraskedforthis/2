@@ -20,7 +20,7 @@ function load_skill_tags(socket, data) {
         SKILL_TAGS.push(tag);
         let div = build_skill_div(tag);
         box.appendChild(div);
-        STATE[tag] = new BarValue(socket, tag);
+        STATE[tag] = new BarValue(socket, tag, []);
         STATE[tag].max_value = 100;
     }
 }

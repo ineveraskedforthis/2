@@ -1,5 +1,5 @@
 import { Socket } from "../../../shared/battle_data.js";
-import { generate_name } from "../Divs/item.js";
+import { generate_item_name } from "../StringGeneration/string_generation.js";
 import { elementById, inputById } from "../HTMLwrappers/common.js";
 import { update_backpack, update_equip_list } from "./update.js"
 

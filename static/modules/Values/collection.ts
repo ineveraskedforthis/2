@@ -17,7 +17,7 @@ export class Value implements ValueInterface {
     protected _id: string;
     protected _value: number;
 
-    constructor(socket: Socket, id: string){
+    constructor(socket: Socket, id: string, dependents: DependencyUI[]){
         this._id = id;
         this._value = 0;
         this._update(0);
@@ -25,6 +25,10 @@ export class Value implements ValueInterface {
         ((display: Value) => socket.on(`val_${id}_c`, (data: number) => {
             console.log("update value " + id)
             display.value = data
+
+            for (let item of dependents) {
+                item.update_display()
+            }
         }))(this);
 
 
@@ -50,8 +54,8 @@ export class Value implements ValueInterface {
 export class LimitedValue extends Value implements LimitedValueInterface {
     protected _max_value: number;
 
-    constructor(socket: Socket, id: string) {
-        super(socket, id);
+    constructor(socket: Socket, id: string, dependents: DependencyUI[]) {
+        super(socket, id, dependents);
 
         this._max_value = 100;
         ((display: LimitedValue) => socket.on(`val_${id}_m`, (data: number) => {
@@ -90,8 +94,8 @@ export class BarValue extends LimitedValue {
 export class StashValue extends Value {
     readonly material_index: number
 
-    constructor(socket : Socket, id: string, material_index: number) {
-        super(socket, id)
+    constructor(socket : Socket, id: string, material_index: number, dependents: DependencyUI[]) {
+        super(socket, id, dependents)
         this.material_index = material_index
 
         let indicators = select(`.${value_indicator_class_name(this._id)}`);

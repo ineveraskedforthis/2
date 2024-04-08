@@ -1,3 +1,5 @@
+import { market_items } from "./Market/items_market.js";
+import { market_bulk } from "./Market/market.js";
 import { socket } from "./Socket/socket.js";
 import { StashValue, Value } from "./Values/collection.js";
 
@@ -17,6 +19,8 @@ export function is_action_repeatable(action: action) {
     return false
 }
 
+
+
 type globals = {
     prev_mouse_x: number | null,
     prev_mouse_y: number | null,
@@ -32,9 +36,7 @@ type globals = {
     action_ratio: number
     action_total_time: number
     local_characters: CharacterView[]
-    stash: StashValue[]
-    savings: Value
-    savings_trade: Value
+    character_data: CharacterDataExpanded|undefined
 }
 
 export var globals: globals = {
@@ -52,7 +54,6 @@ export var globals: globals = {
     action_ratio: 0,
     action_total_time: 1,
     local_characters: [],
-    stash: [],
-    savings: new Value(socket, "savings"),
-    savings_trade: new Value(socket, "savings_trade")
+    character_data: undefined
 }
+

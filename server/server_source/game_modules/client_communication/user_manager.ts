@@ -60,7 +60,7 @@ export namespace UserManagement {
                 char_id = Number(data[1]) as char_id
             }
 
-            let user = new UserData(Number(data[0]), char_id, data[2], data[3], data[4] == 'true')            
+            let user = new UserData(Number(data[0]), char_id, data[2], data[3], data[4] == 'true')
             users_data_dict[user.id] = user
             login_to_user_data[user.login] = user
             users_data_list.push(user)
@@ -139,7 +139,7 @@ export namespace UserManagement {
         // console.log(data.code)
         // console.log(process.env.TESTER_CODE)
 
-        let hash = bcrypt.hashSync(data.password, salt) 
+        let hash = bcrypt.hashSync(data.password, salt)
         let user_data = construct_user_data('@', data.login, hash, (data.code == process.env.TESTER_CODE)&&(data.code != undefined))
         let user = construct_user(sw, user_data)
         user.logged_in = true
@@ -164,7 +164,7 @@ export namespace UserManagement {
         if (x == undefined) return false
         if (!x.logged_in) return false
         return true
-    }    
+    }
 
     export function get_user(id: user_online_id) {
         return users_online_dict[id]
@@ -199,7 +199,7 @@ export namespace UserManagement {
                 if (user.tester_account) {
                     let item = ItemSystem.create('sword', [], 100);
                     EventInventory.add_item(character, item)
-                }                
+                }
                 break
             };
             case "big_humans":{character = Template.Character.HumanStrong(x, y, name);break};
@@ -212,7 +212,7 @@ export namespace UserManagement {
         if (character == undefined) return;
         console.log('user ' + user.login + ' gets new character: ' + character.get_name() + '(id:' + character.id + ')')
         Link.character_and_user_data(character, user)
-        
+
         const real_user = get_user(id as user_online_id)
         if (real_user != undefined) {real_user.character_removed = false}
         // save_users()
@@ -222,7 +222,7 @@ export namespace UserManagement {
         if (id == '#') return
         let user = get_user(id as user_online_id)
         if (user == undefined) return
-        if (reason == 'character_creation') {user.character_created = true} else 
+        if (reason == 'character_creation') {user.character_created = true} else
         if (reason == 'character_removal')  {user.character_removed = true} else {
             Update.on(user.updates, reason)
         }
@@ -232,7 +232,7 @@ export namespace UserManagement {
     export function update_users() {
         // console.log('update loop')
         for (let item of users_to_update) {
-            // console.log('send_update to ' + item.data.login)          
+            // console.log('send_update to ' + item.data.login)
             if (item.character_created) {
                 send_character_to_user(item)
                 item.character_created = false
@@ -245,20 +245,26 @@ export namespace UserManagement {
             if (item.market_update) {
                 SendUpdate.market(item)
             }
-            
+
         }
         users_to_update.clear()
     }
 
     export function send_character_to_user(user: User) {
         Alerts.generic_user_alert(user, 'character_exists', undefined)
+
         SendUpdate.all(user)
         Update.update_root(user)
-        
-        
+
+
         const character = Convert.user_to_character(user)
 
+
+
         if (character == undefined) return
+
+        Alerts.generic_user_alert(user, "character_data", {name: character.name, id: character.id})
+
         if (character.current_building != undefined) Alerts.enter_room(character)
         const battle = Convert.character_to_battle(character)
         if (battle != undefined) {

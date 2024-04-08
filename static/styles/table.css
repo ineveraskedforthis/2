@@ -54,6 +54,14 @@
     flex: 1 0 5%;
 }
 
+.flex-0-0-5 {
+    flex: 0 0 5%;
+}
+
+.flex-1-0-3 {
+    flex: 1 0 3%;
+}
+
 .flex-0-0-30px {
     flex: 0 0 30px;
 }
@@ -67,3 +75,8 @@
     flex-direction: row;
 }
 
+.centered_background {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}

@@ -35,7 +35,7 @@ export namespace Request {
             return
         }
 
-        
+
         let ids = Data.Buildings.from_cell_id(character.cell_id)
 
         if (ids == undefined) {
@@ -89,8 +89,18 @@ export namespace Request {
         const battle = Convert.character_to_battle(character)
         if (battle == undefined) return
 
-        Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit.id)  
+        Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit.id)
         Alerts.generic_user_alert(user, 'current-unit-turn', battle.heap.get_selected_unit()?.id)
+    }
+
+    export function belongings(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist')
+            return
+        }
+
+        SendUpdate.belongings(user)
     }
 
     export function flee_chance(sw: SocketWrapper) {
@@ -110,7 +120,7 @@ export namespace Request {
             sw.socket.emit('alert', 'your character does not exist')
             return
         }
-        
+
         SendUpdate.attack_damage(user)
     }
 
@@ -121,7 +131,7 @@ export namespace Request {
     //         return
     //     }
     //     const battle_id = character.battle_id
-    //     if (battle_id == undefined) return 
+    //     if (battle_id == undefined) return
     //     const battle = Convert.id_to_battle(battle_id);
     //     const unit = Convert.character_to_unit(character)
     //     if (unit == undefined) {return}
@@ -147,7 +157,7 @@ export namespace Request {
             return
         }
         const battle_id = character.battle_id
-        if (battle_id == undefined) return 
+        if (battle_id == undefined) return
         const battle = Convert.id_to_battle(battle_id);
         const unit = Convert.character_to_unit(character)
         if (unit == undefined) {return}
@@ -182,7 +192,7 @@ export namespace Request {
         if (unit == undefined) {return}
 
         const target_unit = battle.heap.get_unit(target_id as unit_id)
-        if (target_unit == undefined) return 
+        if (target_unit == undefined) return
 
         const target_character = Convert.unit_to_character(target_unit)
 
@@ -203,7 +213,7 @@ export namespace Request {
     export function battle_actions_position(sw: SocketWrapper, target: unknown) {
         // console.log('requested position actions')
         if (target == undefined) return
-        if (!Validator.is_point(target)) return 
+        if (!Validator.is_point(target)) return
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) {
             sw.socket.emit('alert', 'your character does not exist')

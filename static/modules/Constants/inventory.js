@@ -16,3 +16,4 @@ export const EQUIPMENT_TAGS = [
     'amulet',
     'robe'
 ];
+export const damage_types = ['fire', 'slice', 'pierce', 'blunt'];

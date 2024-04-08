@@ -9,7 +9,7 @@ export interface OrderBulkJson {
     typ: 'sell'|'buy',
     tag: material_index,
     owner_id: char_id,
-    owner_name: string|undefined,
+    owner_name: string,
     amount: number
     price: money
     id: order_bulk_id
@@ -25,7 +25,7 @@ export class OrderBulk {
     tag: material_index
     amount: number
     price: money
-    
+
     constructor(id: order_bulk_id, amount: number, price: money, typ: 'sell'|'buy', tag: material_index, owner_id: char_id) {
         this.id = id
         this.typ = typ
@@ -43,16 +43,16 @@ export class OrderBulk {
 //     item: ItemJson
 //     price: money
 //     finished: boolean
-// } 
+// }
 
 // export class OrderItem {
 //     id: order_item_id
 //     owner_id: char_id;
 //     // cell_id: cell_id
-    
+
 //     item: Item;
 //     price: money
-    
+
 //     finished: boolean
 
 //     constructor(id: order_item_id, item: Item, price: money, owner_id: char_id, finished: boolean) {
@@ -62,6 +62,6 @@ export class OrderBulk {
 
 //         this.item = item;
 //         this.price = price;
-//         this.finished = finished        
+//         this.finished = finished
 //     }
 // }

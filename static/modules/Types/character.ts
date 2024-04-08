@@ -18,7 +18,9 @@ interface BulkOrderView {
     amount: number,
     price: number,
     id: number,
-    typ: string
+    typ: string,
+    owner_id: number,
+    owner_name: string
 }
 
 interface CraftItemView {
@@ -70,4 +72,15 @@ interface BattleLogData {
 
 interface DependencyUI {
     update_display: () => void;
+}
+
+interface CharacterDataBasic {
+    id: number,
+    name: string,
+}
+
+interface CharacterDataExpanded extends CharacterDataBasic {
+    savings: ValueInterface,
+    savings_trade: ValueInterface,
+    stash: ValueInterface[]
 }

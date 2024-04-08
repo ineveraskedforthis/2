@@ -4,7 +4,7 @@ export class CharacterInfoCorner {
     constructor(socket) {
         this.data = {};
         for (const item of bar_value_tags) {
-            this.data[item] = new BarValue(socket, item);
+            this.data[item] = new BarValue(socket, item, []);
         }
     }
 }

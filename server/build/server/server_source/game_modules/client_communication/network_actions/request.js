@@ -75,6 +75,15 @@ var Request;
         alerts_1.Alerts.generic_user_alert(user, 'current-unit-turn', battle.heap.get_selected_unit()?.id);
     }
     Request.player_index = player_index;
+    function belongings(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist');
+            return;
+        }
+        updates_1.SendUpdate.belongings(user);
+    }
+    Request.belongings = belongings;
     function flee_chance(sw) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined) {
@@ -103,7 +112,7 @@ var Request;
     //         return
     //     }
     //     const battle_id = character.battle_id
-    //     if (battle_id == undefined) return 
+    //     if (battle_id == undefined) return
     //     const battle = Convert.id_to_battle(battle_id);
     //     const unit = Convert.character_to_unit(character)
     //     if (unit == undefined) {return}
