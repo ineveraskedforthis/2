@@ -53,13 +53,13 @@ export namespace Event {
             Alerts.not_enough_to_character(student, 'money', savings, price, undefined)
             return
         }
-        
+
 
         let responce = perk_requirement(perk, student)
         if (responce != 'ok') {
             Alerts.generic_character_alert(student, 'alert', responce)
             return
-        } 
+        }
 
         Effect.Transfer.savings(student, teacher, price)
         Effect.learn_perk(student, perk)
@@ -72,8 +72,8 @@ export namespace Event {
             Effect.Change.skill(student, skill, 1)
         } else {
             Alerts.not_enough_to_character(
-                student, 
-                response.response, 
+                student,
+                response.response,
                 response.current_quantity,
                 response.min_quantity,
                 response.max_quantity
@@ -182,12 +182,12 @@ export namespace Event {
         const acc = Accuracy.ranged(attacker, distance)
         const dice_accuracy = Math.random()
         const attacker_ranged_skill = CharacterSystem.skill(attacker, 'ranged')
-        if (dice_accuracy > acc) { 
+        if (dice_accuracy > acc) {
             const dice_skill_up = Math.random()
             if (dice_skill_up * 100 > attacker_ranged_skill) {
                 Effect.Change.skill(attacker, 'ranged', 1)
             }
-            return 'miss' 
+            return 'miss'
         }
 
         const dice_skill_up = Math.random()
@@ -205,7 +205,7 @@ export namespace Event {
         }
 
         const responce = ranged_dodge(attack, defender, flag_dodge)
-        
+
         if (responce == 'miss') {
             DmgOps.mult_ip(attack.damage, 0)
         } else {
@@ -246,13 +246,13 @@ export namespace Event {
     export function magic_bolt_mage(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
         if (defender.dead()) return 'miss'
         if (attacker.dead()) return 'miss'
-        unconditional_magic_bolt(attacker, defender, dist, flag_dodge, false)    
+        unconditional_magic_bolt(attacker, defender, dist, flag_dodge, false)
     }
 
     export function magic_bolt_zaz(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
         if (defender.dead()) return 'miss'
         if (attacker.dead()) return 'miss'
-        if (attacker.stash.get(ZAZ) == 0) return  
+        if (attacker.stash.get(ZAZ) == 0) return
         Event.change_stash(attacker, ZAZ, -1)
         unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true)
     }
@@ -270,7 +270,7 @@ export namespace Event {
                 attacker.status.blood = 0
                 Effect.Change.blood(attacker, -attacker.status.blood)
                 Effect.Change.hp(attacker, BLOOD_COST - blood)
-            } 
+            }
         }
         unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true)
     }
@@ -303,7 +303,7 @@ export namespace Event {
         attack.defender_status_change.rage += 3
         attack.defender_status_change.stress += 1
 
-        
+
         //calculating defense skill
         evade(defender, attack, dodge_flag);
         block(defender, attack);
@@ -311,9 +311,9 @@ export namespace Event {
 
         //calculating improvement to skill
         attack_skill_improvement(attacker, defender, attack);
-        
+
         //breaking items
-        attack_affect_durability(attacker, defender, attack);   
+        attack_affect_durability(attacker, defender, attack);
 
         //applying defense and attack skill
         let damage_modifier = (100 + attack.attack_skill) / (100 + attack.defence_skill)
@@ -358,7 +358,7 @@ export namespace Event {
                 const dice = Math.random();
                 if (dice < improvement_rate)
                     Effect.Change.skill(attacker, attack.weapon_type, 1);
-            }            
+            }
         }
 
         //fighting provides constant growth of this skill up to some level
@@ -475,7 +475,7 @@ export namespace Event {
         const dropped_items = Loot.items(victim.race)
         for (let item of dropped_items) {
             EventInventory.add_item(killer, item)
-        } 
+        }
 
         // skinning check
         const skin = Loot.skinning(victim.race)
@@ -592,7 +592,7 @@ export namespace Event {
         let difficulty = Math.floor(building.durability / 3 + 10)
         on_craft_update(character, [{skill: 'woodwork', difficulty: difficulty}])
         change_stash(character, WOOD, -cost)
-        Effect.building_repair(building, repair)        
+        Effect.building_repair(building, repair)
     }
 
     export function remove_tree(cell: cell_id) {

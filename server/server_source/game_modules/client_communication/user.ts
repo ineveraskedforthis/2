@@ -8,7 +8,7 @@ export class UserData {
     password_hash: string
     char_id: char_id|TEMP_CHAR_ID
     tester_account: boolean|undefined
-    
+
     constructor(id: number, char_id:char_id|TEMP_CHAR_ID, login:string, password_hash:string, tester_flag:boolean) {
         this.id = id as user_id
         this.char_id = char_id
@@ -21,7 +21,7 @@ export class UserData {
 export class SocketWrapper {
     socket: Socket
     user_id: user_online_id|TEMP_USER_ID
-    
+
     constructor(socket: Socket) {
         this.socket = socket
         this.user_id = '#'
@@ -35,7 +35,6 @@ export class User {
     logged_in: boolean
     character_created: boolean
     character_removed: boolean
-    market_update: boolean
 
     constructor(socket: Socket, data: UserData) {
         this.socket = socket
@@ -43,7 +42,6 @@ export class User {
         this.logged_in = false
         this.character_created = false
         this.character_removed = false
-        this.market_update = false
         this.updates = Update.construct()
     }
 }

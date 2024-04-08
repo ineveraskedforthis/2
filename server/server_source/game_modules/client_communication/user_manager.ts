@@ -242,10 +242,6 @@ export namespace UserManagement {
                 Update.update_root(item)
                 item.updates = Update.construct()
             }
-            if (item.market_update) {
-                SendUpdate.market(item)
-            }
-
         }
         users_to_update.clear()
     }

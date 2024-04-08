@@ -49,9 +49,10 @@ var Effect;
     let Change;
     (function (Change) {
         function hp(character, dx) {
-            if (character.change_hp(dx))
+            if (!character.change_hp(dx))
                 return;
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+            if (Math.abs(dx) > 0)
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.hp = hp;
         function fatigue(character, dx) {
@@ -62,33 +63,40 @@ var Effect;
             if ((dx - change > 0)) {
                 stress(character, dx - change);
             }
-            if (!flag)
-                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+            if (Math.abs(dx) > 0)
+                if (!flag)
+                    user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.fatigue = fatigue;
         function stress(character, dx) {
-            if (character.change_stress(dx))
+            if (!character.change_stress(dx))
                 return;
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+            if (Math.abs(dx) > 0)
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.stress = stress;
         function rage(character, dx) {
-            if (character.change_rage(dx))
+            if (!character.change_rage(dx))
                 return;
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+            if (Math.abs(dx) > 0)
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.rage = rage;
         function blood(character, dx) {
-            if (character.change_blood(dx))
+            if (!character.change_blood(dx))
                 return;
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+            if (Math.abs(dx) > 0)
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
         }
         Change.blood = blood;
         function skill(character, skill, dx) {
             character._skills[skill] += dx;
             if (character._skills[skill] > 100)
                 character._skills[skill] = 100;
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 12 /* UI_Part.SKILLS */);
+            if (character.user_id != "#")
+                console.log("skill change");
+            if (Math.abs(dx) > 0)
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 12 /* UI_Part.SKILLS */);
         }
         Change.skill = skill;
     })(Change = Effect.Change || (Effect.Change = {}));

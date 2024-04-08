@@ -20,7 +20,7 @@ import { character_to_string } from "../strings_management";
 export namespace Effect {
     export namespace Update {
         export function cell_market(cell: cell_id) {
-            const locals = Data.Cells.get_characters_list_from_cell(cell) 
+            const locals = Data.Cells.get_characters_list_from_cell(cell)
             for (let item of locals) {
                 const local_character = Convert.id_to_character(item)
                 UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.MARKET)
@@ -53,8 +53,8 @@ export namespace Effect {
 
     export namespace Change {
         export function hp(character: Character, dx: number) {
-            if (character.change_hp(dx)) return;
-            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            if (!character.change_hp(dx)) return;
+            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS);
         }
 
         export function fatigue(character: Character, dx: number) {
@@ -65,30 +65,32 @@ export namespace Effect {
             if ((dx - change > 0)) {
                 stress(character, dx - change)
             }
-            
-            if (!flag) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+
+            if (Math.abs(dx) > 0) if (!flag) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
         export function stress(character: Character, dx: number) {
-            if (character.change_stress(dx)) return;
-            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            if (!character.change_stress(dx)) return;
+            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
         export function rage(character: Character, dx: number) {
-            if (character.change_rage(dx)) return;
-            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            if (!character.change_rage(dx)) return;
+            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
         export function blood(character: Character, dx: number) {
-            if (character.change_blood(dx)) return;
-            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            if (!character.change_blood(dx)) return;
+            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
         }
 
         export function skill(character: Character, skill: skill, dx: number) {
-            character._skills[skill] += dx 
-            if (character._skills[skill] > 100) 
+            character._skills[skill] += dx
+            if (character._skills[skill] > 100)
                 character._skills[skill] = 100
-            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKILLS)
+
+            if (character.user_id != "#") console.log("skill change");
+            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKILLS)
         }
     }
 
@@ -97,7 +99,7 @@ export namespace Effect {
         UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SKILLS)
     }
 
-    export function rent_room(character_id: char_id, building_id: building_id) {        
+    export function rent_room(character_id: char_id, building_id: building_id) {
         let character = Data.CharacterDB.from_id(character_id)
         let response = Trigger.building_is_available(character_id, building_id)
         if (response.response == 'ok') {
@@ -106,7 +108,7 @@ export namespace Effect {
                 Effect.Transfer.savings(character, owner, response.price)
             }
             enter_room(character_id, building_id)
-        }        
+        }
         return response
     }
 
@@ -126,7 +128,7 @@ export namespace Effect {
         character.current_building = undefined
     }
 
-    export function new_building(cell_id: cell_id, type: LandPlotType, durability: number, room_cost: money) {        
+    export function new_building(cell_id: cell_id, type: LandPlotType, durability: number, room_cost: money) {
         return Data.Buildings.create({
             cell_id: cell_id,
             durability: durability,
@@ -138,10 +140,10 @@ export namespace Effect {
     export function building_quality_reduction_roll(building: LandPlot) {
         if (building.type == LandPlotType.ForestPlot) return;
         if (building.type == LandPlotType.LandPlot) return
-        if (building.type == LandPlotType.RatLair) return 
-        if (building.type == LandPlotType.FarmPlot) return 
+        if (building.type == LandPlotType.RatLair) return
+        if (building.type == LandPlotType.FarmPlot) return
         if (building.type == LandPlotType.CottonField) return
-        
+
         if (Math.random() > 0.9) {
             building.durability = trim(building.durability - 1, 0, 1000)
         }
