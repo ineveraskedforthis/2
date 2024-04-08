@@ -1,4 +1,4 @@
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 import { tab } from "./tab.js";
 function reloadCss() {
     var links = document.getElementsByTagName("link");

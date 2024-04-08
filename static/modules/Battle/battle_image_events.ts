@@ -1,5 +1,5 @@
 import { battle_position, UnitSocket, unit_id } from "../../../shared/battle_data"
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 import { IMAGES } from "../load_images.js";
 import { BattleImage, battle_canvas, battle_canvas_context, camera, player_unit_id, units_views } from "./battle_image.js";
 import { position_c } from "./battle_image_helper.js";
@@ -32,7 +32,7 @@ export class BattleImageEvent {
 
     time_passed: number
     duration: number
-    
+
     event_id: number
 
     constructor(event_id: number, unit_id: unit_id, ap_change: number, hp_change: number, duration: number) {
@@ -77,7 +77,7 @@ export class BattleImageEvent {
             this.hp_change_left = 0
             return true
         }
-        
+
         this.ap_change_left = this.ap_change * (this.duration - this.time_passed) / this.duration
         this.hp_change_left = this.hp_change * (this.duration - this.time_passed) / this.duration
 
@@ -90,7 +90,7 @@ export class BattleImageEvent {
         } else {
             unit.a_image.set_action('idle')
         }
-                
+
         unit.ap_change = this.ap_change_left
         unit.hp_change = this.hp_change_left
 
@@ -131,7 +131,7 @@ export class MoveEvent extends BattleImageEvent {
         let direction = position_c.diff(unit.position, target)
         let norm = position_c.norm(direction)
 
-        super(event_id, unit_id, ap_change, 0, norm / BATTLE_MOVEMENT_SPEED)     
+        super(event_id, unit_id, ap_change, 0, norm / BATTLE_MOVEMENT_SPEED)
 
         this.target_position = target
         this.total_distance = norm
@@ -140,9 +140,9 @@ export class MoveEvent extends BattleImageEvent {
     on_start(): void {
         let unit = units_views[this.unit]
         let message = unit.name + ' moved (' + this.target_position.x + ' ' + this.target_position.y + ')'
-        
+
         // let unit= units_views[this.unit]
-        let direction_vec = position_c.diff(this.target_position, unit.position) 
+        let direction_vec = position_c.diff(this.target_position, unit.position)
 
         if (direction_vec.x < 0) {
             unit.orientation = 'left'
@@ -234,7 +234,7 @@ export class UpdateDataEvent extends BattleImageEvent {
 
         unit.range = this.data.range
 
-        let direction_vec = position_c.diff(this.data.position, unit.position) 
+        let direction_vec = position_c.diff(this.data.position, unit.position)
         if (direction_vec.x < 0) {
             unit.orientation = 'left'
         } else if (direction_vec.x > 0) {
@@ -301,7 +301,7 @@ export class AttackEvent extends BattleImageEvent {
         if (unit_view_attacker == undefined || unit_view_defender == undefined) return
 
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
-        direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+        direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec)
 
         if (direction_vec.x < 0) {
             unit_view_attacker.orientation = 'left'
@@ -350,7 +350,7 @@ export class RangedAttackEvent extends BattleImageEvent {
         let unit_view_defender = units_views[this.target]
 
         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
-        direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+        direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec)
 
         if (direction_vec.x < 0) {
             unit_view_attacker.orientation = 'left'
@@ -402,7 +402,7 @@ export class RangedAttackEvent extends BattleImageEvent {
 //     constructor(unit: unit_id, target: unit_id) {
 //         this.type = 'miss'
 //         this.unit_id = unit
-//         this.target_id = target 
+//         this.target_id = target
 //     }
 
 //     effect() {
@@ -410,7 +410,7 @@ export class RangedAttackEvent extends BattleImageEvent {
 //         let unit_view_defender = units_views[this.target_id]
 
 //         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
-//         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+//         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec)
 
 //         unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
 //     }
@@ -423,7 +423,7 @@ export class RangedAttackEvent extends BattleImageEvent {
 //     }
 // }
 
-export class RetreatEvent extends BattleImageEvent {    
+export class RetreatEvent extends BattleImageEvent {
     constructor(event_id: number, unit_id: unit_id, cost: number) {
         super(event_id, unit_id, 0, 0, cost)
     }

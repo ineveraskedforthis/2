@@ -15,6 +15,7 @@
     <link rel="stylesheet" type="text/css" href="static/styles/character_creation.css">
     <link rel="stylesheet" type="text/css" href="static/styles/status_frame_style.css">
     <link rel="stylesheet" type="text/css" href="static/styles/tab_list.css">
+    <link rel="stylesheet" type="text/css" href="static/styles/table.css">
     <link rel="stylesheet" type="text/css" href="static/styles/messages.css">
     <link rel="stylesheet" type="text/css" href="static/styles/map.css">
     <link rel="stylesheet" type="text/css" href="static/styles/skills.css">
@@ -266,8 +267,11 @@
 
                 <div id = 'stash_container' class = 'container-vertical tab_content'>
                     <div id = "goods_stash"></div>
-                    <div id = "savings"></div>
-                    <div id = "savings_trade"></div>
+
+                    <div> Savings: </div>
+                    <div class = "savings_value"></div>
+                    <div> Savings reserved in trade: </div>
+                    <div class = "savings_trade_value"></div>
                 </div>
                 <div class="corner bottom"></div>
             </div>
@@ -366,7 +370,7 @@
                     </div>
                 </div>
                 <div id = 'market' class="tab_content container-vertical">
-                    <div class="header">
+                    <div class="generic_header_buttons_container">
                         <div id="open_market" class="selected">Common goods</div>
                         <div id="open_auction">Equipment</div>
                     </div>
@@ -379,38 +383,37 @@
                             </div>
                             <div class="goods_market market_tab" >
 
-                                <div id="goods_buy_wrapper" class="goods_list_wrapper">
-                                    <div id="goods_list_buy_header" class="goods_list_header">
+                                <div id="bulk_market_container" class="columns_container">
+                                    <div id = "bulk_market_control">
+                                        <div id="bulk_market_filters">
+                                            <div> Filters: </div>
+
+                                            <div id="per_good_filters" class="scroll-y"> </div>
+                                        </div>
+
+                                        <div class="market_control">
+                                            <select name="order_material" id="create_order_material"></select>
+                                            <select name="order_type" id="create_order_type">
+                                                <option value="sell">Sell</option>
+                                                <option value="buy">Buy</option>
+                                            </select>
+                                            <input type="text" id="create_order_amount" class="market_input_field" placeholder="Amount">
+                                            <input type="text" id="create_order_price" class="market_input_field" placeholder="Price">
+                                            <p></p>
+                                            <button id="create_order_button"> Send </button>
+                                            <button id="clear_orders_button"> Clear all. </button>
+
+                                            <div> Savings: </div>
+                                            <div class = "savings_value"></div>
+                                            <div> Savings reserved in trade: </div>
+                                            <div class = "savings_trade_value"></div>
+                                        </div>
                                     </div>
+
                                     <div id="goods_list_buy" class="market_goods_list">
+
                                     </div>
                                 </div>
-
-                                <div id="goods_sell_wrapper" class="goods_list_wrapper">
-                                    <div id="goods_list_sell_header" class="goods_list_header">
-                                    </div>
-                                    <div id="goods_list_sell" class="market_goods_list">
-                                    </div>
-                                </div>
-
-                                <p>
-
-                                <div class="market_control">
-
-                                    <select name="order_material" id="create_order_material"></select>
-                                    <select name="order_type" id="create_order_type">
-                                        <option value="sell">Sell</option>
-                                        <option value="buy">Buy</option>
-                                    </select>
-                                    <input type="text" id="create_order_amount" class="market_input_field" placeholder="Amount">
-                                    <input type="text" id="create_order_price" class="market_input_field" placeholder="Price">
-                                    <p></p>
-                                    <button id="create_order_button"> Send </button>
-
-                                    <button id="clear_orders_button"> Clear all. </button>
-
-                                </div>
-
                             </div>
                         </div>
 
@@ -430,7 +433,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="corner bottom"></div>
             </div>
 
 

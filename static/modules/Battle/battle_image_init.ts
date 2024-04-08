@@ -1,7 +1,7 @@
 import { BattleImage, battle_in_progress, events_list, player_unit_id } from "./battle_image.js";
 import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, UnitSocket, BattleActionData } from "../../../shared/battle_data.js"
 import { tab } from "../ViewManagement/tab.js";
-import { socket } from "../globals.js"
+import { socket } from "../Socket/socket.js";
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
 
 

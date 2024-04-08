@@ -1,5 +1,6 @@
 import { elementById } from "../HTMLwrappers/common.js";
-import { socket, globals } from "../globals.js"
+import { globals } from "../globals.js"
+import { socket } from "../Socket/socket.js";
 
 
 export function init_character_list_interactions() {

@@ -484,7 +484,7 @@ div {
 .craft_option:hover {
     background: linear-gradient(0.25turn, rgba(238, 232, 170, 0.543), transparent);
 }
-.craft_option:hover > .goods_icon {
+.craft_option:hover > .goods-icon {
     color: black;
     font-weight: bold;
 }
@@ -492,12 +492,12 @@ div {
 .craft_option:active{
     background: linear-gradient(0.25turn, rgba(172, 255, 47, 0.447), transparent);
 }
-.craft_option:active > .goods_icon {
+.craft_option:active > .goods-icon {
     color: black;
     font-weight: bold;
 }
 
-.goods_icon {
+.goods-icon {
     background-repeat: no-repeat;
     background-position: center;
     background-size: initial;
@@ -506,7 +506,7 @@ div {
     /* padding: 10px; */
 }
 
-.small_square {
+.small-square {
     width:30px;
     height:30px;
 }

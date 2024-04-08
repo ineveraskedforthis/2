@@ -1,21 +1,21 @@
-.generic_button {
+.generic-button {
     background: rgba(51, 7, 7, 0.7);
     background-repeat: no-repeat;
     background-position: center;
     background-size: 100% 100%;
-    flex: auto;
+    /* flex: auto; */
     text-align: center;
 
     border: #e6cfcf90 1px solid;
     border-radius: 3px;
 }
 
-.generic_button:hover {
+.generic-button:hover {
     background: linear-gradient(177deg, rgba(181, 35, 35, 0.942) 0%, rgba(51, 7, 7, 0.7) 55%);
 }
 
-.generic_button.selected {
-    background: linear-gradient(rgb(206, 235, 74) 0%, rgba(51, 7, 7, 0.7) 15%);
+.generic-button.selected {
+    background: linear-gradient(rgba(51, 7, 7, 0.7) 50%, rgb(206, 235, 74) 100%);
 }
 
 .generic_header_buttons_container {
@@ -31,12 +31,16 @@
     width: 50%;
     height: 100%;
     background-color: rgba(163, 28, 28, 0.425);
+    border: ivory 1px solid;
+    border-radius: 5px;
 }
 
 .generic_header_buttons_container > div:hover {
     background-color: rgba(148, 156, 36, 0.425);
+    border-width: 1px 1px 0px 1px;
 }
 
 .generic_header_buttons_container > .selected {
     background-color: rgba(145, 148, 102, 0.671);
+    border-width: 1px 1px 0px 1px;
 }

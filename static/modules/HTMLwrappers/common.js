@@ -20,6 +20,15 @@ export function inputById(id) {
     }
     return candidate;
 }
+export function selectById(id) {
+    let candidate = elementById(id);
+    if (!isSelect(candidate)) {
+        let error_string = `Element with ID: ${id} is not a select element`;
+        alert(error_string);
+        throw new Error(error_string);
+    }
+    return candidate;
+}
 export function imageById(id) {
     let candidate = elementById(id);
     if (!isImage(candidate)) {
@@ -66,6 +75,9 @@ export function isImage(item) {
 }
 export function isInput(item) {
     return item instanceof HTMLInputElement;
+}
+export function isSelect(item) {
+    return item instanceof HTMLSelectElement;
 }
 export function setInnerHTMLById(id, string) {
     elementById(id).innerHTML = string;

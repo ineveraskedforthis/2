@@ -1,4 +1,4 @@
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 import { tab } from "./tab.js";
 
 function reloadCss()
@@ -40,7 +40,7 @@ function show_scene(scene_id: string) {
             document.getElementById(parent_elem.children[i].id)!.style.visibility = 'hidden';
         }
     }
-    document.getElementById(scene_id)!.style.visibility = 'visible';    
+    document.getElementById(scene_id)!.style.visibility = 'visible';
 }
 
 export function login(msg: string) {
@@ -71,7 +71,7 @@ export function reg(msg: string) {
 // Main menu:
 document.getElementById('to_character_creation')!.onclick = () => {
     socket.emit('play');
-} 
+}
 
 
 socket.on('no-character', show_char_creation)

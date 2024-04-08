@@ -1,4 +1,4 @@
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 export function init_buildings() {
     {
         let div = document.getElementById('local_buildings');

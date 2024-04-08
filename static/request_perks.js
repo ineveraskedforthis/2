@@ -1,6 +1,7 @@
-import { socket, globals } from './modules/globals.js';
+import { globals } from './modules/globals.js';
+import { socket } from "./modules/Socket/socket.js";
 import { SKILL_NAMES } from './SKILL_NAMES.js';
-import { stash_id_to_tag } from './bulk_tags.js';
+import { stash_id_to_tag } from './modules/Stash/stash.js';
 import { EQUIPMENT_TAGS } from './modules/Constants/inventory.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
 // export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const

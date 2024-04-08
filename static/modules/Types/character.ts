@@ -2,10 +2,23 @@ interface ValueInterface {
     value: number;
 }
 
+interface LimitedValueInterface {
+    value: number;
+    max_value: number;
+}
+
 interface CharacterView {
     id: number;
     name: string;
     dead: boolean;
+}
+
+interface BulkOrderView {
+    tag: number,
+    amount: number,
+    price: number,
+    id: number,
+    typ: string
 }
 
 interface CraftItemView {
@@ -53,4 +66,8 @@ interface BattleLogData {
     res: PerDamageNumber,
 
     total: number
+}
+
+interface DependencyUI {
+    update_display: () => void;
 }

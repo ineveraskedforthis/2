@@ -28,6 +28,18 @@ export function inputById(id: string): HTMLInputElement {
     return candidate
 }
 
+export function selectById(id: string): HTMLSelectElement {
+    let candidate = elementById(id);
+
+    if(!isSelect(candidate)) {
+        let error_string = `Element with ID: ${id} is not a select element`;
+        alert(error_string);
+        throw new Error(error_string);
+    }
+
+    return candidate
+}
+
 export function imageById(id: string): HTMLImageElement {
     let candidate = elementById(id);
 
@@ -88,6 +100,10 @@ export function isImage(item: Element): item is HTMLImageElement {
 
 export function isInput(item: Element): item is HTMLInputElement {
     return item instanceof HTMLInputElement;
+}
+
+export function isSelect(item: Element): item is HTMLSelectElement {
+    return item instanceof HTMLSelectElement;
 }
 
 export function setInnerHTMLById(id: string, string: string) {

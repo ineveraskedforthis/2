@@ -1,6 +1,7 @@
 import { set_up_header_with_strings } from '../../headers.js';
 import { elementById, inputById } from '../HTMLwrappers/common.js';
-import { globals, socket } from '../globals.js';
+import { globals } from '../globals.js';
+import { socket } from "../Socket/socket.js";
 // MESSAGES STUFF
 const message_boxes = ['log', 'log-attack', 'chat'];
 export function init_messages_interactions() {

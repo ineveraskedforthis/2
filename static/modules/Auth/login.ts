@@ -1,7 +1,7 @@
 import { set_up_header_with_strings } from '../../headers.js';
 import { elementById, inputById } from '../HTMLwrappers/common.js';
 import { tab } from '../ViewManagement/tab.js';
-import { socket } from '../globals.js';
+import { socket } from "../Socket/socket.js";
 
 export function init_authentication_control() {
     elementById('logout').onclick = () => {

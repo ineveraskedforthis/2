@@ -1,5 +1,5 @@
-import { socket } from '../globals.js';
-import { stash_id_to_tag } from "../../bulk_tags.js";
+import { socket } from "../Socket/socket.js";
+import { stash_id_to_tag } from '../Stash/stash.js';
 import { elementById, elementParent, existsById, selectOneFrom } from '../HTMLwrappers/common.js';
 var craft_items = [];
 var craft_bulk = [];
@@ -30,7 +30,7 @@ function construct_craft_inputs(inputs) {
     const inputs_div = document.createElement('div');
     for (let input of inputs) {
         const input_div = document.createElement('div');
-        input_div.classList.add(...['goods_icon', 'small_square']);
+        input_div.classList.add(...['goods-icon', 'small-square']);
         input_div.style.backgroundImage = `url(/static/img/stash_${stash_id_to_tag[input.material]}.png`;
         input_div.innerHTML = input.amount.toString();
         inputs_div.appendChild(input_div);
@@ -60,7 +60,7 @@ function construct_craft_div(data) {
     for (let output of data.output) {
         const output_div = document.createElement('div');
         output_div.classList.add('material_id' + output.material);
-        output_div.classList.add(...['goods_icon', 'small_square']);
+        output_div.classList.add(...['goods-icon', 'small-square']);
         output_div.style.background = `no-repeat left/contain url(/static/img/stash_${stash_id_to_tag[output.material]}.png)`;
         outputs_div.appendChild(output_div);
     }

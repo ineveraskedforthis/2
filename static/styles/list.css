@@ -1,8 +1,0 @@
-.list_header > .header {
-    display: flex;
-    flex-direction: row;
-    border: #fdf1f1fd 1px solid;
-    background-color: rgba(118, 35, 21, 0.479);
-    height: 20px;
-}
-

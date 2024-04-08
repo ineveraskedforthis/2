@@ -1,10 +1,11 @@
-import { socket, globals } from './modules/globals.js';
+import { globals } from './modules/globals.js';
+import { socket } from "./modules/Socket/socket.js";
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { CharacterStatsResponse, PerksResponse } from '../shared/responses.js'
 import { Perks } from '../shared/character.js'
 import { equip_slot } from '../shared/inventory.js';
 import { money } from '../shared/common.js';
-import { stash_id_to_tag } from './bulk_tags.js';
+import { stash_id_to_tag } from './modules/Stash/stash.js';
 import { EQUIPMENT_TAGS } from './modules/Constants/inventory.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
 

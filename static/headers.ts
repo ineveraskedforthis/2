@@ -3,9 +3,16 @@ export interface raw_header_tab {
     connected_element: string,
 }
 
-export interface header_tab {
-    element: HTMLElement,
+interface header_button {
+    element: HTMLElement
+}
+
+export interface header_tab extends header_button {
     connected_element: HTMLElement
+}
+
+export interface header_callbacks extends header_button {
+    callback: () => void
 }
 
 function raw_header_to_header(input: raw_header_tab) : header_tab {
@@ -29,6 +36,26 @@ function show_function(item: header_tab) {
     }
 }
 
+function _unselect_header_function(item: header_button) {
+    return () => {
+        item.element.classList.remove('selected')
+    }
+}
+
+function _select_header_function(item: header_button) {
+    return () => {
+        item.element.classList.add('selected')
+    }
+}
+
+function select_header_callback(item: header_button, group: header_button[] ) {
+    for (let h of group) {
+        _unselect_header_function(h)()
+    }
+
+    _select_header_function(item)()
+}
+
 function select_function(item: header_tab, group: header_tab[]) {
     return () => {
         for (let h of group) {
@@ -45,6 +72,17 @@ export function set_up_header_tab_choice(data: header_tab[]) {
     }
 
     select_function(data[0], data)()
+}
+
+export function set_up_header_tab_callbacks(data: header_callbacks[] ) {
+    for (let item of data) {
+        item.element.onclick = () => {
+            select_header_callback(item, data)
+            item.callback()
+        }
+    }
+
+    data[0].callback()
 }
 
 export function set_up_header_with_strings(data: raw_header_tab[]) {

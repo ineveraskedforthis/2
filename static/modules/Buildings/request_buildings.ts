@@ -1,4 +1,4 @@
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 import { LandPlotType, LandPlotSocket } from "../../../shared/buildings.js"
 
 export function init_buildings() {

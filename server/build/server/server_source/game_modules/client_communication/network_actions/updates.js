@@ -140,8 +140,8 @@ var SendUpdate;
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        alerts_1.Alerts.generic_user_alert(user, 'savings', character.savings.get());
-        alerts_1.Alerts.generic_user_alert(user, 'savings-trade', character.trade_savings.get());
+        alerts_1.Alerts.generic_user_alert(user, 'val_savings_c', character.savings.get());
+        alerts_1.Alerts.generic_user_alert(user, 'val_savings_trade_c', character.trade_savings.get());
     }
     SendUpdate.savings = savings;
     function status(user) {

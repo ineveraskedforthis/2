@@ -1,5 +1,5 @@
 import { generate_item_market_div, generate_market_header } from "../Divs/item.js";
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 const item_market_container = document.getElementById('auction_house_tab');
 const item_market_data = [];
 const control_container = document.querySelector('.auction_control');

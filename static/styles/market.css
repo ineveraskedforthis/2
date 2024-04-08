@@ -153,3 +153,38 @@
 .auc_slot{
     border: white 1px solid;
 }
+
+
+#bulk_market_filters {
+    height: 80%;
+}
+
+#goods_list_buy {
+    border: ivory 1px solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    width: calc(85% - 40px);
+    height: 100%;
+}
+
+#bulk_market_container {
+    height: calc(100% - 20px);
+}
+
+#filters_header {
+    height: 25px;
+}
+
+#per_good_filters {
+    height: calc(100% - 25px);
+}
+
+#bulk_market_control {
+    border: ivory 1px solid;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px;
+    width: 15%;
+    height: 100%;
+}

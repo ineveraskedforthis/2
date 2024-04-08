@@ -1,4 +1,4 @@
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 import { IMAGES } from "../load_images.js";
 import { BattleImage, battle_canvas_context, camera, player_unit_id, units_views } from "./battle_image.js";
 import { position_c } from "./battle_image_helper.js";
@@ -315,13 +315,13 @@ export class RangedAttackEvent extends BattleImageEvent {
 //     constructor(unit: unit_id, target: unit_id) {
 //         this.type = 'miss'
 //         this.unit_id = unit
-//         this.target_id = target 
+//         this.target_id = target
 //     }
 //     effect() {
 //         let unit_view_attacker = units_views[this.unit_id]
 //         let unit_view_defender = units_views[this.target_id]
 //         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
-//         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec) 
+//         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec)
 //         unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
 //     }
 //     generate_log_message():string {

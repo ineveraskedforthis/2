@@ -1,8 +1,5 @@
-import { Socket } from "../../shared/battle_data";
-
-// eslint-disable-next-line no-undef
-declare const io: any;
-export var socket:Socket = io();
+import { socket } from "./Socket/socket.js";
+import { StashValue, Value } from "./Values/collection.js";
 
 export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest'] as const
 export type local_action = typeof local_actions[number]
@@ -35,6 +32,9 @@ type globals = {
     action_ratio: number
     action_total_time: number
     local_characters: CharacterView[]
+    stash: StashValue[]
+    savings: Value
+    savings_trade: Value
 }
 
 export var globals: globals = {
@@ -52,4 +52,7 @@ export var globals: globals = {
     action_ratio: 0,
     action_total_time: 1,
     local_characters: [],
+    stash: [],
+    savings: new Value(socket, "savings"),
+    savings_trade: new Value(socket, "savings_trade")
 }

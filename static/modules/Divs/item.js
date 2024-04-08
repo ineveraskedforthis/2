@@ -1,4 +1,4 @@
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 function send_equip_weapon_message(index) {
     {
         const destroy = document.getElementById('destroy');

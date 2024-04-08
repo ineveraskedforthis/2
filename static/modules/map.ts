@@ -3,7 +3,8 @@
 
 import { CellDisplay } from '../../shared/responses.js';
 import {get_pos_in_canvas} from './common.js';
-import { action, globals, is_action_repeatable, local_action, local_actions, socket } from './globals.js';
+import { action, globals, is_action_repeatable, local_action, local_actions } from './globals.js';
+import { socket } from "./Socket/socket.js";
 import {location_descriptions, section_descriptions} from './localisation.js';
 
 function st(a: [number, number]) {
@@ -45,7 +46,7 @@ export function init_map_control(map: Map) {
         globals.prev_mouse_x = null;
         globals.prev_mouse_y = null;
         globals.map_zoom = 1
-        map.last_time_down = Date.now() 
+        map.last_time_down = Date.now()
     }
 
     map.canvas.onmousemove = event => {
@@ -64,7 +65,7 @@ export function init_map_control(map: Map) {
         var hovered_hex = map.get_hex([mouse_pos.x, mouse_pos.y]);
         if (hovered_hex != undefined) {
             map.hover_hex(hovered_hex);
-        }            
+        }
     };
 
     map.canvas.onmouseup = event => {
@@ -81,7 +82,7 @@ export function init_map_control(map: Map) {
                 map.select_hex(selected_hex);
                 map.move_flag = true
                 send_move_action(map, 'move')
-            }  
+            }
         } else {
             let tmp = Date.now()
             if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
@@ -92,7 +93,7 @@ export function init_map_control(map: Map) {
                 context.style.left = event.clientX + 5 + 'px';
                 context.classList.remove('hidden')
                 globals.map_context_dissapear_time = 1;
-            }            
+            }
         }
         globals.pressed = false;
     }
@@ -108,15 +109,15 @@ export function init_map_control(map: Map) {
 }
 
 const tile_tags = [
-    'red_steppe', 
-    'house', 
-    'urban_1', 
-    'urban_3', 
-    'city', 
-    'sea', 
-    'coast', 
-    'forest_1', 
-    'forest_2', 
+    'red_steppe',
+    'house',
+    'urban_1',
+    'urban_3',
+    'city',
+    'sea',
+    'coast',
+    'forest_1',
+    'forest_2',
     'forest_3',
     'rupture',
     'rural',
@@ -201,7 +202,7 @@ export class Map {
         this.forest = []
         this.urban = []
         this.rat_lairs = []
-        // this.visit_spotted = []     
+        // this.visit_spotted = []
         // this.description = document.createElement('div');
         // this.container.appendChild(this.description);
 
@@ -227,7 +228,7 @@ export class Map {
     //     // console.log(this.visit_spotted)
     // }
 
-    
+
     load_terrain(data: { x: number, y: number, ter: CellDisplay}) {
         if (this.terrain[data.x] == undefined) {
             this.terrain[data.x] = []
@@ -279,7 +280,7 @@ export class Map {
                     this.draw_hex(ctx, position, 'fill', '(0, 0, 255, 0.6)', 0);
                     // this.draw_hex(i, j, 'circle', '(0, 255, 0, 1)');
                 } else if (this.selected != null && this.selected[0] == i && this.selected[1] == j) {
-                    this.draw_hex(ctx, position, 'fill', '(255, 255, 0, 0.6)', 0);                    
+                    this.draw_hex(ctx, position, 'fill', '(255, 255, 0, 0.6)', 0);
                 } else {
                     // if ((get_territory_tag(i, j) == this.curr_territory) & (this.curr_territory != undefined) & (this.sections != undefined)) {
                     //     let color = this.get_section_color(this.get_section(i, j))
@@ -310,7 +311,7 @@ export class Map {
 
         if (this.selected != undefined){
             ctx.strokeStyle = 'rgb(0, 255, 0)'
-            
+
             let cur: [number, number]| undefined = this.selected
             while (cur != undefined) {
                 let tmp: string|undefined = st(cur)
@@ -322,11 +323,11 @@ export class Map {
                     let tmp_cen = this.get_hex_centre(previous)
                     ctx.lineTo(tmp_cen[0], tmp_cen[1])
                     ctx.stroke()
-                }                
+                }
                 cur = this.path[tmp]
             }
-            
-        }        
+
+        }
     }
 
     // get_section(x, y) {
@@ -335,7 +336,7 @@ export class Map {
     //         if (this.sections.hexes[i].indexOf(tmp) > -1) {
     //             return i
     //         }
-    //     } 
+    //     }
     //     return 'unknown'
     // }
 
@@ -366,7 +367,7 @@ export class Map {
             }
         } else {
             this.draw_hex(ctx, this.curr_pos, 'pentagon', '(200, 200, 0, 1)', 10);
-        }        
+        }
     }
 
     draw_selected_circle(ctx: CanvasRenderingContext2D) {
@@ -376,7 +377,7 @@ export class Map {
     draw_pentagon(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
         let epsilon = 6 * Math.PI / 5
         // let xi = 2 * Math.PI / 5
-        let start = this.time 
+        let start = this.time
         // let shift = globals.action_ratio
 
         ctx.beginPath();
@@ -472,10 +473,10 @@ export class Map {
     draw_hex_features(ctx: CanvasRenderingContext2D, [i, j]: [number, number]) {
         var h = this.hex_h;
         var w = this.hex_w;
-        var [center_x, center_y] = this.hex_center_camera_adjusted([i, j]) 
+        var [center_x, center_y] = this.hex_center_camera_adjusted([i, j])
         // (this.hex_side + w) * i - this.camera[0] - this.hex_shift[0];
         // var center_y = 2 * h * j - h * i - this.camera[1] - this.hex_shift[1];
-        
+
         // draw features
         if (this.urban[i] == undefined) return;
         if (this.urban[i][j] == undefined) return;
@@ -485,7 +486,7 @@ export class Map {
         let urbanisation = this.urban[i][j]
         let rats = this.rat_lairs[i][j]
         ctx.strokeStyle = 'black';
-        
+
         if (rats) {
             ctx.drawImage(tile('rats'), center_x - this.hex_side, center_y - h)
         }
@@ -497,7 +498,7 @@ export class Map {
 
             ctx.drawImage(tile('forest_1'), center_x - this.hex_side + noise_x, center_y - h + noise_y)
         }
-        
+
         if ((urbanisation >= 8)) {
             ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
             ctx.drawImage(tile('city_colour'), center_x - this.hex_side, center_y - h)
@@ -586,7 +587,7 @@ export class Map {
         let next = 0
         while ((next != -1) && (right < 400)) {
             let curr = queue[next]
-            used[st(curr)] = true           
+            used[st(curr)] = true
             for (let d of directions) {
                 let tmp: [number, number] = [curr[0] + d[0], curr[1] + d[1]]
                 let terrain = this.get_terrain(tmp)
@@ -598,11 +599,11 @@ export class Map {
                         right++;
                         if ((tmp[0] == this.selected[0]) && (tmp[1] == this.selected[1])) {
                             return prev
-                        }                    
+                        }
                     }
                 }
             }
-            
+
 
             let heur_score = 9999
             next = -1
@@ -630,7 +631,7 @@ export class Map {
             }
             return 'coast'
         }
-        
+
         if (this.forest[i] != undefined) {
             if (this.urban[i][j] >= 4) {
                 return 'colony'
@@ -731,7 +732,7 @@ function send_move_action(map: Map, action: 'move' | 'continue_move') {
     console.log(action)
     let selected = map.selected
     let curr_pos = map.curr_pos
-    
+
     if (action == 'move') {
         if (selected == undefined) return
         let adj_flag = check_move(position_diff(selected, curr_pos))
@@ -743,22 +744,22 @@ function send_move_action(map: Map, action: 'move' | 'continue_move') {
             map.move_flag = true
             const next_cell = map.real_path[map.path_progress + 1]
             map.move_target = next_cell
-            socket.emit('move', coord_to_x_y(next_cell))            
+            socket.emit('move', coord_to_x_y(next_cell))
         }
     } else if (action == 'continue_move') {
         map.path_progress += 1
         const next_cell = map.real_path[map.path_progress + 1]
         map.move_target = next_cell
-        if (next_cell == undefined) return        
-        socket.emit('move', coord_to_x_y(next_cell))    
-    } 
+        if (next_cell == undefined) return
+        socket.emit('move', coord_to_x_y(next_cell))
+    }
     // else if ((map.real_path.length > 1) && ((map.move_flag == true) || (map.movement_progress > 0.99))) {
     //     map.move_flag = true
     //     map.path_progress = 1
     //     map.path = map.create_path()
     //     const next_cell = map.real_path[map.path_progress + 1]
     //     map.move_target = next_cell
-    //     socket.emit('move', coord_to_x_y(next_cell))            
+    //     socket.emit('move', coord_to_x_y(next_cell))
     // }
 }
 
@@ -778,7 +779,7 @@ function set_local_actions(actions: readonly local_action[], map: Map) {
     let desktop_container = document.getElementById('desktop_actions')!;
     for (let action_tag of actions) {
         // let map_button = document.getElementById(action_tag + '_button');
-        // ((button, map_manager, action_tag) => 
+        // ((button, map_manager, action_tag) =>
         //         button.onclick = () => map_manager.send_cell_action(action_tag)
         // )(map_button, this, action_tag);
         let desktop_button = document.createElement('div');
@@ -842,13 +843,13 @@ export function draw_map_related_stuff(delta: number) {
             //do the movement again if you are not at destination already
             if (map.move_flag) {
                 send_move_action(map, 'continue_move')
-            }            
+            }
             // map.move_flag = false
         } else {
             let bar = div.querySelector('span')!
             bar.style.width = Math.min(Math.floor(globals.action_time / globals.action_total_time * 10000)/ 100, 100) + '%'
             if (map.move_flag) {map.movement_progress = globals.action_ratio}
-        }    
+        }
     }
 
     if (globals.map_context_dissapear_time != undefined) {
@@ -883,5 +884,5 @@ function restart_action_bar(time: number, is_move: boolean) {
         globals.action_total_time += 0.1
         globals.action_total_time *= 1.1
     }
-    
+
 }

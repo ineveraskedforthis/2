@@ -1,6 +1,6 @@
 import { BattleImage, battle_in_progress } from "./battle_image.js";
 import { tab } from "../ViewManagement/tab.js";
-import { socket } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
 // export const battle_image = new BattleImageNext();
 const events_queue = [];

@@ -1,5 +1,6 @@
 import { elementById } from "../HTMLwrappers/common.js";
-import { socket, globals } from "../globals.js";
+import { globals } from "../globals.js";
+import { socket } from "../Socket/socket.js";
 export function init_character_list_interactions() {
     socket.on('cell-characters', data => { update_characters_list(data); });
     elementById("attack_selected_character").onclick = attack_selected_character;

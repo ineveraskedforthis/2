@@ -1,5 +1,5 @@
 import { damage_type, ItemData, ItemOrderData } from "../../../shared/inventory"
-import { socket } from "../globals.js"
+import { socket } from "../Socket/socket.js";
 
 function send_equip_weapon_message(index:number) {
     {

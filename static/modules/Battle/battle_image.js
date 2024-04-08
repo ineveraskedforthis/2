@@ -1,6 +1,6 @@
 import { get_mouse_pos_in_canvas, position_c } from './battle_image_helper.js';
 import { BattleUnitView } from './battle_view.js';
-import { socket } from '../globals.js';
+import { socket } from "../Socket/socket.js";
 import { AnimatedImage } from './animation.js';
 import { BATTLE_SCALE } from './constants.js';
 import { IMAGES } from '../load_images.js';
@@ -612,7 +612,7 @@ export var BattleImage;
     //         } else {
     //             div.classList.remove('disabled')
     //         }
-    //     } 
+    //     }
     // }
     function update_action_display(tag, flag) {
         console.log(tag);
@@ -791,7 +791,7 @@ export var BattleImage;
 //         console.log(data)
 //         for (let unit of Object.values(data)) {
 //             if (had_left[unit.id]) continue
-//             update_unit(unit)            
+//             update_unit(unit)
 //         }
 //         if (selected == undefined) return
 //         if (player == undefined) return
@@ -816,7 +816,7 @@ export var BattleImage;
 //             if (action.who == player) {
 //                 alert('Not enough action points')
 //                 return 'Not enough action points'
-//             }            
+//             }
 //             return 'ok'
 //         }
 //         if ((action.action == 'not_your_turn') ){
@@ -853,7 +853,7 @@ export var BattleImage;
 //     if (data.action == 'pff') {
 //         return 'something wrong has happened'
 //     }
-//     else 
+//     else
 //     } else if (data.action.startsWith('flee-failed')) {
 //         return names[data.who] + ' failed to retreat'
 //     }

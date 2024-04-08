@@ -2,7 +2,7 @@ import {canvas_position, get_mouse_pos_in_canvas, position_c} from './battle_ima
 
 import { BattleData, unit_id, UnitSocket, battle_position, BattleActionData } from "../../../shared/battle_data.js"
 import { BattleUnitView } from './battle_view.js';
-import { socket } from '../globals.js';
+import { socket } from "../Socket/socket.js";
 import { BattleImageEvent } from './battle_image_events.js';
 import { AnimatedImage } from './animation.js';
 import { BATTLE_SCALE } from './constants.js';
@@ -153,12 +153,12 @@ const right = 7
 const top = -15
 const bottom = 15
 
-const width = right - left 
+const width = right - left
 const height = bottom - top
 const max_dim = Math.max(width, height)
 
 function x_y_to_tile(x: number, y: number) {
-    return (x - left) * max_dim + y 
+    return (x - left) * max_dim + y
 }
 
 function set_tile(x: number, y: number, value: number) {
@@ -350,7 +350,7 @@ export namespace BattleImage {
 
     export function unit_div(id: unit_id|undefined): HTMLDivElement|undefined {
         if (id == undefined) return undefined;
-        let div = enemy_list_div.querySelector('.fighter_' + id) 
+        let div = enemy_list_div.querySelector('.fighter_' + id)
         if (div == null) return undefined
         return div as HTMLDivElement
     }
@@ -365,7 +365,7 @@ export namespace BattleImage {
         if (units_views[unit] != undefined) {
             units_views[unit].killed = true
         }
-        
+
         had_left[unit] = true
 
         UnitsQueueManagement.end_turn()
@@ -430,7 +430,7 @@ export namespace BattleImage {
                 hovered_flag = true;
                 set_hover(Number(unit_id) as unit_id)
             }
-        } 
+        }
         if (!hovered_flag) {
             remove_hover()
         }
@@ -467,7 +467,7 @@ export namespace BattleImage {
                 select(i)
                 selected = true
             }
-        } 
+        }
         if (!selected) {
             unselect()
             anchor_position = pos;
@@ -506,12 +506,12 @@ export namespace BattleImage {
         actions.push(action_type)
 
         console.log(action_type)
-        
+
         let action_div = document.createElement('div');
         action_div.classList.add('battle_action');
         action_div.classList.add(action_type.tag)
         action_div.id = "battle_action_" + action_type.tag
-        
+
         {
             let label = document.createElement('div')
             label.innerHTML = `(${hotkey||''}) ${action_type.name}`
@@ -522,12 +522,12 @@ export namespace BattleImage {
             let label = document.createElement('div')
             label.id = action_type.tag + '_ap_cost'
             action_div.appendChild(label)
-            
+
             if (action_type.cost != undefined) {
                 label.innerHTML = 'ap: ' + action_type.cost.toFixed(2);
             }
         }
-        
+
         {
             let label = document.createElement('div')
             label.id = action_type.tag + '_chance_b'
@@ -541,7 +541,7 @@ export namespace BattleImage {
             label.innerHTML = '???'
             action_div.appendChild(label)
         }
-        
+
         if (hotkey != undefined) {
             key_to_action[hotkey] = action_type.tag
             key_to_action_type[hotkey] = action_type.target
@@ -572,7 +572,7 @@ export namespace BattleImage {
                 }
             }
         }
-        
+
         if (!flag) add_action(data, hotkey)
     }
 
@@ -692,7 +692,7 @@ export namespace BattleImage {
     //         } else {
     //             div.classList.remove('disabled')
     //         }
-    //     } 
+    //     }
     // }
     export function update_action_display(tag: string, flag: boolean) {
         console.log(tag)
@@ -722,7 +722,7 @@ export namespace BattleImage {
                 }
 
                 battle_canvas_context.drawImage(
-                    tilemap, 
+                    tilemap,
                     tile * 50, 0,
                     50, 50,
                     start_point.x, start_point.y,
@@ -753,7 +753,7 @@ export namespace BattleImage {
         //     battle_canvas_context.moveTo(start_point.x, start_point.y);
         //     battle_canvas_context.lineTo(end_point.x, end_point.y)
         // }
-        
+
         // for (let i = top + 1; i < bottom; i++) {
         //     const start_point = position_c.battle_to_canvas({x: left, y: i} as battle_position)
         //     const end_point = position_c.battle_to_canvas({x: right, y: i} as battle_position)
@@ -761,7 +761,7 @@ export namespace BattleImage {
         //     battle_canvas_context.lineTo(end_point.x, end_point.y)
         // }
         // battle_canvas_context.stroke()
-        
+
     }
 
     export function draw_units(dt: number) {
@@ -789,26 +789,26 @@ export namespace BattleImage {
     export function draw(dt: number) {
         battle_canvas_context.clearRect(0, 0, w, h);
         draw_background()
-        
+
         UnitsQueueManagement.draw(battle_canvas_context)
         //handle_events
-        update(dt)       
+        update(dt)
 
         // draw background only once (no camera movement support yet)
         if (!background_flag){
             let ctx = canvas_background.getContext('2d');
             ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
             background_flag = true;
-        } 
+        }
 
-         
+
         draw_units(dt)
         draw_anchor()
     }
 
     export function draw_anchor() {
         let ctx = battle_canvas_context
-        if (anchor_position != undefined) {            
+        if (anchor_position != undefined) {
             ctx.strokeStyle = 'rgba(255, 255, 0, 1)';
             ctx.fillStyle = "rgba(10, 10, 200, 0.9)";
             ctx.beginPath();
@@ -892,10 +892,10 @@ export namespace BattleImage {
 //         for (let unit of Object.values(data)) {
 //             if (had_left[unit.id]) continue
 
-//             update_unit(unit)            
+//             update_unit(unit)
 //         }
 
-        
+
 //         if (selected == undefined) return
 //         if (player == undefined) return
 //         let move_ap_div = document.getElementById('move'+'_ap_cost')!
@@ -904,7 +904,7 @@ export namespace BattleImage {
 //         const target_data = units_data[selected]
 //         if (player_data == undefined) return
 //         if (target_data == undefined) return
-        
+
 //         let a = player_data.position
 //         let b = target_data.position
 //         let dist = Math.floor(position_c.dist(a, b) * 100) / 100
@@ -936,7 +936,7 @@ export namespace BattleImage {
 //             if (action.who == player) {
 //                 alert('Not enough action points')
 //                 return 'Not enough action points'
-//             }            
+//             }
 //             return 'ok'
 //         }
 //         if ((action.action == 'not_your_turn') ){
@@ -958,7 +958,7 @@ export namespace BattleImage {
 //         }
 //     }
 // }
-    
+
 
     // returns log message
     // returns null if no message needed
@@ -972,12 +972,12 @@ export namespace BattleImage {
     //     if (data.action == 'end_turn') {
     //         return 'end_of_the_turn'
     //     }
-        
+
     //     if (data.action == 'pff') {
     //         return 'something wrong has happened'
     //     }
-        
-    //     else 
+
+    //     else
     //     } else if (data.action.startsWith('flee-failed')) {
     //         return names[data.who] + ' failed to retreat'
     //     }

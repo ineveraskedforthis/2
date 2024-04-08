@@ -1,7 +1,8 @@
 /* eslint-disable no-redeclare */
 /*global images, battle_image*/
 import { get_pos_in_canvas } from './common.js';
-import { globals, is_action_repeatable, local_actions, socket } from './globals.js';
+import { globals, is_action_repeatable, local_actions } from './globals.js';
+import { socket } from "./Socket/socket.js";
 function st(a) {
     return a[0] + ' ' + a[1];
 }
@@ -143,7 +144,7 @@ export class Map {
         this.forest = [];
         this.urban = [];
         this.rat_lairs = [];
-        // this.visit_spotted = []     
+        // this.visit_spotted = []
         // this.description = document.createElement('div');
         // this.container.appendChild(this.description);
         this.path = {};
@@ -260,7 +261,7 @@ export class Map {
     //         if (this.sections.hexes[i].indexOf(tmp) > -1) {
     //             return i
     //         }
-    //     } 
+    //     }
     //     return 'unknown'
     // }
     // get_section_color(tag) {
@@ -644,7 +645,7 @@ function send_move_action(map, action) {
     //     map.path = map.create_path()
     //     const next_cell = map.real_path[map.path_progress + 1]
     //     map.move_target = next_cell
-    //     socket.emit('move', coord_to_x_y(next_cell))            
+    //     socket.emit('move', coord_to_x_y(next_cell))
     // }
 }
 function send_local_cell_action(map, action) {
@@ -661,7 +662,7 @@ function set_local_actions(actions, map) {
     let desktop_container = document.getElementById('desktop_actions');
     for (let action_tag of actions) {
         // let map_button = document.getElementById(action_tag + '_button');
-        // ((button, map_manager, action_tag) => 
+        // ((button, map_manager, action_tag) =>
         //         button.onclick = () => map_manager.send_cell_action(action_tag)
         // )(map_button, this, action_tag);
         let desktop_button = document.createElement('div');

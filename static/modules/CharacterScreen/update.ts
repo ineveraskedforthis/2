@@ -1,30 +1,34 @@
 import { EquipSocket, equip_slot } from "../../../shared/inventory.js";
 import { EQUIPMENT_TAGS } from "../Constants/inventory.js";
 import { generate_dummy_item_backpack_div, generate_item_backpack_div, generate_name } from "../Divs/item.js";
-import { socket } from "../globals.js";
+import { elementById } from "../HTMLwrappers/common.js";
+import { socket } from "../Socket/socket.js";
+
 
 const table_items = document.getElementById('backpack_weapon_tab')!
 const item_select_div = document.getElementById('create_auction_order_item') as HTMLSelectElement
 
 const header_div = generate_dummy_item_backpack_div()
+const equip_block = elementById('equip')!
 
-const equip_block = document.getElementById('equip')!
-for (let i of EQUIPMENT_TAGS) {
-    const tmp = document.createElement('div');
-    tmp.classList.add(... ['item_frame']);
-    tmp.id = 'eq_' + i;
-    ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
-    let name_label = document.createElement('div')
-    name_label.innerHTML = i
-    name_label.classList.add('slot_label')
-    tmp.appendChild(name_label)
+export function init_equipment() {
+    for (let i of EQUIPMENT_TAGS) {
+        const tmp = document.createElement('div');
+        tmp.classList.add(... ['item_frame']);
+        tmp.id = 'eq_' + i;
+        ((tag) => {tmp.onclick = () => {socket.emit('unequip', tag); socket.emit('char-info-detailed')}})(i)
+        let name_label = document.createElement('div')
+        name_label.innerHTML = i
+        name_label.classList.add('slot_label')
+        tmp.appendChild(name_label)
 
-    let item_label = document.createElement('div')
-    item_label.classList.add('item')
-    item_label.innerHTML = "???"
-    tmp.appendChild(item_label)
+        let item_label = document.createElement('div')
+        item_label.classList.add('item')
+        item_label.innerHTML = "???"
+        tmp.appendChild(item_label)
 
-    equip_block.appendChild(tmp)
+        equip_block.appendChild(tmp)
+    }
 }
 
 function add_option(name: string, id: number) {
