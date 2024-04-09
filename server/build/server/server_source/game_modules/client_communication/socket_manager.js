@@ -98,7 +98,7 @@ class SocketManager {
             socket.on('leave-room', () => run_event_1.SocketCommand.leave_room(user));
             socket.on('repair-building', (msg) => run_event_1.SocketCommand.repair_building(user, msg));
             socket.on('request-tags', () => { socket.emit('tags', materials_manager_1.materials.get_materials_json()); });
-            socket.on('request-belonging', () => request_1.Request.belongings(user));
+            socket.on('request-belongings', () => request_1.Request.belongings(user));
         });
     }
     disconnect(user) {

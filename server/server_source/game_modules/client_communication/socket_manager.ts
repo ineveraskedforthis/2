@@ -143,7 +143,7 @@ export class SocketManager {
 
             socket.on('request-tags', () => {socket.emit('tags', materials.get_materials_json());})
 
-            socket.on('request-belonging', () => Request.belongings(user))
+            socket.on('request-belongings', () => Request.belongings(user))
         });
     }
 

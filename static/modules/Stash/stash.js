@@ -58,12 +58,6 @@ export function update_tags(msg) {
     for (var tag in msg) {
         character.stash.push(new StashValue(socket, tag, msg[tag], [market_bulk]));
     }
-    socket.on('stash-update', msg => {
-        console.log('stash-update');
-        console.log(msg);
-        update_stash(msg);
-        socket.emit('request-belongings');
-    });
 }
 export function update_stash(data) {
     const character = globals.character_data;

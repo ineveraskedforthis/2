@@ -1,5 +1,5 @@
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-import { update_tags } from './modules/Stash/stash.js';
+import { update_stash, update_tags } from './modules/Stash/stash.js';
 import { init_authentication_control } from './modules/Auth/login.js';
 import { BattleImage } from './modules/Battle/battle_image.js';
 import { init_battle_control } from './modules/Battle/battle_image_init.js';
@@ -70,6 +70,18 @@ socket.on("character_data", (msg: CharacterDataBasic) => {
     socket.emit('request-tags');
 })
 
+socket.on('tags', msg => {
+    update_tags(msg);
+    init_market_filters();
+    socket.emit('request-belongings')
+});
+
+socket.on('stash-update', msg => {
+    console.log('stash-update');
+    console.log(msg);
+    update_stash(msg);
+});
+
 socket.on('log-message', msg => {
     if (msg == null) {
         return;
@@ -81,11 +93,6 @@ socket.on('log-message', msg => {
     new_log_message(msg)
 });
 
-
-socket.on('tags', msg => {
-    update_tags(msg);
-    init_market_filters();
-});
 socket.on('is-reg-completed', msg => reg(msg));
 socket.on('is-login-completed', msg => login(msg));
 socket.on('session', msg => {localStorage.setItem('session', msg)})
