@@ -1,3 +1,4 @@
+import { SKILL_NAMES } from "../../SKILL_NAMES.js";
 import { set_up_header_with_strings } from "../../headers.js";
 import { elementById, resetInnerHTMLById } from "../HTMLwrappers/common.js";
 import { BarValue, value_bar_class_name, value_class_name } from "../Values/collection.js";
@@ -36,7 +37,7 @@ function build_skill_div(tag) {
         practice_bar_container.appendChild(practice_bar);
         let name_label = document.createElement('div');
         name_label.classList.add('label');
-        name_label.innerHTML = tag;
+        name_label.innerHTML = SKILL_NAMES[tag] != undefined ? SKILL_NAMES[tag] : tag;
         practice_bar_container.appendChild(name_label);
     }
     skill_div.appendChild(practice_bar_container);
