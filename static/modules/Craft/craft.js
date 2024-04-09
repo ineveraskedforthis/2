@@ -101,7 +101,7 @@ export function new_craft_bulk(craft_list, data) {
         value.value = item.amount;
     }
     for (let item of data.value.output) {
-        let value = new BulkAmount(socket, data.tag + "_craft_input_" + item.material, item.material, []);
+        let value = new BulkAmount(socket, data.tag + "_craft_output_" + item.material, item.material, []);
         output_amount_data[data.tag].push(value);
         value.value = item.amount;
     }
@@ -118,7 +118,7 @@ export function new_craft_item(craft_list, data) {
         inputs_amount_data[data.tag].push(value);
         value.value = item.amount;
     }
-    durability_data[data.tag] = new Value(socket, data.tag + "craft_durability", [craft_list]);
+    durability_data[data.tag] = new Value(socket, data.tag + "_craft_durability", [craft_list]);
     craft_list.data.push(data.value);
     craft_list.update_display();
 }

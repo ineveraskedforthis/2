@@ -87,7 +87,9 @@ var Alerts;
     }
     Alerts.generic_character_alert = generic_character_alert;
     function craft_bulk(user, tag, value) {
-        Alerts.generic_user_alert(user, 'craft-bulk', { tag: tag, value: value });
+        for (let item of value) {
+            Alerts.generic_user_alert(user, `val_${tag}_craft_output_${item.material}_c`, item.amount);
+        }
     }
     Alerts.craft_bulk = craft_bulk;
     function craft_bulk_complete(user, tag, value) {
@@ -95,7 +97,7 @@ var Alerts;
     }
     Alerts.craft_bulk_complete = craft_bulk_complete;
     function craft_item(user, tag, value) {
-        Alerts.generic_user_alert(user, 'craft-item', { tag: tag, value: value });
+        Alerts.generic_user_alert(user, `val_${tag}_craft_durability_c`, value);
     }
     Alerts.craft_item = craft_item;
     function craft_item_complete(user, tag, value) {

@@ -106,14 +106,16 @@ export namespace Alerts {
     }
 
     export function craft_bulk(user: User, tag: string, value: box[]) {
-        Alerts.generic_user_alert(user, 'craft-bulk', {tag: tag, value: value})
+        for (let item of value) {
+            Alerts.generic_user_alert(user, `val_${tag}_craft_output_${item.material}_c`, item.amount)
+        }
     }
     export function craft_bulk_complete(user: User, tag: string, value: CraftBulkTemplate) {
         Alerts.generic_user_alert(user, 'craft-bulk-complete', {tag: tag, value: value})
     }
 
     export function craft_item(user: User, tag: string, value: number) {
-        Alerts.generic_user_alert(user, 'craft-item', {tag: tag, value: value})
+        Alerts.generic_user_alert(user, `val_${tag}_craft_durability_c`, value)
     }
     export function craft_item_complete(user: User, tag: string, value: CraftItemTemplate) {
         Alerts.generic_user_alert(user, 'craft-item-complete', {tag: tag, value: value})

@@ -57,7 +57,7 @@ export function output_bulk(character: Character, craft: CraftBulkTemplate) {
                 bonus += 5;
         }
 
-        let amount = Math.round(item.amount * ratio + bonus);
+        let amount = Math.floor(item.amount * ratio + bonus);
         if (character.race == 'rat') amount = 0;
         if (amount > 0) result.push({ material: item.material, amount: amount });
     }
