@@ -1,10 +1,15 @@
 interface ValueInterface {
+    id: string;
     value: number;
 }
 
-interface LimitedValueInterface {
-    value: number;
+interface LimitedValueInterface extends ValueInterface {
     max_value: number;
+}
+
+interface BulkAmountInterface extends ValueInterface {
+    material_index: number;
+    material_string: string;
 }
 
 interface CharacterView {

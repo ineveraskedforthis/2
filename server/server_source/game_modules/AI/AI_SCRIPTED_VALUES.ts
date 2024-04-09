@@ -1,7 +1,7 @@
 import { cell_id, money } from "@custom_types/common";
 import { Character } from "../character/character";
 import { ELODINO_FLESH, materials, material_index, RAT_BONE, RAT_SKIN, WOOD, MEAT, FOOD, FISH, ZAZ, ARROW_BONE } from "../manager_classes/materials_manager"
-import { box, CraftBulkTemplate, CraftItemTemplate } from "../craft/crafts_storage"
+import { box, CraftBulkTemplate, CraftItemTemplate } from "@custom_types/inventory";
 import { MapSystem } from "../map/system";
 import { output_bulk } from "../craft/CraftBulk";
 
@@ -18,19 +18,19 @@ export function base_price(cell_id: cell_id, material: material_index): money {
         case RAT_SKIN:
             return 10 as money
 
-        case WOOD: 
+        case WOOD:
             return 10 as money
 
         case ELODINO_FLESH:
             return 50 as money
-        
+
         case MEAT:
             return 8 as money
 
         case FISH:
             return 8 as money
-        
-        case FOOD: 
+
+        case FOOD:
             return 8 as money
 
         case ZAZ:
@@ -85,9 +85,9 @@ export namespace AItrade {
     }
 
     export function price_norm_box(
-        character: Character, 
-        items_vector: box[], 
-        price_estimator: PriceEstimator): number 
+        character: Character,
+        items_vector: box[],
+        price_estimator: PriceEstimator): number
     {
         let norm = 0
         for (let item of items_vector) {

@@ -5,7 +5,7 @@ import { Battle } from "../../battle/classes/battle";
 import { Unit } from "../../battle/classes/unit";
 import { BattleSystem } from "../../battle/system";
 import { Character } from "../../character/character";
-import { CraftBulkTemplate, CraftItemTemplate, box,   } from "../../craft/crafts_storage";
+import { CraftBulkTemplate, CraftItemTemplate, box } from "@custom_types/inventory";
 // import { Cell } from "../../map/cell";
 import { OrderBulkJson } from "../../market/classes";
 import { Damage } from "../../Damage";

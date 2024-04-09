@@ -1,15 +1,24 @@
-import { ItemOrderData } from "../../../shared/inventory.js";
-import { Column, List } from "../../widgets/List/list.js";
-import { damage_types } from "../Constants/inventory.js";
-import { elementById, selectOne } from "../HTMLwrappers/common.js";
-import { socket } from "../Socket/socket.js";
-import { generate_item_name } from "../StringGeneration/string_generation.js";
-import { globals } from "../globals.js";
+import { Socket } from "../../../shared/battle_data.js"
+import { ItemData } from "../../../shared/inventory.js"
+import { Column, List } from "../../widgets/List/list.js"
+import { damage_types } from "../Constants/inventory.js"
+import { elementById } from "../HTMLwrappers/common.js"
+import { socket } from "../Socket/socket.js"
+import { generate_item_name } from "../StringGeneration/string_generation.js"
 
-const columns:Column<ItemOrderData>[] = [
+
+function send_switch_weapon_request(socket: Socket) {
+    socket.emit('switch-weapon')
+}
+
+export function init_equipment_screen(socket: Socket) {
+    elementById('send_switch_weapon_request').onclick = () => send_switch_weapon_request(socket)
+}
+
+const columns:Column<ItemData>[] = [
     {
-        header_text: "Owner name",
-        value: (item) => item.seller,
+        header_text: "Item type",
+        value: (item) => item.item_type,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },
@@ -31,22 +40,13 @@ const columns:Column<ItemOrderData>[] = [
     },
 
     {
-        header_text: "Price",
-        value: (item) => item.price,
-        type: "number",
-        custom_style: ["flex-0-0-5"]
-    },
-
-    {
-        value: (item) => "buyout",
-        onclick: (item) => () => {socket.emit('buyout', {char_id: item.seller_id, item_id: item.id})},
+        value: (item) => "Unequip",
+        onclick: (item) => () => {socket.emit('unequip', item.item_type)},
         viable: (item) => {
-            const character = globals.character_data
-            if (character == undefined) return false
-            return (1 * item.price <= character.savings.value)
+            return true
         },
         type: "string",
-        custom_style: ["flex-1-0-5"]
+        custom_style: ["flex-0-0-5"]
     },
 
     {
@@ -56,12 +56,7 @@ const columns:Column<ItemOrderData>[] = [
         custom_style: ["flex-0-0-5"]
     },
 
-    {
-        header_text: "Item type",
-        value: (item) => item.item_type,
-        type: "string",
-        custom_style: ["flex-1-0-5"]
-    },
+
 
     {
         header_background: 'url(/static/img/small_icons/bow.png)',
@@ -120,17 +115,5 @@ for (let d of damage_types) {
     )
 }
 
-const item_market_container = elementById('auction_house_tab')
-export const market_items = new List<ItemOrderData>(item_market_container)
-market_items.columns = columns
-
-export function init_market_items() {
-    socket.on('item-market-data', data => {update_item_market(data)});
-}
-
-export function update_item_market(data: ItemOrderData[]) {
-    console.log("updating market")
-    console.log(data)
-
-    market_items.data = data
-}
+export const equip_list = new List<ItemData>(elementById('equip'))
+equip_list.columns = columns

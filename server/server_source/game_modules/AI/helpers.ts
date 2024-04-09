@@ -5,7 +5,8 @@ import { Convert } from "../systems_communication"
 import { output_bulk } from "../craft/CraftBulk"
 import { trim } from "../calculations/basic_functions"
 import { create_item, durability } from "../craft/CraftItem"
-import { box, CraftBulkTemplate, CraftItemTemplate, crafts_items } from "../craft/crafts_storage"
+import { crafts_items } from "../craft/crafts_storage"
+import { box, CraftBulkTemplate, CraftItemTemplate } from "@custom_types/inventory"
 import { AItrade, price, priced_box } from "./AI_SCRIPTED_VALUES"
 import { Data } from "../data"
 import { cell_id, money } from "@custom_types/common"
@@ -28,14 +29,14 @@ export namespace AIhelper {
             if (is_enemy_characters(character, target_char)) {
                 if (!target_char.dead()) {
                     return target_char.id
-                }                
+                }
             }
             // if (hostile(char.race, target_char.race)) {
             //     if (!target_char.dead()) {
             //         return target_char.id
-            //     }                
+            //     }
             // }
-        } 
+        }
         return undefined
     }
 
@@ -47,9 +48,9 @@ export namespace AIhelper {
             if (target_char.race == 'rat') {
                 if (!target_char.in_battle() && !target_char.dead()) {
                     return target_char.id
-                }                
+                }
             }
-        } 
+        }
         return undefined
     }
 
@@ -63,8 +64,8 @@ export namespace AIhelper {
             const battle_id = target_char.battle_id
             if ((battle_id != undefined) && !target_char.dead()) {
                 battles.push(battle_id)
-            }        
-        } 
+            }
+        }
         return battles
     }
     export function check_battles_to_join(agent: Character) {
@@ -131,7 +132,7 @@ export namespace AIhelper {
         let prices: price[] = []
         for (let item of estimated_output) {
             const price = Math.round(Math.max(
-                input_price * 2 / item.amount, 
+                input_price * 2 / item.amount,
                 AItrade.sell_price_bulk(character, item.material)))
             prices.push({material: item.material, price: price as money})
         }

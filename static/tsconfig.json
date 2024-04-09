@@ -12,5 +12,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node"
+  },
+
+  "paths": {
+    "@custom_types/*": ["../shared/*"]
   }
 }

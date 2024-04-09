@@ -3,40 +3,6 @@ import { elementById, inputById } from "../HTMLwrappers/common.js";
 function send_update_request(socket) {
     socket.emit('char-info-detailed');
 }
-function send_eat_request(socket) {
-    socket.emit('eat');
-    socket.emit('char-info-detailed');
-}
-function send_clean_request(socket) {
-    socket.emit('clean');
-    socket.emit('char-info-detailed');
-}
-function send_craft_food_request(socket) {
-    socket.emit('char-info-detailed');
-}
-function send_craft_clothes_request(socket) {
-    socket.emit('cclothes');
-    socket.emit('char-info-detailed');
-}
-// function send_enchant_request(socket: Socket) {
-//     let items = document.getElementsByName('sell_item');
-//     let index = undefined;
-//     for(let i = 0; i < items.length; i++) {
-//         if (items[i].checked) index = parseInt(items[i].value);
-//     }
-//     socket.emit('enchant', index)
-// }
-// function send_disenchant_request(socket: Socket) {
-//     let items = document.getElementsByName('sell_item');
-//     let index = undefined;
-//     for(let i = 0; i < items.length; i++) {
-//         if (items[i].checked) index = parseInt(items[i].value);
-//     }
-//     socket.emit('disenchant', index)
-// }
-// function get_item_image(tag: string) {
-//     return "background: no-repeat center/100% url(/static/img/" + tag + ".png);"
-// }
 function send_sell_item_request(socket) {
     let items = document.getElementsByName('sell_item');
     let index = undefined;

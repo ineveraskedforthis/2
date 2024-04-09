@@ -90,6 +90,16 @@ export function selectImage(selectors: string): HTMLImageElement {
     return candidate;
 }
 
+export function selectHTMLs(selectors: string): HTMLElement[] {
+    const candidates = select(selectors);
+    const result: HTMLElement[] = []
+    for (const candidate of candidates) {
+        if (isHTML(candidate)) result.push(candidate);
+    }
+
+    return result;
+}
+
 export function isHTML(item: Element): item is HTMLElement {
     return item instanceof HTMLElement;
 }

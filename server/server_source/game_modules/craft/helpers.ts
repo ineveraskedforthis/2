@@ -2,7 +2,7 @@ import { Character } from "../character/character";
 import { Stash } from "../inventories/stash";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
-import { skill_check, box } from "./crafts_storage";
+import { skill_check, box } from "@custom_types/inventory";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
 

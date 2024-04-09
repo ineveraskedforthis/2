@@ -2,7 +2,8 @@ import { EquipSocket, ItemData, equip, equip_slot, slots } from "../../../../sha
 import { damage_type, tagModel, tagRACE } from "../types";
 // import { update_character } from "../base_game_classes/affix";
 // import { Character } from "../character/character";
-import { Item, ItemJson } from "../items/item";
+import { Item } from "../items/item";
+import { ItemJson } from "@custom_types/inventory";
 import { ItemSystem } from "../items/system";
 import { DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
@@ -25,7 +26,7 @@ interface EquipStrings {
 }
 
 class EquipData {
-    slots: {[_ in equip_slot]?: Item}
+    slots: Partial<Record<equip_slot, Item>> //{[_ in equip_slot]?: Item}
     backpack: Inventory
 
     constructor(backpack_limit: number) {
@@ -81,10 +82,10 @@ class EquipData {
     //             this.secondary              = item_from_string(json.secondary)
     //     }
     //     for (let tag of armour_slots) {
-    //         const tmp = json.armour[tag] 
+    //         const tmp = json.armour[tag]
     //         if (tmp != undefined) {
     //             this.armour[tag]            = item_from_string(tmp)
-    //         }            
+    //         }
     //     }
 
     //     inventory_from_string(this.backpack, json.backpack)
@@ -143,7 +144,7 @@ export class Equip {
         return 1
     }
 
-    
+
     get_magic_power_modifier() {
         return 1
     }
@@ -220,7 +221,7 @@ export class Equip {
             return
         }
 
-        
+
         if (tmp == undefined) {
             this.data.slots.weapon = backpack.items[index];
             backpack.remove(index)
@@ -270,9 +271,19 @@ export class Equip {
         return this.data.slots[tag]
     }
 
+    _equip_to_data(data: Partial<Record<equip_slot, Item>>): Partial<Record<equip_slot, ItemData>> {
+        const result: Partial<Record<equip_slot, ItemData>> = {}
+
+        for (const key of Object.keys(data)) {
+            result[key as equip_slot] = ItemSystem.item_data(data[key as equip_slot])
+        }
+
+        return result
+    }
+
     get_data():EquipSocket {
         let response = {
-            equip: Object.fromEntries(Object.entries(this.data.slots).map(([slot, item]) => [slot, ItemSystem.item_data(item)])),   
+            equip: this._equip_to_data(this.data.slots),
             backpack: this.data.backpack.get_data()
         }
         return response

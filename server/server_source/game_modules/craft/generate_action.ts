@@ -3,7 +3,7 @@ import { Character } from "../character/character";
 import { map_position } from "../types";
 import { event_craft_bulk } from "./CraftBulk";
 import { event_craft_item } from "./CraftItem";
-import { CraftBulkTemplate, CraftItemTemplate, box,} from "./crafts_storage";
+import { CraftBulkTemplate, CraftItemTemplate, box } from "@custom_types/inventory";
 import { check_inputs } from "./helpers";
 import { CharacterMapAction, MapActionTriggerTargeted } from "../actions/types";
 import { dummy_duration, dummy_start } from "../actions/generic_functions";

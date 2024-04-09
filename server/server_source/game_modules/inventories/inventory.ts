@@ -1,6 +1,7 @@
 import { ItemBackpackData, ItemData } from "../../../../shared/inventory";
 import { item_from_string, item_to_string } from "../strings_management";
-import { Item, ItemJson } from "../items/item";
+import { Item } from "../items/item";
+import { ItemJson } from "@custom_types/inventory";
 import { ItemSystem } from "../items/system";
 
 export interface InventoryJson {

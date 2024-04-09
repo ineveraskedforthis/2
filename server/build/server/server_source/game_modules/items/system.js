@@ -207,7 +207,7 @@ var ItemSystem;
             resists: resists(item),
             price: item.price,
             // ranged_damage: ranged_damage(item)
-            is_weapon: slot(item) == 'weapon'
+            is_weapon: slot(item) == 'weapon',
         };
     }
     ItemSystem.item_data = item_data;

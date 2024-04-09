@@ -89,7 +89,6 @@ export namespace Effect {
             if (character._skills[skill] > 100)
                 character._skills[skill] = 100
 
-            if (character.user_id != "#") console.log("skill change");
             if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKILLS)
         }
     }

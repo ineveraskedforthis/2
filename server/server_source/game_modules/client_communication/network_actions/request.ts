@@ -239,5 +239,13 @@ export namespace Request {
         }
     }
 
+    export function craft_data(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (user == undefined) {
+            sw.socket.emit('alert', 'user does not exist')
+            return
+        }
 
+        SendUpdate.all_craft(user)
+    }
 }

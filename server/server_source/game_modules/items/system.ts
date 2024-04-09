@@ -3,7 +3,8 @@ import { damage_type } from "../types";
 import { attack_affixes_effects, damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
 import { DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
-import { Item, ItemJson } from "./item";
+import { Item } from "./item";
+import { ItemJson } from "@custom_types/inventory";
 import { ELODINO_FLESH, GRACI_HAIR, materials, MaterialsManager } from "../manager_classes/materials_manager";
 import { Status } from "../types";
 import { AttackObj } from "../attack/class";
@@ -217,7 +218,7 @@ export namespace ItemSystem {
             resists: resists(item),
             price: item.price,
             // ranged_damage: ranged_damage(item)
-            is_weapon: slot(item) == 'weapon'
+            is_weapon: slot(item) == 'weapon',
         }
     }
 }

@@ -1,16 +1,17 @@
 import { Socket } from "../../../shared/battle_data.js";
-import { elementById, isHTML, select } from "../HTMLwrappers/common.js";
+import { elementById, isHTML, select, selectHTMLs } from "../HTMLwrappers/common.js";
+import { material_icon_url } from "../Stash/stash.js";
 
-export function value_bar_class_name (tag: string) : string {
-    return tag + "_value_bar";
+export function value_bar_class_name (id: string) : string {
+    return id + "_value_bar";
 }
 
-export function value_class_name (tag: string) : string {
-    return tag + "_value";
+export function value_class_name (id: string) : string {
+    return id + "_value";
 }
 
-export function value_indicator_class_name (tag: string) : string {
-    return tag + "_value_indicator"
+export function value_indicator_class_name (id: string) : string {
+    return id + "_value_indicator"
 }
 
 export class Value implements ValueInterface {
@@ -48,6 +49,10 @@ export class Value implements ValueInterface {
 
     get value(): number {
         return this._value
+    }
+
+    get id(): string {
+        return this._id
     }
 }
 
@@ -91,15 +96,31 @@ export class BarValue extends LimitedValue {
     }
 }
 
-export class StashValue extends Value {
+export class BulkAmount extends Value implements BulkAmountInterface {
     readonly material_index: number
-
     constructor(socket : Socket, id: string, material_index: number, dependents: DependencyUI[]) {
         super(socket, id, dependents)
         this.material_index = material_index
+    }
+
+    protected _update(difference: number): void {
+        super._update(difference);
+
+        for (let item of selectHTMLs("." + value_class_name(this._id))) {
+            item.style.backgroundImage = material_icon_url(this.material_string)
+        }
+    }
+
+    get material_string() {
+        return this._id
+    }
+}
+
+export class StashValue extends BulkAmount {
+    constructor(socket : Socket, id: string, material_index: number, dependents: DependencyUI[]) {
+        super(socket, id, material_index, dependents)
 
         let indicators = select(`.${value_indicator_class_name(this._id)}`);
-
         for (let item of indicators) {
             ((item) => item.addEventListener("animationend", (event) => {
                 item.classList.remove(... ["stash_up", "stash_down"])
@@ -121,9 +142,5 @@ export class StashValue extends Value {
                 item.classList.add('stash_up')
             }
         }
-    }
-
-    get material_string() {
-        return this._id
     }
 }

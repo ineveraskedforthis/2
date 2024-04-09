@@ -206,9 +206,16 @@ class Equip {
         }
         return this.data.slots[tag];
     }
+    _equip_to_data(data) {
+        const result = {};
+        for (const key of Object.keys(data)) {
+            result[key] = system_1.ItemSystem.item_data(data[key]);
+        }
+        return result;
+    }
     get_data() {
         let response = {
-            equip: Object.fromEntries(Object.entries(this.data.slots).map(([slot, item]) => [slot, system_1.ItemSystem.item_data(item)])),
+            equip: this._equip_to_data(this.data.slots),
             backpack: this.data.backpack.get_data()
         };
         return response;

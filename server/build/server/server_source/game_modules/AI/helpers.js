@@ -26,7 +26,7 @@ var AIhelper;
             // if (hostile(char.race, target_char.race)) {
             //     if (!target_char.dead()) {
             //         return target_char.id
-            //     }                
+            //     }
             // }
         }
         return undefined;

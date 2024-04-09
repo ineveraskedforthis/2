@@ -1,10 +1,6 @@
-import { affix, equip_slot, ItemData } from "../../../../shared/inventory"
-import { weapon_tag } from "../types"
-import { Damage } from "../Damage"
-import { ITEM_MATERIAL } from "./ITEM_MATERIAL"
-import { BaseRange, ModelToEquipSlot } from "./base_values"
 import { item_model_tag } from "./model_tags"
 import { money } from "@custom_types/common"
+import { ItemJson, affix } from "@custom_types/inventory"
 
 export class Item {
     durability: number
@@ -25,11 +21,5 @@ export class Item {
             model_tag: this.model_tag,
         }
     }
-}
-
-export interface ItemJson {
-    durability: number
-    affixes: affix[]
-    model_tag: item_model_tag
 }
 

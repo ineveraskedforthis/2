@@ -8,10 +8,8 @@ import { set_up_character_creation_UI } from './modules/CharacterCreation/main.j
 import { set_up_character_model, update_equip_image } from './modules/CharacterImage/main.js';
 import { CharacterInfoCorner } from './modules/CharacterInfo/main.js';
 import { CharacterScreen } from './modules/CharacterScreen/character_screen.js';
-import { init_equipment, update_backpack, update_equip_list } from './modules/CharacterScreen/update.js';
 import { init_character_list_interactions, update_characters_list } from './modules/CharactersList/main.js';
-import { init_craft_table } from './modules/Craft/craft_list_div.js';
-import { init_equipment_screen } from './modules/Equipment/main.js';
+import { backpack_list } from './modules/Equipment/backpack.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
 import { init_market_items, market_items } from './modules/Market/items_market.js';
 import { init_market_bulk, init_market_filters, market_bulk } from './modules/Market/market.js';
@@ -26,6 +24,9 @@ import { draw_map_related_stuff } from './modules/map.js';
 import { init_detailed_character_statistics } from './request_perks.js';
 import { globals } from './modules/globals.js';
 import { Value } from './modules/Values/collection.js';
+import { EquipSocket, ItemData, TaggedCraftBulk, TaggedCraftItem } from '../shared/inventory.js';
+import { equip_list } from './modules/Equipment/equipment.js';
+import { new_craft_bulk, new_craft_item, new_craft_table, update_craft_item_div } from './modules/Craft/craft.js';
 
 // noselect tabs
 
@@ -48,11 +49,8 @@ const character_screen = new CharacterScreen(socket);
 set_up_character_model(socket);
 init_skills(socket);
 set_up_character_creation_UI(socket);
-init_equipment()
-init_equipment_screen(socket)
 set_up_market_headers()
 init_detailed_character_statistics()
-init_craft_table()
 init_character_list_interactions()
 init_market_bulk()
 init_market_items()
@@ -73,7 +71,16 @@ socket.on("character_data", (msg: CharacterDataBasic) => {
 socket.on('tags', msg => {
     update_tags(msg);
     init_market_filters();
-    socket.emit('request-belongings')
+    const craft_table = new_craft_table()
+
+
+    socket.on('craft-bulk-complete', (msg: TaggedCraftBulk) => { new_craft_bulk(craft_table, msg); });
+    socket.on('craft-item', (msg: CraftItemUpdateView) => { update_craft_item_div(craft_table, msg); });
+    socket.on('craft-item-complete', (msg: TaggedCraftItem) => { new_craft_item(craft_table, msg); });
+
+
+    socket.emit('request-craft');
+    socket.emit('request-belongings');
 });
 
 socket.on('stash-update', msg => {
@@ -98,10 +105,17 @@ socket.on('is-login-completed', msg => login(msg));
 socket.on('session', msg => {localStorage.setItem('session', msg)})
 socket.on('reset_session', () => {localStorage.setItem('session', 'null')})
 socket.on('char-info-detailed', msg => character_screen.update(msg))
-socket.on('equip-update', msg => {
-    update_equip_list(msg)
+socket.on('equip-update', (msg: EquipSocket) => {
     update_equip_image(msg.equip)
-    update_backpack(msg)
+
+    let equip_data : ItemData[] = []
+    for (let item of Object.values(msg.equip)) {
+        if (item == undefined) continue;
+        equip_data.push(item)
+    }
+
+    equip_list.data = equip_data
+    backpack_list.data = msg.backpack.items
 });
 
 {

@@ -67,6 +67,15 @@ export function selectImage(selectors) {
     }
     return candidate;
 }
+export function selectHTMLs(selectors) {
+    const candidates = select(selectors);
+    const result = [];
+    for (const candidate of candidates) {
+        if (isHTML(candidate))
+            result.push(candidate);
+    }
+    return result;
+}
 export function isHTML(item) {
     return item instanceof HTMLElement;
 }

@@ -227,4 +227,13 @@ var Request;
         }
     }
     Request.battle_actions_position = battle_actions_position;
+    function craft_data(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (user == undefined) {
+            sw.socket.emit('alert', 'user does not exist');
+            return;
+        }
+        updates_1.SendUpdate.all_craft(user);
+    }
+    Request.craft_data = craft_data;
 })(Request = exports.Request || (exports.Request = {}));

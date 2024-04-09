@@ -78,10 +78,8 @@ export class SocketManager {
 
 
             socket.on('equip',  (msg: any) => InventoryCommands.equip(user, msg));
-
             socket.on('enchant',  (msg: any) => InventoryCommands.enchant(user, msg));
             socket.on('reenchant', (msg: any) => InventoryCommands.reroll_enchant(user, msg))
-
             socket.on('destroy',  (msg: any) => InventoryCommands.break_item(user, msg));
             // socket.on('disench',  (msg: any) => this.disenchant(user, msg));
 
@@ -123,6 +121,7 @@ export class SocketManager {
 
             socket.on('request-talk',   (msg:unknown) => Dialog.request_greeting(user, msg))
             socket.on('request-prices-character',  (msg:unknown) => Dialog.request_prices(user, msg))
+            socket.on('request-craft', () => Request.craft_data(user))
 
             socket.on('request-local-buildings', (msg:any) => Request.local_buildings(user))
             socket.on('learn-perk',     (msg: undefined|{id: unknown, tag: unknown}) =>

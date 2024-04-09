@@ -2,6 +2,7 @@
 //CHARACTER 2D IMAGE DISPLAY
 
 import { Socket } from "../../../shared/battle_data.js"
+import { equip, equip_slot } from "../../../shared/inventory.js"
 import { EQUIPMENT_TAGS } from "../Constants/inventory.js"
 import { elementById, imageById, selectImage, selectOne } from "../HTMLwrappers/common.js"
 
@@ -100,7 +101,7 @@ interface EquipmentModel {
     name: string
 }
 
-export function update_equip_image(data:Record<string, EquipmentModel>) {
+export function update_equip_image(data:equip) {
 
     console.log('equip update')
     console.log(data)

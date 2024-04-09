@@ -87,6 +87,7 @@ class SocketManager {
             socket.on('battle-action-position', (msg) => actions_1.HandleAction.battle_position(user, msg));
             socket.on('request-talk', (msg) => dialog_1.Dialog.request_greeting(user, msg));
             socket.on('request-prices-character', (msg) => dialog_1.Dialog.request_prices(user, msg));
+            socket.on('request-craft', () => request_1.Request.craft_data(user));
             socket.on('request-local-buildings', (msg) => request_1.Request.local_buildings(user));
             socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg));
             socket.on('learn-skill', (msg) => run_event_1.SocketCommand.learn_skill(user, msg));

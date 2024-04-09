@@ -1,5 +1,6 @@
 import { money } from "@custom_types/common.js";
-import { Item, ItemJson } from "../items/item.js";
+import { Item } from "../items/item.js";
+import { ItemJson } from "@custom_types/inventory.js";
 import { material_index } from "../manager_classes/materials_manager.js";
 import { char_id, order_bulk_id } from "../types.js";
 

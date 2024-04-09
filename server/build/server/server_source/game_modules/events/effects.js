@@ -93,8 +93,6 @@ var Effect;
             character._skills[skill] += dx;
             if (character._skills[skill] > 100)
                 character._skills[skill] = 100;
-            if (character.user_id != "#")
-                console.log("skill change");
             if (Math.abs(dx) > 0)
                 user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 12 /* UI_Part.SKILLS */);
         }

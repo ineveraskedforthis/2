@@ -1,56 +1,11 @@
 import { Socket } from "../../../shared/battle_data.js";
-import { generate_item_name } from "../StringGeneration/string_generation.js";
 import { elementById, inputById } from "../HTMLwrappers/common.js";
-import { update_backpack, update_equip_list } from "./update.js"
 
 // export const EQUIPMENT_TAGS = ['weapon', 'secondary', 'body', 'legs', 'foot', 'head', 'arms'];
 
 function send_update_request(socket: Socket) {
     socket.emit('char-info-detailed');
 }
-
-function send_eat_request(socket: Socket) {
-    socket.emit('eat');
-    socket.emit('char-info-detailed');
-}
-
-function send_clean_request(socket: Socket) {
-    socket.emit('clean');
-    socket.emit('char-info-detailed');
-}
-
-function send_craft_food_request(socket: Socket) {
-    socket.emit('char-info-detailed');
-}
-
-function send_craft_clothes_request(socket: Socket) {
-    socket.emit('cclothes')
-    socket.emit('char-info-detailed');
-}
-
-// function send_enchant_request(socket: Socket) {
-//     let items = document.getElementsByName('sell_item');
-//     let index = undefined;
-//     for(let i = 0; i < items.length; i++) {
-//         if (items[i].checked) index = parseInt(items[i].value);
-//     }
-
-//     socket.emit('enchant', index)
-// }
-
-// function send_disenchant_request(socket: Socket) {
-//     let items = document.getElementsByName('sell_item');
-//     let index = undefined;
-//     for(let i = 0; i < items.length; i++) {
-//         if (items[i].checked) index = parseInt(items[i].value);
-//     }
-
-//     socket.emit('disenchant', index)
-// }
-
-// function get_item_image(tag: string) {
-//     return "background: no-repeat center/100% url(/static/img/" + tag + ".png);"
-// }
 
 function send_sell_item_request(socket: Socket) {
 

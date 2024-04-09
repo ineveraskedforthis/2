@@ -1,3 +1,7 @@
+import { skill } from "../server/server_source/game_modules/character/SkillList"
+import { item_model_tag } from "../server/server_source/game_modules/items/model_tags"
+import { material_index } from "../server/server_source/game_modules/manager_classes/materials_manager"
+
 export interface damageSocket {
     fire: number
     blunt: number
@@ -6,12 +10,10 @@ export interface damageSocket {
 }
 
 export type backpack = {
-    items: ItemData[]
+    items: ItemBackpackData[]
 }
 
-export type equip = {
-    [index in equip_slot]?: ItemData;
-}
+export type equip = Partial<Record<equip_slot, ItemData>>
 
 export type EquipSocket = {
     equip: equip
@@ -29,7 +31,7 @@ export interface ItemData {
     durability: number
     is_weapon: boolean
     price?: number
-    backpack_index?: number
+    backpack_index?: number,
 }
 
 export interface ItemBackpackData extends ItemData {
@@ -75,3 +77,37 @@ export type equip_slot = typeof slots[number]
 // export type slot = secondary_slot | equip_slot
 
 export type damage_type = 'blunt'|'pierce'|'slice'|'fire'
+export interface box {
+    material: material_index;
+    amount: number;
+}
+export interface skill_check {
+    skill: skill;
+    difficulty: number;
+}
+export interface CraftBulkTemplate {
+    id: string;
+    input: box[];
+    output: box[];
+    difficulty: skill_check[];
+}
+export interface CraftItemTemplate {
+    id: string;
+    input: box[];
+    output_model: item_model_tag;
+    output_affixes: affix[];
+    difficulty: skill_check[];
+}
+export interface ItemJson {
+    durability: number
+    affixes: affix[]
+    model_tag: item_model_tag
+}
+export interface TaggedCraftBulk {
+    tag: string,
+    value: CraftBulkTemplate
+}
+export interface TaggedCraftItem {
+    tag: string,
+    value: CraftItemTemplate
+}

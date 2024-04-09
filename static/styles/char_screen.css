@@ -64,13 +64,6 @@
 }
 
 
-.backpack_tab {
-    margin: 10px;
-}
-.backpack_tab > tbody > tr {
-    height: 24px;
-}
-
 #backpacks_collection {
     /* position: absolute; */
     width: 100%;

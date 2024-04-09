@@ -1,19 +1,17 @@
-import { ItemOrderData } from "../../../shared/inventory.js";
-import { Column, List } from "../../widgets/List/list.js";
-import { damage_types } from "../Constants/inventory.js";
-import { elementById, selectOne } from "../HTMLwrappers/common.js";
-import { socket } from "../Socket/socket.js";
-import { generate_item_name } from "../StringGeneration/string_generation.js";
-import { globals } from "../globals.js";
+import { ItemBackpackData } from "../../../shared/inventory.js"
+import { Column, List } from "../../widgets/List/list.js"
+import { damage_types } from "../Constants/inventory.js"
+import { elementById, selectById } from "../HTMLwrappers/common.js"
+import { socket } from "../Socket/socket.js"
+import { generate_item_name } from "../StringGeneration/string_generation.js"
 
-const columns:Column<ItemOrderData>[] = [
+const columns:Column<ItemBackpackData>[] = [
     {
-        header_text: "Owner name",
-        value: (item) => item.seller,
+        header_text: "Item type",
+        value: (item) => item.item_type,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },
-
     {
         header_text: "Name",
         value: (item) => {
@@ -31,22 +29,57 @@ const columns:Column<ItemOrderData>[] = [
     },
 
     {
-        header_text: "Price",
-        value: (item) => item.price,
-        type: "number",
+        value: (item) => "Equip",
+        onclick: (item) => () => {socket.emit('equip', item.backpack_index)},
+        viable: (item) => {
+            return true
+        },
+        type: "string",
         custom_style: ["flex-0-0-5"]
     },
 
     {
-        value: (item) => "buyout",
-        onclick: (item) => () => {socket.emit('buyout', {char_id: item.seller_id, item_id: item.id})},
+        value: (item) => "Enchant",
+        onclick: (item) => () => {socket.emit('enchant', item.backpack_index)},
         viable: (item) => {
-            const character = globals.character_data
-            if (character == undefined) return false
-            return (1 * item.price <= character.savings.value)
+            return true
         },
         type: "string",
-        custom_style: ["flex-1-0-5"]
+        custom_style: ["flex-0-0-5"]
+    },
+
+    {
+        value: (item) => "Reroll",
+        onclick: (item) => () => {socket.emit('reenchant', item.backpack_index)},
+        viable: (item) => {
+            return true
+        },
+        type: "string",
+        custom_style: ["flex-0-0-5"]
+    },
+
+    {
+        header_text: "Sell",
+        value:(item) => "",
+        type: "string",
+        custom_style: ["flex-0-0-5"],
+        onclick:(item) => () => {
+            const item_select_div = selectById('create_auction_order_item')
+            item_select_div.value = JSON.stringify({index: item.backpack_index})
+        },
+        viable:(item) => {
+            return true
+        }
+    },
+
+    {
+        value: (item) => "Destroy",
+        onclick: (item) => () => {socket.emit('destroy', item.backpack_index)},
+        viable: (item) => {
+            return true
+        },
+        type: "string",
+        custom_style: ["flex-0-0-5"]
     },
 
     {
@@ -56,12 +89,7 @@ const columns:Column<ItemOrderData>[] = [
         custom_style: ["flex-0-0-5"]
     },
 
-    {
-        header_text: "Item type",
-        value: (item) => item.item_type,
-        type: "string",
-        custom_style: ["flex-1-0-5"]
-    },
+
 
     {
         header_background: 'url(/static/img/small_icons/bow.png)',
@@ -120,17 +148,5 @@ for (let d of damage_types) {
     )
 }
 
-const item_market_container = elementById('auction_house_tab')
-export const market_items = new List<ItemOrderData>(item_market_container)
-market_items.columns = columns
-
-export function init_market_items() {
-    socket.on('item-market-data', data => {update_item_market(data)});
-}
-
-export function update_item_market(data: ItemOrderData[]) {
-    console.log("updating market")
-    console.log(data)
-
-    market_items.data = data
-}
+export const backpack_list = new List<ItemBackpackData>(elementById('backpack_tab'))
+backpack_list.columns = columns
