@@ -110,7 +110,10 @@ export class List {
                 if (col.custom_style != undefined)
                     div.classList.add(...col.custom_style);
                 if (is_number_column(col)) {
-                    div.classList.add('align-right');
+                    div.classList.add('right-centered-box');
+                }
+                if (is_string_column(col)) {
+                    div.classList.add('centered-box');
                 }
                 if (is_icon_column(col)) {
                     div.style.backgroundImage = col.image_path(item);

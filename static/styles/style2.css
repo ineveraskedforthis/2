@@ -472,6 +472,18 @@ div {
     text-align: center;
 }
 
+.centered-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.right-centered-box {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+}
+
 .craft_option > div {
     flex-grow: 1;
 }
