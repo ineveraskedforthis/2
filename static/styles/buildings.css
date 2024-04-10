@@ -4,12 +4,10 @@
     flex-wrap: wrap;
 }
 
-.buildings-list > div {
-    height: 100px;
-    width: 100px;
-    margin: 5px;
-
-    background-size: contain;
+.background-cover {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .buildings-actions {
@@ -20,5 +18,5 @@
 .buildings-actions > div {
     margin-bottom: 10px;
     height: 40px;
-    
+
 }

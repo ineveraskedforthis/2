@@ -283,18 +283,8 @@
                     </div>
                 </div>
                 <div class="game_tab_content">
-                    <div class="container-horizontal height-full">
-                        <div class="container-vertical">
-                            <div>
-                                <button id="attack_selected_character"> Attack </button>
-                                <button id="rob_selected_character"> Rob the dead. </button>
-                                <button id="support_selected_character"> Support in battle. </button>
-                                <button id="request_perks_selected_charater"> Talk. </button>
-                                <button id="request_buildings">Local Buildings</button>
-                            </div>
-                            <div id="characters_list"></div>
-                        </div>
-                        <div id = 'map_column'>
+                    <div class="container-horizontal height-full padding-0010r">
+                        <div id = 'map_column' class="flex-3 width-40pc margin-0001r border-round height-full width-50pc">
                             <div id = 'map_context' class="hidden">
                                 <div id='map_control'>
                                     <div id = 'map_buttons'>
@@ -305,7 +295,26 @@
                             </div>
                             <canvas id='map_canvas' width=1000 height=800 oncontextmenu="return false;"></canvas>
                         </div>
-                        <div id = 'description_column'>
+                        <div id = 'locations_column' class = "flex-1 width-20pc height-full container-vertical margin-0001r border-round">
+                            <div id="selected-location-image" class="flex-3 height-30pc margin-0020r border-round background-solid background-cover"></div>
+                            <div id="location-action" class="flex-0-0-5 margin-0020r border-round background-solid container-horizontal">
+                                <div id="enter-location-button" class="generic-button centered-box flex-1 height-auto"> Enter </div>
+                                <div class="generic-button centered-box flex-1 height-auto"> ??? </div>
+                                <div class="generic-button centered-box flex-1 height-auto"> ??? </div>
+                            </div>
+                            <div id="location-list" class="flex-2 margin-0020r border-round background-solid">
+
+                            </div>
+                        </div>
+                        <div class="flex-1 width-auto height-full container-vertical margin-0001r border-round">
+                            <div>
+                                <button id="attack_selected_character"> Attack </button>
+                                <button id="rob_selected_character"> Rob the dead. </button>
+                                <button id="support_selected_character"> Support in battle. </button>
+                                <button id="request_perks_selected_charater"> Talk. </button>
+                                <button id="request_buildings">Local Buildings</button>
+                            </div>
+                            <div id="characters_list"></div>
                         </div>
                     </div>
                 </div>

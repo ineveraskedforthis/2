@@ -61,16 +61,16 @@ export namespace Validator {
     }
 
     export function valid_action_to_character(user: User|undefined, character: Character|undefined, target: unknown): [User, Character, Character]|[undefined, undefined, undefined] {
-        if (user == undefined) return [undefined, undefined, undefined] 
-        if (character == undefined) return [undefined, undefined, undefined] 
+        if (user == undefined) return [undefined, undefined, undefined]
+        if (character == undefined) return [undefined, undefined, undefined]
         if (!Validator.can_act(user, character)) {return [undefined, undefined, undefined] }
         // console.log('user is valid')
         const data = Number(target)
-        if (isNaN(data)) return [undefined, undefined, undefined] 
+        if (isNaN(data)) return [undefined, undefined, undefined]
         const target_character = Convert.number_to_character(data)
-        if (target_character == undefined) return [undefined, undefined, undefined] 
+        if (target_character == undefined) return [undefined, undefined, undefined]
         console.log('target character is vaalid')
-        
+
         return [user, character, target_character]
     }
 
@@ -96,7 +96,7 @@ export namespace Validator {
         if (!('target' in value)) return false
         if (!(typeof (value as { tag: unknown, target: unknown }).tag === 'string')) return false
         if (!is_point((value as { tag: unknown, target: unknown }).target)) return false
-        
+
         return true
     }
 }

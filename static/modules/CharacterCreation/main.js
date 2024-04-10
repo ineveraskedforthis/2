@@ -1,5 +1,5 @@
 import { set_body_type } from "../CharacterImage/main.js";
-import { elementById, inputById } from "../HTMLwrappers/common.js";
+import { elementById, inputById, selectById } from "../HTMLwrappers/common.js";
 var character_display = {
     eyes: 1,
     chin: 0,
@@ -9,7 +9,7 @@ export function set_up_character_creation_UI(socket) {
     elementById("next_2").onclick = (event) => {
         event.preventDefault();
         let name = inputById('char_name').value;
-        let race = inputById('char_race').value;
+        let race = selectById('char_race').value;
         let data = {
             name: name,
             mouth: character_display.mouth,
@@ -21,8 +21,8 @@ export function set_up_character_creation_UI(socket) {
         console.log(data);
         socket.emit('create_character', data);
     };
-    elementById('char_race').addEventListener('change', function () {
-        let faction = inputById('char_race').value;
+    selectById('char_race').addEventListener('change', function () {
+        let faction = selectById('char_race').value;
         set_faction(faction);
     });
     const minimap = elementById('minimap_character_creation');
@@ -74,7 +74,7 @@ export function set_up_character_creation_UI(socket) {
     };
 }
 function set_faction(faction) {
-    inputById('char_race').value = faction;
+    selectById('char_race').value = faction;
     var race = "unknown";
     if (faction == 'city')
         race = 'human';

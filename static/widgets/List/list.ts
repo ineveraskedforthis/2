@@ -197,11 +197,6 @@ export class List<Item> implements ListInterface<Item> {
             ((table: List<Item>, item_index: number, line) => {
                 line.onmouseenter = () => { table.hovered_item_index = item_index }
                 line.onmouseleave = () => { table.hovered_item_index = undefined }
-                line.onclick = () => {
-
-                    table.selected_item_index = item_index
-                    line.classList.add("selected")
-                }
             })(this, item_index, line)
 
             let index = 0

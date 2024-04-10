@@ -126,6 +126,8 @@ export class Map {
         this.time = 0;
         this.last_time_down = 0;
         this.canvas = canvas;
+        canvas.width = container.clientWidth - 2;
+        canvas.height = container.clientHeight - 2;
         this.container = container;
         this.hex_side = 23;
         this.camera = [50, 600];
@@ -565,10 +567,11 @@ export class Map {
             this.camera[1] = temp[1] + 400;
         }
         console.log(this.move_flag);
+        socket.emit('request-local-buildings');
         return this.get_bg_tag([i, j]);
     }
 }
-const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_control'));
+const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_column'));
 init_map_control(map);
 socket.on('map-pos', msg => {
     console.log('map-pos');
