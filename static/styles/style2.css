@@ -203,7 +203,7 @@ div {
     top: 0%;
     right: 0%;
     width: 20px;
-    height: 100px;
+    height: 20px;
 
     background-image: url(/static/img/tab_buttons/close_tab_passive.png);
 }
@@ -614,7 +614,7 @@ div {
 
 .border-round {
     border: ivory 1px solid;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 .margin-0020r {
@@ -635,4 +635,13 @@ div {
 
 .padding-0010r {
     padding: 1%;
+}
+
+.padding-0020r {
+    padding: 1%;
+}
+
+.padding-20px-vertical {
+    padding-top: 20px;
+    padding-bottom: 20px;
 }

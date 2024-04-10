@@ -8,6 +8,7 @@ const systems_communication_1 = require("../../systems_communication");
 const common_validations_1 = require("./common_validations");
 const system_1 = require("../../battle/system");
 const system_2 = require("../../character/system");
+const request_1 = require("./request");
 var SocketCommand;
 (function (SocketCommand) {
     // data is a raw id of character
@@ -153,6 +154,7 @@ var SocketCommand;
         if (character == undefined)
             return;
         events_1.Event.create_land_plot(character);
+        request_1.Request.local_buildings(sw);
     }
     SocketCommand.create_plot = create_plot;
     function develop_plot(sw, msg) {
@@ -178,6 +180,7 @@ var SocketCommand;
         if (type == "cotton_field" /* LandPlotType.CottonField */)
             true_type = "cotton_field" /* LandPlotType.CottonField */;
         events_1.Event.develop_land_plot(character, building_id, true_type);
+        request_1.Request.local_buildings(sw);
     }
     SocketCommand.develop_plot = develop_plot;
     function change_rent_price(sw, msg) {
@@ -198,6 +201,7 @@ var SocketCommand;
             return;
         console.log('change rent price', character.name, building, price);
         events_1.Event.change_rent_price(character, building_id, price);
+        request_1.Request.local_buildings(sw);
     }
     SocketCommand.change_rent_price = change_rent_price;
     function repair_building(sw, msg) {
@@ -213,6 +217,7 @@ var SocketCommand;
         if (building == undefined)
             return;
         events_1.Event.repair_building(character, building_id);
+        request_1.Request.local_buildings(sw);
     }
     SocketCommand.repair_building = repair_building;
 })(SocketCommand = exports.SocketCommand || (exports.SocketCommand = {}));

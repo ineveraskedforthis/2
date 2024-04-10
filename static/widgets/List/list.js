@@ -35,6 +35,20 @@ export class List {
             let order = sorting_setting.order;
             const column = this._columns[sorting_setting.column];
             this.data.sort((a, b) => {
+                const validate_a = column.value(a);
+                const validate_b = column.value(b);
+                if (validate_a == undefined) {
+                    alert("INVALID TABLE ENTRY");
+                    console.error("INVALID ENTRY:");
+                    console.log(a);
+                    console.log(column.header_text);
+                }
+                if (validate_b == undefined) {
+                    alert("INVALID TABLE ENTRY");
+                    console.error("INVALID ENTRY:");
+                    console.log(b);
+                    console.log(column.header_text);
+                }
                 if (is_string_column(column)) {
                     const A = column.value(a);
                     const B = column.value(b);

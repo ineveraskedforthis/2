@@ -1,8 +1,3 @@
-import { market_items } from "./Market/items_market.js";
-import { market_bulk } from "./Market/market.js";
-import { socket } from "./Socket/socket.js";
-import { StashValue, Value } from "./Values/collection.js";
-
 export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest'] as const
 export type local_action = typeof local_actions[number]
 export type action = 'move' | 'continue_move' | local_action

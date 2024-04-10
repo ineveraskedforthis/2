@@ -1,5 +1,4 @@
 import { elementById } from "../HTMLwrappers/common.js";
-import { market_bulk } from "../Market/market.js";
 import { socket } from "../Socket/socket.js";
 import { StashValue, value_class_name, value_indicator_class_name } from "../Values/collection.js";
 import { globals } from "../globals.js";
@@ -9,7 +8,7 @@ export var material_ids = [];
 export function material_icon_url(material_tag) {
     return `url(/static/img/stash_${material_tag}.png)`;
 }
-export function update_tags(msg) {
+export function update_tags(msg, stash_dependent_elements) {
     console.log("TAAAAAAGS");
     console.log(msg);
     let inventory_div = elementById('goods_stash');
@@ -56,7 +55,7 @@ export function update_tags(msg) {
     if (character == undefined)
         return;
     for (var tag in msg) {
-        character.stash.push(new StashValue(socket, tag, msg[tag], [market_bulk]));
+        character.stash.push(new StashValue(socket, tag, msg[tag], stash_dependent_elements));
     }
 }
 export function update_stash(data) {

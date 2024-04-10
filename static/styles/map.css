@@ -6,7 +6,7 @@
     overflow-y: scroll;
     width: 100%;
     flex: auto;
-    height: 90%;
+    height: 100%;
 }
 
 #characters_list > div {

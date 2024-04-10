@@ -295,26 +295,54 @@
                             </div>
                             <canvas id='map_canvas' width=1000 height=800 oncontextmenu="return false;"></canvas>
                         </div>
-                        <div id = 'locations_column' class = "flex-1 width-20pc height-full container-vertical margin-0001r border-round">
+                        <div id = 'locations_column' class = "flex-2 width-20pc height-full container-vertical margin-0001r border-round">
                             <div id="selected-location-image" class="flex-3 height-30pc margin-0020r border-round background-solid background-cover"></div>
                             <div id="location-action" class="flex-0-0-5 margin-0020r border-round background-solid container-horizontal">
                                 <div id="enter-location-button" class="generic-button centered-box flex-1 height-auto"> Enter </div>
-                                <div class="generic-button centered-box flex-1 height-auto"> ??? </div>
+
                                 <div class="generic-button centered-box flex-1 height-auto"> ??? </div>
                             </div>
                             <div id="location-list" class="flex-2 margin-0020r border-round background-solid">
 
                             </div>
+
+                            <div id="cell-action" class="flex-0-0-5 margin-0020r border-round background-solid container-horizontal">
+                                <div id="claim-location-button" class="generic-button centered-box flex-1 height-auto"> Claim land plot </div>
+                            </div>
                         </div>
                         <div class="flex-1 width-auto height-full container-vertical margin-0001r border-round">
-                            <div>
-                                <button id="attack_selected_character"> Attack </button>
-                                <button id="rob_selected_character"> Rob the dead. </button>
-                                <button id="support_selected_character"> Support in battle. </button>
-                                <button id="request_perks_selected_charater"> Talk. </button>
-                                <button id="request_buildings">Local Buildings</button>
+
+                            <div class="container-vertical margin-0020r border-round padding-0020r flex-1">
+                                <div id="building-description" class="details_content"></div>
+                                <div id="building-rooms" class="details_content"></div>
+                                <div id="building-guests" class="details_content"></div>
+
+                                <div id="building-durability" class="details_content"></div>
+                                <div id="repair-building" class="details_content generic-button"> REPAIR </div>
+
+                                <div id="building-owner" class="details_content"> OWNER </div>
+                                <div id="rent-building-price" class="details_content"> RENT_PRICE </div>
+                                <div id="rent-building-price-true" class="details_content"> RENT_PRICE_TRUE </div>
+                                <div id="rent-building-room" class="details_content generic-button"> RENT </div>
+                                <div id="change-price-room" class="details_content generic-button"> CHANGE_PRICE </div>
+                                <input type="text" id="building-rent-price-input" class="details_content">
                             </div>
-                            <div id="characters_list"></div>
+
+                            <div class="container-vertical margin-0020r border-round padding-0020r flex-1">
+                                <div id="build-shack" class="details_content generic-button"> Build shack </div>
+                                <div id="build-house" class="details_content generic-button"> Build house </div>
+                                <div id="build-inn" class="details_content generic-button"> Build inn </div>
+                            </div>
+
+                            <div class="container-vertical margin-0020r border-round padding-0020r flex-2">
+                                <div id="attack_selected_character" class="generic-button flex-0-0-5"> Attack </div>
+                                <div id="rob_selected_character" class="generic-button flex-0-0-5"> Rob the dead. </div>
+                                <div id="support_selected_character" class="generic-button flex-0-0-5"> Support in battle. </div>
+                                <div id="request_perks_selected_charater" class="generic-button flex-0-0-5"> Talk. </div>
+
+                                <div id="characters_list"></div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -471,20 +499,6 @@
                     <div id = 'equip', class = 'character_screen_frame'>
 
                     </div>
-
-                    <!-- <div>
-                        <input type="checkbox" id="enchant" name="enchant">
-                        <label for="enchant">"Enchant" mode (Press an item to attempt enchanting it)</label>
-                        <p>
-                        <input type="checkbox" id="reenchant" name="reenchant">
-                        <label for="reenchant">"Reroll enchants" mode (20% less enchant rating)</label>
-                        <p>
-                        <input type="checkbox" id="fill_market" name="fill_market">
-                        <label for="fill_market">"Fill market select" mode </label>
-                        <p>
-                        <input type="checkbox" id="destroy" name="destroy">
-                        <label for="destroy">"Destroy item" mode (Overrides everything)</label>
-                    </div> -->
                 </div>
 
 
@@ -510,37 +524,6 @@
 
 
             <div id="backdrop" class="background-backdrop hidden">
-                <div id="local_buildings", class="game_tab hidden container-horizontal pop-up">
-                    <div id="buildings-list" class="buildings-list">
-
-                    </div>
-
-                    <div id="buildings-actions" class="buildings-actions">
-                        <div class="building_thumbnail"></div>
-                        <div class="details_list">
-                            <div id="building-description" class="details_content"></div>
-                            <div id="building-rooms" class="details_content"></div>
-                            <div id="building-guests" class="details_content"></div>
-                            <div id="building-durability" class="details_content"></div>
-                            <div id="building-owner" class="details_content"> OWNER </div>
-                            <div id="rent-building-price" class="details_content"> RENT_PRICE </div>
-                            <div id="rent-building-price-true" class="details_content"> RENT_PRICE_TRUE </div>
-                            <div id="rent-building-room" class="details_content active"> RENT </div>
-                            <div id="repair-building" class="details_content active"> REPAIR </div>
-                            <div id="change-price-room" class="details_content active"> CHANGE_PRICE </div>
-                            <input type="text" id="building-rent-price-input" class="details_content">
-                            <div class="details_content">___________</div>
-                            <div id="claim-land-plot" class="details_content active"> Claim land plot </div>
-                            <div id="build-shack" class="details_content active"> Build shack </div>
-                            <div id="build-house" class="details_content active"> Build house </div>
-                            <div id="build-inn" class="details_content active"> Build inn </div>
-                            <div class="details_content">___________</div>
-                            <div id="buildings-close-button" class="details_content active"> CLOSE </div>
-                        </div>
-                    </div>
-                </div>
-
-
                 <div id="dialog-scene" class="dialog-scene hidden">
                     <div class="character-display">
                     </div>

@@ -42,18 +42,7 @@ const locations_list = new List<LandPlotSocket>(elementById("location-list"));
 locations_list.columns = columns;
 
 export function init_buildings() {
-    {
-        let div = document.getElementById('local_buildings')
-
-        let close_button = document.getElementById('buildings-close-button')!;
-        close_button.onclick = () => close_buildings();
-    }
-
-    {
-        document.getElementById('claim-land-plot')!.onclick = create_plot;
-        // document.getElementById('change-price-room')!.onclick
-        // document.getElementById('build-shack')
-    }
+    elementById('claim-location-button').onclick = create_plot;
 
     socket.on('buildings-info', (data: LandPlotSocket[]) => {
         locations_list.data = data
@@ -66,9 +55,9 @@ function create_plot() {
 }
 
 function close_buildings() {
-    let big_div = document.getElementById('local_buildings')!;
+    let big_div = elementById('local_buildings');
     big_div.classList.add('hidden');
-    document.getElementById('backdrop')!.classList.add('hidden');
+    elementById('backdrop').classList.add('hidden');
 }
 
 function rent_room(id: number) {
@@ -79,7 +68,7 @@ function rent_room(id: number) {
 
 function change_price(id: number) {
     return function() {
-        const price = parseInt((document.getElementById('building-rent-price-input')! as HTMLInputElement).value)
+        const price = parseInt((elementById('building-rent-price-input') as HTMLInputElement).value)
         if (price == undefined) return
         console.log('change-rent-price', {id: id, price: price})
         socket.emit('change-rent-price', {id: id, price: price})
@@ -145,36 +134,36 @@ function display_building_data(b: LandPlotSocket) {
             image_container.innerHTML = type_to_name(b.type)
         }
 
-        elementById("enter-location-button").onclick = () => rent_room(b.id)
+        elementById("enter-location-button").onclick = rent_room(b.id)
 
 
-        // const owner_div = document.getElementById('building-owner')!;
-        // owner_div.innerHTML = 'Owner: ' + b.owner_name + `(${b.owner_id})`;
+        const owner_div = elementById('building-owner');
+        owner_div.innerHTML = 'Owner: ' + b.owner_name + `(${b.owner_id})`;
 
-        // document.getElementById('building-guests')!.innerHTML = 'Guests: ' + b.guests.join(', ');
+        elementById('building-guests').innerHTML = 'Guests: ' + b.guests.join(', ');
 
-        // document.getElementById('rent-building-room')!.onclick = rent_room(b.id);
-        // document.getElementById('rent-building-price')!.innerHTML = 'Rent price (for you): ' + b.room_cost.toString();
-        // document.getElementById('rent-building-price-true')!.innerHTML = 'Rent price: ' + b.room_cost_true.toString();
-        // document.getElementById('repair-building')!.onclick = repair_building(b.id);
-        // document.getElementById('building-description')!.innerHTML = b.type;
-        // document.getElementById('building-rooms')!.innerHTML = 'Rooms: ' + b.rooms_occupied + '/' + b.rooms;
-        // document.getElementById('building-durability')!.innerHTML = 'Durability: ' + b.durability;
-        // document.getElementById('change-price-room')!.onclick = change_price(b.id);
+        elementById('rent-building-room').onclick = rent_room(b.id);
+        elementById('rent-building-price').innerHTML = 'Rent price (for you): ' + b.room_cost.toString();
+        elementById('rent-building-price-true').innerHTML = 'Rent price: ' + b.room_cost_true.toString();
+        elementById('repair-building').onclick = repair_building(b.id);
+        elementById('building-description').innerHTML = b.type;
+        elementById('building-rooms').innerHTML = 'Rooms: ' + b.rooms_occupied + '/' + b.rooms;
+        elementById('building-durability').innerHTML = 'Durability: ' + b.durability;
+        elementById('change-price-room').onclick = change_price(b.id);
 
-        // if (b.type == LandPlotType.LandPlot) {
-        //     document.getElementById('build-shack')!.classList.remove('hidden')
-        //     document.getElementById('build-house')!.classList.remove('hidden')
-        //     document.getElementById('build-inn')!.classList.remove('hidden')
+        if (b.type == LandPlotType.LandPlot) {
+            elementById('build-shack').classList.remove('hidden')
+            elementById('build-house').classList.remove('hidden')
+            elementById('build-inn').classList.remove('hidden')
 
-        //     document.getElementById('build-shack')!.onclick = build_shack(b.id);
-        //     document.getElementById('build-house')!.onclick = build_house(b.id);
-        //     document.getElementById('build-inn')!.onclick = build_inn(b.id);
-        // } else {
-        //     document.getElementById('build-shack')!.classList.add('hidden')
-        //     document.getElementById('build-house')!.classList.add('hidden')
-        //     document.getElementById('build-inn')!.classList.add('hidden')
-        // }
+            elementById('build-shack').onclick = build_shack(b.id);
+            elementById('build-house').onclick = build_house(b.id);
+            elementById('build-inn').onclick = build_inn(b.id);
+        } else {
+            elementById('build-shack').classList.add('hidden')
+            elementById('build-house').classList.add('hidden')
+            elementById('build-inn').classList.add('hidden')
+        }
     }
 }
 

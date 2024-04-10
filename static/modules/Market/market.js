@@ -111,9 +111,6 @@ const columns = [
         custom_style: ["flex-1-0-5"]
     }
 ];
-let market_div_buy = elementById('goods_list_buy');
-export const market_bulk = new List(market_div_buy);
-market_bulk.columns = columns;
 const FILTER_STATE = {
     type: "sell",
     per_good: []
@@ -123,8 +120,14 @@ function material_id_filter() {
         return FILTER_STATE.per_good[item.tag] && (item.typ == FILTER_STATE.type);
     };
 }
-market_bulk.filter = material_id_filter();
-export function init_market_filters() {
+export function new_market_bulk() {
+    let market_div_buy = elementById('goods_list_buy');
+    const market_bulk = new List(market_div_buy);
+    market_bulk.columns = columns;
+    market_bulk.filter = material_id_filter();
+    return market_bulk;
+}
+export function init_market_bulk_infrastructure(market_bulk) {
     let filters = elementById('per_good_filters');
     for (let item_index of material_ids) {
         FILTER_STATE.per_good.push(false);
@@ -144,8 +147,6 @@ export function init_market_filters() {
         filters.appendChild(filter_div);
     }
     market_bulk.filter = material_id_filter();
-}
-export function init_market_bulk() {
     let clear_orders_button = elementById('clear_orders_button');
     let clear_auction_orders_button = elementById('clear_auction_orders_button');
     set_up_header_tab_callbacks([
@@ -183,4 +184,5 @@ export function init_market_bulk() {
         socket.emit('sell-item', { index: Number(item.index), item_type: item.type, price: Number(price) });
     });
     socket.on('market-data', data => market_bulk.data = data);
+    return market_bulk;
 }

@@ -12,7 +12,7 @@ import { init_character_list_interactions, update_characters_list } from './modu
 import { backpack_list } from './modules/Equipment/backpack.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
 import { init_market_items, market_items } from './modules/Market/items_market.js';
-import { init_market_bulk, init_market_filters, market_bulk } from './modules/Market/market.js';
+import { init_market_bulk_infrastructure, new_market_bulk } from './modules/Market/market.js';
 import { set_up_market_headers } from './modules/Market/market_header.js';
 import { init_messages_interactions, new_log_message } from './modules/MessageBox/new_log_message.js';
 import { init_skills } from './modules/Skills/main.js';
@@ -45,10 +45,10 @@ set_up_character_creation_UI(socket);
 set_up_market_headers();
 init_detailed_character_statistics();
 init_character_list_interactions();
-init_market_bulk();
 init_market_items();
 init_buildings();
 init_battle_control();
+const market_bulk = new_market_bulk();
 socket.on("character_data", (msg) => {
     globals.character_data = {
         id: msg.id,
@@ -60,8 +60,8 @@ socket.on("character_data", (msg) => {
     socket.emit('request-tags');
 });
 socket.on('tags', msg => {
-    update_tags(msg);
-    init_market_filters();
+    update_tags(msg, [market_bulk]);
+    init_market_bulk_infrastructure(market_bulk);
     const craft_table = new_craft_table();
     socket.on('craft-bulk-complete', (msg) => {
         new_craft_bulk(craft_table, msg);

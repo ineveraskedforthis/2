@@ -117,10 +117,7 @@ const columns:Column<BulkOrderView>[] = [
     }
 ]
 
-let market_div_buy = elementById('goods_list_buy');
 
-export const market_bulk = new List<BulkOrderView>(market_div_buy);
-market_bulk.columns = columns;
 
 interface BulkMarketFilterState {
     type: "sell"|"buy"
@@ -138,9 +135,16 @@ function material_id_filter(): (item:BulkOrderView) => boolean {
     }
 }
 
-market_bulk.filter = material_id_filter()
+export function new_market_bulk() {
+    let market_div_buy = elementById('goods_list_buy');
+    const market_bulk = new List<BulkOrderView>(market_div_buy);
+    market_bulk.columns = columns;
+    market_bulk.filter = material_id_filter()
+    return market_bulk
+}
 
-export function init_market_filters() {
+export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>) {
+
     let filters = elementById('per_good_filters')
 
     for (let item_index of material_ids) {
@@ -167,9 +171,6 @@ export function init_market_filters() {
     }
 
     market_bulk.filter = material_id_filter()
-}
-
-export function init_market_bulk() {
 
     let clear_orders_button = elementById('clear_orders_button');
     let clear_auction_orders_button = elementById('clear_auction_orders_button');
@@ -215,4 +216,6 @@ export function init_market_bulk() {
     })
 
     socket.on('market-data', data => market_bulk.data = data);
+
+    return market_bulk
 }
