@@ -14,8 +14,9 @@ export class Value {
         this._id = id;
         this._value = 0;
         this._update(0);
+        console.log("register value: " + id);
         ((display) => socket.on(`val_${id}_c`, (data) => {
-            console.log("update value " + id);
+            console.log("update value: " + id);
             display.value = data;
             for (let item of dependents) {
                 item.update_display();

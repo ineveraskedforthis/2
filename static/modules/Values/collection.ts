@@ -23,8 +23,10 @@ export class Value implements ValueInterface {
         this._value = 0;
         this._update(0);
 
+        console.log("register value: " + id);
+
         ((display: Value) => socket.on(`val_${id}_c`, (data: number) => {
-            console.log("update value " + id)
+            console.log("update value: " + id)
             display.value = data
 
             for (let item of dependents) {

@@ -63,9 +63,15 @@ socket.on('tags', msg => {
     update_tags(msg);
     init_market_filters();
     const craft_table = new_craft_table();
-    socket.on('craft-bulk-complete', (msg) => { new_craft_bulk(craft_table, msg); });
-    socket.on('craft-item', (msg) => { update_craft_item_div(craft_table, msg); });
-    socket.on('craft-item-complete', (msg) => { new_craft_item(craft_table, msg); });
+    socket.on('craft-bulk-complete', (msg) => {
+        new_craft_bulk(craft_table, msg);
+    });
+    socket.on('craft-item', (msg) => {
+        update_craft_item_div(craft_table, msg);
+    });
+    socket.on('craft-item-complete', (msg) => {
+        new_craft_item(craft_table, msg);
+    });
     socket.emit('request-craft');
     socket.emit('request-belongings');
 });
