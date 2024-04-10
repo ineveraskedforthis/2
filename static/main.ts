@@ -74,7 +74,9 @@ socket.on('tags', msg => {
     const craft_table = new_craft_table()
 
 
-    socket.on('craft-bulk-complete', (msg: TaggedCraftBulk) => { new_craft_bulk(craft_table, msg); });
+    socket.on('craft-bulk-complete', (msg: TaggedCraftBulk) => {
+        new_craft_bulk(craft_table, msg);
+    });
     socket.on('craft-item', (msg: CraftItemUpdateView) => { update_craft_item_div(craft_table, msg); });
     socket.on('craft-item-complete', (msg: TaggedCraftItem) => { new_craft_item(craft_table, msg); });
 
