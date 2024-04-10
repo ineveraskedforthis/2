@@ -30,7 +30,7 @@ const columns:Column<ItemData>[] = [
             const name_string = generate_item_name(item)
             name.innerHTML = name_string
             name.classList.add('item_tier_' + Math.min(item.affixes, 4))
-            name.classList.add('item_label')
+            name.classList.add('centered-box')
             name.classList.add('width-125')
 
             return name

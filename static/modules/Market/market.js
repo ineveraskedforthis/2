@@ -137,7 +137,9 @@ export function init_market_filters() {
             market_bulk.filter = material_id_filter();
         }, [
             div(undefined, "", ["goods-icon", "small-square"], material_icon_url(tag), undefined, []),
-            div(undefined, tag, [], undefined, undefined, [])
+            div(undefined, "", ["width-auto"], undefined, undefined, [
+                div(undefined, tag, ["right-centered-box"], undefined, undefined, [])
+            ])
         ]);
         filters.appendChild(filter_div);
     }

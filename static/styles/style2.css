@@ -476,12 +476,16 @@ div {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100%;
+    width: 100%;
 }
 
 .right-centered-box {
     display: flex;
     align-items: center;
     justify-content: right;
+    height: 100%;
+    width: 100%;
 }
 
 .craft_option > div {

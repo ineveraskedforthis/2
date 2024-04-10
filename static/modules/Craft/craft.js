@@ -39,7 +39,7 @@ const craft_columns = [
         type: "html",
         value: (item) => {
             if (is_item_craft(item)) {
-                return div(undefined, item.output_model, [], undefined, undefined, []);
+                return div(undefined, item.output_model, ["centered-box"], undefined, undefined, []);
             }
             if (is_bulk_craft(item)) {
                 return item_amount_view_diw(output_amount_data[item.id]);
