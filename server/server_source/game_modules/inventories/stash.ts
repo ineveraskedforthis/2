@@ -1,4 +1,5 @@
-import { materials, material_index } from "../manager_classes/materials_manager";
+import { materials } from "../manager_classes/materials_manager";
+import { material_index } from "@custom_types/inventory";
 import { StashData } from "../types";
 
 export class Stash {

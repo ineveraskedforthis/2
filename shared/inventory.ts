@@ -1,6 +1,26 @@
-import { skill } from "../server/server_source/game_modules/character/SkillList"
 import { item_model_tag } from "../server/server_source/game_modules/items/model_tags"
-import { material_index } from "../server/server_source/game_modules/manager_classes/materials_manager"
+
+export interface SkillListInterface {
+    clothier: number;
+    cooking: number;
+    onehand: number;
+    polearms: number;
+    noweapon: number;
+    twohanded: number
+    skinning: number;
+    magic_mastery: number;
+    blocking: number;
+    evasion: number;
+    woodwork: number;
+    hunt: number;
+    ranged: number;
+    bone_carving: number;
+    travelling: number;
+    fishing: number;
+    smith: number;
+}
+
+export type skill = keyof SkillListInterface
 
 export interface damageSocket {
     fire: number
@@ -111,3 +131,4 @@ export interface TaggedCraftItem {
     tag: string,
     value: CraftItemTemplate
 }
+export type material_index = number & { __brand: "index of the material"}

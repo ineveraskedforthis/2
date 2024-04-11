@@ -8,7 +8,8 @@ import { Data } from "../data";
 import { Effect } from "../events/effects";
 import { EventMarket } from "../events/market";
 import { ScriptedValue } from "../events/scripted_values";
-import { FOOD, MEAT, MaterialsManager, RAT_BONE, RAT_SKIN, material_index, materials } from "../manager_classes/materials_manager";
+import { FOOD, MEAT, MaterialsManager, RAT_BONE, RAT_SKIN, materials } from "../manager_classes/materials_manager";
+import { material_index } from "@custom_types/inventory";
 import { Cell } from "../map/DATA_LAYOUT_CELL";
 // import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
@@ -134,7 +135,7 @@ export function buy_random(character: Character) {
 export function random_walk(char: Character, constraints: (cell: Cell) => boolean) {
     let cell = Convert.character_to_cell(char)
     let possible_moves = []
-    for (let d of dp) {      
+    for (let d of dp) {
         let tmp: [number, number] = [d[0] + cell.x, d[1] + cell.y]
         let target_id = Data.World.coordinate_to_id(tmp)
         let target_cell = Data.Cells.from_id(target_id)
@@ -142,22 +143,22 @@ export function random_walk(char: Character, constraints: (cell: Cell) => boolea
             if (MapSystem.can_move(tmp) && constraints(target_cell)) {
                 possible_moves.push(tmp)
             }
-        } 
+        }
     }
     // console.log(cell.x, cell.y)
     // console.log(possible_moves)
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)]
         ActionManager.start_action(
-            CharacterAction.MOVE, 
-            char, 
-            Data.World.coordinate_to_id(move_direction))  
+            CharacterAction.MOVE,
+            char,
+            Data.World.coordinate_to_id(move_direction))
     }
 }
 
 export function rat_walk(character: Character, constraints: (cell: Cell) => boolean) {
     let cell_ids = Data.World.neighbours(character.cell_id)
-    let potential_moves = cell_ids.map((x) => {   
+    let potential_moves = cell_ids.map((x) => {
         let cell = Data.Cells.from_id(x)
         return {item: cell, weight: trim(cell.rat_scent, 0, 5)}
     })
@@ -168,7 +169,7 @@ export function rat_walk(character: Character, constraints: (cell: Cell) => bool
 export function home_walk(character: Character) {
     if (character.home_cell_id == undefined) {
         let cell_ids = Data.World.neighbours(character.cell_id)
-        let potential_moves = cell_ids.map((x) => {   
+        let potential_moves = cell_ids.map((x) => {
             let cell = Data.Cells.from_id(x)
             return {item: cell, weight: cell.market_scent}
         })
@@ -194,7 +195,7 @@ export function coast_walk(character: Character) {
 
 export function rat_go_home(character: Character, constraints: (cell: Cell) => boolean) {
     let cell = Convert.character_to_cell(character)
-    let potential_moves = Data.World.neighbours(character.cell_id).map((x) => {return Data.Cells.from_id(x)}).map((x) => 
+    let potential_moves = Data.World.neighbours(character.cell_id).map((x) => {return Data.Cells.from_id(x)}).map((x) =>
         {return {item: x, weight: x.rat_scent}})
     let target = select_max(potential_moves, constraints)
     if (target != undefined)
@@ -226,7 +227,7 @@ export function roll_price_belief_sell_increase(character: Character, material: 
 export function update_price_beliefs(character: Character) {
     let orders = Convert.cell_id_to_bulk_orders(character.cell_id)
     // initialisation
-    
+
     for (let material of materials.list_of_indices) {
         let value_buy = character.ai_price_belief_buy.get(material)
         let value_sell = character.ai_price_belief_sell.get(material)
@@ -238,7 +239,7 @@ export function update_price_beliefs(character: Character) {
             character.ai_price_belief_sell.set(material, base_price(character.cell_id, material))
         }
     }
-    
+
     // updating price beliefs as you go
     for (let item of orders) {
         let order = Data.BulkOrders.from_id(item)

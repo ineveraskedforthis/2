@@ -6,7 +6,7 @@ import { building_id, char_id, CharacterTemplate, model_interface_name, ModelVar
 import { battle_id, unit_id } from "../../../../shared/battle_data";
 import { SkillList } from "./SkillList";
 import { AImemory, AIstate } from "./AIstate";
-import { material_index } from "../manager_classes/materials_manager";
+import { material_index } from "@custom_types/inventory";
 import { PerksTable, TraitsTable } from "../../../../shared/character";
 import { cell_id, money } from "../../../../shared/common";
 import { CharacterMapAction } from "../actions/types";
@@ -56,7 +56,7 @@ export class Character {
     stats: StatsTag;
     resists: BaseResistTag;
     max_hp: MaxHPTag;
-    
+
     explored: boolean[];
     next_cell: cell_id
 
@@ -71,9 +71,16 @@ export class Character {
 
     model_variation: any;
 
-    constructor(id: number, battle_id: battle_id|undefined, battle_unit_id: unit_id|undefined, user_id: user_id|TEMP_USER_ID, cell_id: cell_id,
-                 name: string, template: CharacterTemplate) {
-        
+    constructor(
+        id: number,
+        battle_id: battle_id|undefined,
+        battle_unit_id: unit_id|undefined,
+        user_id: user_id|TEMP_USER_ID,
+        cell_id: cell_id,
+        name: string,
+        template: CharacterTemplate
+    ) {
+
         this.id = id as char_id
         this.battle_id = battle_id
         this.battle_unit_id = battle_unit_id
@@ -103,7 +110,7 @@ export class Character {
 
 
         // let max_hp = MaxHP[template.max_hp]
-        
+
         this.current_building = undefined
 
         this.equip = new Equip()
@@ -111,7 +118,7 @@ export class Character {
         this.trade_stash = new Stash()
         this.savings = new Savings()
         this.trade_savings = new Savings()
-        
+
         this.status = new Status()
         this.status.blood = 0
         this.status.fatigue = 0
@@ -149,7 +156,7 @@ export class Character {
      */
     change(type: status_type, x: number):boolean {
         let tmp = this.status[type];
-        let new_status = tmp + x 
+        let new_status = tmp + x
         let max = 100
         if (type == 'hp') {
             max = MaxHP[this.max_hp]
@@ -158,7 +165,7 @@ export class Character {
         return this.set(type, new_status)
     }
 
-    
+
     get_name() {
         if (!this.dead()) return this.name
         if (this.skinned != true) {

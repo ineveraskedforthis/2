@@ -1,5 +1,4 @@
 import { Accuracy } from "../../battle/battle_calcs";
-import { SkillList, skill } from "../../character/SkillList";
 import { Convert } from "../../systems_communication";
 import { weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
@@ -16,6 +15,7 @@ import { Data } from "../../data";
 import { terrain_to_string } from "../../map/terrain";
 import { cell_id } from "@custom_types/common";
 import { CellDisplay, CharacterStatsResponse } from "@custom_types/responses";
+import { skill } from "@custom_types/inventory";
 
 
 

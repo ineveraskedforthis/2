@@ -1,6 +1,7 @@
 import { cell_id, money } from "@custom_types/common";
 import { Character } from "../character/character";
-import { ELODINO_FLESH, materials, material_index, RAT_BONE, RAT_SKIN, WOOD, MEAT, FOOD, FISH, ZAZ, ARROW_BONE } from "../manager_classes/materials_manager"
+import { ELODINO_FLESH, materials, RAT_BONE, RAT_SKIN, WOOD, MEAT, FOOD, FISH, ZAZ, ARROW_BONE } from "../manager_classes/materials_manager"
+import { material_index } from "@custom_types/inventory";
 import { box, CraftBulkTemplate, CraftItemTemplate } from "@custom_types/inventory";
 import { MapSystem } from "../map/system";
 import { output_bulk } from "../craft/CraftBulk";

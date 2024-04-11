@@ -142,7 +142,7 @@ var ItemOrders;
     ItemOrders.remove = remove;
     // export function remove_unsafe(id: number, who: Character) {
     //     const true_id = Convert.number_to_order_item_id(id)
-    //     if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER    
+    //     if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER
     //     return remove(true_id, who)
     // }
     function remove_all_character(who) {
@@ -165,7 +165,7 @@ var ItemOrders;
     //         finished: order.finished
     //     }
     //     return responce
-    // }    
+    // }
     function sell(seller, backpack_id, price) {
         const item = seller.equip.data.backpack.items[backpack_id];
         if (item == undefined) {

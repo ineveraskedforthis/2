@@ -1,5 +1,6 @@
 import { SocketWrapper, User } from "../user";
-import { materials, material_index } from "../../manager_classes/materials_manager";
+import { materials } from "../../manager_classes/materials_manager";
+import { material_index } from "@custom_types/inventory";
 import { Alerts } from "./alerts";
 import { Convert } from "../../systems_communication";
 import { EventInventory } from "../../events/inventory_events";

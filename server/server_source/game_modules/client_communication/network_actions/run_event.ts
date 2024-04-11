@@ -1,18 +1,18 @@
-import { skill } from "../../character/SkillList";
 import { Data } from "../../data";
 import { Effect } from "../../events/effects";
 import { Event } from "../../events/events";
 import { Convert } from "../../systems_communication";
 import { building_id } from "../../types";
-import { SocketWrapper, User } from "../user";
+import { SocketWrapper } from "../user";
 import { Validator } from "./common_validations";
 
-import { LandPlotType } from "../../../../../shared/buildings"
 import { BattleSystem } from "../../battle/system";
 import { CharacterSystem } from "../../character/system";
 import { money } from "@custom_types/common";
 import { Perks } from "@custom_types/character";
 import { Request } from "./request";
+import { skill } from "@custom_types/inventory";
+import { LandPlotType } from "@custom_types/buildings";
 
 export namespace SocketCommand {
     // data is a raw id of character

@@ -2,12 +2,12 @@ import { money } from "@custom_types/common";
 import { Character } from "../character/character";
 import { ScriptedValue } from "../events/scripted_values";
 import { MapSystem } from "../map/system";
-import { material_index } from "../manager_classes/materials_manager";
+import { material_index } from "@custom_types/inventory";
 import { Convert } from "../systems_communication";
 
 export namespace AI_TRIGGER {
     export function tired(character: Character) {
-        return (character.get_fatigue() > 50) 
+        return (character.get_fatigue() > 50)
             || (character.get_stress()  > 50);
     }
 

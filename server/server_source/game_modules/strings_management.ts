@@ -1,12 +1,8 @@
 import { Item } from "./items/item";
-import { DmgOps } from "./damage_types";
-import { CharacterTemplate, StashData, Status, user_id } from "./types";
+import { CharacterTemplate } from "./types";
 import { Character } from "./character/character";
-import { SkillList, skill } from "./character/SkillList";
 import { Inventory } from "./inventories/inventory";
-import { cell_id, money } from "@custom_types/common";
 import { LandPlot } from "@custom_types/buildings";
-import { battle_id, unit_id } from "@custom_types/battle_data";
 import { Equip } from "./inventories/equip";
 
 

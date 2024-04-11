@@ -1,4 +1,5 @@
-import { materials, material_index, MEAT, FISH, FOOD } from "../manager_classes/materials_manager";
+import { materials, MEAT, FISH, FOOD } from "../manager_classes/materials_manager";
+import { material_index, skill } from "@custom_types/inventory";
 import { CharacterTemplate, damage_type, weapon_attack_tag, weapon_tag } from "../types";
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
@@ -12,7 +13,7 @@ import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
 import { cell_id, money } from "@custom_types/common";
-import { is_crafting_skill, is_melee_skill, skill } from "./SkillList";
+import { is_crafting_skill, is_melee_skill } from "./SkillList";
 import { has_cooking_tools, has_crafting_tools } from "../DATA_LAYOUT_BUILDING";
 import { Perks } from "@custom_types/character";
 import { BaseStats } from "../races/stats";
@@ -71,14 +72,14 @@ export namespace CharacterSystem {
         return true
     }
 
-    export function transaction(        A: Character, B: Character, 
-                                        savings_A_to_B: money, stash_A_to_B: Stash, 
-                                        savings_B_to_A: money, stash_B_to_A: Stash) 
+    export function transaction(        A: Character, B: Character,
+                                        savings_A_to_B: money, stash_A_to_B: Stash,
+                                        savings_B_to_A: money, stash_B_to_A: Stash)
     {
         // transaction validation
         if (A.savings.get() < savings_A_to_B) return false
         if (B.savings.get() < savings_B_to_A) return false
-        
+
         for (let material of materials.get_materials_list()) {
             if (A.stash.get(material) < stash_A_to_B.get(material)) return false
             if (B.stash.get(material) < stash_B_to_A.get(material)) return false
@@ -306,12 +307,12 @@ export namespace CharacterSystem {
                 }
                 if (Math.random() > 0.6) {
                     CampaignAI.decision(character)
-                }                
+                }
             }
             ai_campaign_decision_timer = 0
         }
 
-        
+
         if (character_state_update_timer > 1) {
             for (let character of Data.CharacterDB.list()) {
                 if (character.dead()) {

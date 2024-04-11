@@ -6,10 +6,10 @@ import { Data } from "../../data"
 import { ResponceNegativeQuantified, Trigger } from "../../events/triggers"
 import { CharacterSystem } from "../../character/system"
 import { Perks } from "@custom_types/character"
-import { skill } from "../../character/SkillList"
 import { skill_price } from "../../prices/skill_price"
 import { can_talk, is_enemy_characters } from "../../SYSTEM_REPUTATION"
 import { Character } from "../../character/character"
+import { skill } from "@custom_types/inventory"
 
 export namespace Dialog {
     function talking_check(sw: SocketWrapper, character_id: unknown): [undefined, undefined]|[Character, Character]  {
@@ -26,7 +26,7 @@ export namespace Dialog {
         if (target_character == undefined) {
             sw.socket.emit('alert', 'character does not exist')
             return [undefined, undefined]
-        }        
+        }
         if (character.cell_id != target_character.cell_id) {
             user.socket.emit('alert', 'not in the same cell')
             return [undefined, undefined]
@@ -39,7 +39,7 @@ export namespace Dialog {
             user.socket.emit('alert', "can't talk with enemies or creatures of different race")
             return  [undefined, undefined]
         }
-        
+
 
         return [character, target_character]
     }
@@ -73,7 +73,7 @@ export namespace Dialog {
             race: target_character.race,
             factions: Data.Reputation.list_from_id(target_character.id),
             current_goal: target_character.ai_state,
-            perks: {}, 
+            perks: {},
             skills: {},
             model: target_character.model,
             equip: target_character.equip_models()
@@ -92,7 +92,7 @@ export namespace Dialog {
                     skill_price(skill as skill, character, target_character)
                 ]
             }
-        }        
+        }
         sw.socket.emit('perks-info', response)
     }
 }

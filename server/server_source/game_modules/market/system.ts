@@ -4,7 +4,7 @@ import { Stash } from "../inventories/stash";
 import { Item } from "../items/item";
 import { ItemSystem } from "../items/system"
 import { Data } from "../data";
-import { material_index } from "../manager_classes/materials_manager";
+import { material_index } from "@custom_types/inventory";
 import { Convert } from "../systems_communication";
 import { char_id, order_bulk_id } from "../types";
 import { OrderBulk, OrderBulkJson } from "./classes";
@@ -49,14 +49,14 @@ export namespace BulkOrders {
 
     export function destroy_item(id: order_bulk_id, x: number) {
         const order = Data.BulkOrders.from_id(id)
-        
+
         if (order.typ == 'sell') {
             const character = Data.CharacterDB.from_id(order.owner_id)
             order.amount -= x
             character.trade_stash.inc(order.tag, -x)
         }
     }
-    
+
     export function remove_by_condition(character: Character, tag: material_index) {
         const set = Data.BulkOrders.from_char_id(character.id)
         if (set == undefined) return
@@ -76,7 +76,7 @@ export namespace BulkOrders {
         if (order.amount < amount) amount = order.amount
         if (buyer.savings.get() < pay)  return 'not_enough_money'
 
-        const material = order.tag        
+        const material = order.tag
 
         // shadow operations with imaginary items
         order.amount -= amount;
@@ -85,21 +85,21 @@ export namespace BulkOrders {
         CharacterSystem.to_trade_stash(owner, order.tag, -amount)
 
         //actual transaction
-        CharacterSystem.transaction(owner, buyer, 
-                                    0 as money  , transaction_stash, 
+        CharacterSystem.transaction(owner, buyer,
+                                    0 as money  , transaction_stash,
                                     pay         , empty_stash       )
-        return 'ok'        
+        return 'ok'
     }
 
     export function execute_buy_order(id:order_bulk_id, amount: number, seller: Character) {
         const order = Data.BulkOrders.from_id(id)
         const owner = Convert.id_to_character(order.owner_id)
-        
-        if (order.amount < amount) amount = order.amount    
+
+        if (order.amount < amount) amount = order.amount
         if (seller.stash.get(order.tag) < amount) amount = seller.stash.get(order.tag)
-        
+
         const pay = amount * order.price as money
-        const material = order.tag   
+        const material = order.tag
 
         // shadow operations
         order.amount -= amount;
@@ -118,8 +118,8 @@ export namespace BulkOrders {
         //validation of input
         price = Math.floor(price) as money
         amount = Math.floor(amount)
-        if (price < 0) return 'invalid_price'        
-        if (amount <= 0) return 'invalid_amount'        
+        if (price < 0) return 'invalid_price'
+        if (amount <= 0) return 'invalid_amount'
         if (owner.savings.get() < price * amount) return 'not_enough_savings'
 
         CharacterSystem.to_trade_savings(owner, amount * price as money)
@@ -153,7 +153,7 @@ export namespace ItemOrders {
 
     // export function remove_unsafe(id: number, who: Character) {
     //     const true_id = Convert.number_to_order_item_id(id)
-    //     if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER    
+    //     if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER
     //     return remove(true_id, who)
     // }
 
@@ -164,7 +164,7 @@ export namespace ItemOrders {
             remove(order, who)
         }
     }
-    
+
     // export function order_to_json(order: OrderItem) {
     //     let owner = Convert.id_to_character(order.owner_id)
     //     let responce:OrderItemJson = {
@@ -176,7 +176,7 @@ export namespace ItemOrders {
     //         finished: order.finished
     //     }
     //     return responce
-    // }    
+    // }
 
     export function sell(seller: Character, backpack_id: number, price: money){
         const item = seller.equip.data.backpack.items[backpack_id]
@@ -195,7 +195,7 @@ export namespace ItemOrders {
 
         // make sure that they are in the same cell
         if (seller.cell_id != buyer.cell_id) {return AuctionResponce.NOT_IN_THE_SAME_CELL}
-        
+
         // make sure that buyer has enough money
         // but owner can buy it from himself
         if ((buyer.id != seller.id)&&(buyer.savings.get() < item.price)) {return AuctionResponce.NOT_ENOUGH_MONEY}

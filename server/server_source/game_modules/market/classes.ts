@@ -1,7 +1,7 @@
 import { money } from "@custom_types/common.js";
 import { Item } from "../items/item.js";
 import { ItemJson } from "@custom_types/inventory.js";
-import { material_index } from "../manager_classes/materials_manager.js";
+import { material_index } from "@custom_types/inventory.js";
 import { char_id, order_bulk_id } from "../types.js";
 
 // cell_id is commented as i decided to tie orders directly to location of character

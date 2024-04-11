@@ -5,8 +5,8 @@ import { Data } from "../data";
 import { building_id, char_id } from "../types";
 import { ScriptedValue } from "./scripted_values";
 import { skill_price } from "../prices/skill_price";
-import { skill } from "../character/SkillList";
 import { CharacterSystem } from "../character/system";
+import { skill } from "@custom_types/inventory";
 
 
 export enum ResponceNegative {
@@ -18,21 +18,21 @@ export enum ResponceNegative {
     no_owner = "no_owner",
 }
 
-export enum ResponceNegativeQuantified { 
+export enum ResponceNegativeQuantified {
     Money = "money",
     TeacherSkill = "teacher_skill",
     Skill = "skill",
 }
 
 type LearningAvailableResponce = {
-    response: ResponceNegativeQuantified, 
+    response: ResponceNegativeQuantified,
     current_quantity: number,
     max_quantity: number|undefined,
-    min_quantity: number|undefined} | 
+    min_quantity: number|undefined} |
     { response: 'ok', price: money}
 
 
-type BuildingAvailableResponce = 
+type BuildingAvailableResponce =
      {response: ResponceNegative}
     |{response: "ok", owner_id: char_id|undefined, price: money}
 
@@ -78,21 +78,21 @@ export namespace Trigger {
         const teacher_skill = CharacterSystem.pure_skill(teacher, skill)
         const student_skill = CharacterSystem.pure_skill(student, skill)
         if ((teacher_skill <= student_skill + 20) || (teacher_skill < 30)) {
-            return { 
-                response: ResponceNegativeQuantified.TeacherSkill, 
-                current_quantity: teacher_skill, 
-                max_quantity: undefined, 
-                min_quantity: Math.max(student_skill + 20, 30) 
+            return {
+                response: ResponceNegativeQuantified.TeacherSkill,
+                current_quantity: teacher_skill,
+                max_quantity: undefined,
+                min_quantity: Math.max(student_skill + 20, 30)
             }
         }
-        
+
         let price = skill_price(skill, student, teacher)
         if (savings < price) {
-            return { 
-                response: ResponceNegativeQuantified.Money, 
-                current_quantity: savings, 
-                max_quantity: undefined, 
-                min_quantity: price 
+            return {
+                response: ResponceNegativeQuantified.Money,
+                current_quantity: savings,
+                max_quantity: undefined,
+                min_quantity: price
             }
         }
         return { response: 'ok', price: price}

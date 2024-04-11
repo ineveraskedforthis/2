@@ -1,7 +1,8 @@
 import { trim } from "../calculations/basic_functions";
 import { Item } from "../items/item";
 import { ItemSystem } from "../items/system";
-import { ELODINO_FLESH, GRACI_HAIR, material_index, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
+import { ELODINO_FLESH, GRACI_HAIR, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
+import { material_index } from "@custom_types/inventory";
 import { Character} from "../character/character";
 import { tagModel, tagRACE } from "../types";
 
@@ -14,21 +15,21 @@ export namespace Loot {
             case 'elo': return [{material: ELODINO_FLESH, amount: 3}]
             case 'human': return [{material: MEAT, amount: 6}]
             case 'rat': {
-                    return  [  
+                    return  [
                         {material: MEAT,     amount: 3},
                         {material: RAT_BONE, amount: 5},
                         {material: RAT_SKIN, amount: 4}
                     ]
                 }
             case 'magerat': {
-                return  [  
+                return  [
                     {material: MEAT,     amount: 2},
                     {material: RAT_BONE, amount: 5},
                     {material: RAT_SKIN, amount: 1}
                 ]
             }
             case 'bigrat': {
-                return  [  
+                return  [
                     {material: MEAT,     amount: 6},
                     {material: RAT_BONE, amount: 7},
                     {material: RAT_SKIN, amount: 8}
@@ -36,7 +37,7 @@ export namespace Loot {
             }
             case 'graci': return [{material: GRACI_HAIR, amount: 3}, {material: MEAT, amount: 50}]
             case "test": return []
-            case "berserkrat": return [  
+            case "berserkrat": return [
                     {material: MEAT,     amount: 6},
                     {material: RAT_BONE, amount: 7},
                     {material: RAT_SKIN, amount: 8}

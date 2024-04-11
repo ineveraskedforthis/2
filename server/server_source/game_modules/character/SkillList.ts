@@ -1,4 +1,6 @@
-export class SkillList {
+import { SkillListInterface, skill } from "@custom_types/inventory";
+
+export class SkillList implements SkillListInterface{
     clothier: number;
     cooking: number;
     onehand: number;
@@ -16,7 +18,6 @@ export class SkillList {
     travelling: number;
     fishing: number;
     smith: number;
-
 
     constructor() {
         this.clothier       = 0;
@@ -38,8 +39,6 @@ export class SkillList {
         this.smith          = 0;
     }
 }
-
-export type skill = keyof SkillList
 
 export function is_crafting_skill(skill: skill) {
     switch (skill) {
@@ -69,7 +68,7 @@ export function is_melee_skill(skill: skill) {
     if (skill === 'onehand') return true
     if (skill === 'twohanded') return true
     if (skill === 'polearms') return true
-    if (skill === 'evasion') return true    
+    if (skill === 'evasion') return true
 
     return false
 }

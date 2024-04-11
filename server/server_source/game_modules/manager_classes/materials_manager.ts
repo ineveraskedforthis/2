@@ -1,7 +1,5 @@
+import { material_index } from "@custom_types/inventory"
 import { ITEM_MATERIAL } from "../items/ITEM_MATERIAL"
-
-
-export type material_index = number & { __brand: "index of the material"}
 
 export class MaterialsManager{
     materials: ITEM_MATERIAL[]
@@ -45,7 +43,7 @@ export class MaterialsManager{
     tag_to_material(tag:string) {
         return this.materials[this.mat_dict[tag]]
     }
-    
+
     tag_to_index(tag:string) {
         return this.mat_dict[tag]
     }

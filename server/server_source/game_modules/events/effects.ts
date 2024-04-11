@@ -1,6 +1,4 @@
-import { equip_slot } from "../../../../shared/inventory";
 import { Character } from "../character/character";
-import { skill } from "../character/SkillList";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 import { Data} from "../data";
@@ -8,14 +6,13 @@ import { Convert } from "../systems_communication";
 import { building_id, char_id} from "../types";
 import { ScriptedValue } from "./scripted_values";
 import { trim } from "../calculations/basic_functions";
-import { Perks } from "../../../../shared/character";
 import { cell_id, money } from "@custom_types/common";
 import { LandPlot, LandPlotType } from "@custom_types/buildings";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { Trigger } from "./triggers";
-import { MEAT, material_index } from "../manager_classes/materials_manager";
+import { equip_slot, material_index, skill } from "@custom_types/inventory";
 import { BulkOrders } from "../market/system";
-import { character_to_string } from "../strings_management";
+import { Perks } from "@custom_types/character";
 
 export namespace Effect {
     export namespace Update {
