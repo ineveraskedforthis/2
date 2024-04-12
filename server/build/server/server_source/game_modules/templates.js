@@ -9,7 +9,6 @@ const TEMPLATE_GRACI_1 = require("./races/TEMPLATE_GRACI");
 const TEMPLATE_HUMANS_1 = require("./races/TEMPLATE_HUMANS");
 const TEMPLATE_RATS_1 = require("./races/TEMPLATE_RATS");
 const TEMPLATE_OTHERS_1 = require("./races/TEMPLATE_OTHERS");
-const data_objects_1 = require("./data/data_objects");
 const data_id_1 = require("./data/data_id");
 const LUMP_OF_MONEY = 1000;
 const TONS_OF_MONEY = 30000;
@@ -17,16 +16,20 @@ var Template;
 (function (Template) {
     let Character;
     (function (Character) {
-        function Base(template, name, model, x, y, faction_id) {
-            const cell = data_objects_1.Data.World.coordinate_to_id([x, y]);
-            const location = data_id_1.DataID.Cells.main_location(cell);
+        function Base(template, name, model, location, faction_id) {
+            if (faction_id != undefined)
+                location = data_id_1.DataID.Faction.spawn(faction_id);
+            if (location == undefined) {
+                console.log("attempt to generate character without location");
+                return undefined;
+            }
             let character = events_1.Event.new_character(template, name, location, model);
             if (faction_id != undefined)
                 data_id_1.DataID.Reputation.set(character.id, faction_id, "member");
             return character;
         }
-        function GenericHuman(x, y, name, faction) {
-            let human = Base(TEMPLATE_HUMANS_1.HumanTemplate, name, undefined, x, y, faction);
+        function GenericHuman(name, faction) {
+            let human = Base(TEMPLATE_HUMANS_1.HumanTemplate, name, undefined, undefined, faction);
             human._skills.woodwork += 10;
             human._skills.cooking += 15;
             human._skills.hunt += 5;
@@ -36,8 +39,8 @@ var Template;
             return human;
         }
         Character.GenericHuman = GenericHuman;
-        function HumanSteppe(x, y, name) {
-            let human = GenericHuman(x, y, name, 'steppe_humans');
+        function HumanSteppe(name) {
+            let human = GenericHuman(name, 'steppe_humans');
             human._skills.hunt += 20;
             human._skills.skinning += 10;
             human._skills.cooking += 10;
@@ -47,8 +50,8 @@ var Template;
             return human;
         }
         Character.HumanSteppe = HumanSteppe;
-        function Lumberjack(x, y, name) {
-            let human = HumanSteppe(x, y, name);
+        function Lumberjack(name) {
+            let human = HumanSteppe(name);
             human._skills.travelling += 20;
             human.ai_map = 'lumberjack';
             let cutting_tool = system_1.ItemSystem.create('bone_dagger', [], 100);
@@ -57,34 +60,34 @@ var Template;
             return human;
         }
         Character.Lumberjack = Lumberjack;
-        function Fisherman(x, y, name) {
-            let human = HumanSteppe(x, y, name);
+        function Fisherman(name) {
+            let human = HumanSteppe(name);
             human._skills.travelling += 20;
             human._skills.fishing += 40;
             human.ai_map = 'fisherman';
             return human;
         }
         Character.Fisherman = Fisherman;
-        function HumanStrong(x, y, name) {
-            let human = Base(TEMPLATE_HUMANS_1.HumanStrongTemplate, name, undefined, x, y, undefined);
+        function HumanStrong(location, name) {
+            let human = Base(TEMPLATE_HUMANS_1.HumanStrongTemplate, name, undefined, location, undefined);
             return human;
         }
         Character.HumanStrong = HumanStrong;
-        function HumanCity(x, y, name) {
-            let human = GenericHuman(x, y, name, 'city');
+        function HumanCity(name) {
+            let human = GenericHuman(name, 'city');
             human._skills.fishing += 20;
             human._skills.noweapon += 5;
             return human;
         }
         Character.HumanCity = HumanCity;
-        function HumanSpearman(x, y, name, faction) {
+        function HumanSpearman(name, faction) {
             switch (faction) {
                 case "steppe": {
-                    var human = HumanSteppe(x, y, name);
+                    var human = HumanSteppe(name);
                     break;
                 }
                 case "city": {
-                    var human = HumanCity(x, y, name);
+                    var human = HumanCity(name);
                     break;
                 }
             }
@@ -130,22 +133,22 @@ var Template;
             return character;
         }
         Character.EquipClothesRich = EquipClothesRich;
-        function HumanRatHunter(x, y, name) {
-            let human = HumanSpearman(x, y, name, 'steppe');
+        function HumanRatHunter(name) {
+            let human = HumanSpearman(name, 'steppe');
             human.ai_map = 'rat_hunter';
             human._skills.skinning += 20;
             human._skills.hunt += 20;
             return human;
         }
         Character.HumanRatHunter = HumanRatHunter;
-        function HumanCook(x, y, name, faction) {
+        function HumanCook(name, faction) {
             switch (faction) {
                 case "steppe": {
-                    var human = HumanSteppe(x, y, name);
+                    var human = HumanSteppe(name);
                     break;
                 }
                 case "city": {
-                    var human = HumanCity(x, y, name);
+                    var human = HumanCity(name);
                     break;
                 }
             }
@@ -156,14 +159,14 @@ var Template;
             return human;
         }
         Character.HumanCook = HumanCook;
-        function HumanFletcher(x, y, name, faction) {
+        function HumanFletcher(name, faction) {
             switch (faction) {
                 case "steppe": {
-                    var human = HumanSteppe(x, y, name);
+                    var human = HumanSteppe(name);
                     break;
                 }
                 case "city": {
-                    var human = HumanCity(x, y, name);
+                    var human = HumanCity(name);
                     break;
                 }
             }
@@ -178,21 +181,21 @@ var Template;
             return human;
         }
         Character.HumanFletcher = HumanFletcher;
-        function HumanCityGuard(x, y, name) {
-            let human = HumanSpearman(x, y, name, 'city');
+        function HumanCityGuard(name) {
+            let human = HumanSpearman(name, 'city');
             human.ai_map = 'urban_guard';
             human._skills.polearms += 10;
             return human;
         }
         Character.HumanCityGuard = HumanCityGuard;
-        function HumanLocalTrader(x, y, name, faction) {
+        function HumanLocalTrader(name, faction) {
             switch (faction) {
                 case "steppe": {
-                    var human = HumanSteppe(x, y, name);
+                    var human = HumanSteppe(name);
                     break;
                 }
                 case "city": {
-                    var human = HumanCity(x, y, name);
+                    var human = HumanCity(name);
                     break;
                 }
             }
@@ -201,14 +204,14 @@ var Template;
             return human;
         }
         Character.HumanLocalTrader = HumanLocalTrader;
-        function GenericRat(x, y, name) {
-            let rat = Base(TEMPLATE_RATS_1.RatTemplate, name, undefined, x, y, 'rats');
+        function GenericRat(name) {
+            let rat = Base(TEMPLATE_RATS_1.RatTemplate, name, undefined, undefined, 'rats');
             rat._traits.claws = true;
             return rat;
         }
         Character.GenericRat = GenericRat;
-        function MageRat(x, y, name) {
-            let rat = Base(TEMPLATE_RATS_1.MageRatTemplate, name, undefined, x, y, 'rats');
+        function MageRat(name) {
+            let rat = Base(TEMPLATE_RATS_1.MageRatTemplate, name, undefined, undefined, 'rats');
             rat._traits.claws = true;
             rat._perks.magic_bolt = true;
             rat._perks.mage_initiation = true;
@@ -216,23 +219,23 @@ var Template;
             return rat;
         }
         Character.MageRat = MageRat;
-        function BerserkRat(x, y, name) {
-            let rat = Base(TEMPLATE_RATS_1.BerserkRatTemplate, name, undefined, x, y, 'rats');
+        function BerserkRat(name) {
+            let rat = Base(TEMPLATE_RATS_1.BerserkRatTemplate, name, undefined, undefined, 'rats');
             rat._traits.claws = true;
             rat._perks.charge = true;
             rat._skills.noweapon = 40;
             return rat;
         }
         Character.BerserkRat = BerserkRat;
-        function BigRat(x, y, name) {
-            let rat = Base(TEMPLATE_RATS_1.BigRatTemplate, name, undefined, x, y, 'rats');
+        function BigRat(name) {
+            let rat = Base(TEMPLATE_RATS_1.BigRatTemplate, name, undefined, undefined, 'rats');
             rat._traits.claws = true;
             rat._skills.noweapon = 40;
             return rat;
         }
         Character.BigRat = BigRat;
-        function MageElo(x, y, name) {
-            let elo = Base(TEMPLATE_ELO_1.ElodinoTemplate, name, undefined, x, y, 'elodino_free');
+        function MageElo(name) {
+            let elo = Base(TEMPLATE_ELO_1.ElodinoTemplate, name, undefined, undefined, 'elodino_free');
             elo._perks.magic_bolt = true;
             elo._perks.mage_initiation = true;
             elo._skills.magic_mastery = 20;
@@ -241,20 +244,21 @@ var Template;
             return elo;
         }
         Character.MageElo = MageElo;
-        function Elo(x, y, name) {
-            let elo = Base(TEMPLATE_ELO_1.ElodinoTemplate, name, undefined, x, y, 'elodino_free');
+        function Elo(name) {
+            let elo = Base(TEMPLATE_ELO_1.ElodinoTemplate, name, undefined, undefined, 'elodino_free');
+            if (elo == undefined)
+                return undefined;
             return elo;
         }
         Character.Elo = Elo;
-        function Graci(x, y, name) {
-            let graci = Base(TEMPLATE_GRACI_1.GraciTemplate, name, undefined, x, y, 'graci');
+        function Graci(name) {
+            let graci = Base(TEMPLATE_GRACI_1.GraciTemplate, name, undefined, undefined, 'graci');
             graci._skills.travelling = 70;
             return graci;
         }
         Character.Graci = Graci;
-        function Mage(x, y, faction) {
-            let mage = GenericHuman(x, y, 'Mage', faction);
-            // let mage = Event.new_character(HumanTemplate, 'Mage', cell, dummy_model)
+        function Mage(faction) {
+            let mage = GenericHuman('Mage', faction);
             mage._skills.magic_mastery = 100;
             mage._perks.mage_initiation = true;
             mage._perks.magic_bolt = true;
@@ -265,14 +269,14 @@ var Template;
             return mage;
         }
         Character.Mage = Mage;
-        function BloodMage(x, y, faction) {
-            const blood_mage = Mage(x, y, faction);
-            blood_mage._perks.blood_mage = true;
-            return blood_mage;
+        function BloodMage(faction) {
+            const mage = Mage(faction);
+            mage._perks.blood_mage = true;
+            return mage;
         }
         Character.BloodMage = BloodMage;
-        function Alchemist(x, y, faction) {
-            let alchemist = GenericHuman(x, y, 'Alchemist', faction);
+        function Alchemist(faction) {
+            let alchemist = GenericHuman('Alchemist', faction);
             alchemist._skills.magic_mastery = 60;
             alchemist._perks.mage_initiation = true;
             alchemist._perks.alchemist = true;
@@ -281,8 +285,8 @@ var Template;
             return alchemist;
         }
         Character.Alchemist = Alchemist;
-        function ArmourMaster(x, y) {
-            let master = HumanCity(x, y, 'Armourer');
+        function ArmourMaster() {
+            let master = HumanCity('Armourer');
             master._skills.clothier = 100;
             master._perks.skin_armour_master = true;
             master.stash.inc(materials_manager_1.RAT_SKIN, 50);
@@ -290,8 +294,8 @@ var Template;
             return master;
         }
         Character.ArmourMaster = ArmourMaster;
-        function Shoemaker(x, y) {
-            let master = HumanCity(x, y, 'Shoemaker');
+        function Shoemaker() {
+            let master = HumanCity('Shoemaker');
             master._skills.clothier = 100;
             master._perks.shoemaker = true;
             master.stash.inc(materials_manager_1.RAT_SKIN, 50);
@@ -299,8 +303,8 @@ var Template;
             return master;
         }
         Character.Shoemaker = Shoemaker;
-        function WeaponMasterWood(x, y, faction) {
-            let master = GenericHuman(x, y, 'Weapons maker', faction);
+        function WeaponMasterWood(faction) {
+            let master = GenericHuman('Weapons maker', faction);
             master._skills.woodwork = 100;
             master._perks.weapon_maker = true;
             master.stash.inc(materials_manager_1.WOOD, 15);
@@ -308,8 +312,8 @@ var Template;
             return master;
         }
         Character.WeaponMasterWood = WeaponMasterWood;
-        function WeaponMasterBone(x, y, faction) {
-            let master = GenericHuman(x, y, 'Weapons maker', faction);
+        function WeaponMasterBone(faction) {
+            let master = GenericHuman('Weapons maker', faction);
             master._skills.bone_carving = 100;
             master._perks.weapon_maker = true;
             master.stash.inc(materials_manager_1.RAT_BONE, 40);
@@ -317,8 +321,8 @@ var Template;
             return master;
         }
         Character.WeaponMasterBone = WeaponMasterBone;
-        function MasterUnarmed(x, y, faction) {
-            let master = GenericHuman(x, y, 'Monk', faction);
+        function MasterUnarmed(faction) {
+            let master = GenericHuman('Monk', faction);
             master._skills.noweapon = 100;
             master._perks.dodge = true;
             master._perks.advanced_unarmed = true;
@@ -326,8 +330,8 @@ var Template;
             return master;
         }
         Character.MasterUnarmed = MasterUnarmed;
-        function Ball(x, y, name) {
-            return Base(TEMPLATE_OTHERS_1.BallTemplate, name, undefined, x, y, undefined);
+        function Ball(location, name) {
+            return Base(TEMPLATE_OTHERS_1.BallTemplate, name, undefined, location, undefined);
         }
         Character.Ball = Ball;
     })(Character = Template.Character || (Template.Character = {}));

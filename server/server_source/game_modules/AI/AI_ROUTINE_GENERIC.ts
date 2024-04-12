@@ -91,7 +91,7 @@ export function GenericRest(character: Character) {
             rest_outside(character)
             character.ai_memories.push(AImemory.NO_MONEY)
         } else {
-            let result = Effect.enter_location_payment(character.id, location_to_rest)
+            let result = Effect.enter_location(character.id, location_to_rest)
             if (result.response == ResponceNegative.no_money) {
                 rest_outside(character)
                 character.ai_memories.push(AImemory.NO_MONEY)

@@ -112,7 +112,7 @@ function load() {
     if (version == 0) {
         const factions = Data.Factions.get_factions()
         for (const item of factions) {
-            GameMaster.spawn_faction(DataID.Faction.spawn(item.tag), item.tag)
+            GameMaster.spawn_faction(DataID.Location.cell_id(DataID.Faction.spawn(item.tag)), item.tag)
         }
         set_version(1)
     }

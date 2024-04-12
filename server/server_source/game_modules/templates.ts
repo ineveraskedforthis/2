@@ -1,4 +1,4 @@
-import { cell_id, money } from "@custom_types/common"
+import { cell_id, location_id, money } from "@custom_types/common"
 import { Event } from "./events/events"
 import { ItemSystem } from "./items/system"
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager"
@@ -9,7 +9,6 @@ import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from
 import { CharacterTemplate, ModelVariant } from "./types"
 import { BallTemplate } from "./races/TEMPLATE_OTHERS"
 import { Character } from "./character/character"
-import { Data } from "./data/data_objects"
 import { DataID } from "./data/data_id"
 
 const LUMP_OF_MONEY = 1000 as money
@@ -17,17 +16,52 @@ const TONS_OF_MONEY = 30000 as money
 
 export namespace Template {
     export namespace Character {
-        function Base(template:CharacterTemplate, name: string|undefined, model: ModelVariant|undefined ,x: number, y: number, faction_id: string|undefined) {
-            const cell = Data.World.coordinate_to_id([x, y])
-            const location = DataID.Cells.main_location(cell)
+
+
+        function Base(
+            template:CharacterTemplate,
+            name: string|undefined,
+            model: ModelVariant|undefined,
+            location: location_id,
+            faction_id: string|undefined
+        ): Character
+        function Base(
+            template:CharacterTemplate,
+            name: string|undefined,
+            model: ModelVariant|undefined,
+            location: location_id|undefined,
+            faction_id: string
+        ): Character
+        function Base(
+            template:CharacterTemplate,
+            name: string|undefined,
+            model: ModelVariant|undefined,
+            location: location_id|undefined,
+            faction_id: string|undefined
+        ): Character|undefined
+        function Base(
+            template:CharacterTemplate,
+            name: string|undefined,
+            model: ModelVariant|undefined,
+            location: location_id|undefined,
+            faction_id: string|undefined
+        ): Character|undefined {
+            if (faction_id != undefined)
+                location = DataID.Faction.spawn(faction_id)
+
+            if (location == undefined) {
+                console.log("attempt to generate character without location")
+                return undefined
+            }
+
             let character = Event.new_character(template, name, location, model)
 
             if (faction_id != undefined) DataID.Reputation.set(character.id, faction_id, "member")
             return character
         }
 
-        export function GenericHuman(x: number, y: number, name:string|undefined, faction: string) {
-            let human = Base(HumanTemplate, name, undefined, x, y, faction)
+        export function GenericHuman(name:string|undefined, faction: string) {
+            let human = Base(HumanTemplate, name, undefined, undefined, faction)
             human._skills.woodwork += 10
             human._skills.cooking += 15
             human._skills.hunt += 5
@@ -37,8 +71,8 @@ export namespace Template {
             return human
         }
 
-        export function HumanSteppe(x: number, y: number, name:string|undefined) {
-            let human = GenericHuman(x, y, name, 'steppe_humans')
+        export function HumanSteppe(name:string|undefined) {
+            let human = GenericHuman(name, 'steppe_humans')
             human._skills.hunt += 20
             human._skills.skinning += 10
             human._skills.cooking += 10
@@ -48,8 +82,10 @@ export namespace Template {
             return human
         }
 
-        export function Lumberjack(x: number, y: number, name: string) {
-            let human = HumanSteppe(x, y, name)
+        export function Lumberjack(name: string) {
+            let human = HumanSteppe(name)
+
+
             human._skills.travelling += 20
             human.ai_map = 'lumberjack'
 
@@ -60,8 +96,10 @@ export namespace Template {
             return human
         }
 
-        export function Fisherman(x: number, y: number, name: string) {
-            let human = HumanSteppe(x, y, name)
+        export function Fisherman(name: string) {
+            let human = HumanSteppe(name)
+
+
             human._skills.travelling += 20
             human._skills.fishing += 40
             human.ai_map = 'fisherman'
@@ -69,23 +107,27 @@ export namespace Template {
             return human
         }
 
-        export function HumanStrong(x: number, y: number, name: string|undefined) {
-            let human = Base(HumanStrongTemplate, name, undefined, x, y, undefined)
+        export function HumanStrong(location: location_id, name: string|undefined) {
+            let human = Base(HumanStrongTemplate, name, undefined, location, undefined)
+
+
             return human
         }
 
-        export function HumanCity(x: number, y: number, name: string|undefined) {
-            let human = GenericHuman(x, y, name, 'city')
+        export function HumanCity(name: string|undefined) {
+            let human = GenericHuman(name, 'city')
+
             human._skills.fishing += 20
             human._skills.noweapon += 5
             return human
         }
 
-        export function HumanSpearman(x: number, y: number, name: string|undefined, faction: 'steppe'|'city') {
+        export function HumanSpearman(name: string|undefined, faction: 'steppe'|'city') {
             switch(faction) {
-                case "steppe":{var human = HumanSteppe(x,y, name);break}
-                case "city":{var human = HumanCity(x, y, name);break}
+                case "steppe":{var human = HumanSteppe(name);break}
+                case "city":{var human = HumanCity(name);break}
             }
+
 
             human._skills.polearms = 60
             human._skills.evasion += 10
@@ -132,19 +174,22 @@ export namespace Template {
             return character
         }
 
-        export function HumanRatHunter(x: number, y: number, name: string|undefined) {
-            let human = HumanSpearman(x, y, name, 'steppe')
+        export function HumanRatHunter(name: string|undefined) {
+            let human = HumanSpearman(name, 'steppe')
+
+
             human.ai_map = 'rat_hunter'
             human._skills.skinning += 20
             human._skills.hunt += 20
             return human
         }
 
-        export function HumanCook(x: number, y: number, name: string|undefined, faction: 'steppe'|'city') {
+        export function HumanCook(name: string|undefined, faction: 'steppe'|'city') {
             switch(faction) {
-                case "steppe":{var human = HumanSteppe(x,y, name);break}
-                case "city":{var human = HumanCity(x, y, name);break}
+                case "steppe":{var human = HumanSteppe(name);break}
+                case "city":{var human = HumanCity(name);break}
             }
+
 
             human.stash.inc(FOOD, 10)
             human.savings.inc(500 as money)
@@ -153,11 +198,12 @@ export namespace Template {
             return human
         }
 
-        export function HumanFletcher(x: number, y: number, name: string|undefined, faction: 'steppe'|'city') {
+        export function HumanFletcher(name: string|undefined, faction: 'steppe'|'city') {
             switch(faction) {
-                case "steppe":{var human = HumanSteppe(x,y, name);break}
-                case "city":{var human = HumanCity(x, y, name);break}
+                case "steppe":{var human = HumanSteppe(name);break}
+                case "city":{var human = HumanCity(name);break}
             }
+
 
             human._skills.woodwork = 80
             human._skills.bone_carving = 30
@@ -172,17 +218,19 @@ export namespace Template {
             return human
         }
 
-        export function HumanCityGuard(x: number, y: number, name: string|undefined) {
-            let human = HumanSpearman(x, y, name, 'city')
+        export function HumanCityGuard(name: string|undefined) {
+            let human = HumanSpearman(name, 'city')
+
+
             human.ai_map = 'urban_guard'
             human._skills.polearms += 10
             return human
         }
 
-        export function HumanLocalTrader(x: number, y: number, name: string|undefined, faction:'city'|'steppe'){
+        export function HumanLocalTrader(name: string|undefined, faction:'city'|'steppe'){
             switch(faction) {
-                case "steppe":{var human = HumanSteppe(x,y, name);break}
-                case "city":{var human = HumanCity(x, y, name);break}
+                case "steppe":{var human = HumanSteppe(name);break}
+                case "city":{var human = HumanCity(name);break}
             }
 
             human.ai_map = 'urban_trader'
@@ -190,14 +238,16 @@ export namespace Template {
             return human
         }
 
-        export function GenericRat(x: number, y: number, name:string|undefined) {
-            let rat = Base(RatTemplate, name, undefined, x, y, 'rats')
+        export function GenericRat(name:string|undefined) {
+            let rat = Base(RatTemplate, name, undefined, undefined, 'rats')
+
             rat._traits.claws = true
             return rat
         }
 
-        export function MageRat(x: number, y: number, name:string|undefined) {
-            let rat = Base(MageRatTemplate, name, undefined, x, y, 'rats')
+        export function MageRat(name:string|undefined) {
+            let rat = Base(MageRatTemplate, name, undefined, undefined, 'rats')
+
             rat._traits.claws = true
             rat._perks.magic_bolt = true
             rat._perks.mage_initiation = true
@@ -205,23 +255,26 @@ export namespace Template {
             return rat
         }
 
-        export function BerserkRat(x: number, y: number, name:string|undefined) {
-            let rat = Base(BerserkRatTemplate, name, undefined, x, y, 'rats')
+        export function BerserkRat(name:string|undefined) {
+            let rat = Base(BerserkRatTemplate, name, undefined, undefined, 'rats')
+
             rat._traits.claws = true
             rat._perks.charge = true
             rat._skills.noweapon = 40
             return rat
         }
 
-        export function BigRat(x: number, y: number, name: string|undefined) {
-            let rat = Base(BigRatTemplate, name, undefined, x, y, 'rats')
+        export function BigRat(name: string|undefined) {
+            let rat = Base(BigRatTemplate, name, undefined, undefined, 'rats')
+
             rat._traits.claws = true
             rat._skills.noweapon = 40
             return rat
         }
 
-        export function MageElo(x: number, y: number, name:string|undefined) {
-            let elo = Base(ElodinoTemplate, name, undefined, x, y, 'elodino_free')
+        export function MageElo(name:string|undefined) {
+            let elo = Base(ElodinoTemplate, name, undefined, undefined, 'elodino_free')
+
             elo._perks.magic_bolt = true
             elo._perks.mage_initiation = true
             elo._skills.magic_mastery = 20
@@ -230,21 +283,23 @@ export namespace Template {
             return elo
         }
 
-        export function Elo(x: number, y: number, name:string|undefined) {
-            let elo = Base(ElodinoTemplate, name, undefined, x, y, 'elodino_free')
+        export function Elo(name:string|undefined) {
+            let elo = Base(ElodinoTemplate, name, undefined, undefined, 'elodino_free')
+            if (elo == undefined) return undefined;
+
             return elo
         }
 
-        export function Graci(x: number, y: number, name: string|undefined) {
-            let graci = Base(GraciTemplate, name, undefined, x, y, 'graci')
+        export function Graci(name: string|undefined) {
+            let graci = Base(GraciTemplate, name, undefined, undefined, 'graci')
+
             graci._skills.travelling = 70
             return graci
         }
 
 
-        export function Mage(x: number, y: number, faction: string) {
-            let mage = GenericHuman(x, y, 'Mage', faction)
-            // let mage = Event.new_character(HumanTemplate, 'Mage', cell, dummy_model)
+        export function Mage(faction: string) {
+            let mage = GenericHuman('Mage', faction)
 
             mage._skills.magic_mastery = 100
             mage._perks.mage_initiation = true
@@ -258,15 +313,15 @@ export namespace Template {
             return mage
         }
 
-        export function BloodMage(x: number, y: number, faction: string) {
-            const blood_mage = Mage(x, y, faction)
-            blood_mage._perks.blood_mage = true
+        export function BloodMage(faction: string) {
+            const mage = Mage(faction)
+            mage._perks.blood_mage = true
 
-            return blood_mage
+            return mage
         }
 
-        export function Alchemist(x: number, y: number, faction: string) {
-            let alchemist = GenericHuman(x, y, 'Alchemist', faction)
+        export function Alchemist(faction: string) {
+            let alchemist = GenericHuman('Alchemist', faction)
 
             alchemist._skills.magic_mastery = 60
             alchemist._perks.mage_initiation = true
@@ -278,8 +333,9 @@ export namespace Template {
             return alchemist
         }
 
-        export function ArmourMaster(x: number, y: number) {
-            let master = HumanCity(x, y, 'Armourer')
+        export function ArmourMaster() {
+            let master = HumanCity('Armourer')
+
             master._skills.clothier = 100
             master._perks.skin_armour_master = true
             master.stash.inc(RAT_SKIN, 50)
@@ -287,8 +343,9 @@ export namespace Template {
             return master
         }
 
-        export function Shoemaker(x: number, y: number) {
-            let master = HumanCity(x, y, 'Shoemaker')
+        export function Shoemaker() {
+            let master = HumanCity('Shoemaker')
+
             master._skills.clothier = 100
             master._perks.shoemaker = true
             master.stash.inc(RAT_SKIN, 50)
@@ -296,8 +353,8 @@ export namespace Template {
             return master
         }
 
-        export function WeaponMasterWood(x: number, y: number, faction: string) {
-            let master = GenericHuman(x, y, 'Weapons maker', faction)
+        export function WeaponMasterWood(faction: string) {
+            let master = GenericHuman('Weapons maker', faction)
 
             master._skills.woodwork = 100
             master._perks.weapon_maker = true
@@ -307,8 +364,8 @@ export namespace Template {
             return master
         }
 
-        export function WeaponMasterBone(x: number, y: number, faction: string) {
-            let master = GenericHuman(x, y, 'Weapons maker', faction)
+        export function WeaponMasterBone(faction: string) {
+            let master = GenericHuman('Weapons maker', faction)
 
             master._skills.bone_carving = 100
             master._perks.weapon_maker = true
@@ -318,8 +375,9 @@ export namespace Template {
             return master
         }
 
-        export function MasterUnarmed(x: number, y: number, faction: string) {
-            let master = GenericHuman(x, y, 'Monk', faction)
+        export function MasterUnarmed(faction: string) {
+            let master = GenericHuman('Monk', faction)
+
             master._skills.noweapon = 100
             master._perks.dodge = true
             master._perks.advanced_unarmed = true
@@ -328,8 +386,8 @@ export namespace Template {
             return master
         }
 
-        export function Ball(x: number, y: number, name: string | undefined) {
-            return Base(BallTemplate, name, undefined, x, y, undefined)
+        export function Ball(location: location_id, name: string | undefined) {
+            return Base(BallTemplate, name, undefined, location, undefined)
         }
     }
 }

@@ -110,7 +110,7 @@ export namespace SocketCommand {
         if (location == undefined) return false
         if (location.cell_id != character.cell_id) return false
 
-        Effect.enter_location_payment(character.id, location.id)
+        Effect.enter_location(character.id, location.id)
     }
 
     // export function create_plot(sw: SocketWrapper) {

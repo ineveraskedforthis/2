@@ -1,7 +1,7 @@
-import { money } from "@custom_types/common";
+import { location_id, money } from "@custom_types/common";
 import { CharacterAction } from "../actions/actions_00";
 import { ActionManager } from "../actions/manager";
-import { select_max, select_weighted, trim } from "../calculations/basic_functions";
+import { select_max, select_weighted, select_weighted_callback, trim } from "../calculations/basic_functions";
 import { Character } from "../character/character";
 import { EventMarket } from "../events/market";
 import { FOOD, MEAT, RAT_BONE, RAT_SKIN, materials } from "../manager_classes/materials_manager";
@@ -142,8 +142,16 @@ export function random_walk(char: Character, constraints: (cell: CellData) => bo
             }
         }
     }
-    // console.log(cell.x, cell.y)
-    // console.log(possible_moves)
+
+    //with high probability we will simply stay in our cell, while travelling from location to location:
+    if (Math.random() < 0.8) {
+        const location_id = select_weighted_callback<location_id>(
+            DataID.Cells.locations(cell.id),
+            (item) => 1
+        )
+        Effect.enter_location(char.id, location_id)
+    }
+
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)]
         ActionManager.start_action(

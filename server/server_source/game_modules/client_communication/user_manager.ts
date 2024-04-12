@@ -188,21 +188,23 @@ export namespace UserManagement {
 
         let spawn_point = DataID.Faction.spawn(faction)
         if (spawn_point == undefined) return
-        const [x, y] = Data.World.id_to_coordinate(spawn_point)
         switch(faction){
             case "city":{
-                character = Template.Character.HumanCity(x, y, name);
+                character = Template.Character.HumanCity(name);
                 if (user.tester_account) {
                     let item = ItemSystem.create('sword', [], 100);
                     EventInventory.add_item(character, item)
+
+                    let boots = ItemSystem.create('rat_skin_boots', [], 150);
+                    EventInventory.add_item(character, boots)
                 }
                 break
             };
-            case "big_humans":{character = Template.Character.HumanStrong(x, y, name);break};
-            case "rats":{character = Template.Character.BigRat(x, y, name);break;}
-            case "graci":{character = Template.Character.Graci(x, y, name);break}
-            case "elodino_free":{character = Template.Character.MageElo(x, y, name);break}
-            case "steppe_humans":{character = Template.Character.HumanSteppe(x, y, name);break}
+            case "big_humans":{character = Template.Character.HumanStrong(spawn_point, name);break};
+            case "rats":{character = Template.Character.BigRat( name);break;}
+            case "graci":{character = Template.Character.Graci(name);break}
+            case "elodino_free":{character = Template.Character.MageElo(name);break}
+            case "steppe_humans":{character = Template.Character.HumanSteppe(name);break}
         }
 
         if (character == undefined) return;

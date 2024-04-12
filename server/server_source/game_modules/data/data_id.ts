@@ -33,7 +33,7 @@ var battle_id_list                          : battle_id[]                       
 
 var faction_id_list:string[]                                                                                    = []
 var faction_id_leader                       : Partial<Record<string, character_id>>                             = {}
-var faction_id_spawn                        : Record<string, cell_id>                                           = {}
+var faction_id_spawn                        : Record<string, location_id>                                       = {}
 
 var cell_id_list                            : cell_id[]                                                         = []
 var cell_id_location_id_list                : Record<cell_id, location_id[]>                                    = []
@@ -137,6 +137,10 @@ export namespace DataID {
             character_id_leader_of[leader].add(faction)
         }
 
+        export function set_spawn(faction: string, location: location_id) {
+            faction_id_spawn[faction] = location
+        }
+
         export function is_character_location(location: location_id, character: character_id) {
             return location_id_guests[location].has(character)
         }
@@ -177,6 +181,7 @@ export namespace DataID {
             })
             return result
         }
+
 
         export function main_location(cell: cell_id) {
             return cell_id_location_main[cell]
@@ -232,6 +237,7 @@ export namespace DataID {
             Connection.set_location_owner(undefined, location)
         }
 
+
         export function for_each(callback: (location: location_id) => void) {
             location_id_list.forEach((value, index) => {
                 callback(value)
@@ -240,7 +246,7 @@ export namespace DataID {
     }
 
     export namespace Faction {
-        export function register(faction_id: string, spawn: cell_id) {
+        export function register(faction_id: string, spawn: location_id) {
             faction_id_list.push(faction_id)
             faction_id_spawn[faction_id] = spawn
         }
@@ -248,6 +254,7 @@ export namespace DataID {
         export function list_of_id() {
             return faction_id_list
         }
+
 
         export function spawn(faction: string) {
             return faction_id_spawn[faction]

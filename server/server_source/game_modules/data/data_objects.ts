@@ -91,7 +91,7 @@ export namespace Data {
     }
 
     export namespace Factions {
-        export function register(id: string, spawn: cell_id, faction: Faction) {
+        export function register(id: string, spawn: location_id, faction: Faction) {
             faction_id_object[id] = faction
             DataID.Faction.register(id, spawn)
         }
@@ -127,8 +127,7 @@ export namespace Data {
                 for (let faction of array_faction_data) {
                     if (faction.tag == tag) {
                         const spawn_point = World.coordinate_to_id([x, y])
-
-                        register(faction.tag, spawn_point, faction)
+                        register(faction.tag, DataID.Cells.main_location(spawn_point), faction)
                     }
                 }
             }
@@ -645,10 +644,23 @@ export namespace Data {
 
                     let forest_level = Number(forest_level_string)
 
+                    // TODO: separate world generation from terrain loading
+                    let coast_probability = 0
+                    for (let neigh of World.neighbours(cell_id)) {
+                        const neighbour_data = Cells.from_id(neigh)
+                        if (terrain[neighbour_data.x][neighbour_data.y] == Terrain.sea) coast_probability += 0.2
+                    }
+
                     if ((!cell.loaded_forest)) {
                         let counter = 0;
 
                         while (forest_level > 0) {
+                            let current_terrain = terrain[x][y];
+                            if (Math.random() < coast_probability) {
+                                current_terrain = Terrain.coast
+                                coast_probability -= 0.11
+                            }
+
                             let forest: LocationMinimal = {
                                 fish: 0,
                                 small_game: 10,
@@ -667,7 +679,7 @@ export namespace Data {
                                 has_tanning_tools:      false,
                                 has_rat_lair:           false,
 
-                                terrain: terrain[x][y]
+                                terrain: current_terrain
                             }
 
                             forest_level -= 1
@@ -677,6 +689,12 @@ export namespace Data {
                         }
 
                         while (counter < 10) {
+                            let current_terrain = terrain[x][y];
+                            if (Math.random() < coast_probability) {
+                                current_terrain = Terrain.coast
+                                coast_probability -= 0.11
+                            }
+
                             let steppe: LocationMinimal = {
                                 fish: 0,
                                 small_game: 2,
@@ -695,7 +713,7 @@ export namespace Data {
                                 has_tanning_tools:      false,
                                 has_rat_lair:           false,
 
-                                terrain: terrain[x][y]
+                                terrain: current_terrain
                             }
 
                             counter++

@@ -107,7 +107,7 @@ var SocketCommand;
             return false;
         if (location.cell_id != character.cell_id)
             return false;
-        effects_1.Effect.enter_location_payment(character.id, location.id);
+        effects_1.Effect.enter_location(character.id, location.id);
     }
     SocketCommand.enter_location = enter_location;
     // export function create_plot(sw: SocketWrapper) {

@@ -1,4 +1,4 @@
-import { Terrain, cell_id, money } from "@custom_types/common";
+import { Terrain, cell_id, location_id, money } from "@custom_types/common";
 import { Template } from "./templates";
 import { Data } from "./data/data_objects";
 import { DataID } from "./data/data_id";
@@ -19,8 +19,33 @@ export namespace GameMaster {
         console.log('spawn ' + faction)
         const [x, y] = Data.World.id_to_coordinate(cell_id)
         if (faction == 'city') {
+            const inn = Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+
+                devastation: 0,
+
+                has_bed: true,
+
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: false,
+
+                terrain: Terrain.steppe,
+
+                has_house_level: 3
+            })
+            DataID.Connection.set_spawn('city', inn.id)
+
             // creation of mayor
-            const mayor = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, 'Mayor'))
+            const mayor = Template.Character.EquipClothesRich(Template.Character.HumanCity('Mayor'))
+
             mayor.savings.inc(TONS_OF_MONEY)
             Data.Factions.set_faction_leader(faction, mayor.id)
 
@@ -51,57 +76,34 @@ export namespace GameMaster {
             DataID.Connection.set_character_home(mayor.id, mayor_house.id)
 
             // creation of first colonists
-            Template.Character.EquipClothesBasic(Template.Character.HumanCook(x, y, "Cook", 'city'))
-            Template.Character.EquipClothesBasic(Template.Character.Shoemaker(x, y))
-            Template.Character.EquipClothesBasic(Template.Character.HumanFletcher(x, y, "Fletcher", 'city'))
-            Template.Character.EquipClothesBasic(Template.Character.ArmourMaster(x, y))
-            Template.Character.EquipClothesBasic(Template.Character.WeaponMasterWood(x, y, 'city'))
-            Template.Character.EquipClothesBasic(Template.Character.HumanLocalTrader(x, y, "Local Trader", 'city'))
+            Template.Character.EquipClothesBasic(Template.Character.HumanCook("Cook", 'city'))
+            Template.Character.EquipClothesBasic(Template.Character.Shoemaker())
+            Template.Character.EquipClothesBasic(Template.Character.HumanFletcher("Fletcher", 'city'))
+            Template.Character.EquipClothesBasic(Template.Character.ArmourMaster())
+            Template.Character.EquipClothesBasic(Template.Character.WeaponMasterWood('city'))
+            Template.Character.EquipClothesBasic(Template.Character.HumanLocalTrader("Local Trader", 'city'))
 
-            Template.Character.Fisherman(x, y, "Fisherman 1")
-            Template.Character.Fisherman(x, y, "Fisherman 2")
-            Template.Character.Fisherman(x, y, "Fisherman 3")
+            Template.Character.Fisherman("Fisherman 1")
+            Template.Character.Fisherman("Fisherman 2")
+            Template.Character.Fisherman("Fisherman 3")
 
             // colony mages
-            Template.Character.EquipClothesRich(Template.Character.Alchemist(x, y, 'city'))
-            Template.Character.EquipClothesRich(Template.Character.Mage(x, y, 'city'))
+            Template.Character.EquipClothesRich(Template.Character.Alchemist('city'))
+            Template.Character.EquipClothesRich(Template.Character.Mage('city'))
 
 
             //hunters
             for (let i = 0; i <= 10; i++) {
-                const hunter = Template.Character.HumanRatHunter(x, y, "Hunter " + i)
+                const hunter = Template.Character.HumanRatHunter("Hunter " + i)
                 hunter.savings.inc(500 as money)
             }
             //guards
             for (let i = 0; i <= 5; i++) {
-                const guard = Template.Character.HumanCityGuard(x, y, "Guard " + i)
+                const guard = Template.Character.HumanCityGuard("Guard " + i)
                 guard.savings.inc(500 as money)
             }
             // innkeeper
-            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, "Innkeeper"))
-            const inn = Data.Locations.create(cell_id, {
-                fish: 0,
-                cotton: 0,
-                forest: 0,
-                berries: 0,
-                small_game: 0,
-
-                devastation: 0,
-
-                has_bed: true,
-
-                has_bowmaking_tools: false,
-                has_clothier_tools: false,
-                has_cooking_tools: true,
-                has_cordwainer_tools: false,
-                has_tanning_tools: false,
-                has_rat_lair: false,
-
-                terrain: Terrain.steppe,
-
-                has_house_level: 3
-            })
-
+            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity("Innkeeper"))
             DataID.Connection.set_location_owner(innkeeper.id, inn.id)
             DataID.Connection.set_character_home(innkeeper.id, inn.id)
         }
@@ -109,7 +111,6 @@ export namespace GameMaster {
 
         if (faction == 'steppe_humans') {
             // innkeeper
-            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, "Innkeeper"))
             const inn = Data.Locations.create(cell_id, {
                 fish: 0,
                 cotton: 0,
@@ -133,17 +134,21 @@ export namespace GameMaster {
                 has_house_level: 3
             })
 
+            DataID.Connection.set_spawn('steppe_humans', inn.id)
+
+            const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanSteppe("Innkeeper"))
+
             DataID.Connection.set_location_owner(innkeeper.id, inn.id)
             DataID.Connection.set_character_home(innkeeper.id, inn.id)
 
             // creation of local colonists
-            Template.Character.EquipClothesBasic(Template.Character.HumanCook(x, y, "Cook", 'steppe'))
-            Template.Character.EquipClothesBasic(Template.Character.WeaponMasterBone(x, y, faction))
-            Template.Character.EquipClothesBasic(Template.Character.BloodMage(x, y, faction))
-            Template.Character.EquipClothesBasic(Template.Character.MasterUnarmed(x, y, faction))
+            Template.Character.EquipClothesBasic(Template.Character.HumanCook("Cook", 'steppe'))
+            Template.Character.EquipClothesBasic(Template.Character.WeaponMasterBone(faction))
+            Template.Character.EquipClothesBasic(Template.Character.BloodMage(faction))
+            Template.Character.EquipClothesBasic(Template.Character.MasterUnarmed(faction))
 
-            Template.Character.Lumberjack(x, y, "Lumberjack 1")
-            Template.Character.Lumberjack(x, y, "Lumberjack 2")
+            Template.Character.Lumberjack("Lumberjack 1")
+            Template.Character.Lumberjack("Lumberjack 2")
         }
 
         if (faction == 'rats') {
@@ -169,6 +174,8 @@ export namespace GameMaster {
 
                 has_house_level: 0
             })
+
+            DataID.Connection.set_spawn('rats', rat_lair.id)
         }
 
         if (faction == 'elodino_free') {
@@ -194,12 +201,14 @@ export namespace GameMaster {
 
                 has_house_level: 8
             })
+
+            DataID.Connection.set_spawn('elodino_free', elodino_city.id)
         }
 
         if (faction == 'graci') {
             for (let i = 1; i <= 30; i++) {
                 const cell_obj = Data.Cells.from_id(cell_id)
-                Template.Character.Graci(x, y, undefined)
+                Template.Character.Graci(undefined)
             }
         }
     }
@@ -226,9 +235,9 @@ export namespace GameMaster {
 
         let spawn = DataID.Faction.spawn('city')
         if (spawn != undefined) {
-            let cell = Data.Cells.from_id(spawn)
+            let cell = Data.Cells.from_id(Data.Locations.from_id(spawn).cell_id)
             if (num_hunters < 4) {
-                Template.Character.HumanRatHunter(cell.x, cell.y, "Hunter")
+                Template.Character.HumanRatHunter("Hunter")
             }
         }
 
@@ -240,45 +249,45 @@ export namespace GameMaster {
             if (location.has_rat_lair) {
                 cell.rat_scent = 200
                 cell.rat_scent += 5 * dt / 100
-                spawn_rat(num_rats, cell)
+                spawn_rat(num_rats)
             }
 
-            if (cell_id == DataID.Faction.spawn('elodino_free')) {
-                spawn_elodino(num_elos, cell)
-                spawn_ball(num_balls, cell)
+            if (location.id == DataID.Faction.spawn('elodino_free')) {
+                spawn_elodino(num_elos)
+                spawn_ball(num_balls, location.id)
             }
         });
     }
 
-    export function spawn_rat(rats_number: number, cell: CellData) {
+    export function spawn_rat(rats_number: number) {
         if (rats_number < 30) {
             let dice_spawn = Math.random()
             if (dice_spawn > 0.4) return
             let dice = Math.random()
             if (dice < 0.6) {
-                Template.Character.GenericRat(cell.x, cell.y, undefined)
+                Template.Character.GenericRat(undefined)
             } else if (dice < 0.8) {
-                Template.Character.BigRat(cell.x, cell.y, undefined)
+                Template.Character.BigRat(undefined)
             } else if (dice < 1) {
-                Template.Character.MageRat(cell.x, cell.y, undefined)
+                Template.Character.MageRat(undefined)
             }
         }
     }
 
-    export function spawn_elodino(elos_number: number, cell: CellData) {
+    export function spawn_elodino(elos_number: number) {
         if (elos_number < 50) {
             let dice = Math.random()
             if (dice < 0.7) {
-                Template.Character.Elo(cell.x, cell.y, undefined)
+                Template.Character.Elo( undefined)
             } else {
-                Template.Character.MageElo(cell.x, cell.y, undefined)
+                Template.Character.MageElo(undefined)
             }
         }
     }
 
-    export function spawn_ball(num_balls: number, cell: CellData) {
+    export function spawn_ball(num_balls: number, location: location_id) {
         if (num_balls < 100) {
-            Template.Character.Ball(cell.x, cell.y, undefined)
+            Template.Character.Ball(location, undefined)
         }
     }
 }

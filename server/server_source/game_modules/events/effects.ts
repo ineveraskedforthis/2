@@ -96,24 +96,16 @@ export namespace Effect {
         UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SKILLS)
     }
 
-    export function enter_location_payment(character_id: character_id, location_id: location_id) {
+    export function enter_location(character_id: character_id, location_id: location_id) {
         let character = Data.Characters.from_id(character_id)
         let response = Trigger.location_is_available(character_id, location_id)
         if (response.response == 'ok') {
-            if (response.price > character.savings.data) {
-                return response
-            }
-
-            if (response.owner_id != undefined) {
-                const owner = Data.Characters.from_id(response.owner_id)
-                Effect.Transfer.savings(character, owner, response.price)
-            }
-            enter_location(character_id, location_id)
+            _enter_location(character_id, location_id)
         }
         return response
     }
 
-    export function enter_location(character_id: character_id, location_id: location_id) {
+    function _enter_location(character_id: character_id, location_id: location_id) {
         let character = Data.Characters.from_id(character_id)
         character.location_id = location_id
 

@@ -21,7 +21,7 @@ import { Data } from "../data/data_objects"
 
 export namespace AIhelper {
     export function enemies_in_cell(character: Character) {
-        let a = DataID.Cells.local_character_id_list(character.cell_id)
+        let a = DataID.Location.guest_list(character.location_id)
         for (let id of a) {
             let target_char = Data.Characters.from_id(id)
             if (is_enemy_characters(character, target_char)) {
@@ -34,8 +34,7 @@ export namespace AIhelper {
     }
 
     export function free_rats_in_cell(char: Character) {
-        let cell = Convert.character_to_cell(char)
-        let a = DataID.Cells.local_character_id_list(char.cell_id)
+        let a = DataID.Location.guest_list(char.location_id)
         for (let id of a) {
             let target_char = Data.Characters.from_id(id)
             if (target_char.race == 'rat') {
@@ -49,9 +48,7 @@ export namespace AIhelper {
 
     export function battles_in_cell(char: Character) {
         let battles:battle_id[] = []
-        let cell = Convert.character_to_cell(char)
-        if (cell == undefined) return battles
-        let a = DataID.Cells.local_character_id_list(char.cell_id)
+        let a = DataID.Location.guest_list(char.location_id)
         for (let id of a) {
             let target_char = Data.Characters.from_id(id)
             const battle_id = target_char.battle_id

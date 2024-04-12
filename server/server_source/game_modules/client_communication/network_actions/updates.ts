@@ -270,6 +270,7 @@ export namespace SendUpdate {
     export function map_position_move(user: User) {
         map_position(user, false);
         location(user);
+        local_characters(user);
     }
 
     export function local_characters(user: User) {

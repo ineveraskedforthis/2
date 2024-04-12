@@ -109,7 +109,7 @@ var Data;
                 for (let faction of array_faction_data) {
                     if (faction.tag == tag) {
                         const spawn_point = World.coordinate_to_id([x, y]);
-                        register(faction.tag, spawn_point, faction);
+                        register(faction.tag, data_id_1.DataID.Cells.main_location(spawn_point), faction);
                     }
                 }
             }
@@ -577,9 +577,21 @@ var Data;
                     let cell_id = coordinate_to_id([x, y]);
                     const cell = cell_id_object[cell_id];
                     let forest_level = Number(forest_level_string);
+                    // TODO: separate world generation from terrain loading
+                    let coast_probability = 0;
+                    for (let neigh of World.neighbours(cell_id)) {
+                        const neighbour_data = Cells.from_id(neigh);
+                        if (terrain[neighbour_data.x][neighbour_data.y] == 2 /* Terrain.sea */)
+                            coast_probability += 0.2;
+                    }
                     if ((!cell.loaded_forest)) {
                         let counter = 0;
                         while (forest_level > 0) {
+                            let current_terrain = terrain[x][y];
+                            if (Math.random() < coast_probability) {
+                                current_terrain = 3 /* Terrain.coast */;
+                                coast_probability -= 0.11;
+                            }
                             let forest = {
                                 fish: 0,
                                 small_game: 10,
@@ -595,13 +607,18 @@ var Data;
                                 has_cordwainer_tools: false,
                                 has_tanning_tools: false,
                                 has_rat_lair: false,
-                                terrain: terrain[x][y]
+                                terrain: current_terrain
                             };
                             forest_level -= 1;
                             counter++;
                             Locations.create(cell_id, forest);
                         }
                         while (counter < 10) {
+                            let current_terrain = terrain[x][y];
+                            if (Math.random() < coast_probability) {
+                                current_terrain = 3 /* Terrain.coast */;
+                                coast_probability -= 0.11;
+                            }
                             let steppe = {
                                 fish: 0,
                                 small_game: 2,
@@ -617,7 +634,7 @@ var Data;
                                 has_cordwainer_tools: false,
                                 has_tanning_tools: false,
                                 has_rat_lair: false,
-                                terrain: terrain[x][y]
+                                terrain: current_terrain
                             };
                             counter++;
                             Locations.create(cell_id, steppe);

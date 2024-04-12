@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Trigger = exports.ResponceNegativeQuantified = exports.ResponceNegative = void 0;
-const scripted_values_1 = require("./scripted_values");
 const skill_price_1 = require("../prices/skill_price");
 const system_1 = require("../character/system");
 const data_objects_1 = require("../data/data_objects");
@@ -36,14 +35,7 @@ var Trigger;
         if (character.cell_id != location.cell_id) {
             return { response: ResponceNegative.invalid_cell };
         }
-        if (owner_id == undefined) {
-            return { response: "ok", owner_id: undefined, price: 0 };
-        }
-        let owner = data_objects_1.Data.Characters.from_id(owner_id);
-        if (owner.cell_id != character.cell_id)
-            return { response: ResponceNegative.invalid_cell };
-        let price = scripted_values_1.ScriptedValue.rest_price(character, location);
-        return { response: "ok", owner_id: owner_id, price: price };
+        return { response: "ok", owner_id: owner_id, price: 0 };
     }
     Trigger.location_is_available = location_is_available;
     function can_learn_from(student, teacher, skill) {

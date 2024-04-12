@@ -118,6 +118,10 @@ var DataID;
             character_id_leader_of[leader].add(faction);
         }
         Connection.set_faction_leader = set_faction_leader;
+        function set_spawn(faction, location) {
+            faction_id_spawn[faction] = location;
+        }
+        Connection.set_spawn = set_spawn;
         function is_character_location(location, character) {
             return location_id_guests[location].has(character);
         }

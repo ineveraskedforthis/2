@@ -259,6 +259,7 @@ var SendUpdate;
     function map_position_move(user) {
         map_position(user, false);
         location(user);
+        local_characters(user);
     }
     SendUpdate.map_position_move = map_position_move;
     function local_characters(user) {

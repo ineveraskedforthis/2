@@ -102,29 +102,21 @@ var Effect;
         user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 12 /* UI_Part.SKILLS */);
     }
     Effect.learn_perk = learn_perk;
-    function enter_location_payment(character_id, location_id) {
+    function enter_location(character_id, location_id) {
         let character = data_objects_1.Data.Characters.from_id(character_id);
         let response = triggers_1.Trigger.location_is_available(character_id, location_id);
         if (response.response == 'ok') {
-            if (response.price > character.savings.data) {
-                return response;
-            }
-            if (response.owner_id != undefined) {
-                const owner = data_objects_1.Data.Characters.from_id(response.owner_id);
-                Effect.Transfer.savings(character, owner, response.price);
-            }
-            enter_location(character_id, location_id);
+            _enter_location(character_id, location_id);
         }
         return response;
     }
-    Effect.enter_location_payment = enter_location_payment;
-    function enter_location(character_id, location_id) {
+    Effect.enter_location = enter_location;
+    function _enter_location(character_id, location_id) {
         let character = data_objects_1.Data.Characters.from_id(character_id);
         character.location_id = location_id;
         //console.log("???")
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.MAP_POSITION */);
     }
-    Effect.enter_location = enter_location;
     function location_quality_reduction_roll(location) {
         if (location.has_house_level == 0)
             return;

@@ -116,7 +116,7 @@ function load() {
     if (version == 0) {
         const factions = data_objects_1.Data.Factions.get_factions();
         for (const item of factions) {
-            game_master_1.GameMaster.spawn_faction(data_id_1.DataID.Faction.spawn(item.tag), item.tag);
+            game_master_1.GameMaster.spawn_faction(data_id_1.DataID.Location.cell_id(data_id_1.DataID.Faction.spawn(item.tag)), item.tag);
         }
         set_version(1);
     }

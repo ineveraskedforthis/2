@@ -124,8 +124,11 @@ function random_walk(char, constraints) {
             }
         }
     }
-    // console.log(cell.x, cell.y)
-    // console.log(possible_moves)
+    //with high probability we will simply stay in our cell, while travelling from location to location:
+    if (Math.random() < 0.8) {
+        const location_id = (0, basic_functions_1.select_weighted_callback)(data_id_1.DataID.Cells.locations(cell.id), (item) => 1);
+        effects_1.Effect.enter_location(char.id, location_id);
+    }
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, char, data_objects_1.Data.World.coordinate_to_id(move_direction));

@@ -93,7 +93,7 @@ function GenericRest(character) {
             character.ai_memories.push("no_money" /* AImemory.NO_MONEY */);
         }
         else {
-            let result = effects_1.Effect.enter_location_payment(character.id, location_to_rest);
+            let result = effects_1.Effect.enter_location(character.id, location_to_rest);
             if (result.response == triggers_1.ResponceNegative.no_money) {
                 (0, ACTIONS_BASIC_1.rest_outside)(character);
                 character.ai_memories.push("no_money" /* AImemory.NO_MONEY */);
