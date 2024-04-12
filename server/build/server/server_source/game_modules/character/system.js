@@ -4,28 +4,27 @@ exports.CharacterSystem = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 const damage_types_1 = require("../damage_types");
 const Damage_1 = require("../Damage");
-const character_1 = require("./character");
 const generate_loot_1 = require("../races/generate_loot");
-const data_1 = require("../data");
 const ai_manager_1 = require("../AI/ai_manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const effects_1 = require("../events/effects");
 const SkillList_1 = require("./SkillList");
-const DATA_LAYOUT_BUILDING_1 = require("../DATA_LAYOUT_BUILDING");
 const stats_1 = require("../races/stats");
 const resists_1 = require("../races/resists");
 const system_1 = require("../items/system");
+const data_objects_1 = require("../data/data_objects");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
 (function (CharacterSystem) {
-    function template_to_character(template, name, cell_id) {
-        data_1.Data.CharacterDB.increase_id();
+    function template_to_character(template, name, location) {
         if (name == undefined)
             name = template.name_generator();
-        let character = new character_1.Character(data_1.Data.CharacterDB.id(), undefined, undefined, '#', cell_id, name, template);
-        data_1.Data.CharacterDB.set(data_1.Data.CharacterDB.id(), character);
-        character.explored[cell_id] = true;
+        const character = data_objects_1.Data.Characters.create(location, name, template);
+        character.explored[character.cell_id] = true;
+        for (const cell_id of data_objects_1.Data.World.neighbours(character.cell_id)) {
+            character.explored[cell_id] = true;
+        }
         return character;
     }
     CharacterSystem.template_to_character = template_to_character;
@@ -104,14 +103,15 @@ var CharacterSystem;
         if (result == undefined) {
             result = 0;
         }
-        if (character.current_building != undefined) {
-            let building = data_1.Data.Buildings.from_id(character.current_building);
-            if ((0, DATA_LAYOUT_BUILDING_1.has_cooking_tools)(building.type) && skill == 'cooking') {
-                result = (result + 5) * 1.2;
-            }
-            if ((0, DATA_LAYOUT_BUILDING_1.has_crafting_tools)(building.type) && (0, SkillList_1.is_crafting_skill)(skill)) {
-                result = (result + 5) * 1.2;
-            }
+        let location = data_objects_1.Data.Locations.from_id(character.location_id);
+        if (location.has_cooking_tools && skill == 'cooking') {
+            result = (result + 5) * 1.2;
+        }
+        if (location.has_bowmaking_tools && skill == 'woodwork') {
+            result = (result + 5) * 1.2;
+        }
+        if (location.has_clothier_tools && skill == 'clothier') {
+            result = (result + 5) * 1.2;
         }
         if (skill == 'ranged') {
             const rage_mod = (100 - character.get_rage()) / 100;
@@ -298,29 +298,29 @@ var CharacterSystem;
         ai_campaign_decision_timer += dt;
         character_state_update_timer += dt;
         if (ai_campaign_decision_timer > 8) {
-            for (let character of data_1.Data.CharacterDB.list()) {
+            data_objects_1.Data.Characters.for_each((character) => {
                 if (character.dead()) {
-                    continue;
+                    return;
                 }
                 if (Math.random() > 0.6) {
                     ai_manager_1.CampaignAI.decision(character);
                 }
-            }
+            });
             ai_campaign_decision_timer = 0;
         }
         if (character_state_update_timer > 1) {
-            for (let character of data_1.Data.CharacterDB.list()) {
+            data_objects_1.Data.Characters.for_each((character) => {
                 if (character.dead()) {
-                    continue;
+                    return;
                 }
                 if (!character.in_battle()) {
                     effects_1.Effect.Change.rage(character, -1);
-                    effects_1.Effect.rest_building_tick(character);
+                    effects_1.Effect.rest_location_tick(character);
                     effects_1.Effect.spoilage(character, materials_manager_1.MEAT, 0.01);
                     effects_1.Effect.spoilage(character, materials_manager_1.FISH, 0.01);
                     effects_1.Effect.spoilage(character, materials_manager_1.FOOD, 0.001);
                 }
-            }
+            });
             character_state_update_timer = 0;
         }
     }

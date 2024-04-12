@@ -1,6 +1,6 @@
 import {canvas_position, get_mouse_pos_in_canvas, position_c} from './battle_image_helper.js'
 
-import { BattleData, unit_id, UnitSocket, battle_position, BattleActionData } from "../../../shared/battle_data.js"
+import { BattleData, UnitSocket, battle_position, BattleActionData } from "../../../shared/battle_data.js"
 import { BattleUnitView } from './battle_view.js';
 import { socket } from "../Socket/socket.js";
 import { BattleImageEvent } from './battle_image_events.js';
@@ -8,6 +8,7 @@ import { AnimatedImage } from './animation.js';
 import { BATTLE_SCALE } from './constants.js';
 import { AnimationDict, IMAGES, ImagesDict } from '../load_images.js';
 import { timeEnd } from 'console';
+import { character_id } from '@custom_types/common.js';
 
 declare var alert: (data: string) => {}
 
@@ -66,21 +67,21 @@ export const h = battle_canvas.height
 export let camera: canvas_position = {x: 0, y: 0} as canvas_position
 
 
-let hovered: unit_id|undefined                  = undefined
-let selected: unit_id|undefined                 = undefined
-let current_turn: unit_id|undefined             = undefined
+let hovered: character_id|undefined                  = undefined
+let selected: character_id|undefined                 = undefined
+let current_turn: character_id|undefined             = undefined
 let anchor_position: canvas_position|undefined  = undefined
-export let player_unit_id: unit_id|undefined                   = undefined
+export let player_character_id: character_id|undefined                   = undefined
 export let battle_in_progress                          = false
 
 //temporary
 export let  events_list: BattleImageEvent[]                  =[];
-// let         units_data: {[_ in unit_id]: BattleUnit}         ={};
-export let  units_views: {[_ in unit_id]: BattleUnitView}    ={};
-let         unit_ids: Set<unit_id>                           =new Set();
-let         anim_images: {[_ in unit_id]: AnimatedImage}     ={};
-let         had_left: {[_ in unit_id]: boolean}              ={};
-let         units_queue: unit_id[] = []
+// let         units_data: {[_ in character_id]: BattleUnit}         ={};
+export let  units_views: {[_ in character_id]: BattleUnitView}    ={};
+let         character_ids: Set<character_id>                           =new Set();
+let         anim_images: {[_ in character_id]: AnimatedImage}     ={};
+let         had_left: {[_ in character_id]: boolean}              ={};
+let         units_queue: character_id[] = []
 
 namespace UnitsQueueManagement {
     const width = 200
@@ -99,7 +100,7 @@ namespace UnitsQueueManagement {
 
             canvas.strokeRect(left + width * last_index, top, width, height)
             canvas.fillText(unit.name, left + width * last_index + 20, top + text_margin_top)
-            if (player_unit_id == id) {
+            if (player_character_id == id) {
                 canvas.fillText('YOU', left + width * last_index + 20, top + text_margin_top * 2)
             }
 
@@ -128,7 +129,7 @@ namespace UnitsQueueManagement {
         console.log(units_queue)
     }
 
-    export function new_unit(id: unit_id) {
+    export function new_unit(id: character_id) {
         units_queue.unshift(id)
         end_turn()
     }
@@ -254,7 +255,7 @@ export namespace BattleImage {
         socket.emit('req-battle-actions-self')
     }
 
-    function request_actions_unit(target: unit_id) {
+    function request_actions_unit(target: character_id) {
         console.log('request actions unit')
         socket.emit('req-battle-actions-unit', target)
     }
@@ -284,7 +285,7 @@ export namespace BattleImage {
         selected = undefined
         current_turn = undefined
         anchor_position = undefined
-        player_unit_id = undefined
+        player_character_id = undefined
         battle_in_progress = false
 
         enemy_list_div.innerHTML = ''
@@ -292,7 +293,7 @@ export namespace BattleImage {
         events_list     =[];
         // units_data      ={};
         units_views     ={};
-        unit_ids        =new Set();
+        character_ids        =new Set();
         anim_images     ={};
         had_left        ={};
 
@@ -306,7 +307,7 @@ export namespace BattleImage {
 
         let unit_view = new BattleUnitView(unit)
 
-        unit_ids.add(unit.id)
+        character_ids.add(unit.id)
         // units_data[unit.id]     = battle_unit
         units_views[unit.id]    = unit_view
 
@@ -348,7 +349,7 @@ export namespace BattleImage {
         })
     }
 
-    export function unit_div(id: unit_id|undefined): HTMLDivElement|undefined {
+    export function unit_div(id: character_id|undefined): HTMLDivElement|undefined {
         if (id == undefined) return undefined;
         let div = enemy_list_div.querySelector('.fighter_' + id)
         if (div == null) return undefined
@@ -359,7 +360,7 @@ export namespace BattleImage {
         unload_unit_by_id(unit.id)
     }
 
-    export function unload_unit_by_id(unit: unit_id) {
+    export function unload_unit_by_id(unit: character_id) {
         const div = unit_div(unit)
         if (div != undefined) div.parentElement?.removeChild(div)
         if (units_views[unit] != undefined) {
@@ -381,9 +382,9 @@ export namespace BattleImage {
 
     export function update_selection_data() {
         if (selected == undefined) return
-        if (player_unit_id == undefined) {return}
+        if (player_character_id == undefined) {return}
 
-        const player_data = units_views[player_unit_id]
+        const player_data = units_views[player_character_id]
         const target_data = units_views[selected]
         if (player_data == undefined) return
         if (target_data == undefined) return
@@ -398,7 +399,7 @@ export namespace BattleImage {
         request_actions_unit(target_data.id)
     }
 
-    export function select(index: unit_id) {
+    export function select(index: character_id) {
         unselect()
 
         selected = index;
@@ -418,17 +419,17 @@ export namespace BattleImage {
     export function hover(pos: canvas_position) {
         let hovered_flag = false;
 
-        for (let unit_id of unit_ids) {
+        for (let character_id of character_ids) {
             // validate unit
-            if (had_left[unit_id]) continue
-            let unit_view = units_views[unit_id]
+            if (had_left[character_id]) continue
+            let unit_view = units_views[character_id]
             if (unit_view == undefined) continue;
             if (unit_view.killed) continue;
 
             let centre = position_c.battle_to_canvas(unit_view.position, camera)
             if (d2([centre.x, centre.y], [pos.x, pos.y]) < selection_magnet) {
                 hovered_flag = true;
-                set_hover(Number(unit_id) as unit_id)
+                set_hover(Number(character_id) as character_id)
             }
         }
         if (!hovered_flag) {
@@ -436,7 +437,7 @@ export namespace BattleImage {
         }
     }
 
-    export function set_hover(i: unit_id) {
+    export function set_hover(i: character_id) {
         remove_hover()
         hovered = i;
         let div = enemy_list_div.querySelector('.fighter_' + i)
@@ -453,7 +454,7 @@ export namespace BattleImage {
 
     export function press(pos: canvas_position) {
         let selected = false;
-        for (let i of unit_ids) {
+        for (let i of character_ids) {
             if (had_left[i]) continue
             let unit = units_views[i]
             if (unit == undefined) continue;
@@ -472,8 +473,8 @@ export namespace BattleImage {
             unselect()
             anchor_position = pos;
 
-            if (player_unit_id != undefined) {
-                const player_data = units_views[player_unit_id]
+            if (player_character_id != undefined) {
+                const player_data = units_views[player_character_id]
                 if (player_data == undefined) return;
                 let a = player_data.position
                 let b = position_c.canvas_to_battle(anchor_position)
@@ -594,7 +595,7 @@ export namespace BattleImage {
         label.innerHTML = value.toFixed(2)
     }
 
-    export function set_current_turn(index: unit_id, time_passed: number) {
+    export function set_current_turn(index: character_id, time_passed: number) {
         for (let unit of Object.values(units_views)) {
             unit.next_turn -= time_passed
         }
@@ -664,23 +665,23 @@ export namespace BattleImage {
         // }
     }
 
-    export function set_player(unit_id: unit_id) {
+    export function set_player(character_id: character_id) {
         console.log('set_player_position')
-        console.log(unit_id)
-        player_unit_id = unit_id
+        console.log(character_id)
+        player_character_id = character_id
         // update_player_actions_availability()
     }
 
     // export function update_player_actions_availability() {
-    //     if (player_unit_id == undefined) {
+    //     if (player_character_id == undefined) {
     //         return
     //     }
 
-    //     if (units_views[player_unit_id] == undefined) {
+    //     if (units_views[player_character_id] == undefined) {
     //         return
     //     }
 
-    //     let player = units_views[player_unit_id]
+    //     let player = units_views[player_character_id]
     //     if (player == undefined) return
 
     //     for (let i of actions) {
@@ -766,7 +767,7 @@ export namespace BattleImage {
 
     export function draw_units(dt: number) {
         //sort views by y coordinate
-        var draw_order = Array.from(unit_ids)
+        var draw_order = Array.from(character_ids)
 
         draw_order.sort((a, b) => {
             const A = units_views[a]
@@ -777,12 +778,12 @@ export namespace BattleImage {
         })
 
         //draw views
-        for (let unit_id of draw_order) {
-            if (had_left[unit_id]) continue
-            let view = units_views[Number(unit_id) as unit_id]
+        for (let character_id of draw_order) {
+            if (had_left[character_id]) continue
+            let view = units_views[Number(character_id) as character_id]
             if (view == undefined) continue
             if (view.hp == 0) continue
-            view.draw(dt, camera, selected, hovered, player_unit_id, current_turn)
+            view.draw(dt, camera, selected, hovered, player_character_id, current_turn)
         }
     }
 
@@ -817,8 +818,8 @@ export namespace BattleImage {
             ctx.stroke();
             ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
 
-            if (player_unit_id != undefined) {
-                let player = units_views[player_unit_id]
+            if (player_character_id != undefined) {
+                let player = units_views[player_character_id]
                 if (player == undefined) return
                 let centre = position_c.battle_to_canvas(player.position, camera);
 
@@ -829,8 +830,8 @@ export namespace BattleImage {
             }
         }
 
-        if ((selected != undefined) && (player_unit_id != undefined)) {
-            let player = units_views[player_unit_id]
+        if ((selected != undefined) && (player_character_id != undefined)) {
+            let player = units_views[player_character_id]
             let target = units_views[selected]
             if (player == undefined) return
             if (target == undefined) return
@@ -845,12 +846,12 @@ export namespace BattleImage {
         }
     }
 
-    export function update_unit_displays(unit: unit_id) {
+    export function update_unit_displays(unit: character_id) {
         BattleImage.update_unit_div(unit)
         UnitsQueueManagement.end_turn()
     }
 
-    export function update_unit_div(unit: unit_id) {
+    export function update_unit_div(unit: character_id) {
         let div = unit_div(unit)
         if (div == undefined) return
         const unit_view = units_views[unit]
@@ -864,16 +865,16 @@ export namespace BattleImage {
 
 
 // export class BattleImageNext {
-//     remove_fighter(unit_id: unit_id) {
+//     remove_fighter(character_id: character_id) {
 //         console.log("remove fighter")
-//         console.log(unit_id)
+//         console.log(character_id)
 
-//         const div = document.querySelectorAll('.fighter_' + unit_id)[0]
+//         const div = document.querySelectorAll('.fighter_' + character_id)[0]
 //         if (div != undefined) {
 //             div.parentElement?.removeChild(div)
 //         }
 
-//         had_left[unit_id] = true
+//         had_left[character_id] = true
 //     }
 
 

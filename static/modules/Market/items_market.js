@@ -33,7 +33,7 @@ const columns = [
     },
     {
         value: (item) => "buyout",
-        onclick: (item) => () => { socket.emit('buyout', { char_id: item.seller_id, item_id: item.id }); },
+        onclick: (item) => () => { socket.emit('buyout', { character_id: item.seller_id, item_id: item.id }); },
         viable: (item) => {
             const character = globals.character_data;
             if (character == undefined)

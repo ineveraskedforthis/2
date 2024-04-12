@@ -3,11 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Dialog = void 0;
 const systems_communication_1 = require("../../systems_communication");
 const perk_base_price_1 = require("../../prices/perk_base_price");
-const data_1 = require("../../data");
 const triggers_1 = require("../../events/triggers");
 const system_1 = require("../../character/system");
 const skill_price_1 = require("../../prices/skill_price");
 const SYSTEM_REPUTATION_1 = require("../../SYSTEM_REPUTATION");
+const data_objects_1 = require("../../data/data_objects");
+const data_id_1 = require("../../data/data_id");
 var Dialog;
 (function (Dialog) {
     function talking_check(sw, character_id) {
@@ -20,7 +21,7 @@ var Dialog;
             sw.socket.emit('alert', 'your character does not exist');
             return [undefined, undefined];
         }
-        let target_character = systems_communication_1.Convert.id_to_character(character_id);
+        let target_character = data_objects_1.Data.Characters.from_number(character_id);
         if (target_character == undefined) {
             sw.socket.emit('alert', 'character does not exist');
             return [undefined, undefined];
@@ -60,7 +61,7 @@ var Dialog;
         let response = {
             name: target_character.get_name(),
             race: target_character.race,
-            factions: data_1.Data.Reputation.list_from_id(target_character.id),
+            factions: data_id_1.DataID.Reputation.character(target_character.id).map(systems_communication_1.Convert.reputation_to_socket),
             current_goal: target_character.ai_state,
             perks: {},
             skills: {},

@@ -1,24 +1,20 @@
 import { money } from "@custom_types/common";
-import { rooms } from "../DATA_LAYOUT_BUILDING";
 import { CharacterAction } from "../actions/actions_00";
 import { ActionManager } from "../actions/manager";
 import { select_max, select_weighted, trim } from "../calculations/basic_functions";
 import { Character } from "../character/character";
-import { Data } from "../data";
-import { Effect } from "../events/effects";
 import { EventMarket } from "../events/market";
-import { ScriptedValue } from "../events/scripted_values";
-import { FOOD, MEAT, MaterialsManager, RAT_BONE, RAT_SKIN, materials } from "../manager_classes/materials_manager";
+import { FOOD, MEAT, RAT_BONE, RAT_SKIN, materials } from "../manager_classes/materials_manager";
 import { material_index } from "@custom_types/inventory";
-import { Cell } from "../map/DATA_LAYOUT_CELL";
-// import { Cell } from "../map/cell";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
-// import { money } from "../types";
 import { dp } from "./AI_CONSTANTS";
 import { AItrade, base_price } from "./AI_SCRIPTED_VALUES";
 import { coastal_constraints, simple_constraints, urban_constraints } from "./constraints";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
+import { Data } from "../data/data_objects";
+import { DataID } from "../data/data_id";
+import { CellData } from "../map/cell_interface";
 
 const LOOT = [MEAT, RAT_SKIN, RAT_BONE];
 export function loot(character: Character) {
@@ -51,14 +47,14 @@ export function sell_all_stash(character: Character) {
 }
 
 export function sell_material(character: Character, material: material_index) {
-    let orders = Convert.cell_id_to_bulk_orders(character.cell_id);
+    let orders = DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 0;
     for (let item of orders) {
-        let order = Convert.id_to_bulk_order(item);
+        let order = Data.MarketOrders.from_id(item);
         if (order.typ == 'sell')
             continue;
-        if (order.tag != material)
+        if (order.material != material)
             continue;
         if ((best_price < order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -80,14 +76,14 @@ export function sell_material(character: Character, material: material_index) {
 }
 
 export function buy(character: Character, material_index: material_index) {
-    let orders = Convert.cell_id_to_bulk_orders(character.cell_id);
+    let orders = DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
     for (let item of orders) {
-        let order = Convert.id_to_bulk_order(item);
+        let order = Data.MarketOrders.from_id(item);
         if (order.typ == 'buy')
             continue;
-        if (order.tag != material_index)
+        if (order.material != material_index)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -106,15 +102,15 @@ export function buy(character: Character, material_index: material_index) {
 }
 
 export function buy_random(character: Character) {
-    let orders = Convert.cell_id_to_bulk_orders(character.cell_id);
+    let orders = DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
 
     for (let item of orders) {
-        let order = Convert.id_to_bulk_order(item);
+        let order = Data.MarketOrders.from_id(item);
         if (order.typ == 'buy')
             continue;
-        if (order.tag != FOOD)
+        if (order.material != FOOD)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -132,7 +128,7 @@ export function buy_random(character: Character) {
     return false;
 }
 
-export function random_walk(char: Character, constraints: (cell: Cell) => boolean) {
+export function random_walk(char: Character, constraints: (cell: CellData) => boolean) {
     let cell = Convert.character_to_cell(char)
     let possible_moves = []
     for (let d of dp) {
@@ -156,7 +152,7 @@ export function random_walk(char: Character, constraints: (cell: Cell) => boolea
     }
 }
 
-export function rat_walk(character: Character, constraints: (cell: Cell) => boolean) {
+export function rat_walk(character: Character, constraints: (cell: CellData) => boolean) {
     let cell_ids = Data.World.neighbours(character.cell_id)
     let potential_moves = cell_ids.map((x) => {
         let cell = Data.Cells.from_id(x)
@@ -167,16 +163,16 @@ export function rat_walk(character: Character, constraints: (cell: Cell) => bool
 }
 
 export function home_walk(character: Character) {
-    if (character.home_cell_id == undefined) {
+    if (character.home_location_id == undefined) {
         let cell_ids = Data.World.neighbours(character.cell_id)
         let potential_moves = cell_ids.map((x) => {
             let cell = Data.Cells.from_id(x)
-            return {item: cell, weight: cell.market_scent}
+            return {item: cell, weight: 1}
         })
         let target = select_max(potential_moves, simple_constraints)
         ActionManager.start_action(CharacterAction.MOVE, character, target.id)
     } else {
-        let next_cell = MapSystem.find_path(character.cell_id, character.home_cell_id)
+        let next_cell = MapSystem.find_path(character.cell_id, DataID.Location.cell_id(character.location_id))
         if (next_cell != undefined) {
             ActionManager.start_action(CharacterAction.MOVE, character, next_cell);
         } else {
@@ -193,7 +189,7 @@ export function coast_walk(character: Character) {
     random_walk(character, coastal_constraints)
 }
 
-export function rat_go_home(character: Character, constraints: (cell: Cell) => boolean) {
+export function rat_go_home(character: Character, constraints: (cell: CellData) => boolean) {
     let cell = Convert.character_to_cell(character)
     let potential_moves = Data.World.neighbours(character.cell_id).map((x) => {return Data.Cells.from_id(x)}).map((x) =>
         {return {item: x, weight: x.rat_scent}})
@@ -225,7 +221,7 @@ export function roll_price_belief_sell_increase(character: Character, material: 
 }
 
 export function update_price_beliefs(character: Character) {
-    let orders = Convert.cell_id_to_bulk_orders(character.cell_id)
+    let orders = DataID.Cells.market_order_id_list(character.cell_id)
     // initialisation
 
     for (let material of materials.list_of_indices) {
@@ -242,22 +238,22 @@ export function update_price_beliefs(character: Character) {
 
     // updating price beliefs as you go
     for (let item of orders) {
-        let order = Data.BulkOrders.from_id(item)
+        let order = Data.MarketOrders.from_id(item)
         if (order.typ == "buy") {
-            let belief = character.ai_price_belief_sell.get(order.tag)
+            let belief = character.ai_price_belief_sell.get(order.material)
             if (belief == undefined) {
-                character.ai_price_belief_sell.set(order.tag, order.price)
+                character.ai_price_belief_sell.set(order.material, order.price)
             } else {
-                character.ai_price_belief_sell.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10) as money)
+                character.ai_price_belief_sell.set(order.material, Math.round(order.price / 10 + belief * 9 / 10) as money)
             }
             }
 
         if (order.typ == "sell") {
-            let belief = character.ai_price_belief_buy.get(order.tag)
+            let belief = character.ai_price_belief_buy.get(order.material)
             if (belief == undefined) {
-                character.ai_price_belief_buy.set(order.tag, order.price)
+                character.ai_price_belief_buy.set(order.material, order.price)
             } else {
-                character.ai_price_belief_buy.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10) as money)
+                character.ai_price_belief_buy.set(order.material, Math.round(order.price / 10 + belief * 9 / 10) as money)
             }
         }
     }

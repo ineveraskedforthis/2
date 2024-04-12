@@ -42,13 +42,13 @@ let hovered = undefined;
 let selected = undefined;
 let current_turn = undefined;
 let anchor_position = undefined;
-export let player_unit_id = undefined;
+export let player_character_id = undefined;
 export let battle_in_progress = false;
 //temporary
 export let events_list = [];
-// let         units_data: {[_ in unit_id]: BattleUnit}         ={};
+// let         units_data: {[_ in character_id]: BattleUnit}         ={};
 export let units_views = {};
-let unit_ids = new Set();
+let character_ids = new Set();
 let anim_images = {};
 let had_left = {};
 let units_queue = [];
@@ -70,7 +70,7 @@ var UnitsQueueManagement;
                 continue;
             canvas.strokeRect(left + width * last_index, top, width, height);
             canvas.fillText(unit.name, left + width * last_index + 20, top + text_margin_top);
-            if (player_unit_id == id) {
+            if (player_character_id == id) {
                 canvas.fillText('YOU', left + width * last_index + 20, top + text_margin_top * 2);
             }
             canvas.fillText(unit.next_turn.toFixed(2), left + width * last_index + 100, top + text_margin_top);
@@ -232,13 +232,13 @@ export var BattleImage;
         selected = undefined;
         current_turn = undefined;
         anchor_position = undefined;
-        player_unit_id = undefined;
+        player_character_id = undefined;
         battle_in_progress = false;
         enemy_list_div.innerHTML = '';
         events_list = [];
         // units_data      ={};
         units_views = {};
-        unit_ids = new Set();
+        character_ids = new Set();
         anim_images = {};
         had_left = {};
         UnitsQueueManagement.clear();
@@ -249,7 +249,7 @@ export var BattleImage;
         console.log(unit);
         console.log("add fighter");
         let unit_view = new BattleUnitView(unit);
-        unit_ids.add(unit.id);
+        character_ids.add(unit.id);
         // units_data[unit.id]     = battle_unit
         units_views[unit.id] = unit_view;
         anim_images[unit.id] = new AnimatedImage(unit.tag);
@@ -320,10 +320,10 @@ export var BattleImage;
     function update_selection_data() {
         if (selected == undefined)
             return;
-        if (player_unit_id == undefined) {
+        if (player_character_id == undefined) {
             return;
         }
-        const player_data = units_views[player_unit_id];
+        const player_data = units_views[player_character_id];
         const target_data = units_views[selected];
         if (player_data == undefined)
             return;
@@ -352,11 +352,11 @@ export var BattleImage;
     const selection_magnet = 400;
     function hover(pos) {
         let hovered_flag = false;
-        for (let unit_id of unit_ids) {
+        for (let character_id of character_ids) {
             // validate unit
-            if (had_left[unit_id])
+            if (had_left[character_id])
                 continue;
-            let unit_view = units_views[unit_id];
+            let unit_view = units_views[character_id];
             if (unit_view == undefined)
                 continue;
             if (unit_view.killed)
@@ -364,7 +364,7 @@ export var BattleImage;
             let centre = position_c.battle_to_canvas(unit_view.position, camera);
             if (d2([centre.x, centre.y], [pos.x, pos.y]) < selection_magnet) {
                 hovered_flag = true;
-                set_hover(Number(unit_id));
+                set_hover(Number(character_id));
             }
         }
         if (!hovered_flag) {
@@ -391,7 +391,7 @@ export var BattleImage;
     BattleImage.remove_hover = remove_hover;
     function press(pos) {
         let selected = false;
-        for (let i of unit_ids) {
+        for (let i of character_ids) {
             if (had_left[i])
                 continue;
             let unit = units_views[i];
@@ -412,8 +412,8 @@ export var BattleImage;
         if (!selected) {
             unselect();
             anchor_position = pos;
-            if (player_unit_id != undefined) {
-                const player_data = units_views[player_unit_id];
+            if (player_character_id != undefined) {
+                const player_data = units_views[player_character_id];
                 if (player_data == undefined)
                     return;
                 let a = player_data.position;
@@ -588,21 +588,21 @@ export var BattleImage;
         // }
     }
     BattleImage.send_action = send_action;
-    function set_player(unit_id) {
+    function set_player(character_id) {
         console.log('set_player_position');
-        console.log(unit_id);
-        player_unit_id = unit_id;
+        console.log(character_id);
+        player_character_id = character_id;
         // update_player_actions_availability()
     }
     BattleImage.set_player = set_player;
     // export function update_player_actions_availability() {
-    //     if (player_unit_id == undefined) {
+    //     if (player_character_id == undefined) {
     //         return
     //     }
-    //     if (units_views[player_unit_id] == undefined) {
+    //     if (units_views[player_character_id] == undefined) {
     //         return
     //     }
-    //     let player = units_views[player_unit_id]
+    //     let player = units_views[player_character_id]
     //     if (player == undefined) return
     //     for (let i of actions) {
     //         let div = document.querySelector('.battle_control>.' + i.tag)
@@ -675,7 +675,7 @@ export var BattleImage;
     BattleImage.draw_background = draw_background;
     function draw_units(dt) {
         //sort views by y coordinate
-        var draw_order = Array.from(unit_ids);
+        var draw_order = Array.from(character_ids);
         draw_order.sort((a, b) => {
             const A = units_views[a];
             const B = units_views[b];
@@ -686,15 +686,15 @@ export var BattleImage;
             return (-A.position.y + B.position.y);
         });
         //draw views
-        for (let unit_id of draw_order) {
-            if (had_left[unit_id])
+        for (let character_id of draw_order) {
+            if (had_left[character_id])
                 continue;
-            let view = units_views[Number(unit_id)];
+            let view = units_views[Number(character_id)];
             if (view == undefined)
                 continue;
             if (view.hp == 0)
                 continue;
-            view.draw(dt, camera, selected, hovered, player_unit_id, current_turn);
+            view.draw(dt, camera, selected, hovered, player_character_id, current_turn);
         }
     }
     BattleImage.draw_units = draw_units;
@@ -724,8 +724,8 @@ export var BattleImage;
             ctx.fill();
             ctx.stroke();
             ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
-            if (player_unit_id != undefined) {
-                let player = units_views[player_unit_id];
+            if (player_character_id != undefined) {
+                let player = units_views[player_character_id];
                 if (player == undefined)
                     return;
                 let centre = position_c.battle_to_canvas(player.position, camera);
@@ -735,8 +735,8 @@ export var BattleImage;
                 ctx.stroke();
             }
         }
-        if ((selected != undefined) && (player_unit_id != undefined)) {
-            let player = units_views[player_unit_id];
+        if ((selected != undefined) && (player_character_id != undefined)) {
+            let player = units_views[player_character_id];
             let target = units_views[selected];
             if (player == undefined)
                 return;
@@ -771,14 +771,14 @@ export var BattleImage;
     BattleImage.update_unit_div = update_unit_div;
 })(BattleImage || (BattleImage = {}));
 // export class BattleImageNext {
-//     remove_fighter(unit_id: unit_id) {
+//     remove_fighter(character_id: character_id) {
 //         console.log("remove fighter")
-//         console.log(unit_id)
-//         const div = document.querySelectorAll('.fighter_' + unit_id)[0]
+//         console.log(character_id)
+//         const div = document.querySelectorAll('.fighter_' + character_id)[0]
 //         if (div != undefined) {
 //             div.parentElement?.removeChild(div)
 //         }
-//         had_left[unit_id] = true
+//         had_left[character_id] = true
 //     }
 //     update_unit(unit: UnitSocket) {
 //         console.log('update')

@@ -1,8 +1,8 @@
 // import { money } from "../types";
 import { Character } from "../character/character";
-import { Data } from "../data";
 import { Perks } from "../../../../shared/character";
 import { money } from "../../../../shared/common";
+import { DataID } from "../data/data_id";
 // import { Perks } from "../character/Perks";
 
 function perk_base_price(tag: Perks): number {
@@ -26,11 +26,11 @@ function perk_base_price(tag: Perks): number {
 export function perk_price(tag: Perks, student: Character, teacher: Character): money {
     let price = perk_base_price(tag);
 
-    if (Data.Reputation.a_X_b(teacher.id, 'enemy', student.id))
+    if (DataID.Reputation.a_X_b(teacher.id, 'enemy', student.id))
         price = price * 10;
-    if (!Data.Reputation.a_X_b(teacher.id, 'friend', student.id))
+    if (!DataID.Reputation.a_X_b(teacher.id, 'friend', student.id))
         price = price * 1.5;
-    if (!Data.Reputation.a_X_b(teacher.id, 'member', student.id))
+    if (!DataID.Reputation.a_X_b(teacher.id, 'member', student.id))
         price = price * 1.5;
 
     return Math.round(price) as money;

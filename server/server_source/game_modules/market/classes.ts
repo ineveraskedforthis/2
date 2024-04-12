@@ -1,68 +1,64 @@
 import { money } from "@custom_types/common.js";
-import { Item } from "../items/item.js";
-import { ItemJson } from "@custom_types/inventory.js";
 import { material_index } from "@custom_types/inventory.js";
-import { char_id, order_bulk_id } from "../types.js";
+import { character_id, market_order_id } from "@custom_types/common.js";
+import { DataID } from "../data/data_id.js";
 
-// cell_id is commented as i decided to tie orders directly to location of character
 
-export interface OrderBulkJson {
+export interface MarketOrderJson {
     typ: 'sell'|'buy',
     tag: material_index,
-    owner_id: char_id,
+    owner_id: character_id,
     owner_name: string,
     amount: number
     price: money
-    id: order_bulk_id
-    // cell_id: number
+    id: market_order_id
 }
 
-export class OrderBulk {
-    id: order_bulk_id;
-    owner_id: char_id
-    // cell_id: cell_id
-
+export interface MarketOrderData {
+    id: market_order_id
     typ: 'sell'|'buy'
-    tag: material_index
+    material: material_index
+    amount: number
+    price: money
+}
+
+export interface MarketOrderInterface extends MarketOrderData {
+    readonly owner_id: character_id
+}
+
+export class MarketOrder implements MarketOrderInterface {
+    id: market_order_id;
+    typ: 'sell'|'buy'
+    material: material_index
     amount: number
     price: money
 
-    constructor(id: order_bulk_id, amount: number, price: money, typ: 'sell'|'buy', tag: material_index, owner_id: char_id) {
-        this.id = id
+    constructor(id: market_order_id|undefined, amount: number, price: money, typ: 'sell'|'buy', tag: material_index, owner_id: character_id) {
+        if (id == undefined) {
+            this.id = DataID.MarketOrders.new_id(owner_id)
+        } else {
+            this.id = id
+            DataID.MarketOrders.register(id, owner_id)
+        }
+
         this.typ = typ
-        this.tag = tag
-        this.owner_id = owner_id
+        this.material = tag
         this.amount = amount
         this.price = price
-        // this.cell_id = cell_id
+    }
+
+    get owner_id(): character_id {
+        return DataID.MarketOrders.owner(this.id)
+    }
+
+    toJSON(): MarketOrderInterface {
+        return {
+            id: this.id,
+            owner_id: this.owner_id,
+            amount: this.amount,
+            material: this.material,
+            price: this.price,
+            typ: this.typ
+        }
     }
 }
-
-// export interface OrderItemJson {
-//     id: order_item_id
-//     owner_id: char_id
-//     item: ItemJson
-//     price: money
-//     finished: boolean
-// }
-
-// export class OrderItem {
-//     id: order_item_id
-//     owner_id: char_id;
-//     // cell_id: cell_id
-
-//     item: Item;
-//     price: money
-
-//     finished: boolean
-
-//     constructor(id: order_item_id, item: Item, price: money, owner_id: char_id, finished: boolean) {
-//         this.id = id;
-//         this.owner_id = owner_id;
-//         // this.cell_id = cell_id;
-
-//         this.item = item;
-//         this.price = price;
-//         this.finished = finished
-//     }
-// }

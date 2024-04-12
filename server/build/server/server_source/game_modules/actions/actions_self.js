@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.rest = exports.eat = exports.clean = void 0;
-const data_1 = require("../data");
 const effects_1 = require("../events/effects");
 const generator_1 = require("./generator");
 const generic_functions_1 = require("./generic_functions");
@@ -10,12 +9,13 @@ const events_1 = require("../events/events");
 const system_1 = require("../character/system");
 const scripted_values_1 = require("../events/scripted_values");
 const user_manager_1 = require("../client_communication/user_manager");
+const system_2 = require("../map/system");
 const CLEAN_FATIGUE_COST = 5;
 function clean_duration_modifier(character) {
     return 1 + character.get_blood() / 50;
 }
-function clean_trigger(character, cell) {
-    if (data_1.Data.Cells.can_clean(cell)) {
+function clean_trigger(character) {
+    if (system_2.MapSystem.can_clean(character.location_id)) {
         return { response: "OK" };
     }
     return { response: "NO_RESOURCE" };

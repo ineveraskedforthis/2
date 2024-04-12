@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const data_objects_1 = require("./game_modules/data/data_objects");
 const materials_manager_1 = require("./game_modules/manager_classes/materials_manager");
 // import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
 const system_1 = require("./game_modules/items/system");
@@ -7,11 +8,10 @@ const equip_1 = require("./game_modules/inventories/equip");
 const system_2 = require("./game_modules/character/system");
 const TEMPLATE_HUMANS_1 = require("./game_modules/races/TEMPLATE_HUMANS");
 const inventory_1 = require("./game_modules/inventories/inventory");
-const data_1 = require("./game_modules/data");
-const strings_management_1 = require("./game_modules/strings_management");
-data_1.Data.World.load_world_dimensions(data_1.save_path.WORLD_DIMENSIONS);
-data_1.Data.Cells.load(data_1.save_path.CELLS);
-data_1.Data.World.load();
+const strings_management_1 = require("./game_modules/data/strings_management");
+data_objects_1.Data.World.load_world_dimensions(data_objects_1.save_path.WORLD_DIMENSIONS);
+data_objects_1.Data.Cells.load(data_objects_1.save_path.CELLS);
+data_objects_1.Data.World.load();
 function string_difference([a, b]) {
     let resulta = '';
     let resultb = '';
@@ -98,7 +98,7 @@ function map_coords_test() {
     console.log('coord -> id -> coord');
     for (let i = 0; i <= 10; i++) {
         for (let j = 0; j <= 10; j++) {
-            let [x, y] = data_1.Data.World.id_to_coordinate(data_1.Data.World.coordinate_to_id([i, j]));
+            let [x, y] = data_objects_1.Data.World.id_to_coordinate(data_objects_1.Data.World.coordinate_to_id([i, j]));
             if ((x != i) || (y != j)) {
                 // console.log(i, j, x, y)
                 flag = false;
@@ -107,8 +107,8 @@ function map_coords_test() {
     }
     console.log('id -> coord -> id');
     for (let i = 0; i <= 500; i++) {
-        let tmp = data_1.Data.World.id_to_coordinate(i);
-        let x = data_1.Data.World.coordinate_to_id([tmp[0], tmp[1]]);
+        let tmp = data_objects_1.Data.World.id_to_coordinate(i);
+        let x = data_objects_1.Data.World.coordinate_to_id([tmp[0], tmp[1]]);
         if (i != x) {
             // console.log(i, x)
             flag = false;

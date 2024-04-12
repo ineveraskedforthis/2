@@ -1,9 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.SendUpdate = void 0;
+exports.weapon_attack_tags = exports.SendUpdate = void 0;
 const battle_calcs_1 = require("../../battle/battle_calcs");
 const systems_communication_1 = require("../../systems_communication");
-const types_1 = require("../../types");
 const alerts_1 = require("./alerts");
 const system_1 = require("../../battle/system");
 const constants_1 = require("../../static_data/constants");
@@ -13,8 +12,11 @@ const CraftBulk_1 = require("../../craft/CraftBulk");
 const system_2 = require("../../character/system");
 const system_3 = require("../../attack/system");
 const damage_types_1 = require("../../damage_types");
-const data_1 = require("../../data");
 const terrain_1 = require("../../map/terrain");
+const data_objects_1 = require("../../data/data_objects");
+const system_4 = require("../../map/system");
+const data_id_1 = require("../../data/data_id");
+const heap_1 = require("../../battle/classes/heap");
 var SendUpdate;
 (function (SendUpdate) {
     function all(user) {
@@ -58,84 +60,17 @@ var SendUpdate;
             return;
         const battle_id = character.battle_id;
         if (battle_id != undefined) {
-            const battle = systems_communication_1.Convert.id_to_battle(battle_id);
-            let unit_id = character.battle_unit_id;
+            const battle = data_objects_1.Data.Battles.from_id(battle_id);
             alerts_1.Alerts.battle_progress(user, true);
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_1.BattleSystem.data(battle));
-            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);
-            alerts_1.Alerts.generic_user_alert(user, constants_1.UNIT_ID_MESSAGE, unit_id);
+            alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_CURRENT_UNIT, heap_1.CharactersHeap.get_selected_unit(battle)?.id);
+            alerts_1.Alerts.generic_user_alert(user, constants_1.character_id_MESSAGE, character.id);
         }
         else {
             alerts_1.Alerts.battle_progress(user, false);
         }
     }
     SendUpdate.battle = battle;
-    // send_data_start() {
-    //         this.world.socket_manager.send_battle_data_start(this)
-    //         if (this.waiting_for_input) {
-    //             this.send_action({action: 'new_turn', target: this.heap.selected})
-    //         }
-    //     }
-    //     send_update() {
-    //         this.world.socket_manager.send_battle_update(this)
-    //         if (this.waiting_for_input) {
-    //             this.send_action({action: 'new_turn', target: this.heap.selected})
-    //         }
-    //     }
-    //     send_current_turn() {
-    //         this.send_action({action: 'new_turn', target: this.heap.selected})
-    //     }
-    // send_battle_data_to_user(user: User) {
-    // }
-    // send_battle_data_start(battle: BattleReworked2) {
-    //     let units = battle.get_units()
-    //     let data = battle.get_data()
-    //     let status = battle.get_status()
-    //     for (let i in units) {
-    //         let char = this.world.get_character_by_id(units[i].char_id)
-    //         if ((char != undefined) && char.is_player()) {
-    //             let position = char.get_in_battle_id()
-    //             this.send_to_character_user(char, 'battle-has-started', data);
-    //             this.send_to_character_user(char, 'enemy-update', status)
-    //             this.send_to_character_user(char, 'player-position', position)
-    //         }
-    //     }
-    // }
-    // send_battle_update(battle: BattleReworked2) {
-    //     let units = battle.get_units()
-    //     let status = battle.get_status()
-    //     let data = battle.get_data()
-    //     for (let i in units) {
-    //         let char = this.world.get_character_by_id(units[i].char_id)
-    //         if ((char != undefined) && char.is_player()) {
-    //             this.send_to_character_user(char, 'enemy-update', status)
-    //             this.send_to_character_user(char, 'battle-update', data)
-    //             // this.send_to_character_user(char, 'player-position', position)
-    //         }
-    //     }
-    // }
-    // send_battle_action(battle: BattleReworked2, a: any) {
-    //     let units = battle.get_units()
-    //     for (let i = 0; i < units.length; i++) {
-    //         let char = this.world.get_character_by_id(units[i].char_id);
-    //         if ((char != undefined) && char.is_player()) {
-    //             this.send_to_character_user(char, 'battle-action', a)
-    //         }
-    //     }
-    // }
-    // send_stop_battle(battle: BattleReworked2) {
-    //     let units = battle.get_units()
-    //     for (let i = 0; i < units.length; i++) {
-    //         let character = this.world.get_character_by_id(units[i].char_id);
-    //         if (character != undefined) {
-    //             if (character.is_player()) {
-    //                 this.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
-    //                 this.send_to_character_user(character, 'battle-has-ended', '')
-    //                 this.send_updates_to_char(character)
-    //             }
-    //         }
-    //     }
-    // }
     function savings(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
@@ -209,7 +144,7 @@ var SendUpdate;
     }
     SendUpdate.skill_skinning = skill_skinning;
     function skill_weapon(user) {
-        skills(user, types_1.weapon_attack_tags);
+        skills(user, exports.weapon_attack_tags);
     }
     SendUpdate.skill_weapon = skill_weapon;
     function skill_defence(user) {
@@ -277,28 +212,28 @@ var SendUpdate;
             return;
         alerts_1.Alerts.generic_user_alert(user, 'explore', character.explored);
         map_position(user, true);
-        for (let i = 0; i < character.explored.length; i++) {
-            if (character.explored[i]) {
-                let cell = data_1.Data.Cells.from_id(i);
-                if (cell != undefined) {
-                    let x = cell.x;
-                    let y = cell.y;
-                    let terrain = data_1.Data.World.id_to_terrain(cell.id);
-                    let forestation = data_1.Data.Cells.forestation(cell.id);
-                    let urbanisation = data_1.Data.Cells.urbanisation(cell.id);
-                    // console.log(forestation)
-                    // let res1: {[_ in string]: CellDisplayData} = {}
-                    const display_data = {
-                        terrain: (0, terrain_1.terrain_to_string)(terrain),
-                        forestation: forestation,
-                        urbanisation: urbanisation,
-                        rat_lair: data_1.Data.Cells.rat_lair(cell.id)
-                    };
-                    let res2 = { x: x, y: y, ter: display_data };
-                    alerts_1.Alerts.generic_user_alert(user, 'map-data-display', res2);
-                }
+        data_objects_1.Data.Cells.for_each(cell => {
+            if (character == undefined)
+                return;
+            const exploration_status = character.explored[cell.id];
+            if ((exploration_status != undefined) && exploration_status) {
+                let x = cell.x;
+                let y = cell.y;
+                let terrain = data_objects_1.Data.World.id_to_terrain(cell.id);
+                let forestation = system_4.MapSystem.forestation(cell.id);
+                let urbanisation = system_4.MapSystem.urbanisation(cell.id);
+                // console.log(forestation)
+                // let res1: {[_ in string]: CellDisplayData} = {}
+                const display_data = {
+                    terrain: (0, terrain_1.terrain_to_string)(terrain),
+                    forestation: forestation,
+                    urbanisation: urbanisation,
+                    rat_lair: system_4.MapSystem.rat_lair(cell.id)
+                };
+                let res2 = { x: x, y: y, ter: display_data };
+                alerts_1.Alerts.generic_user_alert(user, 'map-data-display', res2);
             }
-        }
+        });
     }
     SendUpdate.explored = explored;
     function map_position(user, teleport_flag) {
@@ -322,8 +257,8 @@ var SendUpdate;
         const character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)
             return;
-        let characters_list = data_1.Data.Cells.get_characters_list_display(character.cell_id);
-        alerts_1.Alerts.generic_user_alert(user, 'cell-characters', characters_list);
+        let characters = data_id_1.DataID.Location.guest_list(character.location_id).map(systems_communication_1.Convert.character_id_to_character_view);
+        alerts_1.Alerts.generic_user_alert(user, 'cell-characters', characters);
     }
     SendUpdate.local_characters = local_characters;
     function local_actions(user) {
@@ -390,6 +325,7 @@ var SendUpdate;
     }
     SendUpdate.update_player_actions_availability = update_player_actions_availability;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
+exports.weapon_attack_tags = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded'];
 // update_market_info(market: Cell) {
 //     let responce = this.prepare_market_orders(market)
 //     for (let i of this.sockets) {

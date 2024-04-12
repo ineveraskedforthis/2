@@ -1,5 +1,5 @@
 import { ItemBackpackData, ItemData } from "../../../../shared/inventory";
-import { item_from_string, item_to_string } from "../strings_management";
+import { item_from_string, item_to_string } from "../data/strings_management";
 import { Item } from "../items/item";
 import { ItemJson } from "@custom_types/inventory";
 import { ItemSystem } from "../items/system";

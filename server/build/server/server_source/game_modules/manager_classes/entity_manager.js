@@ -16,7 +16,7 @@
 // import { rat } from '../character/races/rat';
 // import { elo } from '../character/races/elo';
 // export class EntityManager {
-//     
+//
 //     cells: Cell[][]
 //     chars: Character[]
 //     orders: MarketOrder[]
@@ -137,8 +137,8 @@
 //         let decision_flag = false
 //         // console.log(this.time_since_last_decision_update)
 //         if (this.time_since_last_decision_update > 20) {
-//             // console.log('decision_time'); 
-//             decision_flag = true; 
+//             // console.log('decision_time');
+//             decision_flag = true;
 //             this.time_since_last_decision_update = 0
 //         }
 //         let rats = 0
@@ -176,7 +176,7 @@
 //                 this.cells[i][j].update(pool, dt)
 //             }
 //         }
-//     }   
+//     }
 //      update_battles() {
 //         for (let i in this.battles) {
 //             var battle = this.battles[i]
@@ -186,7 +186,7 @@
 //             let res = battle.is_over();
 //             if (res == -1) {
 //                  battle.update(pool)
-//             } else {                
+//             } else {
 //                 battle.clean_up_battle()
 //                  this.delete_battle(pool, battle.id);
 //             }
@@ -231,7 +231,7 @@
 //         let temporary_list:market_order_index[] = []
 //         for (let order of this.orders) {
 //             if (order == undefined) continue;
-//             if (order.owner_id == character.id) temporary_list.push(order.id);              
+//             if (order.owner_id == character.id) temporary_list.push(order.id);
 //         }
 //         let cell = character.get_cell()
 //         if (cell == undefined) return
@@ -300,15 +300,15 @@
 //             return this.get_cell_by_id(id)
 //         }
 //     }
-//      kill(char_id: number) {
-//         let character = this.chars[char_id];
+//      kill(character_id: number) {
+//         let character = this.chars[character_id];
 //         if ((character.get_hp() == 0) && (!character.deleted)) {
 //              character.clear_orders(pool);
 //              character.set_flag('dead', true);
 //             let cell = this.get_cell_by_id(character.cell_id)
 //             cell?.exit(character)
-//             console.log('kill ' + char_id);
-//             this.chars[char_id].deleted = true
+//             console.log('kill ' + character_id);
+//             this.chars[character_id].deleted = true
 //              character.delete_from_db(pool);
 //             if (character.is_player()) {
 //                 var user = this.world.user_manager.get_user_from_character(character);
@@ -318,7 +318,7 @@
 //                 user.send_death_message()
 //                 var id =  user.get_new_char(pool);
 //                 this.chars[id] = user.get_character();
-//             }            
+//             }
 //         }
 //         // this.chars[character.id] = null;
 //     }
@@ -378,8 +378,8 @@
 //          battle.delete_from_db(pool);
 //         this.battles[id].ended = true;
 //     }
-//      load_character_data_from_db(char_id: number) {
-//         var res =  common.send_query(pool, constants.select_char_by_id_query, [char_id]);
+//      load_character_data_from_db(character_id: number) {
+//         var res =  common.send_query(pool, constants.select_char_by_id_query, [character_id]);
 //         if (res.rows.length == 0) {
 //             return null;
 //         }

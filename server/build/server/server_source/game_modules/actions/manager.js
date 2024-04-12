@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActionManager = void 0;
 // import { attack } from "./attack"
 const alerts_1 = require("../client_communication/network_actions/alerts");
-const data_1 = require("../data");
+const data_objects_1 = require("../data/data_objects");
 var ActionManager;
 (function (ActionManager) {
     function start_action(action, char, cell) {
@@ -40,16 +40,14 @@ var ActionManager;
     }
     ActionManager.call_action = call_action;
     function update_characters(dt) {
-        for (let character of data_1.Data.CharacterDB.list()) {
-            if (character == undefined)
-                continue;
+        data_objects_1.Data.Characters.for_each(character => {
             if (character.action != undefined) {
                 character.action_progress += dt;
                 if (character.action_progress > character.action_duration) {
                     call_action(character.action, character, character.next_cell || character.cell_id);
                 }
             }
-        }
+        });
     }
     ActionManager.update_characters = update_characters;
 })(ActionManager = exports.ActionManager || (exports.ActionManager = {}));

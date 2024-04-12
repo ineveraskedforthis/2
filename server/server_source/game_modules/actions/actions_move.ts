@@ -2,9 +2,10 @@ import { Character } from "../character/character";
 import { MapSystem } from "../map/system";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
-import { Data } from "../data";
 import { CharacterMapAction } from "./types";
 import { cell_id } from "@custom_types/common";
+import { Data } from "../data/data_objects";
+import { DataID } from "../data/data_id";
 
 export const move:CharacterMapAction ={
     duration(char: Character) {
@@ -26,9 +27,9 @@ export const move:CharacterMapAction ={
             if ((dx == 0 && dy == 0)) {
                 return { response: 'ZERO_MOTION' }
             }
-            return { response: 'INVALID_MOTION' } 
+            return { response: 'INVALID_MOTION' }
         }
-        return { response: 'INVALID_MOTION'} 
+        return { response: 'INVALID_MOTION'}
     },
 
     start: function (char: Character, data: cell_id) {
@@ -43,7 +44,8 @@ export const move:CharacterMapAction ={
             console.log(character.next_cell)
             return
         }
-        Event.move(character, new_cell)
+
+        Event.move(character, DataID.Cells.main_location(new_cell))
     },
 
     is_move: true

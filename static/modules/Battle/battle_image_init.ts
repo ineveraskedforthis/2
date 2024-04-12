@@ -1,8 +1,9 @@
-import { BattleImage, battle_in_progress, events_list, player_unit_id } from "./battle_image.js";
-import { BattleActionChance, BattleData, BattleEventSocket, unit_id, Socket, UnitSocket, BattleActionData } from "../../../shared/battle_data.js"
+import { BattleImage, battle_in_progress, events_list, player_character_id } from "./battle_image.js";
+import { BattleActionChance, BattleData, BattleEventSocket, Socket, UnitSocket, BattleActionData } from "../../../shared/battle_data.js"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../Socket/socket.js";
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
+import { character_id } from "@custom_types/common.js";
 
 
 // export const battle_image = new BattleImageNext();
@@ -38,7 +39,7 @@ export function init_battle_control() {
     socket.on('battle-in-process',          bCallback.update_battle_process)
     // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
     socket.on('battle-update-units',        data => BattleImage.load(data))
-    socket.on(UNIT_ID_MESSAGE,              bCallback.link_player_to_unit)
+    socket.on(character_id_MESSAGE,              bCallback.link_player_to_unit)
     socket.on('current-unit-turn',          bCallback.link_current_turn)
 
     // socket.on('battle-update-unit',         data => .update_unit(data))
@@ -56,18 +57,18 @@ export function init_battle_control() {
 
 
 //              BATTLES
-const UNIT_ID_MESSAGE = 'unit_id'
+const character_id_MESSAGE = 'character_id'
 const BATTLE_DATA_MESSAGE = 'battle_data'
 const BATTLE_CURRENT_UNIT = 'current_unit_turn'
 
 
 
 namespace bCallback {
-    export function link_player_to_unit(data: unit_id) {
+    export function link_player_to_unit(data: character_id) {
         BattleImage.set_player(data)
     }
 
-    export function link_current_turn(data: unit_id) {
+    export function link_current_turn(data: character_id) {
         BattleImage.set_current_turn(data, 0)
     }
 

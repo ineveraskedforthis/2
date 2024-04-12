@@ -3,12 +3,12 @@ import { Effect } from "../events/effects";
 import { Event } from "../events/events";
 import { WOOD, COTTON, MEAT, RAT_SKIN, FISH } from "../manager_classes/materials_manager";
 import { Convert } from "../systems_communication";
-import { Data } from "../data";
 import { cell_id } from "@custom_types/common";
 import { generate_action } from "./generator";
 import { CharacterSystem } from "../character/system";
 import { TriggerResponse } from "./types";
 import { basic_duration_modifier, dummy_effect } from "./generic_functions";
+import { Data } from "../data/data_objects";
 const FATIGUE_COST_WOOD = 5
 const FATIGUE_COST_COTTON = 1
 const FATIGUE_COST_HUNT = 5
@@ -30,46 +30,49 @@ function fishing_duration_modifier(char: Character) {
     return (150 - skill) / 100;
 }
 
-function gather_wood_trigger(character: Character, cell: cell_id): TriggerResponse {
-    // console.log('gather_wood_trigger')
-    if (Data.Cells.has_forest(cell)) {
+function gather_wood_trigger(character: Character): TriggerResponse {
+    const data = Data.Locations.from_id(character.location_id)
+    if (data.forest > 0) {
         return { response: "OK" }
     } else {
-        return { response: "NO_RESOURCE" }
+        return { response: "NO TREES" }
     }
 }
-function gather_cotton_trigger(character: Character, cell: cell_id): TriggerResponse {
-    if (Data.Cells.has_cotton(cell)) {
+function gather_cotton_trigger(character: Character): TriggerResponse {
+    const data = Data.Locations.from_id(character.location_id)
+    if (data.cotton > 0) {
         return { response: "OK" }
     } else {
-        return { response: "NO_RESOURCE" }
+        return { response: "NO COTTON" }
     }
 }
-function hunt_trigger(character: Character, cell: cell_id) : TriggerResponse {
-    if (Data.Cells.has_game(cell)) {
+function hunt_trigger(character: Character) : TriggerResponse {
+    const data = Data.Locations.from_id(character.location_id)
+    if (data.small_game > 0) {
         return { response: "OK" }
     } else {
-        return { response: "NO_RESOURCE" }
+        return { response: "NO GAME" }
     }
 }
-function fishing_trigger(character: Character, cell: cell_id) : TriggerResponse {
-    if (Data.Cells.has_fish(cell)) {
+function fishing_trigger(character: Character) : TriggerResponse {
+    const data = Data.Locations.from_id(character.location_id)
+    if (data.fish > 0) {
         return { response: "OK" }
     } else {
-        return { response: "NO_RESOURCE" }
+        return { response: "NO FISH" }
     }
 }
 
-function gather_wood_effect(character: Character, cell: cell_id) {
-    // console.log('gather_wood_effect')
-    Event.remove_tree(cell)
+function gather_wood_effect(character: Character) {
+    Event.remove_tree(character.location_id)
     Event.change_stash(character, WOOD, 1)
 }
-function gather_cotton_effect(character: Character, cell: cell_id) {
-    const cell_obj = Convert.character_to_cell(character)
-    cell_obj.cotton -= 1
+
+function gather_cotton_effect(character: Character) {
+    Data.Locations.from_id(character.location_id).cotton -= 1
     Event.change_stash(character, COTTON, 1)
 }
+
 function hunt_skill_upgrade_roll(character: Character) {
     const skill = CharacterSystem.pure_skill(character, 'hunt')
     const skinning_skill = CharacterSystem.pure_skill(character, 'skinning')
@@ -81,23 +84,23 @@ function hunt_skill_upgrade_roll(character: Character) {
         Effect.Change.skill(character, 'skinning', 1)
     }
 }
-function hunt_effect(character: Character, cell: cell_id) {
+function hunt_effect(character: Character) {
     const skill = CharacterSystem.skill(character, 'hunt')
     const skinning_skill = CharacterSystem.skill(character, 'skinning')
-    
+
     let amount_meat = Math.floor(skill / 10) + 1
     let amount_skin = Math.floor(Math.max(amount_meat * skinning_skill / 100))
     if (Math.random() < 0.1) {
         amount_meat += 10
         amount_skin += 1
-    }    
+    }
     hunt_skill_upgrade_roll(character)
 
-    const cell_obj = Data.Cells.from_id(cell)
-    cell_obj.game -= 1
+    Data.Locations.from_id(character.location_id).small_game -= 1
     Event.change_stash(character, MEAT, amount_meat)
     Event.change_stash(character, RAT_SKIN, amount_skin)
 }
+
 function fishing_effect(character: Character, cell: cell_id) {
     const skill = CharacterSystem.skill(character, 'fishing')
 
@@ -108,19 +111,18 @@ function fishing_effect(character: Character, cell: cell_id) {
     if (Math.random() < 0.0001) {
         amount += 100
     }
-    
+
     if (Math.random() * Math.random() > skill / 100) {
         Effect.Change.skill(character, 'fishing', 1)
         Effect.Change.stress(character, 1)
     }
 
-    const cell_obj = Data.Cells.from_id(cell)
-    cell_obj.fish -= 1
+    Data.Locations.from_id(character.location_id).fish -= 1
     Event.change_stash(character, FISH, amount)
 }
 
 export const gather_wood = generate_action(
-    FATIGUE_COST_WOOD, 
+    FATIGUE_COST_WOOD,
     gather_wood_duration_modifier,
     gather_wood_trigger,
     gather_wood_effect,

@@ -6,8 +6,8 @@ const alerts_1 = require("./alerts");
 const systems_communication_1 = require("../../systems_communication");
 const inventory_events_1 = require("../../events/inventory_events");
 const market_1 = require("../../events/market");
-const data_1 = require("../../data");
 const system_1 = require("../../market/system");
+const data_objects_1 = require("../../data/data_objects");
 function r(f) {
     return (sw) => {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
@@ -154,10 +154,10 @@ var InventoryCommands;
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined)
             return;
-        const order = systems_communication_1.Convert.id_to_bulk_order(order_id);
+        const order = data_objects_1.Data.MarketOrders.from_number(order_id);
         if (order == undefined)
             return;
-        const seller = systems_communication_1.Convert.id_to_character(order.owner_id);
+        const seller = data_objects_1.Data.Characters.from_id(order.owner_id);
         if (seller.cell_id != character.cell_id)
             return;
         if (isNaN(amount))
@@ -177,7 +177,7 @@ var InventoryCommands;
             return false;
         if (typeof msg != 'object')
             return false;
-        if (!('char_id' in msg))
+        if (!('character_id' in msg))
             return false;
         if (!('item_id' in msg))
             return false;
@@ -189,13 +189,13 @@ var InventoryCommands;
             return;
         if (!validate_item_buyout(msg))
             return;
-        const character_id = msg.char_id;
+        const character_id = msg.character_id;
         const item_id = msg.item_id;
         if (typeof character_id !== 'number')
             return;
         if (typeof item_id !== 'number')
             return;
-        let seller = systems_communication_1.Convert.id_to_character(character_id);
+        let seller = data_objects_1.Data.Characters.from_number(character_id);
         if (seller == undefined)
             return;
         market_1.EventMarket.buyout_item(seller, character, item_id);
@@ -207,7 +207,7 @@ var InventoryCommands;
             return;
         if (isNaN(data))
             return;
-        let order = data_1.Data.BulkOrders.from_id(data);
+        let order = data_objects_1.Data.MarketOrders.from_id(data);
         if (order == undefined)
             return;
         if (order.owner_id != character.id) {

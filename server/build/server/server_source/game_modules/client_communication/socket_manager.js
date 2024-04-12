@@ -88,16 +88,17 @@ class SocketManager {
             socket.on('request-talk', (msg) => dialog_1.Dialog.request_greeting(user, msg));
             socket.on('request-prices-character', (msg) => dialog_1.Dialog.request_prices(user, msg));
             socket.on('request-craft', () => request_1.Request.craft_data(user));
-            socket.on('request-local-buildings', (msg) => request_1.Request.local_buildings(user));
+            socket.on('request-local-locations', (msg) => request_1.Request.local_locations(user));
             socket.on('learn-perk', (msg) => run_event_1.SocketCommand.learn_perk(user, msg));
             socket.on('learn-skill', (msg) => run_event_1.SocketCommand.learn_skill(user, msg));
-            socket.on('buy-plot', (msg) => run_event_1.SocketCommand.buy_plot(user, msg));
-            socket.on('create-plot', () => run_event_1.SocketCommand.create_plot(user));
-            socket.on('build-building', (msg) => run_event_1.SocketCommand.develop_plot(user, msg));
-            socket.on('change-rent-price', (msg) => run_event_1.SocketCommand.change_rent_price(user, msg));
-            socket.on('rent-room', (msg) => run_event_1.SocketCommand.rent_room(user, msg));
-            socket.on('leave-room', () => run_event_1.SocketCommand.leave_room(user));
-            socket.on('repair-building', (msg) => run_event_1.SocketCommand.repair_building(user, msg));
+            // socket.on('buy-plot',       (msg: undefined|{id: unknown}) =>
+            //                                 SocketCommand.buy_plot(user, msg))
+            // socket.on('create-plot',    () => SocketCommand.create_plot(user))
+            // socket.on('build-location',     (msg: undefined|{id: unknown, type: unknown}) => SocketCommand.develop_plot(user, msg))
+            // socket.on('change-rent-price',  (msg: undefined|{id: unknown, price: unknown}) => SocketCommand.change_rent_price(user, msg))
+            // socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
+            // socket.on('leave-room',         () => SocketCommand.leave_room(user))
+            socket.on('repair-location', (msg) => run_event_1.SocketCommand.repair_location(user, msg));
             socket.on('request-tags', () => { socket.emit('tags', materials_manager_1.materials.get_materials_json()); });
             socket.on('request-belongings', () => request_1.Request.belongings(user));
         });
@@ -116,7 +117,7 @@ class SocketManager {
         }
     }
     create_character(sw, data) {
-        if (sw.user_id == '#')
+        if (sw.user_id == undefined)
             return;
         let user = user_manager_1.UserManagement.get_user(sw.user_id);
         if (!common_validations_1.Validator.isAlphaNum(data.name)) {
@@ -137,10 +138,10 @@ class SocketManager {
         user_manager_1.UserManagement.update_users();
     }
     play(sw) {
-        if (sw.user_id == '#')
+        if (sw.user_id == undefined)
             return;
         let user = user_manager_1.UserManagement.get_user(sw.user_id);
-        if (user.data.char_id == '@') {
+        if (user.data.character_id == '@') {
             alerts_1.Alerts.generic_user_alert(user, 'no-character', '');
         }
         else {

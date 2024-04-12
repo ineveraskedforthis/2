@@ -1,4 +1,4 @@
-import { weapon_attack_tag } from "../types";
+import { weapon_attack_tag } from "@custom_types/common";
 import { Damage } from "../Damage";
 import { Status } from "../types";
 

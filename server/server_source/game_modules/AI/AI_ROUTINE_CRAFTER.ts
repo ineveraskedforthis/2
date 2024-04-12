@@ -1,18 +1,11 @@
 import { money } from "@custom_types/common";
 import { Character } from "../character/character";
-import { CharacterSystem } from "../character/system";
-import { craft_actions, crafts_bulk, crafts_items } from "../craft/crafts_storage";
-import { RAT_BONE, RAT_SKIN, WOOD } from "../manager_classes/materials_manager";
-import { GenericRest } from "./AI_ROUTINE_GENERIC";
+import { crafts_bulk, crafts_items } from "../craft/crafts_storage";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { AIactions } from "./AIactions";
 import { update_price_beliefs } from "./ACTIONS_BASIC";
 import { durability } from "../craft/CraftItem";
 import { check_inputs } from "../craft/helpers";
-import { AIhelper } from "./helpers";
-// import { rest_outside } from "./actions";
-// import { base_price } from "./helpers";
-// import { tired } from "./triggers";
 
 export function decide_bulk_craft(character: Character) {
     let result = []
@@ -79,7 +72,6 @@ export function crafter_routine(character: Character) {
     if (character.in_battle()) return
     if (character.action != undefined) return
     if (character.is_player()) return
-    if (character.current_building != undefined) return
 
     const total_crafting_budget = Math.min(400, character.savings.get() / 4) as money
     if (Math.random() < 0.5) {

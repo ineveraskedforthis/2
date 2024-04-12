@@ -3,12 +3,13 @@ import { CharacterSystem } from "../character/system";
 import { Stash } from "../inventories/stash";
 import { Item } from "../items/item";
 import { ItemSystem } from "../items/system"
-import { Data } from "../data";
 import { material_index } from "@custom_types/inventory";
 import { Convert } from "../systems_communication";
-import { char_id, order_bulk_id } from "../types";
-import { OrderBulk, OrderBulkJson } from "./classes";
+import { character_id, market_order_id } from "@custom_types/common";
+import { MarketOrder, MarketOrderJson } from "./classes";
 import { money } from "@custom_types/common";
+import { Data } from "../data/data_objects";
+import { DataID } from "../data/data_id";
 
 export enum AuctionResponce {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
@@ -25,64 +26,22 @@ const empty_stash = new Stash()
 // this file does not handle networking
 
 
-export namespace BulkOrders {
-    // does not shadow resources, shadowing happens in create_type_order functions
-    // private
-    function create(amount: number, price: money, typ:'sell'|'buy', tag: material_index, owner: Character) {
-        Data.BulkOrders.increase_id()
-        let order = new OrderBulk(Data.BulkOrders.id(), amount, price, typ, tag, owner.id)
-        Data.BulkOrders.set(Data.BulkOrders.id(), owner.id, order)
-        return order
-    }
-
-    export function remove(id: order_bulk_id) {
-        const order = Data.BulkOrders.from_id(id)
-        const character = Data.CharacterDB.from_id(order.owner_id)
-        if (order.typ == 'buy') {
-            character.trade_savings.transfer(character.savings, order.amount * order.price as money)
-        }
-        if (order.typ == 'sell') {
-            character.trade_stash.transfer(character.stash, order.tag, order.amount)
-        }
-        order.amount = 0
-    }
-
-    export function destroy_item(id: order_bulk_id, x: number) {
-        const order = Data.BulkOrders.from_id(id)
-
-        if (order.typ == 'sell') {
-            const character = Data.CharacterDB.from_id(order.owner_id)
-            order.amount -= x
-            character.trade_stash.inc(order.tag, -x)
-        }
-    }
-
-    export function remove_by_condition(character: Character, tag: material_index) {
-        const set = Data.BulkOrders.from_char_id(character.id)
-        if (set == undefined) return
-        for (let [_, id] of set.entries()) {
-            const order = Data.BulkOrders.from_id(id)
-            if (order.tag == tag) {
-                remove(id)
-            }
-        }
-    }
-
-    export function execute_sell_order(id: order_bulk_id, amount: number, buyer: Character) {
-        const order = Data.BulkOrders.from_id(id)
-        const owner = Convert.id_to_character(order.owner_id)
+export namespace MarketOrders {
+    export function execute_sell_order(id: market_order_id, amount: number, buyer: Character) {
+        const order = Data.MarketOrders.from_id(id)
+        const owner = Data.Characters.from_id(order.owner_id)
         const pay = amount * order.price as money
 
         if (order.amount < amount) amount = order.amount
         if (buyer.savings.get() < pay)  return 'not_enough_money'
 
-        const material = order.tag
+        const material = order.material
 
         // shadow operations with imaginary items
         order.amount -= amount;
         const transaction_stash = new Stash()
         transaction_stash.inc(material, amount)
-        CharacterSystem.to_trade_stash(owner, order.tag, -amount)
+        CharacterSystem.to_trade_stash(owner, order.material, -amount)
 
         //actual transaction
         CharacterSystem.transaction(owner, buyer,
@@ -91,15 +50,37 @@ export namespace BulkOrders {
         return 'ok'
     }
 
-    export function execute_buy_order(id:order_bulk_id, amount: number, seller: Character) {
-        const order = Data.BulkOrders.from_id(id)
-        const owner = Convert.id_to_character(order.owner_id)
+    export function remove(id: market_order_id) {
+        const order = Data.MarketOrders.from_id(id)
+        const character = Data.Characters.from_id(order.owner_id)
+        if (order.typ == 'buy') {
+            character.trade_savings.transfer(character.savings, order.amount * order.price as money)
+        }
+        if (order.typ == 'sell') {
+            character.trade_stash.transfer(character.stash, order.material, order.amount)
+        }
+        order.amount = 0
+    }
+
+    export function remove_by_condition(character: Character, tag: material_index) {
+        const list = DataID.Character.market_orders_list(character.id)
+        for (const id of list) {
+            const order = Data.MarketOrders.from_id(id)
+            if (order.material == tag) {
+                remove(id)
+            }
+        }
+    }
+
+    export function execute_buy_order(id:market_order_id, amount: number, seller: Character) {
+        const order = Data.MarketOrders.from_id(id)
+        const owner = Data.Characters.from_id(order.owner_id)
 
         if (order.amount < amount) amount = order.amount
-        if (seller.stash.get(order.tag) < amount) amount = seller.stash.get(order.tag)
+        if (seller.stash.get(order.material) < amount) amount = seller.stash.get(order.material)
 
         const pay = amount * order.price as money
-        const material = order.tag
+        const material = order.material
 
         // shadow operations
         order.amount -= amount;
@@ -123,7 +104,7 @@ export namespace BulkOrders {
         if (owner.savings.get() < price * amount) return 'not_enough_savings'
 
         CharacterSystem.to_trade_savings(owner, amount * price as money)
-        const order = create(amount, price, 'buy', material, owner)
+        const order = Data.MarketOrders.create(amount, price, 'buy', material, owner.id)
         return 'ok'
     }
 
@@ -136,8 +117,18 @@ export namespace BulkOrders {
         if (owner.stash.get(material) < amount) return 'not_enough_material'
 
         CharacterSystem.to_trade_stash(owner, material, amount)
-        const order = create(amount, price, 'sell', material, owner)
+        const order = Data.MarketOrders.create(amount, price, 'sell', material, owner.id)
         return 'ok'
+    }
+
+    export function decrease_amount(id: market_order_id, x: number) {
+        const order = Data.MarketOrders.from_id(id)
+
+        if (order.typ == 'sell') {
+            const character = Data.Characters.from_id(order.owner_id)
+            order.amount -= x
+            character.trade_stash.inc(order.material, -x)
+        }
     }
 }
 
@@ -151,32 +142,13 @@ export namespace ItemOrders {
         return AuctionResponce.OK
     }
 
-    // export function remove_unsafe(id: number, who: Character) {
-    //     const true_id = Convert.number_to_order_item_id(id)
-    //     if (true_id == undefined) return AuctionResponce.NO_SUCH_ORDER
-    //     return remove(true_id, who)
-    // }
-
     export function remove_all_character(who:Character) {
         // console.log('attempt to remove item orders')
-        for (let order of Data.CharacterItemOrders(who.id)) {
-            if (order == undefined) return;
+        for (let order of who.equip.data.backpack.items) {
+            if (order == undefined) continue;
             remove(order, who)
         }
     }
-
-    // export function order_to_json(order: OrderItem) {
-    //     let owner = Convert.id_to_character(order.owner_id)
-    //     let responce:OrderItemJson = {
-    //         id: order.id,
-    //         item: order.item.get_json(),
-    //         owner_id: order.owner_id,
-    //         price: order.price,
-    //         // cell_id: owner.cell_id,
-    //         finished: order.finished
-    //     }
-    //     return responce
-    // }
 
     export function sell(seller: Character, backpack_id: number, price: money){
         const item = seller.equip.data.backpack.items[backpack_id]

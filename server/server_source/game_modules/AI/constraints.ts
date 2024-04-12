@@ -1,35 +1,28 @@
-import { Data } from "../data";
-import { Cell } from "../map/DATA_LAYOUT_CELL";
+import { CellData } from "../map/cell_interface";
 import { MapSystem } from "../map/system";
-// import { cell_id } from "../types";
 
-
-export function forest_constraints(cell: Cell) {
-    if (!MapSystem.can_move([cell.x, cell.y])) return false 
-    if (Data.Cells.forestation(cell.id) > 300) {
+export function forest_constraints(cell: CellData) {
+    if (!MapSystem.can_move([cell.x, cell.y])) return false
+    if (MapSystem.forestation(cell.id) > 300) {
         return true
     }
     return false
 }
 
-
-export function urban_constraints(cell: Cell) {
-
-    // console.log(cell.x, cell.y)
-    // console.log(Data.Cells.urbanisation(cell.id))
-    return (Data.Cells.urbanisation(cell.id) > 0) && (MapSystem.can_move([cell.x, cell.y]));
+export function urban_constraints(cell: CellData) {
+    return (MapSystem.urbanisation(cell.id) > 0) && (MapSystem.can_move([cell.x, cell.y]));
 }
 
-export function steppe_constraints(cell: Cell) {
-    if (!MapSystem.can_move([cell.x, cell.y])) return false 
+export function steppe_constraints(cell: CellData) {
+    if (!MapSystem.can_move([cell.x, cell.y])) return false
     if (forest_constraints(cell)) return false
     if (urban_constraints(cell)) return false
     return true
 }
-export function simple_constraints(cell: Cell) {
+export function simple_constraints(cell: CellData) {
     return MapSystem.can_move([cell.x, cell.y]);
 }
 
-export function coastal_constraints(cell: Cell) {
-    return Data.Cells.sea_nearby(cell.id);
+export function coastal_constraints(cell: CellData) {
+    return MapSystem.sea_nearby(cell.id);
 }

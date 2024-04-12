@@ -1,6 +1,7 @@
 import { elementById } from "../HTMLwrappers/common.js";
 import { globals } from "../globals.js"
 import { socket } from "../Socket/socket.js";
+import { CharacterView } from "@custom_types/responses.js";
 
 
 export function init_character_list_interactions() {

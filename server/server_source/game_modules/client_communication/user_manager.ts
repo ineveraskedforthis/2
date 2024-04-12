@@ -3,24 +3,19 @@ var bcrypt = require('bcryptjs');
 var salt = process.env.SALT;
 
 import fs from "fs"
-import { HumanTemplate } from "../races/TEMPLATE_HUMANS";
 import { Convert, Link } from "../systems_communication";
 import { SendUpdate } from "./network_actions/updates";
 import { Alerts } from "./network_actions/alerts";
 import { UI_Part, Update } from "./causality_graph";
-import { char_id, tagModel, tagRACE, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
-import { Event } from "../events/events";
+import { character_id, TEMP_character_id, user_id, user_online_id } from "@custom_types/common";
 import { ModelVariant } from "../types";
 import { SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
-import { BigRatTemplate, RatTemplate } from "../races/TEMPLATE_RATS";
-import { GraciTemplate } from "../races/TEMPLATE_GRACI";
-import { ElodinoTemplate } from "../races/TEMPLATE_ELO";
 import { Template } from "../templates";
 import { Character } from "../character/character";
-import { Data } from "../data";
 import { ItemSystem } from "../items/system";
-// import { SWORD_ARGUMENT } from "../items/items_set_up";
 import { EventInventory } from "../events/inventory_events";
+import { DataID } from "../data/data_id";
+import { Data } from "../data/data_objects";
 var path = require('path')
 
 type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
@@ -55,12 +50,12 @@ export namespace UserManagement {
             let data = line.split(' ')
             console.log(data)
 
-            let char_id:char_id|TEMP_CHAR_ID = '@'
+            let character_id:character_id|TEMP_character_id = '@'
             if (data[1] != '@') {
-                char_id = Number(data[1]) as char_id
+                character_id = Number(data[1]) as character_id
             }
 
-            let user = new UserData(Number(data[0]), char_id, data[2], data[3], data[4] == 'true')
+            let user = new UserData(Number(data[0]), character_id, data[2], data[3], data[4] == 'true')
             users_data_dict[user.id] = user
             login_to_user_data[user.login] = user
             users_data_list.push(user)
@@ -76,14 +71,14 @@ export namespace UserManagement {
         console.log('saving users')
         let str:string = ''
         for (let item of users_data_list) {
-            str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + ' ' + item.tester_account + '\n'
+            str = str + item.id + ' ' + item.character_id + ' ' + item.login + ' ' + item.password_hash + ' ' + item.tester_account + '\n'
         }
         fs.writeFileSync(save_path, str)
         console.log('users saved')
     }
 
     export function log_out(sw: SocketWrapper) {
-        if (sw.user_id == '#') return
+        if (sw.user_id == undefined) return
         users_online_dict[sw.user_id].logged_in = false
     }
 
@@ -102,9 +97,9 @@ export namespace UserManagement {
         return user
     }
 
-    function construct_user_data(char_id: char_id|TEMP_CHAR_ID, login: string, hash: string, tester_flag: boolean) {
+    function construct_user_data(character_id: character_id|TEMP_character_id, login: string, hash: string, tester_flag: boolean) {
         last_id = (last_id + 1)
-        let user_data = new UserData(last_id, char_id, login, hash, tester_flag)
+        let user_data = new UserData(last_id, character_id, login, hash, tester_flag)
         users_data_dict[last_id as user_id] = user_data
         login_to_user_data[login] = user_data
         users_data_list.push(user_data)
@@ -176,7 +171,7 @@ export namespace UserManagement {
 
     export function get_new_character(id: user_id, name: string, model_variation: ModelVariant, faction: string) {
         let user = get_user_data(id)
-        if (user.char_id != '@') {
+        if (user.character_id != '@') {
             console.log('attempt to generate character for user who already owns one')
             return
         }
@@ -190,7 +185,8 @@ export namespace UserManagement {
 // graci 17 13
 // elodino_free 24 20
 // big_humans 10 28
-        let spawn_point = Data.World.get_faction(faction)?.spawn_point
+
+        let spawn_point = DataID.Faction.spawn(faction)
         if (spawn_point == undefined) return
         const [x, y] = Data.World.id_to_coordinate(spawn_point)
         switch(faction){
@@ -218,14 +214,16 @@ export namespace UserManagement {
         // save_users()
     }
 
-    export function add_user_to_update_queue(id: user_id|TEMP_USER_ID, reason:'character_creation'|UI_Part|'character_removal') {
-        if (id == '#') return
+    export function add_user_to_update_queue(id: user_id|undefined, reason:'character_creation'|UI_Part|'character_removal') {
+        if (id == undefined) return
         let user = get_user(id as user_online_id)
         if (user == undefined) return
         if (reason == 'character_creation') {user.character_created = true} else
         if (reason == 'character_removal')  {user.character_removed = true} else {
             Update.on(user.updates, reason)
         }
+
+        //console.log("update scheduled", reason)
         users_to_update.add(user)
     }
 
@@ -261,7 +259,7 @@ export namespace UserManagement {
 
         Alerts.generic_user_alert(user, "character_data", {name: character.name, id: character.id})
 
-        if (character.current_building != undefined) Alerts.enter_room(character)
+        Alerts.enter_room(character)
         const battle = Convert.character_to_battle(character)
         if (battle != undefined) {
             Alerts.battle_to_character(battle, character)

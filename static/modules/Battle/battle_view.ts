@@ -1,17 +1,18 @@
-import { battle_position, UnitSocket, unit_id } from "../../../shared/battle_data.js"
+import { character_id } from "@custom_types/common.js"
+import { battle_position, UnitSocket } from "../../../shared/battle_data.js"
 import { AnimationDict } from "../load_images.js"
 import { AnimatedImage } from "./animation.js"
-import { BattleImage, battle_canvas_context, enemy_list_div, player_unit_id } from "./battle_image.js"
+import { BattleImage, battle_canvas_context, enemy_list_div, player_character_id } from "./battle_image.js"
 
-import { 
-    animation_event, 
-    canvas_position, 
-    position_c, 
+import {
+    animation_event,
+    canvas_position,
+    position_c,
 } from "./battle_image_helper.js"
 import { BATTLE_SCALE } from "./constants.js"
 
 export class BattleUnitView {
-    id: unit_id
+    id: character_id
     position: battle_position
     hp: number
     max_hp: number
@@ -35,7 +36,7 @@ export class BattleUnitView {
     timer: number
 
     orientation: 'left'|'right'
-    
+
     constructor(unit: UnitSocket) {
         this.id = unit.id
         this.name = unit.name
@@ -61,26 +62,26 @@ export class BattleUnitView {
 
         this.timer = 0
     }
-    
+
     update(hp_change: number, ap_change: number) {
-        // if (player_unit_id == this.id) {
+        // if (player_character_id == this.id) {
         //     BattleImage.update_player_actions_availability()
         // }
         this.hp_change = hp_change
         this.ap_change = ap_change
-        
+
         // this.hp = this.unit.hp
-        // this.ap = this.unit.ap 
+        // this.ap = this.unit.ap
         // this.killed = this.unit.killed
 
         // let div = BattleImage.unit_div(this.unit.id)
-        // if (div != undefined) div.innerHTML = this.unit.name 
+        // if (div != undefined) div.innerHTML = this.unit.name
         //                                       + '<br> hp: ' + this.unit.hp
         //                                       + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10
     }
 
 
-    draw_circles(dt: number, ctx: CanvasRenderingContext2D, pos: canvas_position, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined, current_turn: unit_id|undefined) {
+    draw_circles(dt: number, ctx: CanvasRenderingContext2D, pos: canvas_position, selected: character_id|undefined, hovered: character_id|undefined, player_id: character_id|undefined, current_turn: character_id|undefined) {
         //draw character attack radius circle and color it depending on it's status in ui
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
         ctx.beginPath();
@@ -93,10 +94,10 @@ export class BattleUnitView {
             ctx.fillStyle = "rgba(200, 200, 0, 0.5)" // yellow otherwise
         }
         ctx.fill();
-    
+
         // draw movement radius
         ctx.strokeStyle = "rgba(0, 0, 0, 1)"
-        
+
         ctx.beginPath();
         ctx.setLineDash([20, 20])
         ctx.arc(pos.x, pos.y, BATTLE_SCALE * (this.ap - this.ap_change) / this.move_cost, 0, 2 * Math.PI);
@@ -104,14 +105,14 @@ export class BattleUnitView {
         ctx.stroke();
 
         ctx.setLineDash([])
-        
+
         //draw a border of circle above
         ctx.beginPath();
         ctx.arc(pos.x, pos.y, BATTLE_SCALE * this.range, 0, 2 * Math.PI);
         ctx.closePath();
         ctx.stroke();
 
-        
+
 
         //draw small circle at unit's base
         ctx.beginPath();
@@ -131,21 +132,21 @@ export class BattleUnitView {
             ctx.arc(pos.x, pos.y, radius_end * Math.abs(wave) + radius_start * (1 - Math.abs(wave)), 0, 2 * Math.PI);
             ctx.closePath();
             ctx.stroke();
-        } 
+        }
 
         //mark player with something cool
         if (this.id == player_id) {
             ctx.fillStyle = "rgba(0, 0, 0, 0.8)"
             ctx.beginPath();
             const pi = Math.PI
-            
+
             let angle = this.timer * (this.ap / 5)
             let dx = Math.cos(angle) * BATTLE_SCALE * this.range
             let dy = Math.sin(angle) * BATTLE_SCALE * this.range
             ctx.moveTo(pos.x + dx, pos.y + dy)
 
             for (let i = 0; i < 20; i++) {
-                angle = this.timer * (this.ap / 5) + 5 * pi * i / 6 
+                angle = this.timer * (this.ap / 5) + 5 * pi * i / 6
                 let dx = Math.cos(angle) * BATTLE_SCALE * this.range
                 let dy = Math.sin(angle) * BATTLE_SCALE * this.range
                 ctx.lineTo(pos.x + dx, pos.y + dy)
@@ -168,7 +169,7 @@ export class BattleUnitView {
     }
 
 
-    draw(dt: number, camera: canvas_position, selected: unit_id|undefined, hovered: unit_id|undefined, player_id: unit_id|undefined, current_turn: unit_id|undefined) {
+    draw(dt: number, camera: canvas_position, selected: character_id|undefined, hovered: character_id|undefined, player_id: character_id|undefined, current_turn: character_id|undefined) {
         if (this.killed) {
             return
         }
@@ -181,7 +182,7 @@ export class BattleUnitView {
         let pos = position_c.battle_to_canvas(this.position, camera)
         let ctx = battle_canvas_context
 
-        
+
         this.draw_circles(dt, ctx, pos, selected, hovered, player_id, current_turn)
 
         //draw nameplates
@@ -258,10 +259,10 @@ export class BattleUnitView {
                 ctx.fillRect(ap_left + width_ap- width_change, ap_top, width_change, height_ap)
             }
         }
-    }  
+    }
 
 
-    private draw_nameplate(pos: canvas_position, ctx: CanvasRenderingContext2D, player_id: unit_id | undefined) {
+    private draw_nameplate(pos: canvas_position, ctx: CanvasRenderingContext2D, player_id: character_id | undefined) {
         {
             const nameplate_left = pos.x - 50
             const nameplate_top = pos.y + 50

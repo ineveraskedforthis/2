@@ -31,7 +31,7 @@ export function init_battle_control() {
     socket.on('battle-in-process', bCallback.update_battle_process);
     // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
     socket.on('battle-update-units', data => BattleImage.load(data));
-    socket.on(UNIT_ID_MESSAGE, bCallback.link_player_to_unit);
+    socket.on(character_id_MESSAGE, bCallback.link_player_to_unit);
     socket.on('current-unit-turn', bCallback.link_current_turn);
     // socket.on('battle-update-unit',         data => .update_unit(data))
     // socket.on('battle-new-unit',                bCallback.new_unit)
@@ -41,7 +41,7 @@ export function init_battle_control() {
     console.log('battle callbacks are loaded');
 }
 //              BATTLES
-const UNIT_ID_MESSAGE = 'unit_id';
+const character_id_MESSAGE = 'character_id';
 const BATTLE_DATA_MESSAGE = 'battle_data';
 const BATTLE_CURRENT_UNIT = 'current_unit_turn';
 var bCallback;

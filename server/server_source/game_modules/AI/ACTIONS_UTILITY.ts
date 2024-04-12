@@ -5,10 +5,9 @@ import { BattleSystem } from "../battle/system";
 import { AImemory, AIstate } from "../character/AIstate";
 import { Character } from "../character/character"
 import { Convert } from "../systems_communication";
-import { ForestPassiveRoutine, SteppePassiveRoutine, find_building_to_rest } from "./AI_ROUTINE_GENERIC";
+import { ForestPassiveRoutine, SteppePassiveRoutine, find_location_to_rest } from "./AI_ROUTINE_GENERIC";
 import { AIhelper } from "./helpers";
 import { Effect } from "../events/effects";
-import { Data } from "../data";
 import { ScriptedValue } from "../events/scripted_values";
 import { MapSystem } from "../map/system";
 import { buy, coast_walk, home_walk, loot, random_walk, rat_walk, remove_orders, sell_loot, sell_material, update_price_beliefs, urban_walk } from "./ACTIONS_BASIC";
@@ -18,6 +17,7 @@ import { AI_TRIGGER } from "./AI_TRIGGERS";
 import { AI_RESERVE } from "./AI_CONSTANTS";
 import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
 import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
+import { Data } from "../data/data_objects";
 
 function rest_budget(character: Character) {
     let budget = character.savings.get()
@@ -37,7 +37,7 @@ type CampaignAction = {
     utility: (character: Character) => number;
 }
 
-type ActionKeys = 
+type ActionKeys =
     'FIGHT'
     | 'REST'
     | 'RAT_PATROL'
@@ -61,8 +61,8 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     FIGHT: {
         action : (character: Character) => {
             let target = AIhelper.enemies_in_cell(character)
-            const target_char = Convert.id_to_character(target)
-            if (target_char != undefined) {
+            if (target != undefined) {
+                const target_char = Data.Characters.from_id(target)
                 BattleSystem.start_battle(character, target_char)
                 return
             }
@@ -78,30 +78,26 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     REST: {
         action: (character: Character) => {
             character.ai_state = AIstate.GoToRest
-
-            if (character.current_building != undefined) {
-                let building = Data.Buildings.from_id(character.current_building)
-                let tier = ScriptedValue.building_rest_tier(building.type, character)
-                let fatigue_target = ScriptedValue.rest_target_fatigue(tier, building.durability, character.race)
-                const stress_target = ScriptedValue.rest_target_stress(tier, building.durability, character.race)
-                if ((fatigue_target + 1 >= character.get_fatigue()) && (stress_target + 1 >= character.get_stress())) {
-                    Effect.leave_room(character.id)
-                    character.ai_memories.push(AImemory.RESTED)
-                }
-                return
+            let location = Data.Locations.from_id(character.location_id)
+            let tier = ScriptedValue.rest_tier(character, location)
+            let fatigue_target = ScriptedValue.rest_target_fatigue(tier, ScriptedValue.max_devastation - location.devastation, character.race)
+            const stress_target = ScriptedValue.rest_target_stress(tier, ScriptedValue.max_devastation - location.devastation, character.race)
+            if ((fatigue_target + 1 >= character.get_fatigue()) && (stress_target + 1 >= character.get_stress())) {
+                character.ai_memories.push(AImemory.RESTED)
             }
-            if (!AI_TRIGGER.at_home(character)) {
-                home_walk(character)
-                return
-            } else {
-                let building_to_rest = find_building_to_rest(character, rest_budget(character))
-                if (building_to_rest == undefined) {
-                    ActionManager.start_action(CharacterAction.REST, character, character.cell_id);
-                    character.ai_memories.push(AImemory.RESTED)
-                    return
-                } 
-                Effect.rent_room(character.id, building_to_rest)
-            }
+            return
+            // if (!AI_TRIGGER.at_home(character)) {
+            //     home_walk(character)
+            //     return
+            // } else {
+            //     let location_to_rest = find_location_to_rest(character, rest_budget(character))
+            //     if (location_to_rest == undefined) {
+            //         ActionManager.start_action(CharacterAction.REST, character, character.cell_id);
+            //         character.ai_memories.push(AImemory.RESTED)
+            //         return
+            //     }
+            //     Effect.rent_room(character.id, location_to_rest)
+            // }
         },
 
         utility: (character: Character) => {
@@ -114,13 +110,13 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     RAT_PATROL: {
         action(character: Character) {
             character.ai_state = AIstate.Patrol
-            let target = AIhelper.free_rats_in_cell(character)
-            const target_char = Convert.id_to_character(target)
-            if (target_char != undefined) {
+            let target = AIhelper.free_rats_in_cell(character);
+            if (target != undefined) {
+                const target_char = Data.Characters.from_id(target)
                 BattleSystem.start_battle(character, target_char)
             } else {
                 ActionManager.start_action(CharacterAction.HUNT, character, character.cell_id)
-                random_walk(character, simple_constraints) 
+                random_walk(character, simple_constraints)
             }
         },
 
@@ -135,7 +131,6 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     SELL_LOOT: {
         action: (character: Character) => {
             character.ai_state = AIstate.GoToMarket
-            Effect.leave_room(character.id)
             if (AI_TRIGGER.at_home(character)) {
                 update_price_beliefs(character)
                 remove_orders(character)
@@ -227,7 +222,6 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     CRAFT: {
         action(character) {
             character.ai_state = AIstate.Craft
-            Effect.leave_room(character.id)
             crafter_routine(character)
         },
 
@@ -249,7 +243,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
             }
 
             return 0
-        },        
+        },
     },
 
     STEPPE_WALK: {
@@ -283,11 +277,11 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     FISH: {
         action(character) {
             character.ai_state = AIstate.Patrol
-            if (MapSystem.can_fish(character.cell_id)) {
+            if (Data.Locations.from_id(character.location_id).fish > 0) {
                 ActionManager.start_action(CharacterAction.FISH, character, character.cell_id)
             } else {
                 coast_walk(character)
-            }            
+            }
         },
 
         utility(character) {
@@ -318,7 +312,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     CUT_WOOD: {
         action(character) {
             character.ai_state = AIstate.Patrol
-            if (!MapSystem.has_wood(character.cell_id)) {
+            if (Data.Locations.from_id(character.location_id).forest == 0) {
                 random_walk(character, simple_constraints)
                 return
             }
@@ -336,7 +330,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
             character.ai_state = AIstate.GoToMarket
             if (AI_TRIGGER.at_home(character)) {
                 remove_orders(character)
-                update_price_beliefs(character)                
+                update_price_beliefs(character)
                 sell_material(character, WOOD)
             } else {
                 home_walk(character)

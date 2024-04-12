@@ -2,7 +2,6 @@ import { PerksResponse } from "@custom_types/responses"
 import { Convert } from "../../systems_communication"
 import { SocketWrapper } from "../user"
 import { perk_price } from "../../prices/perk_base_price"
-import { Data } from "../../data"
 import { ResponceNegativeQuantified, Trigger } from "../../events/triggers"
 import { CharacterSystem } from "../../character/system"
 import { Perks } from "@custom_types/character"
@@ -10,6 +9,8 @@ import { skill_price } from "../../prices/skill_price"
 import { can_talk, is_enemy_characters } from "../../SYSTEM_REPUTATION"
 import { Character } from "../../character/character"
 import { skill } from "@custom_types/inventory"
+import { Data } from "../../data/data_objects"
+import { DataID } from "../../data/data_id"
 
 export namespace Dialog {
     function talking_check(sw: SocketWrapper, character_id: unknown): [undefined, undefined]|[Character, Character]  {
@@ -22,7 +23,7 @@ export namespace Dialog {
             sw.socket.emit('alert', 'your character does not exist')
             return [undefined, undefined]
         }
-        let target_character = Convert.id_to_character(character_id)
+        let target_character = Data.Characters.from_number(character_id)
         if (target_character == undefined) {
             sw.socket.emit('alert', 'character does not exist')
             return [undefined, undefined]
@@ -71,7 +72,7 @@ export namespace Dialog {
         let response: PerksResponse = {
             name: target_character.get_name(),
             race: target_character.race,
-            factions: Data.Reputation.list_from_id(target_character.id),
+            factions: DataID.Reputation.character(target_character.id).map(Convert.reputation_to_socket),
             current_goal: target_character.ai_state,
             perks: {},
             skills: {},

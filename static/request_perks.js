@@ -72,7 +72,7 @@ function generate_greeting(data) {
     for (let faction_block of data.factions) {
         if (faction_block.reputation != 'neutral') {
             flag = false;
-            greeting_line += `I am ${faction_block.reputation} of ${faction_block.name}. `;
+            greeting_line += `I am ${faction_block.reputation} of ${faction_block.faction_name}. `;
         }
     }
     if (flag) {

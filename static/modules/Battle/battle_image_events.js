@@ -1,6 +1,6 @@
 import { socket } from "../Socket/socket.js";
 import { IMAGES } from "../load_images.js";
-import { BattleImage, battle_canvas_context, camera, player_unit_id, units_views } from "./battle_image.js";
+import { BattleImage, battle_canvas_context, camera, player_character_id, units_views } from "./battle_image.js";
 import { position_c } from "./battle_image_helper.js";
 import { BATTLE_MOVEMENT_SPEED } from "./constants.js";
 const INSTANT_EVENT_DURATION = 1; //seconds
@@ -18,8 +18,8 @@ function new_log_message(msg) {
     log.scrollTop = log.scrollHeight;
 }
 export class BattleImageEvent {
-    constructor(event_id, unit_id, ap_change, hp_change, duration) {
-        this.unit = unit_id;
+    constructor(event_id, character_id, ap_change, hp_change, duration) {
+        this.unit = character_id;
         this.ap_change = ap_change;
         this.ap_change_left = ap_change;
         this.hp_change = hp_change;
@@ -88,11 +88,11 @@ export class BattleImageEvent {
     }
 }
 export class MoveEvent extends BattleImageEvent {
-    constructor(event_id, unit_id, ap_change, target) {
-        const unit = units_views[unit_id];
+    constructor(event_id, character_id, ap_change, target) {
+        const unit = units_views[character_id];
         let direction = position_c.diff(unit.position, target);
         let norm = position_c.norm(direction);
-        super(event_id, unit_id, ap_change, 0, norm / BATTLE_MOVEMENT_SPEED);
+        super(event_id, character_id, ap_change, 0, norm / BATTLE_MOVEMENT_SPEED);
         this.target_position = target;
         this.total_distance = norm;
     }
@@ -117,7 +117,7 @@ export class MoveEvent extends BattleImageEvent {
         if (norm < BATTLE_MOVEMENT_SPEED * dt) {
             unit.position = this.target_position;
             unit.a_image.set_action('idle');
-            if (player_unit_id == unit.id) {
+            if (player_character_id == unit.id) {
                 socket.emit('req-flee-chance');
             }
         }
@@ -128,8 +128,8 @@ export class MoveEvent extends BattleImageEvent {
     }
 }
 export class EndTurn extends BattleImageEvent {
-    constructor(event_id, unit_id, ap_change) {
-        super(event_id, unit_id, ap_change, 0, INSTANT_EVENT_DURATION);
+    constructor(event_id, character_id, ap_change) {
+        super(event_id, character_id, ap_change, 0, INSTANT_EVENT_DURATION);
         this.time_passed = 0;
     }
     on_start() {
@@ -140,9 +140,9 @@ export class EndTurn extends BattleImageEvent {
     }
 }
 export class NewUnitEvent extends BattleImageEvent {
-    constructor(event_id, unit_id, data) {
-        super(event_id, unit_id, 0, 0, 0);
-        this.unit = unit_id;
+    constructor(event_id, character_id, data) {
+        super(event_id, character_id, 0, 0, 0);
+        this.unit = character_id;
         this.data = data;
         this.time_passed = 0;
     }
@@ -156,9 +156,9 @@ export class NewUnitEvent extends BattleImageEvent {
     }
 }
 export class UpdateDataEvent extends BattleImageEvent {
-    constructor(event_id, unit_id, data) {
-        super(event_id, unit_id, 0, 0, INSTANT_EVENT_DURATION);
-        this.unit = unit_id;
+    constructor(event_id, character_id, data) {
+        super(event_id, character_id, 0, 0, INSTANT_EVENT_DURATION);
+        this.unit = character_id;
         this.data = data;
         this.type = 'update';
         this.time_passed = 0;
@@ -217,8 +217,8 @@ const STAND_UNTIL = 0.2;
 const PREPARE_UNTIL = 1.8;
 const HIT_UNTIL = 2;
 export class AttackEvent extends BattleImageEvent {
-    constructor(event_id, unit_id, ap_change, hp_change, target_id) {
-        super(event_id, unit_id, ap_change, hp_change, ATTACK_DURATION);
+    constructor(event_id, character_id, ap_change, hp_change, target_id) {
+        super(event_id, character_id, ap_change, hp_change, ATTACK_DURATION);
         this.target = target_id;
     }
     on_start() {
@@ -257,12 +257,12 @@ export class AttackEvent extends BattleImageEvent {
     }
 }
 export class RangedAttackEvent extends BattleImageEvent {
-    constructor(event_id, unit_id, ap_change, hp_change, target_id) {
-        const unit = units_views[unit_id];
+    constructor(event_id, character_id, ap_change, hp_change, target_id) {
+        const unit = units_views[character_id];
         const unit2 = units_views[target_id];
         let direction = position_c.diff(unit.position, unit2.position);
         let norm = position_c.norm(direction);
-        super(event_id, unit_id, ap_change, hp_change, norm * 2);
+        super(event_id, character_id, ap_change, hp_change, norm * 2);
         this.target = target_id;
     }
     on_start() {
@@ -310,37 +310,37 @@ export class RangedAttackEvent extends BattleImageEvent {
 }
 // export class MissEvent {
 //     type: 'miss'
-//     unit_id: unit_id
-//     target_id: unit_id
-//     constructor(unit: unit_id, target: unit_id) {
+//     character_id: character_id
+//     target_id: character_id
+//     constructor(unit: character_id, target: character_id) {
 //         this.type = 'miss'
-//         this.unit_id = unit
+//         this.character_id = unit
 //         this.target_id = target
 //     }
 //     effect() {
-//         let unit_view_attacker = units_views[this.unit_id]
+//         let unit_view_attacker = units_views[this.character_id]
 //         let unit_view_defender = units_views[this.target_id]
 //         let direction_vec = position_c.diff(unit_view_attacker.position, unit_view_defender.position)
 //         direction_vec = position_c.scalar_mult(1/position_c.norm(direction_vec), direction_vec)
 //         unit_view_defender.animation_sequence.push({type: 'attacked', data: {direction: direction_vec, dodge: true}})
 //     }
 //     generate_log_message():string {
-//         let unit = units_data[this.unit_id]
+//         let unit = units_data[this.character_id]
 //         let target = units_data[this.target_id]
 //         let result = unit.name + ' attacks ' + target.name + ': '
 //         return result + ' MISS!';
 //     }
 // }
 export class RetreatEvent extends BattleImageEvent {
-    constructor(event_id, unit_id, cost) {
-        super(event_id, unit_id, 0, 0, cost);
+    constructor(event_id, character_id, cost) {
+        super(event_id, character_id, 0, 0, cost);
     }
     on_start() {
         let unit = units_views[this.unit];
         if (unit != undefined) {
             unit.killed = true;
         }
-        if (this.unit == player_unit_id) {
+        if (this.unit == player_character_id) {
             new_log_message('You had retreated from the battle');
         }
         else {
@@ -349,9 +349,9 @@ export class RetreatEvent extends BattleImageEvent {
     }
 }
 export class NewTurnEvent extends BattleImageEvent {
-    constructor(event_id, unit_id, data) {
-        super(event_id, unit_id, 0, 0, INSTANT_EVENT_DURATION);
-        this.unit = unit_id;
+    constructor(event_id, character_id, data) {
+        super(event_id, character_id, 0, 0, INSTANT_EVENT_DURATION);
+        this.unit = character_id;
         this.data = data;
         this.time_passed = 0;
     }

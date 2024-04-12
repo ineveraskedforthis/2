@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Character = void 0;
 const stash_1 = require("../inventories/stash");
-// import { PerksTable } from "./Perks";
 const equip_1 = require("../inventories/equip");
 const savings_1 = require("../inventories/savings");
 const types_1 = require("../types");
@@ -10,23 +9,21 @@ const SkillList_1 = require("./SkillList");
 const max_hp_1 = require("../races/max_hp");
 const basic_functions_1 = require("../calculations/basic_functions");
 const system_1 = require("../items/system");
+const data_id_1 = require("../data/data_id");
 class Character {
-    constructor(id, battle_id, battle_unit_id, user_id, cell_id, name, template) {
-        this.id = id;
+    constructor(id, battle_id, user_id, location_id, name, template) {
+        console.log(id, location_id);
+        if (id == undefined) {
+            this.id = data_id_1.DataID.Character.new_id(location_id);
+        }
+        else {
+            this.id = id;
+            data_id_1.DataID.Character.register(id, location_id);
+        }
         this.battle_id = battle_id;
-        this.battle_unit_id = battle_unit_id;
         this.user_id = user_id;
-        this.cell_id = cell_id;
         this.next_cell = 0;
         this.name = name;
-        // this.archetype = Object.assign({}, archetype)
-        // model: tagModel;
-        // ai_map: tagAI;
-        // ai_battle: tagTactic;
-        // race: tagRACE;
-        // stats: StatsTag;
-        // resists: BaseResistTag;
-        // max_hp: MaxHPTag;
         this.model = template.model;
         this.ai_map = template.ai_map;
         this.ai_battle = template.ai_battle;
@@ -34,8 +31,7 @@ class Character {
         this.stats = template.stats;
         this.resists = template.resists;
         this.max_hp = template.max_hp;
-        // let max_hp = MaxHP[template.max_hp]
-        this.current_building = undefined;
+        this.location_id = location_id;
         this.equip = new equip_1.Equip();
         this.stash = new stash_1.Stash();
         this.trade_stash = new stash_1.Stash();
@@ -57,7 +53,43 @@ class Character {
         this._skills = new SkillList_1.SkillList();
         this._perks = {};
         this._traits = {};
+        this.action_points_left = 0;
+        this.action_points_max = 10;
+        this.next_turn_after = 1;
+        this.position = {
+            x: 0,
+            y: 0
+        };
+        this.team = 0;
+        this.dodge_turns = 0;
         this.explored = [];
+    }
+    set battle_id(x) {
+        data_id_1.DataID.Connection.set_character_battle(this.id, x);
+    }
+    get battle_id() {
+        return data_id_1.DataID.Character.battle_id(this.id);
+    }
+    set user_id(x) {
+        data_id_1.DataID.Connection.set_character_user(this.id, x);
+    }
+    get user_id() {
+        return data_id_1.DataID.Character.user_id(this.id);
+    }
+    set location_id(location) {
+        data_id_1.DataID.Connection.set_character_location(this.id, location);
+    }
+    get location_id() {
+        return data_id_1.DataID.Character.location_id(this.id);
+    }
+    set home_location_id(location) {
+        data_id_1.DataID.Connection.set_character_home(this.id, location);
+    }
+    get home_location_id() {
+        return data_id_1.DataID.Character.home_location_id(this.id);
+    }
+    get cell_id() {
+        return data_id_1.DataID.Location.cell_id(this.location_id);
     }
     set_model_variation(data) {
         this.model_variation = data;
@@ -191,8 +223,14 @@ class Character {
         }
         return response;
     }
-    is_player() { return this.user_id != '#'; }
+    is_player() { return this.user_id != undefined; }
     dead() { return this.get_hp() == 0; }
     in_battle() { return (this.battle_id != undefined); }
+    get slowness() {
+        return 100;
+    }
+    get action_units_per_turn() {
+        return 4;
+    }
 }
 exports.Character = Character;

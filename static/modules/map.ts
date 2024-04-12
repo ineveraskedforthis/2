@@ -673,7 +673,7 @@ export class Map {
         }
         console.log(this.move_flag)
 
-        socket.emit('request-local-buildings')
+        socket.emit('request-local-locations')
 
         return this.get_bg_tag([i, j])
     }

@@ -1,21 +1,23 @@
 import { Accuracy } from "../../battle/battle_calcs";
 import { Convert } from "../../systems_communication";
-import { weapon_attack_tags, weapon_tag } from "../../types";
 import { User } from "../user";
 import { Alerts } from "./alerts";
 import { BattleSystem } from "../../battle/system";
-import { BATTLE_CURRENT_UNIT, UNIT_ID_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
+import { BATTLE_CURRENT_UNIT, character_id_MESSAGE, BATTLE_DATA_MESSAGE } from "../../static_data/constants";
 import { prepare_market_orders } from "../helper_functions";
 import { durability, get_crafts_item_list } from "../../craft/CraftItem";
 import { get_crafts_bulk_list, output_bulk } from "../../craft/CraftBulk";
 import { CharacterSystem } from "../../character/system";
 import { Attack } from "../../attack/system";
 import { DmgOps } from "../../damage_types";
-import { Data } from "../../data";
 import { terrain_to_string } from "../../map/terrain";
-import { cell_id } from "@custom_types/common";
-import { CellDisplay, CharacterStatsResponse } from "@custom_types/responses";
+import { CellDisplay, CharacterStatsResponse, CharacterView } from "@custom_types/responses";
 import { skill } from "@custom_types/inventory";
+import { Data } from "../../data/data_objects";
+import { MapSystem } from "../../map/system";
+import { DataID } from "../../data/data_id";
+import { CharactersHeap } from "../../battle/classes/heap";
+import { weapon_attack_tag } from "@custom_types/common";
 
 
 
@@ -62,93 +64,15 @@ export namespace SendUpdate {
 
         const battle_id = character.battle_id
         if (battle_id != undefined) {
-            const battle = Convert.id_to_battle(battle_id);
-            let unit_id = character.battle_unit_id
+            const battle = Data.Battles.from_id(battle_id);
             Alerts.battle_progress(user, true)
             Alerts.generic_user_alert(user, BATTLE_DATA_MESSAGE, BattleSystem.data(battle));
-            Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, battle.heap.get_selected_unit()?.id);
-            Alerts.generic_user_alert(user, UNIT_ID_MESSAGE, unit_id)
+            Alerts.generic_user_alert(user, BATTLE_CURRENT_UNIT, CharactersHeap.get_selected_unit(battle)?.id);
+            Alerts.generic_user_alert(user, character_id_MESSAGE, character.id)
         } else {
             Alerts.battle_progress(user, false)
         }
     }
-// send_data_start() {
-//         this.world.socket_manager.send_battle_data_start(this)
-//         if (this.waiting_for_input) {
-//             this.send_action({action: 'new_turn', target: this.heap.selected})
-//         }
-//     }
-
-//     send_update() {
-//         this.world.socket_manager.send_battle_update(this)
-//         if (this.waiting_for_input) {
-//             this.send_action({action: 'new_turn', target: this.heap.selected})
-//         }
-//     }
-
-//     send_current_turn() {
-//         this.send_action({action: 'new_turn', target: this.heap.selected})
-//     }
-
-    // send_battle_data_to_user(user: User) {
-
-    // }
-
-    // send_battle_data_start(battle: BattleReworked2) {
-    //     let units = battle.get_units()
-    //     let data = battle.get_data()
-    //     let status = battle.get_status()
-    //     for (let i in units) {
-    //         let char = this.world.get_character_by_id(units[i].char_id)
-    //         if ((char != undefined) && char.is_player()) {
-    //             let position = char.get_in_battle_id()
-    //             this.send_to_character_user(char, 'battle-has-started', data);
-    //             this.send_to_character_user(char, 'enemy-update', status)
-    //             this.send_to_character_user(char, 'player-position', position)
-    //         }
-    //     }
-    // }
-
-    // send_battle_update(battle: BattleReworked2) {
-    //     let units = battle.get_units()
-    //     let status = battle.get_status()
-    //     let data = battle.get_data()
-    //     for (let i in units) {
-    //         let char = this.world.get_character_by_id(units[i].char_id)
-    //         if ((char != undefined) && char.is_player()) {
-    //             this.send_to_character_user(char, 'enemy-update', status)
-    //             this.send_to_character_user(char, 'battle-update', data)
-    //             // this.send_to_character_user(char, 'player-position', position)
-    //         }
-    //     }
-    // }
-
-
-
-    // send_battle_action(battle: BattleReworked2, a: any) {
-    //     let units = battle.get_units()
-    //     for (let i = 0; i < units.length; i++) {
-    //         let char = this.world.get_character_by_id(units[i].char_id);
-    //         if ((char != undefined) && char.is_player()) {
-    //             this.send_to_character_user(char, 'battle-action', a)
-    //         }
-    //     }
-    // }
-
-    // send_stop_battle(battle: BattleReworked2) {
-    //     let units = battle.get_units()
-    //     for (let i = 0; i < units.length; i++) {
-    //         let character = this.world.get_character_by_id(units[i].char_id);
-    //         if (character != undefined) {
-    //             if (character.is_player()) {
-    //                 this.send_to_character_user(character, 'battle-action', {action: 'stop_battle'});
-    //                 this.send_to_character_user(character, 'battle-has-ended', '')
-    //                 this.send_updates_to_char(character)
-    //             }
-    //         }
-    //     }
-    // }
-
 
     export function savings(user: User) {
         let character = Convert.user_to_character(user)
@@ -283,6 +207,7 @@ export namespace SendUpdate {
     export function market(user: User) {
         let character = Convert.user_to_character(user)
         if (character == undefined) return
+
         const bulk_data = prepare_market_orders(character.cell_id)
         const items_data = Convert.cell_id_to_item_orders_socket(character.cell_id)
         Alerts.item_market_data(user, items_data)
@@ -291,38 +216,37 @@ export namespace SendUpdate {
 
     export function explored(user: User) {
         let character = Convert.user_to_character(user)
-        if (character == undefined) return
+        if (character == undefined) return;
 
-        Alerts.generic_user_alert(user, 'explore', character.explored)
-        map_position(user, true)
+        Alerts.generic_user_alert(user, 'explore', character.explored);
+        map_position(user, true);
 
-        for (let i = 0; i < character.explored.length; i++) {
-            if (character.explored[i]) {
-                let cell = Data.Cells.from_id(i as cell_id)
-                if (cell != undefined) {
-                    let x = cell.x
-                    let y = cell.y
-                    let terrain = Data.World.id_to_terrain(cell.id);
-                    let forestation = Data.Cells.forestation(cell.id);
-                    let urbanisation = Data.Cells.urbanisation(cell.id);
+        Data.Cells.for_each(cell => {
+            if (character == undefined) return;
+            const exploration_status = character.explored[cell.id]
+            if ((exploration_status != undefined) && exploration_status) {
+                let x = cell.x
+                let y = cell.y
+                let terrain = Data.World.id_to_terrain(cell.id);
+                let forestation = MapSystem.forestation(cell.id);
+                let urbanisation = MapSystem.urbanisation(cell.id);
 
-                    // console.log(forestation)
+                // console.log(forestation)
 
-                    // let res1: {[_ in string]: CellDisplayData} = {}
+                // let res1: {[_ in string]: CellDisplayData} = {}
 
-                    const display_data: CellDisplay = {
-                        terrain: terrain_to_string(terrain),
-                        forestation: forestation,
-                        urbanisation: urbanisation,
-                        rat_lair: Data.Cells.rat_lair(cell.id)
-                    }
-
-
-                    let res2 = {x: x, y: y, ter: display_data}
-                    Alerts.generic_user_alert(user, 'map-data-display', res2)
+                const display_data: CellDisplay = {
+                    terrain: terrain_to_string(terrain),
+                    forestation: forestation,
+                    urbanisation: urbanisation,
+                    rat_lair: MapSystem.rat_lair(cell.id)
                 }
+
+
+                let res2 = {x: x, y: y, ter: display_data}
+                Alerts.generic_user_alert(user, 'map-data-display', res2)
             }
-        }
+        });
     }
 
     export function map_position(user: User, teleport_flag:boolean) {
@@ -344,8 +268,8 @@ export namespace SendUpdate {
     export function local_characters(user: User) {
         const character = Convert.user_to_character(user)
         if (character == undefined) return
-        let characters_list = Data.Cells.get_characters_list_display(character.cell_id)
-        Alerts.generic_user_alert(user, 'cell-characters', characters_list)
+        let characters = DataID.Location.guest_list(character.location_id).map(Convert.character_id_to_character_view)
+        Alerts.generic_user_alert(user, 'cell-characters', characters)
     }
 
     export function local_actions(user: User) {
@@ -415,6 +339,8 @@ export namespace SendUpdate {
     // }
     }
 }
+
+export const weapon_attack_tags: weapon_attack_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']
 
 
 

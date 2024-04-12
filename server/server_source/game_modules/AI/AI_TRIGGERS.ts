@@ -1,9 +1,9 @@
 import { money } from "@custom_types/common";
 import { Character } from "../character/character";
-import { ScriptedValue } from "../events/scripted_values";
 import { MapSystem } from "../map/system";
 import { material_index } from "@custom_types/inventory";
-import { Convert } from "../systems_communication";
+import { DataID } from "../data/data_id";
+import { Data } from "../data/data_objects";
 
 export namespace AI_TRIGGER {
     export function tired(character: Character) {
@@ -16,29 +16,26 @@ export namespace AI_TRIGGER {
     }
 
     export function at_home(character: Character) {
-        const home = character.home_cell_id
+        const home = character.home_location_id
         if (home != undefined) {
-            if (home == character.cell_id) {
+            if (home == character.location_id) {
                 return true
             } else {
                 return false
             }
         }
-        if (MapSystem.has_market(character.cell_id)) {
-            return true
-        }
-        return false
+        return true
     }
 
     export function can_buy(character: Character, material_index: material_index, budget: money) {
-        let orders = Convert.cell_id_to_bulk_orders(character.cell_id);
+        let orders = DataID.Cells.market_order_id_list(character.cell_id);
         let best_order = undefined;
         let best_price = 9999;
         for (let item of orders) {
-            let order = Convert.id_to_bulk_order(item);
+            let order = Data.MarketOrders.from_id(item);
             if (order.typ == 'buy')
                 continue;
-            if (order.tag != material_index)
+            if (order.material != material_index)
                 continue;
             if ((best_price > order.price) && (order.amount > 0)) {
                 best_price = order.price;

@@ -1,9 +1,8 @@
-import { Item } from "./items/item";
-import { CharacterTemplate } from "./types";
-import { Character } from "./character/character";
-import { Inventory } from "./inventories/inventory";
-import { LandPlot } from "@custom_types/buildings";
-import { Equip } from "./inventories/equip";
+import { Item } from "../items/item";
+import { CharacterTemplate } from "../types";
+import { Character } from "../character/character";
+import { Inventory } from "../inventories/inventory";
+import { Equip } from "../inventories/equip";
 
 
 export function item_to_string(item: Item | undefined): string {
@@ -17,8 +16,35 @@ export function item_from_string(s: string): Item {
     return new Item(item_data.durability, item_data.affixes, item_data.model_tag);
 }
 
-export function character_to_string(character: Character) {
-    return JSON.stringify(character)
+export function character_to_string(data: Character) {
+    return JSON.stringify({
+        model: data.model,
+        ai_map: data.ai_map,
+        ai_battle: data.ai_battle,
+        race: data.race,
+        stats: data.stats,
+        resists: data.resists,
+        name: data.name,
+        max_hp: data.max_hp,
+
+        id: data.id,
+        battle_id: data.battle_id,
+        user_id: data.user_id,
+        location_id: data.location_id,
+
+        explored : data.explored,
+        equip: data.equip,
+        home_location_id : data.home_location_id,
+
+        stash: data.stash,
+        trade_stash: data.trade_stash,
+        savings: data.savings,
+        trade_savings: data.trade_savings,
+        status: data.status,
+        _skills : data._skills,
+        _perks : data._perks,
+        _traits : data._traits,
+    })
 }
 
 export function string_to_character(s: string) {
@@ -33,10 +59,10 @@ export function string_to_character(s: string) {
         name_generator: (() => {return data.get_name()}),
         max_hp: data.max_hp
     }
-    const character = new Character(data.id, data.battle_id, data.battle_unit_id, data.user_id, data.cell_id, data.name, template)
+    const character = new Character(data.id, data.battle_id, data.user_id, data.location_id, data.name, template)
     character.explored = data.explored
     character.equip.load_from_json(data.equip)
-    character.home_cell_id = data.home_cell_id
+    character.home_location_id = data.home_location_id
     // equip_from_string(data.equip.data, character.equip)
 
     character.stash.load_from_json(data.stash.data)
@@ -79,12 +105,4 @@ export function inventory_from_string(inventory: Inventory, s: string) {
     // }
     inventory.load_from_json(JSON.parse(s))
     return inventory
-}
-
-export function building_to_string(building: LandPlot) {
-    return JSON.stringify(building)
-}
-
-export function building_from_string(s: string): LandPlot {
-    return JSON.parse(s) as LandPlot
 }

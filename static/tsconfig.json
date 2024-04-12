@@ -11,10 +11,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node"
-  },
+    "moduleResolution": "node",
 
-  "paths": {
-    "@custom_types/*": ["../shared/*"]
+    "paths": {
+      "@custom_types/*": ["../shared/*"]
+    }
   }
 }

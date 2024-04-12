@@ -1,3 +1,5 @@
+import { CharacterView } from "@custom_types/responses"
+
 export const local_actions = ['fish', 'gather_wood', 'gather_cotton', 'hunt', 'clean', 'rest'] as const
 export type local_action = typeof local_actions[number]
 export type action = 'move' | 'continue_move' | local_action

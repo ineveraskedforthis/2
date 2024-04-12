@@ -1,8 +1,10 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from "fs";
 
 // Always the first.
-import { Data } from "./game_modules/data";
-//importing order is important because of global lists of entities
+import { DataID } from "./game_modules/data/data_id";
+import { Data } from "./game_modules/data/data_objects";
+//importing order is important because of lists of entities defined in these files
+
 import { CharacterSystem } from "./game_modules/character/system";
 import { MapSystem } from "./game_modules/map/system";
 import { SocketManager } from "./game_modules/client_communication/socket_manager";
@@ -16,8 +18,7 @@ import { Auth } from "./game_modules/client_communication/network_actions/auth";
 import { Event } from "./game_modules/events/events";
 import { Convert, Link } from "./game_modules/systems_communication";
 import { BattleSystem } from "./game_modules/battle/system";
-import { BulkOrders, ItemOrders } from "./game_modules/market/system";
-import { battle_id, ms, unit_id } from "../../shared/battle_data";
+import { MarketOrders, ItemOrders } from "./game_modules/market/system";
 import { Server } from "./server";
 import { EventMarket } from "./game_modules/events/market";
 import { BattleEvent } from "./game_modules/battle/events";
@@ -27,6 +28,7 @@ import "./game_modules/craft/craft"
 import * as path from "path";
 import { SAVE_GAME_PATH } from "./SAVE_GAME_PATH";
 import { GameMaster } from "./game_modules/game_master";
+import { ms } from "@custom_types/battle_data";
 
 
 if (!existsSync(SAVE_GAME_PATH)){
@@ -84,41 +86,33 @@ export function launch(http_server: Server) {
 function load() {
     // MapSystem.load()
     Data.load()
-    
+
     UserManagement.load_users()
     Auth.load()
-    BattleSystem.load()    
 
-    const characters = Data.CharacterDB.list_of_id()
-
-    //validating ids and connections
-    for (const character of characters) {
-        const object = Data.CharacterDB.from_id(character)
-        Link.character_and_cell(character, object.cell_id)
+    //validating battle status
+    Data.Characters.for_each(object => {
         const battle = Convert.character_to_battle(object)
         if (battle == undefined) {
             object.battle_id = undefined
-            object.battle_unit_id = undefined
         }
-        // EventMarket.clear_orders(character)
-    }
+    });
 
-    for (const battle of Data.Battle.list()) {
+    Data.Battles.for_each(battle => {
         // console.log('test battle for shadow units')
-        for (let unit of Object.values(battle.heap.data)) {
-            let id = unit.char_id
-            let character = Data.CharacterDB.from_id(id)
+        for (let id of Object.values(battle.heap)) {
+            let character = Data.Characters.from_id(id)
             if (character == undefined || !character.in_battle()) {
-                BattleEvent.Leave(battle, unit)
+                BattleEvent.Leave(battle, character)
             }
         }
-    }
+    });
 
     let version = get_version()
     if (version == 0) {
-        const factions = Data.World.get_factions()
+        const factions = Data.Factions.get_factions()
         for (const item of factions) {
-            GameMaster.spawn_faction(item.spawn_point, item.tag)
+            GameMaster.spawn_faction(DataID.Faction.spawn(item.tag), item.tag)
         }
         set_version(1)
     }
@@ -127,7 +121,6 @@ function load() {
 function save() {
     UserManagement.save_users()
     Auth.save()
-    BattleSystem.save()
     Data.save()
 }
 
@@ -145,20 +138,16 @@ function update(delta: number, http_server: Server) {
     }
 
     CharacterSystem.update(delta)
-    
+
     ActionManager.update_characters(delta)
     UserManagement.update_users()
     BattleSystem.update(delta * 1000 as ms)
 
-    let rats = 0
-    let elos = 0
-    let humans = 0
-
-    for (let character of Data.CharacterDB.list()) {
+    Data.Characters.for_each(character => {
         if (character.dead()) {
             Event.death(character)
         }
-    }
+    });
 
     map_update_timer += delta
     if (map_update_timer > 1) {
@@ -166,7 +155,7 @@ function update(delta: number, http_server: Server) {
         GameMaster.update(map_update_timer)
         map_update_timer = 0
     }
-    
+
     update_timer += delta
     if (update_timer > 50000) {
         save()

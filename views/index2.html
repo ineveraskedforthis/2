@@ -3,31 +3,27 @@
 <head>
     <meta charset = "utf-8">
     <title>Path of :dishu:</title>
-    <link rel="stylesheet" type="text/css" href="static/styles/reset.css">
-
-    <link rel="stylesheet" type="text/css" href="static/styles/tooltip.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/bars.css">
-
-    <link rel="stylesheet" type="text/css" href="static/styles/style2.css">
-
-    <link rel="stylesheet" type="text/css" href="static/styles/buildings.css">
-
-    <link rel="stylesheet" type="text/css" href="static/styles/character_creation.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/status_frame_style.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/tab_list.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/table.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/messages.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/map.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/skills.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/market.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/goods_market.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/char_screen.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/battle.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/quests.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/equiped_items.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/backdrop.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/dialog.css">
-    <link rel="stylesheet" type="text/css" href="static/styles/buttons.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/reset.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/tooltip.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/bars.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/style2.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/locations.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/character_creation.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/status_frame_style.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/tab_list.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/table.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/messages.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/map.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/skills.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/market.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/goods_market.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/char_screen.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/battle.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/quests.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/equiped_items.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/backdrop.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/dialog.css">
+    <link rel="stylesheet" type="text/css" href="/static/styles/buttons.css">
 </head>
 <body>
     <!-- <script>var exports = {};</script> -->
@@ -313,25 +309,19 @@
                         <div class="flex-1 width-auto height-full container-vertical margin-0001r border-round">
 
                             <div class="container-vertical margin-0020r border-round padding-0020r flex-1">
-                                <div id="building-description" class="details_content"></div>
-                                <div id="building-rooms" class="details_content"></div>
-                                <div id="building-guests" class="details_content"></div>
+                                <div id="location-description" class="details_content"></div>
+                                <div id="location-rooms" class="details_content"></div>
+                                <div id="location-guests" class="details_content"></div>
 
-                                <div id="building-durability" class="details_content"></div>
-                                <div id="repair-building" class="details_content generic-button"> REPAIR </div>
+                                <div id="location-durability" class="details_content"></div>
+                                <div id="repair-location" class="details_content generic-button"> REPAIR </div>
 
-                                <div id="building-owner" class="details_content"> OWNER </div>
-                                <div id="rent-building-price" class="details_content"> RENT_PRICE </div>
-                                <div id="rent-building-price-true" class="details_content"> RENT_PRICE_TRUE </div>
-                                <div id="rent-building-room" class="details_content generic-button"> RENT </div>
-                                <div id="change-price-room" class="details_content generic-button"> CHANGE_PRICE </div>
-                                <input type="text" id="building-rent-price-input" class="details_content">
-                            </div>
-
-                            <div class="container-vertical margin-0020r border-round padding-0020r flex-1">
-                                <div id="build-shack" class="details_content generic-button"> Build shack </div>
-                                <div id="build-house" class="details_content generic-button"> Build house </div>
-                                <div id="build-inn" class="details_content generic-button"> Build inn </div>
+                                <div id="location-owner" class="details_content"> OWNER </div>
+                                <div id="rent-location-price" class="details_content"> RENT_PRICE </div>
+                                <div id="rent-location-price-true" class="details_content"> RENT_PRICE_TRUE </div>
+                                <div id="rent-location-room" class="details_content generic-button"> RENT </div>
+                                <!-- <div id="change-price-room" class="details_content generic-button"> CHANGE_PRICE </div> -->
+                                <!-- <input type="text" id="location-rent-price-input" class="details_content"> -->
                             </div>
 
                             <div class="container-vertical margin-0020r border-round padding-0020r flex-2">
@@ -340,7 +330,7 @@
                                 <div id="support_selected_character" class="generic-button flex-0-0-5"> Support in battle. </div>
                                 <div id="request_perks_selected_charater" class="generic-button flex-0-0-5"> Talk. </div>
 
-                                <div id="characters_list"></div>
+                                <div id="characters_list" class="flex-3"></div>
 
                             </div>
                         </div>

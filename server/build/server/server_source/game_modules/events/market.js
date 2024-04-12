@@ -4,14 +4,14 @@ exports.EventMarket = void 0;
 const ACTIONS_BASIC_1 = require("../AI/ACTIONS_BASIC");
 const basic_functions_1 = require("../calculations/basic_functions");
 const user_manager_1 = require("../client_communication/user_manager");
-const data_1 = require("../data");
 const system_1 = require("../market/system");
-const systems_communication_1 = require("../systems_communication");
 const effects_1 = require("./effects");
+const data_objects_1 = require("../data/data_objects");
+const data_id_1 = require("../data/data_id");
 var EventMarket;
 (function (EventMarket) {
     function buy(character, material, amount, price) {
-        const responce = system_1.BulkOrders.new_buy_order(material, amount, price, character);
+        const responce = system_1.MarketOrders.new_buy_order(material, amount, price, character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
         effects_1.Effect.Update.cell_market(character.cell_id);
         return responce;
@@ -19,7 +19,7 @@ var EventMarket;
     EventMarket.buy = buy;
     function sell(character, material, amount, price) {
         // console.log('sell ' + material + ' ' + amount + ' ' + price)
-        const responce = system_1.BulkOrders.new_sell_order(material, amount, price, character);
+        const responce = system_1.MarketOrders.new_sell_order(material, amount, price, character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
         effects_1.Effect.Update.cell_market(character.cell_id);
         return responce;
@@ -34,12 +34,12 @@ var EventMarket;
     }
     EventMarket.sell_item = sell_item;
     function execute_sell_order(buyer, order_id, amount) {
-        let result = system_1.BulkOrders.execute_sell_order(order_id, amount, buyer);
-        const order = systems_communication_1.Convert.id_to_bulk_order(order_id);
-        const seller = systems_communication_1.Convert.id_to_character(order.owner_id);
+        let result = system_1.MarketOrders.execute_sell_order(order_id, amount, buyer);
+        const order = data_objects_1.Data.MarketOrders.from_id(order_id);
+        const seller = data_objects_1.Data.Characters.from_id(order.owner_id);
         let order_amount = order.amount;
-        if ((seller.user_id == '#') && (result == 'ok')) {
-            (0, ACTIONS_BASIC_1.roll_price_belief_sell_increase)(seller, order.tag, 1 / (0, basic_functions_1.trim)(order_amount, 1, 100));
+        if ((seller.user_id == undefined) && (result == 'ok')) {
+            (0, ACTIONS_BASIC_1.roll_price_belief_sell_increase)(seller, order.material, 1 / (0, basic_functions_1.trim)(order_amount, 1, 100));
         }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 4 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 5 /* UI_Part.SAVINGS */);
@@ -49,9 +49,9 @@ var EventMarket;
     }
     EventMarket.execute_sell_order = execute_sell_order;
     function execute_buy_order(seller, order_id, amount) {
-        system_1.BulkOrders.execute_buy_order(order_id, amount, seller);
-        const order = systems_communication_1.Convert.id_to_bulk_order(order_id);
-        const buyer = systems_communication_1.Convert.id_to_character(order.owner_id);
+        system_1.MarketOrders.execute_buy_order(order_id, amount, seller);
+        const order = data_objects_1.Data.MarketOrders.from_id(order_id);
+        const buyer = data_objects_1.Data.Characters.from_id(order.owner_id);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 4 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 5 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 5 /* UI_Part.SAVINGS */);
@@ -85,7 +85,7 @@ var EventMarket;
     }
     EventMarket.remove_item_orders = remove_item_orders;
     function remove_bulk_orders(character) {
-        let temporary_list = Array.from(data_1.Data.CharacterBulkOrders(character.id));
+        let temporary_list = data_id_1.DataID.Character.market_orders_list(character.id);
         remove_orders_list(temporary_list);
     }
     EventMarket.remove_bulk_orders = remove_bulk_orders;
@@ -95,9 +95,9 @@ var EventMarket;
         }
     }
     function remove_bulk_order(order_id) {
-        const order = data_1.Data.BulkOrders.from_id(order_id);
-        system_1.BulkOrders.remove(order_id);
-        const character = data_1.Data.CharacterDB.from_id(order.owner_id);
+        const order = data_objects_1.Data.MarketOrders.from_id(order_id);
+        system_1.MarketOrders.remove(order_id);
+        const character = data_objects_1.Data.Characters.from_id(order.owner_id);
         effects_1.Effect.Update.cell_market(character.cell_id);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
     }

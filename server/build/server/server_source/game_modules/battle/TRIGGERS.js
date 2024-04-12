@@ -2,24 +2,24 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleTriggers = void 0;
 const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
-const data_1 = require("../data");
+const data_id_1 = require("../data/data_id");
+const data_objects_1 = require("../data/data_objects");
 const racial_hostility_1 = require("../races/racial_hostility");
-const systems_communication_1 = require("../systems_communication");
 var BattleTriggers;
 (function (BattleTriggers) {
     /** Checks if there is only one team left */
     function safe(battle) {
         const teams = {};
-        for (const unit of Object.values(battle.heap.data)) {
-            const character = systems_communication_1.Convert.unit_to_character(unit);
-            if (character == undefined)
+        for (const unit of battle.heap) {
+            if (unit == undefined)
                 continue;
+            const character = data_objects_1.Data.Characters.from_id(unit);
             if (character.dead())
                 continue;
-            if (teams[unit.team] == undefined)
-                teams[unit.team] = 1;
+            if (teams[character.team] == undefined)
+                teams[character.team] = 1;
             else
-                teams[unit.team] += 1;
+                teams[character.team] += 1;
         }
         const total = Object.values(teams);
         if (total.length > 1)
@@ -28,17 +28,21 @@ var BattleTriggers;
     }
     BattleTriggers.safe = safe;
     function safe_expensive(battle) {
-        for (const unit of Object.values(battle.heap.data)) {
-            const character = systems_communication_1.Convert.unit_to_character(unit);
-            if (!safe_for_unit(battle, unit, character))
+        for (const unit of battle.heap) {
+            if (unit == undefined)
+                continue;
+            const character = data_objects_1.Data.Characters.from_id(unit);
+            if (!safe_for_unit(battle, character))
                 return false;
         }
         return true;
     }
     BattleTriggers.safe_expensive = safe_expensive;
-    function safe_for_unit(battle, unit, character) {
-        for (const item of Object.values(battle.heap.data)) {
-            if (is_enemy(unit, character, item, systems_communication_1.Convert.unit_to_character(item))) {
+    function safe_for_unit(battle, unit) {
+        for (const item of battle.heap) {
+            if (item == undefined)
+                continue;
+            if (is_enemy(unit, data_objects_1.Data.Characters.from_id(item))) {
                 return false;
             }
         }
@@ -53,7 +57,7 @@ var BattleTriggers;
      * @param potential_enemy_char
      * @returns
      */
-    function is_enemy(unit, character, target, target_character) {
+    function is_enemy(unit, target) {
         if (target == undefined) {
             // console.log('undefined target')
             return false;
@@ -63,7 +67,7 @@ var BattleTriggers;
             // console.log('same team')
             return false;
         }
-        return (0, SYSTEM_REPUTATION_1.is_enemy_characters)(character, target_character);
+        return (0, SYSTEM_REPUTATION_1.is_enemy_characters)(unit, target);
     }
     BattleTriggers.is_enemy = is_enemy;
     function is_friend(character, potential_friend_of_character) {
@@ -73,10 +77,10 @@ var BattleTriggers;
         if ((0, racial_hostility_1.hostile)(character.race, potential_friend_of_character.race)) {
             return false;
         }
-        if (data_1.Data.Reputation.a_X_b(character.id, 'friend', potential_friend_of_character.id)) {
+        if (data_id_1.DataID.Reputation.a_X_b(character.id, 'friend', potential_friend_of_character.id)) {
             return true;
         }
-        if (data_1.Data.Reputation.a_X_b(character.id, 'member', potential_friend_of_character.id)) {
+        if (data_id_1.DataID.Reputation.a_X_b(character.id, 'member', potential_friend_of_character.id)) {
             return true;
         }
         return false;

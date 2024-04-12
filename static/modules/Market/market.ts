@@ -5,6 +5,7 @@ import { Column, List } from "../../widgets/List/list.js";
 import { elementById, inputById, selectById, selectOne } from "../HTMLwrappers/common.js";
 import { globals } from "../globals.js";
 import { socket } from "../Socket/socket.js";
+import { BulkOrderView } from '@custom_types/responses.js';
 
 function send_execute_order_request(order_id: number, amount: number) {
     socket.emit('execute-order', { amount: amount, order: order_id });
@@ -215,7 +216,10 @@ export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>
         socket.emit('sell-item', {index: Number(item.index), item_type: item.type, price: Number(price)})
     })
 
-    socket.on('market-data', data => market_bulk.data = data);
+    socket.on('market-data', data => {
+        console.log("update-bulk-market");
+        market_bulk.data = data;
+    });
 
     return market_bulk
 }

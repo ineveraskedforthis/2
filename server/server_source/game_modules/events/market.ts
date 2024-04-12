@@ -4,16 +4,17 @@ import { trim } from "../calculations/basic_functions"
 import { Character } from "../character/character"
 import { UI_Part } from "../client_communication/causality_graph"
 import { UserManagement } from "../client_communication/user_manager"
-import { Data } from "../data"
 import { material_index } from "@custom_types/inventory"
-import { BulkOrders, ItemOrders } from "../market/system"
+import { MarketOrders, ItemOrders } from "../market/system"
 import { Convert } from "../systems_communication"
-import { order_bulk_id } from "../types"
+import { market_order_id } from "@custom_types/common"
 import { Effect } from "./effects"
+import { Data } from "../data/data_objects"
+import { DataID } from "../data/data_id"
 
 export namespace EventMarket {
     export function buy(character: Character, material:material_index, amount: number, price: money) {
-        const responce = BulkOrders.new_buy_order(material, amount, price, character)
+        const responce = MarketOrders.new_buy_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
         Effect.Update.cell_market(character.cell_id)
         return responce
@@ -21,7 +22,7 @@ export namespace EventMarket {
 
     export function sell(character: Character, material:material_index, amount: number, price: money) {
         // console.log('sell ' + material + ' ' + amount + ' ' + price)
-        const responce = BulkOrders.new_sell_order(material, amount, price, character)
+        const responce = MarketOrders.new_sell_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
         Effect.Update.cell_market(character.cell_id)
         return responce
@@ -35,17 +36,17 @@ export namespace EventMarket {
         return responce
     }
 
-    export function execute_sell_order(buyer: Character, order_id: order_bulk_id, amount: number) {
+    export function execute_sell_order(buyer: Character, order_id: market_order_id, amount: number) {
 
 
 
-        let result = BulkOrders.execute_sell_order(order_id, amount, buyer)
-        const order = Convert.id_to_bulk_order(order_id)
-        const seller = Convert.id_to_character(order.owner_id)
+        let result = MarketOrders.execute_sell_order(order_id, amount, buyer)
+        const order = Data.MarketOrders.from_id(order_id)
+        const seller = Data.Characters.from_id(order.owner_id)
         let order_amount = order.amount
 
-        if ((seller.user_id == '#') && (result == 'ok')) {
-            roll_price_belief_sell_increase(seller, order.tag, 1 / trim(order_amount, 1, 100))
+        if ((seller.user_id == undefined) && (result == 'ok')) {
+            roll_price_belief_sell_increase(seller, order.material, 1 / trim(order_amount, 1, 100))
         }
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
@@ -56,10 +57,10 @@ export namespace EventMarket {
         Effect.Update.cell_market(buyer.cell_id)
     }
 
-    export function execute_buy_order(seller:Character, order_id: order_bulk_id, amount: number) {
-        BulkOrders.execute_buy_order(order_id, amount, seller)
-        const order = Convert.id_to_bulk_order(order_id)
-        const buyer = Convert.id_to_character(order.owner_id)
+    export function execute_buy_order(seller:Character, order_id: market_order_id, amount: number) {
+        MarketOrders.execute_buy_order(order_id, amount, seller)
+        const order = Data.MarketOrders.from_id(order_id)
+        const buyer = Data.Characters.from_id(order.owner_id)
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)
@@ -96,21 +97,20 @@ export namespace EventMarket {
     }
 
     export function remove_bulk_orders(character: Character) {
-        let temporary_list:order_bulk_id[] = Array.from(Data.CharacterBulkOrders(character.id))
+        let temporary_list:market_order_id[] = DataID.Character.market_orders_list(character.id)
         remove_orders_list(temporary_list)
     }
 
-    function remove_orders_list(list: order_bulk_id[]) {
+    function remove_orders_list(list: market_order_id[]) {
         for (let id of list) {
             remove_bulk_order(id)
         }
     }
 
-    export function remove_bulk_order(order_id: order_bulk_id) {
-        const order = Data.BulkOrders.from_id(order_id)
-        BulkOrders.remove(order_id)
-
-        const character = Data.CharacterDB.from_id(order.owner_id)
+    export function remove_bulk_order(order_id: market_order_id) {
+        const order = Data.MarketOrders.from_id(order_id)
+        MarketOrders.remove(order_id)
+        const character = Data.Characters.from_id(order.owner_id)
         Effect.Update.cell_market(character.cell_id)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
     }

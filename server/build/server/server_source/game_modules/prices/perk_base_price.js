@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.perk_price = void 0;
-const data_1 = require("../data");
+const data_id_1 = require("../data/data_id");
 // import { Perks } from "../character/Perks";
 function perk_base_price(tag) {
     switch (tag) {
@@ -22,11 +22,11 @@ function perk_base_price(tag) {
 }
 function perk_price(tag, student, teacher) {
     let price = perk_base_price(tag);
-    if (data_1.Data.Reputation.a_X_b(teacher.id, 'enemy', student.id))
+    if (data_id_1.DataID.Reputation.a_X_b(teacher.id, 'enemy', student.id))
         price = price * 10;
-    if (!data_1.Data.Reputation.a_X_b(teacher.id, 'friend', student.id))
+    if (!data_id_1.DataID.Reputation.a_X_b(teacher.id, 'friend', student.id))
         price = price * 1.5;
-    if (!data_1.Data.Reputation.a_X_b(teacher.id, 'member', student.id))
+    if (!data_id_1.DataID.Reputation.a_X_b(teacher.id, 'member', student.id))
         price = price * 1.5;
     return Math.round(price);
 }

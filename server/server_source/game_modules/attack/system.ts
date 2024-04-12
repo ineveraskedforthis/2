@@ -1,4 +1,4 @@
-import { damage_type, melee_attack_type } from "../types";
+import { damage_type, melee_attack_type } from "@custom_types/common";
 import { DmgOps } from "../damage_types";
 import { Character } from "../character/character";
 import { CharacterSystem } from "../character/system";
@@ -33,7 +33,7 @@ export namespace Attack {
         const damage_pierce = DmgOps.total(CharacterSystem.melee_damage_raw(character, 'pierce'))
 
         const max = Math.max(damage_blunt, damage_pierce, damage_slice)
-        
+
         if (damage_slice == max) return 'slice'
         if (damage_pierce == max) return 'pierce'
         if (damage_blunt == max) return 'blunt'
@@ -53,7 +53,7 @@ export namespace Attack {
 
         //account for own skill
         const skill = CharacterSystem.skill(character, 'ranged')
-        
+
         result.attack_skill += skill
 
         //modify current damage with skill
@@ -68,13 +68,13 @@ export namespace Attack {
         }
         const skill = CharacterSystem.skill(character, 'magic_mastery')
         return Math.round(base_damage * CharacterSystem.magic_power(character) / 10 * (1 + skill / 10))
-    }   
+    }
 
     export function generate_magic_bolt(character: Character, dist: number, charge_flag: boolean): AttackObj {
         const result = new AttackObj('ranged')
         result.damage.fire = magic_bolt_base_damage(character, charge_flag)
 
-        
+
 
         if (dist > 1) {
             result.damage.fire = Math.round(result.damage.fire / 7 + (result.damage.fire * 6 / 7) / dist)

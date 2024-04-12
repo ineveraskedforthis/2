@@ -72,7 +72,7 @@ app.get('/api/:API_KEY/character/:charID', (req, res) => {
         res.json({ valid: false, reason: 'id is NaN' });
         return;
     }
-    const character = data_js_1.Data.CharacterDB.from_id(id);
+    const character = data_objects_js_1.Data.Characters.from_number(id);
     if (character == undefined) {
         res.json({ valid: false, reason: 'no_character' });
         return;
@@ -105,46 +105,18 @@ app.get('/api/:API_KEY/cell/:cellID', (req, res) => {
         res.json({ valid: false });
         return;
     }
-    const cell = data_js_1.Data.Cells.from_id(id);
+    const cell = data_objects_js_1.Data.Cells.from_id(id);
     if (cell == undefined) {
         res.json({ valid: false });
         return;
     }
     const response = {
         valid: true,
-        // terrain: cell.terrain,
-        // development: cell.development,
         scent: cell.rat_scent,
-        local_characters: data_js_1.Data.Cells.get_characters_list_display(cell.id)
+        local_characters: data_id_js_1.DataID.Cells.local_character_id_list(cell.id).map(systems_communication_js_1.Convert.character_id_to_character_view)
     };
     res.json(response);
 });
-// app.get('/api/:API_KEY/cell/terrain/:cellID', (req: Request, res: Response) => {
-//     const id = Number(req.params.cellID)
-//     // console.log(`request cell terrain ${id}`)
-//     res.set('Access-Control-Allow-Origin', '*');
-//     if (req.params.API_KEY != process.env.API_KEY) {
-//         res.json({valid: false})
-//         return
-//     }
-//     if (isNaN(id)) {
-//         res.json({valid: false})
-//         return
-//     }
-//     const cell = MapSystem.id_to_cell(id as cell_id)
-//     if (cell == undefined) {
-//         res.json({valid: false})
-//         return
-//     }
-//     const response = {
-//         valid: true,
-//         terrain: cell.terrain,
-//         development: cell.development,
-//         scent: cell.rat_scent,
-//         population: cell.saved_characters_list.length
-//     }    
-//     res.json(response)
-// })
 app.get('/api/:API_KEY/map', (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     if (req.params.API_KEY != process.env.API_KEY) {
@@ -152,20 +124,17 @@ app.get('/api/:API_KEY/map', (req, res) => {
         return;
     }
     const cells = [];
-    for (let cell of data_js_1.Data.Cells.list()) {
-        if (cell == undefined)
-            continue;
+    data_objects_js_1.Data.Cells.for_each(cell => {
         cells[cell.id] = {
             index: cell.id,
-            terrain: data_js_1.Data.World.id_to_terrain(cell.id),
-            // development: cell.development,
+            terrain: data_objects_js_1.Data.World.id_to_terrain(cell.id),
             scent: cell.rat_scent,
-            population: data_js_1.Data.Cells.get_characters_list_from_cell(cell.id).length
+            population: data_id_js_1.DataID.Cells.local_character_id_list(cell.id).length
         };
-    }
+    });
     res.json({
-        width: data_js_1.Data.World.get_world_dimensions()[0],
-        height: data_js_1.Data.World.get_world_dimensions()[1],
+        width: data_objects_js_1.Data.World.get_world_dimensions()[0],
+        height: data_objects_js_1.Data.World.get_world_dimensions()[1],
         cells: cells
     });
 });
@@ -176,8 +145,10 @@ server.listen(port, () => {
     console.log('listening on *:' + port);
 });
 const game_launch_js_1 = require("./game_launch.js");
+const data_id_js_1 = require("./game_modules/data/data_id.js");
+const data_objects_js_1 = require("./game_modules/data/data_objects.js");
 const socket_manager_js_1 = require("./game_modules/client_communication/socket_manager.js");
-const data_js_1 = require("./game_modules/data.js");
+const systems_communication_js_1 = require("./game_modules/systems_communication.js");
 exports.io = require('socket.io')(server, { path: '/socket.io' });
 exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);
 (0, game_launch_js_1.launch)(server);

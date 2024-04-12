@@ -2,14 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AItrade = exports.base_price = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
-const system_1 = require("../map/system");
 const CraftBulk_1 = require("../craft/CraftBulk");
 function base_price(cell_id, material) {
     switch (material) {
         case materials_manager_1.WOOD: {
-            // let cell = MapSystem.id_to_cell(cell_id)
-            if (system_1.MapSystem.has_wood(cell_id))
-                return 3;
             return 10;
         }
         case materials_manager_1.RAT_BONE:

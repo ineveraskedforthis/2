@@ -10,8 +10,8 @@ var BattleValues;
         return 0.1 + Math.max(Math.abs(position.x) / BattleValues.HALFWIDTH, Math.abs(position.y) / BattleValues.HALFHEIGHT) / 2;
     }
     BattleValues.flee_chance = flee_chance;
-    function move_cost(unit, character) {
-        return system_1.CharacterSystem.movement_cost_battle(character);
+    function move_cost(unit) {
+        return system_1.CharacterSystem.movement_cost_battle(unit);
     }
     BattleValues.move_cost = move_cost;
 })(BattleValues = exports.BattleValues || (exports.BattleValues = {}));

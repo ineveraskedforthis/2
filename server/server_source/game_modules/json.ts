@@ -1,13 +1,13 @@
-import { OrderBulk, OrderBulkJson } from "./market/classes";
-import { Convert } from "./systems_communication";
+import { Data } from "./data/data_objects";
+import { MarketOrder, MarketOrderJson } from "./market/classes";
 
 export namespace JSONficate {
-    export function market_order_bulk(order: OrderBulk):OrderBulkJson {
-        let owner = Convert.id_to_character(order.owner_id)
+    export function market_order_bulk(order: MarketOrder):MarketOrderJson {
+        let owner = Data.Characters.from_id(order.owner_id)
 
         return {
             typ: order.typ,
-            tag: order.tag,
+            tag: order.material,
             owner_id: order.owner_id,
             owner_name: owner.get_name(),
             amount: order.amount,

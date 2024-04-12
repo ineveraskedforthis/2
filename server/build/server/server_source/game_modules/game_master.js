@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameMaster = void 0;
-const data_1 = require("./data");
-const effects_1 = require("./events/effects");
 const templates_1 = require("./templates");
+const data_objects_1 = require("./data/data_objects");
+const data_id_1 = require("./data/data_id");
 // steppe_humans 9 9
 // city 2 6
 // rats 12 16
@@ -16,14 +16,31 @@ var GameMaster;
 (function (GameMaster) {
     function spawn_faction(cell_id, faction) {
         console.log('spawn ' + faction);
-        const [x, y] = data_1.Data.World.id_to_coordinate(cell_id);
+        const [x, y] = data_objects_1.Data.World.id_to_coordinate(cell_id);
         if (faction == 'city') {
             // creation of mayor
             const mayor = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(x, y, 'Mayor'));
             mayor.savings.inc(TONS_OF_MONEY);
-            data_1.Data.World.set_faction_leader(faction, mayor.id);
-            const mayor_house = effects_1.Effect.new_building(cell_id, "human_house" /* LandPlotType.HumanHouse */, 200, 50);
-            data_1.Data.Buildings.set_ownership(mayor.id, mayor_house);
+            data_objects_1.Data.Factions.set_faction_leader(faction, mayor.id);
+            const mayor_house = data_objects_1.Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+                devastation: 0,
+                has_bed: true,
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: false,
+                terrain: 1 /* Terrain.steppe */,
+                has_house_level: 5
+            });
+            data_id_1.DataID.Connection.set_location_owner(mayor.id, mayor_house.id);
+            data_id_1.DataID.Connection.set_character_home(mayor.id, mayor_house.id);
             // creation of first colonists
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCook(x, y, "Cook", 'city'));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Shoemaker(x, y));
@@ -49,14 +66,48 @@ var GameMaster;
             }
             // innkeeper
             const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(x, y, "Innkeeper"));
-            const inn = effects_1.Effect.new_building(cell_id, "inn" /* LandPlotType.Inn */, 200, 10);
-            data_1.Data.Buildings.set_ownership(innkeeper.id, inn);
+            const inn = data_objects_1.Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+                devastation: 0,
+                has_bed: true,
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: false,
+                terrain: 1 /* Terrain.steppe */,
+                has_house_level: 3
+            });
+            data_id_1.DataID.Connection.set_location_owner(innkeeper.id, inn.id);
+            data_id_1.DataID.Connection.set_character_home(innkeeper.id, inn.id);
         }
         if (faction == 'steppe_humans') {
             // innkeeper
             const innkeeper = templates_1.Template.Character.EquipClothesRich(templates_1.Template.Character.HumanCity(x, y, "Innkeeper"));
-            const inn = effects_1.Effect.new_building(cell_id, "inn" /* LandPlotType.Inn */, 200, 10);
-            data_1.Data.Buildings.set_ownership(innkeeper.id, inn);
+            const inn = data_objects_1.Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+                devastation: 0,
+                has_bed: true,
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: false,
+                terrain: 1 /* Terrain.steppe */,
+                has_house_level: 3
+            });
+            data_id_1.DataID.Connection.set_location_owner(innkeeper.id, inn.id);
+            data_id_1.DataID.Connection.set_character_home(innkeeper.id, inn.id);
             // creation of local colonists
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanCook(x, y, "Cook", 'steppe'));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.WeaponMasterBone(x, y, faction));
@@ -66,14 +117,46 @@ var GameMaster;
             templates_1.Template.Character.Lumberjack(x, y, "Lumberjack 2");
         }
         if (faction == 'rats') {
-            const rat_lair = effects_1.Effect.new_building(cell_id, "rat_lair" /* LandPlotType.RatLair */, 400, 0);
+            const rat_lair = data_objects_1.Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+                devastation: 0,
+                has_bed: false,
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: false,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: true,
+                terrain: 1 /* Terrain.steppe */,
+                has_house_level: 0
+            });
         }
         if (faction == 'elodino_free') {
-            const elodino_city = effects_1.Effect.new_building(cell_id, "elodino_house" /* LandPlotType.ElodinoHouse */, 400, 0);
+            const elodino_city = data_objects_1.Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+                devastation: 0,
+                has_bed: true,
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: true,
+                terrain: 1 /* Terrain.steppe */,
+                has_house_level: 8
+            });
         }
         if (faction == 'graci') {
             for (let i = 1; i <= 30; i++) {
-                const cell_obj = data_1.Data.Cells.from_id(cell_id);
+                const cell_obj = data_objects_1.Data.Cells.from_id(cell_id);
                 templates_1.Template.Character.Graci(x, y, undefined);
             }
         }
@@ -84,7 +167,7 @@ var GameMaster;
         let num_elos = 0;
         let num_balls = 0;
         let num_hunters = 0;
-        for (const character of data_1.Data.CharacterDB.list()) {
+        data_objects_1.Data.Characters.for_each(character => {
             if ((character.race == 'rat') && (!character.dead())) {
                 num_rats += 1;
             }
@@ -97,43 +180,28 @@ var GameMaster;
             if ((character.ai_map == 'rat_hunter') && (!character.dead())) {
                 num_hunters += 1;
             }
-        }
-        let spawn = data_1.Data.World.get_faction('city')?.spawn_point;
+        });
+        let spawn = data_id_1.DataID.Faction.spawn('city');
         if (spawn != undefined) {
-            let cell = data_1.Data.Cells.from_id(spawn);
+            let cell = data_objects_1.Data.Cells.from_id(spawn);
             if (num_hunters < 4) {
                 templates_1.Template.Character.HumanRatHunter(cell.x, cell.y, "Hunter");
             }
         }
         // console.log('Game master update')
-        for (const cell of data_1.Data.Cells.list_ids()) {
-            let cell_object = data_1.Data.Cells.from_id(cell);
-            const buildings = data_1.Data.Buildings.from_cell_id(cell);
-            if (buildings != undefined) {
-                for (const item_id of buildings) {
-                    const building = data_1.Data.Buildings.from_id(item_id);
-                    if (building.type == "rat_lair" /* LandPlotType.RatLair */) {
-                        cell_object.rat_scent = 200;
-                        cell_object.rat_scent += 5 * dt / 100;
-                        spawn_rat(num_rats, cell_object);
-                    }
-                    if (building.type == "elodino_house" /* LandPlotType.ElodinoHouse */) {
-                        let cell_object = data_1.Data.Cells.from_id(cell);
-                        spawn_elodino(num_elos, cell_object);
-                        spawn_ball(num_balls, cell_object);
-                    }
-                }
+        data_objects_1.Data.Locations.for_each(location => {
+            const cell_id = data_id_1.DataID.Location.cell_id(location.id);
+            const cell = data_objects_1.Data.Cells.from_id(cell_id);
+            if (location.has_rat_lair) {
+                cell.rat_scent = 200;
+                cell.rat_scent += 5 * dt / 100;
+                spawn_rat(num_rats, cell);
             }
-            let set = data_1.Data.Cells.get_characters_set_from_cell(cell);
-            if (set != undefined) {
-                for (const character_id of set) {
-                    let character = data_1.Data.CharacterDB.from_id(character_id);
-                    if ((character.race == 'rat') && (character.dead())) {
-                        cell_object.rat_scent -= 1 * dt / 50;
-                    }
-                }
+            if (cell_id == data_id_1.DataID.Faction.spawn('elodino_free')) {
+                spawn_elodino(num_elos, cell);
+                spawn_ball(num_balls, cell);
             }
-        }
+        });
     }
     GameMaster.update = update;
     function spawn_rat(rats_number, cell) {

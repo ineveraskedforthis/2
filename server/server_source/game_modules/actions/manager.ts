@@ -2,8 +2,8 @@ import { cell_id } from "@custom_types/common"
 import { Character } from "../character/character"
 // import { attack } from "./attack"
 import { Alerts } from "../client_communication/network_actions/alerts"
-import { Data } from "../data"
 import { CharacterMapAction, TriggerResponse } from "./types"
+import { Data } from "../data/data_objects"
 
 
 
@@ -17,7 +17,7 @@ export namespace ActionManager {
         if (check.response != "OK") {
             return check
         }
-        
+
         let duration = action.duration(char)
         Alerts.action_ping(char, duration, action.is_move||false)
         if (action.immediate) {
@@ -45,16 +45,14 @@ export namespace ActionManager {
     }
 
     export function update_characters(dt: number) {
-        for (let character of Data.CharacterDB.list()) {
-            if (character == undefined) continue
-
+        Data.Characters.for_each(character => {
             if (character.action != undefined) {
                 character.action_progress += dt
                 if (character.action_progress > character.action_duration) {
                     call_action(character.action, character, character.next_cell||character.cell_id)
                 }
             }
-        }
+        })
     }
 }
 

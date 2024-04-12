@@ -1,65 +1,85 @@
-// import { EloTemplate } from "../races/elo";
-// import { BigRatTemplate, RatTemplate } from "../races/rat";
-import { Data } from "../data";
-// import { Event } from "../events/events";
-// import { Factions } from "../factions";
-// import { STARTING_DEVELOPMENT, STARTING_RESOURCES, STARTING_TERRAIN, WORLD_SIZE } from "../static_data/map_definitions";
-// import { cell_id, world_coordinates } from "../types";
-// import { Cell} from "./cell";
-import { Template } from "../templates";
 import { trim } from "../calculations/basic_functions";
-// import { Convert } from "../systems_communication";
-// import { MEAT } from "../manager_classes/materials_manager";
-// import { Building } from "../DATA_LAYOUT_BUILDING";
-// import { Cell } from "./DATA_LAYOUT_CELL";
-import { Terrain, terrain_can_move } from "./terrain";
-import { cell_id } from "../../../../shared/common";
-import { Cell } from "./DATA_LAYOUT_CELL";
+import { terrain_can_move } from "./terrain";
+import { Terrain } from "@custom_types/common";
 import { geom, point } from "../geom";
-import { world_coordinates } from "../types";
-
-// var size:world_dimensions = [0, 0]
-// var max_direction:number = 30
-
-// const dp = 
+import { cell_id, location_id, world_coordinates } from "@custom_types/common";
+import { Data } from "../data/data_objects";
+import { CellData } from "./cell_interface";
+import { DataID } from "../data/data_id";
+import { Location } from "../location/location_class";
 
 export namespace MapSystem {
-    export function cells() {
-        return Data.Cells.list()
-    }
-
-    export function initial_load() {
-        console.log('loading map')        
-    }
-
-    export function get_size() {
-        return Data.World.get_world_dimensions()
-    }
-
-    export function can_hunt(cell_id: cell_id) {
-       return Data.Cells.has_game(cell_id)
-    }
-
-    export function can_fish(cell_id: cell_id) {
-        return Data.Cells.has_fish(cell_id)
-        // if (Data.World.id_to_terrain(cell_id) == Terrain.coast) return true
-        // if (Data.Cells.sea_nearby(cell_id)) return true
-        // return false
-    }
-
-    export function has_market(cell_id: cell_id) {
-        if (Data.World.id_to_market(cell_id)) return true
+    export function sea_nearby(cell: cell_id) {
+        let neigbours = Data.World.neighbours(cell)
+        for (const item in neigbours) {
+            let terrain = Data.World.id_to_terrain(neigbours[item])
+            if (terrain == Terrain.sea) {
+                return true
+            }
+        }
         return false
     }
 
-    export function has_wood(cell_id: cell_id) {
-        if (Data.Cells.forestation(cell_id) > 0) return true
-        return false
+    export function can_clean(location: location_id) {
+        const object = Data.Locations.from_id(location)
+        return sea_nearby(object.cell_id)
     }
 
-    const max_scent = 50
+    export function has_forest(location: location_id) {
+        const object = Data.Locations.from_id(location)
+        return object.forest > 0;
+    }
 
-    function update_rat_scent(deltaTime: number, cell: Cell|undefined) {
+    export function has_cotton(location: location_id) {
+        const object = Data.Locations.from_id(location)
+        return object.cotton > 0;
+    }
+
+    export function has_game(location: location_id) {
+        const object = Data.Locations.from_id(location)
+        return object.small_game > 0;
+    }
+
+    export function has_fish(location: location_id) {
+        const object = Data.Locations.from_id(location)
+        return object.fish > 0;
+    }
+
+    export function forestation(cell: cell_id) {
+        let result = 0
+        let locations = DataID.Cells.locations(cell)
+
+        for (let location of locations) {
+            let object = Data.Locations.from_id(location)
+            result += object.forest
+        }
+        return result
+    }
+
+    export function urbanisation(cell: cell_id) {
+        let result = 0
+        let locations = DataID.Cells.locations(cell)
+
+        for (let location of locations) {
+            let object = Data.Locations.from_id(location)
+            if (object.has_house_level > 0) result ++;
+        }
+
+        return result
+    }
+
+    export function rat_lair(cell: cell_id) {
+        let result = false;
+        let locations = DataID.Cells.locations(cell)
+
+        for (let location of locations) {
+            let object = Data.Locations.from_id(location)
+            if (object.has_rat_lair) result = true;
+        }
+        return result
+    }
+
+    function update_rat_scent(deltaTime: number, cell: CellData|undefined) {
         if (cell == undefined) return
         // constant change by dt / 100
         let base_d_scent = deltaTime / 10000
@@ -72,95 +92,77 @@ export namespace MapSystem {
             let neighbours = Data.World.neighbours(cell.id)
             for (let neighbour of neighbours) {
                 const neigbour_cell = Data.Cells.from_id(neighbour)
-                total += neigbour_cell.rat_scent 
+                total += neigbour_cell.rat_scent
             }
             const average = total / neighbours.length * 1
             d_scent += base_d_scent * (average - cell.rat_scent) * 5
         }
 
         {   //account for urbanisation
-            d_scent -= Data.Cells.urbanisation(cell.id) * base_d_scent
+            d_scent -= urbanisation(cell.id) * base_d_scent
         }
         {   //account for forest
-            d_scent -= Data.Cells.forestation(cell.id) / 100 * base_d_scent
+            d_scent -= forestation(cell.id) / 100 * base_d_scent
+        }
+        // fresh sea air
+        if (sea_nearby(cell.id)) {
+            d_scent -= 10 / 100 * base_d_scent
         }
 
         // trim to avoid weirdness
         cell.rat_scent = trim(cell.rat_scent + d_scent * 20, -50, 50)
     }
 
-    function update_market_scent(cell: Cell) {
-        if (cell == undefined) return                        
-        let temp = 0
-        if (Data.World.id_to_terrain(cell.id) == Terrain.sea) {
-            temp = -999
-        } else if (Data.Cells.has_market(cell.id)) {
-            temp = 200
-        } else {
-            // let neighbours = neighbours_cells(cell.id)
-            let neighbours = Data.World.neighbours(cell.id)
-            let max = 0
-            for (let item of neighbours) {
-                let cell_object = Data.Cells.from_id(item)
-                if (cell_object.market_scent > max) {
-                    max = cell_object.market_scent
-                }
-            }
-            temp = max - 1
-        }
-        cell.market_scent = temp
-    }
-
-    function update_fish(cell: Cell) {
-        if (Data.Cells.sea_nearby(cell.id)) {
-            if (Math.random() < (10 - cell.fish) / 100) {
-                cell.fish = cell.fish + 1
+    function update_fish(location: Location) {
+        if (sea_nearby(location.cell_id)) {
+            if (Math.random() < (10 - location.fish) / 100) {
+                location.fish = location.fish + 1
             }
         }
     }
 
-    function update_cotton(cell: Cell) {
-        const competition = Data.Cells.forestation(cell.id) + cell.cotton * 20
+    function update_cotton(location: Location) {
+        const competition = forestation(location.cell_id) + location.cotton * 20
 
         if (Math.random() < 1 - competition / 200) {
-            cell.cotton = cell.cotton + 1
+            location.cotton = location.cotton + 1
         }
     }
 
-    function update_game(cell: Cell) {
-        const competition = cell.game * 50 - Data.Cells.forestation(cell.id)
+    function update_game(location: Location) {
+        const competition = location.small_game * 50 - forestation(location.cell_id)
 
         if (Math.random() < 1 - competition / 200) {
-            cell.game = cell.game + 1
+            location.small_game = location.small_game + 1
         }
     }
 
     export function update(dt: number) {
-        const cells = Data.Cells.list() 
-        for (const cell of cells) {
+        Data.Cells.for_each((cell) => {
             update_rat_scent(dt, cell)
-            update_market_scent(cell)
+        })
+
+        Data.Locations.for_each((location) => {
             if (Math.random() < 0.001) {
-                update_cotton(cell)
-                update_game(cell)
-                update_fish(cell)
-            }            
-        }
+                update_cotton(location)
+                update_game(location)
+                update_fish(location)
+            }
+        })
     }
 
     export function initial_update() {
-        const cells = Data.Cells.list() 
-        for (const cell of cells) {
+        Data.Locations.for_each((location) => {
             for (let i = 0; i < 20; i++) {
-                update_cotton(cell)
-                update_game(cell)
-                update_fish(cell)
-            }            
-        }
+                update_cotton(location)
+                update_game(location)
+                update_fish(location)
+            }
+        })
     }
 
     export function can_move(pos: [number, number]) {
-        if (!Data.World.validate_coordinates(pos)) return false 
+        if (!Data.World.validate_coordinates(pos)) return false
         let terrain = Data.World.get_terrain()
         try {
             return terrain_can_move(terrain[pos[0]][pos[1]])
@@ -243,9 +245,8 @@ export namespace MapSystem {
     function get_hex_centre([x, y]: world_coordinates): point {
         var h = Math.sqrt(3) / 2;
         var w = 1 / 2;
-        var tx = (1 + w) * x 
-        var ty = 2 * h * y - h * x 
+        var tx = (1 + w) * x
+        var ty = 2 * h * y - h * x
         return {x: tx, y: ty};
     }
-
 }

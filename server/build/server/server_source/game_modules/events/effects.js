@@ -2,21 +2,21 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Effect = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
-const data_1 = require("../data");
-const systems_communication_1 = require("../systems_communication");
 const scripted_values_1 = require("./scripted_values");
 const basic_functions_1 = require("../calculations/basic_functions");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const triggers_1 = require("./triggers");
 const system_1 = require("../market/system");
+const data_id_1 = require("../data/data_id");
+const data_objects_1 = require("../data/data_objects");
 var Effect;
 (function (Effect) {
     let Update;
     (function (Update) {
         function cell_market(cell) {
-            const locals = data_1.Data.Cells.get_characters_list_from_cell(cell);
+            const locals = data_id_1.DataID.Cells.local_character_id_list(cell);
             for (let item of locals) {
-                const local_character = systems_communication_1.Convert.id_to_character(item);
+                const local_character = data_objects_1.Data.Characters.from_id(item);
                 user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 19 /* UI_Part.MARKET */);
             }
         }
@@ -103,73 +103,42 @@ var Effect;
         user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 12 /* UI_Part.SKILLS */);
     }
     Effect.learn_perk = learn_perk;
-    function rent_room(character_id, building_id) {
-        let character = data_1.Data.CharacterDB.from_id(character_id);
-        let response = triggers_1.Trigger.building_is_available(character_id, building_id);
+    function enter_location_payment(character_id, location_id) {
+        let character = data_objects_1.Data.Characters.from_id(character_id);
+        let response = triggers_1.Trigger.location_is_available(character_id, location_id);
         if (response.response == 'ok') {
             if (response.owner_id != undefined) {
-                const owner = data_1.Data.CharacterDB.from_id(response.owner_id);
+                const owner = data_objects_1.Data.Characters.from_id(response.owner_id);
                 Effect.Transfer.savings(character, owner, response.price);
             }
-            enter_room(character_id, building_id);
+            enter_location(character_id, location_id);
         }
         return response;
     }
-    Effect.rent_room = rent_room;
-    function enter_room(character_id, building_id) {
-        Effect.leave_room(character_id);
-        let character = data_1.Data.CharacterDB.from_id(character_id);
-        data_1.Data.Buildings.occupy_room(building_id, character_id);
-        character.current_building = building_id;
+    Effect.enter_location_payment = enter_location_payment;
+    function enter_location(character_id, location_id) {
+        let character = data_objects_1.Data.Characters.from_id(character_id);
+        character.location_id = location_id;
         alerts_1.Alerts.enter_room(character);
     }
-    Effect.enter_room = enter_room;
-    function leave_room(character_id) {
-        let character = data_1.Data.CharacterDB.from_id(character_id);
-        if (character.current_building == undefined)
-            return;
-        data_1.Data.Buildings.free_room(character.current_building, character_id);
-        alerts_1.Alerts.leave_room(character);
-        character.current_building = undefined;
-    }
-    Effect.leave_room = leave_room;
-    function new_building(cell_id, type, durability, room_cost) {
-        return data_1.Data.Buildings.create({
-            cell_id: cell_id,
-            durability: durability,
-            type: type,
-            room_cost: room_cost
-        });
-    }
-    Effect.new_building = new_building;
-    function building_quality_reduction_roll(building) {
-        if (building.type == "forest_plot" /* LandPlotType.ForestPlot */)
-            return;
-        if (building.type == "land_plot" /* LandPlotType.LandPlot */)
-            return;
-        if (building.type == "rat_lair" /* LandPlotType.RatLair */)
-            return;
-        if (building.type == "farm_plot" /* LandPlotType.FarmPlot */)
-            return;
-        if (building.type == "cotton_field" /* LandPlotType.CottonField */)
+    Effect.enter_location = enter_location;
+    function location_quality_reduction_roll(location) {
+        if (location.has_house_level == 0)
             return;
         if (Math.random() > 0.9) {
-            building.durability = (0, basic_functions_1.trim)(building.durability - 1, 0, 1000);
+            location.devastation = (0, basic_functions_1.trim)(location.devastation + 1, 0, scripted_values_1.ScriptedValue.max_devastation);
         }
     }
-    Effect.building_quality_reduction_roll = building_quality_reduction_roll;
-    function building_repair(building, x) {
-        building.durability = (0, basic_functions_1.trim)(building.durability + x, 0, 1000);
+    Effect.location_quality_reduction_roll = location_quality_reduction_roll;
+    function location_repair(location, x) {
+        location.devastation = (0, basic_functions_1.trim)(location.devastation - x, 0, scripted_values_1.ScriptedValue.max_devastation);
     }
-    Effect.building_repair = building_repair;
-    function rest_building_tick(character) {
-        if (character.current_building == undefined) {
-            return;
-        }
-        let building = data_1.Data.Buildings.from_id(character.current_building);
-        let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
-        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race);
-        let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race);
+    Effect.location_repair = location_repair;
+    function rest_location_tick(character) {
+        let location = data_objects_1.Data.Locations.from_id(character.location_id);
+        let tier = location.has_house_level;
+        let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
+        let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
         if (fatigue_target < character.get_fatigue()) {
             let fatigue_change = (0, basic_functions_1.trim)(-5, fatigue_target - character.get_fatigue(), 0);
             Effect.Change.fatigue(character, fatigue_change);
@@ -178,9 +147,9 @@ var Effect;
             let stress_change = (0, basic_functions_1.trim)(-5, stress_target - character.get_stress(), 0);
             Effect.Change.stress(character, stress_change);
         }
-        building_quality_reduction_roll(building);
+        location_quality_reduction_roll(location);
     }
-    Effect.rest_building_tick = rest_building_tick;
+    Effect.rest_location_tick = rest_location_tick;
     function spoilage(character, good, rate) {
         let dice = Math.random();
         if (dice < rate) {
@@ -189,16 +158,14 @@ var Effect;
             let spoiled_amount = Math.max(integer, Math.floor(current_amount * rate));
             character.stash.set(good, current_amount - spoiled_amount);
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
-            let orders = data_1.Data.BulkOrders.from_char_id(character.id);
-            if (orders == undefined)
-                return;
+            let orders = data_id_1.DataID.Character.market_orders_list(character.id);
             for (let order of orders) {
-                let order_item = data_1.Data.BulkOrders.from_id(order);
+                let order_item = data_objects_1.Data.MarketOrders.from_id(order);
                 const current_amount = order_item.amount;
-                if (order_item.tag != good)
+                if (order_item.material != good)
                     continue;
                 let spoiled_amount = Math.min(current_amount, Math.max(integer, Math.floor(current_amount * 0.01)));
-                system_1.BulkOrders.destroy_item(order, spoiled_amount);
+                system_1.MarketOrders.decrease_amount(order, spoiled_amount);
             }
             Update.cell_market(character.cell_id);
         }

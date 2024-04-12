@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AI_TRIGGER = void 0;
-const system_1 = require("../map/system");
-const systems_communication_1 = require("../systems_communication");
+const data_id_1 = require("../data/data_id");
+const data_objects_1 = require("../data/data_objects");
 var AI_TRIGGER;
 (function (AI_TRIGGER) {
     function tired(character) {
@@ -15,30 +15,27 @@ var AI_TRIGGER;
     }
     AI_TRIGGER.low_hp = low_hp;
     function at_home(character) {
-        const home = character.home_cell_id;
+        const home = character.home_location_id;
         if (home != undefined) {
-            if (home == character.cell_id) {
+            if (home == character.location_id) {
                 return true;
             }
             else {
                 return false;
             }
         }
-        if (system_1.MapSystem.has_market(character.cell_id)) {
-            return true;
-        }
-        return false;
+        return true;
     }
     AI_TRIGGER.at_home = at_home;
     function can_buy(character, material_index, budget) {
-        let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
+        let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
         let best_order = undefined;
         let best_price = 9999;
         for (let item of orders) {
-            let order = systems_communication_1.Convert.id_to_bulk_order(item);
+            let order = data_objects_1.Data.MarketOrders.from_id(item);
             if (order.typ == 'buy')
                 continue;
-            if (order.tag != material_index)
+            if (order.material != material_index)
                 continue;
             if ((best_price > order.price) && (order.amount > 0)) {
                 best_price = order.price;

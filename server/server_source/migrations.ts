@@ -18,7 +18,7 @@
 // import { constants } from "./game_modules/static_data/constants";
 // import { Convert } from "./game_modules/systems_communication";
 // import { Cell } from "./game_modules/map/cell";
-// import { Building, BuildingType } from "./game_modules/DATA_LAYOUT_BUILDING";
+// import { Location, LocationType } from "./game_modules/DATA_LAYOUT_BUILDING";
 // import { Stash } from "./game_modules/inventories/stash";
 // import { Savings } from "./game_modules/inventories/savings";
 // import { Template } from "./game_modules/templates";
@@ -36,7 +36,7 @@
 //     if (current_version == 0) {
 //         set_up_initial_data()
 //         current_version = 1
-//     } 
+//     }
 
 //     if (current_version == 1) {
 //         create_starting_agents()
@@ -110,20 +110,20 @@
 
 //     if (current_version == 13) {
 //         let cell = MapSystem.coordinate_to_id(7, 5)
-//         let building:Building = {
+//         let location:Location = {
 //             cell_id: cell,
 //             durability: 100,
-//             type: BuildingType.Inn,
+//             type: LocationType.Inn,
 //             rooms: 4,
 //             // kitchen: 100,
 //             // workshop: 0,
 //             room_cost: 5 as money
 //         }
-//         let building_id = Data.Buildings.create(building)
+//         let location_id = Data.Locations.create(location)
 
 //         let innkeeper = Event.new_character(HumanTemplate, 'Innkeeper', cell, undefined)
 //         innkeeper.savings.inc(500 as money)
-//         Data.Buildings.set_ownership(innkeeper.id, building_id)
+//         Data.Locations.set_ownership(innkeeper.id, location_id)
 
 //         current_version = set_version(14)
 //     }
@@ -149,7 +149,7 @@
 
 
 // function create_starting_agents() {
-    
+
 
 //     MapSystem.load()
 //     Data.load()
@@ -171,14 +171,14 @@
 //     for (let i = 1; i < 30; i++) {
 //         Template.Character.Elo(18, 4, undefined)
 //     }
-    
+
 //     /// test person
 
 //     const starting_cell_colony = MapSystem.coordinate_to_id(0, 3)
-    
+
 //     {
 //         let Trader = Event.new_character(HumanTemplate, 'Trader', starting_cell_colony, dummy_model)
-                
+
 //         Trader.stash.inc(MEAT, 10)
 //         Trader.stash.inc(WOOD, 100)
 //         Trader.stash.inc(FOOD, 500)
@@ -205,7 +205,7 @@
 //     // monk.skills.noweapon = 100
 //     // monk.learn_perk("advanced_unarmed")
 //     // monk.faction_id = 3
-//     // monk.changed = true    
+//     // monk.changed = true
 // }
 
 // const dummy_model = {chin: 0, mouth: 0, eyes: 0}
@@ -241,7 +241,7 @@
 //     for (let character of Data.CharacterDB.list()) {
 //         if (character.get_name() != 'Trader') {
 //             EventMarket.clear_orders(character)
-//         }        
+//         }
 //     }
 // }
 
@@ -303,7 +303,7 @@
 
 // function mages_and_foreign_trader() {
 //     blood_mage(10, 8, Factions.Steppes.id)
-    
+
 // }
 
 // let version = get_version()

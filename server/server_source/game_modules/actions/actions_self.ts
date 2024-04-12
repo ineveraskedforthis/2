@@ -1,6 +1,5 @@
 import { cell_id } from "@custom_types/common";
 import { Character } from "../character/character";
-import { Data } from "../data";
 import { Effect } from "../events/effects";
 import { generate_action } from "./generator";
 import { TriggerResponse } from "./types";
@@ -9,17 +8,17 @@ import { FOOD } from "../manager_classes/materials_manager";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
 import { ScriptedValue } from "../events/scripted_values";
-import { Convert } from "../systems_communication";
 import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
+import { MapSystem } from "../map/system";
 
 const CLEAN_FATIGUE_COST = 5
 
 function clean_duration_modifier(character: Character) {
     return 1 + character.get_blood() / 50
 }
-function clean_trigger(character: Character, cell: cell_id): TriggerResponse {
-    if (Data.Cells.can_clean(cell)) {
+function clean_trigger(character: Character): TriggerResponse {
+    if (MapSystem.can_clean(character.location_id)) {
         return { response: "OK" }
     }
     return { response: "NO_RESOURCE" }

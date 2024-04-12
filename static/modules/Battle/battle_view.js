@@ -25,16 +25,16 @@ export class BattleUnitView {
         this.timer = 0;
     }
     update(hp_change, ap_change) {
-        // if (player_unit_id == this.id) {
+        // if (player_character_id == this.id) {
         //     BattleImage.update_player_actions_availability()
         // }
         this.hp_change = hp_change;
         this.ap_change = ap_change;
         // this.hp = this.unit.hp
-        // this.ap = this.unit.ap 
+        // this.ap = this.unit.ap
         // this.killed = this.unit.killed
         // let div = BattleImage.unit_div(this.unit.id)
-        // if (div != undefined) div.innerHTML = this.unit.name 
+        // if (div != undefined) div.innerHTML = this.unit.name
         //                                       + '<br> hp: ' + this.unit.hp
         //                                       + '<br> ap: ' + Math.floor(this.unit.ap * 10) / 10
     }

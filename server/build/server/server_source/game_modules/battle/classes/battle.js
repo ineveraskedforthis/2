@@ -1,16 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Battle = void 0;
+const data_id_1 = require("../../data/data_id");
 class Battle {
-    constructor(id, heap) {
-        this.heap = heap;
-        this.id = id;
+    constructor(id) {
+        this.last = 0;
+        this.heap = [];
+        if (id == undefined) {
+            this.id = data_id_1.DataID.Battle.new_id();
+        }
+        else {
+            data_id_1.DataID.Battle.register(id, []);
+            this.id = id;
+        }
         this.date_of_last_turn = '%';
         this.waiting_for_input = false;
-        // this.ended = false
-        // this.turn_ended = true
         this.last_event_index = 0;
-        this.grace_period = 0;
+        this.grace_period = 6;
+        this.stopped = false;
         this.battle_history = [];
     }
 }

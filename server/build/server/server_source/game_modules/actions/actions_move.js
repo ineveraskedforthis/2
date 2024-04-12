@@ -4,7 +4,8 @@ exports.move = void 0;
 const system_1 = require("../map/system");
 const events_1 = require("../events/events");
 const system_2 = require("../character/system");
-const data_1 = require("../data");
+const data_objects_1 = require("../data/data_objects");
+const data_id_1 = require("../data/data_id");
 exports.move = {
     duration(char) {
         return system_2.CharacterSystem.movement_duration_map(char);
@@ -13,9 +14,9 @@ exports.move = {
         if (char.in_battle()) {
             return { response: 'IN_BATTLE' };
         }
-        const data = data_1.Data.World.id_to_coordinate(cell);
+        const data = data_objects_1.Data.World.id_to_coordinate(cell);
         if (system_1.MapSystem.can_move(data)) {
-            let [x, y] = data_1.Data.World.id_to_coordinate(char.cell_id);
+            let [x, y] = data_objects_1.Data.World.id_to_coordinate(char.cell_id);
             let dx = data[0] - x;
             let dy = data[1] - y;
             if (system_1.MapSystem.is_valid_move(dx, dy)) {
@@ -40,7 +41,7 @@ exports.move = {
             console.log(character.next_cell);
             return;
         }
-        events_1.Event.move(character, new_cell);
+        events_1.Event.move(character, data_id_1.DataID.Cells.main_location(new_cell));
     },
     is_move: true
 };

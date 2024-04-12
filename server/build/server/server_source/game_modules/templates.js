@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Template = void 0;
-const data_1 = require("./data");
 const events_1 = require("./events/events");
 const system_1 = require("./items/system");
 const materials_manager_1 = require("./manager_classes/materials_manager");
@@ -10,6 +9,8 @@ const TEMPLATE_GRACI_1 = require("./races/TEMPLATE_GRACI");
 const TEMPLATE_HUMANS_1 = require("./races/TEMPLATE_HUMANS");
 const TEMPLATE_RATS_1 = require("./races/TEMPLATE_RATS");
 const TEMPLATE_OTHERS_1 = require("./races/TEMPLATE_OTHERS");
+const data_objects_1 = require("./data/data_objects");
+const data_id_1 = require("./data/data_id");
 const LUMP_OF_MONEY = 1000;
 const TONS_OF_MONEY = 30000;
 var Template;
@@ -17,11 +18,11 @@ var Template;
     let Character;
     (function (Character) {
         function Base(template, name, model, x, y, faction_id) {
-            const cell = data_1.Data.World.coordinate_to_id([x, y]);
-            let character = events_1.Event.new_character(template, name, cell, model);
-            character.home_cell_id = cell;
+            const cell = data_objects_1.Data.World.coordinate_to_id([x, y]);
+            const location = data_id_1.DataID.Cells.main_location(cell);
+            let character = events_1.Event.new_character(template, name, location, model);
             if (faction_id != undefined)
-                data_1.Data.Reputation.set(faction_id, character.id, "member");
+                data_id_1.DataID.Reputation.set(character.id, faction_id, "member");
             return character;
         }
         function GenericHuman(x, y, name, faction) {

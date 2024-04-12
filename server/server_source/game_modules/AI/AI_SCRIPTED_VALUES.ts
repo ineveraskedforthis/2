@@ -9,8 +9,6 @@ import { output_bulk } from "../craft/CraftBulk";
 export function base_price(cell_id: cell_id, material: material_index): money {
     switch(material) {
         case WOOD: {
-            // let cell = MapSystem.id_to_cell(cell_id)
-            if (MapSystem.has_wood(cell_id)) return 3 as money
             return 10 as money
         }
         case RAT_BONE:

@@ -26,8 +26,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.launch = void 0;
 const fs_1 = require("fs");
 // Always the first.
-const data_1 = require("./game_modules/data");
-//importing order is important because of global lists of entities
+const data_id_1 = require("./game_modules/data/data_id");
+const data_objects_1 = require("./game_modules/data/data_objects");
+//importing order is important because of lists of entities defined in these files
 const system_1 = require("./game_modules/character/system");
 const system_2 = require("./game_modules/map/system");
 const user_manager_1 = require("./game_modules/client_communication/user_manager");
@@ -92,37 +93,30 @@ function launch(http_server) {
 exports.launch = launch;
 function load() {
     // MapSystem.load()
-    data_1.Data.load();
+    data_objects_1.Data.load();
     user_manager_1.UserManagement.load_users();
     auth_1.Auth.load();
-    system_3.BattleSystem.load();
-    const characters = data_1.Data.CharacterDB.list_of_id();
-    //validating ids and connections
-    for (const character of characters) {
-        const object = data_1.Data.CharacterDB.from_id(character);
-        systems_communication_1.Link.character_and_cell(character, object.cell_id);
+    //validating battle status
+    data_objects_1.Data.Characters.for_each(object => {
         const battle = systems_communication_1.Convert.character_to_battle(object);
         if (battle == undefined) {
             object.battle_id = undefined;
-            object.battle_unit_id = undefined;
         }
-        // EventMarket.clear_orders(character)
-    }
-    for (const battle of data_1.Data.Battle.list()) {
+    });
+    data_objects_1.Data.Battles.for_each(battle => {
         // console.log('test battle for shadow units')
-        for (let unit of Object.values(battle.heap.data)) {
-            let id = unit.char_id;
-            let character = data_1.Data.CharacterDB.from_id(id);
+        for (let id of Object.values(battle.heap)) {
+            let character = data_objects_1.Data.Characters.from_id(id);
             if (character == undefined || !character.in_battle()) {
-                events_2.BattleEvent.Leave(battle, unit);
+                events_2.BattleEvent.Leave(battle, character);
             }
         }
-    }
+    });
     let version = get_version();
     if (version == 0) {
-        const factions = data_1.Data.World.get_factions();
+        const factions = data_objects_1.Data.Factions.get_factions();
         for (const item of factions) {
-            game_master_1.GameMaster.spawn_faction(item.spawn_point, item.tag);
+            game_master_1.GameMaster.spawn_faction(data_id_1.DataID.Faction.spawn(item.tag), item.tag);
         }
         set_version(1);
     }
@@ -130,8 +124,7 @@ function load() {
 function save() {
     user_manager_1.UserManagement.save_users();
     auth_1.Auth.save();
-    system_3.BattleSystem.save();
-    data_1.Data.save();
+    data_objects_1.Data.save();
 }
 var update_timer = 0;
 var map_update_timer = 0;
@@ -149,14 +142,11 @@ function update(delta, http_server) {
     manager_1.ActionManager.update_characters(delta);
     user_manager_1.UserManagement.update_users();
     system_3.BattleSystem.update(delta * 1000);
-    let rats = 0;
-    let elos = 0;
-    let humans = 0;
-    for (let character of data_1.Data.CharacterDB.list()) {
+    data_objects_1.Data.Characters.for_each(character => {
         if (character.dead()) {
             events_1.Event.death(character);
         }
-    }
+    });
     map_update_timer += delta;
     if (map_update_timer > 1) {
         system_2.MapSystem.update(map_update_timer);

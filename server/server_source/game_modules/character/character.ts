@@ -1,14 +1,11 @@
-import {Stash} from "../inventories/stash"
-// import { PerksTable } from "./Perks";
+import { Stash } from "../inventories/stash"
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
-import { building_id, char_id, CharacterTemplate, model_interface_name, ModelVariant, skeleton, Status, status_type, tagAI, tagModel, tagRACE, tagTactic, TEMP_USER_ID, user_id } from "../types";
-import { battle_id, unit_id } from "../../../../shared/battle_data";
+import { CharacterTemplate, model_interface_name, ModelVariant, skeleton, Status, tagAI, tagModel, tagRACE, tagTactic } from "../types";
+import { location_id, character_id, status_type, user_id, cell_id, money } from "@custom_types/common";
 import { SkillList } from "./SkillList";
 import { AImemory, AIstate } from "./AIstate";
 import { material_index } from "@custom_types/inventory";
-import { PerksTable, TraitsTable } from "../../../../shared/character";
-import { cell_id, money } from "../../../../shared/common";
 import { CharacterMapAction } from "../actions/types";
 import { equip_slot } from "@custom_types/inventory";
 import { MaxHP, MaxHPTag } from "../races/max_hp";
@@ -16,17 +13,12 @@ import { BaseResistTag } from "../races/resists";
 import { BaseStats, StatsTag } from "../races/stats";
 import { trim } from "../calculations/basic_functions";
 import { ItemSystem } from "../items/system";
+import { DataID } from "../data/data_id";
+import { PerksTable, TraitsTable } from "@custom_types/character";
+import { action_points, battle_id, battle_position } from "@custom_types/battle_data";
 
 export class Character {
-    id: char_id;
-
-    battle_id: battle_id|undefined;
-    battle_unit_id: unit_id|undefined;
-
-    user_id: user_id|TEMP_USER_ID;
-    cell_id: cell_id;
-    home_cell_id?: cell_id;
-    current_building: building_id|undefined;
+    id: character_id;
 
     name: string;
 
@@ -57,7 +49,7 @@ export class Character {
     resists: BaseResistTag;
     max_hp: MaxHPTag;
 
-    explored: boolean[];
+    explored: Partial<Record<cell_id, boolean>>;
     next_cell: cell_id
 
     ai_state: AIstate;
@@ -71,34 +63,35 @@ export class Character {
 
     model_variation: any;
 
+    action_points_left: action_points;
+    action_points_max: action_points;
+    next_turn_after: number;
+    dodge_turns: number;
+    position: battle_position;
+    team: number
+
     constructor(
-        id: number,
+        id: character_id|undefined,
         battle_id: battle_id|undefined,
-        battle_unit_id: unit_id|undefined,
-        user_id: user_id|TEMP_USER_ID,
-        cell_id: cell_id,
+        user_id: user_id|undefined,
+        location_id: location_id,
         name: string,
         template: CharacterTemplate
     ) {
+        console.log(id, location_id)
 
-        this.id = id as char_id
+        if (id == undefined) {
+            this.id = DataID.Character.new_id(location_id)
+        } else {
+            this.id = id
+            DataID.Character.register(id, location_id)
+        }
+
         this.battle_id = battle_id
-        this.battle_unit_id = battle_unit_id
         this.user_id = user_id
-        this.cell_id = cell_id
         this.next_cell = 0 as cell_id
 
         this.name = name
-
-        // this.archetype = Object.assign({}, archetype)
-
-        // model: tagModel;
-        // ai_map: tagAI;
-        // ai_battle: tagTactic;
-        // race: tagRACE;
-        // stats: StatsTag;
-        // resists: BaseResistTag;
-        // max_hp: MaxHPTag;
 
         this.model = template.model
         this.ai_map = template.ai_map
@@ -108,10 +101,7 @@ export class Character {
         this.resists = template.resists
         this.max_hp = template.max_hp
 
-
-        // let max_hp = MaxHP[template.max_hp]
-
-        this.current_building = undefined
+        this.location_id = location_id
 
         this.equip = new Equip()
         this.stash = new Stash()
@@ -140,7 +130,56 @@ export class Character {
         this._perks = {}
         this._traits = {}
 
+        this.action_points_left = 0 as action_points
+        this.action_points_max = 10 as action_points
+
+
+        this.next_turn_after = 1
+        this.position = {
+            x: 0,
+            y: 0
+        } as battle_position
+
+        this.team = 0
+        this.dodge_turns = 0
+
         this.explored = []
+    }
+
+    set battle_id(x: battle_id|undefined){
+        DataID.Connection.set_character_battle(this.id, x)
+    }
+
+    get battle_id(){
+        return DataID.Character.battle_id(this.id)
+    }
+
+    set user_id(x: user_id| undefined){
+        DataID.Connection.set_character_user(this.id, x)
+    }
+
+    get user_id(){
+        return DataID.Character.user_id(this.id)
+    }
+
+    set location_id(location: location_id) {
+        DataID.Connection.set_character_location(this.id, location)
+    }
+
+    get location_id() {
+        return DataID.Character.location_id(this.id)
+    }
+
+    set home_location_id(location: location_id|undefined) {
+        DataID.Connection.set_character_home(this.id, location)
+    }
+
+    get home_location_id() {
+        return DataID.Character.home_location_id(this.id)
+    }
+
+    get cell_id() {
+        return DataID.Location.cell_id(this.location_id)
     }
 
     set_model_variation(data:ModelVariant) {
@@ -286,7 +325,15 @@ export class Character {
         return response
     }
 
-    is_player()     { return this.user_id != '#' }
+    is_player()     { return this.user_id != undefined }
     dead()          { return this.get_hp() == 0 }
     in_battle()     { return (this.battle_id != undefined) }
+
+    get slowness() {
+        return 100
+    }
+
+    get action_units_per_turn() {
+        return 4
+    }
 }

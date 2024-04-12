@@ -1,3 +1,6 @@
+import { DataID } from "./game_modules/data/data_id";
+import { Data, save_path } from "./game_modules/data/data_objects";
+
 import { MEAT, RAT_SKIN, WOOD } from "./game_modules/manager_classes/materials_manager";
 // import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
 import { ItemSystem } from "./game_modules/items/system";
@@ -6,10 +9,8 @@ import { CharacterSystem } from "./game_modules/character/system";
 import { HumanTemplate } from "./game_modules/races/TEMPLATE_HUMANS";
 import { Inventory } from "./game_modules/inventories/inventory";
 import { MapSystem } from "./game_modules/map/system";
-import { Data, save_path } from "./game_modules/data";
-import { character_to_string, equip_from_string, equip_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/strings_management";
-import { cell_id, money } from "@custom_types/common";
-
+import { character_to_string, equip_from_string, equip_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/data/strings_management";
+import { cell_id, location_id, money } from "@custom_types/common";
 
 Data.World.load_world_dimensions(save_path.WORLD_DIMENSIONS)
 Data.Cells.load(save_path.CELLS)
@@ -41,7 +42,7 @@ function add_testing_items_to_equip(equip: Equip) {
 
 function character_serialization_test_simple() {
     console.log('basic character serialisation test')
-    const character = CharacterSystem.template_to_character(HumanTemplate, 'peter', 1 as cell_id)
+    const character = CharacterSystem.template_to_character(HumanTemplate, 'peter', 1 as location_id)
     const string = character_to_string(character)
     const character2 = string_to_character(string)
     const string2 = character_to_string(character2)
@@ -52,7 +53,7 @@ function character_serialization_test_simple() {
 
 function character_serialisation_test_advanced() {
     console.log('stash, items and skills character serialisation test')
-    const character = CharacterSystem.template_to_character(HumanTemplate, 'peter', 1 as cell_id)
+    const character = CharacterSystem.template_to_character(HumanTemplate, 'peter', 1 as location_id)
     character.stash.inc(WOOD, 1)
     character.stash.inc(MEAT, 1000)
     character.savings.inc(124 as money)
@@ -69,8 +70,8 @@ function character_serialisation_test_advanced() {
     character._perks.meat_master = true
     character._traits.bipolar_disorder_high = true
 
-    character.explored[2] = true
-    character.explored[10] = true
+    character.explored[2 as cell_id] = true
+    character.explored[10 as cell_id] = true
 
     const string = character_to_string(character)
     const character2 = string_to_character(string)
@@ -118,7 +119,7 @@ function map_coords_test() {
     console.log('coord transformation test')
     let flag = true
     console.log('coord -> id -> coord')
-    
+
     for (let i = 0; i <= 10; i++) {
         for (let j = 0; j <= 10; j++) {
             let [x, y] = Data.World.id_to_coordinate(Data.World.coordinate_to_id([i, j]))

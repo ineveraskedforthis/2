@@ -1,38 +1,33 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.OrderBulk = void 0;
-class OrderBulk {
+exports.MarketOrder = void 0;
+const data_id_js_1 = require("../data/data_id.js");
+class MarketOrder {
     constructor(id, amount, price, typ, tag, owner_id) {
-        this.id = id;
+        if (id == undefined) {
+            this.id = data_id_js_1.DataID.MarketOrders.new_id(owner_id);
+        }
+        else {
+            this.id = id;
+            data_id_js_1.DataID.MarketOrders.register(id, owner_id);
+        }
         this.typ = typ;
-        this.tag = tag;
-        this.owner_id = owner_id;
+        this.material = tag;
         this.amount = amount;
         this.price = price;
-        // this.cell_id = cell_id
+    }
+    get owner_id() {
+        return data_id_js_1.DataID.MarketOrders.owner(this.id);
+    }
+    toJSON() {
+        return {
+            id: this.id,
+            owner_id: this.owner_id,
+            amount: this.amount,
+            material: this.material,
+            price: this.price,
+            typ: this.typ
+        };
     }
 }
-exports.OrderBulk = OrderBulk;
-// export interface OrderItemJson {
-//     id: order_item_id
-//     owner_id: char_id
-//     item: ItemJson
-//     price: money
-//     finished: boolean
-// }
-// export class OrderItem {
-//     id: order_item_id
-//     owner_id: char_id;
-//     // cell_id: cell_id
-//     item: Item;
-//     price: money
-//     finished: boolean
-//     constructor(id: order_item_id, item: Item, price: money, owner_id: char_id, finished: boolean) {
-//         this.id = id;
-//         this.owner_id = owner_id;
-//         // this.cell_id = cell_id;
-//         this.item = item;
-//         this.price = price;
-//         this.finished = finished
-//     }
-// }
+exports.MarketOrder = MarketOrder;

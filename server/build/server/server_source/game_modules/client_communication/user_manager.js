@@ -14,10 +14,10 @@ const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const templates_1 = require("../templates");
-const data_1 = require("../data");
 const system_1 = require("../items/system");
-// import { SWORD_ARGUMENT } from "../items/items_set_up";
 const inventory_events_1 = require("../events/inventory_events");
+const data_id_1 = require("../data/data_id");
+const data_objects_1 = require("../data/data_objects");
 var path = require('path');
 exports.users_data_dict = {};
 var users_data_list = [];
@@ -41,11 +41,11 @@ var UserManagement;
             }
             let data = line.split(' ');
             console.log(data);
-            let char_id = '@';
+            let character_id = '@';
             if (data[1] != '@') {
-                char_id = Number(data[1]);
+                character_id = Number(data[1]);
             }
-            let user = new user_1.UserData(Number(data[0]), char_id, data[2], data[3], data[4] == 'true');
+            let user = new user_1.UserData(Number(data[0]), character_id, data[2], data[3], data[4] == 'true');
             exports.users_data_dict[user.id] = user;
             login_to_user_data[user.login] = user;
             users_data_list.push(user);
@@ -60,14 +60,14 @@ var UserManagement;
         console.log('saving users');
         let str = '';
         for (let item of users_data_list) {
-            str = str + item.id + ' ' + item.char_id + ' ' + item.login + ' ' + item.password_hash + ' ' + item.tester_account + '\n';
+            str = str + item.id + ' ' + item.character_id + ' ' + item.login + ' ' + item.password_hash + ' ' + item.tester_account + '\n';
         }
         fs_1.default.writeFileSync(save_path, str);
         console.log('users saved');
     }
     UserManagement.save_users = save_users;
     function log_out(sw) {
-        if (sw.user_id == '#')
+        if (sw.user_id == undefined)
             return;
         exports.users_online_dict[sw.user_id].logged_in = false;
     }
@@ -87,9 +87,9 @@ var UserManagement;
         return user;
     }
     UserManagement.construct_user = construct_user;
-    function construct_user_data(char_id, login, hash, tester_flag) {
+    function construct_user_data(character_id, login, hash, tester_flag) {
         last_id = (last_id + 1);
-        let user_data = new user_1.UserData(last_id, char_id, login, hash, tester_flag);
+        let user_data = new user_1.UserData(last_id, character_id, login, hash, tester_flag);
         exports.users_data_dict[last_id] = user_data;
         login_to_user_data[login] = user_data;
         users_data_list.push(user_data);
@@ -159,7 +159,7 @@ var UserManagement;
     UserManagement.get_user_data = get_user_data;
     function get_new_character(id, name, model_variation, faction) {
         let user = get_user_data(id);
-        if (user.char_id != '@') {
+        if (user.character_id != '@') {
             console.log('attempt to generate character for user who already owns one');
             return;
         }
@@ -171,10 +171,10 @@ var UserManagement;
         // graci 17 13
         // elodino_free 24 20
         // big_humans 10 28
-        let spawn_point = data_1.Data.World.get_faction(faction)?.spawn_point;
+        let spawn_point = data_id_1.DataID.Faction.spawn(faction);
         if (spawn_point == undefined)
             return;
-        const [x, y] = data_1.Data.World.id_to_coordinate(spawn_point);
+        const [x, y] = data_objects_1.Data.World.id_to_coordinate(spawn_point);
         switch (faction) {
             case "city":
                 {
@@ -221,7 +221,7 @@ var UserManagement;
     }
     UserManagement.get_new_character = get_new_character;
     function add_user_to_update_queue(id, reason) {
-        if (id == '#')
+        if (id == undefined)
             return;
         let user = get_user(id);
         if (user == undefined)
@@ -235,6 +235,7 @@ var UserManagement;
         else {
             causality_graph_1.Update.on(user.updates, reason);
         }
+        console.log("update scheduled", reason);
         users_to_update.add(user);
     }
     UserManagement.add_user_to_update_queue = add_user_to_update_queue;
@@ -265,8 +266,7 @@ var UserManagement;
         if (character == undefined)
             return;
         alerts_1.Alerts.generic_user_alert(user, "character_data", { name: character.name, id: character.id });
-        if (character.current_building != undefined)
-            alerts_1.Alerts.enter_room(character);
+        alerts_1.Alerts.enter_room(character);
         const battle = systems_communication_1.Convert.character_to_battle(character);
         if (battle != undefined) {
             alerts_1.Alerts.battle_to_character(battle, character);

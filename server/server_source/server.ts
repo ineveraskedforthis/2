@@ -56,7 +56,7 @@ app.get('/api/:API_KEY/character/:charID', (req: Request, res: Response) => {
     // console.log(`request cell terrain ${id}`)
     res.set('Access-Control-Allow-Origin', '*');
 
-    
+
     if (req.params.API_KEY != process.env.API_KEY) {
         res.json({valid: false, reason: 'wrong_api_key'})
         return
@@ -67,7 +67,7 @@ app.get('/api/:API_KEY/character/:charID', (req: Request, res: Response) => {
         return
     }
 
-    const character = Data.CharacterDB.from_id(id)
+    const character = Data.Characters.from_number(id)
     if (character == undefined) {
         res.json({valid: false, reason: 'no_character'})
         return
@@ -85,7 +85,7 @@ app.get('/api/:API_KEY/character/:charID', (req: Request, res: Response) => {
         perks: character._perks,
         traits: character._traits,
         user_id: character.user_id,
-    }    
+    }
     res.json(response)
 })
 
@@ -108,44 +108,14 @@ app.get('/api/:API_KEY/cell/:cellID', (req: Request, res: Response) => {
         res.json({valid: false})
         return
     }
+
     const response = {
         valid: true,
-        // terrain: cell.terrain,
-        // development: cell.development,
         scent: cell.rat_scent,
-        local_characters: Data.Cells.get_characters_list_display(cell.id)
-    }    
+        local_characters: DataID.Cells.local_character_id_list(cell.id).map(Convert.character_id_to_character_view)
+    }
     res.json(response)
 })
-
-// app.get('/api/:API_KEY/cell/terrain/:cellID', (req: Request, res: Response) => {
-//     const id = Number(req.params.cellID)
-//     // console.log(`request cell terrain ${id}`)
-
-//     res.set('Access-Control-Allow-Origin', '*');
-//     if (req.params.API_KEY != process.env.API_KEY) {
-//         res.json({valid: false})
-//         return
-//     }
-//     if (isNaN(id)) {
-//         res.json({valid: false})
-//         return
-//     }
-
-//     const cell = MapSystem.id_to_cell(id as cell_id)
-//     if (cell == undefined) {
-//         res.json({valid: false})
-//         return
-//     }
-//     const response = {
-//         valid: true,
-//         terrain: cell.terrain,
-//         development: cell.development,
-//         scent: cell.rat_scent,
-//         population: cell.saved_characters_list.length
-//     }    
-//     res.json(response)
-// })
 
 app.get('/api/:API_KEY/map', (req: Request, res: Response) => {
     res.set('Access-Control-Allow-Origin', '*');
@@ -154,18 +124,16 @@ app.get('/api/:API_KEY/map', (req: Request, res: Response) => {
         return
     }
 
-    const cells = []
-    for (let cell of Data.Cells.list()) {
-        if (cell == undefined) continue
+    const cells: Record<cell_id, CellView> = []
 
+    Data.Cells.for_each(cell => {
         cells[cell.id] = {
             index: cell.id,
             terrain: Data.World.id_to_terrain(cell.id),
-            // development: cell.development,
             scent: cell.rat_scent,
-            population: Data.Cells.get_characters_list_from_cell(cell.id).length
+            population: DataID.Cells.local_character_id_list(cell.id).length
         }
-    }
+    })
 
     res.json({
         width: Data.World.get_world_dimensions()[0],
@@ -186,9 +154,11 @@ server.listen(port, () => {
 
 
 import { launch } from "./game_launch.js";
+import { DataID } from './game_modules/data/data_id.js';
+import { Data } from './game_modules/data/data_objects.js';
 import { SocketManager } from "./game_modules/client_communication/socket_manager.js";
-import { Data } from './game_modules/data.js';
-import { cell_id } from '@custom_types/common.js';
+import { CellView, cell_id } from '@custom_types/common.js';
+import { Convert } from './game_modules/systems_communication.js';
 
 export var io = require('socket.io')(server, { path: '/socket.io' });
 export var socket_manager = new SocketManager(io)

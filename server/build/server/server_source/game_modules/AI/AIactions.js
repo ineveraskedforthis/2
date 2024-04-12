@@ -17,7 +17,7 @@ var AIactions;
             const current = character.stash.get(item.material);
             if (current == 0)
                 continue;
-            system_1.BulkOrders.remove_by_condition(character, item.material);
+            system_1.MarketOrders.remove_by_condition(character, item.material);
             let total_amount = character.stash.get(item.material);
             market_1.EventMarket.sell(character, item.material, total_amount, item.price);
         }
@@ -26,14 +26,14 @@ var AIactions;
                 continue;
             if (item.amount == 0)
                 continue;
-            system_1.BulkOrders.remove_by_condition(character, item.material);
+            system_1.MarketOrders.remove_by_condition(character, item.material);
             market_1.EventMarket.buy(character, item.material, item.amount, item.price);
         }
         manager_1.ActionManager.start_action(crafts_storage_1.craft_actions[craft.id], character, character.cell_id);
     }
     AIactions.craft_bulk = craft_bulk;
     function buy_inputs_to_craft_item(character, item, budget) {
-        // BulkOrders.remove_by_condition(character, )
+        // MarketOrders.remove_by_condition(character, )
         let inputs = item.input;
         const buy = helpers_1.AIhelper.buy_craft_inputs(character, budget, inputs);
         for (let item of buy) {
@@ -41,7 +41,7 @@ var AIactions;
                 continue;
             if (item.amount == 0)
                 continue;
-            system_1.BulkOrders.remove_by_condition(character, item.material);
+            system_1.MarketOrders.remove_by_condition(character, item.material);
             market_1.EventMarket.buy(character, item.material, item.amount, item.price);
         }
     }

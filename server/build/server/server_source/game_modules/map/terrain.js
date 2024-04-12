@@ -1,44 +1,35 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.terrain_can_move = exports.terrain_to_string = exports.string_to_terrain = exports.Terrain = void 0;
-var Terrain;
-(function (Terrain) {
-    Terrain[Terrain["void"] = 0] = "void";
-    Terrain[Terrain["steppe"] = 1] = "steppe";
-    Terrain[Terrain["sea"] = 2] = "sea";
-    Terrain[Terrain["coast"] = 3] = "coast";
-    Terrain[Terrain["rupture"] = 4] = "rupture";
-    Terrain[Terrain["ashlands"] = 5] = "ashlands";
-})(Terrain = exports.Terrain || (exports.Terrain = {}));
+exports.terrain_can_move = exports.terrain_to_string = exports.string_to_terrain = void 0;
 function string_to_terrain(string) {
     switch (string) {
-        case 'void': return Terrain.void;
-        case 'steppe': return Terrain.steppe;
-        case 'sea': return Terrain.sea;
-        case 'coast': return Terrain.coast;
-        case 'rupture': return Terrain.rupture;
-        case 'ashlands': return Terrain.ashlands;
+        case 'void': return 0 /* Terrain.void */;
+        case 'steppe': return 1 /* Terrain.steppe */;
+        case 'sea': return 2 /* Terrain.sea */;
+        case 'coast': return 3 /* Terrain.coast */;
+        case 'rupture': return 4 /* Terrain.rupture */;
+        case 'ashlands': return 5 /* Terrain.ashlands */;
     }
-    return Terrain.void;
+    return 0 /* Terrain.void */;
 }
 exports.string_to_terrain = string_to_terrain;
 function terrain_to_string(terrain) {
     switch (terrain) {
-        case Terrain.void: return 'void';
-        case Terrain.steppe: return 'steppe';
-        case Terrain.sea: return 'sea';
-        case Terrain.coast: return 'coast';
-        case Terrain.rupture: return 'rupture';
-        case Terrain.ashlands: return 'ashlands';
+        case 0 /* Terrain.void */: return 'void';
+        case 1 /* Terrain.steppe */: return 'steppe';
+        case 2 /* Terrain.sea */: return 'sea';
+        case 3 /* Terrain.coast */: return 'coast';
+        case 4 /* Terrain.rupture */: return 'rupture';
+        case 5 /* Terrain.ashlands */: return 'ashlands';
     }
 }
 exports.terrain_to_string = terrain_to_string;
 function terrain_can_move(terrain) {
-    if (terrain == Terrain.sea)
+    if (terrain == 2 /* Terrain.sea */)
         return false;
-    if (terrain == Terrain.rupture)
+    if (terrain == 4 /* Terrain.rupture */)
         return false;
-    if (terrain == Terrain.void)
+    if (terrain == 0 /* Terrain.void */)
         return false;
     return true;
 }

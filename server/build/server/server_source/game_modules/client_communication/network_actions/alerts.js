@@ -4,7 +4,8 @@ exports.Alerts = void 0;
 const system_1 = require("../../battle/system");
 const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
-const data_1 = require("../../data");
+const data_id_1 = require("../../data/data_id");
+const data_objects_1 = require("../../data/data_objects");
 var Alerts;
 (function (Alerts) {
     function not_enough_to_user(user, tag, current, min, max) {
@@ -131,11 +132,11 @@ var Alerts;
             let unit_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
             Event.data = unit_data;
         }
-        for (let unit of Object.values(battle.heap.data)) {
-            if (unit == undefined)
+        for (let unit_id of Object.values(battle.heap)) {
+            if (unit_id == undefined)
                 continue;
-            const character = systems_communication_1.Convert.unit_to_character(unit);
-            generic_character_alert(character, 'battle-event', Event);
+            const unit = data_objects_1.Data.Characters.from_id(unit_id);
+            generic_character_alert(unit, 'battle-event', Event);
         }
     }
     Alerts.battle_event_target_unit = battle_event_target_unit;
@@ -154,10 +155,10 @@ var Alerts;
             let unit_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
             Event.data = unit_data;
         }
-        for (let unit of Object.values(battle.heap.data)) {
+        for (let unit of battle.heap) {
             if (unit == undefined)
                 continue;
-            const character = systems_communication_1.Convert.unit_to_character(unit);
+            const character = data_objects_1.Data.Characters.from_id(unit);
             generic_character_alert(character, 'battle-event', Event);
         }
     }
@@ -177,46 +178,29 @@ var Alerts;
             let unit_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
             Event.data = unit_data;
         }
-        for (let unit of Object.values(battle.heap.data)) {
+        for (let unit of battle.heap) {
             if (unit == undefined)
                 continue;
-            const character = systems_communication_1.Convert.unit_to_character(unit);
+            const character = data_objects_1.Data.Characters.from_id(unit);
             generic_character_alert(character, 'battle-event', Event);
         }
     }
     Alerts.battle_event_target_position = battle_event_target_position;
-    // export function battle_event(battle: Battle, tag:BattleEventTag, unit: Unit, target:Unit, cost: number) {
-    //     battle.last_event_index += 1
-    //     const Event:BattleEventSocket = {
-    //         tag: tag,
-    //         creator: unit.id,
-    //         target_position: target.position,
-    //         target_unit: target.id,
-    //         index: battle.last_event_index,
-    //         cost: cost,
-    //     }
-    //     battle.battle_history[Event.index] = Event
-    //     if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
-    //         let unit_data = Convert.unit_to_unit_socket(unit)
-    //         Event.data = unit_data
-    //     }
-    //     for (let unit of Object.values(battle.heap.data)) {
-    //         if (unit == undefined) continue
-    //         const character = Convert.unit_to_character(unit)
-    //         generic_character_alert(character, 'battle-event', Event)
-    //     }
-    // }
     function battle_update_data(battle) {
         const data = system_1.BattleSystem.data(battle);
-        for (let unit of Object.values(battle.heap.data)) {
-            const character = systems_communication_1.Convert.unit_to_character(unit);
+        for (let unit of battle.heap) {
+            if (unit == undefined)
+                continue;
+            const character = data_objects_1.Data.Characters.from_id(unit);
             generic_character_alert(character, 'battle-update-units', data);
         }
     }
     Alerts.battle_update_data = battle_update_data;
     function battle_update_units(battle) {
-        for (let unit of Object.values(battle.heap.data)) {
-            Alerts.battle_event_simple(battle, 'update', unit, 0);
+        for (let unit of battle.heap) {
+            if (unit == undefined)
+                continue;
+            Alerts.battle_event_simple(battle, 'update', data_objects_1.Data.Characters.from_id(unit), 0);
         }
     }
     Alerts.battle_update_units = battle_update_units;
@@ -230,24 +214,28 @@ var Alerts;
     }
     Alerts.battle_to_character = battle_to_character;
     function new_unit(battle, new_unit) {
-        for (let unit of Object.values(battle.heap.data)) {
-            const character = systems_communication_1.Convert.unit_to_character(unit);
+        for (let unit of battle.heap) {
+            if (unit == undefined)
+                continue;
+            const character = data_objects_1.Data.Characters.from_id(unit);
             generic_character_alert(character, 'battle-new-unit', systems_communication_1.Convert.unit_to_unit_socket(new_unit));
         }
     }
     Alerts.new_unit = new_unit;
     function remove_unit(battle, removed_unit) {
-        for (let unit of Object.values(battle.heap.data)) {
-            const character = systems_communication_1.Convert.unit_to_character(unit);
+        for (let unit of battle.heap) {
+            if (unit == undefined)
+                continue;
+            const character = data_objects_1.Data.Characters.from_id(unit);
             generic_character_alert(character, 'battle-remove-unit', systems_communication_1.Convert.unit_to_unit_socket(removed_unit));
         }
     }
     Alerts.remove_unit = remove_unit;
     function cell_locals(cell) {
-        const locals = data_1.Data.Cells.get_characters_list_from_cell(cell);
+        const locals = data_id_1.DataID.Cells.local_character_id_list(cell);
         for (let item of locals) {
             // const id = item.id
-            const local_character = systems_communication_1.Convert.id_to_character(item);
+            const local_character = data_objects_1.Data.Characters.from_id(item);
             const local_user = systems_communication_1.Convert.character_to_user(local_character);
             if (local_user == undefined) {
                 continue;
@@ -256,12 +244,6 @@ var Alerts;
         }
     }
     Alerts.cell_locals = cell_locals;
-    // export function map_action(user: User, tag: string, data: boolean) {
-    //     Alerts.generic_user_alert(user, 'map-action-status', {tag: tag, value: data})
-    // }
-    // export function cell_action(user: User, tag: string, data: number) {
-    //     generic_user_alert(user, 'cell-action-chance', {tag: tag, value: data})
-    // }
     function action_ping(character, duration, is_move) {
         generic_character_alert(character, 'action-ping', { tag: 'start', time: duration, is_move: is_move });
     }

@@ -1,5 +1,5 @@
 import { Damage } from "./Damage";
-import { damage_type } from "./types";
+import { damage_type } from "@custom_types/common";
 
 export namespace DmgOps {
     export function add(y:Damage, x: Damage):Damage {

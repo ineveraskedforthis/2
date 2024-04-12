@@ -183,6 +183,9 @@ export function init_market_bulk_infrastructure(market_bulk) {
         let price = inputById('create_auction_order_price').value;
         socket.emit('sell-item', { index: Number(item.index), item_type: item.type, price: Number(price) });
     });
-    socket.on('market-data', data => market_bulk.data = data);
+    socket.on('market-data', data => {
+        console.log("update-bulk-market");
+        market_bulk.data = data;
+    });
     return market_bulk;
 }

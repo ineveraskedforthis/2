@@ -1,5 +1,6 @@
 import { EquipSocket, ItemData, equip, equip_slot, slots } from "../../../../shared/inventory";
-import { damage_type, tagModel, tagRACE } from "../types";
+import { tagModel, tagRACE } from "../types";
+import { damage_type } from "@custom_types/common";
 // import { update_character } from "../base_game_classes/affix";
 // import { Character } from "../character/character";
 import { Item } from "../items/item";
@@ -9,7 +10,7 @@ import { DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
 import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
 import { AttackObj } from "../attack/class";
-import { inventory_from_string, inventory_to_string, item_from_string, item_to_string } from "../strings_management";
+import { inventory_from_string, inventory_to_string, item_from_string, item_to_string } from "../data/strings_management";
 
 interface EquipJson {
     weapon?: ItemJson;

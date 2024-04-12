@@ -7,9 +7,6 @@ const AIactions_1 = require("./AIactions");
 const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const CraftItem_1 = require("../craft/CraftItem");
 const helpers_1 = require("../craft/helpers");
-// import { rest_outside } from "./actions";
-// import { base_price } from "./helpers";
-// import { tired } from "./triggers";
 function decide_bulk_craft(character) {
     let result = [];
     (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
@@ -72,8 +69,6 @@ function crafter_routine(character) {
     if (character.action != undefined)
         return;
     if (character.is_player())
-        return;
-    if (character.current_building != undefined)
         return;
     const total_crafting_budget = Math.min(400, character.savings.get() / 4);
     if (Math.random() < 0.5) {

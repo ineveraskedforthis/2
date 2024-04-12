@@ -123,22 +123,23 @@ export class SocketManager {
             socket.on('request-prices-character',  (msg:unknown) => Dialog.request_prices(user, msg))
             socket.on('request-craft', () => Request.craft_data(user))
 
-            socket.on('request-local-buildings', (msg:any) => Request.local_buildings(user))
+            socket.on('request-local-locations', (msg:any) => Request.local_locations(user))
             socket.on('learn-perk',     (msg: undefined|{id: unknown, tag: unknown}) =>
                                             SocketCommand.learn_perk(user, msg))
             socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) =>
                                             SocketCommand.learn_skill(user, msg))
-            socket.on('buy-plot',       (msg: undefined|{id: unknown}) =>
-                                            SocketCommand.buy_plot(user, msg))
-            socket.on('create-plot',    () => SocketCommand.create_plot(user))
+
+            // socket.on('buy-plot',       (msg: undefined|{id: unknown}) =>
+            //                                 SocketCommand.buy_plot(user, msg))
+            // socket.on('create-plot',    () => SocketCommand.create_plot(user))
 
 
-            socket.on('build-building',     (msg: undefined|{id: unknown, type: unknown}) => SocketCommand.develop_plot(user, msg))
-            socket.on('change-rent-price',  (msg: undefined|{id: unknown, price: unknown}) => SocketCommand.change_rent_price(user, msg))
-            socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
-            socket.on('leave-room',         () => SocketCommand.leave_room(user))
+            // socket.on('build-location',     (msg: undefined|{id: unknown, type: unknown}) => SocketCommand.develop_plot(user, msg))
+            // socket.on('change-rent-price',  (msg: undefined|{id: unknown, price: unknown}) => SocketCommand.change_rent_price(user, msg))
+            // socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
+            // socket.on('leave-room',         () => SocketCommand.leave_room(user))
 
-            socket.on('repair-building',    (msg: undefined|{id: unknown}) => SocketCommand.repair_building(user, msg))
+            socket.on('repair-location',    (msg: undefined|{id: unknown}) => SocketCommand.repair_location(user, msg))
 
             socket.on('request-tags', () => {socket.emit('tags', materials.get_materials_json());})
 
@@ -165,7 +166,7 @@ export class SocketManager {
     }
 
     create_character(sw: SocketWrapper, data: {name: string, eyes: number, chin: number, mouth: number, faction: string, race: string}) {
-        if (sw.user_id == '#') return
+        if (sw.user_id == undefined) return
         let user = UserManagement.get_user(sw.user_id)
 
         if (!Validator.isAlphaNum(data.name)) {
@@ -190,10 +191,10 @@ export class SocketManager {
     }
 
     play(sw: SocketWrapper) {
-        if (sw.user_id == '#') return
+        if (sw.user_id == undefined) return
         let user = UserManagement.get_user(sw.user_id)
 
-        if (user.data.char_id == '@') {
+        if (user.data.character_id == '@') {
             Alerts.generic_user_alert(user, 'no-character', '')
         } else {
             UserManagement.send_character_to_user(user)

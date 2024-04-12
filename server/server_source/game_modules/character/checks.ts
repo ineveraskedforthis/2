@@ -1,5 +1,6 @@
 import { ARROW_BONE, ZAZ } from "../manager_classes/materials_manager";
-import { weapon_attack_tag, WEAPON_TYPE } from "../types";
+import { WEAPON_TYPE } from "../types";
+import { weapon_attack_tag } from "@custom_types/common";
 import { Item } from "../items/item";
 import { Character } from "./character";
 import { CharacterSystem } from "./system";

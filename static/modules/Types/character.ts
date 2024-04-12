@@ -12,49 +12,6 @@ interface BulkAmountInterface extends ValueInterface {
     material_string: string;
 }
 
-interface CharacterView {
-    id: number;
-    name: string;
-    dead: boolean;
-}
-
-interface BulkOrderView {
-    tag: number,
-    amount: number,
-    price: number,
-    id: number,
-    typ: string,
-    owner_id: number,
-    owner_name: string
-}
-
-interface CraftItemView {
-    id: string
-    output_model: string
-    input: ItemAmountView[]
-}
-
-interface CraftBulkUpdateView {
-    tag: string
-    value: ItemAmountView[]
-}
-
-interface CraftItemUpdateView {
-    tag: string
-    value: number
-}
-
-interface ItemAmountView {
-    amount: number,
-    material: number
-}
-
-interface CraftBulkView {
-    id: string
-    output: ItemAmountView[]
-    input: ItemAmountView[]
-}
-
 type DamageTag = 'fire'|'blunt'|'pierce'|'slice'
 type PerDamageNumber = Record<DamageTag, number>
 

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Validator = void 0;
-const systems_communication_1 = require("../../systems_communication");
+const data_objects_1 = require("../../data/data_objects");
 const a = 'a'.charCodeAt(0);
 const z = 'z'.charCodeAt(0);
 const A = 'A'.charCodeAt(0);
@@ -13,7 +13,7 @@ var Validator;
     function valid_user(user) {
         if (!user.logged_in)
             return false;
-        if (user.data.char_id == -1)
+        if (user.data.character_id == -1)
             return false;
         if (user.data.id == -1)
             return false;
@@ -73,7 +73,7 @@ var Validator;
         const data = Number(target);
         if (isNaN(data))
             return [undefined, undefined, undefined];
-        const target_character = systems_communication_1.Convert.number_to_character(data);
+        const target_character = data_objects_1.Data.Characters.from_number(data);
         if (target_character == undefined)
             return [undefined, undefined, undefined];
         console.log('target character is vaalid');

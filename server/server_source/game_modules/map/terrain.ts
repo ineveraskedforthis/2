@@ -1,11 +1,4 @@
-export enum Terrain {
-    void,
-    steppe,
-    sea,
-    coast,
-    rupture,
-    ashlands,
-}
+import { Terrain } from "@custom_types/common";
 
 export function string_to_terrain(string: string){
     switch(string) {

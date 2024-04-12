@@ -100,7 +100,7 @@ export var tab;
                     socket.emit('send-market-data', true);
                 }
                 else {
-                    socket.emit('send-market-data', false);
+                    socket.emit('send-market-data', true);
                 }
             };
             {

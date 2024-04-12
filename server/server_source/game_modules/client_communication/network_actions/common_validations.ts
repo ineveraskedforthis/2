@@ -1,4 +1,5 @@
 import { Character } from "../../character/character";
+import { Data } from "../../data/data_objects";
 import { Convert } from "../../systems_communication";
 import { User } from "../user";
 
@@ -19,7 +20,7 @@ export type UserCredentials = {
 export namespace Validator {
     export function valid_user(user: User) {
         if (!user.logged_in) return false
-        if (user.data.char_id == -1) return false
+        if (user.data.character_id == -1) return false
         if (user.data.id == -1) return false
         return true
     }
@@ -67,7 +68,7 @@ export namespace Validator {
         // console.log('user is valid')
         const data = Number(target)
         if (isNaN(data)) return [undefined, undefined, undefined]
-        const target_character = Convert.number_to_character(data)
+        const target_character = Data.Characters.from_number(data)
         if (target_character == undefined) return [undefined, undefined, undefined]
         console.log('target character is vaalid')
 

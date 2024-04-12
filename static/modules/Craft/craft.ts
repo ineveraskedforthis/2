@@ -1,3 +1,4 @@
+import { CraftBulkView, CraftItemUpdateView, CraftItemView } from "@custom_types/responses.js";
 import { CraftBulkTemplate, TaggedCraftBulk, TaggedCraftItem } from "../../../shared/inventory.js";
 import { div } from "../../widgets/Div/custom_div.js";
 import { Column, List } from "../../widgets/List/list.js";

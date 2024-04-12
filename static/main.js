@@ -3,7 +3,6 @@ import { update_stash, update_tags } from './modules/Stash/stash.js';
 import { init_authentication_control } from './modules/Auth/login.js';
 import { BattleImage } from './modules/Battle/battle_image.js';
 import { init_battle_control } from './modules/Battle/battle_image_init.js';
-import { init_buildings } from './modules/Buildings/request_buildings.js';
 import { set_up_character_creation_UI } from './modules/CharacterCreation/main.js';
 import { set_up_character_model, update_equip_image } from './modules/CharacterImage/main.js';
 import { CharacterInfoCorner } from './modules/CharacterInfo/main.js';
@@ -26,6 +25,7 @@ import { globals } from './modules/globals.js';
 import { Value } from './modules/Values/collection.js';
 import { equip_list } from './modules/Equipment/equipment.js';
 import { new_craft_bulk, new_craft_item, new_craft_table, update_craft_item_div } from './modules/Craft/craft.js';
+import { init_locations } from './modules/Buildings/request_buildings.js';
 // noselect tabs
 [...document.querySelectorAll(".noselect")].forEach(el => el.addEventListener('contextmenu', e => e.preventDefault()));
 socket.on('connect', () => {
@@ -46,7 +46,7 @@ set_up_market_headers();
 init_detailed_character_statistics();
 init_character_list_interactions();
 init_market_items();
-init_buildings();
+init_locations();
 init_battle_control();
 const market_bulk = new_market_bulk();
 socket.on("character_data", (msg) => {

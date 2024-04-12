@@ -1,21 +1,19 @@
-import { AttackAction, BattleEventSocket, BattleEventTag, battle_position, unit_id } from "../../../../../shared/battle_data";
+import { BattleEventSocket, BattleEventTag, battle_position } from "../../../../../shared/battle_data";
 import { ItemData } from "../../../../../shared/inventory";
 import { AttackObj } from "../../attack/class";
 import { Battle } from "../../battle/classes/battle";
-import { Unit } from "../../battle/classes/unit";
 import { BattleSystem } from "../../battle/system";
 import { Character } from "../../character/character";
 import { CraftBulkTemplate, CraftItemTemplate, box } from "@custom_types/inventory";
-// import { Cell } from "../../map/cell";
-import { OrderBulkJson } from "../../market/classes";
+import { MarketOrderJson } from "../../market/classes";
 import { Damage } from "../../Damage";
 import { Convert } from "../../systems_communication";
 import { UI_Part } from "../causality_graph";
 import { User } from "../user";
 import { UserManagement } from "../user_manager";
-import { Cell } from "../../map/DATA_LAYOUT_CELL";
-import { Data } from "../../data";
 import { cell_id } from "../../../../../shared/common";
+import { DataID } from "../../data/data_id";
+import { Data } from "../../data/data_objects";
 
 export namespace Alerts {
     export function not_enough_to_user(
@@ -28,7 +26,7 @@ export namespace Alerts {
         generic_user_alert(user, 'not_enough', {tag: tag, min: min, max: max, cur: current})
     }
 
-    export function market_data(user: User, data: OrderBulkJson[]) {
+    export function market_data(user: User, data: MarketOrderJson[]) {
         generic_user_alert(user, 'market-data', data)
     }
     export function item_market_data(user: User, data: ItemData[]) {
@@ -133,7 +131,7 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'b-action-damage', {tag: tag, value: value})
     }
 
-    export function battle_event_target_unit(battle: Battle, tag: BattleEventTag, unit: Unit, target: Unit, cost: number) {
+    export function battle_event_target_unit(battle: Battle, tag: BattleEventTag, unit: Character, target: Character, cost: number) {
         battle.last_event_index += 1
         const Event:BattleEventSocket = {
             tag: tag,
@@ -151,14 +149,14 @@ export namespace Alerts {
             Event.data = unit_data
         }
 
-        for (let unit of Object.values(battle.heap.data)) {
-            if (unit == undefined) continue
-            const character = Convert.unit_to_character(unit)
-            generic_character_alert(character, 'battle-event', Event)
+        for (let unit_id of Object.values(battle.heap)) {
+            if (unit_id == undefined) continue;
+            const unit = Data.Characters.from_id(unit_id)
+            generic_character_alert(unit, 'battle-event', Event)
         }
     }
 
-    export function battle_event_simple(battle: Battle, tag: BattleEventTag, unit: Unit, cost: number) {
+    export function battle_event_simple(battle: Battle, tag: BattleEventTag, unit: Character, cost: number) {
         battle.last_event_index += 1
         const Event:BattleEventSocket = {
             tag: tag,
@@ -176,14 +174,14 @@ export namespace Alerts {
             Event.data = unit_data
         }
 
-        for (let unit of Object.values(battle.heap.data)) {
+        for (let unit of battle.heap) {
             if (unit == undefined) continue
-            const character = Convert.unit_to_character(unit)
+            const character = Data.Characters.from_id(unit)
             generic_character_alert(character, 'battle-event', Event)
         }
     }
 
-    export function battle_event_target_position(battle: Battle, tag: BattleEventTag, unit: Unit, position: battle_position, cost: number) {
+    export function battle_event_target_position(battle: Battle, tag: BattleEventTag, unit: Character, position: battle_position, cost: number) {
         battle.last_event_index += 1
         const Event:BattleEventSocket = {
             tag: tag,
@@ -201,53 +199,30 @@ export namespace Alerts {
             Event.data = unit_data
         }
 
-        for (let unit of Object.values(battle.heap.data)) {
+        for (let unit of battle.heap) {
             if (unit == undefined) continue
-            const character = Convert.unit_to_character(unit)
+            const character = Data.Characters.from_id(unit)
             generic_character_alert(character, 'battle-event', Event)
         }
     }
 
-    // export function battle_event(battle: Battle, tag:BattleEventTag, unit: Unit, target:Unit, cost: number) {
-    //     battle.last_event_index += 1
-    //     const Event:BattleEventSocket = {
-    //         tag: tag,
-    //         creator: unit.id,
-    //         target_position: target.position,
-    //         target_unit: target.id,
-    //         index: battle.last_event_index,
-    //         cost: cost,
-    //     }
-
-    //     battle.battle_history[Event.index] = Event
-
-    //     if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
-    //         let unit_data = Convert.unit_to_unit_socket(unit)
-    //         Event.data = unit_data
-    //     }
-
-    //     for (let unit of Object.values(battle.heap.data)) {
-    //         if (unit == undefined) continue
-    //         const character = Convert.unit_to_character(unit)
-    //         generic_character_alert(character, 'battle-event', Event)
-    //     }
-    // }
-
     export function battle_update_data(battle: Battle) {
         const data = BattleSystem.data(battle)
-        for (let unit of Object.values(battle.heap.data)) {
-            const character = Convert.unit_to_character(unit)
+        for (let unit of battle.heap) {
+            if (unit == undefined) continue;
+            const character = Data.Characters.from_id(unit)
             generic_character_alert(character, 'battle-update-units', data)
         }
     }
 
     export function battle_update_units(battle: Battle) {
-        for (let unit of Object.values(battle.heap.data)) {
-            Alerts.battle_event_simple(battle, 'update', unit, 0)
+        for (let unit of battle.heap) {
+            if (unit == undefined) continue;
+            Alerts.battle_event_simple(battle, 'update', Data.Characters.from_id(unit), 0)
         }
     }
 
-    export function battle_update_unit(battle: Battle, unit: Unit) {
+    export function battle_update_unit(battle: Battle, unit: Character) {
         Alerts.battle_event_simple(battle, 'update', unit, 0)
     }
 
@@ -256,38 +231,32 @@ export namespace Alerts {
         generic_character_alert(character, 'battle-update-units', data)
     }
 
-    export function new_unit(battle: Battle, new_unit: Unit) {
-        for (let unit of Object.values(battle.heap.data)) {
-            const character = Convert.unit_to_character(unit)
+    export function new_unit(battle: Battle, new_unit: Character) {
+        for (let unit of battle.heap) {
+            if (unit == undefined) continue;
+            const character = Data.Characters.from_id(unit)
             generic_character_alert(character, 'battle-new-unit', Convert.unit_to_unit_socket(new_unit))
         }
     }
 
-    export function remove_unit(battle: Battle, removed_unit: Unit) {
-        for (let unit of Object.values(battle.heap.data)) {
-            const character = Convert.unit_to_character(unit)
+    export function remove_unit(battle: Battle, removed_unit: Character) {
+        for (let unit of battle.heap) {
+            if (unit == undefined) continue;
+            const character = Data.Characters.from_id(unit)
             generic_character_alert(character, 'battle-remove-unit', Convert.unit_to_unit_socket(removed_unit))
         }
     }
 
     export function cell_locals(cell: cell_id) {
-        const locals = Data.Cells.get_characters_list_from_cell(cell)
+        const locals = DataID.Cells.local_character_id_list(cell)
         for (let item of locals) {
             // const id = item.id
-            const local_character = Convert.id_to_character(item)
+            const local_character = Data.Characters.from_id(item)
             const local_user = Convert.character_to_user(local_character)
             if (local_user == undefined) {continue}
             UserManagement.add_user_to_update_queue(local_user.data.id, UI_Part.LOCAL_CHARACTERS)
         }
     }
-
-    // export function map_action(user: User, tag: string, data: boolean) {
-    //     Alerts.generic_user_alert(user, 'map-action-status', {tag: tag, value: data})
-    // }
-
-    // export function cell_action(user: User, tag: string, data: number) {
-    //     generic_user_alert(user, 'cell-action-chance', {tag: tag, value: data})
-    // }
 
     export function action_ping(character: Character, duration: number, is_move:boolean) {
         generic_character_alert(character, 'action-ping', {tag: 'start', time: duration, is_move: is_move})

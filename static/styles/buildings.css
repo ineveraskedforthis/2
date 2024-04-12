@@ -1,4 +1,4 @@
-.buildings-list {
+.locations-list {
     width: 60%;
     display: flex;
     flex-wrap: wrap;
@@ -10,12 +10,12 @@
     background-repeat: no-repeat;
 }
 
-.buildings-actions {
+.locations-actions {
     height: 100%;
     width: 40%
 }
 
-.buildings-actions > div {
+.locations-actions > div {
     margin-bottom: 10px;
     height: 40px;
 

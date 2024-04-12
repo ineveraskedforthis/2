@@ -1,5 +1,4 @@
 import { cell_id, money } from "@custom_types/common"
-import { Data } from "./data"
 import { Event } from "./events/events"
 import { ItemSystem } from "./items/system"
 import { ARROW_BONE, ELODINO_FLESH, FOOD, GRACI_HAIR, RAT_BONE, RAT_SKIN, WOOD, ZAZ } from "./manager_classes/materials_manager"
@@ -10,6 +9,8 @@ import { BerserkRatTemplate, BigRatTemplate, MageRatTemplate, RatTemplate } from
 import { CharacterTemplate, ModelVariant } from "./types"
 import { BallTemplate } from "./races/TEMPLATE_OTHERS"
 import { Character } from "./character/character"
+import { Data } from "./data/data_objects"
+import { DataID } from "./data/data_id"
 
 const LUMP_OF_MONEY = 1000 as money
 const TONS_OF_MONEY = 30000 as money
@@ -18,9 +19,10 @@ export namespace Template {
     export namespace Character {
         function Base(template:CharacterTemplate, name: string|undefined, model: ModelVariant|undefined ,x: number, y: number, faction_id: string|undefined) {
             const cell = Data.World.coordinate_to_id([x, y])
-            let character = Event.new_character(template, name, cell, model)
-            character.home_cell_id = cell
-            if (faction_id != undefined) Data.Reputation.set(faction_id, character.id, "member")
+            const location = DataID.Cells.main_location(cell)
+            let character = Event.new_character(template, name, location, model)
+
+            if (faction_id != undefined) DataID.Reputation.set(character.id, faction_id, "member")
             return character
         }
 
@@ -84,7 +86,7 @@ export namespace Template {
                 case "steppe":{var human = HumanSteppe(x,y, name);break}
                 case "city":{var human = HumanCity(x, y, name);break}
             }
-            
+
             human._skills.polearms = 60
             human._skills.evasion += 10
             human._skills.blocking += 10
@@ -198,7 +200,7 @@ export namespace Template {
             let rat = Base(MageRatTemplate, name, undefined, x, y, 'rats')
             rat._traits.claws = true
             rat._perks.magic_bolt = true
-            rat._perks.mage_initiation = true 
+            rat._perks.mage_initiation = true
             rat.stash.inc(ZAZ, 5)
             return rat
         }
@@ -281,7 +283,7 @@ export namespace Template {
             master._skills.clothier = 100
             master._perks.skin_armour_master = true
             master.stash.inc(RAT_SKIN, 50)
-            master.savings.inc(TONS_OF_MONEY)            
+            master.savings.inc(TONS_OF_MONEY)
             return master
         }
 
@@ -290,7 +292,7 @@ export namespace Template {
             master._skills.clothier = 100
             master._perks.shoemaker = true
             master.stash.inc(RAT_SKIN, 50)
-            master.savings.inc(TONS_OF_MONEY)            
+            master.savings.inc(TONS_OF_MONEY)
             return master
         }
 
@@ -301,7 +303,7 @@ export namespace Template {
             master._perks.weapon_maker = true
             master.stash.inc(WOOD, 15)
             master.savings.inc(TONS_OF_MONEY)
-            
+
             return master
         }
 
@@ -312,7 +314,7 @@ export namespace Template {
             master._perks.weapon_maker = true
             master.stash.inc(RAT_BONE, 40)
             master.savings.inc(TONS_OF_MONEY)
-            
+
             return master
         }
 

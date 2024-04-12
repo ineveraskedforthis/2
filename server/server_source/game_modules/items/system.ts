@@ -1,5 +1,5 @@
 import { ItemData, affix } from "../../../../shared/inventory";
-import { damage_type } from "../types";
+import { damage_type } from "@custom_types/common";
 import { attack_affixes_effects, damage_affixes_effects, get_power, protection_affixes_effects } from "../base_game_classes/affix";
 import { DmgOps } from "../damage_types";
 import { Damage } from "../Damage";

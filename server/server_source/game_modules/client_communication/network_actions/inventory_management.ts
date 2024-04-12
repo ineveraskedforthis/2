@@ -5,13 +5,13 @@ import { Alerts } from "./alerts";
 import { Convert } from "../../systems_communication";
 import { EventInventory } from "../../events/inventory_events";
 import { EventMarket } from "../../events/market";
-import { Data } from "../../data";
 import { AuctionResponce, } from "../../market/system";
-import { order_bulk_id } from "../../types";
+import { market_order_id } from "@custom_types/common";
 import { Character } from "../../character/character";
 // import { slot } from "../../../../../shared/inventory";
 import { money } from "../../../../../shared/common";
 import { equip_slot } from "@custom_types/inventory";
+import { Data } from "../../data/data_objects";
 
 function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
     return (sw: SocketWrapper) => {
@@ -174,9 +174,9 @@ export namespace InventoryCommands {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
 
-        const order = Convert.id_to_bulk_order(order_id)
+        const order = Data.MarketOrders.from_number(order_id)
         if (order == undefined) return
-        const seller = Convert.id_to_character(order.owner_id)
+        const seller = Data.Characters.from_id(order.owner_id)
 
         if (seller.cell_id != character.cell_id) return;
         if (isNaN(amount)) return
@@ -192,10 +192,10 @@ export namespace InventoryCommands {
         user.socket.emit('alert', responce)
     }
 
-    function validate_item_buyout(msg: unknown): msg is {char_id: number, item_id: number} {
+    function validate_item_buyout(msg: unknown): msg is {character_id: number, item_id: number} {
         if (msg == undefined) return false
         if (typeof msg != 'object') return false
-        if (!('char_id' in msg)) return false
+        if (!('character_id' in msg)) return false
         if (!('item_id' in msg)) return false
         return true
     }
@@ -205,13 +205,13 @@ export namespace InventoryCommands {
         if (character == undefined) return
         if (!validate_item_buyout(msg)) return
 
-        const character_id = msg.char_id
+        const character_id = msg.character_id
         const item_id = msg.item_id
 
         if (typeof character_id !== 'number') return
         if (typeof item_id !== 'number') return
 
-        let seller = Convert.id_to_character(character_id)
+        let seller = Data.Characters.from_number(character_id)
         if (seller == undefined) return
 
         EventMarket.buyout_item(seller, character, item_id)
@@ -223,7 +223,7 @@ export namespace InventoryCommands {
 
         if (isNaN(data)) return
 
-        let order = Data.BulkOrders.from_id(data as order_bulk_id)
+        let order = Data.MarketOrders.from_id(data as market_order_id)
         if (order == undefined) return
 
         if (order.owner_id != character.id) {

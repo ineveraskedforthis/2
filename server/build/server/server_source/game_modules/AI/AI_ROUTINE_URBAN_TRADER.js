@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TraderRoutine = void 0;
-const data_1 = require("../data");
 const market_1 = require("../events/market");
-const systems_communication_1 = require("../systems_communication");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const AI_TRIGGERS_1 = require("./AI_TRIGGERS");
+const data_id_1 = require("../data/data_id");
+const data_objects_1 = require("../data/data_objects");
 function TraderRoutine(character) {
     // console.log("???")
     if (character.in_battle())
@@ -15,8 +15,6 @@ function TraderRoutine(character) {
     if (character.action != undefined)
         return;
     if (character.is_player())
-        return;
-    if (character.current_building != undefined)
         return;
     (0, AI_ROUTINE_GENERIC_1.GenericRest)(character);
     if (character.ai_state == "idle" /* AIstate.Idle */) {
@@ -62,13 +60,13 @@ function TraderRoutine(character) {
             character.ai_state = "patrol_prices" /* AIstate.PatrolPrices */;
             return;
         }
-        let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
+        let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
         let best_profit = 0;
         let target = undefined;
         // buying stuff according to price beliefs
         for (let item of orders) {
-            let order = data_1.Data.BulkOrders.from_id(item);
-            let profit = AI_SCRIPTED_VALUES_1.AItrade.sell_price_bulk(character, order.tag) - order.price;
+            let order = data_objects_1.Data.MarketOrders.from_id(item);
+            let profit = AI_SCRIPTED_VALUES_1.AItrade.sell_price_bulk(character, order.material) - order.price;
             if ((profit > best_profit) && (order.price < character.savings.get())) {
                 best_profit = profit;
                 target = order;

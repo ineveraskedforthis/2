@@ -4,13 +4,9 @@ exports.AI_ACTIONS = void 0;
 const actions_00_1 = require("../actions/actions_00");
 const manager_1 = require("../actions/manager");
 const system_1 = require("../battle/system");
-const systems_communication_1 = require("../systems_communication");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const helpers_1 = require("./helpers");
-const effects_1 = require("../events/effects");
-const data_1 = require("../data");
 const scripted_values_1 = require("../events/scripted_values");
-const system_2 = require("../map/system");
 const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const constraints_1 = require("./constraints");
 const materials_manager_1 = require("../manager_classes/materials_manager");
@@ -18,6 +14,7 @@ const AI_TRIGGERS_1 = require("./AI_TRIGGERS");
 const AI_CONSTANTS_1 = require("./AI_CONSTANTS");
 const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
 const AI_ROUTINE_URBAN_TRADER_1 = require("./AI_ROUTINE_URBAN_TRADER");
+const data_objects_1 = require("../data/data_objects");
 function rest_budget(character) {
     let budget = character.savings.get();
     if (budget < 50) {
@@ -32,8 +29,8 @@ exports.AI_ACTIONS = {
     FIGHT: {
         action: (character) => {
             let target = helpers_1.AIhelper.enemies_in_cell(character);
-            const target_char = systems_communication_1.Convert.id_to_character(target);
-            if (target_char != undefined) {
+            if (target != undefined) {
+                const target_char = data_objects_1.Data.Characters.from_id(target);
                 system_1.BattleSystem.start_battle(character, target_char);
                 return;
             }
@@ -48,30 +45,26 @@ exports.AI_ACTIONS = {
     REST: {
         action: (character) => {
             character.ai_state = "go_to_rest" /* AIstate.GoToRest */;
-            if (character.current_building != undefined) {
-                let building = data_1.Data.Buildings.from_id(character.current_building);
-                let tier = scripted_values_1.ScriptedValue.building_rest_tier(building.type, character);
-                let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, building.durability, character.race);
-                const stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, building.durability, character.race);
-                if ((fatigue_target + 1 >= character.get_fatigue()) && (stress_target + 1 >= character.get_stress())) {
-                    effects_1.Effect.leave_room(character.id);
-                    character.ai_memories.push("rested" /* AImemory.RESTED */);
-                }
-                return;
+            let location = data_objects_1.Data.Locations.from_id(character.location_id);
+            let tier = scripted_values_1.ScriptedValue.rest_tier(character, location);
+            let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
+            const stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
+            if ((fatigue_target + 1 >= character.get_fatigue()) && (stress_target + 1 >= character.get_stress())) {
+                character.ai_memories.push("rested" /* AImemory.RESTED */);
             }
-            if (!AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
-                (0, ACTIONS_BASIC_1.home_walk)(character);
-                return;
-            }
-            else {
-                let building_to_rest = (0, AI_ROUTINE_GENERIC_1.find_building_to_rest)(character, rest_budget(character));
-                if (building_to_rest == undefined) {
-                    manager_1.ActionManager.start_action(actions_00_1.CharacterAction.REST, character, character.cell_id);
-                    character.ai_memories.push("rested" /* AImemory.RESTED */);
-                    return;
-                }
-                effects_1.Effect.rent_room(character.id, building_to_rest);
-            }
+            return;
+            // if (!AI_TRIGGER.at_home(character)) {
+            //     home_walk(character)
+            //     return
+            // } else {
+            //     let location_to_rest = find_location_to_rest(character, rest_budget(character))
+            //     if (location_to_rest == undefined) {
+            //         ActionManager.start_action(CharacterAction.REST, character, character.cell_id);
+            //         character.ai_memories.push(AImemory.RESTED)
+            //         return
+            //     }
+            //     Effect.rent_room(character.id, location_to_rest)
+            // }
         },
         utility: (character) => {
             if (has_memory(character, "rested" /* AImemory.RESTED */))
@@ -85,8 +78,8 @@ exports.AI_ACTIONS = {
         action(character) {
             character.ai_state = "patrol" /* AIstate.Patrol */;
             let target = helpers_1.AIhelper.free_rats_in_cell(character);
-            const target_char = systems_communication_1.Convert.id_to_character(target);
-            if (target_char != undefined) {
+            if (target != undefined) {
+                const target_char = data_objects_1.Data.Characters.from_id(target);
                 system_1.BattleSystem.start_battle(character, target_char);
             }
             else {
@@ -104,7 +97,6 @@ exports.AI_ACTIONS = {
     SELL_LOOT: {
         action: (character) => {
             character.ai_state = "go_to_market" /* AIstate.GoToMarket */;
-            effects_1.Effect.leave_room(character.id);
             if (AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
                 (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
                 (0, ACTIONS_BASIC_1.remove_orders)(character);
@@ -188,7 +180,6 @@ exports.AI_ACTIONS = {
     CRAFT: {
         action(character) {
             character.ai_state = "craft" /* AIstate.Craft */;
-            effects_1.Effect.leave_room(character.id);
             (0, AI_ROUTINE_CRAFTER_1.crafter_routine)(character);
         },
         utility(character) {
@@ -236,7 +227,7 @@ exports.AI_ACTIONS = {
     FISH: {
         action(character) {
             character.ai_state = "patrol" /* AIstate.Patrol */;
-            if (system_2.MapSystem.can_fish(character.cell_id)) {
+            if (data_objects_1.Data.Locations.from_id(character.location_id).fish > 0) {
                 manager_1.ActionManager.start_action(actions_00_1.CharacterAction.FISH, character, character.cell_id);
             }
             else {
@@ -272,7 +263,7 @@ exports.AI_ACTIONS = {
     CUT_WOOD: {
         action(character) {
             character.ai_state = "patrol" /* AIstate.Patrol */;
-            if (!system_2.MapSystem.has_wood(character.cell_id)) {
+            if (data_objects_1.Data.Locations.from_id(character.location_id).forest == 0) {
                 (0, ACTIONS_BASIC_1.random_walk)(character, constraints_1.simple_constraints);
                 return;
             }

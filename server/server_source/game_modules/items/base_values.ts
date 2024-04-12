@@ -1,7 +1,7 @@
 import { equip_slot } from "@custom_types/inventory";
 import { Damage } from "../Damage";
 import { item_model_tag, item_model_tags } from "./model_tags";
-import { weapon_tag } from "../types";
+import { weapon_tag } from "@custom_types/common";
 import { ITEM_MATERIAL } from "./ITEM_MATERIAL";
 import { ELODINO_FLESH, GRACI_HAIR, materials, RAT_BONE, RAT_SKIN, STEEL, TEXTILE, WOOD } from "../manager_classes/materials_manager";
 

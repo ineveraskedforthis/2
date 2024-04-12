@@ -25,15 +25,20 @@ export interface CharacterMapAction {
     immediate?: boolean;
 }
 
-export type TriggerResponse = 
-    { response: 'TIRED' } 
-    | { response: 'NO_RESOURCE' } 
-    | { response: 'IN_BATTLE' } 
+export type TriggerResponse =
+    { response: 'TIRED' }
+    | { response: 'NO_RESOURCE' }
+    | { response: 'IN_BATTLE' }
     | { response: 'OK' }
     | { response: 'ZERO_MOTION' }
     | { response: 'INVALID_MOTION'}
     | { response: 'IMPOSSIBLE_ACTION'}
     | { response: 'ALREADY_IN_AN_ACTION'}
+    | { response: 'NO TREES'}
+    | { response: 'NO COTTON'}
+    | { response: 'NO BERRIES'}
+    | { response: 'NO FISH'}
+    | { response: 'NO GAME'}
 
 export type MapActionTrigger = (character: Character) => TriggerResponse;
 export type MapActionTriggerTargeted = (character: Character, target_cell: cell_id) => TriggerResponse;

@@ -1,6 +1,7 @@
 import { materials, MEAT, FISH, FOOD } from "../manager_classes/materials_manager";
 import { material_index, skill } from "@custom_types/inventory";
-import { CharacterTemplate, damage_type, weapon_attack_tag, weapon_tag } from "../types";
+import { CharacterTemplate } from "../types";
+import { damage_type, location_id, weapon_attack_tag, weapon_tag } from "@custom_types/common";
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
@@ -8,27 +9,29 @@ import { damage_types, DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
 import { Character } from "./character";
 import { Loot } from "../races/generate_loot";
-import { Data } from "../data";
 import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
 import { cell_id, money } from "@custom_types/common";
 import { is_crafting_skill, is_melee_skill } from "./SkillList";
-import { has_cooking_tools, has_crafting_tools } from "../DATA_LAYOUT_BUILDING";
 import { Perks } from "@custom_types/character";
 import { BaseStats } from "../races/stats";
 import { BaseResists } from "../races/resists";
 import { ItemSystem } from "../items/system";
+import { Data } from "../data/data_objects";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 
 export namespace CharacterSystem {
-    export function template_to_character(template: CharacterTemplate, name: string|undefined, cell_id: cell_id) {
-        Data.CharacterDB.increase_id()
+    export function template_to_character(template: CharacterTemplate, name: string|undefined, location: location_id) {
         if (name == undefined) name = template.name_generator();
-        let character = new Character(Data.CharacterDB.id(), undefined, undefined, '#', cell_id, name, template)
-        Data.CharacterDB.set(Data.CharacterDB.id(), character)
-        character.explored[cell_id] = true
+        const character = Data.Characters.create(location, name, template)
+        character.explored[character.cell_id] = true
+
+        for (const cell_id of Data.World.neighbours(character.cell_id)) {
+            character.explored[cell_id] = true
+        }
+
         return character
     }
 
@@ -111,16 +114,18 @@ export namespace CharacterSystem {
             result = 0
         }
 
-        if (character.current_building != undefined) {
-            let building = Data.Buildings.from_id(character.current_building)
+        let location = Data.Locations.from_id(character.location_id)
 
-            if (has_cooking_tools(building.type) && skill == 'cooking') {
-                result = (result + 5) * 1.2
-            }
+        if (location.has_cooking_tools && skill == 'cooking') {
+            result = (result + 5) * 1.2
+        }
 
-            if (has_crafting_tools(building.type) && is_crafting_skill(skill)) {
-                result = (result + 5) * 1.2
-            }
+        if (location.has_bowmaking_tools && skill == 'woodwork') {
+            result = (result + 5) * 1.2
+        }
+
+        if (location.has_clothier_tools && skill == 'clothier') {
+            result = (result + 5) * 1.2
         }
 
         if (skill == 'ranged') {
@@ -301,31 +306,31 @@ export namespace CharacterSystem {
         character_state_update_timer += dt
 
         if (ai_campaign_decision_timer > 8) {
-            for (let character of Data.CharacterDB.list()) {
+            Data.Characters.for_each((character) => {
                 if (character.dead()) {
-                    continue
+                    return
                 }
                 if (Math.random() > 0.6) {
                     CampaignAI.decision(character)
                 }
-            }
+            })
             ai_campaign_decision_timer = 0
         }
 
 
         if (character_state_update_timer > 1) {
-            for (let character of Data.CharacterDB.list()) {
+            Data.Characters.for_each((character) => {
                 if (character.dead()) {
-                    continue
+                    return
                 }
                 if (!character.in_battle()) {
                     Effect.Change.rage(character, -1)
-                    Effect.rest_building_tick(character)
+                    Effect.rest_location_tick(character)
                     Effect.spoilage(character, MEAT, 0.01)
                     Effect.spoilage(character, FISH, 0.01)
                     Effect.spoilage(character, FOOD, 0.001)
                 }
-            }
+            })
 
             character_state_update_timer = 0
         }

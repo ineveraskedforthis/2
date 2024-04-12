@@ -1,5 +1,4 @@
-
-import { position, unit_id, battle_position, UnitSocket } from "../../../shared/battle_data.js"
+import { battle_position, position } from "@custom_types/battle_data.js"
 import { AnimationDict } from "../load_images.js"
 import { AnimatedImage } from "./animation.js"
 import { h, w } from "./battle_image.js"
@@ -75,7 +74,7 @@ export function get_mouse_pos_in_canvas(canvas:HTMLCanvasElement, event: any): c
 }
 
 // export class BattleUnit {
-//     id: unit_id
+//     id: character_id
 //     name: string
 //     hp: number
 //     max_hp: number

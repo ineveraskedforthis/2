@@ -1,4 +1,4 @@
-import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../../types";
+import { user_id, user_online_id } from "@custom_types/common";
 import { SocketWrapper} from "../user";
 import { UserManagement } from "../user_manager";
 import { Alerts } from "./alerts";
@@ -67,10 +67,10 @@ export namespace Auth {
                 return
             }
 
-            var user = UserManagement.get_user(user_id as user_online_id) 
+            var user = UserManagement.get_user(user_id as user_online_id)
             UserManagement.link_socket_wrapper_and_user(sw, user)
         } else {
-            // if not, create new online user entry    
+            // if not, create new online user entry
             let user_data = UserManagement.get_user_data(user_id as user_id)
             var user = UserManagement.construct_user(sw, user_data)
             user.logged_in = true
@@ -84,7 +84,7 @@ export namespace Auth {
 
     export function login(sw: SocketWrapper, data: {login: string, password: string}) {
         // check that user doesn't try to log in while being logged in
-        if (sw.user_id != '#') {
+        if (sw.user_id != undefined) {
             sw.socket.emit('is-login-valid', 'you-are-logged-in');
             return
         }
@@ -122,7 +122,7 @@ export namespace Auth {
 
     export function register(sw: SocketWrapper, data: UserCredentials) {
         // check that user doesn't try to register while being logged in
-        if (sw.user_id != '#') {
+        if (sw.user_id != undefined) {
             sw.socket.emit('is-login-valid', 'you-are-logged-in');
             return
         }

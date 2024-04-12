@@ -4,17 +4,16 @@ exports.update_price_beliefs = exports.roll_price_belief_sell_increase = exports
 const actions_00_1 = require("../actions/actions_00");
 const manager_1 = require("../actions/manager");
 const basic_functions_1 = require("../calculations/basic_functions");
-const data_1 = require("../data");
 const market_1 = require("../events/market");
 const materials_manager_1 = require("../manager_classes/materials_manager");
-// import { Cell } from "../map/cell";
 const system_1 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
-// import { money } from "../types";
 const AI_CONSTANTS_1 = require("./AI_CONSTANTS");
 const AI_SCRIPTED_VALUES_1 = require("./AI_SCRIPTED_VALUES");
 const constraints_1 = require("./constraints");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
+const data_objects_1 = require("../data/data_objects");
+const data_id_1 = require("../data/data_id");
 const LOOT = [materials_manager_1.MEAT, materials_manager_1.RAT_SKIN, materials_manager_1.RAT_BONE];
 function loot(character) {
     let tmp = 0;
@@ -41,14 +40,14 @@ function sell_all_stash(character) {
 }
 exports.sell_all_stash = sell_all_stash;
 function sell_material(character, material) {
-    let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
+    let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 0;
     for (let item of orders) {
-        let order = systems_communication_1.Convert.id_to_bulk_order(item);
+        let order = data_objects_1.Data.MarketOrders.from_id(item);
         if (order.typ == 'sell')
             continue;
-        if (order.tag != material)
+        if (order.material != material)
             continue;
         if ((best_price < order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -64,14 +63,14 @@ function sell_material(character, material) {
 }
 exports.sell_material = sell_material;
 function buy(character, material_index) {
-    let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
+    let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
     for (let item of orders) {
-        let order = systems_communication_1.Convert.id_to_bulk_order(item);
+        let order = data_objects_1.Data.MarketOrders.from_id(item);
         if (order.typ == 'buy')
             continue;
-        if (order.tag != material_index)
+        if (order.material != material_index)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -88,14 +87,14 @@ function buy(character, material_index) {
 }
 exports.buy = buy;
 function buy_random(character) {
-    let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
+    let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
     for (let item of orders) {
-        let order = systems_communication_1.Convert.id_to_bulk_order(item);
+        let order = data_objects_1.Data.MarketOrders.from_id(item);
         if (order.typ == 'buy')
             continue;
-        if (order.tag != materials_manager_1.FOOD)
+        if (order.material != materials_manager_1.FOOD)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -116,8 +115,8 @@ function random_walk(char, constraints) {
     let possible_moves = [];
     for (let d of AI_CONSTANTS_1.dp) {
         let tmp = [d[0] + cell.x, d[1] + cell.y];
-        let target_id = data_1.Data.World.coordinate_to_id(tmp);
-        let target_cell = data_1.Data.Cells.from_id(target_id);
+        let target_id = data_objects_1.Data.World.coordinate_to_id(tmp);
+        let target_cell = data_objects_1.Data.Cells.from_id(target_id);
         if (target_cell != undefined) {
             if (system_1.MapSystem.can_move(tmp) && constraints(target_cell)) {
                 possible_moves.push(tmp);
@@ -128,14 +127,14 @@ function random_walk(char, constraints) {
     // console.log(possible_moves)
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
-        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, char, data_1.Data.World.coordinate_to_id(move_direction));
+        manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, char, data_objects_1.Data.World.coordinate_to_id(move_direction));
     }
 }
 exports.random_walk = random_walk;
 function rat_walk(character, constraints) {
-    let cell_ids = data_1.Data.World.neighbours(character.cell_id);
+    let cell_ids = data_objects_1.Data.World.neighbours(character.cell_id);
     let potential_moves = cell_ids.map((x) => {
-        let cell = data_1.Data.Cells.from_id(x);
+        let cell = data_objects_1.Data.Cells.from_id(x);
         return { item: cell, weight: (0, basic_functions_1.trim)(cell.rat_scent, 0, 5) };
     });
     let target = (0, basic_functions_1.select_weighted)(potential_moves, constraints);
@@ -143,17 +142,17 @@ function rat_walk(character, constraints) {
 }
 exports.rat_walk = rat_walk;
 function home_walk(character) {
-    if (character.home_cell_id == undefined) {
-        let cell_ids = data_1.Data.World.neighbours(character.cell_id);
+    if (character.home_location_id == undefined) {
+        let cell_ids = data_objects_1.Data.World.neighbours(character.cell_id);
         let potential_moves = cell_ids.map((x) => {
-            let cell = data_1.Data.Cells.from_id(x);
-            return { item: cell, weight: cell.market_scent };
+            let cell = data_objects_1.Data.Cells.from_id(x);
+            return { item: cell, weight: 1 };
         });
         let target = (0, basic_functions_1.select_max)(potential_moves, constraints_1.simple_constraints);
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, target.id);
     }
     else {
-        let next_cell = system_1.MapSystem.find_path(character.cell_id, character.home_cell_id);
+        let next_cell = system_1.MapSystem.find_path(character.cell_id, data_id_1.DataID.Location.cell_id(character.location_id));
         if (next_cell != undefined) {
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, next_cell);
         }
@@ -173,7 +172,7 @@ function coast_walk(character) {
 exports.coast_walk = coast_walk;
 function rat_go_home(character, constraints) {
     let cell = systems_communication_1.Convert.character_to_cell(character);
-    let potential_moves = data_1.Data.World.neighbours(character.cell_id).map((x) => { return data_1.Data.Cells.from_id(x); }).map((x) => { return { item: x, weight: x.rat_scent }; });
+    let potential_moves = data_objects_1.Data.World.neighbours(character.cell_id).map((x) => { return data_objects_1.Data.Cells.from_id(x); }).map((x) => { return { item: x, weight: x.rat_scent }; });
     let target = (0, basic_functions_1.select_max)(potential_moves, constraints);
     if (target != undefined)
         if (cell.rat_scent > target.rat_scent) {
@@ -203,7 +202,7 @@ function roll_price_belief_sell_increase(character, material, probability) {
 }
 exports.roll_price_belief_sell_increase = roll_price_belief_sell_increase;
 function update_price_beliefs(character) {
-    let orders = systems_communication_1.Convert.cell_id_to_bulk_orders(character.cell_id);
+    let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     // initialisation
     for (let material of materials_manager_1.materials.list_of_indices) {
         let value_buy = character.ai_price_belief_buy.get(material);
@@ -217,23 +216,23 @@ function update_price_beliefs(character) {
     }
     // updating price beliefs as you go
     for (let item of orders) {
-        let order = data_1.Data.BulkOrders.from_id(item);
+        let order = data_objects_1.Data.MarketOrders.from_id(item);
         if (order.typ == "buy") {
-            let belief = character.ai_price_belief_sell.get(order.tag);
+            let belief = character.ai_price_belief_sell.get(order.material);
             if (belief == undefined) {
-                character.ai_price_belief_sell.set(order.tag, order.price);
+                character.ai_price_belief_sell.set(order.material, order.price);
             }
             else {
-                character.ai_price_belief_sell.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10));
+                character.ai_price_belief_sell.set(order.material, Math.round(order.price / 10 + belief * 9 / 10));
             }
         }
         if (order.typ == "sell") {
-            let belief = character.ai_price_belief_buy.get(order.tag);
+            let belief = character.ai_price_belief_buy.get(order.material);
             if (belief == undefined) {
-                character.ai_price_belief_buy.set(order.tag, order.price);
+                character.ai_price_belief_buy.set(order.material, order.price);
             }
             else {
-                character.ai_price_belief_buy.set(order.tag, Math.round(order.price / 10 + belief * 9 / 10));
+                character.ai_price_belief_buy.set(order.material, Math.round(order.price / 10 + belief * 9 / 10));
             }
         }
     }

@@ -1,13 +1,14 @@
 import type { Character } from "../character/character";
 import { ActionManager } from "../actions/manager";
 import { AIhelper } from "./helpers";
-import { BulkOrders } from "../market/system";
+import { MarketOrders } from "../market/system";
 import { EventMarket } from "../events/market";
 import { craft_actions } from "../craft/crafts_storage";
 import { CraftBulkTemplate, CraftItemTemplate } from "@custom_types/inventory";
 import { money } from "@custom_types/common";
 import { EventInventory } from "../events/inventory_events";
 import { ItemSystem } from "../items/system";
+import { Data } from "../data/data_objects";
 
 
 export namespace AIactions {
@@ -20,7 +21,7 @@ export namespace AIactions {
             if (current == 0)
                 continue;
 
-            BulkOrders.remove_by_condition(character, item.material);
+            MarketOrders.remove_by_condition(character, item.material);
             let total_amount = character.stash.get(item.material);
             EventMarket.sell(character, item.material, total_amount, item.price);
         }
@@ -30,7 +31,7 @@ export namespace AIactions {
                 continue;
             if (item.amount == 0)
                 continue;
-            BulkOrders.remove_by_condition(character, item.material);
+            MarketOrders.remove_by_condition(character, item.material);
             EventMarket.buy(character, item.material, item.amount, item.price);
         }
 
@@ -38,7 +39,7 @@ export namespace AIactions {
     }
 
     export function buy_inputs_to_craft_item(character: Character, item: CraftItemTemplate, budget: money) {
-        // BulkOrders.remove_by_condition(character, )
+        // MarketOrders.remove_by_condition(character, )
         let inputs = item.input
         const buy = AIhelper.buy_craft_inputs(character, budget, inputs);
         for (let item of buy) {
@@ -46,7 +47,7 @@ export namespace AIactions {
                 continue;
             if (item.amount == 0)
                 continue;
-            BulkOrders.remove_by_condition(character, item.material);
+            MarketOrders.remove_by_condition(character, item.material);
             EventMarket.buy(character, item.material, item.amount, item.price);
         }
     }

@@ -1,36 +1,6 @@
-import { money } from "../../../shared/common"
 import { StatsTag } from "./races/stats"
 import { BaseResistTag } from "./races/resists"
 import { MaxHPTag } from "./races/max_hp"
-
-export type char_id = number                    & {__brand:  "character_id"}
-export type TEMP_CHAR_ID = '@' 
-export type user_id = number                    & {__brand:  "user_id"}
-export type user_online_id = user_id            & {__brand2: "online"}
-export type TEMP_USER_ID = '#'
-export type order_bulk_id = number              & { __brand: "bulk_order"}
-// export type order_item_id = number              & { __brand: "auction_order_id"}
-export type order_item_id_raw = number          & { __brand: "auction_order_id", __brand2: "raw"}
-export type building_id = number                & { __brand: "building_id"}
-
-
-
-export interface SavingsJson {
-    data: money
-}
-
-export type damage_type = 'blunt'|'pierce'|'slice'|'fire'
-export type melee_attack_type = 'blunt'|'pierce'|'slice'
-export type weapon_tag = 'polearms'|'onehand'|'ranged'|'twohanded'
-export type weapon_attack_tag = weapon_tag | 'noweapon'
-
-
-// export const armour_slots:armour_slot[] = ['body', 'legs', 'arms', 'head', 'foot']
-export const weapon_attack_tags: weapon_attack_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']
-
-export type world_coordinates = [number, number]
-export type map_position = [number, number]
-export type terrain = 'sea' | 'city' | 'steppe' | 'coast' | 'void'
 
 export const enum WEAPON_TYPE {
     ONEHAND = 'onehand',
@@ -60,9 +30,8 @@ export class Status {
     }
 }
 
-export type status_type = 'hp'|'rage'|'blood'|'stress'|'fatigue'
 
-export type tagAI = 
+export type tagAI =
     'rat'
     | 'urban_guard'
     | 'rat_hunter'
@@ -74,13 +43,13 @@ export type tagAI =
     | 'urban_trader'
     | 'lumberjack'
 
-export type tagRACE = 
+export type tagRACE =
     'human'
     |'rat'
     |'graci'
     |'elo'
     |'ball'
-export type tagModel = 
+export type tagModel =
     'human'
     |'rat'
     |'graci'

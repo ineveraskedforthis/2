@@ -2,7 +2,8 @@ import { Accuracy } from "../battle/battle_calcs";
 import { trim } from "../calculations/basic_functions";
 import { Attack } from "../attack/system";
 import { Character } from "../character/character";
-import { CharacterTemplate, ModelVariant, building_id, char_id } from "../types";
+import { CharacterTemplate, ModelVariant } from "../types";
+import { location_id, character_id } from "@custom_types/common";
 import { Loot } from "../races/generate_loot";
 import { perk_requirement } from "../character/perk_requirement";
 import { perk_price } from "../prices/perk_base_price";
@@ -10,11 +11,10 @@ import { CharacterSystem } from "../character/system";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { UserManagement } from "../client_communication/user_manager";
-import { Data } from "../data";
 import { ARROW_BONE, materials, RAT_SKIN, ZAZ, WOOD } from "../manager_classes/materials_manager";
 import { material_index, skill } from "@custom_types/inventory";
 import { Convert, Link, Unlink } from "../systems_communication";
-import { damage_type } from "../types";
+import { damage_type } from "@custom_types/common";
 import { Effect } from "./effects";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
@@ -24,10 +24,12 @@ import { ScriptedValue } from "./scripted_values";
 import { on_craft_update } from "../craft/helpers";
 import { Perks } from "../../../../shared/character";
 import { cell_id, money } from "@custom_types/common";
-import { LandPlotType } from "@custom_types/buildings";
 import { Trigger } from "./triggers";
 import { handle_attack_reputation_change } from "../SYSTEM_REPUTATION";
 import { equip_slot } from "@custom_types/inventory";
+import { Data } from "../data/data_objects";
+import { MapSystem } from "../map/system";
+import { DataID } from "../data/data_id";
 
 const GRAVEYARD_CELL = 0 as cell_id
 
@@ -69,10 +71,10 @@ export namespace Event {
         }
     }
 
-    export function move(character: Character, new_cell_id: cell_id) {
+    export function move(character: Character, new_location: location_id) {
         const old_cell_id = character.cell_id
-        Effect.leave_room(character.id)
-        Link.character_and_cell(character.id, new_cell_id)
+        Link.character_and_location(character.id, new_location)
+
         move_fatigue_change(character)
         let probability = move_durability_roll_probability(old_cell_id)
         move_durability_roll(character, probability)
@@ -82,15 +84,16 @@ export namespace Event {
 
         let user = Convert.character_to_user(character)
         if (user == undefined) return
-        let new_cell = Data.Cells.from_id(new_cell_id)
+
+        let new_cell = Data.Cells.from_id(DataID.Location.cell_id(new_location))
         Alerts.log_to_user(user, 'rat scent ' + new_cell.rat_scent)
         Alerts.log_to_user(user, 'cell_id ' + new_cell.id)
     }
 
     export function move_durability_roll_probability(cell: cell_id) {
         let probability = 0.5
-        let urbanisation = Data.Cells.urbanisation(cell)
-        let forestation = Data.Cells.forestation(cell)
+        let urbanisation = MapSystem.urbanisation(cell)
+        let forestation = MapSystem.forestation(cell)
         if (forestation > 100) probability += 0.1
         if (forestation > 300) probability += 0.1
         if (urbanisation > 4) probability -= 0.2
@@ -119,14 +122,12 @@ export namespace Event {
         }
     }
 
-    export function new_character(template:CharacterTemplate, name: string|undefined, starting_cell: cell_id, model: ModelVariant|undefined) {
-        // console.log('creating new character')
-        let character = CharacterSystem.template_to_character(template, name, starting_cell)
+    export function new_character(template:CharacterTemplate, name: string|undefined, starting_location: location_id, model: ModelVariant|undefined) {
+        let character = CharacterSystem.template_to_character(template, name, starting_location)
         if (model == undefined) model = {chin: 0, mouth: 0, eyes: 0}
         character.set_model_variation(model)
-        const cell = Data.Cells.from_id(starting_cell)
-        Link.character_and_cell(character.id, cell.id)
-        Data.CharacterDB.save()
+        Link.send_local_characters_info(starting_location)
+        Data.Characters.save()
         return character
     }
 
@@ -477,10 +478,7 @@ export namespace Event {
             }
         }
 
-        if (victim.current_building != undefined) {
-            Effect.leave_room(victim.id)
-        }
-        Data.Buildings.remove_ownership_character(victim.id)
+        DataID.Character.unset_all_ownership(victim.id)
         UserManagement.add_user_to_update_queue(killer.user_id, UI_Part.STASH)
     }
 
@@ -519,79 +517,19 @@ export namespace Event {
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
     }
 
-    // export function build_building(character: Character, type: LandPlotType) {
-
-    // }
-
-    export function buy_land_plot(character: Character, seller: Character) {
-        if (Data.Reputation.from_id('city', seller.id) != 'leader') return 'not_a_leader'
-        if (character.cell_id != seller.cell_id) return 'too_far'
-        if (character.savings.get() < 500) return 'not_enough_money'
-        if (Data.Cells.free_space(character.cell_id) < 1) return 'no_space'
-
-        Effect.Transfer.savings(character, seller, 500 as money)
-        const land_plot = Effect.new_building(character.cell_id, LandPlotType.LandPlot, 100, 1 as money)
-        Data.Buildings.set_ownership(character.id, land_plot)
-    }
-
-    export function create_land_plot(character: Character) {
-        let characters = Data.Cells.get_characters_list_from_cell(character.cell_id)
-        for (let local_character of characters) {
-            if (Data.Reputation.from_id('city', local_character) == 'leader') return 'leader_here'
-        }
-        if (character.cell_id != character.cell_id) return 'too_far'
-        if (Data.Cells.free_space(character.cell_id) < 1) return 'no_space'
-
-        Effect.new_building(character.cell_id, LandPlotType.LandPlot, 100, 0 as money)
-        // Data.Buildings.set_ownership(character.id, land_plot)
-    }
-
-    export function develop_land_plot(character: Character, plot_id: building_id, type: LandPlotType) {
-        let cost = ScriptedValue.building_price_wood(type)
-        if (character.stash.get(WOOD) < cost) return
-        let owner = Data.Buildings.owner(plot_id)
-        if ((owner != undefined) && (owner != character.id)) return 'not_your_plot';
-
-        let building = Data.Buildings.from_id(plot_id)
-        if (building.type != LandPlotType.LandPlot) return
-
-        change_stash(character, WOOD, -cost)
-        building.type = type
-        // Effect.new_building(character.cell_id, type, character.skills.woodwork)
-    }
-
-    export function change_rent_price(character: Character, plot_id: building_id, price: money) {
-        let building = Data.Buildings.from_id(plot_id)
-        // console.log()
-        let owner = Data.Buildings.owner(plot_id)
-        if ((owner != character.id)) return
-
-        building.room_cost = price
-    }
-
-    export function repair_building(character: Character, builing_id: building_id) {
-        let building = Data.Buildings.from_id(builing_id)
-        let skill = CharacterSystem.skill(character, 'woodwork')
-        let repair = Math.min(5, skill - building.durability)
-        if (repair <= 0) return;
-        let cost = Math.round(repair / 100 * ScriptedValue.building_price_wood(building.type) / 2 + 0.51)
+    export function repair_location(character: Character, builing_id: location_id) {
+        let location = Data.Locations.from_id(builing_id)
+        let repair = 1
+        let cost = 1
         if (cost > character.stash.get(WOOD)) return;
-
-        let difficulty = Math.floor(building.durability / 3 + 10)
+        let difficulty = Math.floor((location.devastation) / 3 + 10)
         on_craft_update(character, [{skill: 'woodwork', difficulty: difficulty}])
         change_stash(character, WOOD, -cost)
-        Effect.building_repair(building, repair)
+        Effect.location_repair(location, repair)
     }
 
-    export function remove_tree(cell: cell_id) {
-        let land_plots = Data.Buildings.from_cell_id(cell)
-        if (land_plots == undefined) return;
-        for (let item of land_plots) {
-            const plot = Data.Buildings.from_id(item)
-            if (plot.type == LandPlotType.ForestPlot) {
-                plot.durability = plot.durability - 1
-                if (plot.durability < 0) plot.durability = 0
-            }
-        }
+    export function remove_tree(location: location_id) {
+        const data = Data.Locations.from_id(location)
+        data.forest -= 1
     }
 }

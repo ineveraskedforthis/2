@@ -5,46 +5,39 @@ import { Convert } from "../systems_communication"
 import { output_bulk } from "../craft/CraftBulk"
 import { trim } from "../calculations/basic_functions"
 import { create_item, durability } from "../craft/CraftItem"
-import { crafts_items } from "../craft/crafts_storage"
 import { box, CraftBulkTemplate, CraftItemTemplate } from "@custom_types/inventory"
 import { AItrade, price, priced_box } from "./AI_SCRIPTED_VALUES"
-import { Data } from "../data"
 import { cell_id, money } from "@custom_types/common"
 import { BattleTriggers } from "../battle/TRIGGERS"
 import { BattleSystem } from "../battle/system"
 import { is_enemy_characters } from "../SYSTEM_REPUTATION"
-import { Item } from "../items/item"
 import { DmgOps } from "../damage_types"
-import { Damage } from "../Damage"
 import { item_model_tag } from "../items/model_tags"
 import { base_damage, base_resists, BaseDamage, BaseResist } from "../items/base_values"
+import { DataID } from "../data/data_id"
+import { Data } from "../data/data_objects"
 
 
 
 export namespace AIhelper {
     export function enemies_in_cell(character: Character) {
-        let a = Data.Cells.get_characters_list_from_cell(character.cell_id)
+        let a = DataID.Cells.local_character_id_list(character.cell_id)
         for (let id of a) {
-            let target_char = Convert.id_to_character(id)
+            let target_char = Data.Characters.from_id(id)
             if (is_enemy_characters(character, target_char)) {
                 if (!target_char.dead()) {
                     return target_char.id
                 }
             }
-            // if (hostile(char.race, target_char.race)) {
-            //     if (!target_char.dead()) {
-            //         return target_char.id
-            //     }
-            // }
         }
         return undefined
     }
 
     export function free_rats_in_cell(char: Character) {
         let cell = Convert.character_to_cell(char)
-        let a = Data.Cells.get_characters_list_from_cell(char.cell_id)
+        let a = DataID.Cells.local_character_id_list(char.cell_id)
         for (let id of a) {
-            let target_char = Convert.id_to_character(id)
+            let target_char = Data.Characters.from_id(id)
             if (target_char.race == 'rat') {
                 if (!target_char.in_battle() && !target_char.dead()) {
                     return target_char.id
@@ -58,9 +51,9 @@ export namespace AIhelper {
         let battles:battle_id[] = []
         let cell = Convert.character_to_cell(char)
         if (cell == undefined) return battles
-        let a = Data.Cells.get_characters_list_from_cell(char.cell_id)
+        let a = DataID.Cells.local_character_id_list(char.cell_id)
         for (let id of a) {
-            let target_char = Convert.id_to_character(id)
+            let target_char = Data.Characters.from_id(id)
             const battle_id = target_char.battle_id
             if ((battle_id != undefined) && !target_char.dead()) {
                 battles.push(battle_id)
@@ -72,7 +65,7 @@ export namespace AIhelper {
         let battles = battles_in_cell(agent)
         // console.log(battles)
         for (let item of battles) {
-            let battle = Convert.id_to_battle(item)
+            let battle = Data.Battles.from_id(item)
             if (!(BattleSystem.battle_finished(battle))) {
                 let team = check_team_to_join(agent, battle)
                 if (team == 'no_interest') continue
@@ -85,13 +78,13 @@ export namespace AIhelper {
         return false
     }
     export function check_team_to_join(agent: Character, battle: Battle, exclude?: number):number|'no_interest' {
-        let data = Object.values(battle.heap.data)
         let potential_team = -1
-        for (let item of data) {
-            const target = Convert.unit_to_character(item)
-            if (BattleTriggers.is_friend(agent, target) && (item.team != exclude)) {
+        for (const target_id of battle.heap) {
+            if (target_id == undefined) continue;
+            const target = Data.Characters.from_id(target_id)
+            if (BattleTriggers.is_friend(agent, target) && (target.team != exclude)) {
                 if (potential_team == 0) continue
-                else potential_team = item.team
+                else potential_team = target.team
             }
         }
         if (potential_team == -1) return 'no_interest'

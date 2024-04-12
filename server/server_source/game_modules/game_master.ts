@@ -1,10 +1,8 @@
-import { cell_id, money } from "@custom_types/common";
-import { Data } from "./data";
-import { Effect } from "./events/effects";
-import { Cell } from "./map/DATA_LAYOUT_CELL";
+import { Terrain, cell_id, money } from "@custom_types/common";
 import { Template } from "./templates";
-import { LandPlotType } from "@custom_types/buildings";
-import { character_to_string } from "./strings_management";
+import { Data } from "./data/data_objects";
+import { DataID } from "./data/data_id";
+import { CellData } from "./map/cell_interface";
 
 // steppe_humans 9 9
 // city 2 6
@@ -24,10 +22,33 @@ export namespace GameMaster {
             // creation of mayor
             const mayor = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, 'Mayor'))
             mayor.savings.inc(TONS_OF_MONEY)
-            Data.World.set_faction_leader(faction, mayor.id)
+            Data.Factions.set_faction_leader(faction, mayor.id)
 
-            const mayor_house = Effect.new_building(cell_id, LandPlotType.HumanHouse, 200, 50 as money)
-            Data.Buildings.set_ownership(mayor.id, mayor_house)
+            const mayor_house = Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+
+                devastation: 0,
+
+                has_bed: true,
+
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: false,
+
+                terrain: Terrain.steppe,
+
+                has_house_level: 5
+            })
+
+            DataID.Connection.set_location_owner(mayor.id, mayor_house.id)
+            DataID.Connection.set_character_home(mayor.id, mayor_house.id)
 
             // creation of first colonists
             Template.Character.EquipClothesBasic(Template.Character.HumanCook(x, y, "Cook", 'city'))
@@ -58,16 +79,62 @@ export namespace GameMaster {
             }
             // innkeeper
             const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, "Innkeeper"))
-            const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200, 10 as money)
-            Data.Buildings.set_ownership(innkeeper.id, inn)
+            const inn = Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+
+                devastation: 0,
+
+                has_bed: true,
+
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: false,
+
+                terrain: Terrain.steppe,
+
+                has_house_level: 3
+            })
+
+            DataID.Connection.set_location_owner(innkeeper.id, inn.id)
+            DataID.Connection.set_character_home(innkeeper.id, inn.id)
         }
 
 
         if (faction == 'steppe_humans') {
             // innkeeper
             const innkeeper = Template.Character.EquipClothesRich(Template.Character.HumanCity(x, y, "Innkeeper"))
-            const inn = Effect.new_building(cell_id, LandPlotType.Inn, 200, 10 as money)
-            Data.Buildings.set_ownership(innkeeper.id, inn)
+            const inn = Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+
+                devastation: 0,
+
+                has_bed: true,
+
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: false,
+
+                terrain: Terrain.steppe,
+
+                has_house_level: 3
+            })
+
+            DataID.Connection.set_location_owner(innkeeper.id, inn.id)
+            DataID.Connection.set_character_home(innkeeper.id, inn.id)
 
             // creation of local colonists
             Template.Character.EquipClothesBasic(Template.Character.HumanCook(x, y, "Cook", 'steppe'))
@@ -77,14 +144,56 @@ export namespace GameMaster {
 
             Template.Character.Lumberjack(x, y, "Lumberjack 1")
             Template.Character.Lumberjack(x, y, "Lumberjack 2")
-        }        
+        }
 
         if (faction == 'rats') {
-            const rat_lair = Effect.new_building(cell_id, LandPlotType.RatLair, 400, 0 as money)
+            const rat_lair = Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+
+                devastation: 0,
+
+                has_bed: false,
+
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: false,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: true,
+
+                terrain: Terrain.steppe,
+
+                has_house_level: 0
+            })
         }
 
         if (faction == 'elodino_free') {
-            const elodino_city = Effect.new_building(cell_id, LandPlotType.ElodinoHouse, 400, 0 as money)
+            const elodino_city = Data.Locations.create(cell_id, {
+                fish: 0,
+                cotton: 0,
+                forest: 0,
+                berries: 0,
+                small_game: 0,
+
+                devastation: 0,
+
+                has_bed: true,
+
+                has_bowmaking_tools: false,
+                has_clothier_tools: false,
+                has_cooking_tools: true,
+                has_cordwainer_tools: false,
+                has_tanning_tools: false,
+                has_rat_lair: true,
+
+                terrain: Terrain.steppe,
+
+                has_house_level: 8
+            })
         }
 
         if (faction == 'graci') {
@@ -100,7 +209,7 @@ export namespace GameMaster {
         let num_elos = 0
         let num_balls = 0
         let num_hunters = 0
-        for (const character of Data.CharacterDB.list()) {
+        Data.Characters.for_each(character => {
             if ((character.race == 'rat') && (!character.dead())) {
                 num_rats += 1
             }
@@ -113,50 +222,35 @@ export namespace GameMaster {
             if ((character.ai_map == 'rat_hunter') && (!character.dead())) {
                 num_hunters += 1
             }
-        }
+        })
 
-        let spawn = Data.World.get_faction('city')?.spawn_point
+        let spawn = DataID.Faction.spawn('city')
         if (spawn != undefined) {
             let cell = Data.Cells.from_id(spawn)
             if (num_hunters < 4) {
                 Template.Character.HumanRatHunter(cell.x, cell.y, "Hunter")
             }
-        } 
+        }
 
         // console.log('Game master update')
-        for (const cell of Data.Cells.list_ids()) {
-            let cell_object = Data.Cells.from_id(cell)
-            const buildings = Data.Buildings.from_cell_id(cell)
-            if (buildings != undefined) {
-                for (const item_id of buildings) {
-                    const building = Data.Buildings.from_id(item_id)
-                    if (building.type == LandPlotType.RatLair) {
-                        cell_object.rat_scent = 200
-                        cell_object.rat_scent += 5 * dt / 100
-                        spawn_rat(num_rats, cell_object)
-                    }
+        Data.Locations.for_each(location => {
+            const cell_id = DataID.Location.cell_id(location.id)
+            const cell = Data.Cells.from_id(cell_id)
 
-                    if (building.type == LandPlotType.ElodinoHouse) {
-                        let cell_object = Data.Cells.from_id(cell)
-                        spawn_elodino(num_elos, cell_object)
-                        spawn_ball(num_balls, cell_object)
-                    }
-                }
+            if (location.has_rat_lair) {
+                cell.rat_scent = 200
+                cell.rat_scent += 5 * dt / 100
+                spawn_rat(num_rats, cell)
             }
 
-            let set = Data.Cells.get_characters_set_from_cell(cell)
-            if (set != undefined) {
-                for (const character_id of set) {
-                    let character = Data.CharacterDB.from_id(character_id) 
-                    if ((character.race == 'rat') && (character.dead())) {
-                        cell_object.rat_scent -= 1 * dt / 50
-                    }
-                }
+            if (cell_id == DataID.Faction.spawn('elodino_free')) {
+                spawn_elodino(num_elos, cell)
+                spawn_ball(num_balls, cell)
             }
-        }
+        });
     }
 
-    export function spawn_rat(rats_number: number, cell: Cell) {        
+    export function spawn_rat(rats_number: number, cell: CellData) {
         if (rats_number < 30) {
             let dice_spawn = Math.random()
             if (dice_spawn > 0.4) return
@@ -171,7 +265,7 @@ export namespace GameMaster {
         }
     }
 
-    export function spawn_elodino(elos_number: number, cell: Cell) {
+    export function spawn_elodino(elos_number: number, cell: CellData) {
         if (elos_number < 50) {
             let dice = Math.random()
             if (dice < 0.7) {
@@ -182,7 +276,7 @@ export namespace GameMaster {
         }
     }
 
-    export function spawn_ball(num_balls: number, cell: Cell) {
+    export function spawn_ball(num_balls: number, cell: CellData) {
         if (num_balls < 100) {
             Template.Character.Ball(cell.x, cell.y, undefined)
         }

@@ -567,7 +567,7 @@ export class Map {
             this.camera[1] = temp[1] + 400;
         }
         console.log(this.move_flag);
-        socket.emit('request-local-buildings');
+        socket.emit('request-local-locations');
         return this.get_bg_tag([i, j]);
     }
 }

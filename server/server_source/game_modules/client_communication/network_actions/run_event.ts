@@ -1,18 +1,15 @@
-import { Data } from "../../data";
-import { Effect } from "../../events/effects";
 import { Event } from "../../events/events";
 import { Convert } from "../../systems_communication";
-import { building_id } from "../../types";
+import { location_id } from "@custom_types/common";
 import { SocketWrapper } from "../user";
 import { Validator } from "./common_validations";
 
 import { BattleSystem } from "../../battle/system";
 import { CharacterSystem } from "../../character/system";
-import { money } from "@custom_types/common";
 import { Perks } from "@custom_types/character";
 import { Request } from "./request";
 import { skill } from "@custom_types/inventory";
-import { LandPlotType } from "@custom_types/buildings";
+import { Data } from "../../data/data_objects";
 
 export namespace SocketCommand {
     // data is a raw id of character
@@ -94,121 +91,82 @@ export namespace SocketCommand {
         Event.buy_skill(valid_character, skill_tag as skill, target_character)
     }
 
-    export function rent_room(sw: SocketWrapper, msg: undefined|{id: unknown}) {
-        if (msg == undefined) return
-        let building_id = msg.id
-        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        if (character == undefined) return
-        if (typeof building_id != 'number') return
-        let building = Data.Buildings.from_id(building_id as building_id)
-        if (building == undefined) return
-        let responce = Effect.rent_room(character.id, building_id as building_id)
-    }
+    // export function buy_plot(sw: SocketWrapper,  msg: undefined|{id: unknown}) {
+    //     if (msg == undefined) return
+    //     let character_id = msg.id
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
+    //     console.log('attempt to buy plot', character?.id, target_character?.id)
 
-    export function leave_room(sw: SocketWrapper) {
-        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        if (character == undefined) return
-        Effect.leave_room(character.id)
-    }
+    //     if (character == undefined) return
+    //     if (target_character == undefined) return
+    //     if (valid_character.cell_id != target_character.cell_id) {
+    //         valid_user.socket.emit('alert', 'not in the same cell')
+    //         return
+    //     }
+    //     let response = Event.buy_land_plot(character, target_character)
+    //     console.log(response)
+    // }
 
-    function validate_building_type(msg: string) {
-        switch(msg){
-            case(LandPlotType.ElodinoHouse): return true;
-            case(LandPlotType.HumanHouse): return true;
-            case(LandPlotType.Inn): return true;
-            case(LandPlotType.RatLair): return true
-            case(LandPlotType.Shack): return true;
-        }
-
-        return false
-    }
-
-    // export function build_building(sw: SocketWrapper, msg: unknown) {
+    // export function create_plot(sw: SocketWrapper) {
     //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
     //     if (character == undefined) return
 
-    //     if (typeof msg != 'string') return
-    //     if (!validate_building_type(msg)) return true
-
-    //     // Event.build_building(character, msg as LandPlotType)
+    //     Event.create_land_plot(character)
+    //     Request.local_locations(sw)
     // }
 
-    export function buy_plot(sw: SocketWrapper,  msg: undefined|{id: unknown}) {
-        if (msg == undefined) return
-        let character_id = msg.id
-        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
-        console.log('attempt to buy plot', character?.id, target_character?.id)
+    // export function develop_plot(sw: SocketWrapper, msg: undefined|{id: unknown, type: unknown}) {
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) return
 
-        if (character == undefined) return
-        if (target_character == undefined) return
-        if (valid_character.cell_id != target_character.cell_id) {
-            valid_user.socket.emit('alert', 'not in the same cell')
-            return
-        }
-        let response = Event.buy_land_plot(character, target_character)
-        console.log(response)
-    }
+    //     if (msg == undefined) return
+    //     let location_id = msg.id
+    //     if (typeof location_id != 'number') return
+    //     let location = Data.Locations.from_id(location_id as location_id)
+    //     if (location == undefined) return
+    //     let type = msg.type
+    //     if (type == undefined) return
 
-    export function create_plot(sw: SocketWrapper) {
-        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        if (character == undefined) return
-
-        Event.create_land_plot(character)
-        Request.local_buildings(sw)
-    }
-
-    export function develop_plot(sw: SocketWrapper, msg: undefined|{id: unknown, type: unknown}) {
-        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        if (character == undefined) return
-
-        if (msg == undefined) return
-        let building_id = msg.id
-        if (typeof building_id != 'number') return
-        let building = Data.Buildings.from_id(building_id as building_id)
-        if (building == undefined) return
-        let type = msg.type
-        if (type == undefined) return
-
-        let true_type = LandPlotType.Shack
-        if (type == LandPlotType.HumanHouse) true_type = LandPlotType.HumanHouse
-        if (type == LandPlotType.Inn) true_type = LandPlotType.Inn
-        if (type == LandPlotType.CottonField) true_type = LandPlotType.CottonField
+    //     let true_type = LandPlotType.Shack
+    //     if (type == LandPlotType.HumanHouse) true_type = LandPlotType.HumanHouse
+    //     if (type == LandPlotType.Inn) true_type = LandPlotType.Inn
+    //     if (type == LandPlotType.CottonField) true_type = LandPlotType.CottonField
 
 
-        Event.develop_land_plot(character, building_id as building_id, true_type)
-        Request.local_buildings(sw)
-    }
+    //     Event.develop_land_plot(character, location_id as location_id, true_type)
+    //     Request.local_locations(sw)
+    // }
 
-    export function change_rent_price(sw: SocketWrapper, msg: undefined|{id: unknown, price: unknown}) {
-        console.log('change rent price', msg)
-        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-        if (character == undefined) return
-        if (msg == undefined) return
-        let building_id = msg.id
-        if (typeof building_id != 'number') return
-        let building = Data.Buildings.from_id(building_id as building_id)
-        if (building == undefined) return
-        let price = msg.price
-        if (typeof price != 'number') return
+    // export function change_rent_price(sw: SocketWrapper, msg: undefined|{id: unknown, price: unknown}) {
+    //     console.log('change rent price', msg)
+    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+    //     if (character == undefined) return
+    //     if (msg == undefined) return
+    //     let location_id = msg.id
+    //     if (typeof location_id != 'number') return
+    //     let location = Data.Locations.from_id(location_id as location_id)
+    //     if (location == undefined) return
+    //     let price = msg.price
+    //     if (typeof price != 'number') return
 
-        console.log('change rent price', character.name, building, price)
+    //     console.log('change rent price', character.name, location, price)
 
-        Event.change_rent_price(character, building_id as building_id, price as money)
-        Request.local_buildings(sw)
-    }
+    //     Event.change_rent_price(character, location_id as location_id, price as money)
+    //     Request.local_locations(sw)
+    // }
 
-    export function repair_building(sw: SocketWrapper, msg: undefined|{id: unknown}) {
+    export function repair_location(sw: SocketWrapper, msg: undefined|{id: unknown}) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
 
         if (msg == undefined) return
-        let building_id = msg.id
-        if (typeof building_id != 'number') return
-        let building = Data.Buildings.from_id(building_id as building_id)
-        if (building == undefined) return
+        let location_id = msg.id
+        if (typeof location_id != 'number') return
+        let location = Data.Locations.from_number(location_id)
+        if (location == undefined) return
 
-        Event.repair_building(character, building_id as building_id)
-        Request.local_buildings(sw)
+        Event.repair_location(character, location_id as location_id)
+        Request.local_locations(sw)
     }
 }

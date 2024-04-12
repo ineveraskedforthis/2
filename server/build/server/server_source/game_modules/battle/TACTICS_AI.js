@@ -13,9 +13,9 @@
 // export function execute(tactic: ExecutedTactic, battle: Battle, character: Character, unit: Unit, target_character: Character, target_unit: Unit ) {
 //     let current = tactic.tactic.sequence[tactic.step]
 //     if (current.target == 'self') {
-//         current.action.execute(battle, character, unit)
+//         current.action.execute(battle, character)
 //     } else if (current.target == 'unit') {
-//         current.action.execute(battle, character, unit, target_character, target_unit)
+//         current.action.execute(battle, character, target_character, target_unit)
 //     }
 //     if (tactic.step == tactic.tactic.sequence.length) {
 //         return true
@@ -26,9 +26,9 @@
 //     let total = 0
 //     for (let item of tactic.sequence) {
 //         if (item.target == 'self') {
-//             total += item.action.ap_cost(battle, character, unit)
+//             total += item.action.ap_cost(battle, character)
 //         } else if (item.target == 'unit') {
-//             total += item.action.ap_cost(battle, character, unit, target_character, target_unit)
+//             total += item.action.ap_cost(battle, character, target_character, target_unit)
 //         }
 //     }
 // }
@@ -36,9 +36,9 @@
 //     let total = 0
 //     for (let item of tactic.sequence) {
 //         if (item.target == 'self') {
-//             total += item.action.damage(battle, character, unit)
+//             total += item.action.damage(battle, character)
 //         } else if (item.target == 'unit') {
-//             total += item.action.damage(battle, character, unit, target_character, target_unit)
+//             total += item.action.damage(battle, character, target_character, target_unit)
 //         }
 //     }
 // }
@@ -46,9 +46,9 @@
 //     let total = 0
 //     for (let item of tactic.sequence) {
 //         if (item.target == 'self') {
-//             total += item.action.preservation(battle, character, unit)
+//             total += item.action.preservation(battle, character)
 //         } else if (item.target == 'unit') {
-//             total += item.action.preservation(battle, character, unit, target_character, target_unit)
+//             total += item.action.preservation(battle, character, target_character, target_unit)
 //         }
 //     }
 // }

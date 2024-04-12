@@ -1,21 +1,19 @@
 import { money } from "@custom_types/common";
 import { AIstate } from "../character/AIstate";
 import { Character } from "../character/character";
-import { Data } from "../data";
 import { EventMarket } from "../events/market";
-import { MapSystem } from "../map/system";
-import { Convert } from "../systems_communication";
 import { AItrade } from "./AI_SCRIPTED_VALUES";
 import { home_walk, sell_all_stash, update_price_beliefs, urban_walk } from "./ACTIONS_BASIC";
 import { GenericRest } from "./AI_ROUTINE_GENERIC";
 import { AI_TRIGGER } from "./AI_TRIGGERS";
+import { DataID } from "../data/data_id";
+import { Data } from "../data/data_objects";
 
 export function TraderRoutine(character: Character) {
     // console.log("???")
     if (character.in_battle()) return
     if (character.action != undefined) return
     if (character.is_player()) return
-    if (character.current_building != undefined) return
 
     GenericRest(character);
 
@@ -65,14 +63,14 @@ export function TraderRoutine(character: Character) {
             return
         }
 
-        let orders = Convert.cell_id_to_bulk_orders(character.cell_id)
+        let orders = DataID.Cells.market_order_id_list(character.cell_id)
         let best_profit = 0 as money
         let target = undefined
 
         // buying stuff according to price beliefs
         for (let item of orders) {
-            let order = Data.BulkOrders.from_id(item)
-            let profit = AItrade.sell_price_bulk(character, order.tag) - order.price as money
+            let order = Data.MarketOrders.from_id(item)
+            let profit = AItrade.sell_price_bulk(character, order.material) - order.price as money
 
             if ((profit > best_profit) && (order.price < character.savings.get())) {
                 best_profit = profit

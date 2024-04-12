@@ -1,17 +1,17 @@
 import { Socket } from "../../server";
-import { char_id, TEMP_CHAR_ID, TEMP_USER_ID, user_id, user_online_id } from "../types";
+import { character_id, TEMP_character_id, user_id, user_online_id } from "@custom_types/common";
 import { Update, update_flags } from "./causality_graph";
 
 export class UserData {
     id: user_id
     login: string
     password_hash: string
-    char_id: char_id|TEMP_CHAR_ID
+    character_id: character_id|TEMP_character_id
     tester_account: boolean|undefined
 
-    constructor(id: number, char_id:char_id|TEMP_CHAR_ID, login:string, password_hash:string, tester_flag:boolean) {
+    constructor(id: number, character_id:character_id|TEMP_character_id, login:string, password_hash:string, tester_flag:boolean) {
         this.id = id as user_id
-        this.char_id = char_id
+        this.character_id = character_id
         this.login = login
         this.password_hash = password_hash
         this.tester_account = tester_flag
@@ -20,11 +20,11 @@ export class UserData {
 
 export class SocketWrapper {
     socket: Socket
-    user_id: user_online_id|TEMP_USER_ID
+    user_id: user_online_id|undefined
 
     constructor(socket: Socket) {
         this.socket = socket
-        this.user_id = '#'
+        this.user_id = undefined
     }
 }
 

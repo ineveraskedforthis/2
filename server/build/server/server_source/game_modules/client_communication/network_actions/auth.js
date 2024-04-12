@@ -71,7 +71,7 @@ var Auth;
             user_manager_1.UserManagement.link_socket_wrapper_and_user(sw, user);
         }
         else {
-            // if not, create new online user entry    
+            // if not, create new online user entry
             let user_data = user_manager_1.UserManagement.get_user_data(user_id);
             var user = user_manager_1.UserManagement.construct_user(sw, user_data);
             user.logged_in = true;
@@ -84,7 +84,7 @@ var Auth;
     Auth.login_with_session = login_with_session;
     function login(sw, data) {
         // check that user doesn't try to log in while being logged in
-        if (sw.user_id != '#') {
+        if (sw.user_id != undefined) {
             sw.socket.emit('is-login-valid', 'you-are-logged-in');
             return;
         }
@@ -117,7 +117,7 @@ var Auth;
     Auth.login = login;
     function register(sw, data) {
         // check that user doesn't try to register while being logged in
-        if (sw.user_id != '#') {
+        if (sw.user_id != undefined) {
             sw.socket.emit('is-login-valid', 'you-are-logged-in');
             return;
         }

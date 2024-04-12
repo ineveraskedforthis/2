@@ -120,7 +120,7 @@ export namespace tab {
                 if ((tag == 'market') && (res == 'on')) {
                     socket.emit('send-market-data', true)
                 } else {
-                    socket.emit('send-market-data', false)
+                    socket.emit('send-market-data', true)
                 }
             }
 

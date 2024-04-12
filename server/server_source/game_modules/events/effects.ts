@@ -1,25 +1,25 @@
 import { Character } from "../character/character";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
-import { Data} from "../data";
-import { Convert } from "../systems_communication";
-import { building_id, char_id} from "../types";
+import { location_id, character_id } from "@custom_types/common";
 import { ScriptedValue } from "./scripted_values";
 import { trim } from "../calculations/basic_functions";
 import { cell_id, money } from "@custom_types/common";
-import { LandPlot, LandPlotType } from "@custom_types/buildings";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { Trigger } from "./triggers";
 import { equip_slot, material_index, skill } from "@custom_types/inventory";
-import { BulkOrders } from "../market/system";
+import { MarketOrders } from "../market/system";
 import { Perks } from "@custom_types/character";
+import { DataID } from "../data/data_id";
+import { Data } from "../data/data_objects";
+import { LocationInterface } from "../location/location_interface";
 
 export namespace Effect {
     export namespace Update {
         export function cell_market(cell: cell_id) {
-            const locals = Data.Cells.get_characters_list_from_cell(cell)
+            const locals = DataID.Cells.local_character_id_list(cell)
             for (let item of locals) {
-                const local_character = Convert.id_to_character(item)
+                const local_character = Data.Characters.from_id(item)
                 UserManagement.add_user_to_update_queue(local_character.user_id, UI_Part.MARKET)
             }
         }
@@ -95,68 +95,41 @@ export namespace Effect {
         UserManagement.add_user_to_update_queue(student.user_id, UI_Part.SKILLS)
     }
 
-    export function rent_room(character_id: char_id, building_id: building_id) {
-        let character = Data.CharacterDB.from_id(character_id)
-        let response = Trigger.building_is_available(character_id, building_id)
+    export function enter_location_payment(character_id: character_id, location_id: location_id) {
+        let character = Data.Characters.from_id(character_id)
+        let response = Trigger.location_is_available(character_id, location_id)
         if (response.response == 'ok') {
             if (response.owner_id != undefined) {
-                const owner = Data.CharacterDB.from_id(response.owner_id)
+                const owner = Data.Characters.from_id(response.owner_id)
                 Effect.Transfer.savings(character, owner, response.price)
             }
-            enter_room(character_id, building_id)
+            enter_location(character_id, location_id)
         }
         return response
     }
 
-    export function enter_room(character_id: char_id, building_id: building_id) {
-        Effect.leave_room(character_id)
-        let character = Data.CharacterDB.from_id(character_id)
-        Data.Buildings.occupy_room(building_id, character_id)
-        character.current_building = building_id
+    export function enter_location(character_id: character_id, location_id: location_id) {
+        let character = Data.Characters.from_id(character_id)
+        character.location_id = location_id
         Alerts.enter_room(character)
     }
 
-    export function leave_room(character_id: char_id) {
-        let character = Data.CharacterDB.from_id(character_id)
-        if (character.current_building == undefined) return
-        Data.Buildings.free_room(character.current_building, character_id)
-        Alerts.leave_room(character)
-        character.current_building = undefined
-    }
-
-    export function new_building(cell_id: cell_id, type: LandPlotType, durability: number, room_cost: money) {
-        return Data.Buildings.create({
-            cell_id: cell_id,
-            durability: durability,
-            type: type,
-            room_cost: room_cost
-        })
-    }
-
-    export function building_quality_reduction_roll(building: LandPlot) {
-        if (building.type == LandPlotType.ForestPlot) return;
-        if (building.type == LandPlotType.LandPlot) return
-        if (building.type == LandPlotType.RatLair) return
-        if (building.type == LandPlotType.FarmPlot) return
-        if (building.type == LandPlotType.CottonField) return
-
+    export function location_quality_reduction_roll(location: LocationInterface) {
+        if (location.has_house_level == 0) return;
         if (Math.random() > 0.9) {
-            building.durability = trim(building.durability - 1, 0, 1000)
+            location.devastation = trim(location.devastation + 1, 0, ScriptedValue.max_devastation)
         }
     }
 
-    export function building_repair(building: LandPlot, x: number) {
-        building.durability = trim(building.durability + x, 0, 1000)
+    export function location_repair(location: LocationInterface, x: number) {
+        location.devastation = trim(location.devastation - x, 0, ScriptedValue.max_devastation)
     }
 
-    export function rest_building_tick(character: Character) {
-        if (character.current_building == undefined) {
-            return
-        }
-        let building = Data.Buildings.from_id(character.current_building)
-        let tier = ScriptedValue.building_rest_tier(building.type, character)
-        let fatigue_target = ScriptedValue.rest_target_fatigue(tier, building.durability, character.race)
-        let stress_target = ScriptedValue.rest_target_stress(tier, building.durability, character.race)
+    export function rest_location_tick(character: Character) {
+        let location = Data.Locations.from_id(character.location_id)
+        let tier = location.has_house_level
+        let fatigue_target = ScriptedValue.rest_target_fatigue(tier, ScriptedValue.max_devastation - location.devastation, character.race)
+        let stress_target = ScriptedValue.rest_target_stress(tier, ScriptedValue.max_devastation - location.devastation, character.race)
         if (fatigue_target < character.get_fatigue()) {
             let fatigue_change = trim(-5, fatigue_target - character.get_fatigue(), 0)
             Effect.Change.fatigue(character, fatigue_change)
@@ -167,7 +140,7 @@ export namespace Effect {
             Effect.Change.stress(character, stress_change)
         }
 
-        building_quality_reduction_roll(building)
+        location_quality_reduction_roll(location)
     }
 
     export function spoilage(character: Character, good: material_index, rate: number) {
@@ -178,14 +151,13 @@ export namespace Effect {
             let spoiled_amount = Math.max(integer, Math.floor(current_amount * rate))
             character.stash.set(good, current_amount - spoiled_amount)
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
-            let orders = Data.BulkOrders.from_char_id(character.id)
-            if (orders == undefined) return
+            let orders = DataID.Character.market_orders_list(character.id)
             for (let order of orders) {
-                let order_item = Data.BulkOrders.from_id(order)
+                let order_item = Data.MarketOrders.from_id(order)
                 const current_amount = order_item.amount
-                if (order_item.tag != good) continue
+                if (order_item.material != good) continue
                 let spoiled_amount = Math.min(current_amount, Math.max(integer, Math.floor(current_amount * 0.01)))
-                BulkOrders.destroy_item(order, spoiled_amount)
+                MarketOrders.decrease_amount(order, spoiled_amount)
             }
             Update.cell_market(character.cell_id)
         }
