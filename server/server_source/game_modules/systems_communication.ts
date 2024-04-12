@@ -3,7 +3,7 @@ import { ItemOrderData } from "../../../shared/inventory";
 import { Battle } from "./battle/classes/battle";
 import { Character } from "./character/character";
 import { ItemSystem } from "./items/system";
-import { UI_Part } from "./client_communication/causality_graph";
+import { UI_Part, Update } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
 import { ReputationData, ReputationDataSocket, character_id, location_id, market_order_id, user_online_id } from "@custom_types/common";
@@ -14,6 +14,7 @@ import { DataID } from "./data/data_id";
 import { Data } from "./data/data_objects";
 import { CellData } from "./map/cell_interface";
 import { CharacterView } from "@custom_types/responses";
+import { Alerts } from "./client_communication/network_actions/alerts";
 
 
 export namespace Convert {
@@ -162,6 +163,7 @@ export namespace Link {
 
         const old_location = data_character.location_id
         data_character.location_id = new_location
+
 
         send_local_characters_info(old_location)
         send_local_characters_info(new_location)

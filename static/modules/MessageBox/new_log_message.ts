@@ -2,6 +2,7 @@ import { set_up_header_with_strings } from '../../headers.js';
 import { elementById, inputById } from '../HTMLwrappers/common.js';
 import { globals } from '../globals.js';
 import { socket } from "../Socket/socket.js";
+import { BattleLogData, ChatMessage, DamageTag } from '../Types/character.js';
 
 // MESSAGES STUFF
 

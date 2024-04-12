@@ -10,8 +10,12 @@ import { Perks } from "@custom_types/character";
 import { Request } from "./request";
 import { skill } from "@custom_types/inventory";
 import { Data } from "../../data/data_objects";
+import { Effect } from "../../events/effects";
+import { DataID } from "../../data/data_id";
 
 export namespace SocketCommand {
+
+
     // data is a raw id of character
     export function attack_character(socket_wrapper: SocketWrapper, raw_data: unknown) {
         const [user, character] = Convert.socket_wrapper_to_user_character(socket_wrapper)
@@ -91,22 +95,23 @@ export namespace SocketCommand {
         Event.buy_skill(valid_character, skill_tag as skill, target_character)
     }
 
-    // export function buy_plot(sw: SocketWrapper,  msg: undefined|{id: unknown}) {
-    //     if (msg == undefined) return
-    //     let character_id = msg.id
-    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-    //     const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
-    //     console.log('attempt to buy plot', character?.id, target_character?.id)
+    export function enter_location(sw: SocketWrapper, msg: unknown) {
+        if (msg == undefined) return
+        let location_id = Number(msg)
+        if (typeof(location_id) != "number") {
+            return
+        }
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            return
+        }
 
-    //     if (character == undefined) return
-    //     if (target_character == undefined) return
-    //     if (valid_character.cell_id != target_character.cell_id) {
-    //         valid_user.socket.emit('alert', 'not in the same cell')
-    //         return
-    //     }
-    //     let response = Event.buy_land_plot(character, target_character)
-    //     console.log(response)
-    // }
+        const location = Data.Locations.from_number(location_id)
+        if (location == undefined) return false
+        if (location.cell_id != character.cell_id) return false
+
+        Effect.enter_location_payment(character.id, location.id)
+    }
 
     // export function create_plot(sw: SocketWrapper) {
     //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)

@@ -14,6 +14,7 @@ import { Location } from "../../location/location_class";
 import { character_id } from "@custom_types/common";
 import { LocationView } from "@custom_types/responses";
 import { CharactersHeap } from "../../battle/classes/heap";
+import { MapSystem } from "../../map/system";
 
 
 export namespace Request {
@@ -55,12 +56,15 @@ export namespace Request {
                 owner_name: name,
                 cell_id: location.cell_id,
                 house_level: location.has_house_level,
-                forest: location.forest
+                forest: location.forest,
+                terrain: location.terrain,
+                urbanisation: MapSystem.urbanisation(location.cell_id)
             }
         })
 
         // console.log(locations)
         Alerts.generic_user_alert(user, 'locations-info', locations)
+        SendUpdate.map_related(user)
         return
     }
 

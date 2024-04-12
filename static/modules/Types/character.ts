@@ -1,30 +1,33 @@
-interface ValueInterface {
+import { LocationView } from "@custom_types/responses";
+import { Value } from "../Values/collection";
+
+export interface ValueInterface {
     id: string;
     value: number;
 }
 
-interface LimitedValueInterface extends ValueInterface {
+export interface LimitedValueInterface extends ValueInterface {
     max_value: number;
 }
 
-interface BulkAmountInterface extends ValueInterface {
+export interface BulkAmountInterface extends ValueInterface {
     material_index: number;
     material_string: string;
 }
 
-type DamageTag = 'fire'|'blunt'|'pierce'|'slice'
-type PerDamageNumber = Record<DamageTag, number>
+export type DamageTag = 'fire'|'blunt'|'pierce'|'slice'
+export type PerDamageNumber = Record<DamageTag, number>
 
-interface AttackView {
+export interface AttackView {
     damage: PerDamageNumber
 }
 
-interface ChatMessage {
+export interface ChatMessage {
     msg: string
     user: string
 }
 
-interface BattleLogData {
+export interface BattleLogData {
     role: 'defender'|'attacker',
     attack : AttackView,
     res: PerDamageNumber,
@@ -32,17 +35,18 @@ interface BattleLogData {
     total: number
 }
 
-interface DependencyUI {
+export interface DependencyUI {
     update_display: () => void;
 }
 
-interface CharacterDataBasic {
+export interface CharacterDataBasic {
     id: number,
     name: string,
 }
 
-interface CharacterDataExpanded extends CharacterDataBasic {
+export interface CharacterDataExpanded extends CharacterDataBasic {
     savings: ValueInterface,
     savings_trade: ValueInterface,
+    location_id: Value
     stash: ValueInterface[]
 }

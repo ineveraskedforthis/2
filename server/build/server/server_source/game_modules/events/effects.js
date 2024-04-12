@@ -4,7 +4,6 @@ exports.Effect = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
 const scripted_values_1 = require("./scripted_values");
 const basic_functions_1 = require("../calculations/basic_functions");
-const alerts_1 = require("../client_communication/network_actions/alerts");
 const triggers_1 = require("./triggers");
 const system_1 = require("../market/system");
 const data_id_1 = require("../data/data_id");
@@ -107,6 +106,9 @@ var Effect;
         let character = data_objects_1.Data.Characters.from_id(character_id);
         let response = triggers_1.Trigger.location_is_available(character_id, location_id);
         if (response.response == 'ok') {
+            if (response.price > character.savings.data) {
+                return response;
+            }
             if (response.owner_id != undefined) {
                 const owner = data_objects_1.Data.Characters.from_id(response.owner_id);
                 Effect.Transfer.savings(character, owner, response.price);
@@ -119,7 +121,8 @@ var Effect;
     function enter_location(character_id, location_id) {
         let character = data_objects_1.Data.Characters.from_id(character_id);
         character.location_id = location_id;
-        alerts_1.Alerts.enter_room(character);
+        //console.log("???")
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.MAP_POSITION */);
     }
     Effect.enter_location = enter_location;
     function location_quality_reduction_roll(location) {

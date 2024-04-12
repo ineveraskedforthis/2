@@ -261,8 +261,15 @@ export namespace SendUpdate {
         Alerts.generic_user_alert(user, 'map-pos', data)
     }
 
+    export function location(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+        Alerts.generic_user_alert(user, 'val_location_id_c', character.location_id)
+    }
+
     export function map_position_move(user: User) {
-        map_position(user, false)
+        map_position(user, false);
+        location(user);
     }
 
     export function local_characters(user: User) {
@@ -287,6 +294,7 @@ export namespace SendUpdate {
         local_actions(user)
         local_characters(user)
         explored(user)
+        location(user)
     }
 
     export function belongings(user: User) {

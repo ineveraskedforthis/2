@@ -6,6 +6,7 @@ import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
 import { stash_id_to_tag } from "../Stash/stash.js";
 import { BulkAmount, Value, value_class_name } from "../Values/collection.js";
+import { BulkAmountInterface } from "../Types/character.js";
 
 const durability_data: Record<string, Value> = {}
 const output_amount_data: Record<string, BulkAmountInterface[]> = {}

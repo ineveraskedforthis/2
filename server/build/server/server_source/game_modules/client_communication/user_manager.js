@@ -235,7 +235,7 @@ var UserManagement;
         else {
             causality_graph_1.Update.on(user.updates, reason);
         }
-        console.log("update scheduled", reason);
+        //console.log("update scheduled", reason)
         users_to_update.add(user);
     }
     UserManagement.add_user_to_update_queue = add_user_to_update_queue;

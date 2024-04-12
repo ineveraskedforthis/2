@@ -42,7 +42,8 @@ var Trigger;
         let owner = data_objects_1.Data.Characters.from_id(owner_id);
         if (owner.cell_id != character.cell_id)
             return { response: ResponceNegative.invalid_cell };
-        return { response: "ok", owner_id: owner_id, price: scripted_values_1.ScriptedValue.rest_price(character, location) };
+        let price = scripted_values_1.ScriptedValue.rest_price(character, location);
+        return { response: "ok", owner_id: owner_id, price: price };
     }
     Trigger.location_is_available = location_is_available;
     function can_learn_from(student, teacher, skill) {

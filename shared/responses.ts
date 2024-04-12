@@ -1,5 +1,5 @@
 import { Perks, reputation_level } from "./character";
-import { ReputationData, ReputationDataSocket, cell_id, character_id, location_id, money } from "./common";
+import { ReputationData, ReputationDataSocket, Terrain, cell_id, character_id, location_id, money } from "./common";
 import { equip_slot } from "./inventory";
 
 export type PerksResponse = {
@@ -76,4 +76,6 @@ export interface LocationView {
     cell_id: cell_id,
     house_level: number,
     forest: number,
+    terrain: Terrain,
+    urbanisation: number,
 }

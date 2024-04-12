@@ -18,6 +18,7 @@ import { Request } from "./network_actions/request";
 import { SKILLS } from "../static_data/skills";
 import { craft_actions } from "../craft/crafts_storage";
 import { Dialog } from "./network_actions/dialog";
+import { SendUpdate } from "./network_actions/updates";
 
 interface Message {
     id: number
@@ -129,6 +130,9 @@ export class SocketManager {
             socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) =>
                                             SocketCommand.learn_skill(user, msg))
 
+
+
+
             // socket.on('buy-plot',       (msg: undefined|{id: unknown}) =>
             //                                 SocketCommand.buy_plot(user, msg))
             // socket.on('create-plot',    () => SocketCommand.create_plot(user))
@@ -138,6 +142,9 @@ export class SocketManager {
             // socket.on('change-rent-price',  (msg: undefined|{id: unknown, price: unknown}) => SocketCommand.change_rent_price(user, msg))
             // socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
             // socket.on('leave-room',         () => SocketCommand.leave_room(user))
+            socket.on("enter-location",        (msg: unknown) => {
+                SocketCommand.enter_location(user, msg)
+            });
 
             socket.on('repair-location',    (msg: undefined|{id: unknown}) => SocketCommand.repair_location(user, msg))
 

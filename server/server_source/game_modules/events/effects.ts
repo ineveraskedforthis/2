@@ -13,6 +13,7 @@ import { Perks } from "@custom_types/character";
 import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
 import { LocationInterface } from "../location/location_interface";
+import { SendUpdate } from "../client_communication/network_actions/updates";
 
 export namespace Effect {
     export namespace Update {
@@ -99,6 +100,10 @@ export namespace Effect {
         let character = Data.Characters.from_id(character_id)
         let response = Trigger.location_is_available(character_id, location_id)
         if (response.response == 'ok') {
+            if (response.price > character.savings.data) {
+                return response
+            }
+
             if (response.owner_id != undefined) {
                 const owner = Data.Characters.from_id(response.owner_id)
                 Effect.Transfer.savings(character, owner, response.price)
@@ -111,7 +116,10 @@ export namespace Effect {
     export function enter_location(character_id: character_id, location_id: location_id) {
         let character = Data.Characters.from_id(character_id)
         character.location_id = location_id
-        Alerts.enter_room(character)
+
+        //console.log("???")
+
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.MAP_POSITION)
     }
 
     export function location_quality_reduction_roll(location: LocationInterface) {

@@ -144,7 +144,7 @@ var Link;
         const characters = data_id_1.DataID.Location.guest_list(location);
         for (let item of characters) {
             const local_character = data_objects_1.Data.Characters.from_id(item);
-            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 8 /* UI_Part.LOCAL_CHARACTERS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 9 /* UI_Part.LOCAL_CHARACTERS */);
             user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 19 /* UI_Part.MARKET */);
         }
     }
@@ -169,8 +169,8 @@ var Link;
             character_object.explored[item] = true;
         }
         //updates
-        user_manager_1.UserManagement.add_user_to_update_queue(character_object.user_id, 9 /* UI_Part.EXPLORED */);
-        user_manager_1.UserManagement.add_user_to_update_queue(character_object.user_id, 10 /* UI_Part.LOCAL_ACTIONS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character_object.user_id, 10 /* UI_Part.EXPLORED */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character_object.user_id, 11 /* UI_Part.LOCAL_ACTIONS */);
     }
     Link.character_and_location = character_and_location;
 })(Link = exports.Link || (exports.Link = {}));

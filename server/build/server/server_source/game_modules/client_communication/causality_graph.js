@@ -15,11 +15,13 @@ const children = {
     [3 /* UI_Part.BELONGINGS */]: [4 /* UI_Part.STASH */,
         5 /* UI_Part.SAVINGS */,
         6 /* UI_Part.INVENTORY */],
-    [7 /* UI_Part.MAP */]: [8 /* UI_Part.LOCAL_CHARACTERS */,
-        10 /* UI_Part.LOCAL_ACTIONS */,
-        9 /* UI_Part.EXPLORED */,
-        10 /* UI_Part.LOCAL_ACTIONS */,
-        11 /* UI_Part.MAP_POSITION */],
+    [7 /* UI_Part.MAP */]: [9 /* UI_Part.LOCAL_CHARACTERS */,
+        11 /* UI_Part.LOCAL_ACTIONS */,
+        10 /* UI_Part.EXPLORED */,
+        8 /* UI_Part.MAP_POSITION */],
+    [8 /* UI_Part.MAP_POSITION */]: [9 /* UI_Part.LOCAL_CHARACTERS */,
+        11 /* UI_Part.LOCAL_ACTIONS */,
+        10 /* UI_Part.EXPLORED */],
     [12 /* UI_Part.SKILLS */]: [13 /* UI_Part.COOKING_SKILL */,
         16 /* UI_Part.SKINNING_SKILL */,
         15 /* UI_Part.WEAPON_SKILL */,
@@ -36,10 +38,10 @@ const update_function = {
     [5 /* UI_Part.SAVINGS */]: updates_1.SendUpdate.savings,
     [6 /* UI_Part.INVENTORY */]: updates_1.SendUpdate.equip,
     [7 /* UI_Part.MAP */]: updates_1.SendUpdate.map_related,
-    [10 /* UI_Part.LOCAL_ACTIONS */]: updates_1.SendUpdate.local_actions,
-    [9 /* UI_Part.EXPLORED */]: updates_1.SendUpdate.explored,
-    [8 /* UI_Part.LOCAL_CHARACTERS */]: updates_1.SendUpdate.local_characters,
-    [11 /* UI_Part.MAP_POSITION */]: updates_1.SendUpdate.map_position_move,
+    [8 /* UI_Part.MAP_POSITION */]: updates_1.SendUpdate.map_position_move,
+    [11 /* UI_Part.LOCAL_ACTIONS */]: updates_1.SendUpdate.local_actions,
+    [9 /* UI_Part.LOCAL_CHARACTERS */]: updates_1.SendUpdate.local_characters,
+    [10 /* UI_Part.EXPLORED */]: updates_1.SendUpdate.explored,
     [12 /* UI_Part.SKILLS */]: updates_1.SendUpdate.all_skills,
     [13 /* UI_Part.COOKING_SKILL */]: updates_1.SendUpdate.skill_cooking,
     [16 /* UI_Part.SKINNING_SKILL */]: updates_1.SendUpdate.skill_skinning,
@@ -98,8 +100,7 @@ var Update;
         // console.log(user.updates[current])
         if (force_update || (user.updates[current])) {
             // console.log('updating ' + current + ' ' + current)
-            update_function[current](user);
-            return;
+            update_function[current](user); //return
         }
         const ch = children[current];
         if (ch == undefined) {

@@ -98,6 +98,9 @@ class SocketManager {
             // socket.on('change-rent-price',  (msg: undefined|{id: unknown, price: unknown}) => SocketCommand.change_rent_price(user, msg))
             // socket.on('rent-room',          (msg: undefined|{id: unknown}) => SocketCommand.rent_room(user, msg))
             // socket.on('leave-room',         () => SocketCommand.leave_room(user))
+            socket.on("enter-location", (msg) => {
+                run_event_1.SocketCommand.enter_location(user, msg);
+            });
             socket.on('repair-location', (msg) => run_event_1.SocketCommand.repair_location(user, msg));
             socket.on('request-tags', () => { socket.emit('tags', materials_manager_1.materials.get_materials_json()); });
             socket.on('request-belongings', () => request_1.Request.belongings(user));

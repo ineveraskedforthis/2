@@ -1,6 +1,7 @@
 import { Socket } from "../../../shared/battle_data.js";
 import { elementById, isHTML, select, selectHTMLs } from "../HTMLwrappers/common.js";
 import { material_icon_url } from "../Stash/stash.js";
+import { BulkAmountInterface, DependencyUI, LimitedValueInterface, ValueInterface } from "../Types/character.js";
 
 export function value_bar_class_name (id: string) : string {
     return id + "_value_bar";
@@ -14,6 +15,7 @@ export function value_indicator_class_name (id: string) : string {
     return id + "_value_indicator"
 }
 
+
 export class Value implements ValueInterface {
     protected _id: string;
     protected _value: number;
@@ -21,7 +23,7 @@ export class Value implements ValueInterface {
     constructor(socket: Socket, id: string, dependents: DependencyUI[]){
         this._id = id;
         this._value = 0;
-        this._update(0);
+        this._update(1);
 
         console.log("register value: " + id);
 
@@ -38,6 +40,8 @@ export class Value implements ValueInterface {
     }
 
     protected _update(difference: number) {
+        if (difference == 0) return;
+
         for (let item of select("." + value_class_name(this._id))) {
             item.innerHTML = `${this._value}`
         }
@@ -132,6 +136,7 @@ export class StashValue extends BulkAmount {
 
     protected _update(difference: number): void {
         super._update(difference)
+        if (difference == 0) return
 
         let indicators = select(`.${this._id}_value_indicator`);
 

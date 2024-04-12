@@ -8,6 +8,7 @@ const system_1 = require("../../battle/system");
 const system_2 = require("../../character/system");
 const request_1 = require("./request");
 const data_objects_1 = require("../../data/data_objects");
+const effects_1 = require("../../events/effects");
 var SocketCommand;
 (function (SocketCommand) {
     // data is a raw id of character
@@ -90,21 +91,25 @@ var SocketCommand;
         events_1.Event.buy_skill(valid_character, skill_tag, target_character);
     }
     SocketCommand.learn_skill = learn_skill;
-    // export function buy_plot(sw: SocketWrapper,  msg: undefined|{id: unknown}) {
-    //     if (msg == undefined) return
-    //     let character_id = msg.id
-    //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
-    //     const [valid_user, valid_character, target_character] = Validator.valid_action_to_character(user, character, character_id)
-    //     console.log('attempt to buy plot', character?.id, target_character?.id)
-    //     if (character == undefined) return
-    //     if (target_character == undefined) return
-    //     if (valid_character.cell_id != target_character.cell_id) {
-    //         valid_user.socket.emit('alert', 'not in the same cell')
-    //         return
-    //     }
-    //     let response = Event.buy_land_plot(character, target_character)
-    //     console.log(response)
-    // }
+    function enter_location(sw, msg) {
+        if (msg == undefined)
+            return;
+        let location_id = Number(msg);
+        if (typeof (location_id) != "number") {
+            return;
+        }
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            return;
+        }
+        const location = data_objects_1.Data.Locations.from_number(location_id);
+        if (location == undefined)
+            return false;
+        if (location.cell_id != character.cell_id)
+            return false;
+        effects_1.Effect.enter_location_payment(character.id, location.id);
+    }
+    SocketCommand.enter_location = enter_location;
     // export function create_plot(sw: SocketWrapper) {
     //     const [user, character] = Convert.socket_wrapper_to_user_character(sw)
     //     if (character == undefined) return

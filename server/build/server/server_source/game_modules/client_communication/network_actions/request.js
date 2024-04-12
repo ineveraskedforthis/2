@@ -12,6 +12,7 @@ const common_validations_1 = require("./common_validations");
 const data_id_1 = require("../../data/data_id");
 const data_objects_1 = require("../../data/data_objects");
 const heap_1 = require("../../battle/classes/heap");
+const system_1 = require("../../map/system");
 var Request;
 (function (Request) {
     function local_locations(sw) {
@@ -45,11 +46,14 @@ var Request;
                 owner_name: name,
                 cell_id: location.cell_id,
                 house_level: location.has_house_level,
-                forest: location.forest
+                forest: location.forest,
+                terrain: location.terrain,
+                urbanisation: system_1.MapSystem.urbanisation(location.cell_id)
             };
         });
         // console.log(locations)
         alerts_1.Alerts.generic_user_alert(user, 'locations-info', locations);
+        updates_1.SendUpdate.map_related(user);
         return;
     }
     Request.local_locations = local_locations;

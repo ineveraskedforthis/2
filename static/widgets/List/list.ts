@@ -1,3 +1,5 @@
+import { DependencyUI } from "../../modules/Types/character";
+
 interface ColumnBase<Item> {
     header_text?: string,
     header_background?: string

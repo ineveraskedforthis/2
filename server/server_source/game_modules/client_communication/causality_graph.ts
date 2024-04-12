@@ -13,10 +13,10 @@ export const enum UI_Part {
             SAVINGS,
             INVENTORY,
         MAP,
-            LOCAL_CHARACTERS,
-            EXPLORED,
-            LOCAL_ACTIONS,
             MAP_POSITION,
+                LOCAL_CHARACTERS,
+                EXPLORED,
+                LOCAL_ACTIONS,
             // LOCAL_MARKET,
         SKILLS,
             COOKING_SKILL,
@@ -48,8 +48,10 @@ const children:{[_ in UI_Part]?: UI_Part[]} = {
         [UI_Part.MAP]                   : [ UI_Part.LOCAL_CHARACTERS,
                                             UI_Part.LOCAL_ACTIONS,
                                             UI_Part.EXPLORED,
-                                            UI_Part.LOCAL_ACTIONS,
                                             UI_Part.MAP_POSITION],
+            [UI_Part.MAP_POSITION]      : [ UI_Part.LOCAL_CHARACTERS,
+                                            UI_Part.LOCAL_ACTIONS,
+                                            UI_Part.EXPLORED],
         [UI_Part.SKILLS]                : [ UI_Part.COOKING_SKILL,
                                             UI_Part.SKINNING_SKILL,
                                             UI_Part.WEAPON_SKILL,
@@ -60,29 +62,29 @@ const children:{[_ in UI_Part]?: UI_Part[]} = {
 function empty_function(user: User) {}
 
 const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
-    [UI_Part.ROOT]                      : SendUpdate.all,
-        [UI_Part.STATUS]                : SendUpdate.status,
-            [UI_Part.HP]                : SendUpdate.hp,
-        [UI_Part.BELONGINGS]            : SendUpdate.belongings,
-            [UI_Part.STASH]             : SendUpdate.stash,
-            [UI_Part.SAVINGS]           : SendUpdate.savings,
-            [UI_Part.INVENTORY]         : SendUpdate.equip,
-        [UI_Part.MAP]                   : SendUpdate.map_related,
-            [UI_Part.LOCAL_ACTIONS]     : SendUpdate.local_actions,
-            [UI_Part.EXPLORED]          : SendUpdate.explored,
-            [UI_Part.LOCAL_CHARACTERS]  : SendUpdate.local_characters,
-            [UI_Part.MAP_POSITION]      : SendUpdate.map_position_move,
-        [UI_Part.SKILLS]                : SendUpdate.all_skills,
-            [UI_Part.COOKING_SKILL]     : SendUpdate.skill_cooking,
-            [UI_Part.SKINNING_SKILL]    : SendUpdate.skill_skinning,
-            [UI_Part.DEFENCE_SKILL]     : SendUpdate.skill_defence,
-            [UI_Part.WEAPON_SKILL]      : SendUpdate.skill_weapon,
-        [UI_Part.CRAFT]                 : SendUpdate.all_craft,
+    [UI_Part.ROOT]                          : SendUpdate.all,
+        [UI_Part.STATUS]                    : SendUpdate.status,
+            [UI_Part.HP]                    : SendUpdate.hp,
+        [UI_Part.BELONGINGS]                : SendUpdate.belongings,
+            [UI_Part.STASH]                 : SendUpdate.stash,
+            [UI_Part.SAVINGS]               : SendUpdate.savings,
+            [UI_Part.INVENTORY]             : SendUpdate.equip,
+        [UI_Part.MAP]                       : SendUpdate.map_related,
+            [UI_Part.MAP_POSITION]          : SendUpdate.map_position_move,
+                [UI_Part.LOCAL_ACTIONS]     : SendUpdate.local_actions,
+                [UI_Part.LOCAL_CHARACTERS]  : SendUpdate.local_characters,
+                [UI_Part.EXPLORED]          : SendUpdate.explored,
+        [UI_Part.SKILLS]                    : SendUpdate.all_skills,
+            [UI_Part.COOKING_SKILL]         : SendUpdate.skill_cooking,
+            [UI_Part.SKINNING_SKILL]        : SendUpdate.skill_skinning,
+            [UI_Part.DEFENCE_SKILL]         : SendUpdate.skill_defence,
+            [UI_Part.WEAPON_SKILL]          : SendUpdate.skill_weapon,
+        [UI_Part.CRAFT]                     : SendUpdate.all_craft,
             // [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
-        [UI_Part.BATTLE]                : SendUpdate.battle,
+        [UI_Part.BATTLE]                    : SendUpdate.battle,
             // [UI_Part.BATTLE_ACTIONS]    : SendUpdate.battle_actions,
-        [UI_Part.MARKET]                : SendUpdate.market,
-        [UI_Part.STATS]                 : SendUpdate.stats,
+        [UI_Part.MARKET]                    : SendUpdate.market,
+        [UI_Part.STATS]                     : SendUpdate.stats,
 }
 
 const influence:{[_ in UI_Part]?: UI_Part[]} = {
@@ -137,7 +139,7 @@ export namespace Update {
 
         if (force_update || (user.updates[current])) {
             // console.log('updating ' + current + ' ' + current)
-            update_function[current](user); return
+            update_function[current](user); //return
         }
         const ch = children[current]
         if (ch == undefined) {

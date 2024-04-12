@@ -13,7 +13,7 @@ export class Value {
     constructor(socket, id, dependents) {
         this._id = id;
         this._value = 0;
-        this._update(0);
+        this._update(1);
         console.log("register value: " + id);
         ((display) => socket.on(`val_${id}_c`, (data) => {
             console.log("update value: " + id);
@@ -24,6 +24,8 @@ export class Value {
         }))(this);
     }
     _update(difference) {
+        if (difference == 0)
+            return;
         for (let item of select("." + value_class_name(this._id))) {
             item.innerHTML = `${this._value}`;
         }
@@ -98,6 +100,8 @@ export class StashValue extends BulkAmount {
     }
     _update(difference) {
         super._update(difference);
+        if (difference == 0)
+            return;
         let indicators = select(`.${this._id}_value_indicator`);
         for (let item of indicators) {
             if (difference < 0) {

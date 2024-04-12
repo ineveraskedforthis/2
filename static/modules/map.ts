@@ -655,6 +655,10 @@ export class Map {
         console.log(i, j)
         let tmp0 = this.curr_pos[0]
         let tmp1 = this.curr_pos[1]
+        if ((tmp0 == i) && (tmp1 == j)) {
+            return
+        }
+
         this.curr_pos = [i, j];
         // this.curr_territory = get_territory_tag(i, j);
 
@@ -685,28 +689,11 @@ socket.on('map-pos', msg => {
     console.log('map-pos')
     let location = map.set_curr_pos([msg.x, msg.y], msg.teleport_flag);
     console.log(location)
-    change_bg(location);
 });
-socket.on('enter-room', msg => {
-    console.log('enter-room')
-    change_bg('house_inside');
-})
-socket.on('leave-room', msg => {
-    console.log('leave-room')
-    update_background()
-})
-function change_bg(tag: string) {
-    let div = document.getElementById('actual_game_scene')!;
-    div.style.backgroundImage = "url(/static/img/bg_" + tag + ".png)"
-}
-function update_background() {
-    let location = map.get_bg_tag(map.curr_pos);
-    change_bg(location);
-}
 
 // socket.on('explore', msg => {map.explore(msg)});
-socket.on('map-data-display', data => {map.load_terrain(data); update_background()})
-socket.on('map-data-reset', data => {map.reset(); update_background()})
+socket.on('map-data-display', data => map.load_terrain(data))
+socket.on('map-data-reset', data => map.reset())
 socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
 // socket.on('cell-visited', data => map.mark_visited(data))
 

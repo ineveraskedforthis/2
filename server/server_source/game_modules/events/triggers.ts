@@ -58,7 +58,9 @@ export namespace Trigger {
         if (owner.cell_id != character.cell_id)
             return { response: ResponceNegative.invalid_cell }
 
-        return { response: "ok", owner_id: owner_id, price: ScriptedValue.rest_price(character, location) }
+        let price = ScriptedValue.rest_price(character, location)
+
+        return { response: "ok", owner_id: owner_id, price: price }
     }
 
     export function can_learn_from(student: Character, teacher: Character, skill: skill): LearningAvailableResponce {

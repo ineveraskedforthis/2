@@ -26,8 +26,10 @@ import { Value } from './modules/Values/collection.js';
 import { EquipSocket, ItemData, TaggedCraftBulk, TaggedCraftItem } from '../shared/inventory.js';
 import { equip_list } from './modules/Equipment/equipment.js';
 import { new_craft_bulk, new_craft_item, new_craft_table, update_craft_item_div } from './modules/Craft/craft.js';
-import { init_locations } from './modules/Buildings/request_buildings.js';
+import { init_locations } from './modules/Locations/request_locations.js';
 import { CraftItemUpdateView } from '@custom_types/responses.js';
+import { CharacterDataBasic } from './modules/Types/character.js';
+import { BackgroundImage } from './modules/BackgroundImage/background_image.js';
 
 // noselect tabs
 
@@ -54,8 +56,9 @@ set_up_market_headers()
 init_detailed_character_statistics()
 init_character_list_interactions()
 init_market_items()
-init_locations()
+const locations_list = init_locations()
 init_battle_control()
+const background_image = new BackgroundImage(locations_list)
 
 const market_bulk = new_market_bulk()
 
@@ -65,9 +68,11 @@ socket.on("character_data", (msg: CharacterDataBasic) => {
         name: msg.name,
         savings: new Value(socket, "savings", [market_bulk, market_items]),
         savings_trade: new Value(socket, "savings_trade", []),
+        location_id: new Value(socket, "location_id", [locations_list, background_image]),
         stash: []
     }
     socket.emit('request-tags');
+    socket.emit('request-local-locations');
 })
 
 socket.on('tags', msg => {

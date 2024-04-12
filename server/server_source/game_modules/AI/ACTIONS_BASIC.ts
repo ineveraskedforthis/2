@@ -15,6 +15,7 @@ import { GenericRest } from "./AI_ROUTINE_GENERIC";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
 import { CellData } from "../map/cell_interface";
+import { Effect } from "../events/effects";
 
 const LOOT = [MEAT, RAT_SKIN, RAT_BONE];
 export function loot(character: Character) {
@@ -172,11 +173,19 @@ export function home_walk(character: Character) {
         let target = select_max(potential_moves, simple_constraints)
         ActionManager.start_action(CharacterAction.MOVE, character, target.id)
     } else {
-        let next_cell = MapSystem.find_path(character.cell_id, DataID.Location.cell_id(character.location_id))
+        if (character.cell_id == DataID.Location.cell_id(character.home_location_id)) {
+            Effect.enter_location(character.id, character.home_location_id)
+            return
+        }
+        let next_cell = MapSystem.find_path(character.cell_id, DataID.Location.cell_id(character.home_location_id))
         if (next_cell != undefined) {
             ActionManager.start_action(CharacterAction.MOVE, character, next_cell);
         } else {
+
             console.log('character tries to move home to sell loot but can\'t')
+            console.log(character.cell_id)
+            console.log(DataID.Location.cell_id(character.home_location_id))
+            console.log(character.home_location_id)
         }
     }
 }

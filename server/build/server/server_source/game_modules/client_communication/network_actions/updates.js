@@ -249,8 +249,16 @@ var SendUpdate;
         alerts_1.Alerts.generic_user_alert(user, 'map-pos', data);
     }
     SendUpdate.map_position = map_position;
+    function location(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, 'val_location_id_c', character.location_id);
+    }
+    SendUpdate.location = location;
     function map_position_move(user) {
         map_position(user, false);
+        location(user);
     }
     SendUpdate.map_position_move = map_position_move;
     function local_characters(user) {
@@ -277,6 +285,7 @@ var SendUpdate;
         local_actions(user);
         local_characters(user);
         explored(user);
+        location(user);
     }
     SendUpdate.map_related = map_related;
     function belongings(user) {

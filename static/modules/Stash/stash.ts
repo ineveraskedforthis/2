@@ -1,5 +1,6 @@
 import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
+import { DependencyUI } from "../Types/character.js";
 import { StashValue, value_class_name, value_indicator_class_name } from "../Values/collection.js";
 import { globals } from "../globals.js";
 

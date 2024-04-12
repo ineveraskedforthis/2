@@ -14,6 +14,7 @@ const constraints_1 = require("./constraints");
 const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
+const effects_1 = require("../events/effects");
 const LOOT = [materials_manager_1.MEAT, materials_manager_1.RAT_SKIN, materials_manager_1.RAT_BONE];
 function loot(character) {
     let tmp = 0;
@@ -152,12 +153,19 @@ function home_walk(character) {
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, target.id);
     }
     else {
-        let next_cell = system_1.MapSystem.find_path(character.cell_id, data_id_1.DataID.Location.cell_id(character.location_id));
+        if (character.cell_id == data_id_1.DataID.Location.cell_id(character.home_location_id)) {
+            effects_1.Effect.enter_location(character.id, character.home_location_id);
+            return;
+        }
+        let next_cell = system_1.MapSystem.find_path(character.cell_id, data_id_1.DataID.Location.cell_id(character.home_location_id));
         if (next_cell != undefined) {
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, character, next_cell);
         }
         else {
             console.log('character tries to move home to sell loot but can\'t');
+            console.log(character.cell_id);
+            console.log(data_id_1.DataID.Location.cell_id(character.home_location_id));
+            console.log(character.home_location_id);
         }
     }
 }
