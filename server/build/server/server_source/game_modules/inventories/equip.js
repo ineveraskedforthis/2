@@ -155,8 +155,8 @@ class Equip {
         let item = this.data.slots[tag];
         if (item == undefined)
             return;
-        let responce = this.data.backpack.add(item);
-        if (responce !== false)
+        let response = this.data.backpack.add(item);
+        if (response !== false)
             this.data.slots[tag] = undefined;
     }
     destroy_slot(tag) {

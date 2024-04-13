@@ -102,8 +102,8 @@ var UserManagement;
         }
         // compare hash of password with hash in storage
         var password_hash = user_data.password_hash;
-        let responce = bcrypt.compareSync(data.password, password_hash);
-        if (responce) {
+        let response = bcrypt.compareSync(data.password, password_hash);
+        if (response) {
             var user = construct_user(sw, user_data);
             user.logged_in = true;
             return ({ login_prompt: 'ok', user: user });

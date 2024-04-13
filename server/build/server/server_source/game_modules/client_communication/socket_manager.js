@@ -184,14 +184,14 @@ class SocketManager {
     //     if (user.logged_in && !user.get_character().in_battle()) {
     //         let char = user.get_character();
     //         let res =  this.world.action_manager.start_action(CharacterAction.ATTACK, char, undefined)
-    //         if (res == CharacterActionResponce.OK) {
+    //         if (res == CharacterActionResponse.OK) {
     //             let battle_id = char.get_battle_id()
     //             let battle = this.world.get_battle_from_id(battle_id)
     //             if (battle != undefined) {
     //                 console.log('battle had started')
     //                 battle.send_data_start()
     //             }
-    //         } else if (res == CharacterActionResponce.NO_POTENTIAL_ENEMY) {
+    //         } else if (res == CharacterActionResponse.NO_POTENTIAL_ENEMY) {
     //             user.socket.emit('alert', 'No enemies')
     //         }
     //     }
@@ -222,9 +222,9 @@ class SocketManager {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res =  this.world.action_manager.start_action(CharacterAction.EAT, char, undefined)
-    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //         if (res == CharacterActionResponse.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'not enough food')
-    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //         } else if (res == CharacterActionResponse.IN_BATTLE) {
     //             user.socket.emit('alert', 'you are in battle')
     //         }
     //     }
@@ -233,9 +233,9 @@ class SocketManager {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res =  this.world.action_manager.start_action(CharacterAction.CLEAN, char, undefined)
-    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //         if (res == CharacterActionResponse.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'no water available')
-    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //         } else if (res == CharacterActionResponse.IN_BATTLE) {
     //             user.socket.emit('alert', 'you are in battle')
     //         }
     //     }
@@ -244,9 +244,9 @@ class SocketManager {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res =  this.world.action_manager.start_action(CharacterAction.HUNT, char, undefined)
-    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //         if (res == CharacterActionResponse.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'no prey here')
-    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //         } else if (res == CharacterActionResponse.IN_BATTLE) {
     //             user.socket.emit('alert', 'you are in battle')
     //         }
     //     }
@@ -255,9 +255,9 @@ class SocketManager {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res =  this.world.action_manager.start_action(CharacterAction.GATHER_WOOD, char, undefined)
-    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //         if (res == CharacterActionResponse.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'no wood here')
-    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //         } else if (res == CharacterActionResponse.IN_BATTLE) {
     //             user.socket.emit('alert', 'you are in battle')
     //         }
     //     }
@@ -266,9 +266,9 @@ class SocketManager {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res =  this.world.action_manager.start_action(CharacterAction.REST, char, undefined)
-    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //         if (res == CharacterActionResponse.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'no place to rest here')
-    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //         } else if (res == CharacterActionResponse.IN_BATTLE) {
     //             user.socket.emit('alert', 'you are in battle')
     //         }
     //     }
@@ -277,11 +277,11 @@ class SocketManager {
     //     if (user.logged_in) {
     //         let char = user.get_character();
     //         let res =  this.world.action_manager.start_action(craft_action, char, undefined)
-    //         if (res == CharacterActionResponce.NO_RESOURCE)  {
+    //         if (res == CharacterActionResponse.NO_RESOURCE)  {
     //             user.socket.emit('alert', 'not enough resources')
-    //         } else if (res == CharacterActionResponce.IN_BATTLE) {
+    //         } else if (res == CharacterActionResponse.IN_BATTLE) {
     //             user.socket.emit('alert', 'you are in battle')
-    //         } else if (res == CharacterActionResponce.FAILED) {
+    //         } else if (res == CharacterActionResponse.FAILED) {
     //             user.socket.emit('alert', 'failed')
     //         }
     //     }
@@ -364,11 +364,11 @@ class SocketManager {
     //     }
     // }
     // send_market_info(market: Cell) {
-    //     let responce = this.prepare_market_orders(market)
+    //     let response = this.prepare_market_orders(market)
     //     let list = Array.from(market.characters_list)
     //     for (let item of list) {
     //         let character = this.world.get_char_from_id(item)
-    //         this.send_to_character_user(character, 'market-data', responce)
+    //         this.send_to_character_user(character, 'market-data', response)
     //     }
     //     for (let i of this.sockets) {
     //         if (i.current_user != null) {
@@ -376,7 +376,7 @@ class SocketManager {
     //             try {
     //                 let cell1: any = char.get_cell();
     //                 if (i.online && i.market_data && (cell1.id == market.id)) {
-    //                     i.socket.emit('market-data', responce)
+    //                     i.socket.emit('market-data', response)
     //                 }
     //             } catch(error) {
     //                 console.log(i.current_user.login)

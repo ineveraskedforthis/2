@@ -5,7 +5,7 @@ import { random_walk, rest_outside } from "./ACTIONS_BASIC";
 import { forest_constraints, simple_constraints, steppe_constraints } from "./constraints";
 import { AIhelper } from "./helpers";
 import { Effect } from "../events/effects";
-import { ResponceNegative } from "../events/triggers";
+import { ResponseNegative } from "../events/triggers";
 import { AImemory } from "../character/AIstate";
 import { BattleSystem } from "../battle/system";
 import { AI_TRIGGER } from "./AI_TRIGGERS";
@@ -92,7 +92,7 @@ export function GenericRest(character: Character) {
             character.ai_memories.push(AImemory.NO_MONEY)
         } else {
             let result = Effect.enter_location(character.id, location_to_rest)
-            if (result.response == ResponceNegative.no_money) {
+            if (result.response == ResponseNegative.no_money) {
                 rest_outside(character)
                 character.ai_memories.push(AImemory.NO_MONEY)
             }

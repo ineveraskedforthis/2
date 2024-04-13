@@ -337,14 +337,14 @@ var SendUpdate;
 })(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
 exports.weapon_attack_tags = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded'];
 // update_market_info(market: Cell) {
-//     let responce = this.prepare_market_orders(market)
+//     let response = this.prepare_market_orders(market)
 //     for (let i of this.sockets) {
 //         if (i.current_user != null) {
 //             let char = i.current_user.character;
 //             try {
 //                 let cell1 = char.get_cell();
 //                 if (i.online & i.market_data && (cell1.id==market.id)) {
-//                     i.socket.emit('market-data', responce);
+//                     i.socket.emit('market-data', response);
 //                 }
 //             } catch(error) {
 //             }

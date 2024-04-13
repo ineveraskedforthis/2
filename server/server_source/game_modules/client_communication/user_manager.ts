@@ -18,8 +18,8 @@ import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
 var path = require('path')
 
-type LoginResponce = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
-type RegResponce = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
+type LoginResponse = {login_prompt: 'wrong-login', user: undefined}|{login_prompt: 'wrong-password', user: undefined}|{login_prompt: 'ok', user: User}
+type RegResponse = {reg_prompt: 'login-is-not-available', user: undefined}|{reg_prompt: 'ok', user: User}
 
 
 export type UsersData = {[_ in user_id]: UserData}
@@ -107,7 +107,7 @@ export namespace UserManagement {
         return user_data
     }
 
-    export function login_user(sw: SocketWrapper, data: {login: string, password: string}): LoginResponce {
+    export function login_user(sw: SocketWrapper, data: {login: string, password: string}): LoginResponse {
         // check that user exists
         let user_data = login_to_user_data[data.login]
         if (user_data == undefined) {
@@ -116,8 +116,8 @@ export namespace UserManagement {
 
         // compare hash of password with hash in storage
         var password_hash = user_data.password_hash;
-        let responce =  bcrypt.compareSync(data.password, password_hash)
-        if (responce) {
+        let response =  bcrypt.compareSync(data.password, password_hash)
+        if (response) {
             var user = construct_user(sw, user_data)
             user.logged_in = true
             return({login_prompt: 'ok', user: user});
@@ -125,7 +125,7 @@ export namespace UserManagement {
         return {login_prompt: 'wrong-password', user: undefined};
     }
 
-    export function register_user(sw: SocketWrapper, data: {login: string, password: string, code?: string}):RegResponce {
+    export function register_user(sw: SocketWrapper, data: {login: string, password: string, code?: string}):RegResponse {
         if (login_to_user_data[data.login] != undefined) {
             return {reg_prompt: 'login-is-not-available', user: undefined};
         }

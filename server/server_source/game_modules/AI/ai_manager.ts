@@ -19,8 +19,8 @@ export namespace CampaignAI {
             character.ai_memories.shift()
         }
         if (!AI_TRIGGER.low_hp(character)) {
-            let responce = AIhelper.check_battles_to_join(character)
-            if (responce) return;
+            let response = AIhelper.check_battles_to_join(character)
+            if (response) return;
         }
         decide_ai_action_campaign(character)
     }

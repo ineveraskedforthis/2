@@ -333,8 +333,8 @@ export namespace BattleImage {
 
         let current_event = events_list[0]
         if (current_event != undefined) {
-            const responce = current_event.effect(scaled_dt)
-            if (responce) {
+            const response = current_event.effect(scaled_dt)
+            if (response) {
                 events_list = events_list.slice(1)
                 update_selection_data()
                 update_unit_div(current_event.unit)
@@ -932,7 +932,7 @@ export namespace BattleImage {
 
 
 //     handle_socket_data(action: any){
-//         // handle immediate responces
+//         // handle immediate responses
 //         if ((action.action == 'not_enough_ap')) {
 //             if (action.who == player) {
 //                 alert('Not enough action points')

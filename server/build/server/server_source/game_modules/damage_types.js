@@ -5,11 +5,11 @@ const Damage_1 = require("./Damage");
 var DmgOps;
 (function (DmgOps) {
     function add(y, x) {
-        let responce = new Damage_1.Damage();
+        let response = new Damage_1.Damage();
         for (let t of exports.damage_types) {
-            responce[t] = x[t] + y[t];
+            response[t] = x[t] + y[t];
         }
-        return responce;
+        return response;
     }
     DmgOps.add = add;
     function add_ip(x, y) {
@@ -20,11 +20,11 @@ var DmgOps;
     }
     DmgOps.add_ip = add_ip;
     function subtract(x, y) {
-        let responce = new Damage_1.Damage();
+        let response = new Damage_1.Damage();
         for (let t of exports.damage_types) {
-            responce[t] = Math.max(x[t] - y[t], 0);
+            response[t] = Math.max(x[t] - y[t], 0);
         }
-        return responce;
+        return response;
     }
     DmgOps.subtract = subtract;
     function subtract_ip(x, y) {

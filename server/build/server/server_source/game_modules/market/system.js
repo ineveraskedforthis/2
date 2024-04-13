@@ -1,19 +1,19 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ItemOrders = exports.MarketOrders = exports.AuctionResponce = void 0;
+exports.ItemOrders = exports.MarketOrders = exports.AuctionResponse = void 0;
 const system_1 = require("../character/system");
 const stash_1 = require("../inventories/stash");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
-var AuctionResponce;
-(function (AuctionResponce) {
-    AuctionResponce["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";
-    AuctionResponce["EMPTY_BACKPACK_SLOT"] = "empty_backpack_slot";
-    AuctionResponce["NO_SUCH_ORDER"] = "no_such_order";
-    AuctionResponce["OK"] = "ok";
-    AuctionResponce["NOT_ENOUGH_MONEY"] = "not_enough_money";
-    AuctionResponce["INVALID_ORDER"] = "invalid_order";
-})(AuctionResponce = exports.AuctionResponce || (exports.AuctionResponce = {}));
+var AuctionResponse;
+(function (AuctionResponse) {
+    AuctionResponse["NOT_IN_THE_SAME_CELL"] = "not_in_the_same_cell";
+    AuctionResponse["EMPTY_BACKPACK_SLOT"] = "empty_backpack_slot";
+    AuctionResponse["NO_SUCH_ORDER"] = "no_such_order";
+    AuctionResponse["OK"] = "ok";
+    AuctionResponse["NOT_ENOUGH_MONEY"] = "not_enough_money";
+    AuctionResponse["INVALID_ORDER"] = "invalid_order";
+})(AuctionResponse = exports.AuctionResponse || (exports.AuctionResponse = {}));
 const empty_stash = new stash_1.Stash();
 // this file does not handle networking
 var MarketOrders;
@@ -126,7 +126,7 @@ var ItemOrders;
     ItemOrders.create = create;
     function remove(item, who) {
         item.price = undefined;
-        return AuctionResponce.OK;
+        return AuctionResponse.OK;
     }
     ItemOrders.remove = remove;
     function remove_all_character(who) {
@@ -141,33 +141,33 @@ var ItemOrders;
     function sell(seller, backpack_id, price) {
         const item = seller.equip.data.backpack.items[backpack_id];
         if (item == undefined) {
-            return { responce: AuctionResponce.EMPTY_BACKPACK_SLOT };
+            return { response: AuctionResponse.EMPTY_BACKPACK_SLOT };
         }
         create(seller, item, price, false);
         // seller.equip.data.backpack.remove(backpack_id)
-        return { responce: AuctionResponce.OK };
+        return { response: AuctionResponse.OK };
     }
     ItemOrders.sell = sell;
     function buy(id, buyer, seller) {
         let item = seller.equip.data.backpack.items[id];
         if (item == undefined)
-            return AuctionResponce.INVALID_ORDER;
+            return AuctionResponse.INVALID_ORDER;
         if (item.price == undefined)
-            return AuctionResponce.INVALID_ORDER;
+            return AuctionResponse.INVALID_ORDER;
         // make sure that they are in the same cell
         if (seller.cell_id != buyer.cell_id) {
-            return AuctionResponce.NOT_IN_THE_SAME_CELL;
+            return AuctionResponse.NOT_IN_THE_SAME_CELL;
         }
         // make sure that buyer has enough money
         // but owner can buy it from himself
         if ((buyer.id != seller.id) && (buyer.savings.get() < item.price)) {
-            return AuctionResponce.NOT_ENOUGH_MONEY;
+            return AuctionResponse.NOT_ENOUGH_MONEY;
         }
         buyer.savings.transfer(seller.savings, item.price);
         seller.equip.data.backpack.remove(id);
         buyer.equip.data.backpack.add(item);
         item.price = undefined;
-        return AuctionResponce.OK;
+        return AuctionResponse.OK;
     }
     ItemOrders.buy = buy;
 })(ItemOrders = exports.ItemOrders || (exports.ItemOrders = {}));

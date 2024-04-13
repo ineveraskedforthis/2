@@ -37,9 +37,9 @@ var EventInventory;
     }
     EventInventory.switch_weapon = switch_weapon;
     function add_item(character, item) {
-        const responce = character.equip.data.backpack.add(item);
+        const response = character.equip.data.backpack.add(item);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
-        return responce;
+        return response;
     }
     EventInventory.add_item = add_item;
     function enchant(character, index) {

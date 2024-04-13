@@ -275,15 +275,15 @@ export namespace DataID {
         }
 
         export function character(character: character_id): ReputationData[] {
-            const responce: ReputationData[] = []
+            const response: ReputationData[] = []
             for (const faction of faction_id_list) {
-                responce.push({
+                response.push({
                     faction_id: faction,
                     reputation: get(character, faction)
                 })
             }
 
-            return responce
+            return response
         }
 
         /**

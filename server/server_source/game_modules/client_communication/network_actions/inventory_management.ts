@@ -5,7 +5,7 @@ import { Alerts } from "./alerts";
 import { Convert } from "../../systems_communication";
 import { EventInventory } from "../../events/inventory_events";
 import { EventMarket } from "../../events/market";
-import { AuctionResponce, } from "../../market/system";
+import { AuctionResponse, } from "../../market/system";
 import { market_order_id } from "@custom_types/common";
 import { Character } from "../../character/character";
 // import { slot } from "../../../../../shared/inventory";
@@ -82,13 +82,13 @@ export namespace InventoryCommands {
             return
         }
 
-        let responce = EventMarket.buy(
+        let response = EventMarket.buy(
             character,
             msg.material as material_index,
             msg.amount,
             msg.price)
-        if (responce != 'ok') {
-            Alerts.generic_user_alert(user, 'alert', responce)
+        if (response != 'ok') {
+            Alerts.generic_user_alert(user, 'alert', response)
             return
         }
     }
@@ -138,14 +138,14 @@ export namespace InventoryCommands {
 
         console.log('sell is valid')
 
-        let responce = EventMarket.sell(
+        let response = EventMarket.sell(
             character,
             msg.material as material_index,
             msg.amount,
             msg.price)
 
-        if (responce != 'ok') {
-            Alerts.generic_user_alert(user, 'alert', responce)
+        if (response != 'ok') {
+            Alerts.generic_user_alert(user, 'alert', response)
         }
     }
 
@@ -159,12 +159,12 @@ export namespace InventoryCommands {
         if (isNaN(index) || isNaN(price)) return;
         console.log('validated')
 
-        const responce = EventMarket.sell_item(character, index, price as money)
+        const response = EventMarket.sell_item(character, index, price as money)
 
-        if (responce.responce != AuctionResponce.OK) {
+        if (response.response != AuctionResponse.OK) {
             console.log("impossible sale")
-            console.log(responce.responce)
-            Alerts.generic_user_alert(user, 'alert', responce.responce)
+            console.log(response.response)
+            Alerts.generic_user_alert(user, 'alert', response.response)
         }
     }
 
@@ -179,7 +179,7 @@ export namespace InventoryCommands {
         if (seller.cell_id != character.cell_id) return;
         if (isNaN(amount)) return
 
-        let responce = 'ok'
+        let response = 'ok'
         if (order.typ == 'buy') {
             EventMarket.execute_buy_order(character, order.id, amount)
         }
@@ -187,7 +187,7 @@ export namespace InventoryCommands {
             EventMarket.execute_sell_order(character, order.id, amount)
         }
 
-        user.socket.emit('alert', responce)
+        user.socket.emit('alert', response)
     }
 
     function validate_item_buyout(msg: unknown): msg is {character_id: number, item_id: number} {

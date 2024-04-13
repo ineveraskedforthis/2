@@ -81,9 +81,9 @@ var InventoryCommands;
             user.socket.emit('alert', 'invalid_material');
             return;
         }
-        let responce = market_1.EventMarket.buy(character, msg.material, msg.amount, msg.price);
-        if (responce != 'ok') {
-            alerts_1.Alerts.generic_user_alert(user, 'alert', responce);
+        let response = market_1.EventMarket.buy(character, msg.material, msg.amount, msg.price);
+        if (response != 'ok') {
+            alerts_1.Alerts.generic_user_alert(user, 'alert', response);
             return;
         }
     }
@@ -126,9 +126,9 @@ var InventoryCommands;
             return;
         }
         console.log('sell is valid');
-        let responce = market_1.EventMarket.sell(character, msg.material, msg.amount, msg.price);
-        if (responce != 'ok') {
-            alerts_1.Alerts.generic_user_alert(user, 'alert', responce);
+        let response = market_1.EventMarket.sell(character, msg.material, msg.amount, msg.price);
+        if (response != 'ok') {
+            alerts_1.Alerts.generic_user_alert(user, 'alert', response);
         }
     }
     InventoryCommands.sell = sell;
@@ -142,11 +142,11 @@ var InventoryCommands;
         if (isNaN(index) || isNaN(price))
             return;
         console.log('validated');
-        const responce = market_1.EventMarket.sell_item(character, index, price);
-        if (responce.responce != system_1.AuctionResponce.OK) {
+        const response = market_1.EventMarket.sell_item(character, index, price);
+        if (response.response != system_1.AuctionResponse.OK) {
             console.log("impossible sale");
-            console.log(responce.responce);
-            alerts_1.Alerts.generic_user_alert(user, 'alert', responce.responce);
+            console.log(response.response);
+            alerts_1.Alerts.generic_user_alert(user, 'alert', response.response);
         }
     }
     InventoryCommands.sell_item = sell_item;
@@ -162,14 +162,14 @@ var InventoryCommands;
             return;
         if (isNaN(amount))
             return;
-        let responce = 'ok';
+        let response = 'ok';
         if (order.typ == 'buy') {
             market_1.EventMarket.execute_buy_order(character, order.id, amount);
         }
         if (order.typ == 'sell') {
             market_1.EventMarket.execute_sell_order(character, order.id, amount);
         }
-        user.socket.emit('alert', responce);
+        user.socket.emit('alert', response);
     }
     InventoryCommands.execute_bulk_order = execute_bulk_order;
     function validate_item_buyout(msg) {

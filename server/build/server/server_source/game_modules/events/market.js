@@ -11,26 +11,26 @@ const data_id_1 = require("../data/data_id");
 var EventMarket;
 (function (EventMarket) {
     function buy(character, material, amount, price) {
-        const responce = system_1.MarketOrders.new_buy_order(material, amount, price, character);
+        const response = system_1.MarketOrders.new_buy_order(material, amount, price, character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
         effects_1.Effect.Update.cell_market(character.cell_id);
-        return responce;
+        return response;
     }
     EventMarket.buy = buy;
     function sell(character, material, amount, price) {
         // console.log('sell ' + material + ' ' + amount + ' ' + price)
-        const responce = system_1.MarketOrders.new_sell_order(material, amount, price, character);
+        const response = system_1.MarketOrders.new_sell_order(material, amount, price, character);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
         effects_1.Effect.Update.cell_market(character.cell_id);
-        return responce;
+        return response;
     }
     EventMarket.sell = sell;
     function sell_item(character, index, price) {
         // console.log('sell item index ' + index)
-        const responce = system_1.ItemOrders.sell(character, index, price);
+        const response = system_1.ItemOrders.sell(character, index, price);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
         effects_1.Effect.Update.cell_market(character.cell_id);
-        return responce;
+        return response;
     }
     EventMarket.sell_item = sell_item;
     function execute_sell_order(buyer, order_id, amount) {

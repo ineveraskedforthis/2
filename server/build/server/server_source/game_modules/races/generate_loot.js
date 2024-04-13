@@ -47,7 +47,7 @@ var Loot;
     }
     Loot.base = base;
     function items(dead) {
-        let responce = [];
+        let response = [];
         console.log(dead);
         if (dead == 'rat') {
             let dice_drop = Math.random();
@@ -56,10 +56,10 @@ var Loot;
                 let item = system_1.ItemSystem.create('rat_skull_helmet', [], 100);
                 let dice_quality = (0, basic_functions_1.trim)(Math.random() * Math.random(), 0.1, 1);
                 item.durability = Math.floor(dice_quality * 100);
-                responce.push(item);
+                response.push(item);
             }
         }
-        return responce;
+        return response;
     }
     Loot.items = items;
     function skinning(dead) {

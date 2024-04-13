@@ -254,14 +254,14 @@ var DataID;
         }
         Reputation.set = set;
         function character(character) {
-            const responce = [];
+            const response = [];
             for (const faction of faction_id_list) {
-                responce.push({
+                response.push({
                     faction_id: faction,
                     reputation: get(character, faction)
                 });
             }
-            return responce;
+            return response;
         }
         Reputation.character = character;
         /**

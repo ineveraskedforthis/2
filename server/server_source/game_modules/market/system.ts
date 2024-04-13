@@ -11,7 +11,7 @@ import { money } from "@custom_types/common";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
 
-export enum AuctionResponce {
+export enum AuctionResponse {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
     EMPTY_BACKPACK_SLOT = 'empty_backpack_slot',
     NO_SUCH_ORDER = 'no_such_order',
@@ -139,7 +139,7 @@ export namespace ItemOrders {
 
     export function remove(item: Item, who: Character) {
         item.price = undefined
-        return AuctionResponce.OK
+        return AuctionResponse.OK
     }
 
     export function remove_all_character(who:Character) {
@@ -153,30 +153,30 @@ export namespace ItemOrders {
     export function sell(seller: Character, backpack_id: number, price: money){
         const item = seller.equip.data.backpack.items[backpack_id]
         if (item == undefined) {
-            return {responce: AuctionResponce.EMPTY_BACKPACK_SLOT}
+            return {response: AuctionResponse.EMPTY_BACKPACK_SLOT}
         }
         create(seller, item, price, false)
         // seller.equip.data.backpack.remove(backpack_id)
-        return {responce: AuctionResponce.OK}
+        return {response: AuctionResponse.OK}
     }
 
     export function buy(id: number, buyer: Character, seller: Character) {
         let item = seller.equip.data.backpack.items[id]
-        if (item == undefined) return AuctionResponce.INVALID_ORDER
-        if (item.price == undefined) return AuctionResponce.INVALID_ORDER
+        if (item == undefined) return AuctionResponse.INVALID_ORDER
+        if (item.price == undefined) return AuctionResponse.INVALID_ORDER
 
         // make sure that they are in the same cell
-        if (seller.cell_id != buyer.cell_id) {return AuctionResponce.NOT_IN_THE_SAME_CELL}
+        if (seller.cell_id != buyer.cell_id) {return AuctionResponse.NOT_IN_THE_SAME_CELL}
 
         // make sure that buyer has enough money
         // but owner can buy it from himself
-        if ((buyer.id != seller.id)&&(buyer.savings.get() < item.price)) {return AuctionResponce.NOT_ENOUGH_MONEY}
+        if ((buyer.id != seller.id)&&(buyer.savings.get() < item.price)) {return AuctionResponse.NOT_ENOUGH_MONEY}
 
         buyer.savings.transfer(seller.savings, item.price)
         seller.equip.data.backpack.remove(id)
         buyer.equip.data.backpack.add(item)
         item.price = undefined
 
-        return AuctionResponce.OK
+        return AuctionResponse.OK
     }
 }

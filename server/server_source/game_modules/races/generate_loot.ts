@@ -49,7 +49,7 @@ export namespace Loot {
     }
 
     export function items(dead:tagRACE):Item[] {
-        let responce = []
+        let response = []
         console.log(dead)
         if (dead == 'rat') {
             let dice_drop = Math.random()
@@ -58,11 +58,11 @@ export namespace Loot {
                 let item = ItemSystem.create('rat_skull_helmet', [], 100)
                 let dice_quality = trim(Math.random() * Math.random(), 0.1, 1)
                 item.durability = Math.floor(dice_quality * 100)
-                responce.push(item)
+                response.push(item)
             }
         }
 
-        return responce
+        return response
     }
 
     export function skinning(dead: tagRACE): number {

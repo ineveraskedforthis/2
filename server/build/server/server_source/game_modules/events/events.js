@@ -32,9 +32,9 @@ var Event;
             alerts_1.Alerts.not_enough_to_character(student, 'money', savings, price, undefined);
             return;
         }
-        let responce = (0, perk_requirement_1.perk_requirement)(perk, student);
-        if (responce != 'ok') {
-            alerts_1.Alerts.generic_character_alert(student, 'alert', responce);
+        let response = (0, perk_requirement_1.perk_requirement)(perk, student);
+        if (response != 'ok') {
+            alerts_1.Alerts.generic_character_alert(student, 'alert', response);
             return;
         }
         effects_1.Effect.Transfer.savings(student, teacher, price);
@@ -172,8 +172,8 @@ var Event;
         if (roll_weapon < 0.2) {
             effects_1.Effect.change_durability(attacker, 'weapon', -1);
         }
-        const responce = ranged_dodge(attack, defender, flag_dodge);
-        if (responce == 'miss') {
+        const response = ranged_dodge(attack, defender, flag_dodge);
+        if (response == 'miss') {
             damage_types_1.DmgOps.mult_ip(attack.damage, 0);
         }
         else {

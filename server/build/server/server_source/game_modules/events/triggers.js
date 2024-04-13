@@ -1,24 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Trigger = exports.ResponceNegativeQuantified = exports.ResponceNegative = void 0;
+exports.Trigger = exports.ResponseNegativeQuantified = exports.ResponseNegative = void 0;
 const skill_price_1 = require("../prices/skill_price");
 const system_1 = require("../character/system");
 const data_objects_1 = require("../data/data_objects");
-var ResponceNegative;
-(function (ResponceNegative) {
-    ResponceNegative["current_location_is_not_undefined"] = "current_location_is_not_undefined";
-    ResponceNegative["no_rooms"] = "no_rooms";
-    ResponceNegative["wrong_cell"] = "wrong_cell";
-    ResponceNegative["no_money"] = "no_money";
-    ResponceNegative["invalid_cell"] = "invalid_cell";
-    ResponceNegative["no_owner"] = "no_owner";
-})(ResponceNegative = exports.ResponceNegative || (exports.ResponceNegative = {}));
-var ResponceNegativeQuantified;
-(function (ResponceNegativeQuantified) {
-    ResponceNegativeQuantified["Money"] = "money";
-    ResponceNegativeQuantified["TeacherSkill"] = "teacher_skill";
-    ResponceNegativeQuantified["Skill"] = "skill";
-})(ResponceNegativeQuantified = exports.ResponceNegativeQuantified || (exports.ResponceNegativeQuantified = {}));
+var ResponseNegative;
+(function (ResponseNegative) {
+    ResponseNegative["current_location_is_not_undefined"] = "current_location_is_not_undefined";
+    ResponseNegative["no_rooms"] = "no_rooms";
+    ResponseNegative["wrong_cell"] = "wrong_cell";
+    ResponseNegative["no_money"] = "no_money";
+    ResponseNegative["invalid_cell"] = "invalid_cell";
+    ResponseNegative["no_owner"] = "no_owner";
+})(ResponseNegative = exports.ResponseNegative || (exports.ResponseNegative = {}));
+var ResponseNegativeQuantified;
+(function (ResponseNegativeQuantified) {
+    ResponseNegativeQuantified["Money"] = "money";
+    ResponseNegativeQuantified["TeacherSkill"] = "teacher_skill";
+    ResponseNegativeQuantified["Skill"] = "skill";
+})(ResponseNegativeQuantified = exports.ResponseNegativeQuantified || (exports.ResponseNegativeQuantified = {}));
 var Trigger;
 (function (Trigger) {
     /**
@@ -33,7 +33,7 @@ var Trigger;
         let owner_id = location.owner_id;
         let character = data_objects_1.Data.Characters.from_id(character_id);
         if (character.cell_id != location.cell_id) {
-            return { response: ResponceNegative.invalid_cell };
+            return { response: ResponseNegative.invalid_cell };
         }
         return { response: "ok", owner_id: owner_id, price: 0 };
     }
@@ -44,7 +44,7 @@ var Trigger;
         const student_skill = system_1.CharacterSystem.pure_skill(student, skill);
         if ((teacher_skill <= student_skill + 20) || (teacher_skill < 30)) {
             return {
-                response: ResponceNegativeQuantified.TeacherSkill,
+                response: ResponseNegativeQuantified.TeacherSkill,
                 current_quantity: teacher_skill,
                 max_quantity: undefined,
                 min_quantity: Math.max(student_skill + 20, 30)
@@ -53,7 +53,7 @@ var Trigger;
         let price = (0, skill_price_1.skill_price)(skill, student, teacher);
         if (savings < price) {
             return {
-                response: ResponceNegativeQuantified.Money,
+                response: ResponseNegativeQuantified.Money,
                 current_quantity: savings,
                 max_quantity: undefined,
                 min_quantity: price

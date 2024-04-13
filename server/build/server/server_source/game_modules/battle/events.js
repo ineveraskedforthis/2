@@ -132,8 +132,8 @@ var BattleEvent;
     //     const DefenderCharacter = Convert.unit_to_character(defender)
     //     attacker.action_points_left = attacker.action_points_left - COST as action_points
     //     let dist = geom.dist(attacker.position, defender.position)
-    //     let responce = Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
-    //     switch(responce) {
+    //     let response = Event.magic_bolt(AttackerCharacter, DefenderCharacter, dist, defender.dodge_turns > 0)
+    //     switch(response) {
     //         case 'miss': Alerts.battle_event_target_unit(battle, 'miss', attacker, defender, COST); break;
     //         case 'ok': Alerts.battle_event_target_unit(battle, 'ranged_attack', attacker, defender, COST)
     //     }

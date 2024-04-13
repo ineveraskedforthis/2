@@ -2,7 +2,7 @@ import { cell_id } from "@custom_types/common";
 import { Character } from "../character/character";
 
 
-// export const enum CharacterActionResponce {
+// export const enum CharacterActionResponse {
 //     CANNOT_MOVE_THERE,
 //     OK,
 //     IN_BATTLE,

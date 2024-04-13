@@ -3,11 +3,11 @@ import { damage_type } from "@custom_types/common";
 
 export namespace DmgOps {
     export function add(y:Damage, x: Damage):Damage {
-        let responce = new Damage()
+        let response = new Damage()
         for (let t of damage_types) {
-            responce[t] = x[t] + y[t]
+            response[t] = x[t] + y[t]
         }
-        return responce
+        return response
     }
     export function add_ip(x: Damage, y: Damage) {
         for (let t of damage_types) {
@@ -16,11 +16,11 @@ export namespace DmgOps {
         return x
     }
     export function subtract(x: Damage ,y:Damage):Damage {
-        let responce = new Damage()
+        let response = new Damage()
         for (let t of damage_types) {
-            responce[t] = Math.max(x[t] - y[t], 0)
+            response[t] = Math.max(x[t] - y[t], 0)
         }
-        return responce
+        return response
     }
     export function subtract_ip(x: Damage ,y:Damage):Damage {
         for (let t of damage_types) {

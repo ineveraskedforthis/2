@@ -39,9 +39,9 @@ export namespace EventInventory {
     }
 
     export function add_item(character: Character, item: Item) {
-        const responce = character.equip.data.backpack.add(item)
+        const response = character.equip.data.backpack.add(item)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY)
-        return responce
+        return response
     }
 
     export function enchant(character: Character, index: number) {

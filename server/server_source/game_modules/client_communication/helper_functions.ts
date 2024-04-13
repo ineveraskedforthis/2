@@ -8,12 +8,12 @@ import { Data } from "../data/data_objects";
 export function prepare_market_orders(cell_id: cell_id) {
     let data = DataID.Cells.market_order_id_list(cell_id);
     let orders_array = Array.from(data)
-    let responce: MarketOrderJson[] = []
+    let response: MarketOrderJson[] = []
     for (let order_id of orders_array) {
         const order = Data.MarketOrders.from_id(order_id)
         if (order.amount > 0) {
-            responce.push(JSONficate.market_order_bulk(order))
+            response.push(JSONficate.market_order_bulk(order))
         }
     }
-    return responce
+    return response
 }

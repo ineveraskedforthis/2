@@ -8,7 +8,7 @@ import { skill } from "@custom_types/inventory";
 import { Data } from "../data/data_objects";
 
 
-export enum ResponceNegative {
+export enum ResponseNegative {
     current_location_is_not_undefined = "current_location_is_not_undefined",
     no_rooms = "no_rooms",
     wrong_cell = "wrong_cell",
@@ -17,22 +17,22 @@ export enum ResponceNegative {
     no_owner = "no_owner",
 }
 
-export enum ResponceNegativeQuantified {
+export enum ResponseNegativeQuantified {
     Money = "money",
     TeacherSkill = "teacher_skill",
     Skill = "skill",
 }
 
-type LearningAvailableResponce = {
-    response: ResponceNegativeQuantified,
+type LearningAvailableResponse = {
+    response: ResponseNegativeQuantified,
     current_quantity: number,
     max_quantity: number|undefined,
     min_quantity: number|undefined} |
     { response: 'ok', price: money}
 
 
-type LocationAvailableResponce =
-    {response: ResponceNegative}
+type LocationAvailableResponse =
+    {response: ResponseNegative}
     |{response: "ok", owner_id: character_id|undefined, price: money}
 
 export namespace Trigger {
@@ -43,24 +43,24 @@ export namespace Trigger {
     * @param location_id The ID of the location.
     * @returns An object with the response status and additional information if applicable.
     */
-    export function location_is_available(character_id: character_id, location_id: location_id):LocationAvailableResponce {
+    export function location_is_available(character_id: character_id, location_id: location_id):LocationAvailableResponse {
         let location = Data.Locations.from_id(location_id)
         let owner_id = location.owner_id
         let character = Data.Characters.from_id(character_id)
         if (character.cell_id != location.cell_id) {
-            return { response: ResponceNegative.invalid_cell }
+            return { response: ResponseNegative.invalid_cell }
         }
 
         return { response: "ok", owner_id: owner_id, price: 0 as money }
     }
 
-    export function can_learn_from(student: Character, teacher: Character, skill: skill): LearningAvailableResponce {
+    export function can_learn_from(student: Character, teacher: Character, skill: skill): LearningAvailableResponse {
         let savings = student.savings.get()
         const teacher_skill = CharacterSystem.pure_skill(teacher, skill)
         const student_skill = CharacterSystem.pure_skill(student, skill)
         if ((teacher_skill <= student_skill + 20) || (teacher_skill < 30)) {
             return {
-                response: ResponceNegativeQuantified.TeacherSkill,
+                response: ResponseNegativeQuantified.TeacherSkill,
                 current_quantity: teacher_skill,
                 max_quantity: undefined,
                 min_quantity: Math.max(student_skill + 20, 30)
@@ -70,7 +70,7 @@ export namespace Trigger {
         let price = skill_price(skill, student, teacher)
         if (savings < price) {
             return {
-                response: ResponceNegativeQuantified.Money,
+                response: ResponseNegativeQuantified.Money,
                 current_quantity: savings,
                 max_quantity: undefined,
                 min_quantity: price

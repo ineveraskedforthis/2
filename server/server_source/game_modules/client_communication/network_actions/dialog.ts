@@ -2,7 +2,7 @@ import { PerksResponse } from "@custom_types/responses"
 import { Convert } from "../../systems_communication"
 import { SocketWrapper } from "../user"
 import { perk_price } from "../../prices/perk_base_price"
-import { ResponceNegativeQuantified, Trigger } from "../../events/triggers"
+import { ResponseNegativeQuantified, Trigger } from "../../events/triggers"
 import { CharacterSystem } from "../../character/system"
 import { Perks } from "@custom_types/character"
 import { skill_price } from "../../prices/skill_price"
@@ -86,7 +86,7 @@ export namespace Dialog {
         }
         for (let skill of Object.keys(target_character._skills)) {
             let teaching_response = Trigger.can_learn_from(character, target_character, skill as skill)
-            if (teaching_response.response == 'ok' || teaching_response.response == ResponceNegativeQuantified.Money) {
+            if (teaching_response.response == 'ok' || teaching_response.response == ResponseNegativeQuantified.Money) {
                 const teacher_skill = CharacterSystem.skill(target_character, skill as skill)
                 response.skills[skill as skill] = [
                     teacher_skill,

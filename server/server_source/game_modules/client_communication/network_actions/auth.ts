@@ -99,7 +99,7 @@ export namespace Auth {
             return
         }
 
-        // attempt to login and handle responce
+        // attempt to login and handle response
         var answer = UserManagement.login_user(sw, data);
         sw.socket.emit('is-login-completed', answer.login_prompt);
         if (answer.login_prompt == 'ok') {
@@ -128,13 +128,13 @@ export namespace Auth {
         }
 
         //validate credentials
-        let responce = Validator.validate_creds(data)
-        sw.socket.emit('is-reg-valid', responce);
-        if (responce != 'ok') {
+        let response = Validator.validate_creds(data)
+        sw.socket.emit('is-reg-valid', response);
+        if (response != 'ok') {
             return
         }
 
-        // attempt registration and handle responce
+        // attempt registration and handle response
         let answer = UserManagement.register_user(sw, data)
         sw.socket.emit('is-reg-completed', answer.reg_prompt);
         if (answer.reg_prompt == 'ok') {

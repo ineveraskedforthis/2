@@ -37,19 +37,19 @@ export namespace Convert {
     }
 
     export function order_to_socket_data(index: number, order: Item, owner: Character):ItemOrderData {
-        let responce = ItemSystem.item_data(order)
+        let response = ItemSystem.item_data(order)
 
         return {
-            price: responce.price as number,
-            is_weapon: responce.is_weapon,
-            name: responce.name,
-            affixes: responce.affixes,
-            damage: responce.damage,
-            ranged_damage: responce.ranged_damage,
-            affixes_list: responce.affixes_list,
-            resists: responce.resists,
-            durability: responce.durability,
-            item_type: responce.item_type,
+            price: response.price as number,
+            is_weapon: response.is_weapon,
+            name: response.name,
+            affixes: response.affixes,
+            damage: response.damage,
+            ranged_damage: response.ranged_damage,
+            affixes_list: response.affixes_list,
+            resists: response.resists,
+            durability: response.durability,
+            item_type: response.item_type,
             id: index,
             seller: owner.get_name(),
             seller_id: owner.id

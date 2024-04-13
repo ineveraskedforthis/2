@@ -45,9 +45,9 @@ export namespace Event {
         }
 
 
-        let responce = perk_requirement(perk, student)
-        if (responce != 'ok') {
-            Alerts.generic_character_alert(student, 'alert', responce)
+        let response = perk_requirement(perk, student)
+        if (response != 'ok') {
+            Alerts.generic_character_alert(student, 'alert', response)
             return
         }
 
@@ -193,9 +193,9 @@ export namespace Event {
             Effect.change_durability(attacker, 'weapon', -1)
         }
 
-        const responce = ranged_dodge(attack, defender, flag_dodge)
+        const response = ranged_dodge(attack, defender, flag_dodge)
 
-        if (responce == 'miss') {
+        if (response == 'miss') {
             DmgOps.mult_ip(attack.damage, 0)
         } else {
             attack_affect_durability(attacker, defender, attack)

@@ -164,8 +164,8 @@ export class Equip {
     unequip(tag:equip_slot) {
         let item = this.data.slots[tag]
         if (item == undefined) return
-        let responce = this.data.backpack.add(item);
-        if (responce !== false) this.data.slots[tag] = undefined
+        let response = this.data.backpack.add(item);
+        if (response !== false) this.data.slots[tag] = undefined
     }
 
     destroy_slot(tag: equip_slot) {

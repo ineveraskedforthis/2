@@ -21,8 +21,8 @@ var CampaignAI;
             character.ai_memories.shift();
         }
         if (!AI_TRIGGERS_1.AI_TRIGGER.low_hp(character)) {
-            let responce = helpers_1.AIhelper.check_battles_to_join(character);
-            if (responce)
+            let response = helpers_1.AIhelper.check_battles_to_join(character);
+            if (response)
                 return;
         }
         (0, ACTIONS_DECISION_1.decide_ai_action_campaign)(character);

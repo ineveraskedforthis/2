@@ -14,26 +14,26 @@ import { DataID } from "../data/data_id"
 
 export namespace EventMarket {
     export function buy(character: Character, material:material_index, amount: number, price: money) {
-        const responce = MarketOrders.new_buy_order(material, amount, price, character)
+        const response = MarketOrders.new_buy_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
         Effect.Update.cell_market(character.cell_id)
-        return responce
+        return response
     }
 
     export function sell(character: Character, material:material_index, amount: number, price: money) {
         // console.log('sell ' + material + ' ' + amount + ' ' + price)
-        const responce = MarketOrders.new_sell_order(material, amount, price, character)
+        const response = MarketOrders.new_sell_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
         Effect.Update.cell_market(character.cell_id)
-        return responce
+        return response
     }
 
     export function sell_item(character: Character, index: number, price: money) {
         // console.log('sell item index ' + index)
-        const responce = ItemOrders.sell(character, index, price)
+        const response = ItemOrders.sell(character, index, price)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
         Effect.Update.cell_market(character.cell_id)
-        return responce
+        return response
     }
 
     export function execute_sell_order(buyer: Character, order_id: market_order_id, amount: number) {
