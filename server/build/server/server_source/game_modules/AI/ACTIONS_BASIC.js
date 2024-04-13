@@ -113,6 +113,11 @@ function buy_random(character) {
 exports.buy_random = buy_random;
 function random_walk(char, constraints) {
     let cell = systems_communication_1.Convert.character_to_cell(char);
+    //with high probability we will simply stay in our cell, while travelling from location to location:
+    if (Math.random() < 0.8) {
+        const location_id = (0, basic_functions_1.select_weighted_callback)(data_id_1.DataID.Cells.locations(cell.id), (item) => 1);
+        effects_1.Effect.enter_location(char.id, location_id);
+    }
     let possible_moves = [];
     for (let d of AI_CONSTANTS_1.dp) {
         let tmp = [d[0] + cell.x, d[1] + cell.y];
@@ -124,11 +129,6 @@ function random_walk(char, constraints) {
             }
         }
     }
-    //with high probability we will simply stay in our cell, while travelling from location to location:
-    if (Math.random() < 0.8) {
-        const location_id = (0, basic_functions_1.select_weighted_callback)(data_id_1.DataID.Cells.locations(cell.id), (item) => 1);
-        effects_1.Effect.enter_location(char.id, location_id);
-    }
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)];
         manager_1.ActionManager.start_action(actions_00_1.CharacterAction.MOVE, char, data_objects_1.Data.World.coordinate_to_id(move_direction));
@@ -136,6 +136,11 @@ function random_walk(char, constraints) {
 }
 exports.random_walk = random_walk;
 function rat_walk(character, constraints) {
+    //with high probability we will simply stay in our cell, while travelling from location to location:
+    if (Math.random() < 0.8) {
+        const location_id = (0, basic_functions_1.select_weighted_callback)(data_id_1.DataID.Cells.locations(character.cell_id), (item) => 1);
+        effects_1.Effect.enter_location(character.id, location_id);
+    }
     let cell_ids = data_objects_1.Data.World.neighbours(character.cell_id);
     let potential_moves = cell_ids.map((x) => {
         let cell = data_objects_1.Data.Cells.from_id(x);

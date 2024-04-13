@@ -195,7 +195,7 @@ export namespace GameMaster {
                 has_cooking_tools: true,
                 has_cordwainer_tools: false,
                 has_tanning_tools: false,
-                has_rat_lair: true,
+                has_rat_lair: false,
 
                 terrain: Terrain.steppe,
 

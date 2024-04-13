@@ -152,7 +152,7 @@ var GameMaster;
                 has_cooking_tools: true,
                 has_cordwainer_tools: false,
                 has_tanning_tools: false,
-                has_rat_lair: true,
+                has_rat_lair: false,
                 terrain: 1 /* Terrain.steppe */,
                 has_house_level: 8
             });

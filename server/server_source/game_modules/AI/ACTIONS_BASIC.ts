@@ -131,6 +131,16 @@ export function buy_random(character: Character) {
 
 export function random_walk(char: Character, constraints: (cell: CellData) => boolean) {
     let cell = Convert.character_to_cell(char)
+
+    //with high probability we will simply stay in our cell, while travelling from location to location:
+    if (Math.random() < 0.8) {
+        const location_id = select_weighted_callback<location_id>(
+            DataID.Cells.locations(cell.id),
+            (item) => 1
+        )
+        Effect.enter_location(char.id, location_id)
+    }
+
     let possible_moves = []
     for (let d of dp) {
         let tmp: [number, number] = [d[0] + cell.x, d[1] + cell.y]
@@ -143,15 +153,6 @@ export function random_walk(char: Character, constraints: (cell: CellData) => bo
         }
     }
 
-    //with high probability we will simply stay in our cell, while travelling from location to location:
-    if (Math.random() < 0.8) {
-        const location_id = select_weighted_callback<location_id>(
-            DataID.Cells.locations(cell.id),
-            (item) => 1
-        )
-        Effect.enter_location(char.id, location_id)
-    }
-
     if (possible_moves.length > 0) {
         let move_direction = possible_moves[Math.floor(Math.random() * possible_moves.length)]
         ActionManager.start_action(
@@ -162,6 +163,16 @@ export function random_walk(char: Character, constraints: (cell: CellData) => bo
 }
 
 export function rat_walk(character: Character, constraints: (cell: CellData) => boolean) {
+
+    //with high probability we will simply stay in our cell, while travelling from location to location:
+    if (Math.random() < 0.8) {
+        const location_id = select_weighted_callback<location_id>(
+            DataID.Cells.locations(character.cell_id),
+            (item) => 1
+        )
+        Effect.enter_location(character.id, location_id)
+    }
+
     let cell_ids = Data.World.neighbours(character.cell_id)
     let potential_moves = cell_ids.map((x) => {
         let cell = Data.Cells.from_id(x)
