@@ -1,4 +1,5 @@
 import { Socket } from "../../../shared/battle_data"
+import { DependencyUI, DependencyUICanvas } from "../Types/character"
 
 export const game_tabs = ['map', 'skilltree', 'stash', 'craft', 'equip', 'market']
 
@@ -23,6 +24,8 @@ let RESIZE_ELEMENT:null|HTMLElement = null
 let MOVE_TAB_PRESS = false
 let MOVE_TAB_ELEMENT:null|HTMLElement = null
 let MOVE_TAB_OFFSET: [number, number] = [0, 0]
+
+let canvases : DependencyUICanvas[] = []
 
 
 export namespace tab {
@@ -57,11 +60,15 @@ export namespace tab {
             tab.style.zIndex = tabs_properties[tag].zIndex
         }
         if (tabs_properties[tag].active) {
-            toogle(tag)
+            turn_on(tag)
+        } else {
+            turn_off(tag)
         }
     }
 
-    export function load_all(socket: Socket|undefined) {
+    export function load_all(socket: Socket|undefined, map: DependencyUICanvas) {
+        canvases.push(map)
+
         tabs_properties = JSON.parse(localStorage.getItem('tabs_properties')!)
 
         if (tabs_properties == null) {
@@ -72,6 +79,7 @@ export namespace tab {
             // console.log(tabs_properties)
             load(tag)
         }
+
 
         window.addEventListener('keydown', function(event) {
             if (event.defaultPrevented) {
@@ -282,6 +290,10 @@ export namespace tab {
     }
 
     export function toogle(tag:string) {
+        if (tabs_properties[tag] == undefined) {
+            return
+        }
+
         let tab = document.getElementById(tag + '_tab')!;
         let button = document.getElementById(tag + '_button')!
         button.classList.toggle('active')
@@ -289,34 +301,62 @@ export namespace tab {
         if (tab.classList.contains('hidden')) {
             tab.classList.remove('hidden');
             push(tag)
+            tabs_properties[tag].active = true
+            for (const item of canvases) {
+                item.update_canvas_size()
+            }
             return 'on'
         } else {
             tab.classList.add('hidden');
             pop(tag)
+            tabs_properties[tag].active = false
+            for (const item of canvases) {
+                item.update_canvas_size()
+            }
             return 'off'
         }
+
     }
 
     export function turn_on(tag: string) {
+        if (tabs_properties[tag] == undefined) {
+            return
+        }
+
+
         let tab = document.getElementById(tag + '_tab')!;
         tab.classList.remove('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button')!
             button.classList.add('active')
+            tabs_properties[tag].active = true
         }
 
         push(tag)
+
+        for (const item of canvases) {
+            item.update_canvas_size()
+        }
     }
 
     export function turn_off(tag: string) {
+        if (tabs_properties[tag] == undefined) {
+            return
+        }
+
         let tab = document.getElementById(tag + '_tab')!;
         tab.classList.add('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button')!
             button.classList.remove('active')
+            tabs_properties[tag].active = false
         }
 
         pop(tag)
+
+        for (const item of canvases) {
+            item.update_canvas_size()
+        }
     }
 
     export function tag_to_turn_off_f(tag: string) {

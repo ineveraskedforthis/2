@@ -15,7 +15,7 @@ import { init_market_bulk_infrastructure, new_market_bulk } from './modules/Mark
 import { set_up_market_headers } from './modules/Market/market_header.js';
 import { init_messages_interactions, new_log_message } from './modules/MessageBox/new_log_message.js';
 import { init_skills } from './modules/Skills/main.js';
-import { login, reg } from './modules/ViewManagement/scene.js';
+import { init_game_scene, login, reg } from './modules/ViewManagement/scene.js';
 import { tab } from './modules/ViewManagement/tab.js';
 import { socket } from "./modules/Socket/socket.js";
 import { loadImages } from './modules/load_images.js';
@@ -48,7 +48,10 @@ init_detailed_character_statistics();
 init_character_list_interactions();
 init_market_items();
 const locations_list = init_locations();
+tab.turn_on('map');
 const map = init_map();
+tab.turn_off('map');
+init_game_scene(map);
 const background_image = new BackgroundImage(locations_list);
 const market_bulk = new_market_bulk();
 socket.on("character_data", (msg) => {
@@ -61,6 +64,7 @@ socket.on("character_data", (msg) => {
         stash: []
     };
     init_battle_control();
+    map.update_canvas_size();
     socket.emit('request-tags');
     socket.emit('request-local-locations');
     socket.emit("request-map");

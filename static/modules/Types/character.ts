@@ -39,6 +39,10 @@ export interface DependencyUI {
     update_display: () => void;
 }
 
+export interface DependencyUICanvas {
+    update_canvas_size: () => void
+}
+
 export interface CharacterDataBasic {
     id: number,
     name: string,

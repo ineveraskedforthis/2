@@ -9,6 +9,7 @@ let RESIZE_ELEMENT = null;
 let MOVE_TAB_PRESS = false;
 let MOVE_TAB_ELEMENT = null;
 let MOVE_TAB_OFFSET = [0, 0];
+let canvases = [];
 export var tab;
 (function (tab_1) {
     function save(tag) {
@@ -44,11 +45,15 @@ export var tab;
             tab.style.zIndex = tabs_properties[tag].zIndex;
         }
         if (tabs_properties[tag].active) {
-            toogle(tag);
+            turn_on(tag);
+        }
+        else {
+            turn_off(tag);
         }
     }
     tab_1.load = load;
-    function load_all(socket) {
+    function load_all(socket, map) {
+        canvases.push(map);
         tabs_properties = JSON.parse(localStorage.getItem('tabs_properties'));
         if (tabs_properties == null) {
             tabs_properties = {};
@@ -249,39 +254,64 @@ export var tab;
     }
     tab_1.pop = pop;
     function toogle(tag) {
+        if (tabs_properties[tag] == undefined) {
+            return;
+        }
         let tab = document.getElementById(tag + '_tab');
         let button = document.getElementById(tag + '_button');
         button.classList.toggle('active');
         if (tab.classList.contains('hidden')) {
             tab.classList.remove('hidden');
             push(tag);
+            tabs_properties[tag].active = true;
+            for (const item of canvases) {
+                item.update_canvas_size();
+            }
             return 'on';
         }
         else {
             tab.classList.add('hidden');
             pop(tag);
+            tabs_properties[tag].active = false;
+            for (const item of canvases) {
+                item.update_canvas_size();
+            }
             return 'off';
         }
     }
     tab_1.toogle = toogle;
     function turn_on(tag) {
+        if (tabs_properties[tag] == undefined) {
+            return;
+        }
         let tab = document.getElementById(tag + '_tab');
         tab.classList.remove('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button');
             button.classList.add('active');
+            tabs_properties[tag].active = true;
         }
         push(tag);
+        for (const item of canvases) {
+            item.update_canvas_size();
+        }
     }
     tab_1.turn_on = turn_on;
     function turn_off(tag) {
+        if (tabs_properties[tag] == undefined) {
+            return;
+        }
         let tab = document.getElementById(tag + '_tab');
         tab.classList.add('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button');
             button.classList.remove('active');
+            tabs_properties[tag].active = false;
         }
         pop(tag);
+        for (const item of canvases) {
+            item.update_canvas_size();
+        }
     }
     tab_1.turn_off = turn_off;
     function tag_to_turn_off_f(tag) {

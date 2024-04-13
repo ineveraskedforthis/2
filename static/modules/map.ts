@@ -215,6 +215,11 @@ export class Map {
         this.path_progress = 0
     }
 
+    update_canvas_size() {
+        this.canvas.width = this.container.clientWidth - 2
+        this.canvas.height = this.container.clientHeight - 2
+    }
+
     // update_probability(data) {
     //     let text= Math.floor(data.value * 100) + '%'
 

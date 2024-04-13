@@ -1,4 +1,5 @@
 import { socket } from "../Socket/socket.js";
+import { DependencyUICanvas } from "../Types/character.js";
 import { tab } from "./tab.js";
 
 function reloadCss()
@@ -73,9 +74,10 @@ document.getElementById('to_character_creation')!.onclick = () => {
     socket.emit('play');
 }
 
+export function init_game_scene(map: DependencyUICanvas) {
+    socket.on('no-character', show_char_creation)
+    socket.on('loading_completed', show_game)
+    socket.on('char-removed', show_char_creation)
 
-socket.on('no-character', show_char_creation)
-socket.on('loading_completed', show_game)
-socket.on('char-removed', show_char_creation)
-
-tab.load_all(socket)
+    tab.load_all(socket, map)
+}
