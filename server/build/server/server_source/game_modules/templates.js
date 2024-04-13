@@ -24,6 +24,9 @@ var Template;
                 return undefined;
             }
             let character = events_1.Event.new_character(template, name, location, model);
+            if (faction_id != undefined) {
+                character.home_location_id = data_id_1.DataID.Faction.spawn(faction_id);
+            }
             if (faction_id != undefined)
                 data_id_1.DataID.Reputation.set(character.id, faction_id, "member");
             return character;
