@@ -18,13 +18,22 @@ import { MapSystem } from "../../map/system";
 
 
 export namespace Request {
-    export function local_locations(sw: SocketWrapper) {
+    export function map(sw: SocketWrapper) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) {
-            sw.socket.emit('alert', 'your character does not exist')
+            sw.socket.emit('alert', 'your character does not exist (map)')
             return
         }
 
+        SendUpdate.map_related(user)
+    }
+
+    export function local_locations(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist (local_locations)')
+            return
+        }
 
         let ids = DataID.Cells.locations(character.cell_id)
 
@@ -71,7 +80,7 @@ export namespace Request {
     export function player_index(sw: SocketWrapper) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) {
-            sw.socket.emit('alert', 'your character does not exist')
+            sw.socket.emit('alert', 'your character does not exist (player_index)')
             return
         }
         const battle = Convert.character_to_battle(character)
@@ -84,7 +93,7 @@ export namespace Request {
     export function belongings(sw: SocketWrapper) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) {
-            sw.socket.emit('alert', 'your character does not exist')
+            sw.socket.emit('alert', 'your character does not exist (belongings)')
             return
         }
 
@@ -188,6 +197,16 @@ export namespace Request {
             }
             sw.socket.emit('battle-action-update', result)
         }
+    }
+
+    export function battle(sw: SocketWrapper) {
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist (battle)')
+            return
+        }
+
+        SendUpdate.battle(user)
     }
 
     export function battle_actions_position(sw: SocketWrapper, target: unknown) {

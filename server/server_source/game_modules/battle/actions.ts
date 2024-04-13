@@ -119,7 +119,7 @@ export const ActionsSelf: {[_ in ActionSelfKeys]: ActionSelf} = {
 
 
 
-export const ActionsUnit: {[key in ActionUnitKeys]: ActionUnit} = {
+export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
     'Pierce': {
         valid: always,
         ap_cost: (battle: Battle, character: Character,  target_character: Character, ) => {

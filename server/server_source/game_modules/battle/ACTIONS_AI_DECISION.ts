@@ -1,4 +1,4 @@
-import { ActionUnitKeys, action_points } from "@custom_types/battle_data";
+import { ActionSelfKeys, ActionUnitKeys, action_points } from "@custom_types/battle_data";
 import { Character } from "../character/character";
 import { EventInventory } from "../events/inventory_events";
 import { geom } from "../geom";
@@ -8,13 +8,13 @@ import { Battle } from "./classes/battle";
 import { Data } from "../data/data_objects";
 
 type UtilityObjectTargeted = {
-    action_key: string,
+    action_key: ActionUnitKeys|ActionSelfKeys,
     utility: number,
     ap_cost: number,
     target: Character
 }
 
-function utility_unit_damage(key: string, action: ActionUnit, battle: Battle, character: Character, target_character: Character): UtilityObjectTargeted {
+function utility_unit_damage(key: ActionUnitKeys|ActionSelfKeys, action: ActionUnit, battle: Battle, character: Character, target_character: Character): UtilityObjectTargeted {
     if (!BattleTriggers.is_enemy(character, target_character)) {
         return {action_key: key, utility: 0, ap_cost: 0, target: target_character}
     }
@@ -28,7 +28,7 @@ function utility_unit_damage(key: string, action: ActionUnit, battle: Battle, ch
 }
 
 function generic_utility_unit(
-    key: string,
+    key: ActionUnitKeys|ActionSelfKeys,
     action: ActionUnit,
     battle: Battle,
     character: Character,
@@ -51,9 +51,9 @@ function utility_targeted_value(utility: UtilityObjectTargeted): number {
 }
 
 function best_utility_unit(battle: Battle, character: Character, target_character: Character, d_distance: number, d_ap: action_points): UtilityObjectTargeted {
-    let utility = {action_key: 'None', utility: 0, ap_cost: 0, target: target_character}
+    let utility: UtilityObjectTargeted = {action_key: "EndTurn", utility: 0, ap_cost: 0, target: target_character}
     for (let [key, action] of Object.entries(ActionsUnit)) {
-        let current_utility = generic_utility_unit(key, action, battle, character, target_character, d_distance, d_ap)
+        let current_utility = generic_utility_unit(key as ActionUnitKeys, action, battle, character, target_character, d_distance, d_ap)
         // print_utility('per unit', current_utility)
         if (utility_targeted_value(current_utility) > utility_targeted_value(utility)) {
             utility = current_utility
@@ -77,7 +77,7 @@ function utility_move_closer(battle: Battle, character: Character, target_charac
     const range = character.range()
     const max_move = 1 // potential movement
     if (dist < range) {
-        return {action_key: 'MoveCloser', utility: 0, ap_cost: 0, target: target_character}
+        return {action_key: "MoveTowards", utility: 0, ap_cost: 0, target: target_character}
     }
     let distance_to_walk = dist - range + 0.01
 
@@ -188,9 +188,17 @@ function print_utility(name: string, utility: UtilityObjectTargeted) {
 
 export function decide_AI_battle_action(battle: Battle, character: Character) {
     // console.log('without end_turn')
+
+    let dummy_action: UtilityObjectTargeted = {
+        action_key: "EndTurn",
+        utility: -10,
+        ap_cost: 0,
+        target: character
+    }
+
     let best_self = decide_best_action_self(battle, character, 0 as action_points)
     const best_targeted = best_utility_from_array(battle.heap.map(item => {
-        if (item == undefined) return end_turn;
+        if (item == undefined) return dummy_action;
         let target_character = Data.Characters.from_id(item)
         const utility = select_targeted_action(battle, character, target_character, 0, 0 as action_points)
         // print_utility(character.get_name(), utility)
@@ -201,12 +209,13 @@ export function decide_AI_battle_action(battle: Battle, character: Character) {
     // console.log('with end turn')
     const best_self_later = decide_best_action_self(battle, character, 10 as action_points)
     const best_targeted_later = best_utility_from_array(battle.heap.map(item => {
-        if (item == undefined) return end_turn;
+        if (item == undefined) return dummy_action;
         let target_character = Data.Characters.from_id(item)
         const utility = select_targeted_action(battle, character, target_character, 0, 10 as action_points)
         // print_utility(character.get_name(), utility)
         return utility
     }))
+
     let end_turn = calculate_utility_end_turn(battle, character, [best_self_later, best_targeted_later])
 
     // print_utility(character.get_name(), best_self)

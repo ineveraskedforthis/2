@@ -50,6 +50,8 @@ export function init_battle_control() {
     // socket.on(BATTLE_CURRENT_UNIT,          bCallback.set_current_active_unit)
     socket.on('battle-event',               bCallback.event)
 
+
+
     console.log('battle callbacks are loaded')
 }
 

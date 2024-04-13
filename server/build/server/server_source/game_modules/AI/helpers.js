@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AIhelper = void 0;
-const systems_communication_1 = require("../systems_communication");
 const CraftBulk_1 = require("../craft/CraftBulk");
 const basic_functions_1 = require("../calculations/basic_functions");
 const CraftItem_1 = require("../craft/CraftItem");
@@ -16,7 +15,7 @@ const data_objects_1 = require("../data/data_objects");
 var AIhelper;
 (function (AIhelper) {
     function enemies_in_cell(character) {
-        let a = data_id_1.DataID.Cells.local_character_id_list(character.cell_id);
+        let a = data_id_1.DataID.Location.guest_list(character.location_id);
         for (let id of a) {
             let target_char = data_objects_1.Data.Characters.from_id(id);
             if ((0, SYSTEM_REPUTATION_1.is_enemy_characters)(character, target_char)) {
@@ -29,8 +28,7 @@ var AIhelper;
     }
     AIhelper.enemies_in_cell = enemies_in_cell;
     function free_rats_in_cell(char) {
-        let cell = systems_communication_1.Convert.character_to_cell(char);
-        let a = data_id_1.DataID.Cells.local_character_id_list(char.cell_id);
+        let a = data_id_1.DataID.Location.guest_list(char.location_id);
         for (let id of a) {
             let target_char = data_objects_1.Data.Characters.from_id(id);
             if (target_char.race == 'rat') {
@@ -44,10 +42,7 @@ var AIhelper;
     AIhelper.free_rats_in_cell = free_rats_in_cell;
     function battles_in_cell(char) {
         let battles = [];
-        let cell = systems_communication_1.Convert.character_to_cell(char);
-        if (cell == undefined)
-            return battles;
-        let a = data_id_1.DataID.Cells.local_character_id_list(char.cell_id);
+        let a = data_id_1.DataID.Location.guest_list(char.location_id);
         for (let id of a) {
             let target_char = data_objects_1.Data.Characters.from_id(id);
             const battle_id = target_char.battle_id;

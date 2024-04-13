@@ -15,10 +15,19 @@ const heap_1 = require("../../battle/classes/heap");
 const system_1 = require("../../map/system");
 var Request;
 (function (Request) {
+    function map(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist (map)');
+            return;
+        }
+        updates_1.SendUpdate.map_related(user);
+    }
+    Request.map = map;
     function local_locations(sw) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined) {
-            sw.socket.emit('alert', 'your character does not exist');
+            sw.socket.emit('alert', 'your character does not exist (local_locations)');
             return;
         }
         let ids = data_id_1.DataID.Cells.locations(character.cell_id);
@@ -60,7 +69,7 @@ var Request;
     function player_index(sw) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined) {
-            sw.socket.emit('alert', 'your character does not exist');
+            sw.socket.emit('alert', 'your character does not exist (player_index)');
             return;
         }
         const battle = systems_communication_1.Convert.character_to_battle(character);
@@ -73,7 +82,7 @@ var Request;
     function belongings(sw) {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
         if (character == undefined) {
-            sw.socket.emit('alert', 'your character does not exist');
+            sw.socket.emit('alert', 'your character does not exist (belongings)');
             return;
         }
         updates_1.SendUpdate.belongings(user);
@@ -177,6 +186,15 @@ var Request;
         }
     }
     Request.battle_actions_unit = battle_actions_unit;
+    function battle(sw) {
+        const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
+        if (character == undefined) {
+            sw.socket.emit('alert', 'your character does not exist (battle)');
+            return;
+        }
+        updates_1.SendUpdate.battle(user);
+    }
+    Request.battle = battle;
     function battle_actions_position(sw, target) {
         // console.log('requested position actions')
         if (target == undefined)

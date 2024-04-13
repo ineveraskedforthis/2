@@ -34,7 +34,7 @@ function utility_targeted_value(utility) {
     return utility.utility / utility.ap_cost;
 }
 function best_utility_unit(battle, character, target_character, d_distance, d_ap) {
-    let utility = { action_key: 'None', utility: 0, ap_cost: 0, target: target_character };
+    let utility = { action_key: "EndTurn", utility: 0, ap_cost: 0, target: target_character };
     for (let [key, action] of Object.entries(actions_1.ActionsUnit)) {
         let current_utility = generic_utility_unit(key, action, battle, character, target_character, d_distance, d_ap);
         // print_utility('per unit', current_utility)
@@ -57,7 +57,7 @@ function utility_move_closer(battle, character, target_character, d_ap) {
     const range = character.range();
     const max_move = 1; // potential movement
     if (dist < range) {
-        return { action_key: 'MoveCloser', utility: 0, ap_cost: 0, target: target_character };
+        return { action_key: "MoveTowards", utility: 0, ap_cost: 0, target: target_character };
     }
     let distance_to_walk = dist - range + 0.01;
     let cost = actions_1.ActionsUnit.MoveTowards.ap_cost(battle, character, target_character);
@@ -156,10 +156,16 @@ function print_utility(name, utility) {
 }
 function decide_AI_battle_action(battle, character) {
     // console.log('without end_turn')
+    let dummy_action = {
+        action_key: "EndTurn",
+        utility: -10,
+        ap_cost: 0,
+        target: character
+    };
     let best_self = decide_best_action_self(battle, character, 0);
     const best_targeted = best_utility_from_array(battle.heap.map(item => {
         if (item == undefined)
-            return end_turn;
+            return dummy_action;
         let target_character = data_objects_1.Data.Characters.from_id(item);
         const utility = select_targeted_action(battle, character, target_character, 0, 0);
         // print_utility(character.get_name(), utility)
@@ -169,7 +175,7 @@ function decide_AI_battle_action(battle, character) {
     const best_self_later = decide_best_action_self(battle, character, 10);
     const best_targeted_later = best_utility_from_array(battle.heap.map(item => {
         if (item == undefined)
-            return end_turn;
+            return dummy_action;
         let target_character = data_objects_1.Data.Characters.from_id(item);
         const utility = select_targeted_action(battle, character, target_character, 0, 10);
         // print_utility(character.get_name(), utility)

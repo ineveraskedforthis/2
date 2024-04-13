@@ -115,6 +115,7 @@ export class SocketManager {
             socket.on('req-battle-actions-self', ()=> Request.battle_actions_self(user))
             socket.on('req-battle-actions-unit', (data) => Request.battle_actions_unit(user, data))
             socket.on('req-battle-actions-position', (data) => Request.battle_actions_position(user, data))
+            socket.on('request-battle-data', (data) => Request.battle(user))
 
             socket.on('battle-action-self',  (msg: any) => HandleAction.battle_self(user, msg))
             socket.on('battle-action-unit',  (msg: any) => HandleAction.battle_unit(user, msg))
@@ -130,7 +131,7 @@ export class SocketManager {
             socket.on('learn-skill',    (msg: undefined|{id: unknown, tag: unknown}) =>
                                             SocketCommand.learn_skill(user, msg))
 
-
+            socket.on('request-map', () => Request.map(user))
 
 
             // socket.on('buy-plot',       (msg: undefined|{id: unknown}) =>

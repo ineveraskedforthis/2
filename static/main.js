@@ -19,7 +19,7 @@ import { login, reg } from './modules/ViewManagement/scene.js';
 import { tab } from './modules/ViewManagement/tab.js';
 import { socket } from "./modules/Socket/socket.js";
 import { loadImages } from './modules/load_images.js';
-import { draw_map_related_stuff } from './modules/map.js';
+import { draw_map_related_stuff, init_map } from './modules/map.js';
 import { init_detailed_character_statistics } from './request_perks.js';
 import { globals } from './modules/globals.js';
 import { Value } from './modules/Values/collection.js';
@@ -48,7 +48,7 @@ init_detailed_character_statistics();
 init_character_list_interactions();
 init_market_items();
 const locations_list = init_locations();
-init_battle_control();
+const map = init_map();
 const background_image = new BackgroundImage(locations_list);
 const market_bulk = new_market_bulk();
 socket.on("character_data", (msg) => {
@@ -60,8 +60,11 @@ socket.on("character_data", (msg) => {
         location_id: new Value(socket, "location_id", [locations_list, background_image]),
         stash: []
     };
+    init_battle_control();
     socket.emit('request-tags');
     socket.emit('request-local-locations');
+    socket.emit("request-map");
+    socket.emit("request-battle-data");
 });
 socket.on('tags', msg => {
     update_tags(msg, [market_bulk]);
@@ -127,7 +130,7 @@ function draw(time) {
     }
     delta = (time - previous) / 1000;
     previous = time;
-    draw_map_related_stuff(delta);
+    draw_map_related_stuff(map, delta);
     if (elementById('actual_game_scene').style.visibility == 'visible') {
         if (!elementById('battle_tab').classList.contains('hidden')) {
             BattleImage.draw(delta);

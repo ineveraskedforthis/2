@@ -6,6 +6,7 @@ import {get_pos_in_canvas} from './common.js';
 import { action, globals, is_action_repeatable, local_action, local_actions } from './globals.js';
 import { socket } from "./Socket/socket.js";
 import {location_descriptions, section_descriptions} from './localisation.js';
+import { elementById } from './HTMLwrappers/common.js';
 
 function st(a: [number, number]) {
     return a[0] + ' ' + a[1]
@@ -683,38 +684,8 @@ export class Map {
     }
 }
 
-const map = new Map(document.getElementById('map_canvas') as HTMLCanvasElement, document.getElementById('map_column')!);
-init_map_control(map);
-socket.on('map-pos', msg => {
-    console.log('map-pos')
-    let location = map.set_curr_pos([msg.x, msg.y], msg.teleport_flag);
-    console.log(location)
-});
-
-// socket.on('explore', msg => {map.explore(msg)});
-socket.on('map-data-display', data => map.load_terrain(data))
-socket.on('map-data-reset', data => map.reset())
-socket.on('action-ping', data => restart_action_bar(data.time, data.is_move))
-// socket.on('cell-visited', data => map.mark_visited(data))
 
 
-
-// socket.on('map-action-status', data => update_action_status(data))
-// socket.on('cell-action-chance', msg => map.update_probability(msg))
-
-// function update_action_status(data) {
-//     console.log(data)
-//     let button1 = document.getElementById(data.tag + '_button')
-//     let button2 = document.getElementById(data.tag + '_button_desktop')
-
-//     if (!data.value) {
-//         // button1.classList.add('unavailable')
-//         button2.classList.add('unavailable')
-//     } else {
-//         // button1.classList.remove('unavailable')
-//         button2.classList.remove('unavailable')
-//     }
-// }
 
 
 
@@ -763,10 +734,6 @@ function send_local_cell_action(map: Map, action: local_action|undefined) {
     globals.last_action = action
 }
 
-function send_last_action() {
-    send_local_cell_action(map, globals.last_action)
-}
-
 
 function set_local_actions(actions: readonly local_action[], map: Map) {
     let desktop_container = document.getElementById('desktop_actions')!;
@@ -812,10 +779,9 @@ function set_local_actions(actions: readonly local_action[], map: Map) {
         desktop_container.appendChild(desktop_button);
     }
 }
-set_local_actions(local_actions, map);
 
 
-export function draw_map_related_stuff(delta: number) {
+export function draw_map_related_stuff(map: Map, delta: number) {
     if (globals.action_in_progress) {
         globals.action_time += delta
         globals.action_ratio = globals.action_time / globals.action_total_time
@@ -861,7 +827,7 @@ export function draw_map_related_stuff(delta: number) {
     }
 }
 
-function restart_action_bar(time: number, is_move: boolean) {
+function restart_action_bar(map: Map, time: number, is_move: boolean) {
     // console.log('???')
     globals.action_total_time = time
     globals.action_in_progress = true
@@ -877,5 +843,21 @@ function restart_action_bar(time: number, is_move: boolean) {
         globals.action_total_time += 0.1
         globals.action_total_time *= 1.1
     }
+}
 
+export function init_map() {
+    const map = new Map(elementById('map_canvas') as HTMLCanvasElement, elementById('map_column'));
+
+    init_map_control(map);
+    set_local_actions(local_actions, map);
+    socket.on('map-pos', msg => {
+        console.log('map-pos')
+        let location = map.set_curr_pos([msg.x, msg.y], msg.teleport_flag);
+        console.log(location)
+    });
+
+    socket.on('map-data-display', data => map.load_terrain(data))
+    socket.on('map-data-reset', data => map.reset())
+    socket.on('action-ping', data => restart_action_bar(map, data.time, data.is_move))
+    return map
 }

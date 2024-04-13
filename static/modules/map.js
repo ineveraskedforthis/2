@@ -3,6 +3,7 @@
 import { get_pos_in_canvas } from './common.js';
 import { globals, is_action_repeatable, local_actions } from './globals.js';
 import { socket } from "./Socket/socket.js";
+import { elementById } from './HTMLwrappers/common.js';
 function st(a) {
     return a[0] + ' ' + a[1];
 }
@@ -574,32 +575,6 @@ export class Map {
         return this.get_bg_tag([i, j]);
     }
 }
-const map = new Map(document.getElementById('map_canvas'), document.getElementById('map_column'));
-init_map_control(map);
-socket.on('map-pos', msg => {
-    console.log('map-pos');
-    let location = map.set_curr_pos([msg.x, msg.y], msg.teleport_flag);
-    console.log(location);
-});
-// socket.on('explore', msg => {map.explore(msg)});
-socket.on('map-data-display', data => map.load_terrain(data));
-socket.on('map-data-reset', data => map.reset());
-socket.on('action-ping', data => restart_action_bar(data.time, data.is_move));
-// socket.on('cell-visited', data => map.mark_visited(data))
-// socket.on('map-action-status', data => update_action_status(data))
-// socket.on('cell-action-chance', msg => map.update_probability(msg))
-// function update_action_status(data) {
-//     console.log(data)
-//     let button1 = document.getElementById(data.tag + '_button')
-//     let button2 = document.getElementById(data.tag + '_button_desktop')
-//     if (!data.value) {
-//         // button1.classList.add('unavailable')
-//         button2.classList.add('unavailable')
-//     } else {
-//         // button1.classList.remove('unavailable')
-//         button2.classList.remove('unavailable')
-//     }
-// }
 function send_move_action(map, action) {
     console.log(action);
     let selected = map.selected;
@@ -644,9 +619,6 @@ function send_local_cell_action(map, action) {
     socket.emit(action, { x: map.curr_pos[0], y: map.curr_pos[1] });
     globals.last_action = action;
 }
-function send_last_action() {
-    send_local_cell_action(map, globals.last_action);
-}
 function set_local_actions(actions, map) {
     let desktop_container = document.getElementById('desktop_actions');
     for (let action_tag of actions) {
@@ -690,8 +662,7 @@ function set_local_actions(actions, map) {
         desktop_container.appendChild(desktop_button);
     }
 }
-set_local_actions(local_actions, map);
-export function draw_map_related_stuff(delta) {
+export function draw_map_related_stuff(map, delta) {
     if (globals.action_in_progress) {
         globals.action_time += delta;
         globals.action_ratio = globals.action_time / globals.action_total_time;
@@ -736,7 +707,7 @@ export function draw_map_related_stuff(delta) {
         }
     }
 }
-function restart_action_bar(time, is_move) {
+function restart_action_bar(map, time, is_move) {
     // console.log('???')
     globals.action_total_time = time;
     globals.action_in_progress = true;
@@ -751,4 +722,18 @@ function restart_action_bar(time, is_move) {
         globals.action_total_time += 0.1;
         globals.action_total_time *= 1.1;
     }
+}
+export function init_map() {
+    const map = new Map(elementById('map_canvas'), elementById('map_column'));
+    init_map_control(map);
+    set_local_actions(local_actions, map);
+    socket.on('map-pos', msg => {
+        console.log('map-pos');
+        let location = map.set_curr_pos([msg.x, msg.y], msg.teleport_flag);
+        console.log(location);
+    });
+    socket.on('map-data-display', data => map.load_terrain(data));
+    socket.on('map-data-reset', data => map.reset());
+    socket.on('action-ping', data => restart_action_bar(map, data.time, data.is_move));
+    return map;
 }
