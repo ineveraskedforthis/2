@@ -87,6 +87,9 @@ var BattleSystem;
     function update(dt) {
         const current_date = Date.now();
         data_objects_1.Data.Battles.for_each(battle => {
+            if (battle.stopped) {
+                return;
+            }
             const unit = battle_finished(battle);
             if (unit === true) {
                 stop_battle(battle);
@@ -195,11 +198,16 @@ var BattleSystem;
     }
     BattleSystem.start_battle = start_battle;
     function stop_battle(battle) {
+        console.log("stop battle: ", battle.id);
         battle.stopped = true;
+        const to_delete = [];
         for (let unit of battle.heap) {
-            if (unit == undefined)
-                continue;
+            if (unit != undefined)
+                to_delete.push(unit);
+        }
+        for (let unit of to_delete) {
             const character = data_objects_1.Data.Characters.from_id(unit);
+            heap_1.CharactersHeap.delete_unit(battle, character);
             character.battle_id = undefined;
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
         }

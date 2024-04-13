@@ -97,6 +97,10 @@ export namespace BattleSystem {
         const current_date = Date.now() as ms
 
         Data.Battles.for_each(battle => {
+            if (battle.stopped) {
+                return
+            }
+
             const unit = battle_finished(battle)
             if (unit === true) {
                 stop_battle(battle)
@@ -195,10 +199,16 @@ export namespace BattleSystem {
     }
 
     export function stop_battle(battle: Battle) {
+        console.log("stop battle: ", battle.id)
         battle.stopped = true
+        const to_delete: character_id[] = []
         for (let unit of battle.heap) {
-            if (unit == undefined) continue;
+            if (unit != undefined) to_delete.push(unit)
+        }
+
+        for (let unit of to_delete) {
             const character = Data.Characters.from_id(unit)
+            CharactersHeap.delete_unit(battle, character)
             character.battle_id = undefined
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BATTLE)
         }

@@ -36,7 +36,7 @@ var BattleEvent;
         // console.log(character.get_name())
         user_manager_1.UserManagement.add_user_to_update_queue(unit.user_id, 18 /* UI_Part.BATTLE */);
         alerts_1.Alerts.battle_event_simple(battle, 'unit_left', unit, 0);
-        console.log(`${unit.get_name()} left battle`);
+        console.log(`${unit.id} left battle`);
         heap_1.CharactersHeap.delete_unit(battle, unit);
         if (heap_1.CharactersHeap.get_units_amount(battle) == 0) {
             system_1.BattleSystem.stop_battle(battle);
