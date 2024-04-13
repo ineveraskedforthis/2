@@ -114,7 +114,7 @@ export const ModelToEquipSlot: {[_ in item_model_tag]: equip_slot} = {
     'wooden_mace':                  'weapon',
     'rat_skin_pauldron_left':       'left_pauldron',
     'bone_pauldron_right':          'right_pauldron',
-    'bone_pauldron_left':          'left_pauldron',
+    'bone_pauldron_left':           'left_pauldron',
     'rat_robe':                     'robe',
     'cloth_belt':                   'belt',
     'cloth_shirt':                  'shirt',
