@@ -3,11 +3,9 @@ import { SavingsJson } from "@custom_types/common";
 
 export class Savings {
     data: money
-    // changed: boolean
 
     constructor() {
         this.data = 0 as money;
-        // this.changed = false
     }
 
     json():SavingsJson {
@@ -28,7 +26,6 @@ export class Savings {
     set(x: money) {
         if (this.data == x) return
         this.data = x;
-        // this.changed = true;
     }
 
     get() {
@@ -42,7 +39,6 @@ export class Savings {
         } else {
             this.set(a + x as money)
         }
-        // this.changed = true
     }
 
     transfer(target: Savings, x: money) {

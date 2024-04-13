@@ -66,7 +66,7 @@ exports.create_item = create_item;
 function event_craft_item(character, craft) {
     let result = create_item(craft.output_model, craft.output_affixes, durability(character, craft));
     let response = character.equip.data.backpack.add(result);
-    if (response != false)
+    if (response !== false)
         (0, helpers_1.use_input)(craft.input, character);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
     user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);

@@ -1,30 +1,12 @@
-import { EquipSocket, ItemData, equip, equip_slot, slots } from "../../../../shared/inventory";
-import { tagModel, tagRACE } from "../types";
+import { EquipSocket, ItemData, equip_slot, slots } from "../../../../shared/inventory";
+import { tagModel } from "../types";
 import { damage_type } from "@custom_types/common";
-// import { update_character } from "../base_game_classes/affix";
-// import { Character } from "../character/character";
 import { Item } from "../items/item";
-import { ItemJson } from "@custom_types/inventory";
 import { ItemSystem } from "../items/system";
 import { DmgOps } from "../damage_types";
 import { Damage } from "../Damage";
-import { Inventory, InventoryJson, InventoryStrings } from "./inventory";
+import { Inventory } from "./inventory";
 import { AttackObj } from "../attack/class";
-import { inventory_from_string, inventory_to_string, item_from_string, item_to_string } from "../data/strings_management";
-
-interface EquipJson {
-    weapon?: ItemJson;
-    secondary?: ItemJson;
-    armour: {[_ in string]?: ItemJson};
-    backpack: InventoryJson;
-}
-
-interface EquipStrings {
-    weapon?: string;
-    secondary?: string;
-    armour: {[_ in string]?: string};
-    backpack: string;
-}
 
 class EquipData {
     slots: Partial<Record<equip_slot, Item>> //{[_ in equip_slot]?: Item}
@@ -34,20 +16,6 @@ class EquipData {
         this.slots = {}
         this.backpack = new Inventory(backpack_limit)
     }
-
-    // get_json(): EquipJson{
-    //     let result:EquipJson = {
-    //         weapon: this.weapon?.json(),
-    //         secondary: this.secondary?.json(),
-    //         armour: {},
-    //         backpack: this.backpack.get_json()
-    //     }
-    //     for (let tag of armour_slots) {
-    //         result.armour[tag] = this.armour[tag]?.json()
-    //     }
-
-    //     return result
-    // }
 
     load_json(json:EquipData){
         for (let slot of slots) {
@@ -59,48 +27,14 @@ class EquipData {
         }
         this.backpack.load_from_json(json.backpack)
     }
-
-    // to_string() {
-    //     let result:EquipStrings = {
-    //         weapon: item_to_string(this.weapon),
-    //         secondary: item_to_string(this.secondary),
-    //         armour: {},
-    //         backpack: inventory_to_string(this.backpack)
-    //     }
-    //     for (let tag of armour_slots) {
-    //         result.armour[tag] = item_to_string(this.armour[tag])
-    //     }
-
-    //     return JSON.stringify(result)
-    // }
-
-    // from_string(s: string) {
-    //     const json:EquipStrings = JSON.parse(s)
-    //     if (json.weapon != undefined) {
-    //             this.weapon                 = item_from_string(json.weapon)
-    //     }
-    //     if (json.secondary != undefined) {
-    //             this.secondary              = item_from_string(json.secondary)
-    //     }
-    //     for (let tag of armour_slots) {
-    //         const tmp = json.armour[tag]
-    //         if (tmp != undefined) {
-    //             this.armour[tag]            = item_from_string(tmp)
-    //         }
-    //     }
-
-    //     inventory_from_string(this.backpack, json.backpack)
-    // }
 }
 
 
 export class Equip {
     data: EquipData;
-    // changed: boolean;
 
     constructor() {
         this.data = new EquipData(10)
-        // this.changed = false
     }
 
     transfer_all(target: {equip: Equip}) {
@@ -145,27 +79,9 @@ export class Equip {
         return 1
     }
 
-
     get_magic_power_modifier() {
         return 1
     }
-
-    // update(agent:Character) {
-    //     for (let i of armour_slots) {
-    //         this.item_update(this.data.armour[i], agent);
-    //     }
-    // }
-
-    // item_update(item:Item|undefined, agent:Character) {
-    //     if (item == undefined) {return}
-    //     for (let i = 0; i < item.affixes.length; i++) {
-    //         let affix = item.affixes[i];
-    //         let f = update_character[affix.tag];
-    //         if (f != undefined) {
-    //             f(agent);
-    //         }
-    //     }
-    // }
 
     equip_from_backpack(index: number, model: tagModel) {
         let backpack = this.data.backpack;
@@ -237,7 +153,6 @@ export class Equip {
                 backpack.add(tmp)
             }
         }
-        // this.changed = true
     }
 
     switch_weapon() {
@@ -297,19 +212,7 @@ export class Equip {
         }
     }
 
-    // get_json() {
-    //     return this.data.get_json();
-    // }
-
     load_from_json(json:Equip) {
         this.data.load_json(json.data);
     }
-
-    // to_string() {
-    //     return this.data.to_string()
-    // }
-
-    // from_string(s: string) {
-    //     this.data.from_string(s)
-    // }
 }

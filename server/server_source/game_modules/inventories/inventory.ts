@@ -1,5 +1,4 @@
-import { ItemBackpackData, ItemData } from "../../../../shared/inventory";
-import { item_from_string, item_to_string } from "../data/strings_management";
+import { ItemBackpackData } from "../../../../shared/inventory";
 import { Item } from "../items/item";
 import { ItemJson } from "@custom_types/inventory";
 import { ItemSystem } from "../items/system";
@@ -14,19 +13,13 @@ export interface InventoryStrings {
 export class Inventory{
     items: (Item)[]
     limit: number
-    // changed: boolean
 
     constructor(limit: number) {
         this.items = [];
         this.limit = limit
-        // this.changed = false
     }
 
-    // add(item:Item):number
-    // add(item:undefined):undefined
-    // add(item:Item|undefined):number|undefined
     add(item:Item):number|false {
-        // console.log(item, this.items, this.limit, this.items.length)
         if (this.items.length >= this.limit) return false
         return this.items.push(item) - 1;
     }

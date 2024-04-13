@@ -3,17 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Inventory = void 0;
 const system_1 = require("../items/system");
 class Inventory {
-    // changed: boolean
     constructor(limit) {
         this.items = [];
         this.limit = limit;
-        // this.changed = false
     }
-    // add(item:Item):number
-    // add(item:undefined):undefined
-    // add(item:Item|undefined):number|undefined
     add(item) {
-        // console.log(item, this.items, this.limit, this.items.length)
         if (this.items.length >= this.limit)
             return false;
         return this.items.push(item) - 1;

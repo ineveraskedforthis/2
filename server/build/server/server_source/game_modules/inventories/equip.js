@@ -11,18 +11,6 @@ class EquipData {
         this.slots = {};
         this.backpack = new inventory_2.Inventory(backpack_limit);
     }
-    // get_json(): EquipJson{
-    //     let result:EquipJson = {
-    //         weapon: this.weapon?.json(),
-    //         secondary: this.secondary?.json(),
-    //         armour: {},
-    //         backpack: this.backpack.get_json()
-    //     }
-    //     for (let tag of armour_slots) {
-    //         result.armour[tag] = this.armour[tag]?.json()
-    //     }
-    //     return result
-    // }
     load_json(json) {
         for (let slot of inventory_1.slots) {
             const item_data = json.slots[slot];
@@ -36,10 +24,8 @@ class EquipData {
     }
 }
 class Equip {
-    // changed: boolean;
     constructor() {
         this.data = new EquipData(10);
-        // this.changed = false
     }
     transfer_all(target) {
         for (let tag of inventory_1.slots) {
@@ -82,21 +68,6 @@ class Equip {
     get_magic_power_modifier() {
         return 1;
     }
-    // update(agent:Character) {
-    //     for (let i of armour_slots) {
-    //         this.item_update(this.data.armour[i], agent);
-    //     }
-    // }
-    // item_update(item:Item|undefined, agent:Character) {
-    //     if (item == undefined) {return}
-    //     for (let i = 0; i < item.affixes.length; i++) {
-    //         let affix = item.affixes[i];
-    //         let f = update_character[affix.tag];
-    //         if (f != undefined) {
-    //             f(agent);
-    //         }
-    //     }
-    // }
     equip_from_backpack(index, model) {
         let backpack = this.data.backpack;
         let item = backpack.items[index];
@@ -174,7 +145,6 @@ class Equip {
                 backpack.add(tmp);
             }
         }
-        // this.changed = true
     }
     switch_weapon() {
         let tmp = this.data.slots.weapon;
@@ -225,9 +195,6 @@ class Equip {
             system_1.ItemSystem.modify_attack(this.data.slots[i], attack);
         }
     }
-    // get_json() {
-    //     return this.data.get_json();
-    // }
     load_from_json(json) {
         this.data.load_json(json.data);
     }

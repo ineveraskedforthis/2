@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stash = void 0;
 const materials_manager_1 = require("../manager_classes/materials_manager");
 class Stash {
-    // changed: boolean;
     constructor() {
         this.data = [];
         for (let material of materials_manager_1.materials.get_materials_list()) {

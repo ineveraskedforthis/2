@@ -3,9 +3,7 @@ import { material_index } from "@custom_types/inventory";
 import { StashData } from "../types";
 
 export class Stash {
-    // data: {[key: material_index]: number};
     data: number[]
-    // changed: boolean;
 
     constructor() {
         this.data = [];
