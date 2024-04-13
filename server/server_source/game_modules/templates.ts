@@ -56,6 +56,10 @@ export namespace Template {
 
             let character = Event.new_character(template, name, location, model)
 
+            if (faction_id != undefined) {
+                character.home_location_id = DataID.Faction.spawn(faction_id)
+            }
+
             if (faction_id != undefined) DataID.Reputation.set(character.id, faction_id, "member")
             return character
         }

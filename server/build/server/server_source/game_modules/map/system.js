@@ -96,7 +96,7 @@ var MapSystem;
             d_scent += base_d_scent * (average - cell.rat_scent) * 5;
         }
         { //account for urbanisation
-            d_scent -= urbanisation(cell.id) * base_d_scent;
+            d_scent -= urbanisation(cell.id) * base_d_scent * 2;
         }
         { //account for forest
             d_scent -= forestation(cell.id) / 100 * base_d_scent;

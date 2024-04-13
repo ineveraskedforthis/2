@@ -218,6 +218,7 @@ export namespace GameMaster {
         let num_elos = 0
         let num_balls = 0
         let num_hunters = 0
+        let num_guards = 0
         Data.Characters.for_each(character => {
             if ((character.race == 'rat') && (!character.dead())) {
                 num_rats += 1
@@ -231,14 +232,18 @@ export namespace GameMaster {
             if ((character.ai_map == 'rat_hunter') && (!character.dead())) {
                 num_hunters += 1
             }
+
+            if ((character.ai_map == 'urban_guard' && (!character.dead()))) {
+                num_guards ++;
+            }
         })
 
-        let spawn = DataID.Faction.spawn('city')
-        if (spawn != undefined) {
-            let cell = Data.Cells.from_id(Data.Locations.from_id(spawn).cell_id)
-            if (num_hunters < 4) {
-                Template.Character.HumanRatHunter("Hunter")
-            }
+        if (num_hunters < 4) {
+            Template.Character.HumanRatHunter("Hunter")
+        }
+
+        if (num_guards < 15) {
+            Template.Character.HumanCityGuard("Guard")
         }
 
         // console.log('Game master update')
