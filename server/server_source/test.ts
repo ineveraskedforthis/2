@@ -37,7 +37,7 @@ function add_testing_items_to_equip(equip: Equip) {
     const item2 = ItemSystem.create('rat_skin_armour', [], 100)
     const id1 = equip.data.backpack.add(item)
     const id2 = equip.data.backpack.add(item2)
-    if (id1 != false) equip.equip_weapon(id1, 'human')
+    if (id1 !== false) equip.equip_weapon(id1, 'human')
 }
 
 function character_serialization_test_simple() {

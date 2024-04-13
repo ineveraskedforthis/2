@@ -31,11 +31,6 @@ var EventInventory;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
     }
     EventInventory.destroy_in_backpack = destroy_in_backpack;
-    function unequip_secondary(character) {
-        character.equip.unequip_secondary();
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
-    }
-    EventInventory.unequip_secondary = unequip_secondary;
     function switch_weapon(character) {
         character.equip.switch_weapon();
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);

@@ -73,7 +73,7 @@ export function create_item(model_tag: item_model_tag, affixes: affix[], durabil
 export function event_craft_item(character: Character, craft: CraftItemTemplate) {
     let result = create_item(craft.output_model, craft.output_affixes, durability(character, craft))
     let response = character.equip.data.backpack.add(result);
-    if (response != false) use_input(craft.input, character);
+    if (response !== false) use_input(craft.input, character);
 
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY);
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH);

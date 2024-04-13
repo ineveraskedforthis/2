@@ -68,7 +68,7 @@ var CharactersHeap;
         battle.heap[position] = battle.heap[battle.last];
         shift_down(battle, position);
         x.battle_id = undefined;
-        battle.heap = battle.heap.splice(battle.last - 1, 1);
+        battle.heap.splice(battle.last - 1, 1);
         return true;
     }
     CharactersHeap.delete_unit = delete_unit;

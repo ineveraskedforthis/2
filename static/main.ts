@@ -23,13 +23,13 @@ import { draw_map_related_stuff, init_map } from './modules/map.js';
 import { init_detailed_character_statistics } from './request_perks.js';
 import { globals } from './modules/globals.js';
 import { Value } from './modules/Values/collection.js';
-import { EquipSocket, ItemData, TaggedCraftBulk, TaggedCraftItem } from '../shared/inventory.js';
-import { equip_list } from './modules/Equipment/equipment.js';
+import { EquipSlotData, EquipSocket, ItemData, TaggedCraftBulk, TaggedCraftItem, equip_slot } from '../shared/inventory.js';
 import { new_craft_bulk, new_craft_item, new_craft_table, update_craft_item_div } from './modules/Craft/craft.js';
 import { init_locations } from './modules/Locations/request_locations.js';
 import { CraftItemUpdateView } from '@custom_types/responses.js';
 import { CharacterDataBasic } from './modules/Types/character.js';
 import { BackgroundImage } from './modules/BackgroundImage/background_image.js';
+import { init_equipment_screen } from './modules/Equipment/equipment.js';
 
 // noselect tabs
 
@@ -62,6 +62,7 @@ const map = init_map()
 tab.turn_off('map')
 init_game_scene(map)
 const background_image = new BackgroundImage(locations_list)
+const equip_list = init_equipment_screen(socket)
 
 const market_bulk = new_market_bulk()
 
@@ -133,10 +134,14 @@ socket.on('char-info-detailed', msg => character_screen.update(msg))
 socket.on('equip-update', (msg: EquipSocket) => {
     update_equip_image(msg.equip)
 
-    let equip_data : ItemData[] = []
-    for (let item of Object.values(msg.equip)) {
+    let equip_data : EquipSlotData[] = []
+    for (let item_slot of Object.keys(msg.equip)) {
+        const item = msg.equip[item_slot as equip_slot]
         if (item == undefined) continue;
-        equip_data.push(item)
+        equip_data.push({
+            equip_slot: item_slot as equip_slot,
+            item: item
+        })
     }
 
     equip_list.data = equip_data

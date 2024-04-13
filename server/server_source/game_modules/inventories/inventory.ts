@@ -36,7 +36,7 @@ export class Inventory{
             let item = this.items[i]
             if (item != undefined) {
                 let response = target.add(item)
-                if (response != false) this.remove(i)
+                if (response !== false) this.remove(i)
             }
         }
     }
@@ -58,10 +58,5 @@ export class Inventory{
     load_from_json(data:Inventory) {
         this.items = data.items.filter(item => item != null)
         this.limit = data.limit
-        // for (let i = 0; i <= 100; i++) {
-        //     const tmp = data.items_array[i]
-        //     if (tmp == undefined) return
-        //     this.items.push(ItemSystem.create(tmp))
-        // }
     }
 }

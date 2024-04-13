@@ -54,6 +54,11 @@ export interface ItemData {
     backpack_index?: number,
 }
 
+export interface EquipSlotData {
+    equip_slot: equip_slot
+    item: ItemData
+}
+
 export interface ItemBackpackData extends ItemData {
     backpack_index: number
 }

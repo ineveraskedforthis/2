@@ -34,9 +34,7 @@ export namespace InventoryCommands {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
         if (character.in_battle()) { return }
-
         EventInventory.switch_weapon(character)
-
     }
 
     // expected inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
