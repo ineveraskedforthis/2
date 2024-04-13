@@ -116,6 +116,10 @@ export namespace BattleSystem {
                     // console.log('too long, end turn')
                     BattleEvent.EndTurn(battle, unit)
                 }
+
+                if ((battle.date_of_last_turn == '%')) {
+                    battle.date_of_last_turn = Date.now() as ms;
+                }
                 return
             }
 

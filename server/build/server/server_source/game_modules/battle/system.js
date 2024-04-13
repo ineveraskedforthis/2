@@ -104,6 +104,9 @@ var BattleSystem;
                     // console.log('too long, end turn')
                     events_1.BattleEvent.EndTurn(battle, unit);
                 }
+                if ((battle.date_of_last_turn == '%')) {
+                    battle.date_of_last_turn = Date.now();
+                }
                 return;
             }
             //processing cases of player and ai separately for a now
