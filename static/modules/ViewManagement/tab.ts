@@ -252,25 +252,6 @@ export namespace tab {
                     RESIZE_ELEMENT.style.width = new_width + 'px'
                     RESIZE_ELEMENT.style.height = new_height + 'px'
                 }
-            // if (RESIZE_PRESSED_TOP)
-            //     {
-            //         let x = event.pageX;
-            //         let y = event.pageY;
-            //         let rect_1 = RESIZE_ELEMENT.getBoundingClientRect();
-            //         let rect_2 = game_scene.getBoundingClientRect();
-
-            //         let width = rect_1.right - rect_1.left;
-            //         let height = rect_1.bottom - rect_1.top;
-            //         let new_left = Math.min(rect_1.right - 1, Math.min(rect_2.right - rect_2.left - width, Math.max(1, x - rect_2.left - 1)));
-            //         let new_top = Math.min(rect_1.bottom - 1, Math.min(rect_2.bottom - rect_2.top - height, Math.max(1, y - rect_2.top - 1)));
-            //         // let new_width = rect_1.right - rect_1.left - (new_left - old_left);
-            //         // let new_height = rect_1.bottom - rect_1.top - (new_top - old_top);
-
-            //         RESIZE_ELEMENT.style.top = new_top + 'px';
-            //         RESIZE_ELEMENT.style.left = new_left + 'px';
-            //         // RESIZE_ELEMENT.style.width = new_width + 'px'
-            //         // RESIZE_ELEMENT.style.height = new_height + 'px'
-            //     }
         };
     }
 

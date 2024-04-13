@@ -7,6 +7,12 @@ import { image_url } from "../BackgroundImage/background_image.js";
 
 const columns : Column<LocationView>[] = [
     {
+        header_text: "id",
+        type: "number",
+        value: item => item.id,
+        custom_style: ["flex-1-0-5"]
+    },
+    {
         header_text: "Select",
         type: "string",
         value(item) {
