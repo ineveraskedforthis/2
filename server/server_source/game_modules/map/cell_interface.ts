@@ -1,4 +1,4 @@
-import { cell_id } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 
 export interface CellData {
     id: cell_id,

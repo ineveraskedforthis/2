@@ -1,4 +1,5 @@
-import { Terrain, cell_id, location_id, money } from "@custom_types/common";
+import { Terrain, money } from "@custom_types/common";
+import { cell_id, location_id } from "@custom_types/ids";
 import { Template } from "./templates";
 import { Data } from "./data/data_objects";
 import { DataID } from "./data/data_id";

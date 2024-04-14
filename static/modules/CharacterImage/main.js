@@ -1,8 +1,26 @@
 //CHARACTER 2D IMAGE DISPLAY
-import { EQUIPMENT_TAGS } from "../Constants/inventory.js";
+import { EquipSlotStorage } from "@content/content.js";
 import { elementById, imageById, selectImage } from "../HTMLwrappers/common.js";
 var race_model = "human";
 const display_layers = ['behind_all', 'behind_body', 'behind_right_arm', 'on_top'];
+export const EQUIPMENT_TAGS = [
+    'weapon',
+    'socks',
+    'shirt',
+    'secondary',
+    'pauldron-left',
+    'mail',
+    'pauldron-right',
+    'gauntlet-left',
+    'gauntlet-right',
+    'boots',
+    'helmet',
+    'pants',
+    'belt',
+    'dress',
+    'amulet',
+    'robe'
+];
 export function set_body_type(race) {
     // console.log(race)
     race_model = race;
@@ -88,8 +106,8 @@ export function update_equip_image(data) {
         }
         for (let tag of EQUIPMENT_TAGS) {
             let div = selectImage('.character_image.equip.' + tag + '.' + layer);
-            console.log(tag, data[tag]);
-            let item_tag = data[tag]?.name || 'empty';
+            console.log(tag, data[EquipSlotStorage.from_string(tag).id]);
+            let item_tag = data[EquipSlotStorage.from_string(tag).id]?.name || 'empty';
             if (tag == 'secondary') {
                 continue;
             }

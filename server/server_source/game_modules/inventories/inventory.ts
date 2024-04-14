@@ -1,17 +1,11 @@
 import { ItemBackpackData } from "../../../../shared/inventory";
-import { Item } from "../items/item";
-import { ItemJson } from "@custom_types/inventory";
-import { ItemSystem } from "../items/system";
+import { ItemSystem } from "../systems/items/item_system";
+import { item_id } from "@custom_types/ids";
+import { Data } from "../data/data_objects";
 
-export interface InventoryJson {
-    items_array: (ItemJson|undefined)[]
-}
-export interface InventoryStrings {
-    items_array: string[]
-}
 
 export class Inventory{
-    items: (Item)[]
+    items: item_id[]
     limit: number
 
     constructor(limit: number) {
@@ -19,7 +13,7 @@ export class Inventory{
         this.limit = limit
     }
 
-    add(item:Item):number|false {
+    add(item:item_id):number|false {
         if (this.items.length >= this.limit) return false
         return this.items.push(item) - 1;
     }
@@ -41,7 +35,8 @@ export class Inventory{
     get_data():{items: ItemBackpackData[]} {
         return {
             items: this.items.map((item, index) => {
-                let new_item = ItemSystem.item_data(item) ;
+                const item_object = Data.Items.from_id(item)
+                let new_item = ItemSystem.data(item_object) ;
                 new_item.backpack_index = index;
                 return new_item as ItemBackpackData
             })

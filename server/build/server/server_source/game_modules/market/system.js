@@ -121,11 +121,11 @@ var MarketOrders;
 var ItemOrders;
 (function (ItemOrders) {
     function create(owner, item, price, finished) {
-        item.price = price;
+        data_objects_1.Data.Items.from_id(item).price = price;
     }
     ItemOrders.create = create;
     function remove(item, who) {
-        item.price = undefined;
+        data_objects_1.Data.Items.from_id(item).price = undefined;
         return AuctionResponse.OK;
     }
     ItemOrders.remove = remove;
@@ -149,7 +149,7 @@ var ItemOrders;
     }
     ItemOrders.sell = sell;
     function buy(id, buyer, seller) {
-        let item = seller.equip.data.backpack.items[id];
+        let item = data_objects_1.Data.Items.from_id(seller.equip.data.backpack.items[id]);
         if (item == undefined)
             return AuctionResponse.INVALID_ORDER;
         if (item.price == undefined)
@@ -165,7 +165,7 @@ var ItemOrders;
         }
         buyer.savings.transfer(seller.savings, item.price);
         seller.equip.data.backpack.remove(id);
-        buyer.equip.data.backpack.add(item);
+        buyer.equip.data.backpack.add(item.id);
         item.price = undefined;
         return AuctionResponse.OK;
     }

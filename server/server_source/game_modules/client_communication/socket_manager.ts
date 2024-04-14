@@ -1,6 +1,4 @@
 import { SocketWrapper } from "./user";
-
-import { materials } from "../manager_classes/materials_manager";
 import { io_type, Socket } from "../../server";
 import { UserManagement} from "./user_manager";
 // import { SECTIONS } from "../static_data/map_definitions";
@@ -19,6 +17,7 @@ import { SKILLS } from "../static_data/skills";
 import { craft_actions } from "../craft/crafts_storage";
 import { Dialog } from "./network_actions/dialog";
 import { SendUpdate } from "./network_actions/updates";
+import { MaterialConfiguration } from "@content/content";
 
 interface Message {
     id: number
@@ -149,7 +148,7 @@ export class SocketManager {
 
             socket.on('repair-location',    (msg: undefined|{id: unknown}) => SocketCommand.repair_location(user, msg))
 
-            socket.on('request-tags', () => {socket.emit('tags', materials.get_materials_json());})
+            socket.on('request-tags', () => {socket.emit('tags', MaterialConfiguration.MATERIAL_FROM_STRING);})
 
             socket.on('request-belongings', () => Request.belongings(user))
         });

@@ -1,8 +1,7 @@
-import { character_id } from "@custom_types/common.js"
+import { character_id } from "@custom_types/ids.js"
 import { battle_position, UnitSocket } from "../../../shared/battle_data.js"
-import { AnimationDict } from "../load_images.js"
 import { AnimatedImage } from "./animation.js"
-import { BattleImage, battle_canvas_context, enemy_list_div, player_character_id } from "./battle_image.js"
+import { battle_canvas_context } from "./battle_image.js"
 
 import {
     animation_event,

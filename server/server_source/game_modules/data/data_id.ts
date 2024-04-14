@@ -1,8 +1,8 @@
 // THIS MODULE MUST BE IMPORTED FIRST
 
-import { Faction, ReputationData, character_id, location_id, market_order_id, user_id } from "@custom_types/common"
+import { Faction, ReputationData } from "@custom_types/common"
+import { character_id, location_id, market_order_id, user_id, cell_id, item_id, backpack_id } from "@custom_types/ids"
 import { battle_id } from "@custom_types/battle_data"
-import { cell_id } from "@custom_types/common"
 import { reputation_level } from "@custom_types/character"
 
 
@@ -11,12 +11,17 @@ var last_id_character                       = 0 as character_id
 var last_id_market_order                    = 0 as market_order_id
 var last_id_location                        = 0 as location_id
 var last_id_user                            = 0 as user_id
+var last_id_item                            = 0 as item_id
 
 
 var user_id_list                            : user_id[]                                                         = []
 var user_id_character                       : Partial<Record<user_id, character_id>>                            = []
 
+var item_id_list                            : item_id[]
+//var item_id_backpack                        : Record<item_id, backpack_id>
 
+//var backpack_id_list                        : backpack_id[]                                                     = []
+//var backpack_id_items                       : Record<backpack_id, item_id>                                      = []
 
 var character_id_list                       : character_id[]                                                    = []
 var character_id_location                   : Record<character_id, location_id>                                 = []
@@ -143,6 +148,26 @@ export namespace DataID {
 
         export function is_character_location(location: location_id, character: character_id) {
             return location_id_guests[location].has(character)
+        }
+    }
+
+    export namespace Items {
+        export function update_last_id(x: number) {
+            last_id_item = Math.max(x, last_id_item) as item_id
+        }
+
+        export function set_up(item: item_id) {
+            item_id_list.push(item)
+        }
+
+        export function new_id(): item_id {
+            last_id_item++;
+            return register(last_id_item)
+        }
+
+        export function register(item: item_id) {
+            set_up(item)
+            return item
         }
     }
 

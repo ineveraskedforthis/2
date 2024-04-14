@@ -9,11 +9,13 @@ const path_1 = __importDefault(require("path"));
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const battle_1 = require("../battle/classes/battle");
 const character_1 = require("../character/character");
+const item_1 = require("./entities/item");
 const terrain_1 = require("../map/terrain");
 const data_id_1 = require("./data_id");
 const location_class_1 = require("../location/location_class");
 const strings_management_1 = require("./strings_management");
 const classes_1 = require("../market/classes");
+const content_1 = require("@content/content");
 var character_id_object = [];
 var item_id_object = [];
 var market_order_id_object = [];
@@ -29,6 +31,7 @@ exports.save_path = {
     CELLS: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'cells.txt'),
     TRADE_ORDERS: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'bulk_market.txt'),
     BATTLES: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, 'battles.txt'),
+    ITEMS: path_1.default.join(SAVE_GAME_PATH_1.SAVE_GAME_PATH, "items.txt"),
     WORLD_DIMENSIONS: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'description.txt'),
     TERRAIN: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'map_terrain.txt'),
     FORESTS: path_1.default.join(SAVE_GAME_PATH_1.DEFAULT_WORLD_PATH, 'map_forest.txt'),
@@ -60,6 +63,7 @@ var Data;
         World.load();
         Locations.load(exports.save_path.BUILDINGS);
         Characters.load(exports.save_path.CHARACTERS);
+        Items.load();
         MarketOrders.load();
         // ItemOrders.load()
         Reputation.load(exports.save_path.REPUTATION);
@@ -69,6 +73,7 @@ var Data;
     Data.load = load;
     function save() {
         Characters.save();
+        Items.save();
         MarketOrders.save();
         // ItemOrders.save()
         Reputation.save(exports.save_path.REPUTATION);
@@ -78,6 +83,88 @@ var Data;
         Battles.save();
     }
     Data.save = save;
+    let Items;
+    (function (Items) {
+        function load() {
+            console.log('loading items');
+            if (!fs_1.default.existsSync(exports.save_path.ITEMS)) {
+                fs_1.default.writeFileSync(exports.save_path.ITEMS, '');
+            }
+            let data = fs_1.default.readFileSync(exports.save_path.ITEMS).toString();
+            let lines = data.split('\n');
+            for (let line of lines) {
+                if (line == '') {
+                    continue;
+                }
+                const item = string_to_item(line);
+                if (item == undefined)
+                    continue;
+                item_id_object[item.id] = item;
+            }
+            console.log('items loaded');
+        }
+        Items.load = load;
+        function save() {
+            console.log('saving items');
+            let str = '';
+            for_each(item => {
+                str = str + item_to_string(item) + '\n';
+            });
+            fs_1.default.writeFileSync(exports.save_path.ITEMS, str);
+            console.log('items saved');
+        }
+        Items.save = save;
+        function item_to_string(item) {
+            return JSON.stringify(item);
+        }
+        function create_weapon(durability, affixes, prototype) {
+            const item = new item_1.Weapon(undefined, durability, affixes, prototype);
+            item_id_object[item.id] = item;
+            return item;
+        }
+        Items.create_weapon = create_weapon;
+        function create_weapon_simple(prototype) {
+            const item = create_weapon(100, [], prototype);
+            item_id_object[item.id] = item;
+            return item;
+        }
+        Items.create_weapon_simple = create_weapon_simple;
+        function create_armour(durability, affixes, prototype) {
+            const item = new item_1.Armour(undefined, durability, affixes, prototype);
+            item_id_object[item.id] = item;
+            return item;
+        }
+        Items.create_armour = create_armour;
+        function create_armour_simple(prototype) {
+            const item = create_armour(100, [], prototype);
+            item_id_object[item.id] = item;
+            return item;
+        }
+        Items.create_armour_simple = create_armour_simple;
+        function string_to_item(s) {
+            const item_data = JSON.parse(s);
+            if ("prototype_weapon" in item_data) {
+                return new item_1.Weapon(item_data.id, item_data.durability, item_data.affixes, content_1.WeaponStorage.from_string(item_data["prototype_weapon"]).id);
+            }
+            if ("prototype_armour" in item_data) {
+                return new item_1.Armour(item_data.id, item_data.durability, item_data.affixes, content_1.ArmourStorage.from_string(item_data["prototype_armour"]).id);
+            }
+            return undefined;
+        }
+        function from_id(item) {
+            if (item == undefined)
+                return undefined;
+            return item_id_object[item];
+        }
+        Items.from_id = from_id;
+        function for_each(callback) {
+            data_id_1.DataID.Battle.for_each((item_id) => {
+                const item = item_id_object[item_id];
+                callback(item);
+            });
+        }
+        Items.for_each = for_each;
+    })(Items = Data.Items || (Data.Items = {}));
     let Factions;
     (function (Factions) {
         function register(id, spawn, faction) {

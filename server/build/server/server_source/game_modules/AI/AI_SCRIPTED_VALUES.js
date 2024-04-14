@@ -1,33 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AItrade = exports.base_price = void 0;
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const CraftBulk_1 = require("../craft/CraftBulk");
 function base_price(cell_id, material) {
-    switch (material) {
-        case materials_manager_1.WOOD: {
-            return 10;
-        }
-        case materials_manager_1.RAT_BONE:
-            return 3;
-        case materials_manager_1.RAT_SKIN:
-            return 10;
-        case materials_manager_1.WOOD:
-            return 10;
-        case materials_manager_1.ELODINO_FLESH:
-            return 50;
-        case materials_manager_1.MEAT:
-            return 8;
-        case materials_manager_1.FISH:
-            return 8;
-        case materials_manager_1.FOOD:
-            return 8;
-        case materials_manager_1.ZAZ:
-            return 30;
-        case materials_manager_1.ARROW_BONE:
-            return 10;
-    }
-    return 4;
+    return 50;
 }
 exports.base_price = base_price;
 var AItrade;

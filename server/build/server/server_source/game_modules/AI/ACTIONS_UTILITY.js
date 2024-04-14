@@ -9,7 +9,6 @@ const helpers_1 = require("./helpers");
 const scripted_values_1 = require("../events/scripted_values");
 const ACTIONS_BASIC_1 = require("./ACTIONS_BASIC");
 const constraints_1 = require("./constraints");
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const AI_TRIGGERS_1 = require("./AI_TRIGGERS");
 const AI_CONSTANTS_1 = require("./AI_CONSTANTS");
 const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
@@ -117,7 +116,7 @@ exports.AI_ACTIONS = {
             manager_1.ActionManager.start_action(actions_00_1.CharacterAction.EAT, character, character.cell_id);
         },
         utility: (character) => {
-            if (character.stash.get(materials_manager_1.FOOD) < 1)
+            if (character.stash.get(19 /* MATERIAL.MEAT_RAT_FRIED */) < 1)
                 return 0;
             return 1 - character.get_hp() / character.get_max_hp();
         }
@@ -130,12 +129,12 @@ exports.AI_ACTIONS = {
                 return;
             }
             (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
-            (0, ACTIONS_BASIC_1.buy)(character, materials_manager_1.FOOD);
+            (0, ACTIONS_BASIC_1.buy)(character, 19 /* MATERIAL.MEAT_RAT_FRIED */);
         },
         utility: (character) => {
-            if (!AI_TRIGGERS_1.AI_TRIGGER.can_buy(character, materials_manager_1.FOOD, character.savings.get()))
+            if (!AI_TRIGGERS_1.AI_TRIGGER.can_buy(character, 19 /* MATERIAL.MEAT_RAT_FRIED */, character.savings.get()))
                 return 0;
-            return 1 - character.stash.get(materials_manager_1.FOOD) / AI_CONSTANTS_1.AI_RESERVE.FOOD;
+            return 1 - character.stash.get(19 /* MATERIAL.MEAT_RAT_FRIED */) / AI_CONSTANTS_1.AI_RESERVE.FOOD;
         }
     },
     BUY_ARROWS: {
@@ -146,12 +145,12 @@ exports.AI_ACTIONS = {
                 return;
             }
             (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
-            (0, ACTIONS_BASIC_1.buy)(character, materials_manager_1.ARROW_BONE);
+            (0, ACTIONS_BASIC_1.buy)(character, 0 /* MATERIAL.ARROW_BONE */);
         },
         utility: (character) => {
-            if (!AI_TRIGGERS_1.AI_TRIGGER.can_buy(character, materials_manager_1.ARROW_BONE, character.savings.get()))
+            if (!AI_TRIGGERS_1.AI_TRIGGER.can_buy(character, 0 /* MATERIAL.ARROW_BONE */, character.savings.get()))
                 return 0;
-            return 1 - character.stash.get(materials_manager_1.ARROW_BONE) / AI_CONSTANTS_1.AI_RESERVE.ARROW_BONE;
+            return 1 - character.stash.get(0 /* MATERIAL.ARROW_BONE */) / AI_CONSTANTS_1.AI_RESERVE.ARROW_BONE;
         }
     },
     RAT_WALK: {
@@ -246,7 +245,7 @@ exports.AI_ACTIONS = {
             if (AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
                 (0, ACTIONS_BASIC_1.remove_orders)(character);
                 (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
-                (0, ACTIONS_BASIC_1.sell_material)(character, materials_manager_1.FISH);
+                (0, ACTIONS_BASIC_1.sell_material)(character, 26 /* MATERIAL.FISH_OKU */);
             }
             else {
                 (0, ACTIONS_BASIC_1.home_walk)(character);
@@ -255,9 +254,9 @@ exports.AI_ACTIONS = {
         utility(character) {
             if (character.ai_map == 'crafter')
                 return 0;
-            if (character.trade_stash.get(materials_manager_1.FISH) > 0)
+            if (character.trade_stash.get(26 /* MATERIAL.FISH_OKU */) > 0)
                 return 1;
-            return character.stash.get(materials_manager_1.FISH) / 20;
+            return character.stash.get(26 /* MATERIAL.FISH_OKU */) / 20;
         }
     },
     CUT_WOOD: {
@@ -281,7 +280,7 @@ exports.AI_ACTIONS = {
             if (AI_TRIGGERS_1.AI_TRIGGER.at_home(character)) {
                 (0, ACTIONS_BASIC_1.remove_orders)(character);
                 (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
-                (0, ACTIONS_BASIC_1.sell_material)(character, materials_manager_1.WOOD);
+                (0, ACTIONS_BASIC_1.sell_material)(character, 31 /* MATERIAL.WOOD_RED */);
             }
             else {
                 (0, ACTIONS_BASIC_1.home_walk)(character);
@@ -290,9 +289,9 @@ exports.AI_ACTIONS = {
         utility(character) {
             if (character.ai_map == 'crafter')
                 return 0;
-            if (character.trade_stash.get(materials_manager_1.WOOD) > 0)
+            if (character.trade_stash.get(31 /* MATERIAL.WOOD_RED */) > 0)
                 return 1;
-            return character.stash.get(materials_manager_1.WOOD) / 40;
+            return character.stash.get(31 /* MATERIAL.WOOD_RED */) / 40;
         }
     }
 };

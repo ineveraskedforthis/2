@@ -1,5 +1,6 @@
-import { Terrain, cell_id } from "@custom_types/common";
-import { character_id, location_id } from "@custom_types/common";
+import { Terrain } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
+import { character_id, location_id } from "@custom_types/ids";
 
 export interface LocationMinimal {
     fish: number

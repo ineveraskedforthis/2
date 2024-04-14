@@ -4,6 +4,7 @@ import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
 import { stash_id_to_tag } from "../Stash/stash.js";
 import { BulkAmount, Value, value_class_name } from "../Values/collection.js";
+import { ArmourStorage, WeaponStorage } from "@content/content.js";
 const durability_data = {};
 const output_amount_data = {};
 const inputs_amount_data = {};
@@ -20,7 +21,7 @@ function item_amount_view_diw(items) {
     return div;
 }
 function is_item_craft(x) {
-    return "output_model" in x;
+    return "output_affixes" in x;
 }
 function is_bulk_craft(x) {
     return "output" in x;
@@ -39,7 +40,12 @@ const craft_columns = [
         type: "html",
         value: (item) => {
             if (is_item_craft(item)) {
-                return div(undefined, item.output_model, ["centered-box"], undefined, undefined, []);
+                if (item.output.tag == "weapon") {
+                    return div(undefined, WeaponStorage.get(item.output.value).id_string, ["centered-box"], undefined, undefined, []);
+                }
+                else {
+                    return div(undefined, ArmourStorage.get(item.output.value).id_string, ["centered-box"], undefined, undefined, []);
+                }
             }
             if (is_bulk_craft(item)) {
                 return item_amount_view_diw(output_amount_data[item.id]);

@@ -22,9 +22,11 @@ export const enum MATERIAL {
     MEAT_ELODINO,
     MEAT_BALL,
     MEAT_HUMAN,
-    MEAT_HUMAN_FRIED,
     MEAT_GRACI,
+    MEAT_HUMAN_FRIED,
     MEAT_GRACI_FRIED,
+    FISH_OKU,
+    FISH_OKU_FRIED,
     BERRY_FIE,
     BERRY_ZAZ,
     ZAZ,
@@ -33,6 +35,7 @@ export const enum MATERIAL {
     HAIR_GRACI,
     STEEL,
 }
+export type material_string_id = "arrow-bone"|"arrow-zaz"|"cotton"|"textile"|"small-bone-rat"|"small-bone-human"|"small-bone-graci"|"bone-rat"|"bone-human"|"bone-graci"|"skin-rat"|"skin-human"|"skin-graci"|"skin-ball"|"leather-rat"|"leather-human"|"leather-graci"|"leather-ball"|"meat-rat"|"meat-rat-fried"|"meat-elodino"|"meat-ball"|"meat-human"|"meat-graci"|"meat-human-fried"|"meat-graci-fried"|"fish-oku"|"fish-oku-fried"|"berry-fie"|"berry-zaz"|"zaz"|"wood-red"|"wood-red-plate"|"hair-graci"|"steel"
 
 export const enum MATERIAL_CATEGORY {
     BOW_AMMO,
@@ -40,12 +43,14 @@ export const enum MATERIAL_CATEGORY {
     MATERIAL,
     BONE,
     SKIN,
+    LEATHER,
     MEAT,
     FISH,
     FOOD,
     FRUIT,
     WOOD,
 }
+export type material_category_string_id = "bow-ammo"|"plant"|"material"|"bone"|"skin"|"leather"|"meat"|"fish"|"food"|"fruit"|"wood"
 
 export const enum EQUIP_SLOT {
     WEAPON,
@@ -64,13 +69,17 @@ export const enum EQUIP_SLOT {
     PANTS,
     DRESS,
     SOCKS,
+    NONE,
 }
+export type equip_slot_string_id = "weapon"|"secondary"|"amulet"|"mail"|"pauldron-left"|"pauldron-right"|"gauntlet-left"|"gauntlet-right"|"boots"|"helmet"|"belt"|"robe"|"shirt"|"pants"|"dress"|"socks"|"none"
 
 export const enum IMPACT_TYPE {
     POINT,
     BLADE,
     BLUNT,
+    NONE,
 }
+export type impact_type_string_id = "point"|"blade"|"blunt"|"none"
 
 export const enum WEAPON {
     BOW_WOOD,
@@ -80,6 +89,7 @@ export const enum WEAPON {
     SWORD_STEEL,
     MACE_WOOD,
 }
+export type weapon_string_id = "bow-wood"|"spear-wood"|"spear-wood-bone"|"dagger-bone-rat"|"sword-steel"|"mace-wood"
 
 export const enum ARMOUR {
     HELMET_SKULL_RAT,
@@ -105,6 +115,7 @@ export const enum ARMOUR {
     BELT_TEXTILE,
     SHIRT_TEXTILE,
 }
+export type armour_string_id = "helmet-skull-rat"|"helmet-textile"|"helmet-leather-rat"|"helmet-hair-graci"|"mail-bone"|"mail-leather-rat"|"mail-textile"|"dress-meat-elodino"|"pants-leather-rat"|"pants-textile"|"boots-leather-rat"|"gauntlet-right-leather-rat"|"gauntlet-right-textile"|"gauntlet-left-leather-rat"|"gauntlet-left-textile"|"socks-textile"|"pauldron-left-bone"|"pauldron-left-leather-rat"|"pauldron-right-bone"|"robe-leather-rat"|"belt-textile"|"shirt-textile"
 
 export interface MaterialData {
     readonly id : MATERIAL
@@ -131,8 +142,12 @@ export interface EquipSlotData {
 }
 
 
-export interface ImpactTypeData {
+export interface ImpactData {
     readonly id : IMPACT_TYPE
+    readonly handle_ratio : number
+    readonly blunt : number
+    readonly pierce : number
+    readonly slice : number
     readonly name : string
 }
 
@@ -142,10 +157,11 @@ export interface WeaponData {
     readonly material : MATERIAL
     readonly secondary_material : MATERIAL
     readonly impact : IMPACT_TYPE
-    readonly power : number
+    readonly magic_power : number
     readonly size : number
     readonly length : number
     readonly craftable : number
+    readonly bow_power : number
     readonly name : string
 }
 
@@ -165,107 +181,157 @@ export interface ArmourData {
 
 
 export class MaterialConfiguration {
-    static MATERIAL : MATERIAL[] = [MATERIAL.ARROW_BONE, MATERIAL.ARROW_ZAZ, MATERIAL.COTTON, MATERIAL.TEXTILE, MATERIAL.SMALL_BONE_RAT, MATERIAL.SMALL_BONE_HUMAN, MATERIAL.SMALL_BONE_GRACI, MATERIAL.BONE_RAT, MATERIAL.BONE_HUMAN, MATERIAL.BONE_GRACI, MATERIAL.SKIN_RAT, MATERIAL.SKIN_HUMAN, MATERIAL.SKIN_GRACI, MATERIAL.SKIN_BALL, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_HUMAN, MATERIAL.LEATHER_GRACI, MATERIAL.LEATHER_BALL, MATERIAL.MEAT_RAT, MATERIAL.MEAT_RAT_FRIED, MATERIAL.MEAT_ELODINO, MATERIAL.MEAT_BALL, MATERIAL.MEAT_HUMAN, MATERIAL.MEAT_HUMAN_FRIED, MATERIAL.MEAT_GRACI, MATERIAL.MEAT_GRACI_FRIED, MATERIAL.BERRY_FIE, MATERIAL.BERRY_ZAZ, MATERIAL.ZAZ, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED_PLATE, MATERIAL.HAIR_GRACI, MATERIAL.STEEL, ]
-    static MATERIAL_FROM_STRING : Record<string, MATERIAL> = { "arrow-bone": MATERIAL.ARROW_BONE, "arrow-zaz": MATERIAL.ARROW_ZAZ, "cotton": MATERIAL.COTTON, "textile": MATERIAL.TEXTILE, "small-bone-rat": MATERIAL.SMALL_BONE_RAT, "small-bone-human": MATERIAL.SMALL_BONE_HUMAN, "small-bone-graci": MATERIAL.SMALL_BONE_GRACI, "bone-rat": MATERIAL.BONE_RAT, "bone-human": MATERIAL.BONE_HUMAN, "bone-graci": MATERIAL.BONE_GRACI, "skin-rat": MATERIAL.SKIN_RAT, "skin-human": MATERIAL.SKIN_HUMAN, "skin-graci": MATERIAL.SKIN_GRACI, "skin-ball": MATERIAL.SKIN_BALL, "leather-rat": MATERIAL.LEATHER_RAT, "leather-human": MATERIAL.LEATHER_HUMAN, "leather-graci": MATERIAL.LEATHER_GRACI, "leather-ball": MATERIAL.LEATHER_BALL, "meat-rat": MATERIAL.MEAT_RAT, "meat-rat-fried": MATERIAL.MEAT_RAT_FRIED, "meat-elodino": MATERIAL.MEAT_ELODINO, "meat-ball": MATERIAL.MEAT_BALL, "meat-human": MATERIAL.MEAT_HUMAN, "meat-human-fried": MATERIAL.MEAT_HUMAN_FRIED, "meat-graci": MATERIAL.MEAT_GRACI, "meat-graci-fried": MATERIAL.MEAT_GRACI_FRIED, "berry-fie": MATERIAL.BERRY_FIE, "berry-zaz": MATERIAL.BERRY_ZAZ, "zaz": MATERIAL.ZAZ, "wood-red": MATERIAL.WOOD_RED, "wood-red-plate": MATERIAL.WOOD_RED_PLATE, "hair-graci": MATERIAL.HAIR_GRACI, "steel": MATERIAL.STEEL }
-    static MATERIAL_TO_STRING : Record<MATERIAL, string> = ["arrow-bone", "arrow-zaz", "cotton", "textile", "small-bone-rat", "small-bone-human", "small-bone-graci", "bone-rat", "bone-human", "bone-graci", "skin-rat", "skin-human", "skin-graci", "skin-ball", "leather-rat", "leather-human", "leather-graci", "leather-ball", "meat-rat", "meat-rat-fried", "meat-elodino", "meat-ball", "meat-human", "meat-human-fried", "meat-graci", "meat-graci-fried", "berry-fie", "berry-zaz", "zaz", "wood-red", "wood-red-plate", "hair-graci", "steel", ]
+    static MATERIAL : MATERIAL[] = [MATERIAL.ARROW_BONE, MATERIAL.ARROW_ZAZ, MATERIAL.COTTON, MATERIAL.TEXTILE, MATERIAL.SMALL_BONE_RAT, MATERIAL.SMALL_BONE_HUMAN, MATERIAL.SMALL_BONE_GRACI, MATERIAL.BONE_RAT, MATERIAL.BONE_HUMAN, MATERIAL.BONE_GRACI, MATERIAL.SKIN_RAT, MATERIAL.SKIN_HUMAN, MATERIAL.SKIN_GRACI, MATERIAL.SKIN_BALL, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_HUMAN, MATERIAL.LEATHER_GRACI, MATERIAL.LEATHER_BALL, MATERIAL.MEAT_RAT, MATERIAL.MEAT_RAT_FRIED, MATERIAL.MEAT_ELODINO, MATERIAL.MEAT_BALL, MATERIAL.MEAT_HUMAN, MATERIAL.MEAT_GRACI, MATERIAL.MEAT_HUMAN_FRIED, MATERIAL.MEAT_GRACI_FRIED, MATERIAL.FISH_OKU, MATERIAL.FISH_OKU_FRIED, MATERIAL.BERRY_FIE, MATERIAL.BERRY_ZAZ, MATERIAL.ZAZ, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED_PLATE, MATERIAL.HAIR_GRACI, MATERIAL.STEEL, ]
+    static MATERIAL_FROM_STRING : Record<material_string_id, MATERIAL> = { "arrow-bone": MATERIAL.ARROW_BONE, "arrow-zaz": MATERIAL.ARROW_ZAZ, "cotton": MATERIAL.COTTON, "textile": MATERIAL.TEXTILE, "small-bone-rat": MATERIAL.SMALL_BONE_RAT, "small-bone-human": MATERIAL.SMALL_BONE_HUMAN, "small-bone-graci": MATERIAL.SMALL_BONE_GRACI, "bone-rat": MATERIAL.BONE_RAT, "bone-human": MATERIAL.BONE_HUMAN, "bone-graci": MATERIAL.BONE_GRACI, "skin-rat": MATERIAL.SKIN_RAT, "skin-human": MATERIAL.SKIN_HUMAN, "skin-graci": MATERIAL.SKIN_GRACI, "skin-ball": MATERIAL.SKIN_BALL, "leather-rat": MATERIAL.LEATHER_RAT, "leather-human": MATERIAL.LEATHER_HUMAN, "leather-graci": MATERIAL.LEATHER_GRACI, "leather-ball": MATERIAL.LEATHER_BALL, "meat-rat": MATERIAL.MEAT_RAT, "meat-rat-fried": MATERIAL.MEAT_RAT_FRIED, "meat-elodino": MATERIAL.MEAT_ELODINO, "meat-ball": MATERIAL.MEAT_BALL, "meat-human": MATERIAL.MEAT_HUMAN, "meat-graci": MATERIAL.MEAT_GRACI, "meat-human-fried": MATERIAL.MEAT_HUMAN_FRIED, "meat-graci-fried": MATERIAL.MEAT_GRACI_FRIED, "fish-oku": MATERIAL.FISH_OKU, "fish-oku-fried": MATERIAL.FISH_OKU_FRIED, "berry-fie": MATERIAL.BERRY_FIE, "berry-zaz": MATERIAL.BERRY_ZAZ, "zaz": MATERIAL.ZAZ, "wood-red": MATERIAL.WOOD_RED, "wood-red-plate": MATERIAL.WOOD_RED_PLATE, "hair-graci": MATERIAL.HAIR_GRACI, "steel": MATERIAL.STEEL }
+    static MATERIAL_TO_STRING : Record<MATERIAL, material_string_id> = ["arrow-bone", "arrow-zaz", "cotton", "textile", "small-bone-rat", "small-bone-human", "small-bone-graci", "bone-rat", "bone-human", "bone-graci", "skin-rat", "skin-human", "skin-graci", "skin-ball", "leather-rat", "leather-human", "leather-graci", "leather-ball", "meat-rat", "meat-rat-fried", "meat-elodino", "meat-ball", "meat-human", "meat-graci", "meat-human-fried", "meat-graci-fried", "fish-oku", "fish-oku-fried", "berry-fie", "berry-zaz", "zaz", "wood-red", "wood-red-plate", "hair-graci", "steel", ]
+    static get zero_record() : Record<MATERIAL, number> {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    }
+    static is_valid_id(id: number): id is MATERIAL {
+        return id in this.MATERIAL
+    }
+    static is_valid_string_id(id: string): id is material_string_id {
+        return id in this.MATERIAL_FROM_STRING
+    }
 
     // ENUMS:
 
-    static MATERIAL_MATERIAL : Record<MATERIAL, MATERIAL> = [MATERIAL.ARROW_BONE, MATERIAL.ARROW_ZAZ, MATERIAL.COTTON, MATERIAL.TEXTILE, MATERIAL.SMALL_BONE_RAT, MATERIAL.SMALL_BONE_HUMAN, MATERIAL.SMALL_BONE_GRACI, MATERIAL.BONE_RAT, MATERIAL.BONE_HUMAN, MATERIAL.BONE_GRACI, MATERIAL.SKIN_RAT, MATERIAL.SKIN_HUMAN, MATERIAL.SKIN_GRACI, MATERIAL.SKIN_BALL, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_HUMAN, MATERIAL.LEATHER_GRACI, MATERIAL.LEATHER_BALL, MATERIAL.MEAT_RAT, MATERIAL.MEAT_RAT_FRIED, MATERIAL.MEAT_ELODINO, MATERIAL.MEAT_BALL, MATERIAL.MEAT_HUMAN, MATERIAL.MEAT_HUMAN_FRIED, MATERIAL.MEAT_GRACI, MATERIAL.MEAT_GRACI_FRIED, MATERIAL.BERRY_FIE, MATERIAL.BERRY_ZAZ, MATERIAL.ZAZ, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED_PLATE, MATERIAL.HAIR_GRACI, MATERIAL.STEEL, ]
-    static MATERIAL_MATERIAL_STRING : Record<MATERIAL, string> = ["arrow-bone", "arrow-zaz", "cotton", "textile", "small-bone-rat", "small-bone-human", "small-bone-graci", "bone-rat", "bone-human", "bone-graci", "skin-rat", "skin-human", "skin-graci", "skin-ball", "leather-rat", "leather-human", "leather-graci", "leather-ball", "meat-rat", "meat-rat-fried", "meat-elodino", "meat-ball", "meat-human", "meat-human-fried", "meat-graci", "meat-graci-fried", "berry-fie", "berry-zaz", "zaz", "wood-red", "wood-red-plate", "hair-graci", "steel", ]
-    static MATERIAL_CATEGORY : Record<MATERIAL, MATERIAL_CATEGORY> = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.WOOD, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, ]
-    static MATERIAL_CATEGORY_STRING : Record<MATERIAL, string> = ["bow-ammo", "bow-ammo", "plant", "material", "bone", "bone", "bone", "bone", "bone", "bone", "skin", "skin", "skin", "skin", "material", "material", "material", "material", "meat", "food", "meat", "food", "meat", "food", "meat", "meat", "fruit", "fruit", "material", "wood", "material", "material", "material", ]
+    static MATERIAL_MATERIAL : Record<MATERIAL, MATERIAL> = [MATERIAL.ARROW_BONE, MATERIAL.ARROW_ZAZ, MATERIAL.COTTON, MATERIAL.TEXTILE, MATERIAL.SMALL_BONE_RAT, MATERIAL.SMALL_BONE_HUMAN, MATERIAL.SMALL_BONE_GRACI, MATERIAL.BONE_RAT, MATERIAL.BONE_HUMAN, MATERIAL.BONE_GRACI, MATERIAL.SKIN_RAT, MATERIAL.SKIN_HUMAN, MATERIAL.SKIN_GRACI, MATERIAL.SKIN_BALL, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_HUMAN, MATERIAL.LEATHER_GRACI, MATERIAL.LEATHER_BALL, MATERIAL.MEAT_RAT, MATERIAL.MEAT_RAT_FRIED, MATERIAL.MEAT_ELODINO, MATERIAL.MEAT_BALL, MATERIAL.MEAT_HUMAN, MATERIAL.MEAT_GRACI, MATERIAL.MEAT_HUMAN_FRIED, MATERIAL.MEAT_GRACI_FRIED, MATERIAL.FISH_OKU, MATERIAL.FISH_OKU_FRIED, MATERIAL.BERRY_FIE, MATERIAL.BERRY_ZAZ, MATERIAL.ZAZ, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED_PLATE, MATERIAL.HAIR_GRACI, MATERIAL.STEEL, ]
+    static MATERIAL_MATERIAL_STRING : Record<MATERIAL, material_string_id> = ["arrow-bone", "arrow-zaz", "cotton", "textile", "small-bone-rat", "small-bone-human", "small-bone-graci", "bone-rat", "bone-human", "bone-graci", "skin-rat", "skin-human", "skin-graci", "skin-ball", "leather-rat", "leather-human", "leather-graci", "leather-ball", "meat-rat", "meat-rat-fried", "meat-elodino", "meat-ball", "meat-human", "meat-graci", "meat-human-fried", "meat-graci-fried", "fish-oku", "fish-oku-fried", "berry-fie", "berry-zaz", "zaz", "wood-red", "wood-red-plate", "hair-graci", "steel", ]
+    static MATERIAL_CATEGORY : Record<MATERIAL, MATERIAL_CATEGORY> = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.WOOD, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.MATERIAL, ]
+    static MATERIAL_CATEGORY_STRING : Record<MATERIAL, material_category_string_id> = ["bow-ammo", "bow-ammo", "plant", "material", "bone", "bone", "bone", "bone", "bone", "bone", "skin", "skin", "skin", "skin", "leather", "leather", "leather", "leather", "meat", "food", "meat", "food", "meat", "meat", "food", "meat", "fish", "food", "fruit", "fruit", "material", "wood", "material", "material", "material", ]
 
     // Numbers:
 
-    static MATERIAL_CUTTING_POWER : Record<MATERIAL, number> = [1.0, 2.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.5, 0.5, 10.0, 2.5, ]
-    static MATERIAL_DENSITY : Record<MATERIAL, number> = [0.2, 0.2, 0.1, 1.0, 0.5, 0.6, 0.2, 0.5, 0.6, 0.2, 1.5, 1.2, 1.1, 0.8, 3.0, 2.4, 2.2, 1.6, 0.4, 0.6, 0.1, 0.1, 0.5, 0.7, 0.2, 0.2, 0.2, 0.3, 10.0, 1.0, 2.0, 10.0, 8.0, ]
-    static MATERIAL_CUTTING_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 1.0, 0.5, 0.5, 0.5, 5.0, 5.0, 10.0, 0.9, 0.8, 0.7, 0.5, 2.0, 1.5, 1.0, 0.5, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 1.0, 2.0, 10.0, 10.0, ]
-    static MATERIAL_BLUNT_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 1.0, 0.5, 0.5, 0.5, 3.0, 4.0, 10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 1.0, 2.0, 10.0, 10.0, ]
-    static MATERIAL_PENENTRATION_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 1.0, 0.5, 0.5, 0.5, 3.0, 4.0, 10.0, 0.75, 0.25, 0.0, 0.0, 1.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5.0, 2.5, 5.0, 10.0, 10.0, ]
-    static MATERIAL_MAGIC_POWER : Record<MATERIAL, number> = [0.0, 1.0, 0.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 2.0, 4.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 4.0, 2.0, 0.0, 0.1, 1.0, 0.1, 0.1, 5.0, 0.0, ]
+    static MATERIAL_CUTTING_POWER : Record<MATERIAL, number> = [1.0, 2.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0, 0.5, 0.5, 10.0, 2.5, ]
+    static MATERIAL_DENSITY : Record<MATERIAL, number> = [0.2, 0.2, 0.1, 1.0, 0.5, 0.6, 0.2, 0.5, 0.6, 0.2, 1.5, 1.2, 1.1, 0.8, 3.0, 2.4, 2.2, 1.6, 0.4, 0.6, 0.1, 0.1, 0.5, 0.2, 0.7, 0.2, 0.0, 0.0, 0.2, 0.3, 10.0, 1.0, 2.0, 10.0, 8.0, ]
+    static MATERIAL_CUTTING_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 1.0, 0.5, 0.5, 0.5, 5.0, 5.0, 10.0, 0.9, 0.8, 0.7, 0.5, 2.0, 1.5, 1.0, 0.5, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.8, 0.0, 0.0, 5.0, 1.0, 2.0, 10.0, 10.0, ]
+    static MATERIAL_BLUNT_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 1.0, 0.5, 0.5, 0.5, 3.0, 4.0, 10.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.1, 0.0, 0.0, 2.0, 1.0, 2.0, 10.0, 10.0, ]
+    static MATERIAL_PENENTRATION_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 1.0, 0.5, 0.5, 0.5, 3.0, 4.0, 10.0, 0.75, 0.25, 0.0, 0.0, 1.5, 0.5, 0.0, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.1, 0.0, 0.0, 5.0, 2.5, 5.0, 10.0, 10.0, ]
+    static MATERIAL_MAGIC_POWER : Record<MATERIAL, number> = [0.0, 1.0, 0.1, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 2.0, 4.0, 0.0, 0.0, 2.0, 2.0, 0.0, 4.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.1, 1.0, 0.1, 0.1, 5.0, 0.0, ]
 
     // Strings:
 
-    static MATERIAL_NAME : Record<MATERIAL, string> = ["Bone arrow", "Zaz arrow", "Cotton", "Textile", "Bone(rat, small)", "Bone(human, small)", "Bone(graci, small)", "Bone(rat)", "Bone(human)", "Bone(graci)", "Skin(rat)", "Skin(human)", "Skin(graci)", "Skin(meat ball)", "Leather(rat)", "Leather(human)", "Leather(graci)", "Leather(meat ball)", "Meat(rat)", "Fried meat(rat)", "Meat(elodino)", "Meat(meat ball)", "Meat(human)", "Fried meat(human)", "Meat(graci)", "Fried meat(graci)", "Fieberry", "Zazberry", "Zaz", "Wood(raw)", "Wood(plates)", "Hair(graci)", "Steel", ]
+    static MATERIAL_NAME : Record<MATERIAL, string> = ["Bone arrow", "Zaz arrow", "Cotton", "Textile", "Bone(rat, small)", "Bone(human, small)", "Bone(graci, small)", "Bone(rat)", "Bone(human)", "Bone(graci)", "Skin(rat)", "Skin(human)", "Skin(graci)", "Skin(meat ball)", "Leather(rat)", "Leather(human)", "Leather(graci)", "Leather(meat ball)", "Meat(rat)", "Fried meat(rat)", "Meat(elodino)", "Meat(meat ball)", "Meat(human)", "Meat(graci)", "Fried meat(human)", "Fried meat(graci)", "Fish(oku)", "Fried fish(oku)", "Fieberry", "Zazberry", "Zaz", "Wood(raw)", "Wood(plates)", "Hair(graci)", "Steel", ]
 }
 
 export class MaterialCategoryConfiguration {
-    static CATEGORY : MATERIAL_CATEGORY[] = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.WOOD, ]
-    static CATEGORY_FROM_STRING : Record<string, MATERIAL_CATEGORY> = { "bow-ammo": MATERIAL_CATEGORY.BOW_AMMO, "plant": MATERIAL_CATEGORY.PLANT, "material": MATERIAL_CATEGORY.MATERIAL, "bone": MATERIAL_CATEGORY.BONE, "skin": MATERIAL_CATEGORY.SKIN, "meat": MATERIAL_CATEGORY.MEAT, "fish": MATERIAL_CATEGORY.FISH, "food": MATERIAL_CATEGORY.FOOD, "fruit": MATERIAL_CATEGORY.FRUIT, "wood": MATERIAL_CATEGORY.WOOD }
-    static CATEGORY_TO_STRING : Record<MATERIAL_CATEGORY, string> = ["bow-ammo", "plant", "material", "bone", "skin", "meat", "fish", "food", "fruit", "wood", ]
+    static CATEGORY : MATERIAL_CATEGORY[] = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.WOOD, ]
+    static CATEGORY_FROM_STRING : Record<material_category_string_id, MATERIAL_CATEGORY> = { "bow-ammo": MATERIAL_CATEGORY.BOW_AMMO, "plant": MATERIAL_CATEGORY.PLANT, "material": MATERIAL_CATEGORY.MATERIAL, "bone": MATERIAL_CATEGORY.BONE, "skin": MATERIAL_CATEGORY.SKIN, "leather": MATERIAL_CATEGORY.LEATHER, "meat": MATERIAL_CATEGORY.MEAT, "fish": MATERIAL_CATEGORY.FISH, "food": MATERIAL_CATEGORY.FOOD, "fruit": MATERIAL_CATEGORY.FRUIT, "wood": MATERIAL_CATEGORY.WOOD }
+    static CATEGORY_TO_STRING : Record<MATERIAL_CATEGORY, material_category_string_id> = ["bow-ammo", "plant", "material", "bone", "skin", "leather", "meat", "fish", "food", "fruit", "wood", ]
+    static get zero_record() : Record<MATERIAL_CATEGORY, number> {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    }
+    static is_valid_id(id: number): id is MATERIAL_CATEGORY {
+        return id in this.CATEGORY
+    }
+    static is_valid_string_id(id: string): id is material_category_string_id {
+        return id in this.CATEGORY_FROM_STRING
+    }
 
     // ENUMS:
 
-    static MATERIAL_CATEGORY_CATEGORY : Record<MATERIAL_CATEGORY, MATERIAL_CATEGORY> = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.WOOD, ]
-    static MATERIAL_CATEGORY_CATEGORY_STRING : Record<MATERIAL_CATEGORY, string> = ["bow-ammo", "plant", "material", "bone", "skin", "meat", "fish", "food", "fruit", "wood", ]
+    static MATERIAL_CATEGORY_CATEGORY : Record<MATERIAL_CATEGORY, MATERIAL_CATEGORY> = [MATERIAL_CATEGORY.BOW_AMMO, MATERIAL_CATEGORY.PLANT, MATERIAL_CATEGORY.MATERIAL, MATERIAL_CATEGORY.BONE, MATERIAL_CATEGORY.SKIN, MATERIAL_CATEGORY.LEATHER, MATERIAL_CATEGORY.MEAT, MATERIAL_CATEGORY.FISH, MATERIAL_CATEGORY.FOOD, MATERIAL_CATEGORY.FRUIT, MATERIAL_CATEGORY.WOOD, ]
+    static MATERIAL_CATEGORY_CATEGORY_STRING : Record<MATERIAL_CATEGORY, material_category_string_id> = ["bow-ammo", "plant", "material", "bone", "skin", "leather", "meat", "fish", "food", "fruit", "wood", ]
 
     // Numbers:
 
 
     // Strings:
 
-    static MATERIAL_CATEGORY_NAME : Record<MATERIAL_CATEGORY, string> = ["Ammo(bow)", "Plant", "Material", "Bone", "Skin", "Meat", "Fish", "Food", "Fruit", "Wood", ]
+    static MATERIAL_CATEGORY_NAME : Record<MATERIAL_CATEGORY, string> = ["Ammo(bow)", "Plant", "Material", "Bone", "Skin", "Leather", "Meat", "Fish", "Food", "Fruit", "Wood", ]
 }
 
 export class EquipSlotConfiguration {
-    static SLOT : EQUIP_SLOT[] = [EQUIP_SLOT.WEAPON, EQUIP_SLOT.SECONDARY, EQUIP_SLOT.AMULET, EQUIP_SLOT.MAIL, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_RIGHT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.BOOTS, EQUIP_SLOT.HELMET, EQUIP_SLOT.BELT, EQUIP_SLOT.ROBE, EQUIP_SLOT.SHIRT, EQUIP_SLOT.PANTS, EQUIP_SLOT.DRESS, EQUIP_SLOT.SOCKS, ]
-    static SLOT_FROM_STRING : Record<string, EQUIP_SLOT> = { "weapon": EQUIP_SLOT.WEAPON, "secondary": EQUIP_SLOT.SECONDARY, "amulet": EQUIP_SLOT.AMULET, "mail": EQUIP_SLOT.MAIL, "pauldron-left": EQUIP_SLOT.PAULDRON_LEFT, "pauldron-right": EQUIP_SLOT.PAULDRON_RIGHT, "gauntlet-left": EQUIP_SLOT.GAUNTLET_LEFT, "gauntlet-right": EQUIP_SLOT.GAUNTLET_RIGHT, "boots": EQUIP_SLOT.BOOTS, "helmet": EQUIP_SLOT.HELMET, "belt": EQUIP_SLOT.BELT, "robe": EQUIP_SLOT.ROBE, "shirt": EQUIP_SLOT.SHIRT, "pants": EQUIP_SLOT.PANTS, "dress": EQUIP_SLOT.DRESS, "socks": EQUIP_SLOT.SOCKS }
-    static SLOT_TO_STRING : Record<EQUIP_SLOT, string> = ["weapon", "secondary", "amulet", "mail", "pauldron-left", "pauldron-right", "gauntlet-left", "gauntlet-right", "boots", "helmet", "belt", "robe", "shirt", "pants", "dress", "socks", ]
+    static SLOT : EQUIP_SLOT[] = [EQUIP_SLOT.WEAPON, EQUIP_SLOT.SECONDARY, EQUIP_SLOT.AMULET, EQUIP_SLOT.MAIL, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_RIGHT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.BOOTS, EQUIP_SLOT.HELMET, EQUIP_SLOT.BELT, EQUIP_SLOT.ROBE, EQUIP_SLOT.SHIRT, EQUIP_SLOT.PANTS, EQUIP_SLOT.DRESS, EQUIP_SLOT.SOCKS, EQUIP_SLOT.NONE, ]
+    static SLOT_FROM_STRING : Record<equip_slot_string_id, EQUIP_SLOT> = { "weapon": EQUIP_SLOT.WEAPON, "secondary": EQUIP_SLOT.SECONDARY, "amulet": EQUIP_SLOT.AMULET, "mail": EQUIP_SLOT.MAIL, "pauldron-left": EQUIP_SLOT.PAULDRON_LEFT, "pauldron-right": EQUIP_SLOT.PAULDRON_RIGHT, "gauntlet-left": EQUIP_SLOT.GAUNTLET_LEFT, "gauntlet-right": EQUIP_SLOT.GAUNTLET_RIGHT, "boots": EQUIP_SLOT.BOOTS, "helmet": EQUIP_SLOT.HELMET, "belt": EQUIP_SLOT.BELT, "robe": EQUIP_SLOT.ROBE, "shirt": EQUIP_SLOT.SHIRT, "pants": EQUIP_SLOT.PANTS, "dress": EQUIP_SLOT.DRESS, "socks": EQUIP_SLOT.SOCKS, "none": EQUIP_SLOT.NONE }
+    static SLOT_TO_STRING : Record<EQUIP_SLOT, equip_slot_string_id> = ["weapon", "secondary", "amulet", "mail", "pauldron-left", "pauldron-right", "gauntlet-left", "gauntlet-right", "boots", "helmet", "belt", "robe", "shirt", "pants", "dress", "socks", "none", ]
+    static get zero_record() : Record<EQUIP_SLOT, number> {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    }
+    static is_valid_id(id: number): id is EQUIP_SLOT {
+        return id in this.SLOT
+    }
+    static is_valid_string_id(id: string): id is equip_slot_string_id {
+        return id in this.SLOT_FROM_STRING
+    }
 
     // ENUMS:
 
-    static EQUIP_SLOT_SLOT : Record<EQUIP_SLOT, EQUIP_SLOT> = [EQUIP_SLOT.WEAPON, EQUIP_SLOT.SECONDARY, EQUIP_SLOT.AMULET, EQUIP_SLOT.MAIL, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_RIGHT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.BOOTS, EQUIP_SLOT.HELMET, EQUIP_SLOT.BELT, EQUIP_SLOT.ROBE, EQUIP_SLOT.SHIRT, EQUIP_SLOT.PANTS, EQUIP_SLOT.DRESS, EQUIP_SLOT.SOCKS, ]
-    static EQUIP_SLOT_SLOT_STRING : Record<EQUIP_SLOT, string> = ["weapon", "secondary", "amulet", "mail", "pauldron-left", "pauldron-right", "gauntlet-left", "gauntlet-right", "boots", "helmet", "belt", "robe", "shirt", "pants", "dress", "socks", ]
+    static EQUIP_SLOT_SLOT : Record<EQUIP_SLOT, EQUIP_SLOT> = [EQUIP_SLOT.WEAPON, EQUIP_SLOT.SECONDARY, EQUIP_SLOT.AMULET, EQUIP_SLOT.MAIL, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_RIGHT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.BOOTS, EQUIP_SLOT.HELMET, EQUIP_SLOT.BELT, EQUIP_SLOT.ROBE, EQUIP_SLOT.SHIRT, EQUIP_SLOT.PANTS, EQUIP_SLOT.DRESS, EQUIP_SLOT.SOCKS, EQUIP_SLOT.NONE, ]
+    static EQUIP_SLOT_SLOT_STRING : Record<EQUIP_SLOT, equip_slot_string_id> = ["weapon", "secondary", "amulet", "mail", "pauldron-left", "pauldron-right", "gauntlet-left", "gauntlet-right", "boots", "helmet", "belt", "robe", "shirt", "pants", "dress", "socks", "none", ]
 
     // Numbers:
 
 
     // Strings:
 
-    static EQUIP_SLOT_NAME : Record<EQUIP_SLOT, string> = ["Weapon", "Secondary", "Amulet", "Chestpiece", "Left pauldron", "Right pauldron", "Left gauntlet", "Right gauntlet", "Boots", "Helmet", "Belt", "Robe", "Shirt", "Pants", "Dress", "Socks", ]
+    static EQUIP_SLOT_NAME : Record<EQUIP_SLOT, string> = ["Weapon", "Secondary", "Amulet", "Chestpiece", "Left pauldron", "Right pauldron", "Left gauntlet", "Right gauntlet", "Boots", "Helmet", "Belt", "Robe", "Shirt", "Pants", "Dress", "Socks", "nan", ]
 }
 
-export class ImpactTypeConfiguration {
-    static IMPACT : IMPACT_TYPE[] = [IMPACT_TYPE.POINT, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLUNT, ]
-    static IMPACT_FROM_STRING : Record<string, IMPACT_TYPE> = { "point": IMPACT_TYPE.POINT, "blade": IMPACT_TYPE.BLADE, "blunt": IMPACT_TYPE.BLUNT }
-    static IMPACT_TO_STRING : Record<IMPACT_TYPE, string> = ["point", "blade", "blunt", ]
+export class ImpactConfiguration {
+    static IMPACT : IMPACT_TYPE[] = [IMPACT_TYPE.POINT, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLUNT, IMPACT_TYPE.NONE, ]
+    static IMPACT_FROM_STRING : Record<impact_type_string_id, IMPACT_TYPE> = { "point": IMPACT_TYPE.POINT, "blade": IMPACT_TYPE.BLADE, "blunt": IMPACT_TYPE.BLUNT, "none": IMPACT_TYPE.NONE }
+    static IMPACT_TO_STRING : Record<IMPACT_TYPE, impact_type_string_id> = ["point", "blade", "blunt", "none", ]
+    static get zero_record() : Record<IMPACT_TYPE, number> {
+        return [0, 0, 0, 0, ]
+    }
+    static is_valid_id(id: number): id is IMPACT_TYPE {
+        return id in this.IMPACT
+    }
+    static is_valid_string_id(id: string): id is impact_type_string_id {
+        return id in this.IMPACT_FROM_STRING
+    }
 
     // ENUMS:
 
-    static IMPACT_TYPE_IMPACT : Record<IMPACT_TYPE, IMPACT_TYPE> = [IMPACT_TYPE.POINT, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLUNT, ]
-    static IMPACT_TYPE_IMPACT_STRING : Record<IMPACT_TYPE, string> = ["point", "blade", "blunt", ]
+    static IMPACT_TYPE_IMPACT : Record<IMPACT_TYPE, IMPACT_TYPE> = [IMPACT_TYPE.POINT, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLUNT, IMPACT_TYPE.NONE, ]
+    static IMPACT_TYPE_IMPACT_STRING : Record<IMPACT_TYPE, impact_type_string_id> = ["point", "blade", "blunt", "none", ]
 
     // Numbers:
 
+    static IMPACT_TYPE_HANDLE_RATIO : Record<IMPACT_TYPE, number> = [0.9, 0.1, 0.3, 1.0, ]
+    static IMPACT_TYPE_BLUNT : Record<IMPACT_TYPE, number> = [0.8, 1.0, 1.0, 0.0, ]
+    static IMPACT_TYPE_PIERCE : Record<IMPACT_TYPE, number> = [1.0, 0.8, 0.0, 0.0, ]
+    static IMPACT_TYPE_SLICE : Record<IMPACT_TYPE, number> = [0.4, 1.0, 0.0, 0.0, ]
 
     // Strings:
 
-    static IMPACT_TYPE_NAME : Record<IMPACT_TYPE, string> = ["Point", "Blade", "Blunt", ]
+    static IMPACT_TYPE_NAME : Record<IMPACT_TYPE, string> = ["Point", "Blade", "Blunt", "nan", ]
 }
 
 export class WeaponConfiguration {
     static WEAPON : WEAPON[] = [WEAPON.BOW_WOOD, WEAPON.SPEAR_WOOD, WEAPON.SPEAR_WOOD_BONE, WEAPON.DAGGER_BONE_RAT, WEAPON.SWORD_STEEL, WEAPON.MACE_WOOD, ]
-    static WEAPON_FROM_STRING : Record<string, WEAPON> = { "bow-wood": WEAPON.BOW_WOOD, "spear-wood": WEAPON.SPEAR_WOOD, "spear-wood-bone": WEAPON.SPEAR_WOOD_BONE, "dagger-bone-rat": WEAPON.DAGGER_BONE_RAT, "sword-steel": WEAPON.SWORD_STEEL, "mace-wood": WEAPON.MACE_WOOD }
-    static WEAPON_TO_STRING : Record<WEAPON, string> = ["bow-wood", "spear-wood", "spear-wood-bone", "dagger-bone-rat", "sword-steel", "mace-wood", ]
+    static WEAPON_FROM_STRING : Record<weapon_string_id, WEAPON> = { "bow-wood": WEAPON.BOW_WOOD, "spear-wood": WEAPON.SPEAR_WOOD, "spear-wood-bone": WEAPON.SPEAR_WOOD_BONE, "dagger-bone-rat": WEAPON.DAGGER_BONE_RAT, "sword-steel": WEAPON.SWORD_STEEL, "mace-wood": WEAPON.MACE_WOOD }
+    static WEAPON_TO_STRING : Record<WEAPON, weapon_string_id> = ["bow-wood", "spear-wood", "spear-wood-bone", "dagger-bone-rat", "sword-steel", "mace-wood", ]
+    static get zero_record() : Record<WEAPON, number> {
+        return [0, 0, 0, 0, 0, 0, ]
+    }
+    static is_valid_id(id: number): id is WEAPON {
+        return id in this.WEAPON
+    }
+    static is_valid_string_id(id: string): id is weapon_string_id {
+        return id in this.WEAPON_FROM_STRING
+    }
 
     // ENUMS:
 
     static WEAPON_WEAPON : Record<WEAPON, WEAPON> = [WEAPON.BOW_WOOD, WEAPON.SPEAR_WOOD, WEAPON.SPEAR_WOOD_BONE, WEAPON.DAGGER_BONE_RAT, WEAPON.SWORD_STEEL, WEAPON.MACE_WOOD, ]
-    static WEAPON_WEAPON_STRING : Record<WEAPON, string> = ["bow-wood", "spear-wood", "spear-wood-bone", "dagger-bone-rat", "sword-steel", "mace-wood", ]
+    static WEAPON_WEAPON_STRING : Record<WEAPON, weapon_string_id> = ["bow-wood", "spear-wood", "spear-wood-bone", "dagger-bone-rat", "sword-steel", "mace-wood", ]
     static WEAPON_MATERIAL : Record<WEAPON, MATERIAL> = [MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.SMALL_BONE_RAT, MATERIAL.BONE_RAT, MATERIAL.STEEL, MATERIAL.WOOD_RED, ]
-    static WEAPON_MATERIAL_STRING : Record<WEAPON, string> = ["wood-red", "wood-red", "small-bone-rat", "bone-rat", "steel", "wood-red", ]
+    static WEAPON_MATERIAL_STRING : Record<WEAPON, material_string_id> = ["wood-red", "wood-red", "small-bone-rat", "bone-rat", "steel", "wood-red", ]
     static WEAPON_SECONDARY_MATERIAL : Record<WEAPON, MATERIAL> = [MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.BONE_RAT, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, ]
-    static WEAPON_SECONDARY_MATERIAL_STRING : Record<WEAPON, string> = ["wood-red", "wood-red", "wood-red", "bone-rat", "wood-red", "wood-red", ]
+    static WEAPON_SECONDARY_MATERIAL_STRING : Record<WEAPON, material_string_id> = ["wood-red", "wood-red", "wood-red", "bone-rat", "wood-red", "wood-red", ]
     static WEAPON_IMPACT : Record<WEAPON, IMPACT_TYPE> = [IMPACT_TYPE.BLUNT, IMPACT_TYPE.POINT, IMPACT_TYPE.POINT, IMPACT_TYPE.POINT, IMPACT_TYPE.BLADE, IMPACT_TYPE.BLUNT, ]
-    static WEAPON_IMPACT_STRING : Record<WEAPON, string> = ["blunt", "point", "point", "point", "blade", "blunt", ]
+    static WEAPON_IMPACT_STRING : Record<WEAPON, impact_type_string_id> = ["blunt", "point", "point", "point", "blade", "blunt", ]
 
     // Numbers:
 
-    static WEAPON_POWER : Record<WEAPON, number> = [0, 0, 0, 0, 0, 0, ]
+    static WEAPON_MAGIC_POWER : Record<WEAPON, number> = [0, 0, 0, 0, 0, 0, ]
     static WEAPON_SIZE : Record<WEAPON, number> = [0.75, 1.5, 1.5, 0.5, 1.0, 3.0, ]
     static WEAPON_LENGTH : Record<WEAPON, number> = [1.0, 3.0, 3.0, 0.5, 1.0, 1.0, ]
     static WEAPON_CRAFTABLE : Record<WEAPON, number> = [1, 1, 1, 1, 1, 1, ]
+    static WEAPON_BOW_POWER : Record<WEAPON, number> = [20, 0, 0, 0, 0, 0, ]
 
     // Strings:
 
@@ -274,19 +340,28 @@ export class WeaponConfiguration {
 
 export class ArmourConfiguration {
     static ARMOUR : ARMOUR[] = [ARMOUR.HELMET_SKULL_RAT, ARMOUR.HELMET_TEXTILE, ARMOUR.HELMET_LEATHER_RAT, ARMOUR.HELMET_HAIR_GRACI, ARMOUR.MAIL_BONE, ARMOUR.MAIL_LEATHER_RAT, ARMOUR.MAIL_TEXTILE, ARMOUR.DRESS_MEAT_ELODINO, ARMOUR.PANTS_LEATHER_RAT, ARMOUR.PANTS_TEXTILE, ARMOUR.BOOTS_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_TEXTILE, ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, ARMOUR.GAUNTLET_LEFT_TEXTILE, ARMOUR.SOCKS_TEXTILE, ARMOUR.PAULDRON_LEFT_BONE, ARMOUR.PAULDRON_LEFT_LEATHER_RAT, ARMOUR.PAULDRON_RIGHT_BONE, ARMOUR.ROBE_LEATHER_RAT, ARMOUR.BELT_TEXTILE, ARMOUR.SHIRT_TEXTILE, ]
-    static ARMOUR_FROM_STRING : Record<string, ARMOUR> = { "helmet-skull-rat": ARMOUR.HELMET_SKULL_RAT, "helmet-textile": ARMOUR.HELMET_TEXTILE, "helmet-leather-rat": ARMOUR.HELMET_LEATHER_RAT, "helmet-hair-graci": ARMOUR.HELMET_HAIR_GRACI, "mail-bone": ARMOUR.MAIL_BONE, "mail-leather-rat": ARMOUR.MAIL_LEATHER_RAT, "mail-textile": ARMOUR.MAIL_TEXTILE, "dress-meat-elodino": ARMOUR.DRESS_MEAT_ELODINO, "pants-leather-rat": ARMOUR.PANTS_LEATHER_RAT, "pants-textile": ARMOUR.PANTS_TEXTILE, "boots-leather-rat": ARMOUR.BOOTS_LEATHER_RAT, "gauntlet-right-leather-rat": ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, "gauntlet-right-textile": ARMOUR.GAUNTLET_RIGHT_TEXTILE, "gauntlet-left-leather-rat": ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, "gauntlet-left-textile": ARMOUR.GAUNTLET_LEFT_TEXTILE, "socks-textile": ARMOUR.SOCKS_TEXTILE, "pauldron-left-bone": ARMOUR.PAULDRON_LEFT_BONE, "pauldron-left-leather-rat": ARMOUR.PAULDRON_LEFT_LEATHER_RAT, "pauldron-right-bone": ARMOUR.PAULDRON_RIGHT_BONE, "robe-leather-rat": ARMOUR.ROBE_LEATHER_RAT, "belt-textile": ARMOUR.BELT_TEXTILE, "shirt-textile": ARMOUR.SHIRT_TEXTILE }
-    static ARMOUR_TO_STRING : Record<ARMOUR, string> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone", "mail-leather-rat", "mail-textile", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone", "pauldron-left-leather-rat", "pauldron-right-bone", "robe-leather-rat", "belt-textile", "shirt-textile", ]
+    static ARMOUR_FROM_STRING : Record<armour_string_id, ARMOUR> = { "helmet-skull-rat": ARMOUR.HELMET_SKULL_RAT, "helmet-textile": ARMOUR.HELMET_TEXTILE, "helmet-leather-rat": ARMOUR.HELMET_LEATHER_RAT, "helmet-hair-graci": ARMOUR.HELMET_HAIR_GRACI, "mail-bone": ARMOUR.MAIL_BONE, "mail-leather-rat": ARMOUR.MAIL_LEATHER_RAT, "mail-textile": ARMOUR.MAIL_TEXTILE, "dress-meat-elodino": ARMOUR.DRESS_MEAT_ELODINO, "pants-leather-rat": ARMOUR.PANTS_LEATHER_RAT, "pants-textile": ARMOUR.PANTS_TEXTILE, "boots-leather-rat": ARMOUR.BOOTS_LEATHER_RAT, "gauntlet-right-leather-rat": ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, "gauntlet-right-textile": ARMOUR.GAUNTLET_RIGHT_TEXTILE, "gauntlet-left-leather-rat": ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, "gauntlet-left-textile": ARMOUR.GAUNTLET_LEFT_TEXTILE, "socks-textile": ARMOUR.SOCKS_TEXTILE, "pauldron-left-bone": ARMOUR.PAULDRON_LEFT_BONE, "pauldron-left-leather-rat": ARMOUR.PAULDRON_LEFT_LEATHER_RAT, "pauldron-right-bone": ARMOUR.PAULDRON_RIGHT_BONE, "robe-leather-rat": ARMOUR.ROBE_LEATHER_RAT, "belt-textile": ARMOUR.BELT_TEXTILE, "shirt-textile": ARMOUR.SHIRT_TEXTILE }
+    static ARMOUR_TO_STRING : Record<ARMOUR, armour_string_id> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone", "mail-leather-rat", "mail-textile", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone", "pauldron-left-leather-rat", "pauldron-right-bone", "robe-leather-rat", "belt-textile", "shirt-textile", ]
+    static get zero_record() : Record<ARMOUR, number> {
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    }
+    static is_valid_id(id: number): id is ARMOUR {
+        return id in this.ARMOUR
+    }
+    static is_valid_string_id(id: string): id is armour_string_id {
+        return id in this.ARMOUR_FROM_STRING
+    }
 
     // ENUMS:
 
     static ARMOUR_ARMOUR : Record<ARMOUR, ARMOUR> = [ARMOUR.HELMET_SKULL_RAT, ARMOUR.HELMET_TEXTILE, ARMOUR.HELMET_LEATHER_RAT, ARMOUR.HELMET_HAIR_GRACI, ARMOUR.MAIL_BONE, ARMOUR.MAIL_LEATHER_RAT, ARMOUR.MAIL_TEXTILE, ARMOUR.DRESS_MEAT_ELODINO, ARMOUR.PANTS_LEATHER_RAT, ARMOUR.PANTS_TEXTILE, ARMOUR.BOOTS_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_TEXTILE, ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, ARMOUR.GAUNTLET_LEFT_TEXTILE, ARMOUR.SOCKS_TEXTILE, ARMOUR.PAULDRON_LEFT_BONE, ARMOUR.PAULDRON_LEFT_LEATHER_RAT, ARMOUR.PAULDRON_RIGHT_BONE, ARMOUR.ROBE_LEATHER_RAT, ARMOUR.BELT_TEXTILE, ARMOUR.SHIRT_TEXTILE, ]
-    static ARMOUR_ARMOUR_STRING : Record<ARMOUR, string> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone", "mail-leather-rat", "mail-textile", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone", "pauldron-left-leather-rat", "pauldron-right-bone", "robe-leather-rat", "belt-textile", "shirt-textile", ]
+    static ARMOUR_ARMOUR_STRING : Record<ARMOUR, armour_string_id> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone", "mail-leather-rat", "mail-textile", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone", "pauldron-left-leather-rat", "pauldron-right-bone", "robe-leather-rat", "belt-textile", "shirt-textile", ]
     static ARMOUR_MATERIAL : Record<ARMOUR, MATERIAL> = [MATERIAL.BONE_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.HAIR_GRACI, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.MEAT_ELODINO, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, ]
-    static ARMOUR_MATERIAL_STRING : Record<ARMOUR, string> = ["bone-rat", "textile", "leather-rat", "hair-graci", "bone-rat", "leather-rat", "textile", "meat-elodino", "leather-rat", "textile", "leather-rat", "leather-rat", "textile", "leather-rat", "textile", "textile", "bone-rat", "leather-rat", "bone-rat", "leather-rat", "textile", "textile", ]
+    static ARMOUR_MATERIAL_STRING : Record<ARMOUR, material_string_id> = ["bone-rat", "textile", "leather-rat", "hair-graci", "bone-rat", "leather-rat", "textile", "meat-elodino", "leather-rat", "textile", "leather-rat", "leather-rat", "textile", "leather-rat", "textile", "textile", "bone-rat", "leather-rat", "bone-rat", "leather-rat", "textile", "textile", ]
     static ARMOUR_SECONDARY_MATERIAL : Record<ARMOUR, MATERIAL> = [MATERIAL.SKIN_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.HAIR_GRACI, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.MEAT_ELODINO, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, ]
-    static ARMOUR_SECONDARY_MATERIAL_STRING : Record<ARMOUR, string> = ["skin-rat", "textile", "leather-rat", "hair-graci", "small-bone-rat", "leather-rat", "textile", "meat-elodino", "leather-rat", "textile", "leather-rat", "leather-rat", "textile", "leather-rat", "textile", "textile", "small-bone-rat", "leather-rat", "small-bone-rat", "leather-rat", "textile", "textile", ]
+    static ARMOUR_SECONDARY_MATERIAL_STRING : Record<ARMOUR, material_string_id> = ["skin-rat", "textile", "leather-rat", "hair-graci", "small-bone-rat", "leather-rat", "textile", "meat-elodino", "leather-rat", "textile", "leather-rat", "leather-rat", "textile", "leather-rat", "textile", "textile", "small-bone-rat", "leather-rat", "small-bone-rat", "leather-rat", "textile", "textile", ]
     static ARMOUR_SLOT : Record<ARMOUR, EQUIP_SLOT> = [EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.MAIL, EQUIP_SLOT.MAIL, EQUIP_SLOT.MAIL, EQUIP_SLOT.DRESS, EQUIP_SLOT.PANTS, EQUIP_SLOT.PANTS, EQUIP_SLOT.BOOTS, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.SOCKS, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_RIGHT, EQUIP_SLOT.ROBE, EQUIP_SLOT.BELT, EQUIP_SLOT.SHIRT, ]
-    static ARMOUR_SLOT_STRING : Record<ARMOUR, string> = ["helmet", "helmet", "helmet", "helmet", "mail", "mail", "mail", "dress", "pants", "pants", "boots", "gauntlet-right", "gauntlet-right", "gauntlet-left", "gauntlet-left", "socks", "pauldron-left", "pauldron-left", "pauldron-right", "robe", "belt", "shirt", ]
+    static ARMOUR_SLOT_STRING : Record<ARMOUR, equip_slot_string_id> = ["helmet", "helmet", "helmet", "helmet", "mail", "mail", "mail", "dress", "pants", "pants", "boots", "gauntlet-right", "gauntlet-right", "gauntlet-left", "gauntlet-left", "socks", "pauldron-left", "pauldron-left", "pauldron-right", "robe", "belt", "shirt", ]
 
     // Numbers:
 
@@ -302,19 +377,13 @@ export class ArmourConfiguration {
 }
 
 
-export class Material implements MaterialData {
+class MaterialInstance implements MaterialData {
     private _id: MATERIAL
     constructor(id: MATERIAL) {
         if (!(id in MaterialConfiguration.MATERIAL)) {
             throw new Error(`Invalid Material id: ${id}`);
         }
         this._id = id
-    }
-    static from_string(id: string) {
-        if (!(id in MaterialConfiguration.MATERIAL_FROM_STRING)) {
-            throw new Error(`Invalid Material id: ${id}`);
-        }
-        return new Material(MaterialConfiguration.MATERIAL_FROM_STRING[id])
     }
     get id() {
         return this._id
@@ -352,19 +421,14 @@ export class Material implements MaterialData {
 }
 
 
-export class MaterialCategory implements MaterialCategoryData {
+
+class MaterialCategoryInstance implements MaterialCategoryData {
     private _id: MATERIAL_CATEGORY
     constructor(id: MATERIAL_CATEGORY) {
         if (!(id in MaterialCategoryConfiguration.CATEGORY)) {
             throw new Error(`Invalid MaterialCategory id: ${id}`);
         }
         this._id = id
-    }
-    static from_string(id: string) {
-        if (!(id in MaterialCategoryConfiguration.CATEGORY_FROM_STRING)) {
-            throw new Error(`Invalid MaterialCategory id: ${id}`);
-        }
-        return new MaterialCategory(MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id])
     }
     get id() {
         return this._id
@@ -378,19 +442,14 @@ export class MaterialCategory implements MaterialCategoryData {
 }
 
 
-export class EquipSlot implements EquipSlotData {
+
+class EquipSlotInstance implements EquipSlotData {
     private _id: EQUIP_SLOT
     constructor(id: EQUIP_SLOT) {
         if (!(id in EquipSlotConfiguration.SLOT)) {
             throw new Error(`Invalid EquipSlot id: ${id}`);
         }
         this._id = id
-    }
-    static from_string(id: string) {
-        if (!(id in EquipSlotConfiguration.SLOT_FROM_STRING)) {
-            throw new Error(`Invalid EquipSlot id: ${id}`);
-        }
-        return new EquipSlot(EquipSlotConfiguration.SLOT_FROM_STRING[id])
     }
     get id() {
         return this._id
@@ -404,45 +463,47 @@ export class EquipSlot implements EquipSlotData {
 }
 
 
-export class ImpactType implements ImpactTypeData {
+
+class ImpactInstance implements ImpactData {
     private _id: IMPACT_TYPE
     constructor(id: IMPACT_TYPE) {
-        if (!(id in ImpactTypeConfiguration.IMPACT)) {
-            throw new Error(`Invalid ImpactType id: ${id}`);
+        if (!(id in ImpactConfiguration.IMPACT)) {
+            throw new Error(`Invalid Impact id: ${id}`);
         }
         this._id = id
-    }
-    static from_string(id: string) {
-        if (!(id in ImpactTypeConfiguration.IMPACT_FROM_STRING)) {
-            throw new Error(`Invalid ImpactType id: ${id}`);
-        }
-        return new ImpactType(ImpactTypeConfiguration.IMPACT_FROM_STRING[id])
     }
     get id() {
         return this._id
     }
     get id_string() {
-        return ImpactTypeConfiguration.IMPACT_TYPE_IMPACT_STRING[this._id]
+        return ImpactConfiguration.IMPACT_TYPE_IMPACT_STRING[this._id]
+    }
+    get handle_ratio() {
+        return ImpactConfiguration.IMPACT_TYPE_HANDLE_RATIO[this._id]
+    }
+    get blunt() {
+        return ImpactConfiguration.IMPACT_TYPE_BLUNT[this._id]
+    }
+    get pierce() {
+        return ImpactConfiguration.IMPACT_TYPE_PIERCE[this._id]
+    }
+    get slice() {
+        return ImpactConfiguration.IMPACT_TYPE_SLICE[this._id]
     }
     get name() {
-        return ImpactTypeConfiguration.IMPACT_TYPE_NAME[this._id]
+        return ImpactConfiguration.IMPACT_TYPE_NAME[this._id]
     }
 }
 
 
-export class Weapon implements WeaponData {
+
+class WeaponInstance implements WeaponData {
     private _id: WEAPON
     constructor(id: WEAPON) {
         if (!(id in WeaponConfiguration.WEAPON)) {
             throw new Error(`Invalid Weapon id: ${id}`);
         }
         this._id = id
-    }
-    static from_string(id: string) {
-        if (!(id in WeaponConfiguration.WEAPON_FROM_STRING)) {
-            throw new Error(`Invalid Weapon id: ${id}`);
-        }
-        return new Weapon(WeaponConfiguration.WEAPON_FROM_STRING[id])
     }
     get id() {
         return this._id
@@ -468,8 +529,8 @@ export class Weapon implements WeaponData {
     get impact_string() {
         return WeaponConfiguration.WEAPON_IMPACT_STRING[this._id]
     }
-    get power() {
-        return WeaponConfiguration.WEAPON_POWER[this._id]
+    get magic_power() {
+        return WeaponConfiguration.WEAPON_MAGIC_POWER[this._id]
     }
     get size() {
         return WeaponConfiguration.WEAPON_SIZE[this._id]
@@ -480,25 +541,23 @@ export class Weapon implements WeaponData {
     get craftable() {
         return WeaponConfiguration.WEAPON_CRAFTABLE[this._id]
     }
+    get bow_power() {
+        return WeaponConfiguration.WEAPON_BOW_POWER[this._id]
+    }
     get name() {
         return WeaponConfiguration.WEAPON_NAME[this._id]
     }
 }
 
 
-export class Armour implements ArmourData {
+
+class ArmourInstance implements ArmourData {
     private _id: ARMOUR
     constructor(id: ARMOUR) {
         if (!(id in ArmourConfiguration.ARMOUR)) {
             throw new Error(`Invalid Armour id: ${id}`);
         }
         this._id = id
-    }
-    static from_string(id: string) {
-        if (!(id in ArmourConfiguration.ARMOUR_FROM_STRING)) {
-            throw new Error(`Invalid Armour id: ${id}`);
-        }
-        return new Armour(ArmourConfiguration.ARMOUR_FROM_STRING[id])
     }
     get id() {
         return this._id
@@ -541,6 +600,115 @@ export class Armour implements ArmourData {
     }
     get name() {
         return ArmourConfiguration.ARMOUR_NAME[this._id]
+    }
+}
+
+
+export class MaterialStorage {
+    private static instances : Record<MATERIAL, MaterialInstance> = [new MaterialInstance(MATERIAL.ARROW_BONE), new MaterialInstance(MATERIAL.ARROW_ZAZ), new MaterialInstance(MATERIAL.COTTON), new MaterialInstance(MATERIAL.TEXTILE), new MaterialInstance(MATERIAL.SMALL_BONE_RAT), new MaterialInstance(MATERIAL.SMALL_BONE_HUMAN), new MaterialInstance(MATERIAL.SMALL_BONE_GRACI), new MaterialInstance(MATERIAL.BONE_RAT), new MaterialInstance(MATERIAL.BONE_HUMAN), new MaterialInstance(MATERIAL.BONE_GRACI), new MaterialInstance(MATERIAL.SKIN_RAT), new MaterialInstance(MATERIAL.SKIN_HUMAN), new MaterialInstance(MATERIAL.SKIN_GRACI), new MaterialInstance(MATERIAL.SKIN_BALL), new MaterialInstance(MATERIAL.LEATHER_RAT), new MaterialInstance(MATERIAL.LEATHER_HUMAN), new MaterialInstance(MATERIAL.LEATHER_GRACI), new MaterialInstance(MATERIAL.LEATHER_BALL), new MaterialInstance(MATERIAL.MEAT_RAT), new MaterialInstance(MATERIAL.MEAT_RAT_FRIED), new MaterialInstance(MATERIAL.MEAT_ELODINO), new MaterialInstance(MATERIAL.MEAT_BALL), new MaterialInstance(MATERIAL.MEAT_HUMAN), new MaterialInstance(MATERIAL.MEAT_GRACI), new MaterialInstance(MATERIAL.MEAT_HUMAN_FRIED), new MaterialInstance(MATERIAL.MEAT_GRACI_FRIED), new MaterialInstance(MATERIAL.FISH_OKU), new MaterialInstance(MATERIAL.FISH_OKU_FRIED), new MaterialInstance(MATERIAL.BERRY_FIE), new MaterialInstance(MATERIAL.BERRY_ZAZ), new MaterialInstance(MATERIAL.ZAZ), new MaterialInstance(MATERIAL.WOOD_RED), new MaterialInstance(MATERIAL.WOOD_RED_PLATE), new MaterialInstance(MATERIAL.HAIR_GRACI), new MaterialInstance(MATERIAL.STEEL)]
+
+    // Retrieve instance of MaterialInstance
+    static get(id: MATERIAL) : MaterialInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid Material id: ${id}`);
+        }
+        return this.instances[id]
+    }
+    static from_string(id: material_string_id) : MaterialInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid Material id: ${id}`);
+        }
+        return this.instances[MaterialConfiguration.MATERIAL_FROM_STRING[id]]
+    }
+}
+
+export class MaterialCategoryStorage {
+    private static instances : Record<MATERIAL_CATEGORY, MaterialCategoryInstance> = [new MaterialCategoryInstance(MATERIAL_CATEGORY.BOW_AMMO), new MaterialCategoryInstance(MATERIAL_CATEGORY.PLANT), new MaterialCategoryInstance(MATERIAL_CATEGORY.MATERIAL), new MaterialCategoryInstance(MATERIAL_CATEGORY.BONE), new MaterialCategoryInstance(MATERIAL_CATEGORY.SKIN), new MaterialCategoryInstance(MATERIAL_CATEGORY.LEATHER), new MaterialCategoryInstance(MATERIAL_CATEGORY.MEAT), new MaterialCategoryInstance(MATERIAL_CATEGORY.FISH), new MaterialCategoryInstance(MATERIAL_CATEGORY.FOOD), new MaterialCategoryInstance(MATERIAL_CATEGORY.FRUIT), new MaterialCategoryInstance(MATERIAL_CATEGORY.WOOD)]
+
+    // Retrieve instance of MaterialCategoryInstance
+    static get(id: MATERIAL_CATEGORY) : MaterialCategoryInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid MaterialCategory id: ${id}`);
+        }
+        return this.instances[id]
+    }
+    static from_string(id: material_category_string_id) : MaterialCategoryInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid MaterialCategory id: ${id}`);
+        }
+        return this.instances[MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id]]
+    }
+}
+
+export class EquipSlotStorage {
+    private static instances : Record<EQUIP_SLOT, EquipSlotInstance> = [new EquipSlotInstance(EQUIP_SLOT.WEAPON), new EquipSlotInstance(EQUIP_SLOT.SECONDARY), new EquipSlotInstance(EQUIP_SLOT.AMULET), new EquipSlotInstance(EQUIP_SLOT.MAIL), new EquipSlotInstance(EQUIP_SLOT.PAULDRON_LEFT), new EquipSlotInstance(EQUIP_SLOT.PAULDRON_RIGHT), new EquipSlotInstance(EQUIP_SLOT.GAUNTLET_LEFT), new EquipSlotInstance(EQUIP_SLOT.GAUNTLET_RIGHT), new EquipSlotInstance(EQUIP_SLOT.BOOTS), new EquipSlotInstance(EQUIP_SLOT.HELMET), new EquipSlotInstance(EQUIP_SLOT.BELT), new EquipSlotInstance(EQUIP_SLOT.ROBE), new EquipSlotInstance(EQUIP_SLOT.SHIRT), new EquipSlotInstance(EQUIP_SLOT.PANTS), new EquipSlotInstance(EQUIP_SLOT.DRESS), new EquipSlotInstance(EQUIP_SLOT.SOCKS), new EquipSlotInstance(EQUIP_SLOT.NONE)]
+
+    // Retrieve instance of EquipSlotInstance
+    static get(id: EQUIP_SLOT) : EquipSlotInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid EquipSlot id: ${id}`);
+        }
+        return this.instances[id]
+    }
+    static from_string(id: equip_slot_string_id) : EquipSlotInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid EquipSlot id: ${id}`);
+        }
+        return this.instances[EquipSlotConfiguration.SLOT_FROM_STRING[id]]
+    }
+}
+
+export class ImpactStorage {
+    private static instances : Record<IMPACT_TYPE, ImpactInstance> = [new ImpactInstance(IMPACT_TYPE.POINT), new ImpactInstance(IMPACT_TYPE.BLADE), new ImpactInstance(IMPACT_TYPE.BLUNT), new ImpactInstance(IMPACT_TYPE.NONE)]
+
+    // Retrieve instance of ImpactInstance
+    static get(id: IMPACT_TYPE) : ImpactInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid Impact id: ${id}`);
+        }
+        return this.instances[id]
+    }
+    static from_string(id: impact_type_string_id) : ImpactInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid Impact id: ${id}`);
+        }
+        return this.instances[ImpactConfiguration.IMPACT_FROM_STRING[id]]
+    }
+}
+
+export class WeaponStorage {
+    private static instances : Record<WEAPON, WeaponInstance> = [new WeaponInstance(WEAPON.BOW_WOOD), new WeaponInstance(WEAPON.SPEAR_WOOD), new WeaponInstance(WEAPON.SPEAR_WOOD_BONE), new WeaponInstance(WEAPON.DAGGER_BONE_RAT), new WeaponInstance(WEAPON.SWORD_STEEL), new WeaponInstance(WEAPON.MACE_WOOD)]
+
+    // Retrieve instance of WeaponInstance
+    static get(id: WEAPON) : WeaponInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid Weapon id: ${id}`);
+        }
+        return this.instances[id]
+    }
+    static from_string(id: weapon_string_id) : WeaponInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid Weapon id: ${id}`);
+        }
+        return this.instances[WeaponConfiguration.WEAPON_FROM_STRING[id]]
+    }
+}
+
+export class ArmourStorage {
+    private static instances : Record<ARMOUR, ArmourInstance> = [new ArmourInstance(ARMOUR.HELMET_SKULL_RAT), new ArmourInstance(ARMOUR.HELMET_TEXTILE), new ArmourInstance(ARMOUR.HELMET_LEATHER_RAT), new ArmourInstance(ARMOUR.HELMET_HAIR_GRACI), new ArmourInstance(ARMOUR.MAIL_BONE), new ArmourInstance(ARMOUR.MAIL_LEATHER_RAT), new ArmourInstance(ARMOUR.MAIL_TEXTILE), new ArmourInstance(ARMOUR.DRESS_MEAT_ELODINO), new ArmourInstance(ARMOUR.PANTS_LEATHER_RAT), new ArmourInstance(ARMOUR.PANTS_TEXTILE), new ArmourInstance(ARMOUR.BOOTS_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_RIGHT_TEXTILE), new ArmourInstance(ARMOUR.GAUNTLET_LEFT_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_LEFT_TEXTILE), new ArmourInstance(ARMOUR.SOCKS_TEXTILE), new ArmourInstance(ARMOUR.PAULDRON_LEFT_BONE), new ArmourInstance(ARMOUR.PAULDRON_LEFT_LEATHER_RAT), new ArmourInstance(ARMOUR.PAULDRON_RIGHT_BONE), new ArmourInstance(ARMOUR.ROBE_LEATHER_RAT), new ArmourInstance(ARMOUR.BELT_TEXTILE), new ArmourInstance(ARMOUR.SHIRT_TEXTILE)]
+
+    // Retrieve instance of ArmourInstance
+    static get(id: ARMOUR) : ArmourInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid Armour id: ${id}`);
+        }
+        return this.instances[id]
+    }
+    static from_string(id: armour_string_id) : ArmourInstance {
+        if (!(id in this.instances)) {
+            throw new Error(`Invalid Armour id: ${id}`);
+        }
+        return this.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]]
     }
 }
 

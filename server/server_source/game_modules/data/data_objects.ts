@@ -4,9 +4,10 @@ import path from "path";
 import { DEFAULT_WORLD_PATH, SAVE_GAME_PATH } from "../../SAVE_GAME_PATH";
 import { Battle } from "../battle/classes/battle";
 import { Character } from "../character/character";
-import { Item } from "../items/item";
-import { Faction, ReputationData, character_id, location_id, market_order_id, money, world_coordinates } from "@custom_types/common";
-import { cell_id } from "@custom_types/common";
+import { Armour, EquipmentPiece, EquipmentPieceSaveData, Item, Weapon } from "./entities/item";
+import { Faction, ReputationData, money, world_coordinates } from "@custom_types/common";
+import { character_id, item_id, location_id, market_order_id } from "@custom_types/ids";
+import { cell_id } from "@custom_types/ids";
 import { string_to_terrain } from "../map/terrain";
 import { Terrain } from "@custom_types/common";
 import { LocationData, LocationMinimal } from "../location/location_interface";
@@ -17,14 +18,17 @@ import { character_to_string, string_to_character } from "./strings_management";
 import { MarketOrder, MarketOrderData, MarketOrderInterface } from "../market/classes";
 import { battle_id, ms } from "@custom_types/battle_data";
 import { CharacterTemplate } from "../types";
-import { material_index } from "@custom_types/inventory";
+import { affix } from "@custom_types/inventory";
+import { EquipmentPieceInterface, ItemInterface } from "../../content_wrappers/item";
+import { ARMOUR, ArmourConfiguration, ArmourStorage, MATERIAL, WEAPON, WeaponConfiguration, WeaponStorage, armour_string_id, weapon_string_id } from "@content/content";
 
 var character_id_object         : Character[]   = []
-var item_id_object              : Item[]        = []
+var item_id_object              : (EquipmentPiece)[]        = []
 var market_order_id_object      : MarketOrder[] = []
 var cell_id_object              : CellData[]    = []
 var location_id_object          : Location[]    = []
 var battle_id_object            : Battle[]      = []
+
 
 var faction_id_object           : Record<string, Faction> = {}
 
@@ -36,6 +40,7 @@ export const save_path = {
     CELLS: path.join(SAVE_GAME_PATH, 'cells.txt'),
     TRADE_ORDERS: path.join(SAVE_GAME_PATH, 'bulk_market.txt'),
     BATTLES: path.join(SAVE_GAME_PATH, 'battles.txt'),
+    ITEMS: path.join(SAVE_GAME_PATH, "items.txt"),
 
     WORLD_DIMENSIONS: path.join(DEFAULT_WORLD_PATH, 'description.txt'),
     TERRAIN: path.join(DEFAULT_WORLD_PATH, 'map_terrain.txt'),
@@ -73,6 +78,7 @@ export namespace Data {
         World.load()
         Locations.load(save_path.BUILDINGS)
         Characters.load(save_path.CHARACTERS)
+        Items.load()
         MarketOrders.load()
         // ItemOrders.load()
         Reputation.load(save_path.REPUTATION)
@@ -81,6 +87,7 @@ export namespace Data {
     }
     export function save() {
         Characters.save()
+        Items.save()
         MarketOrders.save()
         // ItemOrders.save()
         Reputation.save(save_path.REPUTATION)
@@ -88,6 +95,101 @@ export namespace Data {
         Locations.save_ownership(save_path.BUILDINGS_OWNERSHIP)
         Cells.save(save_path.CELLS)
         Battles.save()
+    }
+
+    export namespace Items {
+        export function load() {
+            console.log('loading items')
+            if (!fs.existsSync(save_path.ITEMS)) {
+                fs.writeFileSync(save_path.ITEMS, '')
+            }
+            let data = fs.readFileSync(save_path.ITEMS).toString()
+            let lines = data.split('\n')
+
+            for (let line of lines) {
+                if (line == '') {continue}
+                const item = string_to_item(line)
+                if (item == undefined) continue;
+                item_id_object[item.id] = item
+            }
+
+            console.log('items loaded')
+        }
+
+        export function save() {
+            console.log('saving items')
+            let str:string = ''
+
+            for_each(item => {
+                str = str + item_to_string(item) + '\n'
+            })
+
+            fs.writeFileSync(save_path.ITEMS, str)
+            console.log('items saved')
+        }
+
+        function item_to_string(item: Item) {
+            return JSON.stringify(item)
+        }
+
+        export function create_weapon(durability: number, affixes: affix[], prototype: WEAPON): Weapon {
+            const item = new Weapon(undefined, durability, affixes, prototype)
+            item_id_object[item.id] = item
+            return item
+        }
+
+        export function create_weapon_simple(prototype: WEAPON): Weapon {
+            const item = create_weapon(100, [], prototype)
+            item_id_object[item.id] = item
+            return item
+        }
+
+        export function create_armour(durability: number, affixes: affix[], prototype: ARMOUR): Armour {
+            const item = new Armour(undefined, durability, affixes, prototype)
+            item_id_object[item.id] = item
+            return item
+        }
+
+        export function create_armour_simple(prototype: ARMOUR): Armour {
+            const item = create_armour(100, [], prototype)
+            item_id_object[item.id] = item
+            return item
+        }
+
+        function string_to_item(s: string):EquipmentPiece|undefined {
+            const item_data: EquipmentPieceSaveData = JSON.parse(s)
+            if ("prototype_weapon" in item_data) {
+                return new Weapon(
+                    item_data.id,
+                    item_data.durability,
+                    item_data.affixes,
+                    WeaponStorage.from_string(item_data["prototype_weapon"]).id
+                )
+            }
+            if ("prototype_armour" in item_data) {
+                return new Armour(
+                    item_data.id,
+                    item_data.durability,
+                    item_data.affixes,
+                    ArmourStorage.from_string(item_data["prototype_armour"]).id
+                )
+            }
+            return undefined
+        }
+
+        export function from_id(item: item_id):EquipmentPiece
+        export function from_id(item: item_id|undefined):EquipmentPiece|undefined
+        export function from_id(item: item_id|undefined):EquipmentPiece|undefined {
+            if (item == undefined) return undefined
+            return item_id_object[item]
+        }
+
+        export function for_each(callback: (item: Item) => void) {
+            DataID.Battle.for_each((item_id) => {
+                const item = item_id_object[item_id]
+                callback(item)
+            })
+        }
     }
 
     export namespace Factions {
@@ -219,7 +321,7 @@ export namespace Data {
             return battle_id_object[battle]
         }
 
-        export function for_each(callback: (character: Battle) => void) {
+        export function for_each(callback: (battle: Battle) => void) {
             DataID.Battle.for_each((battle_id) => {
                 const battle = battle_id_object[battle_id]
                 callback(battle)
@@ -245,7 +347,7 @@ export namespace Data {
             console.log('bulk market orders saved')
         }
 
-        export function create(amount: number, price: money, typ:'sell'|'buy', tag: material_index, owner: character_id) {
+        export function create(amount: number, price: money, typ:'sell'|'buy', tag: MATERIAL, owner: character_id) {
             const order = new MarketOrder(undefined, amount, price, typ, tag, owner)
             market_order_id_object[order.id] = order
 

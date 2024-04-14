@@ -17,7 +17,7 @@
 
     "paths": {
       "@custom_types/*": ["../shared/*"],
-      "@content/*": ["../content/*"]
+      "@content/*": ["../game_content/src/*"]
     }
   }
 }

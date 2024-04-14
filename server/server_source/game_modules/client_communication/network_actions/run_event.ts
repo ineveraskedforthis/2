@@ -1,6 +1,6 @@
 import { Event } from "../../events/events";
 import { Convert } from "../../systems_communication";
-import { location_id } from "@custom_types/common";
+import { location_id } from "@custom_types/ids";
 import { SocketWrapper } from "../user";
 import { Validator } from "./common_validations";
 

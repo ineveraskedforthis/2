@@ -4,20 +4,17 @@ import { ActionManager } from "../actions/manager";
 import { BattleSystem } from "../battle/system";
 import { AImemory, AIstate } from "../character/AIstate";
 import { Character } from "../character/character"
-import { Convert } from "../systems_communication";
-import { ForestPassiveRoutine, SteppePassiveRoutine, find_location_to_rest } from "./AI_ROUTINE_GENERIC";
+import { ForestPassiveRoutine, SteppePassiveRoutine } from "./AI_ROUTINE_GENERIC";
 import { AIhelper } from "./helpers";
-import { Effect } from "../events/effects";
 import { ScriptedValue } from "../events/scripted_values";
-import { MapSystem } from "../map/system";
 import { buy, coast_walk, home_walk, loot, random_walk, rat_walk, remove_orders, sell_loot, sell_material, update_price_beliefs, urban_walk } from "./ACTIONS_BASIC";
 import { simple_constraints } from "./constraints";
-import { ARROW_BONE, FISH, FOOD, WOOD } from "../manager_classes/materials_manager";
 import { AI_TRIGGER } from "./AI_TRIGGERS";
 import { AI_RESERVE } from "./AI_CONSTANTS";
 import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
 import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 import { Data } from "../data/data_objects";
+import { MATERIAL } from "@content/content";
 
 function rest_budget(character: Character) {
     let budget = character.savings.get()
@@ -152,7 +149,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
         },
 
         utility: (character: Character) => {
-            if (character.stash.get(FOOD) < 1) return 0
+            if (character.stash.get(MATERIAL.MEAT_RAT_FRIED) < 1) return 0
             return 1 - character.get_hp() / character.get_max_hp()
         }
     },
@@ -166,12 +163,12 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
             }
 
             update_price_beliefs(character)
-            buy(character, FOOD)
+            buy(character, MATERIAL.MEAT_RAT_FRIED)
         },
 
         utility: (character: Character) => {
-            if (!AI_TRIGGER.can_buy(character, FOOD, character.savings.get())) return 0
-            return 1 - character.stash.get(FOOD) / AI_RESERVE.FOOD
+            if (!AI_TRIGGER.can_buy(character, MATERIAL.MEAT_RAT_FRIED, character.savings.get())) return 0
+            return 1 - character.stash.get(MATERIAL.MEAT_RAT_FRIED) / AI_RESERVE.FOOD
         }
     },
 
@@ -184,12 +181,12 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
             }
 
             update_price_beliefs(character)
-            buy(character, ARROW_BONE)
+            buy(character, MATERIAL.ARROW_BONE)
         },
 
         utility: (character: Character) => {
-            if (!AI_TRIGGER.can_buy(character, ARROW_BONE, character.savings.get())) return 0
-            return 1 - character.stash.get(ARROW_BONE) / AI_RESERVE.ARROW_BONE
+            if (!AI_TRIGGER.can_buy(character, MATERIAL.ARROW_BONE, character.savings.get())) return 0
+            return 1 - character.stash.get(MATERIAL.ARROW_BONE) / AI_RESERVE.ARROW_BONE
         }
     },
 
@@ -296,7 +293,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
             if (AI_TRIGGER.at_home(character)) {
                 remove_orders(character)
                 update_price_beliefs(character)
-                sell_material(character, FISH)
+                sell_material(character, MATERIAL.FISH_OKU)
             } else {
                 home_walk(character)
             }
@@ -304,8 +301,8 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
         utility(character) {
             if (character.ai_map == 'crafter') return 0
-            if (character.trade_stash.get(FISH) > 0) return 1
-            return character.stash.get(FISH) / 20
+            if (character.trade_stash.get(MATERIAL.FISH_OKU) > 0) return 1
+            return character.stash.get(MATERIAL.FISH_OKU) / 20
         }
     },
 
@@ -331,7 +328,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
             if (AI_TRIGGER.at_home(character)) {
                 remove_orders(character)
                 update_price_beliefs(character)
-                sell_material(character, WOOD)
+                sell_material(character, MATERIAL.WOOD_RED)
             } else {
                 home_walk(character)
             }
@@ -339,8 +336,8 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
         utility(character) {
             if (character.ai_map == 'crafter') return 0
-            if (character.trade_stash.get(WOOD) > 0) return 1
-            return character.stash.get(WOOD) / 40
+            if (character.trade_stash.get(MATERIAL.WOOD_RED) > 0) return 1
+            return character.stash.get(MATERIAL.WOOD_RED) / 40
         }
     }
 }

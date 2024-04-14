@@ -4,23 +4,22 @@ import { trim } from "../calculations/basic_functions"
 import { Character } from "../character/character"
 import { UI_Part } from "../client_communication/causality_graph"
 import { UserManagement } from "../client_communication/user_manager"
-import { material_index } from "@custom_types/inventory"
 import { MarketOrders, ItemOrders } from "../market/system"
-import { Convert } from "../systems_communication"
-import { market_order_id } from "@custom_types/common"
+import { market_order_id } from "@custom_types/ids"
 import { Effect } from "./effects"
 import { Data } from "../data/data_objects"
 import { DataID } from "../data/data_id"
+import { MATERIAL } from "@content/content"
 
 export namespace EventMarket {
-    export function buy(character: Character, material:material_index, amount: number, price: money) {
+    export function buy(character: Character, material:MATERIAL, amount: number, price: money) {
         const response = MarketOrders.new_buy_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
         Effect.Update.cell_market(character.cell_id)
         return response
     }
 
-    export function sell(character: Character, material:material_index, amount: number, price: money) {
+    export function sell(character: Character, material:MATERIAL, amount: number, price: money) {
         // console.log('sell ' + material + ' ' + amount + ' ' + price)
         const response = MarketOrders.new_sell_order(material, amount, price, character)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)

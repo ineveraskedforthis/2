@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unlink = exports.Link = exports.Convert = void 0;
-const system_1 = require("./items/system");
+const item_system_1 = require("./systems/items/item_system");
 const user_manager_1 = require("./client_communication/user_manager");
 const VALUES_1 = require("./battle/VALUES");
 const data_id_1 = require("./data/data_id");
@@ -26,9 +26,10 @@ var Convert;
     }
     Convert.character_id_to_character_view = character_id_to_character_view;
     function order_to_socket_data(index, order, owner) {
-        let response = system_1.ItemSystem.item_data(order);
+        let response = item_system_1.ItemSystem.data(order);
         return {
             price: response.price,
+            prototype_id: order.prototype.id_string,
             is_weapon: response.is_weapon,
             name: response.name,
             affixes: response.affixes,
@@ -53,7 +54,7 @@ var Convert;
         for (let character_id of chars) {
             const items = data_objects_1.Data.Characters.from_id(character_id).equip.data.backpack.items;
             for (let order_id = 0; order_id < items.length; order_id++) {
-                const order = items[order_id];
+                const order = data_objects_1.Data.Items.from_id(items[order_id]);
                 if (order == undefined)
                     continue;
                 if (order.price == undefined)

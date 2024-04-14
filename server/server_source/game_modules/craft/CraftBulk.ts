@@ -1,14 +1,13 @@
 import { Character } from "../character/character";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
-import { Stash } from "../inventories/stash";
-import { ARROW_BONE, FOOD, ZAZ } from "../manager_classes/materials_manager";
 import { generate_bulk_craft_action } from "./generate_action";
 import { crafts_bulk, craft_actions } from "./crafts_storage";
 import { box, CraftBulkTemplate, skill_check } from "@custom_types/inventory";
 import { use_input, on_craft_update, skill_to_ratio, MAX_SKILL_MULTIPLIER_BULK } from "./helpers";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
+import { MATERIAL_CATEGORY, MaterialStorage } from "@content/content";
 
 
 export function event_craft_bulk(character: Character, craft: CraftBulkTemplate) {
@@ -38,21 +37,23 @@ export function output_bulk(character: Character, craft: CraftBulkTemplate) {
     }
 
     for (let item of craft.output) {
+        const material = MaterialStorage.get(item.material)
+
         //calculate bonus from perks
         let bonus = 0;
-        if (item.material == FOOD) {
+        if (material.category == MATERIAL_CATEGORY.MEAT) {
             if (character._perks.meat_master)
                 bonus += 1;
         }
 
-        if (item.material == ZAZ) {
+        if (material.magic_power > 0) {
             if (character._perks.alchemist)
                 bonus += 2;
             if (character._perks.mage_initiation)
                 bonus += 1;
         }
 
-        if (item.material == ARROW_BONE) {
+        if (material.category == MATERIAL_CATEGORY.BOW_AMMO) {
             if (character._perks.fletcher)
                 bonus += 5;
         }

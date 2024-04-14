@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SocketManager = void 0;
 const user_1 = require("./user");
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const user_manager_1 = require("./user_manager");
 // import { SECTIONS } from "../static_data/map_definitions";
 const auth_1 = require("./network_actions/auth");
@@ -17,6 +16,7 @@ const request_1 = require("./network_actions/request");
 const skills_1 = require("../static_data/skills");
 const crafts_storage_1 = require("../craft/crafts_storage");
 const dialog_1 = require("./network_actions/dialog");
+const content_1 = require("@content/content");
 class SocketManager {
     // sessions: {[_ in string]: number}
     constructor(io) {
@@ -104,7 +104,7 @@ class SocketManager {
                 run_event_1.SocketCommand.enter_location(user, msg);
             });
             socket.on('repair-location', (msg) => run_event_1.SocketCommand.repair_location(user, msg));
-            socket.on('request-tags', () => { socket.emit('tags', materials_manager_1.materials.get_materials_json()); });
+            socket.on('request-tags', () => { socket.emit('tags', content_1.MaterialConfiguration.MATERIAL_FROM_STRING); });
             socket.on('request-belongings', () => request_1.Request.belongings(user));
         });
     }

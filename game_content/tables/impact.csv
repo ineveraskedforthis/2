@@ -1,4 +1,5 @@
-id,name
-point,"Point"
-blade,"Blade"
-blunt,"Blunt"
+id,handle-ratio,blunt,pierce,slice,name
+point,0.9,0.8,1,0.4,"Point"
+blade,0.1,1,0.8,1,"Blade"
+blunt,0.3,1,0.0,0.0,"Blunt"
+none,1,0,0,0,"None"

@@ -2,20 +2,21 @@ import { Stash } from "../inventories/stash"
 import { Equip } from "../inventories/equip";
 import { Savings} from "../inventories/savings";
 import { CharacterTemplate, model_interface_name, ModelVariant, skeleton, Status, tagAI, tagModel, tagRACE, tagTactic } from "../types";
-import { location_id, character_id, status_type, user_id, cell_id, money } from "@custom_types/common";
+import { status_type, money } from "@custom_types/common";
+import { location_id, character_id, user_id, cell_id } from "@custom_types/ids";
 import { SkillList } from "./SkillList";
 import { AImemory, AIstate } from "./AIstate";
-import { material_index } from "@custom_types/inventory";
 import { CharacterMapAction } from "../actions/types";
-import { equip_slot } from "@custom_types/inventory";
 import { MaxHP, MaxHPTag } from "../races/max_hp";
 import { BaseResistTag } from "../races/resists";
-import { BaseStats, StatsTag } from "../races/stats";
+import { StatsTag } from "../races/stats";
 import { trim } from "../calculations/basic_functions";
-import { ItemSystem } from "../items/system";
+import { ItemSystem } from "../systems/items/item_system";
 import { DataID } from "../data/data_id";
 import { PerksTable, TraitsTable } from "@custom_types/character";
 import { action_points, battle_id, battle_position } from "@custom_types/battle_data";
+import { EQUIP_SLOT, EquipSlotConfiguration, IMPACT_TYPE, MATERIAL } from "@content/content";
+import { Data } from "../data/data_objects";
 
 export class Character {
     id: character_id;
@@ -54,8 +55,8 @@ export class Character {
 
     ai_state: AIstate;
     ai_memories: AImemory[];
-    ai_price_belief_sell: Map<material_index, money>;
-    ai_price_belief_buy: Map<material_index, money>;
+    ai_price_belief_sell: Map<MATERIAL, money>;
+    ai_price_belief_buy: Map<MATERIAL, money>;
 
     action: CharacterMapAction|undefined
     action_progress: number
@@ -301,10 +302,10 @@ export class Character {
     }
 
     range() {
-        let weapon = this.equip.data.slots.weapon
+        let weapon = this.equip.weapon
         if (weapon != undefined) {
             let result = ItemSystem.range(weapon)
-            if (ItemSystem.weapon_tag(weapon) == 'polearms') {
+            if (weapon.prototype.impact == IMPACT_TYPE.POINT) {
                 if (this._perks.advanced_polearm) {
                     result += 0.5
                 }
@@ -317,10 +318,13 @@ export class Character {
         return 0.5
     }
 
-    equip_models():{[_ in equip_slot]?: string}  {
-        let response:{[_ in equip_slot]?: string} = {}
-        for (let [k, v] of Object.entries(this.equip.data.slots)) {
-            response[k as equip_slot] = v?.model_tag
+    equip_models():{[_ in EQUIP_SLOT]?: string}  {
+        let response:{[_ in EQUIP_SLOT]?: string} = {}
+        for (let k of EquipSlotConfiguration.SLOT) {
+            const item_id = this.equip.data.slots[k]
+            if (item_id == undefined) continue
+            const item_data = Data.Items.from_id(item_id)
+            response[k] = item_data.prototype.id_string
         }
         return response
     }

@@ -10,16 +10,16 @@ const data_objects_1 = require("../data/data_objects");
 const events_1 = require("../events/events");
 const inventory_events_1 = require("../events/inventory_events");
 const geom_1 = require("../geom");
-const system_3 = require("../items/system");
+const item_system_1 = require("../systems/items/item_system");
 const battle_calcs_1 = require("./battle_calcs");
 const events_2 = require("./events");
 const TRIGGERS_1 = require("./TRIGGERS");
 const VALUES_1 = require("./VALUES");
 function attack_ap_cost(base, character) {
     let result = base;
-    let weapon = character.equip.data.slots.weapon;
+    let weapon = character.equip.weapon;
     if (weapon != undefined) {
-        result = base * system_3.ItemSystem.weight(weapon) / 4;
+        result = base * item_system_1.ItemSystem.weight(weapon) / 4;
     }
     const skill = system_2.CharacterSystem.attack_skill(character);
     result = result * (1 - skill / 200);

@@ -1,5 +1,5 @@
-import { character_id } from "@custom_types/common";
-import { battle_position, UnitSocket } from "../../../shared/battle_data"
+import { character_id } from "@custom_types/ids.js";
+import { battle_position, UnitSocket } from "../../../shared/battle_data.js"
 import { socket } from "../Socket/socket.js";
 import { IMAGES } from "../load_images.js";
 import { BattleImage, battle_canvas, battle_canvas_context, camera, player_character_id, units_views } from "./battle_image.js";

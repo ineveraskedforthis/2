@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CharacterSystem = void 0;
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const damage_types_1 = require("../damage_types");
 const Damage_1 = require("../Damage");
 const generate_loot_1 = require("../races/generate_loot");
@@ -11,8 +10,9 @@ const effects_1 = require("../events/effects");
 const SkillList_1 = require("./SkillList");
 const stats_1 = require("../races/stats");
 const resists_1 = require("../races/resists");
-const system_1 = require("../items/system");
+const item_system_1 = require("../systems/items/item_system");
 const data_objects_1 = require("../data/data_objects");
+const content_1 = require("@content/content");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
@@ -74,7 +74,7 @@ var CharacterSystem;
             return false;
         if (B.savings.get() < savings_B_to_A)
             return false;
-        for (let material of materials_manager_1.materials.get_materials_list()) {
+        for (let material of content_1.MaterialConfiguration.MATERIAL) {
             if (A.stash.get(material) < stash_A_to_B.get(material))
                 return false;
             if (B.stash.get(material) < stash_B_to_A.get(material))
@@ -83,7 +83,7 @@ var CharacterSystem;
         //transaction is validated, execution
         A.savings.transfer(B.savings, savings_A_to_B);
         B.savings.transfer(A.savings, savings_B_to_A);
-        for (let material of materials_manager_1.materials.get_materials_list()) {
+        for (let material of content_1.MaterialConfiguration.MATERIAL) {
             A.stash.transfer(B.stash, material, stash_A_to_B.get(material));
             B.stash.transfer(A.stash, material, stash_B_to_A.get(material));
         }
@@ -132,7 +132,7 @@ var CharacterSystem;
         const weapon_damage = character.equip.get_melee_damage(type);
         if (weapon_damage != undefined) {
             if (character._perks.advanced_polearm) {
-                if (CharacterSystem.weapon_type(character) == 'polearms') {
+                if (CharacterSystem.equiped_weapon_impact_type(character) == 0 /* IMPACT_TYPE.POINT */) {
                     damage_types_1.DmgOps.mult_ip(weapon_damage, 1.2);
                 }
             }
@@ -226,8 +226,10 @@ var CharacterSystem;
     CharacterSystem.movement_cost_battle = movement_cost_battle;
     function boots_speed_multiplier(character) {
         let base = 0.75;
-        if (character.equip.data.slots.boots != undefined) {
-            base = base + character.equip.data.slots.boots.durability / 200;
+        const boots_id = character.equip.data.slots[8 /* EQUIP_SLOT.BOOTS */];
+        if (boots_id != undefined) {
+            const boots = data_objects_1.Data.Items.from_id(boots_id);
+            base = base + boots.durability / 200;
         }
         return base;
     }
@@ -241,7 +243,7 @@ var CharacterSystem;
     }
     CharacterSystem.movement_duration_map = movement_duration_map;
     function attack_skill(character) {
-        return skill(character, melee_weapon_type(character));
+        return skill(character, equiped_weapon_required_skill(character));
     }
     CharacterSystem.attack_skill = attack_skill;
     function resistance(character) {
@@ -250,22 +252,45 @@ var CharacterSystem;
         return result;
     }
     CharacterSystem.resistance = resistance;
-    function weapon_type(character) {
-        const weapon = character.equip.data.slots.weapon;
-        if (weapon == undefined)
-            return 'noweapon';
-        return system_1.ItemSystem.weapon_tag(weapon) || 'noweapon';
+    function equiped_weapon_impact_type(character) {
+        const weapon = character.equip.weapon;
+        if (weapon == undefined) {
+            return 3 /* IMPACT_TYPE.NONE */;
+        }
+        return weapon.prototype.impact;
     }
-    CharacterSystem.weapon_type = weapon_type;
-    function melee_weapon_type(character) {
-        const weapon = character.equip.data.slots.weapon;
-        if (weapon == undefined)
-            return 'noweapon';
-        if (system_1.ItemSystem.weapon_tag(weapon) == 'ranged')
-            return 'polearms';
-        return system_1.ItemSystem.weapon_tag(weapon) || 'noweapon';
+    CharacterSystem.equiped_weapon_impact_type = equiped_weapon_impact_type;
+    function equiped_weapon_required_skill_melee(character) {
+        const weapon = character.equip.weapon;
+        if (weapon == undefined) {
+            return "noweapon";
+        }
+        if (weapon.prototype.impact == 0 /* IMPACT_TYPE.POINT */) {
+            return "polearms";
+        }
+        if (item_system_1.ItemSystem.weight(weapon) > phys_power(character)) {
+            return "twohanded";
+        }
+        return "onehand";
     }
-    CharacterSystem.melee_weapon_type = melee_weapon_type;
+    CharacterSystem.equiped_weapon_required_skill_melee = equiped_weapon_required_skill_melee;
+    function equiped_weapon_required_skill(character) {
+        const weapon = character.equip.weapon;
+        if (weapon == undefined) {
+            return "noweapon";
+        }
+        if (weapon.prototype.bow_power > 0) {
+            return "ranged";
+        }
+        if (weapon.prototype.impact == 0 /* IMPACT_TYPE.POINT */) {
+            return "polearms";
+        }
+        if (item_system_1.ItemSystem.weight(weapon) > phys_power(character)) {
+            return "twohanded";
+        }
+        return "onehand";
+    }
+    CharacterSystem.equiped_weapon_required_skill = equiped_weapon_required_skill;
     /**
      * Damages character, accounting for resistances
      * @param character Damaged character
@@ -308,7 +333,7 @@ var CharacterSystem;
             });
             ai_campaign_decision_timer = 0;
         }
-        if (character_state_update_timer > 1) {
+        if (character_state_update_timer > 10) {
             data_objects_1.Data.Characters.for_each((character) => {
                 if (character.dead()) {
                     return;
@@ -316,9 +341,17 @@ var CharacterSystem;
                 if (!character.in_battle()) {
                     effects_1.Effect.Change.rage(character, -1);
                     effects_1.Effect.rest_location_tick(character);
-                    effects_1.Effect.spoilage(character, materials_manager_1.MEAT, 0.01);
-                    effects_1.Effect.spoilage(character, materials_manager_1.FISH, 0.01);
-                    effects_1.Effect.spoilage(character, materials_manager_1.FOOD, 0.001);
+                    for (const material_id of content_1.MaterialConfiguration.MATERIAL) {
+                        const material = content_1.MaterialStorage.get(material_id);
+                        if (material.category == 7 /* MATERIAL_CATEGORY.FISH */)
+                            effects_1.Effect.spoilage(character, material_id, 0.01);
+                        if (material.category == 6 /* MATERIAL_CATEGORY.MEAT */)
+                            effects_1.Effect.spoilage(character, material_id, 0.01);
+                        if (material.category == 9 /* MATERIAL_CATEGORY.FRUIT */)
+                            effects_1.Effect.spoilage(character, material_id, 0.01);
+                        if (material.category == 8 /* MATERIAL_CATEGORY.FOOD */)
+                            effects_1.Effect.spoilage(character, material_id, 0.001);
+                    }
                 }
             });
             character_state_update_timer = 0;

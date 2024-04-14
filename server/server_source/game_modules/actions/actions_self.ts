@@ -1,16 +1,16 @@
-import { cell_id } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { Character } from "../character/character";
 import { Effect } from "../events/effects";
 import { generate_action } from "./generator";
 import { TriggerResponse } from "./types";
 import { basic_duration_modifier, dummy_effect } from "./generic_functions";
-import { FOOD } from "../manager_classes/materials_manager";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
 import { ScriptedValue } from "../events/scripted_values";
 import { UserManagement } from "../client_communication/user_manager";
 import { UI_Part } from "../client_communication/causality_graph";
 import { MapSystem } from "../map/system";
+import { MATERIAL } from "@content/content";
 
 const CLEAN_FATIGUE_COST = 5
 
@@ -24,7 +24,7 @@ function clean_trigger(character: Character): TriggerResponse {
     return { response: "NO_RESOURCE" }
 }
 function eat_trigger(character: Character, cell: cell_id): TriggerResponse {
-    let tmp = character.stash.get(FOOD);
+    let tmp = character.stash.get(MATERIAL.MEAT_RAT_FRIED);
     if (tmp > 0) {
         return { response: "OK" }
     }
@@ -37,7 +37,7 @@ function eat_effect(character: Character, cell: cell_id) {
     Effect.Change.fatigue(character, -2)
     Effect.Change.stress(character, -3)
     Effect.Change.hp(character, 10)
-    Event.change_stash(character, FOOD, -1)
+    Event.change_stash(character, MATERIAL.MEAT_RAT_FRIED, -1)
 }
 
 export const clean = generate_action(

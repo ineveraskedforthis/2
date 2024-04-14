@@ -1,19 +1,15 @@
-import { materials } from "../manager_classes/materials_manager";
-import { material_index } from "@custom_types/inventory";
+import { MATERIAL, MaterialConfiguration, MaterialStorage } from "@content/content";
 import { StashData } from "../types";
 
 export class Stash {
-    data: number[]
+    data: Record<MATERIAL, number>
 
     constructor() {
-        this.data = [];
-        for (let material of materials.get_materials_list()) {
-            this.data[material] = 0;
-        }
+        this.data = MaterialConfiguration.zero_record;
     }
 
     is_empty() {
-        for (let material of materials.get_materials_list()) {
+        for (let material of MaterialConfiguration.MATERIAL) {
             if ((this.data[material] == null) || (this.data[material] == undefined)) continue
             if (this.data[material] > 0) {
                 return false
@@ -23,9 +19,10 @@ export class Stash {
     }
 
     get_json() {
-        let data:{[_ in material_index]: number} = {};
-        for (let material of materials.get_materials_list()) {
-            data[material] = this.data[material as number];
+        let data: Record<string, number> = {};
+        for (let material of MaterialConfiguration.MATERIAL) {
+            const material_data = MaterialStorage.get(material)
+            data[material_data.id_string] = this.data[material];
         }
         return data
     }
@@ -33,11 +30,11 @@ export class Stash {
     load_from_json(data:StashData) {
         for (let [i, amount] of Object.entries(data)) {
             if (amount == null) amount = 0
-            this.data[Number(i) as material_index] = amount
+            this.data[Number(i) as MATERIAL] = amount
         }
     }
 
-    inc(tag: material_index, x: number) {
+    inc(tag: MATERIAL, x: number) {
         let tag_stash = this.get(tag);
         var tmp:number = 0
         if (tag_stash == undefined) {
@@ -56,7 +53,7 @@ export class Stash {
         return tmp;
     }
 
-    set(tag: material_index, x: number) {
+    set(tag: MATERIAL, x: number) {
         if ((x < 0)||(x == undefined)||(Number.isNaN(x))) {
             this.data[tag] = 0
         } else {
@@ -64,13 +61,13 @@ export class Stash {
         }
     }
 
-    get(tag: material_index):number {
+    get(tag: MATERIAL):number {
         let tmp = this.data[tag]
         if ((tmp == undefined)||(Number.isNaN(tmp))) return 0
         return tmp;
     }
 
-    transfer(target: Stash, tag: material_index, amount: number) {
+    transfer(target: Stash, tag: MATERIAL, amount: number) {
         if ((amount == undefined) || (amount == null) || (Number.isNaN(amount))) amount = 0
         var tmp = this.inc(tag, -amount);
         target.inc(tag, -tmp);
@@ -78,7 +75,7 @@ export class Stash {
     }
 
     transfer_all(target: Stash) {
-        for (let tag of materials.get_materials_list()) {
+        for (let tag of MaterialConfiguration.MATERIAL) {
             this.transfer(target, tag, this.get(tag))
         }
     }

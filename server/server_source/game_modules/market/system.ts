@@ -1,15 +1,12 @@
 import { Character } from "../character/character";
 import { CharacterSystem } from "../character/system";
 import { Stash } from "../inventories/stash";
-import { Item } from "../items/item";
-import { ItemSystem } from "../items/system"
-import { material_index } from "@custom_types/inventory";
-import { Convert } from "../systems_communication";
-import { character_id, market_order_id } from "@custom_types/common";
-import { MarketOrder, MarketOrderJson } from "./classes";
+import { Item } from "../data/entities/item";
+import { item_id, market_order_id } from "@custom_types/ids";
 import { money } from "@custom_types/common";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
+import { MATERIAL } from "@content/content";
 
 export enum AuctionResponse {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
@@ -62,7 +59,7 @@ export namespace MarketOrders {
         order.amount = 0
     }
 
-    export function remove_by_condition(character: Character, tag: material_index) {
+    export function remove_by_condition(character: Character, tag: MATERIAL) {
         const list = DataID.Character.market_orders_list(character.id)
         for (const id of list) {
             const order = Data.MarketOrders.from_id(id)
@@ -95,7 +92,7 @@ export namespace MarketOrders {
         return 'ok'
     }
 
-    export function new_buy_order(material: material_index, amount: number, price: money, owner: Character) {
+    export function new_buy_order(material: MATERIAL, amount: number, price: money, owner: Character) {
         //validation of input
         price = Math.floor(price) as money
         amount = Math.floor(amount)
@@ -108,7 +105,7 @@ export namespace MarketOrders {
         return 'ok'
     }
 
-    export function new_sell_order(material: material_index, amount: number, price: money, owner: Character) {
+    export function new_sell_order(material: MATERIAL, amount: number, price: money, owner: Character) {
         //validation of input
         price = Math.floor(price) as money
         amount = Math.floor(amount)
@@ -133,12 +130,12 @@ export namespace MarketOrders {
 }
 
 export namespace ItemOrders {
-    export function create(owner: Character, item: Item, price: money, finished: boolean) {
-        item.price = price
+    export function create(owner: Character, item: item_id, price: money, finished: boolean) {
+        Data.Items.from_id(item).price = price
     }
 
-    export function remove(item: Item, who: Character) {
-        item.price = undefined
+    export function remove(item: item_id, who: Character) {
+        Data.Items.from_id(item).price = undefined
         return AuctionResponse.OK
     }
 
@@ -161,7 +158,7 @@ export namespace ItemOrders {
     }
 
     export function buy(id: number, buyer: Character, seller: Character) {
-        let item = seller.equip.data.backpack.items[id]
+        let item = Data.Items.from_id(seller.equip.data.backpack.items[id])
         if (item == undefined) return AuctionResponse.INVALID_ORDER
         if (item.price == undefined) return AuctionResponse.INVALID_ORDER
 
@@ -174,7 +171,7 @@ export namespace ItemOrders {
 
         buyer.savings.transfer(seller.savings, item.price)
         seller.equip.data.backpack.remove(id)
-        buyer.equip.data.backpack.add(item)
+        buyer.equip.data.backpack.add(item.id)
         item.price = undefined
 
         return AuctionResponse.OK

@@ -1,5 +1,5 @@
 
-import { character_id } from "@custom_types/common";
+import { character_id } from "@custom_types/ids";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 import { Battle } from "./battle";

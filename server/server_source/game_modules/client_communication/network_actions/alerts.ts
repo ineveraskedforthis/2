@@ -11,7 +11,7 @@ import { Convert } from "../../systems_communication";
 import { UI_Part } from "../causality_graph";
 import { User } from "../user";
 import { UserManagement } from "../user_manager";
-import { cell_id } from "../../../../../shared/common";
+import { cell_id } from "@custom_types/ids";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 

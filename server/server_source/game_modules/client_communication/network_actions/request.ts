@@ -11,7 +11,7 @@ import { Validator } from "./common_validations";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 import { Location } from "../../location/location_class";
-import { character_id } from "@custom_types/common";
+import { character_id } from "@custom_types/ids";
 import { LocationView } from "@custom_types/responses";
 import { CharactersHeap } from "../../battle/classes/heap";
 import { MapSystem } from "../../map/system";

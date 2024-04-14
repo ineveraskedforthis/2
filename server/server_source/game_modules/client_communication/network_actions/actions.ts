@@ -9,7 +9,7 @@ import { battle_action_position, battle_action_self, battle_action_character } f
 import { Validator } from "./common_validations";
 import { Data } from "../../data/data_objects";
 import { CharactersHeap } from "../../battle/classes/heap";
-import { character_id } from "@custom_types/common";
+import { character_id } from "@custom_types/ids";
 import { ActionPositionKeys, ActionUnitKeys, battle_position } from "@custom_types/battle_data";
 
 export namespace HandleAction {

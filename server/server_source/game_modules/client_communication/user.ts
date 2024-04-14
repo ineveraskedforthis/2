@@ -1,5 +1,6 @@
 import { Socket } from "../../server";
-import { character_id, TEMP_character_id, user_id, user_online_id } from "@custom_types/common";
+import { TEMP_character_id } from "@custom_types/common";
+import { character_id, user_id, user_online_id } from "@custom_types/ids";
 import { Update, update_flags } from "./causality_graph";
 
 export class UserData {

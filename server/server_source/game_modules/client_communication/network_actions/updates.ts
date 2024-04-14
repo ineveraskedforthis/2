@@ -17,8 +17,6 @@ import { Data } from "../../data/data_objects";
 import { MapSystem } from "../../map/system";
 import { DataID } from "../../data/data_id";
 import { CharactersHeap } from "../../battle/classes/heap";
-import { weapon_attack_tag } from "@custom_types/common";
-
 
 
 export namespace SendUpdate {
@@ -349,7 +347,8 @@ export namespace SendUpdate {
     }
 }
 
-export const weapon_attack_tags: weapon_attack_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']
+export type weapon_skill_tag = 'polearms'|'noweapon'|'onehand'|'ranged'|'twohanded'
+export const weapon_attack_tags: weapon_skill_tag[] = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded']
 
 
 

@@ -6,9 +6,8 @@ import { socket } from "../Socket/socket.js";
 import { BattleImageEvent } from './battle_image_events.js';
 import { AnimatedImage } from './animation.js';
 import { BATTLE_SCALE } from './constants.js';
-import { AnimationDict, IMAGES, ImagesDict } from '../load_images.js';
-import { timeEnd } from 'console';
-import { character_id } from '@custom_types/common.js';
+import { IMAGES } from '../load_images.js';
+import { character_id } from '@custom_types/ids.js';
 
 declare var alert: (data: string) => {}
 

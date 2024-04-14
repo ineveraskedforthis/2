@@ -1,3 +1,4 @@
+import { EquipSlotStorage } from "@content/content.js";
 import { List } from "../../widgets/List/list.js";
 import { damage_types } from "../Constants/inventory.js";
 import { elementById } from "../HTMLwrappers/common.js";
@@ -10,13 +11,13 @@ function send_switch_weapon_request(socket) {
 const columns = [
     {
         header_text: "Item type",
-        value: (item) => item.item.item_type,
+        value: (item) => EquipSlotStorage.get(item.item.item_type).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },
     {
         header_text: "Slot",
-        value: (item) => item.equip_slot,
+        value: (item) => EquipSlotStorage.get(item.equip_slot).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },

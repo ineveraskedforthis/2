@@ -2,19 +2,19 @@ import { UnitSocket } from "../../../shared/battle_data";
 import { ItemOrderData } from "../../../shared/inventory";
 import { Battle } from "./battle/classes/battle";
 import { Character } from "./character/character";
-import { ItemSystem } from "./items/system";
-import { UI_Part, Update } from "./client_communication/causality_graph";
+import { ItemSystem } from "./systems/items/item_system";
+import { UI_Part } from "./client_communication/causality_graph";
 import { SocketWrapper, User, UserData } from "./client_communication/user";
 import { UserManagement } from "./client_communication/user_manager";
-import { ReputationData, ReputationDataSocket, character_id, location_id, market_order_id, user_online_id } from "@custom_types/common";
-import { cell_id } from "@custom_types/common";
+import { ReputationData, ReputationDataSocket } from "@custom_types/common";
+import { character_id, location_id, user_online_id } from "@custom_types/ids";
+import { cell_id } from "@custom_types/ids";
 import { BattleValues } from "./battle/VALUES";
-import { Item } from "./items/item";
+import { EquipmentPiece } from "./data/entities/item";
 import { DataID } from "./data/data_id";
 import { Data } from "./data/data_objects";
 import { CellData } from "./map/cell_interface";
 import { CharacterView } from "@custom_types/responses";
-import { Alerts } from "./client_communication/network_actions/alerts";
 
 
 export namespace Convert {
@@ -36,11 +36,12 @@ export namespace Convert {
         }
     }
 
-    export function order_to_socket_data(index: number, order: Item, owner: Character):ItemOrderData {
-        let response = ItemSystem.item_data(order)
+    export function order_to_socket_data(index: number, order: EquipmentPiece, owner: Character):ItemOrderData {
+        let response = ItemSystem.data(order)
 
         return {
             price: response.price as number,
+            prototype_id: order.prototype.id_string,
             is_weapon: response.is_weapon,
             name: response.name,
             affixes: response.affixes,
@@ -65,7 +66,7 @@ export namespace Convert {
         for (let character_id of chars) {
             const items = Data.Characters.from_id(character_id).equip.data.backpack.items
             for (let order_id = 0; order_id < items.length; order_id++) {
-                const order = items[order_id]
+                const order = Data.Items.from_id(items[order_id])
                 if (order == undefined) continue;
                 if (order.price == undefined) continue;
                 let character = Data.Characters.from_id(character_id)

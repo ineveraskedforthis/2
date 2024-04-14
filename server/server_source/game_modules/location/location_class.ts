@@ -1,8 +1,9 @@
 import { DataID } from "../data/data_id";
 
-import { Terrain, cell_id, character_id } from "@custom_types/common";
+import { Terrain } from "@custom_types/common";
+import { cell_id, character_id } from "@custom_types/ids";
 import { LocationData, LocationInterface, LocationMinimal } from "./location_interface";
-import { location_id } from "@custom_types/common";
+import { location_id } from "@custom_types/ids";
 
 export class Location implements LocationInterface {
     id: location_id

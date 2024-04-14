@@ -8,8 +8,10 @@ const types_1 = require("../types");
 const SkillList_1 = require("./SkillList");
 const max_hp_1 = require("../races/max_hp");
 const basic_functions_1 = require("../calculations/basic_functions");
-const system_1 = require("../items/system");
+const item_system_1 = require("../systems/items/item_system");
 const data_id_1 = require("../data/data_id");
+const content_1 = require("@content/content");
+const data_objects_1 = require("../data/data_objects");
 class Character {
     constructor(id, battle_id, user_id, location_id, name, template) {
         console.log(id, location_id);
@@ -198,10 +200,10 @@ class Character {
         return this.status.stress;
     }
     range() {
-        let weapon = this.equip.data.slots.weapon;
+        let weapon = this.equip.weapon;
         if (weapon != undefined) {
-            let result = system_1.ItemSystem.range(weapon);
-            if (system_1.ItemSystem.weapon_tag(weapon) == 'polearms') {
+            let result = item_system_1.ItemSystem.range(weapon);
+            if (weapon.prototype.impact == 0 /* IMPACT_TYPE.POINT */) {
                 if (this._perks.advanced_polearm) {
                     result += 0.5;
                 }
@@ -218,8 +220,12 @@ class Character {
     }
     equip_models() {
         let response = {};
-        for (let [k, v] of Object.entries(this.equip.data.slots)) {
-            response[k] = v?.model_tag;
+        for (let k of content_1.EquipSlotConfiguration.SLOT) {
+            const item_id = this.equip.data.slots[k];
+            if (item_id == undefined)
+                continue;
+            const item_data = data_objects_1.Data.Items.from_id(item_id);
+            response[k] = item_data.prototype.id_string;
         }
         return response;
     }

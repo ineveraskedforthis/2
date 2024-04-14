@@ -1,3 +1,4 @@
+import { EquipSlotStorage } from "@content/content.js"
 import { Socket } from "../../../shared/battle_data.js"
 import { EquipSlotData, ItemData } from "../../../shared/inventory.js"
 import { Column, List } from "../../widgets/List/list.js"
@@ -16,7 +17,7 @@ function send_switch_weapon_request(socket: Socket) {
 const columns:Column<EquipSlotData>[] = [
     {
         header_text: "Item type",
-        value: (item) => item.item.item_type,
+        value: (item) => EquipSlotStorage.get(item.item.item_type).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },
@@ -24,7 +25,7 @@ const columns:Column<EquipSlotData>[] = [
 
     {
         header_text: "Slot",
-        value: (item) => item.equip_slot,
+        value: (item) => EquipSlotStorage.get(item.equip_slot).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },

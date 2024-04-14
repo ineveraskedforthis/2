@@ -3,7 +3,7 @@ import { BattleActionChance, BattleData, BattleEventSocket, Socket, UnitSocket, 
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../Socket/socket.js";
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
-import { character_id } from "@custom_types/common.js";
+import { character_id } from "@custom_types/ids.js";
 
 
 // export const battle_image = new BattleImageNext();

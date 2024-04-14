@@ -1,21 +1,21 @@
 import { battle_id } from "../../../../shared/battle_data"
 import { Battle } from "../battle/classes/battle"
 import { Character } from "../character/character"
-import { Convert } from "../systems_communication"
 import { output_bulk } from "../craft/CraftBulk"
 import { trim } from "../calculations/basic_functions"
 import { create_item, durability } from "../craft/CraftItem"
 import { box, CraftBulkTemplate, CraftItemTemplate } from "@custom_types/inventory"
 import { AItrade, price, priced_box } from "./AI_SCRIPTED_VALUES"
-import { cell_id, money } from "@custom_types/common"
+import { money } from "@custom_types/common"
 import { BattleTriggers } from "../battle/TRIGGERS"
 import { BattleSystem } from "../battle/system"
 import { is_enemy_characters } from "../SYSTEM_REPUTATION"
 import { DmgOps } from "../damage_types"
-import { item_model_tag } from "../items/model_tags"
-import { base_damage, base_resists, BaseDamage, BaseResist } from "../items/base_values"
 import { DataID } from "../data/data_id"
 import { Data } from "../data/data_objects"
+import { is_armour } from "../../content_wrappers/item"
+import { ItemSystem } from "../systems/items/item_system"
+import { EquipmentPiece } from "../data/entities/item"
 
 
 
@@ -131,16 +131,16 @@ export namespace AIhelper {
     }
 
     export function sell_price_craft_item(character: Character, craft: CraftItemTemplate): money {
-        // const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
         const estimated_quality = durability(character, craft)
-        return sell_price_item(character, create_item(craft.output_model, craft.output_affixes, estimated_quality), estimated_quality)
+        return sell_price_item(character, create_item(craft.output, craft.output_affixes, estimated_quality))
     }
 
-    export function sell_price_item(character: Character, item: { model_tag: item_model_tag }, durability: number): money {
-        let resists = DmgOps.total(base_resists(item.model_tag))
-        let damage =  DmgOps.total(base_damage(item.model_tag))
-
-        // let min_price = AItrade.price_norm_box(character, crafts_items[tag].input, AItrade.buy_price_bulk)
-        return Math.floor(5 * ((resists + damage) * durability / 100 + Math.random() * 50)) + 1 as money
+    export function sell_price_item(character: Character, item: EquipmentPiece): money {
+        if (is_armour(item)) {
+            let resists = DmgOps.total(ItemSystem.resists(item))
+            return Math.floor(5 * (resists * item.durability / 100 + Math.random() * 50)) + 1 as money
+        }
+        let damage =  DmgOps.total(ItemSystem.damage_breakdown(item))
+        return Math.floor(5 * (damage * item.durability / 100 + Math.random() * 50)) + 1 as money
     }
 }

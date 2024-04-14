@@ -1,20 +1,7 @@
-import { Item } from "../items/item";
 import { CharacterTemplate } from "../types";
 import { Character } from "../character/character";
 import { Inventory } from "../inventories/inventory";
 import { Equip } from "../inventories/equip";
-
-
-export function item_to_string(item: Item | undefined): string {
-    return (JSON.stringify(item));
-}
-
-export function item_from_string(s: string): Item {
-    const item_data: Item = JSON.parse(s);
-    // let damage = DmgOps.copy(item_data.damage);
-    // let resistance = DmgOps.copy(item_data.resists);
-    return new Item(item_data.durability, item_data.affixes, item_data.model_tag);
-}
 
 export function character_to_string(data: Character) {
     return JSON.stringify({

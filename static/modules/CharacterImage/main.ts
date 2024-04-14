@@ -1,14 +1,32 @@
 
 //CHARACTER 2D IMAGE DISPLAY
 
+import { EquipSlotStorage, equip_slot_string_id } from "@content/content.js"
 import { Socket } from "../../../shared/battle_data.js"
-import { equip, equip_slot } from "../../../shared/inventory.js"
-import { EQUIPMENT_TAGS } from "../Constants/inventory.js"
+import { equip } from "../../../shared/inventory.js"
 import { elementById, imageById, selectImage, selectOne } from "../HTMLwrappers/common.js"
-
 
 var race_model = "human"
 const display_layers = ['behind_all', 'behind_body', 'behind_right_arm', 'on_top']
+
+export const EQUIPMENT_TAGS: (equip_slot_string_id)[] = [
+    'weapon',
+    'socks',
+    'shirt',
+    'secondary',
+    'pauldron-left',
+    'mail',
+    'pauldron-right',
+    'gauntlet-left',
+    'gauntlet-right',
+    'boots',
+    'helmet',
+    'pants',
+    'belt',
+    'dress',
+    'amulet',
+    'robe'
+];
 
 
 export function set_body_type(race: string) {
@@ -112,8 +130,8 @@ export function update_equip_image(data:equip) {
         if ((layer != 'on_top') && (race_model != 'human')) {continue}
         for (let tag of EQUIPMENT_TAGS) {
             let div = selectImage('.character_image.equip.' + tag + '.' + layer);
-            console.log(tag, data[tag])
-            let item_tag = data[tag]?.name||'empty';
+            console.log(tag, data[EquipSlotStorage.from_string(tag).id])
+            let item_tag = data[EquipSlotStorage.from_string(tag).id]?.name||'empty';
             if (tag == 'secondary') {
                 continue
             }

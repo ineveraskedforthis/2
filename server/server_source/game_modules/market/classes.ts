@@ -1,12 +1,12 @@
 import { money } from "@custom_types/common.js";
-import { material_index } from "@custom_types/inventory.js";
-import { character_id, market_order_id } from "@custom_types/common.js";
+import { character_id, market_order_id } from "@custom_types/ids.js";
 import { DataID } from "../data/data_id.js";
+import { MATERIAL } from "@content/content.js";
 
 
 export interface MarketOrderJson {
     typ: 'sell'|'buy',
-    tag: material_index,
+    tag: MATERIAL,
     owner_id: character_id,
     owner_name: string,
     amount: number
@@ -17,7 +17,7 @@ export interface MarketOrderJson {
 export interface MarketOrderData {
     id: market_order_id
     typ: 'sell'|'buy'
-    material: material_index
+    material: MATERIAL
     amount: number
     price: money
 }
@@ -29,11 +29,11 @@ export interface MarketOrderInterface extends MarketOrderData {
 export class MarketOrder implements MarketOrderInterface {
     id: market_order_id;
     typ: 'sell'|'buy'
-    material: material_index
+    material: MATERIAL
     amount: number
     price: money
 
-    constructor(id: market_order_id|undefined, amount: number, price: money, typ: 'sell'|'buy', tag: material_index, owner_id: character_id) {
+    constructor(id: market_order_id|undefined, amount: number, price: money, typ: 'sell'|'buy', tag: MATERIAL, owner_id: character_id) {
         if (id == undefined) {
             this.id = DataID.MarketOrders.new_id(owner_id)
         } else {

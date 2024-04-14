@@ -1,62 +1,29 @@
-import { cell_id, money } from "@custom_types/common";
+import { money } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { Character } from "../character/character";
-import { ELODINO_FLESH, materials, RAT_BONE, RAT_SKIN, WOOD, MEAT, FOOD, FISH, ZAZ, ARROW_BONE } from "../manager_classes/materials_manager"
-import { material_index } from "@custom_types/inventory";
-import { box, CraftBulkTemplate, CraftItemTemplate } from "@custom_types/inventory";
-import { MapSystem } from "../map/system";
+import { box, CraftBulkTemplate } from "@custom_types/inventory";
 import { output_bulk } from "../craft/CraftBulk";
+import { MATERIAL } from "@content/content";
 
-export function base_price(cell_id: cell_id, material: material_index): money {
-    switch(material) {
-        case WOOD: {
-            return 10 as money
-        }
-        case RAT_BONE:
-            return 3 as money
-
-        case RAT_SKIN:
-            return 10 as money
-
-        case WOOD:
-            return 10 as money
-
-        case ELODINO_FLESH:
-            return 50 as money
-
-        case MEAT:
-            return 8 as money
-
-        case FISH:
-            return 8 as money
-
-        case FOOD:
-            return 8 as money
-
-        case ZAZ:
-            return 30 as money
-
-        case ARROW_BONE:
-            return 10 as money
-    }
-
-    return 4 as money
+export function base_price(cell_id: cell_id, material: MATERIAL): money {
+    return 50 as money
 }
 
 export interface price {
-    material: material_index,
+    material: MATERIAL,
     price: money
 }
 
 export interface priced_box {
-    material: material_index,
+    material: MATERIAL,
     price: money
     amount: number
 }
 
-type PriceEstimator = (character: Character, material: material_index) => money
+type PriceEstimator = (character: Character, material: MATERIAL) => money
 
 export namespace AItrade {
-    export function buy_price_bulk( character: Character, material: material_index) {
+    export function buy_price_bulk( character: Character, material: MATERIAL) {
         let base = base_price(character.cell_id, material);
         let belief = character.ai_price_belief_buy.get(material);
         if (belief != undefined) base = belief;
@@ -66,7 +33,7 @@ export namespace AItrade {
         return base as money;
     }
 
-    export function sell_price_bulk(character: Character, material: material_index) {
+    export function sell_price_bulk(character: Character, material: MATERIAL) {
         let belief = character.ai_price_belief_sell.get(material)
         if (belief == undefined) return base_price(character.cell_id, material) as money;
         // if (character.archetype.ai_map == 'urban_trader') {

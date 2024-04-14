@@ -3,7 +3,7 @@ import { trim } from "../calculations/basic_functions";
 import { Attack } from "../attack/system";
 import { Character } from "../character/character";
 import { CharacterTemplate, ModelVariant } from "../types";
-import { location_id, character_id } from "@custom_types/common";
+import { location_id } from "@custom_types/ids";
 import { Loot } from "../races/generate_loot";
 import { perk_requirement } from "../character/perk_requirement";
 import { perk_price } from "../prices/perk_base_price";
@@ -11,25 +11,23 @@ import { CharacterSystem } from "../character/system";
 import { UI_Part } from "../client_communication/causality_graph";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { UserManagement } from "../client_communication/user_manager";
-import { ARROW_BONE, materials, RAT_SKIN, ZAZ, WOOD } from "../manager_classes/materials_manager";
-import { material_index, skill } from "@custom_types/inventory";
+import { skill } from "@custom_types/inventory";
 import { Convert, Link, Unlink } from "../systems_communication";
-import { damage_type } from "@custom_types/common";
+import { damage_type, melee_attack_type } from "@custom_types/common";
 import { Effect } from "./effects";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
 import { AttackObj } from "../attack/class";
 import { DmgOps } from "../damage_types";
-import { ScriptedValue } from "./scripted_values";
 import { on_craft_update } from "../craft/helpers";
 import { Perks } from "../../../../shared/character";
-import { cell_id, money } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { Trigger } from "./triggers";
 import { handle_attack_reputation_change } from "../SYSTEM_REPUTATION";
-import { equip_slot } from "@custom_types/inventory";
 import { Data } from "../data/data_objects";
 import { MapSystem } from "../map/system";
 import { DataID } from "../data/data_id";
+import { EQUIP_SLOT, EquipSlotConfiguration, MATERIAL, MaterialStorage } from "@content/content";
 
 const GRAVEYARD_CELL = 0 as cell_id
 
@@ -103,10 +101,11 @@ export namespace Event {
     }
 
     export function move_fatigue_change(character: Character) {
-        if (character.equip.data.slots.boots== undefined) {
+        const boots = character.equip.slot_to_item(EQUIP_SLOT.BOOTS)
+        if (boots == undefined) {
             Effect.Change.fatigue(character, 3)
         } else {
-            const durability = character.equip.data.slots.boots.durability
+            const durability = boots.durability
             Effect.Change.fatigue(character, Math.round(trim(3 - 2 * (durability / 100), 1, 3)))
         }
     }
@@ -114,7 +113,7 @@ export namespace Event {
     export function move_durability_roll(character: Character, probability: number){
         const dice = Math.random()
         if (dice < probability) {
-            Effect.change_durability(character, 'boots', -1)
+            Effect.change_durability(character, EQUIP_SLOT.BOOTS, -1)
             let skill_dice = Math.random()
             if (skill_dice * skill_dice * skill_dice > CharacterSystem.skill(character, 'travelling') / 100) {
                 Effect.Change.skill(character, 'travelling', 1)
@@ -162,10 +161,10 @@ export namespace Event {
         // sanity checks
         if (defender.get_hp() == 0) return 'miss'
         if (attacker.get_hp() == 0) return 'miss'
-        if (attacker.stash.get(ARROW_BONE) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 0, 1, undefined); return 'no_ammo'}
+        if (attacker.stash.get(attacker.equip.data.selected_ammo) < 1) {Alerts.not_enough_to_character(attacker, 'arrow', 0, 1, undefined); return 'no_ammo'}
 
         //remove arrow
-        change_stash(attacker, ARROW_BONE, -1)
+        change_stash(attacker, attacker.equip.data.selected_ammo, -1)
 
         //check missed attack because of lack of skill
         const acc = Accuracy.ranged(attacker, distance)
@@ -190,7 +189,7 @@ export namespace Event {
         // durability changes weapon
         const roll_weapon = Math.random()
         if (roll_weapon < 0.2) {
-            Effect.change_durability(attacker, 'weapon', -1)
+            Effect.change_durability(attacker, EQUIP_SLOT.WEAPON, -1)
         }
 
         const response = ranged_dodge(attack, defender, flag_dodge)
@@ -241,8 +240,8 @@ export namespace Event {
     export function magic_bolt_zaz(attacker: Character, defender: Character, dist: number, flag_dodge: boolean) {
         if (defender.dead()) return 'miss'
         if (attacker.dead()) return 'miss'
-        if (attacker.stash.get(ZAZ) == 0) return
-        Event.change_stash(attacker, ZAZ, -1)
+        if (attacker.stash.get(MATERIAL.ZAZ) == 0) return
+        Event.change_stash(attacker, MATERIAL.ZAZ, -1)
         unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true)
     }
 
@@ -280,7 +279,7 @@ export namespace Event {
         UserManagement.add_user_to_update_queue(attacker.user_id, UI_Part.STATUS);
     }
 
-    export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: damage_type, AOE_flag:boolean) {
+    export function attack(attacker: Character, defender: Character, dodge_flag: boolean, attack_type: melee_attack_type, AOE_flag:boolean) {
         if (attacker.dead()) return
         if (defender.dead()) return
         const attack = Attack.generate_melee(attacker, attack_type)
@@ -324,13 +323,13 @@ export namespace Event {
         if (!attack.flags.miss) {
             const durability_roll = Math.random();
             if (durability_roll < 0.5)
-                Effect.change_durability(attacker, 'weapon', -1);
+                Effect.change_durability(attacker, EQUIP_SLOT.WEAPON, -1);
             if (attack.flags.blocked) {
-                Effect.change_durability(defender, 'weapon', -1);
+                Effect.change_durability(defender, EQUIP_SLOT.WEAPON, -1);
             } else {
-                for (let k of Object.keys(defender.equip.data.slots)) {
+                for (let k of EquipSlotConfiguration.SLOT) {
                     if (Math.random() > 0.5) {
-                        Effect.change_durability(defender, k as equip_slot, -1)
+                        Effect.change_durability(defender, k, -1)
                     }
                 }
             }
@@ -354,7 +353,7 @@ export namespace Event {
         //for defender
         const dice = Math.random();
         if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-            Effect.Change.skill(defender, CharacterSystem.melee_weapon_type(defender), 1);
+            Effect.Change.skill(defender, CharacterSystem.equiped_weapon_required_skill(defender), 1);
         }
         //for attacker
         const dice2 = Math.random();
@@ -364,7 +363,7 @@ export namespace Event {
     }
 
     function parry(defender: Character, attack: AttackObj) {
-        const weapon = CharacterSystem.melee_weapon_type(defender);
+        const weapon = CharacterSystem.equiped_weapon_required_skill(defender);
         const skill = CharacterSystem.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
 
@@ -463,7 +462,7 @@ export namespace Event {
         // console.log('check items drop')
         const dropped_items = Loot.items(victim.race)
         for (let item of dropped_items) {
-            EventInventory.add_item(killer, item)
+            EventInventory.add_item(killer, item.id)
         }
 
         // skinning check
@@ -472,7 +471,7 @@ export namespace Event {
             const dice = Math.random()
             const skinning_skill = CharacterSystem.skill(killer, 'skinning')
             if (dice < skinning_skill / 100) {
-                Event.change_stash(killer, RAT_SKIN, skin)
+                Event.change_stash(killer, MATERIAL.SKIN_RAT, skin)
             } else {
                 Effect.Change.skill(killer, 'skinning', 1)
             }
@@ -509,11 +508,11 @@ export namespace Event {
         character.cleared = true
     }
 
-    export function change_stash(character: Character, tag: material_index, amount: number) {
+    export function change_stash(character: Character, tag: MATERIAL, amount: number) {
         character.stash.inc(tag, amount)
         let user = Convert.character_to_user(character)
         if (user == undefined) return
-        Alerts.log_to_user(user, `change ${materials.index_to_material(tag).string_tag} by ${amount}. Now: ${character.stash.get(tag)}`)
+        Alerts.log_to_user(user, `change ${MaterialStorage.get(tag).name} by ${amount}. Now: ${character.stash.get(tag)}`)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
     }
 
@@ -521,10 +520,10 @@ export namespace Event {
         let location = Data.Locations.from_id(builing_id)
         let repair = 1
         let cost = 1
-        if (cost > character.stash.get(WOOD)) return;
+        if (cost > character.stash.get(MATERIAL.WOOD_RED)) return;
         let difficulty = Math.floor((location.devastation) / 3 + 10)
         on_craft_update(character, [{skill: 'woodwork', difficulty: difficulty}])
-        change_stash(character, WOOD, -cost)
+        change_stash(character, MATERIAL.WOOD_RED, -cost)
         Effect.location_repair(location, repair)
     }
 

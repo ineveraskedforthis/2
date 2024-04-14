@@ -7,8 +7,10 @@ import { craft_actions } from "../craft/crafts_storage";
 import { CraftBulkTemplate, CraftItemTemplate } from "@custom_types/inventory";
 import { money } from "@custom_types/common";
 import { EventInventory } from "../events/inventory_events";
-import { ItemSystem } from "../items/system";
+import { ItemSystem } from "../systems/items/item_system";
 import { Data } from "../data/data_objects";
+import { is_weapon } from "../../content_wrappers/item";
+import { EQUIP_SLOT } from "@content/content";
 
 
 export namespace AIactions {
@@ -60,11 +62,15 @@ export namespace AIactions {
     export function sell_items(character: Character) {
         for (let [index, item] of Object.entries(character.equip.data.backpack.items)) {
             if (item == undefined) continue
-            let slot = ItemSystem.slot(item)
+            const object = Data.Items.from_id(item)
+            let slot = EQUIP_SLOT.WEAPON
+            if (!is_weapon(object)) {
+                slot = object.prototype.slot
+            }
             if (character.equip.data.slots[slot] == undefined) {
                 EventInventory.equip_from_backpack(character, Number(index))
             } else {
-                let price = AIhelper.sell_price_item(character, item, item.durability);
+                let price = AIhelper.sell_price_item(character, object);
                 EventMarket.sell_item(character, Number(index), price);
             }
         }

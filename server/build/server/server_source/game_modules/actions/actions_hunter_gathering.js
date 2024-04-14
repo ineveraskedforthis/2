@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.fish = exports.hunt = exports.gather_cotton = exports.gather_wood = void 0;
 const effects_1 = require("../events/effects");
 const events_1 = require("../events/events");
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const generator_1 = require("./generator");
 const system_1 = require("../character/system");
 const generic_functions_1 = require("./generic_functions");
@@ -63,11 +62,11 @@ function fishing_trigger(character) {
 }
 function gather_wood_effect(character) {
     events_1.Event.remove_tree(character.location_id);
-    events_1.Event.change_stash(character, materials_manager_1.WOOD, 1);
+    events_1.Event.change_stash(character, 31 /* MATERIAL.WOOD_RED */, 1);
 }
 function gather_cotton_effect(character) {
     data_objects_1.Data.Locations.from_id(character.location_id).cotton -= 1;
-    events_1.Event.change_stash(character, materials_manager_1.COTTON, 1);
+    events_1.Event.change_stash(character, 2 /* MATERIAL.COTTON */, 1);
 }
 function hunt_skill_upgrade_roll(character) {
     const skill = system_1.CharacterSystem.pure_skill(character, 'hunt');
@@ -91,8 +90,8 @@ function hunt_effect(character) {
     }
     hunt_skill_upgrade_roll(character);
     data_objects_1.Data.Locations.from_id(character.location_id).small_game -= 1;
-    events_1.Event.change_stash(character, materials_manager_1.MEAT, amount_meat);
-    events_1.Event.change_stash(character, materials_manager_1.RAT_SKIN, amount_skin);
+    events_1.Event.change_stash(character, 18 /* MATERIAL.MEAT_RAT */, amount_meat);
+    events_1.Event.change_stash(character, 10 /* MATERIAL.SKIN_RAT */, amount_skin);
 }
 function fishing_effect(character, cell) {
     const skill = system_1.CharacterSystem.skill(character, 'fishing');
@@ -108,7 +107,7 @@ function fishing_effect(character, cell) {
         effects_1.Effect.Change.stress(character, 1);
     }
     data_objects_1.Data.Locations.from_id(character.location_id).fish -= 1;
-    events_1.Event.change_stash(character, materials_manager_1.FISH, amount);
+    events_1.Event.change_stash(character, 26 /* MATERIAL.FISH_OKU */, amount);
 }
 exports.gather_wood = (0, generator_1.generate_action)(FATIGUE_COST_WOOD, gather_wood_duration_modifier, gather_wood_trigger, gather_wood_effect, generic_functions_1.dummy_effect);
 exports.gather_cotton = (0, generator_1.generate_action)(FATIGUE_COST_COTTON, generic_functions_1.basic_duration_modifier, gather_cotton_trigger, gather_cotton_effect, generic_functions_1.dummy_effect);

@@ -1,5 +1,5 @@
-import { weapon_attack_tag } from "@custom_types/common";
 import { Damage } from "../Damage";
+import { weapon_skill_tag } from "../client_communication/network_actions/updates";
 import { Status } from "../types";
 
 
@@ -13,7 +13,7 @@ export class AttackObj {
     }
     defender_status_change:Status;
     attacker_status_change:Status;
-    weapon_type:weapon_attack_tag;
+    weapon_type:weapon_skill_tag;
     damage: Damage;
     chance_to_hit: number;
     new_pos: {x: number, y:number}|undefined;
@@ -22,7 +22,7 @@ export class AttackObj {
     defence_skill:number
 
 
-    constructor(weapon_type: weapon_attack_tag) {
+    constructor(weapon_type: weapon_skill_tag) {
         this.flags = {
             crit: false,
             miss: false,

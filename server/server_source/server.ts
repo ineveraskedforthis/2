@@ -157,7 +157,8 @@ import { launch } from "./game_launch.js";
 import { DataID } from './game_modules/data/data_id.js';
 import { Data } from './game_modules/data/data_objects.js';
 import { SocketManager } from "./game_modules/client_communication/socket_manager.js";
-import { CellView, cell_id } from '@custom_types/common.js';
+import { CellView } from '@custom_types/common.js';
+import { cell_id } from "@custom_types/ids.js";
 import { Convert } from './game_modules/systems_communication.js';
 
 export var io = require('socket.io')(server, { path: '/socket.io' });

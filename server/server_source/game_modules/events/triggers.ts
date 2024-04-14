@@ -1,6 +1,6 @@
 import { money } from "@custom_types/common";
 import { Character } from "../character/character";
-import { location_id, character_id } from "@custom_types/common";
+import { location_id, character_id } from "@custom_types/ids";
 import { ScriptedValue } from "./scripted_values";
 import { skill_price } from "../prices/skill_price";
 import { CharacterSystem } from "../character/system";

@@ -1,6 +1,5 @@
-import { cell_id } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { Character } from "../character/character";
-import { map_position } from "@custom_types/common";
 import { event_craft_bulk } from "./CraftBulk";
 import { event_craft_item } from "./CraftItem";
 import { CraftBulkTemplate, CraftItemTemplate, box } from "@custom_types/inventory";

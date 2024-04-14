@@ -1,11 +1,10 @@
-import { location_id, money } from "@custom_types/common";
+import { money } from "@custom_types/common";
+import { location_id } from "@custom_types/ids";
 import { CharacterAction } from "../actions/actions_00";
 import { ActionManager } from "../actions/manager";
 import { select_max, select_weighted, select_weighted_callback, trim } from "../calculations/basic_functions";
 import { Character } from "../character/character";
 import { EventMarket } from "../events/market";
-import { FOOD, MEAT, RAT_BONE, RAT_SKIN, materials } from "../manager_classes/materials_manager";
-import { material_index } from "@custom_types/inventory";
 import { MapSystem } from "../map/system";
 import { Convert } from "../systems_communication";
 import { dp } from "./AI_CONSTANTS";
@@ -16,8 +15,10 @@ import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
 import { CellData } from "../map/cell_interface";
 import { Effect } from "../events/effects";
+import { MATERIAL, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
 
-const LOOT = [MEAT, RAT_SKIN, RAT_BONE];
+const LOOT = [MATERIAL.MEAT_RAT, MATERIAL.SKIN_RAT, MATERIAL.BONE_RAT, MATERIAL.SMALL_BONE_RAT, MATERIAL.FISH_OKU];
+
 export function loot(character: Character) {
     let tmp = 0;
     for (let tag of LOOT) {
@@ -37,7 +38,7 @@ export function remove_orders(character: Character) {
 
 
 export function sell_all_stash(character: Character) {
-    for (let tag of materials.get_materials_list()) {
+    for (let tag of MaterialConfiguration.MATERIAL) {
         EventMarket.sell(
             character,
             tag,
@@ -47,7 +48,7 @@ export function sell_all_stash(character: Character) {
     }
 }
 
-export function sell_material(character: Character, material: material_index) {
+export function sell_material(character: Character, material: MATERIAL) {
     let orders = DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 0;
@@ -76,7 +77,7 @@ export function sell_material(character: Character, material: material_index) {
     return true;
 }
 
-export function buy(character: Character, material_index: material_index) {
+export function buy(character: Character, material: MATERIAL) {
     let orders = DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
@@ -84,7 +85,7 @@ export function buy(character: Character, material_index: material_index) {
         let order = Data.MarketOrders.from_id(item);
         if (order.typ == 'buy')
             continue;
-        if (order.material != material_index)
+        if (order.material != material)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -111,7 +112,8 @@ export function buy_random(character: Character) {
         let order = Data.MarketOrders.from_id(item);
         if (order.typ == 'buy')
             continue;
-        if (order.material != FOOD)
+        const material = MaterialStorage.get(order.material)
+        if (material.category != MATERIAL_CATEGORY.FOOD)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -238,7 +240,7 @@ export function rest_outside(character: Character) {
     ActionManager.start_action(CharacterAction.REST, character, character.cell_id);
 }
 
-export function roll_price_belief_sell_increase(character: Character, material: material_index, probability: number) {
+export function roll_price_belief_sell_increase(character: Character, material: MATERIAL, probability: number) {
     let dice = Math.random()
     let current = character.ai_price_belief_sell.get(material)
     if (current == undefined) {
@@ -252,7 +254,7 @@ export function update_price_beliefs(character: Character) {
     let orders = DataID.Cells.market_order_id_list(character.cell_id)
     // initialisation
 
-    for (let material of materials.list_of_indices) {
+    for (let material of MaterialConfiguration.MATERIAL) {
         let value_buy = character.ai_price_belief_buy.get(material)
         let value_sell = character.ai_price_belief_sell.get(material)
 

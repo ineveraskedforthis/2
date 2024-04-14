@@ -14,7 +14,8 @@
     "moduleResolution": "node",
 
     "paths": {
-      "@custom_types/*": ["../shared/*"]
+      "@custom_types/*": ["../shared/*"],
+      "@content/*": ["../game_content/src/*"]
     }
   }
 }

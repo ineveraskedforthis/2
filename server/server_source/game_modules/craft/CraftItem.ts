@@ -2,16 +2,15 @@ import { trim } from "../calculations/basic_functions";
 import { Character } from "../character/character";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
-import { ItemJson } from "@custom_types/inventory";
-import { ItemSystem } from "../items/system";
-import { ELODINO_FLESH, MEAT, RAT_BONE, RAT_SKIN } from "../manager_classes/materials_manager";
 import { craft_actions, crafts_items } from "./crafts_storage";
 import { box, skill_check, CraftItemTemplate } from "@custom_types/inventory";
 import { on_craft_update, use_input } from "./helpers";
 import { generate_craft_item_action } from "./generate_action";
 import { CharacterSystem } from "../character/system";
-import { item_model_tag } from "../items/model_tags";
 import { affix } from "@custom_types/inventory";
+import { EQUIPMENT_PIECE } from "../data/entities/item";
+import { ArmourStorage, EQUIP_SLOT, MATERIAL_CATEGORY, MaterialStorage } from "@content/content";
+import { Data } from "../data/data_objects";
 
 
 
@@ -27,23 +26,27 @@ function bonus_durability(character: Character, craft: CraftItemTemplate) {
     let flesh_flag = false
 
     for (let item of craft.input) {
-        if (item.material == RAT_SKIN)      skin_flag = true
-        if (item.material == RAT_BONE)      bone_flag = true
-        if (item.material == MEAT)          flesh_flag = true
-        if (item.material == ELODINO_FLESH) flesh_flag = true
+        const material = MaterialStorage.get(item.material)
+        if (material.category == MATERIAL_CATEGORY.SKIN) skin_flag = true
+        if (material.category == MATERIAL_CATEGORY.LEATHER) skin_flag = true
+        if (material.category == MATERIAL_CATEGORY.BONE) bone_flag = true
+        if (material.category == MATERIAL_CATEGORY.MEAT) flesh_flag = true
     }
 
     const template = {
-        model_tag: craft.output_model,
+        model_tag: craft.output,
         affixes: craft.output_affixes
     }
-    if (ItemSystem.slot(template) == 'weapon') {
+
+
+    if (craft.output.tag == "weapon") {
         if (character._perks.weapon_maker)
             durability += 10;
     } else {
+        const data = ArmourStorage.get(craft.output.value)
         if (character._perks.skin_armour_master && skin_flag)
             durability += 20
-        if (character._perks.shoemaker && (ItemSystem.slot(template) == 'boots')) {
+        if (character._perks.shoemaker && (data.slot == EQUIP_SLOT.BOOTS)) {
             durability += 20;
         }
     }
@@ -61,18 +64,23 @@ export function durability(character: Character, craft: CraftItemTemplate): numb
     return Math.floor(durability + bonus_durability(character, craft))
 }
 
-export function create_item(model_tag: item_model_tag, affixes: affix[], durability: number) {
-    let result = ItemSystem.create(model_tag, affixes, durability);
-    // introduce some luck
+export function create_item(model_tag: EQUIPMENT_PIECE, affixes: affix[], durability: number) {
+    if (model_tag.tag == "armour") {
+        const result = Data.Items.create_armour(durability, affixes, model_tag.value)
+        result.durability = durability
+        result.durability += Math.round(Math.random() * 10);
+        return result
+    }
+
+    let result = Data.Items.create_weapon(durability, affixes, model_tag.value);
     result.durability = durability
     result.durability += Math.round(Math.random() * 10);
-
     return result
 }
 
 export function event_craft_item(character: Character, craft: CraftItemTemplate) {
-    let result = create_item(craft.output_model, craft.output_affixes, durability(character, craft))
-    let response = character.equip.data.backpack.add(result);
+    let result = create_item(craft.output, craft.output_affixes, durability(character, craft))
+    let response = character.equip.data.backpack.add(result.id);
     if (response !== false) use_input(craft.input, character);
 
     UserManagement.add_user_to_update_queue(character.user_id, UI_Part.INVENTORY);
@@ -80,11 +88,11 @@ export function event_craft_item(character: Character, craft: CraftItemTemplate)
     on_craft_update(character, craft.difficulty);
 }
 
-export function new_craft_item(id: string, input: box[], output: item_model_tag, output_affixes: affix[], difficulty: skill_check[]) {
+export function new_craft_item(id: string, input: box[], output: EQUIPMENT_PIECE, output_affixes: affix[], difficulty: skill_check[]) {
     crafts_items[id] = {
         id: id,
         input: input,
-        output_model: output,
+        output: output,
         output_affixes: output_affixes,
         difficulty: difficulty,
     };

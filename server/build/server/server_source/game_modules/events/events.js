@@ -10,7 +10,6 @@ const perk_base_price_1 = require("../prices/perk_base_price");
 const system_2 = require("../character/system");
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const user_manager_1 = require("../client_communication/user_manager");
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const systems_communication_1 = require("../systems_communication");
 const effects_1 = require("./effects");
 const inventory_events_1 = require("./inventory_events");
@@ -22,6 +21,7 @@ const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
 const data_objects_1 = require("../data/data_objects");
 const system_3 = require("../map/system");
 const data_id_1 = require("../data/data_id");
+const content_1 = require("@content/content");
 const GRAVEYARD_CELL = 0;
 var Event;
 (function (Event) {
@@ -84,11 +84,12 @@ var Event;
     }
     Event.move_durability_roll_probability = move_durability_roll_probability;
     function move_fatigue_change(character) {
-        if (character.equip.data.slots.boots == undefined) {
+        const boots = character.equip.slot_to_item(8 /* EQUIP_SLOT.BOOTS */);
+        if (boots == undefined) {
             effects_1.Effect.Change.fatigue(character, 3);
         }
         else {
-            const durability = character.equip.data.slots.boots.durability;
+            const durability = boots.durability;
             effects_1.Effect.Change.fatigue(character, Math.round((0, basic_functions_1.trim)(3 - 2 * (durability / 100), 1, 3)));
         }
     }
@@ -96,7 +97,7 @@ var Event;
     function move_durability_roll(character, probability) {
         const dice = Math.random();
         if (dice < probability) {
-            effects_1.Effect.change_durability(character, 'boots', -1);
+            effects_1.Effect.change_durability(character, 8 /* EQUIP_SLOT.BOOTS */, -1);
             let skill_dice = Math.random();
             if (skill_dice * skill_dice * skill_dice > system_2.CharacterSystem.skill(character, 'travelling') / 100) {
                 effects_1.Effect.Change.skill(character, 'travelling', 1);
@@ -144,12 +145,12 @@ var Event;
             return 'miss';
         if (attacker.get_hp() == 0)
             return 'miss';
-        if (attacker.stash.get(materials_manager_1.ARROW_BONE) < 1) {
+        if (attacker.stash.get(attacker.equip.data.selected_ammo) < 1) {
             alerts_1.Alerts.not_enough_to_character(attacker, 'arrow', 0, 1, undefined);
             return 'no_ammo';
         }
         //remove arrow
-        change_stash(attacker, materials_manager_1.ARROW_BONE, -1);
+        change_stash(attacker, attacker.equip.data.selected_ammo, -1);
         //check missed attack because of lack of skill
         const acc = battle_calcs_1.Accuracy.ranged(attacker, distance);
         const dice_accuracy = Math.random();
@@ -170,7 +171,7 @@ var Event;
         // durability changes weapon
         const roll_weapon = Math.random();
         if (roll_weapon < 0.2) {
-            effects_1.Effect.change_durability(attacker, 'weapon', -1);
+            effects_1.Effect.change_durability(attacker, 0 /* EQUIP_SLOT.WEAPON */, -1);
         }
         const response = ranged_dodge(attack, defender, flag_dodge);
         if (response == 'miss') {
@@ -219,9 +220,9 @@ var Event;
             return 'miss';
         if (attacker.dead())
             return 'miss';
-        if (attacker.stash.get(materials_manager_1.ZAZ) == 0)
+        if (attacker.stash.get(30 /* MATERIAL.ZAZ */) == 0)
             return;
-        Event.change_stash(attacker, materials_manager_1.ZAZ, -1);
+        Event.change_stash(attacker, 30 /* MATERIAL.ZAZ */, -1);
         unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true);
     }
     Event.magic_bolt_zaz = magic_bolt_zaz;
@@ -294,12 +295,12 @@ var Event;
         if (!attack.flags.miss) {
             const durability_roll = Math.random();
             if (durability_roll < 0.5)
-                effects_1.Effect.change_durability(attacker, 'weapon', -1);
+                effects_1.Effect.change_durability(attacker, 0 /* EQUIP_SLOT.WEAPON */, -1);
             if (attack.flags.blocked) {
-                effects_1.Effect.change_durability(defender, 'weapon', -1);
+                effects_1.Effect.change_durability(defender, 0 /* EQUIP_SLOT.WEAPON */, -1);
             }
             else {
-                for (let k of Object.keys(defender.equip.data.slots)) {
+                for (let k of content_1.EquipSlotConfiguration.SLOT) {
                     if (Math.random() > 0.5) {
                         effects_1.Effect.change_durability(defender, k, -1);
                     }
@@ -324,7 +325,7 @@ var Event;
         //for defender
         const dice = Math.random();
         if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-            effects_1.Effect.Change.skill(defender, system_2.CharacterSystem.melee_weapon_type(defender), 1);
+            effects_1.Effect.Change.skill(defender, system_2.CharacterSystem.equiped_weapon_required_skill(defender), 1);
         }
         //for attacker
         const dice2 = Math.random();
@@ -333,7 +334,7 @@ var Event;
         }
     }
     function parry(defender, attack) {
-        const weapon = system_2.CharacterSystem.melee_weapon_type(defender);
+        const weapon = system_2.CharacterSystem.equiped_weapon_required_skill(defender);
         const skill = system_2.CharacterSystem.attack_skill(defender) + Math.round(Math.random() * 5);
         attack.defence_skill += skill;
         // roll parry
@@ -418,7 +419,7 @@ var Event;
         // console.log('check items drop')
         const dropped_items = generate_loot_1.Loot.items(victim.race);
         for (let item of dropped_items) {
-            inventory_events_1.EventInventory.add_item(killer, item);
+            inventory_events_1.EventInventory.add_item(killer, item.id);
         }
         // skinning check
         const skin = generate_loot_1.Loot.skinning(victim.race);
@@ -426,7 +427,7 @@ var Event;
             const dice = Math.random();
             const skinning_skill = system_2.CharacterSystem.skill(killer, 'skinning');
             if (dice < skinning_skill / 100) {
-                Event.change_stash(killer, materials_manager_1.RAT_SKIN, skin);
+                Event.change_stash(killer, 10 /* MATERIAL.SKIN_RAT */, skin);
             }
             else {
                 effects_1.Effect.Change.skill(killer, 'skinning', 1);
@@ -462,7 +463,7 @@ var Event;
         let user = systems_communication_1.Convert.character_to_user(character);
         if (user == undefined)
             return;
-        alerts_1.Alerts.log_to_user(user, `change ${materials_manager_1.materials.index_to_material(tag).string_tag} by ${amount}. Now: ${character.stash.get(tag)}`);
+        alerts_1.Alerts.log_to_user(user, `change ${content_1.MaterialStorage.get(tag).name} by ${amount}. Now: ${character.stash.get(tag)}`);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
     }
     Event.change_stash = change_stash;
@@ -470,11 +471,11 @@ var Event;
         let location = data_objects_1.Data.Locations.from_id(builing_id);
         let repair = 1;
         let cost = 1;
-        if (cost > character.stash.get(materials_manager_1.WOOD))
+        if (cost > character.stash.get(31 /* MATERIAL.WOOD_RED */))
             return;
         let difficulty = Math.floor((location.devastation) / 3 + 10);
         (0, helpers_1.on_craft_update)(character, [{ skill: 'woodwork', difficulty: difficulty }]);
-        change_stash(character, materials_manager_1.WOOD, -cost);
+        change_stash(character, 31 /* MATERIAL.WOOD_RED */, -cost);
         effects_1.Effect.location_repair(location, repair);
     }
     Event.repair_location = repair_location;

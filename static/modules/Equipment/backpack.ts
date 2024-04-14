@@ -1,3 +1,4 @@
+import { EquipSlotStorage } from "@content/content.js"
 import { ItemBackpackData } from "../../../shared/inventory.js"
 import { Column, List } from "../../widgets/List/list.js"
 import { damage_types } from "../Constants/inventory.js"
@@ -8,7 +9,7 @@ import { generate_item_name } from "../StringGeneration/string_generation.js"
 const columns:Column<ItemBackpackData>[] = [
     {
         header_text: "Item type",
-        value: (item) => item.item_type,
+        value: (item) => EquipSlotStorage.get(item.item_type).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },

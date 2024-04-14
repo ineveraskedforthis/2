@@ -1,9 +1,8 @@
 import { money } from "@custom_types/common";
 import { Character } from "../character/character";
-import { MapSystem } from "../map/system";
-import { material_index } from "@custom_types/inventory";
 import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
+import { MATERIAL } from "@content/content";
 
 export namespace AI_TRIGGER {
     export function tired(character: Character) {
@@ -27,7 +26,7 @@ export namespace AI_TRIGGER {
         return true
     }
 
-    export function can_buy(character: Character, material_index: material_index, budget: money) {
+    export function can_buy(character: Character, material_index: MATERIAL, budget: money) {
         let orders = DataID.Cells.market_order_id_list(character.cell_id);
         let best_order = undefined;
         let best_price = 9999;

@@ -1,3 +1,4 @@
+import { EquipSlotStorage } from "@content/content.js";
 import { ItemOrderData } from "../../../shared/inventory.js";
 import { Column, List } from "../../widgets/List/list.js";
 import { damage_types } from "../Constants/inventory.js";
@@ -58,7 +59,7 @@ const columns:Column<ItemOrderData>[] = [
 
     {
         header_text: "Item type",
-        value: (item) => item.item_type,
+        value: (item) => EquipSlotStorage.get(item.item_type).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },

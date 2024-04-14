@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.InventoryCommands = void 0;
-const materials_manager_1 = require("../../manager_classes/materials_manager");
 const alerts_1 = require("./alerts");
 const systems_communication_1 = require("../../systems_communication");
 const inventory_events_1 = require("../../events/inventory_events");
 const market_1 = require("../../events/market");
 const system_1 = require("../../market/system");
 const data_objects_1 = require("../../data/data_objects");
+const content_1 = require("@content/content");
 function r(f) {
     return (sw) => {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
@@ -46,7 +46,8 @@ var InventoryCommands;
         if (character.in_battle()) {
             return;
         }
-        inventory_events_1.EventInventory.unequip(character, msg);
+        if (content_1.EquipSlotConfiguration.is_valid_string_id(msg))
+            inventory_events_1.EventInventory.unequip(character, content_1.EquipSlotStorage.from_string(msg).id);
     }
     InventoryCommands.unequip = unequip;
     function buy(sw, msg) {
@@ -55,33 +56,72 @@ var InventoryCommands;
             return;
         console.log('buy');
         console.log(msg);
-        if (isNaN(msg.price)) {
+        if (typeof msg != "object") {
+            return;
+        }
+        if (msg == null) {
+            return;
+        }
+        const key_price = "price";
+        const key_amount = "amount";
+        const key_material = "material";
+        if (!(key_price in msg)) {
+            return;
+        }
+        if (!(key_amount in msg)) {
+            return;
+        }
+        if (!(key_material in msg)) {
+            return;
+        }
+        let price = msg[key_price];
+        let amount = msg[key_amount];
+        let material = msg[key_material];
+        if (!(typeof price == "number")) {
+            return;
+        }
+        if (!(typeof amount == "number")) {
+            return;
+        }
+        if (!(typeof material == "number")) {
+            return;
+        }
+        if (isNaN(price)) {
             user.socket.emit('alert', 'invalid_price');
             return;
         }
-        msg.price = Math.floor(msg.price);
-        if (msg.price < 0) {
+        if (isNaN(amount)) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        if (isNaN(material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        price = Math.floor(price);
+        amount = Math.floor(amount);
+        material = Math.floor(material);
+        if (!(typeof price == "number")) {
+            return;
+        }
+        if (!(typeof amount == "number")) {
+            return;
+        }
+        if (!(typeof material == "number")) {
+            return;
+        }
+        if (price < 0) {
             user.socket.emit('alert', 'invalid_price');
         }
-        if (isNaN(msg.amount)) {
+        if (amount <= 0) {
             user.socket.emit('alert', 'invalid_amount');
             return;
         }
-        msg.amount = Math.floor(msg.amount);
-        if (msg.amount <= 0) {
-            user.socket.emit('alert', 'invalid_amount');
-            return;
-        }
-        if (isNaN(msg.material)) {
+        if (!content_1.MaterialConfiguration.is_valid_id(material)) {
             user.socket.emit('alert', 'invalid_material');
             return;
         }
-        msg.material = Math.floor(msg.material);
-        if (!materials_manager_1.materials.validate_material(msg.material)) {
-            user.socket.emit('alert', 'invalid_material');
-            return;
-        }
-        let response = market_1.EventMarket.buy(character, msg.material, msg.amount, msg.price);
+        let response = market_1.EventMarket.buy(character, material, amount, price);
         if (response != 'ok') {
             alerts_1.Alerts.generic_user_alert(user, 'alert', response);
             return;
@@ -94,39 +134,74 @@ var InventoryCommands;
             return;
         console.log('sell');
         console.log(msg);
-        if (isNaN(msg.price)) {
+        if (typeof msg != "object") {
+            return;
+        }
+        if (msg == null) {
+            return;
+        }
+        if (!("price" in msg)) {
+            return;
+        }
+        if (!("amount" in msg)) {
+            return;
+        }
+        if (!("material" in msg)) {
+            return;
+        }
+        let price = msg["price"];
+        let amount = msg["amount"];
+        let material = msg["material"];
+        if (!(typeof price == "number")) {
+            return;
+        }
+        if (!(typeof amount == "number")) {
+            return;
+        }
+        if (!(typeof material == "number")) {
+            return;
+        }
+        if (isNaN(price)) {
             user.socket.emit('alert', 'invalid_price');
             return;
         }
-        msg.price = Math.floor(msg.price);
-        if (msg.price < 0) {
+        if (isNaN(amount)) {
+            user.socket.emit('alert', 'invalid_amount');
+            return;
+        }
+        if (isNaN(material)) {
+            user.socket.emit('alert', 'invalid_material');
+            return;
+        }
+        price = Math.floor(price);
+        amount = Math.floor(amount);
+        material = Math.floor(material);
+        if (!(typeof price == "number")) {
+            return;
+        }
+        if (!(typeof amount == "number")) {
+            return;
+        }
+        if (!(typeof material == "number")) {
+            return;
+        }
+        if (price < 0) {
             user.socket.emit('alert', 'invalid_price');
-            return;
         }
-        if (isNaN(msg.amount)) {
+        if (amount <= 0) {
             user.socket.emit('alert', 'invalid_amount');
             return;
         }
-        msg.amount = Math.floor(msg.amount);
-        if (msg.amount <= 0) {
-            user.socket.emit('alert', 'invalid_amount');
-            return;
-        }
-        if (isNaN(msg.material)) {
+        if (!content_1.MaterialConfiguration.is_valid_id(material)) {
             user.socket.emit('alert', 'invalid_material');
             return;
         }
-        msg.material = Math.floor(msg.material);
-        if (!materials_manager_1.materials.validate_material(msg.material)) {
-            user.socket.emit('alert', 'invalid_material');
-            return;
-        }
-        if (msg.price > 99999999999) {
+        if (price > 99999999999) {
             user.socket.emit('alert', 'invalid_price');
             return;
         }
         console.log('sell is valid');
-        let response = market_1.EventMarket.sell(character, msg.material, msg.amount, msg.price);
+        let response = market_1.EventMarket.sell(character, material, amount, price);
         if (response != 'ok') {
             alerts_1.Alerts.generic_user_alert(user, 'alert', response);
         }
@@ -261,13 +336,4 @@ var InventoryCommands;
         inventory_events_1.EventInventory.reroll_enchant(character, msg);
     }
     InventoryCommands.reroll_enchant = reroll_enchant;
-    //  disenchant(user: User, msg: number) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //         // let res =  char.disenchant(this.pool, msg);
-    //         // if (res != 'ok') {
-    //         //     socket.emit('alert', res);
-    //         // }
-    //     }
-    // }
 })(InventoryCommands = exports.InventoryCommands || (exports.InventoryCommands = {}));

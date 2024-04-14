@@ -14,9 +14,9 @@ const alerts_1 = require("./network_actions/alerts");
 const causality_graph_1 = require("./causality_graph");
 const SAVE_GAME_PATH_1 = require("../../SAVE_GAME_PATH");
 const templates_1 = require("../templates");
-const system_1 = require("../items/system");
 const inventory_events_1 = require("../events/inventory_events");
 const data_id_1 = require("../data/data_id");
+const data_objects_1 = require("../data/data_objects");
 var path = require('path');
 exports.users_data_dict = {};
 var users_data_list = [];
@@ -178,10 +178,11 @@ var UserManagement;
                 {
                     character = templates_1.Template.Character.HumanCity(name);
                     if (user.tester_account) {
-                        let item = system_1.ItemSystem.create('sword', [], 100);
-                        inventory_events_1.EventInventory.add_item(character, item);
-                        let boots = system_1.ItemSystem.create('rat_skin_boots', [], 150);
-                        inventory_events_1.EventInventory.add_item(character, boots);
+                        let item = data_objects_1.Data.Items.create_weapon_simple(4 /* WEAPON.SWORD_STEEL */);
+                        inventory_events_1.EventInventory.add_item(character, item.id);
+                        let boots = data_objects_1.Data.Items.create_armour_simple(10 /* ARMOUR.BOOTS_LEATHER_RAT */);
+                        boots.durability = 175;
+                        inventory_events_1.EventInventory.add_item(character, boots.id);
                     }
                     break;
                 }

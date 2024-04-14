@@ -1,3 +1,4 @@
+import { EQUIP_SLOT } from "@content/content"
 import { Attack } from "../attack/system"
 import { Character } from "../character/character"
 import { can_cast_magic_bolt, can_cast_magic_bolt_blood, can_shoot, has_zaz } from "../character/checks"
@@ -8,7 +9,7 @@ import { Data } from "../data/data_objects"
 import { Event } from "../events/events"
 import { EventInventory } from "../events/inventory_events"
 import { geom } from "../geom"
-import { ItemSystem } from "../items/system"
+import { ItemSystem } from "../systems/items/item_system"
 import { Convert } from "../systems_communication"
 import { Accuracy } from "./battle_calcs"
 import { Battle } from "./classes/battle"
@@ -21,7 +22,7 @@ import { action_points, ActionPositionKeys, ActionSelfKeys, ActionUnitKeys, batt
 function attack_ap_cost(base: number, character: Character) {
     let result = base
 
-    let weapon = character.equip.data.slots.weapon
+    let weapon = character.equip.weapon
     if (weapon != undefined) {
         result = base * ItemSystem.weight(weapon) / 4
     }

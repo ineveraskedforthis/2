@@ -1,7 +1,7 @@
-import { materials, MEAT, FISH, FOOD } from "../manager_classes/materials_manager";
-import { material_index, skill } from "@custom_types/inventory";
+import { skill } from "@custom_types/inventory";
 import { CharacterTemplate } from "../types";
-import { damage_type, location_id, weapon_attack_tag, weapon_tag } from "@custom_types/common";
+import { melee_attack_type } from "@custom_types/common";
+import { location_id } from "@custom_types/ids";
 import { Equip } from "../inventories/equip";
 import { Savings } from "../inventories/savings";
 import { Stash } from "../inventories/stash";
@@ -12,13 +12,15 @@ import { Loot } from "../races/generate_loot";
 import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
 import { Effect } from "../events/effects";
-import { cell_id, money } from "@custom_types/common";
-import { is_crafting_skill, is_melee_skill } from "./SkillList";
+import { money } from "@custom_types/common";
+import { is_melee_skill } from "./SkillList";
 import { Perks } from "@custom_types/character";
 import { BaseStats } from "../races/stats";
 import { BaseResists } from "../races/resists";
-import { ItemSystem } from "../items/system";
+import { ItemSystem } from "../systems/items/item_system";
 import { Data } from "../data/data_objects";
+import { EQUIP_SLOT, IMPACT_TYPE, MATERIAL, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
+import { weapon_skill_tag } from "../client_communication/network_actions/updates";
 var ai_campaign_decision_timer = 0
 var character_state_update_timer = 0
 
@@ -39,11 +41,11 @@ export namespace CharacterSystem {
         A.savings.transfer(B.savings, x)
     }
 
-    export function transfer_stash(A: Character, B:Character, what: material_index, amount: number) {
+    export function transfer_stash(A: Character, B:Character, what: MATERIAL, amount: number) {
         A.stash.transfer(B.stash, what, amount)
     }
 
-    export function to_trade_stash(A: Character, material: material_index, amount: number) {
+    export function to_trade_stash(A: Character, material: MATERIAL, amount: number) {
         if (amount > 0) {
             if (A.stash.get(material) < amount) return false
             A.stash.transfer(A.trade_stash, material, amount)
@@ -83,7 +85,7 @@ export namespace CharacterSystem {
         if (A.savings.get() < savings_A_to_B) return false
         if (B.savings.get() < savings_B_to_A) return false
 
-        for (let material of materials.get_materials_list()) {
+        for (let material of MaterialConfiguration.MATERIAL) {
             if (A.stash.get(material) < stash_A_to_B.get(material)) return false
             if (B.stash.get(material) < stash_B_to_A.get(material)) return false
         }
@@ -93,7 +95,7 @@ export namespace CharacterSystem {
         A.savings.transfer(B.savings, savings_A_to_B)
         B.savings.transfer(A.savings, savings_B_to_A)
 
-        for (let material of materials.get_materials_list()) {
+        for (let material of MaterialConfiguration.MATERIAL) {
             A.stash.transfer(B.stash, material, stash_A_to_B.get(material))
             B.stash.transfer(A.stash, material, stash_B_to_A.get(material))
         }
@@ -145,11 +147,11 @@ export namespace CharacterSystem {
         return trim(Math.round(result), 0, 100)
     }
 
-    export function melee_damage_raw(character: Character, type: damage_type) {
+    export function melee_damage_raw(character: Character, type: melee_attack_type) {
         const weapon_damage = character.equip.get_melee_damage(type)
         if (weapon_damage != undefined) {
             if (character._perks.advanced_polearm) {
-                if (CharacterSystem.weapon_type(character) == 'polearms') {
+                if (CharacterSystem.equiped_weapon_impact_type(character) == IMPACT_TYPE.POINT) {
                     DmgOps.mult_ip(weapon_damage, 1.2)
                 }
             }
@@ -233,8 +235,11 @@ export namespace CharacterSystem {
     export function boots_speed_multiplier(character: Character): number {
         let base = 0.75
 
-        if (character.equip.data.slots.boots != undefined) {
-            base = base + character.equip.data.slots.boots.durability / 200
+        const boots_id = character.equip.data.slots[EQUIP_SLOT.BOOTS]
+
+        if (boots_id != undefined) {
+            const boots = Data.Items.from_id(boots_id)
+            base = base + boots.durability / 200
         }
 
         return base
@@ -250,7 +255,7 @@ export namespace CharacterSystem {
     }
 
     export function attack_skill(character: Character) {
-        return skill(character, melee_weapon_type(character))
+        return skill(character, equiped_weapon_required_skill(character))
     }
 
     export function resistance(character: Character) {
@@ -259,17 +264,52 @@ export namespace CharacterSystem {
         return result
     }
 
-    export function weapon_type(character: Character):weapon_attack_tag {
-        const weapon = character.equip.data.slots.weapon
-        if (weapon == undefined) return 'noweapon'
-        return ItemSystem.weapon_tag(weapon) || 'noweapon'
+    export function equiped_weapon_impact_type(character: Character):IMPACT_TYPE {
+        const weapon = character.equip.weapon
+        if (weapon == undefined) {
+            return IMPACT_TYPE.NONE;
+        }
+        return weapon.prototype.impact;
     }
 
-    export function melee_weapon_type(character: Character):weapon_attack_tag {
-        const weapon = character.equip.data.slots.weapon
-        if (weapon == undefined) return 'noweapon'
-        if (ItemSystem.weapon_tag(weapon) == 'ranged') return 'polearms'
-        return ItemSystem.weapon_tag(weapon) || 'noweapon'
+    export function equiped_weapon_required_skill_melee(character: Character):weapon_skill_tag {
+        const weapon = character.equip.weapon
+
+        if (weapon == undefined) {
+            return "noweapon"
+        }
+
+        if (weapon.prototype.impact == IMPACT_TYPE.POINT) {
+            return "polearms"
+        }
+
+        if (ItemSystem.weight(weapon) > phys_power(character)) {
+            return "twohanded"
+        }
+
+        return "onehand"
+    }
+
+    export function equiped_weapon_required_skill(character: Character):skill {
+        const weapon = character.equip.weapon
+
+        if (weapon == undefined) {
+            return "noweapon"
+        }
+
+        if (weapon.prototype.bow_power > 0) {
+            return "ranged"
+        }
+
+        if (weapon.prototype.impact == IMPACT_TYPE.POINT) {
+            return "polearms"
+        }
+
+        if (ItemSystem.weight(weapon) > phys_power(character)) {
+            return "twohanded"
+        }
+
+        return "onehand"
     }
 
 
@@ -296,7 +336,7 @@ export namespace CharacterSystem {
         origin.equip.transfer_all(target)
     }
 
-    export function rgo_check(character: Character):{material: material_index, amount: number}[] {
+    export function rgo_check(character: Character):{material: MATERIAL, amount: number}[] {
         const loot = Loot.base(character.model)
         return loot
     }
@@ -318,7 +358,7 @@ export namespace CharacterSystem {
         }
 
 
-        if (character_state_update_timer > 1) {
+        if (character_state_update_timer > 10) {
             Data.Characters.for_each((character) => {
                 if (character.dead()) {
                     return
@@ -326,9 +366,13 @@ export namespace CharacterSystem {
                 if (!character.in_battle()) {
                     Effect.Change.rage(character, -1)
                     Effect.rest_location_tick(character)
-                    Effect.spoilage(character, MEAT, 0.01)
-                    Effect.spoilage(character, FISH, 0.01)
-                    Effect.spoilage(character, FOOD, 0.001)
+                    for (const material_id of MaterialConfiguration.MATERIAL) {
+                        const material = MaterialStorage.get(material_id)
+                        if (material.category == MATERIAL_CATEGORY.FISH) Effect.spoilage(character, material_id, 0.01)
+                        if (material.category == MATERIAL_CATEGORY.MEAT) Effect.spoilage(character, material_id, 0.01)
+                        if (material.category == MATERIAL_CATEGORY.FRUIT) Effect.spoilage(character, material_id, 0.01)
+                        if (material.category == MATERIAL_CATEGORY.FOOD) Effect.spoilage(character, material_id, 0.001)
+                    }
                 }
             })
 

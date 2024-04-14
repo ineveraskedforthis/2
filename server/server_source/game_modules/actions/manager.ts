@@ -1,4 +1,4 @@
-import { cell_id } from "@custom_types/common"
+import { cell_id } from "@custom_types/ids"
 import { Character } from "../character/character"
 // import { attack } from "./attack"
 import { Alerts } from "../client_communication/network_actions/alerts"

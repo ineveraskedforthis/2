@@ -1,16 +1,13 @@
-import { DataID } from "./game_modules/data/data_id";
 import { Data, save_path } from "./game_modules/data/data_objects";
-
-import { MEAT, RAT_SKIN, WOOD } from "./game_modules/manager_classes/materials_manager";
-// import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
-import { ItemSystem } from "./game_modules/items/system";
+import { ItemSystem } from "./game_modules/systems/items/item_system";
 import { Equip } from "./game_modules/inventories/equip";
 import { CharacterSystem } from "./game_modules/character/system";
 import { HumanTemplate } from "./game_modules/races/TEMPLATE_HUMANS";
 import { Inventory } from "./game_modules/inventories/inventory";
-import { MapSystem } from "./game_modules/map/system";
 import { character_to_string, equip_from_string, equip_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/data/strings_management";
-import { cell_id, location_id, money } from "@custom_types/common";
+import { money } from "@custom_types/common";
+import { cell_id, location_id } from "@custom_types/ids";
+import { ARMOUR, MATERIAL, WEAPON } from "@content/content";
 
 Data.World.load_world_dimensions(save_path.WORLD_DIMENSIONS)
 Data.Cells.load(save_path.CELLS)
@@ -33,10 +30,10 @@ function string_difference([a, b]: [string, string]): [string, string] {
 
 
 function add_testing_items_to_equip(equip: Equip) {
-    const item = ItemSystem.create('spear', [], 100)
-    const item2 = ItemSystem.create('rat_skin_armour', [], 100)
-    const id1 = equip.data.backpack.add(item)
-    const id2 = equip.data.backpack.add(item2)
+    const item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD)
+    const item2 = Data.Items.create_armour_simple(ARMOUR.MAIL_LEATHER_RAT)
+    const id1 = equip.data.backpack.add(item.id)
+    const id2 = equip.data.backpack.add(item2.id)
     if (id1 !== false) equip.equip_weapon(id1, 'human')
 }
 
@@ -54,8 +51,8 @@ function character_serialization_test_simple() {
 function character_serialisation_test_advanced() {
     console.log('stash, items and skills character serialisation test')
     const character = CharacterSystem.template_to_character(HumanTemplate, 'peter', 1 as location_id)
-    character.stash.inc(WOOD, 1)
-    character.stash.inc(MEAT, 1000)
+    character.stash.inc(MATERIAL.WOOD_RED, 1)
+    character.stash.inc(MATERIAL.MEAT_RAT, 1000)
     character.savings.inc(124 as money)
     character.trade_savings.inc(141 as money)
 
@@ -103,10 +100,10 @@ function equip_string_test() {
 function backpack_string_test() {
     console.log('backpack ser test')
     const backpack = new Inventory(10)
-    const item = ItemSystem.create('spear', [], 100)
-    const item2 = ItemSystem.create('rat_skin_boots', [], 100)
-    backpack.add(item)
-    backpack.add(item2)
+    const item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD)
+    const item2 = Data.Items.create_armour_simple(ARMOUR.BOOTS_LEATHER_RAT)
+    backpack.add(item.id)
+    backpack.add(item2.id)
 
     const j1 = inventory_to_string(backpack)
     const b2 = new Inventory(10)

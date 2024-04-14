@@ -1,11 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const data_objects_1 = require("./game_modules/data/data_objects");
-const materials_manager_1 = require("./game_modules/manager_classes/materials_manager");
-// import { RAT_SKIN_ARMOUR_ARGUMENT, RAT_SKIN_BOOTS_ARGUMENT, SPEAR_ARGUMENT } from "./game_modules/items/items_set_up";
-const system_1 = require("./game_modules/items/system");
 const equip_1 = require("./game_modules/inventories/equip");
-const system_2 = require("./game_modules/character/system");
+const system_1 = require("./game_modules/character/system");
 const TEMPLATE_HUMANS_1 = require("./game_modules/races/TEMPLATE_HUMANS");
 const inventory_1 = require("./game_modules/inventories/inventory");
 const strings_management_1 = require("./game_modules/data/strings_management");
@@ -24,16 +21,16 @@ function string_difference([a, b]) {
     return [resulta, resultb];
 }
 function add_testing_items_to_equip(equip) {
-    const item = system_1.ItemSystem.create('spear', [], 100);
-    const item2 = system_1.ItemSystem.create('rat_skin_armour', [], 100);
-    const id1 = equip.data.backpack.add(item);
-    const id2 = equip.data.backpack.add(item2);
+    const item = data_objects_1.Data.Items.create_weapon_simple(1 /* WEAPON.SPEAR_WOOD */);
+    const item2 = data_objects_1.Data.Items.create_armour_simple(5 /* ARMOUR.MAIL_LEATHER_RAT */);
+    const id1 = equip.data.backpack.add(item.id);
+    const id2 = equip.data.backpack.add(item2.id);
     if (id1 !== false)
         equip.equip_weapon(id1, 'human');
 }
 function character_serialization_test_simple() {
     console.log('basic character serialisation test');
-    const character = system_2.CharacterSystem.template_to_character(TEMPLATE_HUMANS_1.HumanTemplate, 'peter', 1);
+    const character = system_1.CharacterSystem.template_to_character(TEMPLATE_HUMANS_1.HumanTemplate, 'peter', 1);
     const string = (0, strings_management_1.character_to_string)(character);
     const character2 = (0, strings_management_1.string_to_character)(string);
     const string2 = (0, strings_management_1.character_to_string)(character2);
@@ -42,9 +39,9 @@ function character_serialization_test_simple() {
 }
 function character_serialisation_test_advanced() {
     console.log('stash, items and skills character serialisation test');
-    const character = system_2.CharacterSystem.template_to_character(TEMPLATE_HUMANS_1.HumanTemplate, 'peter', 1);
-    character.stash.inc(materials_manager_1.WOOD, 1);
-    character.stash.inc(materials_manager_1.MEAT, 1000);
+    const character = system_1.CharacterSystem.template_to_character(TEMPLATE_HUMANS_1.HumanTemplate, 'peter', 1);
+    character.stash.inc(31 /* MATERIAL.WOOD_RED */, 1);
+    character.stash.inc(18 /* MATERIAL.MEAT_RAT */, 1000);
     character.savings.inc(124);
     character.trade_savings.inc(141);
     character.change('blood', 12);
@@ -82,10 +79,10 @@ function equip_string_test() {
 function backpack_string_test() {
     console.log('backpack ser test');
     const backpack = new inventory_1.Inventory(10);
-    const item = system_1.ItemSystem.create('spear', [], 100);
-    const item2 = system_1.ItemSystem.create('rat_skin_boots', [], 100);
-    backpack.add(item);
-    backpack.add(item2);
+    const item = data_objects_1.Data.Items.create_weapon_simple(1 /* WEAPON.SPEAR_WOOD */);
+    const item2 = data_objects_1.Data.Items.create_armour_simple(10 /* ARMOUR.BOOTS_LEATHER_RAT */);
+    backpack.add(item.id);
+    backpack.add(item2.id);
     const j1 = (0, strings_management_1.inventory_to_string)(backpack);
     const b2 = new inventory_1.Inventory(10);
     (0, strings_management_1.inventory_from_string)(b2, j1);

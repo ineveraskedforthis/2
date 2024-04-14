@@ -9,9 +9,10 @@ const TRIGGERS_1 = require("../battle/TRIGGERS");
 const system_1 = require("../battle/system");
 const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
 const damage_types_1 = require("../damage_types");
-const base_values_1 = require("../items/base_values");
 const data_id_1 = require("../data/data_id");
 const data_objects_1 = require("../data/data_objects");
+const item_1 = require("../../content_wrappers/item");
+const item_system_1 = require("../systems/items/item_system");
 var AIhelper;
 (function (AIhelper) {
     function enemies_in_cell(character) {
@@ -124,16 +125,17 @@ var AIhelper;
     }
     AIhelper.sell_prices_craft_bulk = sell_prices_craft_bulk;
     function sell_price_craft_item(character, craft) {
-        // const input_price = AItrade.price_norm_box(character, craft.input, AItrade.buy_price_bulk)
         const estimated_quality = (0, CraftItem_1.durability)(character, craft);
-        return sell_price_item(character, (0, CraftItem_1.create_item)(craft.output_model, craft.output_affixes, estimated_quality), estimated_quality);
+        return sell_price_item(character, (0, CraftItem_1.create_item)(craft.output, craft.output_affixes, estimated_quality));
     }
     AIhelper.sell_price_craft_item = sell_price_craft_item;
-    function sell_price_item(character, item, durability) {
-        let resists = damage_types_1.DmgOps.total((0, base_values_1.base_resists)(item.model_tag));
-        let damage = damage_types_1.DmgOps.total((0, base_values_1.base_damage)(item.model_tag));
-        // let min_price = AItrade.price_norm_box(character, crafts_items[tag].input, AItrade.buy_price_bulk)
-        return Math.floor(5 * ((resists + damage) * durability / 100 + Math.random() * 50)) + 1;
+    function sell_price_item(character, item) {
+        if ((0, item_1.is_armour)(item)) {
+            let resists = damage_types_1.DmgOps.total(item_system_1.ItemSystem.resists(item));
+            return Math.floor(5 * (resists * item.durability / 100 + Math.random() * 50)) + 1;
+        }
+        let damage = damage_types_1.DmgOps.total(item_system_1.ItemSystem.damage_breakdown(item));
+        return Math.floor(5 * (damage * item.durability / 100 + Math.random() * 50)) + 1;
     }
     AIhelper.sell_price_item = sell_price_item;
 })(AIhelper = exports.AIhelper || (exports.AIhelper = {}));

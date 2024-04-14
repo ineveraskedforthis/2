@@ -10,7 +10,7 @@ import { UserManagement } from "../client_communication/user_manager"
 import { UI_Part } from "../client_communication/causality_graph"
 import { Data } from "../data/data_objects"
 import { CharactersHeap } from "./classes/heap"
-import { character_id } from "@custom_types/common"
+import { character_id } from "@custom_types/ids"
 
 var last_character_id = 0 as character_id
 

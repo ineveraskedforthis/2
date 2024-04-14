@@ -2,22 +2,20 @@
 import { affix_tag } from "../../../../shared/inventory";
 import { AttackObj } from "../attack/class";
 import { Character } from "../character/character";
-import { Item } from "../items/item";
-import { ELODINO_FLESH, GRACI_HAIR, materials } from "../manager_classes/materials_manager";
+import { Armour, Item, Weapon } from "../data/entities/item";
 import { Damage } from "../Damage";
-import { BaseDamage, ModelToMaterial, base_damage } from "../items/base_values";
+import { IMPACT_TYPE, MATERIAL } from "@content/content";
 
-export function get_potential_affix_weapon(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
+export function get_potential_affix_weapon(enchant_rating:number, item:Weapon):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []
-    
+
     // checking for phys damage mods
-    if ((base_damage(item.model_tag).pierce > 0) || (base_damage(item.model_tag).slice > 0)) {
+    if ((item.prototype.impact == IMPACT_TYPE.POINT) || (item.prototype.impact == IMPACT_TYPE.BLADE)) {
         potential_affix.push({tag: 'sharp', weight: 20})
         potential_affix.push({tag: 'notched', weight: 2})
     }
-    if ((base_damage(item.model_tag).slice > 0) || (base_damage(item.model_tag).blunt > 0)){
-        potential_affix.push({tag: 'heavy', weight: 10})
-    }
+
+    potential_affix.push({tag: 'heavy', weight: 10})
 
     // adding universal mods
     if (enchant_rating > 20) {
@@ -34,15 +32,15 @@ export function get_potential_affix_weapon(enchant_rating:number, item:Item):{ta
     return potential_affix
 }
 
-export function get_potential_affix_armour(enchant_rating:number, item:Item):{tag: affix_tag, weight: number}[] {
+export function get_potential_affix_armour(enchant_rating:number, item:Armour):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []
 
-    //universal    
+    //universal
     potential_affix.push({tag: 'thick', weight: 25})
     potential_affix.push({tag: 'layered', weight: 25})
     potential_affix.push({tag: 'hard', weight: 25})
 
-    // special when you reach 
+    // special when you reach
     if (enchant_rating > 30) {
         potential_affix.push({tag: 'of_heat', weight: 3})
         potential_affix.push({tag: 'of_power', weight: 3})
@@ -53,7 +51,7 @@ export function get_potential_affix_armour(enchant_rating:number, item:Item):{ta
     // for local creatures you have better chances for special affixes
     // if your enchanting rating is high
     if (enchant_rating > 60) {
-        if (ModelToMaterial[item.model_tag].string_tag == materials.index_to_material(ELODINO_FLESH).string_tag) {
+        if (item.prototype.material == MATERIAL.MEAT_ELODINO) {
             potential_affix.push({tag: 'of_heat', weight: 5})
             potential_affix.push({tag: 'of_power', weight: 5})
             potential_affix.push({tag: 'of_protection', weight: 5})
@@ -62,9 +60,9 @@ export function get_potential_affix_armour(enchant_rating:number, item:Item):{ta
             potential_affix.push({tag: 'of_elder_beast', weight: 1})
         }
     }
-    
+
     if (enchant_rating > 100) {
-        if (ModelToMaterial[item.model_tag].string_tag == materials.index_to_material(GRACI_HAIR).string_tag) {
+        if (item.prototype.material == MATERIAL.HAIR_GRACI) {
             potential_affix.push({tag: 'of_heat', weight: 5})
             potential_affix.push({tag: 'of_power', weight: 5})
             potential_affix.push({tag: 'of_protection', weight: 5})
@@ -73,8 +71,6 @@ export function get_potential_affix_armour(enchant_rating:number, item:Item):{ta
             potential_affix.push({tag: 'of_elder_beast', weight: 1})
         }
     }
-
-
 
     return potential_affix
 }
@@ -107,12 +103,12 @@ export function enchant_item(enchant_rating: number, item: Item, potential_affix
     return '???'
 }
 
-export function roll_affix_weapon(enchant_rating:number, item:Item) {
+export function roll_affix_weapon(enchant_rating:number, item:Weapon) {
     let potential_affix = get_potential_affix_weapon(enchant_rating, item)
     return enchant_item(enchant_rating, item, potential_affix)
 }
 
-export function roll_affix_armour(enchant_rating:number, item:Item) {
+export function roll_affix_armour(enchant_rating:number, item:Armour) {
     let potential_affix = get_potential_affix_armour(enchant_rating, item)
     return enchant_item(enchant_rating, item, potential_affix)
 }
@@ -264,7 +260,7 @@ export const get_power:{[_ in affix_tag]?: power_modification} = {
         of_power: (data: number) => {
             data += 2
             return data
-        }, 
+        },
         of_elodino_pleasure: (data: number) => {
             data += 5
             return data

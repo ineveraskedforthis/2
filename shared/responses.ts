@@ -1,6 +1,7 @@
+import { EQUIP_SLOT, MATERIAL } from "@content/content";
 import { Perks, reputation_level } from "./character";
-import { ReputationData, ReputationDataSocket, Terrain, cell_id, character_id, location_id, money } from "./common";
-import { equip_slot } from "./inventory";
+import { ReputationData, ReputationDataSocket, Terrain, money } from "./common";
+import { cell_id, character_id, location_id } from "./ids";
 
 export type PerksResponse = {
     name: string,
@@ -10,7 +11,7 @@ export type PerksResponse = {
     skills: {[_ in string]?: [number, number]},
     current_goal: string,
     model: string,
-    equip: {[_ in equip_slot]?: string}
+    equip: {[_ in EQUIP_SLOT]?: string}
 }
 
 export type CharacterStatsResponse = {
@@ -58,7 +59,7 @@ export interface CraftItemUpdateView {
 }
 export interface ItemAmountView {
     amount: number;
-    material: number;
+    material: MATERIAL;
 }
 export interface CraftBulkView {
     id: string;

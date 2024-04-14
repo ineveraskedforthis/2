@@ -1,4 +1,4 @@
-import { character_id } from "@custom_types/common";
+import { character_id } from "@custom_types/ids";
 import { BattleEventSocket, battle_id, ms } from "../../../../../shared/battle_data";
 import { DataID } from "../../data/data_id";
 

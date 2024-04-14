@@ -1,257 +1,101 @@
-// import { 
-//     RAT_SKIN_HELMET_ARGUMENT,
-//     RAT_SKIN_GLOVES_ARGUMENT, 
-//     RAT_SKIN_ARMOUR_ARGUMENT,
-//     RAT_SKIN_PANTS_ARGUMENT,
-//     RAT_SKIN_BOOTS_ARGUMENT,
-//     ELODINO_DRESS_ARGUMENT,
-//     GRACI_HAIR_ARGUMENT, 
-//     BONE_ARMOUR_ARGUMENT,
-//     BASIC_BOW_ARGUMENT,
-//     BONE_DAGGER_ARGUMENT,
-//     BONE_SPEAR_ARGUMENT,
-//     SPEAR_ARGUMENT,
-//     SWORD_ARGUMENT,
-//     WOODEN_MACE_ARGUMENT,
-//     CLOTH_ARMOUR_ARGUMENT,
-//     CLOTH_GLOVES_ARGUMENT,
-//     CLOTH_HELMET_ARGUMENT} from "../items/items_set_up"
-import { RAT_SKIN, ELODINO_FLESH, RAT_BONE, GRACI_HAIR, STEEL, WOOD, TEXTILE } from "../manager_classes/materials_manager"
+import { ArmourConfiguration, ArmourStorage, EquipSlotStorage, IMPACT_TYPE, ImpactStorage, MATERIAL, MATERIAL_CATEGORY, MaterialStorage, WeaponConfiguration, WeaponStorage } from "@content/content"
 import { new_craft_item } from "./CraftItem"
+import { box, skill_check } from "@custom_types/inventory"
 
-export namespace CraftItem {
-    export namespace RatSkin {
-        export const helmet =
-            new_craft_item(
-                'rat_skin_helmet',
-                [{material: RAT_SKIN, amount: 5}], 
-                'rat_skin_helmet',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
-        export const glove_right =
-            new_craft_item(
-                'rat_skin_glove_right',
-                [{material: RAT_SKIN, amount: 3}], 
-                'rat_skin_glove_right',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
-        export const glove_left =
-            new_craft_item(
-                'rat_skin_glove_left',
-                [{material: RAT_SKIN, amount: 3}], 
-                'rat_skin_glove_left',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
-        export const armour =
-            new_craft_item(
-                'rat_skin_armour',
-                [{material: RAT_SKIN, amount: 10}], 
-                'rat_skin_armour',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
-        export const pants =
-            new_craft_item(
-                'rat_skin_pants',
-                [{material: RAT_SKIN, amount: 8}], 
-                'rat_skin_pants',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
-        export const boots =
-            new_craft_item(
-                'rat_skin_boots',
-                [{material: RAT_SKIN, amount: 8}], 
-                'rat_skin_boots',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
-        export const left_pauldron = 
-            new_craft_item(
-                'rat_skin_pauldron_left',
-                [{material: RAT_SKIN, amount: 3}],
-                'rat_skin_pauldron_left',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
-
-        export const robe = 
-            new_craft_item(
-                'rat_robe',
-                [{material: RAT_SKIN, amount: 30}],
-                'rat_robe',
-                [],
-                [{skill: 'clothier', difficulty: 50}]
-            )
-        
+function generate_skill_check(skill_check: skill_check[], difficulty: number, material_category: MATERIAL_CATEGORY) {
+    switch(material_category) {
+        case MATERIAL_CATEGORY.BOW_AMMO:break;
+        case MATERIAL_CATEGORY.PLANT:break;
+        case MATERIAL_CATEGORY.MATERIAL:break;
+        case MATERIAL_CATEGORY.BONE:skill_check.push({skill: 'bone_carving', difficulty: difficulty}); break;
+        case MATERIAL_CATEGORY.SKIN:skill_check.push({skill: "clothier", difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.LEATHER:skill_check.push({skill: "clothier", difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.MEAT:skill_check.push({skill: "clothier", difficulty: difficulty});break;
+        case MATERIAL_CATEGORY.FISH:break;
+        case MATERIAL_CATEGORY.FOOD:break;
+        case MATERIAL_CATEGORY.FRUIT:break;
+        case MATERIAL_CATEGORY.WOOD:skill_check.push({skill: "woodwork", difficulty: difficulty});break;
     }
 
-    export namespace Cloth {
-        export const armour = 
-            new_craft_item(
-                'cloth_armour',
-                [{material: TEXTILE, amount: 10}],
-                'cloth_mail',
-                [],
-                [{skill: 'clothier', difficulty: 50}]
-            )
-        export const socks = 
-            new_craft_item(
-                'cloth_socks',
-                [{material: TEXTILE, amount: 5}],
-                'cloth_socks',
-                [],
-                [{skill: 'clothier', difficulty: 50}]
-            )
-        export const glove_left = 
-            new_craft_item(
-                'cloth_glove_left',
-                [{material: TEXTILE, amount: 3}],
-                'cloth_glove_left',
-                [],
-                [{skill: 'clothier', difficulty: 50}]
-            )
-        export const glove_right = 
-            new_craft_item(
-                'cloth_glove_right',
-                [{material: TEXTILE, amount: 3}],
-                'cloth_glove_right',
-                [],
-                [{skill: 'clothier', difficulty: 50}]
-            )
-        export const helmet = 
-            new_craft_item(
-                'cloth_helmet',
-                [{material: TEXTILE, amount: 5}],
-                'cloth_helmet',
-                [],
-                [{skill: 'clothier', difficulty: 50}]
-            )
-        export const belt = 
-            new_craft_item(
-                'cloth_belt',
-                [{material: TEXTILE, amount: 5}],
-                'cloth_belt',
-                [],
-                [{skill: 'clothier', difficulty: 10}]
-            )
-        export const shirt =
-            new_craft_item(
-                'cloth_shirt',
-                [{material: TEXTILE, amount: 10}],
-                'cloth_shirt',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
-        export const pants =
-            new_craft_item(
-                'cloth_pants',
-                [{material: TEXTILE, amount: 10}],
-                'cloth_pants',
-                [],
-                [{skill: 'clothier', difficulty: 20}]
-            )
+    return skill_check
+}
+
+export function generate_item_crafts() {
+    for (const weapon_id of WeaponConfiguration.WEAPON) {
+        const weapon = WeaponStorage.get(weapon_id)
+
+        const material = weapon.material
+        const secondary_material = weapon.secondary_material
+
+        const material_data = MaterialStorage.get(material)
+        const secondary_material_data = MaterialStorage.get(secondary_material)
+
+        const impact_type = ImpactStorage.get(weapon.impact)
+
+        let difficulty = 0
+
+        switch(impact_type.id) {
+            case IMPACT_TYPE.POINT:difficulty += 15;break
+            case IMPACT_TYPE.BLADE:difficulty += 50;break
+            case IMPACT_TYPE.BLUNT:difficulty += 5;break
+        }
+
+        let skills: skill_check[] = []
+        skills = generate_skill_check(skills, difficulty, material_data.category)
+
+        const main_box: box = {
+            amount: weapon.size * (1 - impact_type.handle_ratio),
+            material: material
+        }
+
+        if (material == secondary_material) {
+            main_box.amount = weapon.size
+            new_craft_item(weapon.id_string, [main_box], {tag: "weapon", value: weapon_id}, [], skills)
+        } else {
+            skills = generate_skill_check(skills, difficulty, secondary_material_data.category)
+            new_craft_item(weapon.id_string, [main_box, {amount: weapon.size * impact_type.handle_ratio, material: secondary_material}], {tag: "weapon", value: weapon_id}, [], skills)
+        }
     }
 
-    export const elodino_dress = 
-        new_craft_item(
-            'elodino_dress',
-            [{material: ELODINO_FLESH, amount: 4}], 
-            'elodino_dress',
-            [],
-            [{skill: 'clothier', difficulty: 50}]
-        )
+    for (const armour_id of ArmourConfiguration.ARMOUR) {
+        const armour = ArmourStorage.get(armour_id)
 
-    export const graci_hair =
-        new_craft_item(
-            'graci_hair',
-            [{material: GRACI_HAIR, amount: 1}], 
-            'graci_hair',
-            [],
-            [{skill: 'clothier', difficulty: 5}]
-        )
+        const material = armour.material
+        const secondary_material = armour.secondary_material
 
-    export namespace Bone {
-        export const armour =
+        const material_data = MaterialStorage.get(material)
+        const secondary_material_data = MaterialStorage.get(secondary_material)
+
+        const slot = EquipSlotStorage.get(armour.slot)
+
+        let difficulty = 50
+
+        let skills: skill_check[] = []
+        skills = generate_skill_check(skills, difficulty, material_data.category)
+
+        const main_box: box = {
+            amount: armour.size / material_data.density,
+            material: material
+        }
+
+        if (material == secondary_material) {
+            main_box.amount += armour.secondary_size
+            new_craft_item(armour.id_string, [main_box], {tag: "armour", value: armour_id}, [], skills)
+        } else {
+            skills = generate_skill_check(skills, difficulty, secondary_material_data.category)
             new_craft_item(
-                'bone_armour',
-                [{material: RAT_BONE, amount: 50}], 
-                'bone_armour',
-                [],
-                [{skill: 'bone_carving', difficulty: 50}]
-            )
-        export const dagger = 
-        new_craft_item(
-            'bone_dagger',
-            [{material: RAT_BONE, amount: 15}], 
-            'bone_dagger',
-            [],
-            [{skill: 'bone_carving', difficulty: 30}]
-        )
-        export const spear = 
-        new_craft_item(
-            'spear_wood_bone',
-            [{material: WOOD, amount: 2}, {material: RAT_BONE, amount: 4}], 
-            'bone_spear',
-            [],
-            [{skill: 'woodwork', difficulty: 10}, {skill: 'bone_carving', difficulty: 5}]
-        )
-
-        export const pauldron_left = 
-        new_craft_item(
-            'bone_pauldron_left',
-            [{material: RAT_BONE, amount: 20}],
-            'bone_pauldron_left',
-            [],
-            [{skill: 'bone_carving', difficulty: 20}]
-        )
-
-        export const pauldron_right = 
-        new_craft_item(
-            'bone_pauldron_right',
-            [{material: RAT_BONE, amount: 20}],
-            'bone_pauldron_right',
-            [],
-            [{skill: 'bone_carving', difficulty: 20}]
-        )
+                armour.id_string,
+                [
+                    main_box,
+                    {
+                        amount: armour.secondary_size / secondary_material_data.density,
+                        material: secondary_material
+                    }
+                ],
+                {
+                    tag: "armour",
+                    value: armour_id
+                }, [], skills)
+        }
     }
-
-    export namespace Wood {
-        export const mace = 
-            new_craft_item(
-                'wooden_mace',
-                [{material: WOOD, amount: 8}], 
-                'wooden_mace',
-                [],
-                [{skill: 'woodwork', difficulty: 10}]
-            )
-        export const spear =
-            new_craft_item(
-                'spear_wood',
-                [{material: WOOD, amount: 2}], 
-                'spear',
-                [],
-                [{skill: 'woodwork', difficulty: 10}]
-            )
-        export const bow =
-            new_craft_item(
-                'bow_wood',
-                [{material: WOOD, amount: 2}], 
-                'bow',
-                [],
-                [{skill: 'woodwork', difficulty: 20}]
-            )
-    }
-
-    export const sword =
-        new_craft_item(
-            'steel_sword',
-            [{material: STEEL, amount: 2}], 
-            'sword',
-            [],
-            [{skill: 'smith', difficulty: 60}]
-        )
 }

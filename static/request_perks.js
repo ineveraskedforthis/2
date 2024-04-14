@@ -2,8 +2,9 @@ import { globals } from './modules/globals.js';
 import { socket } from "./modules/Socket/socket.js";
 import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { stash_id_to_tag } from './modules/Stash/stash.js';
-import { EQUIPMENT_TAGS } from './modules/Constants/inventory.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
+import { EquipSlotStorage } from '@content/content.js';
+import { EQUIPMENT_TAGS } from './modules/CharacterImage/main.js';
 // export const slots_front_end = ['weapon', 'secondary', 'amulet', 'mail', 'greaves', 'left_pauldron', 'right_pauldron', 'left_gauntlet', 'right_gauntlet', 'boots', 'helmet', 'belt', 'robe', 'shirt', 'pants'] as const
 // tmp.typ = this.typ;
 // tmp.tag = this.tag;
@@ -99,25 +100,25 @@ function url(layer, tag_slot, tag_item, race) {
 function build_portrait(div, data, model) {
     let string = '';
     for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
-        let item_tag = data[tag];
+        let item_tag = data[EquipSlotStorage.from_string(tag).id];
         if (item_tag != undefined)
             string += `no-repeat ${url('on_top', tag, item_tag, model)} top center/cover, `;
     }
     string += `no-repeat url(/static/img/character_image/${model}/right_arm.PNG) top center/cover, `;
     for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
-        let item_tag = data[tag];
+        let item_tag = data[EquipSlotStorage.from_string(tag).id];
         if (item_tag != undefined)
             string += `no-repeat ${url('behind_right_arm', tag, item_tag, model)} top center/cover, `;
     }
     string += `no-repeat url(/static/img/character_image/${model}/body.PNG) top center/cover, `;
     for (let tag of EQUIPMENT_TAGS.slice().reverse()) {
-        let item_tag = data[tag];
+        let item_tag = data[EquipSlotStorage.from_string(tag).id];
         if (item_tag != undefined)
             string += `no-repeat ${url('behind_body', tag, item_tag, model)} top center/cover, `;
     }
     string += `no-repeat url(/static/img/character_image/${model}/left_arm.PNG) top center/cover, `;
     for (let tag of EQUIPMENT_TAGS) {
-        let item_tag = data[tag];
+        let item_tag = data[EquipSlotStorage.from_string(tag).id];
         if (item_tag != undefined)
             string += `no-repeat ${url('behind_all', tag, item_tag, model)} top center/cover, `;
     }

@@ -1,4 +1,5 @@
-import { item_model_tag } from "../server/server_source/game_modules/items/model_tags"
+import { EQUIP_SLOT, MATERIAL } from "@content/content";
+import { EQUIPMENT_PIECE, EquipmentPiece } from "../server/server_source/game_modules/data/entities/item";
 
 export interface SkillListInterface {
     clothier: number;
@@ -33,7 +34,7 @@ export type backpack = {
     items: ItemBackpackData[]
 }
 
-export type equip = Partial<Record<equip_slot, ItemData>>
+export type equip = Partial<Record<EQUIP_SLOT, ItemData>>
 
 export type EquipSocket = {
     equip: equip
@@ -42,12 +43,14 @@ export type EquipSocket = {
 
 export interface ItemData {
     name: string,
+    id: number,
+    prototype_id: string
     affixes: number,
     damage: damageSocket,
     ranged_damage: number,
     resists: damageSocket,
     affixes_list: affix[],
-    item_type: equip_slot
+    item_type: EQUIP_SLOT
     durability: number
     is_weapon: boolean
     price?: number
@@ -55,7 +58,7 @@ export interface ItemData {
 }
 
 export interface EquipSlotData {
-    equip_slot: equip_slot
+    equip_slot: EQUIP_SLOT
     item: ItemData
 }
 
@@ -67,7 +70,6 @@ export interface ItemOrderData extends ItemData {
     price: number
     seller: string
     seller_id: number
-    id: number
     is_weapon: boolean
 }
 
@@ -77,24 +79,6 @@ export interface affix{
     tag: affix_tag;
 }
 
-export const slots = [
-    'weapon',
-    'secondary',
-    'amulet',
-    'mail',
-    // 'greaves',
-    'left_pauldron',
-    'right_pauldron',
-    'left_gauntlet',
-    'right_gauntlet',
-    'boots', 'helmet',
-    'belt',
-    'robe',
-    'shirt',
-    'pants',
-    'dress',
-    'socks'] as const
-export type equip_slot = typeof slots[number]
 
 // export type equip_slot = armour_slot|'weapon'
 // export type armour_slot = 'skirt'|'amulet'|'mail'|'greaves'|'left_pauldron'|'right_pauldron'|'left_gauntlet'|'right_gauntlet'|'boots'|'helmet'|'belt'|'robe'
@@ -103,7 +87,7 @@ export type equip_slot = typeof slots[number]
 
 export type damage_type = 'blunt'|'pierce'|'slice'|'fire'
 export interface box {
-    material: material_index;
+    material: MATERIAL;
     amount: number;
 }
 export interface skill_check {
@@ -119,14 +103,14 @@ export interface CraftBulkTemplate {
 export interface CraftItemTemplate {
     id: string;
     input: box[];
-    output_model: item_model_tag;
+    output: EQUIPMENT_PIECE;
     output_affixes: affix[];
     difficulty: skill_check[];
 }
 export interface ItemJson {
     durability: number
     affixes: affix[]
-    model_tag: item_model_tag
+    model_tag: string
 }
 export interface TaggedCraftBulk {
     tag: string,
@@ -136,4 +120,3 @@ export interface TaggedCraftItem {
     tag: string,
     value: CraftItemTemplate
 }
-export type material_index = number & { __brand: "index of the material"}

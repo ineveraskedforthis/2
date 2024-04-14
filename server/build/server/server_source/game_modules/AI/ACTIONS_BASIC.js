@@ -5,7 +5,6 @@ const actions_00_1 = require("../actions/actions_00");
 const manager_1 = require("../actions/manager");
 const basic_functions_1 = require("../calculations/basic_functions");
 const market_1 = require("../events/market");
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_1 = require("../map/system");
 const systems_communication_1 = require("../systems_communication");
 const AI_CONSTANTS_1 = require("./AI_CONSTANTS");
@@ -15,7 +14,8 @@ const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
 const effects_1 = require("../events/effects");
-const LOOT = [materials_manager_1.MEAT, materials_manager_1.RAT_SKIN, materials_manager_1.RAT_BONE];
+const content_1 = require("@content/content");
+const LOOT = [18 /* MATERIAL.MEAT_RAT */, 10 /* MATERIAL.SKIN_RAT */, 7 /* MATERIAL.BONE_RAT */, 4 /* MATERIAL.SMALL_BONE_RAT */, 26 /* MATERIAL.FISH_OKU */];
 function loot(character) {
     let tmp = 0;
     for (let tag of LOOT) {
@@ -35,7 +35,7 @@ function remove_orders(character) {
 }
 exports.remove_orders = remove_orders;
 function sell_all_stash(character) {
-    for (let tag of materials_manager_1.materials.get_materials_list()) {
+    for (let tag of content_1.MaterialConfiguration.MATERIAL) {
         market_1.EventMarket.sell(character, tag, character.stash.get(tag), AI_SCRIPTED_VALUES_1.AItrade.sell_price_bulk(character, tag));
     }
 }
@@ -63,7 +63,7 @@ function sell_material(character, material) {
     return true;
 }
 exports.sell_material = sell_material;
-function buy(character, material_index) {
+function buy(character, material) {
     let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     let best_order = undefined;
     let best_price = 9999;
@@ -71,7 +71,7 @@ function buy(character, material_index) {
         let order = data_objects_1.Data.MarketOrders.from_id(item);
         if (order.typ == 'buy')
             continue;
-        if (order.material != material_index)
+        if (order.material != material)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -95,7 +95,8 @@ function buy_random(character) {
         let order = data_objects_1.Data.MarketOrders.from_id(item);
         if (order.typ == 'buy')
             continue;
-        if (order.material != materials_manager_1.FOOD)
+        const material = content_1.MaterialStorage.get(order.material);
+        if (material.category != 8 /* MATERIAL_CATEGORY.FOOD */)
             continue;
         if ((best_price > order.price) && (order.amount > 0)) {
             best_price = order.price;
@@ -220,7 +221,7 @@ exports.roll_price_belief_sell_increase = roll_price_belief_sell_increase;
 function update_price_beliefs(character) {
     let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     // initialisation
-    for (let material of materials_manager_1.materials.list_of_indices) {
+    for (let material of content_1.MaterialConfiguration.MATERIAL) {
         let value_buy = character.ai_price_belief_buy.get(material);
         let value_sell = character.ai_price_belief_sell.get(material);
         if (value_buy == undefined) {

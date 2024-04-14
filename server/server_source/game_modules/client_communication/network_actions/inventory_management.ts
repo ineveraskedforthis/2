@@ -1,17 +1,14 @@
 import { SocketWrapper, User } from "../user";
-import { materials } from "../../manager_classes/materials_manager";
-import { material_index } from "@custom_types/inventory";
 import { Alerts } from "./alerts";
 import { Convert } from "../../systems_communication";
 import { EventInventory } from "../../events/inventory_events";
 import { EventMarket } from "../../events/market";
 import { AuctionResponse, } from "../../market/system";
-import { market_order_id } from "@custom_types/common";
+import { market_order_id } from "@custom_types/ids";
 import { Character } from "../../character/character";
-// import { slot } from "../../../../../shared/inventory";
-import { money } from "../../../../../shared/common";
-import { equip_slot } from "@custom_types/inventory";
 import { Data } from "../../data/data_objects";
+import { EquipSlotConfiguration, EquipSlotStorage, MaterialConfiguration } from "@content/content";
+import { money } from "@custom_types/common";
 
 function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
     return (sw: SocketWrapper) => {
@@ -38,55 +35,94 @@ export namespace InventoryCommands {
     }
 
     // expected inputs 'right_hand', 'body', 'legs', 'foot', 'head', 'arms'
-    export function unequip(sw: SocketWrapper, msg: equip_slot) {
+    export function unequip(sw: SocketWrapper, msg: string) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
         if (character.in_battle()) { return }
-        EventInventory.unequip(character, msg)
+        if (EquipSlotConfiguration.is_valid_string_id(msg))
+        EventInventory.unequip(character, EquipSlotStorage.from_string(msg).id)
     }
 
-    export function buy(sw: SocketWrapper, msg: any) {
+    type trade_object_key = "price" | "amount" | "material"
+
+    export function buy(sw: SocketWrapper, msg: Partial<Record<trade_object_key, number>>) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return
 
         console.log('buy')
         console.log(msg)
-        if (isNaN(msg.price)) {
+
+        if (typeof msg != "object") {
+            return
+        }
+        if (msg == null) {
+            return
+        }
+        const key_price : trade_object_key = "price"
+        const key_amount : trade_object_key = "amount"
+        const key_material : trade_object_key = "material"
+        if (!(key_price in msg)) {
+            return
+        }
+        if (!(key_amount in msg)) {
+            return
+        }
+        if (!(key_material in msg)) {
+            return
+        }
+        let price = msg[key_price]
+        let amount = msg[key_amount]
+        let material = msg[key_material]
+        if (!(typeof price == "number")) {
+            return
+        }
+        if (!(typeof amount == "number")) {
+            return
+        }
+        if (!(typeof material == "number")) {
+            return
+        }
+        if (isNaN(price)) {
             user.socket.emit('alert', 'invalid_price')
             return
         }
-        msg.price = Math.floor(msg.price)
-        if (msg.price < 0) {
-            user.socket.emit('alert', 'invalid_price')
-        }
-
-
-        if (isNaN(msg.amount)) {
+        if (isNaN(amount)) {
             user.socket.emit('alert', 'invalid_amount')
             return
         }
-        msg.amount = Math.floor(msg.amount)
-        if (msg.amount <= 0) {
-            user.socket.emit('alert', 'invalid_amount')
-            return
-        }
-
-
-        if (isNaN(msg.material)) {
+        if (isNaN(material)) {
             user.socket.emit('alert', 'invalid_material')
             return
         }
-        msg.material = Math.floor(msg.material)
-        if (!materials.validate_material(msg.material)) {
+        price = Math.floor(price)
+        amount = Math.floor(amount)
+        material = Math.floor(material)
+        if (!(typeof price == "number")) {
+            return
+        }
+        if (!(typeof amount == "number")) {
+            return
+        }
+        if (!(typeof material == "number")) {
+            return
+        }
+        if (price < 0) {
+            user.socket.emit('alert', 'invalid_price')
+        }
+        if (amount <= 0) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+        if (!MaterialConfiguration.is_valid_id(material)) {
             user.socket.emit('alert', 'invalid_material')
             return
         }
 
         let response = EventMarket.buy(
             character,
-            msg.material as material_index,
-            msg.amount,
-            msg.price)
+            material,
+            amount,
+            price as money)
         if (response != 'ok') {
             Alerts.generic_user_alert(user, 'alert', response)
             return
@@ -99,39 +135,70 @@ export namespace InventoryCommands {
 
         console.log('sell')
         console.log(msg)
-        if (isNaN(msg.price)) {
+        if (typeof msg != "object") {
+            return
+        }
+        if (msg == null) {
+            return
+        }
+        if (!("price" in msg)) {
+            return
+        }
+        if (!("amount" in msg)) {
+            return
+        }
+        if (!("material" in msg)) {
+            return
+        }
+        let price = msg["price"]
+        let amount = msg["amount"]
+        let material = msg["material"]
+        if (!(typeof price == "number")) {
+            return
+        }
+        if (!(typeof amount == "number")) {
+            return
+        }
+        if (!(typeof material == "number")) {
+            return
+        }
+        if (isNaN(price)) {
             user.socket.emit('alert', 'invalid_price')
             return
         }
-        msg.price = Math.floor(msg.price)
-        if (msg.price < 0) {
+        if (isNaN(amount)) {
+            user.socket.emit('alert', 'invalid_amount')
+            return
+        }
+        if (isNaN(material)) {
+            user.socket.emit('alert', 'invalid_material')
+            return
+        }
+        price = Math.floor(price)
+        amount = Math.floor(amount)
+        material = Math.floor(material)
+        if (!(typeof price == "number")) {
+            return
+        }
+        if (!(typeof amount == "number")) {
+            return
+        }
+        if (!(typeof material == "number")) {
+            return
+        }
+        if (price < 0) {
             user.socket.emit('alert', 'invalid_price')
-            return
         }
-
-
-        if (isNaN(msg.amount)) {
+        if (amount <= 0) {
             user.socket.emit('alert', 'invalid_amount')
             return
         }
-        msg.amount = Math.floor(msg.amount)
-        if (msg.amount <= 0) {
-            user.socket.emit('alert', 'invalid_amount')
-            return
-        }
-
-
-        if (isNaN(msg.material)) {
-            user.socket.emit('alert', 'invalid_material')
-            return
-        }
-        msg.material = Math.floor(msg.material)
-        if (!materials.validate_material(msg.material)) {
+        if (!MaterialConfiguration.is_valid_id(material)) {
             user.socket.emit('alert', 'invalid_material')
             return
         }
 
-        if (msg.price > 99999999999) {
+        if (price > 99999999999) {
             user.socket.emit('alert', 'invalid_price')
             return
         }
@@ -140,9 +207,9 @@ export namespace InventoryCommands {
 
         let response = EventMarket.sell(
             character,
-            msg.material as material_index,
-            msg.amount,
-            msg.price)
+            material,
+            amount,
+            price as money)
 
         if (response != 'ok') {
             Alerts.generic_user_alert(user, 'alert', response)
@@ -275,14 +342,4 @@ export namespace InventoryCommands {
 
         EventInventory.reroll_enchant(character, msg)
     }
-
-    //  disenchant(user: User, msg: number) {
-    //     if (user.logged_in) {
-    //         let char = user.get_character();
-    //         // let res =  char.disenchant(this.pool, msg);
-    //         // if (res != 'ok') {
-    //         //     socket.emit('alert', res);
-    //         // }
-    //     }
-    // }
 }

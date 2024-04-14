@@ -1,4 +1,4 @@
-import { character_id } from "./common";
+import { character_id } from "./ids";
 
 export type battle_id = number & { __brand: "battle"}
 

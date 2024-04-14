@@ -2,14 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Template = void 0;
 const events_1 = require("./events/events");
-const system_1 = require("./items/system");
-const materials_manager_1 = require("./manager_classes/materials_manager");
 const TEMPLATE_ELO_1 = require("./races/TEMPLATE_ELO");
 const TEMPLATE_GRACI_1 = require("./races/TEMPLATE_GRACI");
 const TEMPLATE_HUMANS_1 = require("./races/TEMPLATE_HUMANS");
 const TEMPLATE_RATS_1 = require("./races/TEMPLATE_RATS");
 const TEMPLATE_OTHERS_1 = require("./races/TEMPLATE_OTHERS");
 const data_id_1 = require("./data/data_id");
+const data_objects_1 = require("./data/data_objects");
 const LUMP_OF_MONEY = 1000;
 const TONS_OF_MONEY = 30000;
 var Template;
@@ -57,9 +56,9 @@ var Template;
             let human = HumanSteppe(name);
             human._skills.travelling += 20;
             human.ai_map = 'lumberjack';
-            let cutting_tool = system_1.ItemSystem.create('bone_dagger', [], 100);
+            let cutting_tool = data_objects_1.Data.Items.create_weapon(100, [], 3 /* WEAPON.DAGGER_BONE_RAT */);
             cutting_tool.durability = 200;
-            human.equip.data.slots.weapon = cutting_tool;
+            human.equip.weapon = cutting_tool;
             return human;
         }
         Character.Lumberjack = Lumberjack;
@@ -99,40 +98,37 @@ var Template;
             human._skills.blocking += 10;
             human._skills.ranged += 20;
             human._perks.advanced_polearm = true;
-            let spear = system_1.ItemSystem.create('bone_spear', [], 100);
+            let spear = data_objects_1.Data.Items.create_weapon(100, [], 2 /* WEAPON.SPEAR_WOOD_BONE */);
             spear.durability = 200;
-            let bow = system_1.ItemSystem.create('bow', [], 100);
-            let armour = system_1.ItemSystem.create('rat_skin_armour', [], 100);
-            let pants = system_1.ItemSystem.create('rat_skin_pants', [], 100);
-            let boots = system_1.ItemSystem.create('rat_skin_boots', [], 100);
-            let hat = system_1.ItemSystem.create('rat_skin_helmet', [], 100);
-            human.equip.data.slots.weapon = spear;
-            human.equip.data.slots.mail = armour;
-            human.equip.data.slots.pants = pants;
-            human.equip.data.slots.boots = boots;
-            human.equip.data.slots.helmet = hat;
-            human.equip.data.slots.secondary = bow;
-            human.stash.inc(materials_manager_1.ARROW_BONE, 60);
+            let bow = data_objects_1.Data.Items.create_weapon(100, [], 0 /* WEAPON.BOW_WOOD */);
+            let armour = data_objects_1.Data.Items.create_armour(100, [], 5 /* ARMOUR.MAIL_LEATHER_RAT */);
+            let pants = data_objects_1.Data.Items.create_armour(100, [], 8 /* ARMOUR.PANTS_LEATHER_RAT */);
+            let boots = data_objects_1.Data.Items.create_armour(100, [], 10 /* ARMOUR.BOOTS_LEATHER_RAT */);
+            let hat = data_objects_1.Data.Items.create_armour(100, [], 2 /* ARMOUR.HELMET_LEATHER_RAT */);
+            human.equip.weapon = spear;
+            human.equip.data.slots[3 /* EQUIP_SLOT.MAIL */] = armour.id;
+            human.equip.data.slots[13 /* EQUIP_SLOT.PANTS */] = pants.id;
+            human.equip.data.slots[8 /* EQUIP_SLOT.BOOTS */] = boots.id;
+            human.equip.data.slots[9 /* EQUIP_SLOT.HELMET */] = hat.id;
+            human.equip.data.slots[1 /* EQUIP_SLOT.SECONDARY */] = bow.id;
+            human.stash.inc(0 /* MATERIAL.ARROW_BONE */, 60);
             return human;
         }
         Character.HumanSpearman = HumanSpearman;
         function EquipClothesBasic(character) {
-            character.equip.data.slots.mail = system_1.ItemSystem.create('cloth_mail', [], 100);
-            // character.equip.data.slots.left_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
-            // character.equip.data.slots.right_gauntlet = ItemSystem.create(CLOTH_GLOVES_ARGUMENT)
-            character.equip.data.slots.boots = system_1.ItemSystem.create('rat_skin_boots', [], 100);
-            // character.equip.data.slots.helmet = ItemSystem.create('cloth_helmet', [], 100)
-            character.equip.data.slots.pants = system_1.ItemSystem.create('cloth_pants', [], 100);
-            character.equip.data.slots.shirt = system_1.ItemSystem.create('cloth_shirt', [], 100);
+            character.equip.data.slots[3 /* EQUIP_SLOT.MAIL */] = data_objects_1.Data.Items.create_armour(100, [], 6 /* ARMOUR.MAIL_TEXTILE */).id;
+            character.equip.data.slots[8 /* EQUIP_SLOT.BOOTS */] = data_objects_1.Data.Items.create_armour(100, [], 10 /* ARMOUR.BOOTS_LEATHER_RAT */).id;
+            character.equip.data.slots[13 /* EQUIP_SLOT.PANTS */] = data_objects_1.Data.Items.create_armour(100, [], 9 /* ARMOUR.PANTS_TEXTILE */).id;
+            character.equip.data.slots[12 /* EQUIP_SLOT.SHIRT */] = data_objects_1.Data.Items.create_armour(100, [], 21 /* ARMOUR.SHIRT_TEXTILE */).id;
             return character;
         }
         Character.EquipClothesBasic = EquipClothesBasic;
         function EquipClothesRich(character) {
             EquipClothesBasic(character);
-            character.equip.data.slots.robe = system_1.ItemSystem.create('rat_robe', [], 100);
-            character.equip.data.slots.right_gauntlet = system_1.ItemSystem.create('cloth_glove_right', [], 100);
-            character.equip.data.slots.left_gauntlet = system_1.ItemSystem.create('cloth_glove_left', [], 100);
-            character.equip.data.slots.helmet = system_1.ItemSystem.create('cloth_helmet', [], 100);
+            character.equip.data.slots[11 /* EQUIP_SLOT.ROBE */] = data_objects_1.Data.Items.create_armour(100, [], 19 /* ARMOUR.ROBE_LEATHER_RAT */).id;
+            character.equip.data.slots[7 /* EQUIP_SLOT.GAUNTLET_RIGHT */] = data_objects_1.Data.Items.create_armour(100, [], 12 /* ARMOUR.GAUNTLET_RIGHT_TEXTILE */).id;
+            character.equip.data.slots[6 /* EQUIP_SLOT.GAUNTLET_LEFT */] = data_objects_1.Data.Items.create_armour(100, [], 14 /* ARMOUR.GAUNTLET_LEFT_TEXTILE */).id;
+            character.equip.data.slots[9 /* EQUIP_SLOT.HELMET */] = data_objects_1.Data.Items.create_armour(100, [], 1 /* ARMOUR.HELMET_TEXTILE */).id;
             return character;
         }
         Character.EquipClothesRich = EquipClothesRich;
@@ -155,7 +151,8 @@ var Template;
                     break;
                 }
             }
-            human.stash.inc(materials_manager_1.FOOD, 10);
+            human.stash.inc(27 /* MATERIAL.FISH_OKU_FRIED */, 10);
+            human.stash.inc(19 /* MATERIAL.MEAT_RAT_FRIED */, 10);
             human.savings.inc(500);
             human._skills.cooking = 70;
             human._perks.meat_master = true;
@@ -177,9 +174,9 @@ var Template;
             human._skills.bone_carving = 30;
             human._perks.fletcher = true;
             human._skills.ranged = 30;
-            human.stash.inc(materials_manager_1.ARROW_BONE, 50);
-            human.stash.inc(materials_manager_1.RAT_BONE, 3);
-            human.stash.inc(materials_manager_1.WOOD, 1);
+            human.stash.inc(0 /* MATERIAL.ARROW_BONE */, 50);
+            human.stash.inc(4 /* MATERIAL.SMALL_BONE_RAT */, 3);
+            human.stash.inc(31 /* MATERIAL.WOOD_RED */, 1);
             human.savings.inc(500);
             return human;
         }
@@ -218,7 +215,7 @@ var Template;
             rat._traits.claws = true;
             rat._perks.magic_bolt = true;
             rat._perks.mage_initiation = true;
-            rat.stash.inc(materials_manager_1.ZAZ, 5);
+            rat.stash.inc(30 /* MATERIAL.ZAZ */, 5);
             return rat;
         }
         Character.MageRat = MageRat;
@@ -243,7 +240,7 @@ var Template;
             elo._perks.mage_initiation = true;
             elo._skills.magic_mastery = 20;
             elo._skills.cooking = 20;
-            elo.stash.inc(materials_manager_1.ZAZ, 30);
+            elo.stash.inc(30 /* MATERIAL.ZAZ */, 30);
             return elo;
         }
         Character.MageElo = MageElo;
@@ -265,10 +262,10 @@ var Template;
             mage._skills.magic_mastery = 100;
             mage._perks.mage_initiation = true;
             mage._perks.magic_bolt = true;
-            let item = system_1.ItemSystem.create('spear', [], 100);
+            let item = data_objects_1.Data.Items.create_weapon_simple(1 /* WEAPON.SPEAR_WOOD */);
             item.affixes.push({ tag: 'of_power' });
             item.affixes.push({ tag: 'of_power' });
-            mage.equip.data.slots.weapon = item;
+            mage.equip.weapon = item;
             return mage;
         }
         Character.Mage = Mage;
@@ -283,7 +280,7 @@ var Template;
             alchemist._skills.magic_mastery = 60;
             alchemist._perks.mage_initiation = true;
             alchemist._perks.alchemist = true;
-            alchemist.stash.inc(materials_manager_1.ZAZ, 5);
+            alchemist.stash.inc(30 /* MATERIAL.ZAZ */, 5);
             alchemist.savings.inc(5000);
             return alchemist;
         }
@@ -292,7 +289,7 @@ var Template;
             let master = HumanCity('Armourer');
             master._skills.clothier = 100;
             master._perks.skin_armour_master = true;
-            master.stash.inc(materials_manager_1.RAT_SKIN, 50);
+            master.stash.inc(14 /* MATERIAL.LEATHER_RAT */, 50);
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
@@ -301,7 +298,7 @@ var Template;
             let master = HumanCity('Shoemaker');
             master._skills.clothier = 100;
             master._perks.shoemaker = true;
-            master.stash.inc(materials_manager_1.RAT_SKIN, 50);
+            master.stash.inc(14 /* MATERIAL.LEATHER_RAT */, 50);
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
@@ -310,7 +307,7 @@ var Template;
             let master = GenericHuman('Weapons maker', faction);
             master._skills.woodwork = 100;
             master._perks.weapon_maker = true;
-            master.stash.inc(materials_manager_1.WOOD, 15);
+            master.stash.inc(31 /* MATERIAL.WOOD_RED */, 15);
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }
@@ -319,7 +316,7 @@ var Template;
             let master = GenericHuman('Weapons maker', faction);
             master._skills.bone_carving = 100;
             master._perks.weapon_maker = true;
-            master.stash.inc(materials_manager_1.RAT_BONE, 40);
+            master.stash.inc(7 /* MATERIAL.BONE_RAT */, 40);
             master.savings.inc(TONS_OF_MONEY);
             return master;
         }

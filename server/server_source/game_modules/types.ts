@@ -1,19 +1,10 @@
 import { StatsTag } from "./races/stats"
 import { BaseResistTag } from "./races/resists"
 import { MaxHPTag } from "./races/max_hp"
+import { MATERIAL } from "@content/content";
 
-export const enum WEAPON_TYPE {
-    ONEHAND = 'onehand',
-    POLEARMS = 'polearms',
-    NOWEAPON = 'noweapon',
-    TWOHANDED = 'twohanded',
-    RANGED = 'ranged'
-}
 
-export type StashData = {
-    [index in number]: number
-}
-
+export type StashData = Record<MATERIAL, number>
 
 export class Status {
     hp:number;
@@ -29,7 +20,6 @@ export class Status {
         this.fatigue = 100
     }
 }
-
 
 export type tagAI =
     'rat'

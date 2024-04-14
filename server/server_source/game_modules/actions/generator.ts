@@ -1,14 +1,14 @@
 import { CharacterMapAction, DurationModifier, MapActionEffect, MapActionTriggerTargeted, TriggerResponse } from "./types";
 import { Character } from "../character/character";
 import { basic_trigger } from "./generic_functions";
-import { cell_id } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { Effect } from "../events/effects";
 export function generate_action(
-    fatigue_cost: number, 
+    fatigue_cost: number,
     duration_modifer: DurationModifier,
-    trigger: MapActionTriggerTargeted, 
+    trigger: MapActionTriggerTargeted,
     effect: MapActionEffect,
-    start_effect: MapActionEffect): CharacterMapAction 
+    start_effect: MapActionEffect): CharacterMapAction
 {
     return {
         duration(character: Character) {

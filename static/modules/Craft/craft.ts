@@ -1,5 +1,5 @@
 import { CraftBulkView, CraftItemUpdateView, CraftItemView } from "@custom_types/responses.js";
-import { CraftBulkTemplate, TaggedCraftBulk, TaggedCraftItem } from "../../../shared/inventory.js";
+import { CraftBulkTemplate, CraftItemTemplate, TaggedCraftBulk, TaggedCraftItem } from "../../../shared/inventory.js";
 import { div } from "../../widgets/Div/custom_div.js";
 import { Column, List } from "../../widgets/List/list.js";
 import { elementById } from "../HTMLwrappers/common.js";
@@ -7,6 +7,7 @@ import { socket } from "../Socket/socket.js";
 import { stash_id_to_tag } from "../Stash/stash.js";
 import { BulkAmount, Value, value_class_name } from "../Values/collection.js";
 import { BulkAmountInterface } from "../Types/character.js";
+import { ArmourStorage, WeaponStorage } from "@content/content.js";
 
 const durability_data: Record<string, Value> = {}
 const output_amount_data: Record<string, BulkAmountInterface[]> = {}
@@ -25,15 +26,15 @@ function item_amount_view_diw(items: BulkAmountInterface[]) {
     return div;
 }
 
-function is_item_craft(x: CraftBulkView|CraftItemView) : x is CraftItemView {
-    return "output_model" in x;
+function is_item_craft(x: CraftBulkTemplate|CraftItemTemplate) : x is CraftItemTemplate {
+    return "output_affixes" in x;
 }
 
-function is_bulk_craft(x: CraftBulkView|CraftItemView) : x is CraftBulkView {
+function is_bulk_craft(x: CraftBulkTemplate|CraftItemTemplate) : x is CraftBulkTemplate {
     return "output" in x;
 }
 
-const craft_columns : Column<CraftBulkView|CraftItemView>[] = [
+const craft_columns : Column<CraftBulkTemplate|CraftItemTemplate>[] = [
     {
         header_text: "Inputs",
         type: "html",
@@ -47,7 +48,11 @@ const craft_columns : Column<CraftBulkView|CraftItemView>[] = [
         type: "html",
         value: (item) => {
             if (is_item_craft(item)) {
-                return div(undefined, item.output_model, ["centered-box"], undefined, undefined, [])
+                if (item.output.tag == "weapon") {
+                    return div(undefined, WeaponStorage.get(item.output.value).id_string, ["centered-box"], undefined, undefined, [])
+                } else {
+                    return div(undefined, ArmourStorage.get(item.output.value).id_string, ["centered-box"], undefined, undefined, [])
+                }
             }
 
             if (is_bulk_craft(item)) {
@@ -94,19 +99,19 @@ const craft_columns : Column<CraftBulkView|CraftItemView>[] = [
 ]
 
 export function new_craft_table() {
-    const craft_list = new List<CraftBulkView|CraftItemView>(elementById('craft_list'))
+    const craft_list = new List<CraftBulkTemplate|CraftItemTemplate>(elementById('craft_list'))
     craft_list.columns = craft_columns
     return craft_list
 }
 
-export function update_craft_item_div(craft_list: List<CraftBulkView|CraftItemView>, message: CraftItemUpdateView) {
+export function update_craft_item_div(craft_list: List<CraftBulkTemplate|CraftItemTemplate>, message: CraftItemUpdateView) {
     if (durability_data[message.tag] == undefined) {
         durability_data[message.tag] = new Value(socket, message.tag + `_craft_durability`, [craft_list])
     }
     durability_data[message.tag].value = message.value
 }
 
-export function new_craft_bulk(craft_list: List<CraftBulkView|CraftItemView>, data: TaggedCraftBulk) {
+export function new_craft_bulk(craft_list: List<CraftBulkTemplate|CraftItemTemplate>, data: TaggedCraftBulk) {
     if (inputs_amount_data[data.tag] != undefined) {
         return
     }
@@ -130,7 +135,7 @@ export function new_craft_bulk(craft_list: List<CraftBulkView|CraftItemView>, da
     craft_list.update_display()
 }
 
-export function new_craft_item(craft_list: List<CraftBulkView|CraftItemView>, data: TaggedCraftItem) {
+export function new_craft_item(craft_list: List<CraftBulkTemplate|CraftItemTemplate>, data: TaggedCraftItem) {
     if (durability_data[data.tag] != undefined) {
         return
     }

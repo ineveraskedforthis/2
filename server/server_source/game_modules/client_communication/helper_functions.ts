@@ -1,4 +1,4 @@
-import { cell_id } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { JSONficate } from "../json";
 import { MarketOrderJson } from "../market/classes";
 import { Convert } from "../systems_communication";

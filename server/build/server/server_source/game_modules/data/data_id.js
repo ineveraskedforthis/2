@@ -7,8 +7,13 @@ var last_id_character = 0;
 var last_id_market_order = 0;
 var last_id_location = 0;
 var last_id_user = 0;
+var last_id_item = 0;
 var user_id_list = [];
 var user_id_character = [];
+var item_id_list;
+//var item_id_backpack                        : Record<item_id, backpack_id>
+//var backpack_id_list                        : backpack_id[]                                                     = []
+//var backpack_id_items                       : Record<backpack_id, item_id>                                      = []
 var character_id_list = [];
 var character_id_location = [];
 var character_id_owned_location_set = [];
@@ -127,6 +132,27 @@ var DataID;
         }
         Connection.is_character_location = is_character_location;
     })(Connection = DataID.Connection || (DataID.Connection = {}));
+    let Items;
+    (function (Items) {
+        function update_last_id(x) {
+            last_id_item = Math.max(x, last_id_item);
+        }
+        Items.update_last_id = update_last_id;
+        function set_up(item) {
+            item_id_list.push(item);
+        }
+        Items.set_up = set_up;
+        function new_id() {
+            last_id_item++;
+            return register(last_id_item);
+        }
+        Items.new_id = new_id;
+        function register(item) {
+            set_up(item);
+            return item;
+        }
+        Items.register = register;
+    })(Items = DataID.Items || (DataID.Items = {}));
     let Cells;
     (function (Cells) {
         function register(id) {

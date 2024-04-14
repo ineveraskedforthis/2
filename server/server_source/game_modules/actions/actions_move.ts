@@ -3,7 +3,7 @@ import { MapSystem } from "../map/system";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
 import { CharacterMapAction } from "./types";
-import { cell_id } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
 

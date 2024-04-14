@@ -1,24 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Equip = void 0;
-const inventory_1 = require("../../../../shared/inventory");
-const system_1 = require("../items/system");
+const item_system_1 = require("../systems/items/item_system");
 const damage_types_1 = require("../damage_types");
 const Damage_1 = require("../Damage");
-const inventory_2 = require("./inventory");
+const inventory_1 = require("./inventory");
+const content_1 = require("@content/content");
+const data_objects_1 = require("../data/data_objects");
+const item_1 = require("../../content_wrappers/item");
 class EquipData {
     constructor(backpack_limit) {
         this.slots = {};
-        this.backpack = new inventory_2.Inventory(backpack_limit);
+        this.backpack = new inventory_1.Inventory(backpack_limit);
+        this.selected_ammo = 0 /* MATERIAL.ARROW_BONE */;
     }
     load_json(json) {
-        for (let slot of inventory_1.slots) {
-            const item_data = json.slots[slot];
-            if (item_data == undefined)
-                continue;
-            const item = system_1.ItemSystem.create(item_data.model_tag, item_data.affixes, item_data.durability);
-            item.price = item_data.price;
-            this.slots[slot] = item;
+        for (let slot_id of content_1.EquipSlotConfiguration.SLOT) {
+            const slot = content_1.EquipSlotStorage.get(slot_id);
+            this.slots[slot.id] = json.slots[slot.id_string];
         }
         this.backpack.load_from_json(json.backpack);
     }
@@ -28,37 +27,51 @@ class Equip {
         this.data = new EquipData(10);
     }
     transfer_all(target) {
-        for (let tag of inventory_1.slots) {
-            this.unequip(tag);
+        for (let slot of content_1.EquipSlotConfiguration.SLOT) {
+            this.unequip(slot);
         }
         this.data.backpack.transfer_all(target.equip.data.backpack);
     }
+    get weapon() {
+        return this.data.slots[0 /* EQUIP_SLOT.WEAPON */] ? data_objects_1.Data.Items.from_id(this.data.slots[0 /* EQUIP_SLOT.WEAPON */]) : undefined;
+    }
+    set weapon(weapon) {
+        this.data.slots[0 /* EQUIP_SLOT.WEAPON */] = weapon ? weapon.id : undefined;
+    }
+    get weapon_id() {
+        return this.data.slots[0 /* EQUIP_SLOT.WEAPON */];
+    }
+    set weapon_id(x) {
+        this.data.slots[0 /* EQUIP_SLOT.WEAPON */] = x;
+    }
+    get secondary() {
+        return this.data.slots[1 /* EQUIP_SLOT.SECONDARY */] ? data_objects_1.Data.Items.from_id(this.data.slots[1 /* EQUIP_SLOT.SECONDARY */]) : undefined;
+    }
     get_weapon_range() {
-        let right_hand = this.data.slots.weapon;
-        if (right_hand == undefined) {
-            return undefined;
-        }
-        return system_1.ItemSystem.range(right_hand);
+        let weapon = this.weapon;
+        if (weapon == undefined)
+            return;
+        return item_system_1.ItemSystem.range(weapon);
     }
     get_melee_damage(type) {
-        // let damage = new Damage()
-        const item = this.data.slots.weapon;
-        if (item == undefined)
-            return undefined;
-        return system_1.ItemSystem.melee_damage(item, type);
+        let weapon = this.weapon;
+        if (weapon == undefined)
+            return;
+        return item_system_1.ItemSystem.melee_damage(weapon, type);
     }
     get_ranged_damage() {
-        let weapon = this.data.slots.weapon;
+        let weapon = this.weapon;
         if (weapon == undefined)
-            return undefined;
-        return system_1.ItemSystem.ranged_damage(weapon);
+            return;
+        return item_system_1.ItemSystem.ranged_damage(weapon, this.data.selected_ammo);
     }
     get_magic_power() {
         let result = 0;
-        result += system_1.ItemSystem.power(this.data.slots.weapon);
-        result += system_1.ItemSystem.power(this.data.slots.secondary);
-        for (let tag of inventory_1.slots) {
-            result += system_1.ItemSystem.power(this.data.slots[tag]);
+        for (let tag of content_1.EquipSlotConfiguration.SLOT) {
+            const item_id = this.data.slots[tag];
+            if (item_id == undefined)
+                continue;
+            result += item_system_1.ItemSystem.power(data_objects_1.Data.Items.from_id(item_id));
         }
         return result;
     }
@@ -73,7 +86,8 @@ class Equip {
         let item = backpack.items[index];
         if (item == undefined)
             return;
-        if (system_1.ItemSystem.slot(item) == 'weapon') {
+        const item_object = data_objects_1.Data.Items.from_id(item);
+        if ((0, item_1.is_weapon)(item_object)) {
             this.equip_weapon(index, model);
         }
         else {
@@ -86,8 +100,11 @@ class Equip {
         }
         let backpack = this.data.backpack;
         let item = backpack.items[index];
+        const item_data = data_objects_1.Data.Items.from_id(item);
+        if ((0, item_1.is_weapon)(item_data))
+            return;
         if (item != undefined) {
-            let slot = system_1.ItemSystem.slot(item);
+            let slot = item_data.prototype.slot;
             let tmp = this.data.slots[slot];
             this.data.slots[slot] = item;
             backpack.remove(index);
@@ -102,54 +119,32 @@ class Equip {
         let item = backpack.items[index];
         if (item == undefined)
             return;
-        if (system_1.ItemSystem.slot(item) != 'weapon') {
+        const item_data = data_objects_1.Data.Items.from_id(item);
+        if ((0, item_1.is_armour)(item_data)) {
             return;
         }
-        let tmp = this.data.slots.weapon;
-        if (model == 'graci') {
-            if (item.model_tag == 'spear') {
-            }
-            else if (item.model_tag == 'bone_spear') {
-            }
-            else {
-                return;
-            }
-        }
-        else if (model == 'human') {
-        }
-        else if (model == 'human_strong') {
-            if (item.model_tag == 'spear') {
-            }
-            else if (item.model_tag == 'bone_spear') {
-            }
-            else {
-                return;
-            }
-        }
-        else {
-            return;
-        }
+        let tmp = this.data.slots[0 /* EQUIP_SLOT.WEAPON */];
         if (tmp == undefined) {
-            this.data.slots.weapon = backpack.items[index];
+            this.data.slots[0 /* EQUIP_SLOT.WEAPON */] = backpack.items[index];
             backpack.remove(index);
         }
         else {
-            let tmp2 = this.data.slots.secondary;
+            let tmp2 = this.data.slots[1 /* EQUIP_SLOT.SECONDARY */];
             if (tmp2 == undefined) {
-                this.data.slots.secondary = backpack.items[index];
+                this.data.slots[1 /* EQUIP_SLOT.SECONDARY */] = backpack.items[index];
                 backpack.remove(index);
             }
             else {
-                this.data.slots.weapon = backpack.items[index];
+                this.data.slots[0 /* EQUIP_SLOT.WEAPON */] = backpack.items[index];
                 backpack.remove(index);
                 backpack.add(tmp);
             }
         }
     }
     switch_weapon() {
-        let tmp = this.data.slots.weapon;
-        this.data.slots.weapon = this.data.slots.secondary;
-        this.data.slots.secondary = tmp;
+        let tmp = this.data.slots[0 /* EQUIP_SLOT.WEAPON */];
+        this.data.slots[0 /* EQUIP_SLOT.WEAPON */] = this.data.slots[1 /* EQUIP_SLOT.SECONDARY */];
+        this.data.slots[1 /* EQUIP_SLOT.SECONDARY */] = tmp;
     }
     unequip(tag) {
         let item = this.data.slots[tag];
@@ -164,15 +159,17 @@ class Equip {
         return;
     }
     slot_to_item(tag) {
-        if (tag == 'weapon') {
-            return this.data.slots.weapon;
-        }
-        return this.data.slots[tag];
+        const id = this.data.slots[tag];
+        return id ? data_objects_1.Data.Items.from_id(id) : undefined;
     }
     _equip_to_data(data) {
         const result = {};
-        for (const key of Object.keys(data)) {
-            result[key] = system_1.ItemSystem.item_data(data[key]);
+        for (const key of content_1.EquipSlotConfiguration.SLOT) {
+            const item_id = data[key];
+            if (item_id == undefined)
+                continue;
+            const item_data = data_objects_1.Data.Items.from_id(item_id);
+            result[item_data.prototype.id_string] = item_system_1.ItemSystem.data(item_data);
         }
         return result;
     }
@@ -185,14 +182,24 @@ class Equip {
     }
     resists() {
         let resists = new Damage_1.Damage;
-        for (let i of inventory_1.slots) {
-            damage_types_1.DmgOps.add_ip(resists, system_1.ItemSystem.resists(this.data.slots[i]));
+        for (const key of content_1.EquipSlotConfiguration.SLOT) {
+            const item_id = this.data.slots[key];
+            if (item_id == undefined)
+                continue;
+            const item_data = data_objects_1.Data.Items.from_id(item_id);
+            if ((0, item_1.is_weapon)(item_data))
+                continue;
+            damage_types_1.DmgOps.add_ip(resists, item_system_1.ItemSystem.resists(item_data));
         }
         return resists;
     }
     modify_attack(attack) {
-        for (let i of inventory_1.slots) {
-            system_1.ItemSystem.modify_attack(this.data.slots[i], attack);
+        for (const key of content_1.EquipSlotConfiguration.SLOT) {
+            const item_id = this.data.slots[key];
+            if (item_id == undefined)
+                continue;
+            const item_data = data_objects_1.Data.Items.from_id(item_id);
+            item_system_1.ItemSystem.modify_attack(item_data, attack);
         }
     }
     load_from_json(json) {

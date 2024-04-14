@@ -1,18 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.can_shoot = exports.has_zaz = exports.can_cast_magic_bolt_blood = exports.can_cast_magic_bolt = exports.can_push_back = exports.can_fast_attack = exports.can_dodge = void 0;
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const system_1 = require("./system");
-const system_2 = require("../items/system");
-function weapon_type(weapon) {
-    if (weapon == undefined) {
-        return 'noweapon';
-    }
-    return system_2.ItemSystem.weapon_tag(weapon);
-}
 function can_dodge(character) {
     if (system_1.CharacterSystem.perk(character, 'advanced_unarmed')) {
-        if (weapon_type(character.equip.data.slots.weapon) == 'noweapon') {
+        if (system_1.CharacterSystem.equiped_weapon_required_skill(character) == "noweapon") {
             return true;
         }
     }
@@ -24,7 +16,7 @@ function can_dodge(character) {
 exports.can_dodge = can_dodge;
 function can_fast_attack(character) {
     if (system_1.CharacterSystem.perk(character, 'advanced_unarmed')) {
-        if (weapon_type(character.equip.data.slots.weapon) == 'noweapon') {
+        if (system_1.CharacterSystem.equiped_weapon_required_skill(character) == "noweapon") {
             return true;
         }
     }
@@ -33,7 +25,7 @@ function can_fast_attack(character) {
 exports.can_fast_attack = can_fast_attack;
 function can_push_back(character) {
     if (system_1.CharacterSystem.perk(character, 'advanced_polearm')) {
-        if (weapon_type(character.equip.data.slots.weapon) == "polearms" /* WEAPON_TYPE.POLEARMS */) {
+        if (system_1.CharacterSystem.equiped_weapon_required_skill(character) == "polearms") {
             return true;
         }
     }
@@ -52,14 +44,14 @@ function can_cast_magic_bolt_blood(character) {
 }
 exports.can_cast_magic_bolt_blood = can_cast_magic_bolt_blood;
 function has_zaz(character) {
-    return character.stash.get(materials_manager_1.ZAZ) > 0;
+    return character.stash.get(30 /* MATERIAL.ZAZ */) > 0;
 }
 exports.has_zaz = has_zaz;
 function can_shoot(character) {
-    if (system_1.CharacterSystem.weapon_type(character) != 'ranged') {
+    if (system_1.CharacterSystem.equiped_weapon_required_skill(character) != 'ranged') {
         return false;
     }
-    if (character.stash.get(materials_manager_1.ARROW_BONE) >= 1) {
+    if (character.stash.get(character.equip.data.selected_ammo) >= 1) {
         return true;
     }
     return false;

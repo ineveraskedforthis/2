@@ -5,8 +5,8 @@ import { CharacterSystem } from "../character/system";
 import { AttackObj } from "./class";
 
 export namespace Attack {
-    export function generate_melee(character: Character, type: damage_type): AttackObj {
-        const result = new AttackObj(CharacterSystem.melee_weapon_type(character))
+    export function generate_melee(character: Character, type: melee_attack_type): AttackObj {
+        const result = new AttackObj(CharacterSystem.equiped_weapon_required_skill_melee(character))
         //add base item damage
         DmgOps.add_ip(result.damage, CharacterSystem.melee_damage_raw(character, type))
         //account for strength

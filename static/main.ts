@@ -23,13 +23,14 @@ import { draw_map_related_stuff, init_map } from './modules/map.js';
 import { init_detailed_character_statistics } from './request_perks.js';
 import { globals } from './modules/globals.js';
 import { Value } from './modules/Values/collection.js';
-import { EquipSlotData, EquipSocket, ItemData, TaggedCraftBulk, TaggedCraftItem, equip_slot } from '../shared/inventory.js';
+import { EquipSlotData, EquipSocket, TaggedCraftBulk, TaggedCraftItem } from '../shared/inventory.js';
 import { new_craft_bulk, new_craft_item, new_craft_table, update_craft_item_div } from './modules/Craft/craft.js';
 import { init_locations } from './modules/Locations/request_locations.js';
 import { CraftItemUpdateView } from '@custom_types/responses.js';
 import { CharacterDataBasic } from './modules/Types/character.js';
 import { BackgroundImage } from './modules/BackgroundImage/background_image.js';
 import { init_equipment_screen } from './modules/Equipment/equipment.js';
+import { EquipSlotConfiguration, equip_slot_string_id } from "@content/content.js"
 
 // noselect tabs
 
@@ -135,11 +136,11 @@ socket.on('equip-update', (msg: EquipSocket) => {
     update_equip_image(msg.equip)
 
     let equip_data : EquipSlotData[] = []
-    for (let item_slot of Object.keys(msg.equip)) {
-        const item = msg.equip[item_slot as equip_slot]
+    for (let slot of EquipSlotConfiguration.SLOT) {
+        const item = msg.equip[slot]
         if (item == undefined) continue;
         equip_data.push({
-            equip_slot: item_slot as equip_slot,
+            equip_slot: slot,
             item: item
         })
     }

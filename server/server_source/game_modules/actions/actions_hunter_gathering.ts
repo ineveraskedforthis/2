@@ -1,14 +1,13 @@
 import { Character } from "../character/character";
 import { Effect } from "../events/effects";
 import { Event } from "../events/events";
-import { WOOD, COTTON, MEAT, RAT_SKIN, FISH } from "../manager_classes/materials_manager";
-import { Convert } from "../systems_communication";
-import { cell_id } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { generate_action } from "./generator";
 import { CharacterSystem } from "../character/system";
 import { TriggerResponse } from "./types";
 import { basic_duration_modifier, dummy_effect } from "./generic_functions";
 import { Data } from "../data/data_objects";
+import { MATERIAL } from "@content/content";
 const FATIGUE_COST_WOOD = 5
 const FATIGUE_COST_COTTON = 1
 const FATIGUE_COST_HUNT = 5
@@ -65,12 +64,12 @@ function fishing_trigger(character: Character) : TriggerResponse {
 
 function gather_wood_effect(character: Character) {
     Event.remove_tree(character.location_id)
-    Event.change_stash(character, WOOD, 1)
+    Event.change_stash(character, MATERIAL.WOOD_RED, 1)
 }
 
 function gather_cotton_effect(character: Character) {
     Data.Locations.from_id(character.location_id).cotton -= 1
-    Event.change_stash(character, COTTON, 1)
+    Event.change_stash(character, MATERIAL.COTTON, 1)
 }
 
 function hunt_skill_upgrade_roll(character: Character) {
@@ -97,8 +96,8 @@ function hunt_effect(character: Character) {
     hunt_skill_upgrade_roll(character)
 
     Data.Locations.from_id(character.location_id).small_game -= 1
-    Event.change_stash(character, MEAT, amount_meat)
-    Event.change_stash(character, RAT_SKIN, amount_skin)
+    Event.change_stash(character, MATERIAL.MEAT_RAT, amount_meat)
+    Event.change_stash(character, MATERIAL.SKIN_RAT, amount_skin)
 }
 
 function fishing_effect(character: Character, cell: cell_id) {
@@ -118,7 +117,7 @@ function fishing_effect(character: Character, cell: cell_id) {
     }
 
     Data.Locations.from_id(character.location_id).fish -= 1
-    Event.change_stash(character, FISH, amount)
+    Event.change_stash(character, MATERIAL.FISH_OKU, amount)
 }
 
 export const gather_wood = generate_action(

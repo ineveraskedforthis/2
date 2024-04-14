@@ -1,19 +1,19 @@
 import { Character } from "../character/character";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
-import { location_id, character_id } from "@custom_types/common";
+import { location_id, character_id } from "@custom_types/ids";
 import { ScriptedValue } from "./scripted_values";
 import { trim } from "../calculations/basic_functions";
-import { cell_id, money } from "@custom_types/common";
-import { Alerts } from "../client_communication/network_actions/alerts";
+import { money } from "@custom_types/common";
+import { cell_id } from "@custom_types/ids";
 import { Trigger } from "./triggers";
-import { equip_slot, material_index, skill } from "@custom_types/inventory";
+import { skill } from "@custom_types/inventory";
 import { MarketOrders } from "../market/system";
 import { Perks } from "@custom_types/character";
 import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
 import { LocationInterface } from "../location/location_interface";
-import { SendUpdate } from "../client_communication/network_actions/updates";
+import { EQUIP_SLOT, MATERIAL } from "@content/content";
 
 export namespace Effect {
     export namespace Update {
@@ -26,7 +26,7 @@ export namespace Effect {
         }
     }
 
-    export function change_durability(character: Character, slot: equip_slot, dx: number) {
+    export function change_durability(character: Character, slot: EQUIP_SLOT, dx: number) {
         const item = character.equip.slot_to_item(slot)
         if (item == undefined) return
         item.durability += dx
@@ -36,7 +36,7 @@ export namespace Effect {
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
     }
 
-    export function destroy_item(character:Character, slot: equip_slot) {
+    export function destroy_item(character:Character, slot: EQUIP_SLOT) {
         character.equip.destroy_slot(slot)
         UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BELONGINGS)
     }
@@ -143,7 +143,7 @@ export namespace Effect {
         location_quality_reduction_roll(location)
     }
 
-    export function spoilage(character: Character, good: material_index, rate: number) {
+    export function spoilage(character: Character, good: MATERIAL, rate: number) {
         let dice = Math.random()
         if (dice < rate) {
             let current_amount = character.stash.get(good)

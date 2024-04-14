@@ -1,19 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.inventory_from_string = exports.inventory_to_string = exports.equip_from_string = exports.equip_to_string = exports.string_to_character = exports.character_to_string = exports.item_from_string = exports.item_to_string = void 0;
-const item_1 = require("../items/item");
+exports.inventory_from_string = exports.inventory_to_string = exports.equip_from_string = exports.equip_to_string = exports.string_to_character = exports.character_to_string = void 0;
 const character_1 = require("../character/character");
-function item_to_string(item) {
-    return (JSON.stringify(item));
-}
-exports.item_to_string = item_to_string;
-function item_from_string(s) {
-    const item_data = JSON.parse(s);
-    // let damage = DmgOps.copy(item_data.damage);
-    // let resistance = DmgOps.copy(item_data.resists);
-    return new item_1.Item(item_data.durability, item_data.affixes, item_data.model_tag);
-}
-exports.item_from_string = item_from_string;
 function character_to_string(data) {
     return JSON.stringify({
         model: data.model,

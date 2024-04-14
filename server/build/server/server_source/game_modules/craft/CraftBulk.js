@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.get_crafts_bulk_list = exports.new_craft_bulk = exports.output_bulk = exports.produce_output = exports.event_craft_bulk = void 0;
 const user_manager_1 = require("../client_communication/user_manager");
-const materials_manager_1 = require("../manager_classes/materials_manager");
 const generate_action_1 = require("./generate_action");
 const crafts_storage_1 = require("./crafts_storage");
 const helpers_1 = require("./helpers");
 const events_1 = require("../events/events");
 const system_1 = require("../character/system");
+const content_1 = require("@content/content");
 function event_craft_bulk(character, craft) {
     (0, helpers_1.use_input)(craft.input, character);
     produce_output(output_bulk(character, craft), character);
@@ -33,19 +33,20 @@ function output_bulk(character, craft) {
         ratio = Math.min((0, helpers_1.skill_to_ratio)(skill, check.difficulty), ratio);
     }
     for (let item of craft.output) {
+        const material = content_1.MaterialStorage.get(item.material);
         //calculate bonus from perks
         let bonus = 0;
-        if (item.material == materials_manager_1.FOOD) {
+        if (material.category == 6 /* MATERIAL_CATEGORY.MEAT */) {
             if (character._perks.meat_master)
                 bonus += 1;
         }
-        if (item.material == materials_manager_1.ZAZ) {
+        if (material.magic_power > 0) {
             if (character._perks.alchemist)
                 bonus += 2;
             if (character._perks.mage_initiation)
                 bonus += 1;
         }
-        if (item.material == materials_manager_1.ARROW_BONE) {
+        if (material.category == 0 /* MATERIAL_CATEGORY.BOW_AMMO */) {
             if (character._perks.fletcher)
                 bonus += 5;
         }
