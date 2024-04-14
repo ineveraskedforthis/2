@@ -38,13 +38,13 @@ export class List {
                 const validate_a = column.value(a);
                 const validate_b = column.value(b);
                 if (validate_a == undefined) {
-                    alert("INVALID TABLE ENTRY");
+                    //alert("INVALID TABLE ENTRY")
                     console.error("INVALID ENTRY:");
                     console.log(a);
                     console.log(column.header_text);
                 }
                 if (validate_b == undefined) {
-                    alert("INVALID TABLE ENTRY");
+                    //alert("INVALID TABLE ENTRY")
                     console.error("INVALID ENTRY:");
                     console.log(b);
                     console.log(column.header_text);
@@ -185,6 +185,8 @@ export class List {
         return this._sorting_sequence[len - 1].order;
     }
     set data(data) {
+        console.log("update table with data:");
+        console.log(data);
         this._data = data;
         this._update_table();
     }
@@ -229,3 +231,4 @@ export class List {
         this._update_table();
     }
 }
+

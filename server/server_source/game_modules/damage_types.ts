@@ -50,6 +50,12 @@ export namespace DmgOps {
         }
         return total
     }
+
+    export function floor_ip(x: Damage) {
+        for (let tag of damage_types) {
+            x[tag] = Math.floor(x[tag])
+        }
+    }
 }
 
 export const damage_types: damage_type[] = ['blunt', 'pierce', 'slice', 'fire'];

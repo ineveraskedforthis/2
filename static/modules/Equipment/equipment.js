@@ -1,4 +1,4 @@
-import { EquipSlotStorage } from "@content/content.js";
+import { EquipSlotStorage } from "../.././content.js";
 import { List } from "../../widgets/List/list.js";
 import { damage_types } from "../Constants/inventory.js";
 import { elementById } from "../HTMLwrappers/common.js";
@@ -17,7 +17,7 @@ const columns = [
     },
     {
         header_text: "Slot",
-        value: (item) => EquipSlotStorage.get(item.equip_slot).name,
+        value: (item) => EquipSlotStorage.from_string(item.equip_slot).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },
@@ -103,3 +103,4 @@ export function init_equipment_screen(socket) {
     elementById('send_switch_weapon_request').onclick = () => send_switch_weapon_request(socket);
     return equip_list;
 }
+

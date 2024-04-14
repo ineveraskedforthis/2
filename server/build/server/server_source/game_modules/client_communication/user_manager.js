@@ -276,3 +276,4 @@ var UserManagement;
     }
     UserManagement.send_character_to_user = send_character_to_user;
 })(UserManagement || (exports.UserManagement = UserManagement = {}));
+

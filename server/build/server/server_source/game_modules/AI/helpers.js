@@ -139,3 +139,4 @@ var AIhelper;
     }
     AIhelper.sell_price_item = sell_price_item;
 })(AIhelper || (exports.AIhelper = AIhelper = {}));
+

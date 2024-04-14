@@ -1,1 +1,1 @@
-tsc -p ./server/ & tsc -p ./static/
+tsc -p ./server/ & tsc -p ./static/ & python replace_path.py

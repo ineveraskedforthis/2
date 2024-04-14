@@ -10,3 +10,4 @@ class Damage {
     }
 }
 exports.Damage = Damage;
+

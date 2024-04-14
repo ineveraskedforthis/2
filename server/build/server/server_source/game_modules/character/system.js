@@ -12,7 +12,7 @@ const stats_1 = require("../races/stats");
 const resists_1 = require("../races/resists");
 const item_system_1 = require("../systems/items/item_system");
 const data_objects_1 = require("../data/data_objects");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 var ai_campaign_decision_timer = 0;
 var character_state_update_timer = 0;
 var CharacterSystem;
@@ -362,3 +362,4 @@ var CharacterSystem;
     }
     CharacterSystem.battle_update = battle_update;
 })(CharacterSystem || (exports.CharacterSystem = CharacterSystem = {}));
+

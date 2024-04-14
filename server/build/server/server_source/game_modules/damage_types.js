@@ -53,5 +53,12 @@ var DmgOps;
         return total;
     }
     DmgOps.total = total;
+    function floor_ip(x) {
+        for (let tag of exports.damage_types) {
+            x[tag] = Math.floor(x[tag]);
+        }
+    }
+    DmgOps.floor_ip = floor_ip;
 })(DmgOps || (exports.DmgOps = DmgOps = {}));
 exports.damage_types = ['blunt', 'pierce', 'slice', 'fire'];
+

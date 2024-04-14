@@ -112,3 +112,4 @@ function GenericRest(character) {
     return false;
 }
 exports.GenericRest = GenericRest;
+

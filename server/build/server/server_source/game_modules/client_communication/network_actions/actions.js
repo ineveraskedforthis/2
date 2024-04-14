@@ -134,3 +134,4 @@ var HandleAction;
     }
     HandleAction.battle_position = battle_position;
 })(HandleAction || (exports.HandleAction = HandleAction = {}));
+

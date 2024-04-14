@@ -245,3 +245,4 @@ exports.update_character = {
         agent.change('hp', -1);
     }
 };
+

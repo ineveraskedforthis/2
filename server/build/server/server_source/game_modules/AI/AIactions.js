@@ -56,6 +56,7 @@ var AIactions;
         for (let [index, item] of Object.entries(character.equip.data.backpack.items)) {
             if (item == undefined)
                 continue;
+            //console.log(item)
             const object = data_objects_1.Data.Items.from_id(item);
             let slot = 0 /* EQUIP_SLOT.WEAPON */;
             if (!(0, item_1.is_weapon)(object)) {
@@ -72,3 +73,4 @@ var AIactions;
     }
     AIactions.sell_items = sell_items;
 })(AIactions || (exports.AIactions = AIactions = {}));
+

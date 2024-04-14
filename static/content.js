@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ArmourStorage = exports.WeaponStorage = exports.ImpactStorage = exports.EquipSlotStorage = exports.MaterialCategoryStorage = exports.MaterialStorage = exports.ArmourConfiguration = exports.WeaponConfiguration = exports.ImpactConfiguration = exports.EquipSlotConfiguration = exports.MaterialCategoryConfiguration = exports.MaterialConfiguration = void 0;
-class MaterialConfiguration {
+export class MaterialConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
     }
@@ -12,7 +9,6 @@ class MaterialConfiguration {
         return id in this.MATERIAL_FROM_STRING;
     }
 }
-exports.MaterialConfiguration = MaterialConfiguration;
 MaterialConfiguration.MATERIAL = [0 /* MATERIAL.ARROW_BONE */, 1 /* MATERIAL.ARROW_ZAZ */, 2 /* MATERIAL.COTTON */, 3 /* MATERIAL.TEXTILE */, 4 /* MATERIAL.SMALL_BONE_RAT */, 5 /* MATERIAL.SMALL_BONE_HUMAN */, 6 /* MATERIAL.SMALL_BONE_GRACI */, 7 /* MATERIAL.BONE_RAT */, 8 /* MATERIAL.BONE_HUMAN */, 9 /* MATERIAL.BONE_GRACI */, 10 /* MATERIAL.SKIN_RAT */, 11 /* MATERIAL.SKIN_HUMAN */, 12 /* MATERIAL.SKIN_GRACI */, 13 /* MATERIAL.SKIN_BALL */, 14 /* MATERIAL.LEATHER_RAT */, 15 /* MATERIAL.LEATHER_HUMAN */, 16 /* MATERIAL.LEATHER_GRACI */, 17 /* MATERIAL.LEATHER_BALL */, 18 /* MATERIAL.MEAT_RAT */, 19 /* MATERIAL.MEAT_RAT_FRIED */, 20 /* MATERIAL.MEAT_ELODINO */, 21 /* MATERIAL.MEAT_BALL */, 22 /* MATERIAL.MEAT_HUMAN */, 23 /* MATERIAL.MEAT_GRACI */, 24 /* MATERIAL.MEAT_HUMAN_FRIED */, 25 /* MATERIAL.MEAT_GRACI_FRIED */, 26 /* MATERIAL.FISH_OKU */, 27 /* MATERIAL.FISH_OKU_FRIED */, 28 /* MATERIAL.BERRY_FIE */, 29 /* MATERIAL.BERRY_ZAZ */, 30 /* MATERIAL.ZAZ */, 31 /* MATERIAL.WOOD_RED */, 32 /* MATERIAL.WOOD_RED_PLATE */, 33 /* MATERIAL.HAIR_GRACI */, 34 /* MATERIAL.STEEL */,];
 MaterialConfiguration.MATERIAL_FROM_STRING = { "arrow-bone": 0 /* MATERIAL.ARROW_BONE */, "arrow-zaz": 1 /* MATERIAL.ARROW_ZAZ */, "cotton": 2 /* MATERIAL.COTTON */, "textile": 3 /* MATERIAL.TEXTILE */, "small-bone-rat": 4 /* MATERIAL.SMALL_BONE_RAT */, "small-bone-human": 5 /* MATERIAL.SMALL_BONE_HUMAN */, "small-bone-graci": 6 /* MATERIAL.SMALL_BONE_GRACI */, "bone-rat": 7 /* MATERIAL.BONE_RAT */, "bone-human": 8 /* MATERIAL.BONE_HUMAN */, "bone-graci": 9 /* MATERIAL.BONE_GRACI */, "skin-rat": 10 /* MATERIAL.SKIN_RAT */, "skin-human": 11 /* MATERIAL.SKIN_HUMAN */, "skin-graci": 12 /* MATERIAL.SKIN_GRACI */, "skin-ball": 13 /* MATERIAL.SKIN_BALL */, "leather-rat": 14 /* MATERIAL.LEATHER_RAT */, "leather-human": 15 /* MATERIAL.LEATHER_HUMAN */, "leather-graci": 16 /* MATERIAL.LEATHER_GRACI */, "leather-ball": 17 /* MATERIAL.LEATHER_BALL */, "meat-rat": 18 /* MATERIAL.MEAT_RAT */, "meat-rat-fried": 19 /* MATERIAL.MEAT_RAT_FRIED */, "meat-elodino": 20 /* MATERIAL.MEAT_ELODINO */, "meat-ball": 21 /* MATERIAL.MEAT_BALL */, "meat-human": 22 /* MATERIAL.MEAT_HUMAN */, "meat-graci": 23 /* MATERIAL.MEAT_GRACI */, "meat-human-fried": 24 /* MATERIAL.MEAT_HUMAN_FRIED */, "meat-graci-fried": 25 /* MATERIAL.MEAT_GRACI_FRIED */, "fish-oku": 26 /* MATERIAL.FISH_OKU */, "fish-oku-fried": 27 /* MATERIAL.FISH_OKU_FRIED */, "berry-fie": 28 /* MATERIAL.BERRY_FIE */, "berry-zaz": 29 /* MATERIAL.BERRY_ZAZ */, "zaz": 30 /* MATERIAL.ZAZ */, "wood-red": 31 /* MATERIAL.WOOD_RED */, "wood-red-plate": 32 /* MATERIAL.WOOD_RED_PLATE */, "hair-graci": 33 /* MATERIAL.HAIR_GRACI */, "steel": 34 /* MATERIAL.STEEL */ };
 MaterialConfiguration.MATERIAL_TO_STRING = ["arrow-bone", "arrow-zaz", "cotton", "textile", "small-bone-rat", "small-bone-human", "small-bone-graci", "bone-rat", "bone-human", "bone-graci", "skin-rat", "skin-human", "skin-graci", "skin-ball", "leather-rat", "leather-human", "leather-graci", "leather-ball", "meat-rat", "meat-rat-fried", "meat-elodino", "meat-ball", "meat-human", "meat-graci", "meat-human-fried", "meat-graci-fried", "fish-oku", "fish-oku-fried", "berry-fie", "berry-zaz", "zaz", "wood-red", "wood-red-plate", "hair-graci", "steel",];
@@ -30,7 +26,7 @@ MaterialConfiguration.MATERIAL_PENENTRATION_PROTECTION = [0.0, 0.0, 0.05, 0.1, 0
 MaterialConfiguration.MATERIAL_MAGIC_POWER = [0.0, 1.0, 0.05, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 2.0, 4.0, 0.0, 0.0, 2.0, 2.0, 0.0, 4.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.1, 1.0, 0.1, 0.1, 5.0, 0.0,];
 // Strings: 
 MaterialConfiguration.MATERIAL_NAME = ["Bone arrow", "Zaz arrow", "Cotton", "Textile", "Bone(rat, small)", "Bone(human, small)", "Bone(graci, small)", "Bone(rat)", "Bone(human)", "Bone(graci)", "Skin(rat)", "Skin(human)", "Skin(graci)", "Skin(meat ball)", "Leather(rat)", "Leather(human)", "Leather(graci)", "Leather(meat ball)", "Meat(rat)", "Fried meat(rat)", "Meat(elodino)", "Meat(meat ball)", "Meat(human)", "Meat(graci)", "Fried meat(human)", "Fried meat(graci)", "Fish(oku)", "Fried fish(oku)", "Fieberry", "Zazberry", "Zaz", "Wood(raw)", "Wood(plates)", "Hair(graci)", "Steel",];
-class MaterialCategoryConfiguration {
+export class MaterialCategoryConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
     }
@@ -41,7 +37,6 @@ class MaterialCategoryConfiguration {
         return id in this.CATEGORY_FROM_STRING;
     }
 }
-exports.MaterialCategoryConfiguration = MaterialCategoryConfiguration;
 MaterialCategoryConfiguration.CATEGORY = [0 /* MATERIAL_CATEGORY.BOW_AMMO */, 1 /* MATERIAL_CATEGORY.PLANT */, 2 /* MATERIAL_CATEGORY.MATERIAL */, 3 /* MATERIAL_CATEGORY.BONE */, 4 /* MATERIAL_CATEGORY.SKIN */, 5 /* MATERIAL_CATEGORY.LEATHER */, 6 /* MATERIAL_CATEGORY.MEAT */, 7 /* MATERIAL_CATEGORY.FISH */, 8 /* MATERIAL_CATEGORY.FOOD */, 9 /* MATERIAL_CATEGORY.FRUIT */, 10 /* MATERIAL_CATEGORY.WOOD */,];
 MaterialCategoryConfiguration.CATEGORY_FROM_STRING = { "bow-ammo": 0 /* MATERIAL_CATEGORY.BOW_AMMO */, "plant": 1 /* MATERIAL_CATEGORY.PLANT */, "material": 2 /* MATERIAL_CATEGORY.MATERIAL */, "bone": 3 /* MATERIAL_CATEGORY.BONE */, "skin": 4 /* MATERIAL_CATEGORY.SKIN */, "leather": 5 /* MATERIAL_CATEGORY.LEATHER */, "meat": 6 /* MATERIAL_CATEGORY.MEAT */, "fish": 7 /* MATERIAL_CATEGORY.FISH */, "food": 8 /* MATERIAL_CATEGORY.FOOD */, "fruit": 9 /* MATERIAL_CATEGORY.FRUIT */, "wood": 10 /* MATERIAL_CATEGORY.WOOD */ };
 MaterialCategoryConfiguration.CATEGORY_TO_STRING = ["bow-ammo", "plant", "material", "bone", "skin", "leather", "meat", "fish", "food", "fruit", "wood",];
@@ -51,7 +46,7 @@ MaterialCategoryConfiguration.MATERIAL_CATEGORY_CATEGORY_STRING = ["bow-ammo", "
 // Numbers: 
 // Strings: 
 MaterialCategoryConfiguration.MATERIAL_CATEGORY_NAME = ["Ammo(bow)", "Plant", "Material", "Bone", "Skin", "Leather", "Meat", "Fish", "Food", "Fruit", "Wood",];
-class EquipSlotConfiguration {
+export class EquipSlotConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
     }
@@ -62,7 +57,6 @@ class EquipSlotConfiguration {
         return id in this.SLOT_FROM_STRING;
     }
 }
-exports.EquipSlotConfiguration = EquipSlotConfiguration;
 EquipSlotConfiguration.SLOT = [0 /* EQUIP_SLOT.WEAPON */, 1 /* EQUIP_SLOT.SECONDARY */, 2 /* EQUIP_SLOT.AMULET */, 3 /* EQUIP_SLOT.MAIL */, 4 /* EQUIP_SLOT.PAULDRON_LEFT */, 5 /* EQUIP_SLOT.PAULDRON_RIGHT */, 6 /* EQUIP_SLOT.GAUNTLET_LEFT */, 7 /* EQUIP_SLOT.GAUNTLET_RIGHT */, 8 /* EQUIP_SLOT.BOOTS */, 9 /* EQUIP_SLOT.HELMET */, 10 /* EQUIP_SLOT.BELT */, 11 /* EQUIP_SLOT.ROBE */, 12 /* EQUIP_SLOT.SHIRT */, 13 /* EQUIP_SLOT.PANTS */, 14 /* EQUIP_SLOT.DRESS */, 15 /* EQUIP_SLOT.SOCKS */, 16 /* EQUIP_SLOT.NONE */,];
 EquipSlotConfiguration.SLOT_FROM_STRING = { "weapon": 0 /* EQUIP_SLOT.WEAPON */, "secondary": 1 /* EQUIP_SLOT.SECONDARY */, "amulet": 2 /* EQUIP_SLOT.AMULET */, "mail": 3 /* EQUIP_SLOT.MAIL */, "pauldron-left": 4 /* EQUIP_SLOT.PAULDRON_LEFT */, "pauldron-right": 5 /* EQUIP_SLOT.PAULDRON_RIGHT */, "gauntlet-left": 6 /* EQUIP_SLOT.GAUNTLET_LEFT */, "gauntlet-right": 7 /* EQUIP_SLOT.GAUNTLET_RIGHT */, "boots": 8 /* EQUIP_SLOT.BOOTS */, "helmet": 9 /* EQUIP_SLOT.HELMET */, "belt": 10 /* EQUIP_SLOT.BELT */, "robe": 11 /* EQUIP_SLOT.ROBE */, "shirt": 12 /* EQUIP_SLOT.SHIRT */, "pants": 13 /* EQUIP_SLOT.PANTS */, "dress": 14 /* EQUIP_SLOT.DRESS */, "socks": 15 /* EQUIP_SLOT.SOCKS */, "none": 16 /* EQUIP_SLOT.NONE */ };
 EquipSlotConfiguration.SLOT_TO_STRING = ["weapon", "secondary", "amulet", "mail", "pauldron-left", "pauldron-right", "gauntlet-left", "gauntlet-right", "boots", "helmet", "belt", "robe", "shirt", "pants", "dress", "socks", "none",];
@@ -72,7 +66,7 @@ EquipSlotConfiguration.EQUIP_SLOT_SLOT_STRING = ["weapon", "secondary", "amulet"
 // Numbers: 
 // Strings: 
 EquipSlotConfiguration.EQUIP_SLOT_NAME = ["Weapon", "Secondary", "Amulet", "Chestpiece", "Left pauldron", "Right pauldron", "Left gauntlet", "Right gauntlet", "Boots", "Helmet", "Belt", "Robe", "Shirt", "Pants", "Dress", "Socks", "nan",];
-class ImpactConfiguration {
+export class ImpactConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0,];
     }
@@ -83,7 +77,6 @@ class ImpactConfiguration {
         return id in this.IMPACT_FROM_STRING;
     }
 }
-exports.ImpactConfiguration = ImpactConfiguration;
 ImpactConfiguration.IMPACT = [0 /* IMPACT_TYPE.POINT */, 1 /* IMPACT_TYPE.BLADE */, 2 /* IMPACT_TYPE.BLUNT */, 3 /* IMPACT_TYPE.NONE */,];
 ImpactConfiguration.IMPACT_FROM_STRING = { "point": 0 /* IMPACT_TYPE.POINT */, "blade": 1 /* IMPACT_TYPE.BLADE */, "blunt": 2 /* IMPACT_TYPE.BLUNT */, "none": 3 /* IMPACT_TYPE.NONE */ };
 ImpactConfiguration.IMPACT_TO_STRING = ["point", "blade", "blunt", "none",];
@@ -97,7 +90,7 @@ ImpactConfiguration.IMPACT_TYPE_PIERCE = [1.0, 0.8, 0.0, 0.0,];
 ImpactConfiguration.IMPACT_TYPE_SLICE = [0.4, 1.0, 0.0, 0.0,];
 // Strings: 
 ImpactConfiguration.IMPACT_TYPE_NAME = ["Point", "Blade", "Blunt", "nan",];
-class WeaponConfiguration {
+export class WeaponConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0,];
     }
@@ -108,7 +101,6 @@ class WeaponConfiguration {
         return id in this.WEAPON_FROM_STRING;
     }
 }
-exports.WeaponConfiguration = WeaponConfiguration;
 WeaponConfiguration.WEAPON = [0 /* WEAPON.BOW_WOOD */, 1 /* WEAPON.SPEAR_WOOD */, 2 /* WEAPON.SPEAR_WOOD_BONE */, 3 /* WEAPON.DAGGER_BONE_RAT */, 4 /* WEAPON.SWORD_STEEL */, 5 /* WEAPON.MACE_WOOD */,];
 WeaponConfiguration.WEAPON_FROM_STRING = { "bow-wood": 0 /* WEAPON.BOW_WOOD */, "spear-wood": 1 /* WEAPON.SPEAR_WOOD */, "spear-wood-bone": 2 /* WEAPON.SPEAR_WOOD_BONE */, "dagger-bone-rat": 3 /* WEAPON.DAGGER_BONE_RAT */, "sword-steel": 4 /* WEAPON.SWORD_STEEL */, "mace-wood": 5 /* WEAPON.MACE_WOOD */ };
 WeaponConfiguration.WEAPON_TO_STRING = ["bow-wood", "spear-wood", "spear-wood-bone", "dagger-bone-rat", "sword-steel", "mace-wood",];
@@ -129,7 +121,7 @@ WeaponConfiguration.WEAPON_CRAFTABLE = [1, 1, 1, 1, 1, 1,];
 WeaponConfiguration.WEAPON_BOW_POWER = [20, 0, 0, 0, 0, 0,];
 // Strings: 
 WeaponConfiguration.WEAPON_NAME = ["Bow", "Spear", "Spear", "Dagger", "Sword", "Mace",];
-class ArmourConfiguration {
+export class ArmourConfiguration {
     static get zero_record() {
         return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
     }
@@ -140,7 +132,6 @@ class ArmourConfiguration {
         return id in this.ARMOUR_FROM_STRING;
     }
 }
-exports.ArmourConfiguration = ArmourConfiguration;
 ArmourConfiguration.ARMOUR = [0 /* ARMOUR.HELMET_SKULL_RAT */, 1 /* ARMOUR.HELMET_TEXTILE */, 2 /* ARMOUR.HELMET_LEATHER_RAT */, 3 /* ARMOUR.HELMET_HAIR_GRACI */, 4 /* ARMOUR.MAIL_BONE */, 5 /* ARMOUR.MAIL_LEATHER_RAT */, 6 /* ARMOUR.MAIL_TEXTILE */, 7 /* ARMOUR.DRESS_MEAT_ELODINO */, 8 /* ARMOUR.PANTS_LEATHER_RAT */, 9 /* ARMOUR.PANTS_TEXTILE */, 10 /* ARMOUR.BOOTS_LEATHER_RAT */, 11 /* ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT */, 12 /* ARMOUR.GAUNTLET_RIGHT_TEXTILE */, 13 /* ARMOUR.GAUNTLET_LEFT_LEATHER_RAT */, 14 /* ARMOUR.GAUNTLET_LEFT_TEXTILE */, 15 /* ARMOUR.SOCKS_TEXTILE */, 16 /* ARMOUR.PAULDRON_LEFT_BONE */, 17 /* ARMOUR.PAULDRON_LEFT_LEATHER_RAT */, 18 /* ARMOUR.PAULDRON_RIGHT_BONE */, 19 /* ARMOUR.ROBE_LEATHER_RAT */, 20 /* ARMOUR.BELT_TEXTILE */, 21 /* ARMOUR.SHIRT_TEXTILE */,];
 ArmourConfiguration.ARMOUR_FROM_STRING = { "helmet-skull-rat": 0 /* ARMOUR.HELMET_SKULL_RAT */, "helmet-textile": 1 /* ARMOUR.HELMET_TEXTILE */, "helmet-leather-rat": 2 /* ARMOUR.HELMET_LEATHER_RAT */, "helmet-hair-graci": 3 /* ARMOUR.HELMET_HAIR_GRACI */, "mail-bone": 4 /* ARMOUR.MAIL_BONE */, "mail-leather-rat": 5 /* ARMOUR.MAIL_LEATHER_RAT */, "mail-textile": 6 /* ARMOUR.MAIL_TEXTILE */, "dress-meat-elodino": 7 /* ARMOUR.DRESS_MEAT_ELODINO */, "pants-leather-rat": 8 /* ARMOUR.PANTS_LEATHER_RAT */, "pants-textile": 9 /* ARMOUR.PANTS_TEXTILE */, "boots-leather-rat": 10 /* ARMOUR.BOOTS_LEATHER_RAT */, "gauntlet-right-leather-rat": 11 /* ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT */, "gauntlet-right-textile": 12 /* ARMOUR.GAUNTLET_RIGHT_TEXTILE */, "gauntlet-left-leather-rat": 13 /* ARMOUR.GAUNTLET_LEFT_LEATHER_RAT */, "gauntlet-left-textile": 14 /* ARMOUR.GAUNTLET_LEFT_TEXTILE */, "socks-textile": 15 /* ARMOUR.SOCKS_TEXTILE */, "pauldron-left-bone": 16 /* ARMOUR.PAULDRON_LEFT_BONE */, "pauldron-left-leather-rat": 17 /* ARMOUR.PAULDRON_LEFT_LEATHER_RAT */, "pauldron-right-bone": 18 /* ARMOUR.PAULDRON_RIGHT_BONE */, "robe-leather-rat": 19 /* ARMOUR.ROBE_LEATHER_RAT */, "belt-textile": 20 /* ARMOUR.BELT_TEXTILE */, "shirt-textile": 21 /* ARMOUR.SHIRT_TEXTILE */ };
 ArmourConfiguration.ARMOUR_TO_STRING = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone", "mail-leather-rat", "mail-textile", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone", "pauldron-left-leather-rat", "pauldron-right-bone", "robe-leather-rat", "belt-textile", "shirt-textile",];
@@ -365,7 +356,7 @@ class ArmourInstance {
         return ArmourConfiguration.ARMOUR_NAME[this._id];
     }
 }
-class MaterialStorage {
+export class MaterialStorage {
     // Retrieve instance of MaterialInstance 
     static get(id) {
         if (!(id in this.instances)) {
@@ -380,9 +371,8 @@ class MaterialStorage {
         return this.instances[MaterialConfiguration.MATERIAL_FROM_STRING[id]];
     }
 }
-exports.MaterialStorage = MaterialStorage;
 MaterialStorage.instances = [new MaterialInstance(0 /* MATERIAL.ARROW_BONE */), new MaterialInstance(1 /* MATERIAL.ARROW_ZAZ */), new MaterialInstance(2 /* MATERIAL.COTTON */), new MaterialInstance(3 /* MATERIAL.TEXTILE */), new MaterialInstance(4 /* MATERIAL.SMALL_BONE_RAT */), new MaterialInstance(5 /* MATERIAL.SMALL_BONE_HUMAN */), new MaterialInstance(6 /* MATERIAL.SMALL_BONE_GRACI */), new MaterialInstance(7 /* MATERIAL.BONE_RAT */), new MaterialInstance(8 /* MATERIAL.BONE_HUMAN */), new MaterialInstance(9 /* MATERIAL.BONE_GRACI */), new MaterialInstance(10 /* MATERIAL.SKIN_RAT */), new MaterialInstance(11 /* MATERIAL.SKIN_HUMAN */), new MaterialInstance(12 /* MATERIAL.SKIN_GRACI */), new MaterialInstance(13 /* MATERIAL.SKIN_BALL */), new MaterialInstance(14 /* MATERIAL.LEATHER_RAT */), new MaterialInstance(15 /* MATERIAL.LEATHER_HUMAN */), new MaterialInstance(16 /* MATERIAL.LEATHER_GRACI */), new MaterialInstance(17 /* MATERIAL.LEATHER_BALL */), new MaterialInstance(18 /* MATERIAL.MEAT_RAT */), new MaterialInstance(19 /* MATERIAL.MEAT_RAT_FRIED */), new MaterialInstance(20 /* MATERIAL.MEAT_ELODINO */), new MaterialInstance(21 /* MATERIAL.MEAT_BALL */), new MaterialInstance(22 /* MATERIAL.MEAT_HUMAN */), new MaterialInstance(23 /* MATERIAL.MEAT_GRACI */), new MaterialInstance(24 /* MATERIAL.MEAT_HUMAN_FRIED */), new MaterialInstance(25 /* MATERIAL.MEAT_GRACI_FRIED */), new MaterialInstance(26 /* MATERIAL.FISH_OKU */), new MaterialInstance(27 /* MATERIAL.FISH_OKU_FRIED */), new MaterialInstance(28 /* MATERIAL.BERRY_FIE */), new MaterialInstance(29 /* MATERIAL.BERRY_ZAZ */), new MaterialInstance(30 /* MATERIAL.ZAZ */), new MaterialInstance(31 /* MATERIAL.WOOD_RED */), new MaterialInstance(32 /* MATERIAL.WOOD_RED_PLATE */), new MaterialInstance(33 /* MATERIAL.HAIR_GRACI */), new MaterialInstance(34 /* MATERIAL.STEEL */)];
-class MaterialCategoryStorage {
+export class MaterialCategoryStorage {
     // Retrieve instance of MaterialCategoryInstance 
     static get(id) {
         if (!(id in this.instances)) {
@@ -397,9 +387,8 @@ class MaterialCategoryStorage {
         return this.instances[MaterialCategoryConfiguration.CATEGORY_FROM_STRING[id]];
     }
 }
-exports.MaterialCategoryStorage = MaterialCategoryStorage;
 MaterialCategoryStorage.instances = [new MaterialCategoryInstance(0 /* MATERIAL_CATEGORY.BOW_AMMO */), new MaterialCategoryInstance(1 /* MATERIAL_CATEGORY.PLANT */), new MaterialCategoryInstance(2 /* MATERIAL_CATEGORY.MATERIAL */), new MaterialCategoryInstance(3 /* MATERIAL_CATEGORY.BONE */), new MaterialCategoryInstance(4 /* MATERIAL_CATEGORY.SKIN */), new MaterialCategoryInstance(5 /* MATERIAL_CATEGORY.LEATHER */), new MaterialCategoryInstance(6 /* MATERIAL_CATEGORY.MEAT */), new MaterialCategoryInstance(7 /* MATERIAL_CATEGORY.FISH */), new MaterialCategoryInstance(8 /* MATERIAL_CATEGORY.FOOD */), new MaterialCategoryInstance(9 /* MATERIAL_CATEGORY.FRUIT */), new MaterialCategoryInstance(10 /* MATERIAL_CATEGORY.WOOD */)];
-class EquipSlotStorage {
+export class EquipSlotStorage {
     // Retrieve instance of EquipSlotInstance 
     static get(id) {
         if (!(id in this.instances)) {
@@ -414,9 +403,8 @@ class EquipSlotStorage {
         return this.instances[EquipSlotConfiguration.SLOT_FROM_STRING[id]];
     }
 }
-exports.EquipSlotStorage = EquipSlotStorage;
 EquipSlotStorage.instances = [new EquipSlotInstance(0 /* EQUIP_SLOT.WEAPON */), new EquipSlotInstance(1 /* EQUIP_SLOT.SECONDARY */), new EquipSlotInstance(2 /* EQUIP_SLOT.AMULET */), new EquipSlotInstance(3 /* EQUIP_SLOT.MAIL */), new EquipSlotInstance(4 /* EQUIP_SLOT.PAULDRON_LEFT */), new EquipSlotInstance(5 /* EQUIP_SLOT.PAULDRON_RIGHT */), new EquipSlotInstance(6 /* EQUIP_SLOT.GAUNTLET_LEFT */), new EquipSlotInstance(7 /* EQUIP_SLOT.GAUNTLET_RIGHT */), new EquipSlotInstance(8 /* EQUIP_SLOT.BOOTS */), new EquipSlotInstance(9 /* EQUIP_SLOT.HELMET */), new EquipSlotInstance(10 /* EQUIP_SLOT.BELT */), new EquipSlotInstance(11 /* EQUIP_SLOT.ROBE */), new EquipSlotInstance(12 /* EQUIP_SLOT.SHIRT */), new EquipSlotInstance(13 /* EQUIP_SLOT.PANTS */), new EquipSlotInstance(14 /* EQUIP_SLOT.DRESS */), new EquipSlotInstance(15 /* EQUIP_SLOT.SOCKS */), new EquipSlotInstance(16 /* EQUIP_SLOT.NONE */)];
-class ImpactStorage {
+export class ImpactStorage {
     // Retrieve instance of ImpactInstance 
     static get(id) {
         if (!(id in this.instances)) {
@@ -431,9 +419,8 @@ class ImpactStorage {
         return this.instances[ImpactConfiguration.IMPACT_FROM_STRING[id]];
     }
 }
-exports.ImpactStorage = ImpactStorage;
 ImpactStorage.instances = [new ImpactInstance(0 /* IMPACT_TYPE.POINT */), new ImpactInstance(1 /* IMPACT_TYPE.BLADE */), new ImpactInstance(2 /* IMPACT_TYPE.BLUNT */), new ImpactInstance(3 /* IMPACT_TYPE.NONE */)];
-class WeaponStorage {
+export class WeaponStorage {
     // Retrieve instance of WeaponInstance 
     static get(id) {
         if (!(id in this.instances)) {
@@ -448,9 +435,8 @@ class WeaponStorage {
         return this.instances[WeaponConfiguration.WEAPON_FROM_STRING[id]];
     }
 }
-exports.WeaponStorage = WeaponStorage;
 WeaponStorage.instances = [new WeaponInstance(0 /* WEAPON.BOW_WOOD */), new WeaponInstance(1 /* WEAPON.SPEAR_WOOD */), new WeaponInstance(2 /* WEAPON.SPEAR_WOOD_BONE */), new WeaponInstance(3 /* WEAPON.DAGGER_BONE_RAT */), new WeaponInstance(4 /* WEAPON.SWORD_STEEL */), new WeaponInstance(5 /* WEAPON.MACE_WOOD */)];
-class ArmourStorage {
+export class ArmourStorage {
     // Retrieve instance of ArmourInstance 
     static get(id) {
         if (!(id in this.instances)) {
@@ -465,5 +451,5 @@ class ArmourStorage {
         return this.instances[ArmourConfiguration.ARMOUR_FROM_STRING[id]];
     }
 }
-exports.ArmourStorage = ArmourStorage;
 ArmourStorage.instances = [new ArmourInstance(0 /* ARMOUR.HELMET_SKULL_RAT */), new ArmourInstance(1 /* ARMOUR.HELMET_TEXTILE */), new ArmourInstance(2 /* ARMOUR.HELMET_LEATHER_RAT */), new ArmourInstance(3 /* ARMOUR.HELMET_HAIR_GRACI */), new ArmourInstance(4 /* ARMOUR.MAIL_BONE */), new ArmourInstance(5 /* ARMOUR.MAIL_LEATHER_RAT */), new ArmourInstance(6 /* ARMOUR.MAIL_TEXTILE */), new ArmourInstance(7 /* ARMOUR.DRESS_MEAT_ELODINO */), new ArmourInstance(8 /* ARMOUR.PANTS_LEATHER_RAT */), new ArmourInstance(9 /* ARMOUR.PANTS_TEXTILE */), new ArmourInstance(10 /* ARMOUR.BOOTS_LEATHER_RAT */), new ArmourInstance(11 /* ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT */), new ArmourInstance(12 /* ARMOUR.GAUNTLET_RIGHT_TEXTILE */), new ArmourInstance(13 /* ARMOUR.GAUNTLET_LEFT_LEATHER_RAT */), new ArmourInstance(14 /* ARMOUR.GAUNTLET_LEFT_TEXTILE */), new ArmourInstance(15 /* ARMOUR.SOCKS_TEXTILE */), new ArmourInstance(16 /* ARMOUR.PAULDRON_LEFT_BONE */), new ArmourInstance(17 /* ARMOUR.PAULDRON_LEFT_LEATHER_RAT */), new ArmourInstance(18 /* ARMOUR.PAULDRON_RIGHT_BONE */), new ArmourInstance(19 /* ARMOUR.ROBE_LEATHER_RAT */), new ArmourInstance(20 /* ARMOUR.BELT_TEXTILE */), new ArmourInstance(21 /* ARMOUR.SHIRT_TEXTILE */)];
+

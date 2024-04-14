@@ -69,7 +69,7 @@ const craft_columns : Column<CraftBulkTemplate|CraftItemTemplate>[] = [
         type: "number",
         value: (item) => {
             if (is_item_craft(item)) {
-                return durability_data[item.id].value
+                return durability_data[item.id].value ? durability_data[item.id].value : 0
             }
 
             if (is_bulk_craft(item)) {

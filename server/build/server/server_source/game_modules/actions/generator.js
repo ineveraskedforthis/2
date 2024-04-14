@@ -27,3 +27,4 @@ function generate_action(fatigue_cost, duration_modifer, trigger, effect, start_
     };
 }
 exports.generate_action = generate_action;
+

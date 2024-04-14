@@ -4,7 +4,7 @@ import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
 import { stash_id_to_tag } from "../Stash/stash.js";
 import { BulkAmount, Value, value_class_name } from "../Values/collection.js";
-import { ArmourStorage, WeaponStorage } from "@content/content.js";
+import { ArmourStorage, WeaponStorage } from "../.././content.js";
 const durability_data = {};
 const output_amount_data = {};
 const inputs_amount_data = {};
@@ -59,7 +59,7 @@ const craft_columns = [
         type: "number",
         value: (item) => {
             if (is_item_craft(item)) {
-                return durability_data[item.id].value;
+                return durability_data[item.id].value ? durability_data[item.id].value : 0;
             }
             if (is_bulk_craft(item)) {
                 return 0;
@@ -128,3 +128,4 @@ export function new_craft_item(craft_list, data) {
     craft_list.data.push(data.value);
     craft_list.update_display();
 }
+

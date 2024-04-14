@@ -22,12 +22,12 @@ import { affix } from "@custom_types/inventory";
 import { EquipmentPieceInterface, ItemInterface } from "../../content_wrappers/item";
 import { ARMOUR, ArmourConfiguration, ArmourStorage, MATERIAL, WEAPON, WeaponConfiguration, WeaponStorage, armour_string_id, weapon_string_id } from "@content/content";
 
-var character_id_object         : Character[]   = []
+var character_id_object         : Character[]               = []
 var item_id_object              : (EquipmentPiece)[]        = []
-var market_order_id_object      : MarketOrder[] = []
-var cell_id_object              : CellData[]    = []
-var location_id_object          : Location[]    = []
-var battle_id_object            : Battle[]      = []
+var market_order_id_object      : MarketOrder[]             = []
+var cell_id_object              : CellData[]                = []
+var location_id_object          : Location[]                = []
+var battle_id_object            : Battle[]                  = []
 
 
 var faction_id_object           : Record<string, Faction> = {}
@@ -110,6 +110,7 @@ export namespace Data {
                 if (line == '') {continue}
                 const item = string_to_item(line)
                 if (item == undefined) continue;
+                DataID.Items.register(item.id)
                 item_id_object[item.id] = item
             }
 
@@ -134,25 +135,25 @@ export namespace Data {
 
         export function create_weapon(durability: number, affixes: affix[], prototype: WEAPON): Weapon {
             const item = new Weapon(undefined, durability, affixes, prototype)
+            //console.log("new weapon: ", item.id)
             item_id_object[item.id] = item
             return item
         }
 
         export function create_weapon_simple(prototype: WEAPON): Weapon {
             const item = create_weapon(100, [], prototype)
-            item_id_object[item.id] = item
             return item
         }
 
         export function create_armour(durability: number, affixes: affix[], prototype: ARMOUR): Armour {
             const item = new Armour(undefined, durability, affixes, prototype)
+            //console.log("new armour: ", item.id)
             item_id_object[item.id] = item
             return item
         }
 
         export function create_armour_simple(prototype: ARMOUR): Armour {
             const item = create_armour(100, [], prototype)
-            item_id_object[item.id] = item
             return item
         }
 
@@ -185,7 +186,7 @@ export namespace Data {
         }
 
         export function for_each(callback: (item: Item) => void) {
-            DataID.Battle.for_each((item_id) => {
+            DataID.Items.for_each((item_id) => {
                 const item = item_id_object[item_id]
                 callback(item)
             })

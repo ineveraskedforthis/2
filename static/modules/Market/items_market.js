@@ -1,4 +1,4 @@
-import { EquipSlotStorage } from "@content/content.js";
+import { EquipSlotStorage } from "../.././content.js";
 import { List } from "../../widgets/List/list.js";
 import { damage_types } from "../Constants/inventory.js";
 import { elementById } from "../HTMLwrappers/common.js";
@@ -114,3 +114,4 @@ export function update_item_market(data) {
     console.log(data);
     market_items.data = data;
 }
+

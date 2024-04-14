@@ -7,3 +7,4 @@ var AI_RESERVE;
     AI_RESERVE.FOOD = 4;
     AI_RESERVE.ARROW_BONE = 40;
 })(AI_RESERVE || (exports.AI_RESERVE = AI_RESERVE = {}));
+

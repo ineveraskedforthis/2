@@ -4,12 +4,13 @@ import { Equip } from "./game_modules/inventories/equip";
 import { CharacterSystem } from "./game_modules/character/system";
 import { HumanTemplate } from "./game_modules/races/TEMPLATE_HUMANS";
 import { Inventory } from "./game_modules/inventories/inventory";
-import { character_to_string, equip_from_string, equip_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/data/strings_management";
+import { character_to_string, inventory_from_string, inventory_to_string, string_to_character } from "./game_modules/data/strings_management";
 import { money } from "@custom_types/common";
 import { cell_id, location_id } from "@custom_types/ids";
 import { ARMOUR, MATERIAL, WEAPON } from "@content/content";
 
 Data.World.load_world_dimensions(save_path.WORLD_DIMENSIONS)
+Data.World.load_terrain(save_path.TERRAIN)
 Data.Cells.load(save_path.CELLS)
 Data.World.load()
 
@@ -80,22 +81,22 @@ function character_serialisation_test_advanced() {
     console.log(string==string2)
 }
 
-function equip_string_test() {
-    console.log('equip ser test')
-    const equip = new Equip()
-    add_testing_items_to_equip(equip)
+// function equip_string_test() {
+//     console.log('equip ser test')
+//     const equip = new Equip()
+//     add_testing_items_to_equip(equip)
 
-    const s1 = equip_to_string(equip)
-    const equip2 = new Equip
-    equip_from_string(s1, equip2)
-    // equip2.from_string(s1)
-    const s2 = equip_to_string(equip2)
+//     const s1 = equip_to_string(equip)
+//     const equip2 = new Equip
+//     equip_from_string(s1, equip2)
+//     // equip2.from_string(s1)
+//     const s2 = equip_to_string(equip2)
 
-    // console.log(string_difference([s1, s2]))
-    // console.log(s1)
-    // console.log(s2)
-    console.log(s1 == s2)
-}
+//     // console.log(string_difference([s1, s2]))
+//     // console.log(s1)
+//     // console.log(s2)
+//     console.log(s1 == s2)
+// }
 
 function backpack_string_test() {
     console.log('backpack ser test')
@@ -143,6 +144,6 @@ function map_coords_test() {
 
 character_serialization_test_simple()
 character_serialisation_test_advanced()
-equip_string_test()
+// equip_string_test()
 backpack_string_test()
 map_coords_test()

@@ -10,7 +10,7 @@ const max_hp_1 = require("../races/max_hp");
 const basic_functions_1 = require("../calculations/basic_functions");
 const item_system_1 = require("../systems/items/item_system");
 const data_id_1 = require("../data/data_id");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 const data_objects_1 = require("../data/data_objects");
 class Character {
     constructor(id, battle_id, user_id, location_id, name, template) {
@@ -240,3 +240,4 @@ class Character {
     }
 }
 exports.Character = Character;
+

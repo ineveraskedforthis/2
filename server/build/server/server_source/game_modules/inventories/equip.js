@@ -5,7 +5,7 @@ const item_system_1 = require("../systems/items/item_system");
 const damage_types_1 = require("../damage_types");
 const Damage_1 = require("../Damage");
 const inventory_1 = require("./inventory");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 const data_objects_1 = require("../data/data_objects");
 const item_1 = require("../../content_wrappers/item");
 class EquipData {
@@ -20,6 +20,17 @@ class EquipData {
             this.slots[slot.id] = json.slots[slot.id_string];
         }
         this.backpack.load_from_json(json.backpack);
+    }
+    toJSON() {
+        const result = {};
+        for (let slot_id of content_1.EquipSlotConfiguration.SLOT) {
+            const slot = content_1.EquipSlotStorage.get(slot_id);
+            result[slot.id_string] = this.slots[slot.id];
+        }
+        return {
+            slots: result,
+            backpack: this.backpack
+        };
     }
 }
 class Equip {
@@ -169,7 +180,7 @@ class Equip {
             if (item_id == undefined)
                 continue;
             const item_data = data_objects_1.Data.Items.from_id(item_id);
-            result[item_data.prototype.id_string] = item_system_1.ItemSystem.data(item_data);
+            result[content_1.EquipSlotStorage.get(key).id_string] = item_system_1.ItemSystem.data(item_data);
         }
         return result;
     }
@@ -207,3 +218,4 @@ class Equip {
     }
 }
 exports.Equip = Equip;
+

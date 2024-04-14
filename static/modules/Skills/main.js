@@ -48,3 +48,4 @@ function build_skill_div(tag) {
     skill_div.appendChild(practice_number);
     return skill_div;
 }
+

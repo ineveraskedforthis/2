@@ -17,7 +17,7 @@ var last_id_item                            = 0 as item_id
 var user_id_list                            : user_id[]                                                         = []
 var user_id_character                       : Partial<Record<user_id, character_id>>                            = []
 
-var item_id_list                            : item_id[]
+var item_id_list                            : item_id[]                                                         = []
 //var item_id_backpack                        : Record<item_id, backpack_id>
 
 //var backpack_id_list                        : backpack_id[]                                                     = []
@@ -158,16 +158,24 @@ export namespace DataID {
 
         export function set_up(item: item_id) {
             item_id_list.push(item)
+            update_last_id(item)
         }
 
         export function new_id(): item_id {
             last_id_item++;
+            //console.log("new item id : ", last_id_item)
             return register(last_id_item)
         }
 
         export function register(item: item_id) {
             set_up(item)
             return item
+        }
+
+        export function for_each(callback: (id: item_id) => void) {
+            item_id_list.forEach((value, index) => {
+                callback(value)
+            })
         }
     }
 
@@ -221,6 +229,7 @@ export namespace DataID {
         export function set_up(location: location_id) {
             location_id_list.push(location)
             location_id_guests[location] = new Set()
+            update_last_id(location)
         }
 
         export function new_id(cell: cell_id): location_id {
@@ -295,7 +304,7 @@ export namespace DataID {
             return reputation
         }
         export function set(character: character_id, faction: string, reputation: reputation_level) {
-            console.log(character, 'is now a', reputation, 'of', faction)
+            //console.log(character, 'is now a', reputation, 'of', faction)
             character_id_faction_id_reputation[character][faction] = reputation
         }
 

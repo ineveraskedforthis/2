@@ -26,3 +26,4 @@ function dummy_duration(char) {
 exports.dummy_duration = dummy_duration;
 function dummy_start(char) { }
 exports.dummy_start = dummy_start;
+

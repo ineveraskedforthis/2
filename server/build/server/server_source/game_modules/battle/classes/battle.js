@@ -22,3 +22,4 @@ class Battle {
     }
 }
 exports.Battle = Battle;
+

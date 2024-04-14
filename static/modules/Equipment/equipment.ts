@@ -25,7 +25,7 @@ const columns:Column<EquipSlotData>[] = [
 
     {
         header_text: "Slot",
-        value: (item) => EquipSlotStorage.get(item.equip_slot).name,
+        value: (item) => EquipSlotStorage.from_string(item.equip_slot).name,
         type: "string",
         custom_style: ["flex-1-0-5"]
     },

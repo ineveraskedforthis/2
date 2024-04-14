@@ -10,7 +10,7 @@ var last_id_user = 0;
 var last_id_item = 0;
 var user_id_list = [];
 var user_id_character = [];
-var item_id_list;
+var item_id_list = [];
 //var item_id_backpack                        : Record<item_id, backpack_id>
 //var backpack_id_list                        : backpack_id[]                                                     = []
 //var backpack_id_items                       : Record<backpack_id, item_id>                                      = []
@@ -140,10 +140,12 @@ var DataID;
         Items.update_last_id = update_last_id;
         function set_up(item) {
             item_id_list.push(item);
+            update_last_id(item);
         }
         Items.set_up = set_up;
         function new_id() {
             last_id_item++;
+            //console.log("new item id : ", last_id_item)
             return register(last_id_item);
         }
         Items.new_id = new_id;
@@ -152,6 +154,12 @@ var DataID;
             return item;
         }
         Items.register = register;
+        function for_each(callback) {
+            item_id_list.forEach((value, index) => {
+                callback(value);
+            });
+        }
+        Items.for_each = for_each;
     })(Items = DataID.Items || (DataID.Items = {}));
     let Cells;
     (function (Cells) {
@@ -200,6 +208,7 @@ var DataID;
         function set_up(location) {
             location_id_list.push(location);
             location_id_guests[location] = new Set();
+            update_last_id(location);
         }
         Location.set_up = set_up;
         function new_id(cell) {
@@ -275,7 +284,7 @@ var DataID;
         }
         Reputation.get = get;
         function set(character, faction, reputation) {
-            console.log(character, 'is now a', reputation, 'of', faction);
+            //console.log(character, 'is now a', reputation, 'of', faction)
             character_id_faction_id_reputation[character][faction] = reputation;
         }
         Reputation.set = set;
@@ -464,3 +473,4 @@ var DataID;
         MarketOrders.owner = owner;
     })(MarketOrders = DataID.MarketOrders || (DataID.MarketOrders = {}));
 })(DataID || (exports.DataID = DataID = {}));
+

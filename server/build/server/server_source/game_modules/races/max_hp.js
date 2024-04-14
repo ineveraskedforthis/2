@@ -12,3 +12,4 @@ exports.MaxHP = {
     MageRat: 20,
     BigRat: 200,
 };
+

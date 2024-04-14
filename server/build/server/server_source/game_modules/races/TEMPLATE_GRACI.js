@@ -16,3 +16,4 @@ const graci_moraes = ['O', 'u', 'La', 'Ma', 'a', 'A', 'Ou'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(graci_moraes, 2);
 }
+

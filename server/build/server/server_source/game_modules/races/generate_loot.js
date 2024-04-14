@@ -72,3 +72,4 @@ var Loot;
     }
     Loot.skinning = skinning;
 })(Loot || (exports.Loot = Loot = {}));
+

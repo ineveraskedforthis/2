@@ -63,14 +63,14 @@ export function string_to_character(s: string) {
     return character
 }
 
-export function equip_to_string(equip: Equip) {
-    return JSON.stringify(equip)
-}
+// export function equip_to_string(equip: Equip) {
+//     return JSON.stringify(equip)
+// }
 
-export function equip_from_string(s: string, equip: Equip): Equip {
-    equip.load_from_json(JSON.parse(s))
-    return equip
-}
+// export function equip_from_string(s: string, equip: Equip): Equip {
+//     equip.load_from_json(JSON.parse(s))
+//     return equip
+// }
 
 export function inventory_to_string(inventory: Inventory) {
     // const array:string[] = []

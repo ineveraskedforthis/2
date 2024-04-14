@@ -51,3 +51,4 @@ var ActionManager;
     }
     ActionManager.update_characters = update_characters;
 })(ActionManager || (exports.ActionManager = ActionManager = {}));
+

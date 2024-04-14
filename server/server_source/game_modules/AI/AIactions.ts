@@ -62,6 +62,7 @@ export namespace AIactions {
     export function sell_items(character: Character) {
         for (let [index, item] of Object.entries(character.equip.data.backpack.items)) {
             if (item == undefined) continue
+            //console.log(item)
             const object = Data.Items.from_id(item)
             let slot = EQUIP_SLOT.WEAPON
             if (!is_weapon(object)) {

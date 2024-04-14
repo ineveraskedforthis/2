@@ -126,3 +126,4 @@ function end_battle() {
     tab.turn_off('battle');
     BattleImage.reset();
 }
+

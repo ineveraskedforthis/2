@@ -15,7 +15,7 @@ const data_id_1 = require("./data_id");
 const location_class_1 = require("../location/location_class");
 const strings_management_1 = require("./strings_management");
 const classes_1 = require("../market/classes");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 var character_id_object = [];
 var item_id_object = [];
 var market_order_id_object = [];
@@ -99,6 +99,7 @@ var Data;
                 const item = string_to_item(line);
                 if (item == undefined)
                     continue;
+                data_id_1.DataID.Items.register(item.id);
                 item_id_object[item.id] = item;
             }
             console.log('items loaded');
@@ -119,25 +120,25 @@ var Data;
         }
         function create_weapon(durability, affixes, prototype) {
             const item = new item_1.Weapon(undefined, durability, affixes, prototype);
+            //console.log("new weapon: ", item.id)
             item_id_object[item.id] = item;
             return item;
         }
         Items.create_weapon = create_weapon;
         function create_weapon_simple(prototype) {
             const item = create_weapon(100, [], prototype);
-            item_id_object[item.id] = item;
             return item;
         }
         Items.create_weapon_simple = create_weapon_simple;
         function create_armour(durability, affixes, prototype) {
             const item = new item_1.Armour(undefined, durability, affixes, prototype);
+            //console.log("new armour: ", item.id)
             item_id_object[item.id] = item;
             return item;
         }
         Items.create_armour = create_armour;
         function create_armour_simple(prototype) {
             const item = create_armour(100, [], prototype);
-            item_id_object[item.id] = item;
             return item;
         }
         Items.create_armour_simple = create_armour_simple;
@@ -158,7 +159,7 @@ var Data;
         }
         Items.from_id = from_id;
         function for_each(callback) {
-            data_id_1.DataID.Battle.for_each((item_id) => {
+            data_id_1.DataID.Items.for_each((item_id) => {
                 const item = item_id_object[item_id];
                 callback(item);
             });
@@ -770,3 +771,4 @@ var Data;
         World.get_max_dimension = get_max_dimension;
     })(World = Data.World || (Data.World = {}));
 })(Data || (exports.Data = Data = {}));
+

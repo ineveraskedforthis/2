@@ -21,7 +21,7 @@ const SYSTEM_REPUTATION_1 = require("../SYSTEM_REPUTATION");
 const data_objects_1 = require("../data/data_objects");
 const system_3 = require("../map/system");
 const data_id_1 = require("../data/data_id");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 const GRAVEYARD_CELL = 0;
 var Event;
 (function (Event) {
@@ -485,3 +485,4 @@ var Event;
     }
     Event.remove_tree = remove_tree;
 })(Event || (exports.Event = Event = {}));
+

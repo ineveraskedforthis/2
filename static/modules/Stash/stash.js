@@ -72,3 +72,4 @@ export function process_stash_click(tag) {
         socket.emit('eat');
     }
 }
+

@@ -36,6 +36,19 @@ class EquipData {
 
         this.backpack.load_from_json(json.backpack)
     }
+
+    toJSON() {
+        const result : Partial<Record<string, item_id>> = {}
+        for (let slot_id of EquipSlotConfiguration.SLOT) {
+            const slot = EquipSlotStorage.get(slot_id);
+            result[slot.id_string] = this.slots[slot.id]
+        }
+
+        return {
+            slots: result,
+            backpack: this.backpack
+        }
+    }
 }
 
 
@@ -195,7 +208,7 @@ export class Equip {
             const item_id = data[key]
             if (item_id == undefined) continue
             const item_data = Data.Items.from_id(item_id)
-            result[item_data.prototype.id_string] = ItemSystem.data(item_data)
+            result[EquipSlotStorage.get(key).id_string] = ItemSystem.data(item_data)
         }
 
         return result

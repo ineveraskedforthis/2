@@ -41,3 +41,4 @@ function generate_bulk_craft_action(craft) {
     };
 }
 exports.generate_bulk_craft_action = generate_bulk_craft_action;
+

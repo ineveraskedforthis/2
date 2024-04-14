@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Armour = exports.Weapon = exports.Item = void 0;
 const data_id_1 = require("../data_id");
-const content_1 = require("@content/content");
+const content_1 = require("../../../.././../game_content/src/content");
 class Item {
     constructor(id, durability, affixes) {
         if (id == undefined) {
@@ -55,3 +55,4 @@ class Armour extends Item {
     }
 }
 exports.Armour = Armour;
+

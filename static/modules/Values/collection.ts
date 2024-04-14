@@ -29,6 +29,7 @@ export class Value implements ValueInterface {
 
         ((display: Value) => socket.on(`val_${id}_c`, (data: number) => {
             console.log("update value: " + id)
+            console.log("new value: ", data)
             display.value = data
 
             for (let item of dependents) {

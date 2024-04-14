@@ -67,3 +67,4 @@ export function loadImages(onAllLoaded) {
         img.onload = onload;
     }
 }
+

@@ -17,3 +17,4 @@ export const SKILL_NAMES = {
     fishing: 'Fishing',
     smith: 'Smithing'
 };
+

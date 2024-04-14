@@ -41,14 +41,14 @@ export namespace ItemSystem {
             const weapon_type = ImpactStorage.get(item.prototype.impact)
             const ratio = weapon_type.handle_ratio
 
-            return item.prototype.size * (material_handle.density * ratio + material_impact.density * (1 - ratio))
+            return Math.round(0.5 + item.prototype.size * (material_handle.density * ratio + material_impact.density * (1 - ratio)))
         }
 
         if (is_armour(item)) {
             const main_material = MaterialStorage.get(item.prototype.material)
             const secondary_material = MaterialStorage.get(item.prototype.secondary_material)
 
-            return main_material.density * item.prototype.size + secondary_material.density * item.prototype.secondary_size
+            return Math.round(0.5 + main_material.density * item.prototype.size + secondary_material.density * item.prototype.secondary_size)
         }
 
         return 0
@@ -84,7 +84,7 @@ export namespace ItemSystem {
             result += main_material.magic_power * item.prototype.size + secondary_material.magic_power * item.prototype.secondary_size
         }
 
-        return result;
+        return  Math.round(0.5 + result);
     }
 
     export function melee_damage(item: Weapon, type: melee_attack_type) {
@@ -128,6 +128,7 @@ export namespace ItemSystem {
         // fire damage is always added
         damage.fire = power(item) + affix_damage.fire
 
+        DmgOps.floor_ip(damage)
         // console.log(damage)
         return damage
     }
@@ -147,6 +148,8 @@ export namespace ItemSystem {
 
         damage.pierce = weapon.prototype.bow_power * ammo_data.cutting_power + ammo_data.magic_power
         DmgOps.add_ip(damage, affix_damage)
+
+        DmgOps.floor_ip(damage)
 
         return damage
     }
@@ -185,6 +188,7 @@ export namespace ItemSystem {
 
         const durability_mod = 0.2 + 0.8 * item.durability / 100
         DmgOps.mult_ip(result, durability_mod)
+        DmgOps.floor_ip(result)
 
         return result;
     }
@@ -230,12 +234,12 @@ export namespace ItemSystem {
             affixes: item.affixes.length,
             affixes_list: item.affixes,
             durability: item.durability,
-            item_type: EQUIP_SLOT.WEAPON,
+            item_type: item.prototype.slot,
             damage: empty_resists,
             ranged_damage: 0,
             resists: resists(item),
             price: item.price,
-            is_weapon: true,
+            is_weapon: false,
         }
     }
 

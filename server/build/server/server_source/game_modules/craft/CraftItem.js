@@ -7,7 +7,7 @@ const crafts_storage_1 = require("./crafts_storage");
 const helpers_1 = require("./helpers");
 const generate_action_1 = require("./generate_action");
 const system_1 = require("../character/system");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 const data_objects_1 = require("../data/data_objects");
 function base_durability(skill, difficulty) {
     const base = Math.round(skill / difficulty * 100);
@@ -100,3 +100,4 @@ function get_crafts_item_list(character) {
     return list;
 }
 exports.get_crafts_item_list = get_crafts_item_list;
+

@@ -16,7 +16,7 @@ const request_1 = require("./network_actions/request");
 const skills_1 = require("../static_data/skills");
 const crafts_storage_1 = require("../craft/crafts_storage");
 const dialog_1 = require("./network_actions/dialog");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 class SocketManager {
     // sessions: {[_ in string]: number}
     constructor(io) {
@@ -427,3 +427,4 @@ class SocketManager {
     }
 }
 exports.SocketManager = SocketManager;
+

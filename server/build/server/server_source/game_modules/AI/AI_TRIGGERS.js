@@ -51,3 +51,4 @@ var AI_TRIGGER;
     }
     AI_TRIGGER.can_buy = can_buy;
 })(AI_TRIGGER || (exports.AI_TRIGGER = AI_TRIGGER = {}));
+

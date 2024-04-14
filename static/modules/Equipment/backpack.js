@@ -1,4 +1,4 @@
-import { EquipSlotStorage } from "@content/content.js";
+import { EquipSlotStorage } from "../.././content.js";
 import { List } from "../../widgets/List/list.js";
 import { damage_types } from "../Constants/inventory.js";
 import { elementById, selectById } from "../HTMLwrappers/common.js";
@@ -129,3 +129,4 @@ for (let d of damage_types) {
 }
 export const backpack_list = new List(elementById('backpack_tab'));
 backpack_list.columns = columns;
+

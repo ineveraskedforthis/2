@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generate_item_crafts = void 0;
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 const CraftItem_1 = require("./CraftItem");
 function generate_skill_check(skill_check, difficulty, material_category) {
     switch (material_category) {
@@ -98,3 +98,4 @@ function generate_item_crafts() {
     }
 }
 exports.generate_item_crafts = generate_item_crafts;
+

@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const data_objects_1 = require("./game_modules/data/data_objects");
-const equip_1 = require("./game_modules/inventories/equip");
 const system_1 = require("./game_modules/character/system");
 const TEMPLATE_HUMANS_1 = require("./game_modules/races/TEMPLATE_HUMANS");
 const inventory_1 = require("./game_modules/inventories/inventory");
 const strings_management_1 = require("./game_modules/data/strings_management");
 data_objects_1.Data.World.load_world_dimensions(data_objects_1.save_path.WORLD_DIMENSIONS);
+data_objects_1.Data.World.load_terrain(data_objects_1.save_path.TERRAIN);
 data_objects_1.Data.Cells.load(data_objects_1.save_path.CELLS);
 data_objects_1.Data.World.load();
 function string_difference([a, b]) {
@@ -62,20 +62,20 @@ function character_serialisation_test_advanced() {
     // console.log(string_difference([string, string2]))
     console.log(string == string2);
 }
-function equip_string_test() {
-    console.log('equip ser test');
-    const equip = new equip_1.Equip();
-    add_testing_items_to_equip(equip);
-    const s1 = (0, strings_management_1.equip_to_string)(equip);
-    const equip2 = new equip_1.Equip;
-    (0, strings_management_1.equip_from_string)(s1, equip2);
-    // equip2.from_string(s1)
-    const s2 = (0, strings_management_1.equip_to_string)(equip2);
-    // console.log(string_difference([s1, s2]))
-    // console.log(s1)
-    // console.log(s2)
-    console.log(s1 == s2);
-}
+// function equip_string_test() {
+//     console.log('equip ser test')
+//     const equip = new Equip()
+//     add_testing_items_to_equip(equip)
+//     const s1 = equip_to_string(equip)
+//     const equip2 = new Equip
+//     equip_from_string(s1, equip2)
+//     // equip2.from_string(s1)
+//     const s2 = equip_to_string(equip2)
+//     // console.log(string_difference([s1, s2]))
+//     // console.log(s1)
+//     // console.log(s2)
+//     console.log(s1 == s2)
+// }
 function backpack_string_test() {
     console.log('backpack ser test');
     const backpack = new inventory_1.Inventory(10);
@@ -115,6 +115,7 @@ function map_coords_test() {
 }
 character_serialization_test_simple();
 character_serialisation_test_advanced();
-equip_string_test();
+// equip_string_test()
 backpack_string_test();
 map_coords_test();
+

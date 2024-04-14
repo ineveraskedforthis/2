@@ -17,3 +17,4 @@ export const SKILL_NAMES: {[_ in string]: string} = {
     fishing: 'Fishing',
     smith: 'Smithing'
 };
+

@@ -7,7 +7,7 @@ const inventory_events_1 = require("../../events/inventory_events");
 const market_1 = require("../../events/market");
 const system_1 = require("../../market/system");
 const data_objects_1 = require("../../data/data_objects");
-const content_1 = require("@content/content");
+const content_1 = require("../../../.././../game_content/src/content");
 function r(f) {
     return (sw) => {
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);
@@ -337,3 +337,4 @@ var InventoryCommands;
     }
     InventoryCommands.reroll_enchant = reroll_enchant;
 })(InventoryCommands || (exports.InventoryCommands = InventoryCommands = {}));
+

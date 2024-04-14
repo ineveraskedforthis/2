@@ -4,7 +4,7 @@ exports.ItemSystem = void 0;
 const affix_1 = require("../../base_game_classes/affix");
 const damage_types_1 = require("../../damage_types");
 const Damage_1 = require("../../Damage");
-const content_1 = require("@content/content");
+const content_1 = require("../../../.././../game_content/src/content");
 const item_1 = require("../../../content_wrappers/item");
 const empty_resists = new Damage_1.Damage();
 var ItemSystem;
@@ -35,12 +35,12 @@ var ItemSystem;
             const material_handle = content_1.MaterialStorage.get(item.prototype.secondary_material);
             const weapon_type = content_1.ImpactStorage.get(item.prototype.impact);
             const ratio = weapon_type.handle_ratio;
-            return item.prototype.size * (material_handle.density * ratio + material_impact.density * (1 - ratio));
+            return Math.round(0.5 + item.prototype.size * (material_handle.density * ratio + material_impact.density * (1 - ratio)));
         }
         if ((0, item_1.is_armour)(item)) {
             const main_material = content_1.MaterialStorage.get(item.prototype.material);
             const secondary_material = content_1.MaterialStorage.get(item.prototype.secondary_material);
-            return main_material.density * item.prototype.size + secondary_material.density * item.prototype.secondary_size;
+            return Math.round(0.5 + main_material.density * item.prototype.size + secondary_material.density * item.prototype.secondary_size);
         }
         return 0;
     }
@@ -69,7 +69,7 @@ var ItemSystem;
             const secondary_material = content_1.MaterialStorage.get(item.prototype.secondary_material);
             result += main_material.magic_power * item.prototype.size + secondary_material.magic_power * item.prototype.secondary_size;
         }
-        return result;
+        return Math.round(0.5 + result);
     }
     ItemSystem.power = power;
     function melee_damage(item, type) {
@@ -108,6 +108,7 @@ var ItemSystem;
         damage_types_1.DmgOps.mult_ip(damage, durability_mod);
         // fire damage is always added
         damage.fire = power(item) + affix_damage.fire;
+        damage_types_1.DmgOps.floor_ip(damage);
         // console.log(damage)
         return damage;
     }
@@ -126,6 +127,7 @@ var ItemSystem;
         const ammo_data = content_1.MaterialStorage.get(ammo);
         damage.pierce = weapon.prototype.bow_power * ammo_data.cutting_power + ammo_data.magic_power;
         damage_types_1.DmgOps.add_ip(damage, affix_damage);
+        damage_types_1.DmgOps.floor_ip(damage);
         return damage;
     }
     ItemSystem.ranged_damage = ranged_damage;
@@ -158,6 +160,7 @@ var ItemSystem;
         }
         const durability_mod = 0.2 + 0.8 * item.durability / 100;
         damage_types_1.DmgOps.mult_ip(result, durability_mod);
+        damage_types_1.DmgOps.floor_ip(result);
         return result;
     }
     ItemSystem.resists = resists;
@@ -199,12 +202,12 @@ var ItemSystem;
             affixes: item.affixes.length,
             affixes_list: item.affixes,
             durability: item.durability,
-            item_type: 0 /* EQUIP_SLOT.WEAPON */,
+            item_type: item.prototype.slot,
             damage: empty_resists,
             ranged_damage: 0,
             resists: resists(item),
             price: item.price,
-            is_weapon: true,
+            is_weapon: false,
         };
     }
     ItemSystem.armour_data = armour_data;
@@ -220,3 +223,4 @@ var ItemSystem;
     }
     ItemSystem.data = data;
 })(ItemSystem || (exports.ItemSystem = ItemSystem = {}));
+

@@ -1,4 +1,4 @@
-import { EQUIP_SLOT, MATERIAL } from "@content/content";
+import { EQUIP_SLOT, MATERIAL, equip_slot_string_id } from "@content/content";
 import { EQUIPMENT_PIECE, EquipmentPiece } from "../server/server_source/game_modules/data/entities/item";
 
 export interface SkillListInterface {
@@ -34,7 +34,7 @@ export type backpack = {
     items: ItemBackpackData[]
 }
 
-export type equip = Partial<Record<EQUIP_SLOT, ItemData>>
+export type equip = Partial<Record<equip_slot_string_id, ItemData>>
 
 export type EquipSocket = {
     equip: equip
@@ -58,7 +58,7 @@ export interface ItemData {
 }
 
 export interface EquipSlotData {
-    equip_slot: EQUIP_SLOT
+    equip_slot: equip_slot_string_id
     item: ItemData
 }
 

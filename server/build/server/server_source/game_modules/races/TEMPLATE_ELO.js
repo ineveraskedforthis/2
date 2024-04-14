@@ -16,3 +16,4 @@ exports.ElodinoTemplate = {
     name_generator: generate_name,
     max_hp: "Elodino",
 };
+

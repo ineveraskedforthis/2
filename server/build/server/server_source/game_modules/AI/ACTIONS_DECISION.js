@@ -15,3 +15,4 @@ function decide_ai_action_campaign(character) {
     best_action(character);
 }
 exports.decide_ai_action_campaign = decide_ai_action_campaign;
+

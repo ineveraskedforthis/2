@@ -66,3 +66,4 @@ export class BackgroundImage {
         div.style.backgroundImage = image_url(location_data.terrain, location_data.forest, location_data.house_level, location_data.urbanisation);
     }
 }
+

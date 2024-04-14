@@ -41,3 +41,4 @@ function skeleton(model) {
     }
 }
 exports.skeleton = skeleton;
+

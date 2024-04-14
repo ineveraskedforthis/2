@@ -7,7 +7,7 @@ const crafts_storage_1 = require("./crafts_storage");
 const helpers_1 = require("./helpers");
 const events_1 = require("../events/events");
 const system_1 = require("../character/system");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 function event_craft_bulk(character, craft) {
     (0, helpers_1.use_input)(craft.input, character);
     produce_output(output_bulk(character, craft), character);
@@ -77,3 +77,4 @@ function get_crafts_bulk_list(character) {
     return list;
 }
 exports.get_crafts_bulk_list = get_crafts_bulk_list;
+

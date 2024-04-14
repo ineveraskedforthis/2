@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stash = void 0;
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 class Stash {
     constructor() {
         this.data = content_1.MaterialConfiguration.zero_record;
@@ -78,3 +78,4 @@ class Stash {
     }
 }
 exports.Stash = Stash;
+

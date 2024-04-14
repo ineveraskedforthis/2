@@ -80,3 +80,4 @@ function crafter_routine(character) {
     AIactions_1.AIactions.sell_items(character);
 }
 exports.crafter_routine = crafter_routine;
+

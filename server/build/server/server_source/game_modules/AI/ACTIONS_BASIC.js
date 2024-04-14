@@ -14,7 +14,7 @@ const AI_ROUTINE_GENERIC_1 = require("./AI_ROUTINE_GENERIC");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
 const effects_1 = require("../events/effects");
-const content_1 = require("@content/content");
+const content_1 = require("../../.././../game_content/src/content");
 const LOOT = [18 /* MATERIAL.MEAT_RAT */, 10 /* MATERIAL.SKIN_RAT */, 7 /* MATERIAL.BONE_RAT */, 4 /* MATERIAL.SMALL_BONE_RAT */, 26 /* MATERIAL.FISH_OKU */];
 function loot(character) {
     let tmp = 0;
@@ -297,3 +297,4 @@ function update_price_beliefs(character) {
     });
 }
 exports.update_price_beliefs = update_price_beliefs;
+

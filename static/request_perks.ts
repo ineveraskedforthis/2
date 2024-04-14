@@ -264,3 +264,4 @@ export function init_detailed_character_statistics() {
     socket.on('perks-update',   update_perks);
     socket.on('stats',          update_stats)
 }
+

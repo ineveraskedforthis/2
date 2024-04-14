@@ -1,5 +1,5 @@
 //CHARACTER 2D IMAGE DISPLAY
-import { EquipSlotStorage } from "@content/content.js";
+import { EquipSlotStorage } from "../.././content.js";
 import { elementById, imageById, selectImage } from "../HTMLwrappers/common.js";
 var race_model = "human";
 const display_layers = ['behind_all', 'behind_body', 'behind_right_arm', 'on_top'];
@@ -96,8 +96,6 @@ export function set_up_character_model(socket) {
     flag_init = true;
 }
 export function update_equip_image(data) {
-    console.log('equip update');
-    console.log(data);
     if (flag_init == false)
         return;
     for (let layer of display_layers) {
@@ -106,8 +104,8 @@ export function update_equip_image(data) {
         }
         for (let tag of EQUIPMENT_TAGS) {
             let div = selectImage('.character_image.equip.' + tag + '.' + layer);
-            console.log(tag, data[EquipSlotStorage.from_string(tag).id]);
-            let item_tag = data[EquipSlotStorage.from_string(tag).id]?.name || 'empty';
+            console.log(tag, data[EquipSlotStorage.from_string(tag).id_string]);
+            let item_tag = data[EquipSlotStorage.from_string(tag).id_string]?.name || 'empty';
             if (tag == 'secondary') {
                 continue;
             }
@@ -125,3 +123,4 @@ export function update_equip_image(data) {
         }
     }
 }
+

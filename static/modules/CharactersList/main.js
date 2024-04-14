@@ -65,3 +65,4 @@ function select_character(id) {
     let character_div = elementById('ListCharacterId_' + id);
     character_div.classList.add('selected');
 }
+

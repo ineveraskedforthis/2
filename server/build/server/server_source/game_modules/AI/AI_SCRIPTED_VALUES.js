@@ -53,3 +53,4 @@ var AItrade;
     }
     AItrade.craft_bulk_profitability = craft_bulk_profitability;
 })(AItrade || (exports.AItrade = AItrade = {}));
+

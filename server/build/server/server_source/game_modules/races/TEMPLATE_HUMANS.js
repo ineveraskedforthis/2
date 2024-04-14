@@ -44,3 +44,4 @@ exports.TraderTemplate = {
 function HumanNamesGen() {
     return 'name ' + Math.floor(Math.random() * 50);
 }
+

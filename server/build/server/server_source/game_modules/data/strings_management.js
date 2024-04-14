@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.inventory_from_string = exports.inventory_to_string = exports.equip_from_string = exports.equip_to_string = exports.string_to_character = exports.character_to_string = void 0;
+exports.inventory_from_string = exports.inventory_to_string = exports.string_to_character = exports.character_to_string = void 0;
 const character_1 = require("../character/character");
 function character_to_string(data) {
     return JSON.stringify({
@@ -58,15 +58,13 @@ function string_to_character(s) {
     return character;
 }
 exports.string_to_character = string_to_character;
-function equip_to_string(equip) {
-    return JSON.stringify(equip);
-}
-exports.equip_to_string = equip_to_string;
-function equip_from_string(s, equip) {
-    equip.load_from_json(JSON.parse(s));
-    return equip;
-}
-exports.equip_from_string = equip_from_string;
+// export function equip_to_string(equip: Equip) {
+//     return JSON.stringify(equip)
+// }
+// export function equip_from_string(s: string, equip: Equip): Equip {
+//     equip.load_from_json(JSON.parse(s))
+//     return equip
+// }
 function inventory_to_string(inventory) {
     // const array:string[] = []
     // for (let i of inventory.items) {
@@ -89,3 +87,4 @@ function inventory_from_string(inventory, s) {
     return inventory;
 }
 exports.inventory_from_string = inventory_from_string;
+

@@ -7,3 +7,4 @@ exports.BATTLE_CURRENT_UNIT = 'current_unit_turn';
 exports.constants = {
     version: 304,
 };
+

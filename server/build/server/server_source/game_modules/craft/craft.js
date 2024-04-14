@@ -7,3 +7,4 @@ require("./cooking");
 const items_1 = require("./items");
 require("./misc");
 (0, items_1.generate_item_crafts)();
+

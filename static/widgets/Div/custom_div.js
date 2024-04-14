@@ -16,3 +16,4 @@ export function div(id, innerHTML, classes, background, onckick, children) {
     }
     return div;
 }
+

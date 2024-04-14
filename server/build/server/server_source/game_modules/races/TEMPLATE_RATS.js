@@ -46,3 +46,4 @@ const rat_moraes = ['s', 'shi', "S'", "fu", 'fi'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(rat_moraes, 5);
 }
+

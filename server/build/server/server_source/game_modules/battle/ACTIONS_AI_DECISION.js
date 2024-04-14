@@ -196,3 +196,4 @@ function decide_AI_battle_action(battle, character) {
     }
 }
 exports.decide_AI_battle_action = decide_AI_battle_action;
+

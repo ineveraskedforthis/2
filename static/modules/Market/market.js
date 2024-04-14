@@ -189,3 +189,4 @@ export function init_market_bulk_infrastructure(market_bulk) {
     });
     return market_bulk;
 }
+

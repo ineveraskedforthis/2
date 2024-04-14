@@ -135,8 +135,11 @@ socket.on('char-info-detailed', msg => character_screen.update(msg))
 socket.on('equip-update', (msg: EquipSocket) => {
     update_equip_image(msg.equip)
 
+    console.log('equip update')
+    console.log(msg)
+
     let equip_data : EquipSlotData[] = []
-    for (let slot of EquipSlotConfiguration.SLOT) {
+    for (let slot of Object.values(EquipSlotConfiguration.EQUIP_SLOT_SLOT_STRING)) {
         const item = msg.equip[slot]
         if (item == undefined) continue;
         equip_data.push({
@@ -144,6 +147,9 @@ socket.on('equip-update', (msg: EquipSocket) => {
             item: item
         })
     }
+
+    console.log("filtered equip data:")
+    console.log(equip_data)
 
     equip_list.data = equip_data
     backpack_list.data = msg.backpack.items

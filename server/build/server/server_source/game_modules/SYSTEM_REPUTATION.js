@@ -50,3 +50,4 @@ function is_enemy_characters(character, target_character) {
     return true;
 }
 exports.is_enemy_characters = is_enemy_characters;
+
