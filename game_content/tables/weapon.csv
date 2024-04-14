@@ -1,7 +1,7 @@
-id,impact_material,handle_material,power,size,length,impact,craftable,name
+id,material,secondary-material,power,size,length,impact,craftable,name
 bow-wood,wood-red,wood-red,0,0.75,1,blunt,1,"Bow"
 spear-wood,wood-red,wood-red,0,1.5,3,point,1,"Spear"
-spear-wood-bone,bone-rat-small,wood-red,0,1.5,3,point,1,"Spear"
+spear-wood-bone,small-bone-rat,wood-red,0,1.5,3,point,1,"Spear"
 dagger-bone-rat,bone-rat,bone-rat,0,0.5,0.5,point,1,"Dagger"
 sword-steel,steel,wood-red,0,1,1,blade,1,"Sword"
 mace-wood,wood-red,wood-red,0,3,1,blunt,1,"Mace"

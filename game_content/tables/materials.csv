@@ -1,4 +1,4 @@
-id,category,cutting-power,density,cutting-protection,blunt-protection,penentration-protection,magic,name
+id,category,cutting-power,density,cutting-protection,blunt-protection,penentration-protection,magic-power,name
 arrow-bone,bow-ammo,1,0.2,0,0,0,0,"Bone arrow"
 arrow-zaz,bow-ammo,2,0.2,0,0,0,1,"Zaz arrow"
 cotton,plant,0,0.1,0.2,0.2,0.2,0.1,"Cotton"
