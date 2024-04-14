@@ -1,4 +1,4 @@
-tag,category,cutting-power,density,cutting-protection,blunt-protection,penentration-protection,magic,name
+id,category,cutting-power,density,cutting-protection,blunt-protection,penentration-protection,magic,name
 arrow-bone,bow-ammo,1,0.2,0,0,0,0,"Bone arrow"
 arrow-zaz,bow-ammo,2,0.2,0,0,0,1,"Zaz arrow"
 cotton,plant,0,0.1,0.2,0.2,0.2,0.1,"Cotton"
@@ -19,7 +19,7 @@ leather-graci,material,0,2.2,1,1,0,2,"Leather(graci)"
 leather-ball,material,0,1.6,0.5,0.5,0,4,"Leather(meat ball)"
 meat-rat,meat,0,0.4,0,0,0,0,"Meat(rat)"
 meat-rat-fried,food,0,0.6,0,0,0,0,"Fried meat(rat)"
-meat-elodino,meat,0,0.1,0,0,0,2,"Meat(elodino)"
+meat-elodino,meat,0,0.1,0.1,0.1,0.1,2,"Meat(elodino)"
 meat-ball,food,0,0.1,0,0,0,2,"Meat(meat ball)"
 meat-human,meat,0,0.5,0,0,0,0,"Meat(human)"
 meat-human-fried,food,0,0.7,0,0,0,0,"Fried meat(human)"
@@ -27,6 +27,8 @@ meat-graci,meat,0,0.2,0,0,0,4,"Meat(graci)"
 meat-graci-fried,meat,0,0.2,0,0,0,2,"Fried meat(graci)"
 berry-fie,fruit,0,0.2,0,0,0,0,"Fieberry"
 berry-zaz,fruit,0,0.3,0,0,0,0.1,"Zazberry"
-zaz,material,2,5,5,2,5,1,"Zaz"
+zaz,material,3,10,5,2,5,1,"Zaz"
 wood-red,wood,0.5,1,1,1,2.5,0.1,"Wood(raw)"
 wood-red-plate,material,0.5,2,2,2,5,0.1,"Wood(plates)"
+hair-graci,material,10,10,10,10,10,5,Hair(graci)
+steel,material,2.5,8,10,10,10,0,Steel
