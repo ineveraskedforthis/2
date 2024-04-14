@@ -361,4 +361,4 @@ var CharacterSystem;
     function battle_update(character) {
     }
     CharacterSystem.battle_update = battle_update;
-})(CharacterSystem = exports.CharacterSystem || (exports.CharacterSystem = {}));
+})(CharacterSystem || (exports.CharacterSystem = CharacterSystem = {}));

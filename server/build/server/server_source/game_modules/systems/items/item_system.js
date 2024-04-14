@@ -219,4 +219,4 @@ var ItemSystem;
         }
     }
     ItemSystem.data = data;
-})(ItemSystem = exports.ItemSystem || (exports.ItemSystem = {}));
+})(ItemSystem || (exports.ItemSystem = ItemSystem = {}));

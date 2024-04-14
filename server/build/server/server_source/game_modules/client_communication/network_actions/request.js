@@ -216,7 +216,7 @@ var Request;
                 tag: key,
                 cost: item.ap_cost(battle, character, target),
                 damage: 0,
-                probability: 1,
+                probability: 1, //item.chance(battle, character, target),
                 target: 'position',
                 possible: (0, actions_1.battle_action_position_check)(key, battle, character, target).response == 'OK'
             };
@@ -233,4 +233,4 @@ var Request;
         updates_1.SendUpdate.all_craft(user);
     }
     Request.craft_data = craft_data;
-})(Request = exports.Request || (exports.Request = {}));
+})(Request || (exports.Request = Request = {}));

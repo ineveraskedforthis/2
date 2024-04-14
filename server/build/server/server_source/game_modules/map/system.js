@@ -243,4 +243,4 @@ var MapSystem;
         var ty = 2 * h * y - h * x;
         return { x: tx, y: ty };
     }
-})(MapSystem = exports.MapSystem || (exports.MapSystem = {}));
+})(MapSystem || (exports.MapSystem = MapSystem = {}));

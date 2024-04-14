@@ -73,4 +73,4 @@ var Attack;
         return result;
     }
     Attack.generate_magic_bolt = generate_magic_bolt;
-})(Attack = exports.Attack || (exports.Attack = {}));
+})(Attack || (exports.Attack = Attack = {}));

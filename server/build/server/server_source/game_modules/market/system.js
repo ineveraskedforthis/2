@@ -13,7 +13,7 @@ var AuctionResponse;
     AuctionResponse["OK"] = "ok";
     AuctionResponse["NOT_ENOUGH_MONEY"] = "not_enough_money";
     AuctionResponse["INVALID_ORDER"] = "invalid_order";
-})(AuctionResponse = exports.AuctionResponse || (exports.AuctionResponse = {}));
+})(AuctionResponse || (exports.AuctionResponse = AuctionResponse = {}));
 const empty_stash = new stash_1.Stash();
 // this file does not handle networking
 var MarketOrders;
@@ -117,7 +117,7 @@ var MarketOrders;
         }
     }
     MarketOrders.decrease_amount = decrease_amount;
-})(MarketOrders = exports.MarketOrders || (exports.MarketOrders = {}));
+})(MarketOrders || (exports.MarketOrders = MarketOrders = {}));
 var ItemOrders;
 (function (ItemOrders) {
     function create(owner, item, price, finished) {
@@ -170,4 +170,4 @@ var ItemOrders;
         return AuctionResponse.OK;
     }
     ItemOrders.buy = buy;
-})(ItemOrders = exports.ItemOrders || (exports.ItemOrders = {}));
+})(ItemOrders || (exports.ItemOrders = ItemOrders = {}));

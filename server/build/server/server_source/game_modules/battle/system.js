@@ -213,4 +213,4 @@ var BattleSystem;
         }
     }
     BattleSystem.stop_battle = stop_battle;
-})(BattleSystem = exports.BattleSystem || (exports.BattleSystem = {}));
+})(BattleSystem || (exports.BattleSystem = BattleSystem = {}));

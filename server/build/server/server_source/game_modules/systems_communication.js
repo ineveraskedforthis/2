@@ -124,7 +124,7 @@ var Convert;
         return cell;
     }
     Convert.character_to_cell = character_to_cell;
-})(Convert = exports.Convert || (exports.Convert = {}));
+})(Convert || (exports.Convert = Convert = {}));
 var Link;
 (function (Link) {
     function character_and_user_data(character, user) {
@@ -174,7 +174,7 @@ var Link;
         user_manager_1.UserManagement.add_user_to_update_queue(character_object.user_id, 11 /* UI_Part.LOCAL_ACTIONS */);
     }
     Link.character_and_location = character_and_location;
-})(Link = exports.Link || (exports.Link = {}));
+})(Link || (exports.Link = Link = {}));
 var Unlink;
 (function (Unlink) {
     function user_data_and_character(user, character) {
@@ -188,4 +188,4 @@ var Unlink;
         user_manager_1.UserManagement.add_user_to_update_queue(user.id, 'character_removal');
     }
     Unlink.user_data_and_character = user_data_and_character;
-})(Unlink = exports.Unlink || (exports.Unlink = {}));
+})(Unlink || (exports.Unlink = Unlink = {}));

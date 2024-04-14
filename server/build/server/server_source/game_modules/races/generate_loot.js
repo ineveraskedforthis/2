@@ -71,4 +71,4 @@ var Loot;
         return 0;
     }
     Loot.skinning = skinning;
-})(Loot = exports.Loot || (exports.Loot = {}));
+})(Loot || (exports.Loot = Loot = {}));

@@ -14,4 +14,4 @@ var BattleValues;
         return system_1.CharacterSystem.movement_cost_battle(unit);
     }
     BattleValues.move_cost = move_cost;
-})(BattleValues = exports.BattleValues || (exports.BattleValues = {}));
+})(BattleValues || (exports.BattleValues = BattleValues = {}));

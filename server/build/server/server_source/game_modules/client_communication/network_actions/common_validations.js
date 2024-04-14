@@ -116,4 +116,4 @@ var Validator;
         return true;
     }
     Validator.is_tag_point = is_tag_point;
-})(Validator = exports.Validator || (exports.Validator = {}));
+})(Validator || (exports.Validator = Validator = {}));

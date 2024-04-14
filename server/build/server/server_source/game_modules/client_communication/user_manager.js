@@ -275,4 +275,4 @@ var UserManagement;
         alerts_1.Alerts.generic_user_alert(user, 'loading_completed', '');
     }
     UserManagement.send_character_to_user = send_character_to_user;
-})(UserManagement = exports.UserManagement || (exports.UserManagement = {}));
+})(UserManagement || (exports.UserManagement = UserManagement = {}));

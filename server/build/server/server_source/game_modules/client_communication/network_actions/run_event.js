@@ -164,4 +164,4 @@ var SocketCommand;
         request_1.Request.local_locations(sw);
     }
     SocketCommand.repair_location = repair_location;
-})(SocketCommand = exports.SocketCommand || (exports.SocketCommand = {}));
+})(SocketCommand || (exports.SocketCommand = SocketCommand = {}));

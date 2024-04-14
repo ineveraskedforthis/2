@@ -12,13 +12,13 @@ var ResponseNegative;
     ResponseNegative["no_money"] = "no_money";
     ResponseNegative["invalid_cell"] = "invalid_cell";
     ResponseNegative["no_owner"] = "no_owner";
-})(ResponseNegative = exports.ResponseNegative || (exports.ResponseNegative = {}));
+})(ResponseNegative || (exports.ResponseNegative = ResponseNegative = {}));
 var ResponseNegativeQuantified;
 (function (ResponseNegativeQuantified) {
     ResponseNegativeQuantified["Money"] = "money";
     ResponseNegativeQuantified["TeacherSkill"] = "teacher_skill";
     ResponseNegativeQuantified["Skill"] = "skill";
-})(ResponseNegativeQuantified = exports.ResponseNegativeQuantified || (exports.ResponseNegativeQuantified = {}));
+})(ResponseNegativeQuantified || (exports.ResponseNegativeQuantified = ResponseNegativeQuantified = {}));
 var Trigger;
 (function (Trigger) {
     /**
@@ -62,4 +62,4 @@ var Trigger;
         return { response: 'ok', price: price };
     }
     Trigger.can_learn_from = can_learn_from;
-})(Trigger = exports.Trigger || (exports.Trigger = {}));
+})(Trigger || (exports.Trigger = Trigger = {}));

@@ -50,4 +50,4 @@ var ActionManager;
         });
     }
     ActionManager.update_characters = update_characters;
-})(ActionManager = exports.ActionManager || (exports.ActionManager = {}));
+})(ActionManager || (exports.ActionManager = ActionManager = {}));

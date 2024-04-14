@@ -121,4 +121,4 @@ var Update;
         };
     }
     Update.construct = construct;
-})(Update = exports.Update || (exports.Update = {}));
+})(Update || (exports.Update = Update = {}));

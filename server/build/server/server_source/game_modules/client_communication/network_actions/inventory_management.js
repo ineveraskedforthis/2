@@ -336,4 +336,4 @@ var InventoryCommands;
         inventory_events_1.EventInventory.reroll_enchant(character, msg);
     }
     InventoryCommands.reroll_enchant = reroll_enchant;
-})(InventoryCommands = exports.InventoryCommands || (exports.InventoryCommands = {}));
+})(InventoryCommands || (exports.InventoryCommands = InventoryCommands = {}));

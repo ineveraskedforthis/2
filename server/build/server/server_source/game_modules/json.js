@@ -18,4 +18,4 @@ var JSONficate;
         };
     }
     JSONficate.market_order_bulk = market_order_bulk;
-})(JSONficate = exports.JSONficate || (exports.JSONficate = {}));
+})(JSONficate || (exports.JSONficate = JSONficate = {}));

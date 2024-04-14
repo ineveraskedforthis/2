@@ -53,5 +53,5 @@ var DmgOps;
         return total;
     }
     DmgOps.total = total;
-})(DmgOps = exports.DmgOps || (exports.DmgOps = {}));
+})(DmgOps || (exports.DmgOps = DmgOps = {}));
 exports.damage_types = ['blunt', 'pierce', 'slice', 'fire'];

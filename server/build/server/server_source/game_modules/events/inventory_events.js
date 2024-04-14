@@ -88,4 +88,4 @@ var EventInventory;
     EventInventory.reroll_enchant = reroll_enchant;
     function test(character) {
     }
-})(EventInventory = exports.EventInventory || (exports.EventInventory = {}));
+})(EventInventory || (exports.EventInventory = EventInventory = {}));

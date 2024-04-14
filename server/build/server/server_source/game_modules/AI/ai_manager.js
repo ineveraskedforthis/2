@@ -28,4 +28,4 @@ var CampaignAI;
         (0, ACTIONS_DECISION_1.decide_ai_action_campaign)(character);
     }
     CampaignAI.decision = decision;
-})(CampaignAI = exports.CampaignAI || (exports.CampaignAI = {}));
+})(CampaignAI || (exports.CampaignAI = CampaignAI = {}));

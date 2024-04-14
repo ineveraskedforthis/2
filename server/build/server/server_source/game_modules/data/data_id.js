@@ -463,4 +463,4 @@ var DataID;
         }
         MarketOrders.owner = owner;
     })(MarketOrders = DataID.MarketOrders || (DataID.MarketOrders = {}));
-})(DataID = exports.DataID || (exports.DataID = {}));
+})(DataID || (exports.DataID = DataID = {}));

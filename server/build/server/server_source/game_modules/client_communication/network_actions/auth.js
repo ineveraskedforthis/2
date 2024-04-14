@@ -155,4 +155,4 @@ var Auth;
         }
         return result;
     }
-})(Auth = exports.Auth || (exports.Auth = {}));
+})(Auth || (exports.Auth = Auth = {}));

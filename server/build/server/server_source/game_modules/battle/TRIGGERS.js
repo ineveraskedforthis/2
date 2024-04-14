@@ -86,4 +86,4 @@ var BattleTriggers;
         return false;
     }
     BattleTriggers.is_friend = is_friend;
-})(BattleTriggers = exports.BattleTriggers || (exports.BattleTriggers = {}));
+})(BattleTriggers || (exports.BattleTriggers = BattleTriggers = {}));

@@ -484,4 +484,4 @@ var Event;
         data.forest -= 1;
     }
     Event.remove_tree = remove_tree;
-})(Event = exports.Event || (exports.Event = {}));
+})(Event || (exports.Event = Event = {}));

@@ -264,4 +264,4 @@ var Alerts;
         Alerts.generic_character_alert(character, 'leave-room', character);
     }
     Alerts.leave_room = leave_room;
-})(Alerts = exports.Alerts || (exports.Alerts = {}));
+})(Alerts || (exports.Alerts = Alerts = {}));

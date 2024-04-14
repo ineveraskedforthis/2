@@ -86,4 +86,4 @@ var Dialog;
         sw.socket.emit('perks-info', response);
     }
     Dialog.request_greeting = request_greeting;
-})(Dialog = exports.Dialog || (exports.Dialog = {}));
+})(Dialog || (exports.Dialog = Dialog = {}));

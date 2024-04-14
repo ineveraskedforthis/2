@@ -102,4 +102,4 @@ var EventMarket;
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
     }
     EventMarket.remove_bulk_order = remove_bulk_order;
-})(EventMarket = exports.EventMarket || (exports.EventMarket = {}));
+})(EventMarket || (exports.EventMarket = EventMarket = {}));

@@ -334,7 +334,7 @@ var SendUpdate;
         // }
     }
     SendUpdate.update_player_actions_availability = update_player_actions_availability;
-})(SendUpdate = exports.SendUpdate || (exports.SendUpdate = {}));
+})(SendUpdate || (exports.SendUpdate = SendUpdate = {}));
 exports.weapon_attack_tags = ['polearms', 'noweapon', 'onehand', 'ranged', 'twohanded'];
 // update_market_info(market: Cell) {
 //     let response = this.prepare_market_orders(market)

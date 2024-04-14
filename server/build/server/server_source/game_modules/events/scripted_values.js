@@ -89,4 +89,4 @@ var ScriptedValue;
         return rest_target_stress(rest_tier(character, location), ScriptedValue.max_devastation - location.devastation, character.race);
     }
     ScriptedValue.target_stress = target_stress;
-})(ScriptedValue = exports.ScriptedValue || (exports.ScriptedValue = {}));
+})(ScriptedValue || (exports.ScriptedValue = ScriptedValue = {}));

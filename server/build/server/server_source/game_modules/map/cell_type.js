@@ -15,4 +15,4 @@ var CellType;
     CellType[CellType["HumanCity"] = 9] = "HumanCity";
     CellType[CellType["HumanMarket"] = 10] = "HumanMarket";
     CellType[CellType["HumanVillage"] = 11] = "HumanVillage";
-})(CellType = exports.CellType || (exports.CellType = {}));
+})(CellType || (exports.CellType = CellType = {}));

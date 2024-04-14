@@ -16,4 +16,4 @@ var CharacterAction;
     // export const ATTACK = attack
     CharacterAction.GATHER_WOOD = actions_hunter_gathering_1.gather_wood;
     CharacterAction.GATHER_COTTON = actions_hunter_gathering_1.gather_cotton;
-})(CharacterAction = exports.CharacterAction || (exports.CharacterAction = {}));
+})(CharacterAction || (exports.CharacterAction = CharacterAction = {}));

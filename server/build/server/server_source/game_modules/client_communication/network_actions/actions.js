@@ -133,4 +133,4 @@ var HandleAction;
         (0, actions_1.battle_action_position)(action.tag, battle, character, target);
     }
     HandleAction.battle_position = battle_position;
-})(HandleAction = exports.HandleAction || (exports.HandleAction = {}));
+})(HandleAction || (exports.HandleAction = HandleAction = {}));

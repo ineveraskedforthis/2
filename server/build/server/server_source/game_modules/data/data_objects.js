@@ -769,4 +769,4 @@ var Data;
         }
         World.get_max_dimension = get_max_dimension;
     })(World = Data.World || (Data.World = {}));
-})(Data = exports.Data || (exports.Data = {}));
+})(Data || (exports.Data = Data = {}));

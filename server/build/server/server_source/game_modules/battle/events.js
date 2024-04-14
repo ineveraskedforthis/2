@@ -155,7 +155,7 @@ var BattleEvent;
         unit.action_points_left = unit.action_points_left - 4;
     }
     BattleEvent.Dodge = Dodge;
-})(BattleEvent = exports.BattleEvent || (exports.BattleEvent = {}));
+})(BattleEvent || (exports.BattleEvent = BattleEvent = {}));
 //         if (action.action == 'push_back') {
 //             if(!can_push_back(character)) {
 //                 return {action: "not_learnt", who: unit_index}

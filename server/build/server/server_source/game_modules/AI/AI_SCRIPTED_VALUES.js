@@ -52,4 +52,4 @@ var AItrade;
         return profit;
     }
     AItrade.craft_bulk_profitability = craft_bulk_profitability;
-})(AItrade = exports.AItrade || (exports.AItrade = {}));
+})(AItrade || (exports.AItrade = AItrade = {}));

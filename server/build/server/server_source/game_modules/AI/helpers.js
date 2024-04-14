@@ -138,4 +138,4 @@ var AIhelper;
         return Math.floor(5 * (damage * item.durability / 100 + Math.random() * 50)) + 1;
     }
     AIhelper.sell_price_item = sell_price_item;
-})(AIhelper = exports.AIhelper || (exports.AIhelper = {}));
+})(AIhelper || (exports.AIhelper = AIhelper = {}));
