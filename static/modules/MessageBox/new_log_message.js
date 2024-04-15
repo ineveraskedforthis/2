@@ -2,6 +2,7 @@ import { set_up_header_with_strings } from '../../headers.js';
 import { elementById, inputById } from '../HTMLwrappers/common.js';
 import { globals } from '../globals.js';
 import { socket } from "../Socket/socket.js";
+import { my_alert } from './my_alert.js';
 // MESSAGES STUFF
 const message_boxes = ['log', 'log-attack', 'chat'];
 export function init_messages_interactions() {
@@ -77,9 +78,4 @@ function new_log_attack_message(msg) {
     }
     log_message += `total damage: ${msg.total} \n`;
     new_message_to_box('log-attack', log_message);
-}
-function my_alert(msg) {
-    if (msg != 'ok') {
-        alert(msg);
-    }
 }

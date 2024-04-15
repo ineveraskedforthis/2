@@ -3,6 +3,7 @@ import { elementById, inputById } from '../HTMLwrappers/common.js';
 import { globals } from '../globals.js';
 import { socket } from "../Socket/socket.js";
 import { BattleLogData, ChatMessage, DamageTag } from '../Types/character.js';
+import { my_alert } from './my_alert.js';
 
 // MESSAGES STUFF
 
@@ -93,11 +94,5 @@ function new_log_attack_message(msg: BattleLogData) {
     log_message += `total damage: ${msg.total} \n`;
 
     new_message_to_box('log-attack', log_message)
-}
-
-function my_alert(msg: string) {
-    if (msg != 'ok') {
-        alert(msg);
-    }
 }
 
