@@ -16,6 +16,8 @@ function clean_duration_modifier(character) {
     return 1 + character.get_blood() / 50;
 }
 function clean_trigger(character) {
+    if (character.status.blood == 0)
+        return { response: "Notification:", value: "You are already clean" };
     if (system_2.MapSystem.can_clean(character.location_id)) {
         return { response: "OK" };
     }
