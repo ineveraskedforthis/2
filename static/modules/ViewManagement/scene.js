@@ -1,3 +1,4 @@
+import { my_alert } from "../MessageBox/my_alert.js";
 import { socket } from "../Socket/socket.js";
 import { tab } from "./tab.js";
 function reloadCss() {
@@ -36,7 +37,7 @@ function show_scene(scene_id) {
 }
 export function login(msg) {
     if (msg != 'ok') {
-        alert(msg);
+        my_alert(msg);
     }
     else if (msg == 'ok') {
         console.log('login success');
@@ -50,7 +51,7 @@ export function login(msg) {
 }
 export function reg(msg) {
     if (msg != 'ok') {
-        alert(msg);
+        my_alert(msg);
     }
     else if (msg == 'ok') {
         // tactic_screen.reset_tactic()

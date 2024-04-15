@@ -1,3 +1,4 @@
+import { my_alert } from "../MessageBox/my_alert.js";
 import { socket } from "../Socket/socket.js";
 import { DependencyUICanvas } from "../Types/character.js";
 import { tab } from "./tab.js";
@@ -46,7 +47,7 @@ function show_scene(scene_id: string) {
 
 export function login(msg: string) {
     if (msg != 'ok') {
-        alert(msg);
+        my_alert(msg);
     } else if (msg == 'ok') {
         console.log('login success')
         // tactic_screen.reset_tactic()
@@ -60,7 +61,7 @@ export function login(msg: string) {
 
 export function reg(msg: string) {
     if (msg != 'ok') {
-        alert(msg);
+        my_alert(msg);
     } else if (msg == 'ok') {
         // tactic_screen.reset_tactic()
         // show_char_creation();

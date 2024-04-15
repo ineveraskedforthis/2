@@ -652,7 +652,6 @@ div {
     left: 30%;
     width: 40%;
     height: 100%;
-    background-color: aliceblue;
 }
 
 #notification_area > div {
@@ -668,6 +667,7 @@ div {
     align-content: center;
     text-align: center;
     position: absolute;
+    font-size: large;
 }
 
 .notification {
