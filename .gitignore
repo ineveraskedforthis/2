@@ -2,6 +2,7 @@
 node_modules/
 .eslintrc.js
 .vscode
+.venv
 *.png~
 # *.txt
 save_1/
