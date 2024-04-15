@@ -13,7 +13,7 @@ REPLACE_WITH_END = "../game_content/src/"
 DOTS = "../"
 
 
-FOLDER = "./server/build/server/server_source"
+FOLDER = "./server/build/server/src"
 
 for root, dirs, files in os.walk(FOLDER):
     for file_name in files:

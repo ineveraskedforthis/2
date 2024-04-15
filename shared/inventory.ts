@@ -1,5 +1,4 @@
-import { EQUIP_SLOT, MATERIAL, equip_slot_string_id } from "@content/content";
-import { EQUIPMENT_PIECE, EquipmentPiece } from "../server/server_source/game_modules/data/entities/item";
+import { ARMOUR, EQUIP_SLOT, MATERIAL, WEAPON, equip_slot_string_id } from "../game_content/src/content.js"
 
 export interface SkillListInterface {
     clothier: number;
@@ -119,4 +118,5 @@ export interface TaggedCraftBulk {
 export interface TaggedCraftItem {
     tag: string,
     value: CraftItemTemplate
-}
+}export type EQUIPMENT_PIECE = { value: WEAPON; tag: "weapon"}  | { value: ARMOUR; tag: "armour"}
+
