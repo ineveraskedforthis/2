@@ -59,4 +59,3 @@ var Accuracy;
 //     }
 //     return this.get_accuracy({weapon_type: weapon_type}, mod, distance)
 // }
-

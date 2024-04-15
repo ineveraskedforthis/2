@@ -94,4 +94,3 @@ function set_faction(faction) {
 function hover_faction(faction) {
     elementById('minimap_overlay').style.backgroundImage = 'url(/static/img/minimap/' + faction + '.png)';
 }
-

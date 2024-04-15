@@ -24,4 +24,3 @@ export function init_authentication_control() {
         socket.emit('login', { login: login, password: password });
     };
 }
-

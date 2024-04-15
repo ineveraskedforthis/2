@@ -17,4 +17,3 @@ var CharacterAction;
     CharacterAction.GATHER_WOOD = actions_hunter_gathering_1.gather_wood;
     CharacterAction.GATHER_COTTON = actions_hunter_gathering_1.gather_cotton;
 })(CharacterAction || (exports.CharacterAction = CharacterAction = {}));
-

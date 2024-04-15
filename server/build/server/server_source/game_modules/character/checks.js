@@ -57,4 +57,3 @@ function can_shoot(character) {
     return false;
 }
 exports.can_shoot = can_shoot;
-

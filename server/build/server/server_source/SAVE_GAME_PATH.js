@@ -35,4 +35,3 @@ exports.DEFAULT_WORLD_PATH = path.join('default_world');
 if (!fs.existsSync(exports.DEFAULT_WORLD_PATH)) {
     console.log('CREATE NEW WORLD IN WORLD EDITOR');
 }
-

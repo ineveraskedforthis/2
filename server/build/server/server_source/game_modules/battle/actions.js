@@ -410,4 +410,3 @@ function battle_action_position(tag, battle, character, target) {
     return result;
 }
 exports.battle_action_position = battle_action_position;
-

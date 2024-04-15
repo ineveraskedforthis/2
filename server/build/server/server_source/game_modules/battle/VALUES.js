@@ -15,4 +15,3 @@ var BattleValues;
     }
     BattleValues.move_cost = move_cost;
 })(BattleValues || (exports.BattleValues = BattleValues = {}));
-

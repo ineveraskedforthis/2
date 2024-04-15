@@ -9,4 +9,3 @@ function gen_from_moraes(moraes, len) {
     return res;
 }
 exports.gen_from_moraes = gen_from_moraes;
-

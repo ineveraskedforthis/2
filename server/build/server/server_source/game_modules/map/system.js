@@ -244,4 +244,3 @@ var MapSystem;
         return { x: tx, y: ty };
     }
 })(MapSystem || (exports.MapSystem = MapSystem = {}));
-

@@ -360,4 +360,3 @@ export class NewTurnEvent extends BattleImageEvent {
         BattleImage.set_current_turn(this.unit, time_passed);
     }
 }
-

@@ -21,4 +21,3 @@ function hostile(actor, target) {
     }
 }
 exports.hostile = hostile;
-

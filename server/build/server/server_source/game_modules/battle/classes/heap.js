@@ -145,4 +145,3 @@ var CharactersHeap;
     }
     CharactersHeap.update = update;
 })(CharactersHeap || (exports.CharactersHeap = CharactersHeap = {}));
-

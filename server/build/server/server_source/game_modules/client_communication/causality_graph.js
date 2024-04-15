@@ -122,4 +122,3 @@ var Update;
     }
     Update.construct = construct;
 })(Update || (exports.Update = Update = {}));
-

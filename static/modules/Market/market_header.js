@@ -10,4 +10,3 @@ export function set_up_market_headers() {
         { element: auction_button, connected_element: auction }
     ]);
 }
-

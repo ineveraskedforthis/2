@@ -159,4 +159,3 @@ function update(delta, http_server) {
         update_timer = 0;
     }
 }
-

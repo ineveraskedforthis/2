@@ -11,4 +11,3 @@ export function generate_item_name(item) {
     }
     return name_string;
 }
-

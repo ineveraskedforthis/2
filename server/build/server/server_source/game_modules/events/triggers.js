@@ -63,4 +63,3 @@ var Trigger;
     }
     Trigger.can_learn_from = can_learn_from;
 })(Trigger || (exports.Trigger = Trigger = {}));
-

@@ -55,4 +55,3 @@ class Location {
     }
 }
 exports.Location = Location;
-

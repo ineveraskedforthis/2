@@ -11,4 +11,3 @@ exports.BaseResists = {
     BigRat: new Damage_1.Damage(10, 10, 10, 20),
     BerserkRat: new Damage_1.Damage(0, 0, 0, 0)
 };
-

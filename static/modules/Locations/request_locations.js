@@ -84,4 +84,3 @@ function display_location_data(b) {
         // elementById('change-price-room').onclick = change_price(b.id);
     };
 }
-

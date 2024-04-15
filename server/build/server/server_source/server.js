@@ -152,4 +152,3 @@ const systems_communication_js_1 = require("./game_modules/systems_communication
 exports.io = require('socket.io')(server, { path: '/socket.io' });
 exports.socket_manager = new socket_manager_js_1.SocketManager(exports.io);
 (0, game_launch_js_1.launch)(server);
-

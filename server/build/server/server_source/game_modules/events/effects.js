@@ -167,4 +167,3 @@ var Effect;
     }
     Effect.spoilage = spoilage;
 })(Effect || (exports.Effect = Effect = {}));
-

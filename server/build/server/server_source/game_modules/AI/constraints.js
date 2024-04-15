@@ -33,4 +33,3 @@ function coastal_constraints(cell) {
     return system_1.MapSystem.sea_nearby(cell.id);
 }
 exports.coastal_constraints = coastal_constraints;
-

@@ -118,4 +118,3 @@ character_serialisation_test_advanced();
 // equip_string_test()
 backpack_string_test();
 map_coords_test();
-

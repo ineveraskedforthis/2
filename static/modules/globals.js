@@ -27,4 +27,3 @@ export var globals = {
     local_characters: [],
     character_data: undefined
 };
-

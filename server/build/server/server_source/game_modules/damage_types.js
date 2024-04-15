@@ -61,4 +61,3 @@ var DmgOps;
     DmgOps.floor_ip = floor_ip;
 })(DmgOps || (exports.DmgOps = DmgOps = {}));
 exports.damage_types = ['blunt', 'pierce', 'slice', 'fire'];
-

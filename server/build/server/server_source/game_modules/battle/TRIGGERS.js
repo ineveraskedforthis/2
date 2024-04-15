@@ -87,4 +87,3 @@ var BattleTriggers;
     }
     BattleTriggers.is_friend = is_friend;
 })(BattleTriggers || (exports.BattleTriggers = BattleTriggers = {}));
-

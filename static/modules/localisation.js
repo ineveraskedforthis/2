@@ -18,4 +18,3 @@ export const section_descriptions = {
     'living_area': 'Living area',
     'north_rat_coast': 'North coast of Rat Plains, rich with fish'
 };
-

@@ -116,4 +116,3 @@ export class StashValue extends BulkAmount {
         }
     }
 }
-

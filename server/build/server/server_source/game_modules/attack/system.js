@@ -74,4 +74,3 @@ var Attack;
     }
     Attack.generate_magic_bolt = generate_magic_bolt;
 })(Attack || (exports.Attack = Attack = {}));
-

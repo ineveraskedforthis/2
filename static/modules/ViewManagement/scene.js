@@ -69,4 +69,3 @@ export function init_game_scene(map) {
     socket.on('char-removed', show_char_creation);
     tab.load_all(socket, map);
 }
-

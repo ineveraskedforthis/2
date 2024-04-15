@@ -16,4 +16,3 @@ const moraes = ['gu', 'bu', 'mu', 'zu', 'du'];
 function generate_name() {
     return (0, generate_name_moraes_1.gen_from_moraes)(moraes, 5);
 }
-

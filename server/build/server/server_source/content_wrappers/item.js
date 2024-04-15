@@ -13,4 +13,3 @@ function is_armour(x) {
     return "prototype_armour" in x;
 }
 exports.is_armour = is_armour;
-

@@ -89,4 +89,3 @@ var EventInventory;
     function test(character) {
     }
 })(EventInventory || (exports.EventInventory = EventInventory = {}));
-

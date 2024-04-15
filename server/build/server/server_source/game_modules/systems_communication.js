@@ -189,4 +189,3 @@ var Unlink;
     }
     Unlink.user_data_and_character = user_data_and_character;
 })(Unlink || (exports.Unlink = Unlink = {}));
-

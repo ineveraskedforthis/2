@@ -165,4 +165,3 @@ var SocketCommand;
     }
     SocketCommand.repair_location = repair_location;
 })(SocketCommand || (exports.SocketCommand = SocketCommand = {}));
-

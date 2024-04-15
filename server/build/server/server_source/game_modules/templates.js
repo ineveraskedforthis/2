@@ -336,4 +336,3 @@ var Template;
         Character.Ball = Ball;
     })(Character = Template.Character || (Template.Character = {}));
 })(Template || (exports.Template = Template = {}));
-

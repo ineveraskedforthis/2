@@ -34,4 +34,3 @@ class AttackObj {
     }
 }
 exports.AttackObj = AttackObj;
-

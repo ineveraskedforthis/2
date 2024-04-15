@@ -231,4 +231,3 @@ export class List {
         this._update_table();
     }
 }
-

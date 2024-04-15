@@ -741,4 +741,3 @@ export function init_map() {
     socket.on('action-ping', data => restart_action_bar(map, data.time, data.is_move));
     return map;
 }
-

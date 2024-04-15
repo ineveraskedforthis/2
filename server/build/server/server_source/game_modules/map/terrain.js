@@ -34,4 +34,3 @@ function terrain_can_move(terrain) {
     return true;
 }
 exports.terrain_can_move = terrain_can_move;
-

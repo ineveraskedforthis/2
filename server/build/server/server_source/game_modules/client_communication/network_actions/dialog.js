@@ -87,4 +87,3 @@ var Dialog;
     }
     Dialog.request_greeting = request_greeting;
 })(Dialog || (exports.Dialog = Dialog = {}));
-

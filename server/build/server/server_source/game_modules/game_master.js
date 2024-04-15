@@ -248,4 +248,3 @@ var GameMaster;
     }
     GameMaster.spawn_ball = spawn_ball;
 })(GameMaster || (exports.GameMaster = GameMaster = {}));
-

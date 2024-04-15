@@ -859,4 +859,3 @@ export var BattleImage;
 //     }
 //     return 'untreated case of battle action !!!!' + data.action
 // }
-

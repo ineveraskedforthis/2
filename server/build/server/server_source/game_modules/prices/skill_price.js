@@ -13,4 +13,3 @@ function skill_price(tag, student, teacher) {
     return Math.round(student._skills[tag] * price + 10);
 }
 exports.skill_price = skill_price;
-

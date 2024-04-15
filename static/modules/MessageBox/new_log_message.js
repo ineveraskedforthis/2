@@ -83,4 +83,3 @@ function my_alert(msg) {
         alert(msg);
     }
 }
-

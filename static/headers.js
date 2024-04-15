@@ -58,4 +58,3 @@ export function set_up_header_tab_callbacks(data) {
 export function set_up_header_with_strings(data) {
     set_up_header_tab_choice(data.map(raw_header_to_header));
 }
-

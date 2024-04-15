@@ -51,4 +51,3 @@ function use_input(input, character) {
     }
 }
 exports.use_input = use_input;
-
