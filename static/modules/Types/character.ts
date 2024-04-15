@@ -1,5 +1,6 @@
 import { LocationView } from "@custom_types/responses";
 import { Value } from "../Values/collection";
+import { MATERIAL, material_string_id } from "@content/content";
 
 export interface ValueInterface {
     id: string;
@@ -11,7 +12,7 @@ export interface LimitedValueInterface extends ValueInterface {
 }
 
 export interface BulkAmountInterface extends ValueInterface {
-    material_index: number;
+    material_index: MATERIAL;
     material_string: string;
 }
 

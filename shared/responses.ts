@@ -1,7 +1,7 @@
 import { EQUIP_SLOT, MATERIAL } from "@content/content";
 import { Perks, reputation_level } from "./character";
 import { ReputationData, ReputationDataSocket, Terrain, money } from "./common";
-import { cell_id, character_id, location_id } from "./ids";
+import { cell_id, character_id, location_id, market_order_id } from "./ids";
 
 export type PerksResponse = {
     name: string,
@@ -36,13 +36,13 @@ export interface CharacterView {
     dead: boolean;
 }
 export interface BulkOrderView {
-    tag: number;
-    amount: number;
-    price: number;
-    id: number;
-    typ: string;
-    owner_id: number;
-    owner_name: string;
+    typ: 'sell'|'buy',
+    tag: MATERIAL,
+    owner_id: character_id,
+    owner_name: string,
+    amount: number
+    price: money
+    id: market_order_id
 }
 export interface CraftItemView {
     id: string;

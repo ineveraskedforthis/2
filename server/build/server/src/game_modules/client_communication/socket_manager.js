@@ -60,7 +60,7 @@ class SocketManager {
                 request_1.Request.attack_damage(user);
             });
             socket.on('unequip', (msg) => inventory_management_1.InventoryCommands.unequip(user, msg));
-            // socket.on('eat',  () =>             HandleAction.act(user, CharacterAction.EAT));
+            socket.on('eat', (msg) => inventory_management_1.InventoryCommands.eat(user, msg));
             socket.on('clean', () => actions_1.HandleAction.act(user, actions_00_1.CharacterAction.CLEAN));
             socket.on('rest', () => actions_1.HandleAction.act(user, actions_00_1.CharacterAction.REST));
             socket.on('move', (msg) => actions_1.HandleAction.move(user, msg));

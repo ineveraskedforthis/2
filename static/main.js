@@ -1,5 +1,5 @@
 // const game_tabs = ['map', 'battle', 'skilltree', 'market', 'character', 'quest', 'stash', 'craft']
-import { update_stash, update_tags } from './modules/Stash/stash.js';
+import { init_stash, update_stash } from './modules/Stash/stash.js';
 import { init_authentication_control } from './modules/Auth/login.js';
 import { BattleImage } from './modules/Battle/battle_image.js';
 import { init_battle_control } from './modules/Battle/battle_image_init.js';
@@ -56,6 +56,16 @@ init_game_scene(map);
 const background_image = new BackgroundImage(locations_list);
 const equip_list = init_equipment_screen(socket);
 const market_bulk = new_market_bulk();
+const craft_table = new_craft_table();
+socket.on('craft-bulk-complete', (msg) => {
+    new_craft_bulk(craft_table, msg);
+});
+socket.on('craft-item', (msg) => {
+    update_craft_item_div(craft_table, msg);
+});
+socket.on('craft-item-complete', (msg) => {
+    new_craft_item(craft_table, msg);
+});
 socket.on("character_data", (msg) => {
     globals.character_data = {
         id: msg.id,
@@ -71,20 +81,8 @@ socket.on("character_data", (msg) => {
     socket.emit('request-local-locations');
     socket.emit("request-map");
     socket.emit("request-battle-data");
-});
-socket.on('tags', msg => {
-    update_tags(msg, [market_bulk]);
+    init_stash([market_bulk]);
     init_market_bulk_infrastructure(market_bulk);
-    const craft_table = new_craft_table();
-    socket.on('craft-bulk-complete', (msg) => {
-        new_craft_bulk(craft_table, msg);
-    });
-    socket.on('craft-item', (msg) => {
-        update_craft_item_div(craft_table, msg);
-    });
-    socket.on('craft-item-complete', (msg) => {
-        new_craft_item(craft_table, msg);
-    });
     socket.emit('request-craft');
     socket.emit('request-belongings');
 });
@@ -109,8 +107,8 @@ socket.on('reset_session', () => { localStorage.setItem('session', 'null'); });
 socket.on('char-info-detailed', msg => character_screen.update(msg));
 socket.on('equip-update', (msg) => {
     update_equip_image(msg.equip);
-    console.log('equip update');
-    console.log(msg);
+    //console.log('equip update')
+    //console.log(msg)
     let equip_data = [];
     for (let slot of Object.values(EquipSlotConfiguration.EQUIP_SLOT_SLOT_STRING)) {
         const item = msg.equip[slot];
@@ -153,7 +151,7 @@ function draw(time) {
     window.requestAnimationFrame(draw);
 }
 const images = loadImages(() => {
-    console.log(images);
+    //console.log(images);
     window.requestAnimationFrame(draw);
 });
 

@@ -1,10 +1,10 @@
-import { CraftBulkView, CraftItemUpdateView, CraftItemView } from "@custom_types/responses.js";
+import { CraftItemUpdateView } from "@custom_types/responses.js";
 import { CraftBulkTemplate, CraftItemTemplate, TaggedCraftBulk, TaggedCraftItem } from "../../../shared/inventory.js";
 import { div } from "../../widgets/Div/custom_div.js";
 import { Column, List } from "../../widgets/List/list.js";
 import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
-import { material_icon_url, stash_id_to_tag } from "../Stash/stash.js";
+import { material_icon_url } from "../Stash/stash.js";
 import { BulkAmount, Value, value_class_name } from "../Values/collection.js";
 import { BulkAmountInterface } from "../Types/character.js";
 import { ArmourStorage, MaterialStorage, WeaponStorage } from "@content/content.js";

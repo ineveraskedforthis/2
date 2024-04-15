@@ -1,20 +1,16 @@
+import { MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage, material_string_id } from "@content/content.js";
 import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
 import { DependencyUI } from "../Types/character.js";
 import { StashValue, value_class_name, value_indicator_class_name } from "../Values/collection.js";
 import { globals } from "../globals.js";
 
-export var stash_tag_to_id: Record<string, number> = {};
-export var stash_id_to_tag: Record<number, string> = {};
-export var material_ids: number[] = [];
 
-export function material_icon_url(material_tag: string): string {
+export function material_icon_url(material_tag: material_string_id): string {
     return `url(/static/img/stash/${material_tag}.png)`;
 }
 
-export function update_tags(msg: { [key: string]: number; }, stash_dependent_elements: DependencyUI[]) {
-    console.log("TAAAAAAGS");
-    console.log(msg);
+export function init_stash(stash_dependent_elements: DependencyUI[]) {
 
     let inventory_div = elementById('goods_stash');
     let material_select = elementById('create_order_material');
@@ -22,15 +18,9 @@ export function update_tags(msg: { [key: string]: number; }, stash_dependent_ele
     inventory_div.innerHTML = '';
     material_select.innerHTML = '';
 
-    stash_tag_to_id = msg;
+    for (var tag of Object.values(MaterialConfiguration.MATERIAL_MATERIAL_STRING)) {
+        const material = MaterialStorage.from_string(tag)
 
-    for (let tag of Object.keys(msg)) {
-        stash_tag_to_id[tag] = msg[tag];
-        stash_id_to_tag[msg[tag]] = tag;
-        material_ids.push(msg[tag]);
-    }
-
-    for (var tag in msg) {
         // stash
         let div_cell = document.createElement('div');
         div_cell.classList.add(... [value_indicator_class_name(tag), 'tooltip', 'goods_type_stash']);
@@ -45,7 +35,7 @@ export function update_tags(msg: { [key: string]: number; }, stash_dependent_ele
 
         {   // tooltip with description
             let div_text = document.createElement('span');
-            div_text.innerHTML = tag;
+            div_text.innerHTML = material.name;
             div_text.classList.add('tooltiptext');
             div_cell.appendChild(div_text);
         }
@@ -59,17 +49,20 @@ export function update_tags(msg: { [key: string]: number; }, stash_dependent_ele
 
         inventory_div.appendChild(div_cell);
 
+
+
         // updating options
         let option = document.createElement('option');
-        option.value = msg[tag].toString();
+        option.value = tag;
         option.innerHTML = tag;
         material_select.appendChild(option);
     }
 
     const character = globals.character_data;
     if (character == undefined) return;
-    for (var tag in msg) {
-        character.stash.push(new StashValue(socket, tag, msg[tag], stash_dependent_elements))
+    for (var tag of Object.values(MaterialConfiguration.MATERIAL_MATERIAL_STRING)) {
+        const material = MaterialStorage.from_string(tag)
+        character.stash.push(new StashValue(socket, tag, material.id, stash_dependent_elements))
     }
 }
 
@@ -82,9 +75,11 @@ export function update_stash(data: number[]) {
     }
 }
 
-export function process_stash_click(tag: string) {
+export function process_stash_click(tag: material_string_id) {
     console.log(tag);
-    if (tag == 'food') {
-        socket.emit('eat');
+    const material = MaterialStorage.from_string(tag)
+    if (material.category == MATERIAL_CATEGORY.FOOD) {
+        console.log('eating')
+        socket.emit('eat', tag)
     }
 }

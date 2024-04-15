@@ -89,7 +89,6 @@ var Auth;
             return;
         }
         console.log('attempt to login');
-        console.log(data);
         // check that credentials are valid
         var error_message = common_validations_1.Validator.validate_creds(data);
         sw.socket.emit('is-login-valid', error_message);

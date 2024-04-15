@@ -7,8 +7,11 @@ import { AuctionResponse, } from "../../market/system";
 import { market_order_id } from "@custom_types/ids";
 import { Character } from "../../character/character";
 import { Data } from "../../data/data_objects";
-import { EquipSlotConfiguration, EquipSlotStorage, MaterialConfiguration } from "@content/content";
+import { EquipSlotConfiguration, EquipSlotStorage, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
 import { money } from "@custom_types/common";
+import { Effect } from "../../events/effects";
+import { UI_Part } from "../causality_graph";
+import { UserManagement } from "../user_manager";
 
 function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) => void {
     return (sw: SocketWrapper) => {
@@ -19,6 +22,31 @@ function r(f: (user: User, character: Character) => void): (sw: SocketWrapper) =
 }
 
 export namespace InventoryCommands {
+    export function eat(sw: SocketWrapper, msg: unknown) {
+        // console.log(msg)
+        // console.log(1)
+        const [user, character] = Convert.socket_wrapper_to_user_character(sw)
+        if (character == undefined) return
+        if (character.in_battle()) { return }
+
+        // console.log(2)
+        const id = String(msg)
+        if (!MaterialConfiguration.is_valid_string_id(id)) return
+        // console.log(3)
+        const material = MaterialStorage.from_string(id);
+        if (material.category != MATERIAL_CATEGORY.FOOD) return
+        // console.log(4)
+
+        if (character.stash.get(material.id) == 0) Alerts.generic_user_alert(user, "alert", "You don't have this item")
+        // console.log(5)
+
+        character.stash.inc(material.id, -1)
+        UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STASH)
+        Effect.Change.hp(character, Math.round(material.density * 20 + material.magic_power * 5))
+        Effect.Change.stress(character, -Math.round(material.density * 5 + material.magic_power * 10))
+        Effect.Change.fatigue(character, -Math.round(material.density * 20 + material.magic_power * 5))
+    }
+
     export function equip(sw: SocketWrapper, msg: number) {
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)
         if (character == undefined) return

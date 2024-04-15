@@ -1,3 +1,4 @@
+import { MaterialStorage } from "../.././content.js";
 import { isHTML, select, selectHTMLs } from "../HTMLwrappers/common.js";
 import { material_icon_url } from "../Stash/stash.js";
 export function value_bar_class_name(id) {
@@ -85,7 +86,7 @@ export class BulkAmount extends Value {
     _update(difference) {
         super._update(difference);
         for (let item of selectHTMLs("." + material_icon_class_name(this._id))) {
-            item.style.backgroundImage = material_icon_url(this.material_string);
+            item.style.backgroundImage = material_icon_url(MaterialStorage.get(this.material_index).id_string);
         }
     }
     get material_string() {
@@ -119,3 +120,4 @@ export class StashValue extends BulkAmount {
         }
     }
 }
+

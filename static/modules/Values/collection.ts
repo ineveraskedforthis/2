@@ -1,3 +1,4 @@
+import { MATERIAL, MaterialStorage, material_string_id } from "@content/content.js";
 import { Socket } from "../../../shared/battle_data.js";
 import { elementById, isHTML, select, selectHTMLs } from "../HTMLwrappers/common.js";
 import { material_icon_url } from "../Stash/stash.js";
@@ -108,8 +109,8 @@ export class BarValue extends LimitedValue {
 }
 
 export class BulkAmount extends Value implements BulkAmountInterface {
-    readonly material_index: number
-    constructor(socket : Socket, id: string, material_index: number, dependents: DependencyUI[]) {
+    readonly material_index: MATERIAL
+    constructor(socket : Socket, id: string, material_index: MATERIAL, dependents: DependencyUI[]) {
         super(socket, id, dependents)
         this.material_index = material_index
     }
@@ -118,7 +119,7 @@ export class BulkAmount extends Value implements BulkAmountInterface {
         super._update(difference);
 
         for (let item of selectHTMLs("." + material_icon_class_name(this._id))) {
-            item.style.backgroundImage = material_icon_url(this.material_string)
+            item.style.backgroundImage = material_icon_url(MaterialStorage.get(this.material_index).id_string)
         }
     }
 
@@ -128,7 +129,7 @@ export class BulkAmount extends Value implements BulkAmountInterface {
 }
 
 export class StashValue extends BulkAmount {
-    constructor(socket : Socket, id: string, material_index: number, dependents: DependencyUI[]) {
+    constructor(socket : Socket, id: material_string_id, material_index: MATERIAL, dependents: DependencyUI[]) {
         super(socket, id, material_index, dependents)
 
         let indicators = select(`.${value_indicator_class_name(this._id)}`);

@@ -1,11 +1,11 @@
-import { material_icon_url, material_ids, stash_id_to_tag } from '../Stash/stash.js';
+import { material_icon_url } from '../Stash/stash.js';
 import { set_up_header_tab_callbacks } from "../../headers.js";
 import { div } from "../../widgets/Div/custom_div.js";
 import { List } from "../../widgets/List/list.js";
 import { elementById, inputById, selectById } from "../HTMLwrappers/common.js";
 import { globals } from "../globals.js";
 import { socket } from "../Socket/socket.js";
-import { MaterialStorage } from '../.././content.js';
+import { MaterialConfiguration, MaterialStorage } from '../.././content.js';
 function send_execute_order_request(order_id, amount) {
     socket.emit('execute-order', { amount: amount, order: order_id });
 }
@@ -18,7 +18,7 @@ export function clear_callback(order_id) {
 const columns = [
     {
         header_text: "Icon",
-        value: (item) => stash_id_to_tag[item.tag],
+        value: (item) => MaterialStorage.get(item.tag).id_string,
         type: "string",
         //width_style: "30px",
         image_path: (item) => material_icon_url(MaterialStorage.get(item.tag).id_string),
@@ -26,7 +26,7 @@ const columns = [
     },
     {
         header_text: "Name",
-        value: (item) => stash_id_to_tag[item.tag],
+        value: (item) => MaterialStorage.get(item.tag).name,
         type: "string",
         //width_style: "100px",
         custom_style: ["flex-1-0-5"]
@@ -130,10 +130,11 @@ export function new_market_bulk() {
 }
 export function init_market_bulk_infrastructure(market_bulk) {
     let filters = elementById('per_good_filters');
-    for (let item_index of material_ids) {
+    for (let item_index of MaterialConfiguration.MATERIAL) {
+        const material = MaterialStorage.get(item_index);
         FILTER_STATE.per_good.push(false);
         console.log(item_index);
-        const tag = stash_id_to_tag[item_index];
+        const tag = material.id_string;
         console.log(tag);
         const filter_div = div(`filter_${tag}`, "", ["generic-button", "columns_container"], undefined, () => {
             FILTER_STATE.per_good[item_index] = !FILTER_STATE.per_good[item_index];
@@ -146,6 +147,7 @@ export function init_market_bulk_infrastructure(market_bulk) {
             ])
         ]);
         filters.appendChild(filter_div);
+        elementById(`filter_${tag}`).click();
     }
     market_bulk.filter = material_id_filter();
     let clear_orders_button = elementById('clear_orders_button');

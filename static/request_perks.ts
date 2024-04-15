@@ -4,9 +4,8 @@ import { SKILL_NAMES } from './SKILL_NAMES.js';
 import { CharacterStatsResponse, PerksResponse } from '../shared/responses.js'
 import { Perks } from '../shared/character.js'
 import { money } from '../shared/common.js';
-import { stash_id_to_tag } from './modules/Stash/stash.js';
 import { elementById } from './modules/HTMLwrappers/common.js';
-import { EQUIP_SLOT, EquipSlotStorage, equip_slot_string_id } from '@content/content.js';
+import { EQUIP_SLOT, EquipSlotStorage, MATERIAL, MaterialStorage, equip_slot_string_id } from '@content/content.js';
 import { EQUIPMENT_TAGS } from './modules/CharacterImage/main.js';
 
 
@@ -183,17 +182,17 @@ function build_dialog(data: PerksResponse) {
     document.getElementById('dialog-scene')?.classList.remove('hidden');
 }
 
-function convert_prices_data_to_string(data: {buy: Record<number, money>, sell: Record<number, money>}) {
+function convert_prices_data_to_string(data: {buy: Record<MATERIAL, money>, sell: Record<MATERIAL, money>}) {
     let buy_string = "I think one could buy the following goods with these prices: <br>"
 
     for (let [k, v] of Object.entries(data.buy)) {
-        buy_string += stash_id_to_tag[k as unknown as number] + ': ' + v + '<br>'
+        buy_string += MaterialStorage.get(k as unknown as MATERIAL).name + ': ' + v + '<br>'
     }
 
     let sell_string = "I think one could sell the following goods with these prices: <br>"
 
     for (let [k, v] of Object.entries(data.sell)) {
-        sell_string += stash_id_to_tag[k as unknown as number] + ': ' + v + '<br>'
+        sell_string += MaterialStorage.get(k as unknown as MATERIAL).name + ': ' + v + '<br>'
     }
 
     return buy_string + sell_string

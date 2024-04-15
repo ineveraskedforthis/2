@@ -90,7 +90,6 @@ export namespace Auth {
         }
 
         console.log('attempt to login')
-        console.log(data)
 
         // check that credentials are valid
         var error_message = Validator.validate_creds(data);

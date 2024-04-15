@@ -90,7 +90,7 @@ export class SocketManager {
             socket.on('unequip',  (msg: any) =>         InventoryCommands.unequip(user, msg));
 
 
-            // socket.on('eat',  () =>             HandleAction.act(user, CharacterAction.EAT));
+            socket.on('eat',  (msg) =>          InventoryCommands.eat(user, msg));
             socket.on('clean',  () =>           HandleAction.act(user, CharacterAction.CLEAN));
             socket.on('rest',  () =>            HandleAction.act(user, CharacterAction.REST));
             socket.on('move', (msg: any) =>     HandleAction.move(user, msg));
