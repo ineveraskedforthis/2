@@ -28,12 +28,12 @@ function clean_trigger(character: Character): TriggerResponse {
 function clean_effect(character: Character, cell: cell_id) {
     Effect.Change.blood(character, -100)
 }
-function eat_effect(character: Character, cell: cell_id) {
-    Effect.Change.fatigue(character, -2)
-    Effect.Change.stress(character, -3)
-    Effect.Change.hp(character, 10)
-    Event.change_stash(character, MATERIAL.MEAT_RAT_FRIED, -1)
-}
+// function eat_effect(character: Character, cell: cell_id) {
+//     Effect.Change.fatigue(character, -2)
+//     Effect.Change.stress(character, -3)
+//     Effect.Change.hp(character, 10)
+//     Event.change_stash(character, MATERIAL.MEAT_RAT_FRIED, -1)
+// }
 
 export const clean = generate_action(
     CLEAN_FATIGUE_COST,

@@ -277,7 +277,7 @@ export namespace tab {
 
         let tab = document.getElementById(tag + '_tab')!;
         let button = document.getElementById(tag + '_button')!
-        button.classList.toggle('active')
+        button.classList.toggle('control_button_active')
 
         if (tab.classList.contains('hidden')) {
             tab.classList.remove('hidden');
@@ -309,7 +309,7 @@ export namespace tab {
         tab.classList.remove('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button')!
-            button.classList.add('active')
+            button.classList.add('control_button_active')
             tabs_properties[tag].active = true
         }
 
@@ -329,7 +329,7 @@ export namespace tab {
         tab.classList.add('hidden');
         if (tag != 'battle') {
             let button = document.getElementById(tag + '_button')!
-            button.classList.remove('active')
+            button.classList.remove('control_button_active')
             tabs_properties[tag].active = false
         }
 

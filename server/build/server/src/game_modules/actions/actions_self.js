@@ -5,7 +5,6 @@ const effects_1 = require("../events/effects");
 const generator_1 = require("./generator");
 const types_1 = require("./types");
 const generic_functions_1 = require("./generic_functions");
-const events_1 = require("../events/events");
 const system_1 = require("../character/system");
 const scripted_values_1 = require("../events/scripted_values");
 const user_manager_1 = require("../client_communication/user_manager");
@@ -26,12 +25,12 @@ function clean_trigger(character) {
 function clean_effect(character, cell) {
     effects_1.Effect.Change.blood(character, -100);
 }
-function eat_effect(character, cell) {
-    effects_1.Effect.Change.fatigue(character, -2);
-    effects_1.Effect.Change.stress(character, -3);
-    effects_1.Effect.Change.hp(character, 10);
-    events_1.Event.change_stash(character, 19 /* MATERIAL.MEAT_RAT_FRIED */, -1);
-}
+// function eat_effect(character: Character, cell: cell_id) {
+//     Effect.Change.fatigue(character, -2)
+//     Effect.Change.stress(character, -3)
+//     Effect.Change.hp(character, 10)
+//     Event.change_stash(character, MATERIAL.MEAT_RAT_FRIED, -1)
+// }
 exports.clean = (0, generator_1.generate_action)(CLEAN_FATIGUE_COST, clean_duration_modifier, clean_trigger, clean_effect, generic_functions_1.dummy_effect);
 exports.rest = {
     duration(char) {

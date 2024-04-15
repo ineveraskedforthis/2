@@ -23,29 +23,34 @@
     background-image: url(/static/img/character_image/elo/pose.png);
     background-size:     cover;                      /* <------ */
     background-repeat:   no-repeat;
-    background-position: top center; 
+    background-position: top center;
 }
 
 .dialog-content {
     /* border: 3px; */
-    border-radius: 20px;
+    border-radius: 15px;
     border-style: double;
-    padding-left: 10%;
-    padding-right: 10%;
-    padding-top: 20px;
+    padding-left: 5%;
+    padding-right: 5%;
+
+    align-content: center;
 
     font-size: large;
-    
+
     background-color: rgba(251, 242, 231, 0.734);
 }
 
 .dialog-option {
     position: relative;
     flex-shrink: 0;
-    height: 20%;
+    height: fit-content;
     /* margin-bottom: 20%; */
+    padding-top: 5%;
+    padding-bottom: 5%;
     width: 100%;
-    margin-bottom: 50px;
+    margin-bottom: 5%;
+    align-items: center;
+    align-content: center;
 }
 .dialog-option:hover {
     background-color: beige;
@@ -63,9 +68,9 @@
 
     height: 45%;
     width: 20%;
-
-    overflow-y: scroll;
-    overflow-x: hidden;
+/*
+    overflow-y: scroll; */
+    /* overflow-x: hidden; */
 }
 
 .dialog-message {
@@ -75,6 +80,6 @@
     width: 60%;
     height: 20%;
 
-    overflow-y: scroll;
+    /* overflow-y: scroll; */
     text-align: right;
 }

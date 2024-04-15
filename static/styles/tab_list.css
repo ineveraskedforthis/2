@@ -75,7 +75,7 @@
     background-image: url(/static/img/tab_buttons/attack_button_pressed.png);
 }
 
-.control_button.active {
+.control_button.control_button_active {
     background-image: url(/static/img/tab_buttons/attack_button_pressed.png);
 }
 
