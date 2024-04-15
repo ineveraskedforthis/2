@@ -1,3 +1,4 @@
+import { elementById } from "../HTMLwrappers/common.js";
 import { my_alert } from "../MessageBox/my_alert.js";
 import { socket } from "../Socket/socket.js";
 import { DependencyUICanvas } from "../Types/character.js";
@@ -15,7 +16,7 @@ function reloadCss()
 }
 
 {
-    let button = document.getElementById('reset_tabs')!;
+    let button = elementById('reset_windows');
     button.onclick = () => { localStorage.setItem('tabs_properties', 'null'); tab.reset_style_all(); tab.save_tabs_all()};
 }
 
