@@ -25,6 +25,13 @@ const columns = [
         custom_style: ['goods-icon', "flex-0-0-30px"]
     },
     {
+        header_text: "Trader",
+        value: (item) => item.owner_name,
+        type: "string",
+        //width_style: "100px",
+        custom_style: ["flex-1-0-5"]
+    },
+    {
         header_text: "Name",
         value: (item) => MaterialStorage.get(item.tag).name,
         type: "string",

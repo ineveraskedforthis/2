@@ -9,7 +9,7 @@ import { globals } from "../globals.js";
 
 const columns:Column<ItemOrderData>[] = [
     {
-        header_text: "Owner name",
+        header_text: "Trader name",
         value: (item) => item.seller,
         type: "string",
         custom_style: ["flex-1-0-5"]

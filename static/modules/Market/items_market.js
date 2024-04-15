@@ -7,7 +7,7 @@ import { generate_item_name } from "../StringGeneration/string_generation.js";
 import { globals } from "../globals.js";
 const columns = [
     {
-        header_text: "Owner name",
+        header_text: "Trader name",
         value: (item) => item.seller,
         type: "string",
         custom_style: ["flex-1-0-5"]

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AItrade = exports.base_price = void 0;
 const CraftBulk_1 = require("../craft/CraftBulk");
 function base_price(cell_id, material) {
-    return 15;
+    return 10;
 }
 exports.base_price = base_price;
 var AItrade;
