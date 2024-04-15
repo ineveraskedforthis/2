@@ -52,18 +52,6 @@ exports.AI_ACTIONS = {
                 character.ai_memories.push("rested" /* AImemory.RESTED */);
             }
             return;
-            // if (!AI_TRIGGER.at_home(character)) {
-            //     home_walk(character)
-            //     return
-            // } else {
-            //     let location_to_rest = find_location_to_rest(character, rest_budget(character))
-            //     if (location_to_rest == undefined) {
-            //         ActionManager.start_action(CharacterAction.REST, character, character.cell_id);
-            //         character.ai_memories.push(AImemory.RESTED)
-            //         return
-            //     }
-            //     Effect.rent_room(character.id, location_to_rest)
-            // }
         },
         utility: (character) => {
             if (has_memory(character, "rested" /* AImemory.RESTED */))
@@ -113,7 +101,10 @@ exports.AI_ACTIONS = {
     },
     EAT: {
         action: (character) => {
-            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.EAT, character, character.cell_id);
+            if (character.stash.get(19 /* MATERIAL.MEAT_RAT_FRIED */) > 0) {
+                character.change_hp(10);
+                character.stash.inc(19 /* MATERIAL.MEAT_RAT_FRIED */, -1);
+            }
         },
         utility: (character) => {
             if (character.stash.get(19 /* MATERIAL.MEAT_RAT_FRIED */) < 1)

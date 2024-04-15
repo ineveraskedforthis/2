@@ -196,6 +196,34 @@ var SendUpdate;
         alerts_1.Alerts.generic_user_alert(user, 'val_hp_m', character.get_max_hp());
     }
     SendUpdate.hp = hp;
+    function blood(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, 'val_hp_c', character.status.hp);
+    }
+    SendUpdate.blood = blood;
+    function fatigue(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, 'val_fatigue_c', character.status.fatigue);
+    }
+    SendUpdate.fatigue = fatigue;
+    function stress(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, 'val_stress_c', character.status.stress);
+    }
+    SendUpdate.stress = stress;
+    function rage(user) {
+        let character = systems_communication_1.Convert.user_to_character(user);
+        if (character == undefined)
+            return;
+        alerts_1.Alerts.generic_user_alert(user, 'val_rage_c', character.status.rage);
+    }
+    SendUpdate.rage = rage;
     function market(user) {
         let character = systems_communication_1.Convert.user_to_character(user);
         if (character == undefined)

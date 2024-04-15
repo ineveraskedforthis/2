@@ -2,7 +2,7 @@ import { Character } from "../character/character";
 import { MapSystem } from "../map/system";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
-import { CharacterMapAction } from "./types";
+import { CharacterMapAction, NotificationResponse, TriggerResponse } from "./types";
 import { cell_id } from "@custom_types/ids";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
@@ -12,9 +12,9 @@ export const move:CharacterMapAction ={
         return CharacterSystem.movement_duration_map(char);
     },
 
-    check: function (char: Character, cell: cell_id) {
+    check: function (char: Character, cell: cell_id) : TriggerResponse {
         if (char.in_battle()) {
-            return { response: 'IN_BATTLE' }
+            return NotificationResponse.InBattle
         }
         const data = Data.World.id_to_coordinate(cell)
         if (MapSystem.can_move(data)) {
@@ -25,11 +25,11 @@ export const move:CharacterMapAction ={
                 return { response: 'OK' }
             }
             if ((dx == 0 && dy == 0)) {
-                return { response: 'ZERO_MOTION' }
+                return { response: 'Notification:', value: "You have to select another tile" }
             }
-            return { response: 'INVALID_MOTION' }
+            return { response: 'Notification:', value: "You can travel only to neighbouring tiles" }
         }
-        return { response: 'INVALID_MOTION'}
+        return { response: 'Notification:', value: "You can't travel to this cell due to terrain" }
     },
 
     start: function (char: Character, data: cell_id) {

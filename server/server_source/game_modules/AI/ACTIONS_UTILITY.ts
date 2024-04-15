@@ -15,6 +15,7 @@ import { crafter_routine } from "./AI_ROUTINE_CRAFTER";
 import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 import { Data } from "../data/data_objects";
 import { MATERIAL } from "@content/content";
+import { CharacterSystem } from "../character/system";
 
 function rest_budget(character: Character) {
     let budget = character.savings.get()
@@ -83,18 +84,6 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
                 character.ai_memories.push(AImemory.RESTED)
             }
             return
-            // if (!AI_TRIGGER.at_home(character)) {
-            //     home_walk(character)
-            //     return
-            // } else {
-            //     let location_to_rest = find_location_to_rest(character, rest_budget(character))
-            //     if (location_to_rest == undefined) {
-            //         ActionManager.start_action(CharacterAction.REST, character, character.cell_id);
-            //         character.ai_memories.push(AImemory.RESTED)
-            //         return
-            //     }
-            //     Effect.rent_room(character.id, location_to_rest)
-            // }
         },
 
         utility: (character: Character) => {
@@ -145,7 +134,10 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
 
     EAT: {
         action: (character: Character) => {
-            ActionManager.start_action(CharacterAction.EAT, character, character.cell_id)
+            if (character.stash.get(MATERIAL.MEAT_RAT_FRIED) > 0) {
+                character.change_hp(10)
+                character.stash.inc(MATERIAL.MEAT_RAT_FRIED, -1)
+            }
         },
 
         utility: (character: Character) => {

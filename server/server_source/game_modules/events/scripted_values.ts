@@ -4,12 +4,16 @@ import { LocationInterface } from "../location/location_interface";
 import { money } from "@custom_types/common";
 import { Character } from "../character/character";
 import { DataID } from "../data/data_id";
+import { Data } from "../data/data_objects";
 
 export namespace ScriptedValue {
     export const max_devastation = 100
 
     export function rest_price(character: Character, location: LocationInterface) : money {
         if (location.owner_id == character.id) return 0 as money;
+        if (location.owner_id == undefined) return 0 as money;
+        const location_owner = Data.Characters.from_id(location.owner_id)
+        if (location_owner.location_id != character.location_id) return 0 as money
         return location.has_house_level * 10 as money;
     }
 
@@ -48,7 +52,7 @@ export namespace ScriptedValue {
         if (race == 'rat') multiplier = 0.25
         if (race == 'elo') multiplier = 0.5
         if (race == 'graci') multiplier = 0.1
-        return trim(Math.floor((50 - tier * 20) * multiplier), 0, 100)
+        return trim(Math.floor((50 - tier * 20) * multiplier / Math.log(4 + quality)), 0, 100)
     }
 
     /**

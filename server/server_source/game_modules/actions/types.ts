@@ -25,20 +25,37 @@ export interface CharacterMapAction {
     immediate?: boolean;
 }
 
-export type TriggerResponse =
-    { response: 'TIRED' }
-    | { response: 'NO_RESOURCE' }
-    | { response: 'IN_BATTLE' }
-    | { response: 'OK' }
-    | { response: 'ZERO_MOTION' }
-    | { response: 'INVALID_MOTION'}
-    | { response: 'IMPOSSIBLE_ACTION'}
-    | { response: 'ALREADY_IN_AN_ACTION'}
-    | { response: 'NO TREES'}
-    | { response: 'NO COTTON'}
-    | { response: 'NO BERRIES'}
-    | { response: 'NO FISH'}
-    | { response: 'NO GAME'}
+export interface LackData {
+    required_amount: number,
+    required_thing: string
+}
+
+interface LackOfResource {
+    response: "Not enough resources",
+    value: LackData[]
+}
+
+interface ActionIsPossible {
+    response: "OK"
+}
+
+interface Notification {
+    response: "Notification:"
+    value: string
+}
+
+export type TriggerResponse = Notification | ActionIsPossible | LackOfResource
+
+export const ResponseOK : TriggerResponse = {
+    response: "OK"
+}
+
+export namespace NotificationResponse {
+    export const InBattle : Notification = {
+        response: "Notification:",
+        value: "You are in battle."
+    }
+}
 
 export type MapActionTrigger = (character: Character) => TriggerResponse;
 export type MapActionTriggerTargeted = (character: Character, target_cell: cell_id) => TriggerResponse;

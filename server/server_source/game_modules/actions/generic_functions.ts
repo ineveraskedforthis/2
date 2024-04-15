@@ -1,10 +1,10 @@
 import { cell_id } from "@custom_types/ids";
 import { Character } from "../character/character";
-import { TriggerResponse } from "./types";
+import { NotificationResponse, TriggerResponse } from "./types";
 
 export function basic_trigger(character: Character): TriggerResponse {
     if (character.in_battle()) {
-        return { response: 'IN_BATTLE' }
+        return NotificationResponse.InBattle
     }
     return { response: 'OK' }
 }

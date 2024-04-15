@@ -59,7 +59,7 @@ var Event;
         let probability = move_durability_roll_probability(old_cell_id);
         move_durability_roll(character, probability);
         user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.MAP */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 11 /* UI_Part.MAP */);
         let user = systems_communication_1.Convert.character_to_user(character);
         if (user == undefined)
             return;
@@ -399,8 +399,8 @@ var Event;
         if (!target.dead())
             return;
         system_2.CharacterSystem.transfer_all(target, robber);
-        user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 4 /* UI_Part.STASH */);
-        user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 6 /* UI_Part.INVENTORY */);
+        user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 8 /* UI_Part.STASH */);
+        user_manager_1.UserManagement.add_user_to_update_queue(robber.user_id, 10 /* UI_Part.INVENTORY */);
     }
     Event.rob_the_dead = rob_the_dead;
     function kill(killer, victim) {
@@ -434,7 +434,7 @@ var Event;
             }
         }
         data_id_1.DataID.Character.unset_all_ownership(victim.id);
-        user_manager_1.UserManagement.add_user_to_update_queue(killer.user_id, 4 /* UI_Part.STASH */);
+        user_manager_1.UserManagement.add_user_to_update_queue(killer.user_id, 8 /* UI_Part.STASH */);
     }
     Event.kill = kill;
     function death(character) {
@@ -464,7 +464,7 @@ var Event;
         if (user == undefined)
             return;
         alerts_1.Alerts.log_to_user(user, `change ${content_1.MaterialStorage.get(tag).name} by ${amount}. Now: ${character.stash.get(tag)}`);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
     }
     Event.change_stash = change_stash;
     function repair_location(character, builing_id) {

@@ -30,7 +30,7 @@ function gather_wood_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "NO TREES" };
+        return { response: "Notification:", value: "Lack of trees in this location" };
     }
 }
 function gather_cotton_trigger(character) {
@@ -39,7 +39,7 @@ function gather_cotton_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "NO COTTON" };
+        return { response: "Notification:", value: "Lack of cotton in this location" };
     }
 }
 function hunt_trigger(character) {
@@ -48,7 +48,7 @@ function hunt_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "NO GAME" };
+        return { response: "Notification:", value: "Lack of game in this location" };
     }
 }
 function fishing_trigger(character) {
@@ -57,7 +57,7 @@ function fishing_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "NO FISH" };
+        return { response: "Notification:", value: "Lack of fish in this location" };
     }
 }
 function gather_wood_effect(character) {

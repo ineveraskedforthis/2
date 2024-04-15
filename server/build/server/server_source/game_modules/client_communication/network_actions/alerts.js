@@ -240,7 +240,7 @@ var Alerts;
             if (local_user == undefined) {
                 continue;
             }
-            user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 9 /* UI_Part.LOCAL_CHARACTERS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(local_user.data.id, 13 /* UI_Part.LOCAL_CHARACTERS */);
         }
     }
     Alerts.cell_locals = cell_locals;

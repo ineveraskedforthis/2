@@ -6,7 +6,7 @@ import {get_pos_in_canvas} from './common.js';
 import { action, globals, is_action_repeatable, local_action, local_actions } from './globals.js';
 import { socket } from "./Socket/socket.js";
 import {location_descriptions, section_descriptions} from './localisation.js';
-import { elementById } from './HTMLwrappers/common.js';
+import { elementById, select } from './HTMLwrappers/common.js';
 
 function st(a: [number, number]) {
     return a[0] + ' ' + a[1]
@@ -771,9 +771,14 @@ function set_local_actions(actions: readonly local_action[], map: Map) {
                 console.log(global_blob);
                 if (global_blob.keep_doing == action_tag) {
                     global_blob.keep_doing = undefined;
+                    button.classList.remove("highlighted")
                 } else {
+                    for (const other_button of select(".repeat_button")) {
+                        other_button.classList.remove("highlighted")
+                    }
+                    button.classList.add("highlighted")
                     global_blob.keep_doing = action_tag;
-                    send_local_cell_action(map_manager, action_tag);
+                    //send_local_cell_action(map_manager, action_tag);
                 }
             }
             )(repeat_button, map, action_tag, globals);

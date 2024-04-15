@@ -12,7 +12,7 @@ function event_craft_bulk(character, craft) {
     (0, helpers_1.use_input)(craft.input, character);
     produce_output(output_bulk(character, craft), character);
     (0, helpers_1.on_craft_update)(character, craft.difficulty);
-    user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
+    user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
 }
 exports.event_craft_bulk = event_craft_bulk;
 function produce_output(output, character) {

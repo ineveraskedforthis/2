@@ -6,7 +6,7 @@ import { output_bulk } from "../craft/CraftBulk";
 import { MATERIAL } from "@content/content";
 
 export function base_price(cell_id: cell_id, material: MATERIAL): money {
-    return 50 as money
+    return 15 as money
 }
 
 export interface price {

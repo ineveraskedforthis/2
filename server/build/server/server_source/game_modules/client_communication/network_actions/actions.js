@@ -15,14 +15,9 @@ var HandleAction;
     function response_to_alert(user, response) {
         // console.log(response.response)
         switch (response.response) {
-            case "TIRED": return;
-            case "NO_RESOURCE": return alerts_1.Alerts.not_enough_to_user(user, 'something', undefined, undefined, undefined);
-            case "IN_BATTLE": return alerts_1.Alerts.in_battle(user);
+            case "Notification:": alerts_1.Alerts.generic_user_alert(user, "alert", response.value);
             case "OK": return;
-            case "ZERO_MOTION": return alerts_1.Alerts.impossible_move(user);
-            case "INVALID_MOTION": return alerts_1.Alerts.impossible_move(user);
-            case "IMPOSSIBLE_ACTION": return;
-            case "ALREADY_IN_AN_ACTION": return;
+            case "Not enough resources": alerts_1.Alerts.generic_user_alert(user, "alert", "Not enough: " + JSON.stringify(response.value));
         }
     }
     function move(sw, data) {

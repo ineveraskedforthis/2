@@ -16,14 +16,9 @@ export namespace HandleAction {
     function response_to_alert(user: User, response: TriggerResponse) {
         // console.log(response.response)
         switch(response.response) {
-            case "TIRED": return
-            case "NO_RESOURCE": return Alerts.not_enough_to_user(user, 'something', undefined, undefined, undefined)
-            case "IN_BATTLE": return Alerts.in_battle(user)
-            case "OK": return
-            case "ZERO_MOTION": return Alerts.impossible_move(user)
-            case "INVALID_MOTION": return Alerts.impossible_move(user)
-            case "IMPOSSIBLE_ACTION":return
-            case "ALREADY_IN_AN_ACTION": return
+            case "Notification:":Alerts.generic_user_alert(user, "alert", response.value)
+            case "OK":return
+            case "Not enough resources":Alerts.generic_user_alert(user, "alert", "Not enough: " + JSON.stringify(response.value))
         }
     }
     export function move(sw: SocketWrapper, data: {x: unknown, y: unknown}) {

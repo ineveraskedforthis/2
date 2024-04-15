@@ -4,6 +4,7 @@ exports.move = void 0;
 const system_1 = require("../map/system");
 const events_1 = require("../events/events");
 const system_2 = require("../character/system");
+const types_1 = require("./types");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
 exports.move = {
@@ -12,7 +13,7 @@ exports.move = {
     },
     check: function (char, cell) {
         if (char.in_battle()) {
-            return { response: 'IN_BATTLE' };
+            return types_1.NotificationResponse.InBattle;
         }
         const data = data_objects_1.Data.World.id_to_coordinate(cell);
         if (system_1.MapSystem.can_move(data)) {
@@ -23,11 +24,11 @@ exports.move = {
                 return { response: 'OK' };
             }
             if ((dx == 0 && dy == 0)) {
-                return { response: 'ZERO_MOTION' };
+                return { response: 'Notification:', value: "You have to select another tile" };
             }
-            return { response: 'INVALID_MOTION' };
+            return { response: 'Notification:', value: "You can travel only to neighbouring tiles" };
         }
-        return { response: 'INVALID_MOTION' };
+        return { response: 'Notification:', value: "You can't travel to this cell due to terrain" };
     },
     start: function (char, data) {
         char.next_cell = data;

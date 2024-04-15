@@ -62,7 +62,7 @@ var BattleSystem;
         events_1.BattleEvent.NewUnit(battle, character);
         console.log(`${character.get_name()} joins battle ${battle.id}`);
         alerts_1.Alerts.battle_update_data(battle);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
         return unit;
     }
     BattleSystem.add_figther = add_figther;
@@ -209,7 +209,7 @@ var BattleSystem;
             const character = data_objects_1.Data.Characters.from_id(unit);
             heap_1.CharactersHeap.delete_unit(battle, character);
             character.battle_id = undefined;
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 18 /* UI_Part.BATTLE */);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 22 /* UI_Part.BATTLE */);
         }
     }
     BattleSystem.stop_battle = stop_battle;

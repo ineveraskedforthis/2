@@ -8,7 +8,7 @@ var ActionManager;
 (function (ActionManager) {
     function start_action(action, char, cell) {
         if (char.action != undefined) {
-            return { response: 'ALREADY_IN_AN_ACTION' };
+            return { response: 'Notification:', value: "You are already doing something" };
         }
         let check = action.check(char, cell);
         if (check.response != "OK") {

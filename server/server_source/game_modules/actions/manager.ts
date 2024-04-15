@@ -10,7 +10,7 @@ import { Data } from "../data/data_objects"
 export namespace ActionManager {
     export function start_action(action: CharacterMapAction, char: Character, cell: cell_id): TriggerResponse {
         if (char.action != undefined) {
-            return { response: 'ALREADY_IN_AN_ACTION' }
+            return { response: 'Notification:', value: "You are already doing something" }
         }
 
         let check = action.check(char, cell)

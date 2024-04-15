@@ -201,6 +201,30 @@ export namespace SendUpdate {
         Alerts.generic_user_alert(user, 'val_hp_c', character.status.hp)
         Alerts.generic_user_alert(user, 'val_hp_m', character.get_max_hp())
     }
+    export function blood(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.generic_user_alert(user, 'val_hp_c', character.status.hp)
+    }
+    export function fatigue(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.generic_user_alert(user, 'val_fatigue_c', character.status.fatigue)
+    }
+    export function stress(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.generic_user_alert(user, 'val_stress_c', character.status.stress)
+    }
+    export function rage(user: User) {
+        let character = Convert.user_to_character(user)
+        if (character == undefined) return
+
+        Alerts.generic_user_alert(user, 'val_rage_c', character.status.rage)
+    }
 
     export function market(user: User) {
         let character = Convert.user_to_character(user)

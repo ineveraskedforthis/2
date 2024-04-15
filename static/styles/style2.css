@@ -698,3 +698,7 @@ div {
         opacity: 0;
     }
 }
+
+.highlighted {
+    border: 1px solid yellow;
+}

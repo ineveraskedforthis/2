@@ -2,11 +2,17 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ScriptedValue = void 0;
 const basic_functions_1 = require("../calculations/basic_functions");
+const data_objects_1 = require("../data/data_objects");
 var ScriptedValue;
 (function (ScriptedValue) {
     ScriptedValue.max_devastation = 100;
     function rest_price(character, location) {
         if (location.owner_id == character.id)
+            return 0;
+        if (location.owner_id == undefined)
+            return 0;
+        const location_owner = data_objects_1.Data.Characters.from_id(location.owner_id);
+        if (location_owner.location_id != character.location_id)
             return 0;
         return location.has_house_level * 10;
     }
@@ -45,7 +51,7 @@ var ScriptedValue;
             multiplier = 0.5;
         if (race == 'graci')
             multiplier = 0.1;
-        return (0, basic_functions_1.trim)(Math.floor((50 - tier * 20) * multiplier), 0, 100);
+        return (0, basic_functions_1.trim)(Math.floor((50 - tier * 20) * multiplier / Math.log(4 + quality)), 0, 100);
     }
     ScriptedValue.rest_target_fatigue = rest_target_fatigue;
     /**

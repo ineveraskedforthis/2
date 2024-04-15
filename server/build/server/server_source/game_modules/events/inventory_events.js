@@ -13,12 +13,12 @@ var EventInventory;
 (function (EventInventory) {
     function equip_from_backpack(character, index) {
         character.equip.equip_from_backpack(index, character.model);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);
     }
     EventInventory.equip_from_backpack = equip_from_backpack;
     function unequip(character, slot) {
         character.equip.unequip(slot);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);
     }
     EventInventory.unequip = unequip;
     function destroy_in_backpack(character, index) {
@@ -28,17 +28,17 @@ var EventInventory;
         const item_data = data_objects_1.Data.Items.from_id(item);
         events_1.Event.change_stash(character, item_data.prototype.material, 1);
         character.equip.data.backpack.remove(index);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);
     }
     EventInventory.destroy_in_backpack = destroy_in_backpack;
     function switch_weapon(character) {
         character.equip.switch_weapon();
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);
     }
     EventInventory.switch_weapon = switch_weapon;
     function add_item(character, item) {
         const response = character.equip.data.backpack.add(item);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.INVENTORY */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 10 /* UI_Part.INVENTORY */);
         return response;
     }
     EventInventory.add_item = add_item;
@@ -59,7 +59,7 @@ var EventInventory;
             (0, affix_1.roll_affix_weapon)(enchant_rating, item);
         else
             (0, affix_1.roll_affix_armour)(enchant_rating, item);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.BELONGINGS */);
     }
     EventInventory.enchant = enchant;
     function reroll_enchant(character, index) {
@@ -83,7 +83,7 @@ var EventInventory;
             else
                 (0, affix_1.roll_affix_armour)(enchant_rating, item);
         }
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.BELONGINGS */);
     }
     EventInventory.reroll_enchant = reroll_enchant;
     function test(character) {

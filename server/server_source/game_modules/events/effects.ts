@@ -52,7 +52,7 @@ export namespace Effect {
     export namespace Change {
         export function hp(character: Character, dx: number) {
             if (!character.change_hp(dx)) return;
-            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS);
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.HP);
         }
 
         export function fatigue(character: Character, dx: number) {
@@ -64,22 +64,22 @@ export namespace Effect {
                 stress(character, dx - change)
             }
 
-            if (Math.abs(dx) > 0) if (!flag) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            if (flag) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.FATIGUE)
         }
 
         export function stress(character: Character, dx: number) {
             if (!character.change_stress(dx)) return;
-            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STRESS)
         }
 
         export function rage(character: Character, dx: number) {
             if (!character.change_rage(dx)) return;
-            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.RAGE)
         }
 
         export function blood(character: Character, dx: number) {
             if (!character.change_blood(dx)) return;
-            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STATUS)
+            if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BLOOD)
         }
 
         export function skill(character: Character, skill: skill, dx: number) {
@@ -127,7 +127,12 @@ export namespace Effect {
 
     export function rest_location_tick(character: Character) {
         let location = Data.Locations.from_id(character.location_id)
-        let tier = location.has_house_level
+
+        if (location.owner_id != character.id) {
+            return
+        }
+
+        const tier = ScriptedValue.rest_tier(character, location)
         let fatigue_target = ScriptedValue.rest_target_fatigue(tier, ScriptedValue.max_devastation - location.devastation, character.race)
         let stress_target = ScriptedValue.rest_target_stress(tier, ScriptedValue.max_devastation - location.devastation, character.race)
         if (fatigue_target < character.get_fatigue()) {

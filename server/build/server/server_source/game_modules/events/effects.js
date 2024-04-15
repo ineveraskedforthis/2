@@ -16,7 +16,7 @@ var Effect;
             const locals = data_id_1.DataID.Cells.local_character_id_list(cell);
             for (let item of locals) {
                 const local_character = data_objects_1.Data.Characters.from_id(item);
-                user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 19 /* UI_Part.MARKET */);
+                user_manager_1.UserManagement.add_user_to_update_queue(local_character.user_id, 23 /* UI_Part.MARKET */);
             }
         }
         Update.cell_market = cell_market;
@@ -28,20 +28,20 @@ var Effect;
         item.durability += dx;
         if (item.durability < 1)
             destroy_item(character, slot);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.BELONGINGS */);
     }
     Effect.change_durability = change_durability;
     function destroy_item(character, slot) {
         character.equip.destroy_slot(slot);
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.BELONGINGS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 7 /* UI_Part.BELONGINGS */);
     }
     Effect.destroy_item = destroy_item;
     let Transfer;
     (function (Transfer) {
         function savings(from, to, x) {
             from.savings.transfer(to.savings, x);
-            user_manager_1.UserManagement.add_user_to_update_queue(from.user_id, 5 /* UI_Part.SAVINGS */);
-            user_manager_1.UserManagement.add_user_to_update_queue(to.user_id, 5 /* UI_Part.SAVINGS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(from.user_id, 9 /* UI_Part.SAVINGS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(to.user_id, 9 /* UI_Part.SAVINGS */);
         }
         Transfer.savings = savings;
     })(Transfer = Effect.Transfer || (Effect.Transfer = {}));
@@ -50,8 +50,7 @@ var Effect;
         function hp(character, dx) {
             if (!character.change_hp(dx))
                 return;
-            if (Math.abs(dx) > 0)
-                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 2 /* UI_Part.HP */);
         }
         Change.hp = hp;
         function fatigue(character, dx) {
@@ -62,30 +61,29 @@ var Effect;
             if ((dx - change > 0)) {
                 stress(character, dx - change);
             }
-            if (Math.abs(dx) > 0)
-                if (!flag)
-                    user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+            if (flag)
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 5 /* UI_Part.FATIGUE */);
         }
         Change.fatigue = fatigue;
         function stress(character, dx) {
             if (!character.change_stress(dx))
                 return;
             if (Math.abs(dx) > 0)
-                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.STRESS */);
         }
         Change.stress = stress;
         function rage(character, dx) {
             if (!character.change_rage(dx))
                 return;
             if (Math.abs(dx) > 0)
-                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.RAGE */);
         }
         Change.rage = rage;
         function blood(character, dx) {
             if (!character.change_blood(dx))
                 return;
             if (Math.abs(dx) > 0)
-                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 1 /* UI_Part.STATUS */);
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.BLOOD */);
         }
         Change.blood = blood;
         function skill(character, skill, dx) {
@@ -93,13 +91,13 @@ var Effect;
             if (character._skills[skill] > 100)
                 character._skills[skill] = 100;
             if (Math.abs(dx) > 0)
-                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 12 /* UI_Part.SKILLS */);
+                user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 16 /* UI_Part.SKILLS */);
         }
         Change.skill = skill;
     })(Change = Effect.Change || (Effect.Change = {}));
     function learn_perk(student, perk) {
         student._perks[perk] = true;
-        user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 12 /* UI_Part.SKILLS */);
+        user_manager_1.UserManagement.add_user_to_update_queue(student.user_id, 16 /* UI_Part.SKILLS */);
     }
     Effect.learn_perk = learn_perk;
     function enter_location(character_id, location_id) {
@@ -115,7 +113,7 @@ var Effect;
         let character = data_objects_1.Data.Characters.from_id(character_id);
         character.location_id = location_id;
         //console.log("???")
-        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.MAP_POSITION */);
+        user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 12 /* UI_Part.MAP_POSITION */);
     }
     function location_quality_reduction_roll(location) {
         if (location.has_house_level == 0)
@@ -131,7 +129,10 @@ var Effect;
     Effect.location_repair = location_repair;
     function rest_location_tick(character) {
         let location = data_objects_1.Data.Locations.from_id(character.location_id);
-        let tier = location.has_house_level;
+        if (location.owner_id != character.id) {
+            return;
+        }
+        const tier = scripted_values_1.ScriptedValue.rest_tier(character, location);
         let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
         let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
         if (fatigue_target < character.get_fatigue()) {
@@ -152,7 +153,7 @@ var Effect;
             let integer = (Math.random() < 0.5) ? 1 : 0;
             let spoiled_amount = Math.max(integer, Math.floor(current_amount * rate));
             character.stash.set(good, current_amount - spoiled_amount);
-            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.STASH */);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 8 /* UI_Part.STASH */);
             let orders = data_id_1.DataID.Character.market_orders_list(character.id);
             for (let order of orders) {
                 let order_item = data_objects_1.Data.MarketOrders.from_id(order);

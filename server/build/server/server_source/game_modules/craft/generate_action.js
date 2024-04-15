@@ -4,14 +4,21 @@ exports.generate_bulk_craft_action = exports.generate_craft_item_action = export
 const CraftBulk_1 = require("./CraftBulk");
 const CraftItem_1 = require("./CraftItem");
 const helpers_1 = require("./helpers");
+const types_1 = require("../actions/types");
 const generic_functions_1 = require("../actions/generic_functions");
+const content_1 = require("../../.././../game_content/src/content");
 function generate_check_funtion(inputs) {
     return (char, cell) => {
         if (char.in_battle())
-            return { response: 'IN_BATTLE' };
+            return types_1.NotificationResponse.InBattle;
         if ((0, helpers_1.check_inputs)(inputs, char.stash))
             return { response: 'OK' };
-        return { response: 'NO_RESOURCE' };
+        return { response: "Not enough resources", value: inputs.map((value) => {
+                return {
+                    required_amount: value.amount,
+                    required_thing: content_1.MaterialStorage.get(value.material).name
+                };
+            }) };
     };
 }
 exports.generate_check_funtion = generate_check_funtion;
@@ -41,3 +48,4 @@ function generate_bulk_craft_action(craft) {
     };
 }
 exports.generate_bulk_craft_action = generate_bulk_craft_action;
+

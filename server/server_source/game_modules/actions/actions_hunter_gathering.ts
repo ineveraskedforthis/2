@@ -34,7 +34,7 @@ function gather_wood_trigger(character: Character): TriggerResponse {
     if (data.forest > 0) {
         return { response: "OK" }
     } else {
-        return { response: "NO TREES" }
+        return { response: "Notification:", value: "Lack of trees in this location"}
     }
 }
 function gather_cotton_trigger(character: Character): TriggerResponse {
@@ -42,7 +42,7 @@ function gather_cotton_trigger(character: Character): TriggerResponse {
     if (data.cotton > 0) {
         return { response: "OK" }
     } else {
-        return { response: "NO COTTON" }
+        return { response: "Notification:", value: "Lack of cotton in this location"}
     }
 }
 function hunt_trigger(character: Character) : TriggerResponse {
@@ -50,7 +50,7 @@ function hunt_trigger(character: Character) : TriggerResponse {
     if (data.small_game > 0) {
         return { response: "OK" }
     } else {
-        return { response: "NO GAME" }
+        return { response: "Notification:", value: "Lack of game in this location"}
     }
 }
 function fishing_trigger(character: Character) : TriggerResponse {
@@ -58,7 +58,7 @@ function fishing_trigger(character: Character) : TriggerResponse {
     if (data.fish > 0) {
         return { response: "OK" }
     } else {
-        return { response: "NO FISH" }
+        return { response: "Notification:", value: "Lack of fish in this location"}
     }
 }
 
