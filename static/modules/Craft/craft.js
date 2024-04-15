@@ -2,9 +2,9 @@ import { div } from "../../widgets/Div/custom_div.js";
 import { List } from "../../widgets/List/list.js";
 import { elementById } from "../HTMLwrappers/common.js";
 import { socket } from "../Socket/socket.js";
-import { stash_id_to_tag } from "../Stash/stash.js";
+import { material_icon_url } from "../Stash/stash.js";
 import { BulkAmount, Value, value_class_name } from "../Values/collection.js";
-import { ArmourStorage, WeaponStorage } from "../.././content.js";
+import { ArmourStorage, MaterialStorage, WeaponStorage } from "../.././content.js";
 const durability_data = {};
 const output_amount_data = {};
 const inputs_amount_data = {};
@@ -14,7 +14,7 @@ function item_amount_view_diw(items) {
     for (let item of items) {
         const item_div = document.createElement('div');
         item_div.classList.add(...['goods-icon', 'small-square', value_class_name(item.id)]);
-        item_div.style.backgroundImage = `url(/static/img/stash_${stash_id_to_tag[item.material_index]}.png`;
+        item_div.style.backgroundImage = material_icon_url(MaterialStorage.get(item.material_index).id_string);
         item_div.innerHTML = item.value.toString();
         div.appendChild(item_div);
     }
@@ -41,10 +41,10 @@ const craft_columns = [
         value: (item) => {
             if (is_item_craft(item)) {
                 if (item.output.tag == "weapon") {
-                    return div(undefined, WeaponStorage.get(item.output.value).id_string, ["centered-box"], undefined, undefined, []);
+                    return div(undefined, WeaponStorage.get(item.output.value).name, ["centered-box"], undefined, undefined, []);
                 }
                 else {
-                    return div(undefined, ArmourStorage.get(item.output.value).id_string, ["centered-box"], undefined, undefined, []);
+                    return div(undefined, ArmourStorage.get(item.output.value).name, ["centered-box"], undefined, undefined, []);
                 }
             }
             if (is_bulk_craft(item)) {

@@ -19,11 +19,12 @@ MaterialConfiguration.MATERIAL_CATEGORY = [0 /* MATERIAL_CATEGORY.BOW_AMMO */, 0
 MaterialConfiguration.MATERIAL_CATEGORY_STRING = ["bow-ammo", "bow-ammo", "plant", "material", "bone", "bone", "bone", "bone", "bone", "bone", "skin", "skin", "skin", "skin", "leather", "leather", "leather", "leather", "meat", "food", "meat", "food", "meat", "meat", "food", "meat", "fish", "food", "fruit", "fruit", "material", "wood", "material", "material", "material",];
 // Numbers: 
 MaterialConfiguration.MATERIAL_CUTTING_POWER = [2.0, 4.0, 0.0, 0.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6.0, 1.0, 1.0, 20.0, 5.0,];
-MaterialConfiguration.MATERIAL_DENSITY = [0.2, 0.2, 0.1, 1.0, 0.5, 0.6, 0.2, 0.5, 0.6, 0.2, 1.5, 1.2, 1.1, 0.8, 3.0, 2.4, 2.2, 1.6, 0.4, 0.6, 0.1, 0.1, 0.5, 0.2, 0.7, 0.2, 0.0, 0.0, 0.2, 0.3, 10.0, 1.0, 2.0, 10.0, 8.0,];
-MaterialConfiguration.MATERIAL_CUTTING_PROTECTION = [0.0, 0.0, 0.2, 0.1, 0.25, 0.5, 0.5, 0.5, 0.5, 5.0, 0.6, 0.5, 0.4, 0.3, 0.5, 0.4, 0.3, 0.2, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.8, 0.0, 0.0, 5.0, 1.0, 2.0, 10.0, 5.0,];
+MaterialConfiguration.MATERIAL_DENSITY = [0.2, 0.2, 0.2, 1.0, 0.5, 0.6, 0.2, 0.5, 0.6, 0.2, 1.5, 1.2, 1.1, 0.8, 3.0, 2.4, 2.2, 1.6, 0.4, 0.6, 0.1, 0.1, 0.5, 0.2, 0.7, 0.2, 0.3, 0.5, 0.2, 0.3, 10.0, 1.0, 2.0, 10.0, 8.0,];
+MaterialConfiguration.MATERIAL_CUTTING_PROTECTION = [0.0, 0.0, 0.2, 0.1, 0.25, 0.5, 0.5, 0.5, 0.5, 5.0, 0.6, 0.5, 0.4, 0.3, 0.5, 0.4, 0.3, 0.2, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.8, 0.0, 0.0, 2.0, 1.0, 2.0, 10.0, 5.0,];
 MaterialConfiguration.MATERIAL_BLUNT_PROTECTION = [0.0, 0.0, 0.05, 0.01, 0.025, 0.05, 0.05, 0.3, 0.4, 0.1, 0.01, 0.01, 0.01, 0.01, 0.05, 0.04, 0.03, 0.02, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 2.0, 1.0, 2.0, 10.0, 5.0,];
 MaterialConfiguration.MATERIAL_PENENTRATION_PROTECTION = [0.0, 0.0, 0.05, 0.1, 0.5, 0.5, 0.5, 3.0, 4.0, 5.0, 0.2, 0.1, 0.0, 0.0, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.1, 0.0, 0.0, 5.0, 2.5, 5.0, 10.0, 5.0,];
 MaterialConfiguration.MATERIAL_MAGIC_POWER = [0.0, 1.0, 0.05, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 2.0, 4.0, 0.0, 0.0, 2.0, 2.0, 0.0, 4.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.1, 1.0, 0.1, 0.1, 5.0, 0.0,];
+MaterialConfiguration.MATERIAL_UNIT_SIZE = [0.1, 0.1, 1.0, 1.0, 0.03, 0.03, 0.5, 0.4, 0.4, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.01, 0.01, 0.03, 1.0, 1.0, 1.0, 1.0,];
 // Strings: 
 MaterialConfiguration.MATERIAL_NAME = ["Bone arrow", "Zaz arrow", "Cotton", "Textile", "Bone(rat, small)", "Bone(human, small)", "Bone(graci, small)", "Bone(rat)", "Bone(human)", "Bone(graci)", "Skin(rat)", "Skin(human)", "Skin(graci)", "Skin(meat ball)", "Leather(rat)", "Leather(human)", "Leather(graci)", "Leather(meat ball)", "Meat(rat)", "Fried meat(rat)", "Meat(elodino)", "Meat(meat ball)", "Meat(human)", "Meat(graci)", "Fried meat(human)", "Fried meat(graci)", "Fish(oku)", "Fried fish(oku)", "Fieberry", "Zazberry", "Zaz", "Wood(raw)", "Wood(plates)", "Hair(graci)", "Steel",];
 export class MaterialCategoryConfiguration {
@@ -147,7 +148,7 @@ ArmourConfiguration.ARMOUR_SLOT_STRING = ["helmet", "helmet", "helmet", "helmet"
 // Numbers: 
 ArmourConfiguration.ARMOUR_MAGIC_POWER = [0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,];
 ArmourConfiguration.ARMOUR_THICKNESS = [2.0, 0.5, 1.0, 0.1, 2.0, 1.0, 0.5, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0,];
-ArmourConfiguration.ARMOUR_SIZE = [0.1, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.4, 0.1, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,];
+ArmourConfiguration.ARMOUR_SIZE = [3.0, 3.0, 3.0, 3.0, 10.0, 10.0, 10.0, 10.0, 6.0, 6.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.5, 2.5, 2.5, 15.0, 1.0, 2.0,];
 ArmourConfiguration.ARMOUR_SECONDARY_SIZE = [0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,];
 ArmourConfiguration.ARMOUR_CRAFTABLE = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,];
 // Strings: 
@@ -188,6 +189,9 @@ class MaterialInstance {
     }
     get magic_power() {
         return MaterialConfiguration.MATERIAL_MAGIC_POWER[this._id];
+    }
+    get unit_size() {
+        return MaterialConfiguration.MATERIAL_UNIT_SIZE[this._id];
     }
     get name() {
         return MaterialConfiguration.MATERIAL_NAME[this._id];

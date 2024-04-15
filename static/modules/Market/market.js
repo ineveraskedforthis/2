@@ -5,6 +5,7 @@ import { List } from "../../widgets/List/list.js";
 import { elementById, inputById, selectById } from "../HTMLwrappers/common.js";
 import { globals } from "../globals.js";
 import { socket } from "../Socket/socket.js";
+import { MaterialStorage } from '../.././content.js';
 function send_execute_order_request(order_id, amount) {
     socket.emit('execute-order', { amount: amount, order: order_id });
 }
@@ -20,7 +21,7 @@ const columns = [
         value: (item) => stash_id_to_tag[item.tag],
         type: "string",
         //width_style: "30px",
-        image_path: (item) => "url(/static/img/stash_" + stash_id_to_tag[item.tag] + ".png",
+        image_path: (item) => material_icon_url(MaterialStorage.get(item.tag).id_string),
         custom_style: ['goods-icon', "flex-0-0-30px"]
     },
     {
@@ -141,7 +142,7 @@ export function init_market_bulk_infrastructure(market_bulk) {
         }, [
             div(undefined, "", ["goods-icon", "small-square"], material_icon_url(tag), undefined, []),
             div(undefined, "", ["width-auto"], undefined, undefined, [
-                div(undefined, tag, ["right-centered-box"], undefined, undefined, [])
+                div(undefined, MaterialStorage.get(item_index).name, ["right-centered-box"], undefined, undefined, [])
             ])
         ]);
         filters.appendChild(filter_div);
@@ -189,3 +190,4 @@ export function init_market_bulk_infrastructure(market_bulk) {
     });
     return market_bulk;
 }
+

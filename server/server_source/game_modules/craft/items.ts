@@ -20,9 +20,13 @@ function generate_skill_check(skill_check: skill_check[], difficulty: number, ma
     return skill_check
 }
 
+const input_multiplier = 1.2
+
 export function generate_item_crafts() {
     for (const weapon_id of WeaponConfiguration.WEAPON) {
         const weapon = WeaponStorage.get(weapon_id)
+
+        if (weapon.craftable == 0) continue;
 
         const material = weapon.material
         const secondary_material = weapon.secondary_material
@@ -44,16 +48,16 @@ export function generate_item_crafts() {
         skills = generate_skill_check(skills, difficulty, material_data.category)
 
         const main_box: box = {
-            amount: weapon.size * (1 - impact_type.handle_ratio),
+            amount: Math.floor(1 + weapon.size * (1 - impact_type.handle_ratio) / material_data.unit_size * input_multiplier),
             material: material
         }
 
         if (material == secondary_material) {
-            main_box.amount = weapon.size
+            main_box.amount = Math.floor(1 + weapon.size / material_data.unit_size * input_multiplier)
             new_craft_item(weapon.id_string, [main_box], {tag: "weapon", value: weapon_id}, [], skills)
         } else {
             skills = generate_skill_check(skills, difficulty, secondary_material_data.category)
-            new_craft_item(weapon.id_string, [main_box, {amount: weapon.size * impact_type.handle_ratio, material: secondary_material}], {tag: "weapon", value: weapon_id}, [], skills)
+            new_craft_item(weapon.id_string, [main_box, {amount: Math.floor(1 + weapon.size * impact_type.handle_ratio / secondary_material_data.unit_size * input_multiplier), material: secondary_material}], {tag: "weapon", value: weapon_id}, [], skills)
         }
     }
 
@@ -74,12 +78,12 @@ export function generate_item_crafts() {
         skills = generate_skill_check(skills, difficulty, material_data.category)
 
         const main_box: box = {
-            amount: armour.size / material_data.density,
+            amount: Math.floor(1 + armour.size * input_multiplier / material_data.unit_size),
             material: material
         }
 
         if (material == secondary_material) {
-            main_box.amount += armour.secondary_size
+            main_box.amount += Math.floor(1 + (armour.size + armour.secondary_size) / material_data.unit_size * input_multiplier)
             new_craft_item(armour.id_string, [main_box], {tag: "armour", value: armour_id}, [], skills)
         } else {
             skills = generate_skill_check(skills, difficulty, secondary_material_data.category)
@@ -88,7 +92,7 @@ export function generate_item_crafts() {
                 [
                     main_box,
                     {
-                        amount: armour.secondary_size / secondary_material_data.density,
+                        amount: Math.floor(1 + armour.secondary_size / secondary_material_data.unit_size * input_multiplier),
                         material: secondary_material
                     }
                 ],

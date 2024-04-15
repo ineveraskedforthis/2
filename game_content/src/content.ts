@@ -126,6 +126,7 @@ export interface MaterialData {
     readonly blunt_protection : number
     readonly penentration_protection : number
     readonly magic_power : number
+    readonly unit_size : number
     readonly name : string
 }
 
@@ -204,11 +205,12 @@ export class MaterialConfiguration {
     // Numbers: 
 
     static MATERIAL_CUTTING_POWER : Record<MATERIAL, number> = [2.0, 4.0, 0.0, 0.0, 2.5, 2.5, 2.5, 2.5, 2.5, 2.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 6.0, 1.0, 1.0, 20.0, 5.0, ]
-    static MATERIAL_DENSITY : Record<MATERIAL, number> = [0.2, 0.2, 0.1, 1.0, 0.5, 0.6, 0.2, 0.5, 0.6, 0.2, 1.5, 1.2, 1.1, 0.8, 3.0, 2.4, 2.2, 1.6, 0.4, 0.6, 0.1, 0.1, 0.5, 0.2, 0.7, 0.2, 0.0, 0.0, 0.2, 0.3, 10.0, 1.0, 2.0, 10.0, 8.0, ]
-    static MATERIAL_CUTTING_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 0.1, 0.25, 0.5, 0.5, 0.5, 0.5, 5.0, 0.6, 0.5, 0.4, 0.3, 0.5, 0.4, 0.3, 0.2, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.8, 0.0, 0.0, 5.0, 1.0, 2.0, 10.0, 5.0, ]
+    static MATERIAL_DENSITY : Record<MATERIAL, number> = [0.2, 0.2, 0.2, 1.0, 0.5, 0.6, 0.2, 0.5, 0.6, 0.2, 1.5, 1.2, 1.1, 0.8, 3.0, 2.4, 2.2, 1.6, 0.4, 0.6, 0.1, 0.1, 0.5, 0.2, 0.7, 0.2, 0.3, 0.5, 0.2, 0.3, 10.0, 1.0, 2.0, 10.0, 8.0, ]
+    static MATERIAL_CUTTING_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.2, 0.1, 0.25, 0.5, 0.5, 0.5, 0.5, 5.0, 0.6, 0.5, 0.4, 0.3, 0.5, 0.4, 0.3, 0.2, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.8, 0.0, 0.0, 2.0, 1.0, 2.0, 10.0, 5.0, ]
     static MATERIAL_BLUNT_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.05, 0.01, 0.025, 0.05, 0.05, 0.3, 0.4, 0.1, 0.01, 0.01, 0.01, 0.01, 0.05, 0.04, 0.03, 0.02, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 2.0, 1.0, 2.0, 10.0, 5.0, ]
     static MATERIAL_PENENTRATION_PROTECTION : Record<MATERIAL, number> = [0.0, 0.0, 0.05, 0.1, 0.5, 0.5, 0.5, 3.0, 4.0, 5.0, 0.2, 0.1, 0.0, 0.0, 0.3, 0.2, 0.1, 0.0, 0.0, 0.0, 0.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.1, 0.0, 0.0, 5.0, 2.5, 5.0, 10.0, 5.0, ]
     static MATERIAL_MAGIC_POWER : Record<MATERIAL, number> = [0.0, 1.0, 0.05, 0.1, 0.0, 0.0, 1.0, 0.0, 0.0, 2.0, 0.0, 0.0, 1.0, 2.0, 0.0, 0.0, 2.0, 4.0, 0.0, 0.0, 2.0, 2.0, 0.0, 4.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.1, 1.0, 0.1, 0.1, 5.0, 0.0, ]
+    static MATERIAL_UNIT_SIZE : Record<MATERIAL, number> = [0.1, 0.1, 1.0, 1.0, 0.03, 0.03, 0.5, 0.4, 0.4, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 2.0, 0.01, 0.01, 0.03, 1.0, 1.0, 1.0, 1.0, ]
 
     // Strings: 
 
@@ -367,7 +369,7 @@ export class ArmourConfiguration {
 
     static ARMOUR_MAGIC_POWER : Record<ARMOUR, number> = [0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
     static ARMOUR_THICKNESS : Record<ARMOUR, number> = [2.0, 0.5, 1.0, 0.1, 2.0, 1.0, 0.5, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0, ]
-    static ARMOUR_SIZE : Record<ARMOUR, number> = [0.1, 0.1, 0.1, 0.1, 0.5, 0.5, 0.5, 0.4, 0.1, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, ]
+    static ARMOUR_SIZE : Record<ARMOUR, number> = [3.0, 3.0, 3.0, 3.0, 10.0, 10.0, 10.0, 10.0, 6.0, 6.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.5, 2.5, 2.5, 15.0, 1.0, 2.0, ]
     static ARMOUR_SECONDARY_SIZE : Record<ARMOUR, number> = [0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ]
     static ARMOUR_CRAFTABLE : Record<ARMOUR, number> = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
 
@@ -414,6 +416,9 @@ class MaterialInstance implements MaterialData {
     }
     get magic_power() {
         return MaterialConfiguration.MATERIAL_MAGIC_POWER[this._id]
+    }
+    get unit_size() {
+        return MaterialConfiguration.MATERIAL_UNIT_SIZE[this._id]
     }
     get name() {
         return MaterialConfiguration.MATERIAL_NAME[this._id]

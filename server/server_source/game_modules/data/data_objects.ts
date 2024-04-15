@@ -110,7 +110,6 @@ export namespace Data {
                 if (line == '') {continue}
                 const item = string_to_item(line)
                 if (item == undefined) continue;
-                DataID.Items.register(item.id)
                 item_id_object[item.id] = item
             }
 

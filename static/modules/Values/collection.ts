@@ -11,6 +11,10 @@ export function value_class_name (id: string) : string {
     return id + "_value";
 }
 
+export function material_icon_class_name(id: string): string {
+    return id + "_icon"
+}
+
 export function value_indicator_class_name (id: string) : string {
     return id + "_value_indicator"
 }
@@ -113,7 +117,7 @@ export class BulkAmount extends Value implements BulkAmountInterface {
     protected _update(difference: number): void {
         super._update(difference);
 
-        for (let item of selectHTMLs("." + value_class_name(this._id))) {
+        for (let item of selectHTMLs("." + material_icon_class_name(this._id))) {
             item.style.backgroundImage = material_icon_url(this.material_string)
         }
     }

@@ -9,7 +9,7 @@ export var stash_id_to_tag: Record<number, string> = {};
 export var material_ids: number[] = [];
 
 export function material_icon_url(material_tag: string): string {
-    return `url(/static/img/stash_${material_tag}.png)`;
+    return `url(/static/img/stash/${material_tag}.png)`;
 }
 
 export function update_tags(msg: { [key: string]: number; }, stash_dependent_elements: DependencyUI[]) {

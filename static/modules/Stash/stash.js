@@ -6,7 +6,7 @@ export var stash_tag_to_id = {};
 export var stash_id_to_tag = {};
 export var material_ids = [];
 export function material_icon_url(material_tag) {
-    return `url(/static/img/stash_${material_tag}.png)`;
+    return `url(/static/img/stash/${material_tag}.png)`;
 }
 export function update_tags(msg, stash_dependent_elements) {
     console.log("TAAAAAAGS");
