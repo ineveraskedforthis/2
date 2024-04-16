@@ -187,7 +187,7 @@ export function init_market_bulk_infrastructure(market_bulk) {
         let type = selectById('create_order_type').value;
         let amount = inputById('create_order_amount').value;
         let price = inputById('create_order_price').value;
-        socket.emit(type, { material: Number(material), amount: Number(amount), price: Number(price) });
+        socket.emit(type, { material: MaterialStorage.from_string(material).id, amount: Number(amount), price: Number(price) });
         // console.log(material, type, amount, price)
     });
     let order_button = elementById('create_auction_order_button');
