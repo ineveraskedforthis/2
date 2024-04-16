@@ -83,22 +83,24 @@ export type impact_type_string_id = "point"|"blade"|"blunt"|"none"
 
 export const enum WEAPON {
     BOW_WOOD,
-    SPEAR_WOOD,
-    SPEAR_WOOD_BONE,
+    SPEAR_WOOD_RED,
+    SPEAR_WOOD_RED_BONE_RAT,
     DAGGER_BONE_RAT,
     SWORD_STEEL,
-    MACE_WOOD,
+    MACE_WOOD_RED,
 }
-export type weapon_string_id = "bow-wood"|"spear-wood"|"spear-wood-bone"|"dagger-bone-rat"|"sword-steel"|"mace-wood"
+export type weapon_string_id = "bow-wood"|"spear-wood-red"|"spear-wood-red-bone-rat"|"dagger-bone-rat"|"sword-steel"|"mace-wood-red"
 
 export const enum ARMOUR {
     HELMET_SKULL_RAT,
     HELMET_TEXTILE,
     HELMET_LEATHER_RAT,
     HELMET_HAIR_GRACI,
-    MAIL_BONE,
+    MAIL_BONE_RAT,
     MAIL_LEATHER_RAT,
     MAIL_TEXTILE,
+    MAIL_LEATHER_BALL,
+    MAIL_LEATHER_GRACI,
     DRESS_MEAT_ELODINO,
     PANTS_LEATHER_RAT,
     PANTS_TEXTILE,
@@ -108,14 +110,14 @@ export const enum ARMOUR {
     GAUNTLET_LEFT_LEATHER_RAT,
     GAUNTLET_LEFT_TEXTILE,
     SOCKS_TEXTILE,
-    PAULDRON_LEFT_BONE,
+    PAULDRON_LEFT_BONE_RAT,
     PAULDRON_LEFT_LEATHER_RAT,
-    PAULDRON_RIGHT_BONE,
+    PAULDRON_RIGHT_BONE_RAT,
     ROBE_LEATHER_RAT,
     BELT_TEXTILE,
     SHIRT_TEXTILE,
 }
-export type armour_string_id = "helmet-skull-rat"|"helmet-textile"|"helmet-leather-rat"|"helmet-hair-graci"|"mail-bone"|"mail-leather-rat"|"mail-textile"|"dress-meat-elodino"|"pants-leather-rat"|"pants-textile"|"boots-leather-rat"|"gauntlet-right-leather-rat"|"gauntlet-right-textile"|"gauntlet-left-leather-rat"|"gauntlet-left-textile"|"socks-textile"|"pauldron-left-bone"|"pauldron-left-leather-rat"|"pauldron-right-bone"|"robe-leather-rat"|"belt-textile"|"shirt-textile"
+export type armour_string_id = "helmet-skull-rat"|"helmet-textile"|"helmet-leather-rat"|"helmet-hair-graci"|"mail-bone-rat"|"mail-leather-rat"|"mail-textile"|"mail-leather-ball"|"mail-leather-graci"|"dress-meat-elodino"|"pants-leather-rat"|"pants-textile"|"boots-leather-rat"|"gauntlet-right-leather-rat"|"gauntlet-right-textile"|"gauntlet-left-leather-rat"|"gauntlet-left-textile"|"socks-textile"|"pauldron-left-bone-rat"|"pauldron-left-leather-rat"|"pauldron-right-bone-rat"|"robe-leather-rat"|"belt-textile"|"shirt-textile"
 
 export interface MaterialData {
     readonly id : MATERIAL
@@ -303,9 +305,9 @@ export class ImpactConfiguration {
 }
 
 export class WeaponConfiguration {
-    static WEAPON : WEAPON[] = [WEAPON.BOW_WOOD, WEAPON.SPEAR_WOOD, WEAPON.SPEAR_WOOD_BONE, WEAPON.DAGGER_BONE_RAT, WEAPON.SWORD_STEEL, WEAPON.MACE_WOOD, ]
-    static WEAPON_FROM_STRING : Record<weapon_string_id, WEAPON> = { "bow-wood": WEAPON.BOW_WOOD, "spear-wood": WEAPON.SPEAR_WOOD, "spear-wood-bone": WEAPON.SPEAR_WOOD_BONE, "dagger-bone-rat": WEAPON.DAGGER_BONE_RAT, "sword-steel": WEAPON.SWORD_STEEL, "mace-wood": WEAPON.MACE_WOOD }
-    static WEAPON_TO_STRING : Record<WEAPON, weapon_string_id> = ["bow-wood", "spear-wood", "spear-wood-bone", "dagger-bone-rat", "sword-steel", "mace-wood", ]
+    static WEAPON : WEAPON[] = [WEAPON.BOW_WOOD, WEAPON.SPEAR_WOOD_RED, WEAPON.SPEAR_WOOD_RED_BONE_RAT, WEAPON.DAGGER_BONE_RAT, WEAPON.SWORD_STEEL, WEAPON.MACE_WOOD_RED, ]
+    static WEAPON_FROM_STRING : Record<weapon_string_id, WEAPON> = { "bow-wood": WEAPON.BOW_WOOD, "spear-wood-red": WEAPON.SPEAR_WOOD_RED, "spear-wood-red-bone-rat": WEAPON.SPEAR_WOOD_RED_BONE_RAT, "dagger-bone-rat": WEAPON.DAGGER_BONE_RAT, "sword-steel": WEAPON.SWORD_STEEL, "mace-wood-red": WEAPON.MACE_WOOD_RED }
+    static WEAPON_TO_STRING : Record<WEAPON, weapon_string_id> = ["bow-wood", "spear-wood-red", "spear-wood-red-bone-rat", "dagger-bone-rat", "sword-steel", "mace-wood-red", ]
     static get zero_record() : Record<WEAPON, number> {
         return [0, 0, 0, 0, 0, 0, ]
     }
@@ -318,8 +320,8 @@ export class WeaponConfiguration {
 
     // ENUMS: 
 
-    static WEAPON_WEAPON : Record<WEAPON, WEAPON> = [WEAPON.BOW_WOOD, WEAPON.SPEAR_WOOD, WEAPON.SPEAR_WOOD_BONE, WEAPON.DAGGER_BONE_RAT, WEAPON.SWORD_STEEL, WEAPON.MACE_WOOD, ]
-    static WEAPON_WEAPON_STRING : Record<WEAPON, weapon_string_id> = ["bow-wood", "spear-wood", "spear-wood-bone", "dagger-bone-rat", "sword-steel", "mace-wood", ]
+    static WEAPON_WEAPON : Record<WEAPON, WEAPON> = [WEAPON.BOW_WOOD, WEAPON.SPEAR_WOOD_RED, WEAPON.SPEAR_WOOD_RED_BONE_RAT, WEAPON.DAGGER_BONE_RAT, WEAPON.SWORD_STEEL, WEAPON.MACE_WOOD_RED, ]
+    static WEAPON_WEAPON_STRING : Record<WEAPON, weapon_string_id> = ["bow-wood", "spear-wood-red", "spear-wood-red-bone-rat", "dagger-bone-rat", "sword-steel", "mace-wood-red", ]
     static WEAPON_MATERIAL : Record<WEAPON, MATERIAL> = [MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.SMALL_BONE_RAT, MATERIAL.BONE_RAT, MATERIAL.STEEL, MATERIAL.WOOD_RED, ]
     static WEAPON_MATERIAL_STRING : Record<WEAPON, material_string_id> = ["wood-red", "wood-red", "small-bone-rat", "bone-rat", "steel", "wood-red", ]
     static WEAPON_SECONDARY_MATERIAL : Record<WEAPON, MATERIAL> = [MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, MATERIAL.BONE_RAT, MATERIAL.WOOD_RED, MATERIAL.WOOD_RED, ]
@@ -341,11 +343,11 @@ export class WeaponConfiguration {
 }
 
 export class ArmourConfiguration {
-    static ARMOUR : ARMOUR[] = [ARMOUR.HELMET_SKULL_RAT, ARMOUR.HELMET_TEXTILE, ARMOUR.HELMET_LEATHER_RAT, ARMOUR.HELMET_HAIR_GRACI, ARMOUR.MAIL_BONE, ARMOUR.MAIL_LEATHER_RAT, ARMOUR.MAIL_TEXTILE, ARMOUR.DRESS_MEAT_ELODINO, ARMOUR.PANTS_LEATHER_RAT, ARMOUR.PANTS_TEXTILE, ARMOUR.BOOTS_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_TEXTILE, ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, ARMOUR.GAUNTLET_LEFT_TEXTILE, ARMOUR.SOCKS_TEXTILE, ARMOUR.PAULDRON_LEFT_BONE, ARMOUR.PAULDRON_LEFT_LEATHER_RAT, ARMOUR.PAULDRON_RIGHT_BONE, ARMOUR.ROBE_LEATHER_RAT, ARMOUR.BELT_TEXTILE, ARMOUR.SHIRT_TEXTILE, ]
-    static ARMOUR_FROM_STRING : Record<armour_string_id, ARMOUR> = { "helmet-skull-rat": ARMOUR.HELMET_SKULL_RAT, "helmet-textile": ARMOUR.HELMET_TEXTILE, "helmet-leather-rat": ARMOUR.HELMET_LEATHER_RAT, "helmet-hair-graci": ARMOUR.HELMET_HAIR_GRACI, "mail-bone": ARMOUR.MAIL_BONE, "mail-leather-rat": ARMOUR.MAIL_LEATHER_RAT, "mail-textile": ARMOUR.MAIL_TEXTILE, "dress-meat-elodino": ARMOUR.DRESS_MEAT_ELODINO, "pants-leather-rat": ARMOUR.PANTS_LEATHER_RAT, "pants-textile": ARMOUR.PANTS_TEXTILE, "boots-leather-rat": ARMOUR.BOOTS_LEATHER_RAT, "gauntlet-right-leather-rat": ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, "gauntlet-right-textile": ARMOUR.GAUNTLET_RIGHT_TEXTILE, "gauntlet-left-leather-rat": ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, "gauntlet-left-textile": ARMOUR.GAUNTLET_LEFT_TEXTILE, "socks-textile": ARMOUR.SOCKS_TEXTILE, "pauldron-left-bone": ARMOUR.PAULDRON_LEFT_BONE, "pauldron-left-leather-rat": ARMOUR.PAULDRON_LEFT_LEATHER_RAT, "pauldron-right-bone": ARMOUR.PAULDRON_RIGHT_BONE, "robe-leather-rat": ARMOUR.ROBE_LEATHER_RAT, "belt-textile": ARMOUR.BELT_TEXTILE, "shirt-textile": ARMOUR.SHIRT_TEXTILE }
-    static ARMOUR_TO_STRING : Record<ARMOUR, armour_string_id> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone", "mail-leather-rat", "mail-textile", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone", "pauldron-left-leather-rat", "pauldron-right-bone", "robe-leather-rat", "belt-textile", "shirt-textile", ]
+    static ARMOUR : ARMOUR[] = [ARMOUR.HELMET_SKULL_RAT, ARMOUR.HELMET_TEXTILE, ARMOUR.HELMET_LEATHER_RAT, ARMOUR.HELMET_HAIR_GRACI, ARMOUR.MAIL_BONE_RAT, ARMOUR.MAIL_LEATHER_RAT, ARMOUR.MAIL_TEXTILE, ARMOUR.MAIL_LEATHER_BALL, ARMOUR.MAIL_LEATHER_GRACI, ARMOUR.DRESS_MEAT_ELODINO, ARMOUR.PANTS_LEATHER_RAT, ARMOUR.PANTS_TEXTILE, ARMOUR.BOOTS_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_TEXTILE, ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, ARMOUR.GAUNTLET_LEFT_TEXTILE, ARMOUR.SOCKS_TEXTILE, ARMOUR.PAULDRON_LEFT_BONE_RAT, ARMOUR.PAULDRON_LEFT_LEATHER_RAT, ARMOUR.PAULDRON_RIGHT_BONE_RAT, ARMOUR.ROBE_LEATHER_RAT, ARMOUR.BELT_TEXTILE, ARMOUR.SHIRT_TEXTILE, ]
+    static ARMOUR_FROM_STRING : Record<armour_string_id, ARMOUR> = { "helmet-skull-rat": ARMOUR.HELMET_SKULL_RAT, "helmet-textile": ARMOUR.HELMET_TEXTILE, "helmet-leather-rat": ARMOUR.HELMET_LEATHER_RAT, "helmet-hair-graci": ARMOUR.HELMET_HAIR_GRACI, "mail-bone-rat": ARMOUR.MAIL_BONE_RAT, "mail-leather-rat": ARMOUR.MAIL_LEATHER_RAT, "mail-textile": ARMOUR.MAIL_TEXTILE, "mail-leather-ball": ARMOUR.MAIL_LEATHER_BALL, "mail-leather-graci": ARMOUR.MAIL_LEATHER_GRACI, "dress-meat-elodino": ARMOUR.DRESS_MEAT_ELODINO, "pants-leather-rat": ARMOUR.PANTS_LEATHER_RAT, "pants-textile": ARMOUR.PANTS_TEXTILE, "boots-leather-rat": ARMOUR.BOOTS_LEATHER_RAT, "gauntlet-right-leather-rat": ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, "gauntlet-right-textile": ARMOUR.GAUNTLET_RIGHT_TEXTILE, "gauntlet-left-leather-rat": ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, "gauntlet-left-textile": ARMOUR.GAUNTLET_LEFT_TEXTILE, "socks-textile": ARMOUR.SOCKS_TEXTILE, "pauldron-left-bone-rat": ARMOUR.PAULDRON_LEFT_BONE_RAT, "pauldron-left-leather-rat": ARMOUR.PAULDRON_LEFT_LEATHER_RAT, "pauldron-right-bone-rat": ARMOUR.PAULDRON_RIGHT_BONE_RAT, "robe-leather-rat": ARMOUR.ROBE_LEATHER_RAT, "belt-textile": ARMOUR.BELT_TEXTILE, "shirt-textile": ARMOUR.SHIRT_TEXTILE }
+    static ARMOUR_TO_STRING : Record<ARMOUR, armour_string_id> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone-rat", "mail-leather-rat", "mail-textile", "mail-leather-ball", "mail-leather-graci", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone-rat", "pauldron-left-leather-rat", "pauldron-right-bone-rat", "robe-leather-rat", "belt-textile", "shirt-textile", ]
     static get zero_record() : Record<ARMOUR, number> {
-        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+        return [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
     }
     static is_valid_id(id: number): id is ARMOUR {
         return id in this.ARMOUR 
@@ -356,26 +358,26 @@ export class ArmourConfiguration {
 
     // ENUMS: 
 
-    static ARMOUR_ARMOUR : Record<ARMOUR, ARMOUR> = [ARMOUR.HELMET_SKULL_RAT, ARMOUR.HELMET_TEXTILE, ARMOUR.HELMET_LEATHER_RAT, ARMOUR.HELMET_HAIR_GRACI, ARMOUR.MAIL_BONE, ARMOUR.MAIL_LEATHER_RAT, ARMOUR.MAIL_TEXTILE, ARMOUR.DRESS_MEAT_ELODINO, ARMOUR.PANTS_LEATHER_RAT, ARMOUR.PANTS_TEXTILE, ARMOUR.BOOTS_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_TEXTILE, ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, ARMOUR.GAUNTLET_LEFT_TEXTILE, ARMOUR.SOCKS_TEXTILE, ARMOUR.PAULDRON_LEFT_BONE, ARMOUR.PAULDRON_LEFT_LEATHER_RAT, ARMOUR.PAULDRON_RIGHT_BONE, ARMOUR.ROBE_LEATHER_RAT, ARMOUR.BELT_TEXTILE, ARMOUR.SHIRT_TEXTILE, ]
-    static ARMOUR_ARMOUR_STRING : Record<ARMOUR, armour_string_id> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone", "mail-leather-rat", "mail-textile", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone", "pauldron-left-leather-rat", "pauldron-right-bone", "robe-leather-rat", "belt-textile", "shirt-textile", ]
-    static ARMOUR_MATERIAL : Record<ARMOUR, MATERIAL> = [MATERIAL.BONE_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.HAIR_GRACI, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.MEAT_ELODINO, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, ]
-    static ARMOUR_MATERIAL_STRING : Record<ARMOUR, material_string_id> = ["bone-rat", "textile", "leather-rat", "hair-graci", "bone-rat", "leather-rat", "textile", "meat-elodino", "leather-rat", "textile", "leather-rat", "leather-rat", "textile", "leather-rat", "textile", "textile", "bone-rat", "leather-rat", "bone-rat", "leather-rat", "textile", "textile", ]
-    static ARMOUR_SECONDARY_MATERIAL : Record<ARMOUR, MATERIAL> = [MATERIAL.SKIN_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.HAIR_GRACI, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.MEAT_ELODINO, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, ]
-    static ARMOUR_SECONDARY_MATERIAL_STRING : Record<ARMOUR, material_string_id> = ["skin-rat", "textile", "leather-rat", "hair-graci", "small-bone-rat", "leather-rat", "textile", "meat-elodino", "leather-rat", "textile", "leather-rat", "leather-rat", "textile", "leather-rat", "textile", "textile", "small-bone-rat", "leather-rat", "small-bone-rat", "leather-rat", "textile", "textile", ]
-    static ARMOUR_SLOT : Record<ARMOUR, EQUIP_SLOT> = [EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.MAIL, EQUIP_SLOT.MAIL, EQUIP_SLOT.MAIL, EQUIP_SLOT.DRESS, EQUIP_SLOT.PANTS, EQUIP_SLOT.PANTS, EQUIP_SLOT.BOOTS, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.SOCKS, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_RIGHT, EQUIP_SLOT.ROBE, EQUIP_SLOT.BELT, EQUIP_SLOT.SHIRT, ]
-    static ARMOUR_SLOT_STRING : Record<ARMOUR, equip_slot_string_id> = ["helmet", "helmet", "helmet", "helmet", "mail", "mail", "mail", "dress", "pants", "pants", "boots", "gauntlet-right", "gauntlet-right", "gauntlet-left", "gauntlet-left", "socks", "pauldron-left", "pauldron-left", "pauldron-right", "robe", "belt", "shirt", ]
+    static ARMOUR_ARMOUR : Record<ARMOUR, ARMOUR> = [ARMOUR.HELMET_SKULL_RAT, ARMOUR.HELMET_TEXTILE, ARMOUR.HELMET_LEATHER_RAT, ARMOUR.HELMET_HAIR_GRACI, ARMOUR.MAIL_BONE_RAT, ARMOUR.MAIL_LEATHER_RAT, ARMOUR.MAIL_TEXTILE, ARMOUR.MAIL_LEATHER_BALL, ARMOUR.MAIL_LEATHER_GRACI, ARMOUR.DRESS_MEAT_ELODINO, ARMOUR.PANTS_LEATHER_RAT, ARMOUR.PANTS_TEXTILE, ARMOUR.BOOTS_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT, ARMOUR.GAUNTLET_RIGHT_TEXTILE, ARMOUR.GAUNTLET_LEFT_LEATHER_RAT, ARMOUR.GAUNTLET_LEFT_TEXTILE, ARMOUR.SOCKS_TEXTILE, ARMOUR.PAULDRON_LEFT_BONE_RAT, ARMOUR.PAULDRON_LEFT_LEATHER_RAT, ARMOUR.PAULDRON_RIGHT_BONE_RAT, ARMOUR.ROBE_LEATHER_RAT, ARMOUR.BELT_TEXTILE, ARMOUR.SHIRT_TEXTILE, ]
+    static ARMOUR_ARMOUR_STRING : Record<ARMOUR, armour_string_id> = ["helmet-skull-rat", "helmet-textile", "helmet-leather-rat", "helmet-hair-graci", "mail-bone-rat", "mail-leather-rat", "mail-textile", "mail-leather-ball", "mail-leather-graci", "dress-meat-elodino", "pants-leather-rat", "pants-textile", "boots-leather-rat", "gauntlet-right-leather-rat", "gauntlet-right-textile", "gauntlet-left-leather-rat", "gauntlet-left-textile", "socks-textile", "pauldron-left-bone-rat", "pauldron-left-leather-rat", "pauldron-right-bone-rat", "robe-leather-rat", "belt-textile", "shirt-textile", ]
+    static ARMOUR_MATERIAL : Record<ARMOUR, MATERIAL> = [MATERIAL.BONE_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.HAIR_GRACI, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_BALL, MATERIAL.LEATHER_GRACI, MATERIAL.MEAT_ELODINO, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, ]
+    static ARMOUR_MATERIAL_STRING : Record<ARMOUR, material_string_id> = ["bone-rat", "textile", "leather-rat", "hair-graci", "bone-rat", "leather-rat", "textile", "leather-ball", "leather-graci", "meat-elodino", "leather-rat", "textile", "leather-rat", "leather-rat", "textile", "leather-rat", "textile", "textile", "bone-rat", "leather-rat", "bone-rat", "leather-rat", "textile", "textile", ]
+    static ARMOUR_SECONDARY_MATERIAL : Record<ARMOUR, MATERIAL> = [MATERIAL.SKIN_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.HAIR_GRACI, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_BALL, MATERIAL.LEATHER_GRACI, MATERIAL.MEAT_ELODINO, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.SMALL_BONE_RAT, MATERIAL.LEATHER_RAT, MATERIAL.TEXTILE, MATERIAL.TEXTILE, ]
+    static ARMOUR_SECONDARY_MATERIAL_STRING : Record<ARMOUR, material_string_id> = ["skin-rat", "textile", "leather-rat", "hair-graci", "small-bone-rat", "leather-rat", "textile", "leather-ball", "leather-graci", "meat-elodino", "leather-rat", "textile", "leather-rat", "leather-rat", "textile", "leather-rat", "textile", "textile", "small-bone-rat", "leather-rat", "small-bone-rat", "leather-rat", "textile", "textile", ]
+    static ARMOUR_SLOT : Record<ARMOUR, EQUIP_SLOT> = [EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.HELMET, EQUIP_SLOT.MAIL, EQUIP_SLOT.MAIL, EQUIP_SLOT.MAIL, EQUIP_SLOT.MAIL, EQUIP_SLOT.MAIL, EQUIP_SLOT.DRESS, EQUIP_SLOT.PANTS, EQUIP_SLOT.PANTS, EQUIP_SLOT.BOOTS, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.GAUNTLET_RIGHT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.GAUNTLET_LEFT, EQUIP_SLOT.SOCKS, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_LEFT, EQUIP_SLOT.PAULDRON_RIGHT, EQUIP_SLOT.ROBE, EQUIP_SLOT.BELT, EQUIP_SLOT.SHIRT, ]
+    static ARMOUR_SLOT_STRING : Record<ARMOUR, equip_slot_string_id> = ["helmet", "helmet", "helmet", "helmet", "mail", "mail", "mail", "mail", "mail", "dress", "pants", "pants", "boots", "gauntlet-right", "gauntlet-right", "gauntlet-left", "gauntlet-left", "socks", "pauldron-left", "pauldron-left", "pauldron-right", "robe", "belt", "shirt", ]
 
     // Numbers: 
 
-    static ARMOUR_MAGIC_POWER : Record<ARMOUR, number> = [0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
-    static ARMOUR_THICKNESS : Record<ARMOUR, number> = [2.0, 0.5, 1.0, 0.1, 2.0, 1.0, 0.5, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0, ]
-    static ARMOUR_SIZE : Record<ARMOUR, number> = [3.0, 3.0, 3.0, 3.0, 10.0, 10.0, 10.0, 10.0, 6.0, 6.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.5, 2.5, 2.5, 15.0, 1.0, 2.0, ]
-    static ARMOUR_SECONDARY_SIZE : Record<ARMOUR, number> = [0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ]
-    static ARMOUR_CRAFTABLE : Record<ARMOUR, number> = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
+    static ARMOUR_MAGIC_POWER : Record<ARMOUR, number> = [0, 0, 0, 3, 0, 0, 0, 1, 10, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ]
+    static ARMOUR_THICKNESS : Record<ARMOUR, number> = [2.0, 0.5, 1.0, 0.1, 2.0, 1.0, 0.5, 0.5, 1.0, 1.0, 4.0, 4.0, 2.0, 0.5, 0.2, 0.5, 0.2, 0.1, 2.0, 1.0, 2.0, 2.0, 0.5, 5.0, ]
+    static ARMOUR_SIZE : Record<ARMOUR, number> = [3.0, 3.0, 3.0, 3.0, 10.0, 10.0, 10.0, 8.0, 8.0, 10.0, 6.0, 6.0, 3.0, 1.0, 1.0, 1.0, 1.0, 1.0, 2.5, 2.5, 2.5, 15.0, 1.0, 2.0, ]
+    static ARMOUR_SECONDARY_SIZE : Record<ARMOUR, number> = [0.0, 0.0, 0.0, 0.0, 0.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ]
+    static ARMOUR_CRAFTABLE : Record<ARMOUR, number> = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ]
 
     // Strings: 
 
-    static ARMOUR_NAME : Record<ARMOUR, string> = ["Rat skull", "Hat", "Hat", "Wig", "Mail", "Mail", "Mail", "Dress", "Pants", "Pants", "Boots", "Left Glove", "Right Glove", "Left Glove", "Right Glove", "Socks", "Left Pauldron", "Left Pauldron", "Right Pauldron", "Robe", "Belt", "Shirt", ]
+    static ARMOUR_NAME : Record<ARMOUR, string> = ["Rat skull", "Hat", "Hat", "Wig", "Mail", "Mail", "Mail", "Mail", "Mail", "Dress", "Pants", "Pants", "Boots", "Right Glove", "Right Glove", "Left Glove", "Left Glove", "Socks", "Left Bone Pauldron", "Left Pauldron", "Right Bone Pauldron", "Robe", "Belt", "Shirt", ]
 }
 
 
@@ -682,7 +684,7 @@ export class ImpactStorage {
 }
 
 export class WeaponStorage {
-    private static instances : Record<WEAPON, WeaponInstance> = [new WeaponInstance(WEAPON.BOW_WOOD), new WeaponInstance(WEAPON.SPEAR_WOOD), new WeaponInstance(WEAPON.SPEAR_WOOD_BONE), new WeaponInstance(WEAPON.DAGGER_BONE_RAT), new WeaponInstance(WEAPON.SWORD_STEEL), new WeaponInstance(WEAPON.MACE_WOOD)]
+    private static instances : Record<WEAPON, WeaponInstance> = [new WeaponInstance(WEAPON.BOW_WOOD), new WeaponInstance(WEAPON.SPEAR_WOOD_RED), new WeaponInstance(WEAPON.SPEAR_WOOD_RED_BONE_RAT), new WeaponInstance(WEAPON.DAGGER_BONE_RAT), new WeaponInstance(WEAPON.SWORD_STEEL), new WeaponInstance(WEAPON.MACE_WOOD_RED)]
 
     // Retrieve instance of WeaponInstance 
     static get(id: WEAPON) : WeaponInstance {
@@ -700,7 +702,7 @@ export class WeaponStorage {
 }
 
 export class ArmourStorage {
-    private static instances : Record<ARMOUR, ArmourInstance> = [new ArmourInstance(ARMOUR.HELMET_SKULL_RAT), new ArmourInstance(ARMOUR.HELMET_TEXTILE), new ArmourInstance(ARMOUR.HELMET_LEATHER_RAT), new ArmourInstance(ARMOUR.HELMET_HAIR_GRACI), new ArmourInstance(ARMOUR.MAIL_BONE), new ArmourInstance(ARMOUR.MAIL_LEATHER_RAT), new ArmourInstance(ARMOUR.MAIL_TEXTILE), new ArmourInstance(ARMOUR.DRESS_MEAT_ELODINO), new ArmourInstance(ARMOUR.PANTS_LEATHER_RAT), new ArmourInstance(ARMOUR.PANTS_TEXTILE), new ArmourInstance(ARMOUR.BOOTS_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_RIGHT_TEXTILE), new ArmourInstance(ARMOUR.GAUNTLET_LEFT_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_LEFT_TEXTILE), new ArmourInstance(ARMOUR.SOCKS_TEXTILE), new ArmourInstance(ARMOUR.PAULDRON_LEFT_BONE), new ArmourInstance(ARMOUR.PAULDRON_LEFT_LEATHER_RAT), new ArmourInstance(ARMOUR.PAULDRON_RIGHT_BONE), new ArmourInstance(ARMOUR.ROBE_LEATHER_RAT), new ArmourInstance(ARMOUR.BELT_TEXTILE), new ArmourInstance(ARMOUR.SHIRT_TEXTILE)]
+    private static instances : Record<ARMOUR, ArmourInstance> = [new ArmourInstance(ARMOUR.HELMET_SKULL_RAT), new ArmourInstance(ARMOUR.HELMET_TEXTILE), new ArmourInstance(ARMOUR.HELMET_LEATHER_RAT), new ArmourInstance(ARMOUR.HELMET_HAIR_GRACI), new ArmourInstance(ARMOUR.MAIL_BONE_RAT), new ArmourInstance(ARMOUR.MAIL_LEATHER_RAT), new ArmourInstance(ARMOUR.MAIL_TEXTILE), new ArmourInstance(ARMOUR.MAIL_LEATHER_BALL), new ArmourInstance(ARMOUR.MAIL_LEATHER_GRACI), new ArmourInstance(ARMOUR.DRESS_MEAT_ELODINO), new ArmourInstance(ARMOUR.PANTS_LEATHER_RAT), new ArmourInstance(ARMOUR.PANTS_TEXTILE), new ArmourInstance(ARMOUR.BOOTS_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_RIGHT_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_RIGHT_TEXTILE), new ArmourInstance(ARMOUR.GAUNTLET_LEFT_LEATHER_RAT), new ArmourInstance(ARMOUR.GAUNTLET_LEFT_TEXTILE), new ArmourInstance(ARMOUR.SOCKS_TEXTILE), new ArmourInstance(ARMOUR.PAULDRON_LEFT_BONE_RAT), new ArmourInstance(ARMOUR.PAULDRON_LEFT_LEATHER_RAT), new ArmourInstance(ARMOUR.PAULDRON_RIGHT_BONE_RAT), new ArmourInstance(ARMOUR.ROBE_LEATHER_RAT), new ArmourInstance(ARMOUR.BELT_TEXTILE), new ArmourInstance(ARMOUR.SHIRT_TEXTILE)]
 
     // Retrieve instance of ArmourInstance 
     static get(id: ARMOUR) : ArmourInstance {

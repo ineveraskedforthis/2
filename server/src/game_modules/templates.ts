@@ -1,7 +1,6 @@
 import { money } from "@custom_types/common"
 import { location_id } from "@custom_types/ids"
 import { Event } from "./events/events"
-import { ItemSystem } from "./systems/items/item_system"
 import { ElodinoTemplate } from "./races/TEMPLATE_ELO"
 import { GraciTemplate } from "./races/TEMPLATE_GRACI"
 import { HumanStrongTemplate, HumanTemplate } from "./races/TEMPLATE_HUMANS"
@@ -140,7 +139,7 @@ export namespace Template {
             human._skills.blocking += 10
             human._skills.ranged += 20
             human._perks.advanced_polearm = true
-            let spear = Data.Items.create_weapon(100, [], WEAPON.SPEAR_WOOD_BONE)
+            let spear = Data.Items.create_weapon(100, [], WEAPON.SPEAR_WOOD_RED_BONE_RAT)
             spear.durability = 200
             let bow = Data.Items.create_weapon(100, [], WEAPON.BOW_WOOD)
             let armour = Data.Items.create_armour(100, [], ARMOUR.MAIL_LEATHER_RAT)
@@ -232,6 +231,15 @@ export namespace Template {
             return human
         }
 
+        export function Tanner(name: string|undefined) {
+            let human = HumanCity(name)
+            human.stash.inc(MATERIAL.SKIN_RAT, 5)
+            human._skills.tanning += 50
+            human.savings.inc(500 as money)
+
+            return human
+        }
+
         export function HumanLocalTrader(name: string|undefined, faction:'city'|'steppe'){
             switch(faction) {
                 case "steppe":{var human = HumanSteppe(name);break}
@@ -310,7 +318,7 @@ export namespace Template {
             mage._perks.mage_initiation = true
             mage._perks.magic_bolt = true
 
-            let item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD)
+            let item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD_RED_BONE_RAT)
             item.affixes.push({tag: 'of_power'})
             item.affixes.push({tag: 'of_power'})
             mage.equip.weapon = item

@@ -31,7 +31,7 @@ function string_difference([a, b]: [string, string]): [string, string] {
 
 
 function add_testing_items_to_equip(equip: Equip) {
-    const item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD)
+    const item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD_RED)
     const item2 = Data.Items.create_armour_simple(ARMOUR.MAIL_LEATHER_RAT)
     const id1 = equip.data.backpack.add(item.id)
     const id2 = equip.data.backpack.add(item2.id)
@@ -101,7 +101,7 @@ function character_serialisation_test_advanced() {
 function backpack_string_test() {
     console.log('backpack ser test')
     const backpack = new Inventory(10)
-    const item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD)
+    const item = Data.Items.create_weapon_simple(WEAPON.SPEAR_WOOD_RED)
     const item2 = Data.Items.create_armour_simple(ARMOUR.BOOTS_LEATHER_RAT)
     backpack.add(item.id)
     backpack.add(item2.id)

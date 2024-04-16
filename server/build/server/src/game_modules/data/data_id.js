@@ -145,7 +145,6 @@ var DataID;
         Items.set_up = set_up;
         function new_id() {
             last_id_item++;
-            //console.log("new item id : ", last_id_item)
             return register(last_id_item);
         }
         Items.new_id = new_id;

@@ -8,5 +8,5 @@ exports.cotton_to_cloth = (0, CraftBulk_1.new_craft_bulk)('cotton_to_textile', [
 (0, CraftBulk_1.new_craft_bulk)('skin_to_leather3', [{ material: 11 /* MATERIAL.SKIN_HUMAN */, amount: 2 }], [{ material: 15 /* MATERIAL.LEATHER_HUMAN */, amount: 1 }], [{ skill: "tanning", difficulty: 10 }]);
 (0, CraftBulk_1.new_craft_bulk)('skin_to_leather4', [{ material: 10 /* MATERIAL.SKIN_RAT */, amount: 2 }], [{ material: 14 /* MATERIAL.LEATHER_RAT */, amount: 1 }], [{ skill: "tanning", difficulty: 10 }]);
 (0, CraftBulk_1.new_craft_bulk)('smash_bone', [{ material: 9 /* MATERIAL.BONE_GRACI */, amount: 2 }], [{ material: 6 /* MATERIAL.SMALL_BONE_GRACI */, amount: 1 }], [{ skill: "bone_carving", difficulty: 10 }]);
-(0, CraftBulk_1.new_craft_bulk)('smash_bone', [{ material: 8 /* MATERIAL.BONE_HUMAN */, amount: 2 }], [{ material: 5 /* MATERIAL.SMALL_BONE_HUMAN */, amount: 1 }], [{ skill: "bone_carving", difficulty: 10 }]);
-(0, CraftBulk_1.new_craft_bulk)('smash_bone', [{ material: 7 /* MATERIAL.BONE_RAT */, amount: 2 }], [{ material: 4 /* MATERIAL.SMALL_BONE_RAT */, amount: 1 }], [{ skill: "bone_carving", difficulty: 10 }]);
+(0, CraftBulk_1.new_craft_bulk)('smash_bone_1', [{ material: 8 /* MATERIAL.BONE_HUMAN */, amount: 2 }], [{ material: 5 /* MATERIAL.SMALL_BONE_HUMAN */, amount: 1 }], [{ skill: "bone_carving", difficulty: 10 }]);
+(0, CraftBulk_1.new_craft_bulk)('smash_bone_2', [{ material: 7 /* MATERIAL.BONE_RAT */, amount: 2 }], [{ material: 4 /* MATERIAL.SMALL_BONE_RAT */, amount: 1 }], [{ skill: "bone_carving", difficulty: 10 }]);

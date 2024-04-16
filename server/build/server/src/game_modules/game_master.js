@@ -66,6 +66,7 @@ var GameMaster;
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.ArmourMaster());
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.WeaponMasterWood('city'));
             templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.HumanLocalTrader("Local Trader", 'city'));
+            templates_1.Template.Character.EquipClothesBasic(templates_1.Template.Character.Tanner('Tanner'));
             templates_1.Template.Character.Fisherman("Fisherman 1");
             templates_1.Template.Character.Fisherman("Fisherman 2");
             templates_1.Template.Character.Fisherman("Fisherman 3");

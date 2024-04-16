@@ -163,7 +163,6 @@ export namespace DataID {
 
         export function new_id(): item_id {
             last_id_item++;
-            //console.log("new item id : ", last_id_item)
             return register(last_id_item)
         }
 

@@ -98,12 +98,12 @@ var Template;
             human._skills.blocking += 10;
             human._skills.ranged += 20;
             human._perks.advanced_polearm = true;
-            let spear = data_objects_1.Data.Items.create_weapon(100, [], 2 /* WEAPON.SPEAR_WOOD_BONE */);
+            let spear = data_objects_1.Data.Items.create_weapon(100, [], 2 /* WEAPON.SPEAR_WOOD_RED_BONE_RAT */);
             spear.durability = 200;
             let bow = data_objects_1.Data.Items.create_weapon(100, [], 0 /* WEAPON.BOW_WOOD */);
             let armour = data_objects_1.Data.Items.create_armour(100, [], 5 /* ARMOUR.MAIL_LEATHER_RAT */);
-            let pants = data_objects_1.Data.Items.create_armour(100, [], 8 /* ARMOUR.PANTS_LEATHER_RAT */);
-            let boots = data_objects_1.Data.Items.create_armour(100, [], 10 /* ARMOUR.BOOTS_LEATHER_RAT */);
+            let pants = data_objects_1.Data.Items.create_armour(100, [], 10 /* ARMOUR.PANTS_LEATHER_RAT */);
+            let boots = data_objects_1.Data.Items.create_armour(100, [], 12 /* ARMOUR.BOOTS_LEATHER_RAT */);
             let hat = data_objects_1.Data.Items.create_armour(100, [], 2 /* ARMOUR.HELMET_LEATHER_RAT */);
             human.equip.weapon = spear;
             human.equip.data.slots[3 /* EQUIP_SLOT.MAIL */] = armour.id;
@@ -117,17 +117,17 @@ var Template;
         Character.HumanSpearman = HumanSpearman;
         function EquipClothesBasic(character) {
             character.equip.data.slots[3 /* EQUIP_SLOT.MAIL */] = data_objects_1.Data.Items.create_armour(100, [], 6 /* ARMOUR.MAIL_TEXTILE */).id;
-            character.equip.data.slots[8 /* EQUIP_SLOT.BOOTS */] = data_objects_1.Data.Items.create_armour(100, [], 10 /* ARMOUR.BOOTS_LEATHER_RAT */).id;
-            character.equip.data.slots[13 /* EQUIP_SLOT.PANTS */] = data_objects_1.Data.Items.create_armour(100, [], 9 /* ARMOUR.PANTS_TEXTILE */).id;
-            character.equip.data.slots[12 /* EQUIP_SLOT.SHIRT */] = data_objects_1.Data.Items.create_armour(100, [], 21 /* ARMOUR.SHIRT_TEXTILE */).id;
+            character.equip.data.slots[8 /* EQUIP_SLOT.BOOTS */] = data_objects_1.Data.Items.create_armour(100, [], 12 /* ARMOUR.BOOTS_LEATHER_RAT */).id;
+            character.equip.data.slots[13 /* EQUIP_SLOT.PANTS */] = data_objects_1.Data.Items.create_armour(100, [], 11 /* ARMOUR.PANTS_TEXTILE */).id;
+            character.equip.data.slots[12 /* EQUIP_SLOT.SHIRT */] = data_objects_1.Data.Items.create_armour(100, [], 23 /* ARMOUR.SHIRT_TEXTILE */).id;
             return character;
         }
         Character.EquipClothesBasic = EquipClothesBasic;
         function EquipClothesRich(character) {
             EquipClothesBasic(character);
-            character.equip.data.slots[11 /* EQUIP_SLOT.ROBE */] = data_objects_1.Data.Items.create_armour(100, [], 19 /* ARMOUR.ROBE_LEATHER_RAT */).id;
-            character.equip.data.slots[7 /* EQUIP_SLOT.GAUNTLET_RIGHT */] = data_objects_1.Data.Items.create_armour(100, [], 12 /* ARMOUR.GAUNTLET_RIGHT_TEXTILE */).id;
-            character.equip.data.slots[6 /* EQUIP_SLOT.GAUNTLET_LEFT */] = data_objects_1.Data.Items.create_armour(100, [], 14 /* ARMOUR.GAUNTLET_LEFT_TEXTILE */).id;
+            character.equip.data.slots[11 /* EQUIP_SLOT.ROBE */] = data_objects_1.Data.Items.create_armour(100, [], 21 /* ARMOUR.ROBE_LEATHER_RAT */).id;
+            character.equip.data.slots[7 /* EQUIP_SLOT.GAUNTLET_RIGHT */] = data_objects_1.Data.Items.create_armour(100, [], 14 /* ARMOUR.GAUNTLET_RIGHT_TEXTILE */).id;
+            character.equip.data.slots[6 /* EQUIP_SLOT.GAUNTLET_LEFT */] = data_objects_1.Data.Items.create_armour(100, [], 16 /* ARMOUR.GAUNTLET_LEFT_TEXTILE */).id;
             character.equip.data.slots[9 /* EQUIP_SLOT.HELMET */] = data_objects_1.Data.Items.create_armour(100, [], 1 /* ARMOUR.HELMET_TEXTILE */).id;
             return character;
         }
@@ -188,6 +188,14 @@ var Template;
             return human;
         }
         Character.HumanCityGuard = HumanCityGuard;
+        function Tanner(name) {
+            let human = HumanCity(name);
+            human.stash.inc(10 /* MATERIAL.SKIN_RAT */, 5);
+            human._skills.tanning += 50;
+            human.savings.inc(500);
+            return human;
+        }
+        Character.Tanner = Tanner;
         function HumanLocalTrader(name, faction) {
             switch (faction) {
                 case "steppe": {
@@ -262,7 +270,7 @@ var Template;
             mage._skills.magic_mastery = 100;
             mage._perks.mage_initiation = true;
             mage._perks.magic_bolt = true;
-            let item = data_objects_1.Data.Items.create_weapon_simple(1 /* WEAPON.SPEAR_WOOD */);
+            let item = data_objects_1.Data.Items.create_weapon_simple(2 /* WEAPON.SPEAR_WOOD_RED_BONE_RAT */);
             item.affixes.push({ tag: 'of_power' });
             item.affixes.push({ tag: 'of_power' });
             mage.equip.weapon = item;

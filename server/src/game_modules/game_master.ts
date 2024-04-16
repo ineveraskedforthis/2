@@ -84,6 +84,8 @@ export namespace GameMaster {
             Template.Character.EquipClothesBasic(Template.Character.WeaponMasterWood('city'))
             Template.Character.EquipClothesBasic(Template.Character.HumanLocalTrader("Local Trader", 'city'))
 
+            Template.Character.EquipClothesBasic(Template.Character.Tanner('Tanner'))
+
             Template.Character.Fisherman("Fisherman 1")
             Template.Character.Fisherman("Fisherman 2")
             Template.Character.Fisherman("Fisherman 3")

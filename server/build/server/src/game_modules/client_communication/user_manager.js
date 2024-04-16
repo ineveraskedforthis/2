@@ -180,7 +180,7 @@ var UserManagement;
                     if (user.tester_account) {
                         let item = data_objects_1.Data.Items.create_weapon_simple(4 /* WEAPON.SWORD_STEEL */);
                         inventory_events_1.EventInventory.add_item(character, item.id);
-                        let boots = data_objects_1.Data.Items.create_armour_simple(10 /* ARMOUR.BOOTS_LEATHER_RAT */);
+                        let boots = data_objects_1.Data.Items.create_armour_simple(12 /* ARMOUR.BOOTS_LEATHER_RAT */);
                         boots.durability = 175;
                         inventory_events_1.EventInventory.add_item(character, boots.id);
                     }

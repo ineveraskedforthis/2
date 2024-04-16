@@ -21,7 +21,7 @@ function string_difference([a, b]) {
     return [resulta, resultb];
 }
 function add_testing_items_to_equip(equip) {
-    const item = data_objects_1.Data.Items.create_weapon_simple(1 /* WEAPON.SPEAR_WOOD */);
+    const item = data_objects_1.Data.Items.create_weapon_simple(1 /* WEAPON.SPEAR_WOOD_RED */);
     const item2 = data_objects_1.Data.Items.create_armour_simple(5 /* ARMOUR.MAIL_LEATHER_RAT */);
     const id1 = equip.data.backpack.add(item.id);
     const id2 = equip.data.backpack.add(item2.id);
@@ -79,8 +79,8 @@ function character_serialisation_test_advanced() {
 function backpack_string_test() {
     console.log('backpack ser test');
     const backpack = new inventory_1.Inventory(10);
-    const item = data_objects_1.Data.Items.create_weapon_simple(1 /* WEAPON.SPEAR_WOOD */);
-    const item2 = data_objects_1.Data.Items.create_armour_simple(10 /* ARMOUR.BOOTS_LEATHER_RAT */);
+    const item = data_objects_1.Data.Items.create_weapon_simple(1 /* WEAPON.SPEAR_WOOD_RED */);
+    const item2 = data_objects_1.Data.Items.create_armour_simple(12 /* ARMOUR.BOOTS_LEATHER_RAT */);
     backpack.add(item.id);
     backpack.add(item2.id);
     const j1 = (0, strings_management_1.inventory_to_string)(backpack);
