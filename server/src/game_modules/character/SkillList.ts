@@ -18,6 +18,7 @@ export class SkillList implements SkillListInterface{
     travelling: number;
     fishing: number;
     smith: number;
+    tanning: number;
 
     constructor() {
         this.clothier       = 0;
@@ -37,10 +38,11 @@ export class SkillList implements SkillListInterface{
         this.travelling     = 0;
         this.fishing        = 0;
         this.smith          = 0;
+        this.tanning        = 0
     }
 }
 
-export function is_crafting_skill(skill: skill) {
+export function is_crafting_skill(skill: skill): boolean {
     switch (skill) {
         case "clothier":return true
         case "cooking":return false
@@ -59,6 +61,7 @@ export function is_crafting_skill(skill: skill) {
         case "travelling":return false
         case "fishing":return false
         case "smith":return true
+        case "tanning":return true
     }
 }
 

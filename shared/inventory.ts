@@ -18,6 +18,7 @@ export interface SkillListInterface {
     travelling: number;
     fishing: number;
     smith: number;
+    tanning: number,
 }
 
 export type skill = keyof SkillListInterface

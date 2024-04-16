@@ -10,6 +10,22 @@ export namespace Cooking {
             [{skill: 'cooking', difficulty: 20}]
         )
 
+    export const meat2 =
+        new_craft_bulk(
+            'meat_to_food',
+            [{material: MATERIAL.MEAT_HUMAN, amount: 2}],
+            [{material: MATERIAL.MEAT_HUMAN_FRIED, amount: 1}],
+            [{skill: 'cooking', difficulty: 20}]
+        )
+
+    export const meat3 =
+        new_craft_bulk(
+            'meat_to_food',
+            [{material: MATERIAL.MEAT_GRACI, amount: 2}],
+            [{material: MATERIAL.MEAT_GRACI_FRIED, amount: 1}],
+            [{skill: 'cooking', difficulty: 20}]
+        )
+
     export const fish =
         new_craft_bulk(
             'fish_to_food',
@@ -24,5 +40,13 @@ export namespace Cooking {
             [{material: MATERIAL.MEAT_ELODINO, amount: 1}],
             [{material: MATERIAL.ZAZ, amount: 1}],
             [{skill: 'cooking', difficulty: 10}, {skill: 'magic_mastery', difficulty: 30}]
+        )
+
+    export const berries =
+        new_craft_bulk(
+            'berry_to_zaz',
+            [{material: MATERIAL.BERRY_ZAZ, amount: 100}],
+            [{material: MATERIAL.ZAZ, amount: 1}],
+            [{skill: 'cooking', difficulty: 20}, {skill: 'magic_mastery', difficulty: 40}]
         )
 }

@@ -20,6 +20,7 @@ class SkillList {
         this.travelling = 0;
         this.fishing = 0;
         this.smith = 0;
+        this.tanning = 0;
     }
 }
 exports.SkillList = SkillList;
@@ -42,6 +43,7 @@ function is_crafting_skill(skill) {
         case "travelling": return false;
         case "fishing": return false;
         case "smith": return true;
+        case "tanning": return true;
     }
 }
 exports.is_crafting_skill = is_crafting_skill;
