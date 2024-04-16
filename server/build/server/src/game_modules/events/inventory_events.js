@@ -54,7 +54,7 @@ var EventInventory;
         events_1.Event.change_stash(character, 30 /* MATERIAL.ZAZ */, -1);
         const pure_skill = system_1.CharacterSystem.pure_skill(character, 'magic_mastery');
         if (pure_skill < 10)
-            effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
+            effects_1.Effect.Change.skill(character, 'magic_mastery', 1, "Enchanting" /* CHANGE_REASON.ENCHANTING */);
         if ((0, item_1.is_weapon)(item))
             (0, affix_1.roll_affix_weapon)(enchant_rating, item);
         else
@@ -75,7 +75,7 @@ var EventInventory;
         events_1.Event.change_stash(character, 30 /* MATERIAL.ZAZ */, -1);
         const pure_skill = system_1.CharacterSystem.pure_skill(character, 'magic_mastery');
         if (pure_skill < 10 * rolls)
-            effects_1.Effect.Change.skill(character, 'magic_mastery', 1);
+            effects_1.Effect.Change.skill(character, 'magic_mastery', 1, "Enchanting" /* CHANGE_REASON.ENCHANTING */);
         item.affixes = [];
         for (let i = 0; i < rolls; i++) {
             if ((0, item_1.is_weapon)(item))

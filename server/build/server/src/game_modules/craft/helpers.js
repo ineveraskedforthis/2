@@ -26,12 +26,12 @@ function on_craft_update(character, difficulty) {
         const pure_skill = system_1.CharacterSystem.pure_skill(character, item.skill);
         const total_skill = system_1.CharacterSystem.skill(character, item.skill);
         if (roll_skill_improvement(pure_skill, item.difficulty)) {
-            effects_1.Effect.Change.skill(character, item.skill, 1);
+            effects_1.Effect.Change.skill(character, item.skill, 1, "Crafting" /* CHANGE_REASON.CRAFTING */);
         }
         fatigue += (0, basic_functions_1.trim)(item.difficulty - total_skill, 0, 20);
     }
-    effects_1.Effect.Change.stress(character, 1);
-    effects_1.Effect.Change.fatigue(character, fatigue);
+    effects_1.Effect.Change.stress(character, 1, "Crafting" /* CHANGE_REASON.CRAFTING */);
+    effects_1.Effect.Change.fatigue(character, fatigue, "Crafting" /* CHANGE_REASON.CRAFTING */);
 }
 exports.on_craft_update = on_craft_update;
 function check_inputs(inputs, stash) {

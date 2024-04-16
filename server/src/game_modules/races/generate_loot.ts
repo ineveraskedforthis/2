@@ -10,16 +10,23 @@ const SKIN_HUMAN_DIFFICULTY = 40
 export namespace Loot {
     export function base(dead:tagModel):{material: MATERIAL, amount: number}[] {
         switch(dead) {
-            case 'elo': return [{material: MATERIAL.MEAT_ELODINO, amount: 3}]
-            case 'human': return [{material: MATERIAL.MEAT_HUMAN, amount: 6}]
+            case 'elo': return [
+                {material: MATERIAL.MEAT_ELODINO, amount: 3}
+            ]
+            case 'human': return [
+                {material: MATERIAL.MEAT_HUMAN, amount: 10},
+                {material: MATERIAL.BONE_HUMAN, amount: 2},
+                {material: MATERIAL.SMALL_BONE_HUMAN, amount: 5},
+                {material: MATERIAL.SKIN_HUMAN, amount: 5}
+            ]
             case 'rat': {
-                    return  [
-                        {material: MATERIAL.MEAT_RAT,     amount: 3},
-                        {material: MATERIAL.SMALL_BONE_RAT, amount: 5},
-                        {material: MATERIAL.BONE_RAT, amount: 1},
-                        {material: MATERIAL.SKIN_RAT, amount: 2}
-                    ]
-                }
+                return  [
+                    {material: MATERIAL.MEAT_RAT,     amount: 3},
+                    {material: MATERIAL.SMALL_BONE_RAT, amount: 5},
+                    {material: MATERIAL.BONE_RAT, amount: 1},
+                    {material: MATERIAL.SKIN_RAT, amount: 2}
+                ]
+            }
             case 'magerat': {
                 return  [
                     {material: MATERIAL.MEAT_RAT,     amount: 2},
@@ -36,16 +43,30 @@ export namespace Loot {
                     {material: MATERIAL.SKIN_RAT, amount: 6}
                 ]
             }
-            case 'graci': return [{material: MATERIAL.HAIR_GRACI, amount: 3}, {material: MATERIAL.MEAT_GRACI, amount: 50}]
+            case 'graci': return [
+                {material: MATERIAL.HAIR_GRACI, amount: 10},
+                {material: MATERIAL.MEAT_GRACI, amount: 50},
+                {material: MATERIAL.BONE_GRACI, amount: 10},
+                {material: MATERIAL.SKIN_GRACI, amount: 50},
+                {material: MATERIAL.SMALL_BONE_GRACI, amount: 100}
+            ]
             case "test": return []
             case "berserkrat": return [
-                    {material: MATERIAL.MEAT_RAT, amount: 10},
-                    {material: MATERIAL.SMALL_BONE_RAT, amount: 10},
-                    {material: MATERIAL.BONE_RAT, amount: 2},
-                    {material: MATERIAL.SKIN_RAT, amount: 6}
-                ]
-            case "human_strong": return [{material: MATERIAL.MEAT_HUMAN, amount: 20}]
-            case "ball": return [{material: MATERIAL.MEAT_BALL, amount: 20}]
+                {material: MATERIAL.MEAT_RAT, amount: 10},
+                {material: MATERIAL.SMALL_BONE_RAT, amount: 10},
+                {material: MATERIAL.BONE_RAT, amount: 2},
+                {material: MATERIAL.SKIN_RAT, amount: 6}
+            ]
+            case "human_strong": return [
+                {material: MATERIAL.MEAT_HUMAN, amount: 20},
+                {material: MATERIAL.BONE_HUMAN, amount: 5},
+                {material: MATERIAL.SMALL_BONE_HUMAN, amount: 10},
+                {material: MATERIAL.SKIN_HUMAN, amount: 10}
+            ]
+            case "ball": return [
+                {material: MATERIAL.MEAT_BALL, amount: 20},
+                {material: MATERIAL.SKIN_BALL, amount: 20}
+            ]
         }
         return []
     }
@@ -67,8 +88,13 @@ export namespace Loot {
         return response
     }
 
-    export function skinning(dead: tagRACE): number {
-        if (dead == 'rat') return 4
-        return 0
+    export function skin(race: tagRACE): MATERIAL|undefined {
+        switch(race) {
+            case "human":return MATERIAL.SKIN_HUMAN
+            case "rat":return MATERIAL.SKIN_RAT
+            case "graci":return MATERIAL.SKIN_GRACI
+            case "elo":return undefined
+            case "ball":return MATERIAL.SKIN_BALL
+        }
     }
 }

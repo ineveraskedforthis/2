@@ -194,7 +194,7 @@ export class Character {
      * @param {number} x - the amount to change the status by
      * @return {boolean} true if the status was successfully changed, false if the new value is the same as the old value
      */
-    change(type: status_type, x: number):boolean {
+    _change(type: status_type, x: number):boolean {
         let tmp = this.status[type];
         let new_status = tmp + x
         let max = 100
@@ -202,7 +202,7 @@ export class Character {
             max = MaxHP[this.max_hp]
         }
         new_status = trim(new_status, 0, max)
-        return this.set(type, new_status)
+        return this._set(type, new_status)
     }
 
 
@@ -217,16 +217,16 @@ export class Character {
         return `Traces of something`
     }
 
-    change_hp(x: number) {
-        return this.change('hp', x)
+    _change_hp(x: number) {
+        return this._change('hp', x)
     }
 
-    change_rage(x: number) {
-        return this.change('rage', x)
+    _change_rage(x: number) {
+        return this._change('rage', x)
     }
 
-    change_blood(x: number) {
-        return this.change('blood', x)
+    _change_blood(x: number) {
+        return this._change('blood', x)
     }
 
     /**
@@ -235,8 +235,8 @@ export class Character {
      * @param {number} x - The amount to change the fatigue level by.
      * @return {boolean} - False if fatigue was not changed, true if it was.
      */
-    change_fatigue(x: number) {
-        return this.change('fatigue', x)
+    _change_fatigue(x: number): boolean {
+        return this._change('fatigue', x)
     }
 
     /**
@@ -245,8 +245,8 @@ export class Character {
      * @param {number} x - The amount to change the stress level by.
      * @return {boolean} - False if stress was not changed, true if it was.
      */
-    change_stress(x: number) {
-        return this.change('stress', x)
+    _change_stress(x: number): boolean {
+        return this._change('stress', x)
     }
 
     /**
@@ -256,17 +256,33 @@ export class Character {
     * @param {number} x - The value to set the status to.
     * @return {boolean} Returns true if the value was set successfully, false if the value had not changed.
     */
-    set(type: status_type, x: number):boolean {
+    _set(type: status_type, x: number):boolean {
         if (this.status[type] == x) return false
         this.status[type] = x
         return true
     }
 
-    set_fatigue(x: number) {
-        return this.set('fatigue', x)
+    _set_fatigue(x: number) {
+        return this._set('fatigue', x)
     }
 
-    set_status(dstatus: Status) {
+    _set_hp(x: number) {
+        return this._set('hp', x)
+    }
+
+    _set_rage(x: number) {
+        return this._set('rage', x)
+    }
+
+    _set_stress(x: number) {
+        return this._set('stress', x)
+    }
+
+    _set_blood(x: number) {
+        return this._set('blood', x)
+    }
+
+    _set_status(dstatus: Status) {
         this.status.blood = dstatus.blood
         this.status.rage = dstatus.rage
         this.status.stress = dstatus.stress
@@ -274,12 +290,12 @@ export class Character {
         this.status.fatigue = dstatus.fatigue
     }
 
-    change_status(dstatus: Status) {
-        this.change_hp(dstatus.hp)
-        this.change_rage(dstatus.rage);
-        this.change_stress(dstatus.stress);
-        this.change_blood(dstatus.blood);
-        this.change_fatigue(dstatus.fatigue)
+    _change_status(dstatus: Status) {
+        this._change_hp(dstatus.hp)
+        this._change_rage(dstatus.rage);
+        this._change_stress(dstatus.stress);
+        this._change_blood(dstatus.blood);
+        this._change_fatigue(dstatus.fatigue)
     }
 
     get_hp() {

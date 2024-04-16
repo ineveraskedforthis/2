@@ -51,7 +51,7 @@ function string_to_character(s) {
     character.trade_stash.load_from_json(data.trade_stash.data);
     character.savings.inc(data.savings.data);
     character.trade_savings.inc(data.trade_savings.data);
-    character.set_status(data.status);
+    character._set_status(data.status);
     character._skills = data._skills;
     character._perks = data._perks;
     character._traits = data._traits;

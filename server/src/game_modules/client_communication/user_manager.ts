@@ -232,6 +232,8 @@ export namespace UserManagement {
         users_to_update.add(user)
     }
 
+
+
     export function update_users() {
         // console.log('update loop')
         for (let item of users_to_update) {

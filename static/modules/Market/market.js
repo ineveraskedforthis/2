@@ -136,6 +136,9 @@ export function new_market_bulk() {
     return market_bulk;
 }
 export function init_market_bulk_infrastructure(market_bulk) {
+    if (FILTER_STATE.per_good.length > 0) {
+        return;
+    }
     let filters = elementById('per_good_filters');
     for (let item_index of MaterialConfiguration.MATERIAL) {
         const material = MaterialStorage.get(item_index);

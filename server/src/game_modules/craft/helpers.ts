@@ -1,7 +1,7 @@
 import { Character } from "../character/character";
 import { Stash } from "../inventories/stash";
 import { trim } from "../calculations/basic_functions";
-import { Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../events/effects";
 import { skill_check, box } from "@custom_types/inventory";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";
@@ -28,13 +28,13 @@ export function on_craft_update(character: Character, difficulty: skill_check[])
         const pure_skill = CharacterSystem.pure_skill(character, item.skill);
         const total_skill = CharacterSystem.skill(character, item.skill);
         if (roll_skill_improvement(pure_skill, item.difficulty)) {
-            Effect.Change.skill(character, item.skill, 1);
+            Effect.Change.skill(character, item.skill, 1, CHANGE_REASON.CRAFTING);
         }
         fatigue += trim(item.difficulty - total_skill, 0, 20);
     }
 
-    Effect.Change.stress(character, 1);
-    Effect.Change.fatigue(character, fatigue);
+    Effect.Change.stress(character, 1, CHANGE_REASON.CRAFTING);
+    Effect.Change.fatigue(character, fatigue, CHANGE_REASON.CRAFTING);
 }
 
 

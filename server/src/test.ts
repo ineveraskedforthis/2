@@ -57,10 +57,10 @@ function character_serialisation_test_advanced() {
     character.savings.inc(124 as money)
     character.trade_savings.inc(141 as money)
 
-    character.change('blood', 12)
-    character.change('fatigue', 41)
-    character.change('hp', -40)
-    character.change('rage', 11)
+    character._change('blood', 12)
+    character._change('fatigue', 41)
+    character._change('hp', -40)
+    character._change('rage', 11)
 
     add_testing_items_to_equip(character.equip)
 

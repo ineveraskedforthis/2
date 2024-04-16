@@ -14,6 +14,32 @@ import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
 import { LocationInterface } from "../location/location_interface";
 import { EQUIP_SLOT, MATERIAL } from "@content/content";
+import { Alerts } from "../client_communication/network_actions/alerts";
+import { Status } from "../types";
+
+
+export const enum CHANGE_REASON {
+    ATTACK = "Attack",
+    REST = "Rest",
+    EDUCATION = "Education",
+    TRAVEL = "Travel",
+    DODGE = "Dodging attempt",
+    SHOOTING = "Shooting",
+    RANGED_ATTACK = "Ranged attack",
+    MAGIC_APPLICATION = "Application of magic",
+    MAGIC_BOLT = "Magic bolt",
+    FIGHTING = "Fighting",
+    SKINNING = "Skinning enemies",
+    HUNTING = "Hunting",
+    FISHING = "Fishing",
+    CLEANING = "Cleaning",
+    GATHERING = "Gathering",
+    WOODCUTTING = "Woodcutting",
+    EATING = "Eating",
+    CRAFTING = "Crafting",
+    ENCHANTING = "Enchanting",
+    EQUIPMENT_ENCHANT = "Equipment enchant"
+}
 
 export namespace Effect {
     export namespace Update {
@@ -42,50 +68,106 @@ export namespace Effect {
     }
 
     export namespace Transfer {
-        export function savings(from: Character, to: Character, x: money) {
+        export function savings(from: Character, to: Character, x: money, reason: CHANGE_REASON) {
             from.savings.transfer(to.savings, x)
+
+            Alerts.Log.savings_transfer(from, to, x, reason)
             UserManagement.add_user_to_update_queue(from.user_id, UI_Part.SAVINGS)
             UserManagement.add_user_to_update_queue(to.user_id, UI_Part.SAVINGS)
         }
     }
 
-    export namespace Change {
-        export function hp(character: Character, dx: number) {
-            if (!character.change_hp(dx)) return;
+    export namespace Set {
+        export function status(character: Character, dstatus: Status, reason: CHANGE_REASON) {
+            hp(character, dstatus.hp, reason)
+            rage(character, dstatus.rage, reason);
+            stress(character, dstatus.stress, reason);
+            blood(character, dstatus.blood, reason);
+            fatigue(character, dstatus.fatigue, reason)
+        }
+
+        export function fatigue(character: Character, x: number, reason: CHANGE_REASON) {
+            if (!character._set_fatigue(x)) return;
+            Alerts.Log.fatigue_set(character, x, reason)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.FATIGUE);
+        }
+
+        export function stress(character: Character, x: number, reason: CHANGE_REASON) {
+            if (!character._set_stress(x)) return;
+            Alerts.Log.stress_set(character, x, reason)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STRESS);
+        }
+
+        export function hp(character: Character, x: number, reason: CHANGE_REASON) {
+            if (!character._set_hp(x)) return;
+            Alerts.Log.hp_set(character, x, reason)
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.HP);
         }
 
-        export function fatigue(character: Character, dx: number) {
+        export function rage(character: Character, x: number, reason: CHANGE_REASON) {
+            if (!character._set_rage(x)) return;
+            Alerts.Log.rage_set(character, x, reason)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.RAGE);
+        }
+
+        export function blood(character: Character, x: number, reason: CHANGE_REASON) {
+            if (!character._set_blood(x)) return;
+            Alerts.Log.blood_set(character, x, reason)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BLOOD);
+        }
+    }
+
+    export namespace Change {
+        export function status(character: Character, dstatus: Status, reason: CHANGE_REASON) {
+            hp(character, dstatus.hp, reason)
+            rage(character, dstatus.rage, reason);
+            stress(character, dstatus.stress, reason);
+            blood(character, dstatus.blood, reason);
+            fatigue(character, dstatus.fatigue, reason)
+        }
+
+        export function hp(character: Character, dx: number, reason: CHANGE_REASON) {
+            if (!character._change_hp(dx)) return;
+            Alerts.Log.hp_change(character, dx, reason)
+            UserManagement.add_user_to_update_queue(character.user_id, UI_Part.HP);
+        }
+
+        export function fatigue(character: Character, dx: number, reason: CHANGE_REASON) {
             let prev = character.get_fatigue()
-            let flag = character.change_fatigue(dx)
+            let flag = character._change_fatigue(dx)
             let current = character.get_fatigue()
             let change = current - prev
             if ((dx - change > 0)) {
-                stress(character, dx - change)
+                stress(character, dx - change, reason)
             }
-
+            if (Math.abs(change) > 0) Alerts.Log.fatigue_change(character, dx, reason)
             if (flag) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.FATIGUE)
         }
 
-        export function stress(character: Character, dx: number) {
-            if (!character.change_stress(dx)) return;
+        export function stress(character: Character, dx: number, reason: CHANGE_REASON) {
+            if (!character._change_stress(dx)) return;
+            Alerts.Log.stress_change(character, dx, reason)
             if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.STRESS)
         }
 
-        export function rage(character: Character, dx: number) {
-            if (!character.change_rage(dx)) return;
+        export function rage(character: Character, dx: number, reason: CHANGE_REASON) {
+            if (!character._change_rage(dx)) return;
+            Alerts.Log.rage_change(character, dx, reason)
             if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.RAGE)
         }
 
-        export function blood(character: Character, dx: number) {
-            if (!character.change_blood(dx)) return;
+        export function blood(character: Character, dx: number, reason: CHANGE_REASON) {
+            if (!character._change_blood(dx)) return;
+            Alerts.Log.blood_change(character, dx, reason)
             if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BLOOD)
         }
 
-        export function skill(character: Character, skill: skill, dx: number) {
+        export function skill(character: Character, skill: skill, dx: number, reason: CHANGE_REASON) {
             character._skills[skill] += dx
             if (character._skills[skill] > 100)
                 character._skills[skill] = 100
+            else
+                Alerts.Log.skill_change(character, skill, dx, reason);
 
             if (Math.abs(dx) > 0) UserManagement.add_user_to_update_queue(character.user_id, UI_Part.SKILLS)
         }
@@ -137,12 +219,12 @@ export namespace Effect {
         let stress_target = ScriptedValue.rest_target_stress(tier, ScriptedValue.max_devastation - location.devastation, character.race)
         if (fatigue_target < character.get_fatigue()) {
             let fatigue_change = trim(-5, fatigue_target - character.get_fatigue(), 0)
-            Effect.Change.fatigue(character, fatigue_change)
+            Effect.Change.fatigue(character, fatigue_change, CHANGE_REASON.REST)
         }
 
         if (stress_target < character.get_stress()) {
             let stress_change = trim(-5, stress_target - character.get_stress(), 0)
-            Effect.Change.stress(character, stress_change)
+            Effect.Change.stress(character, stress_change, CHANGE_REASON.REST)
         }
 
         location_quality_reduction_roll(location)

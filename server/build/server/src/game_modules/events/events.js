@@ -37,15 +37,15 @@ var Event;
             alerts_1.Alerts.generic_character_alert(student, 'alert', response);
             return;
         }
-        effects_1.Effect.Transfer.savings(student, teacher, price);
+        effects_1.Effect.Transfer.savings(student, teacher, price, "Education" /* CHANGE_REASON.EDUCATION */);
         effects_1.Effect.learn_perk(student, perk);
     }
     Event.buy_perk = buy_perk;
     function buy_skill(student, skill, teacher) {
         let response = triggers_1.Trigger.can_learn_from(student, teacher, skill);
         if (response.response == 'ok') {
-            effects_1.Effect.Transfer.savings(student, teacher, response.price);
-            effects_1.Effect.Change.skill(student, skill, 1);
+            effects_1.Effect.Transfer.savings(student, teacher, response.price, "Education" /* CHANGE_REASON.EDUCATION */);
+            effects_1.Effect.Change.skill(student, skill, 1, "Education" /* CHANGE_REASON.EDUCATION */);
         }
         else {
             alerts_1.Alerts.not_enough_to_character(student, response.response, response.current_quantity, response.min_quantity, response.max_quantity);
@@ -86,11 +86,11 @@ var Event;
     function move_fatigue_change(character) {
         const boots = character.equip.slot_to_item(8 /* EQUIP_SLOT.BOOTS */);
         if (boots == undefined) {
-            effects_1.Effect.Change.fatigue(character, 3);
+            effects_1.Effect.Change.fatigue(character, 3, "Travel" /* CHANGE_REASON.TRAVEL */);
         }
         else {
             const durability = boots.durability;
-            effects_1.Effect.Change.fatigue(character, Math.round((0, basic_functions_1.trim)(3 - 2 * (durability / 100), 1, 3)));
+            effects_1.Effect.Change.fatigue(character, Math.round((0, basic_functions_1.trim)(3 - 2 * (durability / 100), 1, 3)), "Travel" /* CHANGE_REASON.TRAVEL */);
         }
     }
     Event.move_fatigue_change = move_fatigue_change;
@@ -100,7 +100,7 @@ var Event;
             effects_1.Effect.change_durability(character, 8 /* EQUIP_SLOT.BOOTS */, -1);
             let skill_dice = Math.random();
             if (skill_dice * skill_dice * skill_dice > system_2.CharacterSystem.skill(character, 'travelling') / 100) {
-                effects_1.Effect.Change.skill(character, 'travelling', 1);
+                effects_1.Effect.Change.skill(character, 'travelling', 1, "Travel" /* CHANGE_REASON.TRAVEL */);
             }
         }
     }
@@ -135,7 +135,7 @@ var Event;
         if (flag_dodge) {
             const dice_evasion_skill_up = Math.random();
             if (dice_evasion_skill_up > evasion_chance) {
-                effects_1.Effect.Change.skill(defender, 'evasion', 1);
+                effects_1.Effect.Change.skill(defender, 'evasion', 1, "Dodging attempt" /* CHANGE_REASON.DODGE */);
             }
         }
     }
@@ -158,13 +158,13 @@ var Event;
         if (dice_accuracy > acc) {
             const dice_skill_up = Math.random();
             if (dice_skill_up * 100 > attacker_ranged_skill) {
-                effects_1.Effect.Change.skill(attacker, 'ranged', 1);
+                effects_1.Effect.Change.skill(attacker, 'ranged', 1, "Shooting" /* CHANGE_REASON.SHOOTING */);
             }
             return 'miss';
         }
         const dice_skill_up = Math.random();
         if (dice_skill_up * 50 > attacker_ranged_skill) {
-            effects_1.Effect.Change.skill(attacker, 'ranged', 1);
+            effects_1.Effect.Change.skill(attacker, 'ranged', 1, "Shooting" /* CHANGE_REASON.SHOOTING */);
         }
         // create attack
         const attack = system_1.Attack.generate_ranged(attacker);
@@ -185,7 +185,7 @@ var Event;
         attack.defender_status_change.fatigue += 5;
         attack.defender_status_change.stress += 3;
         attack.defence_skill += system_2.CharacterSystem.skill(defender, 'evasion');
-        deal_damage(defender, attack, attacker, false);
+        deal_damage(defender, attack, attacker, false, "Ranged attack" /* CHANGE_REASON.RANGED_ATTACK */);
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender);
@@ -196,11 +196,11 @@ var Event;
     function unconditional_magic_bolt(attacker, defender, dist, flag_dodge, flag_charged) {
         const dice = Math.random();
         if (dice > system_2.CharacterSystem.skill(attacker, 'magic_mastery') / 50) {
-            effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1);
+            effects_1.Effect.Change.skill(attacker, 'magic_mastery', 1, "Application of magic" /* CHANGE_REASON.MAGIC_APPLICATION */);
         }
         const attack = system_1.Attack.generate_magic_bolt(attacker, dist, flag_charged);
         attack.defender_status_change.stress += 5;
-        deal_damage(defender, attack, attacker, false);
+        deal_damage(defender, attack, attacker, false, "Magic bolt" /* CHANGE_REASON.MAGIC_BOLT */);
         if (defender.dead()) {
             kill(attacker, defender);
         }
@@ -233,24 +233,24 @@ var Event;
             return 'miss';
         const BLOOD_COST = 10;
         if (attacker.status.blood >= BLOOD_COST) {
-            effects_1.Effect.Change.blood(attacker, -BLOOD_COST);
+            effects_1.Effect.Change.blood(attacker, -BLOOD_COST, "Application of magic" /* CHANGE_REASON.MAGIC_APPLICATION */);
         }
         else {
             const blood = attacker.status.blood;
             const hp = attacker.status.hp;
             if (blood + hp > BLOOD_COST) {
                 attacker.status.blood = 0;
-                effects_1.Effect.Change.blood(attacker, -attacker.status.blood);
-                effects_1.Effect.Change.hp(attacker, BLOOD_COST - blood);
+                effects_1.Effect.Change.blood(attacker, -attacker.status.blood, "Application of magic" /* CHANGE_REASON.MAGIC_APPLICATION */);
+                effects_1.Effect.Change.hp(attacker, BLOOD_COST - blood, "Application of magic" /* CHANGE_REASON.MAGIC_APPLICATION */);
             }
         }
         unconditional_magic_bolt(attacker, defender, dist, flag_dodge, true);
     }
     Event.magic_bolt_blood = magic_bolt_blood;
-    function deal_damage(defender, attack, attacker, AOE_flag) {
-        const total = system_2.CharacterSystem.damage(defender, attack.damage);
-        defender.change_status(attack.defender_status_change);
-        attacker.change_status(attack.attacker_status_change);
+    function deal_damage(defender, attack, attacker, AOE_flag, reason) {
+        const total = system_2.CharacterSystem.damage(defender, attack.damage, reason);
+        effects_1.Effect.Change.status(defender, attack.defender_status_change, reason);
+        effects_1.Effect.Change.status(attacker, attack.attacker_status_change, reason);
         const resistance = system_2.CharacterSystem.resistance(defender);
         alerts_1.Alerts.log_attack(defender, attack, resistance, total, 'defender');
         alerts_1.Alerts.log_attack(attacker, attack, resistance, total, 'attacker');
@@ -284,7 +284,7 @@ var Event;
         // console.log('attack after modification')
         // console.log(attack)
         //apply damage and status effect after all modifiers
-        deal_damage(defender, attack, attacker, AOE_flag);
+        deal_damage(defender, attack, attacker, AOE_flag, "Attack" /* CHANGE_REASON.ATTACK */);
         //if target is dead, loot it all
         if (defender.dead()) {
             kill(attacker, defender);
@@ -313,24 +313,24 @@ var Event;
         if (attack.attack_skill < attack.defence_skill) {
             const improvement_rate = (100 + attack.defence_skill) / (100 + attack.attack_skill);
             if (improvement_rate > 1) {
-                effects_1.Effect.Change.skill(attacker, attack.weapon_type, Math.floor(improvement_rate));
+                effects_1.Effect.Change.skill(attacker, attack.weapon_type, Math.floor(improvement_rate), "Attack" /* CHANGE_REASON.ATTACK */);
             }
             else {
                 const dice = Math.random();
                 if (dice < improvement_rate)
-                    effects_1.Effect.Change.skill(attacker, attack.weapon_type, 1);
+                    effects_1.Effect.Change.skill(attacker, attack.weapon_type, 1, "Attack" /* CHANGE_REASON.ATTACK */);
             }
         }
         //fighting provides constant growth of this skill up to some level
         //for defender
         const dice = Math.random();
         if ((dice < 0.5) && (attack.attack_skill <= 30)) {
-            effects_1.Effect.Change.skill(defender, system_2.CharacterSystem.equiped_weapon_required_skill(defender), 1);
+            effects_1.Effect.Change.skill(defender, system_2.CharacterSystem.equiped_weapon_required_skill(defender), 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         //for attacker
         const dice2 = Math.random();
         if ((dice2 < 0.5) && (attack.attack_skill <= 30)) {
-            effects_1.Effect.Change.skill(attacker, attack.weapon_type, 1);
+            effects_1.Effect.Change.skill(attacker, attack.weapon_type, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
     }
     function parry(defender, attack) {
@@ -345,11 +345,11 @@ var Event;
         }
         //fighting provides constant growth of this skill up to some level
         if (skill < attack.attack_skill) {
-            effects_1.Effect.Change.skill(defender, weapon, 1);
+            effects_1.Effect.Change.skill(defender, weapon, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         const dice = Math.random();
         if ((dice < 0.1) && (skill <= 10)) {
-            effects_1.Effect.Change.skill(defender, weapon, 1);
+            effects_1.Effect.Change.skill(defender, weapon, 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
     }
     function block(defender, attack) {
@@ -362,11 +362,11 @@ var Event;
         }
         //fighting provides constant growth of this skill
         if (skill < attack.attack_skill) {
-            effects_1.Effect.Change.skill(defender, 'blocking', 1);
+            effects_1.Effect.Change.skill(defender, 'blocking', 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         const dice = Math.random();
         if ((dice < 0.1) && (skill <= 20)) {
-            effects_1.Effect.Change.skill(defender, 'blocking', 1);
+            effects_1.Effect.Change.skill(defender, 'blocking', 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
     }
     function evade(defender, attack, dodge_flag) {
@@ -386,11 +386,11 @@ var Event;
         }
         //fighting provides constant growth of this skill
         if (skill < attack.attack_skill) {
-            effects_1.Effect.Change.skill(defender, 'evasion', 1);
+            effects_1.Effect.Change.skill(defender, 'evasion', 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
         const dice = Math.random();
         if ((dice < 0.1) && (skill <= 10)) {
-            effects_1.Effect.Change.skill(defender, 'evasion', 1);
+            effects_1.Effect.Change.skill(defender, 'evasion', 1, "Fighting" /* CHANGE_REASON.FIGHTING */);
         }
     }
     function rob_the_dead(robber, target) {
@@ -413,25 +413,24 @@ var Event;
         // loot bulk
         const loot = system_2.CharacterSystem.rgo_check(victim);
         for (const item of loot) {
-            Event.change_stash(killer, item.material, item.amount);
+            if (content_1.MaterialStorage.get(item.material).category == 4 /* MATERIAL_CATEGORY.SKIN */) {
+                const dice = Math.random();
+                const skinning_skill = system_2.CharacterSystem.skill(killer, 'skinning');
+                const amount = Math.round(item.amount * dice * skinning_skill / 100 * skinning_skill / 100);
+                Event.change_stash(killer, item.material, amount);
+                if (dice > skinning_skill / 100) {
+                    effects_1.Effect.Change.skill(killer, 'skinning', 1, "Skinning enemies" /* CHANGE_REASON.SKINNING */);
+                }
+            }
+            else {
+                Event.change_stash(killer, item.material, item.amount);
+            }
         }
         // loot items rgo
         // console.log('check items drop')
         const dropped_items = generate_loot_1.Loot.items(victim.race);
         for (let item of dropped_items) {
             inventory_events_1.EventInventory.add_item(killer, item.id);
-        }
-        // skinning check
-        const skin = generate_loot_1.Loot.skinning(victim.race);
-        if (skin > 0) {
-            const dice = Math.random();
-            const skinning_skill = system_2.CharacterSystem.skill(killer, 'skinning');
-            if (dice < skinning_skill / 100) {
-                Event.change_stash(killer, 10 /* MATERIAL.SKIN_RAT */, skin);
-            }
-            else {
-                effects_1.Effect.Change.skill(killer, 'skinning', 1);
-            }
         }
         data_id_1.DataID.Character.unset_all_ownership(victim.id);
         user_manager_1.UserManagement.add_user_to_update_queue(killer.user_id, 8 /* UI_Part.STASH */);

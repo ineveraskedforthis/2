@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.attack_affixes_effects = exports.roll_affix_armour = exports.roll_affix_weapon = exports.enchant_item = exports.get_potential_affix_armour = exports.get_potential_affix_weapon = void 0;
+const effects_1 = require("../events/effects");
 function get_potential_affix_weapon(enchant_rating, item) {
     let potential_affix = [];
     // checking for phys damage mods
@@ -231,17 +232,17 @@ exports.get_power = {
 };
 exports.update_character = {
     of_elder_beast: (agent) => {
-        agent.change('stress', 5);
-        agent.change('rage', 5);
-        agent.change('hp', 1);
+        effects_1.Effect.Change.stress(agent, 5, "Equipment enchant" /* CHANGE_REASON.EQUIPMENT_ENCHANT */);
+        effects_1.Effect.Change.rage(agent, 5, "Equipment enchant" /* CHANGE_REASON.EQUIPMENT_ENCHANT */);
+        effects_1.Effect.Change.hp(agent, 1, "Equipment enchant" /* CHANGE_REASON.EQUIPMENT_ENCHANT */);
     },
     of_graci_beauty: (agent) => {
-        agent.change('stress', 1);
+        effects_1.Effect.Change.stress(agent, 1, "Equipment enchant" /* CHANGE_REASON.EQUIPMENT_ENCHANT */);
     },
     of_elodino_pleasure: (agent) => {
-        agent.change('stress', 1);
+        effects_1.Effect.Change.stress(agent, 1, "Equipment enchant" /* CHANGE_REASON.EQUIPMENT_ENCHANT */);
     },
     of_painful_protection: (agent) => {
-        agent.change('hp', -1);
+        effects_1.Effect.Change.hp(agent, -1, "Equipment enchant" /* CHANGE_REASON.EQUIPMENT_ENCHANT */);
     }
 };

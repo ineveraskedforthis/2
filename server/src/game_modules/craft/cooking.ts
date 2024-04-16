@@ -4,7 +4,7 @@ import { new_craft_bulk } from "./CraftBulk";
 export namespace Cooking {
     export const meat =
         new_craft_bulk(
-            'meat_to_food',
+            'meat_to_food1',
             [{material: MATERIAL.MEAT_RAT, amount: 2}],
             [{material: MATERIAL.MEAT_RAT_FRIED, amount: 1}],
             [{skill: 'cooking', difficulty: 20}]
@@ -12,7 +12,7 @@ export namespace Cooking {
 
     export const meat2 =
         new_craft_bulk(
-            'meat_to_food',
+            'meat_to_food2',
             [{material: MATERIAL.MEAT_HUMAN, amount: 2}],
             [{material: MATERIAL.MEAT_HUMAN_FRIED, amount: 1}],
             [{skill: 'cooking', difficulty: 20}]
@@ -20,7 +20,7 @@ export namespace Cooking {
 
     export const meat3 =
         new_craft_bulk(
-            'meat_to_food',
+            'meat_to_food3',
             [{material: MATERIAL.MEAT_GRACI, amount: 2}],
             [{material: MATERIAL.MEAT_GRACI_FRIED, amount: 1}],
             [{skill: 'cooking', difficulty: 20}]

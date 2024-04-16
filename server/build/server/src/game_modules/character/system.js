@@ -295,14 +295,15 @@ var CharacterSystem;
      * Damages character, accounting for resistances
      * @param character Damaged character
      * @param damage damage
+     * @param reason Reason of damage
      * @returns total damage dealt
      */
-    function damage(character, damage) {
+    function damage(character, damage, reason) {
         let total = 0;
         let resistance = CharacterSystem.resistance(character);
         for (let tag of damage_types_1.damage_types) {
             const damage_curr = (0, basic_functions_1.trim)(damage[tag] - resistance[tag], 0, 100000);
-            character.change_hp(-damage_curr);
+            effects_1.Effect.Change.hp(character, -damage_curr, reason);
             total += damage_curr;
         }
         return total;
@@ -339,7 +340,7 @@ var CharacterSystem;
                     return;
                 }
                 if (!character.in_battle()) {
-                    effects_1.Effect.Change.rage(character, -1);
+                    effects_1.Effect.Change.rage(character, -1, "Rest" /* CHANGE_REASON.REST */);
                     effects_1.Effect.rest_location_tick(character);
                     for (const material_id of content_1.MaterialConfiguration.MATERIAL) {
                         const material = content_1.MaterialStorage.get(material_id);

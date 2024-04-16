@@ -48,6 +48,10 @@ var Alerts;
         user.socket.emit('log-message', message);
     }
     Alerts.log_to_user = log_to_user;
+    function log_to_character(character, message) {
+        generic_character_alert(character, 'log-message', message);
+    }
+    Alerts.log_to_character = log_to_character;
     function log_attack(character, attack, resistance, total_damage, role) {
         generic_character_alert(character, 'log-attack', {
             attack: attack,
@@ -264,4 +268,56 @@ var Alerts;
         Alerts.generic_character_alert(character, 'leave-room', character);
     }
     Alerts.leave_room = leave_room;
+    let Log;
+    (function (Log) {
+        function savings_transfer(from, to, amount, reason) {
+            Alerts.log_to_character(from, `You transfered ${amount} money to ${to.name}(${to.id}). Reason:${reason}`);
+            Alerts.log_to_character(to, `You got ${amount} money from ${from.name}(${to.id}). Reason:${reason}`);
+        }
+        Log.savings_transfer = savings_transfer;
+        function hp_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your hp changed by ${d}. Reason: ${reason}`);
+        }
+        Log.hp_change = hp_change;
+        function stress_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your stress changed by ${d}. Reason: ${reason}`);
+        }
+        Log.stress_change = stress_change;
+        function fatigue_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your fatigue changed by ${d}. Reason: ${reason}`);
+        }
+        Log.fatigue_change = fatigue_change;
+        function blood_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your blood changed by ${d}. Reason: ${reason}`);
+        }
+        Log.blood_change = blood_change;
+        function rage_change(character, d, reason) {
+            Alerts.log_to_character(character, `Your rage changed by ${d}. Reason: ${reason}`);
+        }
+        Log.rage_change = rage_change;
+        function hp_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your hp was set to ${d}. Reason: ${reason}`);
+        }
+        Log.hp_set = hp_set;
+        function stress_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your stress was set to ${d}. Reason: ${reason}`);
+        }
+        Log.stress_set = stress_set;
+        function fatigue_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your fatigue was set to ${d}. Reason: ${reason}`);
+        }
+        Log.fatigue_set = fatigue_set;
+        function blood_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your blood was set to ${d}. Reason: ${reason}`);
+        }
+        Log.blood_set = blood_set;
+        function rage_set(character, d, reason) {
+            Alerts.log_to_character(character, `Your rage was set to ${d}. Reason: ${reason}`);
+        }
+        Log.rage_set = rage_set;
+        function skill_change(character, skill, d, reason) {
+            Alerts.log_to_character(character, `Your ${skill} skill changed by ${d}. Reason: ${reason}`);
+        }
+        Log.skill_change = skill_change;
+    })(Log = Alerts.Log || (Alerts.Log = {}));
 })(Alerts || (exports.Alerts = Alerts = {}));

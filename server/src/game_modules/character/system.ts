@@ -11,7 +11,7 @@ import { Character } from "./character";
 import { Loot } from "../races/generate_loot";
 import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
-import { Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../events/effects";
 import { money } from "@custom_types/common";
 import { is_melee_skill } from "./SkillList";
 import { Perks } from "@custom_types/character";
@@ -317,14 +317,15 @@ export namespace CharacterSystem {
      * Damages character, accounting for resistances
      * @param character Damaged character
      * @param damage damage
+     * @param reason Reason of damage
      * @returns total damage dealt
      */
-    export function damage(character: Character, damage: Damage) {
+    export function damage(character: Character, damage: Damage, reason: CHANGE_REASON) {
         let total = 0
         let resistance = CharacterSystem.resistance(character)
         for (let tag of damage_types) {
             const damage_curr = trim(damage[tag] - resistance[tag], 0, 100000)
-            character.change_hp(-damage_curr)
+            Effect.Change.hp(character, -damage_curr, reason)
             total += damage_curr
         }
         return total
@@ -364,7 +365,7 @@ export namespace CharacterSystem {
                     return
                 }
                 if (!character.in_battle()) {
-                    Effect.Change.rage(character, -1)
+                    Effect.Change.rage(character, -1, CHANGE_REASON.REST)
                     Effect.rest_location_tick(character)
                     for (const material_id of MaterialConfiguration.MATERIAL) {
                         const material = MaterialStorage.get(material_id)

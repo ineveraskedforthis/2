@@ -154,6 +154,9 @@ export function new_market_bulk() {
 }
 
 export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>) {
+    if (FILTER_STATE.per_good.length > 0 ) {
+        return
+    }
 
     let filters = elementById('per_good_filters')
 

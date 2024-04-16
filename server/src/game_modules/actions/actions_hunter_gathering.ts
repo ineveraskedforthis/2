@@ -1,5 +1,5 @@
 import { Character } from "../character/character";
-import { Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../events/effects";
 import { Event } from "../events/events";
 import { cell_id } from "@custom_types/ids";
 import { generate_action } from "./generator";
@@ -76,11 +76,11 @@ function hunt_skill_upgrade_roll(character: Character) {
     const skill = CharacterSystem.pure_skill(character, 'hunt')
     const skinning_skill = CharacterSystem.pure_skill(character, 'skinning')
     if (Math.random() * Math.random() > skill / 100) {
-        Effect.Change.skill(character, 'hunt', 1)
-        Effect.Change.stress(character, 1)
+        Effect.Change.skill(character, 'hunt', 1, CHANGE_REASON.HUNTING)
+        Effect.Change.stress(character, 1, CHANGE_REASON.HUNTING)
     }
     if (Math.random() > skinning_skill / 20) {
-        Effect.Change.skill(character, 'skinning', 1)
+        Effect.Change.skill(character, 'skinning', 1, CHANGE_REASON.HUNTING)
     }
 }
 function hunt_effect(character: Character) {
@@ -112,8 +112,8 @@ function fishing_effect(character: Character, cell: cell_id) {
     }
 
     if (Math.random() * Math.random() > skill / 100) {
-        Effect.Change.skill(character, 'fishing', 1)
-        Effect.Change.stress(character, 1)
+        Effect.Change.skill(character, 'fishing', 1, CHANGE_REASON.FISHING)
+        Effect.Change.stress(character, 1, CHANGE_REASON.FISHING)
     }
 
     Data.Locations.from_id(character.location_id).fish -= 1
@@ -125,14 +125,17 @@ export const gather_wood = generate_action(
     gather_wood_duration_modifier,
     gather_wood_trigger,
     gather_wood_effect,
-    dummy_effect)
+    dummy_effect,
+    CHANGE_REASON.WOODCUTTING
+)
 
 export const gather_cotton = generate_action(
     FATIGUE_COST_COTTON,
     basic_duration_modifier,
     gather_cotton_trigger,
     gather_cotton_effect,
-    dummy_effect
+    dummy_effect,
+    CHANGE_REASON.GATHERING
 )
 
 export const hunt = generate_action(
@@ -140,7 +143,8 @@ export const hunt = generate_action(
     hunt_duration_modifier,
     hunt_trigger,
     hunt_effect,
-    dummy_effect
+    dummy_effect,
+    CHANGE_REASON.HUNTING
 )
 
 export const fish = generate_action(
@@ -148,5 +152,6 @@ export const fish = generate_action(
     fishing_duration_modifier,
     fishing_trigger,
     fishing_effect,
-    dummy_effect
+    dummy_effect,
+    CHANGE_REASON.FISHING
 )

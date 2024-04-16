@@ -72,11 +72,11 @@ function hunt_skill_upgrade_roll(character) {
     const skill = system_1.CharacterSystem.pure_skill(character, 'hunt');
     const skinning_skill = system_1.CharacterSystem.pure_skill(character, 'skinning');
     if (Math.random() * Math.random() > skill / 100) {
-        effects_1.Effect.Change.skill(character, 'hunt', 1);
-        effects_1.Effect.Change.stress(character, 1);
+        effects_1.Effect.Change.skill(character, 'hunt', 1, "Hunting" /* CHANGE_REASON.HUNTING */);
+        effects_1.Effect.Change.stress(character, 1, "Hunting" /* CHANGE_REASON.HUNTING */);
     }
     if (Math.random() > skinning_skill / 20) {
-        effects_1.Effect.Change.skill(character, 'skinning', 1);
+        effects_1.Effect.Change.skill(character, 'skinning', 1, "Hunting" /* CHANGE_REASON.HUNTING */);
     }
 }
 function hunt_effect(character) {
@@ -103,13 +103,13 @@ function fishing_effect(character, cell) {
         amount += 100;
     }
     if (Math.random() * Math.random() > skill / 100) {
-        effects_1.Effect.Change.skill(character, 'fishing', 1);
-        effects_1.Effect.Change.stress(character, 1);
+        effects_1.Effect.Change.skill(character, 'fishing', 1, "Fishing" /* CHANGE_REASON.FISHING */);
+        effects_1.Effect.Change.stress(character, 1, "Fishing" /* CHANGE_REASON.FISHING */);
     }
     data_objects_1.Data.Locations.from_id(character.location_id).fish -= 1;
     events_1.Event.change_stash(character, 26 /* MATERIAL.FISH_OKU */, amount);
 }
-exports.gather_wood = (0, generator_1.generate_action)(FATIGUE_COST_WOOD, gather_wood_duration_modifier, gather_wood_trigger, gather_wood_effect, generic_functions_1.dummy_effect);
-exports.gather_cotton = (0, generator_1.generate_action)(FATIGUE_COST_COTTON, generic_functions_1.basic_duration_modifier, gather_cotton_trigger, gather_cotton_effect, generic_functions_1.dummy_effect);
-exports.hunt = (0, generator_1.generate_action)(FATIGUE_COST_HUNT, hunt_duration_modifier, hunt_trigger, hunt_effect, generic_functions_1.dummy_effect);
-exports.fish = (0, generator_1.generate_action)(FATIGUE_COST_FISH, fishing_duration_modifier, fishing_trigger, fishing_effect, generic_functions_1.dummy_effect);
+exports.gather_wood = (0, generator_1.generate_action)(FATIGUE_COST_WOOD, gather_wood_duration_modifier, gather_wood_trigger, gather_wood_effect, generic_functions_1.dummy_effect, "Woodcutting" /* CHANGE_REASON.WOODCUTTING */);
+exports.gather_cotton = (0, generator_1.generate_action)(FATIGUE_COST_COTTON, generic_functions_1.basic_duration_modifier, gather_cotton_trigger, gather_cotton_effect, generic_functions_1.dummy_effect, "Gathering" /* CHANGE_REASON.GATHERING */);
+exports.hunt = (0, generator_1.generate_action)(FATIGUE_COST_HUNT, hunt_duration_modifier, hunt_trigger, hunt_effect, generic_functions_1.dummy_effect, "Hunting" /* CHANGE_REASON.HUNTING */);
+exports.fish = (0, generator_1.generate_action)(FATIGUE_COST_FISH, fishing_duration_modifier, fishing_trigger, fishing_effect, generic_functions_1.dummy_effect, "Fishing" /* CHANGE_REASON.FISHING */);

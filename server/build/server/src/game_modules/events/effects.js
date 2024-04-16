@@ -8,6 +8,7 @@ const triggers_1 = require("./triggers");
 const system_1 = require("../market/system");
 const data_id_1 = require("../data/data_id");
 const data_objects_1 = require("../data/data_objects");
+const alerts_1 = require("../client_communication/network_actions/alerts");
 var Effect;
 (function (Effect) {
     let Update;
@@ -38,58 +39,121 @@ var Effect;
     Effect.destroy_item = destroy_item;
     let Transfer;
     (function (Transfer) {
-        function savings(from, to, x) {
+        function savings(from, to, x, reason) {
             from.savings.transfer(to.savings, x);
+            alerts_1.Alerts.Log.savings_transfer(from, to, x, reason);
             user_manager_1.UserManagement.add_user_to_update_queue(from.user_id, 9 /* UI_Part.SAVINGS */);
             user_manager_1.UserManagement.add_user_to_update_queue(to.user_id, 9 /* UI_Part.SAVINGS */);
         }
         Transfer.savings = savings;
     })(Transfer = Effect.Transfer || (Effect.Transfer = {}));
+    let Set;
+    (function (Set) {
+        function status(character, dstatus, reason) {
+            hp(character, dstatus.hp, reason);
+            rage(character, dstatus.rage, reason);
+            stress(character, dstatus.stress, reason);
+            blood(character, dstatus.blood, reason);
+            fatigue(character, dstatus.fatigue, reason);
+        }
+        Set.status = status;
+        function fatigue(character, x, reason) {
+            if (!character._set_fatigue(x))
+                return;
+            alerts_1.Alerts.Log.fatigue_set(character, x, reason);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 5 /* UI_Part.FATIGUE */);
+        }
+        Set.fatigue = fatigue;
+        function stress(character, x, reason) {
+            if (!character._set_stress(x))
+                return;
+            alerts_1.Alerts.Log.stress_set(character, x, reason);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.STRESS */);
+        }
+        Set.stress = stress;
+        function hp(character, x, reason) {
+            if (!character._set_hp(x))
+                return;
+            alerts_1.Alerts.Log.hp_set(character, x, reason);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 2 /* UI_Part.HP */);
+        }
+        Set.hp = hp;
+        function rage(character, x, reason) {
+            if (!character._set_rage(x))
+                return;
+            alerts_1.Alerts.Log.rage_set(character, x, reason);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.RAGE */);
+        }
+        Set.rage = rage;
+        function blood(character, x, reason) {
+            if (!character._set_blood(x))
+                return;
+            alerts_1.Alerts.Log.blood_set(character, x, reason);
+            user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.BLOOD */);
+        }
+        Set.blood = blood;
+    })(Set = Effect.Set || (Effect.Set = {}));
     let Change;
     (function (Change) {
-        function hp(character, dx) {
-            if (!character.change_hp(dx))
+        function status(character, dstatus, reason) {
+            hp(character, dstatus.hp, reason);
+            rage(character, dstatus.rage, reason);
+            stress(character, dstatus.stress, reason);
+            blood(character, dstatus.blood, reason);
+            fatigue(character, dstatus.fatigue, reason);
+        }
+        Change.status = status;
+        function hp(character, dx, reason) {
+            if (!character._change_hp(dx))
                 return;
+            alerts_1.Alerts.Log.hp_change(character, dx, reason);
             user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 2 /* UI_Part.HP */);
         }
         Change.hp = hp;
-        function fatigue(character, dx) {
+        function fatigue(character, dx, reason) {
             let prev = character.get_fatigue();
-            let flag = character.change_fatigue(dx);
+            let flag = character._change_fatigue(dx);
             let current = character.get_fatigue();
             let change = current - prev;
             if ((dx - change > 0)) {
-                stress(character, dx - change);
+                stress(character, dx - change, reason);
             }
+            if (Math.abs(change) > 0)
+                alerts_1.Alerts.Log.fatigue_change(character, dx, reason);
             if (flag)
                 user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 5 /* UI_Part.FATIGUE */);
         }
         Change.fatigue = fatigue;
-        function stress(character, dx) {
-            if (!character.change_stress(dx))
+        function stress(character, dx, reason) {
+            if (!character._change_stress(dx))
                 return;
+            alerts_1.Alerts.Log.stress_change(character, dx, reason);
             if (Math.abs(dx) > 0)
                 user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 3 /* UI_Part.STRESS */);
         }
         Change.stress = stress;
-        function rage(character, dx) {
-            if (!character.change_rage(dx))
+        function rage(character, dx, reason) {
+            if (!character._change_rage(dx))
                 return;
+            alerts_1.Alerts.Log.rage_change(character, dx, reason);
             if (Math.abs(dx) > 0)
                 user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 6 /* UI_Part.RAGE */);
         }
         Change.rage = rage;
-        function blood(character, dx) {
-            if (!character.change_blood(dx))
+        function blood(character, dx, reason) {
+            if (!character._change_blood(dx))
                 return;
+            alerts_1.Alerts.Log.blood_change(character, dx, reason);
             if (Math.abs(dx) > 0)
                 user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 4 /* UI_Part.BLOOD */);
         }
         Change.blood = blood;
-        function skill(character, skill, dx) {
+        function skill(character, skill, dx, reason) {
             character._skills[skill] += dx;
             if (character._skills[skill] > 100)
                 character._skills[skill] = 100;
+            else
+                alerts_1.Alerts.Log.skill_change(character, skill, dx, reason);
             if (Math.abs(dx) > 0)
                 user_manager_1.UserManagement.add_user_to_update_queue(character.user_id, 16 /* UI_Part.SKILLS */);
         }
@@ -137,11 +201,11 @@ var Effect;
         let stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
         if (fatigue_target < character.get_fatigue()) {
             let fatigue_change = (0, basic_functions_1.trim)(-5, fatigue_target - character.get_fatigue(), 0);
-            Effect.Change.fatigue(character, fatigue_change);
+            Effect.Change.fatigue(character, fatigue_change, "Rest" /* CHANGE_REASON.REST */);
         }
         if (stress_target < character.get_stress()) {
             let stress_change = (0, basic_functions_1.trim)(-5, stress_target - character.get_stress(), 0);
-            Effect.Change.stress(character, stress_change);
+            Effect.Change.stress(character, stress_change, "Rest" /* CHANGE_REASON.REST */);
         }
         location_quality_reduction_roll(location);
     }

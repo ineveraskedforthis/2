@@ -16,6 +16,7 @@ import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 import { Data } from "../data/data_objects";
 import { MATERIAL } from "@content/content";
 import { CharacterSystem } from "../character/system";
+import { CHANGE_REASON, Effect } from "../events/effects";
 
 function rest_budget(character: Character) {
     let budget = character.savings.get()
@@ -135,7 +136,7 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     EAT: {
         action: (character: Character) => {
             if (character.stash.get(MATERIAL.MEAT_RAT_FRIED) > 0) {
-                character.change_hp(10)
+                Effect.Change.hp(character, 25, CHANGE_REASON.EATING)
                 character.stash.inc(MATERIAL.MEAT_RAT_FRIED, -1)
             }
         },
