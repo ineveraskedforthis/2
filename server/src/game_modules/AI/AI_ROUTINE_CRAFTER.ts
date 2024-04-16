@@ -35,8 +35,6 @@ function bulk_crafter_routine(character: Character, budget: money) {
 function decide_item_buy_inputs(character: Character) {
     let result = []
     for (const item of Object.values(crafts_items)) {
-        // let cost =  item.output, durability(character, item))
-        // let price = AIhelper.sell_price_item(item.output, durability(character, item))
         if (durability(character, item) > 120) {
             result.push(item)
         }

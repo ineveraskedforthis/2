@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.update_price_beliefs = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.coast_walk = exports.urban_walk = exports.home_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
+exports.update_price_beliefs = exports.roll_price_belief_sell_decrease = exports.roll_price_belief_sell_increase = exports.rest_outside = exports.rat_go_home = exports.coast_walk = exports.urban_walk = exports.home_walk = exports.rat_walk = exports.random_walk = exports.buy_random = exports.buy = exports.sell_material = exports.sell_all_stash = exports.remove_orders = exports.sell_loot = exports.loot = void 0;
 const actions_00_1 = require("../actions/actions_00");
 const manager_1 = require("../actions/manager");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -218,6 +218,17 @@ function roll_price_belief_sell_increase(character, material, probability) {
     }
 }
 exports.roll_price_belief_sell_increase = roll_price_belief_sell_increase;
+function roll_price_belief_sell_decrease(character, material, probability) {
+    let dice = Math.random();
+    let current = character.ai_price_belief_sell.get(material);
+    if (current == undefined) {
+        character.ai_price_belief_sell.set(material, 1);
+    }
+    else if (dice < probability) {
+        character.ai_price_belief_sell.set(material, current - 1);
+    }
+}
+exports.roll_price_belief_sell_decrease = roll_price_belief_sell_decrease;
 function update_price_beliefs(character) {
     let orders = data_id_1.DataID.Cells.market_order_id_list(character.cell_id);
     // initialisation

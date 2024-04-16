@@ -30,7 +30,7 @@ export namespace MarketOrders {
         const pay = amount * order.price as money
 
         if (order.amount < amount) amount = order.amount
-        if (buyer.savings.get() < pay)  return 'not_enough_money'
+        if (buyer.savings.get() < pay) return 'not_enough_money'
 
         const material = order.material
 

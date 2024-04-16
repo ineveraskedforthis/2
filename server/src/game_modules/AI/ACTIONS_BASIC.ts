@@ -249,6 +249,15 @@ export function roll_price_belief_sell_increase(character: Character, material: 
         character.ai_price_belief_sell.set(material, current + 1 as money)
     }
 }
+export function roll_price_belief_sell_decrease(character: Character, material: MATERIAL, probability: number) {
+    let dice = Math.random()
+    let current = character.ai_price_belief_sell.get(material)
+    if (current == undefined) {
+        character.ai_price_belief_sell.set(material, 1 as money)
+    } else if (dice < probability) {
+        character.ai_price_belief_sell.set(material, current - 1 as money)
+    }
+}
 
 export function update_price_beliefs(character: Character) {
     let orders = DataID.Cells.market_order_id_list(character.cell_id)

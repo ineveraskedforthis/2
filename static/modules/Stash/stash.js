@@ -4,7 +4,7 @@ import { socket } from "../Socket/socket.js";
 import { StashValue, value_class_name, value_indicator_class_name } from "../Values/collection.js";
 import { globals } from "../globals.js";
 export function material_icon_url(material_tag) {
-    return `url(/static/img/stash/${material_tag}.png)`;
+    return `url(/static/img/stash/${material_tag}.PNG)`;
 }
 export function init_stash(stash_dependent_elements) {
     let inventory_div = elementById('goods_stash');

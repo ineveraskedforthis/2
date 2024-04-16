@@ -1,5 +1,5 @@
 import { money } from "@custom_types/common"
-import { roll_price_belief_sell_increase } from "../AI/ACTIONS_BASIC"
+import { roll_price_belief_sell_decrease, roll_price_belief_sell_increase } from "../AI/ACTIONS_BASIC"
 import { trim } from "../calculations/basic_functions"
 import { Character } from "../character/character"
 import { UI_Part } from "../client_communication/causality_graph"
@@ -37,15 +37,12 @@ export namespace EventMarket {
 
     export function execute_sell_order(buyer: Character, order_id: market_order_id, amount: number) {
 
-
-
         let result = MarketOrders.execute_sell_order(order_id, amount, buyer)
         const order = Data.MarketOrders.from_id(order_id)
         const seller = Data.Characters.from_id(order.owner_id)
-        let order_amount = order.amount
 
         if ((seller.user_id == undefined) && (result == 'ok')) {
-            roll_price_belief_sell_increase(seller, order.material, 1 / trim(order_amount, 1, 100))
+            roll_price_belief_sell_increase(seller, order.material, trim(Math.min(amount, order.amount), 1, 100) / 50)
         }
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
@@ -57,9 +54,13 @@ export namespace EventMarket {
     }
 
     export function execute_buy_order(seller:Character, order_id: market_order_id, amount: number) {
-        MarketOrders.execute_buy_order(order_id, amount, seller)
+        const result = MarketOrders.execute_buy_order(order_id, amount, seller)
         const order = Data.MarketOrders.from_id(order_id)
         const buyer = Data.Characters.from_id(order.owner_id)
+
+        if ((seller.user_id == undefined) && (result == 'ok')) {
+            roll_price_belief_sell_decrease(seller, order.material, trim(Math.min(amount, order.amount), 1, 100) / 50)
+        }
 
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.STASH)
         UserManagement.add_user_to_update_queue(buyer.user_id, UI_Part.SAVINGS)

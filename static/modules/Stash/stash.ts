@@ -7,7 +7,7 @@ import { globals } from "../globals.js";
 
 
 export function material_icon_url(material_tag: material_string_id): string {
-    return `url(/static/img/stash/${material_tag}.png)`;
+    return `url(/static/img/stash/${material_tag}.PNG)`;
 }
 
 export function init_stash(stash_dependent_elements: DependencyUI[]) {

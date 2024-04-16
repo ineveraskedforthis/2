@@ -37,9 +37,8 @@ var EventMarket;
         let result = system_1.MarketOrders.execute_sell_order(order_id, amount, buyer);
         const order = data_objects_1.Data.MarketOrders.from_id(order_id);
         const seller = data_objects_1.Data.Characters.from_id(order.owner_id);
-        let order_amount = order.amount;
         if ((seller.user_id == undefined) && (result == 'ok')) {
-            (0, ACTIONS_BASIC_1.roll_price_belief_sell_increase)(seller, order.material, 1 / (0, basic_functions_1.trim)(order_amount, 1, 100));
+            (0, ACTIONS_BASIC_1.roll_price_belief_sell_increase)(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, order.amount), 1, 100) / 50);
         }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 9 /* UI_Part.SAVINGS */);
@@ -49,9 +48,12 @@ var EventMarket;
     }
     EventMarket.execute_sell_order = execute_sell_order;
     function execute_buy_order(seller, order_id, amount) {
-        system_1.MarketOrders.execute_buy_order(order_id, amount, seller);
+        const result = system_1.MarketOrders.execute_buy_order(order_id, amount, seller);
         const order = data_objects_1.Data.MarketOrders.from_id(order_id);
         const buyer = data_objects_1.Data.Characters.from_id(order.owner_id);
+        if ((seller.user_id == undefined) && (result == 'ok')) {
+            (0, ACTIONS_BASIC_1.roll_price_belief_sell_decrease)(seller, order.material, (0, basic_functions_1.trim)(Math.min(amount, order.amount), 1, 100) / 50);
+        }
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 8 /* UI_Part.STASH */);
         user_manager_1.UserManagement.add_user_to_update_queue(buyer.user_id, 9 /* UI_Part.SAVINGS */);
         user_manager_1.UserManagement.add_user_to_update_queue(seller.user_id, 9 /* UI_Part.SAVINGS */);
