@@ -153,6 +153,10 @@ var CharacterSystem;
         return enchant_rating;
     }
     CharacterSystem.enchant_rating = enchant_rating;
+    // TODO
+    function weight(character) {
+        return 1;
+    }
     function movement_speed_battle(character) {
         let speed = stats_1.BaseStats[character.stats].movement_speed;
         speed = speed * (2 - character.get_fatigue() / 100) * boots_speed_multiplier(character);

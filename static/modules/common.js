@@ -23,3 +23,7 @@ export function get_pos_in_canvas(canvas, event) {
     };
     return tmp;
 }
+export function smoothstep(a, b, t) {
+    const _smoothstep = t * t * (3 - 2 * t);
+    return a * (1 - _smoothstep) + b * _smoothstep;
+}

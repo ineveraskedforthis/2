@@ -156,6 +156,11 @@ export namespace CharacterSystem {
         return enchant_rating
     }
 
+    // TODO
+    function weight(character: Character): number {
+        return 1
+    }
+
     function movement_speed_battle(character: Character): number {
         let speed = BaseStats[character.stats].movement_speed
         speed = speed * (2 - character.get_fatigue() / 100) * boots_speed_multiplier(character)

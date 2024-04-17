@@ -2,7 +2,8 @@ import { MATERIAL, MaterialStorage, material_string_id } from "@content/content.
 import { Socket } from "../../../shared/battle_data.js";
 import { elementById, isHTML, select, selectHTMLs } from "../HTMLwrappers/common.js";
 import { material_icon_url } from "../Stash/stash.js";
-import { BulkAmountInterface, DependencyUI, LimitedValueInterface, ValueInterface } from "../Types/character.js";
+import { AnimatedValueInterface, BulkAmountInterface, DependencyUI, LimitedValueInterface, ValueInterface } from "../Types/character.js";
+import { smoothstep } from "../common.js";
 
 export function value_bar_class_name (id: string) : string {
     return id + "_value_bar";
@@ -20,6 +21,9 @@ export function value_indicator_class_name (id: string) : string {
     return id + "_value_indicator"
 }
 
+
+
+export const animated_values_storage : AnimatedValueInterface[] = []
 
 export class Value implements ValueInterface {
     protected _id: string;
@@ -41,8 +45,6 @@ export class Value implements ValueInterface {
                 item.update_display()
             }
         }))(this);
-
-
     }
 
     protected _update(difference: number) {
@@ -67,6 +69,51 @@ export class Value implements ValueInterface {
         return this._id
     }
 }
+
+export class AnimatedValue extends Value implements AnimatedValueInterface {
+    private last_update_time: number;
+    private current_lerp_origin: number;
+
+    constructor(socket: Socket, id: string, dependents: DependencyUI[]) {
+        super(socket, id, dependents)
+
+        this.last_update_time = Date.now()
+        this.current_lerp_origin = 0
+
+        animated_values_storage.push(this)
+    }
+
+    protected _update(difference: number) {
+        if (difference == 0) return;
+
+        for (let item of select("." + value_class_name(this._id))) {
+            item.innerHTML = `${Math.round(this.display_value)}`
+        }
+    }
+
+    get display_value() {
+        const now = Date.now()
+        const time_passed = Math.min((now - this.last_update_time) / 1000 * 2, 1)
+        return smoothstep(this.current_lerp_origin, this._value, time_passed)
+    }
+
+    set value(value: number) {
+        this.current_lerp_origin = this.display_value;
+        this.last_update_time = Date.now();
+
+        this._value = value;
+        this._update(value - this.display_value)
+    }
+
+    get value() {
+        return this._value
+    }
+
+    update_display() {
+        this._update(1)
+    }
+}
+
 
 export class LimitedValue extends Value implements LimitedValueInterface {
     protected _max_value: number;

@@ -1,6 +1,7 @@
 import { MaterialStorage } from "../.././content.js";
 import { isHTML, select, selectHTMLs } from "../HTMLwrappers/common.js";
 import { material_icon_url } from "../Stash/stash.js";
+import { smoothstep } from "../common.js";
 export function value_bar_class_name(id) {
     return id + "_value_bar";
 }
@@ -13,6 +14,7 @@ export function material_icon_class_name(id) {
 export function value_indicator_class_name(id) {
     return id + "_value_indicator";
 }
+export const animated_values_storage = [];
 export class Value {
     constructor(socket, id, dependents) {
         this._id = id;
@@ -45,6 +47,38 @@ export class Value {
     }
     get id() {
         return this._id;
+    }
+}
+export class AnimatedValue extends Value {
+    constructor(socket, id, dependents) {
+        super(socket, id, dependents);
+        this.last_update_time = Date.now();
+        this.current_lerp_origin = 0;
+        animated_values_storage.push(this);
+    }
+    _update(difference) {
+        if (difference == 0)
+            return;
+        for (let item of select("." + value_class_name(this._id))) {
+            item.innerHTML = `${Math.round(this.display_value)}`;
+        }
+    }
+    get display_value() {
+        const now = Date.now();
+        const time_passed = Math.min((now - this.last_update_time) / 1000 * 2, 1);
+        return smoothstep(this.current_lerp_origin, this._value, time_passed);
+    }
+    set value(value) {
+        this.current_lerp_origin = this.display_value;
+        this.last_update_time = Date.now();
+        this._value = value;
+        this._update(value - this.display_value);
+    }
+    get value() {
+        return this._value;
+    }
+    update_display() {
+        this._update(1);
     }
 }
 export class LimitedValue extends Value {

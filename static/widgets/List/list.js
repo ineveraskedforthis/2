@@ -24,6 +24,8 @@ export class List {
         this._data = [];
         this._columns = [];
         this._filter = undefined;
+        this._per_line_class = [];
+        this._per_line_class_by_item = () => [];
     }
     update_display() {
         this._update_table();
@@ -107,10 +109,24 @@ export class List {
             const line = document.createElement("div");
             line.classList.add("table-row");
             line.classList.add("line_" + item_index);
-            ((table, item_index, line) => {
-                line.onmouseenter = () => { table.hovered_item_index = item_index; };
-                line.onmouseleave = () => { table.hovered_item_index = undefined; };
-            })(this, item_index, line);
+            line.classList.add(...this._per_line_class);
+            line.classList.add(...this._per_line_class_by_item(item));
+            ((table, item_index, line, item) => {
+                line.onclick = () => {
+                    if (table._onclick)
+                        table._onclick(item, line);
+                };
+                line.onmouseenter = () => {
+                    table.hovered_item_index = item_index;
+                    if (table._onmouseenter)
+                        table._onmouseenter(item, line);
+                };
+                line.onmouseleave = () => {
+                    table.hovered_item_index = undefined;
+                    if (table._onmouseleave)
+                        table._onmouseleave(item, line);
+                };
+            })(this, item_index, line, item);
             let index = 0;
             for (let col of this.columns) {
                 let div = document.createElement("div");
@@ -149,6 +165,27 @@ export class List {
             this.wrapper.appendChild(line);
             item_index++;
         }
+    }
+    set onclick(callback) {
+        this._onclick = callback;
+        this._update_table();
+    }
+    set onmouseenter(callback) {
+        this._onmouseenter = callback;
+        this._update_table();
+    }
+    set onmouseleave(callback) {
+        this._onmouseleave = callback;
+        this._update_table();
+    }
+    set per_line_class_by_item(callback) {
+        this._per_line_class_by_item = callback;
+    }
+    get per_line_class() {
+        return this._per_line_class;
+    }
+    set per_line_class(x) {
+        this._per_line_class = x;
     }
     set sorted_column(data) {
         console.log("sort column " + data);

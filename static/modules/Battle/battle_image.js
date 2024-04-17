@@ -4,17 +4,8 @@ import { socket } from "../Socket/socket.js";
 import { AnimatedImage } from './animation.js';
 import { BATTLE_SCALE } from './constants.js';
 import { IMAGES } from '../load_images.js';
-function build_unit_div(unit_data, div) {
-    if (div == undefined)
-        div = document.createElement('div');
-    div.innerHTML = unit_data.name + '(id:' + unit_data.id + ')' + '<br>  hp: ' + unit_data.hp + '<br> ap: ' + unit_data.ap.toFixed(2);
-    div.classList.add('fighter_' + unit_data.id);
-    div.classList.add('enemy_status');
-    div.onclick = () => BattleImage.select(unit_data.id);
-    div.onmouseenter = () => BattleImage.set_hover(unit_data.id);
-    div.onmouseleave = BattleImage.remove_hover;
-    return div;
-}
+import { selectOne } from '../HTMLwrappers/common.js';
+import { enemies_list } from './actions_list.js';
 export const battle_canvas = document.getElementById('battle_canvas');
 export const battle_canvas_context = battle_canvas.getContext('2d');
 export const canvas_background = document.getElementById('battle_canvas_background');
@@ -34,9 +25,6 @@ battle_canvas.onmouseup = (event) => {
         bcp = false;
     }
 };
-export const enemy_list_div = document.querySelector('.enemy_list');
-export const w = battle_canvas.width;
-export const h = battle_canvas.height;
 export let camera = { x: 0, y: 0 };
 let hovered = undefined;
 let selected = undefined;
@@ -48,6 +36,7 @@ export let battle_in_progress = false;
 export let events_list = [];
 // let         units_data: {[_ in character_id]: BattleUnit}         ={};
 export let units_views = {};
+export let units_socket = [];
 let character_ids = new Set();
 let anim_images = {};
 let had_left = {};
@@ -234,7 +223,6 @@ export var BattleImage;
         anchor_position = undefined;
         player_character_id = undefined;
         battle_in_progress = false;
-        enemy_list_div.innerHTML = '';
         events_list = [];
         // units_data      ={};
         units_views = {};
@@ -253,8 +241,8 @@ export var BattleImage;
         // units_data[unit.id]     = battle_unit
         units_views[unit.id] = unit_view;
         anim_images[unit.id] = new AnimatedImage(unit.tag);
-        let div = build_unit_div(unit_view, undefined);
-        enemy_list_div.appendChild(div);
+        enemies_list.data.push(unit);
+        enemies_list.update_display();
         UnitsQueueManagement.new_unit(unit.id);
     }
     BattleImage.load_unit = load_unit;
@@ -274,7 +262,11 @@ export var BattleImage;
             if (response) {
                 events_list = events_list.slice(1);
                 update_selection_data();
-                update_unit_div(current_event.unit);
+                // const data = enemies_list.data
+                // for (let i = 0; i < data.length; i++) {
+                //     if (data[i].id == current_event.unit) {
+                //     }
+                // }
             }
         }
     }
@@ -289,7 +281,7 @@ export var BattleImage;
     function unit_div(id) {
         if (id == undefined)
             return undefined;
-        let div = enemy_list_div.querySelector('.fighter_' + id);
+        let div = selectOne('.fighter_' + id);
         if (div == null)
             return undefined;
         return div;
@@ -364,31 +356,35 @@ export var BattleImage;
             let centre = position_c.battle_to_canvas(unit_view.position, camera);
             if (d2([centre.x, centre.y], [pos.x, pos.y]) < selection_magnet) {
                 hovered_flag = true;
-                set_hover(Number(character_id));
+                set_hover(Number(character_id), selectOne('.fighter_' + character_id));
             }
         }
         if (!hovered_flag) {
-            remove_hover();
+            clear_hover();
         }
     }
     BattleImage.hover = hover;
-    function set_hover(i) {
-        remove_hover();
-        hovered = i;
-        let div = enemy_list_div.querySelector('.fighter_' + i);
-        if (div != undefined)
-            div.classList.add('hovered_unit');
+    function set_hover(unit, line) {
+        if (hovered)
+            remove_hover(hovered, selectOne('.fighter_' + hovered));
+        hovered = unit;
+        line.classList.add('hovered_unit');
     }
     BattleImage.set_hover = set_hover;
-    function remove_hover() {
+    function remove_hover(unit, line) {
         if (hovered != undefined) {
-            let div = enemy_list_div.querySelector('.fighter_' + hovered);
-            if (div != undefined)
-                div.classList.remove('hovered_unit');
+            line.classList.remove('hovered_unit');
         }
-        hovered = undefined;
+        clear_hover();
     }
     BattleImage.remove_hover = remove_hover;
+    function clear_hover() {
+        hovered = undefined;
+        for (const item of enemies_list.data) {
+            selectOne(".fighter_" + item.id).classList.remove("hovered_unit");
+        }
+    }
+    BattleImage.clear_hover = clear_hover;
     function press(pos) {
         let selected = false;
         for (let i of character_ids) {
@@ -435,6 +431,8 @@ export var BattleImage;
     // }
     function change_bg(bg) {
         background = bg;
+        const w = battle_canvas.width;
+        const h = battle_canvas.height;
         let ctx = canvas_background.getContext('2d');
         ctx?.drawImage(IMAGES['battle_bg_' + background], 0, 0, w, h);
     }
@@ -699,6 +697,8 @@ export var BattleImage;
     }
     BattleImage.draw_units = draw_units;
     function draw(dt) {
+        const w = battle_canvas.width;
+        const h = battle_canvas.height;
         battle_canvas_context.clearRect(0, 0, w, h);
         draw_background();
         UnitsQueueManagement.draw(battle_canvas_context);
@@ -752,23 +752,10 @@ export var BattleImage;
     }
     BattleImage.draw_anchor = draw_anchor;
     function update_unit_displays(unit) {
-        BattleImage.update_unit_div(unit);
+        enemies_list.update_display();
         UnitsQueueManagement.end_turn();
     }
     BattleImage.update_unit_displays = update_unit_displays;
-    function update_unit_div(unit) {
-        let div = unit_div(unit);
-        if (div == undefined)
-            return;
-        const unit_view = units_views[unit];
-        if (unit_view.hp == 0) {
-            div.style.display = "none";
-        }
-        else {
-            build_unit_div(units_views[unit], div);
-        }
-    }
-    BattleImage.update_unit_div = update_unit_div;
 })(BattleImage || (BattleImage = {}));
 // export class BattleImageNext {
 //     remove_fighter(character_id: character_id) {

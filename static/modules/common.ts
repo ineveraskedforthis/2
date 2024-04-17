@@ -29,3 +29,8 @@ export function get_pos_in_canvas(canvas: HTMLCanvasElement, event: MouseEvent) 
     };
     return tmp
 }
+
+export function smoothstep(a: number, b: number, t: number) {
+    const _smoothstep = t * t * (3 - 2 * t)
+    return a * (1 - _smoothstep) + b * _smoothstep
+}

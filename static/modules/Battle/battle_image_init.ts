@@ -1,9 +1,10 @@
-import { BattleImage, battle_in_progress, events_list, player_character_id } from "./battle_image.js";
+import { BattleImage, battle_canvas, battle_in_progress, canvas_background, events_list, player_character_id } from "./battle_image.js";
 import { BattleActionChance, BattleData, BattleEventSocket, Socket, UnitSocket, BattleActionData } from "../../../shared/battle_data.js"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../Socket/socket.js";
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
 import { character_id } from "@custom_types/ids.js";
+import { elementById, selectById } from "../HTMLwrappers/common.js";
 
 
 // export const battle_image = new BattleImageNext();
@@ -39,7 +40,7 @@ export function init_battle_control() {
     socket.on('battle-in-process',          bCallback.update_battle_process)
     // socket.on(BATTLE_DATA_MESSAGE,          bCallback.update_battle_state)
     socket.on('battle-update-units',        data => BattleImage.load(data))
-    socket.on(character_id_MESSAGE,              bCallback.link_player_to_unit)
+    socket.on(character_id_MESSAGE,         bCallback.link_player_to_unit)
     socket.on('current-unit-turn',          bCallback.link_current_turn)
 
     // socket.on('battle-update-unit',         data => .update_unit(data))
@@ -148,7 +149,22 @@ namespace bCallback {
 function start_battle() {
     console.log('start battle')
     tab.turn_on('battle')
-    // BattleImage.reset()
+
+    const container = elementById("battle_display_container")
+    battle_canvas.width = container.clientWidth
+    battle_canvas.height = container.clientHeight
+
+    canvas_background.width = container.clientWidth
+    canvas_background.height = container.clientHeight
+
+    setTimeout(() => {
+        const container = elementById("battle_display_container")
+        battle_canvas.width = container.clientWidth
+        battle_canvas.height = container.clientHeight
+
+        canvas_background.width = container.clientWidth
+        canvas_background.height = container.clientHeight
+    }, 1000)
 }
 
 function end_battle() {

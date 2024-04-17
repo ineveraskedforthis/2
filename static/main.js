@@ -22,7 +22,7 @@ import { loadImages } from './modules/load_images.js';
 import { draw_map_related_stuff, init_map } from './modules/map.js';
 import { init_detailed_character_statistics } from './request_perks.js';
 import { globals } from './modules/globals.js';
-import { Value } from './modules/Values/collection.js';
+import { AnimatedValue, Value, animated_values_storage } from './modules/Values/collection.js';
 import { new_craft_bulk, new_craft_item, new_craft_table, update_craft_item_div } from './modules/Craft/craft.js';
 import { init_locations } from './modules/Locations/request_locations.js';
 import { BackgroundImage } from './modules/BackgroundImage/background_image.js';
@@ -70,8 +70,8 @@ socket.on("character_data", (msg) => {
     globals.character_data = {
         id: msg.id,
         name: msg.name,
-        savings: new Value(socket, "savings", [market_bulk, market_items]),
-        savings_trade: new Value(socket, "savings_trade", []),
+        savings: new AnimatedValue(socket, "savings", [market_bulk, market_items]),
+        savings_trade: new AnimatedValue(socket, "savings_trade", []),
         location_id: new Value(socket, "location_id", [locations_list, background_image]),
         stash: []
     };
@@ -143,6 +143,9 @@ function draw(time) {
     delta = (time - previous) / 1000;
     previous = time;
     draw_map_related_stuff(map, delta);
+    for (const value of animated_values_storage) {
+        value.update_display();
+    }
     if (elementById('actual_game_scene').style.visibility == 'visible') {
         if (!elementById('battle_tab').classList.contains('hidden')) {
             BattleImage.draw(delta);

@@ -1,7 +1,8 @@
-import { BattleImage, battle_in_progress } from "./battle_image.js";
+import { BattleImage, battle_canvas, battle_in_progress, canvas_background } from "./battle_image.js";
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../Socket/socket.js";
 import { AttackEvent, EndTurn, MoveEvent, NewTurnEvent, NewUnitEvent, RangedAttackEvent, RetreatEvent, UnitLeftEvent, UpdateDataEvent } from "./battle_image_events.js";
+import { elementById } from "../HTMLwrappers/common.js";
 // export const battle_image = new BattleImageNext();
 const events_queue = [];
 const keybinds = {
@@ -120,7 +121,18 @@ var bCallback;
 function start_battle() {
     console.log('start battle');
     tab.turn_on('battle');
-    // BattleImage.reset()
+    const container = elementById("battle_display_container");
+    battle_canvas.width = container.clientWidth;
+    battle_canvas.height = container.clientHeight;
+    canvas_background.width = container.clientWidth;
+    canvas_background.height = container.clientHeight;
+    setTimeout(() => {
+        const container = elementById("battle_display_container");
+        battle_canvas.width = container.clientWidth;
+        battle_canvas.height = container.clientHeight;
+        canvas_background.width = container.clientWidth;
+        canvas_background.height = container.clientHeight;
+    }, 1000);
 }
 function end_battle() {
     tab.turn_off('battle');

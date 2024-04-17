@@ -1,8 +1,6 @@
 import { battle_position, position } from "@custom_types/battle_data.js"
-import { AnimationDict } from "../load_images.js"
-import { AnimatedImage } from "./animation.js"
-import { h, w } from "./battle_image.js"
 import { BATTLE_SCALE } from "./constants.js"
+import { battle_canvas } from "./battle_image.js"
 
 declare var alert: (data: string) => {}
 
@@ -36,6 +34,8 @@ export namespace position_c {
     }
 
     export function battle_to_canvas(pos: battle_position, camera: canvas_position) {
+        const w = battle_canvas.width
+        const h = battle_canvas.height
         let centre = {x: pos.y, y: pos.x};
         centre.x = -centre.x * BATTLE_SCALE + w / 2 + camera.x;
         centre.y = centre.y * BATTLE_SCALE + h / 2 + camera.y;
@@ -43,6 +43,8 @@ export namespace position_c {
     }
 
     export function canvas_to_battle(pos: canvas_position) {
+        const w = battle_canvas.width
+        const h = battle_canvas.height
         let tmp = {x: pos.x, y: pos.y}
         tmp.x = (tmp.x - w / 2) / (-BATTLE_SCALE);
         tmp.y = (tmp.y - h / 2) / (BATTLE_SCALE)
@@ -67,8 +69,8 @@ export namespace position_c {
 export function get_mouse_pos_in_canvas(canvas:HTMLCanvasElement, event: any): canvas_position {
     var rect = canvas.getBoundingClientRect();
     let tmp = {
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
     };
     return position_c.raw_to_canvas(tmp)
 }

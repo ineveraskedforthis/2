@@ -22,6 +22,15 @@ const columns = [
         custom_style: ["flex-1-0-5"]
     },
     {
+        value: (item) => "Unequip",
+        onclick: (item) => () => { socket.emit('unequip', item.equip_slot); },
+        viable: (item) => {
+            return true;
+        },
+        type: "string",
+        custom_style: ["flex-0-0-5"]
+    },
+    {
         header_text: "Name",
         value: (item) => {
             const name = document.createElement('div');
@@ -34,15 +43,6 @@ const columns = [
         },
         type: "html",
         custom_style: ["flex-1-0-5"]
-    },
-    {
-        value: (item) => "Unequip",
-        onclick: (item) => () => { socket.emit('unequip', item.equip_slot); },
-        viable: (item) => {
-            return true;
-        },
-        type: "string",
-        custom_style: ["flex-0-0-5"]
     },
     {
         header_text: "Durability",

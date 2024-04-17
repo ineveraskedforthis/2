@@ -85,6 +85,8 @@ interface sorting_setting {
     order: sorting_order
 }
 
+type item_callback<Item> = (item: Item, line: HTMLElement) => void
+
 export class List<Item> implements ListInterface<Item> {
     private _data: Item[]
     private _columns: Column<Item>[]
@@ -98,6 +100,14 @@ export class List<Item> implements ListInterface<Item> {
     private _hovered_item_index: number|undefined
 
     private _filter: ((item: Item) => boolean)|undefined
+
+    private _onclick: item_callback<Item> | undefined;
+    private _onmouseenter: item_callback<Item> | undefined;
+    private _onmouseleave: item_callback<Item> | undefined;
+    private _per_line_class: string[]
+
+    private _per_line_class_by_item: (item: Item) => string[]
+
 
     constructor(container: HTMLElement) {
         this.container = container
@@ -114,6 +124,9 @@ export class List<Item> implements ListInterface<Item> {
         this._columns = []
 
         this._filter = undefined
+
+        this._per_line_class = []
+        this._per_line_class_by_item = () => []
     }
 
     update_display() {
@@ -209,11 +222,22 @@ export class List<Item> implements ListInterface<Item> {
             const line = document.createElement("div");
             line.classList.add("table-row");
             line.classList.add("line_" + item_index);
+            line.classList.add(... this._per_line_class);
+            line.classList.add(... this._per_line_class_by_item(item));
 
-            ((table: List<Item>, item_index: number, line) => {
-                line.onmouseenter = () => { table.hovered_item_index = item_index }
-                line.onmouseleave = () => { table.hovered_item_index = undefined }
-            })(this, item_index, line)
+            ((table: List<Item>, item_index: number, line, item) => {
+                line.onclick = () => {
+                    if (table._onclick) table._onclick(item, line);
+                }
+                line.onmouseenter = () => {
+                    table.hovered_item_index = item_index;
+                    if (table._onmouseenter) table._onmouseenter(item, line);
+                }
+                line.onmouseleave = () => {
+                    table.hovered_item_index = undefined;
+                    if (table._onmouseleave) table._onmouseleave(item, line);
+                }
+            })(this, item_index, line, item)
 
             let index = 0
             for (let col of this.columns) {
@@ -256,6 +280,30 @@ export class List<Item> implements ListInterface<Item> {
             this.wrapper.appendChild(line)
             item_index++
         }
+    }
+
+    set onclick(callback: item_callback<Item> | undefined) {
+        this._onclick = callback
+        this._update_table()
+    }
+    set onmouseenter(callback: item_callback<Item> | undefined) {
+        this._onmouseenter = callback
+        this._update_table()
+    }
+    set onmouseleave(callback: item_callback<Item> | undefined) {
+        this._onmouseleave = callback
+        this._update_table()
+    }
+    set per_line_class_by_item(callback: (item: Item) => string[]) {
+        this._per_line_class_by_item = callback
+    }
+
+    get per_line_class() {
+        return this._per_line_class
+    }
+
+    set per_line_class(x: string[]) {
+        this._per_line_class = x
     }
 
     set sorted_column(data: number|undefined) {

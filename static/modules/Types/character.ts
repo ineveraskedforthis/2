@@ -7,6 +7,10 @@ export interface ValueInterface {
     value: number;
 }
 
+export interface AnimatedValueInterface extends ValueInterface, DependencyUI {
+    display_value: number;
+}
+
 export interface LimitedValueInterface extends ValueInterface {
     max_value: number;
 }
