@@ -14,7 +14,7 @@ import { GenericRest } from "./AI_ROUTINE_GENERIC";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
 import { CellData } from "../map/cell_interface";
-import { Effect } from "../events/effects";
+import { Effect } from "../effects/effects";
 import { MATERIAL, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
 
 const LOOT = [MATERIAL.MEAT_RAT, MATERIAL.SKIN_RAT, MATERIAL.BONE_RAT, MATERIAL.SMALL_BONE_RAT, MATERIAL.FISH_OKU];

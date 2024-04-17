@@ -14,7 +14,9 @@ import { UserManagement } from "../user_manager";
 import { cell_id } from "@custom_types/ids";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
-import { CHANGE_REASON } from "../../events/effects";
+import { CHANGE_REASON } from "../../effects/effects";
+import { Stash } from "../../inventories/stash";
+import { MATERIAL, MaterialConfiguration, MaterialStorage } from "@content/content";
 
 export namespace Alerts {
     export function not_enough_to_user(
@@ -284,9 +286,39 @@ export namespace Alerts {
     }
 
     export namespace Log {
+        export function to_trade_stash(A: Character, material: MATERIAL, amount: number) {
+            Alerts.log_to_character(A, `You moved ${amount} of ${MaterialStorage.get(material).name} to your trade stash. Cancel your market order to return it back.`)
+        }
+
+        export function from_trade_stash(A: Character, material: MATERIAL, amount: number) {
+            Alerts.log_to_character(A, `You moved ${amount} of ${MaterialStorage.get(material).name} from your trade stash.`)
+        }
+
+        export function to_trade_savings(A: Character, amount: number) {
+            Alerts.log_to_character(A, `You moved ${amount} money to your trade savings. Cancel your market order to return it back.`)
+        }
+
+        export function from_trade_savings(A: Character, amount: number) {
+            Alerts.log_to_character(A, `You moved ${amount} money from your trade savings.`)
+        }
+
         export function savings_transfer(from: Character, to: Character, amount: number, reason: CHANGE_REASON) {
             Alerts.log_to_character(from, `You transfered ${amount} money to ${to.name}(${to.id}). Reason:${reason}`)
             Alerts.log_to_character(to, `You got ${amount} money from ${from.name}(${to.id}). Reason:${reason}`)
+        }
+
+        export function stash_transfer(from: Character, to: Character, transfer: Stash, reason: CHANGE_REASON) {
+            for (const m of MaterialConfiguration.MATERIAL) {
+                const amount = transfer.get(m)
+                if (amount == 0) continue;
+
+                material_transfer(from, to, m, amount, reason)
+            }
+        }
+
+        export function material_transfer(from: Character, to: Character, what: MATERIAL, amount: number, reason: CHANGE_REASON) {
+            Alerts.log_to_character(from, `You transfered ${amount} of ${MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason:${reason}`)
+            Alerts.log_to_character(to, `You got ${amount} of ${MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`)
         }
 
         export function hp_change(character: Character, d: number, reason: CHANGE_REASON) {

@@ -14,7 +14,7 @@ const AI_CONSTANTS_1 = require("./AI_CONSTANTS");
 const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
 const AI_ROUTINE_URBAN_TRADER_1 = require("./AI_ROUTINE_URBAN_TRADER");
 const data_objects_1 = require("../data/data_objects");
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 function rest_budget(character) {
     let budget = character.savings.get();
     if (budget < 50) {

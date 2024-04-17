@@ -4,7 +4,7 @@ import { ScriptedValue } from "../events/scripted_values";
 import { random_walk, rest_outside } from "./ACTIONS_BASIC";
 import { forest_constraints, simple_constraints, steppe_constraints } from "./constraints";
 import { AIhelper } from "./helpers";
-import { Effect } from "../events/effects";
+import { Effect } from "../effects/effects";
 import { ResponseNegative } from "../events/triggers";
 import { AImemory } from "../character/AIstate";
 import { BattleSystem } from "../battle/system";

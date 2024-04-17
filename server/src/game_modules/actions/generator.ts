@@ -2,7 +2,7 @@ import { CharacterMapAction, DurationModifier, MapActionEffect, MapActionTrigger
 import { Character } from "../character/character";
 import { basic_trigger } from "./generic_functions";
 import { cell_id } from "@custom_types/ids";
-import { CHANGE_REASON, Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 export function generate_action(
     fatigue_cost: number,
     duration_modifer: DurationModifier,

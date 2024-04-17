@@ -6,6 +6,7 @@ const systems_communication_1 = require("../../systems_communication");
 const user_manager_1 = require("../user_manager");
 const data_id_1 = require("../../data/data_id");
 const data_objects_1 = require("../../data/data_objects");
+const content_1 = require("../../../.././../game_content/src/content");
 var Alerts;
 (function (Alerts) {
     function not_enough_to_user(user, tag, current, min, max) {
@@ -270,11 +271,41 @@ var Alerts;
     Alerts.leave_room = leave_room;
     let Log;
     (function (Log) {
+        function to_trade_stash(A, material, amount) {
+            Alerts.log_to_character(A, `You moved ${amount} of ${content_1.MaterialStorage.get(material).name} to your trade stash. Cancel your market order to return it back.`);
+        }
+        Log.to_trade_stash = to_trade_stash;
+        function from_trade_stash(A, material, amount) {
+            Alerts.log_to_character(A, `You moved ${amount} of ${content_1.MaterialStorage.get(material).name} from your trade stash.`);
+        }
+        Log.from_trade_stash = from_trade_stash;
+        function to_trade_savings(A, amount) {
+            Alerts.log_to_character(A, `You moved ${amount} money to your trade savings. Cancel your market order to return it back.`);
+        }
+        Log.to_trade_savings = to_trade_savings;
+        function from_trade_savings(A, amount) {
+            Alerts.log_to_character(A, `You moved ${amount} money from your trade savings.`);
+        }
+        Log.from_trade_savings = from_trade_savings;
         function savings_transfer(from, to, amount, reason) {
             Alerts.log_to_character(from, `You transfered ${amount} money to ${to.name}(${to.id}). Reason:${reason}`);
             Alerts.log_to_character(to, `You got ${amount} money from ${from.name}(${to.id}). Reason:${reason}`);
         }
         Log.savings_transfer = savings_transfer;
+        function stash_transfer(from, to, transfer, reason) {
+            for (const m of content_1.MaterialConfiguration.MATERIAL) {
+                const amount = transfer.get(m);
+                if (amount == 0)
+                    continue;
+                material_transfer(from, to, m, amount, reason);
+            }
+        }
+        Log.stash_transfer = stash_transfer;
+        function material_transfer(from, to, what, amount, reason) {
+            Alerts.log_to_character(from, `You transfered ${amount} of ${content_1.MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason:${reason}`);
+            Alerts.log_to_character(to, `You got ${amount} of ${content_1.MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`);
+        }
+        Log.material_transfer = material_transfer;
         function hp_change(character, d, reason) {
             Alerts.log_to_character(character, `Your hp changed by ${d}. Reason: ${reason}`);
         }
@@ -321,3 +352,4 @@ var Alerts;
         Log.skill_change = skill_change;
     })(Log = Alerts.Log || (Alerts.Log = {}));
 })(Alerts || (exports.Alerts = Alerts = {}));
+

@@ -8,7 +8,7 @@ const market_1 = require("../../events/market");
 const system_1 = require("../../market/system");
 const data_objects_1 = require("../../data/data_objects");
 const content_1 = require("../../../.././../game_content/src/content");
-const effects_1 = require("../../events/effects");
+const effects_1 = require("../../effects/effects");
 const user_manager_1 = require("../user_manager");
 function r(f) {
     return (sw) => {

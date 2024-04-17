@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.use_input = exports.check_inputs = exports.on_craft_update = exports.roll_skill_improvement = exports.skill_to_ratio = exports.MAX_SKILL_MULTIPLIER_BULK = void 0;
 const basic_functions_1 = require("../calculations/basic_functions");
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 const events_1 = require("../events/events");
 const system_1 = require("../character/system");
 exports.MAX_SKILL_MULTIPLIER_BULK = 10;

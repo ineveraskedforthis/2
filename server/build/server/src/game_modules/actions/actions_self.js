@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.rest = exports.clean = void 0;
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 const generator_1 = require("./generator");
 const types_1 = require("./types");
 const generic_functions_1 = require("./generic_functions");
@@ -73,6 +73,6 @@ exports.rest = {
         const location_owner = data_objects_1.Data.Characters.from_id(location.owner_id);
         if (location_owner == undefined)
             return;
-        system_1.CharacterSystem.transfer_savings(char, location_owner, price);
+        effects_1.Effect.Transfer.savings(char, location_owner, price, "Rest" /* CHANGE_REASON.REST */);
     },
 };

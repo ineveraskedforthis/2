@@ -9,7 +9,7 @@ import { Character } from "../../character/character";
 import { Data } from "../../data/data_objects";
 import { EquipSlotConfiguration, EquipSlotStorage, MATERIAL_CATEGORY, MaterialConfiguration, MaterialStorage } from "@content/content";
 import { money } from "@custom_types/common";
-import { CHANGE_REASON, Effect } from "../../events/effects";
+import { CHANGE_REASON, Effect } from "../../effects/effects";
 import { UI_Part } from "../causality_graph";
 import { UserManagement } from "../user_manager";
 

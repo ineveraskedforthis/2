@@ -14,7 +14,7 @@ import { UserManagement } from "../client_communication/user_manager";
 import { skill } from "@custom_types/inventory";
 import { Convert, Link, Unlink } from "../systems_communication";
 import { damage_type, melee_attack_type } from "@custom_types/common";
-import { CHANGE_REASON, Effect } from "./effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 import { EventInventory } from "./inventory_events";
 import { EventMarket } from "./market";
 import { AttackObj } from "../attack/class";

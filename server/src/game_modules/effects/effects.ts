@@ -2,20 +2,21 @@ import { Character } from "../character/character";
 import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 import { location_id, character_id } from "@custom_types/ids";
-import { ScriptedValue } from "./scripted_values";
+import { ScriptedValue } from "../events/scripted_values";
 import { trim } from "../calculations/basic_functions";
 import { money } from "@custom_types/common";
 import { cell_id } from "@custom_types/ids";
-import { Trigger } from "./triggers";
+import { Trigger } from "../events/triggers";
 import { skill } from "@custom_types/inventory";
 import { MarketOrders } from "../market/system";
 import { Perks } from "@custom_types/character";
 import { DataID } from "../data/data_id";
 import { Data } from "../data/data_objects";
 import { LocationInterface } from "../location/location_interface";
-import { EQUIP_SLOT, MATERIAL } from "@content/content";
+import { EQUIP_SLOT, MATERIAL, MaterialConfiguration } from "@content/content";
 import { Alerts } from "../client_communication/network_actions/alerts";
 import { Status } from "../types";
+import { Stash } from "../inventories/stash";
 
 
 export const enum CHANGE_REASON {
@@ -38,7 +39,9 @@ export const enum CHANGE_REASON {
     EATING = "Eating",
     CRAFTING = "Crafting",
     ENCHANTING = "Enchanting",
-    EQUIPMENT_ENCHANT = "Equipment enchant"
+    EQUIPMENT_ENCHANT = "Equipment enchant",
+    MOVED_TO_TRADE_STASH = "Moving to trade stash",
+    TRADE = "Trade"
 }
 
 export namespace Effect {
@@ -72,8 +75,55 @@ export namespace Effect {
             from.savings.transfer(to.savings, x)
 
             Alerts.Log.savings_transfer(from, to, x, reason)
+
             UserManagement.add_user_to_update_queue(from.user_id, UI_Part.SAVINGS)
             UserManagement.add_user_to_update_queue(to.user_id, UI_Part.SAVINGS)
+        }
+
+        export function stash(A: Character, B:Character, what: MATERIAL, amount: number, reason: CHANGE_REASON) {
+            A.stash.transfer(B.stash, what, amount)
+            Alerts.Log.material_transfer(A, B, what, amount, reason)
+
+            UserManagement.add_user_to_update_queue(A.user_id, UI_Part.STASH)
+            UserManagement.add_user_to_update_queue(B.user_id, UI_Part.STASH)
+        }
+
+        export function to_trade_stash(A: Character, material: MATERIAL, amount: number) {
+            if (amount > 0) {
+                if (A.stash.get(material) < amount) return false
+                A.stash.transfer(A.trade_stash, material, amount)
+                UserManagement.add_user_to_update_queue(A.user_id, UI_Part.STASH)
+                Alerts.Log.to_trade_stash(A, material, amount)
+                return true
+            }
+
+            if (amount < 0) {
+                if (A.trade_stash.get(material) < -amount) return false
+                A.trade_stash.transfer(A.stash, material, -amount)
+                UserManagement.add_user_to_update_queue(A.user_id, UI_Part.STASH)
+                Alerts.Log.from_trade_stash(A, material, -amount)
+                return true
+            }
+
+            return true
+        }
+
+        export function to_trade_savings(A: Character, amount: money) {
+            if (amount > 0) {
+                if (A.savings.get() < amount) return false
+                A.savings.transfer(A.trade_savings, amount)
+                Alerts.Log.to_trade_savings(A, amount)
+                return true
+            }
+
+            if (amount < 0) {
+                if (A.trade_savings.get() < -amount) return false
+                A.trade_savings.transfer(A.savings, -amount as money)
+                Alerts.Log.from_trade_savings(A, -amount)
+                return true
+            }
+
+            return true
         }
     }
 
@@ -115,6 +165,31 @@ export namespace Effect {
             Alerts.Log.blood_set(character, x, reason)
             UserManagement.add_user_to_update_queue(character.user_id, UI_Part.BLOOD);
         }
+    }
+
+    export function transaction(        A: Character, B: Character,
+                                        savings_A_to_B: money, stash_A_to_B: Stash,
+                                        savings_B_to_A: money, stash_B_to_A: Stash, reason: CHANGE_REASON)
+    {
+        // transaction validation
+        if (A.savings.get() < savings_A_to_B) return false
+        if (B.savings.get() < savings_B_to_A) return false
+
+        for (let material of MaterialConfiguration.MATERIAL) {
+            if (A.stash.get(material) < stash_A_to_B.get(material)) return false
+            if (B.stash.get(material) < stash_B_to_A.get(material)) return false
+        }
+
+        //transaction is validated, execution
+        Transfer.savings(A, B, savings_A_to_B, reason)
+        Transfer.savings(B, A, savings_B_to_A, reason)
+
+        for (let material of MaterialConfiguration.MATERIAL) {
+            Transfer.stash(A, B, material, stash_A_to_B.get(material), reason)
+            Transfer.stash(B, A, material, stash_B_to_A.get(material), reason)
+        }
+
+        return true
     }
 
     export namespace Change {

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.update_character = exports.get_power = exports.protection_affixes_effects = exports.damage_affixes_effects = exports.attack_affixes_effects = exports.roll_affix_armour = exports.roll_affix_weapon = exports.enchant_item = exports.get_potential_affix_armour = exports.get_potential_affix_weapon = void 0;
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 function get_potential_affix_weapon(enchant_rating, item) {
     let potential_affix = [];
     // checking for phys damage mods

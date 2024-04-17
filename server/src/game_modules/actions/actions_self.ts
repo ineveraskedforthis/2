@@ -1,6 +1,6 @@
 import { cell_id } from "@custom_types/ids";
 import { Character } from "../character/character";
-import { CHANGE_REASON, Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 import { generate_action } from "./generator";
 import { CharacterMapAction, LackData, NotificationResponse, TriggerResponse } from "./types";
 import { basic_duration_modifier, dummy_effect } from "./generic_functions";
@@ -76,6 +76,7 @@ export const rest: CharacterMapAction = {
         const target_stress = ScriptedValue.rest_target_stress(ScriptedValue.rest_tier(char, location), skill, char.race)
         if (target_fatigue < char.get_fatigue()) Effect.Set.fatigue(char, target_fatigue, CHANGE_REASON.REST)
         if (target_stress < char.get_stress()) Effect.Set.stress(char, target_stress, CHANGE_REASON.REST)
+
         UserManagement.add_user_to_update_queue(char.user_id, UI_Part.STATUS)
     },
 
@@ -85,6 +86,6 @@ export const rest: CharacterMapAction = {
         const location_owner = Data.Characters.from_id(location.owner_id)
         if (location_owner == undefined) return
 
-        CharacterSystem.transfer_savings(char, location_owner, price)
+        Effect.Transfer.savings(char, location_owner, price, CHANGE_REASON.REST)
     },
 }

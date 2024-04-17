@@ -11,7 +11,7 @@ import { Character } from "./character";
 import { Loot } from "../races/generate_loot";
 import { CampaignAI } from "../AI/ai_manager";
 import { trim } from "../calculations/basic_functions";
-import { CHANGE_REASON, Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 import { money } from "@custom_types/common";
 import { is_melee_skill } from "./SkillList";
 import { Perks } from "@custom_types/character";
@@ -35,71 +35,6 @@ export namespace CharacterSystem {
         }
 
         return character
-    }
-
-    export function transfer_savings(A: Character, B: Character, x: money) {
-        A.savings.transfer(B.savings, x)
-    }
-
-    export function transfer_stash(A: Character, B:Character, what: MATERIAL, amount: number) {
-        A.stash.transfer(B.stash, what, amount)
-    }
-
-    export function to_trade_stash(A: Character, material: MATERIAL, amount: number) {
-        if (amount > 0) {
-            if (A.stash.get(material) < amount) return false
-            A.stash.transfer(A.trade_stash, material, amount)
-            return true
-        }
-
-        if (amount < 0) {
-            if (A.trade_stash.get(material) < -amount) return false
-            A.trade_stash.transfer(A.stash, material, -amount)
-            return true
-        }
-
-        return true
-    }
-
-    export function to_trade_savings(A: Character, amount: money) {
-        if (amount > 0) {
-            if (A.savings.get() < amount) return false
-            A.savings.transfer(A.trade_savings, amount)
-            return true
-        }
-
-        if (amount < 0) {
-            if (A.trade_savings.get() < -amount) return false
-            A.trade_savings.transfer(A.savings, -amount as money)
-            return true
-        }
-
-        return true
-    }
-
-    export function transaction(        A: Character, B: Character,
-                                        savings_A_to_B: money, stash_A_to_B: Stash,
-                                        savings_B_to_A: money, stash_B_to_A: Stash)
-    {
-        // transaction validation
-        if (A.savings.get() < savings_A_to_B) return false
-        if (B.savings.get() < savings_B_to_A) return false
-
-        for (let material of MaterialConfiguration.MATERIAL) {
-            if (A.stash.get(material) < stash_A_to_B.get(material)) return false
-            if (B.stash.get(material) < stash_B_to_A.get(material)) return false
-        }
-
-
-        //transaction is validated, execution
-        A.savings.transfer(B.savings, savings_A_to_B)
-        B.savings.transfer(A.savings, savings_B_to_A)
-
-        for (let material of MaterialConfiguration.MATERIAL) {
-            A.stash.transfer(B.stash, material, stash_A_to_B.get(material))
-            B.stash.transfer(A.stash, material, stash_B_to_A.get(material))
-        }
-        return true
     }
 
     export function pure_skill(character: Character, skill: skill) {

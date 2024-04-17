@@ -7,6 +7,7 @@ import { money } from "@custom_types/common";
 import { Data } from "../data/data_objects";
 import { DataID } from "../data/data_id";
 import { MATERIAL } from "@content/content";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 
 export enum AuctionResponse {
     NOT_IN_THE_SAME_CELL = 'not_in_the_same_cell',
@@ -38,12 +39,12 @@ export namespace MarketOrders {
         order.amount -= amount;
         const transaction_stash = new Stash()
         transaction_stash.inc(material, amount)
-        CharacterSystem.to_trade_stash(owner, order.material, -amount)
+        Effect.Transfer.to_trade_stash(owner, order.material, -amount)
 
         //actual transaction
-        CharacterSystem.transaction(owner, buyer,
+        Effect.transaction(owner, buyer,
                                     0 as money  , transaction_stash,
-                                    pay         , empty_stash       )
+                                    pay         , empty_stash       , CHANGE_REASON.TRADE)
         return 'ok'
     }
 
@@ -83,12 +84,12 @@ export namespace MarketOrders {
         order.amount -= amount;
         const transaction_stash = new Stash()
         transaction_stash.inc(material, amount)
-        CharacterSystem.to_trade_savings(owner, -pay as money)
+        Effect.Transfer.to_trade_savings(owner, -pay as money)
 
         //transaction
-        CharacterSystem.transaction(owner, seller,
+        Effect.transaction(owner, seller,
                                     pay          , empty_stash,
-                                    0 as money   , transaction_stash)
+                                    0 as money   , transaction_stash, CHANGE_REASON.TRADE)
         return 'ok'
     }
 
@@ -100,7 +101,7 @@ export namespace MarketOrders {
         if (amount <= 0) return 'invalid_amount'
         if (owner.savings.get() < price * amount) return 'not_enough_savings'
 
-        CharacterSystem.to_trade_savings(owner, amount * price as money)
+        Effect.Transfer.to_trade_savings(owner, amount * price as money)
         const order = Data.MarketOrders.create(amount, price, 'buy', material, owner.id)
         return 'ok'
     }
@@ -113,7 +114,7 @@ export namespace MarketOrders {
         if (amount <= 0) return 'invalid_amount'
         if (owner.stash.get(material) < amount) return 'not_enough_material'
 
-        CharacterSystem.to_trade_stash(owner, material, amount)
+        Effect.Transfer.to_trade_stash(owner, material, amount)
         const order = Data.MarketOrders.create(amount, price, 'sell', material, owner.id)
         return 'ok'
     }

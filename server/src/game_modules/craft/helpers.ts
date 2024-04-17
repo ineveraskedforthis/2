@@ -1,7 +1,7 @@
 import { Character } from "../character/character";
 import { Stash } from "../inventories/stash";
 import { trim } from "../calculations/basic_functions";
-import { CHANGE_REASON, Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 import { skill_check, box } from "@custom_types/inventory";
 import { Event } from "../events/events";
 import { CharacterSystem } from "../character/system";

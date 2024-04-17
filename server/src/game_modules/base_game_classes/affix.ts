@@ -5,7 +5,7 @@ import { Character } from "../character/character";
 import { Armour, Item, Weapon } from "../data/entities/item";
 import { Damage } from "../Damage";
 import { IMPACT_TYPE, MATERIAL } from "@content/content";
-import { CHANGE_REASON, Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 
 export function get_potential_affix_weapon(enchant_rating:number, item:Weapon):{tag: affix_tag, weight: number}[] {
     let potential_affix:{tag: affix_tag, weight: number}[] = []

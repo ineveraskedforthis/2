@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fish = exports.hunt = exports.gather_cotton = exports.gather_wood = void 0;
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 const events_1 = require("../events/events");
 const generator_1 = require("./generator");
 const system_1 = require("../character/system");

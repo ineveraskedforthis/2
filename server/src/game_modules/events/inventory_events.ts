@@ -3,7 +3,7 @@ import { UI_Part } from "../client_communication/causality_graph";
 import { UserManagement } from "../client_communication/user_manager";
 import { roll_affix_armour, roll_affix_weapon } from "../base_game_classes/affix";
 import { Alerts } from "../client_communication/network_actions/alerts";
-import { CHANGE_REASON, Effect } from "./effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 import { Event } from "./events";
 import { CharacterSystem } from "../character/system";
 import { EQUIP_SLOT, MATERIAL } from "@content/content";

@@ -5,7 +5,7 @@ const ACTIONS_BASIC_1 = require("../AI/ACTIONS_BASIC");
 const basic_functions_1 = require("../calculations/basic_functions");
 const user_manager_1 = require("../client_communication/user_manager");
 const system_1 = require("../market/system");
-const effects_1 = require("./effects");
+const effects_1 = require("../effects/effects");
 const data_objects_1 = require("../data/data_objects");
 const data_id_1 = require("../data/data_id");
 var EventMarket;

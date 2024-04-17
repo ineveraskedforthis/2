@@ -1,5 +1,5 @@
 import { Character } from "../character/character";
-import { CHANGE_REASON, Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 import { Event } from "../events/events";
 import { cell_id } from "@custom_types/ids";
 import { generate_action } from "./generator";

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generate_action = void 0;
 const generic_functions_1 = require("./generic_functions");
-const effects_1 = require("../events/effects");
+const effects_1 = require("../effects/effects");
 function generate_action(fatigue_cost, duration_modifer, trigger, effect, start_effect, associated_reason) {
     return {
         duration(character) {

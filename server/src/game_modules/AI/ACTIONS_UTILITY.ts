@@ -16,7 +16,7 @@ import { TraderRoutine } from "./AI_ROUTINE_URBAN_TRADER";
 import { Data } from "../data/data_objects";
 import { MATERIAL } from "@content/content";
 import { CharacterSystem } from "../character/system";
-import { CHANGE_REASON, Effect } from "../events/effects";
+import { CHANGE_REASON, Effect } from "../effects/effects";
 
 function rest_budget(character: Character) {
     let budget = character.savings.get()
