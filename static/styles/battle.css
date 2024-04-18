@@ -9,11 +9,6 @@
     top: 0%
 }
 
-#battle_canvas_background {
-    z-index: 1;
-    top: -100%;
-}
-
 #battle_tab > .battle_display {
     /* border: rgb(56, 143, 6) solid 1px; */
     flex: 0 0 60%;

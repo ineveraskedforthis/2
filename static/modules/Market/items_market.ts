@@ -130,8 +130,8 @@ export function init_market_items() {
 }
 
 export function update_item_market(data: ItemOrderData[]) {
-    console.log("updating market")
-    console.log(data)
+    // console.log("updating market")
+    // console.log(data)
 
     market_items.data = data
 }

@@ -142,6 +142,7 @@ function draw(time) {
     }
     delta = (time - previous) / 1000;
     previous = time;
+    globals.now = Date.now();
     draw_map_related_stuff(map, delta);
     for (const value of animated_values_storage) {
         value.update_display();

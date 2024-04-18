@@ -13,19 +13,41 @@ export interface Socket {
 }
 
 export type battle_position = position & { __brand: "battle"}
+export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'|'new_turn'|'update'|'unit_join'|'unit_left';
+
+export interface BattleActionRecordPosition {
+    type: "position",
+    target: battle_position,
+    action: BattleEventTag,
+}
+
+export interface BattleActionRecordUnit {
+    type: "unit",
+    target: character_id,
+    action: BattleEventTag,
+}
 
 export interface UnitSocket {
     tag: string,//model
-    position: battle_position
-    range: number
+
     name: string
+
     hp: number
     max_hp: number
-    ap: number
+
+    ap: number,
+    max_ap: number,
+
     id: character_id
+
     next_turn: number
     dead: boolean
+
+    range: number
     move_cost: number
+    position: battle_position
+
+    action: BattleActionRecordUnit|BattleActionRecordPosition
 }
 
 export interface BattleActionChance {
@@ -33,44 +55,16 @@ export interface BattleActionChance {
     value: number
 }
 
-
-export type BattleEventTag = 'end_turn'|'move'|'attack'|'miss'|'ranged_attack'|'flee'|'new_turn'|'update'|'unit_join'|'unit_left';
-export interface BattleEventSocket{
-    tag: BattleEventTag
-    creator: character_id
-    target_position: battle_position
-    target_unit: character_id
-    cost: number
-    index: number // events are numbered, they should be treated in succession
-    data?: UnitSocket
+export interface BattleKeyframeSocket{
+    index: number // keyframes are numbered, they should be treated in succession if possible
+    data: UnitSocket[]
 }
-
-
 
 export type BattleData = {[_ in number]: UnitSocket};
 
 export type action_points = number & { __brand: "action_point"}
 export type ms = number & { __brand: "ms" }
-
-
-export interface MoveAction {action: "move", target: battle_position}
-export interface AttackAction {action: "attack", target: character_id}
-export interface HeavyAttackAction {action: "heavy_attack", target: character_id}
-export interface FastAttackAction {action: "fast_attack", target: character_id}
-export interface ChargeAction {action: "charge", target: character_id}
-export interface DodgeAction {action: "dodge", who: character_id}
-export interface ShootAction {action: "shoot", target: character_id}
-export interface PushBack {action: "push_back", target: character_id}
-export interface FleeAction {action: "flee", who: character_id}
-export interface MagicBoltAction {action: "magic_bolt", target: character_id}
-export interface SpellTargetAction {action: "spell_target", target: character_id, spell_tag: "charge"|"bolt"}
-export interface EndTurn {action: 'end_turn'}
-export interface NullAction {action: null}
-export interface SwitchWeaponAction {action: "switch_weapon", who: character_id}
-export type Action = MoveAction|AttackAction|FleeAction|SpellTargetAction|EndTurn|NullAction|FastAttackAction|DodgeAction|PushBack|MagicBoltAction|SwitchWeaponAction|ShootAction
-export type ActionTag = 'move'|'attack'|'flee'|'spell_target'|'end_turn'|null|'heavy_attack'|'dodge'|'push_back'|'magic_bolt'|'switch_weapon'|'shoot'
-
-export type ActionLog = Action[]
+export type seconds = number & { __brand: "seconds" }
 
 export interface BattleActionData {
     name: string,

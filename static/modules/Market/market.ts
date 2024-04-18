@@ -233,7 +233,7 @@ export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>
     })
 
     socket.on('market-data', data => {
-        console.log("update-bulk-market");
+        // console.log("update-bulk-market");
         market_bulk.data = data;
     });
 

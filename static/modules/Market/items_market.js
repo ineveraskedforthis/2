@@ -110,8 +110,8 @@ export function init_market_items() {
     socket.on('item-market-data', data => { update_item_market(data); });
 }
 export function update_item_market(data) {
-    console.log("updating market");
-    console.log(data);
+    // console.log("updating market")
+    // console.log(data)
     market_items.data = data;
 }
 

@@ -14,6 +14,14 @@ const COST = {
     ATTACK: 3,
     CHARGE: 1,
 };
+function sanitize_movement_target(unit, available_points, target) {
+    let tmp = geom_1.geom.minus(target, unit.position);
+    var points_spent = geom_1.geom.norm(tmp) * VALUES_1.BattleValues.move_cost(unit);
+    if (points_spent > available_points) {
+        tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), available_points / VALUES_1.BattleValues.move_cost(unit));
+    }
+    return { x: tmp.x + unit.position.x, y: tmp.y + unit.position.y };
+}
 var BattleEvent;
 (function (BattleEvent) {
     function NewUnit(battle, unit) {
@@ -22,20 +30,20 @@ var BattleEvent;
         alerts_1.Alerts.new_unit(battle, unit);
         if (battle.grace_period > 0)
             battle.grace_period = 5;
-        alerts_1.Alerts.battle_event_simple(battle, 'unit_join', unit, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'unit_join', unit);
     }
     BattleEvent.NewUnit = NewUnit;
     function Leave(battle, unit) {
         if (unit == undefined)
             return;
         // console.log('leave' + unit.id)
-        alerts_1.Alerts.battle_event_simple(battle, 'update', unit, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'update', unit);
         EndTurn(battle, unit);
         alerts_1.Alerts.remove_unit(battle, unit);
-        alerts_1.Alerts.battle_event_simple(battle, 'flee', unit, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'flee', unit);
         // console.log(character.get_name())
         user_manager_1.UserManagement.add_user_to_update_queue(unit.user_id, 22 /* UI_Part.BATTLE */);
-        alerts_1.Alerts.battle_event_simple(battle, 'unit_left', unit, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'unit_left', unit);
         console.log(`${unit.id} left battle`);
         heap_1.CharactersHeap.delete_unit(battle, unit);
         if (heap_1.CharactersHeap.get_units_amount(battle) == 0) {
@@ -80,24 +88,18 @@ var BattleEvent;
         let time_passed = next_unit.next_turn_after;
         heap_1.CharactersHeap.update(battle, time_passed);
         // send updates
-        alerts_1.Alerts.battle_event_simple(battle, 'end_turn', unit, current_ap - new_ap);
+        alerts_1.Alerts.battle_event_simple(battle, 'end_turn', unit);
         alerts_1.Alerts.battle_update_unit(battle, unit);
-        alerts_1.Alerts.battle_event_simple(battle, 'new_turn', next_unit, 0);
+        alerts_1.Alerts.battle_event_simple(battle, 'new_turn', next_unit);
         return true;
     }
     BattleEvent.EndTurn = EndTurn;
-    function Move(battle, unit, target, ignore_flag) {
-        let tmp = geom_1.geom.minus(target, unit.position);
-        var points_spent = geom_1.geom.norm(tmp) * VALUES_1.BattleValues.move_cost(unit);
-        if (points_spent > unit.action_points_left) {
-            tmp = geom_1.geom.mult(geom_1.geom.normalize(tmp), unit.action_points_left / VALUES_1.BattleValues.move_cost(unit));
-            points_spent = unit.action_points_left;
-        }
-        const result = { x: tmp.x + unit.position.x, y: tmp.y + unit.position.y };
-        SetCoord(battle, unit, result);
+    function Move(battle, unit, target, available_points, ignore_flag) {
+        target = sanitize_movement_target(unit, available_points, target);
+        SetCoord(battle, unit, target);
         if (!ignore_flag) {
             // unit.action_points_left =  unit.action_points_left - points_spent as action_points
-            alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position, points_spent);
+            alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position);
             alerts_1.Alerts.battle_update_unit(battle, unit);
         }
     }
@@ -119,7 +121,7 @@ var BattleEvent;
             direction = geom_1.geom.minus(direction, stop_before);
             SetCoord(battle, unit, direction);
         }
-        alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position, COST.CHARGE);
+        alerts_1.Alerts.battle_event_target_position(battle, 'move', unit, unit.position);
     }
     BattleEvent.Charge = Charge;
     // export function MagicBolt(battle: Battle, attacker: Character, defender: Character) {

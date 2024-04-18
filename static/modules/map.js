@@ -64,7 +64,7 @@ export function init_map_control(map) {
         if (selected_hex == undefined)
             return;
         if (event.button == 2) {
-            let tmp = Date.now();
+            let tmp = globals.now;
             if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
                 map.select_hex(selected_hex);
                 map.move_flag = true;
@@ -72,7 +72,7 @@ export function init_map_control(map) {
             }
         }
         else {
-            let tmp = Date.now();
+            let tmp = globals.now;
             if ((map.last_time_down == undefined) || (tmp - map.last_time_down < 150)) {
                 map.select_hex(selected_hex);
                 let context = document.getElementById('map_context');

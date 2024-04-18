@@ -122,72 +122,73 @@ var Alerts;
         Alerts.generic_user_alert(user, 'b-action-damage', { tag: tag, value: value });
     }
     Alerts.battle_action_damage = battle_action_damage;
-    function battle_event_target_unit(battle, tag, unit, target, cost) {
+    function battle_event_target_unit(battle, tag, unit, target) {
         battle.last_event_index += 1;
-        const Event = {
-            tag: tag,
-            creator: unit.id,
-            target_position: target.position,
-            target_unit: target.id,
-            index: battle.last_event_index,
-            cost: cost,
+        const actor_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
+        actor_data.action = {
+            action: tag,
+            target: target.id,
+            type: "unit"
         };
-        battle.battle_history[Event.index] = Event;
-        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')) {
-            let unit_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
-            Event.data = unit_data;
-        }
+        const target_data = systems_communication_1.Convert.unit_to_unit_socket(target);
+        const event = {
+            index: battle.last_event_index,
+            data: [
+                actor_data, target_data
+            ]
+        };
+        battle.battle_history[event.index] = event;
         for (let unit_id of Object.values(battle.heap)) {
             if (unit_id == undefined)
                 continue;
             const unit = data_objects_1.Data.Characters.from_id(unit_id);
-            generic_character_alert(unit, 'battle-event', Event);
+            generic_character_alert(unit, 'battle-event', event);
         }
     }
     Alerts.battle_event_target_unit = battle_event_target_unit;
-    function battle_event_simple(battle, tag, unit, cost) {
+    function battle_event_simple(battle, tag, unit) {
         battle.last_event_index += 1;
-        const Event = {
-            tag: tag,
-            creator: unit.id,
-            target_position: unit.position,
-            target_unit: unit.id,
-            index: battle.last_event_index,
-            cost: cost,
+        const actor_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
+        actor_data.action = {
+            action: tag,
+            target: unit.id,
+            type: "unit"
         };
-        battle.battle_history[Event.index] = Event;
-        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')) {
-            let unit_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
-            Event.data = unit_data;
-        }
+        const event = {
+            index: battle.last_event_index,
+            data: [
+                actor_data
+            ]
+        };
+        battle.battle_history[event.index] = event;
         for (let unit of battle.heap) {
             if (unit == undefined)
                 continue;
             const character = data_objects_1.Data.Characters.from_id(unit);
-            generic_character_alert(character, 'battle-event', Event);
+            generic_character_alert(character, 'battle-event', event);
         }
     }
     Alerts.battle_event_simple = battle_event_simple;
-    function battle_event_target_position(battle, tag, unit, position, cost) {
+    function battle_event_target_position(battle, tag, unit, position) {
         battle.last_event_index += 1;
-        const Event = {
-            tag: tag,
-            creator: unit.id,
-            target_position: position,
-            target_unit: unit.id,
-            index: battle.last_event_index,
-            cost: cost,
+        const actor_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
+        actor_data.action = {
+            action: tag,
+            target: position,
+            type: "position"
         };
-        battle.battle_history[Event.index] = Event;
-        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')) {
-            let unit_data = systems_communication_1.Convert.unit_to_unit_socket(unit);
-            Event.data = unit_data;
-        }
+        const event = {
+            index: battle.last_event_index,
+            data: [
+                actor_data
+            ]
+        };
+        battle.battle_history[event.index] = event;
         for (let unit of battle.heap) {
             if (unit == undefined)
                 continue;
             const character = data_objects_1.Data.Characters.from_id(unit);
-            generic_character_alert(character, 'battle-event', Event);
+            generic_character_alert(character, 'battle-event', event);
         }
     }
     Alerts.battle_event_target_position = battle_event_target_position;
@@ -205,12 +206,12 @@ var Alerts;
         for (let unit of battle.heap) {
             if (unit == undefined)
                 continue;
-            Alerts.battle_event_simple(battle, 'update', data_objects_1.Data.Characters.from_id(unit), 0);
+            Alerts.battle_event_simple(battle, 'update', data_objects_1.Data.Characters.from_id(unit));
         }
     }
     Alerts.battle_update_units = battle_update_units;
     function battle_update_unit(battle, unit) {
-        Alerts.battle_event_simple(battle, 'update', unit, 0);
+        Alerts.battle_event_simple(battle, 'update', unit);
     }
     Alerts.battle_update_unit = battle_update_unit;
     function battle_to_character(battle, character) {
@@ -232,7 +233,7 @@ var Alerts;
             if (unit == undefined)
                 continue;
             const character = data_objects_1.Data.Characters.from_id(unit);
-            generic_character_alert(character, 'battle-remove-unit', systems_communication_1.Convert.unit_to_unit_socket(removed_unit));
+            generic_character_alert(character, 'battle-remove-unit', removed_unit);
         }
     }
     Alerts.remove_unit = remove_unit;
@@ -295,13 +296,13 @@ var Alerts;
         function stash_transfer(from, to, transfer, reason) {
             for (const m of content_1.MaterialConfiguration.MATERIAL) {
                 const amount = transfer.get(m);
-                if (amount == 0)
-                    continue;
                 material_transfer(from, to, m, amount, reason);
             }
         }
         Log.stash_transfer = stash_transfer;
         function material_transfer(from, to, what, amount, reason) {
+            if (amount == 0)
+                return;
             Alerts.log_to_character(from, `You transfered ${amount} of ${content_1.MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason:${reason}`);
             Alerts.log_to_character(to, `You got ${amount} of ${content_1.MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`);
         }

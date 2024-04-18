@@ -31,6 +31,7 @@ import { CharacterDataBasic } from './modules/Types/character.js';
 import { BackgroundImage } from './modules/BackgroundImage/background_image.js';
 import { init_equipment_screen } from './modules/Equipment/equipment.js';
 import { EquipSlotConfiguration, equip_slot_string_id } from "@content/content.js"
+import { ms, seconds } from '@custom_types/battle_data.js';
 
 // noselect tabs
 
@@ -160,13 +161,15 @@ socket.on('equip-update', (msg: EquipSocket) => {
 // UI animations update loop
 var delta = 0;
 var previous: number|undefined = undefined
-function draw(time: number) {
+function draw(time: ms|number) {
     if (previous == undefined) {
         previous = time
     }
 
-    delta = (time - previous) / 1000
+    delta = (time - previous) / 1000 as seconds
     previous = time
+
+    globals.now = Date.now()
 
     draw_map_related_stuff(map, delta)
 
@@ -176,7 +179,7 @@ function draw(time: number) {
 
     if (elementById('actual_game_scene').style.visibility == 'visible') {
         if (!elementById('battle_tab').classList.contains('hidden')) {
-            BattleImage.draw(delta);
+            BattleImage.draw(delta as seconds);
         }
     }
     window.requestAnimationFrame(draw);

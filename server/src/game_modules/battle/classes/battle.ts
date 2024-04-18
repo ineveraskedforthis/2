@@ -1,5 +1,5 @@
 import { character_id } from "@custom_types/ids";
-import { BattleEventSocket, battle_id, ms } from "../../../../../shared/battle_data";
+import { BattleKeyframeSocket, battle_id, ms } from "../../../../../shared/battle_data";
 import { DataID } from "../../data/data_id";
 
 interface BattleHeap {
@@ -18,7 +18,7 @@ export class Battle implements BattleHeap {
     grace_period: number
     stopped: boolean
 
-    battle_history: BattleEventSocket[]
+    battle_history: BattleKeyframeSocket[]
 
     ai_timer?: ms
 

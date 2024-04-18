@@ -349,8 +349,6 @@ export class List<Item> implements ListInterface<Item> {
     }
 
     set data(data: Item[]) {
-        console.log("update table with data:")
-        console.log(data)
         this._data = data
         this._update_table()
     }

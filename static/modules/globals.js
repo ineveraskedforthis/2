@@ -25,5 +25,6 @@ export var globals = {
     action_ratio: 0,
     action_total_time: 1,
     local_characters: [],
-    character_data: undefined
+    character_data: undefined,
+    now: Date.now()
 };

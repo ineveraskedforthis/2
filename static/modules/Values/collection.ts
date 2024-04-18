@@ -4,6 +4,7 @@ import { elementById, isHTML, select, selectHTMLs } from "../HTMLwrappers/common
 import { material_icon_url } from "../Stash/stash.js";
 import { AnimatedValueInterface, BulkAmountInterface, DependencyUI, LimitedValueInterface, ValueInterface } from "../Types/character.js";
 import { smoothstep } from "../common.js";
+import { globals } from "../globals.js";
 
 export function value_bar_class_name (id: string) : string {
     return id + "_value_bar";
@@ -34,11 +35,11 @@ export class Value implements ValueInterface {
         this._value = 0;
         this._update(1);
 
-        console.log("register value: " + id);
+        // console.log("register value: " + id);
 
         ((display: Value) => socket.on(`val_${id}_c`, (data: number) => {
-            console.log("update value: " + id)
-            console.log("new value: ", data)
+            // console.log("update value: " + id)
+            // console.log("new value: ", data)
             display.value = data
 
             for (let item of dependents) {
@@ -77,7 +78,7 @@ export class AnimatedValue extends Value implements AnimatedValueInterface {
     constructor(socket: Socket, id: string, dependents: DependencyUI[]) {
         super(socket, id, dependents)
 
-        this.last_update_time = Date.now()
+        this.last_update_time = globals.now
         this.current_lerp_origin = 0
 
         animated_values_storage.push(this)
@@ -92,14 +93,14 @@ export class AnimatedValue extends Value implements AnimatedValueInterface {
     }
 
     get display_value() {
-        const now = Date.now()
+        const now = globals.now
         const time_passed = Math.min((now - this.last_update_time) / 1000 * 2, 1)
         return smoothstep(this.current_lerp_origin, this._value, time_passed)
     }
 
     set value(value: number) {
         this.current_lerp_origin = this.display_value;
-        this.last_update_time = Date.now();
+        this.last_update_time = globals.now;
 
         this._value = value;
         this._update(value - this.display_value)

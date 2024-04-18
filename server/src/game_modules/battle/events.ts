@@ -20,7 +20,15 @@ const COST = {
     CHARGE: 1,
 }
 
+function sanitize_movement_target(unit: Character, available_points: action_points, target: battle_position) {
+    let tmp = geom.minus(target, unit.position)
+    var points_spent = geom.norm(tmp) * BattleValues.move_cost(unit)
+    if (points_spent > available_points) {
+        tmp = geom.mult(geom.normalize(tmp), available_points / BattleValues.move_cost(unit)) as battle_position
+    }
 
+    return {x: tmp.x + unit.position.x, y: tmp.y + unit.position.y} as battle_position
+}
 
 export namespace BattleEvent {
     export function NewUnit(battle: Battle, unit: Character) {
@@ -28,21 +36,21 @@ export namespace BattleEvent {
         CharactersHeap.add_unit(battle, unit)
         Alerts.new_unit(battle, unit)
         if (battle.grace_period > 0) battle.grace_period = 5
-        Alerts.battle_event_simple(battle, 'unit_join', unit, 0)
+        Alerts.battle_event_simple(battle, 'unit_join', unit)
     }
 
     export function Leave(battle: Battle, unit: Character|undefined) {
         if (unit == undefined) return
         // console.log('leave' + unit.id)
-        Alerts.battle_event_simple(battle, 'update', unit, 0)
+        Alerts.battle_event_simple(battle, 'update', unit)
         EndTurn(battle, unit)
 
         Alerts.remove_unit(battle, unit)
-        Alerts.battle_event_simple(battle, 'flee', unit, 0)
+        Alerts.battle_event_simple(battle, 'flee', unit)
         // console.log(character.get_name())
 
         UserManagement.add_user_to_update_queue(unit.user_id, UI_Part.BATTLE)
-        Alerts.battle_event_simple(battle, 'unit_left', unit, 0)
+        Alerts.battle_event_simple(battle, 'unit_left', unit)
 
         console.log(`${unit.id} left battle`)
         CharactersHeap.delete_unit(battle, unit)
@@ -93,25 +101,19 @@ export namespace BattleEvent {
         CharactersHeap.update(battle, time_passed)
 
         // send updates
-        Alerts.battle_event_simple(battle, 'end_turn', unit, current_ap - new_ap)
+        Alerts.battle_event_simple(battle, 'end_turn', unit)
         Alerts.battle_update_unit(battle, unit)
-        Alerts.battle_event_simple(battle, 'new_turn', next_unit, 0)
+        Alerts.battle_event_simple(battle, 'new_turn', next_unit)
         return true
     }
 
-    export function Move(battle: Battle, unit: Character, target: battle_position, ignore_flag: boolean) {
-        let tmp = geom.minus(target, unit.position)
-        var points_spent = geom.norm(tmp) * BattleValues.move_cost(unit)
-        if (points_spent > unit.action_points_left) {
-            tmp = geom.mult(geom.normalize(tmp), unit.action_points_left / BattleValues.move_cost(unit)) as battle_position
-            points_spent = unit.action_points_left
-        }
-        const result = {x: tmp.x + unit.position.x, y: tmp.y + unit.position.y} as battle_position
-        SetCoord(battle, unit, result)
+    export function Move(battle: Battle, unit: Character, target: battle_position, available_points: action_points, ignore_flag: boolean) {
+        target = sanitize_movement_target(unit, available_points, target)
+        SetCoord(battle, unit, target)
 
         if (!ignore_flag) {
             // unit.action_points_left =  unit.action_points_left - points_spent as action_points
-            Alerts.battle_event_target_position(battle, 'move', unit, unit.position, points_spent)
+            Alerts.battle_event_target_position(battle, 'move', unit, unit.position)
             Alerts.battle_update_unit(battle, unit)
         }
     }
@@ -135,7 +137,7 @@ export namespace BattleEvent {
             SetCoord(battle, unit, direction)
         }
 
-        Alerts.battle_event_target_position(battle, 'move', unit, unit.position, COST.CHARGE)
+        Alerts.battle_event_target_position(battle, 'move', unit, unit.position)
     }
 
     // export function MagicBolt(battle: Battle, attacker: Character, defender: Character) {

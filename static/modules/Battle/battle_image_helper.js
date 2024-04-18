@@ -1,67 +1,39 @@
-import { BATTLE_SCALE } from "./constants.js";
-import { battle_canvas } from "./battle_image.js";
-const NAMEPLATE_SHIFT_X = 0;
-const NAMEPLATE_SHIFT_Y = 0;
-export var position_c;
-(function (position_c) {
+export var geom2;
+(function (geom2) {
     function diff(a, b) {
         return { x: a.x - b.x, y: a.y - b.y };
     }
-    position_c.diff = diff;
+    geom2.diff = diff;
     function dist(a, b) {
         return norm(diff(b, a));
     }
-    position_c.dist = dist;
+    geom2.dist = dist;
     function norm(a) {
         return Math.sqrt(a.x * a.x + a.y * a.y);
     }
-    position_c.norm = norm;
+    geom2.norm = norm;
     function sum(a, b) {
         return { x: a.x + b.x, y: a.y + b.y };
     }
-    position_c.sum = sum;
+    geom2.sum = sum;
     function scalar_mult(x, a) {
         return { x: x * a.x, y: x * a.y };
     }
-    position_c.scalar_mult = scalar_mult;
-    function battle_to_canvas(pos, camera) {
-        const w = battle_canvas.width;
-        const h = battle_canvas.height;
-        let centre = { x: pos.y, y: pos.x };
-        centre.x = -centre.x * BATTLE_SCALE + w / 2 + camera.x;
-        centre.y = centre.y * BATTLE_SCALE + h / 2 + camera.y;
-        return raw_to_canvas(centre);
-    }
-    position_c.battle_to_canvas = battle_to_canvas;
-    function canvas_to_battle(pos) {
-        const w = battle_canvas.width;
-        const h = battle_canvas.height;
-        let tmp = { x: pos.x, y: pos.y };
-        tmp.x = (tmp.x - w / 2) / (-BATTLE_SCALE);
-        tmp.y = (tmp.y - h / 2) / (BATTLE_SCALE);
-        return raw_to_battle({ x: tmp.y, y: tmp.x });
-    }
-    position_c.canvas_to_battle = canvas_to_battle;
-    function raw_to_battle(pos) {
-        return pos;
-    }
-    position_c.raw_to_battle = raw_to_battle;
-    function raw_to_canvas(pos) {
-        return pos;
-    }
-    position_c.raw_to_canvas = raw_to_canvas;
+    geom2.scalar_mult = scalar_mult;
     function image_to_canvas(position, w, h) {
-        // let w = image.get_w(images);
-        // let h = image.get_h(images);
         return [position.x - w / 10, position.y - h / 5 + 10, w / 5, h / 5];
     }
-    position_c.image_to_canvas = image_to_canvas;
-})(position_c || (position_c = {}));
-export function get_mouse_pos_in_canvas(canvas, event) {
-    var rect = canvas.getBoundingClientRect();
-    let tmp = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top
-    };
-    return position_c.raw_to_canvas(tmp);
-}
+    geom2.image_to_canvas = image_to_canvas;
+})(geom2 || (geom2 = {}));
+export var geom3;
+(function (geom3) {
+    function dot3(a, b) {
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    }
+    geom3.dot3 = dot3;
+    function dist(a, b) {
+        const c = [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+        return Math.sqrt(dot3(c, c));
+    }
+    geom3.dist = dist;
+})(geom3 || (geom3 = {}));

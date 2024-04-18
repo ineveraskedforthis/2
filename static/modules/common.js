@@ -24,6 +24,24 @@ export function get_pos_in_canvas(canvas, event) {
     return tmp;
 }
 export function smoothstep(a, b, t) {
+    if (t > 1) {
+        return b;
+    }
+    if (t < 0) {
+        return a;
+    }
+    if (a == b) {
+        return a;
+    }
     const _smoothstep = t * t * (3 - 2 * t);
     return a * (1 - _smoothstep) + b * _smoothstep;
+}
+export function lerp(a, b, t) {
+    if (t > 1) {
+        return b;
+    }
+    if (t < 0) {
+        return a;
+    }
+    return a * (1 - t) + b * t;
 }

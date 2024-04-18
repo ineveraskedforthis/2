@@ -100,10 +100,17 @@ export namespace Convert {
             hp: character.get_hp(),
             max_hp: character.get_max_hp(),
             ap: character.action_points_left,
+            max_ap: character.action_points_max,
             id: character.id,
             next_turn: character.next_turn_after,
             dead: character.dead(),
-            move_cost: BattleValues.move_cost(character)
+            move_cost: BattleValues.move_cost(character),
+
+            action: {
+                type: "unit",
+                target: character.id,
+                action: "update"
+            }
         }
     }
 

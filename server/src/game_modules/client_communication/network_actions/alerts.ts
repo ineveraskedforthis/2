@@ -1,4 +1,4 @@
-import { BattleEventSocket, BattleEventTag, battle_position } from "../../../../../shared/battle_data";
+import { BattleKeyframeSocket, BattleEventTag, battle_position } from "../../../../../shared/battle_data";
 import { ItemData, skill } from "../../../../../shared/inventory";
 import { AttackObj } from "../../attack/class";
 import { Battle } from "../../battle/classes/battle";
@@ -138,78 +138,83 @@ export namespace Alerts {
         Alerts.generic_user_alert(user, 'b-action-damage', {tag: tag, value: value})
     }
 
-    export function battle_event_target_unit(battle: Battle, tag: BattleEventTag, unit: Character, target: Character, cost: number) {
+    export function battle_event_target_unit(battle: Battle, tag: BattleEventTag, unit: Character, target: Character) {
         battle.last_event_index += 1
-        const Event:BattleEventSocket = {
-            tag: tag,
-            creator: unit.id,
-            target_position: target.position,
-            target_unit: target.id,
+
+        const actor_data = Convert.unit_to_unit_socket(unit)
+        actor_data.action = {
+            action: tag,
+            target: target.id,
+            type: "unit"
+        }
+
+        const target_data = Convert.unit_to_unit_socket(target)
+
+        const event : BattleKeyframeSocket = {
             index: battle.last_event_index,
-            cost: cost,
+            data: [
+                actor_data, target_data
+            ]
         }
 
-        battle.battle_history[Event.index] = Event
-
-        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
-            let unit_data = Convert.unit_to_unit_socket(unit)
-            Event.data = unit_data
-        }
+        battle.battle_history[event.index] = event
 
         for (let unit_id of Object.values(battle.heap)) {
             if (unit_id == undefined) continue;
             const unit = Data.Characters.from_id(unit_id)
-            generic_character_alert(unit, 'battle-event', Event)
+            generic_character_alert(unit, 'battle-event', event)
         }
     }
 
-    export function battle_event_simple(battle: Battle, tag: BattleEventTag, unit: Character, cost: number) {
+    export function battle_event_simple(battle: Battle, tag: BattleEventTag, unit: Character) {
         battle.last_event_index += 1
-        const Event:BattleEventSocket = {
-            tag: tag,
-            creator: unit.id,
-            target_position: unit.position,
-            target_unit: unit.id,
+
+        const actor_data = Convert.unit_to_unit_socket(unit)
+        actor_data.action = {
+            action: tag,
+            target: unit.id,
+            type: "unit"
+        }
+
+        const event : BattleKeyframeSocket = {
             index: battle.last_event_index,
-            cost: cost,
+            data: [
+                actor_data
+            ]
         }
 
-        battle.battle_history[Event.index] = Event
-
-        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
-            let unit_data = Convert.unit_to_unit_socket(unit)
-            Event.data = unit_data
-        }
+        battle.battle_history[event.index] = event
 
         for (let unit of battle.heap) {
             if (unit == undefined) continue
             const character = Data.Characters.from_id(unit)
-            generic_character_alert(character, 'battle-event', Event)
+            generic_character_alert(character, 'battle-event', event)
         }
     }
 
-    export function battle_event_target_position(battle: Battle, tag: BattleEventTag, unit: Character, position: battle_position, cost: number) {
+    export function battle_event_target_position(battle: Battle, tag: BattleEventTag, unit: Character, position: battle_position) {
         battle.last_event_index += 1
-        const Event:BattleEventSocket = {
-            tag: tag,
-            creator: unit.id,
-            target_position: position,
-            target_unit: unit.id,
+
+        const actor_data = Convert.unit_to_unit_socket(unit)
+        actor_data.action = {
+            action: tag,
+            target: position,
+            type: "position"
+        }
+
+        const event : BattleKeyframeSocket = {
             index: battle.last_event_index,
-            cost: cost,
+            data: [
+                actor_data
+            ]
         }
 
-        battle.battle_history[Event.index] = Event
-
-        if ((tag == 'update') || (tag == 'unit_join') || (tag == 'new_turn')){
-            let unit_data = Convert.unit_to_unit_socket(unit)
-            Event.data = unit_data
-        }
+        battle.battle_history[event.index] = event
 
         for (let unit of battle.heap) {
             if (unit == undefined) continue
             const character = Data.Characters.from_id(unit)
-            generic_character_alert(character, 'battle-event', Event)
+            generic_character_alert(character, 'battle-event', event)
         }
     }
 
@@ -225,12 +230,12 @@ export namespace Alerts {
     export function battle_update_units(battle: Battle) {
         for (let unit of battle.heap) {
             if (unit == undefined) continue;
-            Alerts.battle_event_simple(battle, 'update', Data.Characters.from_id(unit), 0)
+            Alerts.battle_event_simple(battle, 'update', Data.Characters.from_id(unit))
         }
     }
 
     export function battle_update_unit(battle: Battle, unit: Character) {
-        Alerts.battle_event_simple(battle, 'update', unit, 0)
+        Alerts.battle_event_simple(battle, 'update', unit)
     }
 
     export function battle_to_character(battle: Battle, character: Character) {
@@ -250,7 +255,7 @@ export namespace Alerts {
         for (let unit of battle.heap) {
             if (unit == undefined) continue;
             const character = Data.Characters.from_id(unit)
-            generic_character_alert(character, 'battle-remove-unit', Convert.unit_to_unit_socket(removed_unit))
+            generic_character_alert(character, 'battle-remove-unit', removed_unit)
         }
     }
 
@@ -310,13 +315,12 @@ export namespace Alerts {
         export function stash_transfer(from: Character, to: Character, transfer: Stash, reason: CHANGE_REASON) {
             for (const m of MaterialConfiguration.MATERIAL) {
                 const amount = transfer.get(m)
-                if (amount == 0) continue;
-
                 material_transfer(from, to, m, amount, reason)
             }
         }
 
         export function material_transfer(from: Character, to: Character, what: MATERIAL, amount: number, reason: CHANGE_REASON) {
+            if (amount == 0) return;
             Alerts.log_to_character(from, `You transfered ${amount} of ${MaterialStorage.get(what).name} to ${to.name}(${to.id}). Reason:${reason}`)
             Alerts.log_to_character(to, `You got ${amount} of ${MaterialStorage.get(what).name} from ${from.name}(${to.id}). Reason:${reason}`)
         }

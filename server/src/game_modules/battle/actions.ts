@@ -64,7 +64,6 @@ function always(character: Character): boolean {
     return true
 }
 
-
 const RANDOM_STEP_LENGTH = 2
 
 export const ActionsSelf: {[_ in ActionSelfKeys]: ActionSelf} = {
@@ -79,11 +78,12 @@ export const ActionsSelf: {[_ in ActionSelfKeys]: ActionSelf} = {
             }
             let dice = Math.random();
             if (dice <= BattleValues.flee_chance(character.position)) { // success
-                Alerts.battle_event_simple(battle, 'flee', character, 3)
-                Alerts.battle_event_simple(battle, 'update', character, 0)
+                Alerts.battle_event_simple(battle, 'flee', character)
+                Alerts.battle_event_simple(battle, 'update', character)
                 BattleEvent.Leave(battle, character)
                 return
             }
+            Alerts.battle_event_simple(battle, "flee", character)
         },
         chance: (battle: Battle, character: Character, ) => {
             return BattleValues.flee_chance(character.position)
@@ -105,11 +105,11 @@ export const ActionsSelf: {[_ in ActionSelfKeys]: ActionSelf} = {
         ap_cost: (battle: Battle, character: Character, ) => {
             return CharacterSystem.movement_cost_battle(character) * RANDOM_STEP_LENGTH as action_points
         },
-        execute: (battle: Battle, character: Character, ) => {
+        execute: (battle: Battle, character: Character, available_points: action_points) => {
             const phi = Math.random() * Math.PI * 2
             const shift = {x: Math.cos(phi), y: Math.sin(phi)} as battle_position
-            const target = geom.sum(character.position, geom.mult(shift, RANDOM_STEP_LENGTH))
-            BattleEvent.Move(battle, character, target, true)
+            let target = geom.sum(character.position, geom.mult(shift, RANDOM_STEP_LENGTH))
+            BattleEvent.Move(battle, character, target, available_points, true, )
         },
         chance: (battle: Battle, character: Character, ) => {
             return 1
@@ -175,7 +175,7 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
                     Event.attack(character, aoe_target, dodge_flag, 'slice', false)
                 }
 
-                Alerts.battle_event_target_unit(battle, 'attack', character, aoe_target, 0)
+                Alerts.battle_event_target_unit(battle, 'attack', character, aoe_target)
                 Alerts.battle_update_unit(battle, aoe_target)
             }
         },
@@ -200,7 +200,7 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             let range = character.range()
 
             Event.attack(character, target_character, dodge_flag, 'blunt', false)
-            Alerts.battle_event_target_unit(battle, 'attack', character, target_character, 0)
+            Alerts.battle_event_target_unit(battle, 'attack', character, target_character)
             Alerts.battle_update_unit(battle, character)
             Alerts.battle_update_unit(battle, target_character)
         },
@@ -322,7 +322,7 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             // console.log('current ap:' + character.action_points_left)
             return distance_to_walk * BattleValues.move_cost(character) as action_points
         },
-        execute: (battle: Battle, character: Character, target_character: Character, ignore_flag?: boolean) => {
+        execute: (battle: Battle, character: Character, target_character: Character, available_points: action_points, ignore_flag?: boolean) => {
             const delta = geom.minus(target_character.position, character.position);
             const dist = geom.norm(delta)
             const range = character.range()
@@ -333,7 +333,8 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             let direction = geom.normalize(delta)
             let distance_to_walk = Math.min(dist - range + 0.01, max_move)
             let target = geom.sum(character.position, geom.mult(direction, distance_to_walk))
-            BattleEvent.Move(battle, character, target, ignore_flag == true)
+
+            BattleEvent.Move(battle, character, target, available_points, ignore_flag == true)
         },
         chance: (battle: Battle, character: Character,  target_character: Character, ) => {
             return 1
@@ -370,8 +371,8 @@ export const ActionsPosition: { [key in ActionPositionKeys]: ActionPosition} = {
             const distance = geom.dist(character.position, target)
             return Math.min(distance * BattleValues.move_cost(character), character.action_points_left) as action_points
         },
-        execute: (battle: Battle, character: Character,  target: battle_position) => {
-            BattleEvent.Move(battle, character, target, false)
+        execute: (battle: Battle, character: Character,  target: battle_position, available_points: action_points) => {
+            BattleEvent.Move(battle, character, target, available_points, false)
         }
     }
 }
@@ -463,7 +464,7 @@ export function battle_action_self(tag: string, battle: Battle, character: Chara
     let result = battle_action_self_check(tag, battle, character, 0 as action_points)
     if (result.response == "OK") {
         character.action_points_left = character.action_points_left - result.ap_cost as action_points
-        result.action.execute(battle, character)
+        result.action.execute(battle, character, result.ap_cost)
     }
     return result
 }
@@ -473,8 +474,8 @@ export function battle_action_character(tag: ActionUnitKeys, battle: Battle, cha
     // console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name())
     // console.log(result.response)
     if (result.response == "OK") {
-        result.action.execute(battle, character, target_character)
         character.action_points_left = character.action_points_left - result.ap_cost as action_points
+        result.action.execute(battle, character, target_character, result.ap_cost)
         // Alerts.battle_event(battle, tag, character.id, target_character.position, target_character.id, result.ap_cost)
         Alerts.battle_update_unit(battle, character)
         Alerts.battle_update_unit(battle, target_character)
@@ -488,8 +489,8 @@ export function battle_action_position(tag: ActionPositionKeys, battle: Battle, 
     console.log(character.get_name(), 'attempts to ', tag)
     console.log(result.response)
     if (result.response == "OK") {
-        result.action.execute(battle, character, target)
         character.action_points_left = character.action_points_left - result.ap_cost as action_points
+        result.action.execute(battle, character, target, result.ap_cost)
 
         if (character.action_points_left < 0) {
             character.action_points_left = 0 as action_points

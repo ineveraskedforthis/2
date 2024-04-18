@@ -1,17 +1,10 @@
-import { battle_position, position } from "@custom_types/battle_data.js"
-import { BATTLE_SCALE } from "./constants.js"
-import { battle_canvas } from "./battle_image.js"
-
-declare var alert: (data: string) => {}
-
-
-const NAMEPLATE_SHIFT_X = 0
-const NAMEPLATE_SHIFT_Y = 0
+import { position } from "@custom_types/battle_data.js"
 
 export type canvas_position = position & { __brand: "canvas"}
 
+export type f3 = [number, number, number]
 
-export namespace position_c {
+export namespace geom2 {
 
     export function diff<Type extends position>(a: Type, b: Type): Type {
         return {x: a.x - b.x, y:a.y - b.y} as Type
@@ -33,84 +26,22 @@ export namespace position_c {
         return {x: x * a.x, y: x * a.y} as Type
     }
 
-    export function battle_to_canvas(pos: battle_position, camera: canvas_position) {
-        const w = battle_canvas.width
-        const h = battle_canvas.height
-        let centre = {x: pos.y, y: pos.x};
-        centre.x = -centre.x * BATTLE_SCALE + w / 2 + camera.x;
-        centre.y = centre.y * BATTLE_SCALE + h / 2 + camera.y;
-        return raw_to_canvas(centre)
-    }
-
-    export function canvas_to_battle(pos: canvas_position) {
-        const w = battle_canvas.width
-        const h = battle_canvas.height
-        let tmp = {x: pos.x, y: pos.y}
-        tmp.x = (tmp.x - w / 2) / (-BATTLE_SCALE);
-        tmp.y = (tmp.y - h / 2) / (BATTLE_SCALE)
-        return raw_to_battle({x: tmp.y, y: tmp.x})
-    }
-
-    export function raw_to_battle(pos: position) {
-        return pos as battle_position
-    }
-
-    export function raw_to_canvas(pos: position) {
-        return pos as canvas_position
-    }
-
     export function image_to_canvas(position:canvas_position, w:number, h:number):[number, number, number, number] {
-        // let w = image.get_w(images);
-        // let h = image.get_h(images);
         return [position.x - w/10, position.y - h/5 + 10, w/5, h/5]
     }
 }
 
-export function get_mouse_pos_in_canvas(canvas:HTMLCanvasElement, event: any): canvas_position {
-    var rect = canvas.getBoundingClientRect();
-    let tmp = {
-        x: event.clientX - rect.left,
-        y: event.clientY - rect.top
-    };
-    return position_c.raw_to_canvas(tmp)
+export namespace geom3 {
+    export function dot3(a: f3, b: f3) {
+        return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+    }
+
+    export function dist(a: f3, b: f3) {
+        const c: f3 = [a[0] - b[0], a[1] - b[1], a[2] - b[2]]
+        return Math.sqrt(dot3(c, c))
+    }
 }
 
-// export class BattleUnit {
-//     id: character_id
-//     name: string
-//     hp: number
-//     max_hp: number
-//     ap: number
-//     range: number
-//     position: battle_position
-//     killed: boolean
-//     tag: string
-
-//     constructor(unit: UnitSocket) {
-//         this.id = unit.id
-//         this.name = unit.name
-//         this.hp = unit.hp
-//         this.max_hp = unit.max_hp
-//         this.ap = unit.ap
-//         this.range = unit.range
-//         this.position = unit.position
-//         this.killed = false
-//         if (unit.hp == 0) {
-//             this.killed = true
-//         }
-//         this.tag = unit.tag
-//     }
-
-//     update(hp: number, ap: number, position: battle_position, range: number) {
-//         if (hp != undefined) this.hp = hp;
-//         if (ap != undefined) this.ap = ap
-//         if (position != undefined) this.position = position
-//         if (range != undefined) this.range = range
-//         if (hp == 0) {
-//             this.killed = true
-//         }
-//     }
-// }
 
 export interface animation_event {
     type: "move"|"attack"|"update"|'attacked'

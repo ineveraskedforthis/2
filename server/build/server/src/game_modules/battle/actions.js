@@ -43,11 +43,12 @@ exports.ActionsSelf = {
             }
             let dice = Math.random();
             if (dice <= VALUES_1.BattleValues.flee_chance(character.position)) { // success
-                alerts_1.Alerts.battle_event_simple(battle, 'flee', character, 3);
-                alerts_1.Alerts.battle_event_simple(battle, 'update', character, 0);
+                alerts_1.Alerts.battle_event_simple(battle, 'flee', character);
+                alerts_1.Alerts.battle_event_simple(battle, 'update', character);
                 events_2.BattleEvent.Leave(battle, character);
                 return;
             }
+            alerts_1.Alerts.battle_event_simple(battle, "flee", character);
         },
         chance: (battle, character) => {
             return VALUES_1.BattleValues.flee_chance(character.position);
@@ -69,11 +70,11 @@ exports.ActionsSelf = {
         ap_cost: (battle, character) => {
             return system_2.CharacterSystem.movement_cost_battle(character) * RANDOM_STEP_LENGTH;
         },
-        execute: (battle, character) => {
+        execute: (battle, character, available_points) => {
             const phi = Math.random() * Math.PI * 2;
             const shift = { x: Math.cos(phi), y: Math.sin(phi) };
-            const target = geom_1.geom.sum(character.position, geom_1.geom.mult(shift, RANDOM_STEP_LENGTH));
-            events_2.BattleEvent.Move(battle, character, target, true);
+            let target = geom_1.geom.sum(character.position, geom_1.geom.mult(shift, RANDOM_STEP_LENGTH));
+            events_2.BattleEvent.Move(battle, character, target, available_points, true);
         },
         chance: (battle, character) => {
             return 1;
@@ -135,7 +136,7 @@ exports.ActionsUnit = {
                 else {
                     events_1.Event.attack(character, aoe_target, dodge_flag, 'slice', false);
                 }
-                alerts_1.Alerts.battle_event_target_unit(battle, 'attack', character, aoe_target, 0);
+                alerts_1.Alerts.battle_event_target_unit(battle, 'attack', character, aoe_target);
                 alerts_1.Alerts.battle_update_unit(battle, aoe_target);
             }
         },
@@ -158,7 +159,7 @@ exports.ActionsUnit = {
             let dodge_flag = (target_character.dodge_turns > 0);
             let range = character.range();
             events_1.Event.attack(character, target_character, dodge_flag, 'blunt', false);
-            alerts_1.Alerts.battle_event_target_unit(battle, 'attack', character, target_character, 0);
+            alerts_1.Alerts.battle_event_target_unit(battle, 'attack', character, target_character);
             alerts_1.Alerts.battle_update_unit(battle, character);
             alerts_1.Alerts.battle_update_unit(battle, target_character);
         },
@@ -274,7 +275,7 @@ exports.ActionsUnit = {
             // console.log('current ap:' + character.action_points_left)
             return distance_to_walk * VALUES_1.BattleValues.move_cost(character);
         },
-        execute: (battle, character, target_character, ignore_flag) => {
+        execute: (battle, character, target_character, available_points, ignore_flag) => {
             const delta = geom_1.geom.minus(target_character.position, character.position);
             const dist = geom_1.geom.norm(delta);
             const range = character.range();
@@ -285,7 +286,7 @@ exports.ActionsUnit = {
             let direction = geom_1.geom.normalize(delta);
             let distance_to_walk = Math.min(dist - range + 0.01, max_move);
             let target = geom_1.geom.sum(character.position, geom_1.geom.mult(direction, distance_to_walk));
-            events_2.BattleEvent.Move(battle, character, target, ignore_flag == true);
+            events_2.BattleEvent.Move(battle, character, target, available_points, ignore_flag == true);
         },
         chance: (battle, character, target_character) => {
             return 1;
@@ -318,8 +319,8 @@ exports.ActionsPosition = {
             const distance = geom_1.geom.dist(character.position, target);
             return Math.min(distance * VALUES_1.BattleValues.move_cost(character), character.action_points_left);
         },
-        execute: (battle, character, target) => {
-            events_2.BattleEvent.Move(battle, character, target, false);
+        execute: (battle, character, target, available_points) => {
+            events_2.BattleEvent.Move(battle, character, target, available_points, false);
         }
     }
 };
@@ -376,7 +377,7 @@ function battle_action_self(tag, battle, character) {
     let result = battle_action_self_check(tag, battle, character, 0);
     if (result.response == "OK") {
         character.action_points_left = character.action_points_left - result.ap_cost;
-        result.action.execute(battle, character);
+        result.action.execute(battle, character, result.ap_cost);
     }
     return result;
 }
@@ -386,8 +387,8 @@ function battle_action_character(tag, battle, character, target_character) {
     // console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name())
     // console.log(result.response)
     if (result.response == "OK") {
-        result.action.execute(battle, character, target_character);
         character.action_points_left = character.action_points_left - result.ap_cost;
+        result.action.execute(battle, character, target_character, result.ap_cost);
         // Alerts.battle_event(battle, tag, character.id, target_character.position, target_character.id, result.ap_cost)
         alerts_1.Alerts.battle_update_unit(battle, character);
         alerts_1.Alerts.battle_update_unit(battle, target_character);
@@ -401,8 +402,8 @@ function battle_action_position(tag, battle, character, target) {
     console.log(character.get_name(), 'attempts to ', tag);
     console.log(result.response);
     if (result.response == "OK") {
-        result.action.execute(battle, character, target);
         character.action_points_left = character.action_points_left - result.ap_cost;
+        result.action.execute(battle, character, target, result.ap_cost);
         if (character.action_points_left < 0) {
             character.action_points_left = 0;
         }

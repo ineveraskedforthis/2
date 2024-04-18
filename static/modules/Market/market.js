@@ -197,7 +197,7 @@ export function init_market_bulk_infrastructure(market_bulk) {
         socket.emit('sell-item', { index: Number(item.index), item_type: item.type, price: Number(price) });
     });
     socket.on('market-data', data => {
-        console.log("update-bulk-market");
+        // console.log("update-bulk-market");
         market_bulk.data = data;
     });
     return market_bulk;

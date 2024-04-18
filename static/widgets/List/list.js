@@ -222,8 +222,6 @@ export class List {
         return this._sorting_sequence[len - 1].order;
     }
     set data(data) {
-        console.log("update table with data:");
-        console.log(data);
         this._data = data;
         this._update_table();
     }
