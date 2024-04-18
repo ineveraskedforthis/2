@@ -48,7 +48,7 @@ function hunt_trigger(character) {
         return { response: "OK" };
     }
     else {
-        return { response: "Notification:", value: "There is no more game in the location. Check other locations in map window." };
+        return { response: "Notification:", value: "There is no more prey in the location. Check other locations in map window." };
     }
 }
 function fishing_trigger(character) {

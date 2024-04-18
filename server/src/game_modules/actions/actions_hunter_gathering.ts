@@ -151,7 +151,7 @@ export const fish = generate_action(
     FATIGUE_COST_FISH,
     fishing_duration_modifier,
     fishing_trigger,
-    fishing_effect
+    fishing_effect,
     dummy_effect,
     CHANGE_REASON.FISHING
 )
