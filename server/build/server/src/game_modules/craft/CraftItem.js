@@ -71,7 +71,7 @@ function create_item(model_tag, affixes, durability) {
 }
 exports.create_item = create_item;
 function event_craft_item(character, craft) {
-    let result = create_item(craft.output, craft.output_affixes, durability(character, craft));
+    let result = create_item(craft.output, craft.output_affixes.slice(), durability(character, craft));
     let response = character.equip.data.backpack.add(result.id);
     if (response !== false)
         (0, helpers_1.use_input)(craft.input, character);

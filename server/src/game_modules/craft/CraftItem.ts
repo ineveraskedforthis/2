@@ -79,7 +79,7 @@ export function create_item(model_tag: EQUIPMENT_PIECE, affixes: affix[], durabi
 }
 
 export function event_craft_item(character: Character, craft: CraftItemTemplate) {
-    let result = create_item(craft.output, craft.output_affixes, durability(character, craft))
+    let result = create_item(craft.output, craft.output_affixes.slice(), durability(character, craft))
     let response = character.equip.data.backpack.add(result.id);
     if (response !== false) use_input(craft.input, character);
 
