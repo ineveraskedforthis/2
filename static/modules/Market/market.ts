@@ -164,9 +164,7 @@ export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>
         const material = MaterialStorage.get(item_index)
 
         FILTER_STATE.per_good.push(false)
-        console.log(item_index)
         const tag = material.id_string
-        console.log(tag)
 
         const filter_div = div(
             `filter_${tag}`, "", ["generic-button", "columns_container"], undefined, () => {
@@ -222,7 +220,6 @@ export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>
         let price = inputById('create_order_price').value
 
         socket.emit(type, {material: MaterialStorage.from_string(material as material_string_id).id, amount: Number(amount), price: Number(price)})
-        // console.log(material, type, amount, price)
     })
 
     let order_button = elementById('create_auction_order_button')
@@ -233,7 +230,6 @@ export function init_market_bulk_infrastructure(market_bulk: List<BulkOrderView>
     })
 
     socket.on('market-data', data => {
-        // console.log("update-bulk-market");
         market_bulk.data = data;
     });
 

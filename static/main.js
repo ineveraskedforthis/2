@@ -87,8 +87,8 @@ socket.on("character_data", (msg) => {
     socket.emit('request-belongings');
 });
 socket.on('stash-update', msg => {
-    console.log('stash-update');
-    console.log(msg);
+    // console.log('stash-update');
+    // console.log(msg);
     update_stash(msg);
 });
 socket.on('log-message', msg => {

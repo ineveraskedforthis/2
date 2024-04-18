@@ -105,8 +105,8 @@ socket.on("character_data", (msg: CharacterDataBasic) => {
 })
 
 socket.on('stash-update', msg => {
-    console.log('stash-update');
-    console.log(msg);
+    // console.log('stash-update');
+    // console.log(msg);
     update_stash(msg);
 });
 

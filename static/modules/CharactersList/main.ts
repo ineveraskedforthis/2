@@ -32,8 +32,8 @@ function rob_selected_charater() {
 }
 
 export function update_characters_list(data: CharacterView[]) {
-    console.log('update characters_list');
-    console.log(data);
+    // console.log('update characters_list');
+    // console.log(data);
     let list_div = elementById('characters_list');
     globals.local_characters = data;
 

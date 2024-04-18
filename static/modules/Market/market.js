@@ -143,9 +143,7 @@ export function init_market_bulk_infrastructure(market_bulk) {
     for (let item_index of MaterialConfiguration.MATERIAL) {
         const material = MaterialStorage.get(item_index);
         FILTER_STATE.per_good.push(false);
-        console.log(item_index);
         const tag = material.id_string;
-        console.log(tag);
         const filter_div = div(`filter_${tag}`, "", ["generic-button", "columns_container"], undefined, () => {
             FILTER_STATE.per_good[item_index] = !FILTER_STATE.per_good[item_index];
             elementById(`filter_${tag}`).classList.toggle("selected");
@@ -188,7 +186,6 @@ export function init_market_bulk_infrastructure(market_bulk) {
         let amount = inputById('create_order_amount').value;
         let price = inputById('create_order_price').value;
         socket.emit(type, { material: MaterialStorage.from_string(material).id, amount: Number(amount), price: Number(price) });
-        // console.log(material, type, amount, price)
     });
     let order_button = elementById('create_auction_order_button');
     order_button.onclick = (() => {
@@ -197,7 +194,6 @@ export function init_market_bulk_infrastructure(market_bulk) {
         socket.emit('sell-item', { index: Number(item.index), item_type: item.type, price: Number(price) });
     });
     socket.on('market-data', data => {
-        // console.log("update-bulk-market");
         market_bulk.data = data;
     });
     return market_bulk;
