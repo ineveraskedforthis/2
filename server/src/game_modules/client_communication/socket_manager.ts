@@ -110,7 +110,7 @@ export class SocketManager {
             socket.on('req-player-index',   () =>  Request.player_index(user))
             socket.on('req-flee-chance',    () => Request.flee_chance(user))
             socket.on('req-attacks-damage', () => Request.attack_damage(user))
-            // socket.on('req-battle-actions', () => Request.battle_actions(user))
+            socket.on('req-battle-actions-all', () => Request.battle_actions_all(user))
             socket.on('req-battle-actions-self', ()=> Request.battle_actions_self(user))
             socket.on('req-battle-actions-unit', (data) => Request.battle_actions_unit(user, data))
             socket.on('req-battle-actions-position', (data) => Request.battle_actions_position(user, data))

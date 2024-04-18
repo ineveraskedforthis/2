@@ -129,6 +129,45 @@ var Request;
     //         sw.socket.emit('battle-action-update', result)
     //     }
     // }
+    function battle_actions_all(sw) {
+        for (let [key, item] of Object.entries(actions_1.ActionsSelf)) {
+            const result = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0,
+                target: 'self',
+                possible: false
+            };
+            sw.socket.emit('battle-action-update', result);
+        }
+        for (let [key, item] of Object.entries(actions_1.ActionsUnit)) {
+            const result = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0,
+                target: 'unit',
+                possible: false
+            };
+            sw.socket.emit('battle-action-update', result);
+        }
+        for (let [key, item] of Object.entries(actions_1.ActionsPosition)) {
+            const result = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0,
+                target: 'position',
+                possible: false
+            };
+            sw.socket.emit('battle-action-update', result);
+        }
+    }
+    Request.battle_actions_all = battle_actions_all;
     function battle_actions_self(sw) {
         // console.log('requested self actions')
         const [user, character] = systems_communication_1.Convert.socket_wrapper_to_user_character(sw);

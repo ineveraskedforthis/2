@@ -144,6 +144,47 @@ export namespace Request {
     //     }
     // }
 
+    export function battle_actions_all(sw: SocketWrapper) {
+        for (let [key, item] of Object.entries(ActionsSelf)) {
+            const result: BattleActionData = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0,
+                target: 'self',
+                possible: false
+            }
+            sw.socket.emit('battle-action-update', result)
+        }
+
+        for (let [key, item] of Object.entries(ActionsUnit)) {
+            const result: BattleActionData = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0,
+                target: 'unit',
+                possible: false
+            }
+            sw.socket.emit('battle-action-update', result)
+        }
+
+        for (let [key, item] of Object.entries(ActionsPosition)) {
+            const result: BattleActionData = {
+                name: key,
+                tag: key,
+                cost: 0,
+                damage: 0,
+                probability: 0,
+                target: 'position',
+                possible: false
+            }
+            sw.socket.emit('battle-action-update', result)
+        }
+    }
+
     export function battle_actions_self(sw: SocketWrapper) {
         // console.log('requested self actions')
         const [user, character] = Convert.socket_wrapper_to_user_character(sw)

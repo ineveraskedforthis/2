@@ -29,14 +29,8 @@ BattleView.set_callbacks(
     }
 )
 
-export let battle_in_progress                       = false
-
 export let events_list  : BattleKeyframeSocket[]     = [];
 export let units_socket : UnitSocket[]               = [];
-
-
-//persistent
-let    actions: BattleActionData[]                         =[]
 
 let key_to_action: {[_ in string]: string|undefined} = {}
 let key_to_action_type : {[_ in string]: 'unit'|'self'|'position'} = {}
@@ -51,6 +45,10 @@ function HOTKEYS_HANDLER(e: KeyboardEvent) {
 document.addEventListener('keyup', HOTKEYS_HANDLER, false);
 
 export namespace BattleImage {
+    export function request_all_actions() {
+        socket.emit('req-battle-actions-all');
+    }
+
     function request_actions() {
         console.log('request actions');
         socket.emit('req-battle-actions-self');
@@ -60,7 +58,7 @@ export namespace BattleImage {
             socket.emit('req-battle-actions-position', BattleView.anchor_position);
     }
 
-    function request_actions_self() {
+    export function request_actions_self() {
         console.log('request actions self')
         socket.emit('req-battle-actions-self')
     }
@@ -93,8 +91,6 @@ export namespace BattleImage {
     }
 
     export function reset() {
-        battle_in_progress = false
-
         BattleView.anchor_position = undefined
         BattleView.player = undefined
         BattleView.selected = undefined

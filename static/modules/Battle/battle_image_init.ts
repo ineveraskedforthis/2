@@ -1,4 +1,4 @@
-import { BattleImage, battle_in_progress } from "./battle_image.js";
+import { BattleImage } from "./battle_image.js";
 import { BattleData, BattleKeyframeSocket, BattleActionData } from "../../../shared/battle_data.js"
 import { tab } from "../ViewManagement/tab.js";
 import { socket } from "../Socket/socket.js";
@@ -43,10 +43,8 @@ namespace bCallback {
     export function update_battle_process(flag: boolean) {
         console.log('battle-in-process ' + flag)
         if (flag) {
-            if (battle_in_progress) {
-                socket.emit('request-battle-data')
-            }
             start_battle()
+            socket.emit('request-battle-data')
         } else {
             end_battle()
         }
@@ -61,16 +59,20 @@ function start_battle() {
     console.log('start battle')
     tab.turn_on('battle')
 
+    BattleImage.request_all_actions()
+
     const container = elementById("battle_display_container")
     BattleView.canvas.width = container.clientWidth
     BattleView.canvas.height = container.clientHeight
     BattleView.scale = Math.floor(Math.min(container.clientWidth, container.clientHeight) / 35)
+    BattleImage.request_actions_self()
 
     setTimeout(() => {
         const container = elementById("battle_display_container")
         BattleView.canvas.width = container.clientWidth
         BattleView.canvas.height = container.clientHeight
         BattleView.scale = Math.floor(Math.min(container.clientWidth, container.clientHeight) / 35)
+        BattleImage.request_actions_self()
     }, 1000)
 }
 

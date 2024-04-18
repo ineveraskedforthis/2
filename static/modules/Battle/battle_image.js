@@ -18,11 +18,8 @@ BattleView.set_callbacks((event) => {
         bcp = false;
     }
 });
-export let battle_in_progress = false;
 export let events_list = [];
 export let units_socket = [];
-//persistent
-let actions = [];
 let key_to_action = {};
 let key_to_action_type = {};
 function HOTKEYS_HANDLER(e) {
@@ -34,6 +31,10 @@ function HOTKEYS_HANDLER(e) {
 document.addEventListener('keyup', HOTKEYS_HANDLER, false);
 export var BattleImage;
 (function (BattleImage) {
+    function request_all_actions() {
+        socket.emit('req-battle-actions-all');
+    }
+    BattleImage.request_all_actions = request_all_actions;
     function request_actions() {
         console.log('request actions');
         socket.emit('req-battle-actions-self');
@@ -46,6 +47,7 @@ export var BattleImage;
         console.log('request actions self');
         socket.emit('req-battle-actions-self');
     }
+    BattleImage.request_actions_self = request_actions_self;
     function request_actions_unit(target) {
         console.log('request actions unit');
         socket.emit('req-battle-actions-unit', target);
@@ -69,7 +71,6 @@ export var BattleImage;
     }
     BattleImage.load = load;
     function reset() {
-        battle_in_progress = false;
         BattleView.anchor_position = undefined;
         BattleView.player = undefined;
         BattleView.selected = undefined;

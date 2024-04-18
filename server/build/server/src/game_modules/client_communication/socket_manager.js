@@ -78,7 +78,7 @@ class SocketManager {
             socket.on('req-player-index', () => request_1.Request.player_index(user));
             socket.on('req-flee-chance', () => request_1.Request.flee_chance(user));
             socket.on('req-attacks-damage', () => request_1.Request.attack_damage(user));
-            // socket.on('req-battle-actions', () => Request.battle_actions(user))
+            socket.on('req-battle-actions-all', () => request_1.Request.battle_actions_all(user));
             socket.on('req-battle-actions-self', () => request_1.Request.battle_actions_self(user));
             socket.on('req-battle-actions-unit', (data) => request_1.Request.battle_actions_unit(user, data));
             socket.on('req-battle-actions-position', (data) => request_1.Request.battle_actions_position(user, data));
