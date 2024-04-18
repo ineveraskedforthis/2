@@ -16,6 +16,8 @@ export interface UnitViewMinimal {
 
     readonly position: battle_position
     readonly range: number
+
+    readonly valid: boolean
 }
 
 export interface UnitView extends UnitViewMinimal {

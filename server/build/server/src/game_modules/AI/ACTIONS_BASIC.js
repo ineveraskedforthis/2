@@ -264,6 +264,27 @@ function update_price_beliefs(character) {
             }
         }
     }
+    //if we are selling, then we want to decrease price
+    //if we are buying, we want to increase it slowly
+    const personal_orders = data_id_1.DataID.Character.market_orders_list(character.id);
+    for (const item of personal_orders) {
+        const order = data_objects_1.Data.MarketOrders.from_id(item);
+        //if our order is huge, we are more likely to change price: we want to fulfill it asap!
+        const probability = order.amount / 50;
+        const dice = Math.random();
+        if (order.typ == "buy") {
+            const belief = character.ai_price_belief_buy.get(order.material) || (0, AI_SCRIPTED_VALUES_1.base_price)(character.cell_id, order.material);
+            if (dice < probability) {
+                character.ai_price_belief_buy.set(order.material, (belief + 1));
+            }
+        }
+        if (order.typ == "sell") {
+            const belief = character.ai_price_belief_sell.get(order.material) || (0, AI_SCRIPTED_VALUES_1.base_price)(character.cell_id, order.material);
+            if (dice < probability) {
+                character.ai_price_belief_sell.set(order.material, Math.max(1, (belief - 1)));
+            }
+        }
+    }
     //adding a bit of healthy noise
     character.ai_price_belief_buy.forEach((value, key, map) => {
         if (value > 1) {

@@ -11,7 +11,7 @@ import { keybinds } from "./Widgets/action_list.js";
 // export const battle_image = new BattleImageNext();
 const events_queue: BattleKeyframeSocket[] = []
 
-
+var battle_is_on = false
 
 export function init_battle_control() {
     socket.on('battle-action-set-up', (data: BattleActionData) => {
@@ -43,6 +43,10 @@ namespace bCallback {
     export function update_battle_process(flag: boolean) {
         console.log('battle-in-process ' + flag)
         if (flag) {
+            if (battle_is_on) {
+                console.log("but we are already in one")
+                return
+            }
             start_battle()
             socket.emit('request-battle-data')
         } else {
@@ -55,9 +59,19 @@ namespace bCallback {
     }
 }
 
+
+
 function start_battle() {
+    if (battle_is_on) {
+        return
+    }
+
+    battle_is_on = true
     console.log('start battle')
+
     tab.turn_on('battle')
+
+    console.log("battle tab is supposed to show now...")
 
     BattleImage.request_all_actions()
 
@@ -77,6 +91,10 @@ function start_battle() {
 }
 
 function end_battle() {
+    if (!battle_is_on) {
+        return
+    }
+    battle_is_on = false
     tab.turn_off('battle')
     BattleImage.reset()
 }

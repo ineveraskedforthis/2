@@ -179,6 +179,10 @@ class CurrentUnit implements UnitView {
     get range() {
         return smoothstep(this.past.range, this.future.range, BattleStorage.event_timer / BattleStorage.event_timer_max)
     }
+
+    get valid() : boolean {
+        return (BattleStorage.from_id(this.id) != undefined)
+    }
 }
 
 export function fatten_battle_character(id: character_id): UnitView {

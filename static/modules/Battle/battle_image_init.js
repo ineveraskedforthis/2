@@ -6,6 +6,7 @@ import { BattleView } from "./View/battle_view.js";
 import { keybinds } from "./Widgets/action_list.js";
 // export const battle_image = new BattleImageNext();
 const events_queue = [];
+var battle_is_on = false;
 export function init_battle_control() {
     socket.on('battle-action-set-up', (data) => {
         BattleImage.update_action(data, keybinds[data.tag]);
@@ -33,6 +34,10 @@ var bCallback;
     function update_battle_process(flag) {
         console.log('battle-in-process ' + flag);
         if (flag) {
+            if (battle_is_on) {
+                console.log("but we are already in one");
+                return;
+            }
             start_battle();
             socket.emit('request-battle-data');
         }
@@ -47,8 +52,13 @@ var bCallback;
     bCallback.event = event;
 })(bCallback || (bCallback = {}));
 function start_battle() {
+    if (battle_is_on) {
+        return;
+    }
+    battle_is_on = true;
     console.log('start battle');
     tab.turn_on('battle');
+    console.log("battle tab is supposed to show now...");
     BattleImage.request_all_actions();
     const container = elementById("battle_display_container");
     BattleView.canvas.width = container.clientWidth;
@@ -64,6 +74,10 @@ function start_battle() {
     }, 1000);
 }
 function end_battle() {
+    if (!battle_is_on) {
+        return;
+    }
+    battle_is_on = false;
     tab.turn_off('battle');
     BattleImage.reset();
 }

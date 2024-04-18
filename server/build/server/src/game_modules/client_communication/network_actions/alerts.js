@@ -84,6 +84,8 @@ var Alerts;
     }
     Alerts.generic_user_alert = generic_user_alert;
     function battle_progress(user, flag) {
+        if (user == undefined)
+            return;
         if (!user.logged_in)
             return;
         user.socket.emit('battle-in-process', flag);

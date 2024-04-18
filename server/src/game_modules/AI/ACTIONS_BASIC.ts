@@ -285,7 +285,7 @@ export function update_price_beliefs(character: Character) {
             } else {
                 character.ai_price_belief_sell.set(order.material, Math.round(order.price / 10 + belief * 9 / 10) as money)
             }
-            }
+        }
 
         if (order.typ == "sell") {
             let belief = character.ai_price_belief_buy.get(order.material)
@@ -293,6 +293,33 @@ export function update_price_beliefs(character: Character) {
                 character.ai_price_belief_buy.set(order.material, order.price)
             } else {
                 character.ai_price_belief_buy.set(order.material, Math.round(order.price / 10 + belief * 9 / 10) as money)
+            }
+        }
+    }
+
+    //if we are selling, then we want to decrease price
+    //if we are buying, we want to increase it slowly
+
+
+    const personal_orders = DataID.Character.market_orders_list(character.id)
+
+    for (const item of personal_orders) {
+        const order = Data.MarketOrders.from_id(item)
+        //if our order is huge, we are more likely to change price: we want to fulfill it asap!
+        const probability = order.amount / 50
+        const dice = Math.random()
+
+        if (order.typ == "buy") {
+            const belief = character.ai_price_belief_buy.get(order.material) || base_price(character.cell_id, order.material)
+            if (dice < probability) {
+                character.ai_price_belief_buy.set(order.material, (belief + 1) as money)
+            }
+        }
+
+        if (order.typ == "sell") {
+            const belief = character.ai_price_belief_sell.get(order.material) || base_price(character.cell_id, order.material)
+            if (dice < probability) {
+                character.ai_price_belief_sell.set(order.material, Math.max(1, (belief - 1)) as money)
             }
         }
     }

@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BattleEvent = void 0;
 const alerts_1 = require("../client_communication/network_actions/alerts");
 const geom_1 = require("../geom");
+const systems_communication_1 = require("../systems_communication");
 const system_1 = require("./system");
 const checks_1 = require("../character/checks");
 const basic_functions_1 = require("../calculations/basic_functions");
@@ -44,6 +45,7 @@ var BattleEvent;
         // console.log(character.get_name())
         user_manager_1.UserManagement.add_user_to_update_queue(unit.user_id, 22 /* UI_Part.BATTLE */);
         alerts_1.Alerts.battle_event_simple(battle, 'unit_left', unit);
+        alerts_1.Alerts.battle_progress(systems_communication_1.Convert.character_to_user(unit), false);
         console.log(`${unit.id} left battle`);
         heap_1.CharactersHeap.delete_unit(battle, unit);
         if (heap_1.CharactersHeap.get_units_amount(battle) == 0) {

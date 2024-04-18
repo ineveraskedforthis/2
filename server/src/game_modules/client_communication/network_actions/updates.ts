@@ -62,6 +62,7 @@ export namespace SendUpdate {
 
         const battle_id = character.battle_id
         if (battle_id != undefined) {
+            // console.log('!!!')
             const battle = Data.Battles.from_id(battle_id);
             Alerts.battle_progress(user, true)
             Alerts.generic_user_alert(user, BATTLE_DATA_MESSAGE, BattleSystem.data(battle));

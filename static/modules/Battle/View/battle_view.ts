@@ -185,21 +185,25 @@ export class BattleView {
 
     static get player_position() : canvas_position|undefined {
         if (this._player_view == undefined) return undefined
+        if (!this._player_view.valid) return undefined
         return this.battle_to_canvas(this._player_view.position, this.camera)
     }
 
     static get selected_position() : canvas_position|undefined {
         if (this._selected_view == undefined) return undefined
+        if (!this._selected_view.valid) return undefined
         return this.battle_to_canvas(this._selected_view.position, this.camera)
     }
 
     static get hovered_position() : canvas_position|undefined {
         if (this._hovered_view == undefined) return undefined
+        if (!this._hovered_view.valid) return undefined
         return this.battle_to_canvas(this._hovered_view.position, this.camera)
     }
 
     static get current_turn_position() : canvas_position|undefined {
         if (this._current_turn_view == undefined) return undefined
+        if (!this._current_turn_view.valid) return undefined
         return this.battle_to_canvas(this._current_turn_view.position, this.camera)
     }
 
@@ -296,6 +300,7 @@ export class BattleView {
     static draw_current_turn() {
         const unit = this._current_turn_view
         if (unit == undefined) return
+        if (!unit.valid) this._current_turn_view = undefined
         if (this.current_turn_position == undefined) return
         if (unit.hp == 0) return;
 
@@ -318,6 +323,7 @@ export class BattleView {
     static draw_player() {
         const unit = this._player_view
         if (unit == undefined) return
+        if (!unit.valid) this._player_view = undefined
         if (this.player_position == undefined) return
         if (unit.hp == 0) return;
 

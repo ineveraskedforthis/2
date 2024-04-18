@@ -52,9 +52,7 @@ const update_function = {
     [18 /* UI_Part.DEFENCE_SKILL */]: updates_1.SendUpdate.skill_defence,
     [19 /* UI_Part.WEAPON_SKILL */]: updates_1.SendUpdate.skill_weapon,
     [21 /* UI_Part.CRAFT */]: updates_1.SendUpdate.all_craft,
-    // [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
     [22 /* UI_Part.BATTLE */]: updates_1.SendUpdate.battle,
-    // [UI_Part.BATTLE_ACTIONS]    : SendUpdate.battle_actions,
     [23 /* UI_Part.MARKET */]: updates_1.SendUpdate.market,
     [24 /* UI_Part.STATS */]: updates_1.SendUpdate.stats,
 };
@@ -104,7 +102,8 @@ var Update;
         // console.log(user.updates[current])
         if (force_update || (user.updates[current])) {
             // console.log('updating ' + current + ' ' + current)
-            update_function[current](user); //return
+            update_function[current](user);
+            return;
         }
         const ch = children[current];
         if (ch == undefined) {

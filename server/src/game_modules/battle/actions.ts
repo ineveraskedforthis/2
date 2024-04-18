@@ -84,6 +84,7 @@ export const ActionsSelf: {[_ in ActionSelfKeys]: ActionSelf} = {
                 return
             }
             Alerts.battle_event_simple(battle, "flee", character)
+
         },
         chance: (battle: Battle, character: Character, ) => {
             return BattleValues.flee_chance(character.position)

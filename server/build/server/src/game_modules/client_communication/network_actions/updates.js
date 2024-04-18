@@ -60,6 +60,7 @@ var SendUpdate;
             return;
         const battle_id = character.battle_id;
         if (battle_id != undefined) {
+            // console.log('!!!')
             const battle = data_objects_1.Data.Battles.from_id(battle_id);
             alerts_1.Alerts.battle_progress(user, true);
             alerts_1.Alerts.generic_user_alert(user, constants_1.BATTLE_DATA_MESSAGE, system_1.BattleSystem.data(battle));

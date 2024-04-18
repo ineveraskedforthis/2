@@ -214,7 +214,7 @@ export namespace BattleImage {
             if (unit.dead) return;
             let centre = BattleView.battle_to_canvas(unit.position, BattleView.camera)
             if (d2([centre.x, centre.y], [pos.x, pos.y]) < selection_magnet) {
-                set_hover(unit)
+                set_hover(fatten_battle_character(id))
             }
         })
     }

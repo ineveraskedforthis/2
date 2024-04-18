@@ -132,6 +132,9 @@ class CurrentUnit {
     get range() {
         return smoothstep(this.past.range, this.future.range, BattleStorage.event_timer / BattleStorage.event_timer_max);
     }
+    get valid() {
+        return (BattleStorage.from_id(this.id) != undefined);
+    }
 }
 export function fatten_battle_character(id) {
     if (BattleStorage.fat_ids[id] == undefined) {

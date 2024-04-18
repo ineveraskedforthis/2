@@ -51,6 +51,7 @@ export namespace BattleEvent {
 
         UserManagement.add_user_to_update_queue(unit.user_id, UI_Part.BATTLE)
         Alerts.battle_event_simple(battle, 'unit_left', unit)
+        Alerts.battle_progress(Convert.character_to_user(unit), false)
 
         console.log(`${unit.id} left battle`)
         CharactersHeap.delete_unit(battle, unit)

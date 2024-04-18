@@ -88,9 +88,7 @@ const update_function: {[_ in UI_Part]: ((user: User) => void)} = {
             [UI_Part.DEFENCE_SKILL]         : SendUpdate.skill_defence,
             [UI_Part.WEAPON_SKILL]          : SendUpdate.skill_weapon,
         [UI_Part.CRAFT]                     : SendUpdate.all_craft,
-            // [UI_Part.COOKING_CRAFT]     : SendUpdate.cooking_craft,
         [UI_Part.BATTLE]                    : SendUpdate.battle,
-            // [UI_Part.BATTLE_ACTIONS]    : SendUpdate.battle_actions,
         [UI_Part.MARKET]                    : SendUpdate.market,
         [UI_Part.STATS]                     : SendUpdate.stats,
 }
@@ -140,14 +138,13 @@ export namespace Update {
     //     }
     // }
     export function update(current: UI_Part, user: User, force_update: boolean) {
-
-
         // console.log(force_update)
         // console.log(user.updates[current])
 
         if (force_update || (user.updates[current])) {
             // console.log('updating ' + current + ' ' + current)
-            update_function[current](user); //return
+            update_function[current](user);
+            return;
         }
         const ch = children[current]
         if (ch == undefined) {
@@ -159,6 +156,7 @@ export namespace Update {
     }
 
     export function update_root(user: User) {
+
         update(UI_Part.ROOT, user, false)
     }
 

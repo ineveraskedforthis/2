@@ -79,6 +79,7 @@ export namespace tab {
             // console.log(tabs_properties)
             load(tag)
         }
+        load("battle")
 
 
         window.addEventListener('keydown', function(event) {
@@ -300,10 +301,12 @@ export namespace tab {
     }
 
     export function turn_on(tag: string) {
+        console.log("1")
         if (tabs_properties[tag] == undefined) {
             return
         }
 
+        console.log("2")
 
         let tab = document.getElementById(tag + '_tab')!;
         tab.classList.remove('hidden');
@@ -313,11 +316,17 @@ export namespace tab {
             tabs_properties[tag].active = true
         }
 
+        console.log("3")
+
         push(tag)
+
+        console.log(4)
 
         for (const item of canvases) {
             item.update_canvas_size()
         }
+
+        console.log(5)
     }
 
     export function turn_off(tag: string) {

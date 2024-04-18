@@ -103,7 +103,8 @@ export namespace Alerts {
         user.socket.emit(tag, msg)
     }
 
-    export function battle_progress(user: User, flag: boolean) {
+    export function battle_progress(user: User|undefined, flag: boolean) {
+        if (user == undefined) return
         if (!user.logged_in) return
         user.socket.emit('battle-in-process', flag)
     }

@@ -62,6 +62,7 @@ export var tab;
             // console.log(tabs_properties)
             load(tag);
         }
+        load("battle");
         window.addEventListener('keydown', function (event) {
             if (event.defaultPrevented) {
                 return;
@@ -264,9 +265,11 @@ export var tab;
     }
     tab_1.toogle = toogle;
     function turn_on(tag) {
+        console.log("1");
         if (tabs_properties[tag] == undefined) {
             return;
         }
+        console.log("2");
         let tab = document.getElementById(tag + '_tab');
         tab.classList.remove('hidden');
         if (tag != 'battle') {
@@ -274,10 +277,13 @@ export var tab;
             button.classList.add('control_button_active');
             tabs_properties[tag].active = true;
         }
+        console.log("3");
         push(tag);
+        console.log(4);
         for (const item of canvases) {
             item.update_canvas_size();
         }
+        console.log(5);
     }
     tab_1.turn_on = turn_on;
     function turn_off(tag) {
