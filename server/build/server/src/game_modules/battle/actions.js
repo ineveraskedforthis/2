@@ -74,7 +74,7 @@ exports.ActionsSelf = {
             const phi = Math.random() * Math.PI * 2;
             const shift = { x: Math.cos(phi), y: Math.sin(phi) };
             let target = geom_1.geom.sum(character.position, geom_1.geom.mult(shift, RANDOM_STEP_LENGTH));
-            events_2.BattleEvent.Move(battle, character, target, available_points, true);
+            events_2.BattleEvent.Move(battle, character, target, available_points, false);
         },
         chance: (battle, character) => {
             return 1;
@@ -275,18 +275,18 @@ exports.ActionsUnit = {
             // console.log('current ap:' + character.action_points_left)
             return distance_to_walk * VALUES_1.BattleValues.move_cost(character);
         },
-        execute: (battle, character, target_character, available_points, ignore_flag) => {
+        execute: (battle, character, target_character, available_points) => {
             const delta = geom_1.geom.minus(target_character.position, character.position);
             const dist = geom_1.geom.norm(delta);
             const range = character.range();
-            const max_move = character.action_points_left / VALUES_1.BattleValues.move_cost(character); // potential movement
+            const max_move = available_points / VALUES_1.BattleValues.move_cost(character); // potential movement
             if (dist < range) {
                 return;
             }
             let direction = geom_1.geom.normalize(delta);
             let distance_to_walk = Math.min(dist - range + 0.01, max_move);
             let target = geom_1.geom.sum(character.position, geom_1.geom.mult(direction, distance_to_walk));
-            events_2.BattleEvent.Move(battle, character, target, available_points, ignore_flag == true);
+            events_2.BattleEvent.Move(battle, character, target, available_points, false);
         },
         chance: (battle, character, target_character) => {
             return 1;
@@ -325,6 +325,31 @@ exports.ActionsPosition = {
     }
 };
 const action_currrent = exports.ActionsSelf.Flee;
+function response_to_alert(character, response) {
+    switch (response.response) {
+        case "NOT_ENOUGH_AP": {
+            alerts_1.Alerts.alert(character, "Not enough action points.");
+            return;
+        }
+        case "INVALID_ACTION": {
+            alerts_1.Alerts.alert(character, "You are trying to do an undefined action.");
+            return;
+        }
+        case "OK": {
+            return;
+        }
+        case "NOT_ENOUGH_RANGE": {
+            alerts_1.Alerts.alert(character, "You are too far away.");
+            return;
+        }
+        case "ATTEMPT_IS_INVALID":
+            {
+                alerts_1.Alerts.alert(character, "You can't do this action.");
+                return;
+            }
+            ;
+    }
+}
 function battle_action_self_check(tag, battle, character, d_ap) {
     const action = exports.ActionsSelf[tag];
     if (action == undefined) {
@@ -340,22 +365,18 @@ exports.battle_action_self_check = battle_action_self_check;
 function battle_action_character_check(tag, battle, character, target_character, d_distance, d_ap) {
     const action = exports.ActionsUnit[tag];
     if (action == undefined) {
-        // console.log('no such key')
         return { response: "INVALID_ACTION" };
     }
     const ap_cost = action.ap_cost(battle, character, target_character);
     if (character.action_points_left + d_ap < ap_cost) {
-        // console.log('not enough ap', ap_cost, character.action_points_left, d_ap)
         return { response: "NOT_ENOUGH_AP", needed: ap_cost, current: character.action_points_left };
     }
     const range = action.range(battle, character);
     const dist = geom_1.geom.dist(character.position, target_character.position);
     if (range + d_distance < dist) {
-        // console.log('not enough range', range, dist, d_distance)
         return { response: "NOT_ENOUGH_RANGE" };
     }
     if (!action.valid(character)) {
-        // console.log('character is not valid')
         return { response: "ATTEMPT_IS_INVALID" };
     }
     return { response: "OK", ap_cost: ap_cost, action: action };
@@ -379,21 +400,21 @@ function battle_action_self(tag, battle, character) {
         character.action_points_left = character.action_points_left - result.ap_cost;
         result.action.execute(battle, character, result.ap_cost);
     }
+    response_to_alert(character, result);
     return result;
 }
 exports.battle_action_self = battle_action_self;
 function battle_action_character(tag, battle, character, target_character) {
     let result = battle_action_character_check(tag, battle, character, target_character, 0, 0);
-    // console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name())
-    // console.log(result.response)
+    console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name());
+    console.log(result.response);
     if (result.response == "OK") {
         character.action_points_left = character.action_points_left - result.ap_cost;
         result.action.execute(battle, character, target_character, result.ap_cost);
-        // Alerts.battle_event(battle, tag, character.id, target_character.position, target_character.id, result.ap_cost)
         alerts_1.Alerts.battle_update_unit(battle, character);
         alerts_1.Alerts.battle_update_unit(battle, target_character);
-        // Alerts.battle_event_simple(battle, tag, character, result.ap_cost)
     }
+    response_to_alert(character, result);
     return result;
 }
 exports.battle_action_character = battle_action_character;
@@ -408,6 +429,7 @@ function battle_action_position(tag, battle, character, target) {
             character.action_points_left = 0;
         }
     }
+    response_to_alert(character, result);
     return result;
 }
 exports.battle_action_position = battle_action_position;

@@ -64,6 +64,7 @@ export var BattleImage;
         BattleView.anchor_position = undefined;
         BattleView.player = undefined;
         BattleView.selected = undefined;
+        BattleStorage.clear();
         events_list = [];
     }
     BattleImage.reset = reset;
@@ -72,8 +73,11 @@ export var BattleImage;
         console.log(unit);
         console.log("add fighter");
         BattleStorage.register_unit(unit);
+        console.log(unit.id);
+        console.log(globals.character_data);
         if (unit.id == globals.character_data?.id) {
-            BattleView.player = unit;
+            console.log("Player Detected!!");
+            BattleView.player = fatten_battle_character(unit.id);
         }
     }
     BattleImage.load_unit = load_unit;
@@ -121,6 +125,19 @@ export var BattleImage;
     }
     BattleImage.unload_unit = unload_unit;
     function unload_unit_by_id(unit) {
+        console.log("remove unit ", unit);
+        if (BattleView.selected?.id == unit) {
+            BattleView.selected = undefined;
+        }
+        if (BattleView.hovered?.id == unit) {
+            BattleView.hovered = undefined;
+        }
+        if (BattleView.player?.id == unit) {
+            BattleView.player = undefined;
+        }
+        if (BattleView.current_turn?.id == unit) {
+            BattleView.current_turn = undefined;
+        }
         UnitsListWidget.remove_unit(unit);
         BattleStorage.remove_unit(unit);
     }
@@ -137,13 +154,13 @@ export var BattleImage;
             return;
         if (target_data == undefined)
             return;
-        request_actions_unit(target_data.id);
     }
     BattleImage.update_selection_data = update_selection_data;
     function select(index) {
         unselect();
         BattleView.selected = fatten_battle_character(index);
         UnitsListWidget.selected = index;
+        request_actions_unit(index);
         update_selection_data();
     }
     BattleImage.select = select;
@@ -194,10 +211,10 @@ export var BattleImage;
     }
     BattleImage.press = press;
     function add_action(action_type, hotkey) {
-        console.log('new action');
-        console.log(action_type);
+        // console.log('new action')
+        // console.log(action_type)
         actions.push(action_type);
-        console.log(action_type);
+        // console.log(action_type)
         let action_div = document.createElement('div');
         action_div.classList.add('battle_action');
         action_div.classList.add(action_type.tag);
@@ -259,24 +276,25 @@ export var BattleImage;
     }
     BattleImage.update_action = update_action;
     function update_action_probability(tag, value) {
-        console.log(tag, value);
+        // console.log(tag, value)
         let label = document.getElementById(tag + '_chance_b');
         label.innerHTML = Math.floor(value * 100).toFixed(1) + '%';
     }
     BattleImage.update_action_probability = update_action_probability;
     function update_action_damage(tag, value) {
-        console.log(tag, value);
+        // console.log(tag, value)
         let label = document.getElementById(tag + '_damage_b');
         label.innerHTML = '~' + value.toFixed(2);
     }
     BattleImage.update_action_damage = update_action_damage;
     function update_action_cost(tag, value) {
-        console.log(tag, value);
+        // console.log(tag, value)
         let label = document.getElementById(tag + '_ap_cost');
         label.innerHTML = value.toFixed(2);
     }
     BattleImage.update_action_cost = update_action_cost;
     function set_current_turn(index, time_passed) {
+        console.log('Set current_turn', index);
         BattleView.current_turn = fatten_battle_character(index);
         BattleStorage.foreach((id, unit) => {
             unit.next_turn -= time_passed;
@@ -290,8 +308,8 @@ export var BattleImage;
         if (target_type == 'self') {
             socket.emit('battle-action-self', tag);
         }
-        if (target_type == 'unit') {
-            socket.emit('battle-action-unit', { tag: tag, target: BattleView.selected });
+        if ((target_type == 'unit') && (BattleView.selected != undefined)) {
+            socket.emit('battle-action-unit', { tag: tag, target: BattleView.selected.id });
         }
         if (target_type == 'position') {
             if (BattleView.anchor_position != undefined) {
@@ -326,6 +344,9 @@ export var BattleImage;
             if (view.hp == 0)
                 continue;
             const image = BattleStorage.image_from_id(character_id);
+            if (character_id == globals.character_data?.id) {
+                BattleView.player = view;
+            }
             BattleView.draw(dt, view, image);
         }
     }

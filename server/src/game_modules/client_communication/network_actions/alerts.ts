@@ -11,7 +11,7 @@ import { Convert } from "../../systems_communication";
 import { UI_Part } from "../causality_graph";
 import { User } from "../user";
 import { UserManagement } from "../user_manager";
-import { cell_id } from "@custom_types/ids";
+import { cell_id, character_id } from "@custom_types/ids";
 import { DataID } from "../../data/data_id";
 import { Data } from "../../data/data_objects";
 import { CHANGE_REASON } from "../../effects/effects";
@@ -34,6 +34,10 @@ export namespace Alerts {
     }
     export function item_market_data(user: User, data: ItemData[]) {
         generic_user_alert(user, 'item-market-data', data)
+    }
+
+    export function alert(character: Character, msg: string) {
+        generic_character_alert(character, 'alert', msg)
     }
 
     export function in_battle(user: User) {
@@ -255,7 +259,7 @@ export namespace Alerts {
         for (let unit of battle.heap) {
             if (unit == undefined) continue;
             const character = Data.Characters.from_id(unit)
-            generic_character_alert(character, 'battle-remove-unit', removed_unit)
+            generic_character_alert(character, 'battle-remove-unit', removed_unit.id)
         }
     }
 

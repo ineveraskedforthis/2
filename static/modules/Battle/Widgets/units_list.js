@@ -12,8 +12,9 @@ const columns = [
     {
         header_text: "AP",
         value: (unit) => unit.ap,
+        custom_display: (unit) => unit.ap.toFixed(2),
         type: "number",
-        custom_style: ["flex-0-0-30px"],
+        custom_style: ["flex-0-0-50px"],
     },
     {
         header_text: "HP",
@@ -25,7 +26,7 @@ const columns = [
         header_text: "Next turn",
         value: (unit) => unit.next_turn,
         type: "number",
-        custom_style: ["flex-0-0-80px"]
+        custom_style: ["flex-0-0-30px"]
     }
 ];
 export class UnitsListWidget {

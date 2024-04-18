@@ -13,18 +13,21 @@ interface ColumnBase<Item> {
 
 interface NumberColumn<Item> extends ColumnBase<Item> {
     value: (item: Item) => number
+    custom_display?: (item: Item) => string
 
     type: "number"
 }
 
 interface HTMLElementColumn<Item> extends ColumnBase<Item> {
     value: (item: Item) => HTMLElement
+    custom_display?: (item: Item) => string
 
     type: "html"
 }
 
 interface StringColumn<Item> extends ColumnBase<Item> {
     value: (item: Item) => string
+    custom_display?: (item: Item) => string
 
     type: "string"
 }
@@ -261,7 +264,11 @@ export class List<Item> implements ListInterface<Item> {
                 } else if (is_html_column(col)) {
                     div.appendChild(col.value(item))
                 } else {
-                    div.innerText = col.value(item).toString()
+                    if (col.custom_display) {
+                        div.innerText = col.custom_display(item).toString()
+                    } else {
+                        div.innerText = col.value(item).toString()
+                    }
                 }
 
                 if (is_active_column(col)) {

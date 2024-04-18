@@ -24,7 +24,7 @@ tilemap.src = 'static/img/battle_tiles.png'
 export class BattleView {
     static canvas = elementById("battle_canvas") as HTMLCanvasElement;
     static canvas_context = this.canvas.getContext("2d")!;
-    static scale = 25
+    static scale = 28
 
     static camera: canvas_position = {x: 0, y: 0} as canvas_position
     private static _anchor_position: canvas_position|undefined
@@ -35,8 +35,8 @@ export class BattleView {
 
     // Battle board limits:
 
-    static left = -7
-    static right = 7
+    static left = -15
+    static right = 15
     static top = -15
     static bottom = 15
 
@@ -185,22 +185,22 @@ export class BattleView {
 
     static get player_position() : canvas_position|undefined {
         if (this._player_view == undefined) return undefined
-        this.battle_to_canvas(this._player_view.position, this.camera)
+        return this.battle_to_canvas(this._player_view.position, this.camera)
     }
 
     static get selected_position() : canvas_position|undefined {
         if (this._selected_view == undefined) return undefined
-        this.battle_to_canvas(this._selected_view.position, this.camera)
+        return this.battle_to_canvas(this._selected_view.position, this.camera)
     }
 
     static get hovered_position() : canvas_position|undefined {
         if (this._hovered_view == undefined) return undefined
-        this.battle_to_canvas(this._hovered_view.position, this.camera)
+        return this.battle_to_canvas(this._hovered_view.position, this.camera)
     }
 
     static get current_turn_position() : canvas_position|undefined {
         if (this._current_turn_view == undefined) return undefined
-        this.battle_to_canvas(this._current_turn_view.position, this.camera)
+        return this.battle_to_canvas(this._current_turn_view.position, this.camera)
     }
 
     static get player() : UnitViewMinimal|undefined {
@@ -296,7 +296,7 @@ export class BattleView {
         const ctx = this.canvas_context
         const pos = this.current_turn_position
 
-        let wave = Math.sin(globals.now)
+        let wave = Math.sin(globals.now / 1000)
         let radius_end = Math.max(this.scale * unit.ap / unit.move_cost / 2, this.scale * unit.range / 2, 5)
         let radius_start = this.scale/10
 
@@ -321,14 +321,14 @@ export class BattleView {
         const pi = Math.PI
 
         let angle = globals.now * (unit.ap / 5)
-        let dx = Math.cos(angle) * this.scale * unit.range
-        let dy = Math.sin(angle) * this.scale * unit.range
+        let dx = Math.cos(angle / 1000) * this.scale * unit.range
+        let dy = Math.sin(angle / 1000) * this.scale * unit.range
         ctx.moveTo(pos.x + dx, pos.y + dy)
 
         for (let i = 0; i < 20; i++) {
             angle = globals.now * (unit.ap / 5) + 5 * pi * i / 6
-            let dx = Math.cos(angle) * this.scale * unit.range
-            let dy = Math.sin(angle) * this.scale * unit.range
+            let dx = Math.cos(angle / 1000) * this.scale * unit.range
+            let dy = Math.sin(angle / 1000) * this.scale * unit.range
             ctx.lineTo(pos.x + dx, pos.y + dy)
         }
 

@@ -129,22 +129,22 @@ export class BattleView {
     static get player_position() {
         if (this._player_view == undefined)
             return undefined;
-        this.battle_to_canvas(this._player_view.position, this.camera);
+        return this.battle_to_canvas(this._player_view.position, this.camera);
     }
     static get selected_position() {
         if (this._selected_view == undefined)
             return undefined;
-        this.battle_to_canvas(this._selected_view.position, this.camera);
+        return this.battle_to_canvas(this._selected_view.position, this.camera);
     }
     static get hovered_position() {
         if (this._hovered_view == undefined)
             return undefined;
-        this.battle_to_canvas(this._hovered_view.position, this.camera);
+        return this.battle_to_canvas(this._hovered_view.position, this.camera);
     }
     static get current_turn_position() {
         if (this._current_turn_view == undefined)
             return undefined;
-        this.battle_to_canvas(this._current_turn_view.position, this.camera);
+        return this.battle_to_canvas(this._current_turn_view.position, this.camera);
     }
     static get player() {
         return this._player_view;
@@ -227,7 +227,7 @@ export class BattleView {
             return;
         const ctx = this.canvas_context;
         const pos = this.current_turn_position;
-        let wave = Math.sin(globals.now);
+        let wave = Math.sin(globals.now / 1000);
         let radius_end = Math.max(this.scale * unit.ap / unit.move_cost / 2, this.scale * unit.range / 2, 5);
         let radius_start = this.scale / 10;
         ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
@@ -249,13 +249,13 @@ export class BattleView {
         ctx.beginPath();
         const pi = Math.PI;
         let angle = globals.now * (unit.ap / 5);
-        let dx = Math.cos(angle) * this.scale * unit.range;
-        let dy = Math.sin(angle) * this.scale * unit.range;
+        let dx = Math.cos(angle / 1000) * this.scale * unit.range;
+        let dy = Math.sin(angle / 1000) * this.scale * unit.range;
         ctx.moveTo(pos.x + dx, pos.y + dy);
         for (let i = 0; i < 20; i++) {
             angle = globals.now * (unit.ap / 5) + 5 * pi * i / 6;
-            let dx = Math.cos(angle) * this.scale * unit.range;
-            let dy = Math.sin(angle) * this.scale * unit.range;
+            let dx = Math.cos(angle / 1000) * this.scale * unit.range;
+            let dy = Math.sin(angle / 1000) * this.scale * unit.range;
             ctx.lineTo(pos.x + dx, pos.y + dy);
         }
         ctx.stroke();
@@ -387,11 +387,11 @@ export class BattleView {
 _a = BattleView;
 BattleView.canvas = elementById("battle_canvas");
 BattleView.canvas_context = _a.canvas.getContext("2d");
-BattleView.scale = 25;
+BattleView.scale = 28;
 BattleView.camera = { x: 0, y: 0 };
 // Battle board limits:
-BattleView.left = -7;
-BattleView.right = 7;
+BattleView.left = -15;
+BattleView.right = 15;
 BattleView.top = -15;
 BattleView.bottom = 15;
 BattleView.width = _a.right - _a.left;

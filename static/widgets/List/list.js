@@ -148,7 +148,12 @@ export class List {
                     div.appendChild(col.value(item));
                 }
                 else {
-                    div.innerText = col.value(item).toString();
+                    if (col.custom_display) {
+                        div.innerText = col.custom_display(item).toString();
+                    }
+                    else {
+                        div.innerText = col.value(item).toString();
+                    }
                 }
                 if (is_active_column(col)) {
                     div.classList.add("generic-button");

@@ -109,7 +109,7 @@ export const ActionsSelf: {[_ in ActionSelfKeys]: ActionSelf} = {
             const phi = Math.random() * Math.PI * 2
             const shift = {x: Math.cos(phi), y: Math.sin(phi)} as battle_position
             let target = geom.sum(character.position, geom.mult(shift, RANDOM_STEP_LENGTH))
-            BattleEvent.Move(battle, character, target, available_points, true, )
+            BattleEvent.Move(battle, character, target, available_points, false, )
         },
         chance: (battle: Battle, character: Character, ) => {
             return 1
@@ -322,11 +322,11 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             // console.log('current ap:' + character.action_points_left)
             return distance_to_walk * BattleValues.move_cost(character) as action_points
         },
-        execute: (battle: Battle, character: Character, target_character: Character, available_points: action_points, ignore_flag?: boolean) => {
+        execute: (battle: Battle, character: Character, target_character: Character, available_points: action_points) => {
             const delta = geom.minus(target_character.position, character.position);
             const dist = geom.norm(delta)
             const range = character.range()
-            const max_move = character.action_points_left / BattleValues.move_cost(character) // potential movement
+            const max_move = available_points / BattleValues.move_cost(character) // potential movement
             if (dist < range) {
                 return
             }
@@ -334,7 +334,7 @@ export const ActionsUnit: Record<ActionUnitKeys, ActionUnit> = {
             let distance_to_walk = Math.min(dist - range + 0.01, max_move)
             let target = geom.sum(character.position, geom.mult(direction, distance_to_walk))
 
-            BattleEvent.Move(battle, character, target, available_points, ignore_flag == true)
+            BattleEvent.Move(battle, character, target, available_points, false)
         },
         chance: (battle: Battle, character: Character,  target_character: Character, ) => {
             return 1
@@ -398,6 +398,16 @@ type BattleActionPositionResponse =
     | {response: "INVALID_ACTION"}
     | {response: "OK", ap_cost: action_points, action: ActionPosition};
 
+function response_to_alert(character: Character, response: BattleActionResponse | BattleActionUnitResponse | BattleActionPositionResponse) {
+    switch(response.response) {
+        case "NOT_ENOUGH_AP":{Alerts.alert(character, "Not enough action points."); return}
+        case "INVALID_ACTION":{Alerts.alert(character, "You are trying to do an undefined action."); return}
+        case "OK":{return}
+        case "NOT_ENOUGH_RANGE":{Alerts.alert(character, "You are too far away."); return}
+        case "ATTEMPT_IS_INVALID":{Alerts.alert(character, "You can't do this action."); return};
+    }
+}
+
 export function battle_action_self_check(tag: string, battle: Battle, character: Character,  d_ap: action_points):BattleActionResponse {
     const action = ActionsSelf[tag as ActionSelfKeys]
     if (action == undefined) {
@@ -421,25 +431,21 @@ export function battle_action_character_check(
 {
     const action = ActionsUnit[tag as ActionUnitKeys]
     if (action == undefined) {
-        // console.log('no such key')
         return {response: "INVALID_ACTION"}
     }
 
     const ap_cost = action.ap_cost(battle, character, target_character)
     if (character.action_points_left + d_ap < ap_cost) {
-        // console.log('not enough ap', ap_cost, character.action_points_left, d_ap)
         return {response: "NOT_ENOUGH_AP", needed: ap_cost, current: character.action_points_left}
     }
 
     const range = action.range(battle, character)
     const dist = geom.dist(character.position, target_character.position)
     if (range + d_distance < dist) {
-        // console.log('not enough range', range, dist, d_distance)
         return {response: "NOT_ENOUGH_RANGE"}
     }
 
     if (!action.valid(character)) {
-        // console.log('character is not valid')
         return {response: "ATTEMPT_IS_INVALID"}
     }
 
@@ -466,21 +472,21 @@ export function battle_action_self(tag: string, battle: Battle, character: Chara
         character.action_points_left = character.action_points_left - result.ap_cost as action_points
         result.action.execute(battle, character, result.ap_cost)
     }
+    response_to_alert(character, result)
     return result
 }
 
 export function battle_action_character(tag: ActionUnitKeys, battle: Battle, character: Character,  target_character: Character, ) {
     let result = battle_action_character_check(tag, battle, character, target_character, 0, 0)
-    // console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name())
-    // console.log(result.response)
+    console.log(character.get_name(), 'attempts to ', tag, 'to', target_character.get_name())
+    console.log(result.response)
     if (result.response == "OK") {
         character.action_points_left = character.action_points_left - result.ap_cost as action_points
         result.action.execute(battle, character, target_character, result.ap_cost)
-        // Alerts.battle_event(battle, tag, character.id, target_character.position, target_character.id, result.ap_cost)
         Alerts.battle_update_unit(battle, character)
         Alerts.battle_update_unit(battle, target_character)
-        // Alerts.battle_event_simple(battle, tag, character, result.ap_cost)
     }
+    response_to_alert(character, result)
     return result
 }
 
@@ -496,5 +502,6 @@ export function battle_action_position(tag: ActionPositionKeys, battle: Battle, 
             character.action_points_left = 0 as action_points
         }
     }
+    response_to_alert(character, result)
     return result
 }

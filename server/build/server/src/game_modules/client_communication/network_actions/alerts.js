@@ -21,6 +21,10 @@ var Alerts;
         generic_user_alert(user, 'item-market-data', data);
     }
     Alerts.item_market_data = item_market_data;
+    function alert(character, msg) {
+        generic_character_alert(character, 'alert', msg);
+    }
+    Alerts.alert = alert;
     function in_battle(user) {
         generic_user_alert(user, 'alert', 'you are in battle');
     }
@@ -233,7 +237,7 @@ var Alerts;
             if (unit == undefined)
                 continue;
             const character = data_objects_1.Data.Characters.from_id(unit);
-            generic_character_alert(character, 'battle-remove-unit', removed_unit);
+            generic_character_alert(character, 'battle-remove-unit', removed_unit.id);
         }
     }
     Alerts.remove_unit = remove_unit;

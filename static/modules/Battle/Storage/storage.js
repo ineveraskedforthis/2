@@ -5,21 +5,33 @@ export class BattleStorage {
     static get units() {
         return this._units.slice();
     }
-    static new_turn(unit) {
-        this.current_unit = unit;
-    }
     static register_unit(unit) {
+        if (this.units_data[unit.id] != undefined) {
+            this.update_unit_data(unit);
+            return;
+        }
         this._units.push(unit.id);
         this.units_data[unit.id] = unit;
         this.units_data_past[unit.id] = unit;
         this.units_images[unit.id] = new AnimatedImage(unit.tag);
         this.associated_table.data.push(fatten_battle_character(unit.id));
     }
+    static clear() {
+        this._units = [];
+        this.units_data = [];
+        this.units_data_past = [];
+        this.units_images = [];
+        this.associated_table.data = [];
+        this.event_timer = 0;
+        this.fat_ids = [];
+    }
     static update_unit_data(unit) {
         if (this.units_data[unit.id] == undefined) {
-            throw new Error("attempt to update unit which doesn't exist in storage");
+            console.log("attempt to update unit which doesn't exist in storage but who cares");
+            return;
         }
         this.units_data[unit.id] = unit;
+        this.update_display();
     }
     static update_old_keyframe() {
         for (const unit of this._units) {

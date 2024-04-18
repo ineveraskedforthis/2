@@ -3,7 +3,7 @@ import { Character } from "../character/character";
 import { CharacterSystem } from "../character/system";
 
 export namespace BattleValues {
-    export const HALFWIDTH = 7
+    export const HALFWIDTH = 15
     export const HALFHEIGHT = 15
 
     export function flee_chance(position: battle_position){

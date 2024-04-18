@@ -79,7 +79,7 @@ var HandleAction;
     }
     HandleAction.battle_self = battle_self;
     function battle_unit(sw, action) {
-        // console.log('action unit', action)
+        console.log('action unit', action);
         if (!common_validations_1.Validator.is_tag_value(action)) {
             return;
         }
@@ -89,17 +89,23 @@ var HandleAction;
         if (!character.in_battle())
             return;
         const battle = systems_communication_1.Convert.character_to_battle(character);
-        if (battle == undefined)
+        if (battle == undefined) {
+            alerts_1.Alerts.alert(character, "Not in battle");
             return;
+        }
         if (!battle.waiting_for_input) {
+            alerts_1.Alerts.alert(character, "Not your turn");
             return;
         }
         if (heap_1.CharactersHeap.get_selected_unit(battle)?.id != character.id) {
+            alerts_1.Alerts.alert(character, "Not your turn");
             return;
         }
         const target_unit = heap_1.CharactersHeap.get_unit(battle, action.target);
-        if (target_unit == undefined)
+        if (target_unit == undefined) {
+            alerts_1.Alerts.alert(character, "Undefined target");
             return;
+        }
         (0, actions_1.battle_action_character)(action.tag, battle, character, target_unit);
     }
     HandleAction.battle_unit = battle_unit;

@@ -79,7 +79,7 @@ export namespace HandleAction {
     }
 
     export function battle_unit(sw: SocketWrapper, action: unknown) {
-        // console.log('action unit', action)
+        console.log('action unit', action)
         if (!Validator.is_tag_value(action)) {
             return
         }
@@ -88,18 +88,26 @@ export namespace HandleAction {
         if (character == undefined) return
         if (!character.in_battle()) return
 
-        const battle =   Convert.character_to_battle(character)
-        if (battle == undefined) return
+        const battle = Convert.character_to_battle(character)
+        if (battle == undefined) {
+            Alerts.alert(character, "Not in battle")
+            return
+        }
 
         if (!battle.waiting_for_input) {
+            Alerts.alert(character, "Not your turn")
             return
         }
         if (CharactersHeap.get_selected_unit(battle)?.id != character.id) {
+            Alerts.alert(character, "Not your turn")
             return
         }
 
         const target_unit = CharactersHeap.get_unit(battle, action.target as character_id)
-        if (target_unit == undefined) return
+        if (target_unit == undefined) {
+            Alerts.alert(character, "Undefined target")
+            return
+        }
 
         battle_action_character(action.tag as ActionUnitKeys, battle, character, target_unit)
     }

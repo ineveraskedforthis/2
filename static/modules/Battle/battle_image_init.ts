@@ -73,11 +73,13 @@ function start_battle() {
     const container = elementById("battle_display_container")
     BattleView.canvas.width = container.clientWidth
     BattleView.canvas.height = container.clientHeight
+    BattleView.scale = Math.floor(Math.min(container.clientWidth, container.clientHeight) / 35)
 
     setTimeout(() => {
         const container = elementById("battle_display_container")
         BattleView.canvas.width = container.clientWidth
         BattleView.canvas.height = container.clientHeight
+        BattleView.scale = Math.floor(Math.min(container.clientWidth, container.clientHeight) / 35)
     }, 1000)
 }
 

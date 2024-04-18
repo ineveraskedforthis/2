@@ -19,8 +19,6 @@ export class BattleStorage {
     //Animation data
     private static units_images: Record<character_id, AnimatedImage> = [];
 
-    //Displayed turn
-    private static current_unit: character_id
 
     private static associated_table: List<UnitViewMinimal> = UnitsListWidget.enemies_list
 
@@ -33,11 +31,13 @@ export class BattleStorage {
         return this._units.slice()
     }
 
-    static new_turn(unit: character_id) {
-        this.current_unit = unit
-    }
 
     static register_unit(unit: UnitSocket) {
+        if (this.units_data[unit.id] != undefined) {
+            this.update_unit_data(unit)
+            return
+        }
+
         this._units.push(unit.id);
         this.units_data[unit.id] = unit;
         this.units_data_past[unit.id] = unit;
@@ -46,12 +46,24 @@ export class BattleStorage {
         this.associated_table.data.push(fatten_battle_character(unit.id));
     }
 
+    static clear() {
+        this._units = []
+        this.units_data = []
+        this.units_data_past = []
+        this.units_images = []
+        this.associated_table.data = []
+        this.event_timer = 0 as seconds
+        this.fat_ids = []
+    }
+
     static update_unit_data(unit: UnitSocket) {
         if (this.units_data[unit.id] == undefined) {
-            throw new Error("attempt to update unit which doesn't exist in storage")
+            console.log("attempt to update unit which doesn't exist in storage but who cares")
+            return
         }
 
         this.units_data[unit.id] = unit
+        this.update_display()
     }
 
     static update_old_keyframe() {
