@@ -50,7 +50,7 @@ function hunt_trigger(character: Character) : TriggerResponse {
     if (data.small_game > 0) {
         return { response: "OK" }
     } else {
-        return { response: "Notification:", value: "There is no more game in the location. Check other locations in map window."}
+        return { response: "Notification:", value: "There is no more prey in the location. Check other locations in map window."}
     }
 }
 function fishing_trigger(character: Character) : TriggerResponse {
@@ -151,7 +151,7 @@ export const fish = generate_action(
     FATIGUE_COST_FISH,
     fishing_duration_modifier,
     fishing_trigger,
-    fishing_effect,
+    fishing_effect
     dummy_effect,
     CHANGE_REASON.FISHING
 )
