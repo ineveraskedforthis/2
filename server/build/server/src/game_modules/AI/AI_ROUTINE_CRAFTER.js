@@ -42,7 +42,7 @@ function bulk_crafter_routine(character, budget) {
 function decide_item_buy_inputs(character) {
     let result = [];
     for (const item of Object.values(crafts_storage_1.crafts_items)) {
-        if ((0, CraftItem_1.durability)(character, item) > 120) {
+        if ((0, CraftItem_1.durability)(character, item) > 100) {
             result.push(item);
         }
     }
@@ -60,6 +60,10 @@ function decide_item_craft(character) {
     return result[index];
 }
 function item_crafter_routine(character, budget) {
+    (0, ACTIONS_BASIC_1.update_price_beliefs)(character);
+    if (Math.random() < 0.1) {
+        system_1.MarketOrders.remove_by_character(character);
+    }
     let item = decide_item_buy_inputs(character);
     if (item == undefined)
         return;

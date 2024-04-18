@@ -97,7 +97,7 @@ function sell_to_market_limits(character, material, min_price, max_amount) {
             continue;
         if (order.material != material)
             continue;
-        if ((best_price < order.price) && (order.amount > 0)) {
+        if ((best_price <= order.price) && (order.amount > 0)) {
             best_price = order.price;
             best_order = order;
         }
@@ -120,7 +120,7 @@ function buy_from_market_limits(character, material, max_price, max_amount) {
             continue;
         if (order.material != material)
             continue;
-        if ((best_price > order.price) && (order.amount > 0)) {
+        if ((best_price >= order.price) && (order.amount > 0)) {
             best_price = order.price;
             best_order = order;
         }

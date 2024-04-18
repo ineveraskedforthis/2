@@ -17,6 +17,7 @@ import { Data } from "../data/data_objects";
 import { MATERIAL } from "@content/content";
 import { CharacterSystem } from "../character/system";
 import { CHANGE_REASON, Effect } from "../effects/effects";
+import { DataID } from "../data/data_id";
 
 function rest_budget(character: Character) {
     let budget = character.savings.get()
@@ -77,11 +78,24 @@ export const AI_ACTIONS: Record<ActionKeys, CampaignAction> = {
     REST: {
         action: (character: Character) => {
             character.ai_state = AIstate.GoToRest
-            let location = Data.Locations.from_id(character.location_id)
-            let tier = ScriptedValue.rest_tier(character, location)
-            let fatigue_target = ScriptedValue.rest_target_fatigue(tier, ScriptedValue.max_devastation - location.devastation, character.race)
-            const stress_target = ScriptedValue.rest_target_stress(tier, ScriptedValue.max_devastation - location.devastation, character.race)
-            if ((fatigue_target + 1 >= character.get_fatigue()) && (stress_target + 1 >= character.get_stress())) {
+            let best_rest = 200
+            let best_location = DataID.Cells.main_location(character.cell_id)
+            for (const location of DataID.Cells.locations(character.cell_id)) {
+                const object = Data.Locations.from_id(location)
+                const tier = ScriptedValue.rest_tier(character, object)
+                const fatigue_target = ScriptedValue.rest_target_fatigue(tier, ScriptedValue.max_devastation - object.devastation, character.race)
+                const stress_target = ScriptedValue.rest_target_stress(tier, ScriptedValue.max_devastation - object.devastation, character.race)
+
+                if ((fatigue_target + stress_target < best_rest) && (character.savings.get() > ScriptedValue.rest_price(character, object))) {
+                    best_location = location
+                    best_rest = fatigue_target + stress_target
+                }
+            }
+
+            Effect.enter_location(character.id, best_location)
+            ActionManager.start_action(CharacterAction.REST, character, character.cell_id)
+
+            if (best_rest >= character.get_fatigue() + character.get_stress()) {
                 character.ai_memories.push(AImemory.RESTED)
             }
             return

@@ -41,7 +41,7 @@ function bulk_crafter_routine(character: Character, budget: money) {
 function decide_item_buy_inputs(character: Character) {
     let result = []
     for (const item of Object.values(crafts_items)) {
-        if (durability(character, item) > 120) {
+        if (durability(character, item) > 100) {
             result.push(item)
         }
     }
@@ -63,6 +63,12 @@ function decide_item_craft(character: Character) {
 }
 
 function item_crafter_routine(character: Character, budget: money) {
+    update_price_beliefs(character)
+
+    if (Math.random() < 0.1) {
+        MarketOrders.remove_by_character(character)
+    }
+
     let item = decide_item_buy_inputs(character)
     if (item == undefined) return
     AIactions.buy_inputs_to_craft_item(character, item, budget)

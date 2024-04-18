@@ -58,6 +58,13 @@ var MarketOrders;
         }
     }
     MarketOrders.remove_by_condition = remove_by_condition;
+    function remove_by_character(character) {
+        const list = data_id_1.DataID.Character.market_orders_list(character.id);
+        for (const id of list) {
+            remove(id);
+        }
+    }
+    MarketOrders.remove_by_character = remove_by_character;
     function execute_buy_order(id, amount, seller) {
         const order = data_objects_1.Data.MarketOrders.from_id(id);
         const owner = data_objects_1.Data.Characters.from_id(order.owner_id);

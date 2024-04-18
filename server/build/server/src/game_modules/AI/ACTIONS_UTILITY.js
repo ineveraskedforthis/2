@@ -15,6 +15,7 @@ const AI_ROUTINE_CRAFTER_1 = require("./AI_ROUTINE_CRAFTER");
 const AI_ROUTINE_URBAN_TRADER_1 = require("./AI_ROUTINE_URBAN_TRADER");
 const data_objects_1 = require("../data/data_objects");
 const effects_1 = require("../effects/effects");
+const data_id_1 = require("../data/data_id");
 function rest_budget(character) {
     let budget = character.savings.get();
     if (budget < 50) {
@@ -45,11 +46,21 @@ exports.AI_ACTIONS = {
     REST: {
         action: (character) => {
             character.ai_state = "go_to_rest" /* AIstate.GoToRest */;
-            let location = data_objects_1.Data.Locations.from_id(character.location_id);
-            let tier = scripted_values_1.ScriptedValue.rest_tier(character, location);
-            let fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
-            const stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, scripted_values_1.ScriptedValue.max_devastation - location.devastation, character.race);
-            if ((fatigue_target + 1 >= character.get_fatigue()) && (stress_target + 1 >= character.get_stress())) {
+            let best_rest = 200;
+            let best_location = data_id_1.DataID.Cells.main_location(character.cell_id);
+            for (const location of data_id_1.DataID.Cells.locations(character.cell_id)) {
+                const object = data_objects_1.Data.Locations.from_id(location);
+                const tier = scripted_values_1.ScriptedValue.rest_tier(character, object);
+                const fatigue_target = scripted_values_1.ScriptedValue.rest_target_fatigue(tier, scripted_values_1.ScriptedValue.max_devastation - object.devastation, character.race);
+                const stress_target = scripted_values_1.ScriptedValue.rest_target_stress(tier, scripted_values_1.ScriptedValue.max_devastation - object.devastation, character.race);
+                if ((fatigue_target + stress_target < best_rest) && (character.savings.get() > scripted_values_1.ScriptedValue.rest_price(character, object))) {
+                    best_location = location;
+                    best_rest = fatigue_target + stress_target;
+                }
+            }
+            effects_1.Effect.enter_location(character.id, best_location);
+            manager_1.ActionManager.start_action(actions_00_1.CharacterAction.REST, character, character.cell_id);
+            if (best_rest >= character.get_fatigue() + character.get_stress()) {
                 character.ai_memories.push("rested" /* AImemory.RESTED */);
             }
             return;

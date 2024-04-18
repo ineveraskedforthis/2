@@ -85,6 +85,13 @@ export namespace MarketOrders {
         }
     }
 
+    export function remove_by_character(character:Character) {
+        const list = DataID.Character.market_orders_list(character.id)
+        for (const id of list) {
+            remove(id)
+        }
+    }
+
     export function execute_buy_order(id:market_order_id, amount: number, seller: Character) : MarkerResponseSell {
         const order = Data.MarketOrders.from_id(id)
         const owner = Data.Characters.from_id(order.owner_id)
